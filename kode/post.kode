@@ -1,0 +1,54 @@
+###
+00000000    0000000    0000000  000000000    
+000   000  000   000  000          000       
+00000000   000   000  0000000      000       
+000        000   000       000     000       
+000         0000000   0000000      000       
+###
+
+POST = "__POST__"
+
+class Poster extends EventTarget
+
+    @: ->
+        super()
+        @addEventListener POST, @onPostEvent
+        window.addEventListener 'beforeunload' @dispose
+
+    onPostEvent: (event) ->
+        
+        out = new Event event.event
+        out.args      = event.args
+        out.senderID  = event.senderID
+        out.receivers = event.receivers
+        @dispatchEvent out
+        
+    dispose: =>
+        
+        @removeEventListener POST, @onPostEvent
+        window.removeEventListener 'beforeunload' @dispose
+
+    toAll:  (type, args) -> @send 'toAll'  type, args
+    toWins: (type, args) -> @send 'toWins' type, args
+    toMain: (type, args) -> @send 'toMain' type, args
+     
+    send: (receivers, type, args, id) -> 
+    
+        # if type not in ['pointerMove' 'animationFrame']
+            # Neutralino.debug.log("post.emit #{type} #{args}").catch((e) -> error e)
+        event = new Event POST
+        event.event = type
+        event.args = args
+        event.senderID = id 
+        event.receivers = receivers
+        @dispatchEvent event 
+
+poster = new Poster
+        
+export 
+
+    poster: poster
+
+    emit: (event, args...) -> poster.toAll event, args
+        
+    on: (event, cb) -> poster.addEventListener event, (e) -> cb.apply cb, e.args
