@@ -74,23 +74,28 @@
     NSLog(@"%@", [[NSBundle mainBundle] URLForResource:bundlePath withExtension:nil]);
     
     return [[NSBundle mainBundle] URLForResource:bundlePath withExtension:nil];
-
-    //return [[NSBundle mainBundle] URLForResource:[[bundlePath lastPathComponent] stringByDeletingPathExtension]
-    //                               withExtension:[bundlePath pathExtension]
-    //                                subdirectory:[bundlePath stringByDeletingLastPathComponent]];
 }
 
 - (void) navigateToURL:(NSURL*)url
 {
     if ([url isFileURL])
     {
-        NSLog(@"WebWin navigate file %@", url);
-        // WKNavigation* nav = 
-        [view loadFileURL:url allowingReadAccessToURL:url];
+        id req = [NSMutableURLRequest requestWithURL:url];
+        
+        [req setAttribution:NSURLRequestAttributionUser];
+        [req setValue:@"localhost" forHTTPHeaderField:@"Access-Control-Allow-Origin"];
+        
+        NSLog(@"WebWin navigate header %@", [req allHTTPHeaderFields]);
+    
+        NSURL* srcURL = [Bundle fileURLWithPath:@"/"];
+        NSLog(@"WebWin navigate %@ allow read access %@", url, srcURL);
+        
+        [view loadFileRequest:req allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
+        //[view loadFileURL:url allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
     }
     else
     {
-        NSLog(@"WebWin navigate http %@", url);
+        NSLog(@"WebWin navigate %@", url);
         [view loadRequest:[NSURLRequest requestWithURL:url]];
     }
     

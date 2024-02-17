@@ -2,7 +2,7 @@
 
 var _k_
 
-var c, e
+var $, c, e, main
 
 if (e = document.getElementById('main'))
 {
@@ -10,3 +10,10 @@ if (e = document.getElementById('main'))
     c.textContent = "hello from main"
     e.appendChild(c)
 }
+import dom from './dom.js'
+import elem from './elem.js'
+$ = dom.$
+
+main = $('main')
+elem({class:'test',text:'hello again!',parent:main})
+export default true;
