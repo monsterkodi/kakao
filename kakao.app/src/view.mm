@@ -18,6 +18,7 @@
     [[config preferences] setValue:@YES forKey:@"fullScreenEnabled"];
     [[config preferences] setValue:@YES forKey:@"javaScriptCanAccessClipboard"];
     [[config preferences] setValue:@YES forKey:@"DOMPasteAllowed"];
+    [config setValue:@YES forKey:@"allowUniversalAccessFromFileURLs"];
 
     if (self = [super initWithFrame:CGRectMake(0,0,0,0) configuration:config])
     {

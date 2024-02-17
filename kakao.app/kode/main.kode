@@ -11,21 +11,19 @@ if e = document.getElementById 'main'
     c.textContent = "hello from main"
     e.appendChild c
 
-# export default true
-# module.exports = true
-    
-# import dom     from './dom.js'
-# import elem    from './elem.js'
+import dom  from './dom.js'
+import elem from './elem.js'
 
-# { $ } = dom
+{ $ } = dom
 
-# main =$ 'main'
+main =$ 'main'
 
-# elem class:'test' text:'hello' parent:main#, click: => 
+elem class:'test' text:'hello again!' parent:main #, click: => 
 
-# # import Window from './window.js'
+# import Window from './window.js'
 
-# # win = new Window
+# win = new Window
 
 # log 'kakao.main win:' win
 
+export true

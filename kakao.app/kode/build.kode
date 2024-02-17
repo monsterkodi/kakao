@@ -1,3 +1,10 @@
+###
+0000000    000   000  000  000      0000000      
+000   000  000   000  000  000      000   000    
+0000000    000   000  000  000      000   000    
+000   000  000   000  000  000      000   000    
+0000000     0000000   000  0000000  0000000      
+###
 
 
 CMD = "zig c++"
@@ -6,9 +13,8 @@ SRC = "main.cpp app.mm bundle.mm win.mm view.mm"
 
 OUT = "../Contents/MacOS/kakao"
 
-PRE = "--std=c++17 -I ."
 LIB = "-framework WebKit -framework Cocoa"
-FLG = "-DMACOSX_DEPLOYMENT_TARGET=10.7 -Wno-deprecated-declarations -arch arm64 -Os"
+FLG = "-arch arm64 -Os"
 
 import fs       from "node:fs"
 import process  from "node:process"
@@ -19,7 +25,7 @@ try
 catch e
     null
 
-cmd = "#{CMD} #{PRE} #{SRC} #{LIB} #{FLG} -o #{OUT}"
+cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
 opt = cwd:__dirname + '/src'
 
 childp.exec cmd, opt, (err, stdout, stderr) -> 
