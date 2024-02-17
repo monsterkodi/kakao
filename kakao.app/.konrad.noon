@@ -1,0 +1,3 @@
+kode  . ext js   . replace .. kode/build.kode build.js  .. kode/ Contents/MacOS/js/  
+pug   . ext html . replace .. pug/  Contents/MacOS/js/
+styl  . ext css  . replace .. pug/  Contents/MacOS/js/css/

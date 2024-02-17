@@ -2,4 +2,4 @@ name      kakao
 module    js/index.js
 type      module
 scripts
-          make  bun run js/build.js
+          make  bun run build.js

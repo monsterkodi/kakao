@@ -16,7 +16,7 @@
 {
     NSLog(@"app %@", [Bundle fileURLWithPath:@"new"]);    
 
-    freopen([[NSString stringWithString:@"/Users/kodi/s/kakao/log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
+    freopen([[NSString stringWithString:@"/Users/kodi/s/kakao/kakao.app/log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
     id delegate = [[[App alloc] init] retain];
     [delegate setIcon:@"/Users/kodi/s/kakao/kakao.app/Contents/Resources/img/app.icns"];
