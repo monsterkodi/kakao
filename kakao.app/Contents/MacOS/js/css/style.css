@@ -41,7 +41,6 @@ body {
   -webkit-user-select: none;
   padding: 6px;
   overflow: auto;
-  -webkit-user-select: text;
   pointer-events: auto;
   position: absolute;
   top: 30px;

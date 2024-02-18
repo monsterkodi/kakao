@@ -57,8 +57,7 @@
     WKUserContentController* ucc = [[self configuration] userContentController];
     
     [ucc addScriptMessageHandler:self name:@"kakao"];
-    id world = [WKContentWorld worldWithName:@"kakao"];
-    [ucc addScriptMessageHandlerWithReply:self contentWorld:world name:@"kakao_get"];
+    [ucc addScriptMessageHandlerWithReply:self contentWorld:[WKContentWorld pageWorld] name:@"kakao_reply"];
 }
 
 - (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg
