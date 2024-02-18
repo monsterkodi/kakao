@@ -2,33 +2,36 @@
 
 var _k_
 
-var $, c, e, main
+var main
 
-if (e = document.getElementById('main'))
-{
-    c = document.createElement('div')
-    c.textContent = "hello from main"
-    e.appendChild(c)
-}
 import dom from './dom.js'
 import elem from './elem.js'
-$ = dom.$
-
-main = $('main')
-window.webkit.messageHandlers.kakao.postMessage('in main!')
-window.webkit.messageHandlers.kakao_reply.postMessage('in main!')
-elem({class:'test',text:'hello again!',parent:main,click:(function ()
+import Bundle from './bundle.js'
+import Window from './window.js'
+import Kakao from './kakao.js'
+main = dom.$('main')
+elem({class:'test',text:'hello!',parent:main,click:(function ()
 {
-    return window.webkit.messageHandlers.kakao.postMessage('hello from main!')
+    return Kakao.post('hello from main!')
 }).bind(this)})
 elem({class:'test',text:'ping!',parent:main,click:(function ()
 {
-    return window.webkit.messageHandlers.kakao_reply.postMessage('ping!').then(function (reply, err)
+    return Kakao.request('test.ping','ping!').then(function (reply)
     {
-        console.log(reply,err)
-        if (!err)
-        {
-            return elem({class:'test',text:reply,parent:main})
-        }
+        return elem({class:'test',text:reply,parent:main})
     })
 }).bind(this)})
+elem({class:'test',text:'send!',parent:main,click:(function ()
+{
+    return Kakao.request('test.struct',{hello:'world!',int:1}).then(function (reply)
+    {
+        return elem({class:'test',text:`${reply.input} ${reply.output}`,parent:main})
+    })
+}).bind(this)})
+Kakao.request('Bundle.path').then(function (p)
+{
+    var win
+
+    Bundle.path = p
+    return win = new Window
+})

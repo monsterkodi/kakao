@@ -2,7 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var defaults, fetch, pad, parse, parseStr, regs, save, stringify
+var defaults, load, pad, parse, parseStr, regs, save, stringify
 
 import slash from './slash.js'
 import path from './path.js'
@@ -751,7 +751,7 @@ parseStr = function (str, p, ext)
 
 }
 
-fetch = function (p, ext, cb)
+load = function (p, ext, cb)
 {
     if (_k_.isFunc(ext))
     {
@@ -761,7 +761,7 @@ fetch = function (p, ext, cb)
     {
         try
         {
-            return slash.fetchText(p,function (str)
+            return slash.readText(p,function (str)
             {
                 if (!_k_.empty(str))
                 {
@@ -809,4 +809,4 @@ save = function (p, data, strOpt, cb)
         console.error('noon.save - no callback!')
     }
 }
-export default {extnames:['.json','.noon'],extensions:['json','noon'],save:save,fetch:fetch,parse:parse,stringify:stringify};
+export default {extnames:['.json','.noon'],extensions:['json','noon'],save:save,load:load,parse:parse,stringify:stringify};

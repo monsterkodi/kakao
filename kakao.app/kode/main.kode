@@ -6,32 +6,29 @@
 000   000  000   000  000  000   000    
 ###
 
-import dom  from './dom.js'
-import elem from './elem.js'
+import dom    from './dom.js'
+import elem   from './elem.js'
+import Bundle from './bundle.js'
+import Window from './window.js'
+import Kakao  from './kakao.js'
 
-{ $ } = dom
+main = dom.$ 'main'
 
-main =$ 'main'
-
-window.webkit.messageHandlers.kakao.postMessage 'in main!'
-window.webkit.messageHandlers.kakao_reply.postMessage 'in main!'
-
-elem class:'test' text:'hello again!' parent:main, click: => 
+elem class:'test' text:'hello!' parent:main, click: => 
     
-    window.webkit.messageHandlers.kakao.postMessage 'hello from main!'
+    Kakao.post 'hello from main!'
 
 elem class:'test' text:'ping!' parent:main, click: => 
 
-    window.webkit.messageHandlers.kakao_reply.postMessage('ping!').then (reply, err) ->
-        log reply, err
-        if not err
-            elem class:'test' text:reply, parent:main
-            
+    Kakao.request('test.ping', 'ping!').then (reply) -> 
+        elem class:'test' text:reply, parent:main
+
+elem class:'test' text:'send!' parent:main, click: => 
     
-# import Window from './window.js'
-
-# win = new Window
-
-# log 'kakao.main win:' win
-
-# export true
+    Kakao.request('test.struct', hello:'world!' int:1).then (reply) ->
+        elem class:'test' text:"#{reply.input} #{reply.output}", parent:main
+                
+Kakao.request('Bundle.path').then (p) ->
+    
+    Bundle.path = p
+    win = new Window

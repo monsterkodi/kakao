@@ -205,7 +205,7 @@ Title = (function ()
         }
         if (_k_.empty(this.templateCache))
         {
-            return noon.fetch(this.opt.menu,(function (tc)
+            return noon.load(this.opt.menu,(function (tc)
             {
                 var _177_40_
 

@@ -576,14 +576,14 @@ parseStr = (str, p, ext) ->
         '.json' ➜ JSON.parse str
                 ➜ parse str
 
-fetch = (p, ext, cb) ->
+load = (p, ext, cb) ->
 
     cb = ext if ext is func
 
     if cb is func
 
         try
-            slash.fetchText p, (str) ->
+            slash.readText p, (str) ->
                 if valid str
                     cb parseStr str, p, ext
                 else
@@ -625,6 +625,6 @@ export
     extnames:   ['.json' '.noon']
     extensions: [ 'json'  'noon']
     save:       save
-    fetch:      fetch
+    load:       load
     parse:      parse
     stringify:  stringify

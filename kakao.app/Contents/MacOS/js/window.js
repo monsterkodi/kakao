@@ -11,6 +11,7 @@ import post from './post.js'
 import keyinfo from './keyinfo.js'
 import Title from './title.js'
 import Drag from './drag.js'
+import Bundle from './bundle.js'
 $ = dom.$
 stopEvent = dom.stopEvent
 
@@ -43,7 +44,7 @@ Window = (function ()
         this["animate"] = this["animate"].bind(this)
         this["onDomLoaded"] = this["onDomLoaded"].bind(this)
         post.on('menuAction',this.onMenuAction)
-        window.titlebar = new Title({icon:'./icons/app.png',menu:'/menu.noon'})
+        window.titlebar = new Title({icon:Bundle.resource('img/menu.png'),menu:Bundle.resource('menu.noon')})
         document.addEventListener('DOMContentLoaded',this.onDomLoaded)
     }
 
@@ -52,8 +53,6 @@ Window = (function ()
         var main
 
         main = $('main')
-        elem({class:'test',text:'hello',parent:main,click:(function ()
-        {}).bind(this)})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.requestAnimationFrame(this.animate)
@@ -67,8 +66,7 @@ Window = (function ()
         window.requestAnimationFrame(this.animate)
         now = window.performance.now()
         delta = (now - this.lastAnimationTime) * 0.001
-        this.lastAnimationTime = now
-        console.log(delta)
+        return this.lastAnimationTime = now
     }
 
     Window.prototype["toggleMaximize"] = function ()
