@@ -9,12 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
-@interface View : WKWebView <WKScriptMessageHandler>
+@interface View : WKWebView <WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
 {
 }
 
 -(id)   init;
 -(void) initScripting;
 -(void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg;
+-(void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg replyHandler:(void (^)(id reply, NSString *errorMessage))replyHandler;
 
 @end
