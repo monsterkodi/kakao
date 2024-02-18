@@ -6,11 +6,6 @@
 000   000  000   000  000  000   000    
 ###
 
-if e = document.getElementById 'main'
-    c = document.createElement 'div'
-    c.textContent = "hello from main"
-    e.appendChild c
-
 import dom  from './dom.js'
 import elem from './elem.js'
 
@@ -18,13 +13,20 @@ import elem from './elem.js'
 
 main =$ 'main'
 
+window.webkit.messageHandlers.kakao.postMessage 'in main!'
+window.webkit.messageHandlers.kakao_reply.postMessage 'in main!'
+
 elem class:'test' text:'hello again!' parent:main, click: => 
     
     window.webkit.messageHandlers.kakao.postMessage 'hello from main!'
 
 elem class:'test' text:'ping!' parent:main, click: => 
-    
-    window.webkit.messageHandlers.kakao_get.postMessage 'ping!'
+
+    window.webkit.messageHandlers.kakao_reply.postMessage('ping!').then (reply, err) ->
+        log reply, err
+        if not err
+            elem class:'test' text:reply, parent:main
+            
     
 # import Window from './window.js'
 
@@ -32,4 +34,4 @@ elem class:'test' text:'ping!' parent:main, click: =>
 
 # log 'kakao.main win:' win
 
-export true
+# export true
