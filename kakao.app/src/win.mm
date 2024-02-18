@@ -55,24 +55,12 @@
     [self setContentView:view];
     [self makeKeyAndOrderFront:nil];
             
-    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"./Contents/MacOS/js/index.htm"]);
-    
-    id url = [NSURL fileURLWithPath:@"/Users/kodi/s/kakao/kakao.app/Contents/MacOS/js/index.html"];
-    //id url = [self URLforBundlePath:@"./Contents/MacOS/js/index.html"];
-    NSLog(@"url: %@", url);
-    [self navigateToURL:url];
+    [self navigateToURL:[Bundle fileURLinJS:@"index.html"]];
 	return self;
 }
 
 - (NSURL*) URLforBundlePath:(NSString*)bundlePath // absoulte file url relative to .app folder
-{
-
-    NSLog([[bundlePath lastPathComponent] stringByDeletingPathExtension]);
-    NSLog([bundlePath pathExtension]);
-    NSLog([bundlePath stringByDeletingLastPathComponent]);
-    NSLog(@"%@", [NSBundle mainBundle]);
-    NSLog(@"%@", [[NSBundle mainBundle] URLForResource:bundlePath withExtension:nil]);
-    
+{    
     return [[NSBundle mainBundle] URLForResource:bundlePath withExtension:nil];
 }
 
@@ -82,13 +70,13 @@
     {
         id req = [NSMutableURLRequest requestWithURL:url];
         
-        [req setAttribution:NSURLRequestAttributionUser];
-        [req setValue:@"localhost" forHTTPHeaderField:@"Access-Control-Allow-Origin"];
+        //[req setAttribution:NSURLRequestAttributionUser];
+        //[req setValue:@"localhost" forHTTPHeaderField:@"Access-Control-Allow-Origin"];
         
-        NSLog(@"WebWin navigate header %@", [req allHTTPHeaderFields]);
+        //NSLog(@"WebWin navigate header %@", [req allHTTPHeaderFields]);
     
         NSURL* srcURL = [Bundle fileURLWithPath:@"/"];
-        NSLog(@"WebWin navigate %@ allow read access %@", url, srcURL);
+        //NSLog(@"WebWin navigate %@ allow read access %@", url, srcURL);
         
         [view loadFileRequest:req allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
         //[view loadFileURL:url allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*

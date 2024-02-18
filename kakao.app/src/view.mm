@@ -59,7 +59,7 @@
     
     [ucc addScriptMessageHandler:self name:@"kakao"]; // "external"
      
-    NSString* js = @"script( window.kako = { invoke: function(s) { window.webkit.messageHandlers.external.postMessage(s); } }; )script";
+    NSString* js = @"script( window.kakao = { invoke: function(s) { window.webkit.messageHandlers.external.postMessage(s); } }; )script";
     
     [ucc addUserScript:[[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES]];
 }
