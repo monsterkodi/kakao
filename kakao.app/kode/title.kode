@@ -171,7 +171,7 @@ function Title
         return [] if not @opt.menu
                 
         if empty @templateCache
-            noon.fetch @opt.menu, (tc) => 
+            noon.load @opt.menu, (tc) => 
                 if valid tc
                     @templateCache = @makeTemplate tc
                     if @opt.menuTemplate? and @opt.menuTemplate is func

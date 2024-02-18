@@ -1,0 +1,19 @@
+###
+000   000   0000000   000   000   0000000    0000000 
+000  000   000   000  000  000   000   000  000   000
+0000000    000000000  0000000    000000000  000   000
+000  000   000   000  000  000   000   000  000   000
+000   000  000   000  000   000  000   000   0000000 
+###
+
+function Kakao
+
+    @post: (msg) ->
+        
+        window.webkit.messageHandlers.kakao.postMessage msg
+
+    @request: (route, args...) -> 
+
+        window.webkit.messageHandlers.kakao_request.postMessage route:route, args:args
+
+export Kakao

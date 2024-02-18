@@ -13,6 +13,7 @@ import post    from './post.js'
 import keyinfo from './keyinfo.js'
 import Title   from './title.js'
 import Drag    from './drag.js'
+import Bundle  from './bundle.js'
 
 { $, stopEvent } = dom
 
@@ -28,7 +29,8 @@ function Window
         
         post.on 'menuAction' @onMenuAction
         
-        window.titlebar = new Title icon:'./icons/app.png' menu:'/menu.noon'
+        # window.titlebar = new Title icon:'./icons/app.png' menu:'/menu.noon'
+        window.titlebar = new Title icon:Bundle.resource('img/menu.png'), menu:Bundle.resource('menu.noon')
         
         document.addEventListener 'DOMContentLoaded' @onDomLoaded
         
@@ -52,15 +54,9 @@ function Window
                         # setWindowPos mouseDelta
                         
         main =$ 'main'
-        
-        elem class:'test' text:'hello' parent:main, click: => 
-            # Neutralino.debug.log 'click!'
-            # @createWindow()
-            
+                    
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
-        
-        # Neutralino.window.focus()
         
         window.requestAnimationFrame @animate
         
@@ -76,7 +72,7 @@ function Window
         delta = (now - @lastAnimationTime) * 0.001
         @lastAnimationTime = now
         
-        log delta
+        # log delta
         # post.emit 'animationFrame' delta
             
     toggleMaximize: =>
