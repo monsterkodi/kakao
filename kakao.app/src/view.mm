@@ -32,7 +32,7 @@
 
 -(void) mouseDown:(NSEvent *)event 
 {
-    NSLog(@"mouseDown %@", event);    
+    // NSLog(@"mouseDown %@", event);    
     NSPoint   viewLoc = [self convertPoint:event.locationInWindow fromView:nil];
     NSString *docElem = [NSString stringWithFormat:@"document.elementFromPoint(%f, %f)", viewLoc.x, viewLoc.y];
     NSString *jsCode  = [NSString stringWithFormat:@"%@.classList.contains(\"app-drag-region\")", docElem];
@@ -54,19 +54,22 @@
 
 -(void) initScripting
 {
-    NSLog(@"initScripting");
     WKUserContentController* ucc = [[self configuration] userContentController];
     
-    [ucc addScriptMessageHandler:self name:@"kakao"]; // "external"
-     
-    NSString* js = @"script( window.kakao = { invoke: function(s) { window.webkit.messageHandlers.external.postMessage(s); } }; )script";
-    
-    [ucc addUserScript:[[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES]];
+    [ucc addScriptMessageHandler:self name:@"kakao"];
+    id world = [WKContentWorld worldWithName:@"kakao"];
+    [ucc addScriptMessageHandlerWithReply:self contentWorld:world name:@"kakao_get"];
 }
 
 - (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg
 {
-    NSLog(@"userContentController %@ msg: %@", ucc, msg);
+    NSLog(@"script message: %@ %@", msg.name, msg.body);
+}
+
+- (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg replyHandler:(void (^)(id reply, NSString *errorMessage))replyHandler
+{
+    NSLog(@"reply to message: %@ %@ %@", msg.name, msg.world.name, msg.body);
+    replyHandler(@"pong", nil);
 }
 
 @end

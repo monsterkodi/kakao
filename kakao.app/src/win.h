@@ -17,8 +17,6 @@
 + (id) new;
 - (id) init;
 
-- (void)   runApp;
-- (void)   takeSnapshot:(NSString*)pngFilePath;
-- (NSURL*) URLforBundlePath:(NSString*)bundlePath;
+- (void) takeSnapshot:(NSString*)pngFilePath;
 
 @end

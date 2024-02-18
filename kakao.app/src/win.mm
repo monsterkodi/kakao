@@ -18,14 +18,21 @@
 
 - (id) init
 {
+    BOOL nativeTitleBar = NO;
+
+    NSWindowStyleMask styleMask =     
+        NSWindowStyleMaskTitled | 
+        NSWindowStyleMaskMiniaturizable | 
+        NSWindowStyleMaskClosable | 
+        NSWindowStyleMaskResizable;
+        
+    if (!nativeTitleBar)
+    {
+        styleMask |= NSWindowStyleMaskFullSizeContentView;
+    }
+
     self = [self initWithContentRect: CGRectMake(0, 0, 0, 0)
-                 styleMask: (   
-                                NSWindowStyleMaskTitled | 
-                                NSWindowStyleMaskMiniaturizable | 
-                                NSWindowStyleMaskClosable | 
-                                NSWindowStyleMaskResizable 
-                                //NSWindowStyleMaskFullSizeContentView
-                            )
+                 styleMask: styleMask
                  backing:   NSBackingStoreBuffered
                  defer:     YES];
                 
@@ -33,9 +40,7 @@
 
     view = [[View alloc] init];
     
-    //[view initScripting];        
-        
-    if (0)
+    if (!nativeTitleBar)
     {
         [self setOpaque:NO];
         [self setBackgroundColor:[NSColor clearColor]];
@@ -59,35 +64,20 @@
 	return self;
 }
 
-- (NSURL*) URLforBundlePath:(NSString*)bundlePath // absoulte file url relative to .app folder
-{    
-    return [[NSBundle mainBundle] URLForResource:bundlePath withExtension:nil];
-}
-
 - (void) navigateToURL:(NSURL*)url
 {
     if ([url isFileURL])
     {
         id req = [NSMutableURLRequest requestWithURL:url];
         
-        //[req setAttribution:NSURLRequestAttributionUser];
-        //[req setValue:@"localhost" forHTTPHeaderField:@"Access-Control-Allow-Origin"];
-        
-        //NSLog(@"WebWin navigate header %@", [req allHTTPHeaderFields]);
-    
         NSURL* srcURL = [Bundle fileURLWithPath:@"/"];
-        //NSLog(@"WebWin navigate %@ allow read access %@", url, srcURL);
         
         [view loadFileRequest:req allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
-        //[view loadFileURL:url allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
     }
     else
     {
-        NSLog(@"WebWin navigate %@", url);
         [view loadRequest:[NSURLRequest requestWithURL:url]];
     }
-    
-    NSLog(@"WebWin navigate %@", view);
 }
 
 -(void) takeSnapshot:(NSString*)pngFilePath

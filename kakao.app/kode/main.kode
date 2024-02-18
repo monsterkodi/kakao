@@ -18,8 +18,14 @@ import elem from './elem.js'
 
 main =$ 'main'
 
-elem class:'test' text:'hello again!' parent:main #, click: => 
+elem class:'test' text:'hello again!' parent:main, click: => 
+    
+    window.webkit.messageHandlers.kakao.postMessage 'hello from main!'
 
+elem class:'test' text:'ping!' parent:main, click: => 
+    
+    window.webkit.messageHandlers.kakao_get.postMessage 'ping!'
+    
 # import Window from './window.js'
 
 # win = new Window

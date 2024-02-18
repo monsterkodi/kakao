@@ -14,6 +14,7 @@
 
 + (id) new
 {
+    NSLog(@"kakao");
     freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
     id delegate = [[App alloc] init];
@@ -36,17 +37,17 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
-    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"./willFinish"]);
+    //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"./willFinish"]);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"didFinish"]);
+    //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"didFinish"]);
 }
 
 - (void)applicationWillBecomeActive:(NSNotification *)notification
 {
-    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
+    //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
 }
 
 -(BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender
