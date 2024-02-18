@@ -12,6 +12,12 @@
 {
 }
 
-+ (NSURL*) fileURLWithPath:(NSString*)path; // absoulte file url relative to .app folder
++ (NSString*) path;                         // .app folder
++ (NSString*) appPath:(NSString*)path;      // path relative to .app folder
++ (NSString*) macOSPath:(NSString*)path;    // path relative to .app/Contents/MacOS folder
++ (NSString*) jsPath:(NSString*)path;       // path relative to .app/Contents/MacOS/js folder
++ (NSString*) resourcePath:(NSString*)path; // path relative to .app/Contents/Resources folder
++ (NSURL*) fileURLWithPath:(NSString*)path; // file url relative to .app folder
++ (NSURL*) fileURLinJS:(NSString*)path;     // file url relative to .app/Contents/MacOS/js folder
 
 @end

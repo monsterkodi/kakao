@@ -14,12 +14,11 @@
 
 + (id) new
 {
-    NSLog(@"app %@", [Bundle fileURLWithPath:@"new"]);    
-
-    freopen([[NSString stringWithString:@"/Users/kodi/s/kakao/kakao.app/log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
+    freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
-    id delegate = [[[App alloc] init] retain];
-    [delegate setIcon:@"/Users/kodi/s/kakao/kakao.app/Contents/Resources/img/app.icns"];
+    id delegate = [[App alloc] init];
+    [delegate setIcon:[Bundle resourcePath:@"img/app.icns"]];
+    
     id app = [NSApplication sharedApplication];
     [app setDelegate:delegate];
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
@@ -32,12 +31,7 @@
 
 - (void) run
 {    
-    [[NSApplication sharedApplication] run];
-}
-
-- (void)applicationWillBecomeActive:(NSNotification *)notification
-{
-    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
+    [[NSApplication sharedApplication] run]; // does not return
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
@@ -47,7 +41,12 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/didFinish"]);
+    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"didFinish"]);
+}
+
+- (void)applicationWillBecomeActive:(NSNotification *)notification
+{
+    NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
 }
 
 -(BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender

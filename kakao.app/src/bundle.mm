@@ -10,12 +10,32 @@
 
 @implementation Bundle
 
-+ (NSString*) path
-{
++ (NSString*) path // no idea why the bundle methods don't work
+{                  // but the information is in the description
     id path = [[NSBundle mainBundle] description];
     id cset = [NSCharacterSet characterSetWithCharactersInString:@"<>"];
     id comp = [path componentsSeparatedByCharactersInSet:cset];
     return [comp objectAtIndex:1];
+}
+
++ (NSString*) appPath:(NSString*)path
+{
+    return [[NSString stringWithFormat:@"%@/%@", [Bundle path], path] stringByStandardizingPath];
+}
+
++ (NSString*) macOSPath:(NSString*)path
+{
+    return [[NSString stringWithFormat:@"%@/Contents/MacOS/%@", [Bundle path], path] stringByStandardizingPath];
+}
+
++ (NSString*) jsPath:(NSString*)path
+{
+    return [[NSString stringWithFormat:@"%@/Contents/MacOS/js/%@", [Bundle path], path] stringByStandardizingPath];
+}
+
++ (NSString*) resourcePath:(NSString*)path
+{
+    return [[NSString stringWithFormat:@"%@/Contents/Resources/%@", [Bundle path], path] stringByStandardizingPath];
 }
 
 + (NSURL*) fileURLWithPath:(NSString*)path // absoulte file url relative to .app folder
@@ -24,9 +44,12 @@
 
     id norm = [[NSString pathWithComponents:comp] stringByStandardizingPath];
     
-    //NSLog(norm);
-    
     return [NSURL fileURLWithPath:norm];
+}
+
++ (NSURL*) fileURLinJS:(NSString*)path
+{
+    return [NSURL fileURLWithPath:[Bundle jsPath:path]];
 }
 
 @end
