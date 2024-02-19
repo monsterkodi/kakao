@@ -9,7 +9,7 @@
 
 CMD = "zig c++"
 
-SRC = "main.cpp app.mm bundle.mm win.mm view.mm"
+SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm"
 
 OUT = "../Contents/MacOS/kakao"
 

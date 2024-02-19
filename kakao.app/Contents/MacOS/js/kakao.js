@@ -10,14 +10,19 @@ Kakao = (function ()
     function Kakao ()
     {}
 
-    Kakao["post"] = function (msg)
+    Kakao["post"] = function (route, ...args)
     {
-        return window.webkit.messageHandlers.kakao.postMessage(msg)
+        return window.webkit.messageHandlers.kakao.postMessage({route:route,args:args})
     }
 
     Kakao["request"] = function (route, ...args)
     {
         return window.webkit.messageHandlers.kakao_request.postMessage({route:route,args:args})
+    }
+
+    Kakao["receive"] = function (msg)
+    {
+        console.log('msg from app:',msg)
     }
 
     return Kakao

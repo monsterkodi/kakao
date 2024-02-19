@@ -95,11 +95,11 @@ function Window
         log 'menuAction' action
         switch action.toLowerCase()
             'new window' ➜ @createWindow()
-            'maximize'   ➜ @toggleMaximize()
-            # 'minimize'   ➜ Neutralino.window.minimize()
-            # 'screenshot' ➜ Neutralino.window.takeSnapshot()
-            # 'close'    
-            # 'quit'       ➜ Neutralino.app.exit()
+            'maximize'   ➜ kakao.request 'window.maximize'
+            'minimize'   ➜ kakao.request 'window.minimize'
+            'screenshot' ➜ kakao.request 'window.snapshot'
+            'close'      ➜ kakao.request 'window.close'
+            'quit'       ➜ kakao.post    'window.close'
             
     # 000   000  00000000  000   000
     # 000  000   000        000 000

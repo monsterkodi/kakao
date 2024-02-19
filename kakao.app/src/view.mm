@@ -8,6 +8,7 @@
 
 #import "view.h"
 #import "bundle.h"
+#import "route.h"
 
 @implementation View
 
@@ -63,42 +64,12 @@
 
 - (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage*)msg
 {
-    NSLog(@"%@ %@", msg.name, msg.body);
+    [Route message:msg];
 }
 
-- (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage*)msg replyHandler:(void (^)(id reply, NSString *errorMessage))replyHandler
+- (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage*)msg replyHandler:(Callback)callback
 {
-    NSLog(@"%@ %@", msg.name, msg.body);
-    
-    id reply = @"???";
-    
-    NSDictionary* request = msg.body;
-    NSString* route = [request valueForKey:@"route"];
-    NSArray*  args  = [request valueForKey:@"args"];
-    
-    if ([route compare:@"Bundle.path"] == NSOrderedSame)
-    {
-        reply = [Bundle path];
-    }
-    else if ([route compare:@"fs.readText"] == NSOrderedSame)
-    {
-        NSString* path = [args objectAtIndex:0];
-        NSLog(@"readText %@", path);
-        reply = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    }
-    else if ([route compare:@"test.ping"] == NSOrderedSame)
-    {
-        reply = [NSString stringWithFormat:@"you say %@ you get pong!", [args objectAtIndex:0]];
-    }
-    else if ([route compare:@"test.struct"] == NSOrderedSame)
-    {
-        NSDictionary* dict = [NSMutableDictionary dictionary];
-        [dict setObject:[NSString stringWithFormat:@"you sent %@", [args objectAtIndex:0]] forKey:@"input"];
-        [dict setObject:[NSString stringWithString:@"you get this!"] forKey:@"output"];
-        reply = dict;
-    }
-    
-    replyHandler(reply, nil);
+    [Route request:msg callback:callback];
 }
 
 @end

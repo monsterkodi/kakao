@@ -32,6 +32,7 @@ Kakao.request('Bundle.path').then(function (p)
 {
     var win
 
+    window.kakao = Kakao
     Bundle.path = p
     return win = new Window
 })

@@ -29,6 +29,7 @@ elem class:'test' text:'send!' parent:main, click: =>
         elem class:'test' text:"#{reply.input} #{reply.output}", parent:main
                 
 Kakao.request('Bundle.path').then (p) ->
-    
+
+    window.kakao = Kakao # for receiving messages from app
     Bundle.path = p
     win = new Window
