@@ -14,7 +14,7 @@ SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm"
 OUT = "../Contents/MacOS/kakao"
 
 LIB = "-framework WebKit -framework Cocoa"
-FLG = "-arch arm64 -Os"
+FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
 import fs       from "node:fs"
 import process  from "node:process"

@@ -2,61 +2,36 @@
 
 var _k_
 
-var $, getMousePos, getWindowPos, mousePos, setWindowPos, stopEvent, Window, windowPos
+var $, stopEvent, Window
 
 import dom from './dom.js'
-import elem from './elem.js'
-import kpos from './pos.js'
 import post from './post.js'
 import keyinfo from './keyinfo.js'
 import Title from './title.js'
-import Drag from './drag.js'
 import Bundle from './bundle.js'
 $ = dom.$
 stopEvent = dom.stopEvent
 
-mousePos = kpos(0,0)
-windowPos = kpos(0,0)
-
-getMousePos = function (cb)
-{
-    return cb(mousePos)
-}
-
-getWindowPos = function (cb)
-{
-    return cb(windowPos)
-}
-
-setWindowPos = function (p, cb)
-{}
 
 Window = (function ()
 {
     function Window ()
     {
+        var main
+
         this["onKeyUp"] = this["onKeyUp"].bind(this)
         this["onKeyDown"] = this["onKeyDown"].bind(this)
         this["onMenuAction"] = this["onMenuAction"].bind(this)
         this["onWindowBlur"] = this["onWindowBlur"].bind(this)
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
-        this["toggleMaximize"] = this["toggleMaximize"].bind(this)
         this["animate"] = this["animate"].bind(this)
-        this["onDomLoaded"] = this["onDomLoaded"].bind(this)
         post.on('menuAction',this.onMenuAction)
         window.titlebar = new Title({icon:Bundle.resource('img/menu.png'),menu:Bundle.resource('menu.noon')})
-        document.addEventListener('DOMContentLoaded',this.onDomLoaded)
-    }
-
-    Window.prototype["onDomLoaded"] = function ()
-    {
-        var main
-
-        main = $('main')
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.requestAnimationFrame(this.animate)
-        return main.focus()
+        main = $('main')
+        main.focus()
     }
 
     Window.prototype["animate"] = function ()
@@ -68,9 +43,6 @@ Window = (function ()
         delta = (now - this.lastAnimationTime) * 0.001
         return this.lastAnimationTime = now
     }
-
-    Window.prototype["toggleMaximize"] = function ()
-    {}
 
     Window.prototype["createWindow"] = function ()
     {}

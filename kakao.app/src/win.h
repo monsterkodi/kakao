@@ -17,6 +17,6 @@
 + (id) new;
 - (id) init;
 
-- (void) takeSnapshot:(NSString*)pngFilePath;
+- (void) snapshot:(NSString*)pngFilePath;
 
 @end

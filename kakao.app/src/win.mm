@@ -80,7 +80,7 @@
     }
 }
 
--(void) takeSnapshot:(NSString*)pngFilePath
+-(void) snapshot:(NSString*)pngFilePath
 {
     WKSnapshotConfiguration * snapshotConfiguration = [[WKSnapshotConfiguration alloc] init];
     [view takeSnapshotWithConfiguration:snapshotConfiguration completionHandler:
