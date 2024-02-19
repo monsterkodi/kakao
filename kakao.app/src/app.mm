@@ -17,7 +17,7 @@
 
 + (id) new
 {
-    freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
+    //freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
     App* delegate = [[App alloc] init];
     [delegate setIcon:[Bundle resourcePath:@"img/app.icns"]];

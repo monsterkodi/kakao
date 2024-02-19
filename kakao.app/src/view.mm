@@ -21,10 +21,16 @@
     [[config preferences] setValue:@YES forKey:@"javaScriptCanAccessClipboard"];
     [[config preferences] setValue:@YES forKey:@"DOMPasteAllowed"];
     [config setValue:@YES forKey:@"allowUniversalAccessFromFileURLs"];
+    
+    [[config preferences] setValue:[NSNumber numberWithInt:WKInactiveSchedulingPolicyNone] forKey:@"inactiveSchedulingPolicy"];
 
     if (self = [super initWithFrame:CGRectMake(0,0,0,0) configuration:config])
     {
         [self setValue:@NO forKey:@"drawsBackground"];
+        
+        //self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawDuringViewResize;
+        //self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawOnSetNeedsDisplay;
+        //self.wantsLayer = YES;
     }
     
     [self initScripting];

@@ -8,17 +8,31 @@
 
 #import "route.h"
 #import "bundle.h"
+#import "win.h"
 
-void sendCallback(id _Nullable msg, NSError* _Nullable error)
-{
-    NSLog(@"callback %@", msg);
-}
+Win*  win()  { return (Win*)[[NSApplication sharedApplication] mainWindow]; }
+View* view() { return win().view; }
 
 @implementation Route
 
++ (void) message:(WKScriptMessage*)msg
+{ 
+    NSString* route = [msg.body valueForKey:@"route"];
+    NSArray*  args  = [msg.body valueForKey:@"args"];
+    
+    if ([route hasPrefix:@"window."])
+    {
+        [Route window:[route substringFromIndex:7] args:args];
+    }
+    else if ([route isEqualToString:@"log"])
+    {
+        NSLog(@"%@ %@", msg.name, msg.body);
+    }
+}
+
 + (void) request:(WKScriptMessage*)msg callback:(Callback)callback
 {
-    NSLog(@"%@ %@", msg.name, msg.body);
+    //NSLog(@"%@ %@", msg.name, msg.body);
     
     id reply = @"???";
     
@@ -36,10 +50,10 @@ void sendCallback(id _Nullable msg, NSError* _Nullable error)
 
 + (id) fs:(NSString*)req args:(NSArray*)args
 {
-    if ([req isEqualToString:@"readText"   ])
+    if ([req isEqualToString:@"readText"])
     {
         NSString* path = [args objectAtIndex:0];
-        NSLog(@"readText %@", path);
+        //NSLog(@"readText %@", path);
         return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     }
     
@@ -52,14 +66,12 @@ void sendCallback(id _Nullable msg, NSError* _Nullable error)
 }
 
 + (id) window:(NSString*)req args:(NSArray*)args
-{
-    id app    = [NSApplication sharedApplication];
-    id window = [app mainWindow];
-    
-    if ([req isEqualToString:@"close"   ]) { [window close];           return nil; }
-    if ([req isEqualToString:@"minimize"]) { [window miniaturize:nil]; return nil; }
-    if ([req isEqualToString:@"maximize"]) { [window zoom:nil];        return nil; }
-    if ([req isEqualToString:@"snapshot"]) { [window snapshot:nil];    return nil; }
+{    
+    if ([req isEqualToString:@"maximize"]) { [win() zoom:nil];        return nil; }
+    if ([req isEqualToString:@"minimize"]) { [win() miniaturize:nil]; return nil; }
+    if ([req isEqualToString:@"snapshot"]) { [win() snapshot:nil];    return nil; }
+    if ([req isEqualToString:@"close"   ]) { [win() close];           return nil; }
+    if ([req isEqualToString:@"framerateDrop" ]) { [win() framerateDrop:[args objectAtIndex:0]];           return nil; }
     
     return nil;
 }
@@ -80,28 +92,28 @@ void sendCallback(id _Nullable msg, NSError* _Nullable error)
     return nil;
 }
 
-+ (void) message:(WKScriptMessage*)msg
++ (void) emit:(NSString*)event
 {
-    NSLog(@"%@ %@", msg.name, msg.body);
- 
-    NSString* route = [msg.body valueForKey:@"route"];
-    NSArray*  args  = [msg.body valueForKey:@"args"];
+    [self send:event toView:view()];
+}
+
++ (void) send:(id)msg toView:(View*)targetView
+{
+    NSString* payload;
     
-    if ([route hasPrefix:@"window."])
+    if ([msg isKindOfClass:[NSString class]])
     {
-        [Route window:[route substringFromIndex:7] args:args];
+        payload = [NSString stringWithFormat:@"\"%@\"", msg];
     }
-}
-
-+ (void) callback:(id)msg error:(NSError*)error
-{
-}
-
-+ (void) send:(NSDictionary*)msg toView:(WKWebView*)view
-{
-    id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", msg];
+    else
+    {
+        payload = [NSString stringWithFormat:@"{name:\"%@\", args:[%@]}", [msg objectForKey:@"name"], [msg objectForKey:@"args"]];
+    }
     
-    [view evaluateJavaScript:script completionHandler:(CallbackN)&sendCallback];
+    id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
+
+    NSLog(@"send %@ %@", script, targetView);
+    [targetView evaluateJavaScript:script completionHandler:nil];
 }
 
 @end

@@ -24,11 +24,13 @@ Window = (function ()
         this["onMenuAction"] = this["onMenuAction"].bind(this)
         this["onWindowBlur"] = this["onWindowBlur"].bind(this)
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
+        this["onResize"] = this["onResize"].bind(this)
         this["animate"] = this["animate"].bind(this)
         post.on('menuAction',this.onMenuAction)
         window.titlebar = new Title({icon:Bundle.resource('img/menu.png'),menu:Bundle.resource('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
+        window.addEventListener('resize',this.onResize)
         window.requestAnimationFrame(this.animate)
         main = $('main')
         main.focus()
@@ -36,15 +38,24 @@ Window = (function ()
 
     Window.prototype["animate"] = function ()
     {
-        var delta, now
+        var delta, fps, now
 
         window.requestAnimationFrame(this.animate)
         now = window.performance.now()
         delta = (now - this.lastAnimationTime) * 0.001
-        return this.lastAnimationTime = now
+        this.lastAnimationTime = now
+        fps = 1000 * delta
+        if (fps > 40)
+        {
+            console.log(fps)
+            return kakao.post("window.framerateDrop",delta)
+        }
     }
 
     Window.prototype["createWindow"] = function ()
+    {}
+
+    Window.prototype["onResize"] = function (event)
     {}
 
     Window.prototype["onWindowFocus"] = function (event)
@@ -66,16 +77,16 @@ Window = (function ()
                 return this.createWindow()
 
             case 'maximize':
-                return kakao.request('window.maximize')
+                return kakao.post('window.maximize')
 
             case 'minimize':
-                return kakao.request('window.minimize')
+                return kakao.post('window.minimize')
 
             case 'screenshot':
-                return kakao.request('window.snapshot')
+                return kakao.post('window.snapshot')
 
             case 'close':
-                return kakao.request('window.close')
+                return kakao.post('window.close')
 
             case 'quit':
                 return kakao.post('window.close')

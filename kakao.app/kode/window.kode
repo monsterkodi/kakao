@@ -24,6 +24,7 @@ function Window
         
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
+        window.addEventListener 'resize'  @onResize
         
         window.requestAnimationFrame @animate
         
@@ -38,9 +39,18 @@ function Window
         delta = (now - @lastAnimationTime) * 0.001
         @lastAnimationTime = now
         
+        fps = 1000*delta
+        if fps > 40
+            log fps 
+            kakao.post "window.framerateDrop" delta
+        
+        #kakao.post 'log' now, window.innerWidth, window.innerHeight
+        
         # post.emit 'animationFrame' delta
                             
     createWindow: ->
+        
+    onResize: (event) => #log 'resize' event
                 
     onWindowFocus: (event) => post.emit 'windowFocus'
     onWindowBlur:  (event) => post.emit 'windowBlur' 
@@ -49,11 +59,11 @@ function Window
         log 'menuAction' action
         switch action.toLowerCase()
             'new window' ➜ @createWindow()
-            'maximize'   ➜ kakao.request 'window.maximize'
-            'minimize'   ➜ kakao.request 'window.minimize'
-            'screenshot' ➜ kakao.request 'window.snapshot'
-            'close'      ➜ kakao.request 'window.close'
-            'quit'       ➜ kakao.post    'window.close'
+            'maximize'   ➜ kakao.post 'window.maximize'
+            'minimize'   ➜ kakao.post 'window.minimize'
+            'screenshot' ➜ kakao.post 'window.snapshot'
+            'close'      ➜ kakao.post 'window.close'
+            'quit'       ➜ kakao.post 'window.close'
             
     # 000   000  00000000  000   000
     # 000  000   000        000 000
