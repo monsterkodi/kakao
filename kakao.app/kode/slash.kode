@@ -508,7 +508,6 @@ function Slash
             error "Slash.readText -- no callback!"
             return
             
-        # window.webkit.messageHandlers.kakao_reply.postMessage("fs.readText").then (text, err) ->            
         Kakao.request('fs.readText', p).then (text, err) ->        
             if not err
                 cb text

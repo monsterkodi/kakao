@@ -5,7 +5,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 var cmd, CMD, FLG, LIB, opt, OUT, SRC
 
 CMD = "zig c++"
-SRC = "main.cpp app.mm bundle.mm win.mm view.mm"
+SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm"
 OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os"

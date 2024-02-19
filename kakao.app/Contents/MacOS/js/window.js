@@ -94,7 +94,19 @@ Window = (function ()
                 return this.createWindow()
 
             case 'maximize':
-                return this.toggleMaximize()
+                return kakao.request('window.maximize')
+
+            case 'minimize':
+                return kakao.request('window.minimize')
+
+            case 'screenshot':
+                return kakao.request('window.snapshot')
+
+            case 'close':
+                return kakao.request('window.close')
+
+            case 'quit':
+                return kakao.post('window.close')
 
         }
 

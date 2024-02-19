@@ -8,12 +8,16 @@
 
 function Kakao
 
-    @post: (msg) ->
+    @post: (route, args...) ->
         
-        window.webkit.messageHandlers.kakao.postMessage msg
+        window.webkit.messageHandlers.kakao.postMessage route:route, args:args
 
-    @request: (route, args...) -> 
+    @request: (route, args...) -> # returns promise
 
         window.webkit.messageHandlers.kakao_request.postMessage route:route, args:args
+        
+    @receive: (msg) ->
+        
+        log 'msg from app:' msg
 
 export Kakao
