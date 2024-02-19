@@ -9,10 +9,11 @@
 #import <Cocoa/Cocoa.h>
 #import "view.h"
 
-@interface Win : NSWindow <NSApplicationDelegate>
+@interface Win : NSWindow 
 {
-    View* view;
 }
+
+@property (assign) View*  view;
 
 + (id) new;
 - (id) init;

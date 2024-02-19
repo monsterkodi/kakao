@@ -7,7 +7,49 @@
 */
 
 #import "win.h"
+#import "route.h"
 #import "bundle.h"
+
+@interface WinDelegate : NSObject <NSWindowDelegate> 
+{
+}
+
+- (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame;
+
+@end
+
+@implementation WinDelegate
+
+- (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame
+{
+    NSDictionary* resize = [NSDictionary dictionaryWithObjectsAndKeys: 
+        window, NSViewAnimationTargetKey, 
+        [NSValue valueWithRect: frame], NSViewAnimationEndFrameKey, 
+        nil];
+        
+    NSArray* animations = [NSArray arrayWithObject:resize];
+    NSViewAnimation* animation = [[NSViewAnimation alloc] initWithViewAnimations: animations];
+    
+    if ([window isZoomed])
+    {
+        [Route emit:@"window.demaximizes"];
+        [animation setAnimationCurve: NSAnimationEaseOut];
+    }
+    else
+    {
+        [Route emit:@"window.maximizes"];
+        [animation setAnimationCurve: NSAnimationEaseIn];
+    }
+        
+    [animation setAnimationBlockingMode: NSAnimationNonblocking];
+    [animation setDuration: [window animationResizeTime:frame]];     
+    [animation setFrameRate: 0];
+    [animation startAnimation]; 
+    
+    return NO;
+}
+
+@end
 
 @implementation Win
 
@@ -37,8 +79,10 @@
                  defer:     YES];
                 
     if (!self) { return nil; }
+    
+    [self setDelegate:[[WinDelegate alloc] init]];
 
-    view = [[View alloc] init];
+    self.view = [[View alloc] init];
     
     if (!nativeTitleBar)
     {
@@ -57,11 +101,23 @@
     [self setFrame:CGRectMake(0, 0, 400, 400) display:YES animate:NO];
     [self center];
     
-    [self setContentView:view];
+    [self setContentView:self.view];
     [self makeKeyAndOrderFront:nil];
             
     [self navigateToURL:[Bundle fileURLinJS:@"index.html"]];
 	return self;
+}
+
+- (NSTimeInterval)animationResizeTime:(NSRect)newFrame
+{
+    NSTimeInterval interval = [super animationResizeTime:newFrame];
+    // NSLog(@"resizeTime %d", interval);
+    return interval;
+}
+
+- (void)framerateDrop:(NSInteger*)ms
+{
+    NSLog(@"framrateDrop %@", ms);
 }
 
 - (void) navigateToURL:(NSURL*)url
@@ -72,18 +128,18 @@
         
         NSURL* srcURL = [Bundle fileURLWithPath:@"/"];
         
-        [view loadFileRequest:req allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
+        [self.view loadFileRequest:req allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
     }
     else
     {
-        [view loadRequest:[NSURLRequest requestWithURL:url]];
+        [self.view loadRequest:[NSURLRequest requestWithURL:url]];
     }
 }
 
 -(void) snapshot:(NSString*)pngFilePath
 {
     WKSnapshotConfiguration * snapshotConfiguration = [[WKSnapshotConfiguration alloc] init];
-    [view takeSnapshotWithConfiguration:snapshotConfiguration completionHandler:
+    [self.view takeSnapshotWithConfiguration:snapshotConfiguration completionHandler:
         ^(NSImage * image, NSError * error) {
             
             if (error) { NSLog(@"%@", error); return; }

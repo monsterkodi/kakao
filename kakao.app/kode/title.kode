@@ -30,7 +30,6 @@ function Title
         
         return if not @elem
         
-        post.on 'pointerMove' @onPointerMove
         post.on 'titlebar'    @onTitlebar
         post.on 'menuAction'  @onMenuAction
         post.on 'windowFocus' @onWindowFocus
@@ -100,8 +99,6 @@ function Title
             
     showTitle: -> @title.style.display = 'initial'
     hideTitle: -> @title.style.display = 'none'
-    
-    onPointerMove: (x, y) => #Neutralino.debug.log "mouse #{x} #{y}"
     
     onWindowFocus: => 
         @elem.classList.remove 'blur'
