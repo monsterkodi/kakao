@@ -12,13 +12,18 @@
 
 @implementation App
 
+@synthesize snapshotFolder;
+@synthesize snapshotFile;
+
 + (id) new
 {
-    NSLog(@"kakao");
     freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
-    id delegate = [[App alloc] init];
+    App* delegate = [[App alloc] init];
     [delegate setIcon:[Bundle resourcePath:@"img/app.icns"]];
+    
+    delegate.snapshotFolder = @"~/Desktop";
+    delegate.snapshotFile   = @"kakao";
     
     id app = [NSApplication sharedApplication];
     [app setDelegate:delegate];

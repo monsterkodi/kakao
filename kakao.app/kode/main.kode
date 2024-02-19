@@ -6,29 +6,11 @@
 000   000  000   000  000  000   000    
 ###
 
-import dom    from './dom.js'
-import elem   from './elem.js'
 import Bundle from './bundle.js'
 import Window from './window.js'
 import Kakao  from './kakao.js'
-
-main = dom.$ 'main'
-
-elem class:'test' text:'hello!' parent:main, click: => 
-    
-    Kakao.post 'hello from main!'
-
-elem class:'test' text:'ping!' parent:main, click: => 
-
-    Kakao.request('test.ping', 'ping!').then (reply) -> 
-        elem class:'test' text:reply, parent:main
-
-elem class:'test' text:'send!' parent:main, click: => 
-    
-    Kakao.request('test.struct', hello:'world!' int:1).then (reply) ->
-        elem class:'test' text:"#{reply.input} #{reply.output}", parent:main
                 
-Kakao.request('Bundle.path').then (p) ->
+Kakao.request('bundle.path').then (p) ->
 
     window.kakao = Kakao # for receiving messages from app
     Bundle.path = p

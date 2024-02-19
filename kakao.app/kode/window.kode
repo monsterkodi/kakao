@@ -7,21 +7,12 @@
 ###
 
 import dom     from './dom.js'
-import elem    from './elem.js'
-import kpos    from './pos.js'
 import post    from './post.js'
 import keyinfo from './keyinfo.js'
 import Title   from './title.js'
-import Drag    from './drag.js'
 import Bundle  from './bundle.js'
 
 { $, stopEvent } = dom
-
-mousePos  = kpos 0 0
-windowPos = kpos 0 0
-getMousePos  =    (cb) -> cb mousePos  # Neutralino.computer.getMousePosition().catch((e)->error e).then (p) -> mousePos.copy p; cb? mousePos
-getWindowPos =    (cb) -> cb windowPos # Neutralino.window.getPosition().catch((e)->error e).then (p) -> windowPos.copy p; cb? windowPos
-setWindowPos = (p, cb) -> # Neutralino.window.move(p.x,p.y).catch((e)->error e).then cb
 
 function Window
 
@@ -29,67 +20,30 @@ function Window
         
         post.on 'menuAction' @onMenuAction
         
-        # window.titlebar = new Title icon:'./icons/app.png' menu:'/menu.noon'
         window.titlebar = new Title icon:Bundle.resource('img/menu.png'), menu:Bundle.resource('menu.noon')
         
-        document.addEventListener 'DOMContentLoaded' @onDomLoaded
-        
-        # Neutralino.events.on 'windowFocus' @onWindowFocus
-        # Neutralino.events.on 'windowBlur'  @onWindowBlur
-            
-    onDomLoaded: =>
-        
-        # lastMousePos = kpos 0 0
-        # mouseDelta   = kpos 0 0
-        
-        # @drag = new Drag 
-            # target:  'title'
-            # onStart: -> getMousePos (mp) -> lastMousePos.copy mp
-            # onMove:  -> 
-                # getMousePos (mp) ->
-                    # getWindowPos (pos) =>
-                        # mouseDelta.copy(mp).sub lastMousePos
-                        # lastMousePos.copy mp 
-                        # mouseDelta.add pos
-                        # setWindowPos mouseDelta
-                        
-        main =$ 'main'
-                    
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
         
         window.requestAnimationFrame @animate
         
+        main =$ 'main'
         main.focus()
         
     animate: =>
         
         window.requestAnimationFrame @animate
-        
-        # getMousePos (mp) -> post.emit 'pointerMove' mp.x, mp.y
-        
+                
         now = window.performance.now()
         delta = (now - @lastAnimationTime) * 0.001
         @lastAnimationTime = now
         
-        # log delta
         # post.emit 'animationFrame' delta
-            
-    toggleMaximize: =>
-        
-        # Neutralino.window.isMaximized().then (isMaximized) ->
-            # if isMaximized
-                # Neutralino.window.unmaximize()
-            # else
-                # Neutralino.window.maximize()
-                
+                            
     createWindow: ->
-        
-        # Neutralino.window.getSize().catch((e)->error e).then (size) ->
-            # Neutralino.window.create('/index.html', size).catch((e)->error e)
-        
-    onWindowFocus: (event) => post.emit 'windowFocus' #Neutralino.debug.log 'onFocus' event.detail
-    onWindowBlur:  (event) => post.emit 'windowBlur'  #Neutralino.debug.log 'onBlur'  event.detail
+                
+    onWindowFocus: (event) => post.emit 'windowFocus'
+    onWindowBlur:  (event) => post.emit 'windowBlur' 
     
     onMenuAction: (action) =>
         log 'menuAction' action
@@ -112,24 +66,15 @@ function Window
         stopEvent event
     
         info = keyinfo.forEvent event
-        # @modifiers = info.mod
         
         info.event = event
-
-        # Neutralino.debug.log "#{info.combo}" if info.combo
         
         if 'unhandled' == window.titlebar.handleKeyInfo info
             log 'keydown' info
-            
-            # post.emit 'combo' info.combo, info
-            # post.emit 'keydown' info
-    
+                
     onKeyUp: (event) =>
         
         info = keyinfo.forEvent event
-        # @modifiers = info.mod 
         info.event = event
-        # log 'keyup' info
-        # post.emit 'keyup' info
 
 export Window

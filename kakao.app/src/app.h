@@ -12,6 +12,9 @@
 {
 }
 
+@property (readwrite,assign) NSString* snapshotFolder;
+@property (readwrite,assign) NSString* snapshotFile;
+
 + (id)   new;
 - (void) run; 
 - (void) setIcon:(NSString*) pngFilePath;
