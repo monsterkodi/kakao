@@ -23,7 +23,6 @@ Kakao = (function ()
 
     Kakao["receive"] = function (msg)
     {
-        console.log('post from app:',msg)
         return post.emit(msg)
     }
 

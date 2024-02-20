@@ -20,8 +20,8 @@ function Window
 
     @: ->
         
-        post.on 'menuAction' @onMenuAction
-        post.on 'window.blur' @onWindowBlur
+        post.on 'menuAction'    @onMenuAction
+        post.on 'window.blur'   @onWindowBlur
         post.on 'window.focusd' @onWindowFocus
         
         window.titlebar = new Title icon:Bundle.resource('img/menu.png'), menu:Bundle.resource('menu.noon')
@@ -51,7 +51,7 @@ function Window
             log fps 
             kakao.post "window.framerateDrop" delta
         
-        #kakao.post 'log' now, window.innerWidth, window.innerHeight
+        # kakao.post 'log' now, window.innerWidth, window.innerHeight
         
         # post.emit 'animationFrame' delta
                             
