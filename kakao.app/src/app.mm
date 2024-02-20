@@ -7,7 +7,6 @@
 */
 
 #import "app.h"
-#import "win.h"
 #import "bundle.h"
 
 @implementation App
@@ -35,6 +34,20 @@
     return delegate;
 }
 
+- (Win*) win
+{
+    id app = [NSApplication sharedApplication];
+    for (id window in [app windows]) 
+    {
+        if ([window isKindOfClass:[Win class]])
+        {
+            return window;
+        }
+    }
+    
+    return [app mainWindow];
+}
+
 - (void) run
 {    
     [[NSApplication sharedApplication] run]; // does not return
@@ -53,6 +66,12 @@
 - (void)applicationWillBecomeActive:(NSNotification *)notification
 {
     //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
+}
+
+-(BOOL) applicationShouldTerminate:(NSApplication*)sender
+{
+    NSLog(@"terminate %@", sender);
+    return YES;
 }
 
 -(BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender
