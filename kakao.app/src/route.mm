@@ -19,14 +19,19 @@
 
 + (id) window:(NSString*)req args:(NSArray*)args win:(Win*)win
 {    
-    if ([req isEqualToString:@"close"   ]) { [win close];           return nil; }
-    if ([req isEqualToString:@"reload"  ]) { [win reload];          return nil; }
-    if ([req isEqualToString:@"maximize"]) { [win zoom:nil];        return nil; }
-    if ([req isEqualToString:@"minimize"]) { [win miniaturize:nil]; return nil; }
-    if ([req isEqualToString:@"snapshot"]) { [win snapshot:nil];    return nil; }
-    if ([req isEqualToString:@"new"     ]) { [win new:nil];         return nil; }
-    if ([req isEqualToString:@"id"      ]) { return [NSNumber numberWithInt:(long)win.windowNumber]; }
-    if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[[args objectAtIndex:0] longValue]]; return nil; }
+    id arg0 = nil;
+    if (args && [args count] > 0) arg0 = [args objectAtIndex:0];    
+
+    if ([req isEqualToString:@"focusNext"]) { return [win focusNext];  }
+    if ([req isEqualToString:@"focusPrev"]) { return [win focusPrev];  }
+    if ([req isEqualToString:@"new"     ])  { return [NSNumber numberWithLong:[win new:arg0].windowNumber]; }
+    if ([req isEqualToString:@"snapshot"])  { return [win snapshot:arg0]; }
+    if ([req isEqualToString:@"close"   ])  { [win close];           return nil; }
+    if ([req isEqualToString:@"reload"  ])  { [win reload];          return nil; }
+    if ([req isEqualToString:@"maximize"])  { [win zoom:nil];        return nil; }
+    if ([req isEqualToString:@"minimize"])  { [win miniaturize:nil]; return nil; }
+    if ([req isEqualToString:@"id"      ])  { return [NSNumber numberWithLong:win.windowNumber]; }
+    if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[arg0 longValue]]; return nil; }
     
     return nil;
 }
@@ -50,6 +55,7 @@
     {
         [app terminate:nil];
     }
+    return nil;
 }
 
 // 00000000   0000000  
@@ -66,7 +72,6 @@
         //NSLog(@"readText %@", path);
         return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     }
-    
     return nil;
 }
 

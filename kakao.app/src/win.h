@@ -15,11 +15,13 @@
 
 @property (assign) View*  view;
 
-+ (id) new;
-- (id) init;
-- (id) new:(NSString*)path;
++ (Win*) new;
+- (Win*) init;
+- (Win*) new:(NSString*)path;
+- (Win*) focusNext;
+- (Win*) focusPrev;
 - (void) reload;
-- (void) snapshot:(NSString*)pngFilePath;
 - (void) framerateDrop:(long)ms;
+- (NSString*) snapshot:(NSString*)pngFilePath;
 
 @end

@@ -7,6 +7,7 @@
 ###
 
 import dom     from './dom.js'
+import elem    from './elem.js'
 import post    from './post.js'
 import kakao   from './kakao.js'
 import keyinfo from './keyinfo.js'
@@ -31,10 +32,11 @@ function Window
         
         window.requestAnimationFrame @animate
         
-        kakao.request('window.id').then (id) => log 'got window id' id
-        
         main =$ 'main'
         main.focus()
+        
+        kakao.request('window.id').then (id) => 
+            elem class:'test' text:"window.id #{id}" parent:main
         
     animate: =>
         
@@ -60,16 +62,24 @@ function Window
     onWindowFocus: => 
     onWindowBlur:  => 
     
+    # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
+    # 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
+    # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
+    # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
+    
     onMenuAction: (action) =>
         log 'menuAction' action
         switch action.toLowerCase()
-            'new window' ➜ kakao.post 'window.new'
-            'maximize'   ➜ kakao.post 'window.maximize'
-            'minimize'   ➜ kakao.post 'window.minimize'
-            'screenshot' ➜ kakao.post 'window.snapshot'
-            'close'      ➜ kakao.post 'window.close'
-            'reload'     ➜ kakao.post 'window.reload'
-            'quit'       ➜ kakao.post 'app.quit'
+            'focus next'     ➜ kakao.post 'window.focusNext'
+            'focus previous' ➜ kakao.post 'window.focusPrev'
+            'new window'     ➜ kakao.post 'window.new'
+            'maximize'       ➜ kakao.post 'window.maximize'
+            'minimize'       ➜ kakao.post 'window.minimize'
+            'screenshot'     ➜ kakao.post 'window.snapshot'
+            'close'          ➜ kakao.post 'window.close'
+            'reload'         ➜ kakao.post 'window.reload'
+            'quit'           ➜ kakao.post 'app.quit'
         0
             
     # 000   000  00000000  000   000
