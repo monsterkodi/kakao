@@ -8,6 +8,7 @@
 
 import dom     from './dom.js'
 import post    from './post.js'
+import kakao   from './kakao.js'
 import keyinfo from './keyinfo.js'
 import Title   from './title.js'
 import Bundle  from './bundle.js'
@@ -29,6 +30,8 @@ function Window
         window.addEventListener 'resize'  @onResize
         
         window.requestAnimationFrame @animate
+        
+        kakao.request('window.id').then (id) => log 'got window id' id
         
         main =$ 'main'
         main.focus()

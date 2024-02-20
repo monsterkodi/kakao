@@ -6,6 +6,7 @@ var $, stopEvent, Window
 
 import dom from './dom.js'
 import post from './post.js'
+import kakao from './kakao.js'
 import keyinfo from './keyinfo.js'
 import Title from './title.js'
 import Bundle from './bundle.js'
@@ -34,6 +35,10 @@ Window = (function ()
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)
         window.requestAnimationFrame(this.animate)
+        kakao.request('window.id').then((function (id)
+        {
+            console.log('got window id',id)
+        }).bind(this))
         main = $('main')
         main.focus()
     }

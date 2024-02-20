@@ -45,7 +45,7 @@
         }
     }
     
-    return [app mainWindow];
+    return (Win*)[app mainWindow];
 }
 
 - (void) run
@@ -68,10 +68,10 @@
     //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
 }
 
--(BOOL) applicationShouldTerminate:(NSApplication*)sender
+-(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender
 {
     NSLog(@"terminate %@", sender);
-    return YES;
+    return NSTerminateNow;
 }
 
 -(BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender

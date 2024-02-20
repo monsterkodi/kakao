@@ -70,12 +70,12 @@
 
 - (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage*)msg
 {
-    [Route message:msg];
+    [Route message:msg win:(Win*)[self window]];
 }
 
 - (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage*)msg replyHandler:(Callback)callback
 {
-    [Route request:msg callback:callback];
+    [Route request:msg callback:callback win:(Win*)[self window]];
 }
 
 @end

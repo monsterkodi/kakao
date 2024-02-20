@@ -20,5 +20,6 @@
 - (id) new:(NSString*)path;
 - (void) reload;
 - (void) snapshot:(NSString*)pngFilePath;
+- (void) framerateDrop:(long)ms;
 
 @end
