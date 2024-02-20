@@ -14,11 +14,18 @@
 {
 }
 
+- (void)windowDidBecomeKey:(NSNotification *)notification;
+- (void)windowDidResignKey:(NSNotification *)notification;
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame;
 
 @end
 
 @implementation WinDelegate
+
+- (void)windowDidBecomeKey:(NSNotification *)notification { [Route emit:@"window.focus"]; }
+- (void)windowDidResignKey:(NSNotification *)notification { [Route emit:@"window.blur"]; }
+- (void)windowDidBecomeMain:(NSNotification *)notification { NSLog(@"window.focus"); }
+- (void)windowDidResignMain:(NSNotification *)notification { NSLog(@"window.blur"); }
 
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame
 {
@@ -56,6 +63,12 @@
 + (id) new
 {
     return [[Win alloc] init];
+}
+
+- (id) new:(NSString*)path
+{
+    NSLog(@"new child window %@", path);
+    return [Win new];
 }
 
 - (id) init
@@ -134,6 +147,11 @@
     {
         [self.view loadRequest:[NSURLRequest requestWithURL:url]];
     }
+}
+
+- (void) reload
+{
+    [self.view reload];
 }
 
 -(void) snapshot:(NSString*)pngFilePath

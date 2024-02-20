@@ -30,11 +30,11 @@ function Title
         
         return if not @elem
         
-        post.on 'titlebar'    @onTitlebar
-        post.on 'menuAction'  @onMenuAction
-        post.on 'windowFocus' @onWindowFocus
-        post.on 'windowBlur'  @onWindowBlur
-        
+        post.on 'titlebar'      @onTitlebar
+        post.on 'menuAction'    @onMenuAction
+        post.on 'window.blur'   @onWindowBlur
+        post.on 'window.focus'  @onWindowFocus
+
         @elem.addEventListener 'dblclick' (event) -> 
             stopEvent event 
             post.emit 'menuAction' 'Maximize'
@@ -101,10 +101,12 @@ function Title
     hideTitle: -> @title.style.display = 'none'
     
     onWindowFocus: => 
+        
         @elem.classList.remove 'blur'
         @elem.classList.add 'focus'
 
     onWindowBlur: => 
+        
         @elem.classList.remove 'focus'
         @elem.classList.add 'blur'
         
@@ -253,7 +255,7 @@ function Title
                 keypath.pop()
                 item = sds.get menu, keypath
                 action = item.action ? item.text
-                log 'menuAction' action
+                # log 'menuAction' action
                 post.emit 'menuAction' action
                 return action
 

@@ -19,6 +19,8 @@ function Window
     @: ->
         
         post.on 'menuAction' @onMenuAction
+        post.on 'window.blur' @onWindowBlur
+        post.on 'window.focusd' @onWindowFocus
         
         window.titlebar = new Title icon:Bundle.resource('img/menu.png'), menu:Bundle.resource('menu.noon')
         
@@ -52,18 +54,20 @@ function Window
         
     onResize: (event) => #log 'resize' event
                 
-    onWindowFocus: (event) => post.emit 'windowFocus'
-    onWindowBlur:  (event) => post.emit 'windowBlur' 
+    onWindowFocus: => 
+    onWindowBlur:  => 
     
     onMenuAction: (action) =>
         log 'menuAction' action
         switch action.toLowerCase()
-            'new window' ➜ @createWindow()
+            'new window' ➜ kakao.post 'window.new'
             'maximize'   ➜ kakao.post 'window.maximize'
             'minimize'   ➜ kakao.post 'window.minimize'
             'screenshot' ➜ kakao.post 'window.snapshot'
             'close'      ➜ kakao.post 'window.close'
-            'quit'       ➜ kakao.post 'window.close'
+            'reload'     ➜ kakao.post 'window.reload'
+            'quit'       ➜ kakao.post 'app.quit'
+        0
             
     # 000   000  00000000  000   000
     # 000  000   000        000 000

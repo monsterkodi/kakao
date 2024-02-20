@@ -43,8 +43,8 @@ Title = (function ()
         }
         post.on('titlebar',this.onTitlebar)
         post.on('menuAction',this.onMenuAction)
-        post.on('windowFocus',this.onWindowFocus)
-        post.on('windowBlur',this.onWindowBlur)
+        post.on('window.blur',this.onWindowBlur)
+        post.on('window.focus',this.onWindowFocus)
         this.elem.addEventListener('dblclick',function (event)
         {
             stopEvent(event)
@@ -126,10 +126,10 @@ Title = (function ()
 
     Title.prototype["setTitle"] = function (opt)
     {
-        var html, parts, _121_26_
+        var html, parts, _123_26_
 
         html = ""
-        parts = ((_121_26_=opt.title) != null ? _121_26_ : [])
+        parts = ((_123_26_=opt.title) != null ? _123_26_ : [])
         if (opt.pkg)
         {
             if (opt.pkg.name && _k_.in('name',parts))
@@ -202,7 +202,7 @@ Title = (function ()
         {
             return noon.load(this.opt.menu,(function (tc)
             {
-                var _174_40_
+                var _176_40_
 
                 if (!_k_.empty(tc))
                 {
@@ -241,7 +241,7 @@ Title = (function ()
             menuOrAccel = obj[text]
             tmpl.push(((function ()
             {
-                var item, _204_33_, _204_57_
+                var item, _206_33_, _206_57_
 
                 if (_k_.empty(menuOrAccel) && text.startsWith('-'))
                 {
@@ -287,15 +287,15 @@ Title = (function ()
 
     Title.prototype["showMenu"] = function ()
     {
-        var _219_68_, _219_75_
+        var _221_68_, _221_75_
 
         this.menu.elem.style.display = 'inline-block'
-        return ((_219_68_=this.menu) != null ? typeof (_219_75_=_219_68_.focus) === "function" ? _219_75_() : undefined : undefined)
+        return ((_221_68_=this.menu) != null ? typeof (_221_75_=_221_68_.focus) === "function" ? _221_75_() : undefined : undefined)
     }
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _220_25_
+        var _222_25_
 
         ;(this.menu != null ? this.menu.close() : undefined)
         return this.menu.elem.style.display = 'none'
@@ -328,7 +328,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _255_37_
+        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _257_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -348,9 +348,9 @@ Title = (function ()
         accels = sds.find.key(menu,'accel')
         combos = sds.find.key(menu,'combo')
         var list = _k_.list(combos.concat(accels))
-        for (var _249_20_ = 0; _249_20_ < list.length; _249_20_++)
+        for (var _251_20_ = 0; _251_20_ < list.length; _251_20_++)
         {
-            keypath = list[_249_20_]
+            keypath = list[_251_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -360,8 +360,7 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_255_37_=item.action) != null ? _255_37_ : item.text)
-                console.log('menuAction',action)
+                action = ((_257_37_=item.action) != null ? _257_37_ : item.text)
                 post.emit('menuAction',action)
                 return action
             }

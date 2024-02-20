@@ -27,6 +27,8 @@ Window = (function ()
         this["onResize"] = this["onResize"].bind(this)
         this["animate"] = this["animate"].bind(this)
         post.on('menuAction',this.onMenuAction)
+        post.on('window.blur',this.onWindowBlur)
+        post.on('window.focusd',this.onWindowFocus)
         window.titlebar = new Title({icon:Bundle.resource('img/menu.png'),menu:Bundle.resource('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
@@ -58,15 +60,11 @@ Window = (function ()
     Window.prototype["onResize"] = function (event)
     {}
 
-    Window.prototype["onWindowFocus"] = function (event)
-    {
-        return post.emit('windowFocus')
-    }
+    Window.prototype["onWindowFocus"] = function ()
+    {}
 
-    Window.prototype["onWindowBlur"] = function (event)
-    {
-        return post.emit('windowBlur')
-    }
+    Window.prototype["onWindowBlur"] = function ()
+    {}
 
     Window.prototype["onMenuAction"] = function (action)
     {
@@ -74,25 +72,29 @@ Window = (function ()
         switch (action.toLowerCase())
         {
             case 'new window':
-                return this.createWindow()
-
+                kakao.post('window.new')
+                break
             case 'maximize':
-                return kakao.post('window.maximize')
-
+                kakao.post('window.maximize')
+                break
             case 'minimize':
-                return kakao.post('window.minimize')
-
+                kakao.post('window.minimize')
+                break
             case 'screenshot':
-                return kakao.post('window.snapshot')
-
+                kakao.post('window.snapshot')
+                break
             case 'close':
-                return kakao.post('window.close')
-
+                kakao.post('window.close')
+                break
+            case 'reload':
+                kakao.post('window.reload')
+                break
             case 'quit':
-                return kakao.post('window.close')
-
+                kakao.post('app.quit')
+                break
         }
 
+        return 0
     }
 
     Window.prototype["onKeyDown"] = function (event)

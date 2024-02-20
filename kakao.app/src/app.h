@@ -7,6 +7,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import "win.h"
 
 @interface App : NSResponder <NSApplicationDelegate>
 {
@@ -18,5 +19,6 @@
 + (id)   new;
 - (void) run; 
 - (void) setIcon:(NSString*) pngFilePath;
+- (Win*) win;
 
 @end

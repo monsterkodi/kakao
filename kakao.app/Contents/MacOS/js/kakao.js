@@ -4,6 +4,7 @@ var _k_
 
 var Kakao
 
+import post from './post.js'
 
 Kakao = (function ()
 {
@@ -22,7 +23,8 @@ Kakao = (function ()
 
     Kakao["receive"] = function (msg)
     {
-        console.log('msg from app:',msg)
+        console.log('post from app:',msg)
+        return post.emit(msg)
     }
 
     return Kakao
