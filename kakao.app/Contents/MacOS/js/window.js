@@ -5,6 +5,7 @@ var _k_
 var $, stopEvent, Window
 
 import dom from './dom.js'
+import elem from './elem.js'
 import post from './post.js'
 import kakao from './kakao.js'
 import keyinfo from './keyinfo.js'
@@ -35,12 +36,12 @@ Window = (function ()
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)
         window.requestAnimationFrame(this.animate)
-        kakao.request('window.id').then((function (id)
-        {
-            console.log('got window id',id)
-        }).bind(this))
         main = $('main')
         main.focus()
+        kakao.request('window.id').then((function (id)
+        {
+            return elem({class:'test',text:`window.id ${id}`,parent:main})
+        }).bind(this))
     }
 
     Window.prototype["animate"] = function ()
@@ -76,6 +77,12 @@ Window = (function ()
         console.log('menuAction',action)
         switch (action.toLowerCase())
         {
+            case 'focus next':
+                kakao.post('window.focusNext')
+                break
+            case 'focus previous':
+                kakao.post('window.focusPrev')
+                break
             case 'new window':
                 kakao.post('window.new')
                 break

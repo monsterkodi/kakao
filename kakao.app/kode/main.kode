@@ -9,9 +9,22 @@
 import Bundle from './bundle.js'
 import Window from './window.js'
 import Kakao  from './kakao.js'
-                
-Kakao.request('bundle.path').then (p) ->
+    
+# request the bundle url (toplevel .app folder of the application)
+# without it, the window can't load any resources (menu, icon ...)
 
-    window.kakao = Kakao # for receiving messages from app
-    Bundle.path = p
-    win = new Window
+Kakao.request('bundle.path').then (bundlePath) ->
+
+    # forward the path to the bundle module
+    
+    Bundle.path = bundlePath
+    
+    # install Kakao in the global window scope
+    # it is used to send and receive messages between js running 
+    # in the web view (this process) and the application process
+    
+    window.kakao = Kakao 
+    
+    # we are ready to spawn a window ...
+    
+    new Window

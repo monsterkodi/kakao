@@ -68,12 +68,12 @@
 
 @implementation Win
 
-+ (id) new
++ (Win*) new
 {
     return [[Win alloc] init];
 }
 
-- (id) new:(NSString*)path
+- (Win*) new:(NSString*)path
 {
     NSLog(@"new child window %@", path);
     return [Win new];
@@ -85,7 +85,7 @@
 // 000  000  0000  000     000     
 // 000  000   000  000     000     
 
-- (id) init
+- (Win*) init
 {
     BOOL nativeTitleBar = NO;
 
@@ -157,43 +157,74 @@
     }
 }
 
+// 00000000   0000000    0000000  000   000   0000000  
+// 000       000   000  000       000   000  000       
+// 000000    000   000  000       000   000  0000000   
+// 000       000   000  000       000   000       000  
+// 000        0000000    0000000   0000000   0000000   
+
+- (Win*) focusNext { return [self focusSibling:+1]; }
+- (Win*) focusPrev { return [self focusSibling:-1]; }
+- (Win*) focusSibling:(int)offset
+{
+    NSArray* windows = [[NSApplication sharedApplication] windows];
+    NSUInteger index = [windows indexOfObject:self];
+    if (index != NSNotFound && [windows count] > 1)
+    {    
+        int sibIndex = index + offset;
+        if (sibIndex < 0) sibIndex = [windows count]-1;
+        if (sibIndex >= [windows count]) sibIndex = 0;
+        if (sibIndex != index)
+        {
+            Win* sibling = (Win*)[windows objectAtIndex:sibIndex];
+            //NSLog(@"focus sibling window %d/%d %d", sibIndex, [windows count], sibling.windowNumber);
+            [sibling makeKeyAndOrderFront:self];
+            return sibling;
+        }
+    }
+    //NSLog(@"no sibling window!");
+    return nil;
+}
+
 //  0000000  000   000   0000000   00000000    0000000  000   000   0000000   000000000  
 // 000       0000  000  000   000  000   000  000       000   000  000   000     000     
 // 0000000   000 0 000  000000000  00000000   0000000   000000000  000   000     000     
 //      000  000  0000  000   000  000             000  000   000  000   000     000     
 // 0000000   000   000  000   000  000        0000000   000   000   0000000      000     
 
--(void) snapshot:(NSString*)pngFilePath
+-(NSString*) snapshot:(NSString*)pngFilePath
 {
+    NSString *filePath = @"~/Desktop/kakao.png"; // todo: make path configurable somehow
+    
+    if (!pngFilePath)
+    {
+        int number = 0;
+        while ([[NSFileManager defaultManager] fileExistsAtPath:[filePath stringByExpandingTildeInPath]])
+        {
+            number++;
+            filePath = [NSString stringWithFormat:@"~/Desktop/kakao_%d.png", number];
+        }
+    }
+    else
+    {
+        filePath = [NSString stringWithString:pngFilePath];
+    }
+                
     WKSnapshotConfiguration * snapshotConfiguration = [[WKSnapshotConfiguration alloc] init];
     [self.view takeSnapshotWithConfiguration:snapshotConfiguration completionHandler:
-        ^(NSImage * image, NSError * error) {
-            
+        ^(NSImage * image, NSError * error) 
+        {
             if (error) { NSLog(@"%@", error); return; }
-            
-            NSString *filePath = @"~/Desktop/kakao.png"; // todo: make path configurable somehow
-            
-            if (!pngFilePath)
-            {
-                int number = 0;
-                while ([[NSFileManager defaultManager] fileExistsAtPath:[filePath stringByExpandingTildeInPath]])
-                {
-                    number++;
-                    filePath = [NSString stringWithFormat:@"~/Desktop/kakao_%d.png", number];
-                }
-            }
-            else
-            {
-                filePath = [NSString stringWithString:pngFilePath];
-            }
-            
+                                    
             NSData *imageData = [image TIFFRepresentation];
             NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imageData];
             imageData = [imageRep representationUsingType:NSBitmapImageFileTypePNG properties:[NSDictionary dictionary]];
             [imageData writeToFile:[filePath stringByExpandingTildeInPath] atomically:NO];        
             
-    }];
+        }];
     [snapshotConfiguration release];
+    
+    return filePath;
 }
 
 - (NSTimeInterval)animationResizeTime:(NSRect)newFrame
