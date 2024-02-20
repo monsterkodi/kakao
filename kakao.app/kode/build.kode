@@ -6,8 +6,7 @@
 0000000     0000000   000  0000000  0000000      
 ###
 
-
-CMD = "zig c++"
+CMD = "zig c++" # is awesome!
 
 SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm"
 
@@ -16,17 +15,24 @@ OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
+# bun is used to generate the build command here.
+# it *should* work with node as well if the node: prefix is removed:
+
 import fs       from "node:fs"
 import process  from "node:process"
 import childp   from "node:child_process"
 
 try
-    fs.unlinkSync __dirname + '/log.txt'
+    fs.unlinkSync __dirname + '/log.txt' # remove the log file
 catch e
     null
 
+# the actual build command. 
+# could be a one-liner in a shell script but that would be too simple :)
+    
 cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
-opt = cwd:__dirname + '/src'
+
+opt = cwd:__dirname + '/src' # build inside the kokoa.app/src folder
 
 childp.exec cmd, opt, (err, stdout, stderr) -> 
 
