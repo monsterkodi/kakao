@@ -9,18 +9,18 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import "view.h"
+#import "win.h"
 
 typedef void (^Callback)(id, NSString*);
-typedef void (^CallbackN)(id _Nullable, NSError * _Nullable);
 
 @interface Route : NSObject
 {
 }
 
-+ (void) emit:(NSString*)event;           // send string to js in main web view
-+ (void) send:(id)msg toView:(View*)view; // send object to js in web view
-+ (void) message:(WKScriptMessage*)msg;   // message recieved from js in web view
-// message recieved from js in web view that expects a callback
-+ (void) request:(WKScriptMessage*)msg callback:(Callback)callback; 
++ (void) emit:(NSString*)event;      // send string to js in web views of all windows
++ (void) send:(id)msg win:(Win*)win; // send string or object to js in web view of win
++ (void) message:(WKScriptMessage*)msg win:(Win*)win; // message received from js in web view of win
+// message recieved from js in web view of win that expects a callback
++ (void) request:(WKScriptMessage*)msg callback:(Callback)callback win:(Win*)win; 
 
 @end

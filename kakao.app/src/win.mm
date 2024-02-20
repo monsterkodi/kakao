@@ -1,9 +1,9 @@
 /*
-  000   000  000  000   000
-  000 0 000  000  0000  000
-  000000000  000  000 0 000
-  000   000  000  000  0000
-  00     00  000  000   000
+0000000    00000000  000      00000000   0000000    0000000   000000000  00000000  
+000   000  000       000      000       000        000   000     000     000       
+000   000  0000000   000      0000000   000  0000  000000000     000     0000000   
+000   000  000       000      000       000   000  000   000     000     000       
+0000000    00000000  0000000  00000000   0000000   000   000     000     00000000  
 */
 
 #import "win.h"
@@ -14,18 +14,18 @@
 {
 }
 
-- (void)windowDidBecomeKey:(NSNotification *)notification;
-- (void)windowDidResignKey:(NSNotification *)notification;
+- (void) windowDidBecomeKey:(NSNotification *)notification;
+- (void) windowDidResignKey:(NSNotification *)notification;
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame;
 
 @end
 
 @implementation WinDelegate
 
-- (void)windowDidBecomeKey:(NSNotification *)notification { [Route emit:@"window.focus"]; }
-- (void)windowDidResignKey:(NSNotification *)notification { [Route emit:@"window.blur"]; }
-- (void)windowDidBecomeMain:(NSNotification *)notification { NSLog(@"window.focus"); }
-- (void)windowDidResignMain:(NSNotification *)notification { NSLog(@"window.blur"); }
+- (void) windowDidBecomeKey:(NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
+- (void) windowDidResignKey:(NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
+- (void) windowDidBecomeMain:(NSNotification *)notification { NSLog(@"window.focus"); }
+- (void) windowDidResignMain:(NSNotification *)notification { NSLog(@"window.blur"); }
 
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame
 {
@@ -58,6 +58,14 @@
 
 @end
 
+/*
+000   000  000  000   000  
+000 0 000  000  0000  000  
+000000000  000  000 0 000  
+000   000  000  000  0000  
+00     00  000  000   000  
+*/
+
 @implementation Win
 
 + (id) new
@@ -70,6 +78,12 @@
     NSLog(@"new child window %@", path);
     return [Win new];
 }
+
+// 000  000   000  000  000000000  
+// 000  0000  000  000     000     
+// 000  000 0 000  000     000     
+// 000  000  0000  000     000     
+// 000  000   000  000     000     
 
 - (id) init
 {
@@ -121,17 +135,11 @@
 	return self;
 }
 
-- (NSTimeInterval)animationResizeTime:(NSRect)newFrame
-{
-    NSTimeInterval interval = [super animationResizeTime:newFrame];
-    // NSLog(@"resizeTime %d", interval);
-    return interval;
-}
-
-- (void)framerateDrop:(NSInteger*)ms
-{
-    NSLog(@"framrateDrop %@", ms);
-}
+// 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
+// 0000  000  000   000  000   000  000  000        000   000     000     000       
+// 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
+// 000  0000  000   000     000     000  000   000  000   000     000     000       
+// 000   000  000   000      0      000   0000000   000   000     000     00000000  
 
 - (void) navigateToURL:(NSURL*)url
 {
@@ -149,10 +157,11 @@
     }
 }
 
-- (void) reload
-{
-    [self.view reload];
-}
+//  0000000  000   000   0000000   00000000    0000000  000   000   0000000   000000000  
+// 000       0000  000  000   000  000   000  000       000   000  000   000     000     
+// 0000000   000 0 000  000000000  00000000   0000000   000000000  000   000     000     
+//      000  000  0000  000   000  000             000  000   000  000   000     000     
+// 0000000   000   000  000   000  000        0000000   000   000   0000000      000     
 
 -(void) snapshot:(NSString*)pngFilePath
 {
@@ -187,6 +196,18 @@
     [snapshotConfiguration release];
 }
 
+- (NSTimeInterval)animationResizeTime:(NSRect)newFrame
+{
+    NSTimeInterval interval = [super animationResizeTime:newFrame];
+    // NSLog(@"resizeTime %d", interval);
+    return interval;
+}
+
+- (void)framerateDrop:(long)ms
+{
+    NSLog(@"framrateDrop %ld", ms);
+}
+
 - (BOOL) canBecomeKeyWindow
 {
 	return YES;
@@ -195,6 +216,11 @@
 - (BOOL) canBecomeMainWindow
 {
 	return YES;
+}
+
+- (void) reload
+{
+    [self.view reload];
 }
 
 @end
