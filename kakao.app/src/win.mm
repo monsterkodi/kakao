@@ -132,6 +132,7 @@
         
         self.titleVisibility = NSWindowTitleHidden;
         self.titlebarAppearsTransparent = YES;
+        self.hasShadow = YES;
         
         [self standardWindowButton:NSWindowCloseButton      ].hidden = YES;
         [self standardWindowButton:NSWindowMiniaturizeButton].hidden = YES;
