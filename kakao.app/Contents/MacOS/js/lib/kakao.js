@@ -6,6 +6,7 @@ var Kakao
 
 import post from './post.js'
 import bundle from './bundle.js'
+import Window from '../window.js'
 
 Kakao = (function ()
 {
@@ -28,6 +29,16 @@ Kakao = (function ()
     }
 
     Kakao["bundle"] = bundle
+    Kakao["window"] = Window
+    Kakao["init"] = function (cb)
+    {
+        return Kakao.request('bundle.path').then(function (bundlePath)
+        {
+            bundle.path = bundlePath
+            return cb(bundlePath)
+        })
+    }
+
     return Kakao
 })()
 

@@ -2,10 +2,8 @@
 
 var _k_
 
-import Window from './window.js'
 import kakao from './lib/kakao.js'
-kakao.request('bundle.path').then(function (bundlePath)
+kakao.init(function ()
 {
-    kakao.bundle.path = bundlePath
-    return new Window
+    return new kakao.window
 })
