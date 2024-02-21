@@ -6,9 +6,9 @@
 000   000  000   000  000  000   000    
 ###
 
-import Bundle from './bundle.js'
 import Window from './window.js'
-import Kakao  from './kakao.js'
+import Bundle from './lib/bundle.js'
+import Kakao  from './lib/kakao.js'
     
 # request the bundle url (toplevel .app folder of the application)
 # without it, the window can't load any resources (menu, icon ...)

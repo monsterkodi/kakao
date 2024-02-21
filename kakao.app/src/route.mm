@@ -21,6 +21,8 @@
 {    
     id arg0 = nil;
     if (args && [args count] > 0) arg0 = [args objectAtIndex:0];    
+    
+    NSLog(@"%d ▸ %@ %@", win.windowNumber, req, arg0 ? arg0 : @"");
 
     if ([req isEqualToString:@"focusNext"]) { return [win focusNext];  }
     if ([req isEqualToString:@"focusPrev"]) { return [win focusPrev];  }
@@ -49,7 +51,7 @@
 
 + (id) app:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
-    NSLog(@"app %@", req);
+    NSLog(@"%d ▸ %@", win.windowNumber, req);
     id app = [NSApplication sharedApplication];
     if ([req isEqualToString:@"quit"])
     {
@@ -174,7 +176,8 @@
     
     id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
 
-    NSLog(@"send %@ %@", script, targetView);
+    NSLog(@"%d ◂ %@", win.windowNumber, payload);
+    
     [targetView evaluateJavaScript:script completionHandler:nil];
 }
 

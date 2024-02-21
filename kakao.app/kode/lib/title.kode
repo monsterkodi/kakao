@@ -6,15 +6,15 @@
    000     000     000     0000000  00000000
 ###
 
-import dom      from './dom.js'    # use dom
+import dom      from './dom.js'
 import sds      from './sds.js'
 import menu     from './menu.js'   
 import noon     from './noon.js'  
 import keyinfo  from './keyinfo.js'  
 import slash    from './slash.js'  
-import post     from './post.js'   # use dom elem slash post 
+import post     from './post.js'
                                 
-{ $, stopEvent, elem } = dom    # use $ stopEvent from dom
+{ $, stopEvent, elem } = dom
 
 function Title
     

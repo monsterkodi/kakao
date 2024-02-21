@@ -11,6 +11,4 @@ function os
     @platform: 'Darwin'
     @isMac: os.platform == 'Darwin'
 
-# Neutralino.computer.getKernelInfo().then (kernelInfo) -> os.platform = kernelInfo.variant
-    
 export os

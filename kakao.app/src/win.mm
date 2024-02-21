@@ -10,22 +10,15 @@
 #import "route.h"
 #import "bundle.h"
 
-@interface WinDelegate : NSObject <NSWindowDelegate> 
-{
-}
-
-- (void) windowDidBecomeKey:(NSNotification *)notification;
-- (void) windowDidResignKey:(NSNotification *)notification;
-- (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame;
-
+@interface WinDelegate : NSObject <NSWindowDelegate> {}
 @end
 
 @implementation WinDelegate
 
 - (void) windowDidBecomeKey:(NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
 - (void) windowDidResignKey:(NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
-- (void) windowDidBecomeMain:(NSNotification *)notification { NSLog(@"window.focus"); }
-- (void) windowDidResignMain:(NSNotification *)notification { NSLog(@"window.blur"); }
+- (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
+- (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resignmain"); */ }
 
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame
 {
@@ -75,7 +68,6 @@
 
 - (Win*) new:(NSString*)path
 {
-    NSLog(@"new child window %@", path);
     return [Win new];
 }
 
@@ -177,12 +169,12 @@
         if (sibIndex != index)
         {
             Win* sibling = (Win*)[windows objectAtIndex:sibIndex];
-            //NSLog(@"focus sibling window %d/%d %d", sibIndex, [windows count], sibling.windowNumber);
+            NSLog(@"%d focus sibling %d/%d %d", self.windowNumber, sibIndex, [windows count], sibling.windowNumber);
             [sibling makeKeyAndOrderFront:self];
             return sibling;
         }
     }
-    //NSLog(@"no sibling window!");
+    NSLog(@"no sibling window!");
     return nil;
 }
 
@@ -226,6 +218,13 @@
     
     return filePath;
 }
+
+// 00     00  000   0000000   0000000    
+// 000   000  000  000       000         
+// 000000000  000  0000000   000         
+// 000 0 000  000       000  000         
+// 000   000  000  0000000    0000000    
+
 
 - (NSTimeInterval)animationResizeTime:(NSRect)newFrame
 {
