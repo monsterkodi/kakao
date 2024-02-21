@@ -2,23 +2,20 @@
 
 var _k_
 
-var $, About
+var $, About, elem
 
 import kakao from './kakao.js'
 import post from './post.js'
 import dom from './dom.js'
-import elem from './elem.js'
 $ = dom.$
+elem = dom.elem
 
 
 About = (function ()
 {
     About["show"] = function ()
     {
-        return kakao.request('window.new','about.html').then(function (win)
-        {
-            console.log('about win id',win)
-        })
+        return kakao.request('window.new','about.html')
     }
 
     function About ()
@@ -40,18 +37,17 @@ About = (function ()
 
 if (document.title === 'about')
 {
-    kakao.request('bundle.path').then(function (bundlePath)
+    kakao.init(function ()
     {
-        var about, image, main, win
+        var about, aboutWin, image, main
 
-        kakao.bundle.path = bundlePath
-        win = new About
+        aboutWin = new About
         main = $('#main')
         main.classList.add('app-drag-region')
-        about = elem({class:'about',id:'about',tabIndex:0,parent:main})
-        image = elem('img',{class:'image',src:kakao.bundle.res('img/about.png'),parent:about})
+        about = elem({class:'about',id:'about',parent:main})
+        image = elem('img',{class:'image',src:kakao.bundle.img('about.png'),parent:about})
         elem({class:'version',id:'version',text:'0.0.0',parent:about})
-        return window.onkeydown = win.close
+        return window.onkeydown = aboutWin.close
     })
 }
 export default About.show;

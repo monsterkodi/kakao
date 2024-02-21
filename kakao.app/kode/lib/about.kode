@@ -9,16 +9,12 @@
 import kakao from './kakao.js'
 import post  from './post.js'
 import dom   from './dom.js'
-import elem  from './elem.js'
 
-{ $ } = dom
+{ $, elem } = dom
 
 function About
 
-    @show: ->
-        
-        kakao.request('window.new' 'about.html').then (win) ->
-            log 'about win id' win
+    @show: -> kakao.request 'window.new' 'about.html'
         
     @: -> post.on 'window.blur' @close
         
@@ -26,22 +22,19 @@ function About
         
     openURL: ->
     
-if document.title == 'about' # this is imported from html in the about window
+if document.title == 'about' # this is probably run by the script in about.html
     
-    kakao.request('bundle.path').then (bundlePath) ->
+    kakao.init ->
     
-        kakao.bundle.path = bundlePath
-        
-        win = new About
+        aboutWin = new About
         
         main =$ '#main'
         main.classList.add 'app-drag-region'
                         
-        about = elem class:'about' id:'about' tabIndex:0 parent:main
-        image = elem 'img' class:'image' src:kakao.bundle.res('img/about.png'), parent:about
+        about = elem class:'about' id:'about' parent:main
+        image = elem 'img' class:'image' src:kakao.bundle.img('about.png'), parent:about
         elem class:'version' id:'version' text:'0.0.0' parent:about
         
-        # window.onclick = win.close
-        window.onkeydown = win.close
+        window.onkeydown = aboutWin.close
     
 export About.show
