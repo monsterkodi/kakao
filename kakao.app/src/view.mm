@@ -51,7 +51,7 @@
             {
                 if ([[NSNumber numberWithInt:1] compare:result] == NSOrderedSame)
                 {
-                    NSLog(@"mouseDown performDragWithEvent %@", event);    
+                    //NSLog(@"mouseDown performDragWithEvent %@", event);    
                     [self.window performWindowDragWithEvent:event];
                 }
             }
