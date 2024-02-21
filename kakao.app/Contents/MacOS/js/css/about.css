@@ -31,7 +31,7 @@ body {
   padding: 0;
 }
 #main {
-  border: 6px solid #111;
+  border: 6px solid #000;
   border-radius: 10px;
   background-color: #000;
   -webkit-user-select: none;
