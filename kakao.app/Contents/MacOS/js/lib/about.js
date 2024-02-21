@@ -2,49 +2,56 @@
 
 var _k_
 
-var About
+var $, About
 
 import kakao from './kakao.js'
+import post from './post.js'
+import dom from './dom.js'
+import elem from './elem.js'
+$ = dom.$
+
 
 About = (function ()
 {
-    function About ()
-    {}
-
-    About["win"] = null
-    About["url"] = null
-    About["opt"] = null
-    About["show"] = function (opt)
+    About["show"] = function ()
     {
-        console.log('About.show',opt)
-        About.opt = opt
-        kakao.request('window.new',kakao.bundle.js('about.html')).then(function (win)
+        return kakao.request('window.new','about.html').then(function (win)
         {
             console.log('about win id',win)
         })
-        About.win = win
-        return win
     }
 
-    About["blurAbout"] = function ()
+    function About ()
     {
-        var _141_24_
-
-        if (!(About.opt != null ? About.opt.debug : undefined))
-        {
-            return About.closeAbout()
-        }
+        this["close"] = this["close"].bind(this)
+        post.on('window.blur',this.close)
     }
 
-    About["closeAbout"] = function ()
+    About.prototype["close"] = function ()
     {
-        var _150_17_
-
-        ;(About.win != null ? About.win.close() : undefined)
-        return About.win = null
+        return kakao.post('window.close')
     }
+
+    About.prototype["openURL"] = function ()
+    {}
 
     return About
 })()
 
+if (document.title === 'about')
+{
+    kakao.request('bundle.path').then(function (bundlePath)
+    {
+        var about, image, main, win
+
+        kakao.bundle.path = bundlePath
+        win = new About
+        main = $('#main')
+        main.classList.add('app-drag-region')
+        about = elem({class:'about',id:'about',tabIndex:0,parent:main})
+        image = elem('img',{class:'image',src:kakao.bundle.res('img/about.png'),parent:about})
+        elem({class:'version',id:'version',text:'0.0.0',parent:about})
+        return window.keydown = win.close
+    })
+}
 export default About.show;

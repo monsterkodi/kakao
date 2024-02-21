@@ -33,4 +33,5 @@ function Kakao
         
     @bundle: bundle
 
+window.kakao = Kakao
 export Kakao

@@ -10,9 +10,10 @@ function Bundle
 
     @path: '?'
         
-    @app:      (p) -> Bundle.path + '/'                    + p
-    @js:       (p) -> Bundle.path + '/Contents/MacOS/js/'  + p
-    @macOS:    (p) -> Bundle.path + '/Contents/MacOS/'     + p
-    @resource: (p) -> Bundle.path + '/Contents/Resources/' + p
+    @app: (p) -> Bundle.path + '/'                        + p
+    @js:  (p) -> Bundle.path + '/Contents/MacOS/js/'      + p
+    @mac: (p) -> Bundle.path + '/Contents/MacOS/'         + p
+    @res: (p) -> Bundle.path + '/Contents/Resources/'     + p
+    @img: (p) -> Bundle.path + '/Contents/Resources/img/' + p
     
 export Bundle

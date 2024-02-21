@@ -70,7 +70,7 @@
 {
     NSURL* url;
     
-    NSLog(@"Win new %@", urlString);
+    NSLog(@"Win new > %@", urlString);
     
     if (!urlString) urlString = @"index.html";
     
@@ -80,12 +80,16 @@
     {
         url = [NSURL urlWithString:urlString];
     }
+    else if ([urlString hasPrefix:@"/"])
+    {
+        url = [Bundle rootURL:urlString];
+    }
     else
     {
         url = [Bundle jsURL:urlString];
     }
     
-    NSLog(@"Win new %@", url);
+    NSLog(@"Win new < %@", url);
     return [Win withURL:url];
 }
 

@@ -3,11 +3,9 @@
 var _k_
 
 import Window from './window.js'
-import Bundle from './lib/bundle.js'
-import Kakao from './lib/kakao.js'
-Kakao.request('bundle.path').then(function (bundlePath)
+import kakao from './lib/kakao.js'
+kakao.request('bundle.path').then(function (bundlePath)
 {
-    Bundle.path = bundlePath
-    window.kakao = Kakao
+    kakao.bundle.path = bundlePath
     return new Window
 })
