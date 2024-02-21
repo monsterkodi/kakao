@@ -6,24 +6,9 @@
 000   000  000   000  000  000   000    
 ###
 
-import Window from './window.js'
-import kakao  from './lib/kakao.js'
-    
-# request the bundle url (toplevel .app folder of the application)
-# without it, the window can't load any resources (menu, icon ...)
+# this is the entry point of the javascript
+# which runs in the web view of the window.
 
-kakao.request('bundle.path').then (bundlePath) ->
-
-    # forward the path to the bundle module
+import kakao from './lib/kakao.js'
     
-    kakao.bundle.path = bundlePath
-    
-    # install Kakao in the global window scope
-    # it is used to send and receive messages between js running 
-    # in the web view (this process) and the application process
-    
-    # window.kakao = Kakao 
-    
-    # we are ready to spawn the window ...
-    
-    new Window
+kakao.init -> new kakao.window

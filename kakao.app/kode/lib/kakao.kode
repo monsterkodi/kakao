@@ -10,6 +10,7 @@
 
 import post   from './post.js'
 import bundle from './bundle.js'
+import Window from '../window.js'
 
 function Kakao
 
@@ -32,6 +33,18 @@ function Kakao
         post.emit msg
         
     @bundle: bundle
+    @window: Window
+    
+    @init: (cb) ->
+        
+        # request the bundle url (toplevel .app folder of the application)
+        # without it, the window can't load any resources (menu, icon ...)
+        
+        Kakao.request('bundle.path').then (bundlePath) ->
+        
+            bundle.path = bundlePath # forward the path to the bundle module
+            cb bundlePath
 
-window.kakao = Kakao
+window.kakao = Kakao # kakao sets itself in the global window scope
+
 export Kakao
