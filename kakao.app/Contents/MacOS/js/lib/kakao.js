@@ -31,4 +31,5 @@ Kakao = (function ()
     return Kakao
 })()
 
+window.kakao = Kakao
 export default Kakao;

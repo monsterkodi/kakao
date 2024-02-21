@@ -11,7 +11,7 @@ import about from './lib/about.js'
 import kakao from './lib/kakao.js'
 import keyinfo from './lib/keyinfo.js'
 import Title from './lib/title.js'
-import Bundle from './lib/bundle.js'
+import bundle from './lib/bundle.js'
 $ = dom.$
 stopEvent = dom.stopEvent
 
@@ -32,7 +32,7 @@ Window = (function ()
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focusd',this.onWindowFocus)
-        window.titlebar = new Title({icon:Bundle.resource('img/menu.png'),menu:Bundle.resource('menu.noon')})
+        window.titlebar = new Title({icon:bundle.img('menu.png'),menu:bundle.res('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)

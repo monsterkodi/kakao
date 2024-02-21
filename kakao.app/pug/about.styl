@@ -71,21 +71,48 @@ body
 // 000   000  000   000  000  000   000  
 
 #main
-    border-left         frameBorder
-    border-right        frameBorder
-    border-bottom       frameBorder
-    border-bottom-left-radius  frameRadius
-    border-bottom-right-radius  frameRadius
+    border              frameBorder
+    border-radius       frameRadius
     background-color    bgColor
     -webkit-user-select none
     padding             frameWidth
     overflow            auto
     pointer-events      auto
+    fill-abs()
+    
+//  0000000   0000000     0000000   000   000  000000000  
+// 000   000  000   000  000   000  000   000     000     
+// 000000000  0000000    000   000  000   000     000     
+// 000   000  000   000  000   000  000   000     000     
+// 000   000  0000000     0000000    0000000      000     
+
+.about 
+    text-align          center
+    cursor              pointer
+    outline-width       0
+    overflow            hidden
+    
+.image 
+    pointer-events      none
     position            absolute
-    top                 titlebarHeight
+    height              70%
+    max-height          70%
+    left                50%
+    top                 50%
+    transform           translate(-50%, -50%)
+
+.version 
+    position            absolute
+    bottom              7%
     left                0
     right               0
-    bottom              0                
+    text-align          center
+    font-family         Verdana, sans-serif
+    text-decoration     none
+    color               rgb(50, 50, 50)
+
+.version:hover 
+    color               rgb(205, 205, 205)
 
 //    0000000   000   000  000  00     00   0000000   000000000  000   0000000   000   000
 //   000   000  0000  000  000  000   000  000   000     000     000  000   000  0000  000

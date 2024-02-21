@@ -13,7 +13,7 @@ import about   from './lib/about.js'
 import kakao   from './lib/kakao.js'
 import keyinfo from './lib/keyinfo.js'
 import Title   from './lib/title.js'
-import Bundle  from './lib/bundle.js'
+import bundle  from './lib/bundle.js'
 
 { $, stopEvent } = dom
 
@@ -25,7 +25,7 @@ function Window
         post.on 'window.blur'   @onWindowBlur
         post.on 'window.focusd' @onWindowFocus
         
-        window.titlebar = new Title icon:Bundle.resource('img/menu.png'), menu:Bundle.resource('menu.noon')
+        window.titlebar = new Title icon:bundle.img('menu.png'), menu:bundle.res('menu.noon')
         
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
