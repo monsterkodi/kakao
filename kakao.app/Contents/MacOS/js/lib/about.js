@@ -51,7 +51,7 @@ if (document.title === 'about')
         about = elem({class:'about',id:'about',tabIndex:0,parent:main})
         image = elem('img',{class:'image',src:kakao.bundle.res('img/about.png'),parent:about})
         elem({class:'version',id:'version',text:'0.0.0',parent:about})
-        return window.keydown = win.close
+        return window.onkeydown = win.close
     })
 }
 export default About.show;

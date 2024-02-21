@@ -42,6 +42,6 @@ if document.title == 'about' # this is imported from html in the about window
         elem class:'version' id:'version' text:'0.0.0' parent:about
         
         # window.onclick = win.close
-        window.keydown = win.close
+        window.onkeydown = win.close
     
 export About.show
