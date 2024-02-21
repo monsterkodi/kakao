@@ -9,6 +9,7 @@
 import dom     from './lib/dom.js'
 import elem    from './lib/elem.js'
 import post    from './lib/post.js'
+import about   from './lib/about.js'
 import kakao   from './lib/kakao.js'
 import keyinfo from './lib/keyinfo.js'
 import Title   from './lib/title.js'
@@ -80,6 +81,7 @@ function Window
             'close'          ➜ kakao.post 'window.close'
             'reload'         ➜ kakao.post 'window.reload'
             'quit'           ➜ kakao.post 'app.quit'
+            'about'          ➜ about()
         0
             
     # 000   000  00000000  000   000

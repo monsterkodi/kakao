@@ -5,6 +5,7 @@ var _k_
 var Kakao
 
 import post from './post.js'
+import bundle from './bundle.js'
 
 Kakao = (function ()
 {
@@ -26,6 +27,7 @@ Kakao = (function ()
         return post.emit(msg)
     }
 
+    Kakao["bundle"] = bundle
     return Kakao
 })()
 

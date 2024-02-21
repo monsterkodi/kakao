@@ -61,14 +61,32 @@
 
 @implementation Win
 
-+ (Win*) new
++ (Win*) withURL:(NSURL*)url
 {
-    return [[Win alloc] init];
+    return [[Win alloc] initWithURL:url];
 }
 
-- (Win*) new:(NSString*)path
+- (Win*) new:(NSString*)urlString
 {
-    return [Win new];
+    NSURL* url;
+    
+    NSLog(@"Win new %@", urlString);
+    
+    if (!urlString) urlString = @"index.html";
+    
+    if ([urlString hasPrefix:@"http://"] || 
+        [urlString hasPrefix:@"https://"] || 
+        [urlString hasPrefix:@"file://"])
+    {
+        url = [NSURL urlWithString:urlString];
+    }
+    else
+    {
+        url = [Bundle jsURL:urlString];
+    }
+    
+    NSLog(@"Win new %@", url);
+    return [Win withURL:url];
 }
 
 // 000  000   000  000  000000000  
@@ -77,7 +95,7 @@
 // 000  000  0000  000     000     
 // 000  000   000  000     000     
 
-- (Win*) init
+- (Win*) initWithURL:(NSURL*)url
 {
     BOOL nativeTitleBar = NO;
 
@@ -122,8 +140,9 @@
     
     [self setContentView:self.view];
     [self makeKeyAndOrderFront:nil];
-            
-    [self navigateToURL:[Bundle fileURLinJS:@"index.html"]];
+       
+    [self navigateToURL:url];
+    
 	return self;
 }
 
@@ -137,11 +156,7 @@
 {
     if ([url isFileURL])
     {
-        id req = [NSMutableURLRequest requestWithURL:url];
-        
-        NSURL* srcURL = [Bundle fileURLWithPath:@"/"];
-        
-        [self.view loadFileRequest:req allowingReadAccessToURL:srcURL]; // ▸ WKNavigation*
+        [self.view loadFileRequest:[NSURLRequest requestWithURL:url] allowingReadAccessToURL:[Bundle fileURL:@"/"]]; // ▸ WKNavigation*
     }
     else
     {
