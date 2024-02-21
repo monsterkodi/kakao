@@ -38,7 +38,7 @@
     return [[NSString stringWithFormat:@"%@/Contents/Resources/%@", [Bundle path], path] stringByStandardizingPath];
 }
 
-+ (NSURL*) fileURLWithPath:(NSString*)path // absoulte file url relative to .app folder
++ (NSURL*) fileURL:(NSString*)path // absoulte file url relative to .app folder
 {
     id comp = [[NSArray arrayWithObject:[Bundle path]] arrayByAddingObject:path];
 
@@ -47,7 +47,7 @@
     return [NSURL fileURLWithPath:norm];
 }
 
-+ (NSURL*) fileURLinJS:(NSString*)path
++ (NSURL*) jsURL:(NSString*)path // absoulte file url relative to .app/Contents/MacOS/js folder
 {
     return [NSURL fileURLWithPath:[Bundle jsPath:path]];
 }

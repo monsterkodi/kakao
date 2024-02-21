@@ -15,9 +15,9 @@
 
 @property (assign) View*  view;
 
-+ (Win*) new;
-- (Win*) init;
-- (Win*) new:(NSString*)path;
++ (Win*) withURL:(NSURL*)url;
+- (Win*) initWithURL:(NSURL*)url;
+- (Win*) new:(NSString*)urlString;
 - (Win*) focusNext;
 - (Win*) focusPrev;
 - (void) reload;

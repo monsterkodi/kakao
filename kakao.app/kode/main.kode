@@ -25,6 +25,6 @@ Kakao.request('bundle.path').then (bundlePath) ->
     
     window.kakao = Kakao 
     
-    # we are ready to spawn a window ...
+    # we are ready to spawn the window ...
     
     new Window

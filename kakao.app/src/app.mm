@@ -29,7 +29,7 @@
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
     [app activateIgnoringOtherApps:YES];
     
-    id win = [Win new];
+    id win = [Win withURL:[Bundle jsURL:@"index.html"]];
         
     return delegate;
 }

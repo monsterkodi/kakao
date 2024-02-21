@@ -7,6 +7,7 @@ var $, stopEvent, Window
 import dom from './lib/dom.js'
 import elem from './lib/elem.js'
 import post from './lib/post.js'
+import about from './lib/about.js'
 import kakao from './lib/kakao.js'
 import keyinfo from './lib/keyinfo.js'
 import Title from './lib/title.js'
@@ -103,6 +104,9 @@ Window = (function ()
                 break
             case 'quit':
                 kakao.post('app.quit')
+                break
+            case 'about':
+                about()
                 break
         }
 

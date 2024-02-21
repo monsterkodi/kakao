@@ -1,0 +1,101 @@
+
+//  0000000  000000000  000   000  000    
+// 000          000      000 000   000    
+// 0000000      000       00000    000    
+//      000     000        000     000    
+// 0000000      000        000     0000000
+
+frameWidth          = 6px
+titlebarHeight      = 30px
+
+bgColor             = #000
+frameColor          = #111
+textBlurColor       = #444
+textActiveColor     = #999
+textFocusColor      = #fff
+
+frameWidth          = 6px
+frameRadius         = 10px
+borderRadius        = 10px
+frameBorder         = frameWidth solid frameColor
+bodyBorder          = 1px solid #222
+
+fadeInAnim()          
+    animation           300ms ease-in-out fadeIn
+
+@font-face 
+    font-family     titlebarFont
+    font-weight     normal
+    font-style      normal
+    src             url("../../../Resources/font/Bahnschrift.woff")
+
+@font-face 
+    font-family     fontMono
+    font-weight     normal
+    font-style      normal
+    src             url("../../../Resources/font/Meslo.woff")
+
+*
+    outline-width       0
+    outline-style       none
+    
+fill-abs()
+    position            absolute
+    bottom              0
+    right               0
+    left                0
+    top                 0
+    margin              0
+    padding             0
+        
+// 0000000     0000000   0000000    000   000
+// 000   000  000   000  000   000   000 000 
+// 0000000    000   000  000   000    00000  
+// 000   000  000   000  000   000     000   
+// 0000000     0000000   0000000       000   
+
+body
+    overflow            hidden
+    color               textFocusColor
+    border              bodyBorder
+    border-radius       borderRadius
+    animation           300ms ease-in fadeIn
+    font-family         fontMono
+    font-size           14px
+    fill-abs()
+    
+// 00     00   0000000   000  000   000  
+// 000   000  000   000  000  0000  000  
+// 000000000  000000000  000  000 0 000  
+// 000 0 000  000   000  000  000  0000  
+// 000   000  000   000  000  000   000  
+
+#main
+    border-left         frameBorder
+    border-right        frameBorder
+    border-bottom       frameBorder
+    border-bottom-left-radius  frameRadius
+    border-bottom-right-radius  frameRadius
+    background-color    bgColor
+    -webkit-user-select none
+    padding             frameWidth
+    overflow            auto
+    pointer-events      auto
+    position            absolute
+    top                 titlebarHeight
+    left                0
+    right               0
+    bottom              0                
+
+//    0000000   000   000  000  00     00   0000000   000000000  000   0000000   000   000
+//   000   000  0000  000  000  000   000  000   000     000     000  000   000  0000  000
+//   000000000  000 0 000  000  000000000  000000000     000     000  000   000  000 0 000
+//   000   000  000  0000  000  000 0 000  000   000     000     000  000   000  000  0000
+//   000   000  000   000  000  000   000  000   000     000     000   0000000   000   000
+            
+@keyframes fadeIn
+    0%
+        opacity         0
+    100%  
+        opacity         1
+    
