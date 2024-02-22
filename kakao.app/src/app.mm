@@ -10,10 +10,17 @@
 #import "bundle.h"
 #import "watch.h"
 
+@interface App ()
+
+@property (readwrite,retain) Watch* watch;
+
+@end
+
 @implementation App
 
-@synthesize snapshotFolder;
-@synthesize snapshotFile;
+//@synthesize snapshotFolder;
+//@synthesize snapshotFile;
+//@synthesize watch;
 
 + (id) new
 {
@@ -24,8 +31,7 @@
     
     app.snapshotFolder = @"~/Desktop";
     app.snapshotFile   = @"kakao";
-    app.watch = [[Watch alloc] initWithPath:[Bundle path]];
-    app.watch.delegate = app;
+    app.watch = [Watch path:[Bundle path] delegate:app];
     
     id nsApp = [NSApplication sharedApplication];
     [nsApp setDelegate:app];
@@ -35,6 +41,12 @@
     id win = [Win withURL:[Bundle jsURL:@"index.html"]];
         
     return app;
+}
+
+- (void) dealloc
+{
+    [self.watch release];
+    [super dealloc];
 }
 
 - (Win*) win

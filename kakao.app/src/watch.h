@@ -22,13 +22,10 @@
 
 @interface FSChange : NSObject
 
-@property(nonatomic, copy) NSSet *changedFiles;
-@property(nonatomic) BOOL foldersChanged;
+@property(nonatomic, copy)  NSSet   *changedFiles;
+@property(nonatomic)        BOOL    foldersChanged;
 
 @end
-
-@class FSTreeDiffer;
-@class FSTree;
 
 @protocol WatchDelegate;
 
@@ -38,27 +35,9 @@
 // 000   000  000   000     000     000       000   000  
 // 00     00  000   000     000      0000000  000   000  
 
-@interface Watch : NSObject 
-{
-    NSString *_path;
+@interface Watch : NSObject
 
-    BOOL _running;
-
-    FSEventStreamRef _streamRef;
-    FSTreeDiffer *_treeDiffer;
-
-    NSMutableSet *_eventCache;
-    NSTimeInterval _cacheWaitingTime;
-    NSTimeInterval _eventProcessingDelay;
-}
-
-- (Watch*)initWithPath:(NSString*)path;
-
-@property(nonatomic, readonly, copy)    NSString            *path;
-@property(nonatomic, retain)            id<WatchDelegate>   delegate;
-@property(nonatomic, getter=isRunning)  BOOL                running;
-@property(nonatomic, readonly, strong)  FSTree              *tree;
-@property(nonatomic, assign)            NSTimeInterval      eventProcessingDelay;
++ (Watch*)path:(NSString*)path delegate:(id<WatchDelegate>)delegate;
 
 @end
 
