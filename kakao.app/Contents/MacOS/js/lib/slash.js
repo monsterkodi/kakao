@@ -5,7 +5,6 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 var Slash
 
 import path from './path.js'
-import Kakao from './kakao.js'
 
 Slash = (function ()
 {
@@ -137,7 +136,7 @@ Slash = (function ()
     {
         var c, clmn, d, f, l, line, split
 
-        var _106_14_ = Slash.splitDrive(p); f = _106_14_[0]; d = _106_14_[1]
+        var _105_14_ = Slash.splitDrive(p); f = _105_14_[0]; d = _105_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -168,7 +167,7 @@ Slash = (function ()
     {
         var c, f, l
 
-        var _118_16_ = Slash.splitFileLine(p); f = _118_16_[0]; l = _118_16_[1]; c = _118_16_[2]
+        var _117_16_ = Slash.splitFileLine(p); f = _117_16_[0]; l = _117_16_[1]; c = _117_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -182,7 +181,7 @@ Slash = (function ()
     {
         var f, l
 
-        var _123_14_ = Slash.splitFileLine(p); f = _123_14_[0]; l = _123_14_[1]
+        var _122_14_ = Slash.splitFileLine(p); f = _122_14_[0]; l = _122_14_[1]
 
         if (l > 1)
         {
@@ -386,14 +385,14 @@ Slash = (function ()
 
     Slash["tilde"] = function (p)
     {
-        var _249_36_
+        var _248_36_
 
         return (Slash.path(p) != null ? Slash.path(p).replace(Slash.home(),'~') : undefined)
     }
 
     Slash["untilde"] = function (p)
     {
-        var _250_36_
+        var _249_36_
 
         return (Slash.path(p) != null ? Slash.path(p).replace(/^\~/,Slash.home()) : undefined)
     }
@@ -436,9 +435,9 @@ Slash = (function ()
         {
             return '.'
         }
-        var _271_17_ = Slash.splitDrive(rel); rl = _271_17_[0]; rd = _271_17_[1]
+        var _270_17_ = Slash.splitDrive(rel); rl = _270_17_[0]; rd = _270_17_[1]
 
-        var _272_17_ = Slash.splitDrive(Slash.resolve(to)); tl = _272_17_[0]; td = _272_17_[1]
+        var _271_17_ = Slash.splitDrive(Slash.resolve(to)); tl = _271_17_[0]; td = _271_17_[1]
 
         if (rd && td && rd !== td)
         {
@@ -472,7 +471,7 @@ Slash = (function ()
 
     Slash["pkg"] = function (p)
     {
-        var _297_20_
+        var _296_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -490,7 +489,7 @@ Slash = (function ()
 
     Slash["git"] = function (p, cb)
     {
-        var _309_20_
+        var _308_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -746,9 +745,9 @@ Slash = (function ()
             {
                 Slash.textext = {}
                 var list = _k_.list(require('textextensions'))
-                for (var _490_24_ = 0; _490_24_ < list.length; _490_24_++)
+                for (var _489_24_ = 0; _489_24_ < list.length; _489_24_++)
                 {
-                    ext = list[_490_24_]
+                    ext = list[_489_24_]
                     Slash.textext[ext] = true
                 }
                 Slash.textext['crypt'] = true
@@ -784,7 +783,7 @@ Slash = (function ()
             console.error("Slash.readText -- no callback!")
             return
         }
-        return Kakao.request('fs.readText',p).then(function (text, err)
+        return kakao.request('fs.readText',p).then(function (text, err)
         {
             if (!err)
             {

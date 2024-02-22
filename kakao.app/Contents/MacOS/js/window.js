@@ -1,14 +1,13 @@
-// monsterkodi/kode 0.249.0
+// monsterkodi/kode 0.250.0
 
 var _k_
 
 var $, stopEvent, Window
 
+import kakao from './lib/kakao.js'
 import dom from './lib/dom.js'
 import elem from './lib/elem.js'
 import post from './lib/post.js'
-import about from './lib/about.js'
-import kakao from './lib/kakao.js'
 import keyinfo from './lib/keyinfo.js'
 import Title from './lib/title.js'
 import bundle from './lib/bundle.js'
@@ -51,13 +50,12 @@ Window = (function ()
 
         window.requestAnimationFrame(this.animate)
         now = window.performance.now()
-        delta = (now - this.lastAnimationTime) * 0.001
+        delta = (now - this.lastAnimationTime)
         this.lastAnimationTime = now
-        fps = 1000 * delta
-        if (fps > 40)
+        fps = 1000 / delta
+        if (fps < 27)
         {
-            console.log(fps)
-            return kakao.post("window.framerateDrop",delta)
+            return kakao.send("window.framerateDrop",fps)
         }
     }
 
@@ -79,38 +77,49 @@ Window = (function ()
         switch (action.toLowerCase())
         {
             case 'focus next':
-                kakao.post('window.focusNext')
+                kakao.send('window.focusNext')
                 break
             case 'focus previous':
-                kakao.post('window.focusPrev')
+                kakao.send('window.focusPrev')
                 break
             case 'new window':
-                kakao.post('window.new')
+                kakao.send('window.new')
                 break
             case 'maximize':
-                kakao.post('window.maximize')
+                kakao.send('window.maximize')
                 break
             case 'minimize':
-                kakao.post('window.minimize')
+                kakao.send('window.minimize')
                 break
             case 'screenshot':
-                kakao.post('window.snapshot')
+                kakao.send('window.snapshot')
                 break
             case 'close':
-                kakao.post('window.close')
+                kakao.send('window.close')
                 break
             case 'reload':
-                kakao.post('window.reload')
+                kakao.send('window.reload')
                 break
             case 'quit':
-                kakao.post('app.quit')
+                kakao.send('app.quit')
                 break
             case 'about':
-                about()
+                this.showAbout()
                 break
         }
 
         return 0
+    }
+
+    Window.prototype["showAbout"] = function ()
+    {
+        import('./lib/about.js')
+        .
+        then
+        return function (m)
+        {
+            return m.default()
+        }
     }
 
     Window.prototype["onKeyDown"] = function (event)

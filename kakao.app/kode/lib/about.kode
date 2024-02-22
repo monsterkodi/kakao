@@ -1,16 +1,21 @@
 ###
- 0000000   0000000     0000000   000   000  000000000
-000   000  000   000  000   000  000   000     000
-000000000  0000000    000   000  000   000     000
-000   000  000   000  000   000  000   000     000
-000   000  0000000     0000000    0000000      000
+   0000000   0000000     0000000   000   000  000000000
+  000   000  000   000  000   000  000   000     000
+  000000000  0000000    000   000  000   000     000
+  000   000  000   000  000   000  000   000     000
+  000   000  0000000     0000000    0000000      000
+
+  simple about window
+  
+  provides both ...
+     a method to show the about window: About.show
+     and the code that handles the actual window once shown
 ###
 
 import kakao from './kakao.js'
-import post  from './post.js'
-import dom   from './dom.js'
 
-{ $, elem } = dom
+{ post, dom } = kakao
+{ $, elem }   = dom
 
 function About
 
@@ -18,7 +23,7 @@ function About
         
     @: -> post.on 'window.blur' @close
         
-    close: => kakao.post 'window.close'
+    close: => kakao.send 'window.close'
         
     openURL: ->
     
@@ -29,11 +34,12 @@ if document.title == 'about' # this is probably run by the script in about.html
         aboutWin = new About
         
         main =$ '#main'
-        main.classList.add 'app-drag-region'
+        main.classList.add 'app-drag-region' # make the window draggable anywhere
                         
-        about = elem class:'about' id:'about' parent:main
-        image = elem 'img' class:'image' src:kakao.bundle.img('about.png'), parent:about
-        elem class:'version' id:'version' text:'0.0.0' parent:about
+        elem 'div' class:'about' id:'about' parent:main, children:[
+            elem 'img' class:'image' src:kakao.bundle.img 'about.png'
+            elem 'div' class:'version' id:'version' text:'0.0.0'
+        ]
         
         window.onkeydown = aboutWin.close
     

@@ -7,7 +7,6 @@
 ###
 
 import path  from './path.js'
-import Kakao from './kakao.js'
 
 function Slash
     
@@ -508,7 +507,7 @@ function Slash
             error "Slash.readText -- no callback!"
             return
             
-        Kakao.request('fs.readText', p).then (text, err) ->        
+        kakao.request('fs.readText', p).then (text, err) ->        
             if not err
                 cb text
             else
