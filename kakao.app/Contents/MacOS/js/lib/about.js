@@ -2,11 +2,12 @@
 
 var _k_
 
-var $, About, elem
+var $, About, dom, elem, post
 
 import kakao from './kakao.js'
-import post from './post.js'
-import dom from './dom.js'
+post = kakao.post
+dom = kakao.dom
+
 $ = dom.$
 elem = dom.elem
 
@@ -26,7 +27,7 @@ About = (function ()
 
     About.prototype["close"] = function ()
     {
-        return kakao.post('window.close')
+        return kakao.send('window.close')
     }
 
     About.prototype["openURL"] = function ()
@@ -39,14 +40,12 @@ if (document.title === 'about')
 {
     kakao.init(function ()
     {
-        var about, aboutWin, image, main
+        var aboutWin, main
 
         aboutWin = new About
         main = $('#main')
         main.classList.add('app-drag-region')
-        about = elem({class:'about',id:'about',parent:main})
-        image = elem('img',{class:'image',src:kakao.bundle.img('about.png'),parent:about})
-        elem({class:'version',id:'version',text:'0.0.0',parent:about})
+        elem('div',{class:'about',id:'about',parent:main,children:[elem('img',{class:'image',src:kakao.bundle.img('about.png')}),elem('div',{class:'version',id:'version',text:'0.0.0'})]})
         return window.onkeydown = aboutWin.close
     })
 }

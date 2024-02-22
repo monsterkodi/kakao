@@ -34,8 +34,6 @@ class Poster extends EventTarget
      
     send: (receivers, type, args, id) -> 
     
-        # if type not in ['pointerMove' 'animationFrame']
-            # Neutralino.debug.log("post.emit #{type} #{args}").catch((e) -> error e)
         event = new Event POST
         event.event = type
         event.args = args
