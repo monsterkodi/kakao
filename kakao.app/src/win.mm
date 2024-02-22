@@ -18,8 +18,8 @@
 - (void) windowDidBecomeKey:(NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
 - (void) windowDidResignKey:(NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
 - (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
-- (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resignmain"); */ }
-
+- (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
+- (BOOL) windowShouldClose:(NSWindow*)window { return YES; }
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame
 {
     NSDictionary* resize = [NSDictionary dictionaryWithObjectsAndKeys: 
@@ -78,11 +78,11 @@
         [urlString hasPrefix:@"https://"] || 
         [urlString hasPrefix:@"file://"])
     {
-        url = [NSURL urlWithString:urlString];
+        url = [NSURL URLWithString:urlString];
     }
     else if ([urlString hasPrefix:@"/"])
     {
-        url = [Bundle rootURL:urlString];
+        url = [Bundle fileURL:urlString];
     }
     else
     {
@@ -181,6 +181,12 @@
 {
     NSArray* windows = [[NSApplication sharedApplication] windows];
     NSUInteger index = [windows indexOfObject:self];
+    
+    //for (id window in windows)
+    //{
+    //    NSLog(@"window %@", window);
+    //}
+    
     if (index != NSNotFound && [windows count] > 1)
     {    
         int sibIndex = index + offset;
@@ -189,13 +195,26 @@
         if (sibIndex != index)
         {
             Win* sibling = (Win*)[windows objectAtIndex:sibIndex];
-            NSLog(@"%d focus sibling %d/%d %d", self.windowNumber, sibIndex, [windows count], sibling.windowNumber);
+            //NSLog(@"%d focus sibling %d/%d %d", self.windowNumber, sibIndex, [windows count], sibling.windowNumber);
             [sibling makeKeyAndOrderFront:self];
             return sibling;
         }
     }
     NSLog(@"no sibling window!");
     return nil;
+}
+
+- (void) setWidth:(unsigned int)width height:(unsigned int)height
+{
+    [self setFrame:CGRectMake(0, 0, width, height) display:YES];
+}
+
+- (void) center
+{
+    CGFloat x = (self.screen.frame.size.width  - self.frame.size.width)  / 2;
+    CGFloat y = (self.screen.frame.size.height - self.frame.size.height) / 2;
+    
+    [self setFrameOrigin:CGPointMake(x, y)];
 }
 
 //  0000000  000   000   0000000   00000000    0000000  000   000   0000000   000000000  
@@ -246,16 +265,8 @@
 // 000   000  000  0000000    0000000    
 
 
-- (NSTimeInterval)animationResizeTime:(NSRect)newFrame
-{
-    NSTimeInterval interval = [super animationResizeTime:newFrame];
-    // NSLog(@"resizeTime %d", interval);
-    return interval;
-}
-
 - (void)framerateDrop:(long)ms
 {
-    NSLog(@"framrateDrop %ld", ms);
 }
 
 - (BOOL) canBecomeKeyWindow

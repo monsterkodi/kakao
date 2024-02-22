@@ -8,6 +8,7 @@
 
 #import "app.h"
 #import "bundle.h"
+#import "watch.h"
 
 @implementation App
 
@@ -18,20 +19,22 @@
 {
     //freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
-    App* delegate = [[App alloc] init];
-    [delegate setIcon:[Bundle resourcePath:@"img/app.icns"]];
+    App* app = [[App alloc] init];
+    [app setIcon:[Bundle resourcePath:@"img/app.icns"]];
     
-    delegate.snapshotFolder = @"~/Desktop";
-    delegate.snapshotFile   = @"kakao";
+    app.snapshotFolder = @"~/Desktop";
+    app.snapshotFile   = @"kakao";
+    app.watch = [[Watch alloc] initWithPath:[Bundle path]];
+    app.watch.delegate = app;
     
-    id app = [NSApplication sharedApplication];
-    [app setDelegate:delegate];
-    [app setActivationPolicy:NSApplicationActivationPolicyRegular];
-    [app activateIgnoringOtherApps:YES];
+    id nsApp = [NSApplication sharedApplication];
+    [nsApp setDelegate:app];
+    [nsApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+    [nsApp activateIgnoringOtherApps:YES];
     
     id win = [Win withURL:[Bundle jsURL:@"index.html"]];
         
-    return delegate;
+    return app;
 }
 
 - (Win*) win
@@ -53,20 +56,14 @@
     [[NSApplication sharedApplication] run]; // does not return
 }
 
-- (void)applicationWillFinishLaunching:(NSNotification *)notification
+- (void)watch:(Watch*)watch detectedChange:(FSChange*)change
 {
-    //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"./willFinish"]);
+    NSLog(@"%d %@", change.foldersChanged, change.changedFiles);
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
-{
-    //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"didFinish"]);
-}
-
-- (void)applicationWillBecomeActive:(NSNotification *)notification
-{
-    //NSLog(@"bundle url %@", [Bundle fileURLWithPath:@"/willBecomeActive"]);
-}
+- (void)applicationWillFinishLaunching:(NSNotification *)notification { }
+- (void)applicationDidFinishLaunching:(NSNotification *)notification { }
+- (void)applicationWillBecomeActive:(NSNotification *)notification { }
 
 -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender
 {

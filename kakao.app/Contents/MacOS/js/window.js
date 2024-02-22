@@ -52,8 +52,8 @@ Window = (function ()
         now = window.performance.now()
         delta = (now - this.lastAnimationTime)
         this.lastAnimationTime = now
-        fps = 1000 / delta
-        if (fps < 27)
+        fps = parseInt(1000 / delta)
+        if (fps < 20)
         {
             return kakao.send("window.framerateDrop",fps)
         }
@@ -116,10 +116,11 @@ Window = (function ()
         import('./lib/about.js')
         .
         then
-        return function (m)
+        (function (m)
         {
             return m.default()
-        }
+        })
+        return 0
     }
 
     Window.prototype["onKeyDown"] = function (event)

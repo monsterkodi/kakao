@@ -47,8 +47,8 @@ function Window
         delta = (now - @lastAnimationTime)
         @lastAnimationTime = now
         
-        fps = 1000/delta
-        if fps < 27
+        fps = parseInt 1000/delta
+        if fps < 20
             kakao.send "window.framerateDrop" fps
                                     
     createWindow: ->
@@ -81,7 +81,9 @@ function Window
         
     showAbout: ->
         # this is really ugly. implement 'use' already!
+        # use about -> about()
         import('./lib/about.js').then (m) -> m.default()
+        0 # also fix the return issue(s)!
             
     # 000   000  00000000  000   000
     # 000  000   000        000 000

@@ -18,30 +18,14 @@
     return [comp objectAtIndex:1];
 }
 
-+ (NSString*) appPath:(NSString*)path
-{
-    return [[NSString stringWithFormat:@"%@/%@", [Bundle path], path] stringByStandardizingPath];
-}
-
-+ (NSString*) macOSPath:(NSString*)path
-{
-    return [[NSString stringWithFormat:@"%@/Contents/MacOS/%@", [Bundle path], path] stringByStandardizingPath];
-}
-
-+ (NSString*) jsPath:(NSString*)path
-{
-    return [[NSString stringWithFormat:@"%@/Contents/MacOS/js/%@", [Bundle path], path] stringByStandardizingPath];
-}
-
-+ (NSString*) resourcePath:(NSString*)path
-{
-    return [[NSString stringWithFormat:@"%@/Contents/Resources/%@", [Bundle path], path] stringByStandardizingPath];
-}
++ (NSString*) appPath:      (NSString*)path { return [[NSString stringWithFormat:@"%@/%@",                    [Bundle path], path] stringByStandardizingPath]; }
++ (NSString*) macOSPath:    (NSString*)path { return [[NSString stringWithFormat:@"%@/Contents/MacOS/%@",     [Bundle path], path] stringByStandardizingPath]; }
++ (NSString*) jsPath:       (NSString*)path { return [[NSString stringWithFormat:@"%@/Contents/MacOS/js/%@",  [Bundle path], path] stringByStandardizingPath]; }
++ (NSString*) resourcePath: (NSString*)path { return [[NSString stringWithFormat:@"%@/Contents/Resources/%@", [Bundle path], path] stringByStandardizingPath]; }
 
 + (NSURL*) fileURL:(NSString*)path // absoulte file url relative to .app folder
 {
     id comp = [[NSArray arrayWithObject:[Bundle path]] arrayByAddingObject:path];
-
     id norm = [[NSString pathWithComponents:comp] stringByStandardizingPath];
     
     return [NSURL fileURLWithPath:norm];

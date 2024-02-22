@@ -7,14 +7,18 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import "watch.h"
 #import "win.h"
 
-@interface App : NSResponder <NSApplicationDelegate>
-{
+@interface App : NSResponder <NSApplicationDelegate, WatchDelegate>
+{    
 }
+
+- (void)watch:(Watch*)watch detectedChange:(FSChange*)change;
 
 @property (readwrite,assign) NSString* snapshotFolder;
 @property (readwrite,assign) NSString* snapshotFile;
+@property (readwrite,assign) Watch* watch;
 
 + (id)   new;
 - (void) run; 

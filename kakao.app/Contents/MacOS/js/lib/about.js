@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.249.0
+// monsterkodi/kode 0.250.0
 
 var _k_
 
@@ -22,6 +22,8 @@ About = (function ()
     function About ()
     {
         this["close"] = this["close"].bind(this)
+        kakao.send('window.setSize',200,200)
+        kakao.send('window.center')
         post.on('window.blur',this.close)
     }
 
