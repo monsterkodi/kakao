@@ -86,9 +86,6 @@ struct FSTreeItem
 
 @implementation FSTree
 
-@synthesize rootPath = _rootPath;
-@synthesize buildTime = _buildTime;
-
 - (id)initWithPath:(NSString *)rootPath
 {
     if ((self = [super init])) 
@@ -159,8 +156,10 @@ struct FSTreeItem
 
             NSDate *end = [NSDate date];
             _buildTime = [end timeIntervalSinceReferenceDate] - [start timeIntervalSinceReferenceDate];
-            //NSLog(@"Scanned %d %.3lfs in %@", (int)_count, _buildTime, rootPath);
-            NSLog(@"%d %ld ms", (int)_count, (long)(_buildTime*1000.0));
+            if (_buildTime > 1) 
+            {
+                NSLog(@"%d %ld ms", (int)_count, (long)(_buildTime*1000.0));
+            }
         }
 
         [_folders sortUsingSelector:@selector(compare:)];
@@ -331,15 +330,6 @@ struct FSTreeItem
     return self;
 }
 
-- (NSSet *)allFiles 
-{
-    NSTimeInterval start = [[NSDate date] timeIntervalSinceReferenceDate];
-    NSSet *result = [NSSet setWithArray:[[NSFileManager defaultManager] subpathsOfDirectoryAtPath:_path error:nil]];
-    NSTimeInterval elapsed = [[NSDate date] timeIntervalSinceReferenceDate] - start;
-    NSLog(@"Scanning of %@ took %0.3lf sec.", _path, elapsed);
-    return result;
-}
-
 - (FSChange *)changedPathsByRescanningSubfolders:(NSSet *)subfolderPathes 
 {
     FSTree *currentTree = [[FSTree alloc] initWithPath:_path];
@@ -368,32 +358,49 @@ struct FSTreeItem
 static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch* monitor, size_t numEvents, NSArray *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[]);
 
 @interface Watch ()
+{
+    NSString *_path;
 
+    BOOL _running;
+
+    FSEventStreamRef _streamRef;
+    FSTreeDiffer *_treeDiffer;
+
+    NSMutableSet *_eventCache;
+    NSTimeInterval _cacheWaitingTime;
+    NSTimeInterval _eventProcessingDelay;
+}
+
+- (Watch*)initPath:(NSString*)path;
 - (void)start;
 - (void)stop;
 
-@property (nonatomic, readonly, strong) NSMutableSet * eventCache;
-@property (nonatomic, assign) NSTimeInterval cacheWaitingTime;
+@property(nonatomic, assign)            id<WatchDelegate>   delegate;
+@property(nonatomic, readonly, copy)    NSString*           path;
+@property(nonatomic, readonly, strong)  FSTree*             tree;
+@property(nonatomic, assign)            NSTimeInterval      eventProcessingDelay;
+@property(nonatomic, readonly, strong)  NSMutableSet*       eventCache;
+@property(nonatomic, assign)            NSTimeInterval      cacheWaitingTime;
 
 @end
 
 @implementation Watch
 
-@synthesize path=_path;
-@synthesize delegate=_delegate;
++ (Watch*) path:(NSString*)path delegate:(id<WatchDelegate>)delegate
+{
+    Watch* watch = [[Watch alloc] initPath:path];
+    watch.delegate = delegate;
+    return watch;
+}
 
-@synthesize eventCache = _eventCache;
-@synthesize cacheWaitingTime = _cacheWaitingTime;
-@synthesize eventProcessingDelay=_eventProcessingDelay;
-
-- (Watch*)initWithPath:(NSString *)path 
+- (Watch*)initPath:(NSString*)path 
 {
     if ((self = [super init])) 
     {
         _cacheWaitingTime = 0.1;
         _eventCache = [[NSMutableSet alloc] init];
         _path = [path copy];
-        [self setRunning:true];
+        [self start];
     }
     return self;
 }
@@ -401,32 +408,12 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 - (void)dealloc 
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self.delegate release];
     if (_running) 
     {
         [self stop];
     }
     [super dealloc];
-}
-
-- (BOOL)isRunning 
-{
-    return _running;
-}
-
-- (void)setRunning:(BOOL)running 
-{
-    if (_running != running) 
-    {
-        _running = running;
-        if (running) 
-        {
-            [self start];
-        } 
-        else 
-        {
-            [self stop];
-        }
-    }
 }
 
 - (void)start 
@@ -461,13 +448,11 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     NSString *actualPath = [actualPaths firstObject];
     NSLog(@"FSEvents actual path being watched: %@", actualPath);
 
-    //dispatch_queue_t q = dispatch_queue_create("Watch", NULL);
-    //FSEventStreamSetDispatchQueue(_streamRef, q);
-    
     FSEventStreamScheduleWithRunLoop(_streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     
-    if (!FSEventStreamStart(_streamRef)) {
-        NSLog(@"Failed to start monitoring of %@ (FSEventStreamStart error)", _path);
+    if (!FSEventStreamStart(_streamRef)) 
+    {
+        NSLog(@"Error: can't watch %@ (FSEventStreamStart error)", _path);
     }
 }
 
@@ -503,24 +488,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 }
 
 - (void)sendChangeEventWithPath:(NSString *)path flags:(FSEventStreamEventFlags)flags 
-{
-    NSString *flagsStr = @"";
-    
-    if ((flags & kFSEventStreamEventFlagMustScanSubDirs)) 
-    {
-        flagsStr = [flagsStr stringByAppendingString:@"MustScanSubDirs"];
-    }
-    if ((flags & kFSEventStreamEventFlagRootChanged)) 
-    {
-        flagsStr = [flagsStr stringByAppendingString:@"RootChanged"];
-    }
-    if ([flagsStr length]) 
-    {
-        flagsStr = [NSString stringWithFormat:@" [%@]", flagsStr];
-    }
-    
-    NSLog(@"%@%@", path, flagsStr);
-
+{    
     [self.eventCache addObject:path];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSelector:@selector(sendChangeEventsFromCache) withObject:nil afterDelay:MAX(_eventProcessingDelay, self.cacheWaitingTime)];
