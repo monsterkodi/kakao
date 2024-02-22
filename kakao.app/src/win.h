@@ -9,9 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "view.h"
 
-@interface Win : NSWindow 
-{
-}
+@interface Win : NSWindow
 
 @property (assign) View*  view;
 
@@ -22,6 +20,8 @@
 - (Win*) focusPrev;
 - (void) reload;
 - (void) framerateDrop:(long)ms;
+- (void) center;
+- (void) setWidth:(unsigned int)width height:(unsigned int)height;
 - (NSString*) snapshot:(NSString*)pngFilePath;
 
 @end

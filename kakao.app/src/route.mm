@@ -20,7 +20,9 @@
 + (id) window:(NSString*)req args:(NSArray*)args win:(Win*)win
 {    
     id arg0 = nil;
+    id arg1 = nil;
     if (args && [args count] > 0) arg0 = [args objectAtIndex:0];    
+    if (args && [args count] > 1) arg1 = [args objectAtIndex:1];    
     
     NSLog(@"%d ▸ %@ %@", win.windowNumber, req, arg0 ? arg0 : @"");
 
@@ -28,10 +30,12 @@
     if ([req isEqualToString:@"focusPrev"]) { return [win focusPrev];  }
     if ([req isEqualToString:@"new"     ])  { return [NSNumber numberWithLong:[win new:arg0].windowNumber]; }
     if ([req isEqualToString:@"snapshot"])  { return [win snapshot:arg0]; }
-    if ([req isEqualToString:@"close"   ])  { [win close];           return nil; }
-    if ([req isEqualToString:@"reload"  ])  { [win reload];          return nil; }
-    if ([req isEqualToString:@"maximize"])  { [win zoom:nil];        return nil; }
-    if ([req isEqualToString:@"minimize"])  { [win miniaturize:nil]; return nil; }
+    if ([req isEqualToString:@"close"   ])  { [win performClose:nil]; return nil; }
+    if ([req isEqualToString:@"reload"  ])  { [win reload];           return nil; }
+    if ([req isEqualToString:@"maximize"])  { [win zoom:nil];         return nil; }
+    if ([req isEqualToString:@"minimize"])  { [win miniaturize:nil];  return nil; }
+    if ([req isEqualToString:@"center"  ])  { [win center];           return nil; }
+    if ([req isEqualToString:@"setSize" ])  { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
     if ([req isEqualToString:@"id"      ])  { return [NSNumber numberWithLong:win.windowNumber]; }
     if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[arg0 longValue]]; return nil; }
     

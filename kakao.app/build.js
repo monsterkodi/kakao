@@ -1,11 +1,11 @@
-// monsterkodi/kode 0.249.0
+// monsterkodi/kode 0.250.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var cmd, CMD, FLG, LIB, opt, OUT, SRC
 
 CMD = "zig c++"
-SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm"
+SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm watch.mm"
 OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
