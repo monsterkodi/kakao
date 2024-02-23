@@ -66,7 +66,6 @@ typedef enum
 
 @protocol WatchDelegate <NSObject>
 
-- (void)watch:(Watch*)watch detectedChange:(FSChange*)change;
 - (void)onChanges:(NSArray*)changes inFolder:(NSString*)folder;
 
 @end

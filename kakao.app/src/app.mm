@@ -64,14 +64,14 @@
     [[NSApplication sharedApplication] run]; // does not return
 }
 
-// - (void)watch:(Watch*)watch detectedChange:(FSChange*)change
-// {
-    // NSLog(@"%d %@", change.foldersChanged, change.changedFiles);
-// }
-
 - (void)onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    //NSLog(@"%@", folder);
+    NSLog(@"● changes %@ ▸▸▸", folder);
+    
+    BOOL reloadPage  = NO;
+    BOOL rebuildApp  = NO;
+    BOOL transpile   = NO;
+    
     for (WatchChange* change in changes)
     {
         id type;
@@ -81,7 +81,44 @@
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
         }
-        NSLog(@"%@ %@ %@/%@ ", change.isDir ? @"▸" : @"▪", type, folder, change.path);
+        NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+        
+        if ([change.path hasPrefix:@"Contents/MacOS/js/"])
+        {
+            NSLog(@"reload js");
+            reloadPage = YES;
+        }
+
+        if ([change.path hasPrefix:@"Contents/Resources/"])
+        {
+            NSLog(@"reload resources");
+            reloadPage = YES;
+        }
+
+        if ([change.path hasPrefix:@"src/"] || [change.path isEqualToString:@"Contents/Info.plist"])
+        {
+            // NSLog(@"rebuild app");
+            rebuildApp = YES;
+        }
+        
+        if ([change.path hasPrefix:@"pug/"] || [change.path hasPrefix:@"kode/"])
+        {
+            NSLog(@"transpile kode & pug");
+            transpile = YES;
+        }
+    }
+    
+    if (rebuildApp)
+    {
+        NSLog(@"rebuildApp!");
+    }
+    else if (transpile)
+    {
+        NSLog(@"transpile!");
+    }
+    else if (reloadPage)
+    {
+        NSLog(@"reloadPage!");
     }
 }
 
