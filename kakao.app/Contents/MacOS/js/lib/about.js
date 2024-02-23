@@ -22,7 +22,7 @@ About = (function ()
     function About ()
     {
         this["close"] = this["close"].bind(this)
-        kakao.send('window.setSize',200,200)
+        kakao.send('window.setSize',240,240)
         kakao.send('window.center')
         post.on('window.blur',this.close)
     }

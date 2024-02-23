@@ -20,6 +20,9 @@
 #import <sys/stat.h>
 #import <Foundation/Foundation.h>
 
+#define INTERVAL 0.1 // minimum time in seconds between change dispatches
+                     // increases automatically if folder scanning takes a long time
+
 //  0000000  000   000   0000000   000   000   0000000   00000000  
 // 000       000   000  000   000  0000  000  000        000       
 // 000       000000000  000000000  000 0 000  000  0000  0000000   
@@ -171,14 +174,14 @@ struct FSTreeItem
     [super dealloc];
 }
 
-- (NSSet *)differenceFrom:(FSTree *)previous 
+- (NSSet*) differenceFrom:(FSTree*)previous 
 {
     NSMutableSet *differences = [NSMutableSet set];
 
     FSTreeItem *previtems = previous.items;
-    NSInteger prevcount = previous.count;
+    NSInteger prevcount   = previous.count;
 
-    NSInteger *corresponding = (NSInteger*)malloc(self.count * sizeof(NSInteger));
+    NSInteger *corresponding  = (NSInteger*)malloc(self.count * sizeof(NSInteger));
     NSInteger *rcorresponding = (NSInteger*)malloc(prevcount * sizeof(NSInteger));
 
     if (corresponding == NULL || rcorresponding == NULL) 
@@ -341,19 +344,19 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     BOOL _running;
 
     FSEventStreamRef streamRef;
-    FSTreeDiffer *treeDiffer;
 }
 
 - (Watch*)initPath:(NSString*)path;
 - (void)start;
 - (void)stop;
 
-@property(nonatomic, assign)            id<WatchDelegate>   delegate;
-@property(nonatomic, readwrite, retain) NSString*           path;
-@property(nonatomic, readonly, strong)  FSTree*             tree;
-@property(nonatomic, readwrite, retain) NSMutableSet*       eventCache;
-@property(nonatomic, assign)            NSTimeInterval      cacheWaitingTime;
-@property(nonatomic, assign)            NSTimeInterval      eventProcessingDelay;
+@property(nonatomic, assign) id<WatchDelegate>  delegate;
+@property(nonatomic, assign) NSTimeInterval     cacheWaitingTime;
+@property(nonatomic, assign) NSTimeInterval     eventProcessingDelay;
+@property(nonatomic, retain) NSString*          path;
+@property(nonatomic, retain) FSTree*            tree;
+@property(nonatomic, retain) FSTreeDiffer*      differ;
+@property(nonatomic, retain) NSMutableSet*      eventCache;
 
 @end
 
@@ -370,7 +373,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 {
     if ((self = [super init])) 
     {
-        self.cacheWaitingTime = 0.1;
+        self.cacheWaitingTime = INTERVAL;
         self.eventCache = [[NSMutableSet alloc] init];
         self.path = [path copy];
         [self start];
@@ -391,7 +394,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 
 - (void)start 
 {
-    treeDiffer = [[FSTreeDiffer alloc] initWithPath:self.path];
+    self.differ = [[FSTreeDiffer alloc] initWithPath:self.path];
     NSArray *paths = [NSArray arrayWithObject:self.path];
 
     FSEventStreamContext context;
@@ -435,7 +438,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     FSEventStreamInvalidate(streamRef);
     FSEventStreamRelease(streamRef);
     streamRef = nil;
-    treeDiffer = nil;
+    [self.differ release];
 }
 
 - (void)sendChangeEventsFromCache 
@@ -446,13 +449,10 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     {
         cachedPaths = [self.eventCache copy];
         [self.eventCache removeAllObjects];
-        NSTimeInterval lastRebuildTime = treeDiffer.savedTree.buildTime;
-
-        NSTimeInterval minDelay = [[NSUserDefaults standardUserDefaults] integerForKey:@"MinEventProcessingDelay"] / 1000.0;
-        self.cacheWaitingTime = MAX(lastRebuildTime, minDelay);
+        self.cacheWaitingTime = MAX(self.differ.savedTree.buildTime, INTERVAL);
     }
 
-    FSChange *change = [treeDiffer changedPathsByRescanningSubfolders:cachedPaths];
+    FSChange *change = [self.differ changedPathsByRescanningSubfolders:cachedPaths];
     
     if (change.changedFiles.count > 0 || change.foldersChanged)
     {

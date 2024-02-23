@@ -21,9 +21,9 @@ function About
 
     @show: -> kakao.request 'window.new' 'about.html'
         
-    @: -> 
+    @: ->
     
-        kakao.send 'window.setSize' 200 200
+        kakao.send 'window.setSize' 240 240
         kakao.send 'window.center'
         
         post.on 'window.blur' @close
