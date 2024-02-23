@@ -20,6 +20,23 @@
 // 000       000   000  000   000  000  0000  000   000  000       
 //  0000000  000   000  000   000  000   000   0000000   00000000  
 
+
+typedef enum 
+{
+    Deleted,
+    Created,
+    Changed,
+    
+} ChangeType;
+
+@interface WatchChange : NSObject
+
+@property(nonatomic, copy)  NSString*    path;
+@property(nonatomic)        ChangeType   type;
+@property(nonatomic)        BOOL         isDir;
+
+@end
+
 @interface FSChange : NSObject
 
 @property(nonatomic, copy)  NSSet   *changedFiles;
@@ -50,5 +67,6 @@
 @protocol WatchDelegate <NSObject>
 
 - (void)watch:(Watch*)watch detectedChange:(FSChange*)change;
+- (void)onChanges:(NSArray*)changes inFolder:(NSString*)folder;
 
 @end

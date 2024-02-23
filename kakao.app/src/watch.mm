@@ -29,6 +29,19 @@
 // 000       000   000  000   000  000  0000  000   000  000       
 //  0000000  000   000  000   000  000   000   0000000   00000000  
 
+@implementation WatchChange
+
++ (WatchChange*) withPath:(NSString*)path type:(ChangeType)type isDir:(BOOL)isDir
+{
+    WatchChange* change = [[WatchChange alloc] init];
+    change.path  = path;
+    change.type  = type;
+    change.isDir = isDir;
+    return change;
+}
+
+@end
+
 @interface FSChange ()
 
 + (FSChange*) changeWithFiles:(NSSet*)changedFiles foldersChanged:(BOOL)foldersChanged;
@@ -76,7 +89,7 @@ struct FSTreeItem
 @property (nonatomic, readwrite) NSInteger                count;
 
 - (FSTree*) initWithPath:(NSString*) path;
-- (NSSet*)  differenceFrom:(FSTree *)previous;
+//- (NSSet*)  differenceFrom:(FSTree *)previous;
 
 @end
 
@@ -174,55 +187,168 @@ struct FSTreeItem
     [super dealloc];
 }
 
-- (NSSet*) differenceFrom:(FSTree*)previous 
+// - (NSSet*) differenceFrom:(FSTree*)previous 
+// {
+    // NSMutableSet *differences = [NSMutableSet set];
+
+    // FSTreeItem *previtems = previous.items;
+    // NSInteger prevcount   = previous.count;
+
+    // NSInteger *corresponding  = (NSInteger*)malloc(self.count * sizeof(NSInteger));
+    // NSInteger *rcorresponding = (NSInteger*)malloc(prevcount * sizeof(NSInteger));
+
+    // if (corresponding == NULL || rcorresponding == NULL) 
+    // {
+        // NSLog(@"Error: malloc failed!");
+        // return [NSSet set];
+    // }
+
+    // memset(corresponding, -1, self.count * sizeof(NSInteger));
+    // memset(rcorresponding, -1, prevcount * sizeof(NSInteger));
+
+    // corresponding[0] = 0;
+    // rcorresponding[0] = 0;
+    // NSInteger i = 1, j = 1;
+//     
+    // while (i < self.count && j < prevcount) 
+    // {
+        // NSInteger cp = corresponding[self.items[i].parent];
+        // if (cp < 0) 
+        // {
+            // NSLog(@"%@ subitem", self.items[i].name);
+            // corresponding[i] = -1;
+            // ++i;
+        // } 
+        // else if (previtems[j].parent < cp) 
+        // {
+            // NSLog(@"%@ deleted", previtems[j].name);
+            // rcorresponding[j] = -1;
+            // ++j;
+        // } 
+        // else if (previtems[j].parent > cp) 
+        // {
+            // NSLog(@"%@ created", self.items[i].name);
+            // corresponding[i] = -1;
+            // ++i;
+        // } 
+        // else 
+        // {
+            // NSComparisonResult r = [(__bridge NSString *)self.items[i].name compare:(__bridge NSString *)previtems[j].name];
+            // if (r == 0) 
+            // { // same item! compare mod times
+                // if (self.items[i].st_mode               != previtems[j].st_mode              || 
+                    // self.items[i].st_dev                != previtems[j].st_dev               || 
+                    // self.items[i].st_ino                != previtems[j].st_ino               || 
+                    // self.items[i].st_mtimespec.tv_sec   != previtems[j].st_mtimespec.tv_sec  || 
+                    // self.items[i].st_mtimespec.tv_nsec  != previtems[j].st_mtimespec.tv_nsec || 
+                    // self.items[i].st_ctimespec.tv_sec   != previtems[j].st_ctimespec.tv_sec  || 
+                    // self.items[i].st_ctimespec.tv_nsec  != previtems[j].st_ctimespec.tv_nsec || 
+                    // self.items[i].st_size               != previtems[j].st_size) 
+                // {
+                    // NSLog(@"%@ changed", self.items[i].name);
+                    // if (self.items[i].st_mode == S_IFREG || previtems[j].st_mode == S_IFREG) 
+                    // {
+                        // [differences addObject:(__bridge NSString *)self.items[i].name];
+                    // }
+                // }
+                // corresponding[i] = j;
+                // rcorresponding[j] = i;
+                // ++i;
+                // ++j;
+            // } 
+            // else if (r > 0) // i is after j => we need to advance j => j is deleted
+            // {
+                // NSLog(@"%@ deleted", previtems[j].name);
+                // rcorresponding[j] = -1;
+                // ++j;
+            // } 
+            // else // (r < 0) i is before j => we need to advance i => i is new 
+            // {   
+                // NSLog(@"%@ created", self.items[i].name);
+                // corresponding[i] = -1;
+                // ++i;
+            // }
+        // }
+    // }
+    // // for any tail left, we've already filled it in with -1's
+
+    // for (i = 0; i < self.count; i++) 
+    // {
+        // if (corresponding[i] < 0) 
+        // {
+            // if (self.items[i].st_mode == S_IFREG) 
+            // {
+                // [differences addObject:(__bridge NSString *)self.items[i].name];
+            // }
+        // }
+    // }
+    // for (j = 0; j < prevcount; j++) 
+    // {
+        // if (rcorresponding[j] < 0) 
+        // {
+            // if (previtems[j].st_mode == S_IFREG) 
+            // {
+                // [differences addObject:(__bridge NSString *)previtems[j].name];
+            // }
+        // }
+    // }
+
+    // free(corresponding);
+    // free(rcorresponding);
+
+    // return differences;
+// }
+
+- (NSArray*) changes:(FSTree*)previous 
 {
-    NSMutableSet *differences = [NSMutableSet set];
+    NSMutableArray* changes = [NSMutableArray array];
 
-    FSTreeItem *previtems = previous.items;
-    NSInteger prevcount   = previous.count;
+    FSTreeItem* previtems = previous.items;
+    int prevcount   = previous.count;
 
-    NSInteger *corresponding  = (NSInteger*)malloc(self.count * sizeof(NSInteger));
-    NSInteger *rcorresponding = (NSInteger*)malloc(prevcount * sizeof(NSInteger));
+    int *corresponding  = (int*)malloc(self.count * sizeof(int));
+    int *rcorresponding = (int*)malloc(prevcount * sizeof(int));
 
     if (corresponding == NULL || rcorresponding == NULL) 
     {
         NSLog(@"Error: malloc failed!");
-        return [NSSet set];
+        return [NSArray array];
     }
 
-    memset(corresponding, -1, self.count * sizeof(NSInteger));
-    memset(rcorresponding, -1, prevcount * sizeof(NSInteger));
+    memset(corresponding, -1, self.count * sizeof(int));
+    memset(rcorresponding, -1, prevcount * sizeof(int));
 
     corresponding[0] = 0;
     rcorresponding[0] = 0;
-    NSInteger i = 1, j = 1;
+    int i = 1, j = 1;
     
     while (i < self.count && j < prevcount) 
     {
         NSInteger cp = corresponding[self.items[i].parent];
         if (cp < 0) 
         {
-            NSLog(@"%@ subitem", self.items[i].name);
+            NSLog(@"%@ subitem!", self.items[i].name);
             corresponding[i] = -1;
             ++i;
         } 
         else if (previtems[j].parent < cp) 
         {
-            NSLog(@"%@ deleted", previtems[j].name);
+            NSLog(@"%@ deleted!", previtems[j].name);
             rcorresponding[j] = -1;
             ++j;
         } 
         else if (previtems[j].parent > cp) 
         {
-            NSLog(@"%@ created", self.items[i].name);
+            NSLog(@"%@ created!", self.items[i].name);
             corresponding[i] = -1;
             ++i;
         } 
         else 
         {
             NSComparisonResult r = [(__bridge NSString *)self.items[i].name compare:(__bridge NSString *)previtems[j].name];
-            if (r == 0) 
-            { // same item! compare mod times
+            
+            if (r == 0) // same item, compare mod times
+            { 
                 if (self.items[i].st_mode               != previtems[j].st_mode              || 
                     self.items[i].st_dev                != previtems[j].st_dev               || 
                     self.items[i].st_ino                != previtems[j].st_ino               || 
@@ -232,10 +358,9 @@ struct FSTreeItem
                     self.items[i].st_ctimespec.tv_nsec  != previtems[j].st_ctimespec.tv_nsec || 
                     self.items[i].st_size               != previtems[j].st_size) 
                 {
-                    NSLog(@"%@ changed", self.items[i].name);
                     if (self.items[i].st_mode == S_IFREG || previtems[j].st_mode == S_IFREG) 
                     {
-                        [differences addObject:(__bridge NSString *)self.items[i].name];
+                        [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Changed isDir:NO]];
                     }
                 }
                 corresponding[i] = j;
@@ -245,13 +370,13 @@ struct FSTreeItem
             } 
             else if (r > 0) // i is after j => we need to advance j => j is deleted
             {
-                NSLog(@"%@ deleted", previtems[j].name);
+                //NSLog(@"%@ deleted", previtems[j].name);
                 rcorresponding[j] = -1;
                 ++j;
             } 
             else // (r < 0) i is before j => we need to advance i => i is new 
             {   
-                NSLog(@"%@ created", self.items[i].name);
+                //NSLog(@"%@ created", self.items[i].name);
                 corresponding[i] = -1;
                 ++i;
             }
@@ -265,17 +390,17 @@ struct FSTreeItem
         {
             if (self.items[i].st_mode == S_IFREG) 
             {
-                [differences addObject:(__bridge NSString *)self.items[i].name];
+                [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:NO]];
             }
         }
     }
     for (j = 0; j < prevcount; j++) 
     {
-        if (rcorresponding[j] < 0) 
+        if (rcorresponding[j] < 0)
         {
             if (previtems[j].st_mode == S_IFREG) 
             {
-                [differences addObject:(__bridge NSString *)previtems[j].name];
+                [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:NO]];
             }
         }
     }
@@ -283,7 +408,7 @@ struct FSTreeItem
     free(corresponding);
     free(rcorresponding);
 
-    return differences;
+    return changes;
 }
 
 @end
@@ -301,7 +426,8 @@ struct FSTreeItem
 
 - (id)initWithPath:(NSString*)path;
 
-- (FSChange *)changedPathsByRescanningSubfolders:(NSSet *)subfolderPathes;
+//- (FSChange*) changedPathsByRescanningSubfolders:(NSSet*)subfolderPathes;
+- (NSArray*)  changesInPaths:(NSSet*)pathSet;
 
 @end
 
@@ -317,16 +443,28 @@ struct FSTreeItem
     return self;
 }
 
-- (FSChange*) changedPathsByRescanningSubfolders:(NSSet *)subfolderPathes 
-{
-    FSTree *currentTree = [[FSTree alloc] initWithPath:self.path];
+// /- (FSChange*) changedPathsByRescanningSubfolders:(NSSet *)subfolderPathes 
+// /{
+// /    FSTree *currentTree = [[FSTree alloc] initWithPath:self.path];
+// /
+// /    NSSet *changedPaths = [currentTree differenceFrom:self.savedTree];
+// /    BOOL foldersChanged = ![currentTree.folders isEqualToArray:self.savedTree.folders];
+// /
+// /    self.savedTree = currentTree;
+// /
+// /    return [FSChange changeWithFiles:changedPaths foldersChanged:foldersChanged];
+// /}
 
-    NSSet *changedPaths = [currentTree differenceFrom:self.savedTree];
-    BOOL foldersChanged = ![currentTree.folders isEqualToArray:self.savedTree.folders];
+- (NSArray*) changesInPaths:(NSSet*)paths
+{
+    FSTree* currentTree = [[FSTree alloc] initWithPath:self.path];
+
+    NSArray* changes = [currentTree changes:self.savedTree];
+    //BOOL foldersChanged = ![currentTree.folders isEqualToArray:self.savedTree.folders];
 
     self.savedTree = currentTree;
 
-    return [FSChange changeWithFiles:changedPaths foldersChanged:foldersChanged];
+    return changes;
 }
 
 @end
@@ -422,7 +560,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     
     NSArray *actualPaths = (NSArray *) CFBridgingRelease(FSEventStreamCopyPathsBeingWatched(streamRef));
     NSString *actualPath = [actualPaths firstObject];
-    NSLog(@"FSEvents actual path being watched: %@", actualPath);
+    NSLog(@"Watch: %@", actualPath);
 
     FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     
@@ -452,12 +590,14 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
         self.cacheWaitingTime = MAX(self.differ.savedTree.buildTime, INTERVAL);
     }
 
-    FSChange *change = [self.differ changedPathsByRescanningSubfolders:cachedPaths];
+    //FSChange *change = [self.differ changedPathsByRescanningSubfolders:cachedPaths];
+    //
+    //if (change.changedFiles.count > 0 || change.foldersChanged)
+    //{
+    //    [self.delegate watch:self detectedChange:change];
+    //}
     
-    if (change.changedFiles.count > 0 || change.foldersChanged)
-    {
-        [self.delegate watch:self detectedChange:change];
-    }
+    [self.delegate onChanges:[self.differ changesInPaths:cachedPaths] inFolder:self.path];
 }
 
 - (void)sendChangeEventWithPath:(NSString *)path flags:(FSEventStreamEventFlags)flags 
