@@ -18,10 +18,6 @@
 
 @implementation App
 
-//@synthesize snapshotFolder;
-//@synthesize snapshotFile;
-//@synthesize watch;
-
 + (id) new
 {
     //freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
@@ -68,9 +64,25 @@
     [[NSApplication sharedApplication] run]; // does not return
 }
 
-- (void)watch:(Watch*)watch detectedChange:(FSChange*)change
+// - (void)watch:(Watch*)watch detectedChange:(FSChange*)change
+// {
+    // NSLog(@"%d %@", change.foldersChanged, change.changedFiles);
+// }
+
+- (void)onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    NSLog(@"%d %@", change.foldersChanged, change.changedFiles);
+    //NSLog(@"%@", folder);
+    for (WatchChange* change in changes)
+    {
+        id type;
+        switch (change.type)
+        {
+            case 0: type = @"deleted"; break;
+            case 1: type = @"created"; break;
+            case 2: type = @"changed"; break;
+        }
+        NSLog(@"%@ %@ %@/%@ ", change.isDir ? @"▸" : @"▪", type, folder, change.path);
+    }
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification { }
