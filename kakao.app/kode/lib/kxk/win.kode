@@ -11,9 +11,6 @@ import elem    from './elem.js'
 import post    from './post.js'
 import keyinfo from './keyinfo.js'
 import Title   from './title.js'
-import kakao   from '../kakao.js'
-import bundle  from '../bundle.js'
-# import about   from './about.js'
 
 { $, stopEvent } = dom
 
@@ -25,7 +22,7 @@ function Window
         post.on 'window.blur'   @onWindowBlur
         post.on 'window.focusd' @onWindowFocus
         
-        window.titlebar = new Title icon:bundle.img('menu.png'), menu:bundle.res('menu.noon')
+        window.titlebar = new Title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
         
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
@@ -76,15 +73,9 @@ function Window
             'close'          ➜ kakao.send 'window.close'
             'reload'         ➜ kakao.send 'window.reload'
             'quit'           ➜ kakao.send 'app.quit'
-            'about'          ➜ @showAbout()
+            'about'          ➜ kakao.send 'window.new' 'about.html'
         0
         
-    showAbout: ->
-        # this is really ugly. implement 'use' already!
-        # use about -> about()
-        import('./about.js').then (m) -> m.default()
-        0 # also fix the return issue(s)!
-            
     # 000   000  00000000  000   000
     # 000  000   000        000 000
     # 0000000    0000000     00000

@@ -6,10 +6,10 @@
     000   000  000   000  000   000
 ###
 
-import win    from './win.js'
 import dom    from './dom.js'
 import elem   from './elem.js'
 import post   from './post.js'
+import win    from './win.js'
 
 export 
     win:    win
