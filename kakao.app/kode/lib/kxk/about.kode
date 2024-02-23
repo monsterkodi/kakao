@@ -1,0 +1,51 @@
+###
+     0000000   0000000     0000000   000   000  000000000
+    000   000  000   000  000   000  000   000     000
+    000000000  0000000    000   000  000   000     000
+    000   000  000   000  000   000  000   000     000
+    000   000  0000000     0000000    0000000      000
+  
+    simple about window
+    
+    provides both ...
+       a method to show the about window: About.show
+       and the code that handles the actual window once shown
+###
+
+import kakao from '../kakao.js'
+
+{ post, dom } = kakao
+{ $, elem }   = dom
+
+function About
+
+    @show: -> kakao.request 'window.new' 'about.html'
+        
+    @: ->
+    
+        kakao.send 'window.setSize' 240 240
+        kakao.send 'window.center'
+        
+        post.on 'window.blur' @close
+        
+    close: => kakao.send 'window.close'
+        
+    openURL: ->
+    
+if document.title == 'about' # this is probably run by the script in about.html
+    
+    kakao.init ->
+    
+        aboutWin = new About
+        
+        main =$ '#main'
+        main.classList.add 'app-drag-region' # make the window draggable anywhere
+                        
+        elem 'div' class:'about' id:'about' parent:main, children:[
+            elem 'img' class:'image' src:kakao.bundle.img 'about.png'
+            elem 'div' class:'version' id:'version' text:'0.0.0'
+        ]
+        
+        window.onkeydown = aboutWin.close
+    
+export About.show

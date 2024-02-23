@@ -1,0 +1,110 @@
+###
+    000   000  000  000   000
+    000 0 000  000  0000  000
+    000000000  000  000 0 000
+    000   000  000  000  0000
+    00     00  000  000   000
+###
+
+import dom     from './dom.js'
+import elem    from './elem.js'
+import post    from './post.js'
+import keyinfo from './keyinfo.js'
+import Title   from './title.js'
+import kakao   from '../kakao.js'
+import bundle  from '../bundle.js'
+# import about   from './about.js'
+
+{ $, stopEvent } = dom
+
+function Window
+
+    @: ->
+        
+        post.on 'menuAction'    @onMenuAction
+        post.on 'window.blur'   @onWindowBlur
+        post.on 'window.focusd' @onWindowFocus
+        
+        window.titlebar = new Title icon:bundle.img('menu.png'), menu:bundle.res('menu.noon')
+        
+        window.addEventListener 'keydown' @onKeyDown
+        window.addEventListener 'keyup'   @onKeyUp
+        window.addEventListener 'resize'  @onResize
+        
+        window.requestAnimationFrame @animate
+        
+        main =$ 'main'
+        main.focus()
+        
+        kakao.request('window.id').then (id) => 
+            elem class:'test' text:"window.id #{id}" parent:main
+        
+    animate: =>
+        
+        window.requestAnimationFrame @animate
+                
+        now = window.performance.now()
+        delta = (now - @lastAnimationTime)
+        @lastAnimationTime = now
+        
+        fps = parseInt 1000/delta
+        if fps < 20
+            kakao.send "window.framerateDrop" fps
+                                    
+    createWindow: ->
+        
+    onResize: (event) => #log 'resize' event
+                
+    onWindowFocus: => 
+    onWindowBlur:  => 
+    
+    # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
+    # 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
+    # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
+    # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
+    
+    onMenuAction: (action) =>
+        log 'menuAction' action
+        switch action.toLowerCase()
+            'focus next'     ➜ kakao.send 'window.focusNext'
+            'focus previous' ➜ kakao.send 'window.focusPrev'
+            'new window'     ➜ kakao.send 'window.new'
+            'maximize'       ➜ kakao.send 'window.maximize'
+            'minimize'       ➜ kakao.send 'window.minimize'
+            'screenshot'     ➜ kakao.send 'window.snapshot'
+            'close'          ➜ kakao.send 'window.close'
+            'reload'         ➜ kakao.send 'window.reload'
+            'quit'           ➜ kakao.send 'app.quit'
+            'about'          ➜ @showAbout()
+        0
+        
+    showAbout: ->
+        # this is really ugly. implement 'use' already!
+        # use about -> about()
+        import('./about.js').then (m) -> m.default()
+        0 # also fix the return issue(s)!
+            
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000
+    # 0000000    0000000     00000
+    # 000  000   000          000
+    # 000   000  00000000     000
+    
+    onKeyDown: (event) =>
+
+        stopEvent event
+    
+        info = keyinfo.forEvent event
+        
+        info.event = event
+        
+        if 'unhandled' == window.titlebar.handleKeyInfo info
+            log 'keydown' info
+                
+    onKeyUp: (event) =>
+        
+        info = keyinfo.forEvent event
+        info.event = event
+
+export Window
