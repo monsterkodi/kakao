@@ -1,13 +1,11 @@
-// monsterkodi/kode 0.249.0
+// monsterkodi/kode 0.250.0
 
 var _k_
 
 var Kakao
 
-import post from './post.js'
 import bundle from './bundle.js'
-import dom from './dom.js'
-import Window from '../window.js'
+import kxk from './kxk/kxk.js'
 
 Kakao = (function ()
 {
@@ -35,13 +33,13 @@ Kakao = (function ()
 
     Kakao["receive"] = function (msg)
     {
-        return post.emit(msg)
+        return kxk.post.emit(msg)
     }
 
-    Kakao["dom"] = dom
-    Kakao["post"] = post
     Kakao["bundle"] = bundle
-    Kakao["window"] = Window
+    Kakao["window"] = kxk.win
+    Kakao["dom"] = kxk.dom
+    Kakao["post"] = kxk.post
     return Kakao
 })()
 
