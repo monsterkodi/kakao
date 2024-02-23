@@ -62,11 +62,19 @@
 
 @end
 
-// 000000000  00000000   00000000  00000000  
-//    000     000   000  000       000       
-//    000     0000000    0000000   0000000   
-//    000     000   000  000       000       
-//    000     000   000  00000000  00000000  
+/*
+000000000  00000000   00000000  00000000  
+   000     000   000  000       000       
+   000     0000000    0000000   0000000   
+   000     000   000  000       000       
+   000     000   000  00000000  00000000  
+*/
+
+// 000  000000000  00000000  00     00  
+// 000     000     000       000   000  
+// 000     000     0000000   000000000  
+// 000     000     000       000 0 000  
+// 000     000     00000000  000   000  
 
 struct FSTreeItem 
 {
@@ -89,7 +97,6 @@ struct FSTreeItem
 @property (nonatomic, readwrite) NSInteger                count;
 
 - (FSTree*) initWithPath:(NSString*) path;
-//- (NSSet*)  differenceFrom:(FSTree *)previous;
 
 @end
 
@@ -141,7 +148,6 @@ struct FSTreeItem
                             
                             if (0 == lstat([subpath UTF8String], &st)) 
                             {
-                                BOOL isDir = (st.st_mode & S_IFMT) == S_IFDIR;
                                 NSString *relativeChildPath = (CFStringGetLength(item->name) > 0 ? [(__bridge NSString *)item->name stringByAppendingPathComponent:child] : child);
                                 if (self.count == maxItems) 
                                 {
@@ -176,7 +182,7 @@ struct FSTreeItem
     return self;
 }
 
-- (void)dealloc 
+- (void) dealloc
 {
     FSTreeItem *end = self.items + self.count;
     for (FSTreeItem *cur = self.items; cur < end; ++cur) 
@@ -187,117 +193,11 @@ struct FSTreeItem
     [super dealloc];
 }
 
-// - (NSSet*) differenceFrom:(FSTree*)previous 
-// {
-    // NSMutableSet *differences = [NSMutableSet set];
-
-    // FSTreeItem *previtems = previous.items;
-    // NSInteger prevcount   = previous.count;
-
-    // NSInteger *corresponding  = (NSInteger*)malloc(self.count * sizeof(NSInteger));
-    // NSInteger *rcorresponding = (NSInteger*)malloc(prevcount * sizeof(NSInteger));
-
-    // if (corresponding == NULL || rcorresponding == NULL) 
-    // {
-        // NSLog(@"Error: malloc failed!");
-        // return [NSSet set];
-    // }
-
-    // memset(corresponding, -1, self.count * sizeof(NSInteger));
-    // memset(rcorresponding, -1, prevcount * sizeof(NSInteger));
-
-    // corresponding[0] = 0;
-    // rcorresponding[0] = 0;
-    // NSInteger i = 1, j = 1;
-//     
-    // while (i < self.count && j < prevcount) 
-    // {
-        // NSInteger cp = corresponding[self.items[i].parent];
-        // if (cp < 0) 
-        // {
-            // NSLog(@"%@ subitem", self.items[i].name);
-            // corresponding[i] = -1;
-            // ++i;
-        // } 
-        // else if (previtems[j].parent < cp) 
-        // {
-            // NSLog(@"%@ deleted", previtems[j].name);
-            // rcorresponding[j] = -1;
-            // ++j;
-        // } 
-        // else if (previtems[j].parent > cp) 
-        // {
-            // NSLog(@"%@ created", self.items[i].name);
-            // corresponding[i] = -1;
-            // ++i;
-        // } 
-        // else 
-        // {
-            // NSComparisonResult r = [(__bridge NSString *)self.items[i].name compare:(__bridge NSString *)previtems[j].name];
-            // if (r == 0) 
-            // { // same item! compare mod times
-                // if (self.items[i].st_mode               != previtems[j].st_mode              || 
-                    // self.items[i].st_dev                != previtems[j].st_dev               || 
-                    // self.items[i].st_ino                != previtems[j].st_ino               || 
-                    // self.items[i].st_mtimespec.tv_sec   != previtems[j].st_mtimespec.tv_sec  || 
-                    // self.items[i].st_mtimespec.tv_nsec  != previtems[j].st_mtimespec.tv_nsec || 
-                    // self.items[i].st_ctimespec.tv_sec   != previtems[j].st_ctimespec.tv_sec  || 
-                    // self.items[i].st_ctimespec.tv_nsec  != previtems[j].st_ctimespec.tv_nsec || 
-                    // self.items[i].st_size               != previtems[j].st_size) 
-                // {
-                    // NSLog(@"%@ changed", self.items[i].name);
-                    // if (self.items[i].st_mode == S_IFREG || previtems[j].st_mode == S_IFREG) 
-                    // {
-                        // [differences addObject:(__bridge NSString *)self.items[i].name];
-                    // }
-                // }
-                // corresponding[i] = j;
-                // rcorresponding[j] = i;
-                // ++i;
-                // ++j;
-            // } 
-            // else if (r > 0) // i is after j => we need to advance j => j is deleted
-            // {
-                // NSLog(@"%@ deleted", previtems[j].name);
-                // rcorresponding[j] = -1;
-                // ++j;
-            // } 
-            // else // (r < 0) i is before j => we need to advance i => i is new 
-            // {   
-                // NSLog(@"%@ created", self.items[i].name);
-                // corresponding[i] = -1;
-                // ++i;
-            // }
-        // }
-    // }
-    // // for any tail left, we've already filled it in with -1's
-
-    // for (i = 0; i < self.count; i++) 
-    // {
-        // if (corresponding[i] < 0) 
-        // {
-            // if (self.items[i].st_mode == S_IFREG) 
-            // {
-                // [differences addObject:(__bridge NSString *)self.items[i].name];
-            // }
-        // }
-    // }
-    // for (j = 0; j < prevcount; j++) 
-    // {
-        // if (rcorresponding[j] < 0) 
-        // {
-            // if (previtems[j].st_mode == S_IFREG) 
-            // {
-                // [differences addObject:(__bridge NSString *)previtems[j].name];
-            // }
-        // }
-    // }
-
-    // free(corresponding);
-    // free(rcorresponding);
-
-    // return differences;
-// }
+//  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
+// 000       000   000  000   000  0000  000  000        000       000       
+// 000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
+// 000       000   000  000   000  000  0000  000   000  000            000  
+//  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
 
 - (NSArray*) changes:(FSTree*)previous 
 {
@@ -327,19 +227,23 @@ struct FSTreeItem
         NSInteger cp = corresponding[self.items[i].parent];
         if (cp < 0) 
         {
-            NSLog(@"%@ subitem!", self.items[i].name);
+            NSLog(@"%@ subitem! %d", self.items[i].name, self.items[i].st_mode == S_IFDIR);
             corresponding[i] = -1;
             ++i;
         } 
         else if (previtems[j].parent < cp) 
         {
-            NSLog(@"%@ deleted!", previtems[j].name);
+            BOOL isDir = previtems[j].st_mode == S_IFDIR;
+            NSLog(@"%@ deleted! %d", previtems[j].name, isDir);
+            [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Deleted isDir:isDir]];
             rcorresponding[j] = -1;
             ++j;
         } 
         else if (previtems[j].parent > cp) 
         {
-            NSLog(@"%@ created!", self.items[i].name);
+            BOOL isDir = self.items[i].st_mode == S_IFDIR;
+            NSLog(@"%@ created! %d", self.items[i].name, isDir);
+            [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
             corresponding[i] = -1;
             ++i;
         } 
@@ -360,7 +264,8 @@ struct FSTreeItem
                 {
                     if (self.items[i].st_mode == S_IFREG || previtems[j].st_mode == S_IFREG) 
                     {
-                        [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Changed isDir:NO]];
+                        BOOL isDir = self.items[i].st_mode == S_IFDIR;
+                        [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Changed isDir:isDir]];
                     }
                 }
                 corresponding[i] = j;
@@ -370,13 +275,17 @@ struct FSTreeItem
             } 
             else if (r > 0) // i is after j => we need to advance j => j is deleted
             {
-                //NSLog(@"%@ deleted", previtems[j].name);
+                BOOL isDir = previtems[j].st_mode == S_IFDIR;
+                NSLog(@"%@ deleted %d", previtems[j].name, isDir);
+                [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:isDir]];
                 rcorresponding[j] = -1;
                 ++j;
             } 
             else // (r < 0) i is before j => we need to advance i => i is new 
             {   
-                //NSLog(@"%@ created", self.items[i].name);
+                BOOL isDir = self.items[i].st_mode == S_IFDIR;
+                NSLog(@"%@ created %d", self.items[i].name, isDir);
+                [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
                 corresponding[i] = -1;
                 ++i;
             }
@@ -390,7 +299,8 @@ struct FSTreeItem
         {
             if (self.items[i].st_mode == S_IFREG) 
             {
-                [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:NO]];
+                BOOL isDir = self.items[i].st_mode == S_IFDIR;
+                [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
             }
         }
     }
@@ -400,7 +310,8 @@ struct FSTreeItem
         {
             if (previtems[j].st_mode == S_IFREG) 
             {
-                [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:NO]];
+                BOOL isDir = previtems[j].st_mode == S_IFDIR;
+                [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:isDir]];
             }
         }
     }
