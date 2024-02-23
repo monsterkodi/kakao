@@ -9,8 +9,6 @@ import elem from './elem.js'
 import post from './post.js'
 import keyinfo from './keyinfo.js'
 import Title from './title.js'
-import kakao from '../kakao.js'
-import bundle from '../bundle.js'
 $ = dom.$
 stopEvent = dom.stopEvent
 
@@ -31,7 +29,7 @@ Window = (function ()
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focusd',this.onWindowFocus)
-        window.titlebar = new Title({icon:bundle.img('menu.png'),menu:bundle.res('menu.noon')})
+        window.titlebar = new Title({icon:kakao.bundle.img('menu.png'),menu:kakao.bundle.res('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)
@@ -104,22 +102,10 @@ Window = (function ()
                 kakao.send('app.quit')
                 break
             case 'about':
-                this.showAbout()
+                kakao.send('window.new','about.html')
                 break
         }
 
-        return 0
-    }
-
-    Window.prototype["showAbout"] = function ()
-    {
-        import('./about.js')
-        .
-        then
-        (function (m)
-        {
-            return m.default()
-        })
         return 0
     }
 

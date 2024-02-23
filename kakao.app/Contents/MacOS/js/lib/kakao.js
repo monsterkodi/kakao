@@ -43,5 +43,6 @@ Kakao = (function ()
     return Kakao
 })()
 
+console.log('install kakao in window scope')
 window.kakao = Kakao
 export default Kakao;
