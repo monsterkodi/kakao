@@ -5,13 +5,13 @@
     000   000  000   000  000   000  000   000     000
     000   000  0000000     0000000    0000000      000
   
-    simple about window    
+    simple about window  
 ###
 
 import kakao from '../kakao.js'
 
 { post, dom } = kakao
-{ $, elem } = dom
+{ $, elem   } = dom
 
 window.kakao.init ->
 

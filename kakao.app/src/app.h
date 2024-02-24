@@ -16,8 +16,9 @@
 @property (readwrite,assign) NSString* snapshotFile;
 
 + (id)   new;
-- (Win*) win;
++ (App*) get;
 - (void) run; 
 - (void) setIcon:(NSString*) pngFilePath;
+- (NSArray*) wins;
 
 @end

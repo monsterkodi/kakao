@@ -8,7 +8,8 @@
 
 function os
     
+    @homedir:  -> require('os').homedir()
     @platform: 'Darwin'
-    @isMac: os.platform == 'Darwin'
+    @isMac:    os.platform == 'Darwin'
 
 export os

@@ -11,7 +11,7 @@ function Bundle
     @path: '?'
         
     @app: (p) -> Bundle.path + '/'                        + p
-    @js:  (p) -> Bundle.path + '/Contents/MacOS/js/'      + p
+    @js:  (p) -> Bundle.path + '/js/'                     + p
     @mac: (p) -> Bundle.path + '/Contents/MacOS/'         + p
     @res: (p) -> Bundle.path + '/Contents/Resources/'     + p
     @img: (p) -> Bundle.path + '/Contents/Resources/img/' + p

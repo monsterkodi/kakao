@@ -7,6 +7,7 @@
 ###
 
 import path  from './path.js'
+import os    from './os.js'
 
 function Slash
     
@@ -504,8 +505,7 @@ function Slash
     @readText: (p, cb) ->
         
         if not cb is func
-            error "Slash.readText -- no callback!"
-            return
+            return Bun.file(p).text()
             
         kakao.request('fs.readText', p).then (text, err) ->        
             if not err

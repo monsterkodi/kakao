@@ -1,0 +1,71 @@
+###
+000   000   0000000   0000000    00000000
+000  000   000   000  000   000  000
+0000000    000   000  000   000  0000000
+000  000   000   000  000   000  000
+000   000   0000000   0000000    00000000
+###
+
+import Lexer     from './lexer.js'
+import print     from './print.js'
+import Parser    from './parser.js'
+import Scoper    from './scoper.js'
+import Stripol   from './stripol.js'
+import Returner  from './returner.js'
+import Operator  from './operator.js'
+import Renderer  from './renderer.js'
+
+class Kode
+
+    @: (@args) ->
+
+        @literals = ['bool''num''regex''single''double''triple']
+        @atoms    = @literals.concat ['var']
+
+        @lexer    = new Lexer    @
+        @parser   = new Parser   @
+        @scoper   = new Scoper   @
+        @stripol  = new Stripol  @
+        @returner = new Returner @
+        @operator = new Operator @
+        @renderer = new Renderer @
+
+    #  0000000   0000000   00     00  00000000   000  000      00000000
+    # 000       000   000  000   000  000   000  000  000      000
+    # 000       000   000  000000000  00000000   000  000      0000000
+    # 000       000   000  000 0 000  000        000  000      000
+    #  0000000   0000000   000   000  000        000  0000000  00000000
+
+    @compile: (text, opt={}) -> (new Kode opt).compile text
+    
+    compile: (text, file) ->
+
+        return '' if empty trim text
+
+        ast = @ast text
+
+        # print.ast 'ast' ast
+        # log print.astr ast, @args.scope
+
+        js = @renderer.render ast, file
+
+        # print.code 'js' js 
+        js
+
+    ast: (text) ->
+
+        print.code 'kode' text, 'coffee' if @args.verbose or @args.debug or @args.kode
+
+        tokens = @lexer.tokenize text
+
+        if @args.raw    then print.noon 'raw tokens' tokens
+        if @args.tokens then print.tokens 'tokens'   tokens
+
+        block = @lexer.blockify tokens
+
+        if @args.raw   then print.noon 'raw block' block
+        if @args.block then print.block 'tl block' block
+
+        @operator.collect @returner.collect @scoper.collect @stripol.collect @parser.parse block
+
+export Kode.compile

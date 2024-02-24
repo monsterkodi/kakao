@@ -591,7 +591,13 @@ load = (p, ext, cb) ->
             error "noon.load - can't read file: #{p}" err
             cb null
     else
-        error 'noon.load - no callback!'
+        try
+            str = require('fs').readFileSync p, 'utf8'
+            return parseStr str, p, ext
+        catch err
+            error "noon.load - " + String(err) + ' ' + p
+        
+        # error 'noon.load - no callback!'
 
 ###
  0000000   0000000   000   000  00000000
