@@ -53,7 +53,6 @@ function Kakao
     @dom:    kxk.dom     # dom expection and manipulation
     @post:   kxk.post    # posts messages to modules in the window process 
 
-log 'install kakao in window scope'
 window.kakao = Kakao # kakao sets itself in the global window scope
 
 export Kakao

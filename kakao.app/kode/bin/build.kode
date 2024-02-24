@@ -1,0 +1,44 @@
+###
+    0000000    000   000  000  000      0000000      
+    000   000  000   000  000  000      000   000    
+    0000000    000   000  000  000      000   000    
+    000   000  000   000  000  000      000   000    
+    0000000     0000000   000  0000000  0000000      
+###
+
+CMD = "zig c++" # is awesome!
+
+SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm watch.mm"
+
+OUT = "../Contents/MacOS/kakao"
+
+LIB = "-framework WebKit -framework Cocoa"
+FLG = "-arch arm64 -Os -Wno-nullability-completeness"
+
+import fs       from "fs"
+import process  from "process"
+import childp   from "child_process"
+
+export ->
+    
+    #try
+    #    fs.unlinkSync __dirname + '../../log.txt' # remove the log file
+    #catch e
+    #    null
+    
+    # the actual build command. 
+    # could be a one-liner in a shell script but that would be too simple :)
+        
+    cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
+    
+    opt = cwd:__dirname + '/../../src' # build inside the kokoa.app/src folder
+    
+    childp.exec cmd, opt, (err, stdout, stderr) -> 
+    
+        if err 
+            error 'ERROR' err
+            process.exit 2
+            
+        log stdout if valid stdout
+        log 'app built'
+    

@@ -39,24 +39,15 @@
     return app;
 }
 
++ (App*) get
+{
+    return (App*)[[NSApplication sharedApplication] delegate];
+}
+
 - (void) dealloc
 {
     [self.watch release];
     [super dealloc];
-}
-
-- (Win*) win
-{
-    id app = [NSApplication sharedApplication];
-    for (id window in [app windows]) 
-    {
-        if ([window isKindOfClass:[Win class]])
-        {
-            return window;
-        }
-    }
-    
-    return (Win*)[app mainWindow];
 }
 
 - (void) run
@@ -64,7 +55,29 @@
     [[NSApplication sharedApplication] run]; // does not return
 }
 
-- (void)onChanges:(NSArray*)changes inFolder:(NSString*)folder
+- (NSArray*) wins
+{
+    NSMutableArray* wins = [NSMutableArray array];
+    id app = [NSApplication sharedApplication];
+    for (id win in [app windows]) 
+    {
+        if ([win isKindOfClass:[Win class]])
+        {
+            [wins addObject:win];
+        }
+    }
+    return wins;   
+}
+
+- (void) reload
+{
+    for (Win* win in [self wins]) 
+    {
+        [win reload];
+    }
+}
+
+- (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
     NSLog(@"● changes %@ ▸▸▸", folder);
     
@@ -83,48 +96,40 @@
         }
         NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
         
-        if ([change.path hasPrefix:@"Contents/MacOS/js/"])
-        {
-            NSLog(@"reload js");
-            reloadPage = YES;
-        }
+        if ([change.path hasPrefix:@"js/"]) { reloadPage = YES; }
 
-        if ([change.path hasPrefix:@"Contents/Resources/"])
-        {
-            NSLog(@"reload resources");
-            reloadPage = YES;
-        }
+        if ([change.path hasPrefix:@"Contents/Resources/"]) { reloadPage = YES; }
 
         if ([change.path hasPrefix:@"src/"] || [change.path isEqualToString:@"Contents/Info.plist"])
         {
-            // NSLog(@"rebuild app");
             rebuildApp = YES;
         }
         
         if ([change.path hasPrefix:@"pug/"] || [change.path hasPrefix:@"kode/"])
         {
-            NSLog(@"transpile kode & pug");
             transpile = YES;
         }
     }
     
     if (rebuildApp)
     {
-        NSLog(@"rebuildApp!");
+        NSLog(@"rebuild!");
     }
     else if (transpile)
     {
         NSLog(@"transpile!");
+        [self reload];        
     }
     else if (reloadPage)
     {
-        NSLog(@"reloadPage!");
+        NSLog(@"reload!");
+        [self reload];
     }
 }
 
-- (void)applicationWillFinishLaunching:(NSNotification *)notification { }
-- (void)applicationDidFinishLaunching:(NSNotification *)notification { }
-- (void)applicationWillBecomeActive:(NSNotification *)notification { }
+- (void) applicationWillFinishLaunching:(NSNotification *)notification { }
+- (void) applicationDidFinishLaunching:(NSNotification *)notification { }
+- (void) applicationWillBecomeActive:(NSNotification *)notification { }
 
 -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender
 {

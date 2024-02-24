@@ -1,0 +1,33 @@
+###
+000   000   0000000   0000000    00000000
+000  000   000   000  000   000  000     
+0000000    000   000  000   000  0000000 
+000  000   000   000  000   000  000     
+000   000   0000000   0000000    00000000
+###
+
+import kompile from './kode/kompile'
+import { readdir } from 'fs/promises'
+import slash from '../lib/kxk/slash'
+
+class kode
+
+    @run: ○->
+        
+        kodeDir = slash.resolve __dirname + '/../../kode'
+        jsDir = slash.resolve __dirname + '/../../js'
+        log kodeDir, '▸', jsDir
+        for file in await readdir kodeDir, recursive: true
+
+            if slash.ext(file) == 'kode'
+                
+                kodeFile = slash.join kodeDir, file
+                jsFile   = slash.join jsDir, slash.swapExt file, 'js'
+                
+                kodeText = await Bun.file(kodeFile).text()
+                origText = await Bun.file(jsFile).text()
+                compText = kompile kodeText
+                if origText != compText
+                    log kodeFile, '▸' jsFile
+
+export kode.run

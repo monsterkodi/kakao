@@ -7,6 +7,7 @@
 */
 
 #import "win.h"
+#import "app.h"
 #import "route.h"
 #import "bundle.h"
 
@@ -179,7 +180,8 @@
 - (Win*) focusPrev { return [self focusSibling:-1]; }
 - (Win*) focusSibling:(int)offset
 {
-    NSArray* windows = [[NSApplication sharedApplication] windows];
+    // NSArray* windows = [[NSApplication sharedApplication] windows];
+    NSArray* windows = [[App get] wins];
     NSUInteger index = [windows indexOfObject:self];
     
     //for (id window in windows)
