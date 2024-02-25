@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_
 
 var CMD, FLG, LIB, OUT, SRC
 
@@ -12,25 +12,34 @@ FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 import fs from "fs"
 import process from "process"
 import childp from "child_process"
+import slash from '../lib/kxk/slash.js'
 import path from 'path'
 export default function ()
 {
-    var cmd, opt, __dirname
+    var args, cmd, cp, dirname, opt, out
 
     cmd = `${CMD} -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
-    __dirname = path.dirname(import.meta.url.slice(7))
-    opt = {cwd:__dirname + '/../../src'}
-    return childp.exec(cmd,opt,function (err, stdout, stderr)
+    console.log('cmd',cmd)
+    dirname = path.dirname(import.meta.url.slice(7))
+    console.log('dirname',dirname)
+    opt = {cwd:slash.resolve(dirname + '/../../src')}
+    args = cmd.split(' ')
+    cmd = args.shift()
+    out = args.pop()
+    out = slash.resolve(opt.cwd + '/' + out)
+    args.push(out)
+    console.log('cmd',cmd,'args',args,'opt',opt)
+    cp = childp.spawn(cmd,args,opt)
+    cp.stdout.on('data',function (data)
     {
-        if (err)
-        {
-            console.error('ERROR',err)
-            process.exit(2)
-        }
-        if (!_k_.empty(stdout))
-        {
-            console.log(stdout)
-        }
-        console.log('app built')
+        console.log(`${data}\n`)
+    })
+    cp.stderr.on('data',function (data)
+    {
+        console.log(`${data}\n`)
+    })
+    return cp.on('close',function (code)
+    {
+        console.log('exit',code)
     })
 };

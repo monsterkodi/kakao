@@ -6,11 +6,18 @@
     000        000   000     000     000   000    
 ###
 
-# import path from 'path'
+# log global
 
-# toExport = path
+import path from 'path'
 
-if true #global.Bun
+#try
+#    path = require 'path'
+#catch err
+#    error err
+# log path
+toExport = path
+
+if false #global.Bun
     # toExport = require 'path'
     # else
     CHAR_FORWARD_SLASH  = '/'.charCodeAt 0

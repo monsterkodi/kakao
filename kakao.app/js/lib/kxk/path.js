@@ -4,7 +4,9 @@ var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof Str
 
 var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, join, normalizeString, sep, toExport
 
-if (true)
+import path from 'path'
+toExport = path
+if (false)
 {
     CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
     CHAR_BACKWARD_SLASH = '\\'.charCodeAt(0)
@@ -26,7 +28,7 @@ if (true)
         lastSlash = -1
         dots = 0
         code = 0
-        for (var _31_17_ = i = 0, _31_20_ = path.length; (_31_17_ <= _31_20_ ? i <= path.length : i >= path.length); (_31_17_ <= _31_20_ ? ++i : --i))
+        for (var _38_17_ = i = 0, _38_20_ = path.length; (_38_17_ <= _38_20_ ? i <= path.length : i >= path.length); (_38_17_ <= _38_20_ ? ++i : --i))
         {
             if (i < path.length)
             {

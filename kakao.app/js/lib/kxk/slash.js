@@ -802,27 +802,6 @@ Slash = (function ()
         return ''
     }
 
-    Slash["watch"] = function (p, cb)
-    {
-        var Watcher
-
-        Watcher = require('./watcher')
-        return Watcher.watch(p,cb)
-    }
-
-    Slash["unwatch"] = function (p, cb)
-    {
-        var Watcher
-
-        Watcher = require('./watcher')
-        return Watcher.unwatch(p,cb)
-    }
-
-    Slash["tmpfile"] = function (ext)
-    {
-        return Slash.join(os.tmpdir(),require('uuid').v1() + (ext && `.${ext}` || ''))
-    }
-
     Slash["remove"] = function (p, cb)
     {
         if (cb)
