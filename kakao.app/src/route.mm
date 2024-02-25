@@ -24,7 +24,7 @@
     if (args && [args count] > 0) arg0 = [args objectAtIndex:0];    
     if (args && [args count] > 1) arg1 = [args objectAtIndex:1];    
     
-    NSLog(@"%d ▸ %@ %@", win.windowNumber, req, arg0 ? arg0 : @"");
+    //NSLog(@"%d ▸ %@ %@", win.windowNumber, req, arg0 ? arg0 : @"");
 
     if ([req isEqualToString:@"focusNext"]) { return [win focusNext];  }
     if ([req isEqualToString:@"focusPrev"]) { return [win focusPrev];  }

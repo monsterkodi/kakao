@@ -16,30 +16,35 @@ import slash from '../lib/kxk/slash.js'
 import path from 'path'
 export default function ()
 {
-    var args, cmd, cp, dirname, opt, out
+    var args, cmd, cp, cwd, dirname, opt, out
 
-    cmd = `${CMD} -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
-    console.log('cmd',cmd)
+    cmd = `${CMD} -v -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
+    console.log(cmd)
     dirname = path.dirname(import.meta.url.slice(7))
-    console.log('dirname',dirname)
-    opt = {cwd:slash.resolve(dirname + '/../../src')}
+    cwd = slash.resolve(dirname + '/../../src')
+    opt = {shell:true,cwd:cwd}
     args = cmd.split(' ')
-    cmd = args.shift()
+    cmd = 'cd'
     out = args.pop()
     out = slash.resolve(opt.cwd + '/' + out)
     args.push(out)
-    console.log('cmd',cmd,'args',args,'opt',opt)
+    args.unshift('&&')
+    args.unshift(cwd)
     cp = childp.spawn(cmd,args,opt)
     cp.stdout.on('data',function (data)
     {
-        console.log(`${data}\n`)
+        console.log(`${data}`)
     })
     cp.stderr.on('data',function (data)
     {
-        console.log(`${data}\n`)
+        console.log(`${data}`)
     })
-    return cp.on('close',function (code)
+    cp.on('close',function (code)
     {
-        console.log('exit',code)
+        if (code === 0)
+        {
+            console.log('app built')
+        }
     })
+    return null
 };

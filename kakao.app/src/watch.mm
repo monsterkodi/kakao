@@ -461,7 +461,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     
     NSArray *actualPaths = (NSArray *) CFBridgingRelease(FSEventStreamCopyPathsBeingWatched(streamRef));
     NSString *actualPath = [actualPaths firstObject];
-    NSLog(@"Watch: %@", actualPath);
+    //NSLog(@"Watch: %@", actualPath);
 
     FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     

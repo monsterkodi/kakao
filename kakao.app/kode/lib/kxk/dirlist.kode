@@ -18,15 +18,20 @@ import slash from './slash.js'
 import fs from 'fs/promises'
 
 listdir = (dir, found) ○->
+        
+    dirents = await fs.readdir dir, { withFileTypes: true }
     
-    files = await fs.readdir dir
-    
-    for file in files
+    for dirent in dirents
 
-        stat  = await fs.stat slash.join dir, file
-        isDir = stat.mode & 0o040000
+        # stat  = await fs.stat slash.join dir, file
+        # isDir = stat.mode & 0o040000
+        
+        file  = dirent.name
+        isDir = not dirent.isFile()
         
         absPath = dir + '/' + file
+        
+        # log isDir, absPath
 
         found.push 
             type: isDir ? 'dir' : 'file'
