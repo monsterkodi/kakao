@@ -513,7 +513,7 @@ pad = function (s, l)
 
 stringify = function (obj, options = {})
 {
-    var cs, def, escape, indstr, opt, pretty, s, toStr
+    var def, escape, indstr, opt, pretty, toStr
 
     def = function (o, d)
     {
@@ -538,15 +538,7 @@ stringify = function (obj, options = {})
     opt = def(options,defaults)
     if (opt.ext === '.json')
     {
-        cs = JSON.stringify(obj,null,opt.indent)
-        if (opt.colors)
-        {
-            return require('klor').syntax({text:cs,ext:opt.ext})
-        }
-        else
-        {
-            return cs
-        }
+        return JSON.stringify(obj,null,opt.indent)
     }
     if (typeof(opt.indent) === 'string')
     {
@@ -651,9 +643,9 @@ stringify = function (obj, options = {})
         if (opt.sort)
         {
             var list = _k_.list(Object.keys(o).sort())
-            for (var _507_18_ = 0; _507_18_ < list.length; _507_18_++)
+            for (var _503_18_ = 0; _503_18_ < list.length; _503_18_++)
             {
-                k = list[_507_18_]
+                k = list[_503_18_]
                 l.push(keyValue(k,o[k]))
             }
         }
@@ -672,7 +664,7 @@ stringify = function (obj, options = {})
     }
     toStr = function (o, ind = '', arry = false, visited = [])
     {
-        var s, t, v, _542_32_, _546_37_
+        var s, t, v, _538_32_, _542_37_
 
         if (!(o != null))
         {
@@ -707,7 +699,7 @@ stringify = function (obj, options = {})
                     {
                         s += '\n'
                     }
-                    s += (function () { var r_545_69_ = []; var list = _k_.list(o); for (var _545_69_ = 0; _545_69_ < list.length; _545_69_++)  { v = list[_545_69_];r_545_69_.push(ind + toStr(v,ind + indstr,true,visited))  } return r_545_69_ }).bind(this)().join('\n')
+                    s += (function () { var r_541_69_ = []; var list = _k_.list(o); for (var _541_69_ = 0; _541_69_ < list.length; _541_69_++)  { v = list[_541_69_];r_541_69_.push(ind + toStr(v,ind + indstr,true,visited))  } return r_541_69_ }).bind(this)().join('\n')
                 }
                 else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp')
                 {
@@ -726,12 +718,7 @@ stringify = function (obj, options = {})
 
         return '<???>'
     }
-    s = toStr(obj)
-    if (opt.colors)
-    {
-        s = require('klor').syntax({text:s,ext:'noon'})
-    }
-    return s
+    return toStr(obj)
 }
 
 parseStr = function (str, p, ext)

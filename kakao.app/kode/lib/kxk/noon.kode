@@ -427,11 +427,7 @@ stringify = (obj, options={}) ->
     #  0000000   0000000    0000000   000   000
         
     if opt.ext == '.json'
-        cs = JSON.stringify obj, null, opt.indent
-        if opt.colors
-            return require('klor').syntax text:cs, ext:opt.ext
-        else
-            return cs
+        return JSON.stringify obj, null, opt.indent
     
     if opt.indent is 'string' 
         opt.indent = opt.indent.length
@@ -553,10 +549,7 @@ stringify = (obj, options={}) ->
                 return String o
         return '<???>'
 
-    s = toStr obj
-    if opt.colors
-        s = require('klor').syntax text:s, ext:'noon'
-    s
+    toStr obj
 
 ###
 000       0000000    0000000   0000000
