@@ -79,11 +79,12 @@
 
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    NSLog(@"● changes %@ ▸▸▸", folder);
+    // NSLog(@"● changes %@ ▸▸▸", folder);
     
     BOOL reloadPage  = NO;
     BOOL rebuildApp  = NO;
-    BOOL transpile   = NO;
+    
+    NSMutableArray* filesToTranspile = [NSMutableArray array];
     
     for (WatchChange* change in changes)
     {
@@ -94,7 +95,7 @@
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
         }
-        NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+        // NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
         
         if ([change.path hasPrefix:@"js/"]) { reloadPage = YES; }
 
@@ -107,7 +108,7 @@
         
         if ([change.path hasPrefix:@"pug/"] || [change.path hasPrefix:@"kode/"])
         {
-            transpile = YES;
+            [filesToTranspile addObject:[NSString stringWithFormat:@"%@/%@", folder, change.path]];
         }
     }
     
@@ -115,19 +116,19 @@
     {
         NSLog(@"rebuild!");
     }
-    else if (transpile)
+    else if ([filesToTranspile count])
     {
         static BOOL isTranspiling = NO;
         
         if (isTranspiling)
         {
-            NSLog(@"already transpiling!");
+            // NSLog(@"already transpiling!");
             return;
         }
         
         isTranspiling = YES;
         
-        NSLog(@"transpile!");
+        // NSLog(@"transpile! %@", filesToTranspile);
         
         NSTask *task = [[NSTask alloc] init];
 
@@ -138,6 +139,7 @@
         [arguments addObject:@"--experimental-detect-module"];
         [arguments addObject:[Bundle appPath:@"kk"]];
         [arguments addObject:@"-k"];
+        [arguments addObjectsFromArray:filesToTranspile];
         
         [task setArguments:arguments];
         
@@ -150,19 +152,20 @@
         isTranspiling = NO;
         if ([task terminationStatus]) NSLog(@"transpile failed? %d", [task terminationStatus]);
         [task release];
-        NSLog(@"reload");
+        filesToTranspile = nil;
+        // NSLog(@"reload");
         [self reload];
     }
     else if (reloadPage)
     {
-        NSLog(@"reload!");
+        // NSLog(@"reload!");
         [self reload];
     }
 }
 
-- (void) applicationWillFinishLaunching:(NSNotification *)notification { }
-- (void) applicationDidFinishLaunching:(NSNotification *)notification { }
-- (void) applicationWillBecomeActive:(NSNotification *)notification { }
+//- (void) applicationWillFinishLaunching:(NSNotification *)notification { }
+//- (void) applicationDidFinishLaunching:(NSNotification *)notification { }
+//- (void) applicationWillBecomeActive:(NSNotification *)notification { }
 
 -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender
 {
