@@ -33,15 +33,17 @@ export ->
     # the actual build command. 
     # could be a one-liner in a shell script but that would be too simple :)
         
-    cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
+    cmd = "#{CMD} -v -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
     
-    log 'cmd' cmd
+    log cmd
     
     dirname = path.dirname import.meta.url[7..]
     
-    log 'dirname' dirname
+    # log 'dirname' dirname
     
-    opt = cwd:slash.resolve dirname + '/../../src' # build inside the kokoa.app/src folder
+    cwd = slash.resolve dirname + '/../../src'
+    # opt = shell:true stdio:'inherit' cwd:cwd # build inside the kokoa.app/src folder
+    opt = shell:true cwd:cwd # build inside the kokoa.app/src folder
     
     #log 'childp.exec' childp
     #
@@ -55,16 +57,20 @@ export ->
     #    log 'app built'
     
     args = cmd.split ' '
-    cmd = args.shift()
+    #cmd = args.shift()
+    cmd = 'cd'
     out = args.pop()
     out = slash.resolve opt.cwd + '/' + out
     args.push out
-    log 'cmd' cmd, 'args' args, 'opt' opt
+    args.unshift '&&'
+    args.unshift cwd
+    # log 'cmd' cmd, 'args' args, 'opt' opt
     cp = childp.spawn cmd, args, opt
     
-    cp.stdout.on 'data', (data) -> log "#{data}\n" 
-    cp.stderr.on 'data', (data) -> log "#{data}\n" 
-    cp.on 'close', (code) -> log 'exit' code
+    cp.stdout.on 'data', (data) -> log "#{data}" 
+    cp.stderr.on 'data', (data) -> log "#{data}" 
+    cp.on 'close', (code) -> if code == 0 ➜ log 'app built'
+    null
     
     
     

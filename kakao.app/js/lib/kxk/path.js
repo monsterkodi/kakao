@@ -2,12 +2,11 @@
 
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, join, normalizeString, sep, toExport
+var basename, CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, dirname, extname, isAbsolute, isPathSeparator, isPosixPathSeparator, join, normalizeString, parse, sep, toExport
 
-import path from 'path'
-toExport = path
-if (false)
+if (true)
 {
+    sep = '/'
     CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
     CHAR_BACKWARD_SLASH = '\\'.charCodeAt(0)
     CHAR_DOT = '.'.charCodeAt(0)
@@ -28,7 +27,7 @@ if (false)
         lastSlash = -1
         dots = 0
         code = 0
-        for (var _38_17_ = i = 0, _38_20_ = path.length; (_38_17_ <= _38_20_ ? i <= path.length : i >= path.length); (_38_17_ <= _38_20_ ? ++i : --i))
+        for (var _31_17_ = i = 0, _31_20_ = path.length; (_31_17_ <= _31_20_ ? i <= path.length : i >= path.length); (_31_17_ <= _31_20_ ? ++i : --i))
         {
             if (i < path.length)
             {
@@ -110,20 +109,43 @@ if (false)
         }
         return res
     }
-    join = function (list)
+    join = function (...args)
     {
-        console.log('join',list)
+        return args.join(sep)
     }
-    sep = '/'
-    toExport = {sep:sep,isAbsolute:function (path)
+    isAbsolute = function (path)
     {
         return path[0] === sep
-    },join:function ()
+    }
+    parse = function (path)
     {
-        return join(arguments)
-    },normalize:function (path)
+        var base, components, dots, ext, name
+
+        components = path.split(sep)
+        base = components.slice(-1)[0]
+        dots = base.split('.')
+        ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? dots.pop() : '')
+        name = dots.join('.')
+        return {root:(path[0] === sep ? sep : ''),dir:join.apply(null,components.slice(0)),base:base,name:name,ext:ext}
+    }
+    extname = function (path)
     {
-        var isAbsolute, trailingSeparator
+        return parse(path).ext
+    }
+    dirname = function (path)
+    {
+        return parse(path).dir
+    }
+    basename = function (path, ext)
+    {
+        var p
+
+        p = parse(path)
+        return (ext === p.ext ? p.name : p.base)
+    }
+    toExport = {sep:sep,join:join,parse:parse,extname:extname,dirname:dirname,basename:basename,isAbsolute:isAbsolute,normalize:function (path)
+    {
+        var trailingSeparator
 
         if (!(_k_.isStr(path)))
         {

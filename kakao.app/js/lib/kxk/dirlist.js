@@ -9,15 +9,15 @@ import fs from 'fs/promises'
 
 listdir = async function (dir, found)
 {
-    var absPath, file, files, isDir, stat
+    var absPath, dirent, dirents, file, isDir
 
-    files = await fs.readdir(dir)
-    var list = _k_.list(files)
-    for (var _24_13_ = 0; _24_13_ < list.length; _24_13_++)
+    dirents = await fs.readdir(dir,{withFileTypes:true})
+    var list = _k_.list(dirents)
+    for (var _24_15_ = 0; _24_15_ < list.length; _24_15_++)
     {
-        file = list[_24_13_]
-        stat = await fs.stat(slash.join(dir,file))
-        isDir = stat.mode & 0o040000
+        dirent = list[_24_15_]
+        file = dirent.name
+        isDir = !dirent.isFile()
         absPath = dir + '/' + file
         found.push({type:(isDir ? 'dir' : 'file'),name:file,path:absPath})
         if (isDir)

@@ -27,10 +27,6 @@
     if (self = [super initWithFrame:CGRectMake(0,0,0,0) configuration:config])
     {
         [self setValue:@NO forKey:@"drawsBackground"];
-        
-        //self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawDuringViewResize;
-        //self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawOnSetNeedsDisplay;
-        //self.wantsLayer = YES;
     }
     
     [self initScripting];

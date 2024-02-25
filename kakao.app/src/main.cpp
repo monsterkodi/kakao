@@ -12,7 +12,6 @@ SEL operator"" _sel(const char *s, std::size_t) { return sel_registerName(s); }
 
 using namespace std;
 
-
 int main(int argc, char ** argv)
 {
     for (int i = 1; i < argc; i++) 
