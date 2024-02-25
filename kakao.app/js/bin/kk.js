@@ -28,7 +28,7 @@ class kk
         }
         if (args.kode)
         {
-            return kode()
+            return kode(args.options)
         }
     }
 }

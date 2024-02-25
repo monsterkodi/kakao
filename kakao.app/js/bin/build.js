@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var CMD, FLG, LIB, OUT, SRC
 
@@ -16,35 +16,25 @@ import slash from '../lib/kxk/slash.js'
 import path from 'path'
 export default function ()
 {
-    var args, cmd, cp, cwd, dirname, opt, out
+    var cmd, cwd, dirname, opt
 
     cmd = `${CMD} -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
     console.log(cmd)
     dirname = path.dirname(import.meta.url.slice(7))
     cwd = slash.resolve(dirname + '/../../src')
     opt = {shell:true,cwd:cwd}
-    args = cmd.split(' ')
-    cmd = 'cd'
-    out = args.pop()
-    out = slash.resolve(opt.cwd + '/' + out)
-    args.push(out)
-    args.unshift('&&')
-    args.unshift(cwd)
-    cp = childp.spawn(cmd,args,opt)
-    cp.stdout.on('data',function (data)
+    childp.exec(cmd,opt,function (err, stdout, stderr)
     {
-        console.log(`${data}`)
-    })
-    cp.stderr.on('data',function (data)
-    {
-        console.log(`${data}`)
-    })
-    cp.on('close',function (code)
-    {
-        if (code === 0)
+        if (err)
         {
-            console.log('app built')
+            console.error('ERROR',err)
+            process.exit(2)
         }
+        if (!_k_.empty(stdout))
+        {
+            console.log(stdout)
+        }
+        console.log('app built')
     })
     return null
 };

@@ -27,8 +27,8 @@ args = karg """
 class kk
     
     @run: ->
-    
+        
         if args.build ➜ build()
-        if args.kode  ➜ kode()
+        if args.kode  ➜ kode args.options
     
 export kk.run

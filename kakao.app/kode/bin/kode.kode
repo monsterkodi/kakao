@@ -11,52 +11,47 @@ import slash from '../lib/kxk/slash.js'
 import kolor from '../lib/kxk/kolor.js'
 import dirlist from '../lib/kxk/dirlist.js'
 
-import fs from 'fs/promises'
-# import process from 'process'
+import fs   from 'fs/promises'
+import path from 'path'
 
 kolor.globalize()
-
-import path from 'path'
 
 dirname = path.dirname import.meta.url[7..]
 
 class kode
 
-    @run: ○->
+    @run: (files = []) ○->
               
         kode = new Kode
         
         kodeDir = slash.resolve dirname + '/../../kode'
         jsDir   = slash.resolve dirname + '/../../js'
         
-        list = await dirlist kodeDir
-
-        for item in list
+        if empty files
+            list = await dirlist kodeDir
+            list = list.filter (item) -> item.type == 'file'
+            files = list.map (item) -> item.path
             
-            continue if item.type == 'dir'
-            
-            file = item.name
+        for file in files
             
             if slash.ext(file) == 'kode'
                             
-                kodeFile = item.path
-                jsFile   = slash.swapExt item.path.replace(kodeDir, jsDir), 'js'
+                kodeFile = file
+                jsFile   = slash.swapExt kodeFile.replace(kodeDir, jsDir), 'js'
                 
                 kodeText = await fs.readFile kodeFile, encoding:'utf8'
                 origText = await fs.readFile jsFile,   encoding:'utf8'
-                    
-                # ●▸ comp
+                
+                # ●▸ 🔎
                 compText = kode.compile kodeText
-                # ●▪ comp
+                # ●▪ 🔎
                 
                 if origText != compText
-                    log kodeFile, '▸' jsFile
-                    # log red origText
-                    # log blue compText
+                    log '🛠 ' y4(kodeFile), b5('▸'), w5(jsFile)
+                    await fs.writeFile jsFile, compText, encoding:'utf8'
                 else
-                    log kodeFile
+                    log g3('✔ '), g2(kodeFile)
 
-        log 'done'
         process.exit 0
 
 export kode.run
