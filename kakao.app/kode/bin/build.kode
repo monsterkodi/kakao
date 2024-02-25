@@ -33,7 +33,7 @@ export ->
     # the actual build command. 
     # could be a one-liner in a shell script but that would be too simple :)
         
-    cmd = "#{CMD} -v -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
+    cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
     
     log cmd
     

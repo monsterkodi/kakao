@@ -117,8 +117,41 @@
     }
     else if (transpile)
     {
+        static BOOL isTranspiling = NO;
+        
+        if (isTranspiling)
+        {
+            NSLog(@"already transpiling!");
+            return;
+        }
+        
+        isTranspiling = YES;
+        
         NSLog(@"transpile!");
-        [self reload];        
+        
+        NSTask *task = [[NSTask alloc] init];
+
+        [task setLaunchPath:@"/usr/bin/env"];
+
+        NSMutableArray* arguments = [NSMutableArray array];
+        [arguments addObject:@"node"];
+        [arguments addObject:@"--experimental-detect-module"];
+        [arguments addObject:[Bundle appPath:@"kk"]];
+        [arguments addObject:@"-k"];
+        
+        [task setArguments:arguments];
+        
+        // hides the output:
+        // NSPipe *outputPipe = [NSPipe pipe]; 
+        // [task setStandardOutput:outputPipe];
+
+        [task launch];
+        [task waitUntilExit];
+        isTranspiling = NO;
+        if ([task terminationStatus]) NSLog(@"transpile failed? %d", [task terminationStatus]);
+        [task release];
+        NSLog(@"reload");
+        [self reload];
     }
     else if (reloadPage)
     {

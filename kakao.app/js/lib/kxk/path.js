@@ -124,9 +124,9 @@ if (true)
         components = path.split(sep)
         base = components.slice(-1)[0]
         dots = base.split('.')
-        ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? dots.pop() : '')
+        ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? '.' + dots.pop() : '')
         name = dots.join('.')
-        return {root:(path[0] === sep ? sep : ''),dir:join.apply(null,components.slice(0)),base:base,name:name,ext:ext}
+        return {root:(path[0] === sep ? sep : ''),dir:join.apply(null,components.slice(0, -1)),base:base,name:name,ext:ext}
     }
     extname = function (path)
     {

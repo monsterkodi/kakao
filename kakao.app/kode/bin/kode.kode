@@ -12,6 +12,7 @@ import kolor from '../lib/kxk/kolor.js'
 import dirlist from '../lib/kxk/dirlist.js'
 
 import fs from 'fs/promises'
+# import process from 'process'
 
 kolor.globalize()
 
@@ -22,14 +23,14 @@ dirname = path.dirname import.meta.url[7..]
 class kode
 
     @run: ○->
-                
+              
         kode = new Kode
         
         kodeDir = slash.resolve dirname + '/../../kode'
         jsDir   = slash.resolve dirname + '/../../js'
         
         list = await dirlist kodeDir
-        
+
         for item in list
             
             continue if item.type == 'dir'
@@ -37,7 +38,7 @@ class kode
             file = item.name
             
             if slash.ext(file) == 'kode'
-                
+                            
                 kodeFile = item.path
                 jsFile   = slash.swapExt item.path.replace(kodeDir, jsDir), 'js'
                 
@@ -50,9 +51,12 @@ class kode
                 
                 if origText != compText
                     log kodeFile, '▸' jsFile
-                    log red origText
-                    log blue compText
+                    # log red origText
+                    # log blue compText
                 else
                     log kodeFile
+
+        log 'done'
+        process.exit 0
 
 export kode.run

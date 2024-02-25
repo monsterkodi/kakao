@@ -125,8 +125,8 @@ function Slash
         else f
         
     @ext:       (p) -> path.extname(p).slice 1
+    @removeExt: (p) -> d = Slash.parse(p); Slash.join d.dir, d.name
     @splitExt:  (p) -> [Slash.removeExt(p), Slash.ext(p)]
-    @removeExt: (p) -> Slash.join Slash.dir(p), Slash.base p
     @swapExt:   (p, ext) -> Slash.removeExt(p) + (ext.startsWith('.') and ext or ".#{ext}")
         
     #       000   0000000   000  000   000  

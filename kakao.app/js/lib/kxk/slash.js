@@ -199,14 +199,17 @@ Slash = (function ()
         return path.extname(p).slice(1)
     }
 
+    Slash["removeExt"] = function (p)
+    {
+        var d
+
+        d = Slash.parse(p)
+        return Slash.join(d.dir,d.name)
+    }
+
     Slash["splitExt"] = function (p)
     {
         return [Slash.removeExt(p),Slash.ext(p)]
-    }
-
-    Slash["removeExt"] = function (p)
-    {
-        return Slash.join(Slash.dir(p),Slash.base(p))
     }
 
     Slash["swapExt"] = function (p, ext)
