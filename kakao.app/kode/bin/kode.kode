@@ -6,28 +6,61 @@
 000   000   0000000   0000000    00000000
 ###
 
-import kompile from './kode/kompile'
-import { readdir } from 'fs/promises'
-import slash from '../lib/kxk/slash'
+import Kode from './kode/kompile.js'
+import slash from '../lib/kxk/slash.js'
+import kolor from '../lib/kxk/kolor.js'
+
+import fs from 'fs/promises'
+
+kolor.globalize()
+
+import path from 'path'
+
+# log fs
+
+dirname = path.dirname import.meta.url[7..]
+
+# log '__dirname' dirname
 
 class kode
 
     @run: ○->
         
-        kodeDir = slash.resolve __dirname + '/../../kode'
-        jsDir = slash.resolve __dirname + '/../../js'
+        kode = new Kode
+        
+        kodeDir = slash.resolve dirname + '/../../kode'
+        jsDir = slash.resolve dirname + '/../../js'
         log kodeDir, '▸', jsDir
-        for file in await readdir kodeDir, recursive: true
+        files = await fs.readdir kodeDir, recursive: false#, withFileTypes:true
+        log "files:" files
+        for file in files
 
+            stat = await fs.stat slash.join kodeDir, file
+            log file, 'isDir' stat.mode & 0o040000 #, stat
+            
             if slash.ext(file) == 'kode'
                 
                 kodeFile = slash.join kodeDir, file
                 jsFile   = slash.join jsDir, slash.swapExt file, 'js'
                 
-                kodeText = await Bun.file(kodeFile).text()
-                origText = await Bun.file(jsFile).text()
-                compText = kompile kodeText
+                if global.Bun
+                    kodeText = await Bun.file(kodeFile).text()
+                    origText = await Bun.file(jsFile).text()
+                else
+                    kodeText = await fs.readFile kodeFile, encoding:'utf8'
+                    origText = await fs.readFile jsFile, encoding:'utf8'
+                ●▸ comp
+                compText = kode.compile kodeText
+                ●▪ comp
                 if origText != compText
                     log kodeFile, '▸' jsFile
+                    log red origText
+                    log blue compText
+                else
+                    log kodeFile
+            else
+                
+                stat = await fs.stat slash.join kodeDir, file
+                log 'not kode' file, stat.mode & 0x040000
 
 export kode.run

@@ -1,10 +1,10 @@
-// monsterkodi/kode 0.252.0
+// monsterkodi/kode 0.256.0
 
 var _k_
 
 var args
 
-import karg from '../lib/kxk/karg'
+import karg from '../lib/kxk/karg.js'
 import build from './build.js'
 import kode from './kode.js'
 args = karg(`kk

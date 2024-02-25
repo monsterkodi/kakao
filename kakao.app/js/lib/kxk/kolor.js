@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.252.0
+// monsterkodi/kode 0.256.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
@@ -200,7 +200,7 @@ exports.strip = function (s)
 {
     return String(s).replace(STRIPANSI,'')
 }
-if (__filename === Bun.main)
+if (false)
 {
     reset = '\x1b[0m'
     bold = '\x1b[1m'

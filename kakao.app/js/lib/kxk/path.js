@@ -1,14 +1,10 @@
-// monsterkodi/kode 0.252.0
+// monsterkodi/kode 0.256.0
 
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
 var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, join, normalizeString, sep, toExport
 
-if (Bun)
-{
-    toExport = require('path')
-}
-else
+if (true)
 {
     CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
     CHAR_BACKWARD_SLASH = '\\'.charCodeAt(0)
@@ -30,7 +26,7 @@ else
         lastSlash = -1
         dots = 0
         code = 0
-        for (var _27_17_ = i = 0, _27_20_ = path.length; (_27_17_ <= _27_20_ ? i <= path.length : i >= path.length); (_27_17_ <= _27_20_ ? ++i : --i))
+        for (var _31_17_ = i = 0, _31_20_ = path.length; (_31_17_ <= _31_20_ ? i <= path.length : i >= path.length); (_31_17_ <= _31_20_ ? ++i : --i))
         {
             if (i < path.length)
             {

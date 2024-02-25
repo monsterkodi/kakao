@@ -18,6 +18,10 @@ import Renderer  from './renderer.js'
 class Kode
 
     @: (@args) ->
+        
+        @args ?= {}
+        @args.header  = true
+        @version  = '0.256.0'
 
         @literals = ['bool''num''regex''single''double''triple']
         @atoms    = @literals.concat ['var']
@@ -54,18 +58,20 @@ class Kode
 
     ast: (text) ->
 
-        print.code 'kode' text, 'coffee' if @args.verbose or @args.debug or @args.kode
+        # print.code 'kode' text, 'coffee' if @args.verbose or @args.debug or @args.kode
 
+        # ●▸ token
         tokens = @lexer.tokenize text
+        # ●▪ token
 
-        if @args.raw    then print.noon 'raw tokens' tokens
-        if @args.tokens then print.tokens 'tokens'   tokens
+        # if @args.raw    then print.noon 'raw tokens' tokens
+        # if @args.tokens then print.tokens 'tokens'   tokens
 
         block = @lexer.blockify tokens
 
-        if @args.raw   then print.noon 'raw block' block
-        if @args.block then print.block 'tl block' block
+        # if @args.raw   then print.noon 'raw block' block
+        # if @args.block then print.block 'tl block' block
 
         @operator.collect @returner.collect @scoper.collect @stripol.collect @parser.parse block
 
-export Kode.compile
+export Kode

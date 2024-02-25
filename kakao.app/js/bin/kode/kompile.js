@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.252.0
+// monsterkodi/kode 0.256.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -14,8 +14,13 @@ class Kode
 {
     constructor (args)
     {
+        var _22_14_
+
         this.args = args
     
+        this.args = ((_22_14_=this.args) != null ? _22_14_ : {})
+        this.args.header = true
+        this.version = '0.256.0'
         this.literals = ['bool','num','regex','single','double','triple']
         this.atoms = this.literals.concat(['var'])
         this.lexer = new Lexer(this)
@@ -49,30 +54,10 @@ class Kode
     {
         var block, tokens
 
-        if (this.args.verbose || this.args.debug || this.args.kode)
-        {
-            print.code('kode',text,'coffee')
-        }
         tokens = this.lexer.tokenize(text)
-        if (this.args.raw)
-        {
-            print.noon('raw tokens',tokens)
-        }
-        if (this.args.tokens)
-        {
-            print.tokens('tokens',tokens)
-        }
         block = this.lexer.blockify(tokens)
-        if (this.args.raw)
-        {
-            print.noon('raw block',block)
-        }
-        if (this.args.block)
-        {
-            print.block('tl block',block)
-        }
         return this.operator.collect(this.returner.collect(this.scoper.collect(this.stripol.collect(this.parser.parse(block)))))
     }
 }
 
-export default Kode.compile;
+export default Kode;

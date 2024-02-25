@@ -235,5 +235,5 @@ class Ansi
             process(handler, i) for handler, i in tokens
             break if @input.length == length
             
-module.exports = Ansi
+export Ansi
 

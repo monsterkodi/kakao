@@ -1,13 +1,14 @@
-// monsterkodi/kode 0.252.0
+// monsterkodi/kode 0.256.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var ESCAPEREGEXP, str, STRIPANSI
 
+import ansi from './ansi.js'
 
 str = function (o)
 {
-    var noon, _13_17_
+    var _15_17_
 
     if (!(o != null))
     {
@@ -21,7 +22,6 @@ str = function (o)
         }
         else
         {
-            noon = require('noon')
             return "\n" + noon.stringify(o,{circular:true})
         }
     }
@@ -184,9 +184,9 @@ str.time = function (t)
             f = 1
             o = {ms:1000,second:60,minute:60,hour:24,day:30,month:12,year:0}
             var list = _k_.list(Object.keys(o))
-            for (var _147_18_ = 0; _147_18_ < list.length; _147_18_++)
+            for (var _148_18_ = 0; _148_18_ < list.length; _148_18_++)
             {
-                k = list[_147_18_]
+                k = list[_148_18_]
                 num = parseInt(t / f)
                 f *= o[k]
                 if (k === 'year' || t < f)
@@ -203,9 +203,9 @@ str.time = function (t)
             thsnd = BigInt(1000)
             f = thsnd
             var list1 = ['ns','μs','ms','second']
-            for (var _156_18_ = 0; _156_18_ < list1.length; _156_18_++)
+            for (var _157_18_ = 0; _157_18_ < list1.length; _157_18_++)
             {
-                k = list1[_156_18_]
+                k = list1[_157_18_]
                 if (k === 'seconds' || t < f)
                 {
                     num = parseInt(thsnd * t / f)
@@ -235,17 +235,14 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _184_13_
+    var _185_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }
 
 str.ansi2html = function (s)
 {
-    var Ansi
-
-    Ansi = require('./ansi')
-    return Ansi.html(s)
+    return ansi.html(s)
 }
-str.ansi = require('./ansi')
+str.ansi = ansi
 export default str;

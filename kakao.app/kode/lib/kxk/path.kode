@@ -6,9 +6,13 @@
     000        000   000     000     000   000    
 ###
 
-if Bun
-    toExport = require 'path'
-else
+# import path from 'path'
+
+# toExport = path
+
+if true #global.Bun
+    # toExport = require 'path'
+    # else
     CHAR_FORWARD_SLASH  = '/'.charCodeAt 0
     CHAR_BACKWARD_SLASH = '\\'.charCodeAt 0
     CHAR_DOT            = '.'.charCodeAt 0

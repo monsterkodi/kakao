@@ -10,6 +10,84 @@ import noon  from '../../lib/kxk/noon.js'
 import kstr  from '../../lib/kxk/kstr.js'
 import slash from '../../lib/kxk/slash.js'
 
+# ●▸ pattern
+# patterns = require './lexer.json'
+# import patterns from './lexer.json' assert {type:"json"}
+
+patterns = noon.parse """
+    ws          [ \\t]+
+    nl          [ \\t]*\\r?\\n
+    comment     \\#\\#\\#(?:.|\\n)*?\\#\\#\\#|\\#.*
+    num         0x[a-fA-F\\d]+|0o[0-7]+|0b[0-1]+|[0-9]+n|[0-9]+\\.[0-9]+|[0-9]+e[-\\+]?[0-9]+|[1-9][0-9]*|0|\\-?Infinity
+    triple      \\"\\"\\"(?:.|\\n)*?\\"\\"\\"
+    double      "(?:\\\\.|\\#\\{[^\\}]*}|[^\\n\\\\"])*"
+    single      '(?:\\\\['\\\\]|[^\\n'])*'
+    regex       (?<!\\d\\s*)\\/(?:\\\\[\\/]|\\([^\\n\\s]*\\)|[^\\n\\s\\)])*\\/[gimsuy]*(?!\\s*\\d)
+    dots        (?<!\\.)\\.\\.\\.?(?!\\.)
+    paren       [\\(\\)\\[\\]\\{\\}]
+    func        (○->|○=>|->|=>)
+    then        ➜
+    this        @
+    test        (?<!●)▸[\\s\\n]+
+    profile     ●▸
+    profilend   ●▪
+    prof        ●
+    assert      ▴
+    op          (\\band\\b|\\bor\\b|\\bnot\\b|\\+\\+|--|==|!=|>=|<=|\\+=|-=|\\*=|\\/=|\\|=|\\^=|\\?=|\\&=|%=|<<|>>|=|\\*|\\/|\\+|-|%|\\^|~|\\&|\\||<|>|\\beql\\b|\\bnew\\b|\\bis\\b|\\binstanceof\\b|\\bdelete\\b|\\bnoon\\b|\\bcopy\\b|\\bclone\\b)
+    punct       [,:;!&~\\|\\.\\?\\\\]
+    bool        (\\byes\\b|\\bno\\b|\\btrue\\b|\\bfalse\\b)
+    keyword
+        if
+        then
+        else
+        for
+        each
+        break
+        await
+        return
+        continue
+        switch
+        while
+        when
+        is
+        in
+        of    
+        class
+        super    
+        extends
+        try
+        catch
+        throw
+        finally
+        function
+        require
+        import
+        export
+        from
+        typeof
+        empty
+        valid
+        dbg
+        log
+        warn
+        error
+        clamp
+        int
+        float
+        first
+        last
+        lpad
+        rpad
+        trim
+        ltrim
+        rtrim
+        min
+        max
+    var         [▸a-zA-Z_$][a-zA-Z0-9_$]*
+    """
+
+# ●▪ pattern
+    
 class Lexer
 
     @: (@kode) ->
@@ -18,7 +96,8 @@ class Lexer
         @verbose  = @kode.args.verbose
         @raw      = @kode.args.raw
 
-        @patterns = require './lexer.json'
+        @patterns = patterns
+        # log '@patterns' @patterns
 
         @regs = []
         
@@ -26,7 +105,7 @@ class Lexer
             
             if 
                 pat is 'string'
-                    
+                    # log 'pat' pat
                     @regs.push [key, new RegExp pat]
                     
                 pat is Array
