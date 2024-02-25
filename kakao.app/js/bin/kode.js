@@ -23,9 +23,9 @@ class kode
         jsDir = slash.resolve(dirname + '/../../js')
         list = await dirlist(kodeDir)
         var list1 = _k_.list(list)
-        for (var _33_17_ = 0; _33_17_ < list1.length; _33_17_++)
+        for (var _34_17_ = 0; _34_17_ < list1.length; _34_17_++)
         {
-            item = list1[_33_17_]
+            item = list1[_34_17_]
             if (item.type === 'dir')
             {
                 continue
@@ -41,8 +41,6 @@ class kode
                 if (origText !== compText)
                 {
                     console.log(kodeFile,'▸',jsFile)
-                    console.log(red(origText))
-                    console.log(blue(compText))
                 }
                 else
                 {
@@ -50,6 +48,8 @@ class kode
                 }
             }
         }
+        console.log('done')
+        return process.exit(0)
     }
 }
 

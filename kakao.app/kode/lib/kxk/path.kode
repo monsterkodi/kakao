@@ -91,7 +91,7 @@ if true #global.Bun
         base = components[-1]
         
         dots = base.split '.'
-        ext  = (dots.length > 1 and dots[-1].length) ? dots.pop() : ''
+        ext  = (dots.length > 1 and dots[-1].length) ? '.'+dots.pop() : ''
         name = dots.join '.'
         
         #dotIndex = base.lastIndexOf '.'
@@ -101,7 +101,7 @@ if true #global.Bun
         #    ext = ''
             
         root: path[0] == sep ? sep : ''
-        dir:  join.apply null, components[..-1]
+        dir:  join.apply null, components[...-1]
         base: base
         name: name
         ext:  ext

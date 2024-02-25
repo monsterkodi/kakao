@@ -18,7 +18,7 @@ export default function ()
 {
     var args, cmd, cp, cwd, dirname, opt, out
 
-    cmd = `${CMD} -v -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
+    cmd = `${CMD} -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
     console.log(cmd)
     dirname = path.dirname(import.meta.url.slice(7))
     cwd = slash.resolve(dirname + '/../../src')

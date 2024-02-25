@@ -420,7 +420,7 @@ broken key: ${bold(yellow(k))}`)
             {
                 return
             }
-            process.exit()
+            process.exit(0)
         }
         else if (arg === 'version' && (version != null))
         {
@@ -433,7 +433,7 @@ broken key: ${bold(yellow(k))}`)
             {
                 return
             }
-            process.exit()
+            process.exit(0)
         }
         if (result[arg] === false || result[arg] === true)
         {

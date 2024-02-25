@@ -277,12 +277,12 @@ parse = (config, options={}) ->
             if options.returnLog then return helpText
             log helpText
             return if options.dontExit
-            process.exit()
+            process.exit 0
         else if arg == 'version' and version?
             if options.returnLog then return version
             log version
             return if options.dontExit
-            process.exit()
+            process.exit 0
             
         if 
             result[arg] == false or result[arg] == true
