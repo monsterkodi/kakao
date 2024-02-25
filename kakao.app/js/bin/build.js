@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.252.0
+// monsterkodi/kode 0.256.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
@@ -12,11 +12,13 @@ FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 import fs from "fs"
 import process from "process"
 import childp from "child_process"
+import path from 'path'
 export default function ()
 {
-    var cmd, opt
+    var cmd, opt, __dirname
 
     cmd = `${CMD} -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
+    __dirname = path.dirname(import.meta.url.slice(7))
     opt = {cwd:__dirname + '/../../src'}
     return childp.exec(cmd,opt,function (err, stdout, stderr)
     {

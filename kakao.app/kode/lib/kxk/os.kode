@@ -6,9 +6,12 @@
      0000000   0000000 
 ###
 
+# import { homedir } from 'os'
+
 function os
     
-    @homedir:  -> require('os').homedir()
+    # @homedir:  homedir
+    @homedir:  -> '/Users/kodi'
     @platform: 'Darwin'
     @isMac:    os.platform == 'Darwin'
 

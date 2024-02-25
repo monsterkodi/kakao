@@ -6,14 +6,15 @@
     000   000  0000000      000     000   000
 ###
 
+import ansi from './ansi.js'
+
 str = (o) ->
     
     return 'null' if not o?
     if typeof(o) == 'object'
         if o._str?
             o._str()
-        else
-            noon = require 'noon'
+        else            
             "\n" + noon.stringify o, circular: true
     else
         String o
@@ -184,9 +185,8 @@ str.stripAnsi = (s) ->
     s.replace? STRIPANSI, ''
         
 str.ansi2html = (s) ->
-    Ansi = require './ansi'
-    Ansi.html s
+    ansi.html s
     
-str.ansi = require './ansi'
+str.ansi = ansi
         
 export str

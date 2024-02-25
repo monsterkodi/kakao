@@ -110,7 +110,7 @@ exports.strip = (s) -> String(s).replace STRIPANSI, ''
 # 000 0 000  000   000  000  000  0000  
 # 000   000  000   000  000  000   000  
 
-if __filename == Bun.main 
+if false #__filename == Bun.main 
     
     # print a color table to the console
     # if file is executed directly: 

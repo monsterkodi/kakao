@@ -18,6 +18,7 @@ FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 import fs       from "fs"
 import process  from "process"
 import childp   from "child_process"
+import path     from 'path'
 
 export ->
     
@@ -30,6 +31,8 @@ export ->
     # could be a one-liner in a shell script but that would be too simple :)
         
     cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
+    
+    __dirname = path.dirname import.meta.url[7..]
     
     opt = cwd:__dirname + '/../../src' # build inside the kokoa.app/src folder
     

@@ -6,7 +6,7 @@
     000   000  000   000    
 ###
 
-import karg  from '../lib/kxk/karg'
+import karg  from '../lib/kxk/karg.js'
 import build from './build.js'
 import kode  from './kode.js'
 
