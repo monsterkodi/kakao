@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g3=_k_.k.F256(_k_.k.g(3));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.c3=_k_.k.F256(_k_.k.c(3));_k_.m3=_k_.k.F256(_k_.k.m(3));_k_.y4=_k_.k.F256(_k_.k.y(4));_k_.y5=_k_.k.F256(_k_.k.y(5))
+var _k_ = {profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = process.hrtime.bigint()}, profilend: function (id) { var b = process.hrtime.bigint()-_k_.hrtime[id]; let f=1000n; for (let u of ['ns','μs','ms','s']) { if (u=='s' || b<f) { return console.log(id+' '+(1000n*b/f)+' '+u); } f*=1000n; }}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g2=_k_.k.F256(_k_.k.g(2));_k_.g3=_k_.k.F256(_k_.k.g(3));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.c3=_k_.k.F256(_k_.k.c(3));_k_.c5=_k_.k.F256(_k_.k.c(5));_k_.m3=_k_.k.F256(_k_.k.m(3));_k_.m4=_k_.k.F256(_k_.k.m(4));_k_.y5=_k_.k.F256(_k_.k.y(5))
 
 var dirname
 
@@ -20,6 +20,7 @@ class kode
     {
         var compText, cssDir, cssFile, file, jsDir, jsFile, kode, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText
 
+        _k_.profile('🔨')
         kode = new Kode
         kodeDir = slash.resolve(dirname + '/../../kode')
         pugDir = slash.resolve(dirname + '/../../pug')
@@ -39,9 +40,9 @@ class kode
             })
         }
         var list1 = _k_.list(files)
-        for (var _41_17_ = 0; _41_17_ < list1.length; _41_17_++)
+        for (var _42_17_ = 0; _42_17_ < list1.length; _42_17_++)
         {
-            file = list1[_41_17_]
+            file = list1[_42_17_]
             switch (slash.ext(file))
             {
                 case 'kode':
@@ -52,13 +53,13 @@ class kode
                     compText = kode.compile(kodeText)
                     if (origText !== compText)
                     {
-                        console.log('🛠 ',_k_.y4(kodeFile))
+                        console.log(_k_.b5('▶ '),_k_.g5(slash.tilde(kodeFile)))
                         await slash.write(jsFile,compText)
-                        console.log(_k_.b5('▸ '),_k_.g5(jsFile))
+                        console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(jsFile)))
                     }
                     else
                     {
-                        console.log(_k_.g3('✔ '),_k_.g3(kodeFile))
+                        console.log(_k_.g2('✔ '),_k_.g3(slash.tilde(kodeFile)))
                     }
                     break
                 case 'styl':
@@ -76,13 +77,13 @@ class kode
                         {
                             if (origText !== compText)
                             {
-                                console.log('🛠 ',_k_.y4(stylFile))
+                                console.log(_k_.c3('▶ '),_k_.c5(slash.tilde(stylFile)))
                                 await slash.write(cssFile,compText)
-                                console.log(_k_.b5('▸ '),_k_.g5(cssFile))
+                                console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(cssFile)))
                             }
                             else
                             {
-                                console.log(_k_.g3('✔ '),_k_.c3(stylFile))
+                                console.log(_k_.g2('✔ '),_k_.c3(slash.tilde(stylFile)))
                             }
                         }
                         return null
@@ -102,13 +103,13 @@ class kode
                     {
                         if (tgtText !== compText)
                         {
-                            console.log('🛠 ',_k_.y4(srcFile))
+                            console.log(_k_.m3('▶ '),_k_.m4(slash.tilde(srcFile)))
                             await slash.write(tgtFile,compText)
-                            console.log(_k_.b5('▸ '),_k_.g5(tgtFile))
+                            console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(tgtFile)))
                         }
                         else
                         {
-                            console.log(_k_.g3('✔ '),_k_.m3(srcFile))
+                            console.log(_k_.g2('✔ '),_k_.m3(slash.tilde(srcFile)))
                         }
                     }
                     null
@@ -116,6 +117,7 @@ class kode
             }
 
         }
+        _k_.profilend('🔨')
         return process.exit(0)
     }
 }

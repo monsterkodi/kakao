@@ -2,8 +2,16 @@
 
 var _k_
 
-var os
+var homedir, os
 
+homedir = ''
+import('os')
+.
+then
+(function (os)
+{
+    return homedir = os.homedir()
+})
 
 os = (function ()
 {
@@ -12,7 +20,7 @@ os = (function ()
 
     os["homedir"] = function ()
     {
-        return '/Users/kodi'
+        return homedir
     }
 
     os["platform"] = 'Darwin'

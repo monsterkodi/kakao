@@ -6,12 +6,12 @@
      0000000   0000000 
 ###
 
-# import { homedir } from 'os'
+homedir = ''
+import('os').then (os) -> homedir = os.homedir()
 
 function os
     
-    # @homedir:  homedir
-    @homedir:  -> '/Users/kodi'
+    @homedir:  -> homedir
     @platform: 'Darwin'
     @isMac:    os.platform == 'Darwin'
 
