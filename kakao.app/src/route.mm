@@ -180,7 +180,7 @@
     
     id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
 
-    NSLog(@"%d ◂ %@", win.windowNumber, payload);
+    // NSLog(@"%d ◂ %@", win.windowNumber, payload);
     
     [targetView evaluateJavaScript:script completionHandler:nil];
 }

@@ -71,7 +71,7 @@
 {
     NSURL* url;
     
-    NSLog(@"Win new > %@", urlString);
+    // NSLog(@"Win new > %@", urlString);
     
     if (!urlString) urlString = @"index.html";
     
@@ -90,7 +90,7 @@
         url = [Bundle jsURL:urlString];
     }
     
-    NSLog(@"Win new < %@", url);
+    // NSLog(@"Win new < %@", url);
     return [Win withURL:url];
 }
 
@@ -283,7 +283,11 @@
 
 - (void) reload
 {
-    [self.view reload];
+    [[WKWebsiteDataStore defaultDataStore] // nuke the cache and then reload 
+        removeDataOfTypes:[WKWebsiteDataStore allWebsiteDataTypes] 
+        modifiedSince:[NSDate dateWithTimeIntervalSince1970:0] 
+        completionHandler:^() { [self.view reload]; } // reloadFromOrigin?
+    ];
 }
 
 @end

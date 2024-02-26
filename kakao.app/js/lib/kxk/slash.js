@@ -801,8 +801,111 @@ Slash = (function ()
 
     Slash["writeText"] = function (p, text, cb)
     {
-        Slash.error("Slash.writeText -- no callback!")
-        return ''
+        var tmpfile
+
+        tmpfile = Slash.tmpfile()
+        if (typeof(cb) === 'function')
+        {
+            try
+            {
+                import('fs')
+                .
+                then
+                return (function (fs)
+                {
+                    return this.fileExists(p,function (stat)
+                    {
+                        var mode, _525_42_
+
+                        mode = ((_525_42_=(stat != null ? stat.mode : undefined)) != null ? _525_42_ : 0o666)
+                        return fs.writeFile(tmpfile,text,{mode:mode},function (err)
+                        {
+                            if (err)
+                            {
+                                Slash.error("Slash.writeText - " + String(err))
+                                return cb('')
+                            }
+                            else
+                            {
+                                return fs.move(tmpfile,p,{overwrite:true},function (err)
+                                {
+                                    if (err)
+                                    {
+                                        Slash.error(`Slash.writeText -- move ${tmpfile} -> ${p} ERROR:` + String(err))
+                                        return cb('')
+                                    }
+                                    else
+                                    {
+                                        return cb(p)
+                                    }
+                                })
+                            }
+                        })
+                    })
+                }).bind(this)
+            }
+            catch (err)
+            {
+                return cb(Slash.error("Slash.writeText --- " + String(err)))
+            }
+        }
+        else
+        {
+            try
+            {
+                fs.writeFileSync(tmpfile,text)
+                fs.moveSync(tmpfile,p,{overwrite:true})
+                return p
+            }
+            catch (err)
+            {
+                Slash.error("Slash.writeText -- " + String(err))
+            }
+            return ''
+        }
+    }
+
+    Slash["write"] = async function (p, text)
+    {
+        var crypto, err, fs, fsprom, mode, os, stat, tmpdir, tmpfile, uuid, _573_26_
+
+        console.log(yellow(p))
+        fsprom = await import('fs/promises')
+        console.log(fsprom)
+        fs = fsprom.default
+        console.log(fs)
+        os = await import('os')
+        tmpdir = os.default.tmpdir
+        console.log(tmpdir)
+        crypto = await import('crypto')
+        uuid = crypto.default.randomUUID
+        console.log(uuid)
+        tmpfile = Slash.join(tmpdir(),uuid())
+        console.log('tmpfile',tmpfile)
+        err = await fs.access(p,(fs.R_OK | fs.F_OK))
+        console.log('access',err)
+        stat = await fs.stat(p)
+        console.log('stat',stat)
+        mode = ((_573_26_=(stat != null ? stat.mode : undefined)) != null ? _573_26_ : 0o666)
+        err = await fs.writeFile(tmpfile,text,{mode:mode})
+        console.log('write',err)
+        if (err)
+        {
+            return Slash.error("Slash.writeText - " + String(err))
+        }
+        else
+        {
+            err = await fs.rename(tmpfile,p)
+            if (err)
+            {
+                return Slash.error(`Slash.writeText -- move ${tmpfile} -> ${p} ERROR:` + String(err))
+            }
+        }
+    }
+
+    Slash["tmpfile"] = function (ext)
+    {
+        return Slash.join(os.tmpdir(),require('uuid').v1() + (ext && `.${ext}` || ''))
     }
 
     Slash["remove"] = function (p, cb)

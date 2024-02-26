@@ -38,7 +38,8 @@ Window = (function ()
         main.focus()
         kakao.request('window.id').then((function (id)
         {
-            return elem({class:'test',text:`window.id ${id}`,parent:main})
+            elem({class:'test',text:"▪▸○▴○◂▪",parent:main})
+            return elem({class:'test',text:`${id}`,parent:main})
         }).bind(this))
     }
 

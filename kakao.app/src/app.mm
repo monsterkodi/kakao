@@ -128,7 +128,7 @@
         
         isTranspiling = YES;
         
-        // NSLog(@"transpile! %@", filesToTranspile);
+        NSLog(@"transpile! %@", filesToTranspile);
         
         NSTask *task = [[NSTask alloc] init];
 

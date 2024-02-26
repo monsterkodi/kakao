@@ -456,7 +456,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     }
     else
     {
-        NSLog(@"Start monitoring of %@", self.path);
+        NSLog(@"👁  %@", self.path);
     }
     
     NSArray *actualPaths = (NSArray *) CFBridgingRelease(FSEventStreamCopyPathsBeingWatched(streamRef));

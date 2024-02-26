@@ -6,11 +6,11 @@ var args
 
 import karg from '../lib/kxk/karg.js'
 import build from './build.js'
-import kode from './kode.js'
+import knrd from './knrd.js'
 args = karg(`kk
     options                                 **
     build      build application            = false
-    kode       transpile kode               = false
+    knrd       transpile kode, styl, pug    = false
     rebuild    rebuild all targets          = false
     watch      watch directory for changes  = false
     info       show build status            = false
@@ -26,9 +26,9 @@ class kk
         {
             build()
         }
-        if (args.kode)
+        if (args.knrd)
         {
-            return kode(args.options)
+            return knrd(args.options)
         }
     }
 }

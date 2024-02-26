@@ -515,22 +515,63 @@ function Slash
 
     @writeText: (p, text, cb) ->
         
-        # tmpfile = Slash.tmpfile()
+        tmpfile = Slash.tmpfile()
         
-        # if cb is func
-            # try
-                # Neutralino.filesystem.writeFile(tmpfile, text).then ->
-                    # cb p
-            # catch err 
-                # Slash.error "Slash.writeText - " + String(err)
-                # cb ''
-        # else
-            Slash.error "Slash.writeText -- no callback!"
+        if cb is 'function'
+            try
+                import('fs').then (fs) =>
+                    @fileExists p, (stat) ->
+                        
+                        mode = stat?.mode ? 0o666
+        
+                        fs.writeFile tmpfile, text, mode:mode, (err) ->
+                            if err 
+                                Slash.error "Slash.writeText - " + String(err)
+                                cb ''
+                            else
+                                fs.move tmpfile, p, overwrite:true, (err) ->
+                                    if err 
+                                        Slash.error "Slash.writeText -- move #{tmpfile} -> #{p} ERROR:" + String(err)
+                                        cb '' 
+                                    else cb p
+            catch err
+                cb Slash.error "Slash.writeText --- " + String(err)
+        else
+            try
+                fs.writeFileSync tmpfile, text
+                fs.moveSync tmpfile, p, overwrite:true
+                return p
+            catch err
+                Slash.error "Slash.writeText -- " + String(err)
             ''
+            
+    @write: (p, text) ○->
         
-    #@tmpfile: (ext) -> 
-    #    
-    #    Slash.join os.tmpdir(), require('uuid').v1() + (ext and ".#{ext}" or '')
+        fsprom = await import('fs/promises')
+        fs     = fsprom.default
+        os     = await import('os')
+        tmpdir = os.default.tmpdir
+        crypto = await import('crypto')
+        uuid   = crypto.default.randomUUID
+        tmpfile = Slash.join tmpdir(), uuid()
+        
+        err  = await fs.access p, (fs.R_OK | fs.F_OK)
+            
+        stat = await fs.stat p
+        mode = stat?.mode ? 0o666
+
+        err = await fs.writeFile tmpfile, text, mode:mode
+
+        if err
+            Slash.error "Slash.writeText - " + String(err)
+        else
+            err = await fs.rename tmpfile, p
+            if err 
+                Slash.error "Slash.writeText -- move #{tmpfile} -> #{p} ERROR:" + String(err)
+        
+    @tmpfile: (ext) -> 
+        
+        Slash.join os.tmpdir(), require('uuid').v1() + (ext and ".#{ext}" or '')
         
     # 00000000   00000000  00     00   0000000   000   000  00000000  
     # 000   000  000       000   000  000   000  000   000  000       
