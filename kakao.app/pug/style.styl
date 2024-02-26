@@ -35,12 +35,12 @@ titlebarHeight      = 30px
     color           white
     cursor          pointer
 
-fill-abs()
+fill-abs(n=0)
     position            absolute
-    bottom              0
-    right               0
-    left                0
-    top                 0
+    bottom              n
+    right               n
+    left                n
+    top                 n
     margin              0
     padding             0
         
@@ -51,10 +51,10 @@ fill-abs()
 // 0000000     0000000   0000000       000   
 
 body
+    fill-abs()
     animation           300ms ease-in fadeIn
     font-family         fontMono
     font-size           14px
-    fill-abs()
     
 // 00     00   0000000   000  000   000  
 // 000   000  000   000  000  0000  000  
@@ -63,6 +63,7 @@ body
 // 000   000  000   000  000  000   000  
 
 #main
+    fill-abs()
     -webkit-user-select none
     padding             frameWidth
     overflow            auto

@@ -24,6 +24,7 @@ class kode
 
     @run: (files = []) ○->
               
+        ● 🔨
         kode = new Kode
         
         kodeDir = slash.resolve dirname + '/../../kode'
@@ -50,16 +51,16 @@ class kode
                     kodeText = await fs.readFile kodeFile, encoding:'utf8'
                     origText = await fs.readFile jsFile,   encoding:'utf8'
                     
-                    # ●▸ 🔎
+                    # ●▸ 🔨
                     compText = kode.compile kodeText
-                    # ●▪ 🔎
+                    # ●▪ 🔨
                     
                     if origText != compText
-                        log '🛠 ' y4 kodeFile
+                        log b5('▶ '), g5 slash.tilde kodeFile
                         await slash.write(jsFile, compText)
-                        log b5('▸ '), g5 jsFile
+                        log b5('✔ '), g5 slash.tilde jsFile
                     else
-                        log g3('✔ '), g3 kodeFile
+                        log g2('✔ '), g3 slash.tilde kodeFile
                     
                 'styl'
                 
@@ -75,11 +76,11 @@ class kode
                             log y5('✘ '), r5 err
                         else
                             if origText != compText
-                                log '🛠 ' y4 stylFile
+                                log c3('▶ '), c5 slash.tilde stylFile
                                 await slash.write(cssFile, compText)
-                                log b5('▸ '), g5 cssFile
+                                log b5('✔ '), g5 slash.tilde cssFile
                             else
-                                log g3('✔ '), c3 stylFile
+                                log g2('✔ '), c3 slash.tilde stylFile
                         null
                         
                 'pug'
@@ -96,11 +97,11 @@ class kode
                         log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
                     else
                         if tgtText != compText
-                            log '🛠 ' y4 srcFile
+                            log m3('▶ '), m4 slash.tilde srcFile
                             await slash.write tgtFile, compText
-                            log b5('▸ '), g5 tgtFile
+                            log b5('✔ '), g5 slash.tilde tgtFile
                         else
-                            log g3('✔ '), m3 srcFile
+                            log g2('✔ '), m3 slash.tilde srcFile
                     null
                     
         process.exit 0
