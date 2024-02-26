@@ -1,0 +1,85 @@
+###
+000   000  000   000  00000000   0000000    
+000  000   0000  000  000   000  000   000  
+0000000    000 0 000  0000000    000   000  
+000  000   000  0000  000   000  000   000  
+000   000  000   000  000   000  0000000    
+###
+
+import Kode from './kode/kompile.js'
+import slash from '../lib/kxk/slash.js'
+import kolor from '../lib/kxk/kolor.js'
+import dirlist from '../lib/kxk/dirlist.js'
+import stylus from '../../bin/stylus.js'
+
+import fs   from 'fs/promises'
+import path from 'path'
+
+kolor.globalize()
+
+dirname = path.dirname import.meta.url[7..]
+
+class kode
+
+    @run: (files = []) ○->
+              
+        kode = new Kode
+        
+        kodeDir = slash.resolve dirname + '/../../kode'
+        pugDir  = slash.resolve dirname + '/../../pug'
+        jsDir   = slash.resolve dirname + '/../../js'
+        cssDir  = slash.resolve dirname + '/../../js/css'
+        
+        if empty files
+            list = await dirlist kodeDir
+            list = list.filter (item) -> item.type == 'file'
+            files = list.map (item) -> item.path
+            
+        for file in files
+            
+            switch slash.ext(file) 
+                
+                'kode'
+                            
+                    kodeFile = file
+                    jsFile   = slash.swapExt kodeFile.replace(kodeDir, jsDir), 'js'
+                    
+                    kodeText = await fs.readFile kodeFile, encoding:'utf8'
+                    origText = await fs.readFile jsFile,   encoding:'utf8'
+                    
+                    # ●▸ 🔎
+                    compText = kode.compile kodeText
+                    # ●▪ 🔎
+                    
+                    if origText != compText
+                        log '🛠 ' y4(kodeFile), b5('▸'), w5(jsFile)
+                        # await fs.writeFile jsFile, compText, encoding:'utf8'
+                        await slash.write(jsFile, compText)
+                        log "wrote #{jsFile}"
+                    else
+                        log g3('✔ '), g2(kodeFile)
+                    
+                'styl'
+                
+                    stylFile = file
+                    cssFile  = slash.swapExt stylFile.replace(pugDir, cssDir), 'css'
+                    
+                    stylText = await fs.readFile stylFile, encoding:'utf8'
+                    origText = await fs.readFile cssFile,  encoding:'utf8'
+                    
+                    stylus(stylText).set('filename' cssFile).render (err, compText) ○->
+                        
+                        if err or empty compText
+                            log y5('✘ '), r5(err)
+                        else
+                            if origText != compText
+                                log '🛠 ' y4(stylFile), b5('▸'), w5(cssFile)
+                                await slash.write(cssFile, compText)
+                                log "wrote #{cssFile}"
+                            else
+                                log g3('✔ '), g2(stylFile)
+                        null
+                    
+        process.exit 0
+
+export kode.run
