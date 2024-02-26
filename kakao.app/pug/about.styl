@@ -5,9 +5,6 @@
 //      000     000        000     000    
 // 0000000      000        000     0000000
 
-frameWidth          = 6px
-titlebarHeight      = 30px
-
 bgColor             = #000
 frameColor          = #000
 textBlurColor       = #444
@@ -27,13 +24,13 @@ fadeInAnim()
     font-family     titlebarFont
     font-weight     normal
     font-style      normal
-    src             url("../../Contents/Resources/font/Bahnschrift.woff")
+    src             url(../../Contents/Resources/font/Bahnschrift.woff)
 
 @font-face 
     font-family     fontMono
     font-weight     normal
     font-style      normal
-    src             url("../../Contents/Resources/font/Meslo.woff")
+    src             url(../../Contents/Resources/font/Meslo.woff)
 
 *
     outline-width       0
@@ -55,6 +52,7 @@ fill-abs()
 // 0000000     0000000   0000000       000   
 
 body
+    fill-abs()
     overflow            hidden
     color               textFocusColor
     border              bodyBorder
@@ -62,7 +60,6 @@ body
     animation           300ms ease-in fadeIn
     font-family         fontMono
     font-size           14px
-    fill-abs()
     
 // 00     00   0000000   000  000   000  
 // 000   000  000   000  000  0000  000  
@@ -71,6 +68,7 @@ body
 // 000   000  000   000  000  000   000  
 
 #main
+    fill-abs()
     border              frameBorder
     border-radius       frameRadius
     background-color    bgColor
@@ -78,7 +76,6 @@ body
     padding             frameWidth
     overflow            auto
     pointer-events      auto
-    fill-abs()
     
 //  0000000   0000000     0000000   000   000  000000000  
 // 000   000  000   000  000   000  000   000     000     

@@ -17,7 +17,7 @@
 .test {
   font-size: 40px;
   font-family: fontMono;
-  color: #f22;
+  color: #88f;
   text-align: center;
   width: 100%;
 }
@@ -25,17 +25,11 @@
   color: #fff;
   cursor: pointer;
 }
+fill-abs()
 body {
   animation: 300ms ease-in fadeIn;
   font-family: fontMono;
   font-size: 14px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin: 0;
-  padding: 0;
 }
 #main {
   -webkit-user-select: none;

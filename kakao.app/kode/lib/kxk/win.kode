@@ -34,7 +34,7 @@ function Window
         main.focus()
         
         kakao.request('window.id').then (id) =>
-            elem class:'test' text:"▪▸○▴○◂▪" parent:main
+            elem class:'test' text:"▪▸○!▴!○◂▪" parent:main
             elem class:'test' text:"#{id}" parent:main
         
     animate: =>

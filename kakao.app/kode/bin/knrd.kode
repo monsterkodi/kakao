@@ -6,11 +6,12 @@
 000   000  000   000  000   000  0000000    
 ###
 
-import Kode from './kode/kompile.js'
-import slash from '../lib/kxk/slash.js'
-import kolor from '../lib/kxk/kolor.js'
-import dirlist from '../lib/kxk/dirlist.js'
-import stylus from '../../bin/stylus.js'
+import Kode     from './kode/kompile.js'
+import slash    from '../lib/kxk/slash.js'
+import kolor    from '../lib/kxk/kolor.js'
+import dirlist  from '../lib/kxk/dirlist.js'
+import stylus   from '../../bin/stylus.js'
+import pug      from '../../bin/pug.js'
 
 import fs   from 'fs/promises'
 import path from 'path'
@@ -31,8 +32,10 @@ class kode
         cssDir  = slash.resolve dirname + '/../../js/css'
         
         if empty files
-            list = await dirlist kodeDir
-            list = list.filter (item) -> item.type == 'file'
+            
+            list  = await dirlist pugDir
+            list  = list.concat await dirlist kodeDir
+            list  = list.filter (item) -> item.type == 'file'
             files = list.map (item) -> item.path
             
         for file in files
@@ -52,12 +55,11 @@ class kode
                     # ●▪ 🔎
                     
                     if origText != compText
-                        log '🛠 ' y4(kodeFile), b5('▸'), w5(jsFile)
-                        # await fs.writeFile jsFile, compText, encoding:'utf8'
+                        log '🛠 ' y4 kodeFile
                         await slash.write(jsFile, compText)
-                        log "wrote #{jsFile}"
+                        log b5('▸ '), g5 jsFile
                     else
-                        log g3('✔ '), g2(kodeFile)
+                        log g3('✔ '), g3 kodeFile
                     
                 'styl'
                 
@@ -70,15 +72,36 @@ class kode
                     stylus(stylText).set('filename' cssFile).render (err, compText) ○->
                         
                         if err or empty compText
-                            log y5('✘ '), r5(err)
+                            log y5('✘ '), r5 err
                         else
                             if origText != compText
-                                log '🛠 ' y4(stylFile), b5('▸'), w5(cssFile)
+                                log '🛠 ' y4 stylFile
                                 await slash.write(cssFile, compText)
-                                log "wrote #{cssFile}"
+                                log b5('▸ '), g5 cssFile
                             else
-                                log g3('✔ '), g2(stylFile)
+                                log g3('✔ '), c3 stylFile
                         null
+                        
+                'pug'
+                
+                    srcFile = file
+                    tgtFile = slash.swapExt srcFile.replace(pugDir, jsDir), 'html'
+                    
+                    srcText = await fs.readFile srcFile, encoding:'utf8'
+                    tgtText = await fs.readFile tgtFile, encoding:'utf8'
+                    
+                    compText = pug.render srcText, pretty: true
+                        
+                    if empty compText
+                        log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
+                    else
+                        if tgtText != compText
+                            log '🛠 ' y4 srcFile
+                            await slash.write tgtFile, compText
+                            log b5('▸ '), g5 tgtFile
+                        else
+                            log g3('✔ '), m3 srcFile
+                    null
                     
         process.exit 0
 

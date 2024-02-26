@@ -5,6 +5,8 @@
 000   000  000   000  000   000  000  000   
 0000000    000   000  000   000  000   000  
 */
+fadeInAnim()
+fadeOutAnim()
 body {
   overflow: hidden;
   color: #fff;
@@ -42,11 +44,9 @@ body {
   stroke: #131313;
 }
 #titlebar.focus .winbutton svg {
-  animation: 300ms ease-in-out fadeIn;
   stroke: #444;
 }
 #titlebar.blur .winbutton svg {
-  animation: 300ms ease-in-out fadeOut;
   stroke: #131313;
 }
 #titlebar .winbutton:hover svg {
@@ -66,11 +66,9 @@ body {
   color: #fff;
 }
 #titlebar.focus .menu {
-  animation: 300ms ease-in-out fadeIn;
   opacity: 1;
 }
 #titlebar.blur .menu {
-  animation: 300ms ease-in-out fadeOut;
   opacity: 0;
 }
 .popup {
