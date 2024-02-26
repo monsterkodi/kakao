@@ -1,3 +1,4 @@
+fadeInAnim()
 @font-face {
   font-family: titlebarFont;
   font-weight: normal;
@@ -14,6 +15,7 @@
   outline-width: 0;
   outline-style: none;
 }
+fill-abs()
 body {
   overflow: hidden;
   color: #fff;
@@ -22,13 +24,6 @@ body {
   animation: 300ms ease-in fadeIn;
   font-family: fontMono;
   font-size: 14px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin: 0;
-  padding: 0;
 }
 #main {
   border: 6px solid #000;
@@ -38,13 +33,6 @@ body {
   padding: 6px;
   overflow: auto;
   pointer-events: auto;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin: 0;
-  padding: 0;
 }
 .about {
   text-align: center;
@@ -69,10 +57,10 @@ body {
   text-align: center;
   font-family: Verdana, sans-serif;
   text-decoration: none;
-  color: #323232;
+  color: rgb(50, 50, 50);
 }
 .version:hover {
-  color: #cdcdcd;
+  color: rgb(205, 205, 205);
 }
 @-moz-keyframes fadeIn {
   0% {

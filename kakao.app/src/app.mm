@@ -77,6 +77,12 @@
     }
 }
 
+//  0000000   000   000      0000000  000   000   0000000   000   000   0000000   00000000   0000000  
+// 000   000  0000  000     000       000   000  000   000  0000  000  000        000       000       
+// 000   000  000 0 000     000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
+// 000   000  000  0000     000       000   000  000   000  000  0000  000   000  000            000  
+//  0000000   000   000      0000000  000   000  000   000  000   000   0000000   00000000  0000000   
+
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
     // NSLog(@"● changes %@ ▸▸▸", folder);
@@ -128,8 +134,6 @@
         
         isTranspiling = YES;
         
-        NSLog(@"transpile! %@", filesToTranspile);
-        
         NSTask *task = [[NSTask alloc] init];
 
         [task setLaunchPath:@"/usr/bin/env"];
@@ -153,12 +157,10 @@
         if ([task terminationStatus]) NSLog(@"transpile failed? %d", [task terminationStatus]);
         [task release];
         filesToTranspile = nil;
-        // NSLog(@"reload");
         [self reload];
     }
     else if (reloadPage)
     {
-        // NSLog(@"reload!");
         [self reload];
     }
 }

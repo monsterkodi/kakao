@@ -867,28 +867,19 @@ Slash = (function ()
 
     Slash["write"] = async function (p, text)
     {
-        var crypto, err, fs, fsprom, mode, os, stat, tmpdir, tmpfile, uuid, _573_26_
+        var crypto, err, fs, fsprom, mode, os, stat, tmpdir, tmpfile, uuid, _561_26_
 
-        console.log(yellow(p))
         fsprom = await import('fs/promises')
-        console.log(fsprom)
         fs = fsprom.default
-        console.log(fs)
         os = await import('os')
         tmpdir = os.default.tmpdir
-        console.log(tmpdir)
         crypto = await import('crypto')
         uuid = crypto.default.randomUUID
-        console.log(uuid)
         tmpfile = Slash.join(tmpdir(),uuid())
-        console.log('tmpfile',tmpfile)
         err = await fs.access(p,(fs.R_OK | fs.F_OK))
-        console.log('access',err)
         stat = await fs.stat(p)
-        console.log('stat',stat)
-        mode = ((_573_26_=(stat != null ? stat.mode : undefined)) != null ? _573_26_ : 0o666)
+        mode = ((_561_26_=(stat != null ? stat.mode : undefined)) != null ? _561_26_ : 0o666)
         err = await fs.writeFile(tmpfile,text,{mode:mode})
-        console.log('write',err)
         if (err)
         {
             return Slash.error("Slash.writeText - " + String(err))
