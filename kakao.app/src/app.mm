@@ -10,6 +10,8 @@
 #import "bundle.h"
 #import "watch.h"
 
+#define OK 0
+
 @interface App ()
 
 @property (readwrite,retain) Watch* watch;
@@ -85,7 +87,7 @@
 
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    // NSLog(@"● changes %@ ▸▸▸", folder);
+    NSLog(@"● changes %@ ▸▸▸", folder);
     
     BOOL reloadPage  = NO;
     BOOL rebuildApp  = NO;
@@ -120,54 +122,94 @@
     
     if (rebuildApp)
     {
-        NSLog(@"rebuild!");
+        static BOOL isCompiling = NO;
+        
+        if (isCompiling) { return; }
+        
+        int exitCode = [self kk:@"-b"];
+        
+        isCompiling = NO;
+        
+        if (exitCode == OK)
+        {
+            [[NSApplication sharedApplication] terminate:self];
+        }
     }
     else if ([filesToTranspile count])
     {
         static BOOL isTranspiling = NO;
         
-        if (isTranspiling)
-        {
-            // NSLog(@"already transpiling!");
-            return;
-        }
+        if (isTranspiling) { return; }
         
         isTranspiling = YES;
         
-        NSTask *task = [[NSTask alloc] init];
-
-        [task setLaunchPath:@"/usr/bin/env"];
-
-        NSMutableArray* arguments = [NSMutableArray array];
-        [arguments addObject:@"node"];
-        [arguments addObject:@"--experimental-detect-module"];
-        [arguments addObject:[Bundle appPath:@"kk"]];
-        [arguments addObject:@"-k"];
-        [arguments addObjectsFromArray:filesToTranspile];
-        
-        [task setArguments:arguments];
-        
-        // hides the output:
-        // NSPipe *outputPipe = [NSPipe pipe]; 
-        // [task setStandardOutput:outputPipe];
-
-        [task launch];
-        [task waitUntilExit];
+        [self kk:@"-k" args:filesToTranspile];
+                        
         isTranspiling = NO;
-        if ([task terminationStatus]) NSLog(@"transpile failed? %d", [task terminationStatus]);
-        [task release];
+        
+        // NSLog(@"transpile %@", [changes componentsJoinedByString:@" "]);
+        
         filesToTranspile = nil;
         [self reload];
     }
     else if (reloadPage)
     {
+        // NSLog(@"reload %@", [changes componentsJoinedByString:@" "]);
         [self reload];
     }
 }
 
-//- (void) applicationWillFinishLaunching:(NSNotification *)notification { }
-//- (void) applicationDidFinishLaunching:(NSNotification *)notification { }
-//- (void) applicationWillBecomeActive:(NSNotification *)notification { }
+// 00000000  000   000  00000000   0000000  000   000  000000000  00000000  
+// 000        000 000   000       000       000   000     000     000       
+// 0000000     00000    0000000   000       000   000     000     0000000   
+// 000        000 000   000       000       000   000     000     000       
+// 00000000  000   000  00000000   0000000   0000000      000     00000000  
+
+- (int) kk:(NSString*)command { return [self kk:command args:nil]; }
+- (int) kk:(NSString*)command args:(NSArray*)args
+{
+    NSMutableArray* arr = [NSMutableArray array];
+    [arr addObject:command];
+    if (args) [arr addObjectsFromArray:args];
+    
+    return [self executeNodeScript:[Bundle appPath:@"kk"] args:arr];
+}
+
+- (int) executeNodeScript:(NSString*)scriptPath args:(NSArray*)args
+{
+    NSTask *task = [[NSTask alloc] init];
+
+    [task setLaunchPath:@"/usr/bin/env"];
+
+    NSMutableArray* arguments = [NSMutableArray array];
+    [arguments addObject:@"node"];
+    [arguments addObject:@"--experimental-detect-module"];
+    [arguments addObject:scriptPath];
+    [arguments addObjectsFromArray:args];
+    
+    NSLog(@"execute %@ %@", scriptPath, [arguments componentsJoinedByString:@" "]);
+    
+    [task setArguments:arguments];
+    
+    // hides the output:
+    // NSPipe *outputPipe = [NSPipe pipe]; 
+    // [task setStandardOutput:outputPipe];
+
+    [task launch];
+    [task waitUntilExit];
+    
+    int exitCode = [task terminationStatus];
+    
+    [task autorelease];
+    
+    return exitCode;
+}
+
+// 000000000  00000000  00000000   00     00  000  000   000   0000000   000000000  00000000  
+//    000     000       000   000  000   000  000  0000  000  000   000     000     000       
+//    000     0000000   0000000    000000000  000  000 0 000  000000000     000     0000000   
+//    000     000       000   000  000 0 000  000  000  0000  000   000     000     000       
+//    000     00000000  000   000  000   000  000  000   000  000   000     000     00000000  
 
 -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender
 {

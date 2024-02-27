@@ -461,7 +461,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     
     NSArray *actualPaths = (NSArray *) CFBridgingRelease(FSEventStreamCopyPathsBeingWatched(streamRef));
     NSString *actualPath = [actualPaths firstObject];
-    //NSLog(@"Watch: %@", actualPath);
+    NSLog(@"Watch: %@", actualPath);
 
     FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     
@@ -490,7 +490,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
         [self.eventCache removeAllObjects];
         self.cacheWaitingTime = MAX(self.differ.savedTree.buildTime, INTERVAL);
     }
-    
+    NSLog(@"onChanges");
     [self.delegate onChanges:[self.differ changesInPaths:cachedPaths] inFolder:self.path];
 }
 
