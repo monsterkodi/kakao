@@ -1,2 +1,5 @@
 log.txt
-node_modules
+bin/node_modules
+bin/test*
+bin/bin.mjs
+bin/package.json

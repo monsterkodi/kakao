@@ -4,6 +4,10 @@
     000000000  000  000 0 000
     000   000  000  000  0000
     00     00  000  000   000
+    
+    handles window event from the main process
+    handles the titlebar and its menu
+    calls methods on its delegate
 ###
 
 import dom     from './dom.js'
@@ -14,13 +18,25 @@ import Title   from './title.js'
 
 { $, stopEvent } = dom
 
-function Window
+class WinDelegate
+    
+    onWindowCreated: (win)                  -> log "onWindowCreated #{win.id}"
+    onWindowAnimationTick: (win, tickInfo)  -> log("onWindowAnimationTick" tickInfo) if tickInfo.fps < 20
+    onWindowResize: (win, event)            -> log "onWindowResize" event
+    onWindowFocus: (win)                    -> log "onWindowFocus"
+    onWindowBlur: (win)                     -> log "onWindowBlur"
+    onWindowKeyDown: (win, keyInfo)         -> log "onWindowKeyDownEvent" keyInfo
+    onWindowKeyUp: (win, keyInfo)           -> log "onWindowKeyUpEvent" keyInfo
+    
+function Win
 
-    @: ->
+    @: (@delegate) ->
         
-        post.on 'menuAction'    @onMenuAction
-        post.on 'window.blur'   @onWindowBlur
-        post.on 'window.focusd' @onWindowFocus
+        @delegate ?= new WinDelegate
+        
+        post.on 'menuAction'   @onMenuAction
+        post.on 'window.blur'  @onWindowBlur
+        post.on 'window.focus' @onWindowFocus
         
         window.titlebar = new Title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
         
@@ -33,9 +49,11 @@ function Window
         main =$ 'main'
         main.focus()
         
-        kakao.request('window.id').then (id) =>
+        kakao.request('window.id').then (@id) =>
             elem class:'test' text:"▪▸○!▴!○◂▪" parent:main
             elem class:'test' text:"#{id}" parent:main
+            
+            @delegate?.onWindowCreated? @
         
     animate: =>
         
@@ -48,13 +66,15 @@ function Window
         fps = parseInt 1000/delta
         if fps < 20
             kakao.send "window.framerateDrop" fps
+            
+        @delegate?.onWindowAnimationTick? @, delta:delta, fps:fps, time:now
                                     
     createWindow: ->
         
-    onResize: (event) => #log 'resize' event
+    onResize: (event) => @delegate?.onWindowResize? @, event
                 
-    onWindowFocus: => 
-    onWindowBlur:  => 
+    onWindowFocus: => @delegate?.onWindowFocus? @
+    onWindowBlur:  => @delegate?.onWindowBlur?  @
     
     # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
@@ -63,7 +83,9 @@ function Window
     # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
     
     onMenuAction: (action) =>
-        log 'menuAction' action
+        
+        return if @delegate?.onWindowMenuAction? @, action
+            
         switch action.toLowerCase()
             'focus next'     ➜ kakao.send 'window.focusNext'
             'focus previous' ➜ kakao.send 'window.focusPrev'
@@ -92,11 +114,14 @@ function Window
         info.event = event
         
         if 'unhandled' == window.titlebar.handleKeyInfo info
-            log 'keydown' info
+            
+            @delegate?.onWindowKeyDown? @, info
                 
     onKeyUp: (event) =>
         
         info = keyinfo.forEvent event
         info.event = event
+        
+        @delegate?.onWindowKeyUp? @, info
 
-export Window
+export Win

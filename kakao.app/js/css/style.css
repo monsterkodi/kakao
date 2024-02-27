@@ -25,13 +25,26 @@
   color: #fff;
   cursor: pointer;
 }
-fill-abs(n)
 body {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: 0;
   animation: 300ms ease-in fadeIn;
   font-family: fontMono;
   font-size: 14px;
 }
 #main {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: 0;
   -webkit-user-select: none;
   padding: 6px;
   overflow: auto;

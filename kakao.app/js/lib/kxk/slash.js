@@ -384,7 +384,7 @@ Slash = (function ()
 
     Slash["home"] = function ()
     {
-        return Slash.path(os.homedir())
+        return Slash.path(os.homedir)
     }
 
     Slash["tilde"] = function (p)
