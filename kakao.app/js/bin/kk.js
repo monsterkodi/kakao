@@ -41,13 +41,13 @@ class kk
         {
             await sleep(150)
         }
-        if (args.run)
-        {
-            kk.spawn()
-        }
         if (args.build)
         {
             build()
+        }
+        if (args.run)
+        {
+            kk.spawn()
         }
         if (args.knrd)
         {
@@ -78,6 +78,12 @@ class kk
             }
         })
     }
+
+    static dir (imp)
+    {
+        return imp.meta.url.slice(7)
+    }
 }
 
+global['kk'] = kk
 export default kk.run;

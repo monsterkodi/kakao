@@ -4,6 +4,8 @@
     0000000    0000000      
     000  000   000  000     
     000   000  000   000    
+    
+    commanline tool that builds the application
 ###
 
 import os       from '../lib/kxk/os.js'
@@ -35,11 +37,11 @@ class kk
         
         sleep = (ms) ○-> await new Promise((r) => setTimeout(r, ms)); true
         
-        while not os.loaded
+        while not os.loaded # todo: move this check somewhere else!
             await sleep 150
         
-        if args.run   ➜ kk.spawn()
         if args.build ➜ build()
+        if args.run   ➜ kk.spawn()
         if args.knrd  ➜ knrd args.options
             
     @spawn: ->
@@ -54,5 +56,9 @@ class kk
                 
             log   stdout if valid stdout
             error stderr if valid stderr
+            
+    @dir: (imp) -> imp.meta.url[7..]
+
+global['kk'] = kk
     
 export kk.run

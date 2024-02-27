@@ -10,7 +10,7 @@
 
 function Bundle
 
-    @path: '?' # this is requested and set by Kakao.init
+    @path: '?' # this is requested from the main process and set by Kakao.init
         
     @app: (p) -> Bundle.path + '/'                        + p # absolute path of the .app folder
     @js:  (p) -> Bundle.path + '/js/'                     + p # contains js, css and html files

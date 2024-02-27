@@ -1,9 +1,11 @@
 ###
-000   000  000   000  00000000   0000000    
-000  000   0000  000  000   000  000   000  
-0000000    000 0 000  0000000    000   000  
-000  000   000  0000  000   000  000   000  
-000   000  000   000  000   000  0000000    
+    000   000  000   000  00000000   0000000    
+    000  000   0000  000  000   000  000   000  
+    0000000    000 0 000  0000000    000   000  
+    000  000   000  0000  000   000  000   000  
+    000   000  000   000  000   000  0000000    
+
+    transpiles kode, styl and pug files
 ###
 
 import Kode     from './kode/kompile.js'
@@ -17,92 +19,108 @@ import path from 'path'
 
 kolor.globalize()
 
-dirname = path.dirname import.meta.url[7..]
+dirname = path.dirname import.meta.url[7..] # todo: fix this!
 
-class kode
-
-    @run: (files = []) ○->
+knrd = (files = [], opt = {}) ○->
               
-        ● 🔨
-        kode = new Kode
+    opt.rerunWhenDirty ?= true
+    opt.logVerbose ?= false
+    
+    ● 🔨
+    kode = new Kode
+    
+    kodeDir = slash.resolve dirname + '/../../kode'
+    pugDir  = slash.resolve dirname + '/../../pug'
+    jsDir   = slash.resolve dirname + '/../../js'
+    cssDir  = slash.resolve dirname + '/../../js/css'
+    
+    if empty files
         
-        kodeDir = slash.resolve dirname + '/../../kode'
-        pugDir  = slash.resolve dirname + '/../../pug'
-        jsDir   = slash.resolve dirname + '/../../js'
-        cssDir  = slash.resolve dirname + '/../../js/css'
+        list  = await dirlist kodeDir
+        list  = list.concat await dirlist pugDir
+        list  = list.filter (item) -> item.type == 'file'
+        files = list.map (item) -> item.path
         
-        if empty files
+    log '🔨 ' files.length
+    transpiled = 0
+        
+    for file in files
+        
+        switch slash.ext(file) 
             
-            list  = await dirlist kodeDir
-            list  = list.concat await dirlist pugDir
-            list  = list.filter (item) -> item.type == 'file'
-            files = list.map (item) -> item.path
-            
-        for file in files
-            
-            switch slash.ext(file) 
+            'kode'
+                        
+                kodeFile = file
+                jsFile   = slash.swapExt kodeFile.replace(kodeDir, jsDir), 'js'
                 
-                'kode'
-                            
-                    kodeFile = file
-                    jsFile   = slash.swapExt kodeFile.replace(kodeDir, jsDir), 'js'
-                    
-                    kodeText = await fs.readFile kodeFile, encoding:'utf8'
-                    origText = await fs.readFile jsFile,   encoding:'utf8'
-                    
-                    # ●▸ 🔨
-                    compText = kode.compile kodeText
-                    # ●▪ 🔨
-                    
+                kodeText = await fs.readFile kodeFile, encoding:'utf8'
+                origText = await fs.readFile jsFile,   encoding:'utf8'
+                
+                # ●▸ 🔨
+                compText = kode.compile kodeText
+                # ●▪ 🔨
+
+                if empty compText
+                    log y5('✘ '), r5(err), r4('transpiles to empty!')
+                else
                     if origText != compText
+                        transpiled++
                         log b5('▶ '), g5 slash.tilde kodeFile
                         await slash.write(jsFile, compText)
                         log b5('✔ '), g5 slash.tilde jsFile
-                    else
+                    else if opt.logVerbose
                         log g2('✔ '), g3 slash.tilde kodeFile
-                    
-                'styl'
                 
-                    stylFile = file
-                    cssFile  = slash.swapExt stylFile.replace(pugDir, cssDir), 'css'
-                    
-                    stylText = await fs.readFile stylFile, encoding:'utf8'
-                    origText = await fs.readFile cssFile,  encoding:'utf8'
+            'styl'
+            
+                stylFile = file
+                cssFile  = slash.swapExt stylFile.replace(pugDir, cssDir), 'css'
+                
+                stylText = await fs.readFile stylFile, encoding:'utf8'
+                origText = await fs.readFile cssFile,  encoding:'utf8'
 
-                    compText = stylus stylText
-                    
-                    if empty compText
-                        log y5('✘ '), r5 err
-                    else
-                        if origText != compText
-                            log c3('▶ '), c5 slash.tilde stylFile
-                            await slash.write(cssFile, compText)
-                            log b5('✔ '), g5 slash.tilde cssFile
-                        else
-                            log g2('✔ '), c3 slash.tilde stylFile
-                    null
-                        
-                'pug'
+                compText = stylus stylText
                 
-                    srcFile = file
-                    tgtFile = slash.swapExt srcFile.replace(pugDir, jsDir), 'html'
+                if empty compText
+                    log y5('✘ '), r5(err), r4('transpiles to empty!')
+                else
+                    if origText != compText
+                        transpiled++
+                        log c3('▶ '), c5 slash.tilde stylFile
+                        await slash.write(cssFile, compText)
+                        log b5('✔ '), g5 slash.tilde cssFile
+                    else if opt.logVerbose
+                        log g2('✔ '), c3 slash.tilde stylFile
+                null
                     
-                    srcText = await fs.readFile srcFile, encoding:'utf8'
-                    tgtText = await fs.readFile tgtFile, encoding:'utf8'
+            'pug'
+            
+                srcFile = file
+                tgtFile = slash.swapExt srcFile.replace(pugDir, jsDir), 'html'
+                
+                srcText = await fs.readFile srcFile, encoding:'utf8'
+                tgtText = await fs.readFile tgtFile, encoding:'utf8'
+                
+                compText = pug srcText
                     
-                    compText = pug srcText
-                        
-                    if empty compText
-                        log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
-                    else
-                        if tgtText != compText
-                            log m3('▶ '), m4 slash.tilde srcFile
-                            await slash.write tgtFile, compText
-                            log b5('✔ '), g5 slash.tilde tgtFile
-                        else
-                            log g2('✔ '), m3 slash.tilde srcFile
-                    null
-                    
+                if empty compText
+                    log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
+                else
+                    if tgtText != compText
+                        transpiled++
+                        log m3('▶ '), m4 slash.tilde srcFile
+                        await slash.write tgtFile, compText
+                        log b5('✔ '), g5 slash.tilde tgtFile
+                    else if opt.logVerbose
+                        log g2('✔ '), m3 slash.tilde srcFile
+                null
+                
+    if opt.rerunWhenDirty and transpiled
+        
+        knrd files, rerunWhenDirty:false
+        
+    else
+                
         process.exit 0
 
-export kode.run
+export knrd
