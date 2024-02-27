@@ -29,10 +29,10 @@ knrd = (files = [], opt = {}) ○->
     ● 🔨
     kode = new Kode
     
-    kodeDir = slash.resolve dirname + '/../../kode'
-    pugDir  = slash.resolve dirname + '/../../pug'
-    jsDir   = slash.resolve dirname + '/../../js'
-    cssDir  = slash.resolve dirname + '/../../js/css'
+    kodeDir = slash.resolve import.meta.dirname + '/../../kode'
+    pugDir  = slash.resolve import.meta.dirname + '/../../pug'
+    jsDir   = slash.resolve import.meta.dirname + '/../../js'
+    cssDir  = slash.resolve import.meta.dirname + '/../../js/css'
     
     if empty files
         

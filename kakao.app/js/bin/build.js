@@ -16,12 +16,11 @@ import slash from '../lib/kxk/slash.js'
 import path from 'path'
 export default function ()
 {
-    var cmd, cwd, dirname, opt
+    var cmd, cwd, opt
 
     cmd = `${CMD} -I . ${SRC} ${LIB} ${FLG} -o ${OUT}`
     console.log(cmd)
-    dirname = path.dirname(import.meta.url.slice(7))
-    cwd = slash.resolve(dirname + '/../../src')
+    cwd = slash.resolve(import.meta.dirname + '/../../src')
     opt = {shell:true,cwd:cwd}
     childp.exec(cmd,opt,function (err, stdout, stderr)
     {

@@ -46,8 +46,7 @@ class kk
             
     @spawn: ->
         
-        dirname = path.dirname import.meta.url[7..]
-        cmd = slash.join dirname, '../../Contents/MacOS/kakao'
+        cmd = slash.join import.meta.dirname, '../../Contents/MacOS/kakao'
         opt = shell:true
             
         childp.exec cmd, opt, (err, stdout, stderr) -> 
@@ -57,8 +56,6 @@ class kk
             log   stdout if valid stdout
             error stderr if valid stderr
             
-    @dir: (imp) -> imp.meta.url[7..]
-
 global['kk'] = kk
     
 export kk.run
