@@ -18,6 +18,7 @@
 + (NSString*) jsPath:(NSString*)path;          // path relative to .app/Contents/MacOS/js folder
 + (NSString*) resourcePath:(NSString*)path;    // path relative to .app/Contents/Resources folder
 
++ (NSURL*)    URL;                             // file url for the .app folder
 + (NSURL*)    fileURL:(NSString*)path;         // file url relative to .app folder
 + (NSURL*)    jsURL:(NSString*)path;           // file url relative to .app/Contents/MacOS/js folder
 

@@ -42,12 +42,10 @@ export ->
             process.exit 2
             
         log stdout if valid stdout
-        # log 'app built'
         
-        opt.detached = true
-        childp.spawn 'open' ['..'], opt
+        # opt.detached = true
+        # childp.spawn 'open' ['..'], opt
         
-        log 'done'
         # process.exit 0
     
     null

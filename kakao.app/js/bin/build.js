@@ -33,10 +33,6 @@ export default function ()
         {
             console.log(stdout)
         }
-        opt.detached = true
-        childp.spawn('open',['..'],opt)
-        console.log('done')
-        return process.exit(0)
     })
     return null
 };

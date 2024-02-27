@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_
 
 var args
 
@@ -9,6 +9,7 @@ import karg from '../lib/kxk/karg.js'
 import slash from '../lib/kxk/slash.js'
 import knrd from './knrd.js'
 import build from './build.js'
+import process from 'process'
 import childp from 'child_process'
 import path from 'path'
 args = karg(`kk
@@ -41,17 +42,17 @@ class kk
         {
             await sleep(150)
         }
+        if (args.knrd)
+        {
+            knrd(args.options)
+        }
         if (args.build)
         {
             build()
         }
         if (args.run)
         {
-            kk.spawn()
-        }
-        if (args.knrd)
-        {
-            return knrd(args.options)
+            return kk.spawn()
         }
     }
 
@@ -60,22 +61,9 @@ class kk
         var cmd, opt
 
         cmd = slash.join(import.meta.dirname,'../../Contents/MacOS/kakao')
-        opt = {shell:true}
-        return childp.exec(cmd,opt,function (err, stdout, stderr)
-        {
-            if (err)
-            {
-                console.error('ERROR',err)
-            }
-            if (!_k_.empty(stdout))
-            {
-                console.log(stdout)
-            }
-            if (!_k_.empty(stderr))
-            {
-                console.error(stderr)
-            }
-        })
+        opt = {shell:true,detached:true}
+        console.log('spawn',cmd)
+        return childp.spawn(cmd,[],opt)
     }
 }
 
