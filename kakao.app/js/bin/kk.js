@@ -57,10 +57,9 @@ class kk
 
     static spawn ()
     {
-        var cmd, dirname, opt
+        var cmd, opt
 
-        dirname = path.dirname(import.meta.url.slice(7))
-        cmd = slash.join(dirname,'../../Contents/MacOS/kakao')
+        cmd = slash.join(import.meta.dirname,'../../Contents/MacOS/kakao')
         opt = {shell:true}
         return childp.exec(cmd,opt,function (err, stdout, stderr)
         {
@@ -77,11 +76,6 @@ class kk
                 console.error(stderr)
             }
         })
-    }
-
-    static dir (imp)
-    {
-        return imp.meta.url.slice(7)
     }
 }
 

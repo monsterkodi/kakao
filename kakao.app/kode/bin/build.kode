@@ -32,9 +32,7 @@ export ->
     
     log cmd
     
-    dirname = path.dirname import.meta.url[7..]
-    
-    cwd = slash.resolve dirname + '/../../src'
+    cwd = slash.resolve import.meta.dirname + '/../../src'
     opt = shell:true cwd:cwd # build inside the kokoa.app/src folder
     
     childp.exec cmd, opt, (err, stdout, stderr) -> 
