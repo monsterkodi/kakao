@@ -33,7 +33,10 @@ export default function ()
         {
             console.log(stdout)
         }
-        console.log('app built')
+        opt.detached = true
+        childp.spawn('open',['..'],opt)
+        console.log('done')
+        return process.exit(0)
     })
     return null
 };
