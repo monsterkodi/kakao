@@ -9,6 +9,7 @@
 #import "app.h"
 #import "bundle.h"
 #import "watch.h"
+#import "route.h"
 
 #define OK 0
 
@@ -132,7 +133,19 @@
         
         if (exitCode == OK)
         {
-            [[NSApplication sharedApplication] terminate:self];
+            // todo: check if application binary actually changed before relaunching the application
+        
+            NSWorkspaceOpenConfiguration* cfg = [NSWorkspaceOpenConfiguration configuration];
+            cfg.allowsRunningApplicationSubstitution = NO; // always launch the 
+            cfg.createsNewApplicationInstance = YES;       // new application
+            [[NSWorkspace sharedWorkspace] openApplicationAtURL:[Bundle URL] configuration:cfg completionHandler:^(NSRunningApplication *app, NSError *error) {
+                if (error) [Route emit:@"launchFailed"];
+                else [[NSApplication sharedApplication] terminate:self];
+            }];
+        }
+        else
+        {
+            [Route emit:@"buildFailed"];
         }
     }
     else if ([filesToTranspile count])

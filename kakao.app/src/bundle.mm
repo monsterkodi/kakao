@@ -23,6 +23,11 @@
 + (NSString*) macOSPath:    (NSString*)path { return [[NSString stringWithFormat:@"%@/Contents/MacOS/%@",     [Bundle path], path] stringByStandardizingPath]; }
 + (NSString*) resourcePath: (NSString*)path { return [[NSString stringWithFormat:@"%@/Contents/Resources/%@", [Bundle path], path] stringByStandardizingPath]; }
 
++ (NSURL*) URL // absoulte file url of the .app folder
+{
+    return [Bundle fileURL:@""];
+}
+
 + (NSURL*) fileURL:(NSString*)path // absoulte file url relative to .app folder
 {
     id comp = [[NSArray arrayWithObject:[Bundle path]] arrayByAddingObject:path];
