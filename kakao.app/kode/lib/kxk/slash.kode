@@ -245,7 +245,7 @@ function Slash
     # 000 0 000  000       000  000         
     # 000   000  000  0000000    0000000    
     
-    @home:          -> Slash.path os.homedir()
+    @home:          -> Slash.path os.homedir
     @tilde:     (p) -> Slash.path(p)?.replace Slash.home(), '~'
     @untilde:   (p) -> Slash.path(p)?.replace /^\~/, Slash.home()
     @unenv:     (p) -> 

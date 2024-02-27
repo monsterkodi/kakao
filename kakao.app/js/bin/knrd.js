@@ -8,8 +8,7 @@ import Kode from './kode/kompile.js'
 import slash from '../lib/kxk/slash.js'
 import kolor from '../lib/kxk/kolor.js'
 import dirlist from '../lib/kxk/dirlist.js'
-import stylus from '../../bin/stylus.js'
-import pug from '../../bin/pug.js'
+import { pug , stylus } from '../../bin/min.mjs'
 import fs from 'fs/promises'
 import path from 'path'
 kolor.globalize()
@@ -28,8 +27,8 @@ class kode
         cssDir = slash.resolve(dirname + '/../../js/css')
         if (_k_.empty(files))
         {
-            list = await dirlist(pugDir)
-            list = list.concat(await dirlist(kodeDir))
+            list = await dirlist(kodeDir)
+            list = list.concat(await dirlist(pugDir))
             list = list.filter(function (item)
             {
                 return item.type === 'file'
@@ -40,9 +39,9 @@ class kode
             })
         }
         var list1 = _k_.list(files)
-        for (var _42_17_ = 0; _42_17_ < list1.length; _42_17_++)
+        for (var _41_17_ = 0; _41_17_ < list1.length; _41_17_++)
         {
-            file = list1[_42_17_]
+            file = list1[_41_17_]
             switch (slash.ext(file))
             {
                 case 'kode':
@@ -67,34 +66,32 @@ class kode
                     cssFile = slash.swapExt(stylFile.replace(pugDir,cssDir),'css')
                     stylText = await fs.readFile(stylFile,{encoding:'utf8'})
                     origText = await fs.readFile(cssFile,{encoding:'utf8'})
-                    stylus(stylText).set('filename',cssFile).render(async function (err, compText)
+                    compText = stylus(stylText)
+                    if (_k_.empty(compText))
                     {
-                        if (err || _k_.empty(compText))
+                        console.log(_k_.y5('✘ '),_k_.r5(err))
+                    }
+                    else
+                    {
+                        if (origText !== compText)
                         {
-                            console.log(_k_.y5('✘ '),_k_.r5(err))
+                            console.log(_k_.c3('▶ '),_k_.c5(slash.tilde(stylFile)))
+                            await slash.write(cssFile,compText)
+                            console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(cssFile)))
                         }
                         else
                         {
-                            if (origText !== compText)
-                            {
-                                console.log(_k_.c3('▶ '),_k_.c5(slash.tilde(stylFile)))
-                                await slash.write(cssFile,compText)
-                                console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(cssFile)))
-                            }
-                            else
-                            {
-                                console.log(_k_.g2('✔ '),_k_.c3(slash.tilde(stylFile)))
-                            }
+                            console.log(_k_.g2('✔ '),_k_.c3(slash.tilde(stylFile)))
                         }
-                        return null
-                    })
+                    }
+                    null
                     break
                 case 'pug':
                     srcFile = file
                     tgtFile = slash.swapExt(srcFile.replace(pugDir,jsDir),'html')
                     srcText = await fs.readFile(srcFile,{encoding:'utf8'})
                     tgtText = await fs.readFile(tgtFile,{encoding:'utf8'})
-                    compText = pug.render(srcText,{pretty:true})
+                    compText = pug(srcText)
                     if (_k_.empty(compText))
                     {
                         console.log(_k_.y5('✘ '),_k_.r5(srcFile),_k_.r4('transpiles to empty!'))

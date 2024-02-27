@@ -6,13 +6,25 @@
      0000000   0000000 
 ###
 
-homedir = ''
-import('os').then (os) -> homedir = os.homedir()
-
-function os
+class OS
     
-    @homedir:  -> homedir
+    @loaded:   false
     @platform: 'Darwin'
-    @isMac:    os.platform == 'Darwin'
+    @isMac:    true
+    @homedir:  null
 
-export os
+try
+    (○->
+        # log 'OS'
+        os = await import('os')
+        OS.homedir  = os.homedir()
+        OS.platform = os.platform()
+        OS.isMac    = OS.platform == 'Darwin'
+        OS.loaded   = true
+        # log 'OS' OS
+    )()
+catch err
+    error err
+    OS.loaded = 'not available!' err
+    
+export OS

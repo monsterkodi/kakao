@@ -2,30 +2,34 @@
 
 var _k_
 
-var homedir, os
-
-homedir = ''
-import('os')
-.
-then
-(function (os)
+class OS
 {
-    return homedir = os.homedir()
-})
+    static loaded = false
 
-os = (function ()
+    static platform = 'Darwin'
+
+    static isMac = true
+
+    static homedir = null
+}
+
+try
 {
-    function os ()
-    {}
-
-    os["homedir"] = function ()
+    ;(async function ()
     {
-        return homedir
-    }
+        var os
 
-    os["platform"] = 'Darwin'
-    os["isMac"] = os.platform === 'Darwin'
-    return os
-})()
-
-export default os;
+        os = await import('os')
+        OS.homedir = os.homedir()
+        OS.platform = os.platform()
+        OS.isMac = OS.platform === 'Darwin'
+        return OS.loaded = true
+    })()
+}
+catch (err)
+{
+    console.error(err)
+    OS.loaded = 'not available!'
+    err
+}
+export default OS;
