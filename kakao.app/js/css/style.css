@@ -97,6 +97,12 @@ body {
   width: 22px;
   height: 22px;
 }
+#titlebar .noicon {
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  margin: 6px;
+}
 #titlebar .winbutton {
   flex: 0 0 39px;
   display: inline-block;

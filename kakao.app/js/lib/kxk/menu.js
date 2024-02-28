@@ -5,6 +5,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var elem, Menu, stopEvent
 
 import dom from './dom.js'
+import post from './post.js'
 import keyinfo from './keyinfo.js'
 import popup from './popup.js'
 elem = dom.elem
@@ -15,7 +16,7 @@ Menu = (function ()
 {
     function Menu (opt)
     {
-        var combo, div, item, _26_25_
+        var combo, div, item, _27_25_
 
         this["onClick"] = this["onClick"].bind(this)
         this["onKeyDown"] = this["onKeyDown"].bind(this)
@@ -26,9 +27,9 @@ Menu = (function ()
         this["focus"] = this["focus"].bind(this)
         this.elem = elem({class:'menu',tabindex:0})
         var list = _k_.list(opt.items)
-        for (var _21_17_ = 0; _21_17_ < list.length; _21_17_++)
+        for (var _22_17_ = 0; _22_17_ < list.length; _22_17_++)
         {
-            item = list[_21_17_]
+            item = list[_22_17_]
             if (item.hide)
             {
                 continue
@@ -47,11 +48,13 @@ Menu = (function ()
         this.elem.addEventListener('keydown',this.onKeyDown)
         this.elem.addEventListener('focusout',this.onFocusOut)
         this.elem.addEventListener('mouseover',this.onHover)
+        post.on('window.blur',this.blur)
+        post.on('window.focus',this.focus)
     }
 
     Menu.prototype["del"] = function ()
     {
-        var _40_13_
+        var _43_13_
 
         this.close()
         ;(this.elem != null ? this.elem.remove() : undefined)
@@ -66,10 +69,10 @@ Menu = (function ()
 
     Menu.prototype["blur"] = function ()
     {
-        var _54_33_, _54_40_
+        var _57_33_, _57_40_
 
         this.close()
-        return ((_54_33_=this.focusElem) != null ? typeof (_54_40_=_54_33_.focus) === "function" ? _54_40_() : undefined : undefined)
+        return ((_57_33_=this.focusElem) != null ? typeof (_57_40_=_57_33_.focus) === "function" ? _57_40_() : undefined : undefined)
     }
 
     Menu.prototype["onHover"] = function (event)
@@ -79,7 +82,7 @@ Menu = (function ()
 
     Menu.prototype["onFocusOut"] = function (event)
     {
-        var _60_45_
+        var _63_45_
 
         if (this.popup && !(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {
@@ -95,7 +98,7 @@ Menu = (function ()
 
     Menu.prototype["close"] = function (opt = {})
     {
-        var _80_17_
+        var _83_17_
 
         if ((this.popup != null))
         {
@@ -134,7 +137,7 @@ Menu = (function ()
 
     Menu.prototype["select"] = function (item, opt = {})
     {
-        var hadPopup, _109_17_, _113_17_
+        var hadPopup, _112_17_, _116_17_
 
         if (!(item != null))
         {
@@ -203,14 +206,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _160_39_
+        var _163_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _161_39_
+        var _164_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }

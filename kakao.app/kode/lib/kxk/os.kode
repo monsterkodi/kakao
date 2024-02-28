@@ -16,12 +16,16 @@ class OS
 try
     (○->
         # log 'OS'
-        os = await import('os')
-        OS.homedir  = os.homedir()
-        OS.platform = os.platform()
-        OS.isMac    = OS.platform == 'Darwin'
-        OS.loaded   = true
+        import('os').catch((e)->).then (os) ->
+            if os
+                OS.homedir  = os.homedir()
+                OS.platform = os.platform()
+                OS.isMac    = OS.platform == 'Darwin'
+                OS.loaded   = true
+            else
+                OS.loaded   = 'not available'
         # log 'OS' OS
+        null
     )()
 catch err
     error err

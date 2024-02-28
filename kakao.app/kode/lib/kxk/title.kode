@@ -4,6 +4,11 @@
        000     000     000     000      0000000 
        000     000     000     000      000     
        000     000     000     0000000  00000000
+       
+    a title bar with 
+        - an application icon
+        - a collapsable menu
+        - minimize, maximize and close buttons        
 ###
 
 import dom      from './dom.js'
@@ -35,15 +40,16 @@ function Title
         post.on 'window.blur'   @onWindowBlur
         post.on 'window.focus'  @onWindowFocus
 
-        @elem.addEventListener 'dblclick' (event) -> 
+        @elem.addEventListener 'dblclick' (event) -> # maximize window on double click in title bar
             stopEvent event 
             post.emit 'menuAction' 'Maximize'
                 
         @winicon = elem class: 'winicon'
         
         if @opt.icon
-            imgSrc = slash.join @opt.dir, @opt.icon
-            @winicon.appendChild elem 'img' src:imgSrc
+            @winicon.appendChild elem 'img' src:slash.join @opt.dir, @opt.icon 
+        else 
+            @winicon.appendChild elem 'div' class:'noicon'
         
         @elem.appendChild @winicon
         @winicon.addEventListener 'click' -> post.emit 'menuAction' 'Open Menu'   

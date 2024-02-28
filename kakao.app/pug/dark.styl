@@ -6,12 +6,13 @@
 0000000    000   000  000   000  000   000  
 */
 
-bodyColor           = #ff0000
+bodyColor           = #000000
 bgColor             = #000000
 separatorColor      = #0e0e0e
 frameColor          = #131313
 scrollHoverColor    = #b00
 titleRedColor       = #f00
+bodyBorderColor     = #1a1a1a
 titleColor          = #222
 scrollColor         = #222
 textBlurColor       = #444
@@ -25,9 +26,8 @@ winbuttonActiveColor = textFocusColor
 
 frameWidth          = 6px
 frameRadius         = 10px
-borderRadius        = 10px
+contentRadius       = frameRadius - 2px
 frameBorder         = frameWidth solid frameColor
-bodyBorder          = 1px solid #222
 
 fadeInAnim()          
     animation           300ms ease-in-out fadeIn
@@ -42,9 +42,9 @@ fadeOutAnim()
 
 body
     overflow            hidden
-    color               textFocusColor
-    border              bodyBorder
-    border-radius       borderRadius
+    background-color    black
+    border-radius       frameRadius
+    border              1.5px solid bodyBorderColor
 
 // 00     00   0000000   000  000   000  
 // 000   000  000   000  000  0000  000  
@@ -56,8 +56,8 @@ body
     border-left         frameBorder
     border-right        frameBorder
     border-bottom       frameBorder
-    border-bottom-left-radius  frameRadius
-    border-bottom-right-radius  frameRadius
+    border-bottom-left-radius  contentRadius
+    border-bottom-right-radius contentRadius
     background-color    bgColor
 
 // 000000000  000  000000000  000      00000000  0000000     0000000   00000000   
@@ -68,8 +68,8 @@ body
 
 #titlebar
     background                  frameColor
-    border-top-left-radius      frameRadius
-    border-top-right-radius     frameRadius
+    border-top-left-radius      contentRadius
+    border-top-right-radius     contentRadius
     overflow hidden
 
 .titlebar-name
@@ -78,6 +78,20 @@ body
 .titlebar-dot
     color               titleColor
 
+#titlebar .noicon
+    color    textBlurColor
+    background-color    frameColor
+    border-radius       4px
+    border              1px solid winbuttonFocusColor
+    
+#titlebar.focus .noicon
+    fadeInAnim()
+    
+#titlebar.blur .noicon
+    fadeOutAnim()
+    border              1px solid frameColor
+    background-color    frameColor
+    
 #titlebar .winbutton
     &:active
         background-color titleRedColor
