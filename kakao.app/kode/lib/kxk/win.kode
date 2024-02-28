@@ -38,8 +38,7 @@ function Win
         post.on 'window.blur'  @onWindowBlur
         post.on 'window.focus' @onWindowFocus
         
-        # window.titlebar = new Title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
-        window.titlebar = new Title menu:kakao.bundle.res('menu.noon')
+        window.titlebar = new Title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
         
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
