@@ -7,6 +7,7 @@
 ###
 
 import dom     from './dom.js'
+import post    from './post.js'
 import keyinfo from './keyinfo.js'
 import popup   from './popup.js'
 
@@ -34,6 +35,9 @@ function Menu
         @elem.addEventListener 'focusout'  @onFocusOut
         @elem.addEventListener 'mouseover' @onHover
         
+        post.on 'window.blur'  @blur
+        post.on 'window.focus' @focus
+        
     del: ->
         
         @close()
@@ -55,7 +59,7 @@ function Menu
     
     onHover: (event) => @select event.target, selectFirstItem:false
     
-    onFocusOut: (event) => 
+    onFocusOut: (event) =>
         
         if @popup and not event.relatedTarget?.classList.contains 'popup'
             @popup.close focus:false

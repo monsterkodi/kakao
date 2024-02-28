@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var $, stopEvent, Win
 
@@ -16,41 +16,31 @@ class WinDelegate
 {
     onWindowCreated (win)
     {
-        console.log(`onWindowCreated ${win.id}`)
+        console.log(`win ${win.id}`)
     }
 
     onWindowAnimationTick (win, tickInfo)
-    {
-        if (tickInfo.fps < 20)
-        {
-            console.log("onWindowAnimationTick",tickInfo)
-        }
-    }
+    {}
 
     onWindowResize (win, event)
-    {
-        console.log("onWindowResize",event)
-    }
+    {}
 
     onWindowFocus (win)
-    {
-        console.log("onWindowFocus")
-    }
+    {}
 
     onWindowBlur (win)
-    {
-        console.log("onWindowBlur")
-    }
+    {}
 
     onWindowKeyDown (win, keyInfo)
     {
-        console.log("onWindowKeyDownEvent",keyInfo)
+        if (!_k_.empty(keyInfo.combo))
+        {
+            console.log(`key ${keyInfo.combo}`)
+        }
     }
 
     onWindowKeyUp (win, keyInfo)
-    {
-        console.log("onWindowKeyUpEvent",keyInfo)
-    }
+    {}
 }
 
 
@@ -73,7 +63,7 @@ Win = (function ()
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focus',this.onWindowFocus)
-        window.titlebar = new Title({icon:kakao.bundle.img('menu.png'),menu:kakao.bundle.res('menu.noon')})
+        window.titlebar = new Title({menu:kakao.bundle.res('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)
@@ -82,19 +72,19 @@ Win = (function ()
         main.focus()
         kakao.request('window.id').then((function (id)
         {
-            var _56_21_, _56_38_
+            var _57_21_, _57_38_
 
             this.id = id
         
             elem({class:'test',text:"▪▸○!▴!○◂▪",parent:main})
             elem({class:'test',text:`${id}`,parent:main})
-            return ((_56_21_=this.delegate) != null ? typeof (_56_38_=_56_21_.onWindowCreated) === "function" ? _56_38_(this) : undefined : undefined)
+            return ((_57_21_=this.delegate) != null ? typeof (_57_38_=_57_21_.onWindowCreated) === "function" ? _57_38_(this) : undefined : undefined)
         }).bind(this))
     }
 
     Win.prototype["animate"] = function ()
     {
-        var delta, fps, now, _70_17_, _70_40_
+        var delta, fps, now, _71_17_, _71_40_
 
         window.requestAnimationFrame(this.animate)
         now = window.performance.now()
@@ -105,38 +95,35 @@ Win = (function ()
         {
             kakao.send("window.framerateDrop",fps)
         }
-        return ((_70_17_=this.delegate) != null ? typeof (_70_40_=_70_17_.onWindowAnimationTick) === "function" ? _70_40_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined)
+        return ((_71_17_=this.delegate) != null ? typeof (_71_40_=_71_17_.onWindowAnimationTick) === "function" ? _71_40_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined)
     }
-
-    Win.prototype["createWindow"] = function ()
-    {}
 
     Win.prototype["onResize"] = function (event)
     {
-        var _74_34_, _74_50_
+        var _73_34_, _73_50_
 
-        return ((_74_34_=this.delegate) != null ? typeof (_74_50_=_74_34_.onWindowResize) === "function" ? _74_50_(this,event) : undefined : undefined)
+        return ((_73_34_=this.delegate) != null ? typeof (_73_50_=_73_34_.onWindowResize) === "function" ? _73_50_(this,event) : undefined : undefined)
     }
 
     Win.prototype["onWindowFocus"] = function ()
     {
-        var _76_31_, _76_46_
+        var _74_34_, _74_49_
 
-        return ((_76_31_=this.delegate) != null ? typeof (_76_46_=_76_31_.onWindowFocus) === "function" ? _76_46_(this) : undefined : undefined)
+        return ((_74_34_=this.delegate) != null ? typeof (_74_49_=_74_34_.onWindowFocus) === "function" ? _74_49_(this) : undefined : undefined)
     }
 
     Win.prototype["onWindowBlur"] = function ()
     {
-        var _77_31_, _77_45_
+        var _75_34_, _75_48_
 
-        return ((_77_31_=this.delegate) != null ? typeof (_77_45_=_77_31_.onWindowBlur) === "function" ? _77_45_(this) : undefined : undefined)
+        return ((_75_34_=this.delegate) != null ? typeof (_75_48_=_75_34_.onWindowBlur) === "function" ? _75_48_(this) : undefined : undefined)
     }
 
     Win.prototype["onMenuAction"] = function (action)
     {
-        var _87_27_, _87_47_
+        var _85_27_, _85_47_
 
-        if (((_87_27_=this.delegate) != null ? typeof (_87_47_=_87_27_.onWindowMenuAction) === "function" ? _87_47_(this,action) : undefined : undefined))
+        if (((_85_27_=this.delegate) != null ? typeof (_85_47_=_85_27_.onWindowMenuAction) === "function" ? _85_47_(this,action) : undefined : undefined))
         {
             return
         }
@@ -179,24 +166,24 @@ Win = (function ()
 
     Win.prototype["onKeyDown"] = function (event)
     {
-        var info, _118_21_, _118_38_
+        var info, _115_21_, _115_38_
 
-        stopEvent(event)
         info = keyinfo.forEvent(event)
         info.event = event
+        stopEvent(event)
         if ('unhandled' === window.titlebar.handleKeyInfo(info))
         {
-            return ((_118_21_=this.delegate) != null ? typeof (_118_38_=_118_21_.onWindowKeyDown) === "function" ? _118_38_(this,info) : undefined : undefined)
+            return ((_115_21_=this.delegate) != null ? typeof (_115_38_=_115_21_.onWindowKeyDown) === "function" ? _115_38_(this,info) : undefined : undefined)
         }
     }
 
     Win.prototype["onKeyUp"] = function (event)
     {
-        var info, _125_17_, _125_32_
+        var info, _122_17_, _122_32_
 
         info = keyinfo.forEvent(event)
         info.event = event
-        return ((_125_17_=this.delegate) != null ? typeof (_125_32_=_125_17_.onWindowKeyUp) === "function" ? _125_32_(this,info) : undefined : undefined)
+        return ((_122_17_=this.delegate) != null ? typeof (_122_32_=_122_17_.onWindowKeyUp) === "function" ? _122_32_(this,info) : undefined : undefined)
     }
 
     return Win
