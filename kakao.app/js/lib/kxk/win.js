@@ -63,7 +63,7 @@ Win = (function ()
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focus',this.onWindowFocus)
-        window.titlebar = new Title({menu:kakao.bundle.res('menu.noon')})
+        window.titlebar = new Title({icon:kakao.bundle.img('menu.png'),menu:kakao.bundle.res('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)
@@ -72,19 +72,19 @@ Win = (function ()
         main.focus()
         kakao.request('window.id').then((function (id)
         {
-            var _57_21_, _57_38_
+            var _56_21_, _56_38_
 
             this.id = id
         
             elem({class:'test',text:"▪▸○!▴!○◂▪",parent:main})
             elem({class:'test',text:`${id}`,parent:main})
-            return ((_57_21_=this.delegate) != null ? typeof (_57_38_=_57_21_.onWindowCreated) === "function" ? _57_38_(this) : undefined : undefined)
+            return ((_56_21_=this.delegate) != null ? typeof (_56_38_=_56_21_.onWindowCreated) === "function" ? _56_38_(this) : undefined : undefined)
         }).bind(this))
     }
 
     Win.prototype["animate"] = function ()
     {
-        var delta, fps, now, _71_17_, _71_40_
+        var delta, fps, now, _70_17_, _70_40_
 
         window.requestAnimationFrame(this.animate)
         now = window.performance.now()
@@ -95,35 +95,35 @@ Win = (function ()
         {
             kakao.send("window.framerateDrop",fps)
         }
-        return ((_71_17_=this.delegate) != null ? typeof (_71_40_=_71_17_.onWindowAnimationTick) === "function" ? _71_40_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined)
+        return ((_70_17_=this.delegate) != null ? typeof (_70_40_=_70_17_.onWindowAnimationTick) === "function" ? _70_40_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined)
     }
 
     Win.prototype["onResize"] = function (event)
     {
-        var _73_34_, _73_50_
+        var _72_34_, _72_50_
 
-        return ((_73_34_=this.delegate) != null ? typeof (_73_50_=_73_34_.onWindowResize) === "function" ? _73_50_(this,event) : undefined : undefined)
+        return ((_72_34_=this.delegate) != null ? typeof (_72_50_=_72_34_.onWindowResize) === "function" ? _72_50_(this,event) : undefined : undefined)
     }
 
     Win.prototype["onWindowFocus"] = function ()
     {
-        var _74_34_, _74_49_
+        var _73_34_, _73_49_
 
-        return ((_74_34_=this.delegate) != null ? typeof (_74_49_=_74_34_.onWindowFocus) === "function" ? _74_49_(this) : undefined : undefined)
+        return ((_73_34_=this.delegate) != null ? typeof (_73_49_=_73_34_.onWindowFocus) === "function" ? _73_49_(this) : undefined : undefined)
     }
 
     Win.prototype["onWindowBlur"] = function ()
     {
-        var _75_34_, _75_48_
+        var _74_34_, _74_48_
 
-        return ((_75_34_=this.delegate) != null ? typeof (_75_48_=_75_34_.onWindowBlur) === "function" ? _75_48_(this) : undefined : undefined)
+        return ((_74_34_=this.delegate) != null ? typeof (_74_48_=_74_34_.onWindowBlur) === "function" ? _74_48_(this) : undefined : undefined)
     }
 
     Win.prototype["onMenuAction"] = function (action)
     {
-        var _85_27_, _85_47_
+        var _84_27_, _84_47_
 
-        if (((_85_27_=this.delegate) != null ? typeof (_85_47_=_85_27_.onWindowMenuAction) === "function" ? _85_47_(this,action) : undefined : undefined))
+        if (((_84_27_=this.delegate) != null ? typeof (_84_47_=_84_27_.onWindowMenuAction) === "function" ? _84_47_(this,action) : undefined : undefined))
         {
             return
         }
@@ -166,24 +166,24 @@ Win = (function ()
 
     Win.prototype["onKeyDown"] = function (event)
     {
-        var info, _115_21_, _115_38_
+        var info, _114_21_, _114_38_
 
         info = keyinfo.forEvent(event)
         info.event = event
         stopEvent(event)
         if ('unhandled' === window.titlebar.handleKeyInfo(info))
         {
-            return ((_115_21_=this.delegate) != null ? typeof (_115_38_=_115_21_.onWindowKeyDown) === "function" ? _115_38_(this,info) : undefined : undefined)
+            return ((_114_21_=this.delegate) != null ? typeof (_114_38_=_114_21_.onWindowKeyDown) === "function" ? _114_38_(this,info) : undefined : undefined)
         }
     }
 
     Win.prototype["onKeyUp"] = function (event)
     {
-        var info, _122_17_, _122_32_
+        var info, _121_17_, _121_32_
 
         info = keyinfo.forEvent(event)
         info.event = event
-        return ((_122_17_=this.delegate) != null ? typeof (_122_32_=_122_17_.onWindowKeyUp) === "function" ? _122_32_(this,info) : undefined : undefined)
+        return ((_121_17_=this.delegate) != null ? typeof (_121_32_=_121_17_.onWindowKeyUp) === "function" ? _121_32_(this,info) : undefined : undefined)
     }
 
     return Win

@@ -54,7 +54,7 @@ Menu = (function ()
 
     Menu.prototype["del"] = function ()
     {
-        var _43_13_
+        var _44_13_
 
         this.close()
         ;(this.elem != null ? this.elem.remove() : undefined)
@@ -63,16 +63,18 @@ Menu = (function ()
 
     Menu.prototype["focus"] = function ()
     {
+        var _56_13_
+
         this.focusElem = document.activeElement
-        return this.elem.focus()
+        return (this.elem != null ? this.elem.focus() : undefined)
     }
 
     Menu.prototype["blur"] = function ()
     {
-        var _57_33_, _57_40_
+        var _58_33_, _58_40_
 
         this.close()
-        return ((_57_33_=this.focusElem) != null ? typeof (_57_40_=_57_33_.focus) === "function" ? _57_40_() : undefined : undefined)
+        return ((_58_33_=this.focusElem) != null ? typeof (_58_40_=_58_33_.focus) === "function" ? _58_40_() : undefined : undefined)
     }
 
     Menu.prototype["onHover"] = function (event)
@@ -82,7 +84,7 @@ Menu = (function ()
 
     Menu.prototype["onFocusOut"] = function (event)
     {
-        var _63_45_
+        var _64_45_
 
         if (this.popup && !(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {
@@ -98,7 +100,7 @@ Menu = (function ()
 
     Menu.prototype["close"] = function (opt = {})
     {
-        var _83_17_
+        var _84_17_
 
         if ((this.popup != null))
         {
@@ -137,7 +139,7 @@ Menu = (function ()
 
     Menu.prototype["select"] = function (item, opt = {})
     {
-        var hadPopup, _112_17_, _116_17_
+        var hadPopup, _113_17_, _117_17_
 
         if (!(item != null))
         {
@@ -175,7 +177,7 @@ Menu = (function ()
             opt.items = items
             opt.parent = this
             opt.x = br.left
-            opt.y = pr.top + pr.height
+            opt.y = pr.top + pr.height - 1
             opt.class = 'titlemenu'
             this.popup = popup.menu(opt)
             if (opt.selectFirstItem === false)
@@ -206,14 +208,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _163_39_
+        var _164_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _164_39_
+        var _165_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }
