@@ -22,10 +22,10 @@ knrd = async function (files = [], opt = {})
     opt.logVerbose = ((_27_19_=opt.logVerbose) != null ? _27_19_ : false)
     _k_.profile('🔨')
     kode = new Kode
-    kodeDir = slash.resolve(import.meta.dirname + '/../../kode')
-    pugDir = slash.resolve(import.meta.dirname + '/../../pug')
-    jsDir = slash.resolve(import.meta.dirname + '/../../js')
-    cssDir = slash.resolve(import.meta.dirname + '/../../js/css')
+    kodeDir = slash.path(import.meta.dirname + '/../../kode')
+    pugDir = slash.path(import.meta.dirname + '/../../pug')
+    jsDir = slash.path(import.meta.dirname + '/../../js')
+    cssDir = slash.path(import.meta.dirname + '/../../js/css')
     if (_k_.empty(files))
     {
         list = await dirlist(kodeDir)
@@ -131,11 +131,6 @@ knrd = async function (files = [], opt = {})
     {
         _k_.profilend('🔨')
         return knrd(files,{rerunWhenDirty:false})
-    }
-    else
-    {
-        _k_.profilend('🔨')
-        return process.exit(0)
     }
 }
 export default knrd;

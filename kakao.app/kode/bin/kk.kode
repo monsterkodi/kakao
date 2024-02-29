@@ -16,53 +16,71 @@ import build    from './build.js'
 import process  from 'process'
 import childp   from 'child_process'
 import path     from 'path'
+import fs       from 'fs/promises'
 
 args = karg """
     kk
-        options                                 **
-        build      build application            = false
-        knrd       transpile kode, styl, pug    = false
-        run        run application executable   = false
-        rebuild    rebuild all targets          = false -R
-        watch      watch directory for changes  = false
-        info       show build status            = false
-        test       run tests                    = false
-        verbose    log more                     = false
-        quiet      log nothing                  = false
-        debug      log debug                    = false
+        options                                  **
+        build      build application executable  = false
+        knrd       transpile kode, styl, pug     = false
+        run        run application executable    = false
+        rebuild    rebuild all targets           = false -R
+        info       show build status             = false
+        test       run tests                     = false
+        clean      remove transpilated files     = false 
+        verbose    log more                      = false
+        quiet      log nothing                   = false
+        debug      log debug                     = false
     """
 
 class kk
     
     @run: ○->
         
+        # log 'run' args
+        
         sleep = (ms) ○-> await new Promise((r) => setTimeout(r, ms)); true
         
         while not os.loaded # todo: move this check somewhere else!
             await sleep 150
         
-        if args.knrd  ➜ knrd args.options
-        if args.build ➜ build()
-        if args.run   ➜ kk.spawn()
-                        
+        if args.info    ➜ await kk.info()
+        if args.knrd    ➜ await knrd args.options; delete args.options
+        if args.build   ➜ await build()
+        if args.run     ➜ await kk.spawn()
+        if args.clean   ➜ await kk.clean()
+        if args.rebuild ➜ await kk.rebuild()
+            
+        if valid args.options
+            log 'leftover options' args.options
+            
+    @clean: ○->
+        
+        jsDir = slash.path import.meta.dirname, '../../js'
+        appExe = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
+        await fs.rm jsDir, recursive:true, force:true 
+        await fs.unlink appExe
+                                    
+    @rebuild: ○->
+        
+        await knrd()
+        await build()
+        kk.spawn()
+        
     @spawn: ->
         
-        
-        cmd = slash.join import.meta.dirname, '../../Contents/MacOS/kakao'
+        cmd = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
         opt = shell:true detached:true
         
-        log 'spawn' cmd
-        
         childp.spawn cmd, [], opt
-            
-        #childp.exec cmd, opt, (err, stdout, stderr) -> 
-        #
-        #    if err ➜ error 'ERROR' err
-        #        
-        #    log   stdout if valid stdout
-        #    error stderr if valid stderr
         
-        # process.exit 0
+    @appPath: -> slash.path import.meta.dirname, '../../'
+        
+    @appName: -> slash.name kk.appPath()
+        
+    @info: ○->
+        
+        log 'info' # slash.parse kk.appPath()
             
 global['kk'] = kk
     

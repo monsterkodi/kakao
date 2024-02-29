@@ -6,10 +6,86 @@
     0000000   0000000  000   000  0000000   000   000    
 ###
 
-import path  from './path.js'
-import os    from './os.js'
+import os from './os.js'
+
+sep = '/' 
+    
+CHAR_FORWARD_SLASH  = '/'.charCodeAt 0
+CHAR_BACKWARD_SLASH = '\\'.charCodeAt 0
+CHAR_DOT            = '.'.charCodeAt 0
+
+isPosixPathSeparator = (c) -> c == CHAR_FORWARD_SLASH
+isPathSeparator = (c) -> c == CHAR_FORWARD_SLASH or c == CHAR_BACKWARD_SLASH
+
+# 000   000   0000000   00000000   00     00   0000000  000000000  00000000   
+# 0000  000  000   000  000   000  000   000  000          000     000   000  
+# 000 0 000  000   000  0000000    000000000  0000000      000     0000000    
+# 000  0000  000   000  000   000  000 0 000       000     000     000   000  
+# 000   000   0000000   000   000  000   000  0000000      000     000   000  
+
+normStr = (path, isAbsolute, separator, isPathSeparator) ->
+    
+    res = ''
+    lastSegmentLength = 0
+    lastSlash = -1
+    dots = 0
+    code = 0
+    
+    for i in 0..path.length
+        
+        if i < path.length
+            code = path.charCodeAt i
+        else if isPathSeparator code
+            break
+        else
+            code = CHAR_FORWARD_SLASH
+   
+        if isPathSeparator code
+            if lastSlash == i - 1 or dots == 1
+                true # noop
+            else if dots == 2
+                if (res.length < 2 or 
+                    lastSegmentLength != 2 or
+                    res.charCodeAt(res.length - 1) != CHAR_DOT or
+                    res.charCodeAt(res.length - 2) != CHAR_DOT)
+                    if res.length > 2
+                        lastSlashIndex = res.lastIndexOf separator
+                        if lastSlashIndex == -1
+                            res = ''
+                            lastSegmentLength = 0
+                        else
+                            res = res.slice 0 lastSlashIndex
+                            lastSegmentLength = res.length - 1 - res.lastIndexOf separator
+                        lastSlash = i
+                        dots = 0
+                        continue
+                    else if res.length != 0
+                        res = ''
+                        lastSegmentLength = 0
+                        lastSlash = i
+                        dots = 0
+                        continue
+                if not isAbsolute
+                    res += res.length > 0 ? "#{separator}.." : '..'
+                    lastSegmentLength = 2
+            else 
+                if res.length > 0
+                    res += "#{separator}#{path.slice(lastSlash + 1, i)}"
+                else
+                    res = path.slice lastSlash + 1, i
+                lastSegmentLength = i - lastSlash - 1
+
+            lastSlash = i
+            dots = 0
+        else if code == CHAR_DOT and dots != -1
+            dots++
+        else 
+            dots = -1
+    return res    
 
 function Slash
+
+    @sep: '/' 
     
     @logErrors: true
 
@@ -23,48 +99,79 @@ function Slash
         
         return p if not p
         
-        p = path.normalize p
+        if arguments.length > 1
+            p = Array.from(arguments).join '/'
+        
+        p = Slash.normalize p
+        
+        # p = Slash.unenv Slash.untilde p
         
         if not p
             log 'no pee?' p
             return p
+            
         if p.endsWith(':.') and p.length == 3
             p = p[..1]
+            
         if p.endsWith(':') and p.length == 2
             p = p + '/'
+            
         p
         
     @unslash: (p) ->
+        
         p = Slash.path p
+        
         if Slash.win()
+            
             if p.length >= 3 and p[0] == '/' == p[2] 
                 p = p[1] + ':' + p.slice 2
+                
             reg = new RegExp "/" 'g'
+            
             p = p.replace reg, '\\'
+            
             if p[1] == ':'
                 p =  p[0].toUpperCase() + p[1..]
         p
         
-    # 00000000   00000000   0000000   0000000   000      000   000  00000000  
-    # 000   000  000       000       000   000  000      000   000  000       
-    # 0000000    0000000   0000000   000   000  000       000 000   0000000   
-    # 000   000  000            000  000   000  000         000     000       
-    # 000   000  00000000  0000000    0000000   0000000      0      00000000  
+    @relative: (rel, to) ->
+        
+        to = Slash.path to
+        
+        return to if empty rel
+        
+        rel = Slash.path rel
+        return '.' if to == rel
+            
+        log "relative #{rel} to #{to}" 
+        rel
+        
+    # 000   000   0000000   00000000   00     00   0000000   000      000  0000000  00000000  
+    # 0000  000  000   000  000   000  000   000  000   000  000      000     000   000       
+    # 000 0 000  000   000  0000000    000000000  000000000  000      000    000    0000000   
+    # 000  0000  000   000  000   000  000 0 000  000   000  000      000   000     000       
+    # 000   000   0000000   000   000  000   000  000   000  0000000  000  0000000  00000000  
     
-    @resolve: (p) ->
-                
-        p = process.cwd() if not p?.length
+    @normalize: (path) ->
         
-        if arguments.length > 1
-            p = Slash.join.apply 0, arguments
-        
-        p = Slash.unenv Slash.untilde p
-        
-        if Slash.isRelative p
-            p = Slash.path path.resolve p
-        else
-            p = Slash.path p
-        p
+        return path if not path is str
+    
+        return '' if path.length == 0
+    
+        isAbsolute = isPathSeparator path.charCodeAt 0
+        trailingSeparator = isPathSeparator path.charCodeAt path.length - 1
+    
+        path = normStr path, isAbsolute, '/', isPathSeparator
+    
+        if path.length == 0
+            return '/' if isAbsolute
+            return trailingSeparator ? './' : '.'
+    
+        if trailingSeparator
+            path += '/'
+    
+        isAbsolute ? "/#{path}" : path
         
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
@@ -124,8 +231,8 @@ function Slash
         if l>1 then f + ':' + l
         else f
         
-    @ext:       (p) -> path.extname(p).slice 1
-    @removeExt: (p) -> d = Slash.parse(p); Slash.join d.dir, d.name
+    @ext:       (p) -> Slash.parse(p).ext
+    @removeExt: (p) -> d = Slash.parse(p); Slash.path d.dir, d.name
     @splitExt:  (p) -> [Slash.removeExt(p), Slash.ext(p)]
     @swapExt:   (p, ext) -> Slash.removeExt(p) + (ext.startsWith('.') and ext or ".#{ext}")
         
@@ -134,8 +241,6 @@ function Slash
     #       000  000   000  000  000 0 000  
     # 000   000  000   000  000  000  0000  
     #  0000000    0000000   000  000   000  
-    
-    @join: -> Slash.path [].map.call(arguments, Slash.path).join '/'
     
     @joinFilePos: (file, pos) -> # ['file.txt', [3, 0]] --> file.txt:1:3
         
@@ -190,14 +295,9 @@ function Slash
     # 000   000  000   000       000  000       000        000  0000  000   000  000 0 000  000      000  000  000   
     # 0000000    000   000  0000000   00000000    0        000   000  000   000  000   000  00000000 000  000  000   
     
-    @base:       (p)   -> path.basename Slash.sanitize(p), path.extname Slash.sanitize(p)
-    @file:       (p)   -> path.basename Slash.sanitize(p)
-    @extname:    (p)   -> path.extname Slash.sanitize(p)
-    @basename:   (p,e) -> path.basename Slash.sanitize(p), e
-    @isAbsolute: (p)   -> p = Slash.sanitize(p); p[1] == ':' or path.isAbsolute p
+    @file:       (p)   -> Slash.parse(p).file
+    @isAbsolute: (p)   -> p?[0] == Slash.sep
     @isRelative: (p)   -> not Slash.isAbsolute p
-    @dirname:    (p)   -> Slash.path path.dirname Slash.sanitize(p)
-    @normalize:  (p)   -> Slash.path Slash.sanitize(p)
     
     # 0000000    000  00000000   
     # 000   000  000  000   000  
@@ -216,28 +316,22 @@ function Slash
             p += '/'
         p
         
-    @sanitize: (p) -> 
-        
-        if not p?.length
-            return Slash.error "Slash.sanitize -- no path?" 
-        if p[0] == '\n'
-            Slash.error "leading newline in path! '#{p}'"
-            return Slash.sanitize p.substr 1
-        if p.endsWith '\n'
-            Slash.error "trailing newline in path! '#{p}'"
-            return Slash.sanitize p.substr 0, p.length-1
-        p
-    
     @parse: (p) -> 
         
-        dict = path.parse p
+        p = Slash.path p
         
-        if dict.dir.length == 2 and dict.dir[1] == ':'
-            dict.dir += '/'
-        if dict.root.length == 2 and dict.root[1] == ':'
-            dict.root += '/'
-            
-        dict
+        components = p.split Slash.sep
+        
+        file = components[-1]
+        
+        dots = file.split '.'
+        ext  = (dots.length > 1 and dots[-1].length) ? dots.pop() : ''
+        name = dots.join '.'
+
+        dir:  components[...-1].join '/'
+        file: file
+        name: name
+        ext:  ext
     
     # 00     00  000   0000000   0000000    
     # 000   000  000  000       000         
@@ -259,24 +353,10 @@ function Slash
             i = p.indexOf '$', i+1
             
         Slash.path p
-        
-    @relative: (rel, to) ->
-        
-        to = process.cwd() if not to?.length
-        rel = Slash.resolve rel
-        return rel if not Slash.isAbsolute rel
-        if Slash.resolve(to) == rel
-            return '.'
-
-        [rl, rd] = Slash.splitDrive rel
-        [tl, td] = Slash.splitDrive Slash.resolve to
-        if rd and td and rd != td
-            return rel
-        Slash.path path.relative tl, rl
-        
+                
     @fileUrl: (p) -> "file:///#{Slash.encode p}"
 
-    @samePath: (a, b) -> Slash.resolve(a) == Slash.resolve(b)
+    @samePath: (a, b) -> Slash.path(a) == Slash.path(b)
 
     @escape: (p) -> p.replace /([\`\"])/g, '\\$1'
 
@@ -298,9 +378,9 @@ function Slash
             
             while p.length and Slash.removeDrive(p) not in ['.', '/', '']
                 
-                if  Slash.dirExists  Slash.join p, '.git'         or
-                    Slash.fileExists Slash.join p, 'package.noon' or
-                    Slash.fileExists Slash.join p, 'package.json' ➜ return Slash.resolve p
+                if  Slash.dirExists  Slash.path p, '.git'         or
+                    Slash.fileExists Slash.path p, 'package.noon' or
+                    Slash.fileExists Slash.path p, 'package.json' ➜ return Slash.path p
                 p = Slash.dir p
         null
 
@@ -309,14 +389,14 @@ function Slash
         if p?.length?
             
             if cb is 'function'
-                Slash.dirExists Slash.join(p, '.git'), (stat) -> 
-                    if stat then cb Slash.resolve p
+                Slash.dirExists Slash.path(p, '.git'), (stat) -> 
+                    if stat then cb Slash.path p
                     else if Slash.removeDrive(p) not in ['.' '/' '']
                         Slash.git Slash.dir(p), cb
             else
                 while p.length and Slash.removeDrive(p) not in ['.' '/' '']
                     
-                    if Slash.dirExists Slash.join p, '.git' then return Slash.resolve p
+                    if Slash.dirExists Slash.path p, '.git' then return Slash.path p
                     p = Slash.dir p
         null
         
@@ -333,7 +413,7 @@ function Slash
                 if not p?
                     cb() 
                     return
-                p = Slash.resolve Slash.removeLinePos p
+                p = Slash.path Slash.removeLinePos p
                 fs.access p, (fs.R_OK | fs.F_OK), (err) ->
                     if err?
                         cb() 
@@ -348,7 +428,7 @@ function Slash
         else
             if p?
                 try
-                    p = Slash.resolve Slash.removeLinePos p
+                    p = Slash.path Slash.removeLinePos p
                     if stat = fs.statSync(p)
                         fs.accessSync p, fs.R_OK
                         return stat
@@ -401,48 +481,6 @@ function Slash
             Slash.error "Slash.touch -- " + String(err) 
             false
                 
-    # 000   000  000   000  000   000   0000000  00000000  0000000    
-    # 000   000  0000  000  000   000  000       000       000   000  
-    # 000   000  000 0 000  000   000  0000000   0000000   000   000  
-    # 000   000  000  0000  000   000       000  000       000   000  
-    #  0000000   000   000   0000000   0000000   00000000  0000000    
-    
-    @unused: (p, cb) ->
-        
-        name = Slash.base p
-        dir  = Slash.dir p
-        ext  = Slash.ext p
-        ext  = ext and '.'+ext or ''
-        
-        if /\d\d$/.test name
-            name = name.slice 0, name.length-2
-        
-        if cb is 'function'
-            
-            Slash.exists p, (stat) ->
-                if not stat 
-                    cb Slash.resolve p
-                    return
-                i = 1
-                test = ''
-                check = ->
-                    test = """#{name}#{"#{i}".padStart(2 '0')}#{ext}"""
-                    if dir then test = Slash.join dir, test
-                    Slash.exists test, (stat) ->
-                        if stat
-                            i += 1
-                            check()
-                        else
-                            cb Slash.resolve test
-                check()
-        else
-            if not Slash.exists(p) then return Slash.resolve p
-            for i in 1..1000
-                test = """#{name}#{"#{i}".padStart(2 '0')}#{ext}"""
-                if dir then test = Slash.join dir, test
-                if not Slash.exists test
-                    return Slash.resolve test
-                
     # 000   0000000                 
     # 000  000                      
     # 000  0000000                  
@@ -456,14 +494,14 @@ function Slash
         
         if cb is 'function'
             try
-                fs.access Slash.resolve(p), (fs.constants.R_OK | fs.constants.W_OK), (err) ->
+                fs.access Slash.path(p), (fs.constants.R_OK | fs.constants.W_OK), (err) ->
                     cb not err
             catch err
                 Slash.error "Slash.isWritable -- " + String(err) 
                 cb false
         else
             try
-                fs.accessSync Slash.resolve(p), (fs.constants.R_OK | fs.constants.W_OK)
+                fs.accessSync Slash.path(p), (fs.constants.R_OK | fs.constants.W_OK)
                 return true
             catch err
                 return false
@@ -494,7 +532,7 @@ function Slash
             ext = Slash.ext p
             return true if ext and Slash.textext[ext]? 
             return true if Slash.textbase[Slash.basename(p).toLowerCase()]
-            p = Slash.resolve p
+            p = Slash.path p
             return false if not Slash.isFile p
             isBinary = require 'isbinaryfile'
             return not isBinary.isBinaryFileSync p
@@ -553,7 +591,7 @@ function Slash
         tmpdir = os.default.tmpdir
         crypto = await import('crypto')
         uuid   = crypto.default.randomUUID
-        tmpfile = Slash.join tmpdir(), uuid()
+        tmpfile = Slash.path tmpdir(), uuid()
         
         err  = await fs.access p, (fs.R_OK | fs.F_OK)
             
@@ -571,7 +609,7 @@ function Slash
         
     @tmpfile: (ext) -> 
         
-        Slash.join os.tmpdir(), require('uuid').v1() + (ext and ".#{ext}" or '')
+        Slash.path os.tmpdir(), require('uuid').v1() + (ext and ".#{ext}" or '')
         
     # 00000000   00000000  00     00   0000000   000   000  00000000  
     # 000   000  000       000   000  000   000  000   000  000       
@@ -592,11 +630,10 @@ function Slash
     
     @reg: new RegExp "\\\\" 'g'
 
-    @win: -> path.sep == '\\'
+    @win: -> Slash.sep == '\\'
         
     @error: (msg) -> 
         if @logErrors then error msg 
         ''
 
-# module.exports = Slash        
 export Slash
