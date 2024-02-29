@@ -82,9 +82,10 @@ __dirname = import.meta.dirname
         slash.parse('/a/b/c/')    ▸ dir: '/a/b' file: 'c'     name: 'c' ext: ''
         slash.parse('/a')         ▸ dir: '/'    file: 'a'     name: 'a' ext: ''
         
-        return if not slash.win()
-        slash.parse('c:').root  ▸ 'c:/'
-        slash.parse('c:').dir   ▸ 'c:/'
+        if slash.win()
+            
+            slash.parse('c:').root  ▸ 'c:/'
+            slash.parse('c:').dir   ▸ 'c:/'
 
     # 0000000    000  00000000   
     # 000   000  000  000   000  
@@ -106,14 +107,15 @@ __dirname = import.meta.dirname
         slash.dir '..'                  ▸ ''
         slash.dir './'                  ▸ ''
         slash.dir '../'                 ▸ ''
-        slash.dir '~'                   ▸ ''
-        slash.dir '~/'                  ▸ ''
+        slash.dir '~'                   ▸ slash.dir slash.home()
+        slash.dir '~/'                  ▸ slash.dir slash.home()
         
-        return if not slash.win()
-        slash.dir 'C:/'                 ▸ ''
-        slash.dir 'C:/'                 ▸ ''
-        slash.dir 'C:/Back'             ▸ 'C:/'
-        slash.dir 'D:\\Back'            ▸ 'D:/'
+        if slash.win()
+            
+            slash.dir 'C:/'                 ▸ ''
+            slash.dir 'C:/'                 ▸ ''
+            slash.dir 'C:/Back'             ▸ 'C:/'
+            slash.dir 'D:\\Back'            ▸ 'D:/'
         
     # 00000000    0000000   000000000  000   000  000      000   0000000  000000000  
     # 000   000  000   000     000     000   000  000      000  000          000     
@@ -129,12 +131,15 @@ __dirname = import.meta.dirname
         slash.pathlist '.'                 ▸ ['.']
         slash.pathlist ''                  ▸ []
         
-        slash.pathlist 'C:\\Back\\Slash\\' ▸ ['C:/' 'C:/Back' 'C:/Back/Slash']
-        slash.pathlist 'C:/Slash'          ▸ ['C:/' 'C:/Slash']
         slash.pathlist '/c/Slash'          ▸ ['/' '/c' '/c/Slash']
         slash.pathlist '\\d\\Slash'        ▸ ['/' '/d' '/d/Slash']
 
-        slash.pathlist '~'                 ▸ ['~']
+        slash.pathlist '~'                 ▸ slash.pathlist slash.home()
+
+        if slash.win()
+            
+            slash.pathlist 'C:\\Back\\Slash\\' ▸ ['C:/' 'C:/Back' 'C:/Back/Slash']
+            slash.pathlist 'C:/Slash'          ▸ ['C:/' 'C:/Slash']
                     
     # 000   000   0000000   00     00  00000000  
     # 0000  000  000   000  000   000  000       
@@ -146,13 +151,25 @@ __dirname = import.meta.dirname
         
         slash.name '/some/path.txt'        ▸ 'path'
             
+    # 00000000  000  000      00000000  
+    # 000       000  000      000       
+    # 000000    000  000      0000000   
+    # 000       000  000      000       
+    # 000       000  0000000  00000000  
+    
     ▸ file
         
-        slash.name '/some/path.txt'        ▸ 'path.txt'
+        slash.file '/some/path.txt'        ▸ 'path.txt'
 
+    # 00000000  000   000  000000000  
+    # 000        000 000      000     
+    # 0000000     00000       000     
+    # 000        000 000      000     
+    # 00000000  000   000     000     
+    
     ▸ ext
         
-        slash.name '/some/path.txt'        ▸ 'txt'
+        slash.ext '/some/path.txt'        ▸ 'txt'
        
     # 000   000   0000000   00     00  00000000  
     # 000   000  000   000  000   000  000       

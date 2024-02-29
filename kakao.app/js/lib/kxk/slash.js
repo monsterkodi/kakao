@@ -128,6 +128,7 @@ class Slash
             p = Array.from(arguments).join('/')
         }
         p = Slash.normalize(p)
+        p = Slash.untilde(p)
         if (!p)
         {
             console.log('no pee?',p)
@@ -260,7 +261,7 @@ class Slash
     {
         var c, clmn, d, f, l, line, split
 
-        var _214_14_ = Slash.splitDrive(p); f = _214_14_[0]; d = _214_14_[1]
+        var _215_14_ = Slash.splitDrive(p); f = _215_14_[0]; d = _215_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -291,7 +292,7 @@ class Slash
     {
         var c, f, l
 
-        var _226_16_ = Slash.splitFileLine(p); f = _226_16_[0]; l = _226_16_[1]; c = _226_16_[2]
+        var _227_16_ = Slash.splitFileLine(p); f = _227_16_[0]; l = _227_16_[1]; c = _227_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -305,7 +306,7 @@ class Slash
     {
         var f, l
 
-        var _231_14_ = Slash.splitFileLine(p); f = _231_14_[0]; l = _231_14_[1]
+        var _232_14_ = Slash.splitFileLine(p); f = _232_14_[0]; l = _232_14_[1]
 
         if (l > 1)
         {
@@ -380,7 +381,7 @@ class Slash
             Slash.error("Slash.pathlist -- no path?")
             return []
         }
-        p = Slash.normalize(p)
+        p = Slash.path(p)
         if (p.length > 1 && p[p.length - 1] === '/' && p[p.length - 2] !== ':')
         {
             p = p.slice(0, p.length - 1)
@@ -463,16 +464,12 @@ class Slash
 
     static tilde (p)
     {
-        var _343_36_
-
-        return (Slash.path(p) != null ? Slash.path(p).replace(Slash.home(),'~') : undefined)
+        return (p != null ? p.replace(Slash.home(),'~') : undefined)
     }
 
     static untilde (p)
     {
-        var _344_36_
-
-        return (Slash.path(p) != null ? Slash.path(p).replace(/^\~/,Slash.home()) : undefined)
+        return (p != null ? p.replace(/^\~/,Slash.home()) : undefined)
     }
 
     static unenv (p)

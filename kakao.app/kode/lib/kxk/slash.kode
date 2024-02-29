@@ -104,7 +104,8 @@ class Slash
         
         p = Slash.normalize p
         
-        # p = Slash.unenv Slash.untilde p
+        p = Slash.untilde p
+        # p = Slash.unenv p
         
         if not p
             log 'no pee?' p
@@ -277,8 +278,9 @@ class Slash
         if not p?.length
             Slash.error "Slash.pathlist -- no path?" 
             return []
+
+        p = Slash.path p
             
-        p = Slash.normalize p
         if p.length > 1 and p[p.length-1] == '/' and p[p.length-2] != ':'
             p = p[...p.length-1] 
         list = [p]
@@ -340,8 +342,8 @@ class Slash
 
         Slash.path Slash.tmpdir(), "#{Date.now()}" + (ext and ".#{ext}" or '')
     
-    @tilde:     (p) -> Slash.path(p)?.replace Slash.home(), '~'
-    @untilde:   (p) -> Slash.path(p)?.replace /^\~/, Slash.home()
+    @tilde:     (p) -> p?.replace Slash.home(), '~'
+    @untilde:   (p) -> p?.replace /^\~/, Slash.home()
     @unenv:     (p) -> 
         
         i = p.indexOf '$', 0

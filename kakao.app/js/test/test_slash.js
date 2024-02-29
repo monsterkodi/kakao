@@ -54,12 +54,11 @@ toExport["kslash"] = function ()
         compare(slash.parse('/a/b/c'),{dir:'/a/b',file:'c',name:'c',ext:''})
         compare(slash.parse('/a/b/c/'),{dir:'/a/b',file:'c',name:'c',ext:''})
         compare(slash.parse('/a'),{dir:'/',file:'a',name:'a',ext:''})
-        if (!slash.win())
+        if (slash.win())
         {
-            return
+            compare(slash.parse('c:').root,'c:/')
+            compare(slash.parse('c:').dir,'c:/')
         }
-        compare(slash.parse('c:').root,'c:/')
-        compare(slash.parse('c:').dir,'c:/')
     })
     section("dir", function ()
     {
@@ -75,16 +74,15 @@ toExport["kslash"] = function ()
         compare(slash.dir('..'),'')
         compare(slash.dir('./'),'')
         compare(slash.dir('../'),'')
-        compare(slash.dir('~'),'')
-        compare(slash.dir('~/'),'')
-        if (!slash.win())
+        compare(slash.dir('~'),slash.dir(slash.home()))
+        compare(slash.dir('~/'),slash.dir(slash.home()))
+        if (slash.win())
         {
-            return
+            compare(slash.dir('C:/'),'')
+            compare(slash.dir('C:/'),'')
+            compare(slash.dir('C:/Back'),'C:/')
+            compare(slash.dir('D:\\Back'),'D:/')
         }
-        compare(slash.dir('C:/'),'')
-        compare(slash.dir('C:/'),'')
-        compare(slash.dir('C:/Back'),'C:/')
-        compare(slash.dir('D:\\Back'),'D:/')
     })
     section("pathlist", function ()
     {
@@ -92,11 +90,14 @@ toExport["kslash"] = function ()
         compare(slash.pathlist('/'),['/'])
         compare(slash.pathlist('.'),['.'])
         compare(slash.pathlist(''),[])
-        compare(slash.pathlist('C:\\Back\\Slash\\'),['C:/','C:/Back','C:/Back/Slash'])
-        compare(slash.pathlist('C:/Slash'),['C:/','C:/Slash'])
         compare(slash.pathlist('/c/Slash'),['/','/c','/c/Slash'])
         compare(slash.pathlist('\\d\\Slash'),['/','/d','/d/Slash'])
-        compare(slash.pathlist('~'),['~'])
+        compare(slash.pathlist('~'),slash.pathlist(slash.home()))
+        if (slash.win())
+        {
+            compare(slash.pathlist('C:\\Back\\Slash\\'),['C:/','C:/Back','C:/Back/Slash'])
+            compare(slash.pathlist('C:/Slash'),['C:/','C:/Slash'])
+        }
     })
     section("name", function ()
     {
@@ -104,11 +105,11 @@ toExport["kslash"] = function ()
     })
     section("file", function ()
     {
-        compare(slash.name('/some/path.txt'),'path.txt')
+        compare(slash.file('/some/path.txt'),'path.txt')
     })
     section("ext", function ()
     {
-        compare(slash.name('/some/path.txt'),'txt')
+        compare(slash.ext('/some/path.txt'),'txt')
     })
     section("home", function ()
     {
