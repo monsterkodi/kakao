@@ -43,9 +43,21 @@ class kk
         {
             await sleep(150)
         }
+        if (!(args.info || args.test || args.knrd || args.build || args.run || args.clean || args.rebuild))
+        {
+            args.info = true
+            args.test = true
+            args.knrd = true
+            args.build = true
+            args.run = true
+        }
         if (args.info)
         {
             await kk.info()
+        }
+        if (args.test)
+        {
+            await kk.test()
         }
         if (args.knrd)
         {
@@ -72,16 +84,6 @@ class kk
         {
             console.log('leftover options',args.options)
         }
-    }
-
-    static async clean ()
-    {
-        var appExe, jsDir
-
-        jsDir = slash.path(import.meta.dirname,'../../js')
-        appExe = slash.path(import.meta.dirname,'../../Contents/MacOS/kakao')
-        await fs.rm(jsDir,{recursive:true,force:true})
-        return await fs.unlink(appExe)
     }
 
     static async rebuild ()
@@ -112,7 +114,44 @@ class kk
 
     static async info ()
     {
-        console.log('info')
+        console.log('info',kk.appPath())
+    }
+
+    static async test ()
+    {
+        var cmd, opt
+
+        cmd = "node js/test/test.js"
+        opt = {shell:true,cwd:kk.appPath()}
+        return new Promise(function (resolve, reject)
+        {
+            return childp.exec(cmd,opt,function (err, stdout, stderr)
+            {
+                if (err)
+                {
+                    console.error('ERROR',err)
+                    return reject(err)
+                }
+                else
+                {
+                    if (!_k_.empty(stdout))
+                    {
+                        console.log(stdout)
+                    }
+                    return resolve()
+                }
+            })
+        })
+    }
+
+    static async clean ()
+    {
+        var appExe, jsDir
+
+        jsDir = slash.path(import.meta.dirname,'../../js')
+        appExe = slash.path(import.meta.dirname,'../../Contents/MacOS/kakao')
+        await fs.rm(jsDir,{recursive:true,force:true})
+        return await fs.unlink(appExe)
     }
 }
 

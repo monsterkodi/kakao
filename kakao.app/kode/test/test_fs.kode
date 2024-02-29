@@ -119,10 +119,12 @@ __dirname  = import.meta.dirname
             
             f2 = slash.path __dirname, 'test.txt'
             
+            log f2
+            
             fs.write(f2, "hello world").then (p) ->
                 
                 # fs.read(p).then (r) -> r ▸ 'hello world'
-                    
+                log p, f2    
                 p ▸ f2
                 
                 # fs.remove(p)
