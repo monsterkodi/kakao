@@ -8,7 +8,7 @@
 
 import slash   from './slash.js'
 import dirlist from './dirlist.js'
-import fsp from 'node:fs/promises'
+import fsp from 'fs/promises'
 import fs  from 'fs'
 
 class FS
@@ -34,7 +34,7 @@ class FS
         t = await fsp.readFile p, 'utf8'
         t
     
-    @readText: (p, cb) ->
+    # @readText: (p, cb) ->
         
         #if not cb is func
         #    return Bun.file(p).text()
@@ -79,15 +79,17 @@ class FS
             
     @write: (p, text) ○->
         
-        tmpdir = slash.tmpdir()
-        crypto = await import('crypto')
-        uuid   = crypto.default.randomUUID
-        tmpfile = slash.path slash.tmpdir(), uuid()
+        tmpfile = slash.tmpfile()
         
-        err  = await fsp.access p, (fs.R_OK | fs.F_OK)
+        # err  = await fsp.access p, (fs.R_OK | fs.F_OK)
+
+        try
+            stat = await fsp.stat p
+            mode = stat.mode
+        catch err
+            mode = 0o666
             
-        stat = await fsp.stat p
-        mode = stat?.mode ? 0o666
+        # mode = stat?.mode ? 0o666
 
         err = await fsp.writeFile tmpfile, text, mode:mode
 
@@ -98,8 +100,6 @@ class FS
             if err 
                 FS.error "fs.write -- move #{tmpfile} -> #{p} ERROR:" + String(err)
       
-    @remove: fsp.remove
-    
     # 00000000   000   000   0000000       000   0000000   000  000000000  
     # 000   000  000  000   000           000   000        000     000     
     # 00000000   0000000    000  0000    000    000  0000  000     000     
@@ -142,7 +142,7 @@ class FS
     
     @exists: (p, cb) ->
         
-        if cb is 'function'
+        if cb is func
             try
                 if not p?
                     cb() 
@@ -174,27 +174,34 @@ class FS
                 
     @fileExists: (p, cb) ->
         
-        # if cb is func
-            # try
-                # Neutralino.filesystem.getStats(p).then (stat) ->
-                    # if stat?.isFile then cb(stat) else cb()
-            # catch e
-                # error e
-                # cb()
-        # else
-            error 'slash.fileExists without callback'
+        if cb is func
+            FS.exists p, (stat) ->
+                if stat?.isFile() then cb stat
+                else cb()
+        else
+            if stat = FS.exists p
+                return stat if stat.isFile()
                 
     @dirExists: (p, cb) ->
 
-        # if cb is func
-            # try
-                # Neutralino.filesystem.getStats(p).then (stat) ->
-                    # if stat?.isDirectory then cb(stat) else cb()
-            # catch e
-                # error e
-                # cb()
-        # else
-            error 'slash.fileExists without callback'
+        if cb is func
+            FS.exists p, (stat) ->
+                if stat?.isDirectory() then cb stat
+                else cb()
+        else
+            if stat = FS.exists p
+                return stat if stat.isDirectory()
+                
+    # 00000000   00000000  00     00   0000000   000   000  00000000  
+    # 000   000  000       000   000  000   000  000   000  000       
+    # 0000000    0000000   000000000  000   000   000 000   0000000   
+    # 000   000  000       000 0 000  000   000     000     000       
+    # 000   000  00000000  000   000   0000000       0      00000000  
+    
+    @remove: (p, cb) -> 
+        
+        if cb is func then fs.remove p, cb
+        else fs.unlinkSync p
             
     # 000000000   0000000   000   000   0000000  000   000  
     #    000     000   000  000   000  000       000   000  
