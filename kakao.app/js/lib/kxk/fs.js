@@ -1,10 +1,10 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 import slash from './slash.js'
 import dirlist from './dirlist.js'
-import fsp from 'node:fs/promises'
+import fsp from 'fs/promises'
 import fs from 'fs'
 class FS
 {
@@ -28,20 +28,20 @@ class FS
         return t
     }
 
-    static readText (p, cb)
-    {}
-
     static async write (p, text)
     {
-        var crypto, err, mode, stat, tmpdir, tmpfile, uuid, _90_26_
+        var err, mode, stat, tmpfile
 
-        tmpdir = slash.tmpdir()
-        crypto = await import('crypto')
-        uuid = crypto.default.randomUUID
-        tmpfile = slash.path(slash.tmpdir(),uuid())
-        err = await fsp.access(p,(fs.R_OK | fs.F_OK))
-        stat = await fsp.stat(p)
-        mode = ((_90_26_=(stat != null ? stat.mode : undefined)) != null ? _90_26_ : 0o666)
+        tmpfile = slash.tmpfile()
+        try
+        {
+            stat = await fsp.stat(p)
+            mode = stat.mode
+        }
+        catch (err)
+        {
+            mode = 0o666
+        }
         err = await fsp.writeFile(tmpfile,text,{mode:mode})
         if (err)
         {
@@ -56,8 +56,6 @@ class FS
             }
         }
     }
-
-    static remove = fsp.remove
 
     static pkg (p)
     {
@@ -116,7 +114,7 @@ class FS
     {
         var stat
 
-        if (typeof(cb) === 'function')
+        if (_k_.isFunc(cb))
         {
             try
             {
@@ -181,12 +179,74 @@ class FS
 
     static fileExists (p, cb)
     {
-        console.error('slash.fileExists without callback')
+        var stat
+
+        if (_k_.isFunc(cb))
+        {
+            return FS.exists(p,function (stat)
+            {
+                if ((stat != null ? stat.isFile() : undefined))
+                {
+                    return cb(stat)
+                }
+                else
+                {
+                    return cb()
+                }
+            })
+        }
+        else
+        {
+            if (stat = FS.exists(p))
+            {
+                if (stat.isFile())
+                {
+                    return stat
+                }
+            }
+        }
     }
 
     static dirExists (p, cb)
     {
-        console.error('slash.fileExists without callback')
+        var stat
+
+        if (_k_.isFunc(cb))
+        {
+            return FS.exists(p,function (stat)
+            {
+                if ((stat != null ? stat.isDirectory() : undefined))
+                {
+                    return cb(stat)
+                }
+                else
+                {
+                    return cb()
+                }
+            })
+        }
+        else
+        {
+            if (stat = FS.exists(p))
+            {
+                if (stat.isDirectory())
+                {
+                    return stat
+                }
+            }
+        }
+    }
+
+    static remove (p, cb)
+    {
+        if (_k_.isFunc(cb))
+        {
+            return fs.remove(p,cb)
+        }
+        else
+        {
+            return fs.unlinkSync(p)
+        }
     }
 
     static touch (p)
