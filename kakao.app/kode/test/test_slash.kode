@@ -124,13 +124,16 @@ __dirname = import.meta.dirname
     # 000        000   000     000     000   000  0000000  000  0000000      000     
     
     ▸ pathlist
+    
+        slash.logErrors = false
+        slash.pathlist ''                  ▸ []
+        slash.logErrors = true
         
         slash.pathlist '/some/path.txt'    ▸ ['/' '/some' '/some/path.txt']
 
         slash.pathlist '/'                 ▸ ['/']
         slash.pathlist '.'                 ▸ ['.']
-        slash.pathlist ''                  ▸ []
-        
+                
         slash.pathlist '/c/Slash'          ▸ ['/' '/c' '/c/Slash']
         slash.pathlist '\\d\\Slash'        ▸ ['/' '/d' '/d/Slash']
 
@@ -221,16 +224,18 @@ __dirname = import.meta.dirname
     
     ▸ relative
         
-        slash.relative 'C:\\test\\some\\path.txt' 'C:\\test\\some\\other\\path' ▸ '../../path.txt'
-        slash.relative 'C:\\some\\path' 'C:/some/path' ▸ '.'
-        slash.relative 'C:/Users/kodi/s/konrad/app/js/coffee.js' 'C:/Users/kodi/s/konrad' ▸ 'app/js/coffee.js'
-        slash.relative 'C:/some/path/on.c' 'D:/path/on.d' ▸ 'C:/some/path/on.c'
-        slash.relative 'C:\\some\\path\\on.c' 'D:\\path\\on.d' ▸ 'C:/some/path/on.c'
         slash.relative '\\test\\some\\path.txt' '\\test\\some\\other\\path' ▸ '../../path.txt'
-        slash.relative '\\some\\path' '/some/path' ▸ '.'
         slash.relative '/Users/kodi/s/konrad/app/js/coffee.js' '/Users/kodi/s/konrad' ▸ 'app/js/coffee.js'
         slash.relative '/some/path/on.c' '/path/on.d' ▸ '../../some/path/on.c'
         slash.relative '\\some\\path\\on.c' '\\path\\on.d' ▸ '../../some/path/on.c'
+        slash.relative '\\some\\path' '/some/path' ▸ '.'
+        
+        if slash.win()
+            slash.relative 'C:\\test\\some\\path.txt' 'C:\\test\\some\\other\\path' ▸ '../../path.txt'
+            slash.relative 'C:/Users/kodi/s/konrad/app/js/coffee.js' 'C:/Users/kodi/s/konrad' ▸ 'app/js/coffee.js'
+            slash.relative 'C:\\some\\path' 'C:/some/path' ▸ '.'
+            slash.relative 'C:/some/path/on.c' 'D:/path/on.d' ▸ 'C:/some/path/on.c'
+            slash.relative 'C:\\some\\path\\on.c' 'D:\\path\\on.d' ▸ 'C:/some/path/on.c'
                 
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
@@ -330,15 +335,17 @@ __dirname = import.meta.dirname
     
     ▸ isRelative
         
-        slash.isRelative __dirname      ▸ false
+        slash.isRelative __dirname            ▸ false
         slash.isRelative '.'                  ▸ true
         slash.isRelative '..'                 ▸ true
         slash.isRelative '.././bla../../fark' ▸ true
-        slash.isRelative 'C:\\blafark'        ▸ false
-        slash.isRelative 'C:\\'               ▸ false
-        slash.isRelative 'C:/'                ▸ false
-        slash.isRelative 'C:'                 ▸ false
         slash.isRelative '..\\blafark'        ▸ true
+
+        if slash.win()
+            slash.isRelative 'C:\\blafark'        ▸ false
+            slash.isRelative 'C:\\'               ▸ false
+            slash.isRelative 'C:/'                ▸ false
+            slash.isRelative 'C:'                 ▸ false
         
     #  0000000   0000000   000   000  000  000000000  000  0000000  00000000  
     # 000       000   000  0000  000  000     000     000     000   000       
