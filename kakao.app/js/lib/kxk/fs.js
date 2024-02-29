@@ -54,12 +54,16 @@ class FS
             {
                 return FS.error(`fs.write -- move ${tmpfile} -> ${p} ERROR:` + String(err))
             }
+            else
+            {
+                return p
+            }
         }
     }
 
     static pkg (p)
     {
-        var _111_20_
+        var _75_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -77,7 +81,7 @@ class FS
 
     static git (p, cb)
     {
-        var _123_20_
+        var _87_20_
 
         if (((p != null ? p.length : undefined) != null))
         {

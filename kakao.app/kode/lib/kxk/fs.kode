@@ -31,52 +31,16 @@ class FS
     # 000   000  00000000  000   000   0000000       0      00000000  
         
     @read: (p) ○-> 
+        
         t = await fsp.readFile p, 'utf8'
         t
-    
-    # @readText: (p, cb) ->
-        
-        #if not cb is func
-        #    return Bun.file(p).text()
-        #    
-        #kakao.request('fs.readText', p).then (text, err) ->        
-        #    if not err
-        #        cb text
-        #    else
-        #        error err
-
-    #@writeText: (p, text, cb) ->
-    #    
-    #    tmpfile = slash.tmpfile()
-    #    
-    #    if cb is 'function'
-    #        try
-    #            import('fs').then (fs) =>
-    #                @fileExists p, (stat) ->
-    #                    
-    #                    mode = stat?.mode ? 0o666
-    #    
-    #                    fs.writeFile tmpfile, text, mode:mode, (err) ->
-    #                        if err 
-    #                            slash.error "slash.writeText - " + String(err)
-    #                            cb ''
-    #                        else
-    #                            fs.move tmpfile, p, overwrite:true, (err) ->
-    #                                if err 
-    #                                    slash.error "slash.writeText -- move #{tmpfile} -> #{p} ERROR:" + String(err)
-    #                                    cb '' 
-    #                                else cb p
-    #        catch err
-    #            cb slash.error "slash.writeText --- " + String(err)
-    #    else
-    #        try
-    #            fs.writeFileSync tmpfile, text
-    #            fs.moveSync tmpfile, p, overwrite:true
-    #            return p
-    #        catch err
-    #            slash.error "slash.writeText -- " + String(err)
-    #        ''
             
+    # 000   000  00000000   000  000000000  00000000  
+    # 000 0 000  000   000  000     000     000       
+    # 000000000  0000000    000     000     0000000   
+    # 000   000  000   000  000     000     000       
+    # 00     00  000   000  000     000     00000000  
+    
     @write: (p, text) ○->
         
         tmpfile = slash.tmpfile()
@@ -89,8 +53,6 @@ class FS
         catch err
             mode = 0o666
             
-        # mode = stat?.mode ? 0o666
-
         err = await fsp.writeFile tmpfile, text, mode:mode
 
         if err
@@ -99,6 +61,8 @@ class FS
             err = await fsp.rename tmpfile, p
             if err 
                 FS.error "fs.write -- move #{tmpfile} -> #{p} ERROR:" + String(err)
+            else
+                p
       
     # 00000000   000   000   0000000       000   0000000   000  000000000  
     # 000   000  000  000   000           000   000        000     000     
