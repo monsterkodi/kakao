@@ -17,38 +17,32 @@ OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
-import fs       from "fs"
-import process  from "process"
-import childp   from "child_process"
+import fs       from 'fs'
+import process  from 'process'
+import childp   from 'child_process'
 import slash    from '../lib/kxk/slash.js'
-import path     from 'path'
 
-export ->
+export ○->
     
     # the actual build command. 
     # could be a one-liner in a shell script but that would be too simple :)
         
     cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
     
-    log cmd
+    # log cmd
     
-    cwd = slash.resolve import.meta.dirname + '/../../src'
+    cwd = slash.path import.meta.dirname, '../../src'
     opt = shell:true cwd:cwd # build inside the kokoa.app/src folder
     
-    childp.exec cmd, opt, (err, stdout, stderr) -> 
+    new Promise (resolve, reject) ->
     
-        if err 
-            error 'ERROR' err
-            process.exit 2
-            
-        log stdout if valid stdout
+        childp.exec cmd, opt, (err, stdout, stderr) -> 
         
-        # opt.detached = true
-        # childp.spawn 'open' ['..'], opt
-        
-        # process.exit 0
-    
-    null
-    
+            if err 
+                error 'ERROR' err
+                return reject err
+                
+            log stdout if valid stdout
+            resolve()
     
     

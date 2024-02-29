@@ -1682,9 +1682,9 @@ blocked = function (lines)
             handl = handlers[ext = line.ext]
             if (!handl)
             {
-                _k_.dbg(".", 1270, 16, "ext", ext)
-                _k_.dbg(".", 1271, 16, "line", line)
-                _k_.dbg(".", 1272, 16, null, handlers[ext])
+                _k_.dbg("/Users/kodi/s/kakao/kakao.app", 1270, 16, "ext", ext)
+                _k_.dbg("/Users/kodi/s/kakao/kakao.app", 1271, 16, "line", line)
+                _k_.dbg("/Users/kodi/s/kakao/kakao.app", 1272, 16, null, handlers[ext])
             }
         }
         chunkIndex = 0

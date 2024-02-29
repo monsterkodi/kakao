@@ -1,17 +1,123 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}}
 
-var Slash
+var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, normStr, sep, Slash
 
-import path from './path.js'
 import os from './os.js'
+sep = '/'
+CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
+CHAR_BACKWARD_SLASH = '\\'.charCodeAt(0)
+CHAR_DOT = '.'.charCodeAt(0)
+
+isPosixPathSeparator = function (c)
+{
+    return c === CHAR_FORWARD_SLASH
+}
+
+isPathSeparator = function (c)
+{
+    return c === CHAR_FORWARD_SLASH || c === CHAR_BACKWARD_SLASH
+}
+
+normStr = function (path, isAbsolute, separator, isPathSeparator)
+{
+    var code, dots, i, lastSegmentLength, lastSlash, lastSlashIndex, res
+
+    res = ''
+    lastSegmentLength = 0
+    lastSlash = -1
+    dots = 0
+    code = 0
+    for (var _34_13_ = i = 0, _34_16_ = path.length; (_34_13_ <= _34_16_ ? i <= path.length : i >= path.length); (_34_13_ <= _34_16_ ? ++i : --i))
+    {
+        if (i < path.length)
+        {
+            code = path.charCodeAt(i)
+        }
+        else if (isPathSeparator(code))
+        {
+            break
+        }
+        else
+        {
+            code = CHAR_FORWARD_SLASH
+        }
+        if (isPathSeparator(code))
+        {
+            if (lastSlash === i - 1 || dots === 1)
+            {
+                true
+            }
+            else if (dots === 2)
+            {
+                if ((res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== CHAR_DOT || res.charCodeAt(res.length - 2) !== CHAR_DOT))
+                {
+                    if (res.length > 2)
+                    {
+                        lastSlashIndex = res.lastIndexOf(separator)
+                        if (lastSlashIndex === -1)
+                        {
+                            res = ''
+                            lastSegmentLength = 0
+                        }
+                        else
+                        {
+                            res = res.slice(0,lastSlashIndex)
+                            lastSegmentLength = res.length - 1 - res.lastIndexOf(separator)
+                        }
+                        lastSlash = i
+                        dots = 0
+                        continue
+                    }
+                    else if (res.length !== 0)
+                    {
+                        res = ''
+                        lastSegmentLength = 0
+                        lastSlash = i
+                        dots = 0
+                        continue
+                    }
+                }
+                if (!isAbsolute)
+                {
+                    res += (res.length > 0 ? `${separator}..` : '..')
+                    lastSegmentLength = 2
+                }
+            }
+            else
+            {
+                if (res.length > 0)
+                {
+                    res += `${separator}${path.slice(lastSlash + 1,i)}`
+                }
+                else
+                {
+                    res = path.slice(lastSlash + 1,i)
+                }
+                lastSegmentLength = i - lastSlash - 1
+            }
+            lastSlash = i
+            dots = 0
+        }
+        else if (code === CHAR_DOT && dots !== -1)
+        {
+            dots++
+        }
+        else
+        {
+            dots = -1
+        }
+    }
+    return res
+}
 
 Slash = (function ()
 {
     function Slash ()
     {}
 
+    Slash["sep"] = '/'
     Slash["logErrors"] = true
     Slash["path"] = function (p)
     {
@@ -19,7 +125,11 @@ Slash = (function ()
         {
             return p
         }
-        p = path.normalize(p)
+        if (arguments.length > 1)
+        {
+            p = Array.from(arguments).join('/')
+        }
+        p = Slash.normalize(p)
         if (!p)
         {
             console.log('no pee?',p)
@@ -57,26 +167,50 @@ Slash = (function ()
         return p
     }
 
-    Slash["resolve"] = function (p)
+    Slash["relative"] = function (rel, to)
     {
-        if (!(p != null ? p.length : undefined))
+        to = Slash.path(to)
+        if (_k_.empty(rel))
         {
-            p = process.cwd()
+            return to
         }
-        if (arguments.length > 1)
+        rel = Slash.path(rel)
+        if (to === rel)
         {
-            p = Slash.join.apply(0,arguments)
+            return '.'
         }
-        p = Slash.unenv(Slash.untilde(p))
-        if (Slash.isRelative(p))
+        console.log(`relative ${rel} to ${to}`)
+        return rel
+    }
+
+    Slash["normalize"] = function (path)
+    {
+        var isAbsolute, trailingSeparator
+
+        if (!(_k_.isStr(path)))
         {
-            p = Slash.path(path.resolve(p))
+            return path
         }
-        else
+        if (path.length === 0)
         {
-            p = Slash.path(p)
+            return ''
         }
-        return p
+        isAbsolute = isPathSeparator(path.charCodeAt(0))
+        trailingSeparator = isPathSeparator(path.charCodeAt(path.length - 1))
+        path = normStr(path,isAbsolute,'/',isPathSeparator)
+        if (path.length === 0)
+        {
+            if (isAbsolute)
+            {
+                return '/'
+            }
+            return (trailingSeparator ? './' : '.')
+        }
+        if (trailingSeparator)
+        {
+            path += '/'
+        }
+        return (isAbsolute ? `/${path}` : path)
     }
 
     Slash["split"] = function (p)
@@ -137,7 +271,7 @@ Slash = (function ()
     {
         var c, clmn, d, f, l, line, split
 
-        var _106_14_ = Slash.splitDrive(p); f = _106_14_[0]; d = _106_14_[1]
+        var _213_14_ = Slash.splitDrive(p); f = _213_14_[0]; d = _213_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -168,7 +302,7 @@ Slash = (function ()
     {
         var c, f, l
 
-        var _118_16_ = Slash.splitFileLine(p); f = _118_16_[0]; l = _118_16_[1]; c = _118_16_[2]
+        var _225_16_ = Slash.splitFileLine(p); f = _225_16_[0]; l = _225_16_[1]; c = _225_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -182,7 +316,7 @@ Slash = (function ()
     {
         var f, l
 
-        var _123_14_ = Slash.splitFileLine(p); f = _123_14_[0]; l = _123_14_[1]
+        var _230_14_ = Slash.splitFileLine(p); f = _230_14_[0]; l = _230_14_[1]
 
         if (l > 1)
         {
@@ -196,7 +330,7 @@ Slash = (function ()
 
     Slash["ext"] = function (p)
     {
-        return path.extname(p).slice(1)
+        return Slash.parse(p).ext
     }
 
     Slash["removeExt"] = function (p)
@@ -204,7 +338,7 @@ Slash = (function ()
         var d
 
         d = Slash.parse(p)
-        return Slash.join(d.dir,d.name)
+        return Slash.path(d.dir,d.name)
     }
 
     Slash["splitExt"] = function (p)
@@ -215,11 +349,6 @@ Slash = (function ()
     Slash["swapExt"] = function (p, ext)
     {
         return Slash.removeExt(p) + (ext.startsWith('.') && ext || `.${ext}`)
-    }
-
-    Slash["join"] = function ()
-    {
-        return Slash.path([].map.call(arguments,Slash.path).join('/'))
     }
 
     Slash["joinFilePos"] = function (file, pos)
@@ -286,45 +415,19 @@ Slash = (function ()
         return list
     }
 
-    Slash["base"] = function (p)
-    {
-        return path.basename(Slash.sanitize(p),path.extname(Slash.sanitize(p)))
-    }
-
     Slash["file"] = function (p)
     {
-        return path.basename(Slash.sanitize(p))
-    }
-
-    Slash["extname"] = function (p)
-    {
-        return path.extname(Slash.sanitize(p))
-    }
-
-    Slash["basename"] = function (p, e)
-    {
-        return path.basename(Slash.sanitize(p),e)
+        return Slash.parse(p).file
     }
 
     Slash["isAbsolute"] = function (p)
     {
-        p = Slash.sanitize(p)
-        return p[1] === ':' || path.isAbsolute(p)
+        return (p != null ? p[0] : undefined) === Slash.sep
     }
 
     Slash["isRelative"] = function (p)
     {
         return !Slash.isAbsolute(p)
-    }
-
-    Slash["dirname"] = function (p)
-    {
-        return Slash.path(path.dirname(Slash.sanitize(p)))
-    }
-
-    Slash["normalize"] = function (p)
-    {
-        return Slash.path(Slash.sanitize(p))
     }
 
     Slash["dir"] = function (p)
@@ -347,39 +450,17 @@ Slash = (function ()
         return p
     }
 
-    Slash["sanitize"] = function (p)
-    {
-        if (!(p != null ? p.length : undefined))
-        {
-            return Slash.error("Slash.sanitize -- no path?")
-        }
-        if (p[0] === '\n')
-        {
-            Slash.error(`leading newline in path! '${p}'`)
-            return Slash.sanitize(p.substr(1))
-        }
-        if (p.endsWith('\n'))
-        {
-            Slash.error(`trailing newline in path! '${p}'`)
-            return Slash.sanitize(p.substr(0,p.length - 1))
-        }
-        return p
-    }
-
     Slash["parse"] = function (p)
     {
-        var dict
+        var components, dots, ext, file, name
 
-        dict = path.parse(p)
-        if (dict.dir.length === 2 && dict.dir[1] === ':')
-        {
-            dict.dir += '/'
-        }
-        if (dict.root.length === 2 && dict.root[1] === ':')
-        {
-            dict.root += '/'
-        }
-        return dict
+        p = Slash.path(p)
+        components = p.split(Slash.sep)
+        file = components.slice(-1)[0]
+        dots = file.split('.')
+        ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? dots.pop() : '')
+        name = dots.join('.')
+        return {dir:components.slice(0, -1).join('/'),file:file,name:name,ext:ext}
     }
 
     Slash["home"] = function ()
@@ -389,14 +470,14 @@ Slash = (function ()
 
     Slash["tilde"] = function (p)
     {
-        var _249_36_
+        var _343_36_
 
         return (Slash.path(p) != null ? Slash.path(p).replace(Slash.home(),'~') : undefined)
     }
 
     Slash["untilde"] = function (p)
     {
-        var _250_36_
+        var _344_36_
 
         return (Slash.path(p) != null ? Slash.path(p).replace(/^\~/,Slash.home()) : undefined)
     }
@@ -422,34 +503,6 @@ Slash = (function ()
         return Slash.path(p)
     }
 
-    Slash["relative"] = function (rel, to)
-    {
-        var rd, rl, td, tl
-
-        if (!(to != null ? to.length : undefined))
-        {
-            to = process.cwd()
-        }
-        rel = Slash.resolve(rel)
-        if (!Slash.isAbsolute(rel))
-        {
-            return rel
-        }
-        if (Slash.resolve(to) === rel)
-        {
-            return '.'
-        }
-        var _271_17_ = Slash.splitDrive(rel); rl = _271_17_[0]; rd = _271_17_[1]
-
-        var _272_17_ = Slash.splitDrive(Slash.resolve(to)); tl = _272_17_[0]; td = _272_17_[1]
-
-        if (rd && td && rd !== td)
-        {
-            return rel
-        }
-        return Slash.path(path.relative(tl,rl))
-    }
-
     Slash["fileUrl"] = function (p)
     {
         return `file:///${Slash.encode(p)}`
@@ -457,7 +510,7 @@ Slash = (function ()
 
     Slash["samePath"] = function (a, b)
     {
-        return Slash.resolve(a) === Slash.resolve(b)
+        return Slash.path(a) === Slash.path(b)
     }
 
     Slash["escape"] = function (p)
@@ -475,15 +528,15 @@ Slash = (function ()
 
     Slash["pkg"] = function (p)
     {
-        var _297_20_
+        var _377_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
             while (p.length && !(_k_.in(Slash.removeDrive(p),['.','/',''])))
             {
-                if (Slash.dirExists(Slash.join(p,'.git' || Slash.fileExists(Slash.join(p,'package.noon' || Slash.fileExists(Slash.join(p,'package.json')))))))
+                if (Slash.dirExists(Slash.path(p,'.git' || Slash.fileExists(Slash.path(p,'package.noon' || Slash.fileExists(Slash.path(p,'package.json')))))))
                 {
-                    return Slash.resolve(p)
+                    return Slash.path(p)
                 }
                 p = Slash.dir(p)
             }
@@ -493,17 +546,17 @@ Slash = (function ()
 
     Slash["git"] = function (p, cb)
     {
-        var _309_20_
+        var _389_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
             if (typeof(cb) === 'function')
             {
-                Slash.dirExists(Slash.join(p,'.git'),function (stat)
+                Slash.dirExists(Slash.path(p,'.git'),function (stat)
                 {
                     if (stat)
                     {
-                        return cb(Slash.resolve(p))
+                        return cb(Slash.path(p))
                     }
                     else if (!(_k_.in(Slash.removeDrive(p),['.','/',''])))
                     {
@@ -515,9 +568,9 @@ Slash = (function ()
             {
                 while (p.length && !(_k_.in(Slash.removeDrive(p),['.','/',''])))
                 {
-                    if (Slash.dirExists(Slash.join(p,'.git')))
+                    if (Slash.dirExists(Slash.path(p,'.git')))
                     {
-                        return Slash.resolve(p)
+                        return Slash.path(p)
                     }
                     p = Slash.dir(p)
                 }
@@ -539,7 +592,7 @@ Slash = (function ()
                     cb()
                     return
                 }
-                p = Slash.resolve(Slash.removeLinePos(p))
+                p = Slash.path(Slash.removeLinePos(p))
                 fs.access(p,(fs.R_OK | fs.F_OK),function (err)
                 {
                     if ((err != null))
@@ -573,7 +626,7 @@ Slash = (function ()
             {
                 try
                 {
-                    p = Slash.resolve(Slash.removeLinePos(p))
+                    p = Slash.path(Slash.removeLinePos(p))
                     if (stat = fs.statSync(p))
                     {
                         fs.accessSync(p,fs.R_OK)
@@ -627,75 +680,6 @@ Slash = (function ()
         }
     }
 
-    Slash["unused"] = function (p, cb)
-    {
-        var dir, ext, i, name, test
-
-        name = Slash.base(p)
-        dir = Slash.dir(p)
-        ext = Slash.ext(p)
-        ext = ext && '.' + ext || ''
-        if (/\d\d$/.test(name))
-        {
-            name = name.slice(0,name.length - 2)
-        }
-        if (typeof(cb) === 'function')
-        {
-            return Slash.exists(p,function (stat)
-            {
-                var check, i, test
-
-                if (!stat)
-                {
-                    cb(Slash.resolve(p))
-                    return
-                }
-                i = 1
-                test = ''
-                check = function ()
-                {
-                    test = `${name}${`${i}`.padStart(2,'0')}${ext}`
-                    if (dir)
-                    {
-                        test = Slash.join(dir,test)
-                    }
-                    return Slash.exists(test,function (stat)
-                    {
-                        if (stat)
-                        {
-                            i += 1
-                            return check()
-                        }
-                        else
-                        {
-                            return cb(Slash.resolve(test))
-                        }
-                    })
-                }
-                return check()
-            })
-        }
-        else
-        {
-            if (!Slash.exists(p))
-            {
-                return Slash.resolve(p)
-            }
-            for (i = 1; i <= 1000; i++)
-            {
-                test = `${name}${`${i}`.padStart(2,'0')}${ext}`
-                if (dir)
-                {
-                    test = Slash.join(dir,test)
-                }
-                if (!Slash.exists(test))
-                {
-                    return Slash.resolve(test)
-                }
-            }
-        }
-    }
-
     Slash["isDir"] = function (p, cb)
     {
         return Slash.dirExists(p,cb)
@@ -712,7 +696,7 @@ Slash = (function ()
         {
             try
             {
-                return fs.access(Slash.resolve(p),(fs.constants.R_OK | fs.constants.W_OK),function (err)
+                return fs.access(Slash.path(p),(fs.constants.R_OK | fs.constants.W_OK),function (err)
                 {
                     return cb(!err)
                 })
@@ -727,7 +711,7 @@ Slash = (function ()
         {
             try
             {
-                fs.accessSync(Slash.resolve(p),(fs.constants.R_OK | fs.constants.W_OK))
+                fs.accessSync(Slash.path(p),(fs.constants.R_OK | fs.constants.W_OK))
                 return true
             }
             catch (err)
@@ -749,9 +733,9 @@ Slash = (function ()
             {
                 Slash.textext = {}
                 var list = _k_.list(require('textextensions'))
-                for (var _490_24_ = 0; _490_24_ < list.length; _490_24_++)
+                for (var _528_24_ = 0; _528_24_ < list.length; _528_24_++)
                 {
-                    ext = list[_490_24_]
+                    ext = list[_528_24_]
                     Slash.textext[ext] = true
                 }
                 Slash.textext['crypt'] = true
@@ -765,7 +749,7 @@ Slash = (function ()
             {
                 return true
             }
-            p = Slash.resolve(p)
+            p = Slash.path(p)
             if (!Slash.isFile(p))
             {
                 return false
@@ -815,9 +799,9 @@ Slash = (function ()
                 {
                     return this.fileExists(p,function (stat)
                     {
-                        var mode, _525_42_
+                        var mode, _563_42_
 
-                        mode = ((_525_42_=(stat != null ? stat.mode : undefined)) != null ? _525_42_ : 0o666)
+                        mode = ((_563_42_=(stat != null ? stat.mode : undefined)) != null ? _563_42_ : 0o666)
                         return fs.writeFile(tmpfile,text,{mode:mode},function (err)
                         {
                             if (err)
@@ -867,7 +851,7 @@ Slash = (function ()
 
     Slash["write"] = async function (p, text)
     {
-        var crypto, err, fs, fsprom, mode, os, stat, tmpdir, tmpfile, uuid, _561_26_
+        var crypto, err, fs, fsprom, mode, os, stat, tmpdir, tmpfile, uuid, _599_26_
 
         fsprom = await import('fs/promises')
         fs = fsprom.default
@@ -875,10 +859,10 @@ Slash = (function ()
         tmpdir = os.default.tmpdir
         crypto = await import('crypto')
         uuid = crypto.default.randomUUID
-        tmpfile = Slash.join(tmpdir(),uuid())
+        tmpfile = Slash.path(tmpdir(),uuid())
         err = await fs.access(p,(fs.R_OK | fs.F_OK))
         stat = await fs.stat(p)
-        mode = ((_561_26_=(stat != null ? stat.mode : undefined)) != null ? _561_26_ : 0o666)
+        mode = ((_599_26_=(stat != null ? stat.mode : undefined)) != null ? _599_26_ : 0o666)
         err = await fs.writeFile(tmpfile,text,{mode:mode})
         if (err)
         {
@@ -896,7 +880,7 @@ Slash = (function ()
 
     Slash["tmpfile"] = function (ext)
     {
-        return Slash.join(os.tmpdir(),require('uuid').v1() + (ext && `.${ext}` || ''))
+        return Slash.path(os.tmpdir(),require('uuid').v1() + (ext && `.${ext}` || ''))
     }
 
     Slash["remove"] = function (p, cb)
@@ -914,7 +898,7 @@ Slash = (function ()
     Slash["reg"] = new RegExp("\\\\",'g')
     Slash["win"] = function ()
     {
-        return path.sep === '\\'
+        return Slash.sep === '\\'
     }
 
     Slash["error"] = function (msg)

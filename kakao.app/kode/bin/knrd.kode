@@ -22,17 +22,17 @@ kolor.globalize()
 dirname = path.dirname import.meta.url[7..] # todo: fix this!
 
 knrd = (files = [], opt = {}) ○->
-              
+            
     opt.rerunWhenDirty ?= true
     opt.logVerbose ?= false
     
     ● 🔨
     kode = new Kode
     
-    kodeDir = slash.resolve import.meta.dirname + '/../../kode'
-    pugDir  = slash.resolve import.meta.dirname + '/../../pug'
-    jsDir   = slash.resolve import.meta.dirname + '/../../js'
-    cssDir  = slash.resolve import.meta.dirname + '/../../js/css'
+    kodeDir = slash.path import.meta.dirname + '/../../kode'
+    pugDir  = slash.path import.meta.dirname + '/../../pug'
+    jsDir   = slash.path import.meta.dirname + '/../../js'
+    cssDir  = slash.path import.meta.dirname + '/../../js/css'
     
     if empty files
         
@@ -45,6 +45,8 @@ knrd = (files = [], opt = {}) ○->
     transpiled = 0
         
     for file in files
+        
+        # log file, slash.ext(file), slash.parse(file)  
         
         switch slash.ext(file) 
             
@@ -119,8 +121,4 @@ knrd = (files = [], opt = {}) ○->
         
         knrd files, rerunWhenDirty:false
         
-    else
-                
-        process.exit 0
-
 export knrd

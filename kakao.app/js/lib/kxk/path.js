@@ -2,7 +2,7 @@
 
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-var basename, CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, dirname, extname, isAbsolute, isPathSeparator, isPosixPathSeparator, join, normalize, normStr, parse, sep
+var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, normalize, normStr, sep
 
 sep = '/'
 CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
@@ -140,44 +140,3 @@ normalize = function (path)
     }
     return (isAbsolute ? `/${path}` : path)
 }
-
-join = function (...args)
-{
-    return args.join(sep)
-}
-
-isAbsolute = function (path)
-{
-    return path[0] === sep
-}
-
-parse = function (path)
-{
-    var base, components, dots, ext, name
-
-    components = path.split(sep)
-    base = components.slice(-1)[0]
-    dots = base.split('.')
-    ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? '.' + dots.pop() : '')
-    name = dots.join('.')
-    return {root:(path[0] === sep ? sep : ''),dir:join.apply(null,components.slice(0, -1)),base:base,name:name,ext:ext}
-}
-
-extname = function (path)
-{
-    return parse(path).ext
-}
-
-dirname = function (path)
-{
-    return parse(path).dir
-}
-
-basename = function (path, ext)
-{
-    var p
-
-    p = parse(path)
-    return (ext === p.ext ? p.name : p.base)
-}
-export default {sep:sep,join:join,parse:parse,extname:extname,dirname:dirname,basename:basename,normalize:normalize,isAbsolute:isAbsolute};
