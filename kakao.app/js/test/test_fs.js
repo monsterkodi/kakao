@@ -3,7 +3,7 @@ var toExport = {}
 
 var _k_
 
-var f2, t, __dirname, __filename, _197_21_, _198_21_, _199_21_, _26_29_, _27_30_, _28_38_, _41_34_, _42_33_, _46_32_, _47_33_, _57_26_, _58_27_, _62_27_, _63_25_
+var f2, t, __dirname, __filename, _139_21_, _140_21_, _141_21_, _26_29_, _27_30_, _28_38_, _35_34_, _36_33_, _40_32_, _41_33_, _51_26_, _52_27_, _56_27_, _57_25_
 
 import fs from '../../js/lib/kxk/fs.js'
 import slash from '../../js/lib/kxk/slash.js'
@@ -16,19 +16,13 @@ toExport["fs"] = function ()
         compare(((fs.exists(__dirname) != null)),true)
         compare(((fs.exists(__filename) != null)),true)
         compare(((fs.exists(__filename + 'foo') != null)),false)
-        section("async", function ()
+        fs.exists(__filename,function (stat)
         {
-            fs.exists(__filename,function (stat)
-            {
-                return compare(((stat != null)),true)
-            })
-            section("not", function ()
-            {
-                fs.exists(__filename + 'foo',function (stat)
-                {
-                    return compare(((stat != null)),false)
-                })
-            })
+            return compare(((stat != null)),true)
+        })
+        fs.exists(__filename + 'foo',function (stat)
+        {
+            return compare(((stat != null)),false)
         })
     })
     section("fileExists", function ()
@@ -53,15 +47,10 @@ toExport["fs"] = function ()
     })
     section("write", function ()
     {
-        section("callback", function ()
+        f2 = slash.path(__dirname,'test.txt')
+        fs.write(f2,"hello world").then(function (p)
         {
-            f2 = slash.path(__dirname,'test.txt')
-            console.log(f2)
-            fs.write(f2,"hello world").then(function (p)
-            {
-                console.log(p,f2)
-                return compare(p,f2)
-            })
+            return compare(p,f2)
         })
     })
     section("remove", function ()

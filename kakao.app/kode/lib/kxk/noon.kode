@@ -7,6 +7,7 @@
 ###
 
 import slash from './slash.js'
+import fs    from './fs.js'
 
 # 00000000    0000000   00000000    0000000  00000000
 # 000   000  000   000  000   000  000       000
@@ -573,7 +574,7 @@ load = (p, ext, cb) ->
     if cb is func
 
         try
-            slash.readText p, (str) ->
+            fs.read p, (str) ->
                 if valid str
                     cb parseStr str, p, ext
                 else
