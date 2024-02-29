@@ -83,7 +83,7 @@ normStr = (path, isAbsolute, separator, isPathSeparator) ->
             dots = -1
     return res    
 
-function Slash
+class Slash
 
     @sep: '/' 
     
@@ -185,20 +185,21 @@ function Slash
         
         p = Slash.path p
         parsed = Slash.parse p
-        root = parsed.root
+        # root = parsed.root
 
-        if root.length > 1
-            if p.length > root.length
-                filePath = p.slice(root.length-1)
-            else 
-                filePath = '/'
-            return [filePath , root.slice 0, root.length-2]
+        if false #root.length > 1
+        #    if p.length > root.length
+        #        filePath = p.slice(root.length-1)
+        #    else 
+        #        filePath = '/'
+        #    return [filePath , root.slice 0, root.length-2]
+            null
         else if parsed.dir.length > 1
             if parsed.dir[1] == ':'
                 return [p[2..], parsed.dir[0]]
-        else if parsed.base.length == 2
-            if parsed.base[1] == ':'
-                return ['/', parsed.base[0]]
+        else if parsed.file.length == 2
+            if parsed.file[1] == ':'
+                return ['/', parsed.file[0]]
                 
         [Slash.path(p), '']
         
@@ -231,6 +232,12 @@ function Slash
         if l>1 then f + ':' + l
         else f
         
+    # 00000000  000   000  000000000  
+    # 000        000 000      000     
+    # 0000000     00000       000     
+    # 000        000 000      000     
+    # 00000000  000   000     000     
+    
     @ext:       (p) -> Slash.parse(p).ext
     @removeExt: (p) -> d = Slash.parse(p); Slash.path d.dir, d.name
     @splitExt:  (p) -> [Slash.removeExt(p), Slash.ext(p)]
@@ -258,16 +265,7 @@ function Slash
         return file if not line
         return "#{file}:#{line}" if not col
         "#{file}:#{line}:#{col}"
-    
-    # 0000000    000  00000000   000      000   0000000  000000000  
-    # 000   000  000  000   000  000      000  000          000     
-    # 000   000  000  0000000    000      000  0000000      000     
-    # 000   000  000  000   000  000      000       000     000     
-    # 0000000    000  000   000  0000000  000  0000000      000     
-    
-    @dirlist: (p, opt, cb) -> @list p, opt, cb
-    @list:    (p, opt, cb) -> require('./dirlist') p, opt, cb
-        
+            
     # 00000000    0000000   000000000  000   000  000      000   0000000  000000000  
     # 000   000  000   000     000     000   000  000      000  000          000     
     # 00000000   000000000     000     000000000  000      000  0000000      000     
@@ -295,40 +293,36 @@ function Slash
     # 000   000  000   000       000  000       000        000  0000  000   000  000 0 000  000      000  000  000   
     # 0000000    000   000  0000000   00000000    0        000   000  000   000  000   000  00000000 000  000  000   
     
-    @file:       (p)   -> Slash.parse(p).file
-    @isAbsolute: (p)   -> p?[0] == Slash.sep
-    @isRelative: (p)   -> not Slash.isAbsolute p
+    @dir:        (p) -> Slash.parse(p).dir
+    @file:       (p) -> Slash.parse(p).file
+    @name:       (p) -> Slash.parse(p).name
     
-    # 0000000    000  00000000   
-    # 000   000  000  000   000  
-    # 000   000  000  0000000    
-    # 000   000  000  000   000  
-    # 0000000    000  000   000  
+    @isAbsolute: (p) -> p?[0] == Slash.sep
+    @isRelative: (p) -> not Slash.isAbsolute p
     
-    @dir: (p) -> 
-        
-        p = Slash.normalize p
-        if Slash.isRoot p then return ''
-        p = path.dirname p
-        if p == '.' then return ''
-        p = Slash.path p
-        if p.endsWith(':') and p.length == 2
-            p += '/'
-        p
-        
-    @parse: (p) -> 
+    # 00000000    0000000   00000000    0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 00000000   000000000  0000000    0000000   0000000   
+    # 000        000   000  000   000       000  000       
+    # 000        000   000  000   000  0000000   00000000  
+    
+    @parse: (p) ->
         
         p = Slash.path p
-        
+
+        p = p[...-1] if p.endsWith Slash.sep
         components = p.split Slash.sep
         
         file = components[-1]
-        
+
         dots = file.split '.'
         ext  = (dots.length > 1 and dots[-1].length) ? dots.pop() : ''
         name = dots.join '.'
+        
+        dir = components[...-1].join '/'
+        dir = Slash.sep if Slash.isAbsolute(p) and empty dir
 
-        dir:  components[...-1].join '/'
+        dir:  dir
         file: file
         name: name
         ext:  ext
@@ -339,7 +333,13 @@ function Slash
     # 000 0 000  000       000  000         
     # 000   000  000  0000000    0000000    
     
-    @home:          -> Slash.path os.homedir
+    @home:      -> process.env.HOME
+    @user:      -> process.env.USER
+    @tmpdir:    -> process.env.TMPDIR
+    @tmpfile: (ext) ->
+
+        Slash.path Slash.tmpdir(), "#{Date.now()}" + (ext and ".#{ext}" or '')
+    
     @tilde:     (p) -> Slash.path(p)?.replace Slash.home(), '~'
     @untilde:   (p) -> Slash.path(p)?.replace /^\~/, Slash.home()
     @unenv:     (p) -> 
@@ -359,152 +359,18 @@ function Slash
     @samePath: (a, b) -> Slash.path(a) == Slash.path(b)
 
     @escape: (p) -> p.replace /([\`\"])/g, '\\$1'
-
+    
     @encode: (p) ->
         p = encodeURI p
         p = p.replace /\#/g, "%23"
         p = p.replace /\&/g, "%26"
         p = p.replace /\'/g, "%27"
-
-    # 00000000   000   000   0000000       000   0000000   000  000000000  
-    # 000   000  000  000   000           000   000        000     000     
-    # 00000000   0000000    000  0000    000    000  0000  000     000     
-    # 000        000  000   000   000   000     000   000  000     000     
-    # 000        000   000   0000000   000       0000000   000     000     
-    
-    @pkg: (p) ->
-    
-        if p?.length?
-            
-            while p.length and Slash.removeDrive(p) not in ['.', '/', '']
-                
-                if  Slash.dirExists  Slash.path p, '.git'         or
-                    Slash.fileExists Slash.path p, 'package.noon' or
-                    Slash.fileExists Slash.path p, 'package.json' ➜ return Slash.path p
-                p = Slash.dir p
-        null
-
-    @git: (p, cb) ->
-
-        if p?.length?
-            
-            if cb is 'function'
-                Slash.dirExists Slash.path(p, '.git'), (stat) -> 
-                    if stat then cb Slash.path p
-                    else if Slash.removeDrive(p) not in ['.' '/' '']
-                        Slash.git Slash.dir(p), cb
-            else
-                while p.length and Slash.removeDrive(p) not in ['.' '/' '']
-                    
-                    if Slash.dirExists Slash.path p, '.git' then return Slash.path p
-                    p = Slash.dir p
-        null
         
-    # 00000000  000   000  000   0000000  000000000   0000000  
-    # 000        000 000   000  000          000     000       
-    # 0000000     00000    000  0000000      000     0000000   
-    # 000        000 000   000       000     000          000  
-    # 00000000  000   000  000  0000000      000     0000000   
-    
-    @exists: (p, cb) ->
+    @sanitize: (p) ->
         
-        if cb is 'function'
-            try
-                if not p?
-                    cb() 
-                    return
-                p = Slash.path Slash.removeLinePos p
-                fs.access p, (fs.R_OK | fs.F_OK), (err) ->
-                    if err?
-                        cb() 
-                    else
-                        fs.stat p, (err, stat) ->
-                            if err?
-                                cb()
-                            else
-                                cb stat
-            catch err
-               Slash.error "Slash.exists -- " + String(err) 
-        else
-            if p?
-                try
-                    p = Slash.path Slash.removeLinePos p
-                    if stat = fs.statSync(p)
-                        fs.accessSync p, fs.R_OK
-                        return stat
-                catch err
-                    if err.code in ['ENOENT', 'ENOTDIR']
-                        return null
-                    Slash.error "Slash.exists -- " + String(err) 
-        null     
-                
-    @fileExists: (p, cb) ->
-        
-        # if cb is func
-            # try
-                # Neutralino.filesystem.getStats(p).then (stat) ->
-                    # if stat?.isFile then cb(stat) else cb()
-            # catch e
-                # error e
-                # cb()
-        # else
-            error 'slash.fileExists without callback'
-                
-    @dirExists: (p, cb) ->
-
-        # if cb is func
-            # try
-                # Neutralino.filesystem.getStats(p).then (stat) ->
-                    # if stat?.isDirectory then cb(stat) else cb()
-            # catch e
-                # error e
-                # cb()
-        # else
-            error 'slash.fileExists without callback'
-            
-    # 000000000   0000000   000   000   0000000  000   000  
-    #    000     000   000  000   000  000       000   000  
-    #    000     000   000  000   000  000       000000000  
-    #    000     000   000  000   000  000       000   000  
-    #    000      0000000    0000000    0000000  000   000  
-    
-    @touch: (p) ->
-
-        try
-            dir = Slash.dir p
-            if not Slash.isDir dir
-                fs.mkdirSync dir, recursive:true
-            if not Slash.fileExists p
-                fs.writeFileSync p, ''
-            return p
-        catch err
-            Slash.error "Slash.touch -- " + String(err) 
-            false
-                
-    # 000   0000000                 
-    # 000  000                      
-    # 000  0000000                  
-    # 000       000  000  000  000  
-    # 000  0000000   000  000  000  
-    
-    @isDir:  (p, cb) -> Slash.dirExists p, cb
-    @isFile: (p, cb) -> Slash.fileExists p, cb
-    
-    @isWritable: (p, cb) ->
-        
-        if cb is 'function'
-            try
-                fs.access Slash.path(p), (fs.constants.R_OK | fs.constants.W_OK), (err) ->
-                    cb not err
-            catch err
-                Slash.error "Slash.isWritable -- " + String(err) 
-                cb false
-        else
-            try
-                fs.accessSync Slash.path(p), (fs.constants.R_OK | fs.constants.W_OK)
-                return true
-            catch err
-                return false
+        while p[0] in '\n\r\t' ➜ p = p[1..]
+        while p[-1] in '\n\r\t' ➜ p = p[...-1]
+        p
 
     # 000000000  00000000  000   000  000000000
     #    000     000        000 000      000   
@@ -519,108 +385,7 @@ function Slash
         license:1
         '.gitignore':1
         '.npmignore':1
-    
-    @isText: (p) ->
-    
-        try
-            if not Slash.textext
-                Slash.textext = {}
-                for ext in require 'textextensions'
-                    Slash.textext[ext] = true
-                Slash.textext['crypt'] = true
-            
-            ext = Slash.ext p
-            return true if ext and Slash.textext[ext]? 
-            return true if Slash.textbase[Slash.basename(p).toLowerCase()]
-            p = Slash.path p
-            return false if not Slash.isFile p
-            isBinary = require 'isbinaryfile'
-            return not isBinary.isBinaryFileSync p
-        catch err
-            Slash.error "Slash.isText -- " + String(err)
-            false
-        
-    @readText: (p, cb) ->
-        
-        if not cb is func
-            return Bun.file(p).text()
-            
-        kakao.request('fs.readText', p).then (text, err) ->        
-            if not err
-                cb text
-            else
-                error err
-
-    @writeText: (p, text, cb) ->
-        
-        tmpfile = Slash.tmpfile()
-        
-        if cb is 'function'
-            try
-                import('fs').then (fs) =>
-                    @fileExists p, (stat) ->
-                        
-                        mode = stat?.mode ? 0o666
-        
-                        fs.writeFile tmpfile, text, mode:mode, (err) ->
-                            if err 
-                                Slash.error "Slash.writeText - " + String(err)
-                                cb ''
-                            else
-                                fs.move tmpfile, p, overwrite:true, (err) ->
-                                    if err 
-                                        Slash.error "Slash.writeText -- move #{tmpfile} -> #{p} ERROR:" + String(err)
-                                        cb '' 
-                                    else cb p
-            catch err
-                cb Slash.error "Slash.writeText --- " + String(err)
-        else
-            try
-                fs.writeFileSync tmpfile, text
-                fs.moveSync tmpfile, p, overwrite:true
-                return p
-            catch err
-                Slash.error "Slash.writeText -- " + String(err)
-            ''
-            
-    @write: (p, text) ○->
-        
-        fsprom = await import('fs/promises')
-        fs     = fsprom.default
-        os     = await import('os')
-        tmpdir = os.default.tmpdir
-        crypto = await import('crypto')
-        uuid   = crypto.default.randomUUID
-        tmpfile = Slash.path tmpdir(), uuid()
-        
-        err  = await fs.access p, (fs.R_OK | fs.F_OK)
-            
-        stat = await fs.stat p
-        mode = stat?.mode ? 0o666
-
-        err = await fs.writeFile tmpfile, text, mode:mode
-
-        if err
-            Slash.error "Slash.writeText - " + String(err)
-        else
-            err = await fs.rename tmpfile, p
-            if err 
-                Slash.error "Slash.writeText -- move #{tmpfile} -> #{p} ERROR:" + String(err)
-        
-    @tmpfile: (ext) -> 
-        
-        Slash.path os.tmpdir(), require('uuid').v1() + (ext and ".#{ext}" or '')
-        
-    # 00000000   00000000  00     00   0000000   000   000  00000000  
-    # 000   000  000       000   000  000   000  000   000  000       
-    # 0000000    0000000   000000000  000   000   000 000   0000000   
-    # 000   000  000       000 0 000  000   000     000     000       
-    # 000   000  00000000  000   000   0000000       0      00000000  
-    
-    @remove: (p, cb) -> 
-        if cb then fs.remove p, cb
-        else fs.removeSync p
-                
+                                            
     # 00000000   00000000   0000000         000   000  000  000   000        00000000  00000000   00000000   
     # 000   000  000       000              000 0 000  000  0000  000        000       000   000  000   000  
     # 0000000    0000000   000  0000        000000000  000  000 0 000        0000000   0000000    0000000    

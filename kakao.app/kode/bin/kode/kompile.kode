@@ -46,15 +46,7 @@ class Kode
 
         return '' if empty trim text
 
-        ast = @ast text
-
-        # print.ast 'ast' ast
-        # log print.astr ast, @args.scope
-
-        js = @renderer.render ast, file
-
-        # print.code 'js' js 
-        js
+        @renderer.render @ast(text), file
 
     ast: (text) ->
 

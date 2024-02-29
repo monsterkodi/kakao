@@ -1,8 +1,8 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, normStr, sep, Slash
+var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, normStr, sep
 
 import os from './os.js'
 sep = '/'
@@ -111,15 +111,13 @@ normStr = function (path, isAbsolute, separator, isPathSeparator)
     }
     return res
 }
-
-Slash = (function ()
+class Slash
 {
-    function Slash ()
-    {}
+    static sep = '/'
 
-    Slash["sep"] = '/'
-    Slash["logErrors"] = true
-    Slash["path"] = function (p)
+    static logErrors = true
+
+    static path (p)
     {
         if (!p)
         {
@@ -146,7 +144,7 @@ Slash = (function ()
         return p
     }
 
-    Slash["unslash"] = function (p)
+    static unslash (p)
     {
         var reg
 
@@ -167,7 +165,7 @@ Slash = (function ()
         return p
     }
 
-    Slash["relative"] = function (rel, to)
+    static relative (rel, to)
     {
         to = Slash.path(to)
         if (_k_.empty(rel))
@@ -183,7 +181,7 @@ Slash = (function ()
         return rel
     }
 
-    Slash["normalize"] = function (path)
+    static normalize (path)
     {
         var isAbsolute, trailingSeparator
 
@@ -213,7 +211,7 @@ Slash = (function ()
         return (isAbsolute ? `/${path}` : path)
     }
 
-    Slash["split"] = function (p)
+    static split (p)
     {
         return Slash.path(p).split('/').filter(function (e)
         {
@@ -221,24 +219,15 @@ Slash = (function ()
         })
     }
 
-    Slash["splitDrive"] = function (p)
+    static splitDrive (p)
     {
-        var filePath, parsed, root
+        var parsed
 
         p = Slash.path(p)
         parsed = Slash.parse(p)
-        root = parsed.root
-        if (root.length > 1)
+        if (false)
         {
-            if (p.length > root.length)
-            {
-                filePath = p.slice(root.length - 1)
-            }
-            else
-            {
-                filePath = '/'
-            }
-            return [filePath,root.slice(0,root.length - 2)]
+            null
         }
         else if (parsed.dir.length > 1)
         {
@@ -247,31 +236,31 @@ Slash = (function ()
                 return [p.slice(2),parsed.dir[0]]
             }
         }
-        else if (parsed.base.length === 2)
+        else if (parsed.file.length === 2)
         {
-            if (parsed.base[1] === ':')
+            if (parsed.file[1] === ':')
             {
-                return ['/',parsed.base[0]]
+                return ['/',parsed.file[0]]
             }
         }
         return [Slash.path(p),'']
     }
 
-    Slash["removeDrive"] = function (p)
+    static removeDrive (p)
     {
         return Slash.splitDrive(p)[0]
     }
 
-    Slash["isRoot"] = function (p)
+    static isRoot (p)
     {
         return Slash.removeDrive(p) === '/'
     }
 
-    Slash["splitFileLine"] = function (p)
+    static splitFileLine (p)
     {
         var c, clmn, d, f, l, line, split
 
-        var _213_14_ = Slash.splitDrive(p); f = _213_14_[0]; d = _213_14_[1]
+        var _214_14_ = Slash.splitDrive(p); f = _214_14_[0]; d = _214_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -298,25 +287,25 @@ Slash = (function ()
         return [d + split[0],Math.max(l,1),Math.max(c,0)]
     }
 
-    Slash["splitFilePos"] = function (p)
+    static splitFilePos (p)
     {
         var c, f, l
 
-        var _225_16_ = Slash.splitFileLine(p); f = _225_16_[0]; l = _225_16_[1]; c = _225_16_[2]
+        var _226_16_ = Slash.splitFileLine(p); f = _226_16_[0]; l = _226_16_[1]; c = _226_16_[2]
 
         return [f,[c,l - 1]]
     }
 
-    Slash["removeLinePos"] = function (p)
+    static removeLinePos (p)
     {
         return Slash.splitFileLine(p)[0]
     }
 
-    Slash["removeColumn"] = function (p)
+    static removeColumn (p)
     {
         var f, l
 
-        var _230_14_ = Slash.splitFileLine(p); f = _230_14_[0]; l = _230_14_[1]
+        var _231_14_ = Slash.splitFileLine(p); f = _231_14_[0]; l = _231_14_[1]
 
         if (l > 1)
         {
@@ -328,12 +317,12 @@ Slash = (function ()
         }
     }
 
-    Slash["ext"] = function (p)
+    static ext (p)
     {
         return Slash.parse(p).ext
     }
 
-    Slash["removeExt"] = function (p)
+    static removeExt (p)
     {
         var d
 
@@ -341,17 +330,17 @@ Slash = (function ()
         return Slash.path(d.dir,d.name)
     }
 
-    Slash["splitExt"] = function (p)
+    static splitExt (p)
     {
         return [Slash.removeExt(p),Slash.ext(p)]
     }
 
-    Slash["swapExt"] = function (p, ext)
+    static swapExt (p, ext)
     {
         return Slash.removeExt(p) + (ext.startsWith('.') && ext || `.${ext}`)
     }
 
-    Slash["joinFilePos"] = function (file, pos)
+    static joinFilePos (file, pos)
     {
         file = Slash.removeLinePos(file)
         if (!(pos != null) || !(pos[0] != null) || (pos[0] === pos[1] && pos[1] === 0))
@@ -368,7 +357,7 @@ Slash = (function ()
         }
     }
 
-    Slash["joinFileLine"] = function (file, line, col)
+    static joinFileLine (file, line, col)
     {
         file = Slash.removeLinePos(file)
         if (!line)
@@ -382,17 +371,7 @@ Slash = (function ()
         return `${file}:${line}:${col}`
     }
 
-    Slash["dirlist"] = function (p, opt, cb)
-    {
-        return this.list(p,opt,cb)
-    }
-
-    Slash["list"] = function (p, opt, cb)
-    {
-        return require('./dirlist')(p,opt,cb)
-    }
-
-    Slash["pathlist"] = function (p)
+    static pathlist (p)
     {
         var list
 
@@ -415,74 +394,88 @@ Slash = (function ()
         return list
     }
 
-    Slash["file"] = function (p)
+    static dir (p)
+    {
+        return Slash.parse(p).dir
+    }
+
+    static file (p)
     {
         return Slash.parse(p).file
     }
 
-    Slash["isAbsolute"] = function (p)
+    static name (p)
+    {
+        return Slash.parse(p).name
+    }
+
+    static isAbsolute (p)
     {
         return (p != null ? p[0] : undefined) === Slash.sep
     }
 
-    Slash["isRelative"] = function (p)
+    static isRelative (p)
     {
         return !Slash.isAbsolute(p)
     }
 
-    Slash["dir"] = function (p)
+    static parse (p)
     {
-        p = Slash.normalize(p)
-        if (Slash.isRoot(p))
-        {
-            return ''
-        }
-        p = path.dirname(p)
-        if (p === '.')
-        {
-            return ''
-        }
-        p = Slash.path(p)
-        if (p.endsWith(':') && p.length === 2)
-        {
-            p += '/'
-        }
-        return p
-    }
-
-    Slash["parse"] = function (p)
-    {
-        var components, dots, ext, file, name
+        var components, dir, dots, ext, file, name
 
         p = Slash.path(p)
+        if (p.endsWith(Slash.sep))
+        {
+            p = p.slice(0, -1)
+        }
         components = p.split(Slash.sep)
         file = components.slice(-1)[0]
         dots = file.split('.')
         ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? dots.pop() : '')
         name = dots.join('.')
-        return {dir:components.slice(0, -1).join('/'),file:file,name:name,ext:ext}
+        dir = components.slice(0, -1).join('/')
+        if (Slash.isAbsolute(p) && _k_.empty(dir))
+        {
+            dir = Slash.sep
+        }
+        return {dir:dir,file:file,name:name,ext:ext}
     }
 
-    Slash["home"] = function ()
+    static home ()
     {
-        return Slash.path(os.homedir)
+        return process.env.HOME
     }
 
-    Slash["tilde"] = function (p)
+    static user ()
+    {
+        return process.env.USER
+    }
+
+    static tmpdir ()
+    {
+        return process.env.TMPDIR
+    }
+
+    static tmpfile (ext)
+    {
+        return Slash.path(Slash.tmpdir(),`${Date.now()}` + (ext && `.${ext}` || ''))
+    }
+
+    static tilde (p)
     {
         var _343_36_
 
         return (Slash.path(p) != null ? Slash.path(p).replace(Slash.home(),'~') : undefined)
     }
 
-    Slash["untilde"] = function (p)
+    static untilde (p)
     {
         var _344_36_
 
         return (Slash.path(p) != null ? Slash.path(p).replace(/^\~/,Slash.home()) : undefined)
     }
 
-    Slash["unenv"] = function (p)
+    static unenv (p)
     {
         var i, k, v
 
@@ -503,22 +496,22 @@ Slash = (function ()
         return Slash.path(p)
     }
 
-    Slash["fileUrl"] = function (p)
+    static fileUrl (p)
     {
         return `file:///${Slash.encode(p)}`
     }
 
-    Slash["samePath"] = function (a, b)
+    static samePath (a, b)
     {
         return Slash.path(a) === Slash.path(b)
     }
 
-    Slash["escape"] = function (p)
+    static escape (p)
     {
         return p.replace(/([\`\"])/g,'\\$1')
     }
 
-    Slash["encode"] = function (p)
+    static encode (p)
     {
         p = encodeURI(p)
         p = p.replace(/\#/g,"%23")
@@ -526,382 +519,31 @@ Slash = (function ()
         return p = p.replace(/\'/g,"%27")
     }
 
-    Slash["pkg"] = function (p)
+    static sanitize (p)
     {
-        var _377_20_
-
-        if (((p != null ? p.length : undefined) != null))
+        while (_k_.in(p[0],'\n\r\t'))
         {
-            while (p.length && !(_k_.in(Slash.removeDrive(p),['.','/',''])))
-            {
-                if (Slash.dirExists(Slash.path(p,'.git' || Slash.fileExists(Slash.path(p,'package.noon' || Slash.fileExists(Slash.path(p,'package.json')))))))
-                {
-                    return Slash.path(p)
-                }
-                p = Slash.dir(p)
-            }
+            p = p.slice(1)
         }
-        return null
+        while (_k_.in(p.slice(-1)[0],'\n\r\t'))
+        {
+            p = p.slice(0, -1)
+        }
+        return p
     }
 
-    Slash["git"] = function (p, cb)
-    {
-        var _389_20_
+    static textext = null
 
-        if (((p != null ? p.length : undefined) != null))
-        {
-            if (typeof(cb) === 'function')
-            {
-                Slash.dirExists(Slash.path(p,'.git'),function (stat)
-                {
-                    if (stat)
-                    {
-                        return cb(Slash.path(p))
-                    }
-                    else if (!(_k_.in(Slash.removeDrive(p),['.','/',''])))
-                    {
-                        return Slash.git(Slash.dir(p),cb)
-                    }
-                })
-            }
-            else
-            {
-                while (p.length && !(_k_.in(Slash.removeDrive(p),['.','/',''])))
-                {
-                    if (Slash.dirExists(Slash.path(p,'.git')))
-                    {
-                        return Slash.path(p)
-                    }
-                    p = Slash.dir(p)
-                }
-            }
-        }
-        return null
-    }
+    static textbase = {profile:1,license:1,'.gitignore':1,'.npmignore':1}
 
-    Slash["exists"] = function (p, cb)
-    {
-        var stat
+    static reg = new RegExp("\\\\",'g')
 
-        if (typeof(cb) === 'function')
-        {
-            try
-            {
-                if (!(p != null))
-                {
-                    cb()
-                    return
-                }
-                p = Slash.path(Slash.removeLinePos(p))
-                fs.access(p,(fs.R_OK | fs.F_OK),function (err)
-                {
-                    if ((err != null))
-                    {
-                        return cb()
-                    }
-                    else
-                    {
-                        return fs.stat(p,function (err, stat)
-                        {
-                            if ((err != null))
-                            {
-                                return cb()
-                            }
-                            else
-                            {
-                                return cb(stat)
-                            }
-                        })
-                    }
-                })
-            }
-            catch (err)
-            {
-                Slash.error("Slash.exists -- " + String(err))
-            }
-        }
-        else
-        {
-            if ((p != null))
-            {
-                try
-                {
-                    p = Slash.path(Slash.removeLinePos(p))
-                    if (stat = fs.statSync(p))
-                    {
-                        fs.accessSync(p,fs.R_OK)
-                        return stat
-                    }
-                }
-                catch (err)
-                {
-                    if (_k_.in(err.code,['ENOENT','ENOTDIR']))
-                    {
-                        return null
-                    }
-                    Slash.error("Slash.exists -- " + String(err))
-                }
-            }
-        }
-        return null
-    }
-
-    Slash["fileExists"] = function (p, cb)
-    {
-        console.error('slash.fileExists without callback')
-    }
-
-    Slash["dirExists"] = function (p, cb)
-    {
-        console.error('slash.fileExists without callback')
-    }
-
-    Slash["touch"] = function (p)
-    {
-        var dir
-
-        try
-        {
-            dir = Slash.dir(p)
-            if (!Slash.isDir(dir))
-            {
-                fs.mkdirSync(dir,{recursive:true})
-            }
-            if (!Slash.fileExists(p))
-            {
-                fs.writeFileSync(p,'')
-            }
-            return p
-        }
-        catch (err)
-        {
-            Slash.error("Slash.touch -- " + String(err))
-            return false
-        }
-    }
-
-    Slash["isDir"] = function (p, cb)
-    {
-        return Slash.dirExists(p,cb)
-    }
-
-    Slash["isFile"] = function (p, cb)
-    {
-        return Slash.fileExists(p,cb)
-    }
-
-    Slash["isWritable"] = function (p, cb)
-    {
-        if (typeof(cb) === 'function')
-        {
-            try
-            {
-                return fs.access(Slash.path(p),(fs.constants.R_OK | fs.constants.W_OK),function (err)
-                {
-                    return cb(!err)
-                })
-            }
-            catch (err)
-            {
-                Slash.error("Slash.isWritable -- " + String(err))
-                return cb(false)
-            }
-        }
-        else
-        {
-            try
-            {
-                fs.accessSync(Slash.path(p),(fs.constants.R_OK | fs.constants.W_OK))
-                return true
-            }
-            catch (err)
-            {
-                return false
-            }
-        }
-    }
-
-    Slash["textext"] = null
-    Slash["textbase"] = {profile:1,license:1,'.gitignore':1,'.npmignore':1}
-    Slash["isText"] = function (p)
-    {
-        var ext, isBinary
-
-        try
-        {
-            if (!Slash.textext)
-            {
-                Slash.textext = {}
-                var list = _k_.list(require('textextensions'))
-                for (var _528_24_ = 0; _528_24_ < list.length; _528_24_++)
-                {
-                    ext = list[_528_24_]
-                    Slash.textext[ext] = true
-                }
-                Slash.textext['crypt'] = true
-            }
-            ext = Slash.ext(p)
-            if (ext && (Slash.textext[ext] != null))
-            {
-                return true
-            }
-            if (Slash.textbase[Slash.basename(p).toLowerCase()])
-            {
-                return true
-            }
-            p = Slash.path(p)
-            if (!Slash.isFile(p))
-            {
-                return false
-            }
-            isBinary = require('isbinaryfile')
-            return !isBinary.isBinaryFileSync(p)
-        }
-        catch (err)
-        {
-            Slash.error("Slash.isText -- " + String(err))
-            return false
-        }
-    }
-
-    Slash["readText"] = function (p, cb)
-    {
-        if (!(_k_.isFunc(cb)))
-        {
-            return Bun.file(p).text()
-        }
-        return kakao.request('fs.readText',p).then(function (text, err)
-        {
-            if (!err)
-            {
-                return cb(text)
-            }
-            else
-            {
-                console.error(err)
-            }
-        })
-    }
-
-    Slash["writeText"] = function (p, text, cb)
-    {
-        var tmpfile
-
-        tmpfile = Slash.tmpfile()
-        if (typeof(cb) === 'function')
-        {
-            try
-            {
-                import('fs')
-                .
-                then
-                return (function (fs)
-                {
-                    return this.fileExists(p,function (stat)
-                    {
-                        var mode, _563_42_
-
-                        mode = ((_563_42_=(stat != null ? stat.mode : undefined)) != null ? _563_42_ : 0o666)
-                        return fs.writeFile(tmpfile,text,{mode:mode},function (err)
-                        {
-                            if (err)
-                            {
-                                Slash.error("Slash.writeText - " + String(err))
-                                return cb('')
-                            }
-                            else
-                            {
-                                return fs.move(tmpfile,p,{overwrite:true},function (err)
-                                {
-                                    if (err)
-                                    {
-                                        Slash.error(`Slash.writeText -- move ${tmpfile} -> ${p} ERROR:` + String(err))
-                                        return cb('')
-                                    }
-                                    else
-                                    {
-                                        return cb(p)
-                                    }
-                                })
-                            }
-                        })
-                    })
-                }).bind(this)
-            }
-            catch (err)
-            {
-                return cb(Slash.error("Slash.writeText --- " + String(err)))
-            }
-        }
-        else
-        {
-            try
-            {
-                fs.writeFileSync(tmpfile,text)
-                fs.moveSync(tmpfile,p,{overwrite:true})
-                return p
-            }
-            catch (err)
-            {
-                Slash.error("Slash.writeText -- " + String(err))
-            }
-            return ''
-        }
-    }
-
-    Slash["write"] = async function (p, text)
-    {
-        var crypto, err, fs, fsprom, mode, os, stat, tmpdir, tmpfile, uuid, _599_26_
-
-        fsprom = await import('fs/promises')
-        fs = fsprom.default
-        os = await import('os')
-        tmpdir = os.default.tmpdir
-        crypto = await import('crypto')
-        uuid = crypto.default.randomUUID
-        tmpfile = Slash.path(tmpdir(),uuid())
-        err = await fs.access(p,(fs.R_OK | fs.F_OK))
-        stat = await fs.stat(p)
-        mode = ((_599_26_=(stat != null ? stat.mode : undefined)) != null ? _599_26_ : 0o666)
-        err = await fs.writeFile(tmpfile,text,{mode:mode})
-        if (err)
-        {
-            return Slash.error("Slash.writeText - " + String(err))
-        }
-        else
-        {
-            err = await fs.rename(tmpfile,p)
-            if (err)
-            {
-                return Slash.error(`Slash.writeText -- move ${tmpfile} -> ${p} ERROR:` + String(err))
-            }
-        }
-    }
-
-    Slash["tmpfile"] = function (ext)
-    {
-        return Slash.path(os.tmpdir(),require('uuid').v1() + (ext && `.${ext}` || ''))
-    }
-
-    Slash["remove"] = function (p, cb)
-    {
-        if (cb)
-        {
-            return fs.remove(p,cb)
-        }
-        else
-        {
-            return fs.removeSync(p)
-        }
-    }
-
-    Slash["reg"] = new RegExp("\\\\",'g')
-    Slash["win"] = function ()
+    static win ()
     {
         return Slash.sep === '\\'
     }
 
-    Slash["error"] = function (msg)
+    static error (msg)
     {
         if (this.logErrors)
         {
@@ -909,8 +551,6 @@ Slash = (function ()
         }
         return ''
     }
-
-    return Slash
-})()
+}
 
 export default Slash;

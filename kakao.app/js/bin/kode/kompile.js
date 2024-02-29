@@ -39,15 +39,11 @@ class Kode
 
     compile (text, file)
     {
-        var ast, js
-
         if (_k_.empty(_k_.trim(text)))
         {
             return ''
         }
-        ast = this.ast(text)
-        js = this.renderer.render(ast,file)
-        return js
+        return this.renderer.render(this.ast(text),file)
     }
 
     ast (text)

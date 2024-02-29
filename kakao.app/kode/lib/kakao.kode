@@ -10,7 +10,7 @@
     provides shortcuts to uesful internal modules
     sets itself in the global window scope
 ###
-
+log 'kakao'
 import bundle from './bundle.js'
 import kxk    from './kxk/kxk.js'
 

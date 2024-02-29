@@ -178,6 +178,7 @@
         payload = [NSString stringWithFormat:@"{name:\"%@\", args:[%@]}", [msg objectForKey:@"name"], [msg objectForKey:@"args"]];
     }
     
+    NSLog(@"▸ %@", payload);
     id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
 
     [targetView evaluateJavaScript:script completionHandler:nil];

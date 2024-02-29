@@ -15,10 +15,13 @@
 ###
 
 import slash from './slash.js'
-import fs from 'fs/promises'
 
 listdir = (dir, found) ○->
         
+    # import fs from 'fs/promises'
+    fs = await import('fs/promises')
+    fs = fs.default
+    
     dirents = await fs.readdir dir, { withFileTypes: true }
     
     for dirent in dirents

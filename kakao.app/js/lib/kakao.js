@@ -4,6 +4,7 @@ var _k_
 
 var Kakao
 
+console.log('kakao')
 import bundle from './bundle.js'
 import kxk from './kxk/kxk.js'
 
