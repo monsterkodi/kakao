@@ -168,6 +168,8 @@ class Slash
 
     static relative (rel, to)
     {
+        var dd, r, rc, tc
+
         to = Slash.path(to)
         if (_k_.empty(rel))
         {
@@ -178,7 +180,37 @@ class Slash
         {
             return '.'
         }
-        console.log(`relative ${rel} to ${to}`)
+        if (rel.startsWith(to))
+        {
+            r = rel.slice(to.length)
+            if (r[0] === Slash.sep)
+            {
+                r = r.slice(1)
+            }
+            return r
+        }
+        rc = Slash.split(rel)
+        tc = Slash.split(to)
+        dd = ''
+        while (rc[0] === tc[0])
+        {
+            rc.shift()
+            tc.shift()
+            dd += '../'
+        }
+        if (!_k_.empty(dd))
+        {
+            return dd + rc.join('/')
+        }
+        while (!_k_.empty(tc))
+        {
+            tc.shift()
+            dd += '../'
+        }
+        if (!_k_.empty(dd))
+        {
+            return dd + rc.join('/')
+        }
         return rel
     }
 
@@ -226,11 +258,7 @@ class Slash
 
         p = Slash.path(p)
         parsed = Slash.parse(p)
-        if (false)
-        {
-            null
-        }
-        else if (parsed.dir.length > 1)
+        if (parsed.dir.length > 1)
         {
             if (parsed.dir[1] === ':')
             {
@@ -261,7 +289,7 @@ class Slash
     {
         var c, clmn, d, f, l, line, split
 
-        var _215_14_ = Slash.splitDrive(p); f = _215_14_[0]; d = _215_14_[1]
+        var _238_14_ = Slash.splitDrive(p); f = _238_14_[0]; d = _238_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -292,7 +320,7 @@ class Slash
     {
         var c, f, l
 
-        var _227_16_ = Slash.splitFileLine(p); f = _227_16_[0]; l = _227_16_[1]; c = _227_16_[2]
+        var _250_16_ = Slash.splitFileLine(p); f = _250_16_[0]; l = _250_16_[1]; c = _250_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -306,7 +334,7 @@ class Slash
     {
         var f, l
 
-        var _232_14_ = Slash.splitFileLine(p); f = _232_14_[0]; l = _232_14_[1]
+        var _255_14_ = Slash.splitFileLine(p); f = _255_14_[0]; l = _255_14_[1]
 
         if (l > 1)
         {

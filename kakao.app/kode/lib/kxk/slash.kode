@@ -119,6 +119,12 @@ class Slash
             
         p
         
+    # 000   000  000   000   0000000  000       0000000    0000000  000   000  
+    # 000   000  0000  000  000       000      000   000  000       000   000  
+    # 000   000  000 0 000  0000000   000      000000000  0000000   000000000  
+    # 000   000  000  0000       000  000      000   000       000  000   000  
+    #  0000000   000   000  0000000   0000000  000   000  0000000   000   000  
+    
     @unslash: (p) ->
         
         p = Slash.path p
@@ -136,16 +142,42 @@ class Slash
                 p =  p[0].toUpperCase() + p[1..]
         p
         
+    # 00000000   00000000  000       0000000   000000000  000  000   000  00000000  
+    # 000   000  000       000      000   000     000     000  000   000  000       
+    # 0000000    0000000   000      000000000     000     000   000 000   0000000   
+    # 000   000  000       000      000   000     000     000     000     000       
+    # 000   000  00000000  0000000  000   000     000     000      0      00000000  
+    
     @relative: (rel, to) ->
         
         to = Slash.path to
-        
         return to if empty rel
         
         rel = Slash.path rel
         return '.' if to == rel
+        
+        if rel.startsWith to
+            r = rel[to.length..]
+            r = r[1..] if r[0] == Slash.sep
+            return r
+        
+        rc = Slash.split rel
+        tc = Slash.split to
+        
+        dd = ''
+        while rc[0] == tc[0]
+            rc.shift()
+            tc.shift()
+            dd += '../'
             
-        log "relative #{rel} to #{to}" 
+        return dd + rc.join '/' if valid dd
+        
+        while valid tc
+            tc.shift()
+            dd += '../'
+            
+        return dd + rc.join '/' if valid dd
+        
         rel
         
     # 000   000   0000000   00000000   00     00   0000000   000      000  0000000  00000000  
@@ -186,16 +218,7 @@ class Slash
         
         p = Slash.path p
         parsed = Slash.parse p
-        # root = parsed.root
-
-        if false #root.length > 1
-        #    if p.length > root.length
-        #        filePath = p.slice(root.length-1)
-        #    else 
-        #        filePath = '/'
-        #    return [filePath , root.slice 0, root.length-2]
-            null
-        else if parsed.dir.length > 1
+        if parsed.dir.length > 1
             if parsed.dir[1] == ':'
                 return [p[2..], parsed.dir[0]]
         else if parsed.file.length == 2
@@ -289,11 +312,11 @@ class Slash
             p = Slash.dir p
         list
         
-    # 0000000     0000000    0000000  00000000             000   000   0000000   00     00  00000000                 
-    # 000   000  000   000  000       000                  0000  000  000   000  000   000  000                      
-    # 0000000    000000000  0000000   0000000              000 0 000  000000000  000000000  0000000                  
-    # 000   000  000   000       000  000       000        000  0000  000   000  000 0 000  000      000  000  000   
-    # 0000000    000   000  0000000   00000000    0        000   000  000   000  000   000  00000000 000  000  000   
+    # 0000000    000  00000000           00000000  000  000      00000000        000   000   0000000   00     00  00000000
+    # 000   000  000  000   000          000       000  000      000             0000  000  000   000  000   000  000     
+    # 000   000  000  0000000            000000    000  000      0000000         000 0 000  000000000  000000000  0000000 
+    # 000   000  000  000   000          000       000  000      000             000  0000  000   000  000 0 000  000     
+    # 0000000    000  000   000          000       000  0000000  00000000        000   000  000   000  000   000  00000000
     
     @dir:        (p) -> Slash.parse(p).dir
     @file:       (p) -> Slash.parse(p).file
