@@ -5,17 +5,18 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var dirlist, listdir
 
 import slash from './slash.js'
-import fs from 'fs/promises'
 
 listdir = async function (dir, found)
 {
-    var absPath, dirent, dirents, file, isDir
+    var absPath, dirent, dirents, file, fs, isDir
 
+    fs = await import('fs/promises')
+    fs = fs.default
     dirents = await fs.readdir(dir,{withFileTypes:true})
     var list = _k_.list(dirents)
-    for (var _24_15_ = 0; _24_15_ < list.length; _24_15_++)
+    for (var _27_15_ = 0; _27_15_ < list.length; _27_15_++)
     {
-        dirent = list[_24_15_]
+        dirent = list[_27_15_]
         file = dirent.name
         isDir = !dirent.isFile()
         absPath = dir + '/' + file

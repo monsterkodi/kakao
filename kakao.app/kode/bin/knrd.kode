@@ -9,17 +9,15 @@
 ###
 
 import Kode     from './kode/kompile.js'
+import fs       from '../lib/kxk/fs.js'
 import slash    from '../lib/kxk/slash.js'
 import kolor    from '../lib/kxk/kolor.js'
 import dirlist  from '../lib/kxk/dirlist.js'
 import { pug, stylus } from '../../bin/min.mjs'
 
-import fs   from 'fs/promises'
-import path from 'path'
-
 kolor.globalize()
 
-dirname = path.dirname import.meta.url[7..] # todo: fix this!
+__dirname = import.meta.dirname
 
 knrd = (files = [], opt = {}) ○->
             
@@ -29,10 +27,10 @@ knrd = (files = [], opt = {}) ○->
     ● 🔨
     kode = new Kode
     
-    kodeDir = slash.path import.meta.dirname + '/../../kode'
-    pugDir  = slash.path import.meta.dirname + '/../../pug'
-    jsDir   = slash.path import.meta.dirname + '/../../js'
-    cssDir  = slash.path import.meta.dirname + '/../../js/css'
+    kodeDir = slash.path __dirname + '/../../kode'
+    pugDir  = slash.path __dirname + '/../../pug'
+    jsDir   = slash.path __dirname + '/../../js'
+    cssDir  = slash.path __dirname + '/../../js/css'
     
     if empty files
         
@@ -55,11 +53,11 @@ knrd = (files = [], opt = {}) ○->
                 kodeFile = file
                 jsFile   = slash.swapExt kodeFile.replace(kodeDir, jsDir), 'js'
                 
-                kodeText = await fs.readFile kodeFile, encoding:'utf8'
-                origText = await fs.readFile jsFile,   encoding:'utf8'
+                kodeText = await fs.read kodeFile
+                origText = await fs.read jsFile
                 
                 # ●▸ 🔨
-                compText = kode.compile kodeText
+                compText = kode.compile kodeText, file
                 # ●▪ 🔨
 
                 if empty compText
@@ -68,7 +66,7 @@ knrd = (files = [], opt = {}) ○->
                     if origText != compText
                         transpiled++
                         log b5('▶ '), g5 slash.tilde kodeFile
-                        await slash.write(jsFile, compText)
+                        await fs.write jsFile, compText
                         log b5('✔ '), g5 slash.tilde jsFile
                     else if opt.logVerbose
                         log g2('✔ '), g3 slash.tilde kodeFile
@@ -78,8 +76,8 @@ knrd = (files = [], opt = {}) ○->
                 stylFile = file
                 cssFile  = slash.swapExt stylFile.replace(pugDir, cssDir), 'css'
                 
-                stylText = await fs.readFile stylFile, encoding:'utf8'
-                origText = await fs.readFile cssFile,  encoding:'utf8'
+                stylText = await fs.read stylFile
+                origText = await fs.read cssFile
 
                 compText = stylus stylText
                 
@@ -89,7 +87,7 @@ knrd = (files = [], opt = {}) ○->
                     if origText != compText
                         transpiled++
                         log c3('▶ '), c5 slash.tilde stylFile
-                        await slash.write(cssFile, compText)
+                        await fs.write cssFile, compText
                         log b5('✔ '), g5 slash.tilde cssFile
                     else if opt.logVerbose
                         log g2('✔ '), c3 slash.tilde stylFile
@@ -100,8 +98,8 @@ knrd = (files = [], opt = {}) ○->
                 srcFile = file
                 tgtFile = slash.swapExt srcFile.replace(pugDir, jsDir), 'html'
                 
-                srcText = await fs.readFile srcFile, encoding:'utf8'
-                tgtText = await fs.readFile tgtFile, encoding:'utf8'
+                srcText = await fs.read srcFile
+                tgtText = await fs.read tgtFile
                 
                 compText = pug srcText
                     
@@ -111,7 +109,7 @@ knrd = (files = [], opt = {}) ○->
                     if tgtText != compText
                         transpiled++
                         log m3('▶ '), m4 slash.tilde srcFile
-                        await slash.write tgtFile, compText
+                        await fs.write tgtFile, compText
                         log b5('✔ '), g5 slash.tilde tgtFile
                     else if opt.logVerbose
                         log g2('✔ '), m3 slash.tilde srcFile

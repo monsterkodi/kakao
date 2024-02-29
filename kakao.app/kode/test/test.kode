@@ -1,0 +1,12 @@
+###
+000000000  00000000   0000000  000000000
+   000     000       000          000   
+   000     0000000   0000000      000   
+   000     000            000     000   
+   000     00000000  0000000      000   
+###
+
+import test_slash from './test_slash.js'
+import tester     from '../bin/kode/tester.js'
+
+tester.test test_slash

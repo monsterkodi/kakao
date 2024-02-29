@@ -1,0 +1,189 @@
+###
+000000000  00000000   0000000  000000000          00000000   0000000
+   000     000       000          000             000       000     
+   000     0000000   0000000      000             000000    0000000 
+   000     000            000     000             000            000
+   000     00000000  0000000      000     000000  000       0000000 
+###
+
+
+import fs from '../../js/lib/kxk/slash.js'
+import slash from '../../js/lib/kxk/fs.js'
+
+__filename = import.meta.filename
+__dirname = import.meta.dirname
+
+▸ fs
+    
+    # 00000000  000   000  000   0000000  000000000   0000000  
+    # 000        000 000   000  000          000     000       
+    # 0000000     00000    000  0000000      000     0000000   
+    # 000        000 000   000       000     000          000  
+    # 00000000  000   000  000  0000000      000     0000000   
+    
+    ▸ exists
+
+        (slash.exists(__dirname)?)          ▸ true
+        (slash.exists(slash.__filename)?)         ▸ true
+        (slash.exists(slash.__filename + 'foo')?) ▸ false
+        
+        ▸ async
+             
+            slash.exists slash.__filename, (stat) ->
+                (stat?) ▸ true
+    
+            ▸ not
+                slash.exists slash.__filename + 'foo' (stat) ->
+                    (stat?) ▸ false
+            
+    ▸ fileExists
+
+        (slash.fileExists(slash.__filename)?) ▸ true
+        (slash.fileExists(__dirname)?) ▸ false
+        
+    ▸ dirExists
+        
+        (slash.dirExists(__dirname)?) ▸ true
+        (slash.dirExists(slash.__filename)?) ▸ false
+
+    # 00000000   000   000   0000000   
+    # 000   000  000  000   000        
+    # 00000000   0000000    000  0000  
+    # 000        000  000   000   000  
+    # 000        000   000   0000000   
+    
+    ▸ pkg
+        
+        (slash.pkg(__dirname)?)  ▸ true
+        (slash.pkg(slash.__filename)?) ▸ true
+
+        (slash.pkg('C:\\')?) ▸ false
+        (slash.pkg('C:')?) ▸ false
+        
+    # 00000000   00000000   0000000   0000000    000000000  00000000  000   000  000000000  
+    # 000   000  000       000   000  000   000     000     000        000 000      000     
+    # 0000000    0000000   000000000  000   000     000     0000000     00000       000     
+    # 000   000  000       000   000  000   000     000     000        000 000      000     
+    # 000   000  00000000  000   000  0000000       000     00000000  000   000     000     
+    
+    #▸ readText
+    #    
+    #    (slash.readText __dirname + '/../package.noon') ▸ (a) -> a.startsWith 'name'
+    #    (slash.readText __dirname + '/dir/filedoesntexist') ▸ ''
+    #
+    #    ▸ callback
+    #        slash.readText __dirname + '/../package.noon' (text) ->
+    #            text ▸ (a) -> a.startsWith 'name'
+    #
+    #        ▸ fail
+    #            slash.readText __dirname + '/dir/filedoesntexist' (text) ->
+    #                text ▸ ''
+
+    # 000   000  00000000   000  000000000  00000000  000000000  00000000  000   000  000000000  
+    # 000 0 000  000   000  000     000     000          000     000        000 000      000     
+    # 000000000  0000000    000     000     0000000      000     0000000     00000       000     
+    # 000   000  000   000  000     000     000          000     000        000 000      000     
+    # 00     00  000   000  000     000     00000000     000     00000000  000   000     000     
+    
+    #▸ writeText
+    #    
+    #    f = slash.path __dirname, 'test.txt'
+    #    slash.writeText(f, 'hello') ▸ f
+    #    slash.readText(f) ▸ 'hello'
+    #    f = slash.path __dirname, 'test.txt' 'subdir'
+    #    slash.writeText(f, 'hello') ▸ ''
+    #        
+    #    ▸ callback
+    #        f2 = slash.path __dirname, 'test.txt'
+    #        slash.writeText f2, "hello world" (p) ->
+    #            slash.readText(p) ▸ 'hello world'
+    #            p ▸ f2
+    #            slash.remove(p)
+    #
+    #        ▸ fail
+    #            f3 = slash.path __dirname, 'test.txt' 'subdir' 
+    #            slash.writeText f3, "nope" (p) ->
+    #                p ▸ ''
+                    
+    ▸ write
+        
+        f = slash.path __dirname, 'test.txt'
+        fs.write(f, 'hello') ▸ f
+        fs.read(f) ▸ 'hello'
+        f = slash.path __dirname, 'test.txt' 'subdir'
+        fs.write(f, 'hello') ▸ ''
+            
+        ▸ callback
+            f2 = slash.path __dirname, 'test.txt'
+            fs.write f2, "hello world" (p) ->
+                fs.read(p) ▸ 'hello world'
+                p ▸ f2
+                fs.remove(p)
+
+            ▸ fail
+                f3 = slash.path __dirname, 'test.txt' 'subdir' 
+                fs.write f3, "nope" (p) ->
+                    p ▸ ''
+            
+    # 0000000    000  00000000   000      000   0000000  000000000  
+    # 000   000  000  000   000  000      000  000          000     
+    # 000   000  000  0000000    000      000  0000000      000     
+    # 000   000  000  000   000  000      000       000     000     
+    # 0000000    000  000   000  0000000  000  0000000      000     
+
+    ▸ dirlist
+        
+        #process.chdir __dirname
+        #slash.list (items) ->
+        #    items.map((i) -> i.file) ▸ (a) -> slash.path(__filename) in a
+        #
+        #▸ ''
+        #    slash.list '' (items) ->
+        #        items.map((i) -> i.file) ▸ (a) -> slash.path(__filename) in a
+        #
+        #▸ .
+        #    slash.list '.' (items) ->
+        #        items.map((i) -> i.file) ▸ (a) -> slash.path(__filename) in a
+        #    
+        #▸ fail
+        #    slash.list 'fail' logError:no, (items) ->
+        #        items ▸ []
+        #
+        #▸ ..
+        #    slash.list '..' (items) ->
+        #        items.map((i) -> i.file) ▸ (a) -> slash.resolve("#{__dirname}/../package.noon") in a
+            
+        #  0000000  000   000  000   000   0000000    
+        # 000        000 000   0000  000  000         
+        # 0000000     00000    000 0 000  000         
+        #      000     000     000  0000  000         
+        # 0000000      000     000   000   0000000    
+    
+        #▸ sync
+        #    
+        #    slash.list().map((i) -> i.file)    ▸ (a) -> slash.path(__filename) in a
+        #
+        #    ▸ ''
+        #        slash.list('').map((i) -> i.file)  ▸ (a) -> slash.path(__filename) in a
+        #
+        #    ▸ .
+        #        slash.list('.').map((i) -> i.file) ▸ (a) -> slash.path(__filename) in a
+        #            
+        #    ▸ fail
+        #        slash.list('fail' logError:no) ▸ []
+        #    
+        #    ▸ ..
+        #        slash.list('..').map((i) -> i.file)  ▸ (a) -> slash.resolve("#{__dirname}/../package.noon") in a
+               
+    #▸ tmpfile
+    #    
+    #    slash.tmpfile('txt')        ▸   (a) -> /\.txt$/.test a
+    #    slash.tmpfile()             ▸   (a) -> /[a-f\d]+$/.test a
+
+    ▸ remove
+        
+        t = fs.touch slash.tmpfile()
+        (fs.isFile(t)?)    ▸ true
+        (fs.remove(t)?)    ▸ false
+        (fs.isFile(t)?)    ▸ false
+    

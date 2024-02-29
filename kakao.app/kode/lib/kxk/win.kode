@@ -32,6 +32,8 @@ function Win
 
     @: (@delegate) ->
         
+        log 'win'
+        
         @delegate ?= new WinDelegate
         
         post.on 'menuAction'   @onMenuAction

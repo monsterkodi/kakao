@@ -6,13 +6,9 @@
 000   000  00000000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-# kstr   = require 'kstr'
-# slash  = require 'kslash'
 import kstr  from '../../lib/kxk/kstr.js'
 import slash from '../../lib/kxk/slash.js'
 import utils from './utils.js'
-# import print from './print.js'
-# SrcMap = require './srcmap'
 
 { firstLineCol, lastLineCol } = utils
 
@@ -33,13 +29,8 @@ class Renderer
     # 000   000  000       000  0000  000   000  000       000   000  
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
-    render: (ast, source) ->
+    render: (ast) ->
 
-        # if @kode.args.map and @source
-            # @srcmap = new SrcMap @source
-        
-        @source = slash.relative source, process.cwd()
-            
         @ast = ast
             
         @hint = _k_:{}
@@ -60,17 +51,11 @@ class Renderer
         s += @nodes ast.exps, '\n' true
         
         if @hint.section
-            s += '\nmodule.exports._test_ = true'
-            s += '\nmodule.exports\n'
+            s  = 'var toExport = {}\n' + s
+            s += '\ntoExport._test_ = true'
+            s += '\nexport default toExport\n'
         
-        #if @srcmap
-        #    @srcmap.done s
-        #    sm = @srcmap.generate s
-        #    print.noon sm
-        #    s += @srcmap.jscode sm
-            
-        s = @header s
-            
+        s = @header s            
         s
         
     js: (s, tl) => 
@@ -1562,11 +1547,11 @@ class Renderer
         @hint.section = true
                 
         gi = @ind()
-        s = "module.exports[#{p.title.text}] = function ()\n"
+        s = "toExport[#{p.title.text}] = function ()\n"
         s+= gi + '{\n' 
         s+= @indent + @nodes(p.exps, '\n'+@indent, true) + '\n' if valid p.exps
         s+= gi + '}\n' 
-        s+= "module.exports[#{p.title.text}]._section_ = true"
+        s+= "toExport[#{p.title.text}]._section_ = true"
         @ded()
         s
         

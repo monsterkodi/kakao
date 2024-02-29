@@ -11,7 +11,7 @@
     loaded in ../Contents/MacOS/js/index.html
     which is transpiled from ../pug/index.pug
 ###
-
-import kakao from './lib/kakao.js'
-    
-kakao.init -> new kakao.window
+log 'main'
+# import kakao from './lib/kakao.js'
+#     
+# kakao.init -> new kakao.window

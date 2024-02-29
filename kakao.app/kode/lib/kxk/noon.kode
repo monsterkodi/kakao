@@ -7,7 +7,6 @@
 ###
 
 import slash from './slash.js'
-import path  from './path.js'
 
 # 00000000    0000000   00000000    0000000  00000000
 # 000   000  000   000  000   000  000       000
@@ -608,7 +607,7 @@ save = (p, data, strOpt, cb) ->
     else
         strOpt ?= {}
 
-    str = stringify data, Object.assign ext:path.extname(p), strOpt
+    str = stringify data, Object.assign ext:slash.ext(p), strOpt
 
     if cb is func
 

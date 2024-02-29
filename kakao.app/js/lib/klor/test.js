@@ -1,3 +1,4 @@
+var toExport = {}
 // monsterkodi/kode 0.256.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
@@ -46,7 +47,7 @@ dissect = function (c, e)
 {
     return klor.dissect(c.split('\n'),(e != null ? e : ext))
 }
-module.exports["ranges"] = function ()
+toExport["ranges"] = function ()
 {
     section("fallback", function ()
     {
@@ -1054,8 +1055,8 @@ text`)
         compare(inc(rgs,3,':'),'punct dictionary')
     })
 }
-module.exports["ranges"]._section_ = true
-module.exports["parse"] = function ()
+toExport["ranges"]._section_ = true
+toExport["parse"] = function ()
 {
     section("comment", function ()
     {
@@ -1091,8 +1092,8 @@ module.exports["parse"] = function ()
         compare(b[0].chunks[2].start,9)
     })
 }
-module.exports["parse"]._section_ = true
-module.exports["globalize"] = function ()
+toExport["parse"]._section_ = true
+toExport["globalize"] = function ()
 {
     section("enable", function ()
     {
@@ -1106,10 +1107,10 @@ module.exports["globalize"] = function ()
         compare(global['red']('txt'),'txt')
     })
 }
-module.exports["globalize"]._section_ = true
+toExport["globalize"]._section_ = true
 t = new Tester
 section = t.section
 compare = t.compare
 module.exports.ranges()
-module.exports._test_ = true
-module.exports
+toExport._test_ = true
+export default toExport

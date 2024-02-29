@@ -2,8 +2,4 @@
 
 var _k_
 
-import kakao from './lib/kakao.js'
-kakao.init(function ()
-{
-    return new kakao.window
-})
+console.log('main')

@@ -6,8 +6,11 @@
    000     00000000  0000000      000     00000000  000   000
 ###
 
-import kstr  from '../kxk/kstr.js'
-import slash from '../kxk/slash.js'
+import kstr  from '../../lib/kxk/kstr.js'
+import slash from '../../lib/kxk/slash.js'
+import kolor from '../../lib/kxk/kolor.js'
+
+kolor.globalize()
 
 comps = 0
 succs = 0
@@ -18,9 +21,7 @@ allsuccs = 0
 
 class Tester
 
-    @: (@kode) ->
-
-        # @debug = true
+    @: ->
         
     #  0000000  00000000   0000000  000000000  000   0000000   000   000  
     # 000       000       000          000     000  000   000  0000  000  
@@ -33,7 +34,7 @@ class Tester
         stack.push t
         comps = 0
         depth = stack.length
-        log W1 lpad(depth*3-1) + ' ' + global["g#{Math.max 1, 8-2*depth}"] rpad(34-depth*3 t) + ' '
+        log W1 lpad(depth*3-1) + ' ' + global["g#{max 1, 8-2*depth}"] rpad(34-depth*3 t) + ' '
         f()
         stack.pop()
         
@@ -113,31 +114,34 @@ class Tester
     #    000     000            000     000     
     #    000     00000000  0000000      000     
     
-    test: (text, file) ->
+    test: (testModule) ->
         
-        return if not /\n\s*▸\s\w+/gm.test text
+        # return if not /\n\s*▸\s\w+/gm.test text
         
         comps = 0
         succs = 0
         fails = []
         stack = []
                 
-        g = compare: @compare
-            section: @section
+        #g = compare: @compare
+        #    section: @section
         
-        try
-            tests = @kode.eval text, file, g
-        catch err
-            fails.push
-                stack: stack
-                lhs:   file + stack
-                rhs:   err
-            allfails.push fails[-1]
-            return
+        global.compare = @compare
+        global.section = @section
+        
+        #try
+        #    tests = @kode.eval text, file, g
+        #catch err
+        #    fails.push
+        #        stack: stack
+        #        lhs:   file + stack
+        #        rhs:   err
+        #    allfails.push fails[-1]
+        #    return
 
-        return if tests?._test_ != true
+        return if testModule?._test_ != true
             
-        tests each (k,v) ->
+        testModule each (k,v) ->
 
             if v._section_
                 stack.push k
@@ -207,4 +211,4 @@ class Tester
         if l >= 30 then ss += w2 '...'
         ss
         
-export Tester
+export new Tester
