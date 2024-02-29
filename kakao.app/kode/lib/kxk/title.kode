@@ -47,7 +47,7 @@ function Title
         @winicon = elem class: 'winicon'
         
         if @opt.icon
-            @winicon.appendChild elem 'img' src:slash.join @opt.dir, @opt.icon 
+            @winicon.appendChild elem 'img' src:slash.path @opt.dir, @opt.icon 
         else 
             @winicon.appendChild elem 'div' class:'noicon'
         

@@ -3,7 +3,7 @@ var toExport = {}
 
 var _k_
 
-var f2, t, __dirname, __filename, _195_21_, _196_21_, _197_21_, _26_29_, _27_30_, _28_38_, _41_34_, _42_33_, _46_32_, _47_33_, _57_26_, _58_27_, _62_27_, _63_25_
+var f2, t, __dirname, __filename, _197_21_, _198_21_, _199_21_, _26_29_, _27_30_, _28_38_, _41_34_, _42_33_, _46_32_, _47_33_, _57_26_, _58_27_, _62_27_, _63_25_
 
 import fs from '../../js/lib/kxk/fs.js'
 import slash from '../../js/lib/kxk/slash.js'
@@ -56,14 +56,13 @@ toExport["fs"] = function ()
         section("callback", function ()
         {
             f2 = slash.path(__dirname,'test.txt')
+            console.log(f2)
             fs.write(f2,"hello world").then(function (p)
             {
+                console.log(p,f2)
                 return compare(p,f2)
             })
         })
-    })
-    section("dirlist", function ()
-    {
     })
     section("remove", function ()
     {

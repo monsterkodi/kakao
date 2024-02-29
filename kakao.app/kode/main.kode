@@ -12,6 +12,6 @@
     which is transpiled from ../pug/index.pug
 ###
 log 'main'
-# import kakao from './lib/kakao.js'
-#     
-# kakao.init -> new kakao.window
+import kakao from './lib/kakao.js'
+    
+kakao.init -> new kakao.window

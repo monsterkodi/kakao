@@ -53,7 +53,7 @@ Title = (function ()
         this.winicon = elem({class:'winicon'})
         if (this.opt.icon)
         {
-            this.winicon.appendChild(elem('img',{src:slash.join(this.opt.dir,this.opt.icon)}))
+            this.winicon.appendChild(elem('img',{src:slash.path(this.opt.dir,this.opt.icon)}))
         }
         else
         {
