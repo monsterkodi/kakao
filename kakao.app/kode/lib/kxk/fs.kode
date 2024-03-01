@@ -7,7 +7,6 @@
 ###
 
 import slash   from './slash.js'
-import dirlist from './dirlist.js'
 import fsp from 'fs/promises'
 import fs  from 'fs'
 
@@ -21,8 +20,33 @@ class FS
     # 000   000  000  000   000  000      000       000     000     
     # 0000000    000  000   000  0000000  000  0000000      000     
     
-    @dirlist: (p, opt, cb) ○-> await dirlist p, opt, cb
-    @list:    (p, opt, cb) ○-> await dirlist p, opt, cb
+    @listdir: (dir, found) ○->
+            
+        dirents = await fsp.readdir dir, { withFileTypes: true }
+        
+        for dirent in dirents
+    
+            # stat  = await fs.stat slash.join dir, file
+            # isDir = stat.mode & 0o040000
+            
+            file  = dirent.name
+            isDir = not dirent.isFile()
+            
+            absPath = slash.path dir, file
+            
+            found.push 
+                type: isDir ? 'dir' : 'file'
+                file: file
+                path: absPath
+            
+            if isDir
+    
+                await FS.listdir absPath, found
+                
+        found
+    
+    @list:    (p) ○-> await FS.listdir p, []
+    @dirlist: (p) ○-> await FS.listdir p, []
 
     # 00000000   00000000  00     00   0000000   000   000  00000000  
     # 000   000  000       000   000  000   000  000   000  000       

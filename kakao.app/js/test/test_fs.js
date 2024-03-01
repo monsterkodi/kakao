@@ -1,9 +1,9 @@
 var toExport = {}
 // monsterkodi/kode 0.256.0
 
-var _k_
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var f2, t, __dirname, __filename, _136_21_, _137_21_, _138_21_, _26_29_, _27_30_, _28_38_, _35_34_, _36_33_, _40_32_, _41_33_, _51_26_, _52_27_, _56_27_, _57_25_
+var f2, t, __dirname, __filename, _134_21_, _135_21_, _136_21_, _26_29_, _27_30_, _28_38_, _35_34_, _36_33_, _40_32_, _41_33_, _51_26_, _52_27_, _56_27_, _57_25_
 
 import fs from '../../js/lib/kxk/fs.js'
 import slash from '../../js/lib/kxk/slash.js'
@@ -71,12 +71,34 @@ toExport["fs"] = function ()
                 return fs.remove(p)
             })
         })
-    })
-    section("write fail", function ()
-    {
         fs.write(slash.path(__dirname,'some.dir.that.doesn/t.exist'),'blurk').then(function (p)
         {
             return compare(p,'')
+        })
+    })
+    section("dirlist", function ()
+    {
+        process.chdir(__dirname)
+        fs.list(__dirname).then(function (items)
+        {
+            return compare(items.map(function (i)
+            {
+                return i.path
+            }),function (a)
+            {
+                return _k_.in(slash.path(__filename),a)
+            })
+        })
+    })
+    section("tmpfile", function ()
+    {
+        compare(slash.tmpfile('txt'),function (a)
+        {
+            return /\.txt$/.test(a)
+        })
+        compare(slash.tmpfile(),function (a)
+        {
+            return /[a-f\d]+$/.test(a)
         })
     })
     section("remove", function ()

@@ -1,23 +1,43 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 import slash from './slash.js'
-import dirlist from './dirlist.js'
 import fsp from 'fs/promises'
 import fs from 'fs'
 class FS
 {
     static logErrors = true
 
-    static async dirlist (p, opt, cb)
+    static async listdir (dir, found)
     {
-        return await dirlist(p,opt,cb)
+        var absPath, dirent, dirents, file, isDir
+
+        dirents = await fsp.readdir(dir,{withFileTypes:true})
+        var list = _k_.list(dirents)
+        for (var _27_19_ = 0; _27_19_ < list.length; _27_19_++)
+        {
+            dirent = list[_27_19_]
+            file = dirent.name
+            isDir = !dirent.isFile()
+            absPath = slash.path(dir,file)
+            found.push({type:(isDir ? 'dir' : 'file'),file:file,path:absPath})
+            if (isDir)
+            {
+                await FS.listdir(absPath,found)
+            }
+        }
+        return found
     }
 
-    static async list (p, opt, cb)
+    static async list (p)
     {
-        return await dirlist(p,opt,cb)
+        return await FS.listdir(p,[])
+    }
+
+    static async dirlist (p)
+    {
+        return await FS.listdir(p,[])
     }
 
     static async read (p)
@@ -62,7 +82,7 @@ class FS
 
     static pkg (p)
     {
-        var _74_20_
+        var _98_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -80,7 +100,7 @@ class FS
 
     static git (p, cb)
     {
-        var _86_20_
+        var _110_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
