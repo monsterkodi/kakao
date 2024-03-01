@@ -3,7 +3,7 @@ var toExport = {}
 
 var _k_
 
-var f2, t, __dirname, __filename, _139_21_, _140_21_, _141_21_, _26_29_, _27_30_, _28_38_, _35_34_, _36_33_, _40_32_, _41_33_, _51_26_, _52_27_, _56_27_, _57_25_
+var f2, t, __dirname, __filename, _136_21_, _137_21_, _138_21_, _26_29_, _27_30_, _28_38_, _35_34_, _36_33_, _40_32_, _41_33_, _51_26_, _52_27_, _56_27_, _57_25_
 
 import fs from '../../js/lib/kxk/fs.js'
 import slash from '../../js/lib/kxk/slash.js'
@@ -45,12 +45,38 @@ toExport["fs"] = function ()
             compare(((fs.pkg('C:') != null)),false)
         }
     })
+    section("read", function ()
+    {
+        fs.read(__dirname + '/../../package.noon',function (text)
+        {
+            return compare(text,function (a)
+            {
+                return a.startsWith('name')
+            })
+        })
+        fs.read(__dirname + '/dir/filedoesntexist',function (text)
+        {
+            return compare(text,'')
+        })
+    })
     section("write", function ()
     {
         f2 = slash.path(__dirname,'test.txt')
         fs.write(f2,"hello world").then(function (p)
         {
-            return compare(p,f2)
+            compare(p,f2)
+            return fs.read(p).then(function (r)
+            {
+                compare(r,'hello world')
+                return fs.remove(p)
+            })
+        })
+    })
+    section("write fail", function ()
+    {
+        fs.write(slash.path(__dirname,'some.dir.that.doesn/t.exist'),'blurk').then(function (p)
+        {
+            return compare(p,'')
         })
     })
     section("remove", function ()

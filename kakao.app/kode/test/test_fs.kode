@@ -62,16 +62,15 @@ __dirname  = import.meta.dirname
     # 000   000  000       000   000  000   000
     # 000   000  00000000  000   000  0000000  
     
-    #▸ read
-    #    
-    #    fs.read __dirname + '/../../package.noon' (text) ->
-    #        
-    #        text ▸ (a) -> a.startsWith 'name'
-    #
-    #    ▸ fail
-    #        fs.read __dirname + '/dir/filedoesntexist' (text) ->
-    #            
-    #            text ▸ ''
+    ▸ read
+        
+        fs.read __dirname + '/../../package.noon' (text) ->
+            
+            text ▸ (a) -> a.startsWith 'name'
+    
+        fs.read __dirname + '/dir/filedoesntexist' (text) ->
+             
+            text ▸ ''
 
     # 000   000  00000000   000  000000000  00000000  000000000  00000000  000   000  000000000  
     # 000 0 000  000   000  000     000     000          000     000        000 000      000     
@@ -83,23 +82,21 @@ __dirname  = import.meta.dirname
         
         f2 = slash.path __dirname, 'test.txt'
         
-        # log f2
-        
         fs.write(f2, "hello world").then (p) ->
             
-            # fs.read(p).then (r) -> r ▸ 'hello world'
-            # log p, f2    
             p ▸ f2
             
-            # fs.remove(p)
-
-        #▸ fail
-        #    
-        #    f3 = slash.path __dirname, 'test.txt' 'subdir'
-        #    
-        #    fs.write(f3, "nope").then (p) ->
-        #        p ▸ ''
+            fs.read(p).then (r) -> 
+                
+                r ▸ 'hello world'
+                fs.remove p
             
+    ▸ write fail
+            
+        fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
+            
+            p ▸ ''
+
     # 0000000    000  00000000   000      000   0000000  000000000  
     # 000   000  000  000   000  000      000  000          000     
     # 000   000  000  0000000    000      000  0000000      000     

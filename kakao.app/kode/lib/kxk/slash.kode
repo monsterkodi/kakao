@@ -363,7 +363,7 @@ class Slash
     @tmpdir:    -> process.env.TMPDIR
     @tmpfile: (ext) ->
 
-        Slash.path Slash.tmpdir(), "#{Date.now()}" + (ext and ".#{ext}" or '')
+        Slash.path Slash.tmpdir(), "#{Date.now()}#{Math.random()}" + (ext and ".#{ext}" or '')
     
     @tilde:     (p) -> p?.replace Slash.home(), '~'
     @untilde:   (p) -> p?.replace /^\~/, Slash.home()

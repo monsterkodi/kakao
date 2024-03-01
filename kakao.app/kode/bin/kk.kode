@@ -21,12 +21,12 @@ import fs       from 'fs/promises'
 args = karg """
     kk
         options                                  **
-        build      build application executable  = false
-        knrd       transpile kode, styl, pug     = false
-        run        run application executable    = false
-        rebuild    rebuild all targets           = false -R
         info       show build status             = false
+        knrd       transpile kode, styl, pug     = false
+        build      build application executable  = false
+        rebuild    rebuild all targets           = false -R
         test       run tests                     = false
+        run        run application executable    = false
         clean      remove transpilated files     = false 
         verbose    log more                      = false
         quiet      log nothing                   = false
@@ -45,15 +45,15 @@ class kk
         if not (args.info or args.test or args.knrd or args.build or args.run or args.clean or args.rebuild)
             # no command given? assume all of them for now :)
             args.info  = true
-            args.test  = true
             args.knrd  = true
             args.build = true
+            args.test  = true
             args.run   = true
         
         if args.info    ➜ await kk.info()
-        if args.test    ➜ await kk.test()
         if args.knrd    ➜ await knrd args.options; delete args.options
         if args.build   ➜ await build()
+        if args.test    ➜ await kk.test()
         if args.run     ➜ await kk.spawn()
         if args.clean   ➜ await kk.clean()
         if args.rebuild ➜ await kk.rebuild()                            

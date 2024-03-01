@@ -487,7 +487,7 @@ class Slash
 
     static tmpfile (ext)
     {
-        return Slash.path(Slash.tmpdir(),`${Date.now()}` + (ext && `.${ext}` || ''))
+        return Slash.path(Slash.tmpdir(),`${Date.now()}${Math.random()}` + (ext && `.${ext}` || ''))
     }
 
     static tilde (p)

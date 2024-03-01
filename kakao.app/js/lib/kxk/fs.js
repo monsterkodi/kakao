@@ -22,48 +22,47 @@ class FS
 
     static async read (p)
     {
-        var t
-
-        t = await fsp.readFile(p,'utf8')
-        return t
+        try
+        {
+            return await fsp.readFile(p,'utf8')
+        }
+        catch (err)
+        {
+            return ''
+        }
     }
 
     static async write (p, text)
     {
-        var err, mode, stat, tmpfile
+        var mode, stat, tmpfile
 
-        tmpfile = slash.tmpfile()
         try
         {
-            stat = await fsp.stat(p)
-            mode = stat.mode
+            tmpfile = slash.tmpfile()
+            try
+            {
+                stat = await fsp.stat(p)
+                mode = stat.mode
+                await fsp.access(p,(fs.R_OK | fs.F_OK))
+            }
+            catch (err)
+            {
+                mode = 0o666
+            }
+            await fsp.writeFile(tmpfile,text,{mode:mode})
+            await fsp.rename(tmpfile,p)
+            return p
         }
         catch (err)
         {
-            mode = 0o666
-        }
-        err = await fsp.writeFile(tmpfile,text,{mode:mode})
-        if (err)
-        {
-            return FS.error("fs.write - " + String(err))
-        }
-        else
-        {
-            err = await fsp.rename(tmpfile,p)
-            if (err)
-            {
-                return FS.error(`fs.write -- move ${tmpfile} -> ${p} ERROR:` + String(err))
-            }
-            else
-            {
-                return p
-            }
+            FS.error("fs.write -- " + String(err))
+            return ''
         }
     }
 
     static pkg (p)
     {
-        var _75_20_
+        var _74_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -81,7 +80,7 @@ class FS
 
     static git (p, cb)
     {
-        var _87_20_
+        var _86_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
