@@ -91,8 +91,6 @@ __dirname  = import.meta.dirname
                 r ▸ 'hello world'
                 fs.remove p
             
-    ▸ write fail
-            
         fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
             
             p ▸ ''
