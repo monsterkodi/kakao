@@ -32,8 +32,10 @@ class FS
         
     @read: (p) ○-> 
         
-        t = await fsp.readFile p, 'utf8'
-        t
+        try
+            await fsp.readFile p, 'utf8'
+        catch err
+            ''
             
     # 000   000  00000000   000  000000000  00000000  
     # 000 0 000  000   000  000     000     000       
@@ -42,27 +44,24 @@ class FS
     # 00     00  000   000  000     000     00000000  
     
     @write: (p, text) ○->
-        
-        tmpfile = slash.tmpfile()
-        
-        # err  = await fsp.access p, (fs.R_OK | fs.F_OK)
 
         try
-            stat = await fsp.stat p
-            mode = stat.mode
-        catch err
-            mode = 0o666
-            
-        err = await fsp.writeFile tmpfile, text, mode:mode
+            tmpfile = slash.tmpfile()
 
-        if err
-            FS.error "fs.write - " + String(err)
-        else
-            err = await fsp.rename tmpfile, p
-            if err 
-                FS.error "fs.write -- move #{tmpfile} -> #{p} ERROR:" + String(err)
-            else
-                p
+            try
+                stat = await fsp.stat p
+                mode = stat.mode
+                await fsp.access p, (fs.R_OK | fs.F_OK)
+            catch err
+                mode = 0o666
+                
+            await fsp.writeFile tmpfile, text, mode:mode
+            await fsp.rename tmpfile, p
+            p
+            
+        catch err
+            FS.error "fs.write -- " + String(err)
+            ''
       
     # 00000000   000   000   0000000       000   0000000   000  000000000  
     # 000   000  000  000   000           000   000        000     000     

@@ -15,12 +15,12 @@ import path from 'path'
 import fs from 'fs/promises'
 args = karg(`kk
     options                                  **
-    build      build application executable  = false
-    knrd       transpile kode, styl, pug     = false
-    run        run application executable    = false
-    rebuild    rebuild all targets           = false -R
     info       show build status             = false
+    knrd       transpile kode, styl, pug     = false
+    build      build application executable  = false
+    rebuild    rebuild all targets           = false -R
     test       run tests                     = false
+    run        run application executable    = false
     clean      remove transpilated files     = false 
     verbose    log more                      = false
     quiet      log nothing                   = false
@@ -46,18 +46,14 @@ class kk
         if (!(args.info || args.test || args.knrd || args.build || args.run || args.clean || args.rebuild))
         {
             args.info = true
-            args.test = true
             args.knrd = true
             args.build = true
+            args.test = true
             args.run = true
         }
         if (args.info)
         {
             await kk.info()
-        }
-        if (args.test)
-        {
-            await kk.test()
         }
         if (args.knrd)
         {
@@ -67,6 +63,10 @@ class kk
         if (args.build)
         {
             await build()
+        }
+        if (args.test)
+        {
+            await kk.test()
         }
         if (args.run)
         {
