@@ -8,10 +8,10 @@
     this is the entry point of the javascript
     which runs in the web view of the window.
     
-    loaded in ../Contents/MacOS/js/index.html
+    loaded in ../js/index.html
     which is transpiled from ../pug/index.pug
 ###
-log 'main'
+
 import kakao from './lib/kakao.js'
     
 kakao.init -> new kakao.window

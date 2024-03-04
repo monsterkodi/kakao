@@ -32,8 +32,6 @@ function Win
 
     @: (@delegate) ->
         
-        log 'win'
-        
         @delegate ?= new WinDelegate
         
         post.on 'menuAction'   @onMenuAction
@@ -52,10 +50,12 @@ function Win
         main.focus()
         
         kakao.request('window.id').then (@id) =>
-            elem class:'test' text:"▪▸○!▴!○◂▪" parent:main
+            # elem class:'test' text:"○○" parent:main
             elem class:'test' text:"#{id}" parent:main
             
             @delegate?.onWindowCreated? @
+            kakao.send 'win.setMinSize' 250 125
+            kakao.request('fs.write' kakao.bundle.app('test.txt'), "hello from #{@id}!").then (ok) -> log 'wrote' ok
         
     animate: =>
         

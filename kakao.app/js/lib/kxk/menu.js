@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}}
 
 var elem, Menu, stopEvent
 
@@ -16,7 +16,7 @@ Menu = (function ()
 {
     function Menu (opt)
     {
-        var combo, div, item, _27_25_
+        var combo, div, item, _28_25_
 
         this["onClick"] = this["onClick"].bind(this)
         this["onKeyDown"] = this["onKeyDown"].bind(this)
@@ -36,7 +36,7 @@ Menu = (function ()
             }
             div = elem({class:'menuItem',text:item.text})
             div.item = item
-            div.addEventListener('click',this.onClick)
+            div.addEventListener('mousedown',this.onClick)
             if ((item.combo != null))
             {
                 combo = elem('span',{class:'popupCombo',text:keyinfo.short(item.combo)})
@@ -54,7 +54,7 @@ Menu = (function ()
 
     Menu.prototype["del"] = function ()
     {
-        var _44_13_
+        var _45_13_
 
         this.close()
         ;(this.elem != null ? this.elem.remove() : undefined)
@@ -63,7 +63,7 @@ Menu = (function ()
 
     Menu.prototype["focus"] = function ()
     {
-        var _56_13_
+        var _57_13_
 
         this.focusElem = document.activeElement
         return (this.elem != null ? this.elem.focus() : undefined)
@@ -71,10 +71,7 @@ Menu = (function ()
 
     Menu.prototype["blur"] = function ()
     {
-        var _58_33_, _58_40_
-
-        this.close()
-        return ((_58_33_=this.focusElem) != null ? typeof (_58_40_=_58_33_.focus) === "function" ? _58_40_() : undefined : undefined)
+        return this.close()
     }
 
     Menu.prototype["onHover"] = function (event)
@@ -84,7 +81,7 @@ Menu = (function ()
 
     Menu.prototype["onFocusOut"] = function (event)
     {
-        var _64_45_
+        var _65_45_
 
         if (this.popup && !(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {
@@ -100,7 +97,7 @@ Menu = (function ()
 
     Menu.prototype["close"] = function (opt = {})
     {
-        var _84_17_
+        var _85_17_
 
         if ((this.popup != null))
         {
@@ -115,7 +112,7 @@ Menu = (function ()
         {
             if (opt.focus !== false)
             {
-                if (this.focusElem && typeof(this.focusElem.focus) === 'function')
+                if (this.focusElem && _k_.isFunc(this.focusElem.focus))
                 {
                     this.focusElem.focus()
                 }
@@ -139,7 +136,7 @@ Menu = (function ()
 
     Menu.prototype["select"] = function (item, opt = {})
     {
-        var hadPopup, _113_17_, _117_17_
+        var hadPopup, _114_17_, _118_17_
 
         if (!(item != null))
         {
@@ -176,7 +173,7 @@ Menu = (function ()
             pr = item.parentNode.getBoundingClientRect()
             opt.items = items
             opt.parent = this
-            opt.x = br.left
+            opt.x = br.left - 1
             opt.y = pr.top + pr.height - 1
             opt.class = 'titlemenu'
             this.popup = popup.menu(opt)
@@ -208,14 +205,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _164_39_
+        var _165_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _165_39_
+        var _166_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }

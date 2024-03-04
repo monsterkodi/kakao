@@ -23,7 +23,8 @@ function Menu
             continue if item.hide
             div = elem class: 'menuItem' text: item.text
             div.item = item
-            div.addEventListener 'click' @onClick
+            # div.addEventListener 'click' @onClick
+            div.addEventListener 'mousedown' @onClick
             if item.combo?
                 combo = elem 'span' class:'popupCombo' text: keyinfo.short item.combo
                 div.appendChild combo
@@ -55,7 +56,7 @@ function Menu
         @focusElem = document.activeElement
         @elem?.focus()
         
-    blur: => @close(); @focusElem?.focus?()
+    blur: => @close()
     
     onHover: (event) => @select event.target, selectFirstItem:false
     
@@ -88,7 +89,7 @@ function Menu
                 @elem.focus()
         else
             if opt.focus != false
-                if @focusElem and @focusElem.focus is 'function'
+                if @focusElem and @focusElem.focus is func
                     @focusElem.focus()
         null
             
@@ -142,7 +143,7 @@ function Menu
             pr = item.parentNode.getBoundingClientRect()
             opt.items = items
             opt.parent = @
-            opt.x = br.left
+            opt.x = br.left - 1
             opt.y = pr.top+pr.height-1
             opt.class = 'titlemenu'
             @popup = popup.menu opt

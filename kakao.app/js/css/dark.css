@@ -59,10 +59,6 @@ body {
   animation: 300ms ease-in-out fadeIn;
   stroke: #444;
 }
-#titlebar.blur .winbutton svg {
-  animation: 300ms ease-in-out fadeOut;
-  stroke: #131313;
-}
 #titlebar .winbutton:hover svg {
   stroke: #999;
 }
@@ -82,10 +78,6 @@ body {
 #titlebar.focus .menu {
   animation: 300ms ease-in-out fadeIn;
   opacity: 1;
-}
-#titlebar.blur .menu {
-  animation: 300ms ease-in-out fadeOut;
-  opacity: 0;
 }
 .popup {
   background-color: #131313;

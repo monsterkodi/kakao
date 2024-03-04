@@ -20,7 +20,12 @@
 - (void) windowDidResignKey:(NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
 - (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
 - (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
-- (BOOL) windowShouldClose:(NSWindow*)window { return YES; }
+- (BOOL) windowShouldClose:(NSWindow*)window 
+{ 
+    if ([[[App get] wins] count] == 1) // make sure the application closes if the last kakao window closes.
+        [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
+    return YES; 
+}
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame
 {
     NSDictionary* resize = [NSDictionary dictionaryWithObjectsAndKeys: 
@@ -140,7 +145,7 @@
         [self standardWindowButton:NSWindowZoomButton       ].hidden = YES;
     }
     
-    [self setContentMinSize:CGSizeMake(200, 200)];
+    // [self setContentMinSize:CGSizeMake(200, 200)];
     [self setFrame:CGRectMake(0, 0, 400, 400) display:YES animate:NO];
     [self center];
     
