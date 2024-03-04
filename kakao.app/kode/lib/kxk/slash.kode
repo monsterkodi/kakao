@@ -358,8 +358,8 @@ class Slash
     # 000 0 000  000       000  000         
     # 000   000  000  0000000    0000000    
     
-    @home:      -> process.env.HOME
-    @user:      -> process.env.USER
+    @home:      -> process.env.HOME  
+    @user:      -> process.env.USER  
     @tmpdir:    -> process.env.TMPDIR
     @tmpfile: (ext) ->
 

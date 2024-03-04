@@ -7,7 +7,7 @@
 
     handles application initialization
     handles sending and receiving messages to/from the application process
-    provides shortcuts to uesful internal modules
+    provides shortcuts to useful internal modules
     sets itself in the global window scope
 ###
 log 'kakao'
@@ -18,7 +18,7 @@ function Kakao
 
     # initialization of the application
 
-    @init: (cb) ->
+    @init: (cb) ○->
         
         # request the bundle url (toplevel .app folder of the application)
         # without it, the window can't load any resources (menu, icon ...)
@@ -51,8 +51,15 @@ function Kakao
     @bundle: bundle      # provides paths and urls relative to the application folder
     @window: kxk.win     # base class for kakao windows
     @dom:    kxk.dom     # dom expection and manipulation
-    @post:   kxk.post    # posts messages to modules in the window process 
+    @post:   kxk.post    # posts messages to modules in the window process
+    @fs:     kxk.fs      # fake fs
 
 window.kakao = Kakao # kakao sets itself in the global window scope
+
+window.process = 
+    env:
+        home:   'sweet/home'
+        tmpdir: '/tmp'
+        user:   'kakao_user'
 
 export Kakao

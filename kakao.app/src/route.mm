@@ -72,10 +72,10 @@
 
 + (id) fs:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
-    if ([req isEqualToString:@"readText"])
+    if ([req isEqualToString:@"read"])
     {
         NSString* path = [args objectAtIndex:0];
-        //NSLog(@"readText %@", path);
+        NSLog(@"read %@", path);
         return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     }
     return nil;

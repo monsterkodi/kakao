@@ -13,7 +13,7 @@ Kakao = (function ()
     function Kakao ()
     {}
 
-    Kakao["init"] = function (cb)
+    Kakao["init"] = async function (cb)
     {
         return Kakao.request('bundle.path').then(function (bundlePath)
         {
@@ -41,8 +41,10 @@ Kakao = (function ()
     Kakao["window"] = kxk.win
     Kakao["dom"] = kxk.dom
     Kakao["post"] = kxk.post
+    Kakao["fs"] = kxk.fs
     return Kakao
 })()
 
 window.kakao = Kakao
+window.process = {env:{home:'sweet/home',tmpdir:'/tmp',user:'kakao_user'}}
 export default Kakao;

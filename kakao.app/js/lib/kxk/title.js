@@ -53,7 +53,7 @@ Title = (function ()
         this.winicon = elem({class:'winicon'})
         if (this.opt.icon)
         {
-            this.winicon.appendChild(elem('img',{src:slash.path(this.opt.dir,this.opt.icon)}))
+            this.winicon.appendChild(elem('img',{src:this.opt.icon}))
         }
         else
         {
@@ -195,32 +195,30 @@ Title = (function ()
 
     }
 
-    Title.prototype["initMenu"] = function ()
+    Title.prototype["initMenu"] = async function ()
     {
+        var tc, _182_36_
+
         if (!this.opt.menu)
         {
             return []
         }
         if (_k_.empty(this.templateCache))
         {
-            return noon.load(this.opt.menu,(function (tc)
+            tc = await noon.load(this.opt.menu)
+            if (!_k_.empty(tc))
             {
-                var _182_40_
-
-                if (!_k_.empty(tc))
+                this.templateCache = this.makeTemplate(tc)
+                if ((this.opt.menuTemplate != null) && _k_.isFunc(this.opt.menuTemplate))
                 {
-                    this.templateCache = this.makeTemplate(tc)
-                    if ((this.opt.menuTemplate != null) && _k_.isFunc(this.opt.menuTemplate))
-                    {
-                        this.templateCache = this.opt.menuTemplate(this.templateCache)
-                    }
-                    return this.initFromCache()
+                    this.templateCache = this.opt.menuTemplate(this.templateCache)
                 }
-                else
-                {
-                    console.error('title.initMenu - empty template?',this.opt.menu)
-                }
-            }).bind(this))
+                return this.initFromCache()
+            }
+            else
+            {
+                console.error('title.initMenu - empty template?',this.opt.menu)
+            }
         }
         else
         {

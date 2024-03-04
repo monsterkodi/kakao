@@ -1,11 +1,10 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 var defaults, load, pad, parse, parseStr, regs, save, stringify
 
 import slash from './slash.js'
-import fs from './fs.js'
 
 parse = function (s)
 {
@@ -79,7 +78,7 @@ parse = function (s)
             esc ^= s[p] === '|'
         }
         ld = ''
-        for (var _72_18_ = i = 0, _72_22_ = d; (_72_18_ <= _72_22_ ? i < d : i > d); (_72_18_ <= _72_22_ ? ++i : --i))
+        for (var _71_18_ = i = 0, _71_22_ = d; (_71_18_ <= _71_22_ ? i < d : i > d); (_71_18_ <= _71_22_ ? ++i : --i))
         {
             ld += ' '
         }
@@ -122,9 +121,9 @@ parse = function (s)
 
         o = {}
         var list = _k_.list(t.o)
-        for (var _114_14_ = 0; _114_14_ < list.length; _114_14_++)
+        for (var _113_14_ = 0; _113_14_ < list.length; _113_14_++)
         {
-            i = list[_114_14_]
+            i = list[_113_14_]
             o[i] = null
         }
         t.l = _k_.last(t.o)
@@ -398,7 +397,7 @@ parse = function (s)
     while (i < lines.length)
     {
         line = lines[i]
-        var _330_18_ = inspect(line); d = _330_18_[0]; k = _330_18_[1]; v = _330_18_[2]; e = _330_18_[3]
+        var _329_18_ = inspect(line); d = _329_18_[0]; k = _329_18_[1]; v = _329_18_[2]; e = _329_18_[3]
 
         if ((k != null))
         {
@@ -407,10 +406,10 @@ parse = function (s)
                 addLine(d,k)
                 ud = _k_.last(stack).d
                 var list = _k_.list(undense(d,v))
-                for (var _338_22_ = 0; _338_22_ < list.length; _338_22_++)
+                for (var _337_22_ = 0; _337_22_ < list.length; _337_22_++)
                 {
-                    e = list[_338_22_]
-                    var _339_31_ = inspect(e); dd = _339_31_[0]; dk = _339_31_[1]; dv = _339_31_[2]
+                    e = list[_337_22_]
+                    var _338_31_ = inspect(e); dd = _338_31_[0]; dk = _338_31_[1]; dv = _338_31_[2]
 
                     addLine(dd,dk,dv)
                 }
@@ -643,9 +642,9 @@ stringify = function (obj, options = {})
         if (opt.sort)
         {
             var list = _k_.list(Object.keys(o).sort())
-            for (var _503_18_ = 0; _503_18_ < list.length; _503_18_++)
+            for (var _502_18_ = 0; _502_18_ < list.length; _502_18_++)
             {
-                k = list[_503_18_]
+                k = list[_502_18_]
                 l.push(keyValue(k,o[k]))
             }
         }
@@ -664,7 +663,7 @@ stringify = function (obj, options = {})
     }
     toStr = function (o, ind = '', arry = false, visited = [])
     {
-        var s, t, v, _538_32_, _542_37_
+        var s, t, v, _537_32_, _541_37_
 
         if (!(o != null))
         {
@@ -699,7 +698,7 @@ stringify = function (obj, options = {})
                     {
                         s += '\n'
                     }
-                    s += (function () { var r_541_69_ = []; var list = _k_.list(o); for (var _541_69_ = 0; _541_69_ < list.length; _541_69_++)  { v = list[_541_69_];r_541_69_.push(ind + toStr(v,ind + indstr,true,visited))  } return r_541_69_ }).bind(this)().join('\n')
+                    s += (function () { var r_540_69_ = []; var list = _k_.list(o); for (var _540_69_ = 0; _540_69_ < list.length; _540_69_++)  { v = list[_540_69_];r_540_69_.push(ind + toStr(v,ind + indstr,true,visited))  } return r_540_69_ }).bind(this)().join('\n')
                 }
                 else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp')
                 {
@@ -727,9 +726,9 @@ parseStr = function (str, p, ext)
     {
         return null
     }
-    switch ((ext != null ? ext : require('path').extname(p)))
+    switch ((ext != null ? ext : slash.ext(p)))
     {
-        case '.json':
+        case 'json':
             return JSON.parse(str)
 
         default:
@@ -738,49 +737,25 @@ parseStr = function (str, p, ext)
 
 }
 
-load = function (p, ext, cb)
+load = async function (p, ext)
 {
-    var str
+    return new Promise(async function (resolve, reject)
+    {
+        var fs, str, _573_26_
 
-    if (_k_.isFunc(ext))
-    {
-        cb = ext
-    }
-    if (_k_.isFunc(cb))
-    {
-        try
+        fs = (window != null ? (_573_26_=window.kakao) != null ? _573_26_.fs : undefined : undefined)
+        fs = (fs != null ? fs : await import('fs/promises'))
+        str = await fs.read(p)
+        if (!_k_.empty(str))
         {
-            return fs.read(p,function (str)
-            {
-                if (!_k_.empty(str))
-                {
-                    return cb(parseStr(str,p,ext))
-                }
-                else
-                {
-                    console.error(`noon.load - empty file: ${p}`)
-                    return cb(null)
-                }
-            })
+            resolve(parseStr(str,p,ext))
         }
-        catch (err)
+        else
         {
-            console.error(`noon.load - can't read file: ${p}`,err)
-            return cb(null)
+            reject(null)
         }
-    }
-    else
-    {
-        try
-        {
-            str = require('fs').readFileSync(p,'utf8')
-            return parseStr(str,p,ext)
-        }
-        catch (err)
-        {
-            console.error("noon.load - " + String(err) + ' ' + p)
-        }
-    }
+        return null
+    })
 }
 
 save = function (p, data, strOpt, cb)
