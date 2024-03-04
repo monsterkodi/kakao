@@ -11,10 +11,7 @@
 import Kode     from './kode/kompile.js'
 import fs       from '../lib/kxk/fs.js'
 import slash    from '../lib/kxk/slash.js'
-import kolor    from '../lib/kxk/kolor.js'
 import { pug, stylus } from '../../bin/min.mjs'
-
-kolor.globalize()
 
 __dirname = import.meta.dirname
 
