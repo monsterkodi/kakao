@@ -11,12 +11,15 @@
 import os       from '../lib/kxk/os.js'
 import karg     from '../lib/kxk/karg.js'
 import slash    from '../lib/kxk/slash.js'
+import kolor    from '../lib/kxk/kolor.js'
 import knrd     from './knrd.js'
 import build    from './build.js'
 import process  from 'process'
 import childp   from 'child_process'
 import path     from 'path'
 import fs       from 'fs/promises'
+
+kolor.globalize()
 
 args = karg """
     kk
@@ -35,6 +38,12 @@ args = karg """
 
 class kk
     
+    # 00000000   000   000  000   000  
+    # 000   000  000   000  0000  000  
+    # 0000000    000   000  000 0 000  
+    # 000   000  000   000  000  0000  
+    # 000   000   0000000   000   000  
+    
     @run: ○->
         
         sleep = (ms) ○-> await new Promise((r) => setTimeout(r, ms)); true
@@ -52,7 +61,7 @@ class kk
         
         if args.info    ➜ await kk.info()
         if args.knrd    ➜ await knrd args.options; delete args.options
-        if args.build   ➜ await build()
+        if args.build   ➜ await kk.build()
         if args.test    ➜ await kk.test()
         if args.run     ➜ await kk.spawn()
         if args.clean   ➜ await kk.clean()
@@ -61,27 +70,53 @@ class kk
         if valid args.options
             log 'leftover options' args.options
                                                 
+    # 0000000    000   000  000  000      0000000    
+    # 000   000  000   000  000  000      000   000  
+    # 0000000    000   000  000  000      000   000  
+    # 000   000  000   000  000  000      000   000  
+    # 0000000     0000000   000  0000000  0000000    
+    
+    @build: ○->
+        
+        log '🛠'
+        build()
+        
     @rebuild: ○->
         
         await knrd()
-        await build()
+        await kk.build()
         kk.spawn()
         
+    #  0000000  00000000    0000000   000   000  000   000  
+    # 000       000   000  000   000  000 0 000  0000  000  
+    # 0000000   00000000   000000000  000000000  000 0 000  
+    #      000  000        000   000  000   000  000  0000  
+    # 0000000   000        000   000  00     00  000   000  
+    
     @spawn: ->
         
+        log '🚀'
         cmd = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
         opt = shell:true detached:true
         
         childp.spawn cmd, [], opt
-        
-    @appPath: -> slash.path import.meta.dirname, '../../'
-        
-    @appName: -> slash.name kk.appPath()
-        
+                
+    # 000  000   000  00000000   0000000   
+    # 000  0000  000  000       000   000  
+    # 000  000 0 000  000000    000   000  
+    # 000  000  0000  000       000   000  
+    # 000  000   000  000        0000000   
+    
     @info: ○->
         
-        log 'info' kk.appPath()
+        log w4 '○● info' #kk.appPath()
         
+    # 000000000  00000000   0000000  000000000  
+    #    000     000       000          000     
+    #    000     0000000   0000000      000     
+    #    000     000            000     000     
+    #    000     00000000  0000000      000     
+    
     @test: ○->
         
         cmd = "node js/test/test.js"
@@ -97,10 +132,14 @@ class kk
                 else
                     log stdout if valid stdout
                     resolve()
+
+    @appPath: -> slash.path import.meta.dirname, '../../'
+        
+    @appName: -> slash.name kk.appPath()
                     
     @clean: ○->
         
-        jsDir = slash.path import.meta.dirname, '../../js'
+        jsDir  = slash.path import.meta.dirname, '../../js'
         appExe = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
         await fs.rm jsDir, recursive:true, force:true 
         await fs.unlink appExe

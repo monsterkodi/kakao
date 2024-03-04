@@ -568,18 +568,14 @@ parseStr = (str, p, ext) ->
 
 load = (p, ext) ○->
     
-    new Promise (resolve, reject) ○->
-        
-        fs = window?.kakao?.fs
-        fs ?= await import('fs/promises')
-    
-        str = await fs.read p
-            
-        if valid str
-            resolve parseStr str, p, ext
-        else
-            reject null
-                
+    fs = window?.kakao?.fs
+    fs ?= await import('fs/promises')
+ 
+    str = await fs.read p
+         
+    if valid str
+        parseStr str, p, ext
+    else
         null
 
 ###

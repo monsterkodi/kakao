@@ -739,23 +739,19 @@ parseStr = function (str, p, ext)
 
 load = async function (p, ext)
 {
-    return new Promise(async function (resolve, reject)
-    {
-        var fs, str, _573_26_
+    var fs, str, _571_22_
 
-        fs = (window != null ? (_573_26_=window.kakao) != null ? _573_26_.fs : undefined : undefined)
-        fs = (fs != null ? fs : await import('fs/promises'))
-        str = await fs.read(p)
-        if (!_k_.empty(str))
-        {
-            resolve(parseStr(str,p,ext))
-        }
-        else
-        {
-            reject(null)
-        }
+    fs = (window != null ? (_571_22_=window.kakao) != null ? _571_22_.fs : undefined : undefined)
+    fs = (fs != null ? fs : await import('fs/promises'))
+    str = await fs.read(p)
+    if (!_k_.empty(str))
+    {
+        return parseStr(str,p,ext)
+    }
+    else
+    {
         return null
-    })
+    }
 }
 
 save = function (p, data, strOpt, cb)

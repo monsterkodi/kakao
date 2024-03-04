@@ -33,11 +33,11 @@ __dirname  = import.meta.dirname
     ▸ fileExists
 
         (fs.fileExists(__filename)?) ▸ true
-        (fs.fileExists(__dirname)?) ▸ false
+        (fs.fileExists(__dirname)?)  ▸ false
         
     ▸ dirExists
         
-        (fs.dirExists(__dirname)?) ▸ true
+        (fs.dirExists(__dirname)?)  ▸ true
         (fs.dirExists(__filename)?) ▸ false
 
     # 00000000   000   000   0000000   
