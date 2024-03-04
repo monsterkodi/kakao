@@ -43,7 +43,8 @@ function Popup
                         for child in item.children
                             div.appendChild child
                 div.item = item
-                div.addEventListener 'click' @onClick
+                # div.addEventListener 'click' @onClick
+                div.addEventListener 'mouseup' @onClick
                 if item.combo ? item.accel
                     text = keyinfo.short os.isMac ? (item.combo ? item.accel) : (item.accel ? item.combo)
                     div.appendChild elem 'span' class:'popupCombo' text:text

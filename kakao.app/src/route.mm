@@ -26,17 +26,18 @@
     
     //NSLog(@"%d ▸ %@ %@", win.windowNumber, req, arg0 ? arg0 : @"");
 
-    if ([req isEqualToString:@"focusNext"]) { return [win focusNext];  }
-    if ([req isEqualToString:@"focusPrev"]) { return [win focusPrev];  }
-    if ([req isEqualToString:@"new"     ])  { return [NSNumber numberWithLong:[win new:arg0].windowNumber]; }
-    if ([req isEqualToString:@"snapshot"])  { return [win snapshot:arg0]; }
-    if ([req isEqualToString:@"close"   ])  { [win performClose:nil]; return nil; }
-    if ([req isEqualToString:@"reload"  ])  { [win reload];           return nil; }
-    if ([req isEqualToString:@"maximize"])  { [win zoom:nil];         return nil; }
-    if ([req isEqualToString:@"minimize"])  { [win miniaturize:nil];  return nil; }
-    if ([req isEqualToString:@"center"  ])  { [win center];           return nil; }
-    if ([req isEqualToString:@"setSize" ])  { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
-    if ([req isEqualToString:@"id"      ])  { return [NSNumber numberWithLong:win.windowNumber]; }
+    if ([req isEqualToString:@"focusNext"     ]) { return [win focusNext];  }
+    if ([req isEqualToString:@"focusPrev"     ]) { return [win focusPrev];  }
+    if ([req isEqualToString:@"new"           ]) { return [NSNumber numberWithLong:[win new:arg0].windowNumber]; }
+    if ([req isEqualToString:@"snapshot"      ]) { return [win snapshot:arg0]; }
+    if ([req isEqualToString:@"close"         ]) { [win performClose:nil]; return nil; }
+    if ([req isEqualToString:@"reload"        ]) { [win reload];           return nil; }
+    if ([req isEqualToString:@"maximize"      ]) { [win zoom:nil];         return nil; }
+    if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
+    if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }
+    if ([req isEqualToString:@"setSize"       ]) { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
+    if ([req isEqualToString:@"setMinSize"    ]) { [win setContentMinSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
+    if ([req isEqualToString:@"id"            ]) { return [NSNumber numberWithLong:win.windowNumber]; }
     if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[arg0 longValue]]; return nil; }
     
     return nil;
@@ -55,7 +56,7 @@
 
 + (id) app:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
-    NSLog(@"%d ▸ %@", win.windowNumber, req);
+    NSLog(@"%d ▸ %@", (long)win.windowNumber, req);
     id app = [NSApplication sharedApplication];
     if ([req isEqualToString:@"quit"])
     {
@@ -75,8 +76,17 @@
     if ([req isEqualToString:@"read"])
     {
         NSString* path = [args objectAtIndex:0];
-        NSLog(@"read %@", path);
         return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    }
+    else if ([req isEqualToString:@"write"])
+    {
+        NSString* path = [args objectAtIndex:0];
+        NSString* text = [args objectAtIndex:1];
+        NSData* data = [text dataUsingEncoding:NSUTF8StringEncoding];
+        if ([data writeToFile:path options:NSAtomicWrite error:nil])
+            return path;
+        else
+            return nil;
     }
     return nil;
 }
@@ -121,6 +131,7 @@
          if ([route isEqualToString:@"log"]) { NSLog(@"%ld %@ %@", (long)win.windowNumber, msg.name, msg.body); }
     else if ([route hasPrefix:@"bundle."]) { reply = [Route bundle:[route substringFromIndex:7] args:args win:win]; }
     else if ([route hasPrefix:@"window."]) { reply = [Route window:[route substringFromIndex:7] args:args win:win]; }
+    else if ([route hasPrefix:@"win."   ]) { reply = [Route window:[route substringFromIndex:4] args:args win:win]; }
     else if ([route hasPrefix:@"app."   ]) { reply = [Route app:   [route substringFromIndex:4] args:args win:win]; }
     else if ([route hasPrefix:@"fs."    ]) { reply = [Route fs:    [route substringFromIndex:3] args:args win:win]; }
     else if ([route hasPrefix:@"test."  ]) { reply = [Route test:  [route substringFromIndex:5] args:args win:win]; }

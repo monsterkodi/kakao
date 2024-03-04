@@ -48,7 +48,7 @@ Win = (function ()
 {
     function Win (delegate)
     {
-        var main, _37_18_
+        var main, _35_18_
 
         this.delegate = delegate
     
@@ -59,8 +59,7 @@ Win = (function ()
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["animate"] = this["animate"].bind(this)
-        console.log('win')
-        this.delegate = ((_37_18_=this.delegate) != null ? _37_18_ : new WinDelegate)
+        this.delegate = ((_35_18_=this.delegate) != null ? _35_18_ : new WinDelegate)
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focus',this.onWindowFocus)
@@ -73,13 +72,17 @@ Win = (function ()
         main.focus()
         kakao.request('window.id').then((function (id)
         {
-            var _58_21_, _58_38_
+            var _56_21_, _56_38_
 
             this.id = id
         
-            elem({class:'test',text:"▪▸○!▴!○◂▪",parent:main})
             elem({class:'test',text:`${id}`,parent:main})
-            return ((_58_21_=this.delegate) != null ? typeof (_58_38_=_58_21_.onWindowCreated) === "function" ? _58_38_(this) : undefined : undefined)
+            ;((_56_21_=this.delegate) != null ? typeof (_56_38_=_56_21_.onWindowCreated) === "function" ? _56_38_(this) : undefined : undefined)
+            kakao.send('win.setMinSize',250,110)
+            return kakao.request('fs.write',kakao.bundle.app('test.txt'),`hello from ${this.id}!`).then(function (ok)
+            {
+                console.log('wrote',ok)
+            })
         }).bind(this))
     }
 

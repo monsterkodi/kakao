@@ -33,6 +33,7 @@ body {
   top: 0;
   margin: 0;
   padding: 0;
+  -webkit-user-select: none;
   animation: 300ms ease-in fadeIn;
   font-family: fontMono;
   font-size: 14px;
@@ -45,7 +46,6 @@ body {
   top: 0;
   margin: 0;
   padding: 0;
-  -webkit-user-select: none;
   padding: 6px;
   overflow: auto;
   pointer-events: auto;
@@ -104,16 +104,22 @@ body {
   margin: 6px;
 }
 #titlebar .winbutton {
-  flex: 0 0 39px;
+  flex: 0 1 30px;
   display: inline-block;
   text-align: center;
   vertical-align: bottom;
   font-size: 18px;
-  padding-top: 2px;
   cursor: pointer;
 }
 #titlebar .winbutton.minimize {
-  padding-top: 5px;
+  padding-top: 3px;
+  padding-right: 1px;
+}
+#titlebar .winbutton.maximize {
+  padding-right: 1px;
+}
+#titlebar .winbutton.close {
+  padding-right: 3px;
 }
 #titlebar .topframe {
   height: 2px;
@@ -124,24 +130,27 @@ body {
 }
 .menu {
   height: 30px;
-  flex: 0 0 0;
+  flex: 0 1 0;
   display: flex;
   flex-direction: row;
 }
 .menuItem {
   cursor: pointer;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 7px;
+  padding-left: 12px;
+  padding-right: 0px;
+  padding-top: 6px;
   display: inline-block;
   height: 30px;
   overflow: visible;
 }
 .popup {
+  line-height: 0.8;
   z-index: 9999;
   position: absolute;
   border-radius: 3px;
   font-family: titlebarFont;
+  padding-top: 3px;
+  padding-bottom: 6px;
 }
 .popup.titlemenu {
   border-top-left-radius: 0;

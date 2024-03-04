@@ -52,6 +52,7 @@ fill-abs(n=0)
 
 body
     fill-abs()
+    -webkit-user-select none
     animation           300ms ease-in fadeIn
     font-family         fontMono
     font-size           14px
@@ -64,7 +65,6 @@ body
 
 #main
     fill-abs()
-    -webkit-user-select none
     padding             frameWidth
     overflow            auto
     pointer-events      auto
@@ -129,15 +129,19 @@ body
     margin              frameWidth
     
 #titlebar .winbutton
-    flex                0 0 titlebarHeight*1.3
+    flex                0 1 titlebarHeight*1.0
     display             inline-block
     text-align          center
     vertical-align      bottom
     font-size           18px
-    padding-top         2px
     cursor              pointer
     &.minimize
-        padding-top     5px
+        padding-top     3px
+        padding-right   1px
+    &.maximize
+        padding-right   1px
+    &.close
+        padding-right   frameWidth * 0.5
 
 #titlebar .topframe
     height              2px
@@ -153,17 +157,16 @@ body
 // 000   000  00000000  000   000   0000000   
             
 .menu
-    // line-height         1.05
     height              titlebarHeight
-    flex                0 0 0
+    flex                0 1 0
     display             flex
     flex-direction      row
     
 .menuItem
     cursor              pointer
-    padding-left        10px
-    padding-right       10px
-    padding-top         7px
+    padding-left        12px
+    padding-right       0px
+    padding-top         6px
     display             inline-block
     height              titlebarHeight
     overflow            visible
@@ -175,11 +178,13 @@ body
 // 000         0000000   000         0000000   000
 
 .popup
-    // line-height         1.05
+    line-height         0.8
     z-index             9999
     position            absolute
     border-radius       3px
     font-family         titlebarFont
+    padding-top         3px
+    padding-bottom      6px
     &.titlemenu
         border-top-left-radius   0
         border-top-right-radius  0

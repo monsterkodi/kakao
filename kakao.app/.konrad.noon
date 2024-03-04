@@ -2,6 +2,4 @@ pug   . replace  .. pug/  js/
 styl  . replace  .. pug/  js/css/
 noon  . replace  .. kode/ js/  
 kode  . replace  .. kode/ js/ .. js/bin/js/ js/bin/kode/ 
-ignore 
-    kode/bin/konrad/
         
