@@ -78,11 +78,7 @@ Win = (function ()
         
             elem({class:'test',text:`${id}`,parent:main})
             ;((_56_21_=this.delegate) != null ? typeof (_56_38_=_56_21_.onWindowCreated) === "function" ? _56_38_(this) : undefined : undefined)
-            kakao.send('win.setMinSize',250,110)
-            return kakao.request('fs.write',kakao.bundle.app('test.txt'),`hello from ${this.id}!`).then(function (ok)
-            {
-                console.log('wrote',ok)
-            })
+            return kakao.send('win.setMinSize',250,125)
         }).bind(this))
     }
 

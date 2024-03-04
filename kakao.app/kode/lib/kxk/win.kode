@@ -55,7 +55,7 @@ function Win
             
             @delegate?.onWindowCreated? @
             kakao.send 'win.setMinSize' 250 125
-            kakao.request('fs.write' kakao.bundle.app('test.txt'), "hello from #{@id}!").then (ok) -> log 'wrote' ok
+            # kakao.request('fs.write' kakao.bundle.app('test.txt'), "hello from #{@id}!").then (ok) -> log 'wrote' ok
         
     animate: =>
         
