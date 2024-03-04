@@ -24,7 +24,7 @@ function Menu
             div = elem class: 'menuItem' text: item.text
             div.item = item
             # div.addEventListener 'click' @onClick
-            div.addEventListener 'mousedown' @onClick
+            div.addEventListener 'mousedown' @onMouseDown
             if item.combo?
                 combo = elem 'span' class:'popupCombo' text: keyinfo.short item.combo
                 div.appendChild combo
@@ -158,6 +158,13 @@ function Menu
         else
             @activate item, selectFirstItem:false
             
+    open: (item) ->
+        
+        if @popup
+            return
+        else
+            @activate item, selectFirstItem:false
+            
     itemSelected: (item, elem) ->
             
     deactivate: (item) -> 
@@ -184,6 +191,7 @@ function Menu
             'right'                  ➜ stopEvent event, @navigateRight()
             'left'                   ➜ stopEvent event, @navigateLeft()
             
-    onClick: (e) => @toggle e.target
+    onClick:     (e) => @toggle e.target
+    onMouseDown: (e) => @open e.target
         
 export Menu

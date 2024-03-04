@@ -18,6 +18,7 @@ Menu = (function ()
     {
         var combo, div, item, _28_25_
 
+        this["onMouseDown"] = this["onMouseDown"].bind(this)
         this["onClick"] = this["onClick"].bind(this)
         this["onKeyDown"] = this["onKeyDown"].bind(this)
         this["close"] = this["close"].bind(this)
@@ -36,7 +37,7 @@ Menu = (function ()
             }
             div = elem({class:'menuItem',text:item.text})
             div.item = item
-            div.addEventListener('mousedown',this.onClick)
+            div.addEventListener('mousedown',this.onMouseDown)
             if ((item.combo != null))
             {
                 combo = elem('span',{class:'popupCombo',text:keyinfo.short(item.combo)})
@@ -197,6 +198,18 @@ Menu = (function ()
         }
     }
 
+    Menu.prototype["open"] = function (item)
+    {
+        if (this.popup)
+        {
+            return
+        }
+        else
+        {
+            return this.activate(item,{selectFirstItem:false})
+        }
+    }
+
     Menu.prototype["itemSelected"] = function (item, elem)
     {}
 
@@ -205,14 +218,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _165_39_
+        var _172_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _166_39_
+        var _173_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }
@@ -256,6 +269,11 @@ Menu = (function ()
     Menu.prototype["onClick"] = function (e)
     {
         return this.toggle(e.target)
+    }
+
+    Menu.prototype["onMouseDown"] = function (e)
+    {
+        return this.open(e.target)
     }
 
     return Menu
