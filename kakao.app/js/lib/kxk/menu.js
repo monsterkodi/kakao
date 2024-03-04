@@ -16,10 +16,9 @@ Menu = (function ()
 {
     function Menu (opt)
     {
-        var combo, div, item, _28_25_
+        var combo, div, item, _27_25_
 
         this["onMouseDown"] = this["onMouseDown"].bind(this)
-        this["onClick"] = this["onClick"].bind(this)
         this["onKeyDown"] = this["onKeyDown"].bind(this)
         this["close"] = this["close"].bind(this)
         this["onFocusOut"] = this["onFocusOut"].bind(this)
@@ -55,7 +54,7 @@ Menu = (function ()
 
     Menu.prototype["del"] = function ()
     {
-        var _45_13_
+        var _44_13_
 
         this.close()
         ;(this.elem != null ? this.elem.remove() : undefined)
@@ -64,7 +63,7 @@ Menu = (function ()
 
     Menu.prototype["focus"] = function ()
     {
-        var _57_13_
+        var _56_13_
 
         this.focusElem = document.activeElement
         return (this.elem != null ? this.elem.focus() : undefined)
@@ -82,7 +81,7 @@ Menu = (function ()
 
     Menu.prototype["onFocusOut"] = function (event)
     {
-        var _65_45_
+        var _64_45_
 
         if (this.popup && !(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {
@@ -98,7 +97,7 @@ Menu = (function ()
 
     Menu.prototype["close"] = function (opt = {})
     {
-        var _85_17_
+        var _84_17_
 
         if ((this.popup != null))
         {
@@ -137,7 +136,7 @@ Menu = (function ()
 
     Menu.prototype["select"] = function (item, opt = {})
     {
-        var hadPopup, _114_17_, _118_17_
+        var hadPopup, _113_17_, _117_17_
 
         if (!(item != null))
         {
@@ -218,14 +217,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _172_39_
+        var _171_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _173_39_
+        var _172_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }
@@ -264,11 +263,6 @@ Menu = (function ()
 
         }
 
-    }
-
-    Menu.prototype["onClick"] = function (e)
-    {
-        return this.toggle(e.target)
     }
 
     Menu.prototype["onMouseDown"] = function (e)

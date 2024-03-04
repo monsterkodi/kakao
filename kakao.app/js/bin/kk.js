@@ -7,14 +7,12 @@ var args
 import os from '../lib/kxk/os.js'
 import karg from '../lib/kxk/karg.js'
 import slash from '../lib/kxk/slash.js'
-import kolor from '../lib/kxk/kolor.js'
 import knrd from './knrd.js'
 import build from './build.js'
 import process from 'process'
 import childp from 'child_process'
 import path from 'path'
 import fs from 'fs/promises'
-kolor.globalize()
 args = karg(`kk
     options                                  **
     info       show build status             = false
