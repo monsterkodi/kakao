@@ -6,9 +6,9 @@
     000       0000000 
 ###
 
-import slash   from './slash.js'
-import fsp from 'fs/promises'
-import fs  from 'fs'
+import slash from './slash.js'
+import fsp   from 'fs/promises'
+import fs    from 'fs'
 
 class FS
     

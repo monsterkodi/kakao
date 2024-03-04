@@ -7,7 +7,6 @@
 ###
 
 import slash from './slash.js'
-import fs    from './fs.js'
 
 # 00000000    0000000   00000000    0000000  00000000
 # 000   000  000   000  000   000  000       000
@@ -563,34 +562,25 @@ parseStr = (str, p, ext) ->
 
     return null if str.length <= 0
 
-    switch ext ? require('path').extname p
-        '.json' ➜ JSON.parse str
-                ➜ parse str
+    switch ext ? slash.ext p
+        'json' ➜ JSON.parse str
+               ➜ parse str
 
-load = (p, ext, cb) ->
-
-    cb = ext if ext is func
-
-    if cb is func
-
-        try
-            fs.read p, (str) ->
-                if valid str
-                    cb parseStr str, p, ext
-                else
-                    error "noon.load - empty file: #{p}"
-                    cb null
-        catch err
-            error "noon.load - can't read file: #{p}" err
-            cb null
-    else
-        try
-            str = require('fs').readFileSync p, 'utf8'
-            return parseStr str, p, ext
-        catch err
-            error "noon.load - " + String(err) + ' ' + p
+load = (p, ext) ○->
+    
+    new Promise (resolve, reject) ○->
         
-        # error 'noon.load - no callback!'
+        fs = window?.kakao?.fs
+        fs ?= await import('fs/promises')
+    
+        str = await fs.read p
+            
+        if valid str
+            resolve parseStr str, p, ext
+        else
+            reject null
+                
+        null
 
 ###
  0000000   0000000   000   000  00000000

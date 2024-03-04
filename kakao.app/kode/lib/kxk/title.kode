@@ -47,7 +47,7 @@ function Title
         @winicon = elem class: 'winicon'
         
         if @opt.icon
-            @winicon.appendChild elem 'img' src:slash.path @opt.dir, @opt.icon 
+            @winicon.appendChild elem 'img' src:@opt.icon 
         else 
             @winicon.appendChild elem 'div' class:'noicon'
         
@@ -171,19 +171,19 @@ function Title
     # 000  000  0000  000     000     000 0 000  000       000  0000  000   000  
     # 000  000   000  000     000     000   000  00000000  000   000   0000000   
     
-    initMenu: ->
+    initMenu: ○->
                     
         return [] if not @opt.menu
                 
         if empty @templateCache
-            noon.load @opt.menu, (tc) => 
-                if valid tc
-                    @templateCache = @makeTemplate tc
-                    if @opt.menuTemplate? and @opt.menuTemplate is func
-                        @templateCache = @opt.menuTemplate @templateCache
-                    @initFromCache()
-                else
-                    error 'title.initMenu - empty template?' @opt.menu
+            tc = await noon.load @opt.menu 
+            if valid tc
+                @templateCache = @makeTemplate tc
+                if @opt.menuTemplate? and @opt.menuTemplate is func
+                    @templateCache = @opt.menuTemplate @templateCache
+                @initFromCache()
+            else
+                error 'title.initMenu - empty template?' @opt.menu
         else
             @initFromCache()
             
