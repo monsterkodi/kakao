@@ -5,7 +5,8 @@ var _k_
 
 var ast
 
-import utils from './utils.js'
+import utils from "./utils.js"
+
 ast = utils.ast
 
 toExport["ast"] = function ()

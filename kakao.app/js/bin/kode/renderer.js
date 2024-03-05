@@ -4,11 +4,16 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var firstLineCol, kolorNames, lastLineCol
 
-import kstr from '../../lib/kxk/kstr.js'
-import slash from '../../lib/kxk/slash.js'
-import fs from '../../lib/kxk/fs.js'
-import print from './print.js'
-import utils from './utils.js'
+import kstr from "../../lib/kxk/kstr.js"
+
+import slash from "../../lib/kxk/slash.js"
+
+import fs from "../../lib/kxk/fs.js"
+
+import print from "./print.js"
+
+import utils from "./utils.js"
+
 firstLineCol = utils.firstLineCol
 lastLineCol = utils.lastLineCol
 

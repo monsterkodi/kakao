@@ -6,7 +6,7 @@
  00000 00  000   000  000   000  000   000  000   000  
 ###
 
-import utils from './utils.js'
+use ./utils
 
 { kc, ke } = utils
 
