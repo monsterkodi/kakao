@@ -68,6 +68,7 @@ class FS
             catch (err)
             {
                 mode = 0o666
+                await fsp.mkdir(slash.dir(p),{recursive:true})
             }
             await fsp.writeFile(tmpfile,text,{mode:mode})
             await fsp.rename(tmpfile,p)
@@ -82,7 +83,7 @@ class FS
 
     static pkg (p)
     {
-        var _98_20_
+        var _99_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -100,7 +101,7 @@ class FS
 
     static git (p, cb)
     {
-        var _110_20_
+        var _111_20_
 
         if (((p != null ? p.length : undefined) != null))
         {

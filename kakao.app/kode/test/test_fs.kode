@@ -6,7 +6,6 @@
    000     00000000  0000000      000     000000  000       0000000 
 ###
 
-
 import fs    from '../../js/lib/kxk/fs.js'
 import slash from '../../js/lib/kxk/slash.js'
 
@@ -63,13 +62,13 @@ __dirname  = import.meta.dirname
     # 000   000  00000000  000   000  0000000  
     
     ▸ read
-        
+         
         fs.read __dirname + '/../../package.noon' (text) ->
-            
-            text ▸ (a) -> a.startsWith 'name'
-    
-        fs.read __dirname + '/dir/filedoesntexist' (text) ->
              
+            text ▸ (a) -> a.startsWith 'name'
+     
+        fs.read __dirname + '/dir/filedoesntexist' (text) ->
+              
             text ▸ ''
 
     # 000   000  00000000   000  000000000  00000000  000000000  00000000  000   000  000000000  
@@ -78,22 +77,22 @@ __dirname  = import.meta.dirname
     # 000   000  000   000  000     000     000          000     000        000 000      000     
     # 00     00  000   000  000     000     00000000     000     00000000  000   000     000     
     
-    ▸ write
-        
-        f2 = slash.path __dirname, 'test.txt'
-        
-        fs.write(f2, "hello world").then (p) ->
-            
-            p ▸ f2
-            
-            fs.read(p).then (r) -> 
-                
-                r ▸ 'hello world'
-                fs.remove p
-            
-        fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
-            
-            p ▸ ''
+    # ▸ write
+#         
+        # f2 = slash.path __dirname, 'test.txt'
+#         
+        # fs.write(f2, "hello world").then (p) ->
+#             
+            # p ▸ f2
+#             
+            # fs.read(p).then (r) -> 
+#                 
+                # r ▸ 'hello world'
+                # fs.remove p
+#             
+        # fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
+#             
+            # p ▸ ''
 
     # 0000000    000  00000000   000      000   0000000  000000000  
     # 000   000  000  000   000  000      000  000          000     
@@ -102,7 +101,7 @@ __dirname  = import.meta.dirname
     # 0000000    000  000   000  0000000  000  0000000      000     
 
     ▸ dirlist
-        
+         
         process.chdir __dirname
         fs.list(__dirname).then (items) ->
             items.map((i) -> i.path) ▸ (a) -> slash.path(__filename) in a

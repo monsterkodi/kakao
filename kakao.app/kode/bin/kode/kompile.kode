@@ -14,6 +14,8 @@ import Stripol   from './stripol.js'
 import Returner  from './returner.js'
 import Operator  from './operator.js'
 import Renderer  from './renderer.js'
+import vm        from 'vm'
+import slash     from '../../lib/kxk/slash.js'
 
 class Kode
 
@@ -34,6 +36,46 @@ class Kode
         @operator = new Operator @
         @renderer = new Renderer @
 
+    # 00000000  000   000   0000000   000
+    # 000       000   000  000   000  000
+    # 0000000    000 000   000000000  000
+    # 000          000     000   000  000
+    # 00000000      0      000   000  0000000
+
+    eval: (text, file, glob) ->
+
+        return if empty text
+
+        # vm = require 'vm'
+        
+        sandbox = vm.createContext()
+        if glob then sandbox[k] = v for k,v of glob
+
+        sandbox.__filename = file ? 'eval'
+        sandbox.__dirname  = slash.dir sandbox.__filename
+        sandbox.console    = console
+        sandbox.process    = process
+        sandbox.global     = global
+
+        # if not (sandbox.module or sandbox.require) or file
+            # Module = require 'module'
+            # sandbox.module   = _module  = new Module 'eval'
+            # sandbox.require  = _require = (file) -> Module._load file, _module, true
+            # _module.filename = sandbox.__filename
+            # for r in Object.getOwnPropertyNames require
+                # if r not in ['paths' 'arguments' 'caller' 'length' 'name']
+                    # _require[r] = require[r]
+
+            # _require.paths = _module.paths = Module._nodeModulePaths process.cwd()
+            # _require.resolve = (request) -> Module._resolveFilename request, _module
+            
+        try
+            js = @compile text, file
+            vm.runInContext js, sandbox
+        catch err
+            error err
+            throw err
+        
     #  0000000   0000000   00     00  00000000   000  000      00000000
     # 000       000   000  000   000  000   000  000  000      000
     # 000       000   000  000000000  00000000   000  000      0000000
@@ -48,6 +90,8 @@ class Kode
 
         @renderer.render @ast(text), file
 
+    astr: (text, scopes) -> print.astr @ast(text), scopes
+        
     ast: (text) ->
 
         # print.code 'kode' text, 'coffee' if @args.verbose or @args.debug or @args.kode

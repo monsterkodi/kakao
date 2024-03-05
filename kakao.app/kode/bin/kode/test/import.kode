@@ -1,0 +1,85 @@
+###
+000  00     00  00000000    0000000   00000000   000000000  
+000  000   000  000   000  000   000  000   000     000     
+000  000000000  00000000   000   000  0000000       000     
+000  000 0 000  000        000   000  000   000     000     
+000  000   000  000         0000000   000   000     000     
+###
+
+import utils from './utils.js'
+
+{ kc, ke } = utils
+
+__filename = import.meta.filename
+
+▸ use
+
+    kc 'use blark'                              ▸ 'import blark from "blark"\n'
+    kc 'use mod1 mod2'                          ▸ """
+        import mod1 from "mod1"
+        import mod2 from "mod2"\n
+        """
+    kc 'use loops' __filename                   ▸ 'import loops from "./loops.js"\n'
+    kc 'use ../returner' __filename             ▸ 'import returner from "../returner.js"\n'
+
+▸ import
+    
+    kc 'import noon from "noon"'                               ▸ 'import noon from "noon"'
+    kc 'import defaultExport from "module"'                    ▸ 'import defaultExport from "module"'                 
+    kc 'import * as name from "module"'                        ▸ 'import * as name from "module"'                     
+    kc 'import { export1 } from "module"'                      ▸ 'import { export1 } from "module"'                   
+    kc 'import { export1 as alias1 } from "module"'            ▸ 'import { export1 as alias1 } from "module"'         
+    kc 'import { default as alias } from "module"'             ▸ 'import { default as alias } from "module"'          
+    kc 'import { export1, export2 } from "module"'             ▸ 'import { export1 , export2 } from "module"'          
+    kc 'import { export1, export2 as alias2 } from "module"'   ▸ 'import { export1 , export2 as alias2 } from "module"'
+    kc 'import { "string name" as alias } from "module"'       ▸ 'import { "string name" as alias } from "module"'    
+    kc 'import defaultExport, { export1 } from "module"'       ▸ 'import defaultExport , { export1 } from "module"'    
+    kc 'import defaultExport, * as name from "module"'         ▸ 'import defaultExport , * as name from "module"'      
+    kc 'import("f").then((a) -> a())'                          ▸ """
+        import("f")
+        .
+        then(function (a)
+        {
+            return a()
+        })
+        """
+        
+    kc 'import.meta.url' ▸ 'import.meta.url'
+    kc 'import patterns from "./lexer.json" assert {type:"json"}' ▸ 'import patterns from "./lexer.json" assert { type : "json" }'
+    kc  """
+        import a from 'a'
+        import b from './b'
+        """ ▸
+        """
+        import a from 'a'
+        import b from './b'
+        """
+    
+    kc 'd = { import:1 }' ▸ 'd = {import:1}'
+    
+▸ export
+
+    kc 'export { export1, export2 }'            ▸ 'export { export1 , export2 };'
+    kc 'export { export1, export2 as blark }'   ▸ 'export { export1 , export2 as blark };'
+    
+    kc  """
+        export
+            k: 1
+            $: 2
+        """ ▸ 
+        """
+        export default {k:1,$:2};
+        """
+        
+    kc 'export single' ▸ 'export default single;'
+    
+    kc 'd = { export:1 }' ▸ 'd = {export:1}'
+    
+▸ await
+
+    kc 'await someFunctionCall()'   ▸ 'await someFunctionCall()'
+    kc 'await call(); await again()'   ▸ 'await call()\nawait again()'
+    kc 'await call 1; await again 2'   ▸ 'await call(1)\nawait again(2)'
+    
+    kc 'd = { await:1 }' ▸ 'd = {await:1}'
+    

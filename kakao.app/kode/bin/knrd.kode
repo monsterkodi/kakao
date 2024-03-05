@@ -11,6 +11,7 @@
 import Kode     from './kode/kompile.js'
 import fs       from '../lib/kxk/fs.js'
 import slash    from '../lib/kxk/slash.js'
+import noon     from '../lib/kxk/noon.js'
 import { pug, stylus } from '../../bin/min.mjs'
 
 __dirname = import.meta.dirname
@@ -19,6 +20,7 @@ knrd = (files = [], opt = {}) ○->
             
     opt.rerunWhenDirty ?= true
     opt.logVerbose ?= false
+    
     
     ● 🔨
     kode = new Kode
@@ -35,6 +37,7 @@ knrd = (files = [], opt = {}) ○->
         list  = list.filter (item) -> item.type == 'file'
         files = list.map (item) -> item.path
         
+    # log 'files, opt' files, opt
     log '🔨 ' files.length
     transpiled = 0
         
@@ -110,6 +113,31 @@ knrd = (files = [], opt = {}) ○->
                     else if opt.logVerbose
                         log g2('✔ '), m3 slash.tilde srcFile
                 null
+                
+            'noon'
+            
+                srcFile = file
+                tgtFile = slash.swapExt srcFile.replace(kodeDir, jsDir), 'json'
+                
+                srcText = await fs.read srcFile
+                tgtText = await fs.read tgtFile
+                
+                compText = JSON.stringify noon.parse srcText
+                    
+                if empty compText
+                    log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
+                else
+                    if tgtText != compText
+                        transpiled++
+                        log m3('▶ '), m4 slash.tilde srcFile
+                        await fs.write tgtFile, compText
+                        log b5('✔ '), g5 slash.tilde tgtFile
+                    else if opt.logVerbose
+                        log g2('✔ '), m3 slash.tilde srcFile
+                null
+
+            ➜
+                error 'unknown file type' file
                 
     if opt.rerunWhenDirty and transpiled
         

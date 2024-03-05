@@ -2,80 +2,10 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
-var patterns
-
 import noon from '../../lib/kxk/noon.js'
 import kstr from '../../lib/kxk/kstr.js'
 import slash from '../../lib/kxk/slash.js'
-patterns = noon.parse(`ws          [ \\t]+
-nl          [ \\t]*\\r?\\n
-comment     \\#\\#\\#(?:.|\\n)*?\\#\\#\\#|\\#.*
-num         0x[a-fA-F\\d]+|0o[0-7]+|0b[0-1]+|[0-9]+n|[0-9]+\\.[0-9]+|[0-9]+e[-\\+]?[0-9]+|[1-9][0-9]*|0|\\-?Infinity
-triple      \\"\\"\\"(?:.|\\n)*?\\"\\"\\"
-double      "(?:\\\\.|\\#\\{[^\\}]*}|[^\\n\\\\"])*"
-single      '(?:\\\\['\\\\]|[^\\n'])*'
-regex       (?<!\\d\\s*)\\/(?:\\\\[\\/]|\\([^\\n\\s]*\\)|[^\\n\\s\\)])*\\/[gimsuy]*(?!\\s*\\d)
-dots        (?<!\\.)\\.\\.\\.?(?!\\.)
-paren       [\\(\\)\\[\\]\\{\\}]
-func        (○->|○=>|->|=>)
-then        ➜
-this        @
-test        (?<!●)▸[\\s\\n]+
-profile     ●▸
-profilend   ●▪
-prof        ●
-assert      ▴
-op          (\\band\\b|\\bor\\b|\\bnot\\b|\\+\\+|--|==|!=|>=|<=|\\+=|-=|\\*=|\\/=|\\|=|\\^=|\\?=|\\&=|%=|<<|>>|=|\\*|\\/|\\+|-|%|\\^|~|\\&|\\||<|>|\\beql\\b|\\bnew\\b|\\bis\\b|\\binstanceof\\b|\\bdelete\\b|\\bnoon\\b|\\bcopy\\b|\\bclone\\b)
-punct       [,:;!&~\\|\\.\\?\\\\]
-bool        (\\byes\\b|\\bno\\b|\\btrue\\b|\\bfalse\\b)
-keyword
-    if
-    then
-    else
-    for
-    each
-    break
-    await
-    return
-    continue
-    switch
-    while
-    when
-    is
-    in
-    of    
-    class
-    super    
-    extends
-    try
-    catch
-    throw
-    finally
-    function
-    require
-    import
-    export
-    from
-    typeof
-    empty
-    valid
-    dbg
-    log
-    warn
-    error
-    clamp
-    int
-    float
-    first
-    last
-    lpad
-    rpad
-    trim
-    ltrim
-    rtrim
-    min
-    max
-var         [▸a-zA-Z_$][a-zA-Z0-9_$]*`)
+import fs from 'fs'
 class Lexer
 {
     constructor (kode)
@@ -87,7 +17,7 @@ class Lexer
         this.debug = this.kode.args.debug
         this.verbose = this.kode.args.verbose
         this.raw = this.kode.args.raw
-        this.patterns = patterns
+        this.patterns = JSON.parse(fs.readFileSync(slash.path(import.meta.dirname,'./lexer.json'),'utf8'))
         this.regs = []
         for (key in this.patterns)
         {
@@ -119,10 +49,10 @@ class Lexer
         {
             before = text.length
             var list = _k_.list(this.regs)
-            for (var _139_26_ = 0; _139_26_ < list.length; _139_26_++)
+            for (var _61_26_ = 0; _61_26_ < list.length; _61_26_++)
             {
-                key = list[_139_26_][0]
-                reg = list[_139_26_][1]
+                key = list[_61_26_][0]
+                reg = list[_61_26_][1]
                 match = text.match(reg)
                 if ((match != null ? match.index : undefined) === 0)
                 {
@@ -228,9 +158,9 @@ class Lexer
         var minind, splt, tok
 
         var list = _k_.list(tokens)
-        for (var _215_16_ = 0; _215_16_ < list.length; _215_16_++)
+        for (var _137_16_ = 0; _137_16_ < list.length; _137_16_++)
         {
-            tok = list[_215_16_]
+            tok = list[_137_16_]
             if (tok.type === 'triple')
             {
                 splt = tok.text.slice(3, -3).split('\n')
@@ -382,7 +312,7 @@ class Lexer
                 block = blocks.slice(-1)[0]
             }
         }
-        for (var _347_19_ = idx = 0, _347_23_ = tokens.length; (_347_19_ <= _347_23_ ? idx < tokens.length : idx > tokens.length); (_347_19_ <= _347_23_ ? ++idx : --idx))
+        for (var _269_19_ = idx = 0, _269_23_ = tokens.length; (_269_19_ <= _269_23_ ? idx < tokens.length : idx > tokens.length); (_269_19_ <= _269_23_ ? ++idx : --idx))
         {
             tok = tokens[idx]
             if (tok.type === 'nl')

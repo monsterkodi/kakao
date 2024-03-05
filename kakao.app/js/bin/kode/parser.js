@@ -272,6 +272,37 @@ Parser = (function ()
         return {import:{args:toImport}}
     }
 
+    Parser.prototype["use"] = function (obj, tokens)
+    {
+        var modul, token, toUse
+
+        toUse = []
+        while (token = tokens.shift())
+        {
+            if (token.type === 'nl')
+            {
+                break
+            }
+            modul = ''
+            while (token.type !== 'var')
+            {
+                if (token.type === 'nl')
+                {
+                    toUse.push(modul)
+                    break
+                }
+                else
+                {
+                    modul += token.text
+                    token = tokens.shift()
+                }
+            }
+            modul += token.text
+            toUse.push({type:'var',text:modul})
+        }
+        return {use:toUse}
+    }
+
     Parser.prototype["export"] = function (obj, tokens)
     {
         var start, toExport, token
@@ -589,8 +620,8 @@ Parser = (function ()
         close = this.shiftClose('curly','}',tokens)
         if (!close)
         {
-            _k_.dbg("???", 758, 12, "exps", exps)
-            _k_.dbg("???", 759, 12, "tokens", tokens)
+            _k_.dbg("kode/bin/kode/parser.kode", 789, 12, "exps", exps)
+            _k_.dbg("kode/bin/kode/parser.kode", 790, 12, "tokens", tokens)
         }
         this.pop('{')
         return {object:{open:open,keyvals:exps,close:close}}

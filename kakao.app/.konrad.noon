@@ -1,5 +1,5 @@
 pug   . replace  .. pug/  js/
 styl  . replace  .. pug/  js/css/
-noon  . replace  .. kode/ js/  
+noon  . replace  .. kode/ js/ .. js/bin/js/ js/bin/kode/ 
 kode  . replace  .. kode/ js/ .. js/bin/js/ js/bin/kode/ 
         

@@ -10,15 +10,17 @@ import Stripol from './stripol.js'
 import Returner from './returner.js'
 import Operator from './operator.js'
 import Renderer from './renderer.js'
+import vm from 'vm'
+import slash from '../../lib/kxk/slash.js'
 class Kode
 {
     constructor (args)
     {
-        var _22_14_
+        var _24_14_
 
         this.args = args
     
-        this.args = ((_22_14_=this.args) != null ? _22_14_ : {})
+        this.args = ((_24_14_=this.args) != null ? _24_14_ : {})
         this.args.header = true
         this.version = '0.256.0'
         this.literals = ['bool','num','regex','single','double','triple']
@@ -30,6 +32,40 @@ class Kode
         this.returner = new Returner(this)
         this.operator = new Operator(this)
         this.renderer = new Renderer(this)
+    }
+
+    eval (text, file, glob)
+    {
+        var js, k, sandbox, v
+
+        if (_k_.empty(text))
+        {
+            return
+        }
+        sandbox = vm.createContext()
+        if (glob)
+        {
+            for (k in glob)
+            {
+                v = glob[k]
+                sandbox[k] = v
+            }
+        }
+        sandbox.__filename = (file != null ? file : 'eval')
+        sandbox.__dirname = slash.dir(sandbox.__filename)
+        sandbox.console = console
+        sandbox.process = process
+        sandbox.global = global
+        try
+        {
+            js = this.compile(text,file)
+            return vm.runInContext(js,sandbox)
+        }
+        catch (err)
+        {
+            console.error(err)
+            throw err
+        }
     }
 
     static compile (text, opt = {})
@@ -44,6 +80,11 @@ class Kode
             return ''
         }
         return this.renderer.render(this.ast(text),file)
+    }
+
+    astr (text, scopes)
+    {
+        return print.astr(this.ast(text),scopes)
     }
 
     ast (text)

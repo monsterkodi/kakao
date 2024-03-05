@@ -384,6 +384,37 @@ function Parser extends Parse
                 
         import:
             args: toImport
+            
+    # 000   000   0000000  00000000  
+    # 000   000  000       000       
+    # 000   000  0000000   0000000   
+    # 000   000       000  000       
+    #  0000000   0000000   00000000  
+    
+    use: (obj, tokens) ->
+        
+        toUse = []
+            
+        while token = tokens.shift()
+
+            if token.type == 'nl'
+                break
+                
+            modul = ''
+            while token.type != 'var' 
+                if token.type == 'nl'
+                    toUse.push modul
+                    break
+                else
+                    modul += token.text
+                    token = tokens.shift()
+                    
+            modul += token.text
+            toUse.push 
+                type:'var'
+                text:modul
+                
+        use: toUse
 
     # 00000000  000   000  00000000    0000000   00000000   000000000  
     # 000        000 000   000   000  000   000  000   000     000     
