@@ -360,14 +360,7 @@ class Renderer
                     jsFile = slash.path slash.dir(@file), name + '.js'
                     
                 if 
-                    fs.fileExists kodeFile
-                        
-                        relFile = slash.relative jsFile, slash.dir(@file)
-                        if relFile[0] != '.'
-                            relFile = './' + relFile
-                        s += " from \"#{relFile}\"\n"
-                        
-                    fs.fileExists jsFile
+                    fs.fileExists(kodeFile) or fs.fileExists(jsFile)
                         
                         relFile = slash.relative jsFile, slash.dir(@file)
                         if relFile[0] != '.'

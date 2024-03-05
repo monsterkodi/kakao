@@ -11,11 +11,15 @@ tester.test(test_slash)
 tester.test(test_fs)
 import fs from '../lib/kxk/fs.js'
 import slash from '../lib/kxk/slash.js'
-files = await fs.list(slash.path(import.meta.dirname,'../bin/kode/test'))
-var list = _k_.list(files)
-for (var _20_9_ = 0; _20_9_ < list.length; _20_9_++)
+if (1)
 {
-    file = list[_20_9_]
-    test = await import(file.path)
-    tester.test(test.default)
+    files = await fs.list(slash.path(import.meta.dirname,'../bin/kode/test'))
+    var list = _k_.list(files)
+    for (var _21_13_ = 0; _21_13_ < list.length; _21_13_++)
+    {
+        file = list[_21_13_]
+        test = await import(file.path)
+        tester.test(test.default)
+    }
 }
+tester.summarize()
