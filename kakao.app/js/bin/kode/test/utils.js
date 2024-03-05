@@ -2,22 +2,23 @@
 
 var _k_
 
-var kode
+var kde
 
-import Kode from '../kompile.js'
+import kode from "../kode.js"
 
-kode = function ()
+
+kde = function ()
 {
-    return new Kode()
+    return new kode()
 }
 export default {ast:function (c, p)
 {
-    return kode().astr(c,false)
+    return kde().astr(c,false)
 },ke:function (c)
 {
     try
     {
-        return kode().eval(c)
+        return kde().eval(c)
     }
     catch (err)
     {
@@ -28,7 +29,7 @@ export default {ast:function (c, p)
 {
     var k
 
-    k = kode().compile(c,f)
+    k = kde().compile(c,f)
     if (k.startsWith('// monsterkodi/kode'))
     {
         k = k.slice(k.indexOf('\n') + 2)

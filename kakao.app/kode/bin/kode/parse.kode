@@ -304,7 +304,7 @@ function Parse extends ParseUtils # the base class of Parser
                         @verb 'comma in args, break without shifting'
                         break                               # those are parsed with @exps ➜ give back one arg
                         
-                    if @stack[-1] and @stack[-1].startsWith 'op'
+                    if @stack[-1]?.startsWith 'op'
                         @verb 'comma in operation, break without shifting'
                         break
                     @verb 'exp shift comma'

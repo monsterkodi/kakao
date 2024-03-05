@@ -4,7 +4,7 @@ var _k_ = {profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = process.h
 
 var knrd, __dirname
 
-import Kode from './kode/kompile.js'
+import kode from './kode/kode.js'
 import fs from '../lib/kxk/fs.js'
 import slash from '../lib/kxk/slash.js'
 import noon from '../lib/kxk/noon.js'
@@ -13,12 +13,11 @@ __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, cssDir, cssFile, file, jsDir, jsFile, kode, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _21_23_, _22_19_
+    var compText, cssDir, cssFile, file, jsDir, jsFile, k0de, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _21_23_, _22_19_
 
     opt.rerunWhenDirty = ((_21_23_=opt.rerunWhenDirty) != null ? _21_23_ : true)
     opt.logVerbose = ((_22_19_=opt.logVerbose) != null ? _22_19_ : false)
     _k_.profile('🔨')
-    kode = new Kode
     kodeDir = slash.path(__dirname + '/../../kode')
     pugDir = slash.path(__dirname + '/../../pug')
     jsDir = slash.path(__dirname + '/../../js')
@@ -39,9 +38,9 @@ knrd = async function (files = [], opt = {})
     console.log('🔨 ',files.length)
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _44_13_ = 0; _44_13_ < list1.length; _44_13_++)
+    for (var _41_13_ = 0; _41_13_ < list1.length; _41_13_++)
     {
-        file = list1[_44_13_]
+        file = list1[_41_13_]
         switch (slash.ext(file))
         {
             case 'kode':
@@ -49,7 +48,8 @@ knrd = async function (files = [], opt = {})
                 jsFile = slash.swapExt(kodeFile.replace(kodeDir,jsDir),'js')
                 kodeText = await fs.read(kodeFile)
                 origText = await fs.read(jsFile)
-                compText = kode.compile(kodeText,file)
+                k0de = new kode
+                compText = k0de.compile(kodeText,file)
                 if (_k_.empty(compText))
                 {
                     console.log(_k_.y5('✘ '),_k_.r5(err),_k_.r4('transpiles to empty!'))

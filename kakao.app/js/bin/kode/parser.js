@@ -715,7 +715,7 @@ Parser = (function ()
             col = firstLineCol(key).col
 
             text = this.kode.renderer.node(key)
-            if (text.startsWith('this'))
+            if ((text != null ? text.startsWith('this') : undefined))
             {
                 if (text === 'this')
                 {
