@@ -78,6 +78,7 @@ class FS
                 await fsp.access p, (fs.R_OK | fs.F_OK)
             catch err
                 mode = 0o666
+                await fsp.mkdir slash.dir(p), recursive: true
                 
             await fsp.writeFile tmpfile, text, mode:mode
             await fsp.rename tmpfile, p

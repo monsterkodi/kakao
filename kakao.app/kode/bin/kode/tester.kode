@@ -123,22 +123,9 @@ class Tester
         fails = []
         stack = []
                 
-        #g = compare: @compare
-        #    section: @section
-        
         global.compare = @compare
         global.section = @section
         
-        #try
-        #    tests = @kode.eval text, file, g
-        #catch err
-        #    fails.push
-        #        stack: stack
-        #        lhs:   file + stack
-        #        rhs:   err
-        #    allfails.push fails[-1]
-        #    return
-
         return if testModule?._test_ != true
             
         testModule each (k,v) ->
@@ -161,6 +148,7 @@ class Tester
     # 0000000    0000000   000   000  000   000  000   000  000   000  000  0000000  00000000  
     
     showSpace: (s) ->
+        
         if not s is str
             return noon s
         s.split('\n').map((l) -> l+w2('◂')).join '\n'
@@ -201,14 +189,14 @@ class Tester
         split = split each (v) ->
             if valid v
                 v = ''+v
-                a = min v.length, 30 - l
-                l += a
-                v[...a]
+                # a = min v.length, 80 - l
+                # l += a
+                # v[...a]
          
         split = split.filter (s) -> s.length
             
         ss = split.join w2 '➜ '
-        if l >= 50 then ss += w2 '...'
+        # if l >= 100 then ss += w2 '...'
         ss
         
 export new Tester

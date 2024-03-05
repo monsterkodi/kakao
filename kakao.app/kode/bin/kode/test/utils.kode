@@ -1,0 +1,29 @@
+###
+000000000  00000000   0000000  000000000        000   000  000000000  000  000       0000000  
+   000     000       000          000           000   000     000     000  000      000       
+   000     0000000   0000000      000           000   000     000     000  000      0000000   
+   000     000            000     000           000   000     000     000  000           000  
+   000     00000000  0000000      000            0000000      000     000  0000000  0000000   
+###
+
+import Kode from '../kompile.js'
+kode = -> new Kode()
+
+export 
+            
+    ast:(c,p) -> kode().astr c, no
+    
+    ke: (c)   -> 
+        try
+            kode().eval(c)
+        catch err
+            log c
+            log err
+            
+    kc: (c,f) -> 
+        k = kode().compile c, f
+        if k.startsWith '// monsterkodi/kode'   then k = k[k.indexOf('\n')+2..]
+        if k.startsWith 'var _k_'               then k = k[k.indexOf('\n')+2..]
+        if k.startsWith 'var '                  then k = k[k.indexOf('\n')+2..]
+        k
+        

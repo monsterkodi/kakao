@@ -271,7 +271,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, tok, _280_34_, _342_33_
+        var block, e, numTokens, tok, _281_34_, _343_33_
 
         if (_k_.empty(tokens))
         {
@@ -343,6 +343,9 @@ Parse = (function ()
                         case 'when':
                             return this.when(tok,tokens)
 
+                        case 'use':
+                            return this.use(tok,tokens)
+
                         case 'try':
                             return this.try(tok,tokens)
 
@@ -379,7 +382,7 @@ Parse = (function ()
 
         }
 
-        this.sheapPush('exp',((_280_34_=tok.text) != null ? _280_34_ : tok.type))
+        this.sheapPush('exp',((_281_34_=tok.text) != null ? _281_34_ : tok.type))
         e = tok
         while (tokens.length)
         {
@@ -460,13 +463,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_342_33_=tok.text) != null ? _342_33_ : tok.type))
+        this.sheapPop('exp',((_343_33_=tok.text) != null ? _343_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _403_22_
+        var llc, numTokens, nxt, spaced, unspaced, _404_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])
@@ -669,7 +672,7 @@ Parse = (function ()
             {
                 e = this.prop(e,tokens)
             }
-            else if (nxt.type === 'dots' && !this.stack.slice(-1)[0].startsWith('op') && this.stack.slice(-1)[0] !== '(')
+            else if (nxt.type === 'dots' && !(this.stack.slice(-1)[0] != null ? this.stack.slice(-1)[0].startsWith('op') : undefined) && this.stack.slice(-1)[0] !== '(')
             {
                 e = this.slice(e,tokens)
             }

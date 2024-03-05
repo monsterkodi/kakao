@@ -8,6 +8,8 @@
 
 import kstr  from '../../lib/kxk/kstr.js'
 import slash from '../../lib/kxk/slash.js'
+import fs    from '../../lib/kxk/fs.js'
+import print from './print.js'
 import utils from './utils.js'
 
 { firstLineCol, lastLineCol } = utils
@@ -29,8 +31,11 @@ class Renderer
     # 000   000  000       000  0000  000   000  000       000   000  
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
-    render: (ast) ->
+    render: (ast, source) ->
 
+        @file = source
+        @source = slash.relative source, process.cwd()
+        
         @ast = ast
             
         @hint = _k_:{}
@@ -143,7 +148,7 @@ class Renderer
 
         if not nodes?
             log 'no nodes?!?' @stack, @sheap
-            # print.ast 'no nodes' @ast
+            print.ast 'no nodes' @ast
             return ''
         
         s = ''
@@ -192,6 +197,7 @@ class Renderer
                 when 'function'  then @function v
                 when 'switch'    then @switch v
                 when 'when'      then @when v
+                when 'use'       then @use v
                 when 'import'    then @import v
                 when 'export'    then @export v
                 when 'assert'    then @assert v
@@ -329,6 +335,52 @@ class Renderer
         # log 'fixedAsserts' s
         s
 
+    # 000   000   0000000  00000000  
+    # 000   000  000       000       
+    # 000   000  0000000   0000000   
+    # 000   000       000  000       
+    #  0000000   0000000   00000000  
+    
+    use: (n) ->
+
+        s = ''
+        for m in n
+            s += 'import '
+
+            if @file
+                
+                name = slash.name m.text
+                s += name
+                
+                if m.text[0] == '.'
+                    kodeFile = slash.path slash.dir(@file), m.text + '.kode'
+                    jsFile = slash.path slash.dir(@file), m.text + '.js'
+                else
+                    kodeFile = slash.path slash.dir(@file), name + '.kode'
+                    jsFile = slash.path slash.dir(@file), name + '.js'
+                    
+                if 
+                    fs.fileExists kodeFile
+                        
+                        relFile = slash.relative jsFile, slash.dir(@file)
+                        if relFile[0] != '.'
+                            relFile = './' + relFile
+                        s += " from \"#{relFile}\"\n"
+                        
+                    fs.fileExists jsFile
+                        
+                        relFile = slash.relative jsFile, slash.dir(@file)
+                        if relFile[0] != '.'
+                            relFile = './' + relFile
+                        s += " from \"#{relFile}\"\n"
+                        
+                    ➜
+                        s += " from \"#{m.text}\"\n"
+            else
+                s += @node m
+                s += " from \"#{m.text}\"\n"
+        s
+        
     # 000  00     00  00000000    0000000   00000000   000000000  
     # 000  000   000  000   000  000   000  000   000     000     
     # 000  000000000  00000000   000   000  0000000       000     
@@ -546,8 +598,8 @@ class Renderer
         bind = []
         for m in mthds
             if not m.keyval
-                # print.ast 'not an method?' m
-                # print.ast 'not an method?' mthds
+                print.ast 'not an method?' m
+                print.ast 'not an method?' mthds
                 continue
             if not m.keyval.val.func # probably a static var
                 continue
@@ -951,9 +1003,9 @@ class Renderer
                 return @for_in_range n, varPrefix, lastPrefix, lastPostfix, lineBreak
             list = @node n.list
 
-        #if not list or list == 'undefined'
-        #    print.noon 'no list for' n.list
-        #    print.ast 'no list for' n.list
+        if not list or list == 'undefined'
+            print.noon 'no list for' n.list
+            print.ast 'no list for' n.list
 
         gi = lineBreak or @ind()
         nl = lineBreak or '\n'

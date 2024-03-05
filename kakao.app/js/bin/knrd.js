@@ -7,15 +7,16 @@ var knrd, __dirname
 import Kode from './kode/kompile.js'
 import fs from '../lib/kxk/fs.js'
 import slash from '../lib/kxk/slash.js'
+import noon from '../lib/kxk/noon.js'
 import { pug , stylus } from '../../bin/min.mjs'
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, cssDir, cssFile, file, jsDir, jsFile, kode, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _20_23_, _21_19_
+    var compText, cssDir, cssFile, file, jsDir, jsFile, kode, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _21_23_, _22_19_
 
-    opt.rerunWhenDirty = ((_20_23_=opt.rerunWhenDirty) != null ? _20_23_ : true)
-    opt.logVerbose = ((_21_19_=opt.logVerbose) != null ? _21_19_ : false)
+    opt.rerunWhenDirty = ((_21_23_=opt.rerunWhenDirty) != null ? _21_23_ : true)
+    opt.logVerbose = ((_22_19_=opt.logVerbose) != null ? _22_19_ : false)
     _k_.profile('🔨')
     kode = new Kode
     kodeDir = slash.path(__dirname + '/../../kode')
@@ -38,9 +39,9 @@ knrd = async function (files = [], opt = {})
     console.log('🔨 ',files.length)
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _41_13_ = 0; _41_13_ < list1.length; _41_13_++)
+    for (var _44_13_ = 0; _44_13_ < list1.length; _44_13_++)
     {
-        file = list1[_41_13_]
+        file = list1[_44_13_]
         switch (slash.ext(file))
         {
             case 'kode':
@@ -120,6 +121,34 @@ knrd = async function (files = [], opt = {})
                 }
                 null
                 break
+            case 'noon':
+                srcFile = file
+                tgtFile = slash.swapExt(srcFile.replace(kodeDir,jsDir),'json')
+                srcText = await fs.read(srcFile)
+                tgtText = await fs.read(tgtFile)
+                compText = JSON.stringify(noon.parse(srcText))
+                if (_k_.empty(compText))
+                {
+                    console.log(_k_.y5('✘ '),_k_.r5(srcFile),_k_.r4('transpiles to empty!'))
+                }
+                else
+                {
+                    if (tgtText !== compText)
+                    {
+                        transpiled++
+                        console.log(_k_.m3('▶ '),_k_.m4(slash.tilde(srcFile)))
+                        await fs.write(tgtFile,compText)
+                        console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(tgtFile)))
+                    }
+                    else if (opt.logVerbose)
+                    {
+                        console.log(_k_.g2('✔ '),_k_.m3(slash.tilde(srcFile)))
+                    }
+                }
+                null
+                break
+            default:
+                console.error('unknown file type',file)
         }
 
     }
