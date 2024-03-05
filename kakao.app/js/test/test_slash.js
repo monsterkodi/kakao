@@ -151,6 +151,7 @@ toExport["kslash"] = function ()
         compare(slash.relative('/some/path/on.c','/path/on.d'),'../../some/path/on.c')
         compare(slash.relative('\\some\\path\\on.c','\\path\\on.d'),'../../some/path/on.c')
         compare(slash.relative('\\some\\path','/some/path'),'.')
+        compare(slash.relative('/Users/kodi/s/kakao/kakao.app/js/bin/kode/returner.js','/Users/kodi/s/kakao/kakao.app/js/bin/kode/test'),'../returner.js')
         if (slash.win())
         {
             compare(slash.relative('C:\\test\\some\\path.txt','C:\\test\\some\\other\\path'),'../../path.txt')

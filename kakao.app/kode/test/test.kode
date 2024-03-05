@@ -16,7 +16,10 @@ tester.test test_fs
 import fs    from '../lib/kxk/fs.js'
 import slash from '../lib/kxk/slash.js'
 
-files = await fs.list slash.path import.meta.dirname, '../bin/kode/test'
-for file in files
-    test = await import(file.path)
-    tester.test test.default
+if 1
+    files = await fs.list slash.path import.meta.dirname, '../bin/kode/test'
+    for file in files
+        test = await import(file.path)
+        tester.test test.default
+        
+tester.summarize()

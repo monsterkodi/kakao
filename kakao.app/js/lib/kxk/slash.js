@@ -196,7 +196,6 @@ class Slash
         {
             rc.shift()
             tc.shift()
-            dd += '../'
         }
         if (!_k_.empty(dd))
         {
@@ -289,7 +288,7 @@ class Slash
     {
         var c, clmn, d, f, l, line, split
 
-        var _238_14_ = Slash.splitDrive(p); f = _238_14_[0]; d = _238_14_[1]
+        var _237_14_ = Slash.splitDrive(p); f = _237_14_[0]; d = _237_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -320,7 +319,7 @@ class Slash
     {
         var c, f, l
 
-        var _250_16_ = Slash.splitFileLine(p); f = _250_16_[0]; l = _250_16_[1]; c = _250_16_[2]
+        var _249_16_ = Slash.splitFileLine(p); f = _249_16_[0]; l = _249_16_[1]; c = _249_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -334,7 +333,7 @@ class Slash
     {
         var f, l
 
-        var _255_14_ = Slash.splitFileLine(p); f = _255_14_[0]; l = _255_14_[1]
+        var _254_14_ = Slash.splitFileLine(p); f = _254_14_[0]; l = _254_14_[1]
 
         if (l > 1)
         {

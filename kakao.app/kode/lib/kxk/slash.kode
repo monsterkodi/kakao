@@ -168,7 +168,6 @@ class Slash
         while rc[0] == tc[0]
             rc.shift()
             tc.shift()
-            dd += '../'
             
         return dd + rc.join '/' if valid dd
         
