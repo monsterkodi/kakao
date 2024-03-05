@@ -411,7 +411,7 @@ Parse = (function ()
                         this.verb('comma in args, break without shifting')
                         break
                     }
-                    if (this.stack.slice(-1)[0] && this.stack.slice(-1)[0].startsWith('op'))
+                    if ((this.stack.slice(-1)[0] != null ? this.stack.slice(-1)[0].startsWith('op') : undefined))
                     {
                         this.verb('comma in operation, break without shifting')
                         break

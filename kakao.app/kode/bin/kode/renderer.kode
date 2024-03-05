@@ -359,16 +359,14 @@ class Renderer
                     kodeFile = slash.path slash.dir(@file), name + '.kode'
                     jsFile = slash.path slash.dir(@file), name + '.js'
                     
-                if 
-                    fs.fileExists(kodeFile) or fs.fileExists(jsFile)
+                if m.text[0] == '.'
+                    relFile = slash.relative jsFile, slash.dir(@file)
+                    if relFile[0] != '.'
+                        relFile = './' + relFile
+                    s += " from \"#{relFile}\"\n"
+                else
+                    s += " from \"#{m.text}\"\n"
                         
-                        relFile = slash.relative jsFile, slash.dir(@file)
-                        if relFile[0] != '.'
-                            relFile = './' + relFile
-                        s += " from \"#{relFile}\"\n"
-                        
-                    ➜
-                        s += " from \"#{m.text}\"\n"
             else
                 s += @node m
                 s += " from \"#{m.text}\"\n"
@@ -602,7 +600,7 @@ class Renderer
                 if con then error 'more than one constructor?'
                 m.keyval.val.func.name.text = 'constructor'
                 con = m
-            else if name.startsWith '@'
+            else if name?.startsWith '@'
                 m.keyval.val.func.name.text = 'static ' + name[1..]
             else if m.keyval.val.func?.arrow.text == '=>'
                 bind.push m
@@ -704,7 +702,7 @@ class Renderer
 
         args = args.map (a) =>
             t = @node a
-            if t.startsWith 'this.'
+            if t?.startsWith 'this.'
                 l = trim t.split('=')[0]
                 
                 txt = l[5..]
@@ -1272,7 +1270,7 @@ class Renderer
                 'true'
             else if tok.type == 'bool' and tok.text == 'no'
                 'false'
-            else if tok.type.startsWith 'prof'
+            else if tok.type?.startsWith 'prof'
                 @prof tok
             else
                 tok.text
@@ -1288,7 +1286,7 @@ class Renderer
 
     comment: (tok) ->
 
-        if tok.text.startsWith '###'
+        if tok.text?.startsWith '###'
             '/*' + tok.text[3..-4] + '*/' + '\n'
         else if tok.text.startsWith '#'
             rpad(tok.col) + '//' + tok.text[1..-1]

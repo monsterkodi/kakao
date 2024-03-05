@@ -873,7 +873,7 @@ function Parser extends Parse
             
             {line, col} = firstLineCol key
             text = @kode.renderer.node key
-            if text.startsWith 'this'
+            if text?.startsWith 'this'
                 if text == 'this' then text = '@'
                 else if text.startsWith 'this.' then text = '@' + text[5..]
 
