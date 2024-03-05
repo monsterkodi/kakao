@@ -10,8 +10,8 @@ import Stripol from './stripol.js'
 import Returner from './returner.js'
 import Operator from './operator.js'
 import Renderer from './renderer.js'
-import vm from 'vm'
 import slash from '../../lib/kxk/slash.js'
+import vm from 'vm'
 class Kode
 {
     constructor (args)

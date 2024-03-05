@@ -14,8 +14,8 @@ import Stripol   from './stripol.js'
 import Returner  from './returner.js'
 import Operator  from './operator.js'
 import Renderer  from './renderer.js'
-import vm        from 'vm'
 import slash     from '../../lib/kxk/slash.js'
+import vm        from 'vm'
 
 class Kode
 
@@ -46,8 +46,6 @@ class Kode
 
         return if empty text
 
-        # vm = require 'vm'
-        
         sandbox = vm.createContext()
         if glob then sandbox[k] = v for k,v of glob
 
@@ -57,18 +55,6 @@ class Kode
         sandbox.process    = process
         sandbox.global     = global
 
-        # if not (sandbox.module or sandbox.require) or file
-            # Module = require 'module'
-            # sandbox.module   = _module  = new Module 'eval'
-            # sandbox.require  = _require = (file) -> Module._load file, _module, true
-            # _module.filename = sandbox.__filename
-            # for r in Object.getOwnPropertyNames require
-                # if r not in ['paths' 'arguments' 'caller' 'length' 'name']
-                    # _require[r] = require[r]
-
-            # _require.paths = _module.paths = Module._nodeModulePaths process.cwd()
-            # _require.resolve = (request) -> Module._resolveFilename request, _module
-            
         try
             js = @compile text, file
             vm.runInContext js, sandbox

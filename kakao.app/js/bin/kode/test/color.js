@@ -5,7 +5,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var c, kc, ke, l, n, s
 
-import utils from './utils.js'
+import utils from "./utils.js"
+
 kc = utils.kc
 ke = utils.ke
 

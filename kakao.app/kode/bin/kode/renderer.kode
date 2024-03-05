@@ -6,11 +6,11 @@
 000   000  00000000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-import kstr  from '../../lib/kxk/kstr.js'
-import slash from '../../lib/kxk/slash.js'
-import fs    from '../../lib/kxk/fs.js'
-import print from './print.js'
-import utils from './utils.js'
+use ../../lib/kxk/kstr
+use ../../lib/kxk/slash
+use ../../lib/kxk/fs
+use ./print
+use ./utils
 
 { firstLineCol, lastLineCol } = utils
 
