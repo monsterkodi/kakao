@@ -5,8 +5,10 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 var t, __dirname, __filename, _129_21_, _130_21_, _131_21_, _25_29_, _26_30_, _27_38_, _34_34_, _35_33_, _39_32_, _40_33_, _50_26_, _51_27_, _55_27_, _56_25_
 
-import fs from '../../js/lib/kxk/fs.js'
-import slash from '../../js/lib/kxk/slash.js'
+import fs from "../kxk/fs.js"
+
+import slash from "../kxk/slash.js"
+
 __filename = import.meta.filename
 __dirname = import.meta.dirname
 toExport["fs"] = function ()

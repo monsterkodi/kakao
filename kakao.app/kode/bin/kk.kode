@@ -8,15 +8,17 @@
     commandline tool that builds the application
 ###
 
-import os       from '../lib/kxk/os.js'
-import karg     from '../lib/kxk/karg.js'
-import slash    from '../lib/kxk/slash.js'
-import knrd     from './knrd.js'
-import build    from './build.js'
-import process  from 'process'
-import childp   from 'child_process'
-import path     from 'path'
+use ../kxk/os
+use ../kxk/karg
+use ../kxk/slash
+use ./knrd
+use ./build
+use process
+use child_process
+use path
 import fs       from 'fs/promises'
+
+childp = child_process
 
 args = karg """
     kk

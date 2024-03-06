@@ -5,7 +5,8 @@ var _k_
 
 var home, __dirname, __filename
 
-import slash from '../../js/lib/kxk/slash.js'
+import slash from "../kxk/slash.js"
+
 __filename = import.meta.filename
 __dirname = import.meta.dirname
 toExport["kslash"] = function ()

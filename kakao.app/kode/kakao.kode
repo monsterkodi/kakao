@@ -10,9 +10,9 @@
     provides shortcuts to useful internal modules
     sets itself in the global window scope
 ###
-log 'kakao'
-import bundle from './bundle.js'
-import kxk    from './kxk/kxk.js'
+
+use ./bundle
+use ./kxk/kxk
 
 function Kakao
 

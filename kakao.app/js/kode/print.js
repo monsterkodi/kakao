@@ -2,9 +2,11 @@
 
 var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}};_k_.r1=_k_.k.F256(_k_.k.r(1));_k_.R1=_k_.k.B256(_k_.k.R(1));_k_.R3=_k_.k.B256(_k_.k.R(3));_k_.g1=_k_.k.F256(_k_.k.g(1));_k_.G1=_k_.k.B256(_k_.k.G(1));_k_.G3=_k_.k.B256(_k_.k.G(3));_k_.g6=_k_.k.F256(_k_.k.g(6));_k_.B2=_k_.k.B256(_k_.k.B(2));_k_.B5=_k_.k.B256(_k_.k.B(5));_k_.b6=_k_.k.F256(_k_.k.b(6));_k_.b8=_k_.k.F256(_k_.k.b(8));_k_.Y2=_k_.k.B256(_k_.k.Y(2));_k_.Y4=_k_.k.B256(_k_.k.Y(4));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.W2=_k_.k.B256(_k_.k.W(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.W4=_k_.k.B256(_k_.k.W(4))
 
-import kstr from '../../lib/kxk/kstr.js'
-import slash from '../../lib/kxk/slash.js'
-import noon from '../../lib/kxk/noon.js'
+import kstr from "../kxk/kstr.js"
+
+import slash from "../kxk/slash.js"
+
+import noon from '../kxk/noon.js'
 class Print
 {
     static tokens (header, tokens)
@@ -52,9 +54,9 @@ class Print
             {
                 s = ''
                 var list = _k_.list(tok.tokens)
-                for (var _40_22_ = 0; _40_22_ < list.length; _40_22_++)
+                for (var _41_22_ = 0; _41_22_ < list.length; _41_22_++)
                 {
-                    t = list[_40_22_]
+                    t = list[_41_22_]
                     s += this.token(t)
                 }
                 return '\n' + s
@@ -78,9 +80,9 @@ class Print
 
         s = _k_.B2('   ')
         var list = _k_.list(sheap)
-        for (var _60_14_ = 0; _60_14_ < list.length; _60_14_++)
+        for (var _61_14_ = 0; _61_14_ < list.length; _61_14_++)
         {
-            r = list[_60_14_]
+            r = list[_61_14_]
             switch (r.type)
             {
                 case 'exps':
@@ -129,7 +131,7 @@ class Print
         console.log(_k_.R3(_k_.y5(`\n ${header}`)))
         printBlock = function (b)
         {
-            var c, ci, cn, s, _91_27_, _98_44_
+            var c, ci, cn, s, _92_27_, _99_44_
 
             if (legend)
             {
@@ -142,9 +144,9 @@ class Print
                 s += b.type[0] + ' '
             }
             var list = _k_.list(b.tokens)
-            for (var _90_18_ = 0; _90_18_ < list.length; _90_18_++)
+            for (var _91_18_ = 0; _91_18_ < list.length; _91_18_++)
             {
-                c = list[_90_18_]
+                c = list[_91_18_]
                 if ((c.tokens != null))
                 {
                     s += '\n' + printBlock(c) + b.indent
@@ -157,7 +159,7 @@ class Print
                 {
                     ci = parseInt(b.indent.length / 4)
                     cn = ['g5','r5','m5','g3','r3','m3','g1','r1','m1'][ci % 8]
-                    s += global[cn]((((_98_44_=c.text) != null ? _98_44_ : '')) + ' ')
+                    s += global[cn]((((_99_44_=c.text) != null ? _99_44_ : '')) + ' ')
                 }
             }
             if (_k_.in(b.type,['{}','()','[]']))
@@ -177,7 +179,7 @@ class Print
         lp = _k_.lpad(19)
         printNode = function (node, indent = '', visited = [])
         {
-            var name, s, value, _122_41_, _122_76_
+            var name, s, value, _123_41_, _123_76_
 
             s = ''
             if (!node)
@@ -186,7 +188,7 @@ class Print
             }
             if (node.type)
             {
-                s += _k_.b6(_k_.lpad(4,((_122_41_=node.line) != null ? _122_41_ : ''))) + ' ' + blue(_k_.lpad(3,((_122_76_=node.col) != null ? _122_76_ : ''))) + ' ' + gray(_k_.rpad(10,node.type)) + ' ' + bold(yellow(indent + node.text) + '\n')
+                s += _k_.b6(_k_.lpad(4,((_123_41_=node.line) != null ? _123_41_ : ''))) + ' ' + blue(_k_.lpad(3,((_123_76_=node.col) != null ? _123_76_ : ''))) + ' ' + gray(_k_.rpad(10,node.type)) + ' ' + bold(yellow(indent + node.text) + '\n')
             }
             else if (node instanceof Array)
             {
@@ -199,9 +201,9 @@ class Print
                 {
                     s += lp + ' ' + indent + bold(_k_.w3('['))
                     var list = _k_.list(node)
-                    for (var _130_30_ = 0; _130_30_ < list.length; _130_30_++)
+                    for (var _131_30_ = 0; _131_30_ < list.length; _131_30_++)
                     {
-                        value = list[_130_30_]
+                        value = list[_131_30_]
                         s += '\n'
                         s += printNode(value,indent,visited)
                     }
@@ -232,9 +234,9 @@ class Print
         if (ast instanceof Array)
         {
             var list = _k_.list(ast)
-            for (var _147_40_ = 0; _147_40_ < list.length; _147_40_++)
+            for (var _148_40_ = 0; _148_40_ < list.length; _148_40_++)
             {
-                node = list[_147_40_]
+                node = list[_148_40_]
                 console.log(printNode(node))
             }
         }
@@ -250,7 +252,7 @@ class Print
 
         printNode = function (node, indent = '', visited = [])
         {
-            var name, s, value, _179_28_, _179_43_
+            var name, s, value, _180_28_, _180_43_
 
             s = ''
             if (!node)
@@ -271,9 +273,9 @@ class Print
                 if (node.length)
                 {
                     var list = _k_.list(node)
-                    for (var _173_30_ = 0; _173_30_ < list.length; _173_30_++)
+                    for (var _174_30_ = 0; _174_30_ < list.length; _174_30_++)
                     {
-                        value = list[_173_30_]
+                        value = list[_174_30_]
                         s += printNode(value,indent,visited)
                     }
                 }
@@ -304,7 +306,7 @@ class Print
         }
         if (ast instanceof Array)
         {
-            s = (function () { var r_189_41_ = []; var list = _k_.list(ast); for (var _189_41_ = 0; _189_41_ < list.length; _189_41_++)  { node = list[_189_41_];r_189_41_.push(printNode(node))  } return r_189_41_ }).bind(this)().join('')
+            s = (function () { var r_190_41_ = []; var list = _k_.list(ast); for (var _190_41_ = 0; _190_41_ < list.length; _190_41_++)  { node = list[_190_41_];r_190_41_.push(printNode(node))  } return r_190_41_ }).bind(this)().join('')
         }
         else
         {

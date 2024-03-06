@@ -2,7 +2,8 @@
 
 var _k_
 
-import kakao from './lib/kakao.js'
+import kakao from "./kakao.js"
+
 kakao.init(function ()
 {
     return new kakao.window

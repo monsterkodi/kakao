@@ -4,9 +4,12 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 
 var allfails, allsuccs, comps, fails, stack, succs
 
-import kstr from '../../lib/kxk/kstr.js'
-import slash from '../../lib/kxk/slash.js'
-import kolor from '../../lib/kxk/kolor.js'
+import kstr from "../kxk/kstr.js"
+
+import slash from "../kxk/slash.js"
+
+import kolor from "../kxk/kolor.js"
+
 kolor.globalize()
 comps = 0
 succs = 0

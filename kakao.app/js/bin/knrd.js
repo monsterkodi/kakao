@@ -4,19 +4,22 @@ var _k_ = {profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = process.h
 
 var knrd, __dirname
 
-import kode from './kode/kode.js'
-import fs from '../lib/kxk/fs.js'
-import slash from '../lib/kxk/slash.js'
-import noon from '../lib/kxk/noon.js'
+import kode from "../kode/kode.js"
+
+import fs from "../kxk/fs.js"
+
+import slash from "../kxk/slash.js"
+
+import noon from '../kxk/noon.js'
 import { pug , stylus } from '../../bin/min.mjs'
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, cssDir, cssFile, file, jsDir, jsFile, k0de, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _21_23_, _22_19_
+    var compText, cssDir, cssFile, file, jsDir, jsFile, k0de, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _23_23_, _24_19_
 
-    opt.rerunWhenDirty = ((_21_23_=opt.rerunWhenDirty) != null ? _21_23_ : true)
-    opt.logVerbose = ((_22_19_=opt.logVerbose) != null ? _22_19_ : false)
+    opt.rerunWhenDirty = ((_23_23_=opt.rerunWhenDirty) != null ? _23_23_ : true)
+    opt.logVerbose = ((_24_19_=opt.logVerbose) != null ? _24_19_ : false)
     _k_.profile('🔨')
     kodeDir = slash.path(__dirname + '/../../kode')
     pugDir = slash.path(__dirname + '/../../pug')
@@ -38,9 +41,9 @@ knrd = async function (files = [], opt = {})
     console.log('🔨 ',files.length)
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _41_13_ = 0; _41_13_ < list1.length; _41_13_++)
+    for (var _43_13_ = 0; _43_13_ < list1.length; _43_13_++)
     {
-        file = list1[_41_13_]
+        file = list1[_43_13_]
         switch (slash.ext(file))
         {
             case 'kode':

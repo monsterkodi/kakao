@@ -17,10 +17,12 @@ OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
-import fs       from 'fs'
-import process  from 'process'
-import childp   from 'child_process'
-import slash    from '../lib/kxk/slash.js'
+use fs
+use process
+use child_process
+use ../kxk/slash
+
+childp = child_process
 
 export ○->
     

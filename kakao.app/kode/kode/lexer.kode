@@ -6,9 +6,9 @@
 0000000  00000000  000   000  00000000  000   000
 ###
 
-import noon  from '../../lib/kxk/noon.js'
-import kstr  from '../../lib/kxk/kstr.js'
-import slash from '../../lib/kxk/slash.js'
+import noon  from '../kxk/noon.js'
+import kstr  from '../kxk/kstr.js'
+import slash from '../kxk/slash.js'
 import fs    from 'fs'
 
 class Lexer

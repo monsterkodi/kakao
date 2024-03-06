@@ -620,8 +620,8 @@ Parser = (function ()
         close = this.shiftClose('curly','}',tokens)
         if (!close)
         {
-            _k_.dbg("kode/bin/kode/parser.kode", 789, 12, "exps", exps)
-            _k_.dbg("kode/bin/kode/parser.kode", 790, 12, "tokens", tokens)
+            _k_.dbg("kode/kode/parser.kode", 789, 12, "exps", exps)
+            _k_.dbg("kode/kode/parser.kode", 790, 12, "tokens", tokens)
         }
         this.pop('{')
         return {object:{open:open,keyvals:exps,close:close}}
