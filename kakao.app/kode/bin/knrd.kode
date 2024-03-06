@@ -14,7 +14,7 @@ use ../kxk/slash
 
 import noon from '../kxk/noon.js'
 
-import { pug, stylus } from '../../bin/min.mjs'
+import { pug, stylus } from '../../lib/min.mjs'
 
 __dirname = import.meta.dirname
 

@@ -11,7 +11,7 @@ import fs from "../kxk/fs.js"
 import slash from "../kxk/slash.js"
 
 import noon from '../kxk/noon.js'
-import { pug , stylus } from '../../bin/min.mjs'
+import { pug , stylus } from '../../lib/min.mjs'
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
