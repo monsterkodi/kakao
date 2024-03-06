@@ -1,0 +1,15 @@
+{
+  "name": "bin",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -f bin.mjs min.mjs",
+    "bundle": "bun build index.js --target=node --outfile=bin.mjs",
+    "minify": "uglifyjs bin.mjs -o min.mjs",
+    "build": "bun run clean && bun run bundle && bun run minify"
+  },
+  "dependencies": {
+    "pug": "^3.0.2",
+    "stylus": "0.56.0",
+    "uglify-js": "^3.17.4"
+  }
+}

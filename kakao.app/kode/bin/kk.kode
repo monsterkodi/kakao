@@ -16,7 +16,8 @@ use ./build
 use process
 use child_process
 use path
-import fs       from 'fs/promises'
+
+import fs from 'fs/promises'
 
 childp = child_process
 
