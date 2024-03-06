@@ -19,7 +19,7 @@ __filename = import.meta.filename
         import mod1 from "mod1"
         import mod2 from "mod2"\n
         """
-    kc 'use loops' __filename                   ▸ 'import loops from "./loops.js"\n'
+    kc 'use ./loops' __filename                 ▸ 'import loops from "./loops.js"\n'
     kc 'use ../returner' __filename             ▸ 'import returner from "../returner.js"\n'
 
 ▸ import

@@ -6,9 +6,10 @@
 000        000   000  000  000   000     000
 ###
 
-import kstr  from '../../lib/kxk/kstr.js'
-import slash from '../../lib/kxk/slash.js'
-import noon  from '../../lib/kxk/noon.js'
+use ../kxk/kstr
+use ../kxk/slash
+
+import noon  from '../kxk/noon.js'
 
 class Print
 

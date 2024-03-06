@@ -110,11 +110,11 @@ exports.strip = (s) -> String(s).replace STRIPANSI, ''
 # 000 0 000  000   000  000  000  0000  
 # 000   000  000   000  000  000   000  
 
-if false #__filename == Bun.main 
+if import.meta.filename == process.argv[1]
     
     # print a color table to the console
     # if file is executed directly: 
-    # bun js/lib/kxk/kolor.js
+    # node js/lib/kxk/kolor.js
     
     reset = '\x1b[0m'
     bold  = '\x1b[1m'

@@ -200,7 +200,7 @@ exports.strip = function (s)
 {
     return String(s).replace(STRIPANSI,'')
 }
-if (false)
+if (import.meta.filename === process.argv[1])
 {
     reset = '\x1b[0m'
     bold = '\x1b[1m'

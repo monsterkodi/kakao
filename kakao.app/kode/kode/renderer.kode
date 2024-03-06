@@ -6,9 +6,9 @@
 000   000  00000000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-use ../../lib/kxk/kstr
-use ../../lib/kxk/slash
-use ../../lib/kxk/fs
+use ../kxk/kstr
+use ../kxk/slash
+use ../kxk/fs
 use ./print
 use ./utils
 
@@ -345,31 +345,46 @@ class Renderer
 
         s = ''
         for m in n
-            s += 'import '
+            
+            mod = m.text ? m
+            name = slash.name mod
+            
+            s += 'import ' + name
 
             if @file
                 
-                name = slash.name m.text
-                s += name
-                
-                if m.text[0] == '.'
-                    kodeFile = slash.path slash.dir(@file), m.text + '.kode'
-                    jsFile = slash.path slash.dir(@file), m.text + '.js'
+                if mod[0] == '.'
+                    kodeFile = slash.path slash.dir(@file), mod + '.kode'
+                    jsFile = slash.path slash.dir(@file), mod + '.js'
                 else
                     kodeFile = slash.path slash.dir(@file), name + '.kode'
                     jsFile = slash.path slash.dir(@file), name + '.js'
                     
-                if m.text[0] == '.'
+                if mod[0] == '.'
                     relFile = slash.relative jsFile, slash.dir(@file)
                     if relFile[0] != '.'
                         relFile = './' + relFile
                     s += " from \"#{relFile}\"\n"
                 else
-                    s += " from \"#{m.text}\"\n"
-                        
+                    s += " from \"#{mod}\"\n"
+                
             else
-                s += @node m
-                s += " from \"#{m.text}\"\n"
+                if mod[0] == '.'
+                    s += " from \"#{slash.swapExt mod, 'js'}\"\n"
+                else
+                    s += " from \"#{mod}\"\n"
+                    
+                # if mod[0] == '.'
+                    # relFile = slash.relative jsFile, slash.dir(@file)
+                    # if relFile[0] != '.'
+                        # relFile = './' + relFile
+                    # s += " from \"#{relFile}\"\n"
+                # else
+                    # s += " from \"#{mod}\"\n"
+#                         
+            # else
+                # s += @node m
+                # s += " from \"#{mod}\"\n"
         s
         
     # 000  00     00  00000000    0000000   00000000   000000000  

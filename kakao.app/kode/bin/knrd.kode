@@ -8,10 +8,12 @@
     transpiles kode, styl and pug files
 ###
 
-import kode     from './kode/kode.js'
-import fs       from '../lib/kxk/fs.js'
-import slash    from '../lib/kxk/slash.js'
-import noon     from '../lib/kxk/noon.js'
+use ../kode/kode
+use ../kxk/fs
+use ../kxk/slash
+
+import noon from '../kxk/noon.js'
+
 import { pug, stylus } from '../../bin/min.mjs'
 
 __dirname = import.meta.dirname

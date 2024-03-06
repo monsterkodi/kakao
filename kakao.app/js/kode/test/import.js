@@ -16,7 +16,7 @@ toExport["use"] = function ()
     compare(kc('use blark'),'import blark from "blark"\n')
     compare(kc('use mod1 mod2'),`import mod1 from "mod1"
 import mod2 from "mod2"\n`)
-    compare(kc('use loops',__filename),'import loops from "./loops.js"\n')
+    compare(kc('use ./loops',__filename),'import loops from "./loops.js"\n')
     compare(kc('use ../returner',__filename),'import returner from "../returner.js"\n')
 }
 toExport["use"]._section_ = true

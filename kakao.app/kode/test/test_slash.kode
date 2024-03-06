@@ -4,7 +4,7 @@
 #    000     000            000     000
 #    000     00000000  0000000      000
 
-import slash from '../../js/lib/kxk/slash.js'
+use ../kxk/slash
 
 __filename = import.meta.filename
 __dirname = import.meta.dirname
