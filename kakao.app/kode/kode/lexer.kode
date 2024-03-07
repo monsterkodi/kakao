@@ -7,9 +7,10 @@
 ###
 
 import noon  from '../kxk/noon.js'
-import kstr  from '../kxk/kstr.js'
-import slash from '../kxk/slash.js'
-import fs    from 'fs'
+
+use ../kxk/kstr
+use ../kxk/slash
+use fs
 
 class Lexer
 

@@ -6,13 +6,13 @@
 000        000   000  000   000  0000000   00000000
 ###
 
-import print from './print.js'
-import ParseUtils from './parseutils.js'
-import utils from './utils.js'
+use ./print
+use ./parseutils
+use ./utils
 
 { firstLineCol, lastLineCol } = utils
 
-function Parse extends ParseUtils # the base class of Parser
+function Parse extends parseutils # the base class of Parser
 
     @: (@kode) ->
 

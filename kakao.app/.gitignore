@@ -1,5 +1,5 @@
 log.txt
-bin/node_modules
-bin/test*
-bin/bin.mjs
-bin/package.json
+lib/node_modules
+lib/test*
+lib/bin.mjs
+lib/package.json

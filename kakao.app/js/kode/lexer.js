@@ -3,9 +3,12 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 import noon from '../kxk/noon.js'
-import kstr from '../kxk/kstr.js'
-import slash from '../kxk/slash.js'
-import fs from 'fs'
+import kstr from "../kxk/kstr.js"
+
+import slash from "../kxk/slash.js"
+
+import fs from "fs"
+
 class Lexer
 {
     constructor (kode)
@@ -49,10 +52,10 @@ class Lexer
         {
             before = text.length
             var list = _k_.list(this.regs)
-            for (var _61_26_ = 0; _61_26_ < list.length; _61_26_++)
+            for (var _62_26_ = 0; _62_26_ < list.length; _62_26_++)
             {
-                key = list[_61_26_][0]
-                reg = list[_61_26_][1]
+                key = list[_62_26_][0]
+                reg = list[_62_26_][1]
                 match = text.match(reg)
                 if ((match != null ? match.index : undefined) === 0)
                 {
@@ -158,9 +161,9 @@ class Lexer
         var minind, splt, tok
 
         var list = _k_.list(tokens)
-        for (var _137_16_ = 0; _137_16_ < list.length; _137_16_++)
+        for (var _138_16_ = 0; _138_16_ < list.length; _138_16_++)
         {
-            tok = list[_137_16_]
+            tok = list[_138_16_]
             if (tok.type === 'triple')
             {
                 splt = tok.text.slice(3, -3).split('\n')
@@ -312,7 +315,7 @@ class Lexer
                 block = blocks.slice(-1)[0]
             }
         }
-        for (var _269_19_ = idx = 0, _269_23_ = tokens.length; (_269_19_ <= _269_23_ ? idx < tokens.length : idx > tokens.length); (_269_19_ <= _269_23_ ? ++idx : --idx))
+        for (var _270_19_ = idx = 0, _270_23_ = tokens.length; (_270_19_ <= _270_23_ ? idx < tokens.length : idx > tokens.length); (_270_19_ <= _270_23_ ? ++idx : --idx))
         {
             tok = tokens[idx]
             if (tok.type === 'nl')
