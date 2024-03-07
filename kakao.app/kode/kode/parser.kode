@@ -18,13 +18,13 @@
 # the biggest advantage is that the main features are seperated from
 # the nasty details and corner cases, which are handled in the base class.
 
-import print from './print.js'
-import Parse from './parse.js'
-import utils from './utils.js'
+use ./print
+use ./parse
+use ./utils
 
 { firstLineCol, lastLineCol } = utils
 
-function Parser extends Parse
+function Parser extends parse
 
     scope: (exps) ->
         

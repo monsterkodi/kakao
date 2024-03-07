@@ -4,7 +4,8 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 
 var ParseUtils
 
-import print from './print.js'
+import print from "./print.js"
+
 
 ParseUtils = (function ()
 {
@@ -69,15 +70,15 @@ ParseUtils = (function ()
 
     ParseUtils.prototype["nameMethods"] = function (mthds)
     {
-        var m, name, _108_34_, _108_39_, _109_35_, _109_41_
+        var m, name, _107_34_, _107_39_, _108_35_, _108_41_
 
         if ((mthds != null ? mthds.length : undefined))
         {
             var list = _k_.list(mthds)
-            for (var _107_18_ = 0; _107_18_ < list.length; _107_18_++)
+            for (var _106_18_ = 0; _106_18_ < list.length; _106_18_++)
             {
-                m = list[_107_18_]
-                if (name = ((_108_34_=m.keyval) != null ? (_108_39_=_108_34_.key) != null ? _108_39_.text : undefined : undefined))
+                m = list[_106_18_]
+                if (name = ((_107_34_=m.keyval) != null ? (_107_39_=_107_34_.key) != null ? _107_39_.text : undefined : undefined))
                 {
                     if (((m.keyval.val != null ? m.keyval.val.func : undefined) != null))
                     {
@@ -224,7 +225,7 @@ ParseUtils = (function ()
 
     ParseUtils.prototype["ifSuitableForInline"] = function (e)
     {
-        var ei, _257_24_, _258_24_, _259_24_, _260_24_, _265_26_, _266_26_
+        var ei, _256_24_, _257_24_, _258_24_, _259_24_, _264_26_, _265_26_
 
         if (e.if)
         {
@@ -251,9 +252,9 @@ ParseUtils = (function ()
                 }
             }
             var list = _k_.list(e.if.elifs)
-            for (var _261_19_ = 0; _261_19_ < list.length; _261_19_++)
+            for (var _260_19_ = 0; _260_19_ < list.length; _260_19_++)
             {
-                ei = list[_261_19_]
+                ei = list[_260_19_]
                 if (!this.ifSuitableForInline(ei))
                 {
                     return false

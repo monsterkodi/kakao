@@ -4,16 +4,19 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var firstLineCol, lastLineCol, Parser
 
-import print from './print.js'
-import Parse from './parse.js'
-import utils from './utils.js'
+import print from "./print.js"
+
+import parse from "./parse.js"
+
+import utils from "./utils.js"
+
 firstLineCol = utils.firstLineCol
 lastLineCol = utils.lastLineCol
 
 
 Parser = (function ()
 {
-    _k_.extend(Parser, Parse)
+    _k_.extend(Parser, parse)
     function Parser ()
     {
         return Parser.__super__.constructor.apply(this, arguments)

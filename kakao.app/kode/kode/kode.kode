@@ -6,16 +6,16 @@
 000   000   0000000   0000000    00000000
 ###
 
-import Lexer     from './lexer.js'
-import print     from './print.js'
-import Parser    from './parser.js'
-import Scoper    from './scoper.js'
-import Stripol   from './stripol.js'
-import Returner  from './returner.js'
-import Operator  from './operator.js'
-import Renderer  from './renderer.js'
-import slash     from '../kxk/slash.js'
-import vm        from 'vm'
+use ./lexer
+use ./print
+use ./parser
+use ./scoper
+use ./stripol
+use ./returner
+use ./operator
+use ./renderer
+use ../kxk/slash
+use vm
 
 class Kode
 
@@ -28,13 +28,13 @@ class Kode
         @literals = ['bool''num''regex''single''double''triple']
         @atoms    = @literals.concat ['var']
 
-        @lexer    = new Lexer    @
-        @parser   = new Parser   @
-        @scoper   = new Scoper   @
-        @stripol  = new Stripol  @
-        @returner = new Returner @
-        @operator = new Operator @
-        @renderer = new Renderer @
+        @lexer    = new lexer    @
+        @parser   = new parser   @
+        @scoper   = new scoper   @
+        @stripol  = new stripol  @
+        @returner = new returner @
+        @operator = new operator @
+        @renderer = new renderer @
 
     # 00000000  000   000   0000000   000
     # 000       000   000  000   000  000
