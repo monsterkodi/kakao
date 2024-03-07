@@ -4,8 +4,10 @@ var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof Str
 
 var $, Drag, stopEvent
 
-import kpos from './pos.js'
-import dom from './dom.js'
+import kpos from "./kpos.js"
+
+import dom from "./dom.js"
+
 $ = dom.$
 stopEvent = dom.stopEvent
 

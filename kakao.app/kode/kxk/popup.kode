@@ -6,12 +6,12 @@
     000         0000000   000         0000000   000      
 ###
 
-import os      from './os.js'
-import dom     from './dom.js'
-import post    from './post.js'
-import slash   from './slash.js'
-import keyinfo from './keyinfo.js'
-import popup   from './popup.js'
+use ./os
+use ./dom
+use ./post
+use ./slash
+use ./keyinfo
+use ./popup
 
 { elem, stopEvent } = dom
 

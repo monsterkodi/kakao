@@ -4,7 +4,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var defaults, load, pad, parse, parseStr, regs, save, stringify
 
-import slash from './slash.js'
+import slash from "./slash.js"
+
 
 parse = function (s)
 {

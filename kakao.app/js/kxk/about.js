@@ -4,7 +4,8 @@ var _k_
 
 var $, dom, elem, post
 
-import kakao from '../kakao.js'
+import kakao from "../kakao.js"
+
 post = kakao.post
 dom = kakao.dom
 

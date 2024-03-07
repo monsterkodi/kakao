@@ -2,9 +2,11 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
-import slash from './slash.js'
+import slash from "./slash.js"
+
+import fs from "fs"
+
 import fsp from 'fs/promises'
-import fs from 'fs'
 class FS
 {
     static logErrors = true
@@ -15,9 +17,9 @@ class FS
 
         dirents = await fsp.readdir(dir,{withFileTypes:true})
         var list = _k_.list(dirents)
-        for (var _27_19_ = 0; _27_19_ < list.length; _27_19_++)
+        for (var _28_19_ = 0; _28_19_ < list.length; _28_19_++)
         {
-            dirent = list[_27_19_]
+            dirent = list[_28_19_]
             file = dirent.name
             isDir = !dirent.isFile()
             absPath = slash.path(dir,file)
@@ -83,7 +85,7 @@ class FS
 
     static pkg (p)
     {
-        var _99_20_
+        var _100_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -101,7 +103,7 @@ class FS
 
     static git (p, cb)
     {
-        var _111_20_
+        var _112_20_
 
         if (((p != null ? p.length : undefined) != null))
         {

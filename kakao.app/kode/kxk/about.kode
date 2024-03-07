@@ -8,7 +8,7 @@
     simple about window  
 ###
 
-import kakao from '../kakao.js'
+use ../kakao
 
 { post, dom } = kakao
 { $, elem   } = dom

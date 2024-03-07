@@ -2,7 +2,8 @@
 
 var _k_
 
-import slash from './slash.js'
+import slash from "./slash.js"
+
 class FS
 {
     static logErrors = true

@@ -4,10 +4,14 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var elem, Menu, stopEvent
 
-import dom from './dom.js'
-import post from './post.js'
-import keyinfo from './keyinfo.js'
-import popup from './popup.js'
+import dom from "./dom.js"
+
+import post from "./post.js"
+
+import keyinfo from "./keyinfo.js"
+
+import popup from "./popup.js"
+
 elem = dom.elem
 stopEvent = dom.stopEvent
 
