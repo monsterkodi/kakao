@@ -6,9 +6,10 @@
 000   000  000   000  000   000   0000000 
 ###
 
+use ./kstr
+use ./kolor
+
 import noon  from './noon.js'
-import kstr  from './kstr.js'
-import kolor from './kolor.js'
 
 kolor.globalize()
 

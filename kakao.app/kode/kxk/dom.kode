@@ -6,7 +6,7 @@
     0000000     0000000   000   000
 ###
 
-import elem from './elem.js'
+use ./elem
 
 export
 

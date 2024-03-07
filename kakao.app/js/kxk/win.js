@@ -4,11 +4,16 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var $, stopEvent, Win
 
-import dom from './dom.js'
-import elem from './elem.js'
-import post from './post.js'
-import keyinfo from './keyinfo.js'
-import Title from './title.js'
+import dom from "./dom.js"
+
+import elem from "./elem.js"
+
+import post from "./post.js"
+
+import keyinfo from "./keyinfo.js"
+
+import title from "./title.js"
+
 $ = dom.$
 stopEvent = dom.stopEvent
 
@@ -63,7 +68,7 @@ Win = (function ()
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focus',this.onWindowFocus)
-        window.titlebar = new Title({icon:kakao.bundle.img('menu.png'),menu:kakao.bundle.res('menu.noon')})
+        window.titlebar = new title({icon:kakao.bundle.img('menu.png'),menu:kakao.bundle.res('menu.noon')})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)

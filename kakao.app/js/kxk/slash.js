@@ -4,7 +4,8 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, normStr, sep
 
-import os from './os.js'
+import os from "./os.js"
+
 sep = '/'
 CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
 CHAR_BACKWARD_SLASH = '\\'.charCodeAt(0)

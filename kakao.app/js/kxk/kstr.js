@@ -4,7 +4,8 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 var ESCAPEREGEXP, str, STRIPANSI
 
-import ansi from './ansi.js'
+import ansi from "./ansi.js"
+
 
 str = function (o)
 {

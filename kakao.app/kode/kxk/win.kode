@@ -10,11 +10,11 @@
     calls methods on its delegate
 ###
 
-import dom     from './dom.js'
-import elem    from './elem.js'
-import post    from './post.js'
-import keyinfo from './keyinfo.js'
-import Title   from './title.js'
+use ./dom
+use ./elem
+use ./post
+use ./keyinfo
+use ./title
 
 { $, stopEvent } = dom
 
@@ -38,7 +38,7 @@ function Win
         post.on 'window.blur'  @onWindowBlur
         post.on 'window.focus' @onWindowFocus
         
-        window.titlebar = new Title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
+        window.titlebar = new title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
         
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp

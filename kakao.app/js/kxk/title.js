@@ -4,13 +4,19 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 var $, elem, stopEvent, Title
 
-import dom from './dom.js'
-import sds from './sds.js'
-import menu from './menu.js'
+import dom from "./dom.js"
+
+import sds from "./sds.js"
+
+import menu from "./menu.js"
+
+import keyinfo from "./keyinfo.js"
+
+import slash from "./slash.js"
+
+import post from "./post.js"
+
 import noon from './noon.js'
-import keyinfo from './keyinfo.js'
-import slash from './slash.js'
-import post from './post.js'
 $ = dom.$
 stopEvent = dom.stopEvent
 elem = dom.elem
@@ -20,7 +26,7 @@ Title = (function ()
 {
     function Title (opt)
     {
-        var pkg, _28_13_, _32_27_
+        var pkg, _29_13_, _33_27_
 
         this.opt = opt
     
@@ -33,9 +39,9 @@ Title = (function ()
         this["onTitlebar"] = this["onTitlebar"].bind(this)
         this["onWindowBlur"] = this["onWindowBlur"].bind(this)
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
-        this.opt = ((_28_13_=this.opt) != null ? _28_13_ : {})
+        this.opt = ((_29_13_=this.opt) != null ? _29_13_ : {})
         pkg = this.opt.pkg
-        this.elem = $(((_32_27_=this.opt.elem) != null ? _32_27_ : "#titlebar"))
+        this.elem = $(((_33_27_=this.opt.elem) != null ? _33_27_ : "#titlebar"))
         this.elem.classList.add('focus')
         if (!this.elem)
         {
@@ -129,10 +135,10 @@ Title = (function ()
 
     Title.prototype["setTitle"] = function (opt)
     {
-        var html, parts, _129_26_
+        var html, parts, _130_26_
 
         html = ""
-        parts = ((_129_26_=opt.title) != null ? _129_26_ : [])
+        parts = ((_130_26_=opt.title) != null ? _130_26_ : [])
         if (opt.pkg)
         {
             if (opt.pkg.name && _k_.in('name',parts))
@@ -197,7 +203,7 @@ Title = (function ()
 
     Title.prototype["initMenu"] = async function ()
     {
-        var tc, _182_36_
+        var tc, _183_36_
 
         if (!this.opt.menu)
         {
@@ -242,7 +248,7 @@ Title = (function ()
             menuOrAccel = obj[text]
             tmpl.push(((function ()
             {
-                var item, _212_33_, _212_57_
+                var item, _213_33_, _213_57_
 
                 if (_k_.empty(menuOrAccel) && text.startsWith('-'))
                 {
@@ -288,15 +294,15 @@ Title = (function ()
 
     Title.prototype["showMenu"] = function ()
     {
-        var _227_68_, _227_75_
+        var _228_68_, _228_75_
 
         this.menu.elem.style.display = 'inline-block'
-        return ((_227_68_=this.menu) != null ? typeof (_227_75_=_227_68_.focus) === "function" ? _227_75_() : undefined : undefined)
+        return ((_228_68_=this.menu) != null ? typeof (_228_75_=_228_68_.focus) === "function" ? _228_75_() : undefined : undefined)
     }
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _228_25_
+        var _229_25_
 
         ;(this.menu != null ? this.menu.close() : undefined)
         return this.menu.elem.style.display = 'none'
@@ -329,7 +335,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _263_37_
+        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _264_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -349,9 +355,9 @@ Title = (function ()
         accels = sds.find.key(menu,'accel')
         combos = sds.find.key(menu,'combo')
         var list = _k_.list(combos.concat(accels))
-        for (var _257_20_ = 0; _257_20_ < list.length; _257_20_++)
+        for (var _258_20_ = 0; _258_20_ < list.length; _258_20_++)
         {
-            keypath = list[_257_20_]
+            keypath = list[_258_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -361,7 +367,7 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_263_37_=item.action) != null ? _263_37_ : item.text)
+                action = ((_264_37_=item.action) != null ? _264_37_ : item.text)
                 post.emit('menuAction',action)
                 return action
             }

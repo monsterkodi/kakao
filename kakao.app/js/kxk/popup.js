@@ -4,12 +4,18 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var elem, Popup, stopEvent
 
-import os from './os.js'
-import dom from './dom.js'
-import post from './post.js'
-import slash from './slash.js'
-import keyinfo from './keyinfo.js'
-import popup from './popup.js'
+import os from "./os.js"
+
+import dom from "./dom.js"
+
+import post from "./post.js"
+
+import slash from "./slash.js"
+
+import keyinfo from "./keyinfo.js"
+
+import popup from "./popup.js"
+
 elem = dom.elem
 stopEvent = dom.stopEvent
 

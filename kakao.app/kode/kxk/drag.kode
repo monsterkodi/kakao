@@ -6,8 +6,8 @@
     0000000    000   000  000   000   0000000 
 ###
 
-import kpos from './pos.js'
-import dom  from './dom.js'
+use ./kpos
+use ./dom
 
 { $, stopEvent } = dom
 

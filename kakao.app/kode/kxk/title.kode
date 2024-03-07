@@ -11,13 +11,14 @@
         - minimize, maximize and close buttons        
 ###
 
-import dom      from './dom.js'
-import sds      from './sds.js'
-import menu     from './menu.js'   
+use ./dom
+use ./sds
+use ./menu
+use ./keyinfo
+use ./slash
+use ./post
+
 import noon     from './noon.js'  
-import keyinfo  from './keyinfo.js'  
-import slash    from './slash.js'  
-import post     from './post.js'
                                 
 { $, stopEvent, elem } = dom
 
