@@ -17,12 +17,8 @@ OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
-use fs
-use process
 use child_process
 use ../kxk/slash
-
-childp = child_process
 
 export ○->
     
@@ -38,7 +34,7 @@ export ○->
     
     new Promise (resolve, reject) ->
     
-        childp.exec cmd, opt, (err, stdout, stderr) -> 
+        child_process.exec cmd, opt, (err, stdout, stderr) -> 
         
             if err 
                 error 'ERROR' err

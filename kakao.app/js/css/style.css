@@ -151,6 +151,7 @@ body {
   font-family: titlebarFont;
   padding-top: 3px;
   padding-bottom: 6px;
+  cursor: pointer;
 }
 .popup.titlemenu {
   border-top-left-radius: 0;
@@ -160,7 +161,6 @@ body {
   padding: 4px;
   padding-left: 12px;
   padding-right: 82px;
-  cursor: pointer;
 }
 .popupItem.separator {
   padding: 0;

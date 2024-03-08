@@ -2,22 +2,17 @@
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var childp, CMD, FLG, LIB, OUT, SRC
+var CMD, FLG, LIB, OUT, SRC
 
 CMD = "zig c++"
 SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm watch.mm"
 OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
-import fs from "fs"
-
-import process from "process"
-
 import child_process from "child_process"
 
 import slash from "../kxk/slash.js"
 
-childp = child_process
 export default async function ()
 {
     var cmd, cwd, opt
@@ -27,7 +22,7 @@ export default async function ()
     opt = {shell:true,cwd:cwd}
     return new Promise(function (resolve, reject)
     {
-        return childp.exec(cmd,opt,function (err, stdout, stderr)
+        return child_process.exec(cmd,opt,function (err, stdout, stderr)
         {
             if (err)
             {
