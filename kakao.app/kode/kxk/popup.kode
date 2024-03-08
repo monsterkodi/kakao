@@ -43,8 +43,9 @@ function Popup
                         for child in item.children
                             div.appendChild child
                 div.item = item
-                # div.addEventListener 'click' @onClick
-                div.addEventListener 'mouseup' @onClick
+
+                div.addEventListener 'mouseup' @onItemMouseUp
+                
                 if item.combo ? item.accel
                     text = keyinfo.short os.isMac ? (item.combo ? item.accel) : (item.accel ? item.combo)
                     div.appendChild elem 'span' class:'popupCombo' text:text
@@ -53,6 +54,8 @@ function Popup
             @items.appendChild div
 
         document.body.appendChild @items
+        
+        @items.addEventListener 'mouseup'     @onPopupMouseUp
         @items.addEventListener 'contextmenu' @onContextMenu
         @items.addEventListener 'keydown'     @onKeyDown
         @items.addEventListener 'focusout'    @onFocusOut
@@ -91,10 +94,12 @@ function Popup
         @popup?.close focus:false
         delete @popup
         
+        @items?.removeEventListener 'mouseUp'   @onPopupMouseUp
         @items?.removeEventListener 'keydown'   @onKeyDown
         @items?.removeEventListener 'focusout'  @onFocusOut
         @items?.removeEventListener 'mouseover' @onHover
         @items?.remove()
+        
         delete @items
         
         @parent?.childClosed @, opt
@@ -244,11 +249,19 @@ function Popup
         if item
             @select item, selectFirstItem:false   
 
-    onClick: (event) => 
+    onPopupMouseUp: (event) => 
+        
+        stopEvent event
+        
+        if @selected
+            @activate @selected
+        
+    onItemMouseUp: (event) => 
 
         stopEvent event 
         
         item = elem.upElem event.target, prop:'item'
+        
         if item
             if item.item.menu
                 @toggle item

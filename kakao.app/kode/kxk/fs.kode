@@ -208,7 +208,7 @@ class FS
                 fs.writeFileSync p, ''
             return p
         catch err
-            FS.error "fs.touch -- " + String(err) 
+            FS.error "fs.touch -- " + String(err)
             false
                 
     # 000   0000000                 

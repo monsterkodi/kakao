@@ -13,13 +13,10 @@ use ../kxk/karg
 use ../kxk/slash
 use ./knrd
 use ./build
-use process
+
 use child_process
-use path
 
 import fs from 'fs/promises'
-
-childp = child_process
 
 args = karg """
     kk
@@ -99,7 +96,7 @@ class kk
         cmd = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
         opt = shell:true detached:true
         
-        childp.spawn cmd, [], opt
+        child_process.spawn cmd, [], opt
                 
     # 000  000   000  00000000   0000000   
     # 000  0000  000  000       000   000  
@@ -124,7 +121,7 @@ class kk
         
         new Promise (resolve, reject) ->
         
-            childp.exec cmd, opt, (err, stdout, stderr) -> 
+            child_process.exec cmd, opt, (err, stdout, stderr) -> 
             
                 if err 
                     error 'ERROR' err
