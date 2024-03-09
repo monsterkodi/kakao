@@ -18,7 +18,10 @@ import { pug, stylus } from '../../lib/min.mjs'
 __dirname = import.meta.dirname
 
 knrd = (files = [], opt = {}) ○->
-            
+       
+    if files is str
+        files = [files]
+    
     opt.rerunWhenDirty ?= true
     opt.logVerbose ?= false
     

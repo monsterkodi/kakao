@@ -21,7 +21,9 @@ class Tester
 {
     constructor ()
     {
+        this.test = this.test.bind(this)
         this.compare = this.compare.bind(this)
+        this.section = this.section.bind(this)
     }
 
     section (t, f)
@@ -31,7 +33,10 @@ class Tester
         stack.push(t)
         comps = 0
         depth = stack.length
-        console.log(_k_.W1(_k_.lpad(depth * 3 - 1) + ' ' + global[`g${_k_.max(1,8 - 2 * depth)}`](_k_.rpad(34 - depth * 3,t) + ' ')))
+        if (this.logSections !== false)
+        {
+            console.log(_k_.W1(_k_.lpad(depth * 3 - 1) + ' ' + global[`g${_k_.max(1,8 - 2 * depth)}`](_k_.rpad(34 - depth * 3,t) + ' ')))
+        }
         f()
         return stack.pop()
     }
@@ -135,6 +140,8 @@ class Tester
 
     test (testModule)
     {
+        var logModules
+
         comps = 0
         succs = 0
         fails = []
@@ -145,6 +152,7 @@ class Tester
         {
             return
         }
+        logModules = this.logModules
         ;        (function (o) {
             var r = _k_.each_r(o)
             for (var k in o)
@@ -154,7 +162,10 @@ class Tester
                 if (v._section_)
                 {
                     stack.push(k)
-                    console.log(_k_.G1(_k_.y8(' ' + _k_.rpad(33,k) + ' ')))
+                    if (logModules !== false)
+                    {
+                        console.log(_k_.G1(_k_.y8(' ' + _k_.rpad(33,k) + ' ')))
+                    }
                     v()
                     return stack.pop()
                 }
@@ -188,9 +199,9 @@ class Tester
         var fail, summary
 
         var list = _k_.list(allfails)
-        for (var _158_17_ = 0; _158_17_ < list.length; _158_17_++)
+        for (var _162_17_ = 0; _162_17_ < list.length; _162_17_++)
         {
-            fail = list[_158_17_]
+            fail = list[_162_17_]
             console.log(_k_.R2(_k_.y5(' ' + fail.stack[0] + ' ')) + _k_.R1(_k_.y5(' ' + fail.stack.slice(1).join(_k_.r3(' ▸ ')) + ' ')))
             console.log(_k_.r5(this.showSpace(fail.lhs)))
             console.log(_k_.R1(_k_.r3(' ▸ ')))
@@ -232,7 +243,7 @@ class Tester
         split = ('' + s).split('\n')
         l = 0
         split = (function (o) {
-            var r_189_22_ = _k_.each_r(o)
+            var r_195_22_ = _k_.each_r(o)
             for (var k in o)
             {   
                 var m = (function (v)
@@ -244,10 +255,10 @@ class Tester
             })(o[k])
                 if (m != null)
                 {
-                    r_189_22_[k] = m
+                    r_195_22_[k] = m
                 }
             }
-            return typeof o == 'string' ? r_189_22_.join('') : r_189_22_
+            return typeof o == 'string' ? r_195_22_.join('') : r_195_22_
         })(split)
         split = split.filter(function (s)
         {

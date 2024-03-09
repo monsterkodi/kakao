@@ -127,9 +127,13 @@ class kk
                 watcher.on 'change' (info) -> 
                     cb info.path
     
-        start (sourceFile) ->
+        start (sourceFile) ○->
             
-            log 'changed' sourceFile
+            log b5('🔧'), w3 sourceFile
+            
+            if slash.ext(sourceFile) in ['kode' 'pug' 'styl']
+                await knrd sourceFile
+                await kk.test 'silent'
     
     # 000000000  00000000   0000000  000000000  
     #    000     000       000          000     
@@ -137,9 +141,10 @@ class kk
     #    000     000            000     000     
     #    000     00000000  0000000      000     
     
-    @test: ○->
+    @test: (mode) ○->
                 
         cmd = "node js/test/test.js"
+        cmd += ' ' + mode if mode
         opt = shell:true cwd:kk.appPath() # run tests inside the .app folder
         
         log w4 '○● test'

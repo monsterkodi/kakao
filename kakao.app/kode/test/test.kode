@@ -12,6 +12,13 @@ use ../kxk/fs
 use ../kxk/slash
 use ../kode/tester
 
+if process.argv[-1] == 'brief'
+    tester.logSections = false
+
+if process.argv[-1] == 'silent'
+    tester.logSections = false
+    tester.logModules = false
+
 tester.test test_slash
 tester.test test_fs
 
