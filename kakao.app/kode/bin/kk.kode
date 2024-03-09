@@ -11,6 +11,7 @@
 use ../kxk/os
 use ../kxk/karg
 use ../kxk/slash
+use ../kxk/watch
 use ./knrd
 use ./build
 
@@ -25,6 +26,7 @@ args = karg """
         knrd       transpile kode, styl, pug     = false
         build      build application executable  = false
         rebuild    rebuild all targets           = false -R
+        watch      watch for file changes        = false
         test       run tests                     = false
         run        run application executable    = false
         clean      remove transpilated files     = false 
@@ -48,7 +50,7 @@ class kk
         while not os.loaded # todo: move this check somewhere else!
             await sleep 150
             
-        if not (args.info or args.test or args.knrd or args.build or args.run or args.clean or args.rebuild)
+        if not (args.info or args.test or args.knrd or args.build or args.run or args.clean or args.rebuild or args.watch)
             # no command given? assume all of them for now :)
             args.info  = true
             args.knrd  = true
@@ -63,6 +65,7 @@ class kk
         if args.run     ➜ await kk.spawn()
         if args.clean   ➜ await kk.clean()
         if args.rebuild ➜ await kk.rebuild()                            
+        if args.watch   ➜ await kk.watch()                            
             
         if valid args.options
             log 'leftover options' args.options
@@ -108,6 +111,26 @@ class kk
         
         log w4 '○● info' #kk.appPath()
         
+    # 000   000   0000000   000000000   0000000  000   000  
+    # 000 0 000  000   000     000     000       000   000  
+    # 000000000  000000000     000     000       000000000  
+    # 000   000  000   000     000     000       000   000  
+    # 00     00  000   000     000      0000000  000   000  
+    
+    @watch: ○->
+        
+        log w4('○● watch'), w5 kk.appPath()
+        
+        start = (cb) ->
+    
+            watch.watch kk.appPath(), recursive:true, cb: (watcher) ->
+                watcher.on 'change' (info) -> 
+                    cb info.path
+    
+        start (sourceFile) ->
+            
+            log 'changed' sourceFile
+    
     # 000000000  00000000   0000000  000000000  
     #    000     000       000          000     
     #    000     0000000   0000000      000     

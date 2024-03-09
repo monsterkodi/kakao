@@ -22,6 +22,10 @@ class FS
             dirent = list[_28_19_]
             file = dirent.name
             isDir = !dirent.isFile()
+            if (isDir && _k_.in(file,['node_modules','.git']))
+            {
+                continue
+            }
             absPath = slash.path(dir,file)
             found.push({type:(isDir ? 'dir' : 'file'),file:file,path:absPath})
             if (isDir)
@@ -348,6 +352,8 @@ class FS
         }
         return ''
     }
+
+    static watch = fs.watch
 }
 
 export default FS;

@@ -1,7 +1,5 @@
 #!/usr/bin/env node --experimental-detect-module
-///usr/bin/env node --experimental-detect-module
 ///usr/bin/env bun
-///usr/bin/env ./bin/llrt
 
 import kk from './js/bin/kk.js'
 kk()
