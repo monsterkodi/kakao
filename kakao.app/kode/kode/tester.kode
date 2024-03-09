@@ -29,12 +29,13 @@ class Tester
     #      000  000       000          000     000  000   000  000  0000  
     # 0000000   00000000   0000000     000     000   0000000   000   000  
     
-    section: (t, f) ->
+    section: (t, f) =>
 
         stack.push t
         comps = 0
         depth = stack.length
-        log W1 lpad(depth*3-1) + ' ' + global["g#{max 1, 8-2*depth}"] rpad(34-depth*3 t) + ' '
+        if @logSections != false
+            log W1 lpad(depth*3-1) + ' ' + global["g#{max 1, 8-2*depth}"] rpad(34-depth*3 t) + ' '
         f()
         stack.pop()
         
@@ -114,7 +115,7 @@ class Tester
     #    000     000            000     000     
     #    000     00000000  0000000      000     
     
-    test: (testModule) ->
+    test: (testModule) =>
         
         # return if not /\n\s*▸\s\w+/gm.test text
         
@@ -127,12 +128,15 @@ class Tester
         global.section = @section
         
         return if testModule?._test_ != true
+        
+        logModules = @logModules
             
         testModule each (k,v) ->
 
             if v._section_
                 stack.push k
-                log G1 y8 ' ' + rpad(33 k) + ' '
+                if logModules != false
+                    log G1 y8 ' ' + rpad(33 k) + ' '
                 v()
                 stack.pop()
                                         
@@ -182,7 +186,9 @@ class Tester
     # 0000000   000   000   0000000   000   000     000     
     
     short: (s) ->
+        
         return s if empty s
+        
         split = (''+s).split '\n'
         
         l = 0

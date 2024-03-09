@@ -14,15 +14,24 @@ import slash from "../kxk/slash.js"
 
 import tester from "../kode/tester.js"
 
+if (process.argv.slice(-1)[0] === 'brief')
+{
+    tester.logSections = false
+}
+if (process.argv.slice(-1)[0] === 'silent')
+{
+    tester.logSections = false
+    tester.logModules = false
+}
 tester.test(test_slash)
 tester.test(test_fs)
 if (1)
 {
     files = await fs.list(slash.path(import.meta.dirname,'../kode/test'))
     var list = _k_.list(files)
-    for (var _20_13_ = 0; _20_13_ < list.length; _20_13_++)
+    for (var _27_13_ = 0; _27_13_ < list.length; _27_13_++)
     {
-        file = list[_20_13_]
+        file = list[_27_13_]
         test = await import(file.path)
         tester.test(test.default)
     }

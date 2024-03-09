@@ -14,6 +14,8 @@ use ./utils
     
     kc  "R1 'Red' + g1 ' green'" ▸  "_k_.R1('Red' + _k_.g1(' green'))"
     
+    return
+    
     for c in 8..1
         s = ''
         for n in 'RGBCMYW'
