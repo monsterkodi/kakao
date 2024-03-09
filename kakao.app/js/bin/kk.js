@@ -73,7 +73,8 @@ class kk
         }
         if (args.test)
         {
-            await kk.test()
+            await kk.test(args.options[0])
+            delete args.options
         }
         if (args.run)
         {

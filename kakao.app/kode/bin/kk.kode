@@ -61,7 +61,7 @@ class kk
         if args.info    ➜ await kk.info()
         if args.knrd    ➜ await knrd args.options; delete args.options
         if args.build   ➜ await kk.build()
-        if args.test    ➜ await kk.test()
+        if args.test    ➜ await kk.test args.options[0]; delete args.options
         if args.run     ➜ await kk.spawn()
         if args.clean   ➜ await kk.clean()
         if args.rebuild ➜ await kk.rebuild()                            

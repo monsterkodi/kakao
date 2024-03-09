@@ -25,11 +25,33 @@ knrd = (files = [], opt = {}) ○->
     opt.rerunWhenDirty ?= true
     opt.logVerbose ?= false
     
-    ● 🔨    
+    ● 🔨
+    
     kodeDir = slash.path __dirname + '/../../kode'
     pugDir  = slash.path __dirname + '/../../pug'
     jsDir   = slash.path __dirname + '/../../js'
-    cssDir  = slash.path __dirname + '/../../js/css'
+    
+    rules =
+        kode: 
+            tgtExt:  'js'
+            srcDir:  kodeDir
+            tgtDir:  jsDir
+            compile: (srcText, srcFile) -> k0de = new kode; k0de.compile srcText, srcFile
+        styl:
+            tgtExt:  'css'
+            srcDir:  pugDir
+            tgtDir:  jsDir + '/css'
+            compile: (srcText, srcFile) -> stylus srcText
+        pug:
+            tgtExt:  'html'
+            srcDir:  pugDir
+            tgtDir:  jsDir
+            compile: (srcText, srcFile) -> pug srcText
+        noon:
+            tgtExt:  'json'
+            srcDir:  kodeDir
+            tgtDir:  jsDir
+            compile: (srcText, srcFile) -> JSON.stringify noon.parse srcText
     
     if empty files
         
@@ -38,110 +60,38 @@ knrd = (files = [], opt = {}) ○->
         list  = list.filter (item) -> item.type == 'file'
         files = list.map (item) -> item.path
         
-    # log 'files, opt' files, opt
     log '🔨 ' files.length
+    
     transpiled = 0
         
     for file in files
         
-        # log file, slash.ext(file), slash.parse(file)  
-        
-        switch slash.ext(file) 
+        if rule = rules[slash.ext file]
             
-            'kode'
-                        
-                kodeFile = file
-                jsFile   = slash.swapExt kodeFile.replace(kodeDir, jsDir), 'js'
-                
-                kodeText = await fs.read kodeFile
-                origText = await fs.read jsFile
-                
-                # ●▸ 🔨
-                k0de = new kode
-                compText = k0de.compile kodeText, file
-                # ●▪ 🔨
-
-                if empty compText
-                    log y5('✘ '), r5(err), r4('transpiles to empty!')
-                else
-                    if origText != compText
-                        transpiled++
-                        log b5('▶ '), g5 slash.tilde kodeFile
-                        await fs.write jsFile, compText
-                        log b5('✔ '), g5 slash.tilde jsFile
-                    else if opt.logVerbose
-                        log g2('✔ '), g3 slash.tilde kodeFile
-                
-            'styl'
+            srcFile = file
+            tgtFile = slash.swapExt srcFile.replace(rule.srcDir, rule.tgtDir), rule.tgtExt
             
-                stylFile = file
-                cssFile  = slash.swapExt stylFile.replace(pugDir, cssDir), 'css'
-                
-                stylText = await fs.read stylFile
-                origText = await fs.read cssFile
-
-                compText = stylus stylText
-                
-                if empty compText
-                    log y5('✘ '), r5(err), r4('transpiles to empty!')
-                else
-                    if origText != compText
-                        transpiled++
-                        log c3('▶ '), c5 slash.tilde stylFile
-                        await fs.write cssFile, compText
-                        log b5('✔ '), g5 slash.tilde cssFile
-                    else if opt.logVerbose
-                        log g2('✔ '), c3 slash.tilde stylFile
-                null
-                    
-            'pug'
+            srcText = await fs.read srcFile
+            tgtText = await fs.read tgtFile
             
-                srcFile = file
-                tgtFile = slash.swapExt srcFile.replace(pugDir, jsDir), 'html'
+            compText = rule.compile srcText, srcFile
                 
-                srcText = await fs.read srcFile
-                tgtText = await fs.read tgtFile
-                
-                compText = pug srcText
-                    
-                if empty compText
-                    log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
-                else
-                    if tgtText != compText
-                        transpiled++
-                        log m3('▶ '), m4 slash.tilde srcFile
-                        await fs.write tgtFile, compText
-                        log b5('✔ '), g5 slash.tilde tgtFile
-                    else if opt.logVerbose
-                        log g2('✔ '), m3 slash.tilde srcFile
-                null
-                
-            'noon'
+            if empty compText
+                log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
+            else
+                if tgtText != compText
+                    transpiled++
+                    log m3('▶ '), m4 slash.tilde srcFile
+                    await fs.write tgtFile, compText
+                    log b5('✔ '), g5 slash.tilde tgtFile
+                else if opt.logVerbose
+                    log g2('✔ '), m3 slash.tilde srcFile
+        else
+            # if slash.ext(file) not in ['css' 'html' 'json']
+            error 'unknown file type' file
             
-                srcFile = file
-                tgtFile = slash.swapExt srcFile.replace(kodeDir, jsDir), 'json'
-                
-                srcText = await fs.read srcFile
-                tgtText = await fs.read tgtFile
-                
-                compText = JSON.stringify noon.parse srcText
-                    
-                if empty compText
-                    log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
-                else
-                    if tgtText != compText
-                        transpiled++
-                        log m3('▶ '), m4 slash.tilde srcFile
-                        await fs.write tgtFile, compText
-                        log b5('✔ '), g5 slash.tilde tgtFile
-                    else if opt.logVerbose
-                        log g2('✔ '), m3 slash.tilde srcFile
-                null
-
-            ➜
-                # if slash.ext(file) not in ['css' 'html' 'json']
-                error 'unknown file type' file
-                
+        null
+            
     if opt.rerunWhenDirty and transpiled
         
         knrd files, rerunWhenDirty:false
