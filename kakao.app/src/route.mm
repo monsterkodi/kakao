@@ -28,7 +28,7 @@
 
     if ([req isEqualToString:@"focusNext"     ]) { return [win focusNext];  }
     if ([req isEqualToString:@"focusPrev"     ]) { return [win focusPrev];  }
-    if ([req isEqualToString:@"new"           ]) { return [NSNumber numberWithLong:[win new:arg0].windowNumber]; }
+    if ([req isEqualToString:@"new"           ]) { return [NSNumber numberWithLong:[win new:arg0 script:arg1].windowNumber]; }
     if ([req isEqualToString:@"snapshot"      ]) { return [win snapshot:arg0]; }
     if ([req isEqualToString:@"close"         ]) { [win performClose:nil]; return nil; }
     if ([req isEqualToString:@"reload"        ]) { [win reload];           return nil; }

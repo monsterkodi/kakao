@@ -67,12 +67,12 @@
 
 @implementation Win
 
-+ (Win*) withURL:(NSURL*)url
++ (Win*) withURL:(NSURL*)url script:(NSString*)script
 {
-    return [[Win alloc] initWithURL:url];
+    return [[Win alloc] initWithURL:url script:script];
 }
 
-- (Win*) new:(NSString*)urlString
+- (Win*) new:(NSString*)urlString script:(NSString*)script
 {
     NSURL* url;
     
@@ -96,7 +96,7 @@
     }
     
     // NSLog(@"Win new < %@", url);
-    return [Win withURL:url];
+    return [Win withURL:url script:script];
 }
 
 // 000  000   000  000  000000000  
@@ -105,7 +105,7 @@
 // 000  000  0000  000     000     
 // 000  000   000  000     000     
 
-- (Win*) initWithURL:(NSURL*)url
+- (Win*) initWithURL:(NSURL*)url script:(NSString*)script
 {
     BOOL nativeTitleBar = NO;
 
@@ -131,6 +131,9 @@
 
     self.view = [[View alloc] init];
     
+    self.view.navigationDelegate = self;
+    self.initScript = script;
+    
     if (!nativeTitleBar)
     {
         [self setOpaque:NO];
@@ -151,10 +154,19 @@
     
     [self setContentView:self.view];
     [self makeKeyAndOrderFront:nil];
-       
+    
     [self navigateToURL:url];
     
 	return self;
+}
+
+-(void) webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation
+{
+    if ([self.initScript length])
+    {
+        NSLog(@"init script: %@", self.initScript);
+        [webView evaluateJavaScript:self.initScript completionHandler:nil];
+    }
 }
 
 // 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  

@@ -12,9 +12,9 @@ dom = kakao.dom
 $ = dom.$
 elem = dom.elem
 
-window.kakao.init(function ()
+kakao.init(function ()
 {
-    var main
+    var main, _28_22_
 
     kakao.send('window.setSize',250,250)
     kakao.send('window.center')
@@ -28,5 +28,8 @@ window.kakao.init(function ()
     }
     main = $('#main')
     main.classList.add('app-drag-region')
-    return elem('div',{class:'about',id:'about',parent:main,children:[elem('img',{class:'image',src:kakao.bundle.img('about.png')}),elem('div',{class:'version',id:'version',text:'0.0.0'})]})
+    console.log('bundlePath',kakao.bundle.path,window.aboutImage)
+    window.aboutImage = ((_28_22_=window.aboutImage) != null ? _28_22_ : kakao.bundle.img('about.png'))
+    console.log('window.aboutImage',window.aboutImage)
+    return elem('div',{class:'about',id:'about',parent:main,children:[elem('img',{class:'image',src:window.aboutImage}),elem('div',{class:'version',id:'version',text:'0.0.0'})]})
 })

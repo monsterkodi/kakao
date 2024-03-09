@@ -59,16 +59,16 @@ class kk
             args.run   = true
         
         if args.info    ➜ await kk.info()
-        if args.knrd    ➜ await knrd args.options; delete args.options
+        if args.knrd    ➜ await knrd args.options
         if args.build   ➜ await kk.build()
-        if args.test    ➜ await kk.test args.options[0]; delete args.options
-        if args.run     ➜ await kk.spawn()
+        if args.test    ➜ await kk.test args.options[0]
+        if args.run     ➜ await kk.spawn args.options
         if args.clean   ➜ await kk.clean()
         if args.rebuild ➜ await kk.rebuild()                            
         if args.watch   ➜ await kk.watch()                            
             
-        if valid args.options
-            log 'leftover options' args.options
+        # if valid args.options
+            # log 'leftover options' args.options
                                                 
     # 0000000    000   000  000  000      0000000    
     # 000   000  000   000  000  000      000   000  
@@ -86,21 +86,7 @@ class kk
         await knrd()
         await kk.build()
         kk.spawn()
-        
-    #  0000000  00000000    0000000   000   000  000   000  
-    # 000       000   000  000   000  000 0 000  0000  000  
-    # 0000000   00000000   000000000  000000000  000 0 000  
-    #      000  000        000   000  000   000  000  0000  
-    # 0000000   000        000   000  00     00  000   000  
-    
-    @spawn: ->
-        
-        log '🚀'
-        cmd = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
-        opt = shell:true detached:true
-        
-        child_process.spawn cmd, [], opt
-                
+                        
     # 000  000   000  00000000   0000000   
     # 000  0000  000  000       000   000  
     # 000  000 0 000  000000    000   000  
@@ -159,18 +145,38 @@ class kk
                 else
                     log stdout if valid stdout
                     resolve()
-
-    @appPath: -> slash.path import.meta.dirname, '../../'
-        
-    @appName: -> slash.name kk.appPath()
                     
+    #  0000000  000      00000000   0000000   000   000  
+    # 000       000      000       000   000  0000  000  
+    # 000       000      0000000   000000000  000 0 000  
+    # 000       000      000       000   000  000  0000  
+    #  0000000  0000000  00000000  000   000  000   000  
+    
     @clean: ○->
         
         jsDir  = slash.path import.meta.dirname, '../../js'
         appExe = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
         await fs.rm jsDir, recursive:true, force:true 
         await fs.unlink appExe
-            
+
+    #  0000000  00000000    0000000   000   000  000   000  
+    # 000       000   000  000   000  000 0 000  0000  000  
+    # 0000000   00000000   000000000  000000000  000 0 000  
+    #      000  000        000   000  000   000  000  0000  
+    # 0000000   000        000   000  00     00  000   000  
+    
+    @spawn: (args=[]) ->
+        
+        log '🚀'
+        cmd = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
+        opt = shell:true detached:true
+        
+        child_process.spawn cmd, args, opt
+                    
+    @appPath: -> slash.path import.meta.dirname, '../../'
+        
+    @appName: -> slash.name kk.appPath()
+                                
 global['kk'] = kk
     
 export kk.run

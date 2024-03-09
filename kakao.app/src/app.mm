@@ -21,7 +21,7 @@
 
 @implementation App
 
-+ (id) new
++ (id) new:(NSString*)indexFile
 {
     //freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
         
@@ -37,7 +37,18 @@
     [nsApp setActivationPolicy:NSApplicationActivationPolicyRegular];
     [nsApp activateIgnoringOtherApps:YES];
     
-    id win = [Win withURL:[Bundle jsURL:@"index.html"]];
+    NSMutableString* indexHTML = [NSMutableString stringWithString:indexFile];
+    if (![indexHTML length])
+    {
+        indexHTML = @"index.html";
+    }
+    if (![indexHTML hasSuffix:@".html"])
+    {
+        [indexHTML appendString:@".html"];
+    }
+    NSLog(@"indexFile: %@", indexFile);
+    id indexURL = [Bundle jsURL:indexHTML];
+    id win = [Win withURL:indexURL script:nil];
         
     return app;
 }
