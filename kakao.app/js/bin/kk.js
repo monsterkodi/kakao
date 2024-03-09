@@ -124,6 +124,7 @@ class kk
 
         cmd = "node js/test/test.js"
         opt = {shell:true,cwd:kk.appPath()}
+        console.log(_k_.w4('○● test'))
         return new Promise(function (resolve, reject)
         {
             return child_process.exec(cmd,opt,function (err, stdout, stderr)

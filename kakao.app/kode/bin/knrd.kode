@@ -137,6 +137,7 @@ knrd = (files = [], opt = {}) ○->
                 null
 
             ➜
+                # if slash.ext(file) not in ['css' 'html' 'json']
                 error 'unknown file type' file
                 
     if opt.rerunWhenDirty and transpiled

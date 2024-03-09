@@ -115,14 +115,16 @@ class kk
     #    000     00000000  0000000      000     
     
     @test: ○->
-        
+                
         cmd = "node js/test/test.js"
-        opt = shell:true cwd:kk.appPath() # build inside the kokoa.app/src folder
+        opt = shell:true cwd:kk.appPath() # run tests inside the .app folder
+        
+        log w4 '○● test'
         
         new Promise (resolve, reject) ->
         
             child_process.exec cmd, opt, (err, stdout, stderr) -> 
-            
+                
                 if err 
                     error 'ERROR' err
                     reject err

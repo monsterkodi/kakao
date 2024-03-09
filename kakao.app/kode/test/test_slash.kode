@@ -11,19 +11,57 @@ __dirname = import.meta.dirname
 
 ▸ kslash
     
+    # 000   000   0000000   00000000   00     00   0000000   000      000  0000000  00000000  
+    # 0000  000  000   000  000   000  000   000  000   000  000      000     000   000       
+    # 000 0 000  000   000  0000000    000000000  000000000  000      000    000    0000000   
+    # 000  0000  000   000  000   000  000 0 000  000   000  000      000   000     000       
+    # 000   000   0000000   000   000  000   000  000   000  0000000  000  0000000  00000000  
+    
+    ▸ normalize
+    
+        slash.normalize 'xyz'               ▸ 'xyz'
+        slash.normalize 'x/y/z'             ▸ 'x/y/z'
+        slash.normalize 'x\\y/z\\'          ▸ 'x/y/z/'
+        slash.normalize '\\x\\y/z'          ▸ '/x/y/z'
+        slash.normalize '..\\x\\y/z'        ▸ '../x/y/z'
+        slash.normalize './x\\y/z'          ▸ './x/y/z'
+        
+        slash.normalize 'x/./z'             ▸ 'x/z'
+        slash.normalize 'x/../z'            ▸ 'z'
+        slash.normalize './x/y/z/../../a'   ▸ './x/a'
+        
+        slash.normalize '../up'             ▸ '../up'
+        slash.normalize '//'                ▸ '/'
+        slash.normalize '//././////././'    ▸ '/'
+        slash.normalize './x/../../z'       ▸ '../z'
+        slash.normalize './x/../../../y'    ▸ '../../y'
+    
     # 00000000    0000000   000000000  000   000  
     # 000   000  000   000     000     000   000  
     # 00000000   000000000     000     000000000  
     # 000        000   000     000     000   000  
     # 000        000   000     000     000   000  
-    
+
     ▸ path
+    
+        slash.path ''                       ▸ ''
+        slash.path null                     ▸ ''
+        slash.path undefined                ▸ ''
+        slash.path 'a' 'b' 'c'              ▸ 'a/b/c'
         
-        slash.path 'a' 'b' 'c'  ▸ 'a/b/c'
+        slash.path '' '' 'void' '' ''       ▸ 'void'
+        slash.path '' '' 'oops' '' 'alla'   ▸ 'oops/alla'
+        
         slash.path 'C:\\FOO' '.\\BAR' 'that\\sucks'  ▸ 'C:/FOO/BAR/that/sucks'
         
         slash.path '~'                      ▸ slash.home()
         slash.path '/'                      ▸ '/'
+        slash.path './'                     ▸ './'
+        slash.path '../'                    ▸ '../'
+        slash.path '.././'                  ▸ '../'
+        slash.path './relative'             ▸ './relative'
+        slash.path '../parent'              ▸ '../parent'
+        slash.path '.././././'              ▸ '../'
         slash.path '//'                     ▸ '/'
         slash.path 'C:/'                    ▸ 'C:/'
         slash.path 'C://'                   ▸ 'C:/'
@@ -37,7 +75,7 @@ __dirname = import.meta.dirname
         slash.path "C:"                     ▸ "C:/"
         slash.path "C:\\Back\\Slash\\Crap"  ▸ "C:/Back/Slash/Crap"
         slash.path "C:\\Back\\Slash\\Crap\\..\\..\\To\\The\\..\\Future" ▸ "C:/Back/To/Future"
- 
+         
     # 00000000   00000000  00     00   0000000   000   000  00000000  0000000    00000000   000  000   000  00000000  
     # 000   000  000       000   000  000   000  000   000  000       000   000  000   000  000  000   000  000       
     # 0000000    0000000   000000000  000   000   000 000   0000000   000   000  0000000    000   000 000   0000000   
@@ -94,7 +132,7 @@ __dirname = import.meta.dirname
     # 0000000    000  000   000  
     
     ▸ dir
-        
+    
         slash.dir '/some/path/file.txt' ▸ '/some/path'
         slash.dir '/some/dir/'          ▸ '/some'
         slash.dir '/some/dir'           ▸ '/some'
@@ -102,6 +140,8 @@ __dirname = import.meta.dirname
         slash.dir 'some/dir'            ▸ 'some'
         slash.dir '/some/'              ▸ '/'
         slash.dir '/some'               ▸ '/'
+        slash.dir './rel'               ▸ '.'
+        slash.dir './rel/ative'         ▸ './rel'
         slash.dir '../..'               ▸ '..'
         slash.dir '.'                   ▸ ''
         slash.dir '..'                  ▸ ''
@@ -171,8 +211,70 @@ __dirname = import.meta.dirname
     # 00000000  000   000     000     
     
     ▸ ext
+    
+        slash.ext './none'            ▸ ''
+        slash.ext './some.ext'        ▸ 'ext'
+        slash.ext './some.more.ext'   ▸ 'ext'
         
-        slash.ext '/some/path.txt'        ▸ 'txt'
+    # 00000000   00000000  00     00   0000000   000   000  00000000  00000000  000   000  000000000  
+    # 000   000  000       000   000  000   000  000   000  000       000        000 000      000     
+    # 0000000    0000000   000000000  000   000   000 000   0000000   0000000     00000       000     
+    # 000   000  000       000 0 000  000   000     000     000       000        000 000      000     
+    # 000   000  00000000  000   000   0000000       0      00000000  00000000  000   000     000     
+    
+    ▸ removeExt
+    
+        slash.removeExt './none'            ▸ './none'
+        slash.removeExt './some.ext'        ▸ './some'
+        slash.removeExt './some.more.ext'   ▸ './some.more'
+        
+        slash.removeExt '../none'           ▸ '../none'
+        slash.removeExt '../some.ext'       ▸ '../some'
+        slash.removeExt '../some.more.ext'  ▸ '../some.more'
+        
+        slash.removeExt 'none'              ▸ 'none'
+        slash.removeExt 'some.ext'          ▸ 'some'
+        slash.removeExt 'some.more.ext'     ▸ 'some.more'
+
+    #  0000000  00000000   000      000  000000000  00000000  000   000  000000000  
+    # 000       000   000  000      000     000     000        000 000      000     
+    # 0000000   00000000   000      000     000     0000000     00000       000     
+    #      000  000        000      000     000     000        000 000      000     
+    # 0000000   000        0000000  000     000     00000000  000   000     000     
+    
+    ▸ splitExt
+    
+        slash.splitExt './none'             ▸ ['./none' '']
+        slash.splitExt './some.ext'         ▸ ['./some' 'ext']
+        slash.splitExt './some.more.ext'    ▸ ['./some.more' 'ext']
+
+        slash.splitExt '/none'              ▸ ['/none' '']
+        slash.splitExt '/some.ext'          ▸ ['/some' 'ext']
+        slash.splitExt '/some.more.ext'     ▸ ['/some.more' 'ext']
+        
+        slash.splitExt 'none'               ▸ ['none' '']
+        slash.splitExt 'some.ext'           ▸ ['some' 'ext']
+        slash.splitExt 'some.more.ext'      ▸ ['some.more' 'ext']
+        
+    #  0000000  000   000   0000000   00000000   00000000  000   000  000000000  
+    # 000       000 0 000  000   000  000   000  000        000 000      000     
+    # 0000000   000000000  000000000  00000000   0000000     00000       000     
+    #      000  000   000  000   000  000        000        000 000      000     
+    # 0000000   00     00  000   000  000        00000000  000   000     000     
+    
+    ▸ swapExt
+    
+        slash.swapExt './some' 'new'            ▸ './some.new'
+        slash.swapExt './some.ext' 'new'        ▸ './some.new'
+        slash.swapExt './some.more.ext' 'new'   ▸ './some.more.new'
+        
+        slash.swapExt '/some' 'new'             ▸ '/some.new'
+        slash.swapExt '/some.ext' 'new'         ▸ '/some.new'
+        slash.swapExt '/some.more.ext' 'new'    ▸ '/some.more.new'
+        
+        slash.swapExt 'some' 'new'              ▸ 'some.new'
+        slash.swapExt 'some.ext' 'new'          ▸ 'some.new'
+        slash.swapExt 'some.more.ext' 'new'     ▸ 'some.more.new'
        
     # 000   000   0000000   00     00  00000000  
     # 000   000  000   000  000   000  000       
@@ -223,7 +325,7 @@ __dirname = import.meta.dirname
     # 000   000  00000000  0000000  000   000     000     000      0      00000000  
     
     ▸ relative
-        
+    
         slash.relative '\\test\\some\\path.txt' '\\test\\some\\other\\path' ▸ '../../path.txt'
         slash.relative '/Users/kodi/s/konrad/app/js/coffee.js' '/Users/kodi/s/konrad' ▸ 'app/js/coffee.js'
         slash.relative '/some/path/on.c' '/path/on.d' ▸ '../../some/path/on.c'
