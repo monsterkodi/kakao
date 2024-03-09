@@ -43,7 +43,7 @@ knrd = async function (files = [], opt = {})
         return pug(srcText)
     }},noon:{tgtExt:'json',srcDir:kodeDir,tgtDir:jsDir,compile:function (srcText, srcFile)
     {
-        return JSON.stringify(noon.parse(srcText))
+        return JSON.stringify(noon.parse(srcText),null,4)
     }}}
     if (_k_.empty(files))
     {

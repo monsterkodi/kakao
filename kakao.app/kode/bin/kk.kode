@@ -131,7 +131,7 @@ class kk
             
             log b5('🔧'), w3 sourceFile
             
-            if slash.ext(sourceFile) in ['kode' 'pug' 'styl']
+            if slash.ext(sourceFile) in ['kode' 'pug' 'styl' 'noon']
                 await knrd sourceFile
                 await kk.test 'silent'
     
