@@ -15,7 +15,7 @@
 @property (readwrite,assign) NSString* snapshotFolder;
 @property (readwrite,assign) NSString* snapshotFile;
 
-+ (id)   new;
++ (id)   new:(NSString*)indexFile;
 + (App*) get;
 - (void) run; 
 - (void) setIcon:(NSString*) pngFilePath;

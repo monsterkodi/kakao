@@ -5,7 +5,7 @@ scripts
               clean     rm -rf bin.mjs min.mjs node_modules
               bundle    bun build index.js --target=node --outfile=bin.mjs
               minify    uglifyjs bin.mjs -o min.mjs
-              modules   pnpm install && echo "module.exports = require('./lib/stylus')" > "./node_modules/stylus/index.js" 
+              modules   pnpm install && echo "module.exports = require('./lib/stylus')" > "./node_modules/stylus/index.js"
               make      pnpm run clean && pnpm run modules && pnpm run bundle && pnpm run minify
 dependencies
               pug         ^3.0.2

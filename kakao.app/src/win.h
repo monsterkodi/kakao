@@ -9,13 +9,14 @@
 #import <Cocoa/Cocoa.h>
 #import "view.h"
 
-@interface Win : NSWindow
+@interface Win : NSWindow <WKNavigationDelegate>
 
-@property (assign) View*  view;
+@property (assign) View*     view;
+@property (retain) NSString* initScript;
 
-+ (Win*) withURL:(NSURL*)url;
-- (Win*) initWithURL:(NSURL*)url;
-- (Win*) new:(NSString*)urlString;
++ (Win*) withURL:(NSURL*)url script:(NSString*)script;
+- (Win*) initWithURL:(NSURL*)url script:(NSString*)script;
+- (Win*) new:(NSString*)urlString script:(NSString*)script;
 - (Win*) focusNext;
 - (Win*) focusPrev;
 - (void) reload;

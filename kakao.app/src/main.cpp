@@ -10,18 +10,12 @@
 id  operator"" _cls(const char *s, std::size_t) { return (id)objc_getClass(s); }
 SEL operator"" _sel(const char *s, std::size_t) { return sel_registerName(s); }
 
-using namespace std;
-
 int main(int argc, char ** argv)
 {
-    for (int i = 1; i < argc; i++) 
-    {
-        cout << i-1 << ": " << argv[i] << endl;
-    }
+    // [[App new:html] run]
     
-    // [[App new] run]
-    
-    id app = ((id(*)(id, SEL))objc_msgSend)("App"_cls, "new"_sel);
+    id index = ((id(*)(id, SEL, const char *))objc_msgSend)("NSString"_cls, "stringWithUTF8String:"_sel, argv[1] ? argv[1] : "index.html");
+    id app = ((id(*)(id, SEL, id))objc_msgSend)("App"_cls, "new:"_sel, index);
     ((void(*)(id, SEL))objc_msgSend)(app, "run"_sel);
 
     return 0;

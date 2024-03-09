@@ -38,7 +38,13 @@ function Win
         post.on 'window.blur'  @onWindowBlur
         post.on 'window.focus' @onWindowFocus
         
-        window.titlebar = new title icon:kakao.bundle.img('menu.png'), menu:kakao.bundle.res('menu.noon')
+        menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu.png'
+        menuNoon = @delegate.menuNoon ? kakao.bundle.res 'menu.noon'
+        
+        log 'menuIcon' menuIcon
+        log 'menuNoon' menuNoon
+        
+        window.titlebar = new title icon:menuIcon, menu:menuNoon
         
         window.addEventListener 'keydown' @onKeyDown
         window.addEventListener 'keyup'   @onKeyUp
@@ -95,7 +101,12 @@ function Win
             'close'          ➜ kakao.send 'window.close'
             'reload'         ➜ kakao.send 'window.reload'
             'quit'           ➜ kakao.send 'app.quit'
-            'about'          ➜ kakao.send 'window.new' 'about.html'
+            'open ...'       ➜ kakao.send 'window.new' 'ko.html'
+            'about'          
+                if window.aboutImage
+                    kakao.send 'window.new' 'about.html' "window.aboutImage = \"#{window.aboutImage}\";"
+                else
+                    kakao.send 'window.new' 'about.html'
         0
         
     # 000   000  00000000  000   000
