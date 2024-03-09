@@ -51,7 +51,7 @@ knrd = (files = [], opt = {}) ○->
             tgtExt:  'json'
             srcDir:  kodeDir
             tgtDir:  jsDir
-            compile: (srcText, srcFile) -> JSON.stringify noon.parse srcText
+            compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, 4
     
     if empty files
         

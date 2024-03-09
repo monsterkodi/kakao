@@ -1,5 +1,6 @@
 name          bin
 main          index.js
+info          bundles pug and stylus in a single minified file: min.mjs
 scripts
               clean     rm -rf bin.mjs min.mjs node_modules
               bundle    bun build index.js --target=node --outfile=bin.mjs
