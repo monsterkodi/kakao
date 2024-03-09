@@ -17,8 +17,8 @@ use ./menu
 use ./keyinfo
 use ./slash
 use ./post
-
-import noon     from './noon.js'  
+use ./noon
+# import noon     from './noon.js'  
                                 
 { $, stopEvent, elem } = dom
 

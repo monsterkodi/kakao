@@ -2,116 +2,11 @@
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var CHAR_BACKWARD_SLASH, CHAR_DOT, CHAR_FORWARD_SLASH, isPathSeparator, isPosixPathSeparator, normStr, sep
+var sep
 
 import os from "./os.js"
 
 sep = '/'
-CHAR_FORWARD_SLASH = '/'.charCodeAt(0)
-CHAR_BACKWARD_SLASH = '\\'.charCodeAt(0)
-CHAR_DOT = '.'.charCodeAt(0)
-
-isPosixPathSeparator = function (c)
-{
-    return c === CHAR_FORWARD_SLASH
-}
-
-isPathSeparator = function (c)
-{
-    return c === CHAR_FORWARD_SLASH || c === CHAR_BACKWARD_SLASH
-}
-
-normStr = function (path, isAbsolute, separator, isPathSeparator)
-{
-    var code, dots, i, lastSegmentLength, lastSlash, lastSlashIndex, res
-
-    res = ''
-    lastSegmentLength = 0
-    lastSlash = -1
-    dots = 0
-    code = 0
-    for (var _34_13_ = i = 0, _34_16_ = path.length; (_34_13_ <= _34_16_ ? i <= path.length : i >= path.length); (_34_13_ <= _34_16_ ? ++i : --i))
-    {
-        if (i < path.length)
-        {
-            code = path.charCodeAt(i)
-        }
-        else if (isPathSeparator(code))
-        {
-            break
-        }
-        else
-        {
-            code = CHAR_FORWARD_SLASH
-        }
-        if (isPathSeparator(code))
-        {
-            if (lastSlash === i - 1 || dots === 1)
-            {
-                true
-            }
-            else if (dots === 2)
-            {
-                if ((res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== CHAR_DOT || res.charCodeAt(res.length - 2) !== CHAR_DOT))
-                {
-                    if (res.length > 2)
-                    {
-                        lastSlashIndex = res.lastIndexOf(separator)
-                        if (lastSlashIndex === -1)
-                        {
-                            res = ''
-                            lastSegmentLength = 0
-                        }
-                        else
-                        {
-                            res = res.slice(0,lastSlashIndex)
-                            lastSegmentLength = res.length - 1 - res.lastIndexOf(separator)
-                        }
-                        lastSlash = i
-                        dots = 0
-                        continue
-                    }
-                    else if (res.length !== 0)
-                    {
-                        res = ''
-                        lastSegmentLength = 0
-                        lastSlash = i
-                        dots = 0
-                        continue
-                    }
-                }
-                if (!isAbsolute)
-                {
-                    res += (res.length > 0 ? `${separator}..` : '..')
-                    lastSegmentLength = 2
-                }
-            }
-            else
-            {
-                if (res.length > 0)
-                {
-                    res += `${separator}${path.slice(lastSlash + 1,i)}`
-                }
-                else
-                {
-                    res = path.slice(lastSlash + 1,i)
-                }
-                lastSegmentLength = i - lastSlash - 1
-            }
-            lastSlash = i
-            dots = 0
-        }
-        else if (code === CHAR_DOT && dots !== -1)
-        {
-            dots++
-        }
-        else
-        {
-            dots = -1
-        }
-    }
-    return res
-}
 class Slash
 {
     static sep = '/'
@@ -120,13 +15,20 @@ class Slash
 
     static path (p)
     {
-        if (!p)
-        {
-            return p
-        }
+        var arr
+
         if (arguments.length > 1)
         {
-            p = Array.from(arguments).join('/')
+            arr = Array.from(arguments)
+            arr = arr.filter(function (c)
+            {
+                return !_k_.empty(c)
+            })
+            p = arr.join('/')
+        }
+        if (_k_.empty(p))
+        {
+            return ''
         }
         p = Slash.normalize(p)
         p = Slash.untilde(p)
@@ -144,6 +46,52 @@ class Slash
             p = p + '/'
         }
         return p
+    }
+
+    static normalize (path)
+    {
+        var c, comp, i, prun
+
+        if (!(_k_.isStr(path)))
+        {
+            return ''
+        }
+        if (_k_.empty(path))
+        {
+            return ''
+        }
+        path = path.replaceAll('\\','/')
+        comp = path.split('/')
+        prun = []
+        for (i in comp)
+        {
+            c = comp[i]
+            if (!_k_.empty(prun) && c === '.')
+            {
+                continue
+            }
+            if (_k_.empty(c) && (0 < i && i < comp.length - 1))
+            {
+                continue
+            }
+            if (c === '..')
+            {
+                if (!_k_.empty(prun))
+                {
+                    if (prun.slice(-1)[0] === '.')
+                    {
+                        prun.pop()
+                    }
+                    else if (prun.slice(-1)[0] !== '..')
+                    {
+                        prun.pop()
+                        continue
+                    }
+                }
+            }
+            prun.push(c)
+        }
+        return prun.join('/')
     }
 
     static unslash (p)
@@ -214,36 +162,6 @@ class Slash
         return rel
     }
 
-    static normalize (path)
-    {
-        var isAbsolute, trailingSeparator
-
-        if (!(_k_.isStr(path)))
-        {
-            return path
-        }
-        if (path.length === 0)
-        {
-            return ''
-        }
-        isAbsolute = isPathSeparator(path.charCodeAt(0))
-        trailingSeparator = isPathSeparator(path.charCodeAt(path.length - 1))
-        path = normStr(path,isAbsolute,'/',isPathSeparator)
-        if (path.length === 0)
-        {
-            if (isAbsolute)
-            {
-                return '/'
-            }
-            return (trailingSeparator ? './' : '.')
-        }
-        if (trailingSeparator)
-        {
-            path += '/'
-        }
-        return (isAbsolute ? `/${path}` : path)
-    }
-
     static split (p)
     {
         return Slash.path(p).split('/').filter(function (e)
@@ -289,7 +207,7 @@ class Slash
     {
         var c, clmn, d, f, l, line, split
 
-        var _237_14_ = Slash.splitDrive(p); f = _237_14_[0]; d = _237_14_[1]
+        var _170_14_ = Slash.splitDrive(p); f = _170_14_[0]; d = _170_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -320,7 +238,7 @@ class Slash
     {
         var c, f, l
 
-        var _249_16_ = Slash.splitFileLine(p); f = _249_16_[0]; l = _249_16_[1]; c = _249_16_[2]
+        var _182_16_ = Slash.splitFileLine(p); f = _182_16_[0]; l = _182_16_[1]; c = _182_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -334,7 +252,7 @@ class Slash
     {
         var f, l
 
-        var _254_14_ = Slash.splitFileLine(p); f = _254_14_[0]; l = _254_14_[1]
+        var _187_14_ = Slash.splitFileLine(p); f = _187_14_[0]; l = _187_14_[1]
 
         if (l > 1)
         {

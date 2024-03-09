@@ -394,28 +394,27 @@ function Parser extends parse
     use: (obj, tokens) ->
         
         toUse = []
+        
+        token = tokens.shift()
+                        
+        while token
             
-        while token = tokens.shift()
-
-            if token.type == 'nl'
-                break
+            module = token.text
+            
+            while tokens.length and tokens[0].type != 'nl' and tokens[0].col == token.col + token.text.length
+                token = tokens.shift()
+                module += token.text
+            
+            toUse.push
+                type: 'var'
+                text:  module
                 
-            modul = ''
-            while token.type != 'var' 
-                if token.type == 'nl'
-                    toUse.push modul
-                    break
-                else
-                    modul += token.text
-                    token = tokens.shift()
-                    
-            modul += token.text
-            toUse.push 
-                type:'var'
-                text:modul
-                
+            break if tokens.length and tokens[0].type == 'nl'
+            
+            token = tokens.shift()
+            
         use: toUse
-
+        
     # 00000000  000   000  00000000    0000000   00000000   000000000  
     # 000        000 000   000   000  000   000  000   000     000     
     # 0000000     00000    00000000   000   000  0000000       000     

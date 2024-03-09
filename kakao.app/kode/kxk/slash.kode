@@ -10,79 +10,6 @@ use ./os
 
 sep = '/' 
     
-CHAR_FORWARD_SLASH  = '/'.charCodeAt 0
-CHAR_BACKWARD_SLASH = '\\'.charCodeAt 0
-CHAR_DOT            = '.'.charCodeAt 0
-
-isPosixPathSeparator = (c) -> c == CHAR_FORWARD_SLASH
-isPathSeparator = (c) -> c == CHAR_FORWARD_SLASH or c == CHAR_BACKWARD_SLASH
-
-# 000   000   0000000   00000000   00     00   0000000  000000000  00000000   
-# 0000  000  000   000  000   000  000   000  000          000     000   000  
-# 000 0 000  000   000  0000000    000000000  0000000      000     0000000    
-# 000  0000  000   000  000   000  000 0 000       000     000     000   000  
-# 000   000   0000000   000   000  000   000  0000000      000     000   000  
-
-normStr = (path, isAbsolute, separator, isPathSeparator) ->
-    
-    res = ''
-    lastSegmentLength = 0
-    lastSlash = -1
-    dots = 0
-    code = 0
-    
-    for i in 0..path.length
-        
-        if i < path.length
-            code = path.charCodeAt i
-        else if isPathSeparator code
-            break
-        else
-            code = CHAR_FORWARD_SLASH
-   
-        if isPathSeparator code
-            if lastSlash == i - 1 or dots == 1
-                true # noop
-            else if dots == 2
-                if (res.length < 2 or 
-                    lastSegmentLength != 2 or
-                    res.charCodeAt(res.length - 1) != CHAR_DOT or
-                    res.charCodeAt(res.length - 2) != CHAR_DOT)
-                    if res.length > 2
-                        lastSlashIndex = res.lastIndexOf separator
-                        if lastSlashIndex == -1
-                            res = ''
-                            lastSegmentLength = 0
-                        else
-                            res = res.slice 0 lastSlashIndex
-                            lastSegmentLength = res.length - 1 - res.lastIndexOf separator
-                        lastSlash = i
-                        dots = 0
-                        continue
-                    else if res.length != 0
-                        res = ''
-                        lastSegmentLength = 0
-                        lastSlash = i
-                        dots = 0
-                        continue
-                if not isAbsolute
-                    res += res.length > 0 ? "#{separator}.." : '..'
-                    lastSegmentLength = 2
-            else 
-                if res.length > 0
-                    res += "#{separator}#{path.slice(lastSlash + 1, i)}"
-                else
-                    res = path.slice lastSlash + 1, i
-                lastSegmentLength = i - lastSlash - 1
-
-            lastSlash = i
-            dots = 0
-        else if code == CHAR_DOT and dots != -1
-            dots++
-        else 
-            dots = -1
-    return res    
-
 class Slash
 
     @sep: '/' 
@@ -97,10 +24,12 @@ class Slash
     
     @path: (p) ->
         
-        return p if not p
-        
         if arguments.length > 1
-            p = Array.from(arguments).join '/'
+            arr = Array.from arguments
+            arr = arr.filter (c) -> valid c
+            p = arr.join '/'
+            
+        return '' if empty p
         
         p = Slash.normalize p
         
@@ -118,6 +47,36 @@ class Slash
             p = p + '/'
             
         p
+        
+    # 000   000   0000000   00000000   00     00   0000000   000      000  0000000  00000000  
+    # 0000  000  000   000  000   000  000   000  000   000  000      000     000   000       
+    # 000 0 000  000   000  0000000    000000000  000000000  000      000    000    0000000   
+    # 000  0000  000   000  000   000  000 0 000  000   000  000      000   000     000       
+    # 000   000   0000000   000   000  000   000  000   000  0000000  000  0000000  00000000  
+    
+    @normalize: (path) ->
+        
+        return '' if not path is str
+        return '' if empty path
+        
+        path = path.replaceAll '\\' '/'
+        
+        comp = path.split '/'
+        
+        prun = []
+        for i,c of comp
+            continue if valid prun and c == '.'
+            continue if empty c and 0 < i < comp.length-1
+            if c == '..' 
+                if valid prun 
+                    if prun[-1] == '.'
+                        prun.pop()
+                    else if prun[-1] != '..'
+                        prun.pop()
+                        continue
+            prun.push c
+        
+        prun.join '/'
         
     # 000   000  000   000   0000000  000       0000000    0000000  000   000  
     # 000   000  0000  000  000       000      000   000  000       000   000  
@@ -178,33 +137,7 @@ class Slash
         return dd + rc.join '/' if valid dd
         
         rel
-        
-    # 000   000   0000000   00000000   00     00   0000000   000      000  0000000  00000000  
-    # 0000  000  000   000  000   000  000   000  000   000  000      000     000   000       
-    # 000 0 000  000   000  0000000    000000000  000000000  000      000    000    0000000   
-    # 000  0000  000   000  000   000  000 0 000  000   000  000      000   000     000       
-    # 000   000   0000000   000   000  000   000  000   000  0000000  000  0000000  00000000  
-    
-    @normalize: (path) ->
-        
-        return path if not path is str
-    
-        return '' if path.length == 0
-    
-        isAbsolute = isPathSeparator path.charCodeAt 0
-        trailingSeparator = isPathSeparator path.charCodeAt path.length - 1
-    
-        path = normStr path, isAbsolute, '/', isPathSeparator
-    
-        if path.length == 0
-            return '/' if isAbsolute
-            return trailingSeparator ? './' : '.'
-    
-        if trailingSeparator
-            path += '/'
-    
-        isAbsolute ? "/#{path}" : path
-        
+            
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
     # 0000000   00000000   000      000     000     
@@ -332,6 +265,7 @@ class Slash
     
     @parse: (p) ->
         
+        # log p, Slash.path p
         p = Slash.path p
 
         p = p[...-1] if p.endsWith Slash.sep
@@ -344,6 +278,7 @@ class Slash
         name = dots.join '.'
         
         dir = components[...-1].join '/'
+        # log 'components' components, dir, p
         dir = Slash.sep if Slash.isAbsolute(p) and empty dir
 
         dir:  dir

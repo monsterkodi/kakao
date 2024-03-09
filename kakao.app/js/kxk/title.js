@@ -16,7 +16,8 @@ import slash from "./slash.js"
 
 import post from "./post.js"
 
-import noon from './noon.js'
+import noon from "./noon.js"
+
 $ = dom.$
 stopEvent = dom.stopEvent
 elem = dom.elem

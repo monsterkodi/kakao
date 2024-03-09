@@ -342,6 +342,8 @@ class Renderer
     #  0000000   0000000   00000000  
     
     use: (n) ->
+        
+        # log "use '#{slash.dir(@file)}'" n
 
         s = ''
         for m in n
@@ -370,6 +372,7 @@ class Renderer
                 
             else
                 if mod[0] == '.'
+                    # log 'swap' mod, slash.swapExt mod, 'js'
                     s += " from \"#{slash.swapExt mod, 'js'}\"\n"
                 else
                     s += " from \"#{mod}\"\n"
