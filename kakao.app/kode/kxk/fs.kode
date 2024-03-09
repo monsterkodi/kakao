@@ -27,11 +27,11 @@ class FS
         
         for dirent in dirents
     
-            # stat  = await fs.stat slash.join dir, file
-            # isDir = stat.mode & 0o040000
-            
             file  = dirent.name
             isDir = not dirent.isFile()
+            
+            if isDir and file in ['node_modules' '.git'] 
+                continue # is it a good idea to hardcode this here?
             
             absPath = slash.path dir, file
             
@@ -239,5 +239,7 @@ class FS
     @error: (msg) -> 
         if @logErrors then error msg 
         ''
+        
+    @watch: fs.watch
         
 export FS

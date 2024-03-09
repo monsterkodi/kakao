@@ -10,16 +10,17 @@ import fs from "../kxk/fs.js"
 
 import slash from "../kxk/slash.js"
 
-import noon from '../kxk/noon.js'
+import noon from "../kxk/noon.js"
+
 import { pug , stylus } from '../../lib/min.mjs'
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, cssDir, cssFile, file, jsDir, jsFile, k0de, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _23_23_, _24_19_
+    var compText, cssDir, cssFile, file, jsDir, jsFile, k0de, kodeDir, kodeFile, kodeText, list, origText, pugDir, srcFile, srcText, stylFile, stylText, tgtFile, tgtText, transpiled, _22_23_, _23_19_
 
-    opt.rerunWhenDirty = ((_23_23_=opt.rerunWhenDirty) != null ? _23_23_ : true)
-    opt.logVerbose = ((_24_19_=opt.logVerbose) != null ? _24_19_ : false)
+    opt.rerunWhenDirty = ((_22_23_=opt.rerunWhenDirty) != null ? _22_23_ : true)
+    opt.logVerbose = ((_23_19_=opt.logVerbose) != null ? _23_19_ : false)
     _k_.profile('🔨')
     kodeDir = slash.path(__dirname + '/../../kode')
     pugDir = slash.path(__dirname + '/../../pug')
@@ -41,9 +42,9 @@ knrd = async function (files = [], opt = {})
     console.log('🔨 ',files.length)
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _43_13_ = 0; _43_13_ < list1.length; _43_13_++)
+    for (var _42_13_ = 0; _42_13_ < list1.length; _42_13_++)
     {
-        file = list1[_43_13_]
+        file = list1[_42_13_]
         switch (slash.ext(file))
         {
             case 'kode':

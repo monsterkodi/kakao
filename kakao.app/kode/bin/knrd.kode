@@ -11,8 +11,7 @@
 use ../kode/kode
 use ../kxk/fs
 use ../kxk/slash
-
-import noon from '../kxk/noon.js'
+use ../kxk/noon
 
 import { pug, stylus } from '../../lib/min.mjs'
 
