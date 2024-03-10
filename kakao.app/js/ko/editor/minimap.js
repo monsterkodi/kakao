@@ -2,13 +2,8 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var drag, elem, getStyle, MapScroll
+import mapscroll from "./mapscroll.js"
 
-drag = require('kxk').drag
-elem = require('kxk').elem
-getStyle = require('kxk').getStyle
-
-MapScroll = require('./mapscroll')
 class Minimap
 {
     constructor (editor)
@@ -57,7 +52,7 @@ class Minimap
         this.editor.on('changed',this.onChanged)
         this.editor.on('highlight',this.drawHighlights)
         this.editor.scroll.on('scroll',this.onEditorScroll)
-        this.scroll = new MapScroll({exposeMax:this.height / 4,lineHeight:4,viewHeight:2 * this.editor.viewHeight()})
+        this.scroll = new mapscroll({exposeMax:this.height / 4,lineHeight:4,viewHeight:2 * this.editor.viewHeight()})
         this.scroll.name = `${this.editor.name}.minimap`
         this.drag = new drag({target:this.elem,onStart:this.onStart,onMove:this.onDrag,cursor:'pointer'})
         this.scroll.on('clearLines',this.clearAll)
@@ -391,4 +386,4 @@ class Minimap
     }
 }
 
-module.exports = Minimap
+export default Minimap;

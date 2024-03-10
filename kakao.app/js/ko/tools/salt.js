@@ -2,10 +2,9 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var font, salt, _
+var font, salt
 
-_ = require('kxk')._
-noon = require('kxk').noon
+import noon from "../../kxk/noon.js"
 
 font = noon.parse(`0   
     | 000000 |
@@ -399,9 +398,9 @@ salt = function (text)
     s = text.toLowerCase().trim()
     cs = []
     var list = _k_.list(s)
-    for (var _403_10_ = 0; _403_10_ < list.length; _403_10_++)
+    for (var _405_10_ = 0; _405_10_ < list.length; _405_10_++)
     {
-        c = list[_403_10_]
+        c = list[_405_10_]
         if ((font[c] != null))
         {
             cs.push(font[c])
@@ -414,4 +413,4 @@ salt = function (text)
     })
     return rs.join('\n')
 }
-module.exports = salt
+export default salt;

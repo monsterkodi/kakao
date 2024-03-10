@@ -10,6 +10,9 @@
 
 use ../../kxk/post
 use ../../kxk/elem
+use ../../kxk/dom
+
+{ $ } = dom
 
 class Titlebar
     

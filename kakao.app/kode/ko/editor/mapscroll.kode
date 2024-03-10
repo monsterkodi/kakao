@@ -6,9 +6,9 @@
 000   000  000   000  000              0000000    0000000  000   000   0000000   0000000  0000000
 ###
 
-events = require 'events'
+# use events
 
-class MapScroll extends events
+class MapScroll #extends events
 
     @: (cfg) ->
 
@@ -229,4 +229,4 @@ class MapScroll extends events
             @calc()
             @by 0
 
-module.exports = MapScroll
+export MapScroll

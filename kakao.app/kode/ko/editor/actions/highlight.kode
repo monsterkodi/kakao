@@ -5,10 +5,10 @@
 # 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
 # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
 
-kxk = require 'kxk'
-{ _, post } = kxk
+# kxk = require 'kxk'
+# { _, post } = kxk
 
-module.exports = 
+export
 
     actions:
         menu: 'Select'

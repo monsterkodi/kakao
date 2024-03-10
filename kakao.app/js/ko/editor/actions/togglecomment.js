@@ -2,11 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var _
-
-_ = require('kxk')._
-
-module.exports = {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:'command+/',accel:'ctrl+/'},toggleHeader:{name:'Toggle Header',combo:'command+alt+/',accel:'alt+ctrl+/'}},toggleHeader:function ()
+export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:'command+/',accel:'ctrl+/'},toggleHeader:{name:'Toggle Header',combo:'command+alt+/',accel:'alt+ctrl+/'}},toggleHeader:function ()
 {
     var il, indent, r, rgs
 
@@ -114,4 +110,4 @@ module.exports = {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',comb
     this.do.select(newSelections)
     this.do.setCursors(newCursors)
     return this.do.end()
-}}
+}};

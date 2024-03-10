@@ -6,14 +6,13 @@
 000       000  0000000  00000000        00000000  0000000    000     000      0000000   000   000
 ###
 
-kxk = require 'kxk'
-{ fs, kerror, kpos, popup, post, setStyle, slash, srcmap, stopEvent } = kxk
+# kxk = require 'kxk'
+# { fs, kerror, kpos, popup, post, setStyle, slash, srcmap, stopEvent } = kxk
 
-TextEditor = require './texteditor'
-Syntax     = require './syntax'
-electron   = require 'electron'
+use ./texteditor
+use ./syntax
 
-function FileEditor extends TextEditor
+function FileEditor extends texteditor
 
     @: (viewElem) ->
 
@@ -121,11 +120,11 @@ function FileEditor extends TextEditor
 
     shebangFileType: ->
 
-        fileType = Syntax.shebang @line(0) if @numLines()
+        fileType = syntax.shebang @line(0) if @numLines()
         if fileType == 'txt'
             if @currentFile?
                 ext = slash.ext @currentFile
-                if ext in Syntax.syntaxNames
+                if ext in syntax.syntaxNames
                     return ext
         else if fileType
             return fileType
@@ -450,8 +449,8 @@ function FileEditor extends TextEditor
         
         fileSpan = (f) ->
             if f?
-                span  = Syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
-                span += Syntax.spanForTextAndSyntax '/' + slash.base(f), 'browser'
+                span  = syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
+                span += syntax.spanForTextAndSyntax '/' + slash.base(f), 'browser'
             return span
         
         recent = window.state?.get 'recentFiles' []
@@ -515,4 +514,4 @@ function FileEditor extends TextEditor
                 return
         'unhandled'
 
-module.exports = FileEditor
+export FileEditor

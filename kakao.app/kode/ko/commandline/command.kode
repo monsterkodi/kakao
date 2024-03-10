@@ -6,11 +6,11 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000  
 ###
 
-{ _, elem, history, kerror, reversed } = require 'kxk'
+# { _, elem, history, kerror, reversed } = require 'kxk'
 
-syntax      = require '../editor/syntax'
-CommandList = require './commandlist'
-fuzzy       = require 'fuzzy'
+use ../editor/syntax
+use ./commandlist
+# use fuzzy
 
 function Command
 
@@ -133,7 +133,7 @@ function Command
         if not @commandList?
             listView = elem class: "commandlist #{@prefsID}"
             window.split.elem.appendChild listView
-            @commandList = new CommandList @, '.commandlist' syntaxName:@syntaxName
+            @commandList = new commandlist @, '.commandlist' syntaxName:@syntaxName
     
     listItems: () -> reversed @history
 
@@ -397,4 +397,4 @@ function Command
         else
             false
         
-module.exports = Command
+export Command

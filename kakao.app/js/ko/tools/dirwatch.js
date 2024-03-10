@@ -2,11 +2,6 @@
 
 var _k_
 
-var post, watch
-
-post = require('kxk').post
-watch = require('kxk').watch
-
 class DirWatch
 {
     static watches = {}
@@ -41,4 +36,4 @@ class DirWatch
     }
 }
 
-module.exports = DirWatch
+export default DirWatch;

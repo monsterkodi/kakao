@@ -2,19 +2,16 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var $, Browse, Command, FileBrowser, kerror, post, slash
+var Browse
 
-$ = require('kxk').$
-kerror = require('kxk').kerror
-post = require('kxk').post
-slash = require('kxk').slash
+import command from "../commandline/command.js"
 
-Command = require('../commandline/command')
-FileBrowser = require('../browser/filebrowser')
+import filebrowser from "../browser/filebrowser.js"
+
 
 Browse = (function ()
 {
-    _k_.extend(Browse, Command)
+    _k_.extend(Browse, command)
     function Browse (commandline)
     {
         this["onBrowserItemActivated"] = this["onBrowserItemActivated"].bind(this)
@@ -24,7 +21,7 @@ Browse = (function ()
         this["onFile"] = this["onFile"].bind(this)
         Browse.__super__.constructor.call(this,commandline)
         this.cmdID = 0
-        this.browser = new FileBrowser($('browser'))
+        this.browser = new filebrowser($('browser'))
         this.commands = Object.create(null)
         this.names = ['browse','Browse','shelf']
         post.on('file',this.onFile)
@@ -414,4 +411,4 @@ Browse = (function ()
     return Browse
 })()
 
-module.exports = Browse
+export default Browse;

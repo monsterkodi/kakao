@@ -2,9 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var matchr, Pigments
-
-matchr = require('kxk').matchr
+var Pigments
 
 
 Pigments = (function ()
@@ -115,7 +113,7 @@ Pigments = (function ()
     return Pigments
 })()
 
-module.exports = {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+shift+p',accel:'alt+ctrl+shift+p'}},initPigments:function ()
+export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+shift+p',accel:'alt+ctrl+shift+p'}},initPigments:function ()
 {
     var _117_31_
 
@@ -130,4 +128,4 @@ module.exports = {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle p
     {
         return this.pigments.activate()
     }
-}}
+}};

@@ -6,9 +6,9 @@
 000   000  00000000  00     00  0000000  000  000   000  00000000
 ###
 
-{ last } = require 'kxk'
+# { last } = require 'kxk'
 
-module.exports = 
+export
     
     actions:
         menu: 'Line'

@@ -6,7 +6,7 @@ var reversed
 
 reversed = require('kxk').reversed
 
-module.exports = {actions:{menu:'Delete',deleteForward:{name:'Delete Forward',combo:'delete',text:'delete character to the right'},deleteToEndOfLine:{name:'Delete to End of Line',combo:'ctrl+shift+k',text:'delete characters to the end of line'},deleteToEndOfLineOrWholeLine:{name:'Delete to End of Line or Delete Whole Line',combo:'ctrl+k',text:`delete characters to the end of line, if cursor is not at end of line.
+export default {actions:{menu:'Delete',deleteForward:{name:'Delete Forward',combo:'delete',text:'delete character to the right'},deleteToEndOfLine:{name:'Delete to End of Line',combo:'ctrl+shift+k',text:'delete characters to the end of line'},deleteToEndOfLineOrWholeLine:{name:'Delete to End of Line or Delete Whole Line',combo:'ctrl+k',text:`delete characters to the end of line, if cursor is not at end of line.
                 delete whole line otherwise.`}},deleteToEndOfLine:function ()
 {
     this.do.start()
@@ -85,4 +85,4 @@ module.exports = {actions:{menu:'Delete',deleteForward:{name:'Delete Forward',co
         this.do.setCursors(newCursors)
         return this.do.end()
     }
-}}
+}};

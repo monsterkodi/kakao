@@ -2,14 +2,10 @@
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var elem, hub, kxk, lineDiff, post
+import linediff from "../tools/linediff.js"
 
-kxk = require('kxk')
-elem = kxk.elem
-post = kxk.post
+import hub from "../git/hub.js"
 
-lineDiff = require('../tools/linediff')
-hub = require('../git/hub')
 class Diffbar
 {
     constructor (editor)
@@ -164,7 +160,7 @@ class Diffbar
             for (var _163_18_ = 0; _163_18_ < list.length; _163_18_++)
             {
                 c = list[_163_18_]
-                if (!lineDiff.isBoring(c.old,c.new))
+                if (!linediff.isBoring(c.old,c.new))
                 {
                     return false
                 }
@@ -309,4 +305,4 @@ class Diffbar
     }
 }
 
-module.exports = Diffbar
+export default Diffbar;

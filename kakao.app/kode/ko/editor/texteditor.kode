@@ -6,13 +6,13 @@
    000     00000000  000   000     000           00000000  0000000    000     000      0000000   000   000
 ###
 
-{ $, _, drag, elem, kerror, keyinfo, klog, os, post, prefs, stopEvent } = require 'kxk'
+# { $, _, drag, elem, kerror, keyinfo, klog, os, post, prefs, stopEvent } = require 'kxk'
   
-render       = require './render'
-EditorScroll = require './editorscroll'
-Editor       = require './editor'
+use ./render
+use ./editorscroll
+use ./editor
 
-function TextEditor extends Editor
+function TextEditor extends editor
 
     @: (viewElem, config) ->
 
@@ -44,7 +44,7 @@ function TextEditor extends Editor
         @config.lineHeight ?= 1.2
 
         @setFontSize prefs.get "#{@name}FontSize", @config.fontSize ? 19
-        @scroll = new EditorScroll @
+        @scroll = new editorscroll @
         @scroll.on 'shiftLines' @shiftLines
         @scroll.on 'showLines'  @showLines
 
@@ -769,4 +769,4 @@ function TextEditor extends Editor
         klog.apply klog, [].splice.call arguments, 0
         klog.slog.depth = 2
 
-module.exports = TextEditor
+export TextEditor

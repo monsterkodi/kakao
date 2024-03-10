@@ -2,15 +2,10 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var kerror, post, State, _
+import state from "./state.js"
 
-_ = require('kxk')._
-kerror = require('kxk').kerror
-last = require('kxk').last
-post = require('kxk').post
+import ranges from "../tools/ranges.js"
 
-State = require('./state')
-require('../tools/ranges')
 class Do
 {
     constructor (editor)
@@ -73,14 +68,14 @@ class Do
         return {saveIndex:this.saveIndex,history:this.history,redos:this.redos,state:this.state,file:this.editor.currentFile}
     }
 
-    setTabState (state)
+    setTabState (tabState)
     {
-        this.editor.restoreFromTabState(state)
+        this.editor.restoreFromTabState(tabState)
         this.groupCount = 0
-        this.saveIndex = state.saveIndex
-        this.history = state.history
-        this.redos = state.redos
-        return this.state = state.state
+        this.saveIndex = tabState.saveIndex
+        this.history = tabState.history
+        this.redos = tabState.redos
+        return this.state = tabState.state
     }
 
     reset ()
@@ -106,7 +101,7 @@ class Do
         this.groupCount += 1
         if (this.groupCount === 1)
         {
-            this.startState = this.state = new State(this.editor.state.s)
+            this.startState = this.state = new state(this.editor.state.s)
             if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history).s)
             {
                 return this.history.push(this.state)
@@ -489,4 +484,4 @@ class Do
     }
 }
 
-module.exports = Do
+export default Do;

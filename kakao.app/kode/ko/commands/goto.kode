@@ -6,11 +6,11 @@
  0000000    0000000      000      0000000 
 ###
 
-{ _, post } = require 'kxk'
+# { _, post } = require 'kxk'
 
-Command = require '../commandline/command'
+use ../commandline/command
 
-function Goto extends Command
+function Goto extends command
 
     @: (commandline) ->
         
@@ -91,4 +91,4 @@ function Goto extends Command
         else
             text: ''
                     
-module.exports = Goto
+export Goto

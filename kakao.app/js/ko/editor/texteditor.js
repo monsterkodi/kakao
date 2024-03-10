@@ -2,27 +2,18 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var $, drag, Editor, EditorScroll, elem, kerror, keyinfo, klog, os, post, prefs, render, stopEvent, TextEditor, _
+var TextEditor
 
-$ = require('kxk').$
-_ = require('kxk')._
-drag = require('kxk').drag
-elem = require('kxk').elem
-kerror = require('kxk').kerror
-keyinfo = require('kxk').keyinfo
-klog = require('kxk').klog
-os = require('kxk').os
-post = require('kxk').post
-prefs = require('kxk').prefs
-stopEvent = require('kxk').stopEvent
+import render from "./render.js"
 
-render = require('./render')
-EditorScroll = require('./editorscroll')
-Editor = require('./editor')
+import editorscroll from "./editorscroll.js"
+
+import editor from "./editor.js"
+
 
 TextEditor = (function ()
 {
-    _k_.extend(TextEditor, Editor)
+    _k_.extend(TextEditor, editor)
     function TextEditor (viewElem, config)
     {
         var feature, featureClss, featureName, layer, name, _44_27_, _46_68_
@@ -69,7 +60,7 @@ TextEditor = (function ()
         this.lineDivs = {}
         this.config.lineHeight = ((_44_27_=this.config.lineHeight) != null ? _44_27_ : 1.2)
         this.setFontSize(prefs.get(`${this.name}FontSize`,((_46_68_=this.config.fontSize) != null ? _46_68_ : 19)))
-        this.scroll = new EditorScroll(this)
+        this.scroll = new editorscroll(this)
         this.scroll.on('shiftLines',this.shiftLines)
         this.scroll.on('showLines',this.showLines)
         this.view.addEventListener('blur',this.onBlur)
@@ -1008,4 +999,4 @@ TextEditor = (function ()
     return TextEditor
 })()
 
-module.exports = TextEditor
+export default TextEditor;

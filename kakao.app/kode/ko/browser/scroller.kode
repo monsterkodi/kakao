@@ -6,9 +6,9 @@
 0000000    0000000  000   000   0000000   0000000  0000000  00000000  000   000
 ###
 
-{ drag, elem, scheme } = require 'kxk'
+# { drag, elem, scheme } = require 'kxk'
 
-scheme = require '../tools/scheme'
+use ../tools/scheme
 
 class Scroller
 
@@ -122,4 +122,4 @@ class Scroller
             
         @handle.style.right = "-#{@target.scrollLeft}px"
 
-module.exports = Scroller
+export Scroller

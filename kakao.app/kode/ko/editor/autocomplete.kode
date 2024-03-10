@@ -6,17 +6,18 @@
 000   000   0000000      000      0000000    0000000   0000000   000   000  000        0000000  00000000     000     00000000
 ###
 
-{ $, _, elem, kerror, last, matchr, stopEvent } = require 'kxk'
+# { $, _, elem, kerror, last, matchr, stopEvent } = require 'kxk'
 
-Indexer = require '../main/indexer'
-event   = require 'events'
-req     = require '../tools/req'
+# Indexer = require '../main/indexer'
+
+# use events
+use ../tools/req
 
 jsClass = 
     RegExp: ['test' 'compile' 'exec' 'toString']
     String: ['endsWith' 'startsWith' 'split' 'slice' 'substring' 'padEnd' 'padStart' 'indexOf' 'match' 'trim' 'trimEnd' 'trimStart']
 
-class Autocomplete extends event
+class Autocomplete #extends events
 
     @: (@editor) ->
         
@@ -434,4 +435,4 @@ class Autocomplete extends event
         @close()   
         'unhandled'
         
-module.exports = Autocomplete
+export Autocomplete

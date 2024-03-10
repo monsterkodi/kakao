@@ -6,11 +6,11 @@
 0000000    000  000       000       0000000    000   000  000   000
 ###
 
-kxk = require 'kxk'
-{ elem, post } = kxk
+# kxk = require 'kxk'
+# { elem, post } = kxk
 
-lineDiff = require '../tools/linediff'
-hub      = require '../git/hub'
+use ../tools/linediff
+use ../git/hub
 
 class Diffbar
 
@@ -161,7 +161,7 @@ class Diffbar
 
         if change.mod?
             for c in change.mod
-                return false if not lineDiff.isBoring c.old, c.new
+                return false if not linediff.isBoring c.old, c.new
 
         if change.add?
             for c in change.add
@@ -265,4 +265,4 @@ class Diffbar
 
     clearMetas: -> @editor.meta.delClass 'git'
 
-module.exports = Diffbar
+export Diffbar

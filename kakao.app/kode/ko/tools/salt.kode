@@ -6,7 +6,9 @@
 0000000   000   000  0000000     000   
 ###
 
-{ _, noon } = require 'kxk'
+# { _, noon } = require 'kxk'
+
+use ../../kxk/noon
 
 font = noon.parse """
 0   
@@ -409,4 +411,4 @@ salt = (text) ->
     
     rs.join '\n'
 
-module.exports = salt
+export salt

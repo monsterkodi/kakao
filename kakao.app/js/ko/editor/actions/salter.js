@@ -2,12 +2,9 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var salt, _
+import salt from "../../tools/salt.js"
 
-_ = require('kxk')._
-
-salt = require('../../tools/salt')
-module.exports = {actions:{startSalter:{name:'ASCII Header Mode',text:`if cursor is not in ascii-header: 
+export default {actions:{startSalter:{name:'ASCII Header Mode',text:`if cursor is not in ascii-header: 
                 insert ascii-header of text in selection or word at cursor.
                 switch to ascii-header mode in any case.`,combo:'command+3',accel:'ctrl+3'}},startSalter:function (opt)
 {
@@ -205,4 +202,4 @@ module.exports = {actions:{startSalter:{name:'ASCII Header Mode',text:`if cursor
         }
     }
     return _.sortBy(_.uniq(cols))
-}}
+}};

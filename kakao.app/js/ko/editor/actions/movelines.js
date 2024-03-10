@@ -2,11 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var _
-
-_ = require('kxk')._
-
-module.exports = {actions:{menu:'Line',moveLinesUp:{name:'Move Lines Up',combo:'alt+up'},moveLinesDown:{name:'Move Lines Down',combo:'alt+down'}},moveLinesUp:function ()
+export default {actions:{menu:'Line',moveLinesUp:{name:'Move Lines Up',combo:'alt+up'},moveLinesDown:{name:'Move Lines Down',combo:'alt+down'}},moveLinesUp:function ()
 {
     return this.moveLines('up')
 },moveLinesDown:function ()
@@ -74,4 +70,4 @@ module.exports = {actions:{menu:'Line',moveLinesUp:{name:'Move Lines Up',combo:'
     this.do.select(newSelections)
     this.do.setCursors(newCursors)
     return this.do.end()
-}}
+}};

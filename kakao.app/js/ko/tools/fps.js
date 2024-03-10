@@ -2,14 +2,6 @@
 
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var $, elem, kxk, now, post
-
-kxk = require('kxk')
-$ = kxk.$
-elem = kxk.elem
-post = kxk.post
-
-now = require('perf_hooks').performance.now
 class FPS
 {
     constructor ()
@@ -98,4 +90,4 @@ class FPS
     }
 }
 
-module.exports = FPS
+export default FPS;

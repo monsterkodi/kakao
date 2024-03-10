@@ -6,10 +6,10 @@
 000       000  0000000  00000000
 ###
 
-kxk = require 'kxk'
-{ childp, fs, kerror, klog, slash } = kxk
+# kxk = require 'kxk'
+# { childp, fs, kerror, klog, slash } = kxk
 
-icons = require './icons.json'
+# icons = require './icons.json'
 
 class File
     
@@ -143,4 +143,4 @@ class File
         spans.push "<div class='inline' id='#{file}'>#{split[-1]}</div>"
         spans.join "<span class='punct'>/</span>"
                 
-module.exports = File
+export File

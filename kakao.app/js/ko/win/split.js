@@ -2,9 +2,15 @@
 
 var _k_
 
-import post from "../../kxk/post.js"
+var $
 
 import flex from "./flex/flex.js"
+
+import post from "../../kxk/post.js"
+
+import dom from "../../kxk/dom.js"
+
+$ = dom.$
 
 class Split
 {
@@ -32,7 +38,7 @@ class Split
 
     onDrag ()
     {
-        var _53_23_
+        var _56_23_
 
         if ((this.flex != null))
         {
@@ -288,7 +294,7 @@ class Split
 
     focus (n)
     {
-        var e, _225_31_, _229_22_
+        var e, _228_31_, _232_22_
 
         if (n === 'commandline')
         {

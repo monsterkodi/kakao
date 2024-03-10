@@ -11,31 +11,31 @@ use ../../kakao
 # { klog, post, prefs, scheme, stash, stopEvent, store, win } = require 'kxk'
 
 use ./split
-# use ./terminal
-# use ./tabs
-use ./titlebar
 use ./info
-# use ./filehandler
-# use ../tools/watcher
-# use ../editor/editor
-# use ../commandline/commandline
-# use ../editor/fileeditor
-# use ../main/navigate
-# use ../tools/fps
-# use ../tools/cwd
-# use ../tools/scheme
-# use ../tools/projects
+use ./tabs
+use ./terminal
+use ./titlebar
+use ./filehandler
+use ../tools/watcher
+use ../tools/fps
+use ../tools/scheme
+use ../editor/editor
+use ../commandline/commandline
+use ../editor/fileeditor
+use ../tools/cwd
+use ../tools/projects
+use ../main/navigate
 
-split       = null
-info        = null
-editor      = null
-mainmenu    = null
-terminal    = null
-commandline = null
-titlebar    = null
-tabs        = null
-filehandler = null
-filewatcher = null
+# split       = null
+# info        = null
+# editor      = null
+# mainmenu    = null
+# terminal    = null
+# commandline = null
+# titlebar    = null
+# tabs        = null
+# filehandler = null
+# filewatcher = null
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
@@ -45,7 +45,6 @@ filewatcher = null
 
 function Window #extends win
 
-    onWindowCreated:        (win)           -> log 'onWindowCreated'       win.id
     onWindowAnimationTick:  (win, tickInfo) -> log 'onWindowAnimationTick' win.id
     onWindowResize:         (win, event)    -> log 'onWindowResize'        win.id
     onWindowFocus:          (win)           -> log 'onWindowFocus'         win.id
@@ -59,10 +58,11 @@ function Window #extends win
         @menuNoon = kakao.bundle.res 'menu_ko.noon'
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
-        log window.aboutImage
         
-        return
-
+    onWindowCreated:        (win)           => 
+        
+        log 'onWindowCreated' win.id
+        
         # super
             # dir:            __dirname
             # menuTemplate:   require './menu'
@@ -73,18 +73,18 @@ function Window #extends win
     
         # window.stash = new stash "win/#{@id}" separator:'|'
             
-        filehandler = window.filehandler = new FileHandler
-        filewatcher = window.filewatcher = new FileWatcher
-        tabs        = window.tabs        = new Tabs window.titlebar.elem
-        titlebar    =                      new Titlebar
-        navigate    = window.navigate    = new Navigate()
-        split       = window.split       = new Split()
-        terminal    = window.terminal    = new Terminal 'terminal'
-        editor      = window.editor      = new FileEditor 'editor'
-        commandline = window.commandline = new Commandline 'commandline-editor'
-        info        = window.info        = new Info editor
-        fps         = window.fps         = new FPS()
-        cwd         = window.cwd         = new CWD()
+        @filehandler = window.filehandler = new filehandler
+        @filewatcher = window.filewatcher = new watcher
+        @tabs        = window.tabs        = new tabs window.titlebar.elem
+        @titlebar    =                      new titlebar
+        @navigate    = window.navigate    = new navigate()
+        @split       = window.split       = new split()
+        @terminal    = window.terminal    = new terminal 'terminal'
+        @editor      = window.editor      = new fileeditor 'editor'
+        @commandline = window.commandline = new commandline 'commandline-editor'
+        @info        = window.info        = new info editor
+        @fps         = window.fps         = new fps()
+        @cwd         = window.cwd         = new cwd()
     
         window.textEditor = window.focusEditor = editor
         window.setLastFocus editor.name

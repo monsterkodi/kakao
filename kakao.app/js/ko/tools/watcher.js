@@ -2,12 +2,7 @@
 
 var _k_
 
-var fs, klog, post, slash
-
-fs = require('kxk').fs
-klog = require('kxk').klog
-post = require('kxk').post
-slash = require('kxk').slash
+import post from "../../kxk/post.js"
 
 class Watcher
 {
@@ -76,7 +71,7 @@ class Watcher
 
     stop ()
     {
-        var _50_10_
+        var _52_10_
 
         ;(this.w != null ? this.w.close() : undefined)
         delete this.w
@@ -112,4 +107,4 @@ class FileWatcher
     }
 }
 
-module.exports = FileWatcher
+export default FileWatcher;

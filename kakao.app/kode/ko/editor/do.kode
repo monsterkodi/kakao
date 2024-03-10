@@ -6,10 +6,10 @@
 0000000     0000000
 ###
 
-{ _, kerror, last, post } = require 'kxk'
+# { _, kerror, last, post } = require 'kxk'
 
-State = require './state'
-require '../tools/ranges'
+use ./state
+use ../tools/ranges
 
 class Do 
 
@@ -53,15 +53,15 @@ class Do
         state:     @state
         file:      @editor.currentFile
 
-    setTabState: (state) ->
+    setTabState: (tabState) ->
 
-        @editor.restoreFromTabState state
+        @editor.restoreFromTabState tabState
 
         @groupCount = 0
-        @saveIndex  = state.saveIndex
-        @history    = state.history
-        @redos      = state.redos
-        @state      = state.state
+        @saveIndex  = tabState.saveIndex
+        @history    = tabState.history
+        @redos      = tabState.redos
+        @state      = tabState.state
 
     # 00000000   00000000   0000000  00000000  000000000
     # 000   000  000       000       000          000
@@ -93,7 +93,7 @@ class Do
 
         @groupCount += 1
         if @groupCount == 1
-            @startState = @state = new State @editor.state.s
+            @startState = @state = new state @editor.state.s
             if empty(@history) or @state.s != last(@history).s
                 @history.push @state
 
@@ -391,4 +391,4 @@ class Do
     mainCursor:      -> @state.mainCursor()
     rangeForLineAtIndex: (i) -> [i, [0, @line(i).length]]
 
-module.exports = Do
+export Do

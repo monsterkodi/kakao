@@ -2,12 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var reversed, _
-
-_ = require('kxk')._
-reversed = require('kxk').reversed
-
-module.exports = {actions:{menu:'Select',selectMoreLines:{name:'Select More Lines',text:'selects line at cursor or next line if cursor line is selected already',combo:'command+l',accel:'ctrl+l'},selectLessLines:{name:'Select Less Lines',text:'removes a line from each block of selected lines',combo:'command+shift+l',accel:'ctrl+shift+l'}},selectMoreLines:function ()
+export default {actions:{menu:'Select',selectMoreLines:{name:'Select More Lines',text:'selects line at cursor or next line if cursor line is selected already',combo:'command+l',accel:'ctrl+l'},selectLessLines:{name:'Select Less Lines',text:'removes a line from each block of selected lines',combo:'command+shift+l',accel:'ctrl+shift+l'}},selectMoreLines:function ()
 {
     var c, newCursors, newSelections, selectCursorLineAtIndex, start
 
@@ -73,4 +68,4 @@ module.exports = {actions:{menu:'Select',selectMoreLines:{name:'Select More Line
     this.do.select(newSelections)
     this.do.setCursors(newCursors)
     return this.do.end()
-}}
+}};

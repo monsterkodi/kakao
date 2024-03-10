@@ -2,21 +2,17 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var Buffer, Do, Editor, filelist, kerror, kxk, slash, Syntax, _
+var Editor
 
-kxk = require('kxk')
-_ = kxk._
-filelist = kxk.filelist
-kerror = kxk.kerror
-slash = kxk.slash
+import buffer from "./buffer.js"
 
-Buffer = require('./buffer')
-Syntax = require('./syntax')
-Do = require('./do')
+import syntax from "./syntax.js"
+
+import Do from './do.js'
 
 Editor = (function ()
 {
-    _k_.extend(Editor, Buffer)
+    _k_.extend(Editor, buffer)
     Editor["actions"] = null
     function Editor (name, config)
     {
@@ -33,7 +29,7 @@ Editor = (function ()
         }
         this.indentString = _.padStart("",4)
         this.stickySelection = false
-        this.syntax = new Syntax(this.config.syntaxName,this.line,this.lines)
+        this.syntax = new syntax(this.config.syntaxName,this.line,this.lines)
         this.do = new Do(this)
         this.setupFileType()
     }
@@ -368,4 +364,4 @@ Editor = (function ()
     return Editor
 })()
 
-module.exports = Editor
+export default Editor;

@@ -4,8 +4,6 @@ var _k_ = {last: function (o) {return o != null ? o.length ? o[o.length-1] : und
 
 var lineDiff
 
-last = require('kxk').last
-
 
 lineDiff = function (oldLine, newLine)
 {
@@ -105,4 +103,4 @@ lineDiff.isBoring = function (oldLine, newLine)
     }
     return inserts === deletes
 }
-module.exports = lineDiff
+export default lineDiff;

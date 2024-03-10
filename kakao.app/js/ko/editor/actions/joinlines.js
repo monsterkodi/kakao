@@ -2,7 +2,7 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-module.exports = {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command+j',accel:'ctrl+j'}},insertThen:function (before, after)
+export default {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command+j',accel:'ctrl+j'}},insertThen:function (before, after)
 {
     var bw
 
@@ -52,4 +52,4 @@ module.exports = {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'comma
     }
     this.do.setCursors(newCursors,{main:0})
     return this.do.end()
-}}
+}};

@@ -2,16 +2,6 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var childp, fs, icons, kerror, klog, kxk, slash
-
-kxk = require('kxk')
-childp = kxk.childp
-fs = kxk.fs
-kerror = kxk.kerror
-klog = kxk.klog
-slash = kxk.slash
-
-icons = require('./icons.json')
 class File
 {
     static sourceFileExtensions = ['kode','coffee','styl','swift','pug','md','noon','txt','json','sh','py','cpp','mm','cc','c','cs','h','hpp','ts','js','mjs','frag','vert']
@@ -236,4 +226,4 @@ class File
     }
 }
 
-module.exports = File
+export default File;

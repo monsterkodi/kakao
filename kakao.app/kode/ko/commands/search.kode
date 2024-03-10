@@ -6,14 +6,14 @@
 0000000   00000000  000   000  000   000   0000000  000   000
 ###
 
-{ _, fs, kerror, klor, matchr, post, slash } = require 'kxk'
+# { _, fs, kerror, klor, matchr, post, slash } = require 'kxk'
 
-walker  = require '../tools/walker'
-Syntax  = require '../editor/syntax'
-Command = require '../commandline/command'
-stream  = require 'stream'
+use ../tools/walker
+use ../editor/syntax
+use ../commandline/command
+use stream
 
-function Search extends Command
+function Search extends command
 
     @: (commandline) ->
         
@@ -68,7 +68,7 @@ function Search extends Command
         
         terminal = window.terminal
 
-        terminal.appendMeta clss:'searchHeader' diss:Syntax.dissForTextAndSyntax "▸ Search for '#{opt.text}':" 'ko'
+        terminal.appendMeta clss:'searchHeader' diss:syntax.dissForTextAndSyntax "▸ Search for '#{opt.text}':" 'ko'
         terminal.appendMeta clss:'spacer'
         terminal.singleCursorAtPos [0, terminal.numLines()-2]
         dir = slash.pkg slash.dir opt.file
@@ -139,7 +139,7 @@ function FileSearcher extends WritableStream
                 
         @found = []
         extn = slash.ext @file
-        if extn in Syntax.syntaxNames
+        if extn in syntax.syntaxNames
             @syntaxName = extn
         else
             @syntaxName = null
@@ -147,7 +147,7 @@ function FileSearcher extends WritableStream
     write: (chunk, encoding, cb) ->
         
         lines = chunk.split '\n'
-        @syntaxName = Syntax.shebang lines[0] if not @syntaxName?
+        @syntaxName = syntax.shebang lines[0] if not @syntaxName?
         for l in lines
             @line += 1            
             rngs = matchr.ranges @patterns, l, @flags
@@ -162,7 +162,7 @@ function FileSearcher extends WritableStream
             terminal = window.terminal
             
             meta = 
-                diss:  Syntax.dissForTextAndSyntax "#{slash.tilde @file}" 'ko'
+                diss:  syntax.dissForTextAndSyntax "#{slash.tilde @file}" 'ko'
                 href:  @file
                 clss:  'gitInfoFile'
                 click: @command.onMetaClick
@@ -193,4 +193,4 @@ function FileSearcher extends WritableStream
             terminal.appendMeta clss: 'spacer'
             terminal.scroll.cursorToTop()
                 
-module.exports = Search
+export Search

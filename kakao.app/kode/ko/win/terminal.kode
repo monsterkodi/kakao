@@ -11,8 +11,10 @@
 use ../../kxk/post
 use ../../kxk/kpos
 use ../tools/salt
-use ../editor/texteditor
 use ../editor/syntax
+use ../editor/texteditor
+
+log 'terminal'
 
 function Terminal extends texteditor
 

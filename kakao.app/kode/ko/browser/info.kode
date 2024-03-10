@@ -6,11 +6,11 @@
 000  000   000  000        0000000     
 ###
 
-{ $, elem, open, slash } = require 'kxk'
+# { $, elem, open, slash } = require 'kxk'
 
-File     = require '../tools/file'
-pbytes   = require 'pretty-bytes'
-moment   = require 'moment'
+# pbytes   = require 'pretty-bytes'
+# moment   = require 'moment'
+import File from '../tools/file.j'
     
 # 000  00     00   0000000    0000000   00000000  
 # 000  000   000  000   000  000        000       
@@ -82,7 +82,7 @@ fileInfo = (file) ->
             
     info
     
-module.exports = 
+export 
     file:fileInfo
     image:imageInfo
     

@@ -1,17 +1,11 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var Buffer, endOf, event, fuzzy, kerror, kxk, matchr, startOf, State, _
+var Buffer, endOf, startOf
 
-kxk = require('kxk')
-_ = kxk._
-kerror = kxk.kerror
-matchr = kxk.matchr
+import state from "./state.js"
 
-State = require('./state')
-fuzzy = require('fuzzy')
-event = require('events')
 
 startOf = function (r)
 {
@@ -25,18 +19,16 @@ endOf = function (r)
 
 Buffer = (function ()
 {
-    _k_.extend(Buffer, event)
     function Buffer ()
     {
         this["startOfWordAtPos"] = this["startOfWordAtPos"].bind(this)
         this["endOfWordAtPos"] = this["endOfWordAtPos"].bind(this)
         this["lines"] = this["lines"].bind(this)
         this["line"] = this["line"].bind(this)
-        Buffer.__super__.constructor.call(this)
         this.newlineCharacters = '\n'
         this.wordRegExp = new RegExp("(\\s+|\\w+|[^\\s])",'g')
         this.realWordRegExp = new RegExp("(\\w+)",'g')
-        this.setState(new State())
+        this.setState(new state())
     }
 
     Buffer.prototype["setLines"] = function (lines)
@@ -733,4 +725,4 @@ Buffer = (function ()
     return Buffer
 })()
 
-module.exports = Buffer
+export default Buffer;

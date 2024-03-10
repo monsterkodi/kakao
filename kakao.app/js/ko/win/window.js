@@ -2,34 +2,43 @@
 
 var _k_ = {isFunc: function (o) {return typeof o === 'function'}}
 
-var commandline, editor, filehandler, filewatcher, info, mainmenu, split, tabs, terminal, titlebar, Window
+var Window
 
 import kakao from "../../kakao.js"
 
 import split from "./split.js"
 
-import titlebar from "./titlebar.js"
-
 import info from "./info.js"
 
-split = null
-info = null
-editor = null
-mainmenu = null
-terminal = null
-commandline = null
-titlebar = null
-tabs = null
-filehandler = null
-filewatcher = null
+import tabs from "./tabs.js"
+
+import terminal from "./terminal.js"
+
+import titlebar from "./titlebar.js"
+
+import filehandler from "./filehandler.js"
+
+import watcher from "../tools/watcher.js"
+
+import fps from "../tools/fps.js"
+
+import scheme from "../tools/scheme.js"
+
+import editor from "../editor/editor.js"
+
+import commandline from "../commandline/commandline.js"
+
+import fileeditor from "../editor/fileeditor.js"
+
+import cwd from "../tools/cwd.js"
+
+import projects from "../tools/projects.js"
+
+import navigate from "../main/navigate.js"
+
 
 Window = (function ()
 {
-    Window.prototype["onWindowCreated"] = function (win)
-    {
-        console.log('onWindowCreated',win.id)
-    }
-
     Window.prototype["onWindowAnimationTick"] = function (win, tickInfo)
     {
         console.log('onWindowAnimationTick',win.id)
@@ -62,27 +71,31 @@ Window = (function ()
 
     function Window ()
     {
-        var cwd, fps, navigate, s
-
         this["onMenuAction"] = this["onMenuAction"].bind(this)
         this["onMoved"] = this["onMoved"].bind(this)
+        this["onWindowCreated"] = this["onWindowCreated"].bind(this)
         this.menuIcon = kakao.bundle.img('menu_ko.png')
         this.menuNoon = kakao.bundle.res('menu_ko.noon')
         window.aboutImage = kakao.bundle.img('about_ko.png')
-        console.log(window.aboutImage)
-        return
-        filehandler = window.filehandler = new FileHandler
-        filewatcher = window.filewatcher = new FileWatcher
-        tabs = window.tabs = new Tabs(window.titlebar.elem)
-        titlebar = new Titlebar
-        navigate = window.navigate = new Navigate()
-        split = window.split = new Split()
-        terminal = window.terminal = new Terminal('terminal')
-        editor = window.editor = new FileEditor('editor')
-        commandline = window.commandline = new Commandline('commandline-editor')
-        info = window.info = new Info(editor)
-        fps = window.fps = new FPS()
-        cwd = window.cwd = new CWD()
+    }
+
+    Window.prototype["onWindowCreated"] = function (win)
+    {
+        var s
+
+        console.log('onWindowCreated',win.id)
+        this.filehandler = window.filehandler = new filehandler
+        this.filewatcher = window.filewatcher = new watcher
+        this.tabs = window.tabs = new tabs(window.titlebar.elem)
+        this.titlebar = new titlebar
+        this.navigate = window.navigate = new navigate()
+        this.split = window.split = new split()
+        this.terminal = window.terminal = new terminal('terminal')
+        this.editor = window.editor = new fileeditor('editor')
+        this.commandline = window.commandline = new commandline('commandline-editor')
+        this.info = window.info = new info(editor)
+        this.fps = window.fps = new fps()
+        this.cwd = window.cwd = new cwd()
         window.textEditor = window.focusEditor = editor
         window.setLastFocus(editor.name)
         restoreWin()
@@ -120,7 +133,7 @@ Window = (function ()
             editor.centerText(true,0)
         }
         post.emit('restore')
-        editor.focus()
+        return editor.focus()
     }
 
     Window.prototype["onMoved"] = function (bounds)

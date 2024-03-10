@@ -2,12 +2,6 @@
 
 var _k_
 
-var Immutable, kerror, kstr
-
-kerror = require('kxk').kerror
-kstr = require('kxk').kstr
-
-Immutable = require('seamless-immutable')
 class State
 {
     constructor (opt)
@@ -176,4 +170,4 @@ class State
     }
 }
 
-module.exports = State
+export default State;

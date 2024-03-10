@@ -6,14 +6,14 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-kxk = require 'kxk'
-{ _, filelist, kerror, slash } = kxk
+# kxk = require 'kxk'
+# { _, filelist, kerror, slash } = kxk
 
-Buffer  = require './buffer'
-Syntax  = require './syntax'
-Do      = require './do'
+use ./buffer
+use ./syntax
+import Do from './do.js'
 
-function Editor extends Buffer
+function Editor extends buffer
 
     @actions: null
 
@@ -29,7 +29,7 @@ function Editor extends Buffer
 
         @indentString    = _.padStart "", 4
         @stickySelection = false
-        @syntax          = new Syntax @config.syntaxName, @line, @lines
+        @syntax          = new syntax @config.syntaxName, @line, @lines
         @do              = new Do @
 
         @setupFileType()
@@ -254,4 +254,4 @@ function Editor extends Buffer
         else
             ''
 
-module.exports = Editor
+export Editor

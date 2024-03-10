@@ -6,19 +6,19 @@
 0000000    000   000   0000000   00     00  0000000   00000000
 ###
 
-{ $, kerror, post, slash } = require 'kxk'
+# { $, kerror, post, slash } = require 'kxk'
 
-Command     = require '../commandline/command'
-FileBrowser = require '../browser/filebrowser'
+use ../commandline/command
+use ../browser/filebrowser
 
-function Browse extends Command
+function Browse extends command
 
     @: (commandline) ->
 
         super commandline
 
         @cmdID    = 0
-        @browser  = new FileBrowser $ 'browser'
+        @browser  = new filebrowser $ 'browser'
         @commands = Object.create null
         @names    = ['browse' 'Browse' 'shelf'] # Browse and shelf are hidden in commandline menu
 
@@ -332,4 +332,4 @@ function Browse extends Command
 
             @commandline.setText pth
 
-module.exports = Browse
+export Browse

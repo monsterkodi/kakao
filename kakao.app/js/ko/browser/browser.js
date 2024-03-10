@@ -1,25 +1,16 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var Browser, childp, Column, elem, event, flex, fs, kerror, kpos, os, setStyle, slash
+var Browser
 
-childp = require('kxk').childp
-elem = require('kxk').elem
-fs = require('kxk').fs
-kerror = require('kxk').kerror
-kpos = require('kxk').kpos
-os = require('kxk').os
-setStyle = require('kxk').setStyle
-slash = require('kxk').slash
+import column from "./column.js"
 
-Column = require('./column')
-flex = require('../win/flex/flex')
-event = require('events')
+import flex from "../win/flex/flex.js"
+
 
 Browser = (function ()
 {
-    _k_.extend(Browser, event)
     function Browser (view)
     {
         this.view = view
@@ -29,7 +20,6 @@ Browser = (function ()
         this["focus"] = this["focus"].bind(this)
         this.columns = []
         setStyle('.browserRow .ext','display',window.state.get('browser|hideExtensions') && 'none' || 'initial')
-        return Browser.__super__.constructor.apply(this, arguments)
     }
 
     Browser.prototype["initColumns"] = function ()
@@ -54,15 +44,15 @@ Browser = (function ()
 
     Browser.prototype["columnAtPos"] = function (pos)
     {
-        var column
+        var col
 
         var list = _k_.list(this.columns)
-        for (var _50_19_ = 0; _50_19_ < list.length; _50_19_++)
+        for (var _50_16_ = 0; _50_16_ < list.length; _50_16_++)
         {
-            column = list[_50_19_]
-            if (elem.containsPos(column.div,pos))
+            col = list[_50_16_]
+            if (elem.containsPos(col.div,pos))
             {
-                return column
+                return col
             }
         }
         return null
@@ -70,17 +60,17 @@ Browser = (function ()
 
     Browser.prototype["columnAtX"] = function (x)
     {
-        var column, cpos, pos
+        var col, cpos, pos
 
         var list = _k_.list(this.columns)
-        for (var _57_19_ = 0; _57_19_ < list.length; _57_19_++)
+        for (var _57_16_ = 0; _57_16_ < list.length; _57_16_++)
         {
-            column = list[_57_19_]
-            cpos = kpos(column.div.getBoundingClientRect().left,column.div.getBoundingClientRect().top)
+            col = list[_57_16_]
+            cpos = kpos(col.div.getBoundingClientRect().left,col.div.getBoundingClientRect().top)
             pos = kpos(x,cpos.y)
-            if (elem.containsPos(column.div,pos))
+            if (elem.containsPos(col.div,pos))
             {
-                return column
+                return col
             }
         }
         return null
@@ -88,11 +78,11 @@ Browser = (function ()
 
     Browser.prototype["rowAtPos"] = function (pos)
     {
-        var column
+        var col
 
-        if (column = this.columnAtPos(pos))
+        if (col = this.columnAtPos(pos))
         {
-            return column.rowAtPos(pos)
+            return col.rowAtPos(pos)
         }
         return null
     }
@@ -280,7 +270,7 @@ Browser = (function ()
         {
             return
         }
-        col = new Column(this)
+        col = new column(this)
         this.columns.push(col)
         this.flex.addPane({div:col.div,size:50})
         return col
@@ -510,4 +500,4 @@ Browser = (function ()
     return Browser
 })()
 
-module.exports = Browser
+export default Browser;

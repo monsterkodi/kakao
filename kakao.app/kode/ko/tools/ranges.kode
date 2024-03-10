@@ -6,14 +6,15 @@
 000   000  000   000  000   000   0000000   00000000  0000000 
 ###
 
-{ _ } = require 'kxk'
+# { _ } = require 'kxk'
 
 class Ranges
     
     @pollute: ->
         for member in Object.getOwnPropertyNames Ranges.prototype 
             continue if member in ['constructor']
-            global[member] = Ranges.prototype[member]
+            # global[member] = Ranges.prototype[member]
+            window[member] = Ranges.prototype[member]
         Ranges
 
     cursorDelta: (c, dx, dy=0) ->
@@ -248,4 +249,4 @@ class Ranges
             else
                 a[0]-b[0]
     
-module.exports = Ranges.pollute()
+export Ranges.pollute()

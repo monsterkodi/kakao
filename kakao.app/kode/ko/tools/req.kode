@@ -6,8 +6,8 @@
 000   000  00000000   00000 00
 ###
 
-{ _, kstr, slash } = require 'kxk'
-requireLike = require 'require-like'
+# { _, kstr, slash } = require 'kxk'
+# requireLike = require 'require-like'
 
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/
 mathRegExp  = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
@@ -155,4 +155,4 @@ req = (file, lines, editor) ->
 
 req.moduleKeys = moduleKeys
     
-module.exports = req
+export req

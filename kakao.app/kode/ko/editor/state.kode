@@ -6,9 +6,9 @@
 0000000      000     000   000     000     00000000
 ###
 
-{ kerror, kstr } = require 'kxk'
+# { kerror, kstr } = require 'kxk'
 
-Immutable = require 'seamless-immutable'
+# Immutable = require 'seamless-immutable'
 
 class State
 
@@ -66,4 +66,4 @@ class State
     appendLine:   (t) -> l = @s.lines.asMutable(); l.push t;         new State @s.set 'lines' l
     addHighlight: (h) -> m = @s.highlights.asMutable(); m.push h;    new State @s.set 'highlights' m
 
-module.exports = State
+export State

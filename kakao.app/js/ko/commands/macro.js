@@ -2,7 +2,7 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var Command, fs, GitInfo, indexer, kerror, Macro, post, prefs, req, reversed, salt, slash, syntax, Transform, _
+var fs, kerror, Macro, post, prefs, reversed, slash, _
 
 _ = require('kxk')._
 fs = require('kxk').fs
@@ -12,24 +12,31 @@ prefs = require('kxk').prefs
 reversed = require('kxk').reversed
 slash = require('kxk').slash
 
-indexer = require('../main/indexer')
-salt = require('../tools/salt')
-req = require('../tools/req')
-GitInfo = require('../win/gitinfo')
-Command = require('../commandline/command')
-syntax = require('../editor/syntax')
-Transform = require('../editor/actions/transform')
+import indexer from "../main/indexer.js"
+
+import salt from "../tools/salt.js"
+
+import req from "../tools/req.js"
+
+import gitinfo from "../win/gitinfo.js"
+
+import command from "../commandline/command.js"
+
+import syntax from "../editor/syntax.js"
+
+import transform from "../editor/actions/transform.js"
+
 
 Macro = (function ()
 {
-    _k_.extend(Macro, Command)
+    _k_.extend(Macro, command)
     Macro["macroNames"] = ['clean','help','dbg','class','req','inv','blink','color','fps','cwd','git','unix']
     function Macro (commandline)
     {
         Macro.__super__.constructor.call(this,commandline)
     
         this.macros = Macro.macroNames
-        this.macros = this.macros.concat(Transform.transformNames)
+        this.macros = this.macros.concat(transform.transformNames)
         this.names = ['macro']
     }
 
@@ -113,7 +120,7 @@ Macro = (function ()
                 (window.cwd != null ? window.cwd.toggle() : undefined)
                 break
             case 'git':
-                GitInfo.start()
+                gitinfo.start()
                 break
             case 'err':
                 post.toMain('throwError')
@@ -208,7 +215,7 @@ function ${clss}
     @: () ->
 
 
-module.exports = ${clss}
+export ${clss}
 `
                 fs.writeFile(file,text,{encoding:'utf8'},function (err)
                 {
@@ -252,13 +259,13 @@ module.exports = ${clss}
                 editor.cursorLines(num,step)
                 break
             default:
-                if (Transform.transformNames && _k_.in(cmmd,Transform.transformNames))
+                if (transform.transformNames && _k_.in(cmmd,transform.transformNames))
             {
-                window.textEditor.Transform.do.apply(null,[window.textEditor,cmmd].concat(cmds))
+                window.textEditor.transform.do.apply(null,[window.textEditor,cmmd].concat(cmds))
             }
             else
             {
-                kerror('unhandled macro',cmmd,Transform.transformNames)
+                kerror('unhandled macro',cmmd,transform.transformNames)
                 if (_.last(this.history) === command.trim())
                 {
                     this.history.pop()
@@ -272,4 +279,4 @@ module.exports = ${clss}
     return Macro
 })()
 
-module.exports = Macro
+export default Macro;

@@ -2,7 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-module.exports = {actions:{menu:'Line',duplicateLinesUp:{name:'Duplicate Lines Up',combo:'alt+shift+up'},duplicateLinesDown:{name:'Duplicate Lines Down',combo:'alt+shift+down'}},duplicateLinesUp:function ()
+export default {actions:{menu:'Line',duplicateLinesUp:{name:'Duplicate Lines Up',combo:'alt+shift+up'},duplicateLinesDown:{name:'Duplicate Lines Down',combo:'alt+shift+down'}},duplicateLinesUp:function ()
 {
     return this.duplicateLines('up')
 },duplicateLinesDown:function ()
@@ -58,4 +58,4 @@ module.exports = {actions:{menu:'Line',duplicateLinesUp:{name:'Duplicate Lines U
     this.do.select([])
     this.do.setCursors(newCursors)
     return this.do.end()
-}}
+}};

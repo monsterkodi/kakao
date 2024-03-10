@@ -7,7 +7,7 @@
 
 { reversed } = require 'kxk'
 
-module.exports =
+export
     
     actions:
         menu: 'Delete'

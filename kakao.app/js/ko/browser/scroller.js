@@ -2,13 +2,8 @@
 
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var drag, elem, scheme
+import scheme from "../tools/scheme.js"
 
-drag = require('kxk').drag
-elem = require('kxk').elem
-scheme = require('kxk').scheme
-
-scheme = require('../tools/scheme')
 class Scroller
 {
     constructor (column, parent)
@@ -139,4 +134,4 @@ class Scroller
     }
 }
 
-module.exports = Scroller
+export default Scroller;

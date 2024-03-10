@@ -2,16 +2,14 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var Command, Goto, post, _
+var Goto
 
-_ = require('kxk')._
-post = require('kxk').post
+import command from "../commandline/command.js"
 
-Command = require('../commandline/command')
 
 Goto = (function ()
 {
-    _k_.extend(Goto, Command)
+    _k_.extend(Goto, command)
     function Goto (commandline)
     {
         Goto.__super__.constructor.call(this,commandline)
@@ -101,4 +99,4 @@ Goto = (function ()
     return Goto
 })()
 
-module.exports = Goto
+export default Goto;

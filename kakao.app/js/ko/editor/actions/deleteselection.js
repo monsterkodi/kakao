@@ -6,7 +6,7 @@ var _
 
 _ = require('kxk')._
 
-module.exports = {deleteSelectionOrCursorLines:function ()
+export default {deleteSelectionOrCursorLines:function ()
 {
     this.do.start()
     if (!this.do.numSelections())
@@ -159,4 +159,4 @@ module.exports = {deleteSelectionOrCursorLines:function ()
         }
         return [sp,ep]
     }
-}}
+}};

@@ -6,10 +6,10 @@
 000       000        0000000 
 ###
 
-kxk = require 'kxk'
-{ $, elem, post } = kxk
+# kxk = require 'kxk'
+# { $, elem, post } = kxk
 
-now = require('perf_hooks').performance.now
+# now = require('perf_hooks').performance.now
 
 class FPS
 
@@ -70,5 +70,5 @@ class FPS
             window.requestAnimationFrame @draw
         @stash()
 
-module.exports = FPS
+export FPS
 

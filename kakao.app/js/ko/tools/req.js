@@ -2,13 +2,8 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var kstr, mathRegExp, moduleKeys, req, requireLike, requireRegExp, slash, _
+var mathRegExp, moduleKeys, req, requireRegExp
 
-_ = require('kxk')._
-kstr = require('kxk').kstr
-slash = require('kxk').slash
-
-requireLike = require('require-like')
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/
 mathRegExp = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
 
@@ -210,4 +205,4 @@ req = function (file, lines, editor)
     return operations
 }
 req.moduleKeys = moduleKeys
-module.exports = req
+export default req;

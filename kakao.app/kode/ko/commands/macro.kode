@@ -8,15 +8,15 @@
 
 { _, fs, kerror, post, prefs, reversed, slash } = require 'kxk'
 
-indexer   = require '../main/indexer'
-salt      = require '../tools/salt'
-req       = require '../tools/req'
-GitInfo   = require '../win/gitinfo'
-Command   = require '../commandline/command'
-syntax    = require '../editor/syntax'
-Transform = require '../editor/actions/transform'
+use ../main/indexer
+use ../tools/salt
+use ../tools/req
+use ../win/gitinfo
+use ../commandline/command
+use ../editor/syntax
+use ../editor/actions/transform
 
-function Macro extends Command
+function Macro extends command
 
     @macroNames: ['clean' 'help' 'dbg' 'class' 'req' 'inv' 'blink' 'color' 'fps' 'cwd' 'git' 'unix']
 
@@ -25,7 +25,7 @@ function Macro extends Command
         super commandline
 
         @macros = Macro.macroNames
-        @macros = @macros.concat Transform.transformNames
+        @macros = @macros.concat transform.transformNames
         @names  = ['macro']
 
     #  0000000  000000000   0000000   00000000   000000000
@@ -119,7 +119,7 @@ function Macro extends Command
 
             'fps'   ➜ window.fps?.toggle()
             'cwd'   ➜ window.cwd?.toggle()
-            'git'   ➜ GitInfo.start()
+            'git'   ➜ gitinfo.start()
             'err'
                 post.toMain 'throwError'
                 throw new Error 'err'
@@ -218,7 +218,7 @@ function Macro extends Command
                     @: () ->
 
 
-                module.exports = #{clss}
+                export #{clss}
 
                 """
                 fs.writeFile file, text, encoding:'utf8', (err) ->
@@ -279,13 +279,13 @@ function Macro extends Command
                 #    000     000   000  000   000  000  0000       000  000       000   000  000   000  000 0 000
                 #    000     000   000  000   000  000   000  0000000   000        0000000   000   000  000   000
 
-                if Transform.transformNames and cmmd in Transform.transformNames
-                    window.textEditor.Transform.do.apply null, [window.textEditor, cmmd].concat cmds
+                if transform.transformNames and cmmd in transform.transformNames
+                    window.textEditor.transform.do.apply null, [window.textEditor, cmmd].concat cmds
                 else
-                    kerror 'unhandled macro', cmmd, Transform.transformNames
+                    kerror 'unhandled macro', cmmd, transform.transformNames
                     if _.last(@history) == command.trim()
                         @history.pop()
 
         select: true
 
-module.exports = Macro
+export Macro

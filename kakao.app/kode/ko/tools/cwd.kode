@@ -6,9 +6,9 @@
  0000000  00     00  0000000    
 ###
 
-{ $, elem, post, slash } = require 'kxk'
+# { $, elem, post, slash } = require 'kxk'
 
-syntax = require '../editor/syntax'
+use ../editor/syntax
 
 class CWD
 
@@ -39,4 +39,4 @@ class CWD
         @elem.style.display = @visible() and 'none' or 'unset'
         @stash()
 
-module.exports = CWD
+export CWD

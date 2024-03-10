@@ -2,11 +2,6 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var matchr, _
-
-_ = require('kxk')._
-matchr = require('kxk').matchr
-
 class Strings
 {
     constructor (editor)
@@ -140,4 +135,4 @@ class Strings
     }
 }
 
-module.exports = Strings
+export default Strings;

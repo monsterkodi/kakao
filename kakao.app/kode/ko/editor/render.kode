@@ -6,7 +6,7 @@
 000   000  00000000  000   000  0000000    00000000  000   000
 ###
 
-{ kstr, elem, sw } = require 'kxk'
+# { kstr, elem, sw } = require 'kxk'
 
 class Render
 
@@ -127,4 +127,4 @@ class Render
 
         "<span class=\"#{clss}#{border} #{empty}\" style=\"transform: translate(#{tx}px,#{ty}px); width: #{sw}px; height: #{lh}px\"></span>"
 
-module.exports = Render
+export Render

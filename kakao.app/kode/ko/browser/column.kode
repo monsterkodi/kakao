@@ -6,16 +6,15 @@
  0000000   0000000   0000000   0000000   000   000  000   000
 ###
 
-{ $, _, drag, elem, fs, kerror, keyinfo, klog, kpos, open, popup, post, prefs, setStyle, slash, stopEvent } = require 'kxk'
+# { $, _, drag, elem, fs, kerror, keyinfo, klog, kpos, open, popup, post, prefs, setStyle, slash, stopEvent } = require 'kxk'
 
-Row      = require './row'
-Crumb    = require './crumb'
-Scroller = require './scroller'
-DirWatch = require '../tools/dirwatch'
-File     = require '../tools/file'
-fuzzy    = require 'fuzzy'
-wxw      = require 'wxw'
-electron = require 'electron'
+use ./row
+use ./crumb
+use ./scroller
+use ../tools/dirwatch
+use ../tools/file
+# use fuzzy
+# wxw      = require 'wxw'
 
 function Column
     
@@ -50,8 +49,8 @@ function Column
             onMove:  @onDragMove
             onStop:  @onDragStop
         
-        @crumb  = new Crumb @
-        @scroll = new Scroller @, @content
+        @crumb  = new crumb @
+        @scroll = new scroller @, @content
         
         @setIndex @browser.columns?.length
       
@@ -100,7 +99,7 @@ function Column
         
         if valid @items
             for item in @items
-                @rows.push new Row @, item
+                @rows.push new row @, item
         
             @scroll.update()
             
@@ -945,6 +944,6 @@ function Column
         if @dragDiv
             @updateDragIndicator event
                         
-module.exports = Column
+export Column
 
 
