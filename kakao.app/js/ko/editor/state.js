@@ -2,21 +2,25 @@
 
 var _k_
 
+import kstr from "../../kxk/kstr.js"
+
+import immutable from "../../../lib/immutable.js"
+
 class State
 {
     constructor (opt)
     {
-        var lines, y, _20_31_
+        var lines, y, _19_31_
 
-        if ((opt != null) && Immutable.isImmutable(opt))
+        if ((opt != null) && immutable.isImmutable(opt))
         {
             this.s = opt
         }
         else
         {
-            lines = ((_20_31_=(opt != null ? opt.lines : undefined)) != null ? _20_31_ : [])
+            lines = ((_19_31_=(opt != null ? opt.lines : undefined)) != null ? _19_31_ : [])
             y = lines.length === 0 && -1 || 0
-            this.s = Immutable({lines:lines,cursors:[[0,y]],selections:[],highlights:[],main:0})
+            this.s = immutable({lines:lines,cursors:[[0,y]],selections:[],highlights:[],main:0})
         }
     }
 
@@ -34,7 +38,7 @@ class State
     {
         if (!(this.s.lines[i] != null))
         {
-            kerror(`editor/state -- requesting invalid line at index ${i}?`)
+            console.error(`editor/state -- requesting invalid line at index ${i}?`)
             return ''
         }
         return kstr.detab(this.s.lines[i])

@@ -8,6 +8,8 @@
 
 # { _, elem, fs, kerror, kstr, last, matchr, noon, slash } = require 'kxk'
 
+log 'syntax'
+
 use ../../klor/klor
 use ../../kxk/ffs
 
@@ -181,7 +183,7 @@ class Syntax
 
         # for syntaxFile in fs.readdirSync syntaxDir
         syntaxFiles = await ffs.list syntaxDir
-        log syntaxDir, syntaxFiles
+        log 'syntax.init' syntaxDir, syntaxFiles
         for syntaxFile in syntaxFiles
 
             syntaxName = slash.basename syntaxFile, '.noon'

@@ -14,8 +14,6 @@ use ../tools/salt
 use ../editor/syntax
 use ../editor/texteditor
 
-log 'terminal'
-
 function Terminal extends texteditor
 
     @: (viewElem) ->

@@ -1,14 +1,21 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var Editor
+var Editor, __dirname
 
 import buffer from "./buffer.js"
 
 import syntax from "./syntax.js"
 
+import ffs from "../../kxk/ffs.js"
+
+import kstr from "../../kxk/kstr.js"
+
+import slash from "../../kxk/slash.js"
+
 import Do from './do.js'
+__dirname = import.meta.dirname
 
 Editor = (function ()
 {
@@ -18,16 +25,16 @@ Editor = (function ()
     {
         Editor.__super__.constructor.call(this)
     
-        var _26_27_, _28_50_
+        var _29_27_, _31_50_
 
         this.name = name
         this.config = (config != null ? config : {})
-        this.config.syntaxName = ((_26_27_=this.config.syntaxName) != null ? _26_27_ : 'txt')
+        this.config.syntaxName = ((_29_27_=this.config.syntaxName) != null ? _29_27_ : 'txt')
         if (!(Editor.actions != null))
         {
             Editor.initActions()
         }
-        this.indentString = _.padStart("",4)
+        this.indentString = _k_.lpad(4,"")
         this.stickySelection = false
         this.syntax = new syntax(this.config.syntaxName,this.line,this.lines)
         this.do = new Do(this)
@@ -39,15 +46,23 @@ Editor = (function ()
         return this.do.del()
     }
 
-    Editor["initActions"] = function ()
+    Editor["initActions"] = async function ()
     {
-        var actionFile, actions, k, key, v, value, _62_50_
+        var actionFile, actions, filelist, k, key, v, value, _75_50_
 
         this.actions = []
-        var list = _k_.list(filelist(slash.join(__dirname,'actions')))
-        for (var _53_23_ = 0; _53_23_ < list.length; _53_23_++)
+        console.log(slash.path(__dirname,'actions'))
+        filelist = await ffs.list(slash.path(__dirname,'actions'))
+        console.log('actions',filelist)
+        filelist = filelist.map(function (f)
         {
-            actionFile = list[_53_23_]
+            return f.path
+        })
+        console.log('actions',filelist)
+        var list = _k_.list(filelist)
+        for (var _66_23_ = 0; _66_23_ < list.length; _66_23_++)
+        {
+            actionFile = list[_66_23_]
             if (!(_k_.in(slash.ext(actionFile),['js','mjs','coffee','kode'])))
             {
                 continue
@@ -65,7 +80,7 @@ Editor = (function ()
                     for (k in value)
                     {
                         v = value[k]
-                        if (!_.isString(v))
+                        if (!(_k_.isStr(v)))
                         {
                             if (!(v.key != null))
                             {
@@ -84,9 +99,9 @@ Editor = (function ()
         var action
 
         var list = _k_.list(Editor.actions)
-        for (var _70_19_ = 0; _70_19_ < list.length; _70_19_++)
+        for (var _83_19_ = 0; _83_19_ < list.length; _83_19_++)
         {
-            action = list[_70_19_]
+            action = list[_83_19_]
             if (action.name === name)
             {
                 return action
@@ -97,9 +112,9 @@ Editor = (function ()
 
     Editor.prototype["shebangFileType"] = function ()
     {
-        var _81_31_, _81_44_
+        var _94_31_, _94_44_
 
-        return ((_81_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _81_44_ : 'txt')
+        return ((_94_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _94_44_ : 'txt')
     }
 
     Editor.prototype["setupFileType"] = function ()
@@ -151,11 +166,11 @@ Editor = (function ()
         }
         this.bracketCharacters.regexp = []
         var list = ['open','close']
-        for (var _123_16_ = 0; _123_16_ < list.length; _123_16_++)
+        for (var _136_16_ = 0; _136_16_ < list.length; _136_16_++)
         {
-            key = list[_123_16_]
-            cstr = _.keys(this.bracketCharacters[key]).join('')
-            reg = new RegExp(`[${_.escapeRegExp(cstr)}]`)
+            key = list[_136_16_]
+            cstr = Object.keys(this.bracketCharacters[key]).join('')
+            reg = new RegExp(`[${kstr.escapeRegexp(cstr)}]`)
             this.bracketCharacters.regexps.push([reg,key])
         }
         this.initSurround()
@@ -313,7 +328,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _240_33_, _241_50_, _247_52_
+        var e, il, indentLength, line, thisIndent, _253_33_, _254_50_, _260_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -330,9 +345,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _242_26_ = 0; _242_26_ < list.length; _242_26_++)
+                    for (var _255_26_ = 0; _255_26_ < list.length; _255_26_++)
                     {
-                        e = list[_242_26_]
+                        e = list[_255_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength
@@ -353,7 +368,7 @@ Editor = (function ()
                 il = thisIndent
             }
             il = Math.max(il,this.indentationAtLineIndex(li + 1))
-            return _.padStart("",il)
+            return _k_.lpad(il,"")
         }
         else
         {

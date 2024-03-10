@@ -568,7 +568,7 @@ parseStr = (str, p, ext) ->
 
 load = (p, ext) ○->
     
-    log globalThis
+    # log globalThis
     
     if globalThis.global
         fs = await import('fs/promises')

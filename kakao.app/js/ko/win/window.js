@@ -36,6 +36,7 @@ import projects from "../tools/projects.js"
 
 import navigate from "../main/navigate.js"
 
+console.log('farz')
 
 Window = (function ()
 {
@@ -143,7 +144,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _129_25_
+        var action, _131_25_
 
         return
         if (action = Editor.actionWithName(name))

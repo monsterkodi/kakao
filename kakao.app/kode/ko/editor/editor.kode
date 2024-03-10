@@ -6,12 +6,15 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-# kxk = require 'kxk'
-# { _, filelist, kerror, slash } = kxk
-
 use ./buffer
 use ./syntax
+use ../../kxk/ffs
+use ../../kxk/kstr
+use ../../kxk/slash
+
 import Do from './do.js'
+
+__dirname = import.meta.dirname
 
 function Editor extends buffer
 
@@ -27,7 +30,7 @@ function Editor extends buffer
 
         Editor.initActions() if not Editor.actions?
 
-        @indentString    = _.padStart "", 4
+        @indentString    = lpad 4 ""
         @stickySelection = false
         @syntax          = new syntax @config.syntaxName, @line, @lines
         @do              = new Do @
@@ -44,13 +47,23 @@ function Editor extends buffer
     # 000   000  000          000     000  000   000  000  0000       000
     # 000   000   0000000     000     000   0000000   000   000  0000000
 
-    @initActions: ->
+    @initActions: ○->
 
         @actions = []
         
         # TODO: move this stuff to a config.noon file
         
-        for actionFile in filelist(slash.join __dirname, 'actions')
+        log slash.path __dirname, 'actions'
+        
+        filelist = await ffs.list slash.path __dirname, 'actions'
+        
+        log 'actions' filelist
+        
+        filelist = filelist.map (f) -> f.path
+        
+        log 'actions' filelist
+        
+        for actionFile in filelist #filelist(slash.path __dirname, 'actions')
             continue if slash.ext(actionFile) not in ['js' 'mjs' 'coffee' 'kode']
             actions = require actionFile
             for key,value of actions
@@ -58,7 +71,7 @@ function Editor extends buffer
                     @prototype[key] = value
                 else if key == 'actions'
                     for k,v of value
-                        if not _.isString v
+                        if not v is str
                             v.key = k if not v.key?
                             @actions.push v
 
@@ -121,8 +134,8 @@ function Editor extends buffer
 
         @bracketCharacters.regexp = []
         for key in ['open' 'close']
-            cstr = _.keys(@bracketCharacters[key]).join ''
-            reg = new RegExp "[#{_.escapeRegExp cstr}]"
+            cstr = Object.keys(@bracketCharacters[key]).join ''
+            reg = new RegExp "[#{kstr.escapeRegexp cstr}]"
             @bracketCharacters.regexps.push [reg, key]
 
         @initSurround()
@@ -250,7 +263,7 @@ function Editor extends buffer
             il = thisIndent if il == 0
             il = Math.max il, @indentationAtLineIndex li+1
 
-            _.padStart "", il
+            lpad il, ""
         else
             ''
 
