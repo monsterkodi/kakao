@@ -4,6 +4,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var __dirname
 
+console.log('syntax')
 import klor from "../../klor/klor.js"
 
 import ffs from "../../kxk/ffs.js"
@@ -28,9 +29,9 @@ class Syntax
 
     getDiss (li)
     {
-        var _35_18_
+        var _37_18_
 
-        return this.diss[li] = ((_35_18_=this.diss[li]) != null ? _35_18_ : this.newDiss(li))
+        return this.diss[li] = ((_37_18_=this.diss[li]) != null ? _37_18_ : this.newDiss(li))
     }
 
     setDiss (li, dss)
@@ -48,10 +49,10 @@ class Syntax
         var ch, change, di, li
 
         var list = _k_.list(changeInfo.changes)
-        for (var _59_19_ = 0; _59_19_ < list.length; _59_19_++)
+        for (var _61_19_ = 0; _61_19_ < list.length; _61_19_++)
         {
-            change = list[_59_19_]
-            var _61_23_ = [change.doIndex,change.newIndex,change.change]; di = _61_23_[0]; li = _61_23_[1]; ch = _61_23_[2]
+            change = list[_61_19_]
+            var _63_23_ = [change.doIndex,change.newIndex,change.change]; di = _63_23_[0]; li = _63_23_[1]; ch = _63_23_[2]
 
             switch (ch)
             {
@@ -121,19 +122,19 @@ class Syntax
 
     static spanForTextAndSyntax (text, n)
     {
-        var clrzd, clss, d, di, diss, l, last, sp, spc, style, _123_30_, _128_30_
+        var clrzd, clss, d, di, diss, l, last, sp, spc, style, _125_30_, _130_30_
 
         l = ""
         diss = this.dissForTextAndSyntax(text,n)
         if ((diss != null ? diss.length : undefined))
         {
             last = 0
-            for (var _121_23_ = di = 0, _121_27_ = diss.length; (_121_23_ <= _121_27_ ? di < diss.length : di > diss.length); (_121_23_ <= _121_27_ ? ++di : --di))
+            for (var _123_23_ = di = 0, _123_27_ = diss.length; (_123_23_ <= _123_27_ ? di < diss.length : di > diss.length); (_123_23_ <= _123_27_ ? ++di : --di))
             {
                 d = diss[di]
                 style = (d.styl != null) && d.styl.length && ` style=\"${d.styl}\"` || ''
                 spc = ''
-                for (var _125_27_ = sp = last, _125_34_ = d.start; (_125_27_ <= _125_34_ ? sp < d.start : sp > d.start); (_125_27_ <= _125_34_ ? ++sp : --sp))
+                for (var _127_27_ = sp = last, _127_34_ = d.start; (_127_27_ <= _127_34_ ? sp < d.start : sp > d.start); (_127_27_ <= _127_34_ ? ++sp : --sp))
                 {
                     spc += '&nbsp;'
                 }
@@ -176,9 +177,9 @@ class Syntax
 
         l = ""
         var list = _k_.list(dss)
-        for (var _150_14_ = 0; _150_14_ < list.length; _150_14_++)
+        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
         {
-            d = list[_150_14_]
+            d = list[_152_14_]
             l = _.padEnd(l,d.start)
             l += d.match
         }
@@ -216,15 +217,15 @@ class Syntax
 
     static async init ()
     {
-        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _193_26_, _193_36_
+        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _195_26_, _195_36_
 
         syntaxDir = `${__dirname}/../../syntax/`
         syntaxFiles = await ffs.list(syntaxDir)
-        console.log(syntaxDir,syntaxFiles)
+        console.log('syntax.init',syntaxDir,syntaxFiles)
         var list = _k_.list(syntaxFiles)
-        for (var _185_23_ = 0; _185_23_ < list.length; _185_23_++)
+        for (var _187_23_ = 0; _187_23_ < list.length; _187_23_++)
         {
-            syntaxFile = list[_185_23_]
+            syntaxFile = list[_187_23_]
             syntaxName = slash.basename(syntaxFile,'.noon')
             patterns = noon.load(slash.join(syntaxDir,syntaxFile))
             patterns['\\w+'] = 'text'
@@ -235,9 +236,9 @@ class Syntax
                 delete patterns.ko
                 config = matchr.config(patterns)
                 var list1 = _k_.list(extnames)
-                for (var _198_31_ = 0; _198_31_ < list1.length; _198_31_++)
+                for (var _200_31_ = 0; _200_31_ < list1.length; _200_31_++)
                 {
-                    syntaxName = list1[_198_31_]
+                    syntaxName = list1[_200_31_]
                     this.syntaxNames.push(syntaxName)
                     this.matchrConfigs[syntaxName] = config
                 }

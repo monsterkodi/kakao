@@ -26,6 +26,8 @@ use ../tools/cwd
 use ../tools/projects
 use ../main/navigate
 
+log 'farz'
+
 # split       = null
 # info        = null
 # editor      = null

@@ -6,20 +6,19 @@
 0000000      000     000   000     000     00000000
 ###
 
-# { kerror, kstr } = require 'kxk'
-
-# Immutable = require 'seamless-immutable'
+use ../../kxk/kstr
+use ../../../lib/immutable
 
 class State
 
     @: (opt) ->
 
-        if opt? and Immutable.isImmutable opt
+        if opt? and immutable.isImmutable opt
             @s = opt
         else
             lines = opt?.lines ? []
             y = lines.length == 0 and -1 or 0
-            @s = Immutable(
+            @s = immutable(
                     lines:      lines
                     cursors:    [[0,y]]
                     selections: []
@@ -33,7 +32,7 @@ class State
     tabline:   (i) -> @s.lines[i]
     line:      (i) ->
         if not @s.lines[i]?
-            kerror "editor/state -- requesting invalid line at index #{i}?"
+            error "editor/state -- requesting invalid line at index #{i}?"
             return ''
         kstr.detab @s.lines[i]
     

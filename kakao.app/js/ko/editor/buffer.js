@@ -4,6 +4,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var Buffer, endOf, startOf
 
+console.log('buffer1')
 import state from "./state.js"
 
 
@@ -38,9 +39,9 @@ Buffer = (function ()
         return this.emit('numLines',this.numLines())
     }
 
-    Buffer.prototype["setState"] = function (state)
+    Buffer.prototype["setState"] = function (s)
     {
-        return this.state = new State(state.s)
+        return this.state = new state(s.s)
     }
 
     Buffer.prototype["mainCursor"] = function ()

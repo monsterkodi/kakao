@@ -41,9 +41,6 @@ function Win
         menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu.png'
         menuNoon = @delegate.menuNoon ? kakao.bundle.res 'menu.noon'
         
-        log 'menuIcon' menuIcon
-        log 'menuNoon' menuNoon
-        
         window.titlebar = new title icon:menuIcon, menu:menuNoon
         
         window.addEventListener 'keydown' @onKeyDown

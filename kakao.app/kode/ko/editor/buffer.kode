@@ -6,7 +6,7 @@
 0000000     0000000   000       000       00000000  000   000
 ###
 
-# kxk = require 'kxk'
+log 'buffer1'
 # { _, kerror, matchr } = kxk
 
 use ./state
@@ -31,7 +31,7 @@ function Buffer #extends events
         @state = new State lines:lines
         @emit 'numLines' @numLines()
 
-    setState: (state) -> @state = new State state.s
+    setState: (s) -> @state = new state s.s
 
     mainCursor:    -> @state.mainCursor()
     line:      (i) => @state.line i

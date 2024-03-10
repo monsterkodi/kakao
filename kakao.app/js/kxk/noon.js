@@ -742,7 +742,6 @@ load = async function (p, ext)
 {
     var fs, str
 
-    console.log(globalThis)
     if (globalThis.global)
     {
         fs = await import('fs/promises')
