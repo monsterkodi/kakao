@@ -10,6 +10,11 @@ use ../../kakao
 
 # { klog, post, prefs, scheme, stash, stopEvent, store, win } = require 'kxk'
 
+use ../../kxk/post
+use ../../kxk/stash
+use ../../kxk/store
+use ../../kxk/prefs
+
 use ./split
 use ./info
 use ./tabs
@@ -25,8 +30,6 @@ use ../editor/fileeditor
 use ../tools/cwd
 use ../tools/projects
 use ../main/navigate
-
-log 'farz'
 
 # split       = null
 # info        = null
@@ -63,6 +66,7 @@ function Window #extends win
         
     onWindowCreated:        (win)           => 
         
+        @id = win.id
         log 'onWindowCreated' win.id
         
         # super
@@ -73,7 +77,7 @@ function Window #extends win
             # icon:           '../../img/menu@2x.png'
             # scheme:         false
     
-        # window.stash = new stash "win/#{@id}" separator:'|'
+        window.stash = new stash "win/#{@id}" separator:'|'
             
         @filehandler = window.filehandler = new filehandler
         @filewatcher = window.filewatcher = new watcher
@@ -84,36 +88,36 @@ function Window #extends win
         @terminal    = window.terminal    = new terminal 'terminal'
         @editor      = window.editor      = new fileeditor 'editor'
         @commandline = window.commandline = new commandline 'commandline-editor'
-        @info        = window.info        = new info editor
+        @info        = window.info        = new info @editor
         @fps         = window.fps         = new fps()
         @cwd         = window.cwd         = new cwd()
     
-        window.textEditor = window.focusEditor = editor
-        window.setLastFocus editor.name
+        window.textEditor = window.focusEditor = @editor
+        window.setLastFocus @editor.name
 
-        restoreWin()
-        scheme.set prefs.get 'scheme' 'dark'
+        # restoreWin()
+        # scheme.set prefs.get 'scheme' 'dark'
 
-        terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
+        @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
             post.toWins 'fileLineChanges' file, [lineChange]
     
-        editor.on 'changed' (changeInfo) ->
+        @editor.on 'changed' (changeInfo) ->
             return if changeInfo.foreign
             if changeInfo.changes.length
-                post.toOtherWins 'fileLineChanges' editor.currentFile, changeInfo.changes
+                post.toOtherWins 'fileLineChanges' @editor.currentFile, changeInfo.changes
                 if changeInfo.deletes == 1
-                    navigate.delFilePos file: editor.currentFile, pos: [0 changeInfo.changes[0].oldIndex]
+                    navigate.delFilePos file: @editor.currentFile, pos: [0 changeInfo.changes[0].oldIndex]
                 else
-                    navigate.addFilePos file: editor.currentFile, pos: editor.cursorPos()
+                    navigate.addFilePos file: @editor.currentFile, pos: @editor.cursorPos()
     
-        s = window.stash.get 'fontSize' prefs.get 'editorFontSize' 19
-        editor.setFontSize s if s
+        # s = window.stash.get 'fontSize' prefs.get 'editorFontSize' 19
+        # @editor.setFontSize s if s
     
-        if window.stash.get 'centerText'
-            editor.centerText true 0
+        # if window.stash.get 'centerText'
+            # @editor.centerText true 0
     
         post.emit 'restore'
-        editor.focus()
+        @editor.focus()
 
     onMoved: (bounds) => window.stash.set 'bounds' bounds
         
@@ -188,8 +192,8 @@ function Window #extends win
 # 000        000   000  000       000            000
 # 000        000   000  00000000  000       0000000
 
-# window.state = new store 'state' separator:'|'
-# window.prefs = prefs
+window.state = new store 'state' separator:'|'
+window.prefs = prefs
 
 # post.setMaxListeners 20
 
@@ -386,23 +390,23 @@ function Window #extends win
 #     z = clamp 0.36 5.23 z
 #     webframe.setZoomFactor z
 #     editor.resized()
-# 
-# # 00000000   0000000    0000000  000   000   0000000
-# # 000       000   000  000       000   000  000
-# # 000000    000   000  000       000   000  0000000
-# # 000       000   000  000       000   000       000
-# # 000        0000000    0000000   0000000   0000000
-# 
-# window.onblur  = (event) -> post.emit 'winFocus' false
-# window.onfocus = (event) ->
-#     post.emit 'winFocus' true
-#     if document.activeElement.className == 'body'
-#         if split.editorVisible()
-#             split.focus 'editor'
-#         else
-#             split.focus 'commandline-editor'
-# 
-# window.setLastFocus = (name) -> window.lastFocus = name
+
+# 00000000   0000000    0000000  000   000   0000000
+# 000       000   000  000       000   000  000
+# 000000    000   000  000       000   000  0000000
+# 000       000   000  000       000   000       000
+# 000        0000000    0000000   0000000   0000000
+ 
+window.onblur  = (event) -> post.emit 'winFocus' false
+window.onfocus = (event) ->
+    post.emit 'winFocus' true
+    if document.activeElement.className == 'body'
+        if split.editorVisible()
+            split.focus 'editor'
+        else
+            split.focus 'commandline-editor'
+ 
+window.setLastFocus = (name) -> window.lastFocus = name
 
 # 000   000  00000000  000   000
 # 000  000   000        000 000

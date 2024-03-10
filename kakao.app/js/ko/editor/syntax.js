@@ -4,12 +4,17 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var __dirname
 
-console.log('syntax')
 import klor from "../../klor/klor.js"
+
+import slash from "../../kxk/slash.js"
+
+import matchr from "../../kxk/matchr.js"
+
+import noon from "../../kxk/noon.js"
 
 import ffs from "../../kxk/ffs.js"
 
-__dirname = import.meta.dirname
+__dirname = slash.dir(import.meta.url.slice(7))
 class Syntax
 {
     constructor (name, getLine, getLines)
@@ -29,9 +34,9 @@ class Syntax
 
     getDiss (li)
     {
-        var _37_18_
+        var _38_18_
 
-        return this.diss[li] = ((_37_18_=this.diss[li]) != null ? _37_18_ : this.newDiss(li))
+        return this.diss[li] = ((_38_18_=this.diss[li]) != null ? _38_18_ : this.newDiss(li))
     }
 
     setDiss (li, dss)
@@ -49,10 +54,10 @@ class Syntax
         var ch, change, di, li
 
         var list = _k_.list(changeInfo.changes)
-        for (var _61_19_ = 0; _61_19_ < list.length; _61_19_++)
+        for (var _62_19_ = 0; _62_19_ < list.length; _62_19_++)
         {
-            change = list[_61_19_]
-            var _63_23_ = [change.doIndex,change.newIndex,change.change]; di = _63_23_[0]; li = _63_23_[1]; ch = _63_23_[2]
+            change = list[_62_19_]
+            var _64_23_ = [change.doIndex,change.newIndex,change.change]; di = _64_23_[0]; li = _64_23_[1]; ch = _64_23_[2]
 
             switch (ch)
             {
@@ -122,19 +127,19 @@ class Syntax
 
     static spanForTextAndSyntax (text, n)
     {
-        var clrzd, clss, d, di, diss, l, last, sp, spc, style, _125_30_, _130_30_
+        var clrzd, clss, d, di, diss, l, last, sp, spc, style, _126_30_, _131_30_
 
         l = ""
         diss = this.dissForTextAndSyntax(text,n)
         if ((diss != null ? diss.length : undefined))
         {
             last = 0
-            for (var _123_23_ = di = 0, _123_27_ = diss.length; (_123_23_ <= _123_27_ ? di < diss.length : di > diss.length); (_123_23_ <= _123_27_ ? ++di : --di))
+            for (var _124_23_ = di = 0, _124_27_ = diss.length; (_124_23_ <= _124_27_ ? di < diss.length : di > diss.length); (_124_23_ <= _124_27_ ? ++di : --di))
             {
                 d = diss[di]
                 style = (d.styl != null) && d.styl.length && ` style=\"${d.styl}\"` || ''
                 spc = ''
-                for (var _127_27_ = sp = last, _127_34_ = d.start; (_127_27_ <= _127_34_ ? sp < d.start : sp > d.start); (_127_27_ <= _127_34_ ? ++sp : --sp))
+                for (var _128_27_ = sp = last, _128_34_ = d.start; (_128_27_ <= _128_34_ ? sp < d.start : sp > d.start); (_128_27_ <= _128_34_ ? ++sp : --sp))
                 {
                     spc += '&nbsp;'
                 }
@@ -177,9 +182,9 @@ class Syntax
 
         l = ""
         var list = _k_.list(dss)
-        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
+        for (var _153_14_ = 0; _153_14_ < list.length; _153_14_++)
         {
-            d = list[_152_14_]
+            d = list[_153_14_]
             l = _.padEnd(l,d.start)
             l += d.match
         }
@@ -219,15 +224,14 @@ class Syntax
     {
         var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _195_26_, _195_36_
 
-        syntaxDir = `${__dirname}/../../syntax/`
+        syntaxDir = slash.path(__dirname,'../syntax/')
         syntaxFiles = await ffs.list(syntaxDir)
-        console.log('syntax.init',syntaxDir,syntaxFiles)
         var list = _k_.list(syntaxFiles)
-        for (var _187_23_ = 0; _187_23_ < list.length; _187_23_++)
+        for (var _186_23_ = 0; _186_23_ < list.length; _186_23_++)
         {
-            syntaxFile = list[_187_23_]
-            syntaxName = slash.basename(syntaxFile,'.noon')
-            patterns = noon.load(slash.join(syntaxDir,syntaxFile))
+            syntaxFile = list[_186_23_]
+            syntaxName = slash.name(syntaxFile.path)
+            patterns = JSON.parse(await ffs.read(syntaxFile.path))
             patterns['\\w+'] = 'text'
             patterns['[^\\w\\s]+'] = 'syntax'
             if (((patterns.ko != null ? patterns.ko.extnames : undefined) != null))

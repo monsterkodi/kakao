@@ -2,7 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
-var $
+var $, stopEvent
 
 import post from "../../kxk/post.js"
 
@@ -10,11 +10,16 @@ import elem from "../../kxk/elem.js"
 
 import drag from "../../kxk/drag.js"
 
+import kpos from "../../kxk/kpos.js"
+
+import slash from "../../kxk/slash.js"
+
 import dom from "../../kxk/dom.js"
 
 import tab from "./tab.js"
 
 $ = dom.$
+stopEvent = dom.stopEvent
 
 class Tabs
 {
@@ -65,9 +70,9 @@ class Tabs
 
         t = ''
         var list = _k_.list(this.tabs)
-        for (var _56_16_ = 0; _56_16_ < list.length; _56_16_++)
+        for (var _55_16_ = 0; _55_16_ < list.length; _55_16_++)
         {
-            tab = list[_56_16_]
+            tab = list[_55_16_]
             t += tab.div.innerHTML
         }
         return post.toOtherWins('winTabs',window.winID,t)
@@ -291,9 +296,9 @@ class Tabs
             return !t.pinned && t !== this.activeTab()
         }).bind(this))
         var list = _k_.list(tabsToClose)
-        for (var _207_14_ = 0; _207_14_ < list.length; _207_14_++)
+        for (var _206_14_ = 0; _206_14_ < list.length; _206_14_++)
         {
-            t = list[_207_14_]
+            t = list[_206_14_]
             this.closeTab(t)
         }
         return this.update()
@@ -305,7 +310,7 @@ class Tabs
 
         if (this.tabs.length >= prefs.get('maximalNumberOfTabs',8))
         {
-            for (var _220_26_ = index = 0, _220_30_ = this.tabs.length; (_220_26_ <= _220_30_ ? index < this.tabs.length : index > this.tabs.length); (_220_26_ <= _220_30_ ? ++index : --index))
+            for (var _219_26_ = index = 0, _219_30_ = this.tabs.length; (_219_26_ <= _219_30_ ? index < this.tabs.length : index > this.tabs.length); (_219_26_ <= _219_30_ ? ++index : --index))
             {
                 if (!this.tabs[index].dirty && !this.tabs[index].pinned)
                 {
@@ -323,9 +328,9 @@ class Tabs
         var t
 
         var list = _k_.list(this.tabs)
-        for (var _230_14_ = 0; _230_14_ < list.length; _230_14_++)
+        for (var _229_14_ = 0; _229_14_ < list.length; _229_14_++)
         {
-            t = list[_230_14_]
+            t = list[_229_14_]
             if (t.tmpTab)
             {
                 return t
@@ -358,7 +363,7 @@ class Tabs
     {
         var col, line, tab
 
-        var _251_26_ = slash.splitFileLine(file); file = _251_26_[0]; line = _251_26_[1]; col = _251_26_[2]
+        var _250_26_ = slash.splitFileLine(file); file = _250_26_[0]; line = _250_26_[1]; col = _250_26_[2]
 
         if (tab = this.tab(file))
         {
@@ -405,7 +410,7 @@ class Tabs
         }
         if (ta.index() > tb.index())
         {
-            var _282_17_ = [tb,ta]; ta = _282_17_[0]; tb = _282_17_[1]
+            var _281_17_ = [tb,ta]; ta = _281_17_[0]; tb = _281_17_[1]
 
         }
         this.tabs[ta.index()] = tb
@@ -433,10 +438,10 @@ class Tabs
 
     stash ()
     {
-        var files, pinned, t, _310_41_
+        var files, pinned, t, _309_41_
 
-        files = (function () { var r_303_32_ = []; var list = _k_.list(this.tabs); for (var _303_32_ = 0; _303_32_ < list.length; _303_32_++)  { t = list[_303_32_];r_303_32_.push(t.file)  } return r_303_32_ }).bind(this)()
-        pinned = (function () { var r_304_34_ = []; var list1 = _k_.list(this.tabs); for (var _304_34_ = 0; _304_34_ < list1.length; _304_34_++)  { t = list1[_304_34_];r_304_34_.push(t.pinned)  } return r_304_34_ }).bind(this)()
+        files = (function () { var r_302_32_ = []; var list = _k_.list(this.tabs); for (var _302_32_ = 0; _302_32_ < list.length; _302_32_++)  { t = list[_302_32_];r_302_32_.push(t.file)  } return r_302_32_ }).bind(this)()
+        pinned = (function () { var r_303_34_ = []; var list1 = _k_.list(this.tabs); for (var _303_34_ = 0; _303_34_ < list1.length; _303_34_++)  { t = list1[_303_34_];r_303_34_.push(t.pinned)  } return r_303_34_ }).bind(this)()
         files = files.filter(function (file)
         {
             return !file.startsWith('untitled')
@@ -462,7 +467,7 @@ class Tabs
             this.addTab(files.shift())
         }
         ;(this.tabs[active] != null ? this.tabs[active].activate() : undefined)
-        for (var _328_18_ = pi = 0, _328_22_ = pinned.length; (_328_18_ <= _328_22_ ? pi < pinned.length : pi > pinned.length); (_328_18_ <= _328_22_ ? ++pi : --pi))
+        for (var _327_18_ = pi = 0, _327_22_ = pinned.length; (_327_18_ <= _327_22_ ? pi < pinned.length : pi > pinned.length); (_327_18_ <= _327_22_ ? ++pi : --pi))
         {
             if (pinned[pi])
             {
@@ -474,7 +479,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _334_36_
+        var _333_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -491,9 +496,9 @@ class Tabs
         pkg = this.tabs[0].pkg
         this.tabs[0].showPkg()
         var list = _k_.list(this.tabs.slice(1))
-        for (var _350_16_ = 0; _350_16_ < list.length; _350_16_++)
+        for (var _349_16_ = 0; _349_16_ < list.length; _349_16_++)
         {
-            tab = list[_350_16_]
+            tab = list[_349_16_]
             if (tab.pkg === pkg)
             {
                 tab.hidePkg()
@@ -509,7 +514,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _360_20_
+        var _359_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

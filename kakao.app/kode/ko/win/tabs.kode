@@ -6,16 +6,15 @@
    000     000   000  0000000    0000000
 ###
 
-# kxk = require 'kxk'
-# { $, _, drag, elem, filter, first, kerror, klog, kpos, last, popup, post, prefs, slash, stopEvent } = kxk
-
 use ../../kxk/post
 use ../../kxk/elem
 use ../../kxk/drag
+use ../../kxk/kpos
+use ../../kxk/slash
 use ../../kxk/dom
 use ./tab
 
-{ $ } = dom
+{ $, stopEvent } = dom
 
 class Tabs
 

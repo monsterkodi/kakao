@@ -6,9 +6,11 @@
 000   000  000   000   0000000  000   000   0000000
 ###
 
-{ _, fs, kerror, post, prefs, reversed, slash } = require 'kxk'
-
-use ../main/indexer
+# use ../main/indexer
+use ../../kxk/slash
+use ../../kxk/prefs
+use ../../kxk/post
+use ../../kxk/ffs
 use ../tools/salt
 use ../tools/req
 use ../win/gitinfo
@@ -50,7 +52,8 @@ function Macro extends command
 
     listItems: ->
 
-        items = _.uniq _.concat reversed(@history), @macros
+        # items = _.uniq _.concat reversed(@history), @macros
+        items = @history.concat @macros
 
         ({text: i, line: i in @macros and '◼' or '◆', type:'macro'} for i in items)
 
@@ -76,7 +79,8 @@ function Macro extends command
                 return argl
             else
                 cw = editor.wordsAtCursors positionsNotInRanges(editor.cursors(), editor.selections()), opt
-                ws = _.uniq cw.concat editor.textsInRanges editor.selections()
+                # ws = _.uniq cw.concat editor.textsInRanges editor.selections()
+                ws = editor.textsInRanges.concat editor.selections()
                 ws.filter (w) -> w.trim().length
 
         switch cmmd
@@ -121,7 +125,6 @@ function Macro extends command
             'cwd'   ➜ window.cwd?.toggle()
             'git'   ➜ gitinfo.start()
             'err'
-                post.toMain 'throwError'
                 throw new Error 'err'
 
             # 000   000  00000000  000      00000000
@@ -133,13 +136,13 @@ function Macro extends command
             'help'
 
                 terminal = window.terminal
-                text = fs.readFileSync "#{__dirname}/../../bin/cheet.noon" encoding:'utf8'
-                terminal.clear()
-                for l in text.split '\n'
-                    terminal.appendLineDiss l, syntax.dissForTextAndSyntax l, 'noon'
+                # text = fs.readFileSync "#{__dirname}/../../bin/cheet.noon" encoding:'utf8'
+                # terminal.clear()
+                # for l in text.split '\n'
+                    # terminal.appendLineDiss l, syntax.dissForTextAndSyntax l, 'noon'
 
-                terminal.scroll.cursorToTop 1
-                window.split.do 'show terminal'
+                # terminal.scroll.cursorToTop 1
+                # window.split.do 'show terminal'
 
             # 00000000   00000000   0000000
             # 000   000  000       000   000
@@ -202,7 +205,7 @@ function Macro extends command
 
             'class'
 
-                clss = cmds.length and cmds[0] or _.last editor.textsInRanges(editor.selections())
+                clss = cmds.length and cmds[0] or last editor.textsInRanges(editor.selections())
                 clss ?= 'Class'
                 dir = editor.currentFile? and slash.dir(editor.currentFile) or process.cwd()
                 file = slash.join dir, clss.toLowerCase() + '.kode'
@@ -221,11 +224,9 @@ function Macro extends command
                 export #{clss}
 
                 """
-                fs.writeFile file, text, encoding:'utf8', (err) ->
-                    if err?
-                        kerror 'writing class skeleton failed' err
-                        return
+                ffs.write(file, text).then (file) ->
                     post.emit 'newTabWithFile' file
+                    
                 return focus: editor.name
 
             #  0000000  000      00000000   0000000   000   000
@@ -283,7 +284,7 @@ function Macro extends command
                     window.textEditor.transform.do.apply null, [window.textEditor, cmmd].concat cmds
                 else
                     kerror 'unhandled macro', cmmd, transform.transformNames
-                    if _.last(@history) == command.trim()
+                    if last(@history) == command.trim()
                         @history.pop()
 
         select: true

@@ -6,11 +6,15 @@
 000   000  00000000     000     000   000
 ###
 
-# kxk = require 'kxk'
-# { post, stopEvent, slash, elem, fs, sw, kerror, $, _ } = kxk
-
 use ../tools/ranges
-import File from  '../tools/file.js'
+use ../../kxk/dom
+use ../../kxk/elem
+use ../../kxk/post
+use ../../kxk/slash
+
+{ $, stopEvent } = dom
+
+import File from '../tools/file.js'
 
 class Meta
 

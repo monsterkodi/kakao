@@ -6,11 +6,14 @@
    000     000   000  0000000
 ###
 
-# { elem, kerror, post, slash, tooltip } = require 'kxk'
-
 use ../tools/file
 use ../editor/render
 use ../editor/syntax
+
+use ../../kxk/elem
+use ../../kxk/post
+use ../../kxk/slash
+use ../../kxk/tooltip
 
 class Tab
 

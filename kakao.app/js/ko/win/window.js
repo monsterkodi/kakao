@@ -6,6 +6,14 @@ var Window
 
 import kakao from "../../kakao.js"
 
+import post from "../../kxk/post.js"
+
+import stash from "../../kxk/stash.js"
+
+import store from "../../kxk/store.js"
+
+import prefs from "../../kxk/prefs.js"
+
 import split from "./split.js"
 
 import info from "./info.js"
@@ -36,7 +44,6 @@ import projects from "../tools/projects.js"
 
 import navigate from "../main/navigate.js"
 
-console.log('farz')
 
 Window = (function ()
 {
@@ -82,9 +89,9 @@ Window = (function ()
 
     Window.prototype["onWindowCreated"] = function (win)
     {
-        var s
-
+        this.id = win.id
         console.log('onWindowCreated',win.id)
+        window.stash = new stash(`win/${this.id}`,{separator:'|'})
         this.filehandler = window.filehandler = new filehandler
         this.filewatcher = window.filewatcher = new watcher
         this.tabs = window.tabs = new tabs(window.titlebar.elem)
@@ -94,18 +101,16 @@ Window = (function ()
         this.terminal = window.terminal = new terminal('terminal')
         this.editor = window.editor = new fileeditor('editor')
         this.commandline = window.commandline = new commandline('commandline-editor')
-        this.info = window.info = new info(editor)
+        this.info = window.info = new info(this.editor)
         this.fps = window.fps = new fps()
         this.cwd = window.cwd = new cwd()
-        window.textEditor = window.focusEditor = editor
-        window.setLastFocus(editor.name)
-        restoreWin()
-        scheme.set(prefs.get('scheme','dark'))
-        terminal.on('fileSearchResultChange',function (file, lineChange)
+        window.textEditor = window.focusEditor = this.editor
+        window.setLastFocus(this.editor.name)
+        this.terminal.on('fileSearchResultChange',function (file, lineChange)
         {
             return post.toWins('fileLineChanges',file,[lineChange])
         })
-        editor.on('changed',function (changeInfo)
+        this.editor.on('changed',function (changeInfo)
         {
             if (changeInfo.foreign)
             {
@@ -113,28 +118,19 @@ Window = (function ()
             }
             if (changeInfo.changes.length)
             {
-                post.toOtherWins('fileLineChanges',editor.currentFile,changeInfo.changes)
+                post.toOtherWins('fileLineChanges',this.editor.currentFile,changeInfo.changes)
                 if (changeInfo.deletes === 1)
                 {
-                    return navigate.delFilePos({file:editor.currentFile,pos:[0,changeInfo.changes[0].oldIndex]})
+                    return navigate.delFilePos({file:this.editor.currentFile,pos:[0,changeInfo.changes[0].oldIndex]})
                 }
                 else
                 {
-                    return navigate.addFilePos({file:editor.currentFile,pos:editor.cursorPos()})
+                    return navigate.addFilePos({file:this.editor.currentFile,pos:this.editor.cursorPos()})
                 }
             }
         })
-        s = window.stash.get('fontSize',prefs.get('editorFontSize',19))
-        if (s)
-        {
-            editor.setFontSize(s)
-        }
-        if (window.stash.get('centerText'))
-        {
-            editor.centerText(true,0)
-        }
         post.emit('restore')
-        return editor.focus()
+        return this.editor.focus()
     }
 
     Window.prototype["onMoved"] = function (bounds)
@@ -144,7 +140,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _131_25_
+        var action, _135_25_
 
         return
         if (action = Editor.actionWithName(name))
@@ -288,6 +284,34 @@ Window = (function ()
     return Window
 })()
 
+window.state = new store('state',{separator:'|'})
+window.prefs = prefs
+
+window.onblur = function (event)
+{
+    return post.emit('winFocus',false)
+}
+
+window.onfocus = function (event)
+{
+    post.emit('winFocus',true)
+    if (document.activeElement.className === 'body')
+    {
+        if (split.editorVisible())
+        {
+            return split.focus('editor')
+        }
+        else
+        {
+            return split.focus('commandline-editor')
+        }
+    }
+}
+
+window.setLastFocus = function (name)
+{
+    return window.lastFocus = name
+}
 kakao.init(function ()
 {
     var kwin

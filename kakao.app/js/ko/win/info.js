@@ -2,10 +2,35 @@
 
 var _k_
 
+var $, shortCount
+
+import dom from "../../kxk/dom.js"
+
 import post from "../../kxk/post.js"
 
 import elem from "../../kxk/elem.js"
 
+import tooltip from "../../kxk/tooltip.js"
+
+$ = dom.$
+
+
+shortCount = function (v)
+{
+    v = parseInt(v)
+    if (v > 999999)
+    {
+        return `${Math.floor(v / 1000000)}M`
+    }
+    else if (v > 999)
+    {
+        return `${Math.floor(v / 1000)}k`
+    }
+    else
+    {
+        return `${v}`
+    }
+}
 class Info
 {
     constructor (editor)
@@ -78,7 +103,7 @@ class Info
 
     setEditor (editor)
     {
-        var _90_18_
+        var _101_18_
 
         if (editor === this.editor)
         {

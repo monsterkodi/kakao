@@ -4,6 +4,10 @@ var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h);
 
 import scheme from "../tools/scheme.js"
 
+import elem from "../../kxk/elem.js"
+
+import drag from "../../kxk/drag.js"
+
 class Scroller
 {
     constructor (column, parent)

@@ -1,11 +1,25 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var Commandline
+var $, Commandline, stopEvent, __dirname
+
+import dom from "../../kxk/dom.js"
+
+import ffs from "../../kxk/ffs.js"
+
+import elem from "../../kxk/elem.js"
+
+import post from "../../kxk/post.js"
+
+import slash from "../../kxk/slash.js"
 
 import texteditor from "../editor/texteditor.js"
 
+$ = dom.$
+stopEvent = dom.stopEvent
+
+__dirname = slash.dir(import.meta.url.slice(7))
 
 Commandline = (function ()
 {
@@ -34,7 +48,7 @@ Commandline = (function ()
         post.on('searchText',this.onSearchText)
         this.view.onblur = (function ()
         {
-            var _41_17_, _43_20_
+            var _48_17_, _50_20_
 
             this.button.classList.remove('active')
             ;(this.list != null ? this.list.remove() : undefined)
@@ -51,7 +65,7 @@ Commandline = (function ()
 
     Commandline.prototype["onSearchText"] = function (text)
     {
-        var _57_23_
+        var _64_23_
 
         if (window.split.commandlineVisible())
         {
@@ -67,7 +81,7 @@ Commandline = (function ()
 
     Commandline.prototype["stash"] = function ()
     {
-        var _71_19_
+        var _78_19_
 
         if ((this.command != null))
         {
@@ -77,11 +91,11 @@ Commandline = (function ()
 
     Commandline.prototype["restore"] = function ()
     {
-        var activeID, name, state, _78_29_, _80_27_, _88_41_
+        var activeID, name, state, _85_29_, _87_27_, _95_41_
 
         state = window.stash.get('commandline')
-        this.setText(((_78_29_=(state != null ? state.text : undefined)) != null ? _78_29_ : ""))
-        name = ((_80_27_=(state != null ? state.name : undefined)) != null ? _80_27_ : 'open')
+        this.setText(((_85_29_=(state != null ? state.text : undefined)) != null ? _85_29_ : ""))
+        name = ((_87_27_=(state != null ? state.name : undefined)) != null ? _87_27_ : 'open')
         if (this.command = this.commandForName(name))
         {
             activeID = document.activeElement.id
@@ -92,34 +106,39 @@ Commandline = (function ()
             this.command.setReceiver(activeID !== 'commandline-editor' && activeID || null)
             this.setName(name)
             this.button.className = `commandline-button active ${this.command.prefsID}`
-            return (this.commands[name] != null ? typeof (_88_41_=this.commands[name].restoreState) === "function" ? _88_41_(state) : undefined : undefined)
+            return (this.commands[name] != null ? typeof (_95_41_=this.commands[name].restoreState) === "function" ? _95_41_(state) : undefined : undefined)
         }
     }
 
-    Commandline.prototype["loadCommands"] = function ()
+    Commandline.prototype["loadCommands"] = async function ()
     {
-        var command, commandClass, file, files
+        var command, commandClass, commandModule, file, files
 
-        files = filelist(`${__dirname}/../commands`)
+        files = await ffs.list(slash.path(__dirname,'../commands'))
         var list = _k_.list(files)
-        for (var _99_17_ = 0; _99_17_ < list.length; _99_17_++)
+        for (var _107_17_ = 0; _107_17_ < list.length; _107_17_++)
         {
-            file = list[_99_17_]
-            if (!(_k_.in(slash.ext(file),['js','mjs'])))
+            file = list[_107_17_]
+            console.log(file)
+            if (!(_k_.in(slash.ext(file.path),['js','mjs'])))
             {
                 continue
             }
             try
             {
-                commandClass = require(file)
+                console.log('commandPath',file.path)
+                commandModule = await import(file.path)
+                console.log('commandModule',commandModule)
+                commandClass = commandModule.default
+                console.log('commandClass',file.path,commandClass)
                 command = new commandClass(this)
+                console.log('commandObj',file.path,command)
                 command.setPrefsID(commandClass.name.toLowerCase())
                 this.commands[command.prefsID] = command
             }
             catch (err)
             {
-                _k_.noon(err)
-                kerror(`can't load command from file '${file}': ${err}`)
+                console.error(`can't load command from file '${file.path}': ${err}`)
                 throw err
             }
         }
@@ -146,13 +165,15 @@ Commandline = (function ()
 
     Commandline.prototype["setText"] = function (t)
     {
+        var _145_26_
+
         this.setLines([(t != null ? t : '')])
-        return this.singleCursorAtPos([this.line(0).length,0])
+        return (typeof this.singleCursorAtPos === "function" ? this.singleCursorAtPos([this.line(0).length,0]) : undefined)
     }
 
     Commandline.prototype["changed"] = function (changeInfo)
     {
-        var _1_8_, _144_20_
+        var _1_8_, _159_20_
 
         this.hideList()
         Commandline.__super__.changed.call(this,changeInfo)
@@ -165,15 +186,15 @@ Commandline = (function ()
 
     Commandline.prototype["onSplit"] = function (s)
     {
-        var _148_16_, _148_23_
+        var _163_16_, _163_23_
 
-        ;((_148_16_=this.command) != null ? typeof (_148_23_=_148_16_.onBot) === "function" ? _148_23_(s[1]) : undefined : undefined)
+        ;((_163_16_=this.command) != null ? typeof (_163_23_=_163_16_.onBot) === "function" ? _163_23_(s[1]) : undefined : undefined)
         return this.positionList()
     }
 
     Commandline.prototype["startCommand"] = function (name)
     {
-        var activeID, r, _159_20_
+        var activeID, r, _174_20_
 
         r = (this.command != null ? this.command.cancel(name) : undefined)
         if ((r != null ? r.status : undefined) === 'ok')
@@ -226,14 +247,14 @@ Commandline = (function ()
 
     Commandline.prototype["execute"] = function ()
     {
-        var _198_33_
+        var _213_33_
 
         return this.results((this.command != null ? this.command.execute(this.line(0)) : undefined))
     }
 
     Commandline.prototype["results"] = function (r)
     {
-        var _208_34_, _209_34_, _211_47_, _212_48_, _213_45_
+        var _223_34_, _224_34_, _226_47_, _227_48_, _228_45_
 
         if (((r != null ? r.name : undefined) != null))
         {
@@ -261,14 +282,14 @@ Commandline = (function ()
 
     Commandline.prototype["cancel"] = function ()
     {
-        var _216_32_
+        var _231_32_
 
         return this.results((this.command != null ? this.command.cancel() : undefined))
     }
 
     Commandline.prototype["clear"] = function ()
     {
-        var _219_29_
+        var _234_29_
 
         if (this.text() === '')
         {
@@ -282,7 +303,7 @@ Commandline = (function ()
 
     Commandline.prototype["onCmmdClick"] = function (event)
     {
-        var _231_20_, _235_16_, _235_26_
+        var _246_20_, _250_16_, _250_26_
 
         if (!(this.list != null))
         {
@@ -290,7 +311,7 @@ Commandline = (function ()
             this.positionList()
             window.split.elem.appendChild(this.list)
         }
-        ;((_235_16_=this.command) != null ? typeof (_235_26_=_235_16_.hideList) === "function" ? _235_26_() : undefined : undefined)
+        ;((_250_16_=this.command) != null ? typeof (_250_26_=_250_16_.hideList) === "function" ? _250_26_() : undefined : undefined)
         this.listCommands()
         this.focus()
         this.positionList()
@@ -303,12 +324,15 @@ Commandline = (function ()
 
         this.list.innerHTML = ""
         this.list.style.display = 'unset'
+        console.log('listCommands',this.mainCommands)
+        console.log('listCommands',this.commands)
         var list = _k_.list(this.mainCommands)
-        for (var _245_17_ = 0; _245_17_ < list.length; _245_17_++)
+        for (var _264_17_ = 0; _264_17_ < list.length; _264_17_++)
         {
-            name = list[_245_17_]
+            name = list[_264_17_]
             cmmd = this.commands[name]
-            for (var _247_23_ = ci = 0, _247_27_ = cmmd.names.length; (_247_23_ <= _247_27_ ? ci < cmmd.names.length : ci > cmmd.names.length); (_247_23_ <= _247_27_ ? ++ci : --ci))
+            console.log(name,cmmd)
+            for (var _267_22_ = ci = 0, _267_26_ = cmmd.names.length; (_267_22_ <= _267_26_ ? ci < cmmd.names.length : ci > cmmd.names.length); (_267_22_ <= _267_26_ ? ++ci : --ci))
             {
                 cname = cmmd.names[ci]
                 if (_k_.in(cname,this.hideCommands))
@@ -335,7 +359,7 @@ Commandline = (function ()
 
     Commandline.prototype["hideList"] = function ()
     {
-        var _262_13_
+        var _282_13_
 
         ;(this.list != null ? this.list.remove() : undefined)
         return this.list = null
@@ -343,7 +367,7 @@ Commandline = (function ()
 
     Commandline.prototype["positionList"] = function ()
     {
-        var flex, listHeight, listTop, spaceAbove, spaceBelow, _273_27_
+        var flex, listHeight, listTop, spaceAbove, spaceBelow, _293_27_
 
         if (!(this.list != null))
         {
@@ -366,10 +390,10 @@ Commandline = (function ()
 
     Commandline.prototype["resized"] = function ()
     {
-        var _285_13_, _285_22_, _286_16_, _286_29_
+        var _305_13_, _305_22_, _306_16_, _306_29_
 
-        ;((_285_13_=this.list) != null ? typeof (_285_22_=_285_13_.resized) === "function" ? _285_22_() : undefined : undefined)
-        ;((_286_16_=this.command) != null ? (_286_29_=_286_16_.commandList) != null ? _286_29_.resized() : undefined : undefined)
+        ;((_305_13_=this.list) != null ? typeof (_305_22_=_305_13_.resized) === "function" ? _305_22_() : undefined : undefined)
+        ;((_306_16_=this.command) != null ? (_306_29_=_306_16_.commandList) != null ? _306_29_.resized() : undefined : undefined)
         return Commandline.__super__.resized.call(this)
     }
 
@@ -397,7 +421,7 @@ Commandline = (function ()
 
     Commandline.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _316_19_
+        var _336_19_
 
         if (combo === 'esc')
         {
@@ -416,7 +440,7 @@ Commandline = (function ()
 
     Commandline.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _323_19_, _331_55_, _332_55_, _342_58_
+        var split, _1_8_, _343_19_, _351_55_, _352_55_, _362_58_
 
         if ((this.command != null))
         {

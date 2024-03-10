@@ -13,6 +13,9 @@ use ./crumb
 use ./scroller
 use ../tools/dirwatch
 use ../tools/file
+use ../../kxk/elem
+use ../../kxk/drag
+use ../../kxk/post
 # use fuzzy
 # wxw      = require 'wxw'
 

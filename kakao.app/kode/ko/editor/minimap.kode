@@ -6,9 +6,13 @@
 000   000  000  000   000  000  000   000  000   000  000
 ###
 
-# { drag, elem, getStyle } = require 'kxk'
-
 use ./mapscroll
+
+use ../../kxk/dom
+use ../../kxk/elem
+use ../../kxk/drag
+
+{ getStyle } = dom
 
 class Minimap
 

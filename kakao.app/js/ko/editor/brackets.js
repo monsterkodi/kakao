@@ -1,6 +1,8 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
+
+import matchr from "../../kxk/matchr.js"
 
 class Brackets
 {
@@ -42,11 +44,11 @@ class Brackets
 
         if (after.length || before.length)
         {
-            if (after.length && _.first(after).start === cp[0] && _.first(after).clss === 'open')
+            if (after.length && _k_.first(after).start === cp[0] && _k_.first(after).clss === 'open')
             {
                 cp[0] += 1
             }
-            if (before.length && _.last(before).start === cp[0] - 1 && _.last(before).clss === 'close')
+            if (before.length && _k_.last(before).start === cp[0] - 1 && _k_.last(before).clss === 'close')
             {
                 cp[0] -= 1
             }
@@ -77,7 +79,7 @@ class Brackets
                 {
                     if (stack.length)
                     {
-                        if (this.open[prev.match] === _.last(stack).match)
+                        if (this.open[prev.match] === _k_.last(stack).match)
                         {
                             stack.pop()
                             continue
@@ -126,7 +128,7 @@ class Brackets
                 {
                     if (stack.length)
                     {
-                        if (this.open[_.last(stack).match] === next.match)
+                        if (this.open[_k_.last(stack).match] === next.match)
                         {
                             stack.pop()
                             continue
@@ -204,8 +206,8 @@ class Brackets
                 r = list[_141_30_]
                 r.line = li
             }
-            lst = _.last(rngs)
-            fst = _.first(rngs)
+            lst = _k_.last(rngs)
+            fst = _k_.first(rngs)
             for (var _144_36_ = firstAfterIndex = 0, _144_40_ = rngs.length; (_144_36_ <= _144_40_ ? firstAfterIndex < rngs.length : firstAfterIndex > rngs.length); (_144_36_ <= _144_40_ ? ++firstAfterIndex : --firstAfterIndex))
             {
                 if (rngs[firstAfterIndex].start >= cp)

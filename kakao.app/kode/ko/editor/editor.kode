@@ -14,7 +14,7 @@ use ../../kxk/slash
 
 import Do from './do.js'
 
-__dirname = import.meta.dirname
+__dirname = slash.dir import.meta.url[7..]
 
 function Editor extends buffer
 
@@ -22,24 +22,43 @@ function Editor extends buffer
 
     @: (name, config) ->
 
+        @stringCharacters =
+            "'":  'single'
+            '"':  'double'
+
+        @bracketCharacters =
+            open:
+                '[': ']'
+                '{': '}'
+                '(': ')'
+            close:   {}
+            regexps: []
+        
         super()
 
         @name   = name
         @config = config ? {}
         @config.syntaxName ?= 'txt'
 
-        Editor.initActions() if not Editor.actions?
-
         @indentString    = lpad 4 ""
         @stickySelection = false
         @syntax          = new syntax @config.syntaxName, @line, @lines
         @do              = new Do @
-
-        @setupFileType()
+        
+        if empty Editor.actions
+            Editor.initActions @
+        else
+            @actionsInitialized()
 
     del: ->
 
         @do.del()
+        
+    actionsInitialized: =>
+        
+        # log 'Editor.actionsInitialized'
+        
+        @setupFileType()
 
     #  0000000    0000000  000000000  000   0000000   000   000   0000000
     # 000   000  000          000     000  000   000  0000  000  000
@@ -47,34 +66,30 @@ function Editor extends buffer
     # 000   000  000          000     000  000   000  000  0000       000
     # 000   000   0000000     000     000   0000000   000   000  0000000
 
-    @initActions: ○->
+    @initActions: (editor) ○->
 
-        @actions = []
-        
-        # TODO: move this stuff to a config.noon file
-        
-        log slash.path __dirname, 'actions'
+        Editor.actions = []
         
         filelist = await ffs.list slash.path __dirname, 'actions'
         
-        log 'actions' filelist
-        
-        filelist = filelist.map (f) -> f.path
-        
-        log 'actions' filelist
-        
-        for actionFile in filelist #filelist(slash.path __dirname, 'actions')
+        for item in filelist
+            # TODO: move this stuff to a config.noon file
+            actionFile = item.path
             continue if slash.ext(actionFile) not in ['js' 'mjs' 'coffee' 'kode']
-            actions = require actionFile
-            for key,value of actions
+            # log 'action' actionFile
+            actions = await import(actionFile)
+            # log 'Editor.initActions' actions.default
+            for key,value of actions.default
                 if value is func
                     @prototype[key] = value
                 else if key == 'actions'
                     for k,v of value
                         if not v is str
                             v.key = k if not v.key?
-                            @actions.push v
+                            Editor.actions.push v
 
+        # log 'Editor.initActions' Editor.actions
+        editor?.actionsInitialized()
         # too early for log here!
         # console.log str @actions
 
@@ -108,9 +123,9 @@ function Editor extends buffer
 
         # _______________________________________________________________ strings
 
-        @stringCharacters =
-            "'":  'single'
-            '"':  'double'
+        # @stringCharacters =
+            # "'":  'single'
+            # '"':  'double'
 
         switch @fileType
             when 'md'   then @stringCharacters['*'] = 'bold'
@@ -118,13 +133,13 @@ function Editor extends buffer
 
         # _______________________________________________________________ brackets
 
-        @bracketCharacters =
-            open:
-                '[': ']'
-                '{': '}'
-                '(': ')'
-            close:   {}
-            regexps: []
+        # @bracketCharacters =
+            # open:
+                # '[': ']'
+                # '{': '}'
+                # '(': ')'
+            # close:   {}
+            # regexps: []
 
         switch @fileType
             when 'html' then @bracketCharacters.open['<'] = '>'
@@ -138,7 +153,7 @@ function Editor extends buffer
             reg = new RegExp "[#{kstr.escapeRegexp cstr}]"
             @bracketCharacters.regexps.push [reg, key]
 
-        @initSurround()
+        @initSurround?()
 
         # _______________________________________________________________ indent
 
@@ -169,7 +184,7 @@ function Editor extends buffer
              'iss' 'ini'                                            ➜ ';'
              
         if @lineComment
-            @headerRegExp = new RegExp("^(\\s*#{_.escapeRegExp @lineComment}\\s*)?(\\s*0[0\\s]+)$")
+            @headerRegExp = new RegExp("^(\\s*#{kstr.escapeRegexp @lineComment}\\s*)?(\\s*0[0\\s]+)$")
 
     #  0000000  00000000  000000000         000      000  000   000  00000000   0000000
     # 000       000          000            000      000  0000  000  000       000
@@ -182,7 +197,7 @@ function Editor extends buffer
         # klog 'setText' text.length
 
         if @syntax.name == 'txt'
-            @syntax.name = Syntax.shebang text.slice 0, text.search /\r?\n/
+            @syntax.name = syntax.shebang text.slice 0, text.search /\r?\n/
 
         lines = text.split /\n/
 

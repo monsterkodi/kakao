@@ -1,0 +1,108 @@
+###
+ 0000000  000000000   0000000    0000000  000   000  
+000          000     000   000  000       000   000  
+0000000      000     000000000  0000000   000000000  
+     000     000     000   000       000  000   000  
+0000000      000     000   000  0000000   000   000  
+###
+
+# { _, fs, noon, post, sds, slash } = require './kxk'
+
+# simple key value store with delayed saving to userData folder
+# does not sync between processes
+ 
+use ./post
+use ./slash
+use ./sds
+use ./ffs
+
+function Stash
+    
+    @: (@name, opt) ->
+
+        return error 'stash.constructor -- no name?' if not @name
+        
+        @sep = opt?.separator ? ':'
+        @timer   = null
+        # @file    = slash.path opt?.file ? "#{post.get 'userData'}/#{@name}.noon"
+        @file    = slash.path opt?.file ? "userDataFolder/#{@name}.noon"
+        @timeout = opt?.timeout ? 4000
+        @changes = []
+        
+        # fs.ensureDir slash.dir(@file), ->
+        @data = @load()
+        @data = {} if not @data is obj
+        # @data = _.defaults @data, opt.defaults if opt?.defaults?
+
+    keypath: (key) -> key.split @sep
+    
+    #  0000000   00000000  000000000
+    # 000        000          000   
+    # 000  0000  0000000      000   
+    # 000   000  000          000   
+    #  0000000   00000000     000   
+        
+    get: (key, value) ->
+        
+        error 'stash.get -- invalid key', key if not key?.split?
+        return value if not key?.split?
+        sds.get @data, @keypath(key), value
+         
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: (key, value) ->
+        
+        return error 'stash.set -- invalid key', key if not key?.split?
+        sds.set @data, @keypath(key), value
+        
+        clearTimeout @timer if @timer
+        @timer = setTimeout @save, @timeout
+                    
+    del: (key) -> @set key
+    
+    clear: ->
+        
+        @data = {}
+        clearTimeout @timer
+        @timer = null
+        fs.removeSync @file
+        
+    # 000       0000000    0000000   0000000    
+    # 000      000   000  000   000  000   000  
+    # 000      000   000  000000000  000   000  
+    # 000      000   000  000   000  000   000  
+    # 0000000   0000000   000   000  0000000    
+    
+    load: ->
+        
+        log 'stash load not implemented!'
+        
+        # if slash.isFile @file
+            # return noon.load @file
+        {}
+        
+    #  0000000   0000000   000   000  00000000
+    # 000       000   000  000   000  000     
+    # 0000000   000000000   000 000   0000000 
+    #      000  000   000     000     000     
+    # 0000000   000   000      0      00000000
+
+    save: =>
+        
+        return if not @file
+        
+        clearTimeout @timer
+        @timer = null
+        try
+            text = noon @data
+            log 'stash.save' text
+            ffs.write @file, text
+                # post.toMain 'stashSaved'
+        catch err
+            error "stash.save -- can't save to '#{@file}': #{err}"
+        
+export Stash

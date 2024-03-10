@@ -4,6 +4,8 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var Command
 
+import elem from "../../kxk/elem.js"
+
 import syntax from "../editor/syntax.js"
 
 import commandlist from "./commandlist.js"

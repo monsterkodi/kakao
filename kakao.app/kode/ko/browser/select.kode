@@ -6,8 +6,6 @@
 0000000   00000000  0000000  00000000   0000000     000   
 ###
 
-# { klog } = require 'kxk'
-
 class Select
 
     @: (@browser) ->

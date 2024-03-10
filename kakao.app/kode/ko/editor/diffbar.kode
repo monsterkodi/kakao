@@ -6,11 +6,11 @@
 0000000    000  000       000       0000000    000   000  000   000
 ###
 
-# kxk = require 'kxk'
-# { elem, post } = kxk
-
 use ../tools/linediff
 use ../git/hub
+
+use ../../kxk/elem
+use ../../kxk/post
 
 class Diffbar
 
