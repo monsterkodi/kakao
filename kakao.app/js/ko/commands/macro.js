@@ -1,18 +1,16 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
-var fs, kerror, Macro, post, prefs, reversed, slash, _
+var Macro
 
-_ = require('kxk')._
-fs = require('kxk').fs
-kerror = require('kxk').kerror
-post = require('kxk').post
-prefs = require('kxk').prefs
-reversed = require('kxk').reversed
-slash = require('kxk').slash
+import slash from "../../kxk/slash.js"
 
-import indexer from "../main/indexer.js"
+import prefs from "../../kxk/prefs.js"
+
+import post from "../../kxk/post.js"
+
+import ffs from "../../kxk/ffs.js"
 
 import salt from "../tools/salt.js"
 
@@ -58,13 +56,13 @@ Macro = (function ()
     {
         var i, items
 
-        items = _.uniq(_.concat(reversed(this.history),this.macros))
-        return (function () { var r_55_74_ = []; var list = _k_.list(items); for (var _55_74_ = 0; _55_74_ < list.length; _55_74_++)  { i = list[_55_74_];r_55_74_.push({text:i,line:_k_.in(i,this.macros) && '◼' || '◆',type:'macro'})  } return r_55_74_ }).bind(this)()
+        items = this.history.concat(this.macros)
+        return (function () { var r_58_74_ = []; var list = _k_.list(items); for (var _58_74_ = 0; _58_74_ < list.length; _58_74_++)  { i = list[_58_74_];r_58_74_.push({text:i,line:_k_.in(i,this.macros) && '◼' || '◆',type:'macro'})  } return r_58_74_ }).bind(this)()
     }
 
     Macro.prototype["execute"] = function (command)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, indent, insert, l, li, line, lines, lst, num, s, step, t, terminal, text, ti, words, wordsInArgsOrCursorsOrSelection, _120_35_, _121_35_, _207_40_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, indent, insert, li, line, lines, lst, num, s, step, t, terminal, text, ti, words, wordsInArgsOrCursorsOrSelection, _124_35_, _125_35_, _210_40_
 
         if (_k_.empty(command))
         {
@@ -86,7 +84,7 @@ Macro = (function ()
             else
             {
                 cw = editor.wordsAtCursors(positionsNotInRanges(editor.cursors(),editor.selections()),opt)
-                ws = _.uniq(cw.concat(editor.textsInRanges(editor.selections())))
+                ws = editor.textsInRanges.concat(editor.selections())
                 return ws.filter(function (w)
                 {
                     return w.trim().length
@@ -123,21 +121,10 @@ Macro = (function ()
                 gitinfo.start()
                 break
             case 'err':
-                post.toMain('throwError')
                 throw new Error('err')
                 break
             case 'help':
                 terminal = window.terminal
-                text = fs.readFileSync(`${__dirname}/../../bin/cheet.noon`,{encoding:'utf8'})
-                terminal.clear()
-                var list = _k_.list(text.split('\n'))
-                for (var _138_22_ = 0; _138_22_ < list.length; _138_22_++)
-                {
-                    l = list[_138_22_]
-                    terminal.appendLineDiss(l,syntax.dissForTextAndSyntax(l,'noon'))
-                }
-                terminal.scroll.cursorToTop(1)
-                window.split.do('show terminal')
                 break
             case 'req':
                 if (!(_k_.in(slash.ext(editor.currentFile),['coffee','kode'])))
@@ -148,10 +135,10 @@ Macro = (function ()
                 if (!_k_.empty(lines))
                 {
                     editor.do.start()
-                    var list1 = _k_.list(lines)
-                    for (var _157_29_ = 0; _157_29_ < list1.length; _157_29_++)
+                    var list = _k_.list(lines)
+                    for (var _160_29_ = 0; _160_29_ < list.length; _160_29_++)
                     {
-                        line = list1[_157_29_]
+                        line = list[_160_29_]
                         if (line.op === 'insert')
                         {
                             editor.do.insert(line.index,line.text)
@@ -180,7 +167,7 @@ Macro = (function ()
                     cmds.shift()
                 }
                 words = wordsInArgsOrCursorsOrSelection(cmds,{include:"#@.-"})
-                for (var _182_27_ = ti = 0, _182_31_ = words.length - lst; (_182_27_ <= _182_31_ ? ti < words.length - lst : ti > words.length - lst); (_182_27_ <= _182_31_ ? ++ti : --ti))
+                for (var _185_27_ = ti = 0, _185_31_ = words.length - lst; (_185_27_ <= _185_31_ ? ti < words.length - lst : ti > words.length - lst); (_185_27_ <= _185_31_ ? ++ti : --ti))
                 {
                     t = words[ti]
                     insert += `${t}:\#{kstr ${t}} `
@@ -189,7 +176,7 @@ Macro = (function ()
                 insert += '"'
                 if (lst)
                 {
-                    insert += (function () { var r_188_61_ = []; for (var _188_65_ = ti = words.length - lst, _188_86_ = words.length; (_188_65_ <= _188_86_ ? ti < words.length : ti > words.length); (_188_65_ <= _188_86_ ? ++ti : --ti))  { r_188_61_.push(`, kstr(${words[ti]})`)  } return r_188_61_ }).bind(this)().join('')
+                    insert += (function () { var r_191_61_ = []; for (var _191_65_ = ti = words.length - lst, _191_86_ = words.length; (_191_65_ <= _191_86_ ? ti < words.length : ti > words.length); (_191_65_ <= _191_86_ ? ++ti : --ti))  { r_191_61_.push(`, kstr(${words[ti]})`)  } return r_191_61_ }).bind(this)().join('')
                 }
                 editor.do.start()
                 editor.do.insert(li,insert)
@@ -198,7 +185,7 @@ Macro = (function ()
                 {focus:editor.name}
                 break
             case 'class':
-                clss = cmds.length && cmds[0] || _.last(editor.textsInRanges(editor.selections()))
+                clss = cmds.length && cmds[0] || _k_.last(editor.textsInRanges(editor.selections()))
                 clss = (clss != null ? clss : 'Class')
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || process.cwd()
                 file = slash.join(dir,clss.toLowerCase() + '.kode')
@@ -207,7 +194,7 @@ Macro = (function ()
                     return {text:`file ${file} exists!`}
                 }
                 text = "###\n"
-                text += (function () { var r_212_33_ = []; var list2 = _k_.list(salt(clss).split('\n')); for (var _212_33_ = 0; _212_33_ < list2.length; _212_33_++)  { s = list2[_212_33_];r_212_33_.push(s)  } return r_212_33_ }).bind(this)().join('\n')
+                text += (function () { var r_215_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _215_33_ = 0; _215_33_ < list1.length; _215_33_++)  { s = list1[_215_33_];r_215_33_.push(s)  } return r_215_33_ }).bind(this)().join('\n')
                 text += "\n###\n"
                 text += `
 function ${clss}
@@ -217,20 +204,15 @@ function ${clss}
 
 export ${clss}
 `
-                fs.writeFile(file,text,{encoding:'utf8'},function (err)
+                ffs.write(file,text).then(function (file)
                 {
-                    if ((err != null))
-                    {
-                        kerror('writing class skeleton failed',err)
-                        return
-                    }
                     return post.emit('newTabWithFile',file)
                 })
                 return {focus:editor.name}
 
             case 'clean':
                 editor.do.start()
-                for (var _240_27_ = li = 0, _240_31_ = editor.numLines(); (_240_27_ <= _240_31_ ? li < editor.numLines() : li > editor.numLines()); (_240_27_ <= _240_31_ ? ++li : --li))
+                for (var _241_27_ = li = 0, _241_31_ = editor.numLines(); (_241_27_ <= _241_31_ ? li < editor.numLines() : li > editor.numLines()); (_241_27_ <= _241_31_ ? ++li : --li))
                 {
                     line = editor.line(li)
                     cleaned = line.trimRight()
@@ -266,7 +248,7 @@ export ${clss}
             else
             {
                 kerror('unhandled macro',cmmd,transform.transformNames)
-                if (_.last(this.history) === command.trim())
+                if (_k_.last(this.history) === command.trim())
                 {
                     this.history.pop()
                 }

@@ -6,13 +6,13 @@
 00000000  0000000    000     000      0000000   000   000        0000000    0000000  000   000   0000000   0000000  0000000  
 ###
 
-# use events
+use ../../kxk/events
 
-class EditorScroll #extends events
+class EditorScroll extends events
 
     @: (@editor) ->
 
-        # super()
+        super()
         @lineHeight = @editor.size.lineHeight ? 0
         @viewHeight = -1
         @init()

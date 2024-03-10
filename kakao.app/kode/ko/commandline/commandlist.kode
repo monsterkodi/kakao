@@ -6,11 +6,11 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  0000000      000
 ###
 
-# { kerror, matchr } = require 'kxk'
-
 use ../editor/texteditor
 use ../editor/syntax
 use ../tools/salt
+
+use ../../kxk/matchr
 
 function CommandList extends texteditor
 
@@ -97,7 +97,7 @@ function CommandList extends texteditor
     appendMeta: (meta) ->
 
         if not meta?
-            return kerror 'CommandList.appendMeta -- no meta?'
+            return error 'CommandList.appendMeta -- no meta?'
             
         @meta.addDiv @meta.append meta
 

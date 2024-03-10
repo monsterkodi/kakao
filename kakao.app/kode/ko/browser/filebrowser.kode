@@ -9,9 +9,13 @@
 # { $, drag, elem, filelist, klog, post, prefs, slash } = require 'kxk'
 
 use ./browser
-use ./shelf
 use ./select
-use ../git/hub
+use ./shelf
+use ../../kxk/elem
+use ../../kxk/drag
+use ../../kxk/post
+
+# use ../git/hub
 
 import File from '../tools/file.js'
 import Info from './info.js'

@@ -284,7 +284,7 @@ class Flex
     sizeOfPane:  (i) -> @pane(i).size
     posOfPane:   (i) -> @pane(i).pos()
     posOfHandle: (i) -> @handle(i).pos()
-    pane:        (i) -> i is num and @panes[i]   or i is str and _.find(@panes, (p) -> p.id == i) or i
+    pane:        (i) -> i is num and @panes[i]   or i is str and @panes.find( (p) -> p.id == i) or i
     handle:      (i) -> i is num and @handles[i] or i
 
     height: -> @view.getBoundingClientRect().height

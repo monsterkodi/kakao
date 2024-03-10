@@ -8,9 +8,17 @@
 
 # { $, _, drag, elem, kerror, keyinfo, klog, os, post, prefs, stopEvent } = require 'kxk'
   
+use ../../kxk/keyinfo
+use ../../kxk/prefs
+use ../../kxk/post
+use ../../kxk/drag
+use ../../kxk/elem
+use ../../kxk/dom
 use ./render
 use ./editorscroll
 use ./editor
+
+{ $, stopEvent } = dom
 
 function TextEditor extends editor
 
@@ -54,16 +62,22 @@ function TextEditor extends editor
 
         @initDrag()        
 
+        @installFeatures()
+
+        post.on 'schemeChanged' @onSchemeChanged
+
+    installFeatures: ○->
+        
         for feature in @config.features
             if feature == 'CursorLine'
                 @cursorLine = elem 'div' class:'cursor-line'
             else
                 featureName = feature.toLowerCase()
-                featureClss = require "./#{featureName}"
+                featureModule = await import("./#{featureName}.js")
+                featureClss = featureModule.default
                 @[featureName] = new featureClss @
-
-        post.on 'schemeChanged' @onSchemeChanged
-
+                log 'feature' featureName, featureClss, @[featureName]
+        
     # 0000000    00000000  000
     # 000   000  000       000
     # 000   000  0000000   000

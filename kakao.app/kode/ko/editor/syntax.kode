@@ -8,12 +8,13 @@
 
 # { _, elem, fs, kerror, kstr, last, matchr, noon, slash } = require 'kxk'
 
-log 'syntax'
-
 use ../../klor/klor
+use ../../kxk/slash
+use ../../kxk/matchr
+use ../../kxk/noon
 use ../../kxk/ffs
 
-__dirname = import.meta.dirname
+__dirname = slash.dir import.meta.url[7..]
 
 class Syntax
     
@@ -179,16 +180,15 @@ class Syntax
 
     @init: ○->
 
-        syntaxDir = "#{__dirname}/../../syntax/"
+        syntaxDir = slash.path __dirname, '../syntax/'
 
-        # for syntaxFile in fs.readdirSync syntaxDir
         syntaxFiles = await ffs.list syntaxDir
-        log 'syntax.init' syntaxDir, syntaxFiles
         for syntaxFile in syntaxFiles
 
-            syntaxName = slash.basename syntaxFile, '.noon'
-            patterns = noon.load slash.join syntaxDir, syntaxFile
-
+            syntaxName = slash.name syntaxFile.path
+            
+            patterns = JSON.parse await ffs.read syntaxFile.path
+            
             patterns['\\w+']       = 'text'   # this ensures that all ...
             patterns['[^\\w\\s]+'] = 'syntax' # non-space characters match
 

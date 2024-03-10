@@ -397,7 +397,7 @@ class Flex
 
     pane (i)
     {
-        return _k_.isNum(i) && this.panes[i] || _k_.isStr(i) && _.find(this.panes,function (p)
+        return _k_.isNum(i) && this.panes[i] || _k_.isStr(i) && this.panes.find(function (p)
         {
             return p.id === i
         }) || i

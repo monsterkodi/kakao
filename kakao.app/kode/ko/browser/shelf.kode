@@ -11,8 +11,16 @@
 use ./row
 use ./scroller
 use ./column
+use ../../kxk/dom
+use ../../kxk/elem
+use ../../kxk/post
+use ../../kxk/keyinfo
+use ../../kxk/popup
+
+{ $, stopEvent } = dom
+
+# use ../git/hub
 # use fuzzy
-use ../git/hub
     
 function Shelf extends column
 

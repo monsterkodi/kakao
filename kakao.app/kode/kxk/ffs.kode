@@ -1,73 +1,22 @@
 ###
-    00000000  00000000   0000000
-    000       000       000     
-    000000    000000    0000000 
-    000       000            000
-    000       000       0000000 
+    000   000  00000000   0000000  
+    000  000   000       000       
+    0000000    000000    0000000   
+    000  000   000            000  
+    000   000  000       0000000   
 ###
 
-use ./slash
-
-class FS
+class KFS
     
-    @logErrors: true
-    
-    # 0000000    000  00000000   000      000   0000000  000000000  
-    # 000   000  000  000   000  000      000  000          000     
-    # 000   000  000  0000000    000      000  0000000      000     
-    # 000   000  000  000   000  000      000       000     000     
-    # 0000000    000  000   000  0000000  000  0000000      000     
-    
-    @listdir: (dir, found) ○-> log 'ffs.listdir not implemented!' dir; []
-    
-    @list:    (p) ○-> await FS.listdir p, []; []
-    @dirlist: (p) ○-> await FS.listdir p, []; []
-
-    # 00000000   00000000   0000000   0000000    
-    # 000   000  000       000   000  000   000  
-    # 0000000    0000000   000000000  000   000  
-    # 000   000  000       000   000  000   000  
-    # 000   000  00000000  000   000  0000000    
-    
-    @read: (p) ○-> await kakao.request 'fs.read' p
-            
-    # 000   000  00000000   000  000000000  00000000  
-    # 000 0 000  000   000  000     000     000       
-    # 000000000  0000000    000     000     0000000   
-    # 000   000  000   000  000     000     000       
-    # 00     00  000   000  000     000     00000000  
-    
-    @write: (p, text) ○-> log 'ffs.write' p
-      
-    # 00000000  000   000  000   0000000  000000000   0000000  
-    # 000        000 000   000  000          000     000       
-    # 0000000     00000    000  0000000      000     0000000   
-    # 000        000 000   000       000     000          000  
-    # 00000000  000   000  000  0000000      000     0000000   
-    
-    @exists: (p, cb) -> log 'ffs.exists' p
-                        
-    @fileExists: (p, cb) -> log 'ffs.fileExists' p
+    @list:          (p) ○-> await kakao.request 'fs.list'       p
+    @read:          (p) ○-> await kakao.request 'fs.read'       p
+    @write:      (p, t) ○-> await kakao.request 'fs.write'      p, t
+    @exists:        (p) ○-> await kakao.request 'fs.exists'     p
+    @fileExists:    (p) ○-> await kakao.request 'fs.fileExists' p
+    @dirExists:     (p) ○-> await kakao.request 'fs.dirExists'  p
+    @isWritable:    (p) ○-> await kakao.request 'fs.isWritable' p
+    @remove:        (p) ○-> await kakao.request 'fs.remove'     p
+    @isFile:        (p) ○-> await KFS.fileExists                p
+    @isDir:         (p) ○-> await KFS.dirExists                 p
         
-    @dirExists: (p, cb) -> log 'ffs.dirExists' p
-
-    # 00000000   00000000  00     00   0000000   000   000  00000000  
-    # 000   000  000       000   000  000   000  000   000  000       
-    # 0000000    0000000   000000000  000   000   000 000   0000000   
-    # 000   000  000       000 0 000  000   000     000     000       
-    # 000   000  00000000  000   000   0000000       0      00000000  
-    
-    @remove: (p, cb) -> log 'ffs.remove' p
-        
-    # 000   0000000                 
-    # 000  000                      
-    # 000  0000000                  
-    # 000       000  000  000  000  
-    # 000  0000000   000  000  000  
-    
-    @isDir:  (p, cb) -> FS.dirExists p, cb
-    @isFile: (p, cb) -> FS.fileExists p, cb
-    
-    @isWritable: (p, cb) -> log 'ffs.isWritable' p
-        
-export FS
+export KFS

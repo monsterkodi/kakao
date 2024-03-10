@@ -2,9 +2,17 @@
 
 var _k_
 
-var fileInfo, imageInfo
+var $, fileInfo, imageInfo
 
-import File from '../tools/file.j'
+import dom from "../../kxk/dom.js"
+
+import elem from "../../kxk/elem.js"
+
+import slash from "../../kxk/slash.js"
+
+$ = dom.$
+
+import File from '../tools/file.js'
 
 imageInfo = function (file)
 {
@@ -30,7 +38,7 @@ imageInfo = function (file)
         stat = slash.fileExists(file)
         size = pbytes(stat.size).split(' ')
         age = moment().to(moment(stat.mtime),true)
-        var _41_21_ = age.split(' '); num = _41_21_[0]; range = _41_21_[1]
+        var _46_21_ = age.split(' '); num = _46_21_[0]; range = _46_21_[1]
 
         if (num[0] === 'a')
         {
@@ -54,7 +62,7 @@ fileInfo = function (file)
     size = pbytes(stat.size).split(' ')
     t = moment(stat.mtime)
     age = moment().to(t,true)
-    var _71_17_ = age.split(' '); num = _71_17_[0]; range = _71_17_[1]
+    var _76_17_ = age.split(' '); num = _76_17_[0]; range = _76_17_[1]
 
     if (num[0] === 'a')
     {

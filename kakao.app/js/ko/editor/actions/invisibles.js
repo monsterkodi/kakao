@@ -97,7 +97,7 @@ class Invisibles
         this.clear()
         this.editor.on('lineChanged',this.onLineChanged)
         this.editor.on('lineInserted',this.onLineInserted)
-        for (var _111_19_ = li = 0, _111_23_ = this.editor.numLines(); (_111_19_ <= _111_23_ ? li < this.editor.numLines() : li > this.editor.numLines()); (_111_19_ <= _111_23_ ? ++li : --li))
+        for (var _109_19_ = li = 0, _109_23_ = this.editor.numLines(); (_109_19_ <= _109_23_ ? li < this.editor.numLines() : li > this.editor.numLines()); (_109_19_ <= _109_23_ ? ++li : --li))
         {
             this.onLineInserted(li)
         }
@@ -122,7 +122,7 @@ export default {actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'toggle
     }
 },initInvisibles:function ()
 {
-    var _132_35_
+    var _130_35_
 
-    return this.invisibles = ((_132_35_=this.invisibles) != null ? _132_35_ : new Invisibles(this))
+    return this.invisibles = ((_130_35_=this.invisibles) != null ? _130_35_ : new Invisibles(this))
 }};

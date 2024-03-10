@@ -6,10 +6,13 @@
 0000000    000   000   0000000   00     00  0000000   00000000
 ###
 
-# { $, kerror, post, slash } = require 'kxk'
-
+use ../../kxk/dom
+use ../../kxk/post
+use ../../kxk/slash
 use ../commandline/command
 use ../browser/filebrowser
+
+{ $ } = dom
 
 function Browse extends command
 
@@ -298,7 +301,7 @@ function Browse extends command
 
     execute: (command) ->
 
-        return kerror "no command?" if not command?
+        return error "no command?" if not command?
 
         @hideList()
 
@@ -314,7 +317,7 @@ function Browse extends command
                 post.emit 'jumpToFile' file:cmd
                 return
 
-        kerror 'browse.execute -- unhandled' cmd
+        error 'browse.execute -- unhandled' cmd
 
     onBrowserItemActivated: (item) =>
 

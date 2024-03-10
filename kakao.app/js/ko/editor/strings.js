@@ -2,6 +2,10 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
+import kstr from "../../kxk/kstr.js"
+
+import matchr from "../../kxk/matchr.js"
+
 class Strings
 {
     constructor (editor)
@@ -19,7 +23,7 @@ class Strings
     {
         var a, p
 
-        return this.config = (function () { var r_21_63_ = []; for (var p in this.editor.stringCharacters)  { var a = this.editor.stringCharacters[p];r_21_63_.push([new RegExp(_.escapeRegExp(p)),a])  } return r_21_63_ }).bind(this)()
+        return this.config = (function () { var r_22_66_ = []; for (var p in this.editor.stringCharacters)  { var a = this.editor.stringCharacters[p];r_22_66_.push([new RegExp(kstr.escapeRegexp(p)),a])  } return r_22_66_ }).bind(this)()
     }
 
     onCursor ()
@@ -29,9 +33,9 @@ class Strings
         if (this.editor.numHighlights())
         {
             var list = _k_.list(this.editor.highlights())
-            for (var _26_18_ = 0; _26_18_ < list.length; _26_18_++)
+            for (var _27_18_ = 0; _27_18_ < list.length; _27_18_++)
             {
-                h = list[_26_18_]
+                h = list[_27_18_]
                 if (!(h[2] != null))
                 {
                     return
@@ -48,12 +52,12 @@ class Strings
 
     highlightInside (pos)
     {
-        var cp, i, li, line, pair, pairs, rngs, stack, ths, _50_28_, _54_28_
+        var cp, i, li, line, pair, pairs, rngs, stack, ths, _51_28_, _55_28_
 
         stack = []
         pairs = []
         pair = null
-        var _39_17_ = pos; cp = _39_17_[0]; li = _39_17_[1]
+        var _40_17_ = pos; cp = _40_17_[0]; li = _40_17_[1]
 
         line = this.editor.line(li)
         rngs = matchr.ranges(this.config,line)
@@ -61,7 +65,7 @@ class Strings
         {
             return
         }
-        for (var _43_18_ = i = 0, _43_22_ = rngs.length; (_43_18_ <= _43_22_ ? i < rngs.length : i > rngs.length); (_43_18_ <= _43_22_ ? ++i : --i))
+        for (var _44_18_ = i = 0, _44_22_ = rngs.length; (_44_18_ <= _44_22_ ? i < rngs.length : i > rngs.length); (_44_18_ <= _44_22_ ? ++i : --i))
         {
             ths = rngs[i]
             if (ths.start > 0 && line[ths.start - 1] === '\\')
@@ -115,7 +119,7 @@ class Strings
         var cls, opn
 
         this.clear()
-        var _77_18_ = pair; opn = _77_18_[0]; cls = _77_18_[1]
+        var _78_18_ = pair; opn = _78_18_[0]; cls = _78_18_[1]
 
         pair[0].clss = `stringmatch ${this.editor.stringCharacters[opn.match]}`
         pair[1].clss = `stringmatch ${this.editor.stringCharacters[cls.match]}`
@@ -128,9 +132,9 @@ class Strings
     {
         return this.editor.setHighlights(this.editor.highlights().filter(function (h)
         {
-            var _85_79_
+            var _86_79_
 
-            return !(h[2] != null ? (_85_79_=h[2].clss) != null ? _85_79_.startsWith('stringmatch') : undefined : undefined)
+            return !(h[2] != null ? (_86_79_=h[2].clss) != null ? _86_79_.startsWith('stringmatch') : undefined : undefined)
         }))
     }
 }

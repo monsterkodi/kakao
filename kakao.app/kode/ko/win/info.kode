@@ -8,8 +8,19 @@
 
 # { $, elem, post, shortCount, tooltip } = require 'kxk'
 
+use ../../kxk/dom
 use ../../kxk/post
 use ../../kxk/elem
+use ../../kxk/tooltip
+
+{ $ } = dom
+
+shortCount = (v) ->
+    v = parseInt v
+    if
+        v > 999999 ➜ "#{Math.floor v/1000000}M"
+        v > 999    ➜ "#{Math.floor v/1000}k"
+                   ➜ "#{v}"
 
 class Info
     

@@ -6,9 +6,9 @@
 0000000    0000000  000   000   0000000   0000000  0000000  0000000    000   000  000   000
 ###
 
-# { drag, elem, scheme } = require 'kxk'
-
 use ../tools/scheme
+use ../../kxk/elem
+use ../../kxk/drag
 
 class Scrollbar
 

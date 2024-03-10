@@ -6,9 +6,16 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 ###
 
-# { $, elem, filelist, kerror, noon, post, slash, stopEvent } = require 'kxk'
-
+use ../../kxk/dom
+use ../../kxk/ffs
+use ../../kxk/elem
+use ../../kxk/post
+use ../../kxk/slash
 use ../editor/texteditor
+
+{ $, stopEvent } = dom
+
+__dirname = slash.dir import.meta.url[7..]
 
 function Commandline extends texteditor
 
@@ -93,19 +100,27 @@ function Commandline extends texteditor
     # 000      000   000  000   000  000   000
     # 0000000   0000000   000   000  0000000
 
-    loadCommands: ->
+    loadCommands: ○->
 
-        files = filelist "#{__dirname}/../commands"
+        files = await ffs.list slash.path __dirname, '../commands'
+        
         for file in files
-            continue if slash.ext(file) not in ['js' 'mjs']
+            
+            log file
+            
+            continue if slash.ext(file.path) not in ['js' 'mjs']
             try
-                commandClass = require file
+                log 'commandPath' file.path
+                commandModule = await import(file.path)
+                log 'commandModule' commandModule
+                commandClass = commandModule.default
+                log 'commandClass' file.path, commandClass
                 command = new commandClass @
+                log 'commandObj' file.path, command
                 command.setPrefsID commandClass.name.toLowerCase()
                 @commands[command.prefsID] = command
             catch err
-                noon err
-                kerror "can't load command from file '#{file}': #{err}"
+                error "can't load command from file '#{file.path}': #{err}"
                 throw err
 
     setName: (name) ->
@@ -127,7 +142,7 @@ function Commandline extends texteditor
     setText: (t) ->
 
         @setLines [t ? '']
-        @singleCursorAtPos [@line(0).length, 0]
+        @singleCursorAtPos? [@line(0).length, 0]
 
     #  0000000  000   000   0000000   000   000   0000000   00000000  0000000
     # 000       000   000  000   000  0000  000  000        000       000   000
@@ -242,9 +257,14 @@ function Commandline extends texteditor
 
         @list.innerHTML = ""
         @list.style.display = 'unset'
+        
+        log 'listCommands' @mainCommands
+        log 'listCommands' @commands
+        
         for name in @mainCommands
             cmmd = @commands[name]
-            for ci in [0...cmmd.names.length]
+            log name, cmmd
+            for ci in 0...cmmd.names.length
                 cname = cmmd.names[ci]
                 continue if cname in @hideCommands
                 div = elem class: "list-item"

@@ -1,0 +1,186 @@
+###
+ 0000000  000000000   0000000   00000000   00000000  
+000          000     000   000  000   000  000       
+0000000      000     000   000  0000000    0000000   
+     000     000     000   000  000   000  000       
+0000000      000      0000000   000   000  00000000  
+###
+
+use ./events
+use ./slash
+use ./noon
+use ./post
+use ./ffs
+use ./sds
+
+# simple key value store with delayed saving to userData folder
+# does sync changes between processes
+
+function Store extends events
+
+    @stores: {}
+    @addStore: (store) ->
+
+        # if empty @stores
+            # post.onGet 'store' (name, action) =>
+                # switch action
+                    # when 'data'
+                        # return @stores[name]?.data
+    
+        @stores[store.name] = store
+
+    @: (name, opt={}) ->
+
+        super()
+        
+        @name = name
+        opt.separator ?= ':'
+        opt.timeout   ?= 4000
+        
+        return error 'no name for store?' if not @name
+
+        @sep = opt.separator
+        
+        # if @app
+#             
+            # Store.addStore @
+#             
+            # @timer   = null
+            # @file    = opt.file ? slash.join post.get('userData'), "#{@name}.noon"
+            # @timeout = opt.timeout
+#                 
+            # post.on 'store' (name, action, argl...) =>
+                # return if @name != name
+                # switch action
+                    # 'set'   ➜ @set.apply @, argl
+                    # 'get'   ➜ @get.apply @, argl
+                    # 'del'   ➜ @del.apply @, argl
+                    # 'clear' ➜ @clear()
+                    # 'save'  ➜ @save()
+                # @
+#                 
+        # else
+        if true    
+            # @file = slash.join post.get('userData'), "#{@name}.noon"
+            @file = slash.path "userData/#{@name}.noon"
+            
+            post.on 'store' (name, action, argl...) =>
+                return if @name != name
+                switch action
+                    'data' ➜ @data = argl[0]
+                    'set'  ➜ sds.set @data, @keypath(argl[0]), argl[1]
+                    'get'  ➜ sds.get @data, @keypath(argl[0]), argl[1]
+                    'del'  ➜ sds.del @data, @keypath(argl[0])
+                
+        @data = @load()
+        # @data = _.defaults @data, opt.defaults 
+        for k,v of opt.defaults
+            @data[k] ?= v
+
+    keypath: (key) -> key.split @sep
+    
+    #  0000000   00000000  000000000
+    # 000        000          000   
+    # 000  0000  0000000      000   
+    # 000   000  000          000   
+    #  0000000   00000000     000   
+        
+    get: (key, value) ->
+        
+        return clone(value) if not key?.split?
+        clone sds.get @data, @keypath(key), value
+         
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: (key, value) ->
+
+        return if not key?.split?
+        return if _.isEqual @get(key), value
+
+        @data ?= {}
+        sds.set @data, @keypath(key), value
+        # if @app
+            # clearTimeout @timer
+            # @timer = setTimeout @save, @timeout
+            # post.toWins 'store' @name, 'set' key, value
+        # else
+            # post.toMain 'store' @name, 'set' key, value
+                    
+    del: (key) -> 
+    
+        return if not @data
+        sds.del @data, @keypath key
+        
+        # if @app
+            # clearTimeout @timer
+            # @timer = setTimeout @save, @timeout
+            # post.toWins 'store' @name, 'del' key
+        # else
+            # post.toMain 'store' @name, 'del' key
+                
+    clear: ->
+        
+        @data = {}
+        
+        # if @app
+            # clearTimeout @timer if @timer
+            # post.toWins 'store', @name, 'data', {}
+        # else
+            # post.toMain 'store', @name, 'clear'
+        
+    # 000       0000000    0000000   0000000    
+    # 000      000   000  000   000  000   000  
+    # 000      000   000  000000000  000   000  
+    # 000      000   000  000   000  000   000  
+    # 0000000   0000000   000   000  0000000    
+    
+    reload: ->
+
+        # @data = @load()
+        # post.toWins 'store' @name, 'data' @data
+    
+    load: ->
+        
+        log 'store load'
+        
+        # if @app
+            # try
+                # d = noon.load @file
+                # if d is obj then return d
+                # {}
+            # catch err
+                # {}
+        # else
+            # post.get 'store' @name, 'data'
+        
+    #  0000000   0000000   000   000  00000000
+    # 000       000   000  000   000  000     
+    # 0000000   000000000   000 000   0000000 
+    #      000  000   000     000     000     
+    # 0000000   000   000      0      00000000
+
+    save: =>
+        
+        # if @app
+            # return if not @file
+            # return if empty @data
+#             
+            # @emit 'willSave'
+#             
+            # clearTimeout @timer
+            # @timer = null
+#             
+            # try
+                # ffs.write @file, noon.stringify(@data, {indent: 2, maxalign: 8})+'\n'
+            # catch err
+                # error "store.save -- can't save to '#{@file}:", err
+#                 
+            # @emit 'didSave'
+        # else 
+            # post.toMain 'store' @name, 'save' 
+        
+export Store

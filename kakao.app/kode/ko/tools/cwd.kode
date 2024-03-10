@@ -6,9 +6,13 @@
  0000000  00     00  0000000    
 ###
 
-# { $, elem, post, slash } = require 'kxk'
-
 use ../editor/syntax
+use ../../kxk/dom
+use ../../kxk/post
+use ../../kxk/elem
+use ../../kxk/slash
+
+{ $ } = dom
 
 class CWD
 
@@ -32,8 +36,8 @@ class CWD
     
     visible: -> @elem.style.display != 'none'
 
-    restore: => @toggle() if window.stash.get('cwd' false) != @visible()
-    stash:   => window.stash.set 'cwd' @visible()
+    restore: => #@toggle() if window.stash.get('cwd' false) != @visible()
+    stash:   => #window.stash.set 'cwd' @visible()
 
     toggle: -> 
         @elem.style.display = @visible() and 'none' or 'unset'

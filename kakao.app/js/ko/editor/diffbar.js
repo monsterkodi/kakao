@@ -6,6 +6,10 @@ import linediff from "../tools/linediff.js"
 
 import hub from "../git/hub.js"
 
+import elem from "../../kxk/elem.js"
+
+import post from "../../kxk/post.js"
+
 class Diffbar
 {
     constructor (editor)

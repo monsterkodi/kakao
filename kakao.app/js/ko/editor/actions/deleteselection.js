@@ -2,10 +2,6 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var _
-
-_ = require('kxk')._
-
 export default {deleteSelectionOrCursorLines:function ()
 {
     this.do.start()

@@ -10,6 +10,8 @@ import syntax from "../editor/syntax.js"
 
 import salt from "../tools/salt.js"
 
+import matchr from "../../kxk/matchr.js"
+
 
 CommandList = (function ()
 {
@@ -86,7 +88,7 @@ CommandList = (function ()
 
         if (!(meta != null))
         {
-            return kerror('CommandList.appendMeta -- no meta?')
+            return console.error('CommandList.appendMeta -- no meta?')
         }
         this.meta.addDiv(this.meta.append(meta))
         if ((meta.diss != null))

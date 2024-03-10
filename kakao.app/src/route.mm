@@ -88,6 +88,40 @@
         else
             return nil;
     }
+    else if ([req isEqualToString:@"list"])
+    {
+        NSString* dirPath = [args objectAtIndex:0];
+        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
+        
+        NSMutableArray* result = [NSMutableArray array];
+        
+        NSString *file;
+        while ((file = [dirEnum nextObject])) 
+        {
+            id type; 
+            id fileType = [dirEnum.fileAttributes objectForKey:NSFileType];
+            if ([fileType isEqualToString:NSFileTypeRegular])
+            {
+                type = @"file";
+            }
+            else if ([fileType isEqualToString:NSFileTypeDirectory])
+            {
+                type = @"dir";
+            }
+            
+            id path = [dirPath stringByAppendingPathComponent:file];
+            
+            NSLog(@"%@ file %@ path %@", type, file, path);
+        
+            NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
+            [fileInfo setObject:type forKey:@"type"];
+            [fileInfo setObject:file forKey:@"file"];
+            [fileInfo setObject:path forKey:@"path"];
+            [result addObject:fileInfo];
+        }
+                
+        return result;
+    }
     return nil;
 }
 
@@ -121,7 +155,7 @@
 
 + (void) request:(WKScriptMessage*)msg callback:(Callback)callback win:(Win*)win
 {
-    //NSLog(@"%@ %@", msg.name, msg.body);
+    NSLog(@"%@ %@", msg.name, msg.body);
     
     id reply = @"???";
     

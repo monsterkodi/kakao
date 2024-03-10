@@ -6,11 +6,16 @@
 000  000   000  000        0000000     
 ###
 
-# { $, elem, open, slash } = require 'kxk'
-
 # pbytes   = require 'pretty-bytes'
 # moment   = require 'moment'
-import File from '../tools/file.j'
+
+use ../../kxk/dom
+use ../../kxk/elem
+use ../../kxk/slash
+
+{ $ } = dom
+
+import File from '../tools/file.js'
     
 # 000  00     00   0000000    0000000   00000000  
 # 000  000   000  000   000  000        000       

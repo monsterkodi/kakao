@@ -6,7 +6,7 @@
 0000000    000   000  000   000   0000000  000   000  00000000     000     0000000 
 ###
 
-# { _, matchr } = require 'kxk'
+use ../../kxk/matchr
 
 class Brackets
     
@@ -38,8 +38,8 @@ class Brackets
         [before, after] = @beforeAfterForPos cp
 
         if after.length or before.length
-            if after.length and _.first(after).start == cp[0] and _.first(after).clss == 'open' then cp[0] += 1
-            if before.length and _.last(before).start == cp[0]-1 and _.last(before).clss == 'close' then cp[0] -= 1
+            if after.length and first(after).start == cp[0] and first(after).clss == 'open' then cp[0] += 1
+            if before.length and last(before).start == cp[0]-1 and last(before).clss == 'close' then cp[0] -= 1
 
         if @highlightInside cp
             return
@@ -64,7 +64,7 @@ class Brackets
                 prev = before.pop()
                 if prev.clss == 'open'
                     if stack.length
-                        if @open[prev.match] == _.last(stack).match
+                        if @open[prev.match] == last(stack).match
                             stack.pop()                            
                             continue
                         else
@@ -89,7 +89,7 @@ class Brackets
                 next = after.shift()
                 if next.clss == 'close'
                     if stack.length
-                        if @open[_.last(stack).match] == next.match
+                        if @open[last(stack).match] == next.match
                             stack.pop()                            
                             continue
                         else
@@ -139,8 +139,8 @@ class Brackets
                             
         if rngs.length
             r.line = li for r in rngs
-            lst = _.last rngs
-            fst = _.first rngs
+            lst = last rngs
+            fst = first rngs
             for firstAfterIndex in [0...rngs.length]
                 break if rngs[firstAfterIndex].start >= cp
             before = rngs.slice 0, firstAfterIndex

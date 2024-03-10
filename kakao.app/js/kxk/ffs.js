@@ -2,28 +2,11 @@
 
 var _k_
 
-import slash from "./slash.js"
-
-class FS
+class KFS
 {
-    static logErrors = true
-
-    static async listdir (dir, found)
-    {
-        console.log('ffs.listdir not implemented!',dir)
-        return []
-    }
-
     static async list (p)
     {
-        await FS.listdir(p,[])
-        return []
-    }
-
-    static async dirlist (p)
-    {
-        await FS.listdir(p,[])
-        return []
+        return await kakao.request('fs.list',p)
     }
 
     static async read (p)
@@ -31,45 +14,45 @@ class FS
         return await kakao.request('fs.read',p)
     }
 
-    static async write (p, text)
+    static async write (p, t)
     {
-        console.log('ffs.write',p)
+        return await kakao.request('fs.write',p,t)
     }
 
-    static exists (p, cb)
+    static async exists (p)
     {
-        console.log('ffs.exists',p)
+        return await kakao.request('fs.exists',p)
     }
 
-    static fileExists (p, cb)
+    static async fileExists (p)
     {
-        console.log('ffs.fileExists',p)
+        return await kakao.request('fs.fileExists',p)
     }
 
-    static dirExists (p, cb)
+    static async dirExists (p)
     {
-        console.log('ffs.dirExists',p)
+        return await kakao.request('fs.dirExists',p)
     }
 
-    static remove (p, cb)
+    static async isWritable (p)
     {
-        console.log('ffs.remove',p)
+        return await kakao.request('fs.isWritable',p)
     }
 
-    static isDir (p, cb)
+    static async remove (p)
     {
-        return FS.dirExists(p,cb)
+        return await kakao.request('fs.remove',p)
     }
 
-    static isFile (p, cb)
+    static async isFile (p)
     {
-        return FS.fileExists(p,cb)
+        return await KFS.fileExists(p)
     }
 
-    static isWritable (p, cb)
+    static async isDir (p)
     {
-        console.log('ffs.isWritable',p)
+        return await KFS.dirExists(p)
     }
 }
 
-export default FS;
+export default KFS;
