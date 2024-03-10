@@ -2,16 +2,9 @@
 
 var _k_
 
-var $, elem, File, fileInfo, imageInfo, moment, open, pbytes, slash
+var fileInfo, imageInfo
 
-$ = require('kxk').$
-elem = require('kxk').elem
-open = require('kxk').open
-slash = require('kxk').slash
-
-File = require('../tools/file')
-pbytes = require('pretty-bytes')
-moment = require('moment')
+import File from '../tools/file.j'
 
 imageInfo = function (file)
 {
@@ -75,4 +68,4 @@ fileInfo = function (file)
     info = elem({class:'browserFileInfo',children:[elem('div',{class:`fileInfoIcon ${slash.ext(file)} ${File.iconClassName(file)}`}),elem('div',{class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),elem('table',{class:"fileInfoData",html:`<tr><th>${size[0]}</th><td>${size[1]}</td></tr><tr><th>${num}</th><td>${range}</td></tr>`})]})
     return info
 }
-module.exports = {file:fileInfo,image:imageInfo}
+export default {file:fileInfo,image:imageInfo};

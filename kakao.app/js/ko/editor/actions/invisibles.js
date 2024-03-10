@@ -2,11 +2,6 @@
 
 var _k_
 
-var kerror, _
-
-_ = require('kxk')._
-kerror = require('kxk').kerror
-
 class Invisibles
 {
     constructor (editor)
@@ -109,7 +104,7 @@ class Invisibles
     }
 }
 
-module.exports = {actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'toggle invisibles for current file',combo:'ctrl+i'}},toggleInvisibles:function ()
+export default {actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'toggle invisibles for current file',combo:'ctrl+i'}},toggleInvisibles:function ()
 {
     var _1_13_
 
@@ -130,4 +125,4 @@ module.exports = {actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'togg
     var _132_35_
 
     return this.invisibles = ((_132_35_=this.invisibles) != null ? _132_35_ : new Invisibles(this))
-}}
+}};

@@ -740,18 +740,34 @@ parseStr = function (str, p, ext)
 
 load = async function (p, ext)
 {
-    var fs, str, _571_22_
+    var fs, str
 
-    fs = (window != null ? (_571_22_=window.kakao) != null ? _571_22_.fs : undefined : undefined)
-    fs = (fs != null ? fs : await import('fs/promises'))
-    str = await fs.read(p)
-    if (!_k_.empty(str))
+    console.log(globalThis)
+    if (globalThis.global)
     {
-        return parseStr(str,p,ext)
+        fs = await import('fs/promises')
+        str = await fs.readFile(p,'utf8')
+        if (!_k_.empty(str))
+        {
+            return parseStr(str,p,ext)
+        }
+        else
+        {
+            return null
+        }
     }
-    else
+    else if (globalThis.kakao)
     {
-        return null
+        fs = globalThis.kakao.fs
+        str = await fs.read(p)
+        if (!_k_.empty(str))
+        {
+            return parseStr(str,p,ext)
+        }
+        else
+        {
+            return null
+        }
     }
 }
 

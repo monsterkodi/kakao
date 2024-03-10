@@ -12,7 +12,10 @@
 use ../../kxk/post
 use ../../kxk/elem
 use ../../kxk/drag
+use ../../kxk/dom
 use ./tab
+
+{ $ } = dom
 
 class Tabs
 

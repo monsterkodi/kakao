@@ -2,12 +2,6 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var elem, kstr, sw
-
-kstr = require('kxk').kstr
-elem = require('kxk').elem
-sw = require('kxk').sw
-
 class Render
 {
     static line (diss, size = {charWidth:0})
@@ -106,7 +100,7 @@ class Render
 
     static selectionSpan (prev, sel, next, size, clss)
     {
-        var border, empty, lh, tx, ty
+        var border, empty, lh, sw, tx, ty
 
         border = ""
         if (!prev)
@@ -168,4 +162,4 @@ class Render
     }
 }
 
-module.exports = Render
+export default Render;

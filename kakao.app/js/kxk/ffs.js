@@ -10,17 +10,20 @@ class FS
 
     static async listdir (dir, found)
     {
-        console.log('ffs.listdir',dir)
+        console.log('ffs.listdir not implemented!',dir)
+        return []
     }
 
     static async list (p)
     {
-        return await FS.listdir(p,[])
+        await FS.listdir(p,[])
+        return []
     }
 
     static async dirlist (p)
     {
-        return await FS.listdir(p,[])
+        await FS.listdir(p,[])
+        return []
     }
 
     static async read (p)

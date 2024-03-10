@@ -2,9 +2,15 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
+var $
+
 import post from "../../kxk/post.js"
 
 import elem from "../../kxk/elem.js"
+
+import dom from "../../kxk/dom.js"
+
+$ = dom.$
 
 class Titlebar
 {
@@ -54,7 +60,7 @@ class Titlebar
 
     showList (event)
     {
-        var winInfos, _58_23_
+        var winInfos, _61_23_
 
         if ((this.list != null))
         {
@@ -75,7 +81,7 @@ class Titlebar
 
     closeList ()
     {
-        var _70_16_, _73_17_
+        var _73_16_, _76_17_
 
         if ((this.list != null))
         {
@@ -92,9 +98,9 @@ class Titlebar
 
         this.list.innerHTML = ""
         var list = _k_.list(winInfos)
-        for (var _86_17_ = 0; _86_17_ < list.length; _86_17_++)
+        for (var _89_17_ = 0; _89_17_ < list.length; _89_17_++)
         {
-            info = list[_86_17_]
+            info = list[_89_17_]
             if (info.id === window.winID)
             {
                 continue
@@ -119,7 +125,7 @@ class Titlebar
 
     onWinTabs (winID, tabs)
     {
-        var div, w, width, _108_27_
+        var div, w, width, _111_27_
 
         if (!(this.list != null))
         {
@@ -130,9 +136,9 @@ class Titlebar
             return
         }
         var list = _k_.list(this.list.children)
-        for (var _110_16_ = 0; _110_16_ < list.length; _110_16_++)
+        for (var _113_16_ = 0; _113_16_ < list.length; _113_16_++)
         {
-            div = list[_110_16_]
+            div = list[_113_16_]
             if (div.winID === winID)
             {
                 if (w = $('.wintabs',div))
@@ -198,7 +204,7 @@ class Titlebar
 
     globalModKeyComboEvent (mod, key, combo, event)
     {
-        var _151_16_
+        var _154_16_
 
         switch (combo)
         {

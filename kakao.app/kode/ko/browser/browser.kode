@@ -6,13 +6,13 @@
 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
 ###
 
-{ childp, elem, fs, kerror, kpos, os, setStyle, slash } = require 'kxk'
+# { childp, elem, fs, kerror, kpos, os, setStyle, slash } = require 'kxk'
 
-Column = require './column'
-flex   = require '../win/flex/flex'
-event  = require 'events'
+use ./column
+use ../win/flex/flex
+# use events
 
-function Browser extends event
+function Browser #extends events
     
     @: (@view) ->
         
@@ -47,24 +47,24 @@ function Browser extends event
         
     columnAtPos: (pos) ->
         
-        for column in @columns
-            if elem.containsPos column.div, pos
-                return column
+        for col in @columns
+            if elem.containsPos col.div, pos
+                return col
         null
         
     columnAtX: (x) ->
         
-        for column in @columns
-            cpos = kpos column.div.getBoundingClientRect().left, column.div.getBoundingClientRect().top
+        for col in @columns
+            cpos = kpos col.div.getBoundingClientRect().left, col.div.getBoundingClientRect().top
             pos = kpos x, cpos.y
-            if elem.containsPos column.div, pos
-                return column
+            if elem.containsPos col.div, pos
+                return col
         null
         
     rowAtPos: (pos) ->
         
-        if column = @columnAtPos pos
-            return column.rowAtPos pos
+        if col = @columnAtPos pos
+            return col.rowAtPos pos
         null
                             
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
@@ -171,7 +171,7 @@ function Browser extends event
         
         return if not @flex
 
-        col = new Column @
+        col = new column @
         @columns.push col
         @flex.addPane div:col.div, size:50
         col
@@ -309,4 +309,4 @@ function Browser extends event
             elem 'img' class:'browserImage' src:slash.fileUrl file
         col.table.appendChild cnt
         
-module.exports = Browser
+export Browser

@@ -6,11 +6,11 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 ###
 
-{ $, elem, filelist, kerror, noon, post, slash, stopEvent } = require 'kxk'
+# { $, elem, filelist, kerror, noon, post, slash, stopEvent } = require 'kxk'
 
-TextEditor = require '../editor/texteditor'
+use ../editor/texteditor
 
-function Commandline extends TextEditor
+function Commandline extends texteditor
 
     @: (viewElem) ->
 
@@ -343,4 +343,4 @@ function Commandline extends TextEditor
 
         return super mod, key, combo, char, event
 
-module.exports = Commandline
+export Commandline

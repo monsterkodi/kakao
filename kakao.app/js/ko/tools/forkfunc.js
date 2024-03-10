@@ -4,7 +4,7 @@ var _k_
 
 var callFunc, forkfunc, sendResult
 
-if (module.parent)
+if (import.meta.filename !== process.argv[1])
 {
     forkfunc = function (file, ...args)
     {
@@ -56,7 +56,7 @@ if (module.parent)
         }
         return cp
     }
-    module.exports = forkfunc
+    export default forkfunc;
 }
 else
 {

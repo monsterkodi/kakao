@@ -7,7 +7,7 @@
 
 { _ } = require 'kxk'
 
-module.exports =
+export
     
     deleteSelectionOrCursorLines: ->
         

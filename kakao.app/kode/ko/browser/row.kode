@@ -6,11 +6,10 @@
 000   000   0000000   00     00
 ###
 
-{ $, _, elem, keyinfo, post, slash, stopEvent } = require 'kxk'
+# { $, _, elem, keyinfo, post, slash, stopEvent } = require 'kxk'
 
-Syntax    = require '../editor/syntax'
-electron  = require 'electron'
-File      = require '../tools/file'
+use ../editor/syntax
+import File from '../tools/file.js'
 
 function Row
     
@@ -21,7 +20,7 @@ function Row
         if empty(text) or empty text.trim()
             html = '<span> </span>'
         else
-            html = Syntax.spanForTextAndSyntax text, 'browser'
+            html = syntax.spanForTextAndSyntax text, 'browser'
         @div = elem class:'browserRow' html: html
         @div.classList.add @item.type
         @column.table.appendChild @div
@@ -225,4 +224,4 @@ function Row
                 
         File.rename @item.file, targetFile, (source, target) =>
     
-module.exports = Row
+export Row

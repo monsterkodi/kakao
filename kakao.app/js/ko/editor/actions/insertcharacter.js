@@ -2,13 +2,7 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var kxk, reversed, _
-
-kxk = require('kxk')
-_ = kxk._
-reversed = kxk.reversed
-
-module.exports = {insertCharacter:function (ch)
+export default {insertCharacter:function (ch)
 {
     var cc, cline, nc, newCursors, sline
 
@@ -140,4 +134,4 @@ module.exports = {insertCharacter:function (ch)
         }
     }
     return this.do.end()
-}}
+}};

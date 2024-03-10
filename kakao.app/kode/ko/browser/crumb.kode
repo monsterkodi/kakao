@@ -6,9 +6,9 @@
  0000000  000   000   0000000   000   000  0000000  
 ###
 
-{ elem, kpos, slash } = require 'kxk'
+# { elem, kpos, slash } = require 'kxk'
 
-File = require '../tools/file'
+import File from '../tools/file.js'
 
 class Crumb
 
@@ -62,4 +62,4 @@ class Crumb
         
     clear: -> @elem.innerHTML = ''
     
-module.exports = Crumb
+export Crumb

@@ -6,10 +6,11 @@
 000       000  0000000  00000000  000   000  000   000  000   000  0000000    0000000  00000000  000   000
 ###
 
-{ _, filelist, first, kerror, klog, post, prefs, reversed, slash } = require 'kxk'
+# { _, filelist, first, kerror, klog, post, prefs, reversed, slash } = require 'kxk'
 
-File     = require '../tools/file'
-electron = require 'electron'
+use ../../kxk/post 
+
+import File from '../tools/file.js'
 
 class FileHandler
 
@@ -305,4 +306,4 @@ class FileHandler
             cb: cb
             )
             
-module.exports = FileHandler
+export FileHandler

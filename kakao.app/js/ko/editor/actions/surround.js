@@ -2,13 +2,7 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var os, reversed, _
-
-_ = require('kxk')._
-os = require('kxk').os
-reversed = require('kxk').reversed
-
-module.exports = {initSurround:function ()
+export default {initSurround:function ()
 {
     this.surroundStack = []
     this.surroundPairs = {'#':['#{','}'],'{':['{','}'],'}':['{','}'],'[':['[',']'],']':['[',']'],'(':['(',')'],')':['(',')'],'<':['<','>'],'>':['<','>'],"'":["'","'"],'"':['"','"'],'*':['*','*']}
@@ -119,7 +113,7 @@ module.exports = {initSurround:function ()
     return true
 },insertSurroundCharacter:function (ch)
 {
-    var after, afterGood, before, beforeGood, c, cl, cr, found, newCursors, newSelections, ns, s, spaces, sr, trimmed
+    var after, afterGood, before, beforeGood, c, cl, cr, found, newCursors, newSelections, ns, os, s, spaces, sr, trimmed
 
     if (ch === '"' && _k_.in(this.fileType,['coffee','kode']) && this.insertTripleQuotes())
     {
@@ -373,4 +367,4 @@ module.exports = {initSurround:function ()
             }
         }
     }
-}}
+}};

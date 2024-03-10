@@ -2,14 +2,8 @@
 
 var _k_
 
-var $, elem, post, slash, syntax
+import syntax from "../editor/syntax.js"
 
-$ = require('kxk').$
-elem = require('kxk').elem
-post = require('kxk').post
-slash = require('kxk').slash
-
-syntax = require('../editor/syntax')
 class CWD
 {
     constructor ()
@@ -61,4 +55,4 @@ class CWD
     }
 }
 
-module.exports = CWD
+export default CWD;

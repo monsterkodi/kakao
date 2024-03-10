@@ -6,13 +6,13 @@
 00000000  0000000    000     000      0000000   000   000        0000000    0000000  000   000   0000000   0000000  0000000  
 ###
 
-events = require 'events'
+# use events
 
-class EditorScroll extends events
+class EditorScroll #extends events
 
     @: (@editor) ->
 
-        super()
+        # super()
         @lineHeight = @editor.size.lineHeight ? 0
         @viewHeight = -1
         @init()
@@ -266,4 +266,4 @@ class EditorScroll extends events
         topbot: "#{@top} .. #{@bot} = #{@bot-@top} / #{@numLines} lines"
         scroll: "#{@scroll} offsetTop #{@offsetTop} viewHeight #{@viewHeight} scrollMax #{@scrollMax} fullLines #{@fullLines} viewLines #{@viewLines}"
         
-module.exports = EditorScroll
+export EditorScroll

@@ -2,14 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var kerror, klog, post, _
-
-_ = require('kxk')._
-kerror = require('kxk').kerror
-klog = require('kxk').klog
-post = require('kxk').post
-
-module.exports = {actions:{menu:'Select',selectAll:{name:'Select All',combo:'command+a',accel:'ctrl+a'},selectNone:{name:'Deselect',combo:'command+shift+a',accel:'ctrl+shift+a'},selectInverted:{name:'Invert Selection',text:'selects all lines that have no cursors and no selections',combo:'command+i',accel:'ctrl+i'},selectNextHighlight:{separator:true,name:'Select Next Highlight',combo:'command+g',accel:'ctrl+g'},selectPrevHighlight:{name:'Select Previous Highlight',combo:'command+shift+g',accel:'ctrl+shift+g'},selectTextBetweenCursorsOrSurround:{name:'Select Between Cursors, Brackets or Quotes',text:`select text between even cursors, if at least two cursors exist. 
+export default {actions:{menu:'Select',selectAll:{name:'Select All',combo:'command+a',accel:'ctrl+a'},selectNone:{name:'Deselect',combo:'command+shift+a',accel:'ctrl+shift+a'},selectInverted:{name:'Invert Selection',text:'selects all lines that have no cursors and no selections',combo:'command+i',accel:'ctrl+i'},selectNextHighlight:{separator:true,name:'Select Next Highlight',combo:'command+g',accel:'ctrl+g'},selectPrevHighlight:{name:'Select Previous Highlight',combo:'command+shift+g',accel:'ctrl+shift+g'},selectTextBetweenCursorsOrSurround:{name:'Select Between Cursors, Brackets or Quotes',text:`select text between even cursors, if at least two cursors exist. 
 select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',accel:'alt+b'},toggleStickySelection:{separator:true,name:'Toggle Sticky Selection',text:'current selection is not removed when adding new selections',combo:"ctrl+'",accel:"ctrl+'"}},selectSingleRange:function (r, opt)
 {
     var cursorX
@@ -284,4 +277,4 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     {
         return this.selectSingleRange(r)
     }
-}}
+}};

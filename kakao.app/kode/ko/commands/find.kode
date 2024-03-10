@@ -6,9 +6,9 @@
 000       000  000   000  0000000  
 ###
 
-Command = require '../commandline/command'
+use ../commandline/command
 
-function Find extends Command
+function Find extends command
 
     @: (commandline) ->
         
@@ -115,4 +115,4 @@ function Find extends Command
                     
         super mod, key, combo, event
       
-module.exports = Find
+export Find

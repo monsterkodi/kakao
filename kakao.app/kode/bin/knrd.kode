@@ -81,7 +81,7 @@ knrd = (files = [], opt = {}) ○->
             else
                 if tgtText != compText
                     transpiled++
-                    log m3('▶ '), m4 slash.tilde srcFile
+                    # log m3('▶ '), m4 slash.tilde srcFile
                     await fs.write tgtFile, compText
                     log b5('✔ '), g5 slash.tilde tgtFile
                 else if opt.logVerbose

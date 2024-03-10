@@ -49,12 +49,16 @@ class Flex
     # 000   000  0000000    0000000    
     
     addPane: (p) ->
+        
+        p.flex  ?= @
+        p.index ?= @panes.length
 
-        newPane = new pane _.defaults p, 
-            flex:   @ 
-            index:  @panes.length
+        newPane = new pane p
+            # _.defaults p, 
+            # flex:   @ 
+            # index:  @panes.length
             
-        if lastPane = _.last @panes
+        if lastPane = last @panes
             @handles.push new handle
                 flex:  @
                 index: lastPane.index

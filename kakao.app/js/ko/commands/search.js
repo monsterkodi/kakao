@@ -2,24 +2,20 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var Command, FileSearcher, fs, kerror, klor, matchr, post, Search, slash, stream, Syntax, walker, WritableStream, _
+var FileSearcher, Search, WritableStream
 
-_ = require('kxk')._
-fs = require('kxk').fs
-kerror = require('kxk').kerror
-klor = require('kxk').klor
-matchr = require('kxk').matchr
-post = require('kxk').post
-slash = require('kxk').slash
+import walker from "../tools/walker.js"
 
-walker = require('../tools/walker')
-Syntax = require('../editor/syntax')
-Command = require('../commandline/command')
-stream = require('stream')
+import syntax from "../editor/syntax.js"
+
+import command from "../commandline/command.js"
+
+import stream from "stream"
+
 
 Search = (function ()
 {
-    _k_.extend(Search, Command)
+    _k_.extend(Search, command)
     function Search (commandline)
     {
         this["onMetaClick"] = this["onMetaClick"].bind(this)
@@ -73,7 +69,7 @@ Search = (function ()
         var dir, terminal
 
         terminal = window.terminal
-        terminal.appendMeta({clss:'searchHeader',diss:Syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
+        terminal.appendMeta({clss:'searchHeader',diss:syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
         dir = slash.pkg(slash.dir(opt.file))
@@ -90,6 +86,8 @@ Search = (function ()
 
     Search.prototype["searchInFile"] = function (opt, file)
     {
+        var stream
+
         stream = fs.createReadStream(file,{encoding:'utf8'})
         return stream.pipe(new FileSearcher(this,opt,file))
     }
@@ -163,7 +161,7 @@ FileSearcher = (function ()
         }).bind(this))()
         this.found = []
         extn = slash.ext(this.file)
-        if (_k_.in(extn,Syntax.syntaxNames))
+        if (_k_.in(extn,syntax.syntaxNames))
         {
             this.syntaxName = extn
         }
@@ -180,7 +178,7 @@ FileSearcher = (function ()
         lines = chunk.split('\n')
         if (!(this.syntaxName != null))
         {
-            this.syntaxName = Syntax.shebang(lines[0])
+            this.syntaxName = syntax.shebang(lines[0])
         }
         var list = _k_.list(lines)
         for (var _151_14_ = 0; _151_14_ < list.length; _151_14_++)
@@ -203,7 +201,7 @@ FileSearcher = (function ()
         if (this.found.length)
         {
             terminal = window.terminal
-            meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
+            meta = {diss:syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
             terminal.appendMeta(meta)
             terminal.appendMeta({clss:'spacer'})
             for (var _174_23_ = fi = 0, _174_27_ = this.found.length; (_174_23_ <= _174_27_ ? fi < this.found.length : fi > this.found.length); (_174_23_ <= _174_27_ ? ++fi : --fi))
@@ -227,4 +225,4 @@ FileSearcher = (function ()
     return FileSearcher
 })()
 
-module.exports = Search
+export default Search;

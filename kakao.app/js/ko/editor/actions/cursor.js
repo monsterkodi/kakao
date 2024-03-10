@@ -2,14 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
-var reversed, _
-
-_ = require('kxk')._
-first = require('kxk').first
-last = require('kxk').last
-reversed = require('kxk').reversed
-
-module.exports = {actions:{menu:'Cursors',cursorInAllLines:{name:'Cursor in All Lines',combo:'alt+a'},alignCursorsUp:{separator:true,name:'Align Cursors with Top-most Cursor',combo:'alt+ctrl+shift+up'},alignCursorsDown:{name:'Align Cursors with Bottom-most Cursor',combo:'alt+ctrl+shift+down'},alignCursorsLeft:{name:'Align Cursors with Left-most Cursor'},alignCursorsRight:{name:'Align Cursors with Right-most Cursor'},alignCursorsAndText:{name:'Align Cursors and Text',text:'align text to the right of cursors by inserting spaces',combo:'alt+shift+a'},setCursorsAtSelectionBoundariesOrSelectSurround:{separator:true,name:'Cursors at Selection Boundaries or Select Brackets/Quotes',text:`set cursors at selection boundaries, if a selection exists.
+export default {actions:{menu:'Cursors',cursorInAllLines:{name:'Cursor in All Lines',combo:'alt+a'},alignCursorsUp:{separator:true,name:'Align Cursors with Top-most Cursor',combo:'alt+ctrl+shift+up'},alignCursorsDown:{name:'Align Cursors with Bottom-most Cursor',combo:'alt+ctrl+shift+down'},alignCursorsLeft:{name:'Align Cursors with Left-most Cursor'},alignCursorsRight:{name:'Align Cursors with Right-most Cursor'},alignCursorsAndText:{name:'Align Cursors and Text',text:'align text to the right of cursors by inserting spaces',combo:'alt+shift+a'},setCursorsAtSelectionBoundariesOrSelectSurround:{separator:true,name:'Cursors at Selection Boundaries or Select Brackets/Quotes',text:`set cursors at selection boundaries, if a selection exists.
 select brackets or quotes otherwise.`,combo:'command+alt+b',accel:'alt+ctrl+b'},addCursorsUp:{separator:true,name:'Add Cursors Up',combo:'command+up',accel:'ctrl+up'},addCursorsDown:{name:'Add Cursors Down',combo:'command+down',accel:'ctrl+down'},delCursorsUp:{separator:true,name:'Remove Cursors Up',combo:'command+shift+up',accel:'ctrl+shift+up'},delCursorsDown:{name:'Remove Cursors Down',combo:'command+shift+down',accel:'ctrl+shift+down'},cursorMoves:{name:'Move Cursors To Start',combos:['ctrl+home','ctrl+end','page up','page down','ctrl+shift+home','ctrl+shift+end','shift+page up','shift+page down','alt+-','alt+=','alt+[','alt+]']}},singleCursorAtPos:function (p, opt = {extend:false})
 {
     var mc
@@ -351,4 +344,4 @@ select brackets or quotes otherwise.`,combo:'command+alt+b',accel:'alt+ctrl+b'},
 {
     this.clearCursors()
     return this.clearHighlights()
-}}
+}};

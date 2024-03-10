@@ -2,10 +2,7 @@
 
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var events
-
-events = require('events')
-class MapScroll extends events
+class MapScroll
 {
     constructor (cfg)
     {
@@ -256,4 +253,4 @@ class MapScroll extends events
     }
 }
 
-module.exports = MapScroll
+export default MapScroll;

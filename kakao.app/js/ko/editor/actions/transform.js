@@ -2,15 +2,6 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
-var kerror, kstr, matchr, reversed, slash, _
-
-_ = require('kxk')._
-kerror = require('kxk').kerror
-kstr = require('kxk').kstr
-matchr = require('kxk').matchr
-reversed = require('kxk').reversed
-slash = require('kxk').slash
-
 class Transform
 {
     static transformNames = ['upper','lower','title','case','count','add','sub','up','down','sort','uniq','reverse','resolve','unresolve','dir','base','file','ext']
@@ -319,7 +310,7 @@ class Transform
     }
 }
 
-module.exports = {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggles selected texts between lower- upper- and title-case',combo:'command+alt+ctrl+u',accel:'alt+ctrl+u'},reverseSelection:{name:'Reverse Selection',text:'reverses the order of selected texts',combo:'command+alt+ctrl+r',accel:'alt+ctrl+r'},doTransform:{name:'doTransform'}},toggleCase:function ()
+export default {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggles selected texts between lower- upper- and title-case',combo:'command+alt+ctrl+u',accel:'alt+ctrl+u'},reverseSelection:{name:'Reverse Selection',text:'reverses the order of selected texts',combo:'command+alt+ctrl+r',accel:'alt+ctrl+r'},doTransform:{name:'doTransform'}},toggleCase:function ()
 {
     return Transform.do(this,'case')
 },reverseSelection:function ()
@@ -328,4 +319,4 @@ module.exports = {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'togg
 },doTransform:function (arg)
 {
     return Transform.do(this,arg)
-},Transform:Transform,transformNames:Transform.transformNames}
+},Transform:Transform,transformNames:Transform.transformNames};

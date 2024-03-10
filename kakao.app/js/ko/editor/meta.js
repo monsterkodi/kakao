@@ -2,21 +2,9 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var $, elem, File, fs, kerror, kxk, post, ranges, slash, stopEvent, sw, _
+import ranges from "../tools/ranges.js"
 
-kxk = require('kxk')
-post = kxk.post
-stopEvent = kxk.stopEvent
-slash = kxk.slash
-elem = kxk.elem
-fs = kxk.fs
-sw = kxk.sw
-kerror = kxk.kerror
-$ = kxk.$
-_ = kxk._
-
-ranges = require('../tools/ranges')
-File = require('../tools/file')
+import File from '../tools/file.js'
 class Meta
 {
     constructor (editor)
@@ -291,7 +279,7 @@ class Meta
 
     addDiv (meta)
     {
-        var div, k, lh, size, v, _1_13_, _184_52_, _194_24_
+        var div, k, lh, size, sw, v, _1_13_, _184_52_, _194_24_
 
         size = this.editor.size
         sw = size.charWidth * (meta[1][1] - meta[1][0])
@@ -606,4 +594,4 @@ class Meta
     }
 }
 
-module.exports = Meta
+export default Meta;

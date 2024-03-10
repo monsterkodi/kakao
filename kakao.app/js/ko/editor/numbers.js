@@ -2,14 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var $, elem, event, setStyle
-
-$ = require('kxk').$
-elem = require('kxk').elem
-setStyle = require('kxk').setStyle
-
-event = require('events')
-class Numbers extends event
+class Numbers
 {
     constructor (editor)
     {
@@ -184,4 +177,4 @@ class Numbers extends event
     }
 }
 
-module.exports = Numbers
+export default Numbers;

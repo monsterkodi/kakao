@@ -6,9 +6,9 @@
 000   000  000  000   000  000  000   000  000   000  000
 ###
 
-{ drag, elem, getStyle } = require 'kxk'
+# { drag, elem, getStyle } = require 'kxk'
 
-MapScroll = require './mapscroll'
+use ./mapscroll
 
 class Minimap
 
@@ -46,7 +46,7 @@ class Minimap
         @editor.on 'highlight'     @drawHighlights
         @editor.scroll.on 'scroll' @onEditorScroll
 
-        @scroll = new MapScroll
+        @scroll = new mapscroll
             exposeMax:  @height/4
             lineHeight: 4
             viewHeight: 2*@editor.viewHeight()
@@ -301,4 +301,4 @@ class Minimap
         @lines.width   = @lines.width
         @topbot.style.height = '0'
 
-module.exports = Minimap
+export Minimap

@@ -2,13 +2,7 @@
 
 var _k_
 
-var elem, File, kpos, slash
-
-elem = require('kxk').elem
-kpos = require('kxk').kpos
-slash = require('kxk').slash
-
-File = require('../tools/file')
+import File from '../tools/file.js'
 class Crumb
 {
     constructor (column)
@@ -101,4 +95,4 @@ class Crumb
     }
 }
 
-module.exports = Crumb
+export default Crumb;

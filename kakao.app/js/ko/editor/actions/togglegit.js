@@ -2,11 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var reversed
-
-reversed = require('kxk').reversed
-
-module.exports = {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u',accel:'ctrl+u'}},toggleGitChange:function (key, info)
+export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u',accel:'ctrl+u'}},toggleGitChange:function (key, info)
 {
     return this.toggleGitChangesInLines(this.selectedAndCursorLineIndices())
 },toggleGitChangesInLines:function (lineIndices)
@@ -145,4 +141,4 @@ module.exports = {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors'
     }
 
     return this.do.end()
-}}
+}};

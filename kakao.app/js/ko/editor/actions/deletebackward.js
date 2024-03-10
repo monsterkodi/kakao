@@ -2,12 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var reversed, _
-
-_ = require('kxk')._
-reversed = require('kxk').reversed
-
-module.exports = {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',text:'delete character to the left',combo:'backspace'},deleteBackwardIgnoreLineBoundary:{name:'Delete Backward Over Line Boundaries',combo:'command+backspace',accel:'ctrl+backspace'},deleteBackwardSwallowWhitespace:{name:'Delete Backward Over Whitespace',combo:'alt+backspace'}},deleteBackwardIgnoreLineBoundary:function ()
+export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',text:'delete character to the left',combo:'backspace'},deleteBackwardIgnoreLineBoundary:{name:'Delete Backward Over Line Boundaries',combo:'command+backspace',accel:'ctrl+backspace'},deleteBackwardSwallowWhitespace:{name:'Delete Backward Over Whitespace',combo:'alt+backspace'}},deleteBackwardIgnoreLineBoundary:function ()
 {
     return this.deleteBackward({ignoreLineBoundary:true})
 },deleteBackwardSwallowWhitespace:function ()
@@ -126,4 +121,4 @@ module.exports = {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',
         }
     }
     return this.do.setCursors(newCursors)
-}}
+}};

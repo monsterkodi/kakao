@@ -2,14 +2,8 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var File, kerror, os, slash, walkdir
+import file from "./file.js"
 
-kerror = require('kxk').kerror
-os = require('kxk').os
-slash = require('kxk').slash
-walkdir = require('kxk').walkdir
-
-File = require('./file')
 class Walker
 {
     constructor (cfg)
@@ -27,7 +21,7 @@ class Walker
         this.cfg.ignore = ((_23_25_=this.cfg.ignore) != null ? _23_25_ : ['node_modules','build','Build','Library','Applications'])
         this.cfg.include = ((_24_25_=this.cfg.include) != null ? _24_25_ : ['.konrad.noon','.gitignore','.npmignore'])
         this.cfg.ignoreExt = ((_26_25_=this.cfg.ignoreExt) != null ? _26_25_ : ['asar'])
-        this.cfg.includeExt = ((_27_25_=this.cfg.includeExt) != null ? _27_25_ : File.sourceFileExtensions)
+        this.cfg.includeExt = ((_27_25_=this.cfg.includeExt) != null ? _27_25_ : file.sourceFileExtensions)
         console.log('walker',this.cfg)
     }
 
@@ -168,4 +162,4 @@ class Walker
     }
 }
 
-module.exports = Walker
+export default Walker;

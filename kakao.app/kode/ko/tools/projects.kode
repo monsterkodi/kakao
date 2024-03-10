@@ -6,7 +6,9 @@
 000        000   000   0000000    0000000   00000000   0000000     000     0000000   
 ###
 
-{ post, slash } = require 'kxk'
+# { post, slash } = require 'kxk'
+
+use ../../kxk/post
 
 files    = {}
 numFiles = 0
@@ -48,6 +50,6 @@ class Projects
         log "no project files for file #{file}" Object.keys files
         []
  
-post.on 'projectIndexed', Projects.onIndexed
+post.on 'projectIndexed' Projects.onIndexed
         
-module.exports = Projects
+export Projects

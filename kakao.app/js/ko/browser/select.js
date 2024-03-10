@@ -2,10 +2,6 @@
 
 var _k_
 
-var klog
-
-klog = require('kxk').klog
-
 class Select
 {
     constructor (browser)
@@ -168,4 +164,4 @@ class Select
     }
 }
 
-module.exports = Select
+export default Select;

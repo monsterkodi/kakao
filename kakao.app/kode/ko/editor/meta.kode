@@ -6,11 +6,11 @@
 000   000  00000000     000     000   000
 ###
 
-kxk = require 'kxk'
-{ post, stopEvent, slash, elem, fs, sw, kerror, $, _ } = kxk
+# kxk = require 'kxk'
+# { post, stopEvent, slash, elem, fs, sw, kerror, $, _ } = kxk
 
-ranges = require '../tools/ranges'
-File   = require '../tools/file'
+use ../tools/ranges
+import File from  '../tools/file.js'
 
 class Meta
 
@@ -401,4 +401,4 @@ class Meta
             if not empty(clsss) and clss in clsss
                 @delMeta meta
 
-module.exports = Meta
+export Meta

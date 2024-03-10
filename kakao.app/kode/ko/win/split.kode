@@ -6,8 +6,11 @@
 0000000   000        0000000  000     000   
 ###
 
-use ../../kxk/post
 use ./flex/flex
+use ../../kxk/post
+use ../../kxk/dom
+
+{ $ } = dom
 
 class Split
     

@@ -10,10 +10,11 @@ import kpos from "../../kxk/kpos.js"
 
 import salt from "../tools/salt.js"
 
-import texteditor from "../editor/texteditor.js"
-
 import syntax from "../editor/syntax.js"
 
+import texteditor from "../editor/texteditor.js"
+
+console.log('terminal')
 
 Terminal = (function ()
 {
@@ -54,7 +55,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, _61_21_, _76_21_
+        var l, _63_21_, _78_21_
 
         if (!(meta != null))
         {
@@ -69,9 +70,9 @@ Terminal = (function ()
         {
             this.appendMeta({clss:'spacer'})
             var list = _k_.list(salt(meta.text).split('\n'))
-            for (var _68_22_ = 0; _68_22_ < list.length; _68_22_++)
+            for (var _70_22_ = 0; _70_22_ < list.length; _70_22_++)
             {
-                l = list[_68_22_]
+                l = list[_70_22_]
                 this.appendMeta({clss:'spacer',text:'# ' + l})
             }
             return this.appendMeta({clss:'spacer'})

@@ -2,25 +2,17 @@
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-var $, electron, elem, File, keyinfo, post, Row, slash, stopEvent, Syntax, _
+var Row
 
-$ = require('kxk').$
-_ = require('kxk')._
-elem = require('kxk').elem
-keyinfo = require('kxk').keyinfo
-post = require('kxk').post
-slash = require('kxk').slash
-stopEvent = require('kxk').stopEvent
+import syntax from "../editor/syntax.js"
 
-Syntax = require('../editor/syntax')
-electron = require('electron')
-File = require('../tools/file')
+import File from '../tools/file.js'
 
 Row = (function ()
 {
     function Row (column, item)
     {
-        var html, text, _20_26_
+        var html, text, _19_26_
 
         this.column = column
         this.item = item
@@ -34,14 +26,14 @@ Row = (function ()
         this["onMouseOver"] = this["onMouseOver"].bind(this)
         this["onMouseOut"] = this["onMouseOut"].bind(this)
         this.browser = this.column.browser
-        text = ((_20_26_=this.item.text) != null ? _20_26_ : this.item.name)
+        text = ((_19_26_=this.item.text) != null ? _19_26_ : this.item.name)
         if (_k_.empty((text)) || _k_.empty(text.trim()))
         {
             html = '<span> </span>'
         }
         else
         {
-            html = Syntax.spanForTextAndSyntax(text,'browser')
+            html = syntax.spanForTextAndSyntax(text,'browser')
         }
         this.div = elem({class:'browserRow',html:html})
         this.div.classList.add(this.item.type)
@@ -69,21 +61,21 @@ Row = (function ()
 
     Row.prototype["onMouseOut"] = function ()
     {
-        var _35_24_
+        var _34_24_
 
         return (this.div != null ? this.div.classList.remove('hover') : undefined)
     }
 
     Row.prototype["onMouseOver"] = function ()
     {
-        var _36_24_
+        var _35_24_
 
         return (this.div != null ? this.div.classList.add('hover') : undefined)
     }
 
     Row.prototype["path"] = function ()
     {
-        var _39_21_, _41_20_, _41_26_
+        var _38_21_, _40_20_, _40_26_
 
         if ((this.item.file != null) && _k_.isStr(this.item.file))
         {
@@ -97,7 +89,7 @@ Row = (function ()
 
     Row.prototype["setIcon"] = function ()
     {
-        var className, icon, _70_23_
+        var className, icon, _69_23_
 
         if (slash.ext(this.item.file) === 'kode')
         {
@@ -131,7 +123,7 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, opt, _84_19_
+        var col, opt, _83_19_
 
         if (this.column.index < 0)
         {
@@ -169,7 +161,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _114_31_
+        var _113_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -220,7 +212,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _157_24_
+        var _156_24_
 
         if ((this.input != null))
         {
@@ -273,7 +265,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _190_28_, _197_37_
+        var _189_28_, _196_37_
 
         if (!(this.input != null))
         {
@@ -318,4 +310,4 @@ Row = (function ()
     return Row
 })()
 
-module.exports = Row
+export default Row;

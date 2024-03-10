@@ -6,9 +6,9 @@
 00     00  000   000  0000000  000   000  00000000  000   000
 ###
 
-{ kerror, os, slash, walkdir } = require 'kxk'
+# { kerror, os, slash, walkdir } = require 'kxk'
 
-File = require './file'
+use ./file
 
 class Walker
 
@@ -24,7 +24,7 @@ class Walker
         @cfg.include     ?= ['.konrad.noon' '.gitignore' '.npmignore']
         # @cfg.ignoreExt   ?= ['app' 'asar']
         @cfg.ignoreExt   ?= ['asar']
-        @cfg.includeExt  ?= File.sourceFileExtensions
+        @cfg.includeExt  ?= file.sourceFileExtensions
         
         log 'walker' @cfg
       
@@ -109,4 +109,4 @@ class Walker
         @walker?.end()
         @walker = null
     
-module.exports = Walker
+export Walker

@@ -2,15 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var clipboard, electron, kxk, os, _
-
-kxk = require('kxk')
-os = kxk.os
-_ = kxk._
-
-electron = require('electron')
-clipboard = electron.clipboard
-module.exports = {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c','ctrl+c','command+v','ctrl+v']}},cutCopyPaste:function (key, info)
+export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c','ctrl+c','command+v','ctrl+v']}},cutCopyPaste:function (key, info)
 {
     switch (key)
     {
@@ -39,7 +31,7 @@ module.exports = {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c
     return this.pasteText((clipboard != null ? clipboard.readText() : undefined))
 },replaceSelectedText:function (lines)
 {
-    var insert, ldiff, newSelections, ns, oldLength
+    var insert, ldiff, newSelections, ns, oldLength, os
 
     this.do.start()
     newSelections = this.do.selections()
@@ -148,4 +140,4 @@ module.exports = {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c
     }
     this.do.setCursors(newCursors)
     return this.do.end()
-}}
+}};

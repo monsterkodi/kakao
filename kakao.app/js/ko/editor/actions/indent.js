@@ -2,7 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-module.exports = {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',accel:'ctrl+]'},deIndent:{name:'Outdent',combo:'command+[',accel:'ctrl+['}},indent:function ()
+export default {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',accel:'ctrl+]'},deIndent:{name:'Outdent',combo:'command+[',accel:'ctrl+['}},indent:function ()
 {
     var i, nc, newCursors, newSelections, ns
 
@@ -64,4 +64,4 @@ module.exports = {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',a
     this.do.select(newSelections)
     this.do.setCursors(newCursors)
     return this.do.end()
-}}
+}};

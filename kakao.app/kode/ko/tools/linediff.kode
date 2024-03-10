@@ -6,7 +6,7 @@
 0000000  000  000   000  00000000  0000000    000  000       000       
 ###
 
-{ last } = require 'kxk'
+# { last } = require 'kxk'
 
 lineDiff = (oldLine, newLine) ->
     
@@ -87,4 +87,4 @@ lineDiff.isBoring = (oldLine, newLine) ->
             when 'insert' then inserts += newLine.substr(c.new, c.length).trim()
     inserts == deletes
     
-module.exports = lineDiff
+export lineDiff

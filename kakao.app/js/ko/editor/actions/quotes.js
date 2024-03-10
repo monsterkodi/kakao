@@ -2,11 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var klog
-
-klog = require('kxk').klog
-
-module.exports = {actions:{menu:'Quotes',singleQuotes:{name:'Single',combo:"alt+command+'",accel:"alt+ctrl+'"},doubleQuotes:{name:'Double',combo:"alt+command+shift+'",accel:"alt+ctrl+shift+'"}},singleQuotes:function ()
+export default {actions:{menu:'Quotes',singleQuotes:{name:'Single',combo:"alt+command+'",accel:"alt+ctrl+'"},doubleQuotes:{name:'Double',combo:"alt+command+shift+'",accel:"alt+ctrl+shift+'"}},singleQuotes:function ()
 {
     return this.swapQuotes("'")
 },doubleQuotes:function ()
@@ -39,4 +35,4 @@ module.exports = {actions:{menu:'Quotes',singleQuotes:{name:'Single',combo:"alt+
     }
     this.do.setCursors(cursors)
     return this.do.end()
-}}
+}};

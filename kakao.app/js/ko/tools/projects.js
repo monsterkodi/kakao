@@ -2,10 +2,9 @@
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var files, numFiles, post, slash
+var files, numFiles
 
-post = require('kxk').post
-slash = require('kxk').slash
+import post from "../../kxk/post.js"
 
 files = {}
 numFiles = 0
@@ -62,4 +61,4 @@ class Projects
 }
 
 post.on('projectIndexed',Projects.onIndexed)
-module.exports = Projects
+export default Projects;

@@ -2,12 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var klog, _
-
-_ = require('kxk')._
-klog = require('kxk').klog
-
-module.exports = {actions:{menu:'Cursors',moveCursorsAtBoundaryLeft:{name:'Move Cursors to Indent or Start of Line',combo:'command+left',accel:'ctrl+left'},moveCursorsAtBoundaryRight:{name:'Move Cursors to End of Line',combo:'command+right',accel:'ctrl+right'},moveCursorsToWordBoundary:{name:'move cursors to word boundaries',text:'moves cursors to word boundaries. extends selections, if shift is pressed.',combos:['alt+shift+left','alt+shift+right']},moveCursorsToWordBoundaryLeft:{separator:true,name:'Move Cursors to Start of Word',combo:'alt+left'},moveCursorsToWordBoundaryRight:{name:'Move Cursors to End of Word',combo:'alt+right'},moveCursorsToLineBoundary:{name:'move cursors to line boundaries',text:'moves cursors to line boundaries. extends selections, if shift is pressed.',combos:['home','end','command+shift+left','command+shift+right'],accels:['home','end','shift+home','shift+end','ctrl+shift+left','ctrl+shift+right']},moveMainCursor:{name:'move main cursor',text:`move main cursor independently of other cursors.
+export default {actions:{menu:'Cursors',moveCursorsAtBoundaryLeft:{name:'Move Cursors to Indent or Start of Line',combo:'command+left',accel:'ctrl+left'},moveCursorsAtBoundaryRight:{name:'Move Cursors to End of Line',combo:'command+right',accel:'ctrl+right'},moveCursorsToWordBoundary:{name:'move cursors to word boundaries',text:'moves cursors to word boundaries. extends selections, if shift is pressed.',combos:['alt+shift+left','alt+shift+right']},moveCursorsToWordBoundaryLeft:{separator:true,name:'Move Cursors to Start of Word',combo:'alt+left'},moveCursorsToWordBoundaryRight:{name:'Move Cursors to End of Word',combo:'alt+right'},moveCursorsToLineBoundary:{name:'move cursors to line boundaries',text:'moves cursors to line boundaries. extends selections, if shift is pressed.',combos:['home','end','command+shift+left','command+shift+right'],accels:['home','end','shift+home','shift+end','ctrl+shift+left','ctrl+shift+right']},moveMainCursor:{name:'move main cursor',text:`move main cursor independently of other cursors.
 keeps current main cursor position in cursors if shift is pressed.`,combos:['ctrl+shift+up','ctrl+shift+down','ctrl+shift+left','ctrl+shift+right','ctrl+up','ctrl+down','ctrl+left','ctrl+right']},moveCursors:{name:'move cursors',combos:['left','right','up','down','shift+down','shift+right','shift+up','shift+left','ctrl+left','ctrl+right']}},moveCursorsAtBoundaryLeft:function ()
 {
     return this.setOrMoveCursorsAtBoundary('left')
@@ -301,4 +296,4 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
             return [c[0],c[1] + n]
         }
     })(n),{extend:e,main:'bot'})
-}}
+}};

@@ -2,18 +2,18 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var CommandList, kerror, matchr, salt, Syntax, TextEditor
+var CommandList
 
-kerror = require('kxk').kerror
-matchr = require('kxk').matchr
+import texteditor from "../editor/texteditor.js"
 
-TextEditor = require('../editor/texteditor')
-Syntax = require('../editor/syntax')
-salt = require('../tools/salt')
+import syntax from "../editor/syntax.js"
+
+import salt from "../tools/salt.js"
+
 
 CommandList = (function ()
 {
-    _k_.extend(CommandList, TextEditor)
+    _k_.extend(CommandList, texteditor)
     function CommandList (command, viewElem, opt)
     {
         var _24_41_
@@ -91,13 +91,13 @@ CommandList = (function ()
         this.meta.addDiv(this.meta.append(meta))
         if ((meta.diss != null))
         {
-            return this.appendLineDiss(Syntax.lineForDiss(meta.diss),meta.diss)
+            return this.appendLineDiss(syntax.lineForDiss(meta.diss),meta.diss)
         }
         else if ((meta.text != null) && meta.text.trim().length)
         {
             r = ((_107_29_=meta.rngs) != null ? _107_29_ : [])
             text = meta.text.trim()
-            rngs = r.concat(Syntax.rangesForTextAndSyntax(text,meta.type || 'ko'))
+            rngs = r.concat(syntax.rangesForTextAndSyntax(text,meta.type || 'ko'))
             matchr.sortRanges(rngs)
             diss = matchr.dissect(rngs,{join:true})
             return this.appendLineDiss(text,diss)
@@ -142,4 +142,4 @@ CommandList = (function ()
     return CommandList
 })()
 
-module.exports = CommandList
+export default CommandList;

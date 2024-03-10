@@ -2,14 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var kxk, matchr, post, slash
-
-kxk = require('kxk')
-matchr = kxk.matchr
-post = kxk.post
-slash = kxk.slash
-
-module.exports = {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at cursor',combo:'alt+enter'}},jumpToFileAtPos:function (p = this.cursorPos())
+export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at cursor',combo:'alt+enter'}},jumpToFileAtPos:function (p = this.cursorPos())
 {
     var col, cwd, d, diss, file, line, ranges, rgx, text
 
@@ -134,4 +127,4 @@ module.exports = {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at
         }
     }
     return post.emit('jumpTo',word,opt)
-}}
+}};

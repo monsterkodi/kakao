@@ -5,9 +5,9 @@
 #    000     000   000  000   000  
 #    000     000   000  0000000    
 
-{ _, stopEvent } = require 'kxk'
+# { _, stopEvent } = require 'kxk'
 
-module.exports = 
+export
     
     actions:
         insertOrDeleteTab:

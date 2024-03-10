@@ -2,30 +2,20 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var $, Column, elem, fuzzy, hub, kerror, keyinfo, klog, kpos, popup, post, Row, Scroller, Shelf, slash, stopEvent, _
+var Shelf
 
-$ = require('kxk').$
-_ = require('kxk')._
-elem = require('kxk').elem
-first = require('kxk').first
-kerror = require('kxk').kerror
-keyinfo = require('kxk').keyinfo
-klog = require('kxk').klog
-kpos = require('kxk').kpos
-popup = require('kxk').popup
-post = require('kxk').post
-slash = require('kxk').slash
-stopEvent = require('kxk').stopEvent
+import row from "./row.js"
 
-Row = require('./row')
-Scroller = require('./scroller')
-Column = require('./column')
-fuzzy = require('fuzzy')
-hub = require('../git/hub')
+import scroller from "./scroller.js"
+
+import column from "./column.js"
+
+import hub from "../git/hub.js"
+
 
 Shelf = (function ()
 {
-    _k_.extend(Shelf, Column)
+    _k_.extend(Shelf, column)
     function Shelf (browser)
     {
         this["onKeyUp"] = this["onKeyUp"].bind(this)
@@ -684,4 +674,4 @@ Shelf = (function ()
     return Shelf
 })()
 
-module.exports = Shelf
+export default Shelf;

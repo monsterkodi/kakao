@@ -6,7 +6,9 @@
 00     00  000   000     000      0000000  000   000  00000000  000   000
 ###
 
-{ fs, klog, post, slash } = require 'kxk'
+# { fs, klog, post, slash } = require 'kxk'
+
+use ../../kxk/post
 
 class Watcher
 
@@ -79,4 +81,4 @@ class FileWatcher
         @watchers[file]?.stop()
         delete @watchers[file]
         
-module.exports = FileWatcher
+export FileWatcher

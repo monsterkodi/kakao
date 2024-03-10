@@ -2,14 +2,6 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-var $, elem, post, prefs, slash
-
-$ = require('kxk').$
-elem = require('kxk').elem
-post = require('kxk').post
-prefs = require('kxk').prefs
-slash = require('kxk').slash
-
 class Scheme
 {
     static colors = {}
@@ -86,4 +78,4 @@ class Scheme
     }
 }
 
-module.exports = Scheme
+export default Scheme;

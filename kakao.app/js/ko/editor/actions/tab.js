@@ -2,12 +2,7 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var stopEvent, _
-
-_ = require('kxk')._
-stopEvent = require('kxk').stopEvent
-
-module.exports = {actions:{insertOrDeleteTab:{combos:['tab','shift+tab']}},insertOrDeleteTab:function (key, info)
+export default {actions:{insertOrDeleteTab:{combos:['tab','shift+tab']}},insertOrDeleteTab:function (key, info)
 {
     stopEvent((info != null ? info.event : undefined))
     switch (info.combo)
@@ -74,4 +69,4 @@ module.exports = {actions:{insertOrDeleteTab:{combos:['tab','shift+tab']}},inser
         this.do.setCursors(newCursors)
         return this.do.end()
     }
-}}
+}};
