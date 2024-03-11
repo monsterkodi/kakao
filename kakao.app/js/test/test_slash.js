@@ -139,6 +139,7 @@ toExport["kslash"] = function ()
     section("file", function ()
     {
         compare(slash.file('/some/path.txt'),'path.txt')
+        compare(slash.file('file:///files.css'),'files.css')
     })
     section("ext", function ()
     {

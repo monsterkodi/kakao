@@ -2,6 +2,8 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
+import post from "../../../kxk/post.js"
+
 export default {actions:{menu:'Select',selectAll:{name:'Select All',combo:'command+a',accel:'ctrl+a'},selectNone:{name:'Deselect',combo:'command+shift+a',accel:'ctrl+shift+a'},selectInverted:{name:'Invert Selection',text:'selects all lines that have no cursors and no selections',combo:'command+i',accel:'ctrl+i'},selectNextHighlight:{separator:true,name:'Select Next Highlight',combo:'command+g',accel:'ctrl+g'},selectPrevHighlight:{name:'Select Previous Highlight',combo:'command+shift+g',accel:'ctrl+shift+g'},selectTextBetweenCursorsOrSurround:{name:'Select Between Cursors, Brackets or Quotes',text:`select text between even cursors, if at least two cursors exist. 
 select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',accel:'alt+b'},toggleStickySelection:{separator:true,name:'Toggle Sticky Selection',text:'current selection is not removed when adding new selections',combo:"ctrl+'",accel:"ctrl+'"}},selectSingleRange:function (r, opt)
 {
@@ -9,7 +11,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
 
     if (!(r != null))
     {
-        return kerror(`Editor.${name}.selectSingleRange -- undefined range!`)
+        return console.error(`Editor.${name}.selectSingleRange -- undefined range!`)
     }
     cursorX = (opt != null ? opt.before : undefined) ? r[1][0] : r[1][1]
     this.do.start()
@@ -19,7 +21,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     return this
 },toggleStickySelection:function ()
 {
-    klog('toggleStickySelection')
+    console.log('toggleStickySelection')
     if (this.stickySelection)
     {
         return this.endStickySelection()
@@ -94,7 +96,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
         newCursors = this.do.cursors()
         if (oldCursors.length !== newCursors.length)
         {
-            return kerror(`Editor.${this.name}.endSelection -- oldCursors.size != newCursors.size`,oldCursors.length,newCursors.length)
+            return console.error(`Editor.${this.name}.endSelection -- oldCursors.size != newCursors.size`,oldCursors.length,newCursors.length)
         }
         for (var _139_23_ = ci = 0, _139_27_ = this.do.numCursors(); (_139_23_ <= _139_27_ ? ci < this.do.numCursors() : ci > this.do.numCursors()); (_139_23_ <= _139_27_ ? ++ci : --ci))
         {
@@ -102,7 +104,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
             nc = newCursors[ci]
             if (!(oc != null) || !(nc != null))
             {
-                return kerror(`Editor.${this.name}.endSelection -- invalid cursors`,oc,nc)
+                return console.error(`Editor.${this.name}.endSelection -- invalid cursors`,oc,nc)
             }
             else
             {

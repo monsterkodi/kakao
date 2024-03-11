@@ -6,18 +6,22 @@
  0000000   0000000   0000000   0000000   000   000  000   000
 ###
 
-# { $, _, drag, elem, fs, kerror, keyinfo, klog, kpos, open, popup, post, prefs, setStyle, slash, stopEvent } = require 'kxk'
-
 use ./row
 use ./crumb
 use ./scroller
 use ../tools/dirwatch
 use ../tools/file
+use ../../kxk/dom
+use ../../kxk/kpos
 use ../../kxk/elem
 use ../../kxk/drag
 use ../../kxk/post
-# use fuzzy
-# wxw      = require 'wxw'
+use ../../kxk/prefs
+use ../../kxk/slash
+use ../../kxk/popup
+use ../../kxk/keyinfo
+
+{ $, setStyle } = dom
 
 function Column
     
@@ -94,11 +98,11 @@ function Column
                 @div.classList.add 'browserColumnCode'
                 
         if @parent.type == undefined
-            klog 'undefined parent type?'
+            log 'undefined parent type?'
             @parent.type = slash.isDir(@parent.file) and 'dir' or 'file'
         
-        kerror "no parent item?" if not @parent?
-        kerror "loadItems -- no parent type?", @parent if not @parent.type?
+        error "no parent item?" if not @parent?
+        error "loadItems -- no parent type?", @parent if not @parent.type?
         
         if valid @items
             for item in @items
@@ -229,20 +233,20 @@ function Column
             else if column = @browser.columnAtPos d.pos
                 target = column.parent?.file
             else
-                klog 'no drop target'
+                log 'no drop target'
                 return
                                 
             action = e.shiftKey and 'copy' or 'move'
                 
             if column == @browser.shelf 
                 if target and (e.ctrlKey or e.shiftKey or e.metaKey or e.altKey)
-                    klog 'drop into shelf item'
+                    log 'drop into shelf item'
                     @browser.dropAction action, files, target
                 else
-                    klog 'add to shelf'
+                    log 'add to shelf'
                     @browser.shelf.addFiles files, pos:d.pos
             else
-                klog 'drop into folder column' target
+                log 'drop into folder column' target
                 @browser.dropAction action, files, target
         else
             if e.button == 0
@@ -320,8 +324,9 @@ function Column
         @browser.clearColumn @index
         
         @parent = opt.parent
-        kerror "no parent item?" if not @parent?
-        kerror "setItems -- no parent type?", @parent if not @parent.type?
+        
+        error "no parent item?" if not @parent?
+        error "setItems -- no parent type?", @parent if not @parent.type?
         
         for item in @items
             @rows.push new Row @, item
@@ -426,7 +431,7 @@ function Column
 
     focusBrowser: -> 
     
-        klog 'focusBrowser'
+        log 'focusBrowser'
         @browser.focus force:true
     
     # 00     00   0000000   000   000   0000000  00000000  
@@ -654,22 +659,22 @@ function Column
     
     moveToTrash: =>
         
-        index = @browser.select.freeIndex()
-        if index >= 0
-            selectRow = @row index
-        
-        for row in @browser.select.rows
-            if slash.win()
-                wxw 'trash' row.path()
-            else
-                trashPath = slash.resolve '~/.Trash/' + slash.base row.path()
-                fs.rename row.path(), trashPath, -> 
-            @removeRow row
-           
-        if selectRow
-            @browser.select.row selectRow
-        else
-            @navigateCols 'left'
+        # index = @browser.select.freeIndex()
+        # if index >= 0
+            # selectRow = @row index
+#         
+        # for row in @browser.select.rows
+            # if slash.win()
+                # wxw 'trash' row.path()
+            # else
+                # trashPath = slash.resolve '~/.Trash/' + slash.base row.path()
+                # fs.rename row.path(), trashPath, -> 
+            # @removeRow row
+#            
+        # if selectRow
+            # @browser.select.row selectRow
+        # else
+            # @navigateCols 'left'
 
     addToShelf: =>
         
@@ -678,12 +683,12 @@ function Column
         
     newFolder: =>
         
-        slash.unused slash.join(@path(), 'New folder'), (newDir) =>
-            fs.mkdir newDir, (err) =>
-                if empty err
-                    row = @insertFile newDir
-                    @browser.select.row row
-                    row.editName()
+        # slash.unused slash.join(@path(), 'New folder'), (newDir) =>
+            # fs.mkdir newDir, (err) =>
+                # if empty err
+                    # row = @insertFile newDir
+                    # @browser.select.row row
+                    # row.editName()
             
     # 0000000    000   000  00000000   000      000   0000000   0000000   000000000  00000000  
     # 000   000  000   000  000   000  000      000  000       000   000     000     000       

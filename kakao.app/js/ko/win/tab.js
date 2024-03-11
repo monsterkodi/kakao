@@ -96,14 +96,14 @@ class Tab
                 {
                     if (err)
                     {
-                        return kerror(`tab.saveChanges failed ${err}`)
+                        return console.error(`tab.saveChanges failed ${err}`)
                     }
                     return this.revert()
                 }).bind(this))
             }
             else
             {
-                return kerror('tab.saveChanges -- nothing to save?')
+                console.error('tab.saveChanges -- nothing to save?')
             }
         }
         else
@@ -132,11 +132,11 @@ class Tab
 
     restoreState ()
     {
-        var _94_62_, _94_68_
+        var _94_61_, _94_67_
 
         if (!((this.state != null ? this.state.file : undefined) != null))
         {
-            return kerror('no file in state?',this.state)
+            return console.error('no file in state?',this.state)
         }
         window.editor.do.setTabState(this.state)
         return delete this.state

@@ -4,6 +4,10 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 import post from "../../kxk/post.js"
 
+import prefs from "../../kxk/prefs.js"
+
+import slash from "../../kxk/slash.js"
+
 import File from '../tools/file.js'
 class FileHandler
 {
@@ -53,7 +57,7 @@ class FileHandler
                 }
                 catch (err)
                 {
-                    kerror(err)
+                    console.error(err)
                 }
             }
         }
@@ -256,14 +260,14 @@ class FileHandler
         }
         catch (err)
         {
-            kerror(`macro req failed ${err}`)
+            console.error(`macro req failed ${err}`)
         }
         return File.save(file,editor.text(),function (err, saved)
         {
             editor.saveScrollCursorsAndSelections()
             if (!_k_.empty(err))
             {
-                kerror(`saving '${file}' failed:`,err)
+                console.error(`saving '${file}' failed:`,err)
             }
             else
             {
@@ -294,7 +298,7 @@ class FileHandler
             recent.pop()
         }
         window.state.set('recentFiles',recent)
-        return commandline.commands.open.setHistory(reversed(recent))
+        return commandline.commands.open.setHistory(recent.reversed())
     }
 
     saveChanges ()
@@ -307,7 +311,7 @@ class FileHandler
             {
                 if (err)
                 {
-                    return kerror(`FileHandler.saveChanges failed ${err}`)
+                    console.error(`FileHandler.saveChanges failed ${err}`)
                 }
             })
         }
@@ -335,7 +339,7 @@ class FileHandler
 
         cb = (function (file)
         {
-            klog('saveFileAs',file)
+            console.log('saveFileAs',file)
             this.addToRecent(file)
             return this.saveFile(file)
         }).bind(this)

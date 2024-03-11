@@ -33,7 +33,9 @@ class Scheme
         @colors = {}
         
         for link in document.querySelectorAll '.scheme-link'
+            log 'ref' link.href
             css = slash.file link.href
+            log 'css' css
             newlink = elem 'link', 
                 href:  "css/ko/#{scheme}/#{css}"
                 rel:   'stylesheet'

@@ -119,7 +119,7 @@ function FileEditor extends texteditor
         
     restoreFromTabState: (tabState) ->
 
-        return kerror "no tabState.file?" if not tabState.file?
+        return error "no tabState.file?" if not tabState.file?
         @setCurrentFile tabState.file, tabState.state
 
     # 000000000  000   000  00000000   00000000
@@ -271,12 +271,12 @@ function FileEditor extends texteditor
             @jumpToFile opt
             return true
 
-        return kerror 'nothing to jump to?' if empty word
+        return error 'nothing to jump to?' if empty word
 
         find = word.toLowerCase().trim()
         find = find.slice 1 if find[0] == '@'
 
-        return kerror 'FileEditor.jumpTo -- nothing to find?' if empty find
+        return error 'FileEditor.jumpTo -- nothing to find?' if empty find
 
         type = opt?.type
 

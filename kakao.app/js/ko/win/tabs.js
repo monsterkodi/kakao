@@ -95,7 +95,7 @@ class Tabs
 
         if (winID === window.winID)
         {
-            return kerror(`fileSaved from this window? ${file} ${winID}`)
+            return console.error(`fileSaved from this window? ${file} ${winID}`)
         }
         tab = this.tab(file)
         if ((tab != null) && tab !== this.activeTab())

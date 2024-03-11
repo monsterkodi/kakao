@@ -61,7 +61,7 @@ class Invisibles
     onLineChanged: (li) =>
 
         metas = @editor.meta.metasAtLineIndex(li).filter (m) -> m[2].clss.startsWith 'invisible'
-        return kerror "no invisible meta at line #{li}?" if not metas.length
+        return error "no invisible meta at line #{li}?" if not metas.length
         @editor.meta.delMeta metas[0]
         @onLineInserted li
 

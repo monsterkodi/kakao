@@ -223,7 +223,7 @@ Commandline = (function ()
         }
         else
         {
-            return kerror(`no command ${name}`)
+            console.error(`no command ${name}`)
         }
     }
 

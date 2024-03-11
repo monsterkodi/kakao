@@ -5,7 +5,9 @@
 #    000     000   000  000   000  000  0000       000  000       000   000  000   000  000 0 000
 #    000     000   000  000   000  000   000  0000000   000        0000000   000   000  000   000
 
-# { _, kerror, kstr, matchr, reversed, slash } = require 'kxk'
+use ../../../kxk/kstr
+use ../../../kxk/slash
+use ../../../kxk/matchr
 
 class Transform
 
@@ -80,7 +82,7 @@ class Transform
     # 000   000  00000000      0      00000000  000   000  0000000   00000000
 
     reverse: ->
-        @trans (l) -> reversed l
+        @trans (l) -> l.reversed()
         'reverse'
 
     #  0000000   0000000   00000000   000000000
@@ -257,7 +259,7 @@ class Transform
         if f is func
             @last = f.apply @, opts
         else
-            return kerror "unhandled transform #{transName}"
+            return error "unhandled transform #{transName}"
 
         @last
 

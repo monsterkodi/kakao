@@ -64,7 +64,7 @@ Macro = (function ()
 
         if (_k_.empty(command))
         {
-            return kerror('no command!')
+            return console.error('no command!')
         }
         command = Macro.__super__.execute.call(this,command)
         editor = window.editor
@@ -244,7 +244,7 @@ export ${clss}
             }
             else
             {
-                kerror('unhandled macro',cmmd,transform.transformNames)
+                console.error('unhandled macro',cmmd,transform.transformNames)
                 if (_k_.last(this.history) === command.trim())
                 {
                     this.history.pop()

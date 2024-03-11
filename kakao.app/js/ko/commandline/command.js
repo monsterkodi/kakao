@@ -60,7 +60,7 @@ Command = (function ()
 
         if (_k_.empty(command))
         {
-            return kerror('no command!')
+            return console.error('no command!')
         }
         if ((this.commandList != null))
         {
@@ -378,7 +378,7 @@ Command = (function ()
         }
         if (!(_k_.isArr(this.history)))
         {
-            kerror(`Command.setCurrent -- ${this.historyKey()} : history not an array?`,typeof(this.history))
+            console.error(`Command.setCurrent -- ${this.historyKey()} : history not an array?`,typeof(this.history))
             this.history = []
         }
         _.pull(this.history,command)

@@ -31,17 +31,6 @@ use ../tools/cwd
 use ../tools/projects
 use ../main/navigate
 
-# split       = null
-# info        = null
-# editor      = null
-# mainmenu    = null
-# terminal    = null
-# commandline = null
-# titlebar    = null
-# tabs        = null
-# filehandler = null
-# filewatcher = null
-
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
 # 000000000  000  000 0 000  000   000  000   000  000000000  
@@ -52,8 +41,8 @@ function Window #extends win
 
     onWindowAnimationTick:  (win, tickInfo) -> #log 'onWindowAnimationTick' win.id
     onWindowResize:         (win, event)    -> log 'onWindowResize'        win.id
-    onWindowFocus:          (win)           -> log 'onWindowFocus'         win.id
-    onWindowBlur:           (win)           -> log 'onWindowBlur'          win.id
+    onWindowFocus:          (win)           -> #log 'onWindowFocus'         win.id
+    onWindowBlur:           (win)           -> #log 'onWindowBlur'          win.id
     onWindowKeyDown:        (win, keyInfo)  -> #log 'onWindowKeyDown'       win.id, keyInfo
     onWindowKeyUp:          (win, keyInfo)  -> #log 'onWindowKeyUp'         win.id, keyInfo
     

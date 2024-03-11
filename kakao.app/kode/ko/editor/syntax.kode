@@ -6,12 +6,12 @@
 0000000      000     000   000     000     000   000  000   000
 ###
 
-# { _, elem, fs, kerror, kstr, last, matchr, noon, slash } = require 'kxk'
-
 use ../../klor/klor
 use ../../kxk/slash
 use ../../kxk/matchr
+use ../../kxk/elem
 use ../../kxk/noon
+use ../../kxk/kstr
 use ../../kxk/ffs
 
 __dirname = slash.dir import.meta.url[7..]
@@ -143,7 +143,7 @@ class Syntax
             result = klor.ranges text, n
         else
             if not n? or not Syntax.matchrConfigs[n]?
-                return kerror "no syntax? #{n}"
+                return error "no syntax? #{n}"
             result = matchr.dissect matchr.ranges Syntax.matchrConfigs[n], text
         result
 

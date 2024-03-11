@@ -2,6 +2,12 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
+import kstr from "../../../kxk/kstr.js"
+
+import slash from "../../../kxk/slash.js"
+
+import matchr from "../../../kxk/matchr.js"
+
 class Transform
 {
     static transformNames = ['upper','lower','title','case','count','add','sub','up','down','sort','uniq','reverse','resolve','unresolve','dir','base','file','ext']
@@ -42,7 +48,7 @@ class Transform
         }
 
         pad = Number(step * (cs.length - 1) + offset).toString(base).length
-        numbers = (function () { var r_60_83_ = []; for (var _60_87_ = i = 0, _60_91_ = cs.length; (_60_87_ <= _60_91_ ? i < cs.length : i > cs.length); (_60_87_ <= _60_91_ ? ++i : --i))  { r_60_83_.push(_.padStart(Number(step * i + offset).toString(base),pad,'0'))  } return r_60_83_ }).bind(this)()
+        numbers = (function () { var r_62_83_ = []; for (var _62_87_ = i = 0, _62_91_ = cs.length; (_62_87_ <= _62_91_ ? i < cs.length : i > cs.length); (_62_87_ <= _62_91_ ? ++i : --i))  { r_62_83_.push(_.padStart(Number(step * i + offset).toString(base),pad,'0'))  } return r_62_83_ }).bind(this)()
         this.editor.replaceSelectedText(numbers)
         this.editor.do.end()
         return 'count'
@@ -70,7 +76,7 @@ class Transform
     {
         this.trans(function (l)
         {
-            return reversed(l)
+            return l.reversed()
         })
         return 'reverse'
     }
@@ -113,9 +119,9 @@ class Transform
             v = []
             r = []
             var list = _k_.list(l)
-            for (var _112_18_ = 0; _112_18_ < list.length; _112_18_++)
+            for (var _114_18_ = 0; _114_18_ < list.length; _114_18_++)
             {
-                a = list[_112_18_]
+                a = list[_114_18_]
                 _k_.in(a,v) ? r.push('') : v.push(a)
             }
             return r
@@ -156,9 +162,9 @@ class Transform
             var r
 
             var list = _k_.list(matchr.ranges(/\w+/,t))
-            for (var _139_18_ = 0; _139_18_ < list.length; _139_18_++)
+            for (var _141_18_ = 0; _141_18_ < list.length; _141_18_++)
             {
-                r = list[_139_18_]
+                r = list[_141_18_]
                 t = t.splice(r.start,r.match.length,r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase())
             }
             return t
@@ -173,7 +179,7 @@ class Transform
 
     resolve ()
     {
-        var cwd, _155_30_
+        var cwd, _157_30_
 
         cwd = process.cwd()
         if ((this.editor.currentFile != null))
@@ -245,7 +251,7 @@ class Transform
 
     tfunc (opt)
     {
-        var selections, tl, _226_42_, _227_42_
+        var selections, tl, _228_42_, _229_42_
 
         if (!this.editor.numSelections())
         {
@@ -296,16 +302,16 @@ class Transform
         }
         else
         {
-            return kerror(`unhandled transform ${transName}`)
+            return console.error(`unhandled transform ${transName}`)
         }
         return this.last
     }
 
     static do (editor, transName, ...opts)
     {
-        var t, _266_29_
+        var t, _268_29_
 
-        t = ((_266_29_=editor.transform) != null ? _266_29_ : new Transform(editor))
+        t = ((_268_29_=editor.transform) != null ? _268_29_ : new Transform(editor))
         return t.do.apply(t,[transName].concat(opts))
     }
 }

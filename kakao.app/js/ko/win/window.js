@@ -56,14 +56,10 @@ Window = (function ()
     }
 
     Window.prototype["onWindowFocus"] = function (win)
-    {
-        console.log('onWindowFocus',win.id)
-    }
+    {}
 
     Window.prototype["onWindowBlur"] = function (win)
-    {
-        console.log('onWindowBlur',win.id)
-    }
+    {}
 
     Window.prototype["onWindowKeyDown"] = function (win, keyInfo)
     {}
@@ -150,7 +146,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _146_25_
+        var action, _135_25_
 
         console.log('onMenuAction',name)
         if (action = editor.actionWithName(name))
@@ -371,7 +367,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _309_14_
+    var _298_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -382,7 +378,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _315_22_
+    var _304_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -427,7 +423,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _360_32_
+    var _349_32_
 
     if (!(_k_.isNum(s)))
     {

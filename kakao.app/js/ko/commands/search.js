@@ -4,6 +4,14 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var FileSearcher, Search
 
+import klor from "../../klor/klor.js"
+
+import post from "../../kxk/post.js"
+
+import slash from "../../kxk/slash.js"
+
+import matchr from "../../kxk/matchr.js"
+
 import walker from "../tools/walker.js"
 
 import syntax from "../editor/syntax.js"
@@ -29,7 +37,7 @@ Search = (function ()
 
     Search.prototype["execute"] = function (command)
     {
-        var file, rngs, _45_41_
+        var file, rngs, _48_41_
 
         if (!command.length)
         {
@@ -52,7 +60,7 @@ Search = (function ()
         }
 
         command = Search.__super__.execute.call(this,command)
-        file = ((_45_41_=window.editor.currentFile) != null ? _45_41_ : _.first(_.keys(post.get('indexer','files'))))
+        file = ((_48_41_=window.editor.currentFile) != null ? _48_41_ : _.first(_.keys(post.get('indexer','files'))))
         if (!(file != null))
         {
             return
@@ -147,7 +155,7 @@ FileSearcher = (function ()
                     return this.opt.text
 
                 default:
-                    kerror(`commands/search FileSearcher -- unhandled '${this.opt.name}' command:`,this.command.name,'opt:',this.opt,'file:',this.file)
+                    console.error(`commands/search FileSearcher -- unhandled '${this.opt.name}' command:`,this.command.name,'opt:',this.opt,'file:',this.file)
                     return [[new RegExp(_.escapeRegExp(this.opt.text),'i'),'found']]
             }
 
@@ -166,7 +174,7 @@ FileSearcher = (function ()
 
     FileSearcher.prototype["write"] = function (chunk, encoding, cb)
     {
-        var l, lines, rngs, _151_64_
+        var l, lines, rngs, _154_64_
 
         lines = chunk.split('\n')
         if (!(this.syntaxName != null))
@@ -174,9 +182,9 @@ FileSearcher = (function ()
             this.syntaxName = syntax.shebang(lines[0])
         }
         var list = _k_.list(lines)
-        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
+        for (var _155_14_ = 0; _155_14_ < list.length; _155_14_++)
         {
-            l = list[_152_14_]
+            l = list[_155_14_]
             this.line += 1
             rngs = matchr.ranges(this.patterns,l,this.flags)
             if (rngs.length)
@@ -197,7 +205,7 @@ FileSearcher = (function ()
             meta = {diss:syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
             terminal.appendMeta(meta)
             terminal.appendMeta({clss:'spacer'})
-            for (var _175_23_ = fi = 0, _175_27_ = this.found.length; (_175_23_ <= _175_27_ ? fi < this.found.length : fi > this.found.length); (_175_23_ <= _175_27_ ? ++fi : --fi))
+            for (var _178_23_ = fi = 0, _178_27_ = this.found.length; (_178_23_ <= _178_27_ ? fi < this.found.length : fi > this.found.length); (_178_23_ <= _178_27_ ? ++fi : --fi))
             {
                 f = this.found[fi]
                 regions = klor.dissect([f[1]],this.syntaxName)[0]
