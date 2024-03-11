@@ -71,10 +71,14 @@ function TextEditor extends editor
                 @cursorLine = elem 'div' class:'cursor-line'
             else
                 featureName = feature.toLowerCase()
-                featureModule = await import("./#{featureName}.js")
+                try
+                    featureModule = await import("./#{featureName}.js")
+                catch err
+                    error 'feature' featureName, err
+                    continue
                 featureClss = featureModule.default
                 @[featureName] = new featureClss @
-                log 'feature' featureName, featureClss, @[featureName]
+                # log 'feature' featureName, featureClss, @[featureName]
         
     # 0000000    00000000  000
     # 000   000  000       000
@@ -766,9 +770,12 @@ function TextEditor extends editor
     onKeyDown: (event) =>
 
         { mod, key, combo, char } = keyinfo.forEvent event
+        
 
         return if not combo
-        return if key == 'right click' # weird right command key
+        # return if key == 'right click' # weird right command key
+        
+        log 'onKeyDown' combo
 
         result = @handleModKeyComboCharEvent mod, key, combo, char, event
 

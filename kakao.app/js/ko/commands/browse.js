@@ -30,6 +30,7 @@ Browse = (function ()
         Browse.__super__.constructor.call(this,commandline)
         this.cmdID = 0
         this.browser = new filebrowser($('browser'))
+        console.log('Browser.browser',this.browser)
         this.commands = Object.create(null)
         this.names = ['browse','Browse','shelf']
         post.on('file',this.onFile)
@@ -56,7 +57,7 @@ Browse = (function ()
 
     Browse.prototype["start"] = function (action)
     {
-        var name, _57_40_
+        var name, _58_40_
 
         this.browser.start()
         if (action !== 'shelf')
@@ -68,7 +69,7 @@ Browse = (function ()
             }
             else
             {
-                post.emit('filebrowser','loadItem',{file:process.cwd(),type:'dir'})
+                post.emit('filebrowser','loadItem',{file:'~',type:'dir'})
             }
             this.browser.focus({force:true})
         }
@@ -167,7 +168,7 @@ Browse = (function ()
         var i, prefix
 
         prefix = ''
-        for (var _142_18_ = i = 0, _142_22_ = Math.min(strA.length,strB.length); (_142_18_ <= _142_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_142_18_ <= _142_22_ ? ++i : --i))
+        for (var _144_18_ = i = 0, _144_22_ = Math.min(strA.length,strB.length); (_144_18_ <= _144_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_144_18_ <= _144_22_ ? ++i : --i))
         {
             if (strA[i] !== strB[i])
             {
@@ -185,9 +186,9 @@ Browse = (function ()
         brokenPath = slash.resolve(this.getText())
         longestMatch = ''
         var list = _k_.list(files)
-        for (var _151_17_ = 0; _151_17_ < list.length; _151_17_++)
+        for (var _153_17_ = 0; _153_17_ < list.length; _153_17_++)
         {
-            file = list[_151_17_]
+            file = list[_153_17_]
             file = file.file
             prefix = this.commonPrefix(file,brokenPath)
             if (prefix.length > longestMatch.length)
@@ -260,7 +261,7 @@ Browse = (function ()
 
     Browse.prototype["changed"] = function (command)
     {
-        var text, _211_19_
+        var text, _213_19_
 
         text = this.getText().trim()
         if (!text.endsWith('/'))
@@ -276,7 +277,7 @@ Browse = (function ()
 
     Browse.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var focusBrowser, _226_74_
+        var focusBrowser, _228_74_
 
         switch (combo)
         {
@@ -320,7 +321,7 @@ Browse = (function ()
 
     Browse.prototype["select"] = function (i)
     {
-        var l, s, text, _261_42_, _267_20_, _268_20_
+        var l, s, text, _263_42_, _269_20_, _270_20_
 
         this.selected = _k_.clamp(-1,(this.commandList != null ? this.commandList.numLines() : undefined) - 1,i)
         if (this.selected < 0)
@@ -339,7 +340,7 @@ Browse = (function ()
 
     Browse.prototype["selectListItem"] = function (dir)
     {
-        var _278_34_
+        var _280_34_
 
         if (!(this.commandList != null))
         {
@@ -394,11 +395,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _325_32_, _325_56_, _332_64_, _332_72_, _334_61_, _334_69_
+        var pth, _327_32_, _327_56_, _334_64_, _334_72_, _336_61_, _336_69_
 
         if (!this.isActive())
         {
-            ;((_325_32_=this.commandline.command) != null ? typeof (_325_56_=_325_32_.onBrowserItemActivated) === "function" ? _325_56_(item) : undefined : undefined)
+            ;((_327_32_=this.commandline.command) != null ? typeof (_327_56_=_327_32_.onBrowserItemActivated) === "function" ? _327_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -407,9 +408,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_332_64_=this.browser.activeColumn()) != null ? (_332_72_=_332_64_.parent) != null ? _332_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_334_64_=this.browser.activeColumn()) != null ? (_334_72_=_334_64_.parent) != null ? _334_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_334_61_=this.browser.activeColumn()) != null ? (_334_69_=_334_61_.parent) != null ? _334_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_336_61_=this.browser.activeColumn()) != null ? (_336_69_=_336_61_.parent) != null ? _336_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)

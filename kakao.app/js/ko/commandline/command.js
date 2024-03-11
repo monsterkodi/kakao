@@ -10,6 +10,8 @@ import syntax from "../editor/syntax.js"
 
 import commandlist from "./commandlist.js"
 
+import { fuzzy } from "../../../lib/lib_ko.js"
+
 
 Command = (function ()
 {
@@ -56,7 +58,7 @@ Command = (function ()
 
     Command.prototype["execute"] = function (command)
     {
-        var _65_23_
+        var _64_23_
 
         if (_k_.empty(command))
         {
@@ -77,7 +79,7 @@ Command = (function ()
 
     Command.prototype["changed"] = function (command)
     {
-        var f, fuzzied, items, _82_34_
+        var f, fuzzied, items, _81_34_
 
         if (!(this.commandList != null))
         {
@@ -104,10 +106,10 @@ Command = (function ()
                     }
                     return ''
                 }})
-                items = (function () { var r_94_42_ = []; var list = _k_.list(_.sortBy(fuzzied,function (o)
+                items = (function () { var r_93_42_ = []; var list = _k_.list(fuzzied.sort(function (a, b)
                 {
-                    return o.index
-                })); for (var _94_42_ = 0; _94_42_ < list.length; _94_42_++)  { f = list[_94_42_];r_94_42_.push(f.original)  } return r_94_42_ }).bind(this)()
+                    return a.index - b.index
+                })); for (var _93_42_ = 0; _93_42_ < list.length; _93_42_++)  { f = list[_93_42_];r_93_42_.push(f.original)  } return r_93_42_ }).bind(this)()
             }
             this.showItems(this.weightedItems(items,{currentText:command}))
             this.select(0)
@@ -153,7 +155,7 @@ Command = (function ()
 
     Command.prototype["showList"] = function ()
     {
-        var listView, _134_27_
+        var listView, _133_27_
 
         if (!(this.commandList != null))
         {
@@ -170,7 +172,7 @@ Command = (function ()
 
     Command.prototype["showItems"] = function (items)
     {
-        var _144_34_, _146_39_
+        var _143_34_, _145_39_
 
         if (!(this.commandList != null) && !items.length)
         {
@@ -201,7 +203,7 @@ Command = (function ()
 
     Command.prototype["positionList"] = function ()
     {
-        var flex, listHeight, listTop, spaceBelow, _159_34_
+        var flex, listHeight, listTop, spaceBelow, _158_34_
 
         if (!(this.commandList != null))
         {
@@ -233,7 +235,7 @@ Command = (function ()
 
     Command.prototype["select"] = function (i)
     {
-        var _182_34_
+        var _181_34_
 
         if (!(this.commandList != null))
         {
@@ -267,7 +269,7 @@ Command = (function ()
 
     Command.prototype["prev"] = function ()
     {
-        var _203_23_
+        var _202_23_
 
         if ((this.commandList != null))
         {
@@ -298,7 +300,7 @@ Command = (function ()
 
     Command.prototype["next"] = function ()
     {
-        var _224_27_, _227_23_
+        var _223_27_, _226_23_
 
         if (!(this.commandList != null) && this.listItems().length)
         {
@@ -336,11 +338,11 @@ Command = (function ()
 
     Command.prototype["hideList"] = function ()
     {
-        var _253_20_, _254_20_, _254_26_
+        var _252_20_, _253_20_, _253_26_
 
         this.selected = -1
         ;(this.commandList != null ? this.commandList.del() : undefined)
-        ;((_254_20_=this.commandList) != null ? (_254_26_=_254_20_.view) != null ? _254_26_.remove() : undefined : undefined)
+        ;((_253_20_=this.commandList) != null ? (_253_26_=_253_20_.view) != null ? _253_26_.remove() : undefined : undefined)
         return this.commandList = null
     }
 
@@ -370,7 +372,7 @@ Command = (function ()
 
     Command.prototype["setCurrent"] = function (command)
     {
-        var _279_36_
+        var _278_36_
 
         if (!(this.history != null))
         {
@@ -396,14 +398,14 @@ Command = (function ()
 
     Command.prototype["current"] = function ()
     {
-        var _290_36_
+        var _289_36_
 
-        return ((_290_36_=this.history[this.selected]) != null ? _290_36_ : '')
+        return ((_289_36_=this.history[this.selected]) != null ? _289_36_ : '')
     }
 
     Command.prototype["last"] = function ()
     {
-        var _293_23_
+        var _292_23_
 
         if ((this.commandList != null))
         {
@@ -446,7 +448,7 @@ Command = (function ()
 
     Command.prototype["complete"] = function ()
     {
-        var _322_34_
+        var _321_34_
 
         if (!(this.commandList != null))
         {
@@ -486,12 +488,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _360_17_, _362_28_, _362_39_
+        var _359_17_, _361_28_, _361_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_360_17_=this.history) != null ? _360_17_ : [])
-        console.log('loadState',this.history)
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_362_39_=1) != null ? _362_39_ : 0)
+        this.history = ((_359_17_=this.history) != null ? _359_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_361_39_=1) != null ? _361_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -536,7 +537,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _390_31_
+        var _389_31_
 
         switch (combo)
         {

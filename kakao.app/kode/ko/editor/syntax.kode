@@ -164,7 +164,7 @@ class Syntax
     @shebang: (line) ->
 
         if line.startsWith "#!"
-            lastWord = _.last line.split /[\s\/]/
+            lastWord = last line.split /[\s\/]/
             switch lastWord
                 'python' ➜ return 'py'
                 'node'   ➜ return 'js'

@@ -6,13 +6,12 @@
 000  000   000  000        0000000     
 ###
 
-# pbytes   = require 'pretty-bytes'
-# moment   = require 'moment'
-
 use ../../kxk/dom
 use ../../kxk/elem
 use ../../kxk/slash
+use ../../../lib/lib_ko
 
+{ moment, pbytes } = lib_ko
 { $ } = dom
 
 import File from '../tools/file.js'

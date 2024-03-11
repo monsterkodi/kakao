@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
 var childp, diff, file, gitCmd, gitOpt, kstr, parseResult, slash, _
 
@@ -75,7 +75,7 @@ parseResult = function (file, result)
             {
                 oldLines.push(lines.shift().slice(1))
             }
-            while (_.first(lines)[0] === '\\')
+            while (_k_.first(lines)[0] === '\\')
             {
                 lines.shift()
             }
@@ -84,7 +84,7 @@ parseResult = function (file, result)
             {
                 newLines.push(lines.shift().slice(1))
             }
-            while (_.first(lines)[0] === '\\')
+            while (_k_.first(lines)[0] === '\\')
             {
                 lines.shift()
             }

@@ -13,7 +13,7 @@ use ../kxk/fs
 use ../kxk/slash
 use ../kxk/noon
 
-import { pug, stylus } from '../../lib/min.mjs'
+use ../../lib/lib_kakao ▪ pug stylus
 
 __dirname = import.meta.dirname
 

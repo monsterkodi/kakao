@@ -164,7 +164,7 @@ class Autocomplete extends events
         var d, m, matches, w, words, _141_28_, _163_41_
 
         this.close()
-        this.word = _.last(info.before.split(this.splitRegExp))
+        this.word = _k_.last(info.before.split(this.splitRegExp))
         switch (info.action)
         {
             case 'delete':
@@ -488,10 +488,6 @@ class Autocomplete extends events
             words = l.split(this.splitRegExp)
             words = words.filter((function (w)
             {
-                if (!Indexer.testWord(w))
-                {
-                    return false
-                }
                 if (w === cursorWord)
                 {
                     return false

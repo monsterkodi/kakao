@@ -4,8 +4,6 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 import linediff from "../tools/linediff.js"
 
-import hub from "../git/hub.js"
-
 import elem from "../../kxk/elem.js"
 
 import post from "../../kxk/post.js"
@@ -206,18 +204,7 @@ class Diffbar
     {
         if (this.editor.currentFile)
         {
-            this.changes = {file:this.editor.currentFile}
-            return hub.diff(this.editor.currentFile,(function (changes)
-            {
-                if (changes.file !== this.editor.currentFile)
-                {
-                    return {}
-                }
-                this.changes = changes
-                this.updateMetas()
-                this.updateScroll()
-                return this.editor.emit('diffbarUpdated',this.changes)
-            }).bind(this))
+            return this.changes = {file:this.editor.currentFile}
         }
         else
         {

@@ -451,6 +451,9 @@ function FileEditor extends texteditor
             cb:     -> window.split.maximizeEditor()
         ,
             text:   ''
+        ,
+            text:   'DevTools'
+            combo:  'alt+cmdctrl+i'
         ]
 
         # opt.items = opt.items.concat window.titlebar.menuTemplate()

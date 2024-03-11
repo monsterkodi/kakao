@@ -126,7 +126,7 @@ Store = (function ()
 
     Store.prototype["load"] = function ()
     {
-        console.log('store load')
+        console.log('store load not implemented!')
     }
 
     Store.prototype["save"] = function ()

@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isFunc: function (o) {return typeof o === 'function'}}
 
 import kstr from "../../../kxk/kstr.js"
 
@@ -285,7 +285,7 @@ class Transform
 
         if (!(_k_.in(this.last,funcList)))
         {
-            this.last = _.last(funcList)
+            this.last = _k_.last(funcList)
         }
         nextIndex = (1 + funcList.indexOf(this.last)) % funcList.length
         return this.do(funcList[nextIndex])

@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
 import post from "../../../kxk/post.js"
 
@@ -168,7 +168,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     if (invertedRanges.length)
     {
         this.do.start()
-        this.do.setCursors([rangeStartPos(_.first(invertedRanges))])
+        this.do.setCursors([rangeStartPos(_k_.first(invertedRanges))])
         this.do.select(invertedRanges)
         return this.do.end()
     }
@@ -214,7 +214,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
             this.do.select(s)
             if (this.do.numSelections())
             {
-                this.do.setCursors([rangeEndPos(_.last(s))],{Main:'closest'})
+                this.do.setCursors([rangeEndPos(_k_.last(s))],{Main:'closest'})
             }
         }
         return this.do.end()
@@ -274,7 +274,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     }
     hs = this.highlights()
     r = rangeBeforePosInRanges(this.cursorPos(),hs)
-    r = (r != null ? r : _.last(hs))
+    r = (r != null ? r : _k_.last(hs))
     if ((r != null))
     {
         return this.selectSingleRange(r)

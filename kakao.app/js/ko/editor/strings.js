@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
 import kstr from "../../kxk/kstr.js"
 
@@ -52,7 +52,7 @@ class Strings
 
     highlightInside (pos)
     {
-        var cp, i, li, line, pair, pairs, rngs, stack, ths, _51_28_, _55_28_
+        var cp, i, li, line, pair, pairs, rngs, stack, ths, _51_26_, _55_26_
 
         stack = []
         pairs = []
@@ -75,19 +75,19 @@ class Strings
                     continue
                 }
             }
-            if (((_.last(stack) != null ? _.last(stack).match : undefined) === "'" && "'" === ths.match) && _.last(stack).start === ths.start - 1)
+            if (((_k_.last(stack) != null ? _k_.last(stack).match : undefined) === "'" && "'" === ths.match) && _k_.last(stack).start === ths.start - 1)
             {
                 stack.pop()
                 continue
             }
-            if ((_.last(stack) != null ? _.last(stack).match : undefined) === ths.match)
+            if ((_k_.last(stack) != null ? _k_.last(stack).match : undefined) === ths.match)
             {
                 pairs.push([stack.pop(),ths])
                 if (!(pair != null))
                 {
-                    if ((_.last(pairs)[0].start <= cp && cp <= ths.start + 1))
+                    if ((_k_.last(pairs)[0].start <= cp && cp <= ths.start + 1))
                     {
-                        pair = _.last(pairs)
+                        pair = _k_.last(pairs)
                     }
                 }
                 continue
@@ -98,9 +98,9 @@ class Strings
                 pairs.push([stack.pop(),ths])
                 if (!(pair != null))
                 {
-                    if ((_.last(pairs)[0].start <= cp && cp <= ths.start + 1))
+                    if ((_k_.last(pairs)[0].start <= cp && cp <= ths.start + 1))
                     {
-                        pair = _.last(pairs)
+                        pair = _k_.last(pairs)
                     }
                 }
                 continue

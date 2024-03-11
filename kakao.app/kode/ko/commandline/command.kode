@@ -9,8 +9,7 @@
 use ../../kxk/elem
 use ../editor/syntax
 use ./commandlist
-
-# use fuzzy
+use ../../../lib/lib_ko ▪ fuzzy
 
 function Command
 
@@ -91,7 +90,7 @@ function Command
                         return o if o is str
                         return o.text if o.text is str
                     ''            
-                items = (f.original for f in _.sortBy fuzzied, (o) -> o.index)
+                items = (f.original for f in fuzzied.sort (a,b) -> a.index - b.index)
             @showItems @weightedItems items, currentText: command
             @select 0
             @positionList()
@@ -358,7 +357,7 @@ function Command
     loadState: ->
         @history  = @getState @historyKey(), []
         @history ?= []
-        log 'loadState' @history
+        # log 'loadState' @history
         @selected = @history?.length-1 ? 0
 
     setState: (key, value) ->

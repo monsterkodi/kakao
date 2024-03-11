@@ -480,51 +480,72 @@ class Renderer
 
     use (n)
     {
-        var jsFile, kodeFile, m, mod, name, relFile, s, _351_25_
+        var jsFile, kodeFile, m, mod, name, relFile, s, _356_25_, _369_29_
 
         s = ''
-        var list = _k_.list(n)
-        for (var _349_14_ = 0; _349_14_ < list.length; _349_14_++)
+        if (!_k_.empty(n.items))
         {
-            m = list[_349_14_]
-            mod = ((_351_25_=m.text) != null ? _351_25_ : m)
-            name = slash.name(mod)
-            s += 'import ' + name
-            if (this.file)
+            if (n.toUse.length > 1)
             {
-                if (mod[0] === '.')
-                {
-                    kodeFile = slash.path(slash.dir(this.file),mod + '.kode')
-                    jsFile = slash.path(slash.dir(this.file),mod + '.js')
-                }
-                else
-                {
-                    kodeFile = slash.path(slash.dir(this.file),name + '.kode')
-                    jsFile = slash.path(slash.dir(this.file),name + '.js')
-                }
-                if (mod[0] === '.')
-                {
-                    relFile = slash.relative(jsFile,slash.dir(this.file))
-                    if (relFile[0] !== '.')
-                    {
-                        relFile = './' + relFile
-                    }
-                    s += ` from \"${relFile}\"\n`
-                }
-                else
-                {
-                    s += ` from \"${mod}\"\n`
-                }
+                console.error('items for multiple models?!')
+            }
+            s += 'import { ' + n.items.join(', ') + ' }'
+            m = n.toUse[0]
+            mod = ((_356_25_=m.text) != null ? _356_25_ : m)
+            if (mod[0] === '.')
+            {
+                s += ` from \"${slash.swapExt(mod,'js')}\"\n`
             }
             else
             {
-                if (mod[0] === '.')
+                s += ` from \"${mod}\"\n`
+            }
+        }
+        else
+        {
+            var list = _k_.list(n.toUse)
+            for (var _364_18_ = 0; _364_18_ < list.length; _364_18_++)
+            {
+                m = list[_364_18_]
+                name = slash.name(m.text)
+                s += 'import ' + name
+                mod = ((_369_29_=m.text) != null ? _369_29_ : m)
+                if (this.file)
                 {
-                    s += ` from \"${slash.swapExt(mod,'js')}\"\n`
+                    if (mod[0] === '.')
+                    {
+                        kodeFile = slash.path(slash.dir(this.file),mod + '.kode')
+                        jsFile = slash.path(slash.dir(this.file),mod + '.js')
+                    }
+                    else
+                    {
+                        kodeFile = slash.path(slash.dir(this.file),name + '.kode')
+                        jsFile = slash.path(slash.dir(this.file),name + '.js')
+                    }
+                    if (mod[0] === '.')
+                    {
+                        relFile = slash.relative(jsFile,slash.dir(this.file))
+                        if (relFile[0] !== '.')
+                        {
+                            relFile = './' + relFile
+                        }
+                        s += ` from \"${relFile}\"\n`
+                    }
+                    else
+                    {
+                        s += ` from \"${mod}\"\n`
+                    }
                 }
                 else
                 {
-                    s += ` from \"${mod}\"\n`
+                    if (mod[0] === '.')
+                    {
+                        s += ` from \"${slash.swapExt(mod,'js')}\"\n`
+                    }
+                    else
+                    {
+                        s += ` from \"${mod}\"\n`
+                    }
                 }
             }
         }
@@ -569,7 +590,7 @@ class Renderer
 
     class (n)
     {
-        var b, bind, bn, con, e, mi, mthds, s, superCall, _451_29_, _457_50_
+        var b, bind, bn, con, e, mi, mthds, s, superCall, _453_29_, _459_50_
 
         s = ''
         s += `class ${n.name.text}`
@@ -584,14 +605,14 @@ class Renderer
         mthds = n.body
         if ((mthds != null ? mthds.length : undefined))
         {
-            var _446_24_ = this.prepareMethods(mthds); con = _446_24_[0]; bind = _446_24_[1]
+            var _448_24_ = this.prepareMethods(mthds); con = _448_24_[0]; bind = _448_24_[1]
 
             if (bind.length)
             {
                 var list = _k_.list(con.keyval.val.func.body.exps)
-                for (var _450_22_ = 0; _450_22_ < list.length; _450_22_++)
+                for (var _452_22_ = 0; _452_22_ < list.length; _452_22_++)
                 {
-                    e = list[_450_22_]
+                    e = list[_452_22_]
                     if ((e.call != null ? e.call.callee.text : undefined) === 'super')
                     {
                         superCall = con.keyval.val.func.body.exps.splice(con.keyval.val.func.body.exps.indexOf(e),1)[0]
@@ -599,11 +620,11 @@ class Renderer
                     }
                 }
                 var list1 = _k_.list(bind)
-                for (var _455_22_ = 0; _455_22_ < list1.length; _455_22_++)
+                for (var _457_22_ = 0; _457_22_ < list1.length; _457_22_++)
                 {
-                    b = list1[_455_22_]
+                    b = list1[_457_22_]
                     bn = b.keyval.val.func.name.text
-                    con.keyval.val.func.body.exps = ((_457_50_=con.keyval.val.func.body.exps) != null ? _457_50_ : [])
+                    con.keyval.val.func.body.exps = ((_459_50_=con.keyval.val.func.body.exps) != null ? _459_50_ : [])
                     con.keyval.val.func.body.exps.unshift({type:'code',text:`this.${bn} = this.${bn}.bind(this)`})
                 }
                 if (superCall)
@@ -612,7 +633,7 @@ class Renderer
                 }
             }
             this.indent = '    '
-            for (var _466_22_ = mi = 0, _466_26_ = mthds.length; (_466_22_ <= _466_26_ ? mi < mthds.length : mi > mthds.length); (_466_22_ <= _466_26_ ? ++mi : --mi))
+            for (var _468_22_ = mi = 0, _468_26_ = mthds.length; (_468_22_ <= _468_26_ ? mi < mthds.length : mi > mthds.length); (_468_22_ <= _468_26_ ? ++mi : --mi))
             {
                 if (mi)
                 {
@@ -648,7 +669,7 @@ class Renderer
 
     mthd (n)
     {
-        var s, _502_32_
+        var s, _504_32_
 
         if (n.keyval)
         {
@@ -676,7 +697,7 @@ class Renderer
 
     function (n)
     {
-        var b, bind, bn, callsSuper, con, e, mi, mthds, s, _542_50_, _548_46_
+        var b, bind, bn, callsSuper, con, e, mi, mthds, s, _544_50_, _550_46_
 
         this.fncnName = n.name.text
         s = '\n'
@@ -685,9 +706,9 @@ class Renderer
         if (n.extends)
         {
             var list = _k_.list(n.extends)
-            for (var _528_18_ = 0; _528_18_ < list.length; _528_18_++)
+            for (var _530_18_ = 0; _530_18_ < list.length; _530_18_++)
             {
-                e = list[_528_18_]
+                e = list[_530_18_]
                 this.hint._k_.extend = true
                 s += `    _k_.extend(${n.name.text}, ${this.node(e)})`
             }
@@ -696,26 +717,26 @@ class Renderer
         mthds = n.body
         if ((mthds != null ? mthds.length : undefined))
         {
-            var _537_24_ = this.prepareMethods(mthds); con = _537_24_[0]; bind = _537_24_[1]
+            var _539_24_ = this.prepareMethods(mthds); con = _539_24_[0]; bind = _539_24_[1]
 
             if (bind.length)
             {
                 var list1 = _k_.list(bind)
-                for (var _540_22_ = 0; _540_22_ < list1.length; _540_22_++)
+                for (var _542_22_ = 0; _542_22_ < list1.length; _542_22_++)
                 {
-                    b = list1[_540_22_]
+                    b = list1[_542_22_]
                     bn = b.keyval.val.func.name.text
-                    con.keyval.val.func.body.exps = ((_542_50_=con.keyval.val.func.body.exps) != null ? _542_50_ : [])
+                    con.keyval.val.func.body.exps = ((_544_50_=con.keyval.val.func.body.exps) != null ? _544_50_ : [])
                     con.keyval.val.func.body.exps.unshift({type:'code',text:`this[\"${bn}\"] = this[\"${bn}\"].bind(this)`})
                 }
             }
             if (n.extends)
             {
-                con.keyval.val.func.body.exps = ((_548_46_=con.keyval.val.func.body.exps) != null ? _548_46_ : [])
+                con.keyval.val.func.body.exps = ((_550_46_=con.keyval.val.func.body.exps) != null ? _550_46_ : [])
                 var list2 = _k_.list(con.keyval.val.func.body.exps)
-                for (var _549_22_ = 0; _549_22_ < list2.length; _549_22_++)
+                for (var _551_22_ = 0; _551_22_ < list2.length; _551_22_++)
                 {
-                    e = list2[_549_22_]
+                    e = list2[_551_22_]
                     if (e.call && e.call.callee.text === 'super')
                     {
                         callsSuper = true
@@ -728,7 +749,7 @@ class Renderer
                 }
             }
             this.indent = '    '
-            for (var _559_22_ = mi = 0, _559_26_ = mthds.length; (_559_22_ <= _559_26_ ? mi < mthds.length : mi > mthds.length); (_559_22_ <= _559_26_ ? ++mi : --mi))
+            for (var _561_22_ = mi = 0, _561_26_ = mthds.length; (_561_22_ <= _561_26_ ? mi < mthds.length : mi > mthds.length); (_561_22_ <= _561_26_ ? ++mi : --mi))
             {
                 s += this.funcs(mthds[mi],n.name.text)
                 s += '\n'
@@ -743,10 +764,10 @@ class Renderer
 
     funcs (n, className)
     {
-        var f, member, s, _579_23_, _579_28_, _594_23_, _594_28_, _594_34_
+        var f, member, s, _581_23_, _581_28_, _596_23_, _596_28_, _596_34_
 
         s = ''
-        if (f = ((_579_23_=n.keyval) != null ? (_579_28_=_579_23_.val) != null ? _579_28_.func : undefined : undefined))
+        if (f = ((_581_23_=n.keyval) != null ? (_581_28_=_581_23_.val) != null ? _581_28_.func : undefined : undefined))
         {
             if (f.name.text === 'constructor')
             {
@@ -770,7 +791,7 @@ class Renderer
         }
         else
         {
-            if (((_594_23_=n.keyval) != null ? (_594_28_=_594_23_.key) != null ? (_594_34_=_594_28_.text) != null ? _594_34_[0] : undefined : undefined : undefined) === '@')
+            if (((_596_23_=n.keyval) != null ? (_596_28_=_596_23_.key) != null ? (_596_34_=_596_28_.text) != null ? _596_34_[0] : undefined : undefined : undefined) === '@')
             {
                 member = n.keyval.key.text.slice(1)
                 s = this.indent + `${className}[\"${member}\"] = ` + this.node(n.keyval.val)
@@ -781,13 +802,13 @@ class Renderer
 
     prepareMethods (mthds)
     {
-        var ast, bind, con, m, name, _623_37_
+        var ast, bind, con, m, name, _625_37_
 
         bind = []
         var list = _k_.list(mthds)
-        for (var _608_14_ = 0; _608_14_ < list.length; _608_14_++)
+        for (var _610_14_ = 0; _610_14_ < list.length; _610_14_++)
         {
-            m = list[_608_14_]
+            m = list[_610_14_]
             if (!m.keyval)
             {
                 print.ast('not an method?',m)
@@ -829,14 +850,14 @@ class Renderer
 
     func (n, name)
     {
-        var args, gi, s, str, t, ths, vs, _646_22_, _646_29_, _659_21_, _659_29_, _669_22_, _669_32_
+        var args, gi, s, str, t, ths, vs, _648_22_, _648_29_, _661_21_, _661_29_, _671_22_, _671_32_
 
         if (!n)
         {
             return ''
         }
         gi = this.ind()
-        name = (name != null ? name : ((_646_29_=(n.name != null ? n.name.text : undefined)) != null ? _646_29_ : 'function'))
+        name = (name != null ? name : ((_648_29_=(n.name != null ? n.name.text : undefined)) != null ? _648_29_ : 'function'))
         if (n.arrow.text[0] === '○')
         {
             if (name.indexOf('function') >= 0)
@@ -854,17 +875,17 @@ class Renderer
         }
         s = name
         s += ' ('
-        args = ((_659_21_=n.args) != null ? (_659_29_=_659_21_.parens) != null ? _659_29_.exps : undefined : undefined)
+        args = ((_661_21_=n.args) != null ? (_661_29_=_661_21_.parens) != null ? _661_29_.exps : undefined : undefined)
         if (args)
         {
-            var _661_23_ = this.args(args); str = _661_23_[0]; ths = _661_23_[1]
+            var _663_23_ = this.args(args); str = _663_23_[0]; ths = _663_23_[1]
 
             s += str
         }
         s += ')\n'
         s += gi + '{'
         this.varstack.push(n.body.vars)
-        if (((_669_22_=n.body.exps) != null ? _669_22_[0] != null ? (_669_32_=_669_22_[0].call) != null ? _669_32_.callee.text : undefined : undefined : undefined) === 'super')
+        if (((_671_22_=n.body.exps) != null ? _671_22_[0] != null ? (_671_32_=_671_22_[0].call) != null ? _671_32_.callee.text : undefined : undefined : undefined) === 'super')
         {
             s += '\n'
             s += this.indent + this.node(n.body.exps.shift())
@@ -880,9 +901,9 @@ class Renderer
         {
             s += '\n'
             var list = _k_.list(ths)
-            for (var _682_18_ = 0; _682_18_ < list.length; _682_18_++)
+            for (var _684_18_ = 0; _684_18_ < list.length; _684_18_++)
             {
-                t = list[_682_18_]
+                t = list[_684_18_]
                 s += this.indent + t + '\n'
             }
             s += gi
@@ -915,9 +936,9 @@ class Renderer
             args.slice(-1)[0].text = '...' + args.slice(-1)[0].text
         }
         var list = _k_.list(args)
-        for (var _718_14_ = 0; _718_14_ < list.length; _718_14_++)
+        for (var _720_14_ = 0; _720_14_ < list.length; _720_14_++)
         {
-            a = list[_718_14_]
+            a = list[_720_14_]
             if (a.text)
             {
                 used[a.text] = a.text
@@ -925,7 +946,7 @@ class Renderer
         }
         args = args.map((function (a)
         {
-            var i, l, t, txt, _733_63_
+            var i, l, t, txt, _735_63_
 
             t = this.node(a)
             if ((t != null ? t.startsWith('this.') : undefined))
@@ -941,7 +962,7 @@ class Renderer
                             ths.push(`this.${txt} = ${txt + i}`)
                             txt += i
                             used[txt] = txt
-                            return `${txt}` + (((_733_63_=t.split('=')[1]) != null ? _733_63_ : ''))
+                            return `${txt}` + (((_735_63_=t.split('=')[1]) != null ? _735_63_ : ''))
                         }
                     }
                 }
@@ -1098,9 +1119,9 @@ class Renderer
         }
         s += gi + "}"
         var list = _k_.list(n.elifs)
-        for (var _858_17_ = 0; _858_17_ < list.length; _858_17_++)
+        for (var _860_17_ = 0; _860_17_ < list.length; _860_17_++)
         {
-            elif = list[_858_17_]
+            elif = list[_860_17_]
             s += '\n'
             s += gi + `else if (${this.atom(elif.elif.cond)})\n`
             s += gi + "{\n"
@@ -1127,20 +1148,20 @@ class Renderer
 
     ifInline (n, dontClose)
     {
-        var e, s, _888_17_
+        var e, s, _890_17_
 
         s = ''
         s += `${this.atom(n.cond)} ? `
         if ((n.then != null ? n.then.length : undefined))
         {
-            s += (function () { var r_889_33_ = []; var list = _k_.list(n.then); for (var _889_33_ = 0; _889_33_ < list.length; _889_33_++)  { e = list[_889_33_];r_889_33_.push(this.atom(e))  } return r_889_33_ }).bind(this)().join(', ')
+            s += (function () { var r_891_33_ = []; var list = _k_.list(n.then); for (var _891_33_ = 0; _891_33_ < list.length; _891_33_++)  { e = list[_891_33_];r_891_33_.push(this.atom(e))  } return r_891_33_ }).bind(this)().join(', ')
         }
         if (n.elifs)
         {
             var list1 = _k_.list(n.elifs)
-            for (var _892_18_ = 0; _892_18_ < list1.length; _892_18_++)
+            for (var _894_18_ = 0; _894_18_ < list1.length; _894_18_++)
             {
-                e = list1[_892_18_]
+                e = list1[_894_18_]
                 s += ' : '
                 s += this.ifInline(e.elif,true)
             }
@@ -1154,7 +1175,7 @@ class Renderer
             }
             else
             {
-                s += '(' + (function () { var r_901_42_ = []; var list2 = _k_.list(n.else); for (var _901_42_ = 0; _901_42_ < list2.length; _901_42_++)  { e = list2[_901_42_];r_901_42_.push(this.atom(e))  } return r_901_42_ }).bind(this)().join(', ') + ')'
+                s += '(' + (function () { var r_903_42_ = []; var list2 = _k_.list(n.else); for (var _903_42_ = 0; _903_42_ < list2.length; _903_42_++)  { e = list2[_903_42_];r_903_42_.push(this.atom(e))  } return r_903_42_ }).bind(this)().join(', ') + ')'
             }
         }
         else if (!dontClose)
@@ -1166,7 +1187,7 @@ class Renderer
 
     each (n)
     {
-        var fnc, i, numArgs, rv, _914_33_, _959_35_
+        var fnc, i, numArgs, rv, _916_33_, _961_35_
 
         numArgs = (n.fnc.func.args != null ? n.fnc.func.args.parens.exps.length : undefined)
         rv = 'r' + this.makeVar(n.each)
@@ -1260,7 +1281,7 @@ ${i}})(${this.node(n.lhs)})
 
     for_in (n, varPrefix = '', lastPrefix = '', lastPostfix = '', lineBreak)
     {
-        var e, eb, g2, gi, iterVar, j, list, listVar, nl, postfix, prefix, s, v, _1011_27_, _1033_28_
+        var e, eb, g2, gi, iterVar, j, list, listVar, nl, postfix, prefix, s, v, _1013_27_, _1035_28_
 
         if (!n.list.qmrkop && !n.list.array && !n.list.slice)
         {
@@ -1269,7 +1290,7 @@ ${i}})(${this.node(n.lhs)})
         }
         else
         {
-            if (((_1011_27_=n.list.array) != null ? _1011_27_.items[0] != null ? _1011_27_.items[0].slice : undefined : undefined) || n.list.slice)
+            if (((_1013_27_=n.list.array) != null ? _1013_27_.items[0] != null ? _1013_27_.items[0].slice : undefined : undefined) || n.list.slice)
             {
                 return this.for_in_range(n,varPrefix,lastPrefix,lastPostfix,lineBreak)
             }
@@ -1298,7 +1319,7 @@ ${i}})(${this.node(n.lhs)})
         {
             s += gi + `for (var ${iterVar} = 0; ${iterVar} < ${listVar}.length; ${iterVar}++)` + nl
             s += gi + "{" + nl
-            for (var _1036_21_ = j = 0, _1036_25_ = n.vals.array.items.length; (_1036_21_ <= _1036_25_ ? j < n.vals.array.items.length : j > n.vals.array.items.length); (_1036_21_ <= _1036_25_ ? ++j : --j))
+            for (var _1038_21_ = j = 0, _1038_25_ = n.vals.array.items.length; (_1038_21_ <= _1038_25_ ? j < n.vals.array.items.length : j > n.vals.array.items.length); (_1038_21_ <= _1038_25_ ? ++j : --j))
             {
                 v = n.vals.array.items[j]
                 s += g2 + `${v.text} = ${listVar}[${iterVar}][${j}]` + eb
@@ -1312,9 +1333,9 @@ ${i}})(${this.node(n.lhs)})
             s += g2 + `${varPrefix}${n.vals[0].text} = ${listVar}[${iterVar}]` + eb
         }
         var list1 = _k_.list(n.then)
-        for (var _1045_14_ = 0; _1045_14_ < list1.length; _1045_14_++)
+        for (var _1047_14_ = 0; _1047_14_ < list1.length; _1047_14_++)
         {
-            e = list1[_1045_14_]
+            e = list1[_1047_14_]
             prefix = lastPrefix && e === n.then.slice(-1)[0] ? lastPrefix : ''
             postfix = lastPostfix && e === n.then.slice(-1)[0] ? lastPostfix : ''
             s += g2 + prefix + this.node(e) + postfix + nl
@@ -1329,14 +1350,14 @@ ${i}})(${this.node(n.lhs)})
 
     for_in_range (n, varPrefix, lastPrefix, lastPostfix, lineBreak)
     {
-        var e, eb, end, g2, gi, invCmp, iterCmp, iterDir, iterEnd, iterStart, iterVar, llc, loopCheck, loopStart, loopUpdate, lv, nl, postfix, prefix, rlc, rv, s, slice, start, _1062_28_, _1062_46_, _1072_32_
+        var e, eb, end, g2, gi, invCmp, iterCmp, iterDir, iterEnd, iterStart, iterVar, llc, loopCheck, loopStart, loopUpdate, lv, nl, postfix, prefix, rlc, rv, s, slice, start, _1064_28_, _1064_46_, _1074_32_
 
-        slice = ((_1062_46_=((_1062_28_=n.list.array) != null ? _1062_28_.items[0] != null ? _1062_28_.items[0].slice : undefined : undefined)) != null ? _1062_46_ : n.list.slice)
+        slice = ((_1064_46_=((_1064_28_=n.list.array) != null ? _1064_28_.items[0] != null ? _1064_28_.items[0].slice : undefined : undefined)) != null ? _1064_46_ : n.list.slice)
         gi = lineBreak || this.ind()
         nl = lineBreak || '\n'
         eb = lineBreak && ';' || '\n'
         g2 = lineBreak ? '' : this.indent
-        iterVar = ((_1072_32_=n.vals.text) != null ? _1072_32_ : n.vals[0].text)
+        iterVar = ((_1074_32_=n.vals.text) != null ? _1074_32_ : n.vals[0].text)
         iterStart = this.node(slice.from)
         iterEnd = this.node(slice.upto)
         start = parseInt(iterStart)
@@ -1369,9 +1390,9 @@ ${i}})(${this.node(n.lhs)})
         s += `for (${loopStart}; ${loopCheck}; ${loopUpdate})` + nl
         s += gi + "{" + nl
         var list = _k_.list(n.then)
-        for (var _1110_14_ = 0; _1110_14_ < list.length; _1110_14_++)
+        for (var _1112_14_ = 0; _1112_14_ < list.length; _1112_14_++)
         {
-            e = list[_1110_14_]
+            e = list[_1112_14_]
             prefix = lastPrefix && e === n.then.slice(-1)[0] ? lastPrefix : ''
             postfix = lastPostfix && e === n.then.slice(-1)[0] ? lastPostfix : ''
             s += g2 + prefix + this.node(e) + postfix + nl
@@ -1386,13 +1407,13 @@ ${i}})(${this.node(n.lhs)})
 
     for_of (n, varPrefix = '', lastPrefix = '', lastPostfix = '', lineBreak)
     {
-        var e, eb, g2, gi, key, nl, obj, postfix, prefix, s, val, _1132_26_
+        var e, eb, g2, gi, key, nl, obj, postfix, prefix, s, val, _1134_26_
 
         gi = lineBreak || this.ind()
         nl = lineBreak || '\n'
         eb = lineBreak && ';' || '\n'
         g2 = lineBreak ? '' : this.indent
-        key = ((_1132_26_=n.vals.text) != null ? _1132_26_ : (n.vals[0] != null ? n.vals[0].text : undefined))
+        key = ((_1134_26_=n.vals.text) != null ? _1134_26_ : (n.vals[0] != null ? n.vals[0].text : undefined))
         val = (n.vals[1] != null ? n.vals[1].text : undefined)
         obj = this.node(n.list)
         s = ''
@@ -1403,9 +1424,9 @@ ${i}})(${this.node(n.lhs)})
             s += g2 + `${varPrefix}${val} = ${obj}[${key}]` + eb
         }
         var list = _k_.list(n.then)
-        for (var _1141_14_ = 0; _1141_14_ < list.length; _1141_14_++)
+        for (var _1143_14_ = 0; _1143_14_ < list.length; _1143_14_++)
         {
-            e = list[_1141_14_]
+            e = list[_1143_14_]
             prefix = lastPrefix && e === n.then.slice(-1)[0] ? lastPrefix : ''
             postfix = lastPostfix && e === n.then.slice(-1)[0] ? lastPostfix : ''
             s += g2 + prefix + this.node(e) + postfix + nl
@@ -1473,18 +1494,18 @@ ${i}})(${this.node(n.lhs)})
         s += `switch (${this.node(n.match)})\n`
         s += gi + "{\n"
         var list = _k_.list(n.whens)
-        for (var _1205_14_ = 0; _1205_14_ < list.length; _1205_14_++)
+        for (var _1207_14_ = 0; _1207_14_ < list.length; _1207_14_++)
         {
-            e = list[_1205_14_]
+            e = list[_1207_14_]
             s += gi + this.node(e) + '\n'
         }
         if (!_k_.empty(n.else))
         {
             s += this.indent + 'default:\n'
             var list1 = _k_.list(n.else)
-            for (var _1210_18_ = 0; _1210_18_ < list1.length; _1210_18_++)
+            for (var _1212_18_ = 0; _1212_18_ < list1.length; _1212_18_++)
             {
-                e = list1[_1210_18_]
+                e = list1[_1212_18_]
                 s += this.indent + '    ' + this.node(e) + '\n'
             }
         }
@@ -1503,16 +1524,16 @@ ${i}})(${this.node(n.lhs)})
         }
         s = ''
         var list = _k_.list(n.vals)
-        for (var _1229_14_ = 0; _1229_14_ < list.length; _1229_14_++)
+        for (var _1231_14_ = 0; _1231_14_ < list.length; _1231_14_++)
         {
-            e = list[_1229_14_]
+            e = list[_1231_14_]
             i = e !== n.vals[0] && this.indent || '    '
             s += i + 'case ' + this.node(e) + ':\n'
         }
         var list1 = _k_.list(n.then)
-        for (var _1232_14_ = 0; _1232_14_ < list1.length; _1232_14_++)
+        for (var _1234_14_ = 0; _1234_14_ < list1.length; _1234_14_++)
         {
-            e = list1[_1232_14_]
+            e = list1[_1234_14_]
             gi = this.ind()
             s += gi + '    ' + this.node(e) + '\n'
             this.ded()
@@ -1559,7 +1580,7 @@ ${i}})(${this.node(n.lhs)})
 
     token (tok)
     {
-        var s, _1291_28_
+        var s, _1293_28_
 
         s = tok.type === 'comment' ? this.comment(tok) : tok.type === 'this' ? 'this' : tok.type === 'triple' ? '`' + tok.text.slice(3, -3) + '`' : tok.type === 'bool' && tok.text === 'yes' ? 'true' : tok.type === 'bool' && tok.text === 'no' ? 'false' : (tok.type != null ? tok.type.startsWith('prof') : undefined) ? this.prof(tok) : tok.text
         this.js(s,tok)
@@ -1568,7 +1589,7 @@ ${i}})(${this.node(n.lhs)})
 
     comment (tok)
     {
-        var _1307_19_
+        var _1309_19_
 
         if ((tok.text != null ? tok.text.startsWith('###') : undefined))
         {
@@ -1587,14 +1608,14 @@ ${i}})(${this.node(n.lhs)})
 
     operation (op)
     {
-        var close, first, i, ind, keyval, lhs, o, open, opmap, prfx, ro, s, sep, v, val, _1340_29_, _1340_40_, _1372_25_, _1372_43_, _1372_54_, _1372_64_, _1396_18_, _1396_29_, _1401_25_, _1445_43_
+        var close, first, i, ind, keyval, lhs, o, open, opmap, prfx, ro, s, sep, v, val, _1342_29_, _1342_40_, _1374_25_, _1374_43_, _1374_54_, _1374_64_, _1398_18_, _1398_29_, _1403_25_, _1447_43_
 
         opmap = function (o)
         {
-            var omp, _1333_19_
+            var omp, _1335_19_
 
             omp = {and:'&&',or:'||',not:'!',empty:'_k_.empty',valid:'!_k_.empty',eql:'_k_.eql','==':'===','!=':'!=='}
-            return ((_1333_19_=omp[o]) != null ? _1333_19_ : o)
+            return ((_1335_19_=omp[o]) != null ? _1335_19_ : o)
         }
         o = opmap(op.operator.text)
         sep = ' '
@@ -1604,7 +1625,7 @@ ${i}})(${this.node(n.lhs)})
         }
         if (_k_.in(o,['<','<=','===','!==','>=','>','_k_.eql']))
         {
-            ro = opmap(((_1340_29_=op.rhs) != null ? (_1340_40_=_1340_29_.operation) != null ? _1340_40_.operator.text : undefined : undefined))
+            ro = opmap(((_1342_29_=op.rhs) != null ? (_1342_40_=_1342_29_.operation) != null ? _1342_40_.operator.text : undefined : undefined))
             if (_k_.in(ro,['<','<=','===','!==','>=','>','_k_.eql']))
             {
                 return '(' + this.atom(op.lhs) + sep + o + sep + this.atom(op.rhs.operation.lhs) + ' && ' + kstr.lstrip(this.atom(op.rhs)) + ')'
@@ -1617,9 +1638,9 @@ ${i}})(${this.node(n.lhs)})
             {
                 s = ''
                 var list = _k_.list(op.lhs.object.keyvals)
-                for (var _1351_31_ = 0; _1351_31_ < list.length; _1351_31_++)
+                for (var _1353_31_ = 0; _1353_31_ < list.length; _1353_31_++)
                 {
-                    keyval = list[_1351_31_]
+                    keyval = list[_1353_31_]
                     ind = op.lhs.object.keyvals.indexOf(keyval) > 0 ? this.indent : ''
                     s += ind + `${keyval.text} = ${this.atom(op.rhs)}.${keyval.text}\n`
                 }
@@ -1630,9 +1651,9 @@ ${i}})(${this.node(n.lhs)})
                 v = this.makeVar(op.operator)
                 s = `var ${v} = ${this.atom(op.rhs)}`
                 var list1 = _k_.list(op.lhs.array.items)
-                for (var _1360_28_ = 0; _1360_28_ < list1.length; _1360_28_++)
+                for (var _1362_28_ = 0; _1362_28_ < list1.length; _1362_28_++)
                 {
-                    val = list1[_1360_28_]
+                    val = list1[_1362_28_]
                     i = op.lhs.array.items.indexOf(val)
                     s += `; ${val.text} = ${v}[${i}]`
                 }
@@ -1646,7 +1667,7 @@ ${i}})(${this.node(n.lhs)})
         }
         else if (o === '!')
         {
-            if ((op.rhs != null ? op.rhs.incond : undefined) || _k_.in(((_1372_43_=op.rhs) != null ? (_1372_54_=_1372_43_.operation) != null ? (_1372_64_=_1372_54_.operator) != null ? _1372_64_.text : undefined : undefined : undefined),['=','is']))
+            if ((op.rhs != null ? op.rhs.incond : undefined) || _k_.in(((_1374_43_=op.rhs) != null ? (_1374_54_=_1374_43_.operation) != null ? (_1374_64_=_1374_54_.operator) != null ? _1374_64_.text : undefined : undefined : undefined),['=','is']))
             {
                 open = '('
                 close = ')'
@@ -1677,7 +1698,7 @@ ${i}})(${this.node(n.lhs)})
             this.hint._k_.noon = true
             return `_k_.noon(${this.node(op.rhs)})`
         }
-        else if (((_1396_18_=op.rhs) != null ? (_1396_29_=_1396_18_.operation) != null ? _1396_29_.operator.text : undefined : undefined) === '=')
+        else if (((_1398_18_=op.rhs) != null ? (_1398_29_=_1398_18_.operation) != null ? _1398_29_.operator.text : undefined : undefined) === '=')
         {
             open = '('
             close = ')'
@@ -1804,7 +1825,7 @@ ${i}})(${this.node(n.lhs)})
 
     index (p)
     {
-        var addOne, from, ni, slice, u, upper, upto, _1514_32_, _1518_32_, _1520_25_, _1520_54_, _1536_27_
+        var addOne, from, ni, slice, u, upper, upto, _1516_32_, _1520_32_, _1522_25_, _1522_54_, _1538_27_
 
         if (slice = p.slidx.slice)
         {
@@ -1882,7 +1903,7 @@ ${i}})(${this.node(n.lhs)})
 
     slice (p)
     {
-        var from, o, upto, x, _1566_41_
+        var from, o, upto, x, _1568_41_
 
         if ((p.from.type === 'num' && 'num' === (p.upto != null ? p.upto.type : undefined)))
         {
@@ -1894,7 +1915,7 @@ ${i}})(${this.node(n.lhs)})
                 {
                     upto--
                 }
-                return '[' + ((function () { var r_1571_30_ = []; for (var _1571_34_ = x = from, _1571_40_ = upto; (_1571_34_ <= _1571_40_ ? x <= upto : x >= upto); (_1571_34_ <= _1571_40_ ? ++x : --x))  { r_1571_30_.push(x)  } return r_1571_30_ }).bind(this)().join(',')) + ']'
+                return '[' + ((function () { var r_1573_30_ = []; for (var _1573_34_ = x = from, _1573_40_ = upto; (_1573_34_ <= _1573_40_ ? x <= upto : x >= upto); (_1573_34_ <= _1573_40_ ? ++x : --x))  { r_1573_30_.push(x)  } return r_1573_30_ }).bind(this)().join(',')) + ']'
             }
             else
             {
@@ -1915,9 +1936,9 @@ ${i}})(${this.node(n.lhs)})
 
         s = '`'
         var list = _k_.list(chunks)
-        for (var _1588_18_ = 0; _1588_18_ < list.length; _1588_18_++)
+        for (var _1590_18_ = 0; _1590_18_ < list.length; _1590_18_++)
         {
-            chunk = list[_1588_18_]
+            chunk = list[_1590_18_]
             t = chunk.text
             switch (chunk.type)
             {
@@ -2072,7 +2093,7 @@ ${i}})(${this.node(n.lhs)})
     {
         var v, vl
 
-        vl = (function () { var r_1688_27_ = []; var list = _k_.list(vars); for (var _1688_27_ = 0; _1688_27_ < list.length; _1688_27_++)  { v = list[_1688_27_];r_1688_27_.push(v.text)  } return r_1688_27_ }).bind(this)()
+        vl = (function () { var r_1690_27_ = []; var list = _k_.list(vars); for (var _1690_27_ = 0; _1690_27_ < list.length; _1690_27_++)  { v = list[_1690_27_];r_1690_27_.push(v.text)  } return r_1690_27_ }).bind(this)()
         vl.sort(function (a, b)
         {
             if (a[0] === '_' && b[0] !== '_')
@@ -2096,13 +2117,13 @@ ${i}})(${this.node(n.lhs)})
         var v, vars
 
         var list = _k_.list(this.varstack)
-        for (var _1703_17_ = 0; _1703_17_ < list.length; _1703_17_++)
+        for (var _1705_17_ = 0; _1705_17_ < list.length; _1705_17_++)
         {
-            vars = list[_1703_17_]
+            vars = list[_1705_17_]
             var list1 = _k_.list(vars)
-            for (var _1704_18_ = 0; _1704_18_ < list1.length; _1704_18_++)
+            for (var _1706_18_ = 0; _1706_18_ < list1.length; _1706_18_++)
             {
-                v = list1[_1704_18_]
+                v = list1[_1706_18_]
                 if (v.text === name + (suffix || ''))
                 {
                     return this.freshVar(name,suffix + 1)

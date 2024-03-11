@@ -58,16 +58,8 @@ function Window #extends win
     onWindowCreated:        (win)           => 
         
         @id = win.id
-        log 'onWindowCreated' win.id
+        # log 'onWindowCreated' win.id
         
-        # super
-            # dir:            __dirname
-            # menuTemplate:   require './menu'
-            # pkg:            require '../../package.json'
-            # menu:           '../../kode/menu.noon'
-            # icon:           '../../img/menu@2x.png'
-            # scheme:         false
-    
         window.stash = new stash "win/#{@id}" separator:'|'
             
         @filehandler = window.filehandler = new filehandler
@@ -88,7 +80,6 @@ function Window #extends win
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
-        # restoreWin()
         scheme.set prefs.get 'scheme' 'dark'
 
         @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
@@ -196,8 +187,6 @@ function Window #extends win
 window.state = new store 'state' separator:'|'
 window.prefs = prefs
 
-# post.setMaxListeners 20
-
 # saveStash = ->
 # 
 #     post.emit 'saveChanges' 
@@ -208,15 +197,7 @@ window.prefs = prefs
 # clearStash = ->
 #     post.emit 'saveChanges'
 #     window.stash.clear()
-# 
-# restoreWin = ->
-# 
-#     if bounds = window.stash.get 'bounds'
-#         window.win.setBounds bounds
-# 
-#     if window.stash.get 'devTools'
-#         post.emit 'menuAction' 'devtools'
-# 
+
 # 00000000    0000000    0000000  000000000
 # 000   000  000   000  000          000
 # 00000000   000   000  0000000      000

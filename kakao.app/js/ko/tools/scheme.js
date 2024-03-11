@@ -40,9 +40,7 @@ class Scheme
         for (var _35_17_ = 0; _35_17_ < list.length; _35_17_++)
         {
             link = list[_35_17_]
-            console.log('ref',link.href)
             css = slash.file(link.href)
-            console.log('css',css)
             newlink = elem('link',{href:`css/ko/${scheme}/${css}`,rel:'stylesheet',type:'text/css',class:'scheme-link'})
             link.parentNode.replaceChild(newlink,link)
         }

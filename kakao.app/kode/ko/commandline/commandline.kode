@@ -110,7 +110,7 @@ function Commandline extends texteditor
             
             continue if slash.ext(file.path) not in ['js' 'mjs']
             try
-                log 'commandPath' file.path
+                # log 'commandPath' file.path
                 commandModule = await import(file.path)
                 # log 'commandModule' commandModule
                 commandClass = commandModule.default
@@ -190,6 +190,7 @@ function Commandline extends texteditor
             @lastFocus = window.lastFocus
             @view.focus()
             @setName name
+            log 'startCommand' name
             @results @command.start name # <-- command start
 
             if name in ['search' 'find']
@@ -322,6 +323,7 @@ function Commandline extends texteditor
 
     handleMenuAction: (name, opt) ->
 
+        log 'handleMenuAction' name
         if opt?.command
             if @commandForName opt.command
                 @startCommand opt.command
@@ -342,6 +344,7 @@ function Commandline extends texteditor
 
     handleModKeyComboCharEvent: (mod, key, combo, char, event) ->
 
+        log 'handleModKeyComboEvent' mod, key, combo, char
         if @command?
             return if 'unhandled' != @command.handleModKeyComboEvent mod, key, combo, event
 

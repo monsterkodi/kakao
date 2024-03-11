@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
 export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:'command+/',accel:'ctrl+/'},toggleHeader:{name:'Toggle Header',combo:'command+alt+/',accel:'alt+ctrl+/'}},toggleHeader:function ()
 {
@@ -26,8 +26,8 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
             r = list1[_42_18_]
             this.do.change(r[0],this.do.line(r[0]).splice(il,0,this.lineComment + ' '))
         }
-        this.do.delete(_.first(rgs)[0] - 1)
-        this.do.delete(_.last(rgs)[0])
+        this.do.delete(_k_.first(rgs)[0] - 1)
+        this.do.delete(_k_.last(rgs)[0])
         this.moveCursorsUp()
         this.moveCursorsRight(false,this.lineComment.length + 1)
     }
@@ -39,8 +39,8 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
             r = list2[_50_18_]
             this.do.change(r[0],this.do.line(r[0]).splice(il,this.lineComment.length + 1))
         }
-        this.do.insert(_.last(rgs)[0] + 1,indent + this.multiComment.close)
-        this.do.insert(_.first(rgs)[0],indent + this.multiComment.open)
+        this.do.insert(_k_.last(rgs)[0] + 1,indent + this.multiComment.close)
+        this.do.insert(_k_.first(rgs)[0],indent + this.multiComment.open)
         this.moveCursorsDown()
         this.moveCursorsLeft(false,this.lineComment.length + 1)
     }

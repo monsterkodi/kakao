@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
 export default {initSurround:function ()
 {
@@ -130,7 +130,7 @@ export default {initSurround:function ()
     newCursors = this.do.cursors()
     if (this.surroundStack.length)
     {
-        if (_.last(this.surroundStack)[1] === ch)
+        if (_k_.last(this.surroundStack)[1] === ch)
         {
             var list = _k_.list(newCursors)
             for (var _100_22_ = 0; _100_22_ < list.length; _100_22_++)
@@ -142,7 +142,7 @@ export default {initSurround:function ()
                     break
                 }
             }
-            if (this.surroundStack.length && _.last(this.surroundStack)[1] === ch)
+            if (this.surroundStack.length && _k_.last(this.surroundStack)[1] === ch)
             {
                 this.do.start()
                 this.selectNone()
@@ -332,7 +332,7 @@ export default {initSurround:function ()
     }
     if (this.surroundStack.length)
     {
-        if (uniquePairs.length === 1 && _.isEqual(uniquePairs[0],_.last(this.surroundStack)))
+        if (uniquePairs.length === 1 && _.isEqual(uniquePairs[0],_k_.last(this.surroundStack)))
         {
             this.surroundStack.pop()
         }

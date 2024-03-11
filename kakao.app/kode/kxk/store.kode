@@ -145,7 +145,7 @@ function Store extends events
     
     load: ->
         
-        log 'store load'
+        log 'store load not implemented!'
         
         # if @app
             # try

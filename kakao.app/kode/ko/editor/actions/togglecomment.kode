@@ -41,16 +41,16 @@ export
             # convert to line comments
             for r in rgs
                 @do.change r[0], @do.line(r[0]).splice il, 0, @lineComment + ' '
-            @do.delete _.first(rgs)[0]-1
-            @do.delete _.last(rgs)[0]
+            @do.delete first(rgs)[0]-1
+            @do.delete last(rgs)[0]
             @moveCursorsUp()
             @moveCursorsRight false, @lineComment.length+1            
         else if @multiComment
             # convert to multi comment
             for r in rgs
                 @do.change r[0], @do.line(r[0]).splice il, @lineComment.length+1
-            @do.insert _.last( rgs)[0]+1, indent + @multiComment.close
-            @do.insert _.first(rgs)[0],   indent + @multiComment.open
+            @do.insert last( rgs)[0]+1, indent + @multiComment.close
+            @do.insert first(rgs)[0],   indent + @multiComment.open
             @moveCursorsDown()
             @moveCursorsLeft false, @lineComment.length+1
         @do.end()

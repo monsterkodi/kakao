@@ -4,6 +4,11 @@ var _k_
 
 class KFS
 {
+    static watch (p)
+    {
+        console.log('KFS.watch',p)
+    }
+
     static async list (p)
     {
         return await kakao.request('fs.list',p)

@@ -389,8 +389,8 @@ class Indexer
                         
                         indent = line.search /\S/
     
-                        while funcStack.length and indent <= _.last(funcStack)[0]
-                            _.last(funcStack)[1].last = li - 1
+                        while funcStack.length and indent <= last(funcStack)[0]
+                            last(funcStack)[1].last = li - 1
                             funcInfo = funcStack.pop()[1]
                             funcInfo.class ?= slash.base file
                             fileInfo.funcs.push funcInfo 
@@ -499,7 +499,7 @@ class Indexer
             if funcAdded
 
                 while funcStack.length
-                    _.last(funcStack)[1].last = li - 1
+                    last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
                     funcInfo.class ?= slash.base funcInfo.file
                     funcInfo.class ?= slash.base file

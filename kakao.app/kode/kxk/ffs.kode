@@ -8,6 +8,7 @@
 
 class KFS
     
+    @watch:         (p)  -> log 'KFS.watch' p
     @list:          (p) ○-> await kakao.request 'fs.list'       p
     @read:          (p) ○-> await kakao.request 'fs.read'       p
     @write:      (p, t) ○-> await kakao.request 'fs.write'      p, t

@@ -59,7 +59,7 @@ export
             thisSel = rangesAtLineIndexInRanges c[1], newSelections
             if thisSel.length
                 if @isSelectedLineAtIndex c[1]-1
-                    s = _.first rangesAtLineIndexInRanges c[1]-1, newSelections
+                    s = first rangesAtLineIndexInRanges c[1]-1, newSelections
                     cursorSet c, s[1][1], s[0]
                 newSelections.splice newSelections.indexOf(thisSel[0]), 1
 

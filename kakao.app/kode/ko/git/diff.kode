@@ -52,12 +52,12 @@ parseResult = (file, result) ->
             oldLines = []
             for i in [0...numOld]
                 oldLines.push lines.shift().slice 1
-            lines.shift() while _.first(lines)[0] == '\\'
+            lines.shift() while first(lines)[0] == '\\'
 
             newLines = []
             for i in [0...numNew]
                 newLines.push lines.shift().slice 1
-            lines.shift() while _.first(lines)[0] == '\\'
+            lines.shift() while first(lines)[0] == '\\'
 
             change.old = oldLines if oldLines.length
             change.new = newLines if newLines.length
