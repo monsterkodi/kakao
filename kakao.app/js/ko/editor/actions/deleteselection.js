@@ -2,6 +2,8 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
+import kstr from "../../../kxk/kstr.js"
+
 export default {deleteSelectionOrCursorLines:function ()
 {
     this.do.start()
@@ -84,7 +86,7 @@ export default {deleteSelectionOrCursorLines:function ()
                 {
                     continue
                 }
-                this.do.change(s[0],this.do.line(s[0]).splice(s[1][0],s[1][1] - s[1][0]))
+                this.do.change(s[0],kstr.splice(this.do.line(s[0]),s[1][0],s[1][1] - s[1][0]))
                 var list5 = _k_.list(positionsAfterLineColInPositions(s[0],s[1][1],newCursors))
                 for (var _57_27_ = 0; _57_27_ < list5.length; _57_27_++)
                 {
