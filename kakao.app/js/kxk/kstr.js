@@ -32,15 +32,18 @@ str = function (o)
     }
 }
 
+str.splice = function (s, i, c, r = '')
+{
+    return s.slice(0,i) + r + s.slice(i + Math.abs(c))
+}
+
 str.encode = function (s, spaces = true)
 {
-    var encode, r
+    var r
 
     if (s)
     {
-        encode = require('html-entities').encode
-
-        r = encode(s)
+        r = encodeURI(s)
         if (spaces)
         {
             r = r.replace(/\s/g,'&nbsp;')
@@ -185,9 +188,9 @@ str.time = function (t)
             f = 1
             o = {ms:1000,second:60,minute:60,hour:24,day:30,month:12,year:0}
             var list = _k_.list(Object.keys(o))
-            for (var _148_18_ = 0; _148_18_ < list.length; _148_18_++)
+            for (var _155_18_ = 0; _155_18_ < list.length; _155_18_++)
             {
-                k = list[_148_18_]
+                k = list[_155_18_]
                 num = parseInt(t / f)
                 f *= o[k]
                 if (k === 'year' || t < f)
@@ -204,9 +207,9 @@ str.time = function (t)
             thsnd = BigInt(1000)
             f = thsnd
             var list1 = ['ns','μs','ms','second']
-            for (var _157_18_ = 0; _157_18_ < list1.length; _157_18_++)
+            for (var _164_18_ = 0; _164_18_ < list1.length; _164_18_++)
             {
-                k = list1[_157_18_]
+                k = list1[_164_18_]
                 if (k === 'seconds' || t < f)
                 {
                     num = parseInt(thsnd * t / f)
@@ -236,7 +239,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _185_13_
+    var _192_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

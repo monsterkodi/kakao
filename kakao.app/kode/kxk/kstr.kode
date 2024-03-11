@@ -18,6 +18,14 @@ str = (o) ->
             "\n" + noon.stringify o, circular: true
     else
         String o
+        
+#  0000000  00000000   000      000   0000000  00000000  
+# 000       000   000  000      000  000       000       
+# 0000000   00000000   000      000  000       0000000   
+#      000  000        000      000  000       000       
+# 0000000   000        0000000  000   0000000  00000000  
+
+str.splice = (s, i, c, r='') -> s.slice(0, i) + r + s.slice(i + Math.abs(c))
 
 # 00000000  000   000   0000000   0000000   0000000    00000000
 # 000       0000  000  000       000   000  000   000  000     
@@ -28,8 +36,7 @@ str = (o) ->
 str.encode = (s, spaces=true) ->
     
     if s
-        { encode } = require 'html-entities'
-        r = encode s
+        r = encodeURI s
         if spaces
             r = r.replace /\s/g, '&nbsp;'
         r
@@ -47,7 +54,6 @@ str.escapeRegexp = (s) ->
 # 0000000      000     0000000    000  00000000   
 #      000     000     000   000  000  000        
 # 0000000      000     000   000  000  000        
-
 
 str.rstrip = (s, cs=' ') ->
     

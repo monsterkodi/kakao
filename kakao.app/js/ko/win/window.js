@@ -113,14 +113,13 @@ Window = (function ()
             }
             if (changeInfo.changes.length)
             {
-                post.toOtherWins('fileLineChanges',this.editor.currentFile,changeInfo.changes)
                 if (changeInfo.deletes === 1)
                 {
-                    return navigate.delFilePos({file:this.editor.currentFile,pos:[0,changeInfo.changes[0].oldIndex]})
+                    return window.navigate.delFilePos({file:window.editor.currentFile,pos:[0,changeInfo.changes[0].oldIndex]})
                 }
                 else
                 {
-                    return navigate.addFilePos({file:this.editor.currentFile,pos:this.editor.cursorPos()})
+                    return window.navigate.addFilePos({file:window.editor.currentFile,pos:window.editor.cursorPos()})
                 }
             }
         })
