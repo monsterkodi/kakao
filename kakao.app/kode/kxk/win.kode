@@ -13,8 +13,8 @@
 use ./dom
 use ./elem
 use ./post
-use ./keyinfo
 use ./title
+use ./keyinfo
 
 { $, stopEvent } = dom
 
@@ -54,7 +54,7 @@ function Win
         
         kakao.request('window.id').then (@id) =>
             # elem class:'test' text:"○○" parent:main
-            elem class:'test' text:"#{id}" parent:main
+            # elem class:'test' text:"#{id}" parent:main
             
             @delegate?.onWindowCreated? @
             kakao.send 'win.setMinSize' 250 125
@@ -97,6 +97,7 @@ function Win
             'screenshot'     ➜ kakao.send 'window.snapshot'
             'close'          ➜ kakao.send 'window.close'
             'reload'         ➜ kakao.send 'window.reload'
+            'devtools'       ➜ kakao.send 'window.toggleInspector'
             'quit'           ➜ kakao.send 'app.quit'
             'open ...'       ➜ kakao.send 'window.new' 'ko.html'
             'about'          

@@ -162,7 +162,7 @@ class Indexer
                 root:        dir
                 includeDirs: false
                 includeExt:  [''] # report files without extension
-                file:        (p) => @bins.push slash.basename p
+                file:        (p) => @bins.push slash.file p
             w.start()
 
     collectProjects: ->
@@ -243,7 +243,7 @@ class Indexer
         return if not dir? or @dirs[dir]?
         
         @dirs[dir] =
-            name: slash.basename dir
+            name: slash.file dir
 
         wopt =
             root:        dir
@@ -263,7 +263,7 @@ class Indexer
         
         if not @dirs[p]?
             @dirs[p] =
-                name: slash.basename p
+                name: slash.file p
 
     onWalkerFile: (p, stat) =>
         

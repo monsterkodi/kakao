@@ -103,10 +103,11 @@ Editor = (function ()
     {
         var action
 
+        console.log(name,Editor.actions)
         var list = _k_.list(Editor.actions)
-        for (var _98_19_ = 0; _98_19_ < list.length; _98_19_++)
+        for (var _99_19_ = 0; _99_19_ < list.length; _99_19_++)
         {
-            action = list[_98_19_]
+            action = list[_99_19_]
             if (action.name === name)
             {
                 return action
@@ -117,9 +118,9 @@ Editor = (function ()
 
     Editor.prototype["shebangFileType"] = function ()
     {
-        var _109_31_, _109_44_
+        var _110_31_, _110_44_
 
-        return ((_109_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _109_44_ : 'txt')
+        return ((_110_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _110_44_ : 'txt')
     }
 
     Editor.prototype["setupFileType"] = function ()
@@ -141,7 +142,7 @@ Editor = (function ()
 
     Editor.prototype["setFileType"] = function (fileType)
     {
-        var cstr, k, key, reg, v, _156_21_
+        var cstr, k, key, reg, v, _157_21_
 
         this.fileType = fileType
     
@@ -169,9 +170,9 @@ Editor = (function ()
         }
         this.bracketCharacters.regexp = []
         var list = ['open','close']
-        for (var _151_16_ = 0; _151_16_ < list.length; _151_16_++)
+        for (var _152_16_ = 0; _152_16_ < list.length; _152_16_++)
         {
-            key = list[_151_16_]
+            key = list[_152_16_]
             cstr = Object.keys(this.bracketCharacters[key]).join('')
             reg = new RegExp(`[${kstr.escapeRegexp(cstr)}]`)
             this.bracketCharacters.regexps.push([reg,key])
@@ -331,7 +332,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _268_33_, _269_50_, _275_52_
+        var e, il, indentLength, line, thisIndent, _269_33_, _270_50_, _276_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -348,9 +349,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _270_26_ = 0; _270_26_ < list.length; _270_26_++)
+                    for (var _271_26_ = 0; _271_26_ < list.length; _271_26_++)
                     {
-                        e = list[_270_26_]
+                        e = list[_271_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength

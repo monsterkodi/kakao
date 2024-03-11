@@ -41,7 +41,7 @@ class Walker
                     var extn, name, sp, _48_29_, _54_38_, _80_24_, _83_31_, _84_34_, _88_32_
 
                     sp = slash.path(p)
-                    name = slash.basename(p)
+                    name = slash.file(p)
                     extn = slash.ext(p)
                     if ((typeof cfg.filter === "function" ? cfg.filter(p) : undefined))
                     {
@@ -120,7 +120,7 @@ class Walker
                     }
                     else
                     {
-                        if (_k_.in(slash.ext(sp),cfg.includeExt) || _k_.in(slash.basename(sp),cfg.include) || cfg.includeExt.indexOf('') >= 0)
+                        if (_k_.in(slash.ext(sp),cfg.includeExt) || _k_.in(slash.file(sp),cfg.include) || cfg.includeExt.indexOf('') >= 0)
                         {
                             ;(typeof cfg.file === "function" ? cfg.file(sp,stat) : undefined)
                         }

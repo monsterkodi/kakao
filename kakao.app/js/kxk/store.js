@@ -28,7 +28,7 @@ Store = (function ()
 
     function Store (name, opt = {})
     {
-        var k, v, _37_22_, _38_22_, _78_21_
+        var k, v, _37_22_, _38_22_, _77_21_
 
         this["save"] = this["save"].bind(this)
         Store.__super__.constructor.call(this)
@@ -71,7 +71,7 @@ Store = (function ()
         for (k in opt.defaults)
         {
             v = opt.defaults[k]
-            this.data[k] = ((_78_21_=this.data[k]) != null ? _78_21_ : v)
+            this.data[k] = ((_77_21_=this.data[k]) != null ? _77_21_ : v)
         }
     }
 
@@ -82,7 +82,7 @@ Store = (function ()
 
     Store.prototype["get"] = function (key, value)
     {
-        var _90_45_
+        var _89_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -93,13 +93,13 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _101_32_, _104_14_
+        var _100_32_, _104_14_
 
         if (!((key != null ? key.split : undefined) != null))
         {
             return
         }
-        if (_.isEqual(this.get(key),value))
+        if (this.get(key) === value)
         {
             return
         }

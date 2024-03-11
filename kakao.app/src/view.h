@@ -13,8 +13,11 @@
 {
 }
 
+@property (assign) id inspector;
+
 -(id)   init;
 -(void) initScripting;
+-(void) toggleInspector;
 -(void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg;
 -(void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage *)msg replyHandler:(void (^)(id reply, NSString *errorMessage))replyHandler;
 

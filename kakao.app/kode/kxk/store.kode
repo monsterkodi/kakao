@@ -73,7 +73,6 @@ function Store extends events
                     'del'  ➜ sds.del @data, @keypath(argl[0])
                 
         @data = @load()
-        # @data = _.defaults @data, opt.defaults 
         for k,v of opt.defaults
             @data[k] ?= v
 
@@ -99,7 +98,8 @@ function Store extends events
     set: (key, value) ->
 
         return if not key?.split?
-        return if _.isEqual @get(key), value
+        # return if _.isEqual @get(key), value
+        return if @get(key) == value
 
         @data ?= {}
         sds.set @data, @keypath(key), value

@@ -455,7 +455,7 @@ Browser = (function ()
 
         item = row.item
         file = item.file
-        tmpImg = slash.join(os.tmpdir(),`ko-${slash.basename(file)}.png`)
+        tmpImg = slash.join(os.tmpdir(),`ko-${slash.name(file)}.png`)
         return childp.exec(`/usr/bin/sips -s format png \"${file}\" --out \"${tmpImg}\"`,(function (err)
         {
             if ((err != null))

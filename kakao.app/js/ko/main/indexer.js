@@ -217,7 +217,7 @@ class Indexer
             dir = list[_159_16_]
             w = new Walker({maxFiles:1000,root:dir,includeDirs:false,includeExt:[''],file:(function (p)
             {
-                return this.bins.push(slash.basename(p))
+                return this.bins.push(slash.file(p))
             }).bind(this)})
             w.start()
         }
@@ -328,7 +328,7 @@ class Indexer
         {
             return
         }
-        this.dirs[dir] = {name:slash.basename(dir)}
+        this.dirs[dir] = {name:slash.file(dir)}
         wopt = {root:dir,includeDir:dir,includeDirs:true,dir:this.onWalkerDir,file:this.onWalkerFile,maxDepth:12,maxFiles:100000,done:(function (w)
         {
             return this.shiftQueue
@@ -342,7 +342,7 @@ class Indexer
     {
         if (!(this.dirs[p] != null))
         {
-            return this.dirs[p] = {name:slash.basename(p)}
+            return this.dirs[p] = {name:slash.file(p)}
         }
     }
 

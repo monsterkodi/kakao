@@ -49,7 +49,7 @@ indexKoFiles = function (kofiles, info)
             {
                 if (stat.isDirectory())
                 {
-                    if (_k_.in(slash.basename(path),['node_modules','.git']))
+                    if (_k_.in(slash.file(path),['node_modules','.git']))
                     {
                         this.ignore(path)
                         return

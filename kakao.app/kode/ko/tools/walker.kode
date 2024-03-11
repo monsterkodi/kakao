@@ -42,7 +42,7 @@ class Walker
             @walker = walkdir.walk dir, max_depth: @cfg.maxDepth
             onWalkerPath = (cfg) -> (p,stat) ->
                 sp   = slash.path p
-                name = slash.basename p
+                name = slash.file p
                 extn = slash.ext p
 
                 if cfg.filter?(p)
@@ -84,7 +84,7 @@ class Walker
                     if cfg.skipDir? sp
                         @ignore p
                 else
-                    if slash.ext(sp) in cfg.includeExt or slash.basename(sp) in cfg.include or cfg.includeExt.indexOf('') >= 0
+                    if slash.ext(sp) in cfg.includeExt or slash.file(sp) in cfg.include or cfg.includeExt.indexOf('') >= 0
                         cfg.file? sp, stat
                                                 
                 if cfg.files.length > cfg.maxFiles

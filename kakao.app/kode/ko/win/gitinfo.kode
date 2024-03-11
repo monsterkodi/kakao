@@ -6,12 +6,13 @@
  0000000   000     000     000  000   000  000        0000000 
 ###
 
-kxk = require 'kxk'
-{ fs, post, slash } = kxk
+use ../../kxk/post
+use ../../kxk/slash
+use ../../kxk/ffs
+use ../tools/linediff
+use ../editor/syntax
 
-lineDiff   = require '../tools/linediff'
-Syntax     = require '../editor/syntax'
-hub        = require '../git/hub'
+# use ../git/hub
 
 class GitInfo
     
@@ -33,7 +34,7 @@ class GitInfo
     logText: (text) ->
         
         terminal = window.terminal
-        terminal.appendMeta clss:'searchHeader' diss:Syntax.dissForTextAndSyntax text, 'ko'
+        terminal.appendMeta clss:'searchHeader' diss:syntax.dissForTextAndSyntax text, 'ko'
 
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
     # 000       000   000  000   000  0000  000  000        000       000       
@@ -46,12 +47,12 @@ class GitInfo
         terminal = window.terminal
         
         extn = slash.ext changes.file
-        if extn in Syntax.syntaxNames
+        if extn in syntax.syntaxNames
             syntaxName = extn
         else
             syntaxName = 'txt'
         
-        sytx = new Syntax syntaxName, (i) -> changes.lines[i]
+        sytx = new syntax syntaxName, (i) -> changes.lines[i]
         
         index = 0
         for text in changes.lines
@@ -64,7 +65,7 @@ class GitInfo
                 
             else if changes.change == 'changed'
                 
-                diffs = lineDiff changes.info.mod[index].old, changes.info.mod[index].new
+                diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
                 for diff in diffs 
                     continue if diff.change == 'delete'
                     lineMeta =
@@ -103,7 +104,7 @@ class GitInfo
             
         terminal = window.terminal
         meta = 
-            diss:       Syntax.dissForTextAndSyntax "#{slash.tilde file}", 'ko'
+            diss:       syntax.dissForTextAndSyntax "#{slash.tilde file}", 'ko'
             href:       file
             clss:       'gitInfoFile'
             click:      @onMetaClick
@@ -144,7 +145,7 @@ class GitInfo
                 @logFile 'added' file  # dont delete this for now :)
                 
                 if slash.isText file
-                    data  = fs.readFileSync file, encoding:'utf8'
+                    data  = ffs.read file # this won't work: read returns promise
                     lines = data.split /\r?\n/
                     line  = 1
                     

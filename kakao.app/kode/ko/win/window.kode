@@ -50,17 +50,19 @@ use ../main/navigate
 
 function Window #extends win
 
-    onWindowAnimationTick:  (win, tickInfo) -> log 'onWindowAnimationTick' win.id
+    onWindowAnimationTick:  (win, tickInfo) -> #log 'onWindowAnimationTick' win.id
     onWindowResize:         (win, event)    -> log 'onWindowResize'        win.id
     onWindowFocus:          (win)           -> log 'onWindowFocus'         win.id
     onWindowBlur:           (win)           -> log 'onWindowBlur'          win.id
-    onWindowKeyDown:        (win, keyInfo)  -> log 'onWindowKeyDown'       win.id
-    onWindowKeyUp:          (win, keyInfo)  -> log 'onWindowKeyUp'         win.id
+    onWindowKeyDown:        (win, keyInfo)  -> #log 'onWindowKeyDown'       win.id, keyInfo
+    onWindowKeyUp:          (win, keyInfo)  -> #log 'onWindowKeyUp'         win.id, keyInfo
     
     @: ->
         
         @menuIcon = kakao.bundle.img 'menu_ko.png'
         @menuNoon = kakao.bundle.res 'menu_ko.noon'
+        
+        post.on 'menuAction' @onMenuAction
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         
@@ -92,11 +94,13 @@ function Window #extends win
         @fps         = window.fps         = new fps()
         @cwd         = window.cwd         = new cwd()
     
+        log 'split' @split
+        
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
         # restoreWin()
-        # scheme.set prefs.get 'scheme' 'dark'
+        scheme.set prefs.get 'scheme' 'dark'
 
         @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
             post.toWins 'fileLineChanges' file, [lineChange]
@@ -110,13 +114,17 @@ function Window #extends win
                 else
                     navigate.addFilePos file: @editor.currentFile, pos: @editor.cursorPos()
     
-        # s = window.stash.get 'fontSize' prefs.get 'editorFontSize' 19
-        # @editor.setFontSize s if s
+        s = window.stash.get 'fontSize' prefs.get 'editorFontSize' 19
+        @editor.setFontSize s if s
     
-        # if window.stash.get 'centerText'
-            # @editor.centerText true 0
+        if window.stash.get 'centerText'
+            @editor.centerText true 0
     
         post.emit 'restore'
+        
+        window.split.resized()
+        window.info.reload()
+        
         @editor.focus()
 
     onMoved: (bounds) => window.stash.set 'bounds' bounds
@@ -129,9 +137,12 @@ function Window #extends win
     
     onMenuAction: (name, opts) =>
         
-        return
-    
-        if action = Editor.actionWithName name
+        log 'onMenuAction' name#, opts
+        
+        if action = editor.actionWithName name
+            
+            log 'editor.actionWithName' name
+            
             if action.key? and window.focusEditor[action.key] is func
                 window.focusEditor[action.key] opts.actarg
                 return 
@@ -148,7 +159,7 @@ function Window #extends win
             'Copy'                  ➜ return window.focusEditor.copy()
             'Paste'                 ➜ return window.focusEditor.paste()
             'New Tab'               ➜ return post.emit 'newEmptyTab'
-            'New Window'            ➜ return post.toMain 'newWindowWithFile' editor.currentFile
+            'New Window'            ➜ return post.toMain 'newWindowWithFile' @editor.currentFile
             'Cycle Windows'         ➜ return post.toMain 'activateNextWindow' window.winID
             'Arrange Windows'       ➜ return post.toMain 'arrangeWindows'
             'Toggle Scheme'         ➜ return scheme.toggle()
@@ -157,10 +168,10 @@ function Window #extends win
             'Increase'              ➜ return changeFontSize +1
             'Decrease'              ➜ return changeFontSize -1
             'Reset'                 ➜ return resetFontSize()
-            'Open Window List'      ➜ return titlebar.showList()
-            'Navigate Backward'     ➜ return navigate.backward()
-            'Navigate Forward'      ➜ return navigate.forward()
-            'Maximize Editor'       ➜ return split.maximizeEditor()
+            'Open Window List'      ➜ return @titlebar.showList()
+            'Navigate Backward'     ➜ return @navigate.backward()
+            'Navigate Forward'      ➜ return @navigate.forward()
+            'Maximize Editor'       ➜ return @split.maximizeEditor()
             'Add to Shelf'          ➜ return addToShelf()
             'Toggle History'        ➜ return window.filebrowser.shelf.toggleHistory()
             'Activate Next Tab'     ➜ return window.tabs.navigate 'right'
@@ -184,7 +195,8 @@ function Window #extends win
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
             'Cycle Windows'         ➜ opts = @id
     
-        super name, opts
+        log 'onMenuAction unhandled' name#, opts            
+        # super name, opts
             
 # 00000000   00000000   00000000  00000000   0000000
 # 000   000  000   000  000       000       000
@@ -216,180 +228,181 @@ window.prefs = prefs
 #     if window.stash.get 'devTools'
 #         post.emit 'menuAction' 'devtools'
 # 
-# # 00000000    0000000    0000000  000000000
-# # 000   000  000   000  000          000
-# # 00000000   000   000  0000000      000
-# # 000        000   000       000     000
-# # 000         0000000   0000000      000
-# 
-# post.on 'singleCursorAtPos' (pos, opt) -> # browser double click and newTabWithFile :l:c
-#     editor.singleCursorAtPos pos, opt 
-#     editor.scroll.cursorToTop()
-# post.on 'focusEditor'  -> split.focus 'editor'
-# post.on 'cloneFile'    -> post.toMain 'newWindowWithFile' editor.currentFile
-# post.on 'closeWindow'  -> post.emit 'menuAction' 'Close'
-# post.on 'saveStash'    -> saveStash()
-# post.on 'clearStash'   -> clearStash()
-# post.on 'editorFocus' (editor) ->
-#     window.setLastFocus editor.name
-#     window.focusEditor = editor
-#     window.textEditor = editor if editor.name != 'commandline-editor'
-# 
-# post.on 'mainlog' -> klog.apply klog, arguments
-# 
-# post.on 'ping' (wID, argA, argB) -> post.toWin wID, 'pong' window.winID, argA, argB
-# post.on 'postEditorState' ->
-#     post.toAll 'editorState' window.winID,
-#         lines:      editor.lines()
-#         cursors:    editor.cursors()
-#         main:       editor.mainCursor()
-#         selections: editor.selections()
-#         highlights: editor.highlights()
-# 
-# # 00000000  0000000    000  000000000   0000000   00000000
-# # 000       000   000  000     000     000   000  000   000
-# # 0000000   000   000  000     000     000   000  0000000
-# # 000       000   000  000     000     000   000  000   000
-# # 00000000  0000000    000     000      0000000   000   000
-# 
-# window.editorWithName = (n) ->
-# 
-#     switch n
-#         'command' 
-#         'commandline' ➜ commandline
-#         'terminal'    ➜ terminal
-#         'editor'      ➜ editor
-#                       ➜ editor
-# 
-# #  0000000   000   000  000       0000000    0000000   0000000
-# # 000   000  0000  000  000      000   000  000   000  000   000
-# # 000   000  000 0 000  000      000   000  000000000  000   000
-# # 000   000  000  0000  000      000   000  000   000  000   000
-# #  0000000   000   000  0000000   0000000   000   000  0000000
-# 
+# 00000000    0000000    0000000  000000000
+# 000   000  000   000  000          000
+# 00000000   000   000  0000000      000
+# 000        000   000       000     000
+# 000         0000000   0000000      000
+ 
+post.on 'singleCursorAtPos' (pos, opt) -> # browser double click and newTabWithFile :l:c
+    window.editor.singleCursorAtPos pos, opt 
+    window.editor.scroll.cursorToTop()
+    
+post.on 'focusEditor'  -> window.split.focus 'editor'
+post.on 'cloneFile'    -> post.toMain 'newWindowWithFile' window.editor.currentFile
+post.on 'closeWindow'  -> post.emit 'menuAction' 'Close'
+post.on 'saveStash'    -> saveStash()
+post.on 'clearStash'   -> clearStash()
+post.on 'editorFocus' (editor) ->
+    window.setLastFocus window.editor.name
+    window.focusEditor = window.editor
+    window.textEditor = window.editor if window.editor.name != 'commandline-editor'
+ 
+post.on 'mainlog' -> 
+ 
+post.on 'ping' (wID, argA, argB) -> post.toWin wID, 'pong' window.winID, argA, argB
+post.on 'postEditorState' ->
+    post.toAll 'editorState' window.winID,
+        lines:      window.editor.lines()
+        cursors:    window.editor.cursors()
+        main:       window.editor.mainCursor()
+        selections: window.editor.selections()
+        highlights: window.editor.highlights()
+ 
+# 00000000  0000000    000  000000000   0000000   00000000
+# 000       000   000  000     000     000   000  000   000
+# 0000000   000   000  000     000     000   000  0000000
+# 000       000   000  000     000     000   000  000   000
+# 00000000  0000000    000     000      0000000   000   000
+ 
+window.editorWithName = (n) ->
+ 
+    switch n
+        'command' 
+        'commandline' ➜ window.commandline
+        'terminal'    ➜ window.terminal
+        'editor'      ➜ window.editor
+                      ➜ window.editor
+ 
+#  0000000   000   000  000       0000000    0000000   0000000
+# 000   000  0000  000  000      000   000  000   000  000   000
+# 000   000  000 0 000  000      000   000  000000000  000   000
+# 000   000  000  0000  000      000   000  000   000  000   000
+#  0000000   000   000  0000000   0000000   000   000  0000000
+ 
 # window.onload = ->
-# 
-#     split?.resized()
-#     info?.reload()
-# 
-# # 00000000   00000000  000       0000000    0000000   0000000
-# # 000   000  000       000      000   000  000   000  000   000
-# # 0000000    0000000   000      000   000  000000000  000   000
-# # 000   000  000       000      000   000  000   000  000   000
-# # 000   000  00000000  0000000   0000000   000   000  0000000
-# 
-# reloadWin = ->
-# 
-#     saveStash()
-#     clearListeners()
-#     post.toMain 'reloadWin' winID:window.winID, file:editor.currentFile
-# 
-# # 00000000   00000000   0000000  000  0000000  00000000
-# # 000   000  000       000       000     000   000
-# # 0000000    0000000   0000000   000    000    0000000
-# # 000   000  000            000  000   000     000
-# # 000   000  00000000  0000000   000  0000000  00000000
-# 
-# window.onresize = ->
-# 
-#     split.resized()
-#     window.win?.onMoved window.win.getBounds()
-#     if window.stash.get 'centerText' false
-#         editor.centerText true, 200
-# 
-# post.on 'split' (s) ->
-# 
-#     window.filebrowser?.resized()
-#     terminal.resized()
-#     commandline.resized()
-#     editor.resized()
-# 
-# #  0000000  00000000  000   000  000000000  00000000  00000000       000000000  00000000  000   000  000000000
-# # 000       000       0000  000     000     000       000   000         000     000        000 000      000
-# # 000       0000000   000 0 000     000     0000000   0000000           000     0000000     00000       000
-# # 000       000       000  0000     000     000       000   000         000     000        000 000      000
-# #  0000000  00000000  000   000     000     00000000  000   000         000     00000000  000   000     000
-# 
-# toggleCenterText = ->
-# 
-#     if window.state.get "invisibles|#{editor.currentFile}" false
-#         editor.toggleInvisibles()
-#         restoreInvisibles = true
-# 
-#     if not window.stash.get 'centerText' false
-#         window.stash.set 'centerText' true
-#         editor.centerText true
-#     else
-#         window.stash.set 'centerText' false
-#         editor.centerText false
-# 
-#     if restoreInvisibles
-#         editor.toggleInvisibles()
-#         
-# toggleTabPinned = ->
-#     
-#     if t = window.tabs.activeTab()
-#         t.togglePinned()
-# 
-# # 00000000   0000000   000   000  000000000      0000000  000  0000000  00000000
-# # 000       000   000  0000  000     000        000       000     000   000
-# # 000000    000   000  000 0 000     000        0000000   000    000    0000000
-# # 000       000   000  000  0000     000             000  000   000     000
-# # 000        0000000   000   000     000        0000000   000  0000000  00000000
-# 
-# setFontSize = (s) ->
-# 
-#     s = prefs.get('editorFontSize' 19) if not s is num
-#     s = clamp 8 100 s
-# 
-#     window.stash.set "fontSize" s
-#     editor.setFontSize s
-#     if editor.currentFile?
-#         post.emit 'loadFile' editor.currentFile, reload:true
-# 
-# changeFontSize = (d) ->
-# 
-#     if  editor.size.fontSize >= 20 ➜ f = 2
-#         editor.size.fontSize >= 30 ➜ f = 4
-#         editor.size.fontSize >= 50 ➜ f = 10
-#                                    ➜ f = 1
-#                                    
-#     setFontSize editor.size.fontSize + f*d
-# 
-# resetFontSize = ->
-# 
-#     defaultFontSize = prefs.get 'editorFontSize' 19
-#     window.stash.set 'fontSize' defaultFontSize
-#     setFontSize defaultFontSize
-# 
-# addToShelf = ->
-# 
-#     return if window.lastFocus == 'shelf'
-#     fb = window.filebrowser
-#     if window.lastFocus.startsWith fb.name
-#         path = fb.columnWithName(window.lastFocus).activePath()
-#     else
-#         path = editor.currentFile
-#     post.emit 'addToShelf' path
-# 
-# # 0000000   0000000    0000000   00     00
-# #    000   000   000  000   000  000   000
-# #   000    000   000  000   000  000000000
-# #  000     000   000  000   000  000 0 000
-# # 0000000   0000000    0000000   000   000
-# 
-# resetZoom = ->
-# 
-#     webframe.setZoomFactor 1
-#     editor.resized()
-# 
-# changeZoom = (d) ->
-#     
-#     z = webframe.getZoomFactor()
-#     z *= 1+d/20
-#     z = clamp 0.36 5.23 z
-#     webframe.setZoomFactor z
-#     editor.resized()
+ 
+    # window.split?.resized()
+    # window.info?.reload()
+ 
+# 00000000   00000000  000       0000000    0000000   0000000
+# 000   000  000       000      000   000  000   000  000   000
+# 0000000    0000000   000      000   000  000000000  000   000
+# 000   000  000       000      000   000  000   000  000   000
+# 000   000  00000000  0000000   0000000   000   000  0000000
+ 
+reloadWin = ->
+ 
+    saveStash()
+    clearListeners()
+    post.toMain 'reloadWin' winID:window.winID, file:window.editor.currentFile
+ 
+ # 00000000   00000000   0000000  000  0000000  00000000  
+ # 000   000  000       000       000     000   000       
+ # 0000000    0000000   0000000   000    000    0000000   
+ # 000   000  000            000  000   000     000       
+ # 000   000  00000000  0000000   000  0000000  00000000  
+ 
+window.onresize = ->
+
+    window.split.resized()
+    window.win?.onMoved window.win.getBounds()
+    if window.stash.get 'centerText' false
+        window.editor.centerText true, 200
+
+post.on 'split' (s) ->
+
+    window.filebrowser?.resized()
+    window.terminal.resized()
+    window.commandline.resized()
+    window.editor.resized()
+
+#  0000000  00000000  000   000  000000000  00000000  00000000       000000000  00000000  000   000  000000000
+# 000       000       0000  000     000     000       000   000         000     000        000 000      000
+# 000       0000000   000 0 000     000     0000000   0000000           000     0000000     00000       000
+# 000       000       000  0000     000     000       000   000         000     000        000 000      000
+#  0000000  00000000  000   000     000     00000000  000   000         000     00000000  000   000     000
+
+toggleCenterText = ->
+
+    if window.state.get "invisibles|#{window.editor.currentFile}" false
+        window.editor.toggleInvisibles()
+        restoreInvisibles = true
+
+    if not window.stash.get 'centerText' false
+        window.stash.set 'centerText' true
+        window.editor.centerText true
+    else
+        window.stash.set 'centerText' false
+        window.editor.centerText false
+
+    if restoreInvisibles
+        window.editor.toggleInvisibles()
+        
+toggleTabPinned = ->
+    
+    if t = window.tabs.activeTab()
+        t.togglePinned()
+
+# 00000000   0000000   000   000  000000000      0000000  000  0000000  00000000
+# 000       000   000  0000  000     000        000       000     000   000
+# 000000    000   000  000 0 000     000        0000000   000    000    0000000
+# 000       000   000  000  0000     000             000  000   000     000
+# 000        0000000   000   000     000        0000000   000  0000000  00000000
+
+setFontSize = (s) ->
+
+    s = prefs.get('editorFontSize' 19) if not s is num
+    s = clamp 8 100 s
+
+    window.stash.set "fontSize" s
+    window.editor.setFontSize s
+    if window.editor.currentFile?
+        post.emit 'loadFile' window.editor.currentFile, reload:true
+
+changeFontSize = (d) ->
+
+    if  window.editor.size.fontSize >= 20 ➜ f = 2
+        window.editor.size.fontSize >= 30 ➜ f = 4
+        window.editor.size.fontSize >= 50 ➜ f = 10
+                                   ➜ f = 1
+                                   
+    setFontSize window.editor.size.fontSize + f*d
+
+resetFontSize = ->
+
+    defaultFontSize = prefs.get 'editorFontSize' 19
+    window.stash.set 'fontSize' defaultFontSize
+    setFontSize defaultFontSize
+
+addToShelf = ->
+
+    return if window.lastFocus == 'shelf'
+    fb = window.filebrowser
+    if window.lastFocus.startsWith fb.name
+        path = fb.columnWithName(window.lastFocus).activePath()
+    else
+        path = window.editor.currentFile
+    post.emit 'addToShelf' path
+
+# 0000000   0000000    0000000   00     00
+#    000   000   000  000   000  000   000
+#   000    000   000  000   000  000000000
+#  000     000   000  000   000  000 0 000
+# 0000000   0000000    0000000   000   000
+
+resetZoom = ->
+
+    webframe.setZoomFactor 1
+    window.editor.resized()
+
+changeZoom = (d) ->
+    
+    z = webframe.getZoomFactor()
+    z *= 1+d/20
+    z = clamp 0.36 5.23 z
+    webframe.setZoomFactor z
+    window.editor.resized()
 
 # 00000000   0000000    0000000  000   000   0000000
 # 000       000   000  000       000   000  000
@@ -401,10 +414,10 @@ window.onblur  = (event) -> post.emit 'winFocus' false
 window.onfocus = (event) ->
     post.emit 'winFocus' true
     if document.activeElement.className == 'body'
-        if split.editorVisible()
-            split.focus 'editor'
+        if window.split.editorVisible()
+            window.split.focus 'editor'
         else
-            split.focus 'commandline-editor'
+            window.split.focus 'commandline-editor'
  
 window.setLastFocus = (name) -> window.lastFocus = name
 

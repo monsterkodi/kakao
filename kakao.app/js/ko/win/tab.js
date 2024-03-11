@@ -20,7 +20,7 @@ class Tab
 {
     constructor (tabs, file)
     {
-        var _29_46_
+        var _29_42_
 
         this.tabs = tabs
         this.file = file
@@ -35,7 +35,7 @@ class Tab
             this.pkg = slash.pkg(this.file)
             if ((this.pkg != null))
             {
-                this.pkg = slash.basename(this.pkg)
+                this.pkg = slash.file(this.pkg)
             }
         }
         this.update()
@@ -157,7 +157,7 @@ class Tab
         sep = "<span class='dot'>►</span>"
         this.pkgDiv = elem('span',{class:'pkg',html:this.pkg && (this.pkg + sep) || ''})
         this.div.appendChild(this.pkgDiv)
-        diss = syntax.dissForTextAndSyntax(slash.basename(this.file),'ko')
+        diss = syntax.dissForTextAndSyntax(slash.file(this.file),'ko')
         name = elem('span',{class:'name',html:render.line(diss,{charWidth:0})})
         this.div.appendChild(name)
         html = ''

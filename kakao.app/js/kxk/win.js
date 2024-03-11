@@ -10,9 +10,9 @@ import elem from "./elem.js"
 
 import post from "./post.js"
 
-import keyinfo from "./keyinfo.js"
-
 import title from "./title.js"
+
+import keyinfo from "./keyinfo.js"
 
 $ = dom.$
 stopEvent = dom.stopEvent
@@ -83,7 +83,6 @@ Win = (function ()
 
             this.id = id
         
-            elem({class:'test',text:`${id}`,parent:main})
             ;((_59_21_=this.delegate) != null ? typeof (_59_38_=_59_21_.onWindowCreated) === "function" ? _59_38_(this) : undefined : undefined)
             return kakao.send('win.setMinSize',250,125)
         }).bind(this))
@@ -160,6 +159,9 @@ Win = (function ()
             case 'reload':
                 kakao.send('window.reload')
                 break
+            case 'devtools':
+                kakao.send('window.toggleInspector')
+                break
             case 'quit':
                 kakao.send('app.quit')
                 break
@@ -183,24 +185,24 @@ Win = (function ()
 
     Win.prototype["onKeyDown"] = function (event)
     {
-        var info, _124_21_, _124_38_
+        var info, _125_21_, _125_38_
 
         info = keyinfo.forEvent(event)
         info.event = event
         stopEvent(event)
         if ('unhandled' === window.titlebar.handleKeyInfo(info))
         {
-            return ((_124_21_=this.delegate) != null ? typeof (_124_38_=_124_21_.onWindowKeyDown) === "function" ? _124_38_(this,info) : undefined : undefined)
+            return ((_125_21_=this.delegate) != null ? typeof (_125_38_=_125_21_.onWindowKeyDown) === "function" ? _125_38_(this,info) : undefined : undefined)
         }
     }
 
     Win.prototype["onKeyUp"] = function (event)
     {
-        var info, _131_17_, _131_32_
+        var info, _132_17_, _132_32_
 
         info = keyinfo.forEvent(event)
         info.event = event
-        return ((_131_17_=this.delegate) != null ? typeof (_131_32_=_131_17_.onWindowKeyUp) === "function" ? _131_32_(this,info) : undefined : undefined)
+        return ((_132_17_=this.delegate) != null ? typeof (_132_32_=_132_17_.onWindowKeyUp) === "function" ? _132_32_(this,info) : undefined : undefined)
     }
 
     return Win

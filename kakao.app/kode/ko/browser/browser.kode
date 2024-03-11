@@ -299,7 +299,7 @@ function Browser extends events
         
         item   = row.item
         file   = item.file
-        tmpImg = slash.join os.tmpdir(), "ko-#{slash.basename file}.png"
+        tmpImg = slash.join os.tmpdir(), "ko-#{slash.name file}.png"
         
         childp.exec "/usr/bin/sips -s format png \"#{file}\" --out \"#{tmpImg}\"", (err) =>
             return error "can't convert image #{file}: #{err}" if err?

@@ -6,8 +6,6 @@
 0000000   000   000  00000000  0000000  000     
 ###
 
-# { $, _, elem, first, kerror, keyinfo, klog, kpos, popup, post, slash, stopEvent } = require 'kxk'
-
 use ./row
 use ./scroller
 use ./column
@@ -183,7 +181,7 @@ function Shelf extends column
         
     addItem:  (item, opt) ->
         
-        _.pullAllWith @items, [item], _.isEqual # remove item if on shelf already
+        # _.pullAllWith @items, [item], _.isEqual # remove item if on shelf already
         
         if opt?.pos
             index = @rowIndexAtPos opt.pos
@@ -233,22 +231,22 @@ function Shelf extends column
         
     loadGitStatus: =>
         
-        rows = clone @rows
-        
-        fileStatus = (row, rows) -> (status) =>
-            for file, status of hub.statusFiles status
-                if file.startsWith row.path()
-                    if row.item.type == 'dir'
-                        status = 'dirs'
-                    $('.browserStatusIcon', row.div)?.remove()
-                    row.div.appendChild elem 'span', class:"git-#{status}-icon browserStatusIcon"
-                    break
-            if rows.length
-                row = rows.shift()
-                hub.status row.path(), fileStatus row, rows
-        
-        row = rows.shift()
-        hub.status row.path(), fileStatus row, rows
+        # rows = clone @rows
+#         
+        # fileStatus = (row, rows) -> (status) =>
+            # for file, status of hub.statusFiles status
+                # if file.startsWith row.path()
+                    # if row.item.type == 'dir'
+                        # status = 'dirs'
+                    # $('.browserStatusIcon', row.div)?.remove()
+                    # row.div.appendChild elem 'span', class:"git-#{status}-icon browserStatusIcon"
+                    # break
+            # if rows.length
+                # row = rows.shift()
+                # hub.status row.path(), fileStatus row, rows
+#         
+        # row = rows.shift()
+        # hub.status row.path(), fileStatus row, rows
 
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   

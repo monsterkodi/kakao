@@ -7,13 +7,14 @@
 ###
 
 # use ../main/indexer
+
 use ../../kxk/slash
 use ../../kxk/prefs
 use ../../kxk/post
 use ../../kxk/ffs
 use ../tools/salt
 use ../tools/req
-use ../win/gitinfo
+# use ../win/gitinfo
 use ../commandline/command
 use ../editor/syntax
 use ../editor/actions/transform
@@ -123,7 +124,7 @@ function Macro extends command
 
             'fps'   ➜ window.fps?.toggle()
             'cwd'   ➜ window.cwd?.toggle()
-            'git'   ➜ gitinfo.start()
+            'git'   ➜ gitinfo?.start()
             'err'
                 throw new Error 'err'
 
@@ -219,7 +220,6 @@ function Macro extends command
                 function #{clss}
 
                     @: () ->
-
 
                 export #{clss}
 

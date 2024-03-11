@@ -12,6 +12,9 @@ use ../tools/projects
 use ../commandline/command
 use ../editor/render
 use ../editor/syntax
+use ../../kxk/post
+use ../../kxk/slash
+
 # use fuzzy
 
 import File from '../tools/file.js'
@@ -28,7 +31,7 @@ relative = (rel, to) ->
         r = rel
     r    
 
-function Open extends Command
+function Open extends command
 
     @: (commandline) ->
         
@@ -57,17 +60,17 @@ function Open extends Command
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000  
 
-    changed: (command) ->
+    changed: (cmmd) ->
         
-        command = command.trim()
+        cmmd = cmmd.trim()
 
-        [file, pos] = slash.splitFilePos command ? @getText().trim()
+        [file, pos] = slash.splitFilePos cmmd ? @getText().trim()
 
-        items = @listItems currentText:command, maxItems:10000
+        items = @listItems currentText:cmmd, maxItems:10000
         
-        if command.length
+        if cmmd.length
             
-            fuzzied = fuzzy.filter slash.basename(file), items, extract: (o) -> o.text            
+            fuzzied = fuzzy.filter slash.file(file), items, extract: (o) -> o.text            
             items = (f.original for f in fuzzied)
             items.sort (a,b) -> b.weight - a.weight
                     
@@ -86,7 +89,7 @@ function Open extends Command
 
     complete: ->
 
-        if @commandList? and @commandList.line(@selected).startsWith(slash.basename @getText()) and not @getText().trim().endsWith('/')
+        if @commandList? and @commandList.line(@selected).startsWith(slash.file @getText()) and not @getText().trim().endsWith('/')
             @setText slash.join(slash.dir(@getText()), @commandList.line(@selected))
             if slash.dirExists @getText()
                 @setText @getText() + '/'

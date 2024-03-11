@@ -95,6 +95,7 @@ function Editor extends buffer
 
     @actionWithName: (name) ->
 
+        log name, Editor.actions
         for action in Editor.actions
             if action.name == name
                 return action

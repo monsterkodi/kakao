@@ -39,6 +39,7 @@
     if ([req isEqualToString:@"setMinSize"    ]) { [win setContentMinSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
     if ([req isEqualToString:@"id"            ]) { return [NSNumber numberWithLong:win.windowNumber]; }
     if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[arg0 longValue]]; return nil; }
+    if ([req isEqualToString:@"toggleInspector" ]) { [win.view toggleInspector]; return nil; }
     
     return nil;
 }

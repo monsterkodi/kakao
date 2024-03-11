@@ -4,6 +4,8 @@ var _k_ = {isObj: function (o) {return !(o == null || typeof o != 'object' || o.
 
 var elem, isElement
 
+import proto from "./proto.js"
+
 
 isElement = function (value)
 {
@@ -12,7 +14,7 @@ isElement = function (value)
 
 elem = function (typ, opt)
 {
-    var c, e, event, k, _26_15_, _30_16_, _34_19_, _39_17_
+    var c, e, event, k, _28_15_, _32_16_, _36_19_, _41_17_
 
     if (typ && typeof(typ) === 'object')
     {
@@ -40,9 +42,9 @@ elem = function (typ, opt)
     if ((opt.children != null) && opt.children instanceof Array)
     {
         var list = _k_.list(opt.children)
-        for (var _35_14_ = 0; _35_14_ < list.length; _35_14_++)
+        for (var _37_14_ = 0; _37_14_ < list.length; _37_14_++)
         {
-            c = list[_35_14_]
+            c = list[_37_14_]
             if (isElement(c))
             {
                 e.appendChild(c)
@@ -56,9 +58,9 @@ elem = function (typ, opt)
         delete opt.parent
     }
     var list1 = ['mousedown','mousemove','mouseup','click','dblclick']
-    for (var _43_14_ = 0; _43_14_ < list1.length; _43_14_++)
+    for (var _45_14_ = 0; _45_14_ < list1.length; _45_14_++)
     {
-        event = list1[_43_14_]
+        event = list1[_45_14_]
         if (opt[event] && typeof(opt[event]) === 'function')
         {
             e.addEventListener(event,opt[event])
@@ -66,9 +68,9 @@ elem = function (typ, opt)
         }
     }
     var list2 = _k_.list(Object.keys(opt))
-    for (var _48_10_ = 0; _48_10_ < list2.length; _48_10_++)
+    for (var _50_10_ = 0; _50_10_ < list2.length; _50_10_++)
     {
-        k = list2[_48_10_]
+        k = list2[_50_10_]
         e.setAttribute(k,opt[k])
     }
     return e
@@ -89,7 +91,7 @@ elem.childIndex = function (e)
 
 elem.upAttr = function (element, attr)
 {
-    var a, _62_28_
+    var a, _64_28_
 
     if (!(element != null))
     {
@@ -118,7 +120,7 @@ elem.upProp = function (element, prop)
 
 elem.upElem = function (element, opt)
 {
-    var _75_30_, _76_31_, _77_31_, _77_57_, _77_68_, _78_32_, _78_55_
+    var _77_30_, _78_31_, _79_31_, _79_57_, _79_68_, _80_32_, _80_55_
 
     if (!(element != null))
     {
@@ -145,7 +147,7 @@ elem.upElem = function (element, opt)
 
 elem.downElem = function (element, opt)
 {
-    var child, found, _84_30_, _85_16_, _86_40_, _87_16_, _87_42_, _87_53_, _88_40_
+    var child, found, _86_30_, _87_16_, _88_40_, _89_16_, _89_42_, _89_53_, _90_40_
 
     if (!(element != null))
     {
@@ -170,9 +172,9 @@ elem.downElem = function (element, opt)
         }
     }
     var list = _k_.list(element.children)
-    for (var _89_14_ = 0; _89_14_ < list.length; _89_14_++)
+    for (var _91_14_ = 0; _91_14_ < list.length; _91_14_++)
     {
-        child = list[_89_14_]
+        child = list[_91_14_]
         if (found = elem.downElem(child,opt))
         {
             return found
