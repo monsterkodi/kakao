@@ -2,15 +2,19 @@
 
 var _k_
 
+var immutable
+
 import kstr from "../../kxk/kstr.js"
 
-import immutable from "../../../lib/immutable.js"
+import lib_ko from "../../../lib/lib_ko.js"
+
+immutable = lib_ko.immutable
 
 class State
 {
     constructor (opt)
     {
-        var lines, y, _19_31_
+        var lines, y, _21_31_
 
         if ((opt != null) && immutable.isImmutable(opt))
         {
@@ -18,7 +22,7 @@ class State
         }
         else
         {
-            lines = ((_19_31_=(opt != null ? opt.lines : undefined)) != null ? _19_31_ : [])
+            lines = ((_21_31_=(opt != null ? opt.lines : undefined)) != null ? _21_31_ : [])
             y = lines.length === 0 && -1 || 0
             this.s = immutable({lines:lines,cursors:[[0,y]],selections:[],highlights:[],main:0})
         }

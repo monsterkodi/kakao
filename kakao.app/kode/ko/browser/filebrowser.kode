@@ -9,9 +9,11 @@
 use ./browser
 use ./select
 use ./shelf
+use ../../kxk/slash
 use ../../kxk/elem
 use ../../kxk/drag
 use ../../kxk/post
+use ../../kxk/ffs
 
 # use ../git/hub
 
@@ -376,14 +378,16 @@ function FileBrowser extends browser
 
         dir = item.file
         
-        opt.ignoreHidden = not prefs.get "browser▸showHidden▸#{dir}"
-        slash.list dir, opt, (items) =>
-            post.toMain 'dirLoaded' dir
+        # opt.ignoreHidden = not prefs.get "browser▸showHidden▸#{dir}"
+        ffs.list(dir).then (items) =>
+            # post.toMain 'dirLoaded' dir
             @loadDirItems dir, item, items, col, opt
             post.emit 'dir' dir
                 
     loadDirItems: (dir, item, items, col, opt) =>
-        
+
+        log 'loadDirItems' dir, item, items, col, opt
+                    
         @updateColumnScrolls()
                             
         if @skipOnDblClick and col > 0

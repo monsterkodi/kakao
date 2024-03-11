@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 export default {actions:{menu:'Line',moveLinesUp:{name:'Move Lines Up',combo:'alt+up'},moveLinesDown:{name:'Move Lines Down',combo:'alt+down'}},moveLinesUp:function ()
 {
@@ -17,11 +17,11 @@ export default {actions:{menu:'Line',moveLinesUp:{name:'Move Lines Up',combo:'al
     {
         return
     }
-    if (dir === 'up' && _.first(csr)[0] === 0)
+    if (dir === 'up' && _k_.first(csr)[0] === 0)
     {
         return
     }
-    if (dir === 'down' && _.last(csr)[1] === this.numLines() - 1)
+    if (dir === 'down' && _k_.last(csr)[1] === this.numLines() - 1)
     {
         return
     }

@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
 import kstr from "../../../kxk/kstr.js"
 
@@ -128,9 +128,9 @@ export default {deleteSelectionOrCursorLines:function ()
             {
                 sp = rangeStartPos(plr)
             }
-            else if (sil.length && _.last(sil)[1][1] === plr[1][1])
+            else if (sil.length && _k_.last(sil)[1][1] === plr[1][1])
             {
-                sp = rangeStartPos(_.last(sil))
+                sp = rangeStartPos(_k_.last(sil))
             }
             else
             {
@@ -146,9 +146,9 @@ export default {deleteSelectionOrCursorLines:function ()
             {
                 ep = rangeEndPos(nlr)
             }
-            else if (sil.length && _.first(sil)[1][0] === 0)
+            else if (sil.length && _k_.first(sil)[1][0] === 0)
             {
-                ep = rangeEndPos(_.first(sil))
+                ep = rangeEndPos(_k_.first(sil))
             }
             else
             {

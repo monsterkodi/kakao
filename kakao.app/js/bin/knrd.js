@@ -12,7 +12,8 @@ import slash from "../kxk/slash.js"
 
 import noon from "../kxk/noon.js"
 
-import { pug , stylus } from '../../lib/min.mjs'
+import { pug, stylus } from "../../lib/lib_kakao.js"
+
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})

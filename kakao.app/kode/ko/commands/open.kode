@@ -6,16 +6,13 @@
  0000000   000        00000000  000   000
 ###
 
-# { _, post, slash } = require 'kxk'
-  
 use ../tools/projects
 use ../commandline/command
 use ../editor/render
 use ../editor/syntax
 use ../../kxk/post
 use ../../kxk/slash
-
-# use fuzzy
+use ../../../lib/lib_ko ▪ fuzzy
 
 import File from '../tools/file.js'
                  
@@ -212,7 +209,7 @@ function Open extends command
                     items.push item
 
         items = @weightedItems items, opt
-        items = _.uniqBy items, (o) -> o.text
+        # items = _.uniqBy items, (o) -> o.text
         
         items.slice 0, opt.maxItems
     

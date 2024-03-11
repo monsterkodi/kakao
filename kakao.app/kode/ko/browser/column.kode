@@ -11,7 +11,7 @@ use ./crumb
 use ./scroller
 use ../tools/dirwatch
 use ../tools/file
-use ../../kxk/dom
+use ../../kxk/dom ▪ $ setStyle
 use ../../kxk/kpos
 use ../../kxk/elem
 use ../../kxk/drag
@@ -20,8 +20,7 @@ use ../../kxk/prefs
 use ../../kxk/slash
 use ../../kxk/popup
 use ../../kxk/keyinfo
-
-{ $, setStyle } = dom
+use ../../../lib/lib_ko ▪ fuzzy
 
 function Column
     
@@ -90,7 +89,7 @@ function Column
         @crumb.show()
         
         if @parent.type == 'dir'
-            DirWatch.watch @parent.file
+            dirwatch.watch @parent.file
             @crumb.setFile @parent.file
         else
             if File.isCode @parent.file
@@ -374,14 +373,14 @@ function Column
    
     activateRow: (row) -> @row(row)?.activate()
        
-    activeRow: -> _.find @rows, (r) -> r.isActive()
+    activeRow: -> @rows.find (r) -> r.isActive()
     activePath: -> @activeRow()?.path() ? @parent.file
-    selectedRow: -> _.find @rows, (r) -> r.isSelected()
+    selectedRow: -> @rows.find (r) -> r.isSelected()
     
     row: (row) -> # accepts element, index, string or row
         if      Number.isInteger(row) then return 0 <= row < @numRows() and @rows[row] or null
-        else if typeof(row) == 'string' then return _.find @rows, (r) -> r.item.name == row or r.item.file == row
-        else if row instanceof HTMLElement then return _.find @rows, (r) -> r.div.contains row
+        else if typeof(row) == 'string' then return @rows.find (r) -> r.item.name == row or r.item.file == row
+        else if row instanceof HTMLElement then return @rows.find (r) -> r.div.contains row
         else return row
             
     nextColumn: -> @browser.column @index+1

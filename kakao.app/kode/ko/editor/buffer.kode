@@ -9,6 +9,7 @@
 use ./state
 use ../../kxk/matchr
 use ../../kxk/events
+use ../../../lib/lib_ko ▪ fuzzy
 
 startOf = (r) -> r[0]
 endOf   = (r) -> r[0] + Math.max 1, r[1]-r[0]
@@ -195,8 +196,8 @@ function Buffer extends events
         csr = []
         if il.length
             for li in il
-                if csr.length and _.last(csr)[1] == li-1
-                    _.last(csr)[1] = li
+                if csr.length and last(csr)[1] == li-1
+                    last(csr)[1] = li
                 else
                     csr.push [li,li]
         csr

@@ -7,7 +7,7 @@
 ###
 
 use ../tools/linediff
-use ../git/hub
+# use ../git/hub
 
 use ../../kxk/elem
 use ../../kxk/post
@@ -193,15 +193,15 @@ class Diffbar
 
             @changes = file:@editor.currentFile
 
-            hub.diff @editor.currentFile, (changes) =>
+            # hub.diff @editor.currentFile, (changes) =>
 
-                if changes.file != @editor.currentFile then return {}
+                # if changes.file != @editor.currentFile then return {}
 
-                @changes = changes
+                # @changes = changes
 
-                @updateMetas()
-                @updateScroll()
-                @editor.emit 'diffbarUpdated' @changes # only used in tests
+                # @updateMetas()
+                # @updateScroll()
+                # @editor.emit 'diffbarUpdated' @changes # only used in tests
         else
             @changes = null
             @updateMetas()

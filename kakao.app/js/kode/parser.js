@@ -277,7 +277,7 @@ Parser = (function ()
 
     Parser.prototype["use"] = function (obj, tokens)
     {
-        var module, token, toUse
+        var item, items, module, token, toUse
 
         toUse = []
         token = tokens.shift()
@@ -290,13 +290,34 @@ Parser = (function ()
                 module += token.text
             }
             toUse.push({type:'var',text:module})
-            if (tokens.length && tokens[0].type === 'nl')
+            if (tokens.length && (tokens[0].type === 'nl' || tokens[0].text === '▪'))
             {
                 break
             }
             token = tokens.shift()
         }
-        return {use:toUse}
+        items = []
+        if (tokens.length && tokens[0].text === '▪')
+        {
+            tokens.shift()
+            token = tokens.shift()
+            while (token)
+            {
+                item = token.text
+                while (tokens.length && tokens[0].type !== 'nl' && tokens[0].col === token.col + token.text.length)
+                {
+                    token = tokens.shift()
+                    item += token.text
+                }
+                items.push(item)
+                if (tokens.length && tokens[0].type === 'nl')
+                {
+                    break
+                }
+                token = tokens.shift()
+            }
+        }
+        return {use:{toUse:toUse,items:items}}
     }
 
     Parser.prototype["export"] = function (obj, tokens)
@@ -616,8 +637,8 @@ Parser = (function ()
         close = this.shiftClose('curly','}',tokens)
         if (!close)
         {
-            _k_.dbg("kode/kode/parser.kode", 788, 12, "exps", exps)
-            _k_.dbg("kode/kode/parser.kode", 789, 12, "tokens", tokens)
+            _k_.dbg("kode/kode/parser.kode", 811, 12, "exps", exps)
+            _k_.dbg("kode/kode/parser.kode", 812, 12, "tokens", tokens)
         }
         this.pop('{')
         return {object:{open:open,keyvals:exps,close:close}}

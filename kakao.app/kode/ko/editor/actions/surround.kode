@@ -96,12 +96,12 @@ export
         newCursors = @do.cursors()
         
         if @surroundStack.length
-            if _.last(@surroundStack)[1] == ch
+            if last(@surroundStack)[1] == ch
                 for c in newCursors
                     if @do.line(c[1])[c[0]] != ch
                         @surroundStack = []
                         break
-                if @surroundStack.length and _.last(@surroundStack)[1] == ch
+                if @surroundStack.length and last(@surroundStack)[1] == ch
                     @do.start()
                     @selectNone()
                     @deleteForward()
@@ -224,7 +224,7 @@ export
             c[0] -= so.length
         
         if @surroundStack.length # pop or clean surround stack
-            if uniquePairs.length == 1 and _.isEqual uniquePairs[0], _.last @surroundStack 
+            if uniquePairs.length == 1 and _.isEqual uniquePairs[0], last @surroundStack 
                 @surroundStack.pop()
             else
                 @surroundStack = []

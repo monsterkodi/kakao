@@ -83,7 +83,6 @@ Window = (function ()
         var s
 
         this.id = win.id
-        console.log('onWindowCreated',win.id)
         window.stash = new stash(`win/${this.id}`,{separator:'|'})
         this.filehandler = window.filehandler = new filehandler
         this.filewatcher = window.filewatcher = new watcher
@@ -145,7 +144,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _135_25_
+        var action, _126_25_
 
         console.log('onMenuAction',name)
         if (action = editor.actionWithName(name))
@@ -366,7 +365,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _298_14_
+    var _279_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -377,7 +376,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _304_22_
+    var _285_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -422,7 +421,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _349_32_
+    var _330_32_
 
     if (!(_k_.isNum(s)))
     {

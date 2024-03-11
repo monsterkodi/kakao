@@ -89,8 +89,8 @@ export
                 sil = rangesAtLineIndexInRanges sp[1]-1, sel
                 if sil.length == 1 and isSameRange sil[0], plr
                     sp = rangeStartPos plr
-                else if sil.length and _.last(sil)[1][1] == plr[1][1]
-                    sp = rangeStartPos _.last sil
+                else if sil.length and last(sil)[1][1] == plr[1][1]
+                    sp = rangeStartPos last sil
                 else
                     break
             ep = rangeEndPos r
@@ -99,8 +99,8 @@ export
                 sil = rangesAtLineIndexInRanges ep[1]+1, sel
                 if sil.length == 1 and isSameRange sil[0], nlr
                     ep = rangeEndPos nlr
-                else if sil.length and _.first(sil)[1][0] == 0
-                    ep = rangeEndPos _.first sil
+                else if sil.length and first(sil)[1][0] == 0
+                    ep = rangeEndPos first sil
                 else
                     break                    
             [sp, ep]

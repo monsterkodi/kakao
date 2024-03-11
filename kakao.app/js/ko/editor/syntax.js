@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
 var __dirname
 
@@ -201,7 +201,7 @@ class Syntax
 
         if (line.startsWith("#!"))
         {
-            lastWord = _.last(line.split(/[\s\/]/))
+            lastWord = _k_.last(line.split(/[\s\/]/))
             switch (lastWord)
             {
                 case 'python':

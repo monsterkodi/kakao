@@ -45,7 +45,7 @@ function Search extends command
                     return
                 
         command = super command
-        file = window.editor.currentFile ? _.first _.keys(post.get('indexer' 'files'))
+        file = window.editor.currentFile ? first _.keys(post.get('indexer' 'files'))
         
         return if not file?
         

@@ -204,7 +204,7 @@ export
                 invertedRanges.push @rangeForLineAtIndex li
         if invertedRanges.length
             @do.start()
-            @do.setCursors [rangeStartPos _.first invertedRanges]
+            @do.setCursors [rangeStartPos first invertedRanges]
             @do.select invertedRanges
             @do.end()     
 
@@ -243,7 +243,7 @@ export
             if s.length
                 @do.select s
                 if @do.numSelections()
-                    @do.setCursors [rangeEndPos(_.last s)], Main: 'closest'
+                    @do.setCursors [rangeEndPos(last s)], Main: 'closest'
             @do.end()
             
     selectSurround: ->
@@ -281,6 +281,6 @@ export
         return if not @numHighlights()
         hs = @highlights()
         r = rangeBeforePosInRanges @cursorPos(), hs
-        r ?= _.last hs
+        r ?= last hs
         @selectSingleRange r if r?
 

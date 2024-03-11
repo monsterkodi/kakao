@@ -128,7 +128,7 @@ class Autocomplete extends events
     onEdit: (info) =>
         
         @close()
-        @word = _.last info.before.split @splitRegExp
+        @word = last info.before.split @splitRegExp
         switch info.action
             
             when 'delete' # ever happening?
@@ -367,7 +367,7 @@ class Autocomplete extends events
             
             words = l.split @splitRegExp
             words = words.filter (w) => 
-                return false if not Indexer.testWord w
+                # return false if not Indexer.testWord w
                 return false if w == cursorWord
                 return false if @word == w.slice 0, w.length-1
                 return false if @headerRegExp.test w

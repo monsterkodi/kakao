@@ -47,9 +47,9 @@ export
         hls = @rangesForText text, opt
         if hls.length and opt?.select
             switch opt.select
-                'after'  ➜ @selectSingleRange rangeAfterPosInRanges(@cursorPos(), hls) ? _.first hls
-                'before' ➜ @selectSingleRange rangeBeforePosInRanges(@cursorPos(), hls) ? _.first hls
-                'first'  ➜ @selectSingleRange _.first hls
+                'after'  ➜ @selectSingleRange rangeAfterPosInRanges(@cursorPos(), hls) ? first hls
+                'before' ➜ @selectSingleRange rangeBeforePosInRanges(@cursorPos(), hls) ? first hls
+                'first'  ➜ @selectSingleRange first hls
         @setHighlights hls
         @renderHighlights()
         @emit 'highlight'

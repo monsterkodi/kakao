@@ -1,6 +1,6 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var Buffer, endOf, startOf
 
@@ -9,6 +9,8 @@ import state from "./state.js"
 import matchr from "../../kxk/matchr.js"
 
 import events from "../../kxk/events.js"
+
+import { fuzzy } from "../../../lib/lib_ko.js"
 
 
 startOf = function (r)
@@ -200,14 +202,14 @@ Buffer = (function ()
     {
         var r
 
-        return (function () { var r_85_66_ = []; var list = _k_.list(this.rangesForWordsAtCursors(cs,opt)); for (var _85_66_ = 0; _85_66_ < list.length; _85_66_++)  { r = list[_85_66_];r_85_66_.push(this.textInRange(r))  } return r_85_66_ }).bind(this)()
+        return (function () { var r_86_66_ = []; var list = _k_.list(this.rangesForWordsAtCursors(cs,opt)); for (var _86_66_ = 0; _86_66_ < list.length; _86_66_++)  { r = list[_86_66_];r_86_66_.push(this.textInRange(r))  } return r_86_66_ }).bind(this)()
     }
 
     Buffer.prototype["rangesForWordsAtCursors"] = function (cs = this.cursors(), opt)
     {
         var c, rngs
 
-        rngs = (function () { var r_88_49_ = []; var list = _k_.list(cs); for (var _88_49_ = 0; _88_49_ < list.length; _88_49_++)  { c = list[_88_49_];r_88_49_.push(this.rangeForWordAtPos(c,opt))  } return r_88_49_ }).bind(this)()
+        rngs = (function () { var r_89_49_ = []; var list = _k_.list(cs); for (var _89_49_ = 0; _89_49_ < list.length; _89_49_++)  { c = list[_89_49_];r_89_49_.push(this.rangeForWordAtPos(c,opt))  } return r_89_49_ }).bind(this)()
         return rngs = cleanRanges(rngs)
     }
 
@@ -293,10 +295,10 @@ Buffer = (function ()
 
     Buffer.prototype["wordRangesInLineAtIndex"] = function (li, opt = {})
     {
-        var mtch, r, _139_19_, _140_89_
+        var mtch, r, _140_19_, _141_89_
 
-        opt.regExp = ((_139_19_=opt.regExp) != null ? _139_19_ : this.wordRegExp)
-        if ((opt != null ? (_140_89_=opt.include) != null ? _140_89_.length : undefined : undefined))
+        opt.regExp = ((_140_19_=opt.regExp) != null ? _140_19_ : this.wordRegExp)
+        if ((opt != null ? (_141_89_=opt.include) != null ? _141_89_.length : undefined : undefined))
         {
             opt.regExp = new RegExp(`(\\s+|[\\w${opt.include}]+|[^\\s])`,'g')
         }
@@ -327,7 +329,7 @@ Buffer = (function ()
         hl = this.highlightsInLineIndexRange(lineIndexRange)
         if (hl)
         {
-            return (function () { var r_163_61_ = []; var list = _k_.list(hl); for (var _163_61_ = 0; _163_61_ < list.length; _163_61_++)  { s = list[_163_61_];r_163_61_.push([s[0] - relIndex,[s[1][0],s[1][1]],s[2]])  } return r_163_61_ }).bind(this)()
+            return (function () { var r_164_61_ = []; var list = _k_.list(hl); for (var _164_61_ = 0; _164_61_ < list.length; _164_61_++)  { s = list[_164_61_];r_164_61_.push([s[0] - relIndex,[s[1][0],s[1][1]],s[2]])  } return r_164_61_ }).bind(this)()
         }
     }
 
@@ -346,7 +348,7 @@ Buffer = (function ()
         sl = this.selectionsInLineIndexRange(lineIndexRange)
         if (sl)
         {
-            return (function () { var r_179_55_ = []; var list = _k_.list(sl); for (var _179_55_ = 0; _179_55_ < list.length; _179_55_++)  { s = list[_179_55_];r_179_55_.push([s[0] - relIndex,[s[1][0],s[1][1]]])  } return r_179_55_ }).bind(this)()
+            return (function () { var r_180_55_ = []; var list = _k_.list(sl); for (var _180_55_ = 0; _180_55_ < list.length; _180_55_++)  { s = list[_180_55_];r_180_55_.push([s[0] - relIndex,[s[1][0],s[1][1]]])  } return r_180_55_ }).bind(this)()
         }
     }
 
@@ -362,14 +364,14 @@ Buffer = (function ()
     {
         var s
 
-        return _.uniq((function () { var r_185_47_ = []; var list = _k_.list(this.selections()); for (var _185_47_ = 0; _185_47_ < list.length; _185_47_++)  { s = list[_185_47_];r_185_47_.push(s[0])  } return r_185_47_ }).bind(this)())
+        return _.uniq((function () { var r_186_47_ = []; var list = _k_.list(this.selections()); for (var _186_47_ = 0; _186_47_ < list.length; _186_47_++)  { s = list[_186_47_];r_186_47_.push(s[0])  } return r_186_47_ }).bind(this)())
     }
 
     Buffer.prototype["cursorLineIndices"] = function ()
     {
         var c
 
-        return _.uniq((function () { var r_186_47_ = []; var list = _k_.list(this.cursors()); for (var _186_47_ = 0; _186_47_ < list.length; _186_47_++)  { c = list[_186_47_];r_186_47_.push(c[1])  } return r_186_47_ }).bind(this)())
+        return _.uniq((function () { var r_187_47_ = []; var list = _k_.list(this.cursors()); for (var _187_47_ = 0; _187_47_ < list.length; _187_47_++)  { c = list[_187_47_];r_187_47_.push(c[1])  } return r_187_47_ }).bind(this)())
     }
 
     Buffer.prototype["selectedAndCursorLineIndices"] = function ()
@@ -386,12 +388,12 @@ Buffer = (function ()
         if (il.length)
         {
             var list = _k_.list(il)
-            for (var _197_19_ = 0; _197_19_ < list.length; _197_19_++)
+            for (var _198_19_ = 0; _198_19_ < list.length; _198_19_++)
             {
-                li = list[_197_19_]
-                if (csr.length && _.last(csr)[1] === li - 1)
+                li = list[_198_19_]
+                if (csr.length && _k_.last(csr)[1] === li - 1)
                 {
-                    _.last(csr)[1] = li
+                    _k_.last(csr)[1] = li
                 }
                 else
                 {
@@ -425,7 +427,7 @@ Buffer = (function ()
 
     Buffer.prototype["textInRange"] = function (rg)
     {
-        var _220_58_
+        var _221_58_
 
         return (!_k_.empty((rg)) ? (typeof this.line(rg[0]).slice === "function" ? this.line(rg[0]).slice(rg[1][0],rg[1][1]) : undefined) : '')
     }
@@ -434,7 +436,7 @@ Buffer = (function ()
     {
         var r
 
-        return (function () { var r_221_51_ = []; var list = _k_.list(rgs); for (var _221_51_ = 0; _221_51_ < list.length; _221_51_++)  { r = list[_221_51_];r_221_51_.push(this.textInRange(r))  } return r_221_51_ }).bind(this)()
+        return (function () { var r_222_51_ = []; var list = _k_.list(rgs); for (var _222_51_ = 0; _222_51_ < list.length; _222_51_++)  { r = list[_222_51_];r_222_51_.push(this.textInRange(r))  } return r_222_51_ }).bind(this)()
     }
 
     Buffer.prototype["textInRanges"] = function (rgs)
@@ -530,7 +532,7 @@ Buffer = (function ()
 
     Buffer.prototype["isRangeInString"] = function (r)
     {
-        var _285_61_
+        var _286_61_
 
         return (this.rangeOfStringSurroundingRange(r) != null)
     }
@@ -592,7 +594,7 @@ Buffer = (function ()
     {
         var c
 
-        return (function () { var r_327_78_ = []; var list = _k_.list(cs); for (var _327_78_ = 0; _327_78_ < list.length; _327_78_++)  { c = list[_327_78_];r_327_78_.push(this.rangeForLineAtIndex(c[1]))  } return r_327_78_ }).bind(this)()
+        return (function () { var r_328_78_ = []; var list = _k_.list(cs); for (var _328_78_ = 0; _328_78_ < list.length; _328_78_++)  { c = list[_328_78_];r_328_78_.push(this.rangeForLineAtIndex(c[1]))  } return r_328_78_ }).bind(this)()
     }
 
     Buffer.prototype["rangesForAllLines"] = function ()
@@ -605,7 +607,7 @@ Buffer = (function ()
         var i, r
 
         r = []
-        var _332_14_ = sortPositions([a,b]); a = _332_14_[0]; b = _332_14_[1]
+        var _333_14_ = sortPositions([a,b]); a = _333_14_[0]; b = _333_14_[1]
 
         if (a[1] === b[1])
         {
@@ -616,7 +618,7 @@ Buffer = (function ()
             r.push([a[1],[a[0],this.line(a[1]).length]])
             if (b[1] - a[1] > 1)
             {
-                for (var _338_26_ = i = a[1] + 1, _338_35_ = b[1]; (_338_26_ <= _338_35_ ? i < b[1] : i > b[1]); (_338_26_ <= _338_35_ ? ++i : --i))
+                for (var _339_26_ = i = a[1] + 1, _339_35_ = b[1]; (_339_26_ <= _339_35_ ? i < b[1] : i > b[1]); (_339_26_ <= _339_35_ ? ++i : --i))
                 {
                     r.push([i,[0,this.line(i).length]])
                 }
@@ -632,7 +634,7 @@ Buffer = (function ()
 
         r = []
         ir = [top,bot]
-        for (var _346_19_ = li = startOf(ir), _346_33_ = endOf(ir); (_346_19_ <= _346_33_ ? li < endOf(ir) : li > endOf(ir)); (_346_19_ <= _346_33_ ? ++li : --li))
+        for (var _347_19_ = li = startOf(ir), _347_33_ = endOf(ir); (_347_19_ <= _347_33_ ? li < endOf(ir) : li > endOf(ir)); (_347_19_ <= _347_33_ ? ++li : --li))
         {
             r.push(this.rangeForLineAtIndex(li))
         }
@@ -641,14 +643,14 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForText"] = function (t, opt)
     {
-        var li, r, _355_43_
+        var li, r, _356_43_
 
         t = t.split('\n')[0]
         r = []
-        for (var _353_19_ = li = 0, _353_23_ = this.numLines(); (_353_19_ <= _353_23_ ? li < this.numLines() : li > this.numLines()); (_353_19_ <= _353_23_ ? ++li : --li))
+        for (var _354_19_ = li = 0, _354_23_ = this.numLines(); (_354_19_ <= _354_23_ ? li < this.numLines() : li > this.numLines()); (_354_19_ <= _354_23_ ? ++li : --li))
         {
             r = r.concat(this.rangesForTextInLineAtIndex(t,li,opt))
-            if (r.length >= (((_355_43_=(opt != null ? opt.max : undefined)) != null ? _355_43_ : 999)))
+            if (r.length >= (((_356_43_=(opt != null ? opt.max : undefined)) != null ? _356_43_ : 999)))
             {
                 break
             }
@@ -658,10 +660,10 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForTextInLineAtIndex"] = function (t, i, opt)
     {
-        var mtch, r, re, rng, rngs, type, _360_25_
+        var mtch, r, re, rng, rngs, type, _361_25_
 
         r = []
-        type = ((_360_25_=(opt != null ? opt.type : undefined)) != null ? _360_25_ : 'str')
+        type = ((_361_25_=(opt != null ? opt.type : undefined)) != null ? _361_25_ : 'str')
         switch (type)
         {
             case 'fuzzy':
@@ -689,9 +691,9 @@ Buffer = (function ()
             }
                 rngs = matchr.ranges(t,this.line(i),_k_.in(type,['str','reg','glob']) && 'i' || '')
                 var list = _k_.list(rngs)
-            for (var _373_24_ = 0; _373_24_ < list.length; _373_24_++)
+            for (var _374_24_ = 0; _374_24_ < list.length; _374_24_++)
             {
-                rng = list[_373_24_]
+                rng = list[_374_24_]
                 r.push([i,[rng.start,rng.start + rng.match.length]])
             }
         }
@@ -707,7 +709,7 @@ Buffer = (function ()
         r = []
         ss = -1
         cc = null
-        for (var _382_18_ = i = 0, _382_22_ = t.length; (_382_18_ <= _382_22_ ? i < t.length : i > t.length); (_382_18_ <= _382_22_ ? ++i : --i))
+        for (var _383_18_ = i = 0, _383_22_ = t.length; (_383_18_ <= _383_22_ ? i < t.length : i > t.length); (_383_18_ <= _383_22_ ? ++i : --i))
         {
             c = t[i]
             if (!cc && _k_.in(c,"'\""))

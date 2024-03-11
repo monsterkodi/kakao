@@ -363,7 +363,7 @@ class Meta
     
     onLineDeleted: (li) =>
 
-        while meta = _.last @metasAtLineIndex li
+        while meta = last @metasAtLineIndex li
             @delMeta meta
 
         for meta in rangesFromTopToBotInRanges li, @editor.numLines(), @metas

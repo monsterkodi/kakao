@@ -84,9 +84,9 @@ lineDiff.isBoring = function (oldLine, newLine)
     inserts = ''
     deletes = ''
     var list = _k_.list(changes)
-    for (var _83_10_ = 0; _83_10_ < list.length; _83_10_++)
+    for (var _81_10_ = 0; _81_10_ < list.length; _81_10_++)
     {
-        c = list[_83_10_]
+        c = list[_81_10_]
         switch (c.change)
         {
             case 'change':

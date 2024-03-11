@@ -188,9 +188,9 @@ str.time = function (t)
             f = 1
             o = {ms:1000,second:60,minute:60,hour:24,day:30,month:12,year:0}
             var list = _k_.list(Object.keys(o))
-            for (var _155_18_ = 0; _155_18_ < list.length; _155_18_++)
+            for (var _154_18_ = 0; _154_18_ < list.length; _154_18_++)
             {
-                k = list[_155_18_]
+                k = list[_154_18_]
                 num = parseInt(t / f)
                 f *= o[k]
                 if (k === 'year' || t < f)
@@ -207,9 +207,9 @@ str.time = function (t)
             thsnd = BigInt(1000)
             f = thsnd
             var list1 = ['ns','μs','ms','second']
-            for (var _164_18_ = 0; _164_18_ < list1.length; _164_18_++)
+            for (var _163_18_ = 0; _163_18_ < list1.length; _163_18_++)
             {
-                k = list1[_164_18_]
+                k = list1[_163_18_]
                 if (k === 'seconds' || t < f)
                 {
                     num = parseInt(thsnd * t / f)
@@ -239,7 +239,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _192_13_
+    var _191_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

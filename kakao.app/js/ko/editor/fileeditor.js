@@ -532,7 +532,7 @@ FileEditor = (function ()
 
     FileEditor.prototype["showContextMenu"] = function (absPos)
     {
-        var f, fileMenu, fileSpan, getMenu, opt, recent, RecentMenu, _466_29_
+        var f, fileMenu, fileSpan, getMenu, opt, recent, RecentMenu, _469_29_
 
         if (!(absPos != null))
         {
@@ -547,7 +547,7 @@ FileEditor = (function ()
         }},{text:''},{text:'Maximize',combo:'command+shift+y',accel:'ctrl+shift+y',cb:function ()
         {
             return window.split.maximizeEditor()
-        }},{text:''}]}
+        }},{text:''},{text:'DevTools',combo:'alt+cmdctrl+i'}]}
         RecentMenu = []
         fileSpan = function (f)
         {
@@ -563,9 +563,9 @@ FileEditor = (function ()
         recent = (window.state != null ? window.state.get('recentFiles',[]) : undefined)
         recent = (recent != null ? recent : [])
         var list = _k_.list(recent)
-        for (var _468_14_ = 0; _468_14_ < list.length; _468_14_++)
+        for (var _471_14_ = 0; _471_14_ < list.length; _471_14_++)
         {
-            f = list[_468_14_]
+            f = list[_471_14_]
             if (fs.existsSync(f))
             {
                 RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
@@ -579,9 +579,9 @@ FileEditor = (function ()
             var item
 
             var list1 = _k_.list(template)
-            for (var _476_21_ = 0; _476_21_ < list1.length; _476_21_++)
+            for (var _479_21_ = 0; _479_21_ < list1.length; _479_21_++)
             {
-                item = list1[_476_21_]
+                item = list1[_479_21_]
                 if (item.text === name)
                 {
                     return item
