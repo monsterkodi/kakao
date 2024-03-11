@@ -43,7 +43,7 @@ indexKoFiles = (kofiles, info) ->
             walkdir.sync absDir, opt, (path, stat) ->
                   
                 if stat.isDirectory()
-                    if slash.basename(path) in ['node_modules' '.git']
+                    if slash.file(path) in ['node_modules' '.git']
                         @ignore path
                         return
                 
@@ -96,7 +96,7 @@ indexProject = (file) ->
             gitignore = slash.join path, '.gitignore'
             if slash.isFile gitignore
                 addIgnores gitignore
-            # log r4(path), slash.basename(path)
+            # log r4(path), slash.file(path)
             if slash.basename(path) in ['node_modules' '.git']
                 @ignore path
                 return

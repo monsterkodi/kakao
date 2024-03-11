@@ -11,7 +11,7 @@
 use ../tools/walker
 use ../editor/syntax
 use ../commandline/command
-use stream
+# use stream
 
 function Search extends command
 
@@ -86,8 +86,9 @@ function Search extends command
         
     searchInFile: (opt, file) =>
 
-        stream = fs.createReadStream file, encoding:'utf8'
-        stream.pipe new FileSearcher @, opt, file
+        log 'searchInFile not implemented!'
+        # stream = fs.createReadStream file, encoding:'utf8'
+        # stream.pipe new FileSearcher @, opt, file
 
     # 00     00  00000000  000000000   0000000    0000000  000      000   0000000  000   000  
     # 000   000  000          000     000   000  000       000      000  000       000  000   
@@ -119,9 +120,9 @@ function Search extends command
 #      000  000       000   000  000   000  000       000   000  000       000   000
 # 0000000   00000000  000   000  000   000   0000000  000   000  00000000  000   000
 
-WritableStream = stream.Writable
+# WritableStream = stream.Writable
 
-function FileSearcher extends WritableStream
+function FileSearcher #extends WritableStream
     
     @: (@command, @opt, @file) ->
         

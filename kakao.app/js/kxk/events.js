@@ -29,6 +29,11 @@ events = (function ()
         return this.dispatcher.dispatchEvent(event)
     }
 
+    events.prototype["removeListener"] = function (eventName, listener)
+    {
+        return this.dispatcher.removeEventListener(eventName,listener)
+    }
+
     return events
 })()
 

@@ -1,8 +1,8 @@
 // monsterkodi/kode 0.256.0
 
-var _k_ = {isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
-var Window
+var addToShelf, changeFontSize, changeZoom, reloadWin, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
 
 import kakao from "../../kakao.js"
 
@@ -48,9 +48,7 @@ import navigate from "../main/navigate.js"
 Window = (function ()
 {
     Window.prototype["onWindowAnimationTick"] = function (win, tickInfo)
-    {
-        console.log('onWindowAnimationTick',win.id)
-    }
+    {}
 
     Window.prototype["onWindowResize"] = function (win, event)
     {
@@ -68,14 +66,10 @@ Window = (function ()
     }
 
     Window.prototype["onWindowKeyDown"] = function (win, keyInfo)
-    {
-        console.log('onWindowKeyDown',win.id)
-    }
+    {}
 
     Window.prototype["onWindowKeyUp"] = function (win, keyInfo)
-    {
-        console.log('onWindowKeyUp',win.id)
-    }
+    {}
 
     function Window ()
     {
@@ -84,11 +78,14 @@ Window = (function ()
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
         this.menuIcon = kakao.bundle.img('menu_ko.png')
         this.menuNoon = kakao.bundle.res('menu_ko.noon')
+        post.on('menuAction',this.onMenuAction)
         window.aboutImage = kakao.bundle.img('about_ko.png')
     }
 
     Window.prototype["onWindowCreated"] = function (win)
     {
+        var s
+
         this.id = win.id
         console.log('onWindowCreated',win.id)
         window.stash = new stash(`win/${this.id}`,{separator:'|'})
@@ -104,8 +101,10 @@ Window = (function ()
         this.info = window.info = new info(this.editor)
         this.fps = window.fps = new fps()
         this.cwd = window.cwd = new cwd()
+        console.log('split',this.split)
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
+        scheme.set(prefs.get('scheme','dark'))
         this.terminal.on('fileSearchResultChange',function (file, lineChange)
         {
             return post.toWins('fileLineChanges',file,[lineChange])
@@ -129,7 +128,18 @@ Window = (function ()
                 }
             }
         })
+        s = window.stash.get('fontSize',prefs.get('editorFontSize',19))
+        if (s)
+        {
+            this.editor.setFontSize(s)
+        }
+        if (window.stash.get('centerText'))
+        {
+            this.editor.centerText(true,0)
+        }
         post.emit('restore')
+        window.split.resized()
+        window.info.reload()
         return this.editor.focus()
     }
 
@@ -140,11 +150,12 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _135_25_
+        var action, _146_25_
 
-        return
-        if (action = Editor.actionWithName(name))
+        console.log('onMenuAction',name)
+        if (action = editor.actionWithName(name))
         {
+            console.log('editor.actionWithName',name)
             if ((action.key != null) && _k_.isFunc(window.focusEditor[action.key]))
             {
                 window.focusEditor[action.key](opts.actarg)
@@ -179,7 +190,7 @@ Window = (function ()
                 return post.emit('newEmptyTab')
 
             case 'New Window':
-                return post.toMain('newWindowWithFile',editor.currentFile)
+                return post.toMain('newWindowWithFile',this.editor.currentFile)
 
             case 'Cycle Windows':
                 return post.toMain('activateNextWindow',window.winID)
@@ -206,16 +217,16 @@ Window = (function ()
                 return resetFontSize()
 
             case 'Open Window List':
-                return titlebar.showList()
+                return this.titlebar.showList()
 
             case 'Navigate Backward':
-                return navigate.backward()
+                return this.navigate.backward()
 
             case 'Navigate Forward':
-                return navigate.forward()
+                return this.navigate.forward()
 
             case 'Maximize Editor':
-                return split.maximizeEditor()
+                return this.split.maximizeEditor()
 
             case 'Add to Shelf':
                 return addToShelf()
@@ -278,7 +289,7 @@ Window = (function ()
                 break
         }
 
-        return Window.__super__.onMenuAction.call(this,name,opts)
+        console.log('onMenuAction unhandled',name)
     }
 
     return Window
@@ -286,6 +297,219 @@ Window = (function ()
 
 window.state = new store('state',{separator:'|'})
 window.prefs = prefs
+post.on('singleCursorAtPos',function (pos, opt)
+{
+    window.editor.singleCursorAtPos(pos,opt)
+    return window.editor.scroll.cursorToTop()
+})
+post.on('focusEditor',function ()
+{
+    return window.split.focus('editor')
+})
+post.on('cloneFile',function ()
+{
+    return post.toMain('newWindowWithFile',window.editor.currentFile)
+})
+post.on('closeWindow',function ()
+{
+    return post.emit('menuAction','Close')
+})
+post.on('saveStash',function ()
+{
+    return saveStash()
+})
+post.on('clearStash',function ()
+{
+    return clearStash()
+})
+post.on('editorFocus',function (editor)
+{
+    window.setLastFocus(window.editor.name)
+    window.focusEditor = window.editor
+    if (window.editor.name !== 'commandline-editor')
+    {
+        return window.textEditor = window.editor
+    }
+})
+post.on('mainlog',function ()
+{})
+post.on('ping',function (wID, argA, argB)
+{
+    return post.toWin(wID,'pong',window.winID,argA,argB)
+})
+post.on('postEditorState',function ()
+{
+    return post.toAll('editorState',window.winID,{lines:window.editor.lines(),cursors:window.editor.cursors(),main:window.editor.mainCursor(),selections:window.editor.selections(),highlights:window.editor.highlights()})
+})
+
+window.editorWithName = function (n)
+{
+    switch (n)
+    {
+        case 'command':
+        case 'commandline':
+            return window.commandline
+
+        case 'terminal':
+            return window.terminal
+
+        case 'editor':
+            return window.editor
+
+        default:
+            return window.editor
+    }
+
+}
+
+reloadWin = function ()
+{
+    saveStash()
+    clearListeners()
+    return post.toMain('reloadWin',{winID:window.winID,file:window.editor.currentFile})
+}
+
+window.onresize = function ()
+{
+    var _309_14_
+
+    window.split.resized()
+    ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
+    if (window.stash.get('centerText',false))
+    {
+        return window.editor.centerText(true,200)
+    }
+}
+post.on('split',function (s)
+{
+    var _315_22_
+
+    ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
+    window.terminal.resized()
+    window.commandline.resized()
+    return window.editor.resized()
+})
+
+toggleCenterText = function ()
+{
+    var restoreInvisibles
+
+    if (window.state.get(`invisibles|${window.editor.currentFile}`,false))
+    {
+        window.editor.toggleInvisibles()
+        restoreInvisibles = true
+    }
+    if (!window.stash.get('centerText',false))
+    {
+        window.stash.set('centerText',true)
+        window.editor.centerText(true)
+    }
+    else
+    {
+        window.stash.set('centerText',false)
+        window.editor.centerText(false)
+    }
+    if (restoreInvisibles)
+    {
+        return window.editor.toggleInvisibles()
+    }
+}
+
+toggleTabPinned = function ()
+{
+    var t
+
+    if (t = window.tabs.activeTab())
+    {
+        return t.togglePinned()
+    }
+}
+
+setFontSize = function (s)
+{
+    var _360_32_
+
+    if (!(_k_.isNum(s)))
+    {
+        s = prefs.get('editorFontSize',19)
+    }
+    s = _k_.clamp(8,100,s)
+    window.stash.set("fontSize",s)
+    window.editor.setFontSize(s)
+    if ((window.editor.currentFile != null))
+    {
+        return post.emit('loadFile',window.editor.currentFile,{reload:true})
+    }
+}
+
+changeFontSize = function (d)
+{
+    var f
+
+    if (window.editor.size.fontSize >= 20)
+    {
+        f = 2
+    }
+    else if (window.editor.size.fontSize >= 30)
+    {
+        f = 4
+    }
+    else if (window.editor.size.fontSize >= 50)
+    {
+        f = 10
+    }
+    else
+    {
+        f = 1
+    }
+    return setFontSize(window.editor.size.fontSize + f * d)
+}
+
+resetFontSize = function ()
+{
+    var defaultFontSize
+
+    defaultFontSize = prefs.get('editorFontSize',19)
+    window.stash.set('fontSize',defaultFontSize)
+    return setFontSize(defaultFontSize)
+}
+
+addToShelf = function ()
+{
+    var fb, path
+
+    if (window.lastFocus === 'shelf')
+    {
+        return
+    }
+    fb = window.filebrowser
+    if (window.lastFocus.startsWith(fb.name))
+    {
+        path = fb.columnWithName(window.lastFocus).activePath()
+    }
+    else
+    {
+        path = window.editor.currentFile
+    }
+    return post.emit('addToShelf',path)
+}
+
+resetZoom = function ()
+{
+    webframe.setZoomFactor(1)
+    return window.editor.resized()
+}
+
+changeZoom = function (d)
+{
+    var z
+
+    z = webframe.getZoomFactor()
+    z *= 1 + d / 20
+    z = _k_.clamp(0.36,5.23,z)
+    webframe.setZoomFactor(z)
+    return window.editor.resized()
+}
 
 window.onblur = function (event)
 {
@@ -297,13 +521,13 @@ window.onfocus = function (event)
     post.emit('winFocus',true)
     if (document.activeElement.className === 'body')
     {
-        if (split.editorVisible())
+        if (window.split.editorVisible())
         {
-            return split.focus('editor')
+            return window.split.focus('editor')
         }
         else
         {
-            return split.focus('commandline-editor')
+            return window.split.focus('commandline-editor')
         }
     }
 }

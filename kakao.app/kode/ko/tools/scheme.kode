@@ -21,7 +21,7 @@ class Scheme
     @toggle: (schemes = ['dark' 'bright']) ->
         
         link =$ '.scheme-link'
-        currentScheme = slash.basename slash.dir link.href
+        currentScheme = slash.name slash.dir link.href
         
         nextSchemeIndex = ( schemes.indexOf(currentScheme) + 1) % schemes.length
         nextScheme = schemes[nextSchemeIndex]
@@ -33,9 +33,9 @@ class Scheme
         @colors = {}
         
         for link in document.querySelectorAll '.scheme-link'
-            css = slash.basename link.href
+            css = slash.file link.href
             newlink = elem 'link', 
-                href:  "css/#{scheme}/#{css}"
+                href:  "css/ko/#{scheme}/#{css}"
                 rel:   'stylesheet'
                 type:  'text/css'
                 class: 'scheme-link'

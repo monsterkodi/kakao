@@ -6,12 +6,15 @@
 000       000  0000000  00000000        00000000  0000000    000     000      0000000   000   000
 ###
 
-# kxk = require 'kxk'
-# { fs, kerror, kpos, popup, post, setStyle, slash, srcmap, stopEvent } = kxk
-
+use ../../kxk/dom
+use ../../kxk/kpos
 use ../../kxk/post
+use ../../kxk/popup
+use ../../kxk/slash
 use ./texteditor
 use ./syntax
+
+{ stopEvent, setStyle } = dom
 
 function FileEditor extends texteditor
 
@@ -450,7 +453,7 @@ function FileEditor extends texteditor
             text:   ''
         ]
 
-        opt.items = opt.items.concat window.titlebar.menuTemplate()
+        # opt.items = opt.items.concat window.titlebar.menuTemplate()
 
         RecentMenu = []
         

@@ -182,16 +182,16 @@ class Tabs
         {
             return this.tabs[id]
         }
-        if (_.isElement(id))
+        if (elem.isElement(id))
         {
-            return _.find(this.tabs,function (t)
+            return this.tabs.find(function (t)
             {
                 return t.div.contains(id)
             })
         }
         if (_k_.isStr(id))
         {
-            return _.find(this.tabs,function (t)
+            return this.tabs.find(function (t)
             {
                 return t.file === id
             })
@@ -208,7 +208,7 @@ class Tabs
             tab.setActive()
             return tab
         }
-        tab = _.find(this.tabs,function (t)
+        tab = this.tabs.find(function (t)
         {
             return t.isActive()
         })
@@ -227,7 +227,7 @@ class Tabs
 
     tabAtX (x)
     {
-        return _.find(this.tabs,function (t)
+        return this.tabs.find(function (t)
         {
             var br
 
@@ -260,7 +260,7 @@ class Tabs
         {
             return
         }
-        _.pull(this.tabs,tab.close())
+        this.tabs.splice(this.tabs.indexOf(tab.close()),1)
         if (_k_.empty(this.tabs))
         {
             this.onNewEmptyTab()

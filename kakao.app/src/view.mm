@@ -10,6 +10,13 @@
 #import "bundle.h"
 #import "route.h"
 
+@interface WebInspector : NSObject  { WKWebView *_webView; }
+- (id)initWithWebView:(WKWebView *)webView;
+- (void)detach:     (id)sender;
+- (void)show:       (id)sender;
+- (void)showConsole:(id)sender;
+@end
+
 @implementation View
 
 -(id) init
@@ -56,12 +63,25 @@
     [super mouseDown:event];
 }
 
+-(void) toggleInspector
+{
+    if ([[self _inspector] isVisible])
+    {
+        [[self _inspector] hide];
+    }
+    else
+    {
+        [[self _inspector] showConsole];
+        [[self _inspector] show];
+    }
+}
+
 -(void) initScripting
 {
     WKUserContentController* ucc = [[self configuration] userContentController];
     
     [ucc addScriptMessageHandler:self name:@"kakao"];
-    [ucc addScriptMessageHandlerWithReply:self contentWorld:[WKContentWorld pageWorld] name:@"kakao_request"];
+    [ucc addScriptMessageHandlerWithReply:self contentWorld:[WKContentWorld pageWorld] name:@"kakao_request"];    
 }
 
 - (void) userContentController:(WKUserContentController *)ucc didReceiveScriptMessage:(WKScriptMessage*)msg

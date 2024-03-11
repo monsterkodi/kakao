@@ -25,7 +25,7 @@ class Scheme
         var currentScheme, link, nextScheme, nextSchemeIndex
 
         link = $('.scheme-link')
-        currentScheme = slash.basename(slash.dir(link.href))
+        currentScheme = slash.name(slash.dir(link.href))
         nextSchemeIndex = (schemes.indexOf(currentScheme) + 1) % schemes.length
         nextScheme = schemes[nextSchemeIndex]
         return Scheme.set(nextScheme)
@@ -40,8 +40,8 @@ class Scheme
         for (var _35_17_ = 0; _35_17_ < list.length; _35_17_++)
         {
             link = list[_35_17_]
-            css = slash.basename(link.href)
-            newlink = elem('link',{href:`css/${scheme}/${css}`,rel:'stylesheet',type:'text/css',class:'scheme-link'})
+            css = slash.file(link.href)
+            newlink = elem('link',{href:`css/ko/${scheme}/${css}`,rel:'stylesheet',type:'text/css',class:'scheme-link'})
             link.parentNode.replaceChild(newlink,link)
         }
         prefs.set('scheme',scheme)

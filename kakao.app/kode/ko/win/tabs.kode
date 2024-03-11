@@ -138,9 +138,9 @@ class Tabs
 
     tab: (id) ->
 
-        if id is num then return @tabs[id]
-        if _.isElement id then return _.find @tabs, (t) -> t.div.contains id
-        if id is str then return _.find @tabs, (t) -> t.file == id
+        if id is num ➜ return @tabs[id]
+        if elem.isElement(id) ➜ return @tabs.find (t) -> t.div.contains id
+        if id is str ➜ return @tabs.find (t) -> t.file == id
 
     activeTab: (create) ->
 
@@ -149,7 +149,7 @@ class Tabs
             tab.setActive()
             return tab
             
-        tab = _.find @tabs, (t) -> t.isActive()
+        tab = @tabs.find (t) -> t.isActive()
         
         if not tab and create
             tab = first @tabs
@@ -161,7 +161,7 @@ class Tabs
 
     tabAtX: (x) ->
 
-        _.find @tabs, (t) ->
+        @tabs.find (t) ->
             br = t.div.getBoundingClientRect()
             br.left <= x <= br.left + br.width
 
@@ -183,7 +183,7 @@ class Tabs
 
         return if empty tab
         
-        _.pull @tabs, tab.close()
+        @tabs.splice @tabs.indexOf(tab.close()), 1
         
         if empty @tabs
             @onNewEmptyTab()

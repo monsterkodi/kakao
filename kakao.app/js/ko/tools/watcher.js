@@ -47,7 +47,7 @@ class Watcher
         }).bind(this))
         return this.w.on('unlink',(function (p)
         {
-            return klog(`unlink ${this.id}`,slash.basename(this.file))
+            return klog(`unlink ${this.id}`,slash.file(this.file))
         }).bind(this))
     }
 

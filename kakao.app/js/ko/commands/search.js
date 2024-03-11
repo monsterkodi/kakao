@@ -2,15 +2,13 @@
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var FileSearcher, Search, WritableStream
+var FileSearcher, Search
 
 import walker from "../tools/walker.js"
 
 import syntax from "../editor/syntax.js"
 
 import command from "../commandline/command.js"
-
-import stream from "stream"
 
 
 Search = (function ()
@@ -86,10 +84,7 @@ Search = (function ()
 
     Search.prototype["searchInFile"] = function (opt, file)
     {
-        var stream
-
-        stream = fs.createReadStream(file,{encoding:'utf8'})
-        return stream.pipe(new FileSearcher(this,opt,file))
+        console.log('searchInFile not implemented!')
     }
 
     Search.prototype["onMetaClick"] = function (meta, event)
@@ -119,11 +114,9 @@ Search = (function ()
     return Search
 })()
 
-WritableStream = stream.Writable
 
 FileSearcher = (function ()
 {
-    _k_.extend(FileSearcher, WritableStream)
     function FileSearcher (command, opt, file)
     {
         var extn
@@ -173,7 +166,7 @@ FileSearcher = (function ()
 
     FileSearcher.prototype["write"] = function (chunk, encoding, cb)
     {
-        var l, lines, rngs, _150_64_
+        var l, lines, rngs, _151_64_
 
         lines = chunk.split('\n')
         if (!(this.syntaxName != null))
@@ -181,9 +174,9 @@ FileSearcher = (function ()
             this.syntaxName = syntax.shebang(lines[0])
         }
         var list = _k_.list(lines)
-        for (var _151_14_ = 0; _151_14_ < list.length; _151_14_++)
+        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
         {
-            l = list[_151_14_]
+            l = list[_152_14_]
             this.line += 1
             rngs = matchr.ranges(this.patterns,l,this.flags)
             if (rngs.length)
@@ -204,7 +197,7 @@ FileSearcher = (function ()
             meta = {diss:syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
             terminal.appendMeta(meta)
             terminal.appendMeta({clss:'spacer'})
-            for (var _174_23_ = fi = 0, _174_27_ = this.found.length; (_174_23_ <= _174_27_ ? fi < this.found.length : fi > this.found.length); (_174_23_ <= _174_27_ ? ++fi : --fi))
+            for (var _175_23_ = fi = 0, _175_27_ = this.found.length; (_175_23_ <= _175_27_ ? fi < this.found.length : fi > this.found.length); (_175_23_ <= _175_27_ ? ++fi : --fi))
             {
                 f = this.found[fi]
                 regions = klor.dissect([f[1]],this.syntaxName)[0]

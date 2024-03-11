@@ -18,6 +18,7 @@ function Command
 
         @syntaxName = 'ko'
         @maxHistory = 20
+        @history = []
 
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
@@ -135,7 +136,8 @@ function Command
             window.split.elem.appendChild listView
             @commandList = new commandlist @, '.commandlist' syntaxName:@syntaxName
     
-    listItems: () -> reversed @history
+    # listItems: -> reversed @history
+    listItems: -> @history
 
     showItems: (items) ->
         
@@ -354,8 +356,10 @@ function Command
         @loadState()
         
     loadState: ->
-        @history = @getState @historyKey(), []
-        @selected = @history.length-1
+        @history  = @getState @historyKey(), []
+        @history ?= []
+        log 'loadState' @history
+        @selected = @history?.length-1 ? 0
 
     setState: (key, value) ->
         return if not @prefsID

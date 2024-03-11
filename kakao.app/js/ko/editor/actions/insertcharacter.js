@@ -27,11 +27,12 @@ export default {insertCharacter:function (ch)
     this.deleteSelection()
     newCursors = this.do.cursors()
     var list = _k_.list(newCursors)
-    for (var _30_15_ = 0; _30_15_ < list.length; _30_15_++)
+    for (var _27_15_ = 0; _27_15_ < list.length; _27_15_++)
     {
-        cc = list[_30_15_]
+        cc = list[_27_15_]
         cline = this.do.line(cc[1])
         sline = this.twiggleSubstitute(cline,cc,ch)
+        console.log('insertCharacter cline',cline.splice)
         if (sline)
         {
             this.do.change(cc[1],sline)
@@ -40,9 +41,9 @@ export default {insertCharacter:function (ch)
         {
             this.do.change(cc[1],cline.splice(cc[0],0,ch))
             var list1 = _k_.list(positionsAtLineIndexInPositions(cc[1],newCursors))
-            for (var _37_23_ = 0; _37_23_ < list1.length; _37_23_++)
+            for (var _35_23_ = 0; _35_23_ < list1.length; _35_23_++)
             {
-                nc = list1[_37_23_]
+                nc = list1[_35_23_]
                 if (nc[0] >= cc[0])
                 {
                     nc[0] += 1
@@ -125,9 +126,9 @@ export default {insertCharacter:function (ch)
 
     this.do.start()
     var list = _k_.list(reversed(this.do.cursors()))
-    for (var _78_14_ = 0; _78_14_ < list.length; _78_14_++)
+    for (var _76_14_ = 0; _76_14_ < list.length; _76_14_++)
     {
-        c = list[_78_14_]
+        c = list[_76_14_]
         if (c[0] > this.do.line(c[1]).length)
         {
             this.do.change(c[1],this.do.line(c[1]).splice(c[0],0,_.padStart('',c[0] - this.do.line(c[1]).length)))
