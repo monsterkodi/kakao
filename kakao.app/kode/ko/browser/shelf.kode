@@ -18,7 +18,6 @@ use ../../kxk/popup
 { $, stopEvent } = dom
 
 # use ../git/hub
-# use fuzzy
     
 function Shelf extends column
 
@@ -347,9 +346,9 @@ function Shelf extends column
 
     navigateRows: (key) ->
 
-        return kerror "no rows in column #{@index}?" if not @numRows()
+        return error "no rows in column #{@index}?" if not @numRows()
         index = @activeRow()?.index() ? -1
-        kerror "no index from activeRow? #{index}?", @activeRow() if not index? or Number.isNaN index
+        error "no index from activeRow? #{index}?", @activeRow() if not index? or Number.isNaN index
         
         index = switch key
             'up'        ➜ index-1
@@ -360,10 +359,10 @@ function Shelf extends column
             'page down' ➜ clamp 0, @items.length, index+@numVisible()
                         ➜ index
             
-        kerror "no index #{index}? #{@numVisible()}" if not index? or Number.isNaN index        
+        error "no index #{index}? #{@numVisible()}" if not index? or Number.isNaN index        
         index = clamp 0, @numRows()-1, index
         
-        kerror "no row at index #{index}/#{@numRows()-1}?", @numRows() if not @rows[index]?.activate?
+        error "no row at index #{index}/#{@numRows()-1}?", @numRows() if not @rows[index]?.activate?
 
         navigate = (action) =>
             @navigatingRows = true

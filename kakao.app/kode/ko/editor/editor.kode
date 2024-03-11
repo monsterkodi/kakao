@@ -226,7 +226,7 @@ function Editor extends buffer
     splitStateLineAtPos: (state, pos) ->
 
         l = state.line pos[1]
-        kerror "no line at pos #{pos}?" if not l?
+        error "no line at pos #{pos}?" if not l?
         return ['' ''] if not l?
         [l.slice(0, pos[0]), l.slice(pos[0])]
 

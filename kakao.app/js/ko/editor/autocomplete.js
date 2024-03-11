@@ -240,7 +240,7 @@ class Autocomplete extends events
         cursor = $('.main',this.editor.view)
         if (!(cursor != null))
         {
-            kerror("Autocomplete.open --- no cursor?")
+            console.error("Autocomplete.open --- no cursor?")
             return
         }
         this.span = elem('span',{class:'autocomplete-span'})
@@ -254,7 +254,7 @@ class Autocomplete extends events
         {
             p = this.editor.posAtXY(cr.left,cr.top)
             ci = p[1] - this.editor.scroll.top
-            return kerror(`no span for autocomplete? cursor topleft: ${parseInt(cr.left)} ${parseInt(cr.top)}`,info)
+            return console.error(`no span for autocomplete? cursor topleft: ${parseInt(cr.left)} ${parseInt(cr.top)}`,info)
         }
         sp = spanInfo.span
         inner = sp.innerHTML
@@ -477,7 +477,7 @@ class Autocomplete extends events
             l = list[_357_14_]
             if (!((l != null ? l.split : undefined) != null))
             {
-                return kerror(`Autocomplete.parseLines -- line has no split? action: ${opt.action} line: ${l}`,lines)
+                return console.error(`Autocomplete.parseLines -- line has no split? action: ${opt.action} line: ${l}`,lines)
             }
             if (l.length > 240)
             {

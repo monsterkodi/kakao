@@ -63,7 +63,7 @@ class Invisibles
         })
         if (!metas.length)
         {
-            return kerror(`no invisible meta at line ${li}?`)
+            return console.error(`no invisible meta at line ${li}?`)
         }
         this.editor.meta.delMeta(metas[0])
         return this.onLineInserted(li)

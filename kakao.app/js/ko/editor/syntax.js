@@ -10,7 +10,11 @@ import slash from "../../kxk/slash.js"
 
 import matchr from "../../kxk/matchr.js"
 
+import elem from "../../kxk/elem.js"
+
 import noon from "../../kxk/noon.js"
+
+import kstr from "../../kxk/kstr.js"
 
 import ffs from "../../kxk/ffs.js"
 
@@ -169,7 +173,7 @@ class Syntax
         {
             if (!(n != null) || !(Syntax.matchrConfigs[n] != null))
             {
-                return kerror(`no syntax? ${n}`)
+                return console.error(`no syntax? ${n}`)
             }
             result = matchr.dissect(matchr.ranges(Syntax.matchrConfigs[n],text))
         }

@@ -265,7 +265,6 @@ class Slash
     
     @parse: (p) ->
         
-        # log p, Slash.path p
         p = Slash.path p
 
         p = p[...-1] if p.endsWith Slash.sep
@@ -278,7 +277,6 @@ class Slash
         name = dots.join '.'
         
         dir = components[...-1].join '/'
-        # log 'components' components, dir, p
         dir = Slash.sep if Slash.isAbsolute(p) and empty dir
 
         dir:  dir

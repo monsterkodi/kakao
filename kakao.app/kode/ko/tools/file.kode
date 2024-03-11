@@ -6,10 +6,11 @@
 000       000  0000000  00000000
 ###
 
-# kxk = require 'kxk'
-# { childp, fs, kerror, klog, slash } = kxk
+# { childp, fs, error, log, slash } = kxk
 
 # icons = require './icons.json'
+
+use ../../kxk/slash
 
 class File
     
@@ -25,13 +26,13 @@ class File
         
         fs.mkdir slash.dir(to), recursive:true, (err) ->
             
-            return kerror "mkdir failed #{err}" if err
+            return error "mkdir failed #{err}" if err
             
             if slash.isDir(to)
                 to = slash.join to, slash.file from
 
             fs.move from, to, overwrite:true, (err) ->
-                return kerror "rename failed #{err}" if err
+                return error "rename failed #{err}" if err
                 
                 if editor.currentFile == from
                     editor.currentFile = to
@@ -41,7 +42,7 @@ class File
                         if commandline.text() == slash.tilde from
                             commandline.setText slash.tilde to
                     if not tabs.tab to
-                        klog 'recreate tab!' tabs.activeTab().file, to
+                        log 'recreate tab!' tabs.activeTab().file, to
                 
                 cb from, to
 
@@ -56,7 +57,7 @@ class File
             to = slash.join to, slash.file from
 
         fs.copy from, to, (err) ->
-            return kerror "copy failed #{err}" if err
+            return error "copy failed #{err}" if err
             cb from, to
     
     @iconClassName: (file) ->
@@ -88,19 +89,19 @@ class File
             
     @p4edit: (file, text, cb) ->
         
-        slash.logErrors = true
-        
-        if slash.win()
-            try
-                childp.exec "p4 edit #{slash.unslash(file)}", (err) ->
-                    if valid err
-                        File.unlock file, text, cb
-                    else
-                        File.write file, text, 0o666, cb
-            catch err
-                File.unlock file, text, cb
-        else
-            File.unlock file, text, cb
+        # slash.logErrors = true
+#         
+        # if slash.win()
+            # try
+                # childp.exec "p4 edit #{slash.unslash(file)}", (err) ->
+                    # if valid err
+                        # File.unlock file, text, cb
+                    # else
+                        # File.write file, text, 0o666, cb
+            # catch err
+                # File.unlock file, text, cb
+        # else
+            # File.unlock file, text, cb
             
     @save: (file, text, cb) ->
     

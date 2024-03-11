@@ -6,13 +6,9 @@
 0000000     0000000   000       000       00000000  000   000
 ###
 
-# { _, kerror, matchr } = kxk
-
 use ./state
 use ../../kxk/matchr
 use ../../kxk/events
-# use events
-# use fuzzy
 
 startOf = (r) -> r[0]
 endOf   = (r) -> r[0] + Math.max 1, r[1]-r[0]
@@ -283,7 +279,7 @@ function Buffer extends events
 
     rangeForLineAtIndex: (i) ->
 
-        return kerror "Buffer.rangeForLineAtIndex -- index #{i} >= #{@numLines()}" if i >= @numLines()
+        return error "Buffer.rangeForLineAtIndex -- index #{i} >= #{@numLines()}" if i >= @numLines()
         [i, [0, @line(i).length]]
 
     isRangeInString: (r) -> @rangeOfStringSurroundingRange(r)?

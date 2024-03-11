@@ -122,11 +122,11 @@ FileEditor = (function ()
 
     FileEditor.prototype["restoreFromTabState"] = function (tabState)
     {
-        var _122_62_
+        var _122_61_
 
         if (!(tabState.file != null))
         {
-            return kerror("no tabState.file?")
+            return console.error("no tabState.file?")
         }
         return this.setCurrentFile(tabState.file,tabState.state)
     }
@@ -318,7 +318,7 @@ FileEditor = (function ()
         }
         if (_k_.empty(word))
         {
-            return kerror('nothing to jump to?')
+            return console.error('nothing to jump to?')
         }
         find = word.toLowerCase().trim()
         if (find[0] === '@')
@@ -327,7 +327,7 @@ FileEditor = (function ()
         }
         if (_k_.empty(find))
         {
-            return kerror('FileEditor.jumpTo -- nothing to find?')
+            return console.error('FileEditor.jumpTo -- nothing to find?')
         }
         type = (opt != null ? opt.type : undefined)
         if (!type || type === 'class')

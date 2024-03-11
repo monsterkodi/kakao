@@ -2,6 +2,8 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
+import slash from "../../kxk/slash.js"
+
 class File
 {
     static sourceFileExtensions = ['kode','coffee','styl','swift','pug','md','noon','txt','json','sh','py','cpp','mm','cc','c','cs','h','hpp','ts','js','mjs','frag','vert']
@@ -27,7 +29,7 @@ class File
         {
             if (err)
             {
-                return kerror(`mkdir failed ${err}`)
+                return console.error(`mkdir failed ${err}`)
             }
             if (slash.isDir(to))
             {
@@ -35,11 +37,11 @@ class File
             }
             return fs.move(from,to,{overwrite:true},function (err)
             {
-                var _38_39_
+                var _39_39_
 
                 if (err)
                 {
-                    return kerror(`rename failed ${err}`)
+                    return console.error(`rename failed ${err}`)
                 }
                 if (editor.currentFile === from)
                 {
@@ -57,7 +59,7 @@ class File
                     }
                     if (!tabs.tab(to))
                     {
-                        klog('recreate tab!',tabs.activeTab().file,to)
+                        console.log('recreate tab!',tabs.activeTab().file,to)
                     }
                 }
                 return cb(from,to)
@@ -83,7 +85,7 @@ class File
         {
             if (err)
             {
-                return kerror(`copy failed ${err}`)
+                return console.error(`copy failed ${err}`)
             }
             return cb(from,to)
         })
@@ -132,34 +134,7 @@ class File
     }
 
     static p4edit (file, text, cb)
-    {
-        slash.logErrors = true
-        if (slash.win())
-        {
-            try
-            {
-                return childp.exec(`p4 edit ${slash.unslash(file)}`,function (err)
-                {
-                    if (!_k_.empty(err))
-                    {
-                        return File.unlock(file,text,cb)
-                    }
-                    else
-                    {
-                        return File.write(file,text,0o666,cb)
-                    }
-                })
-            }
-            catch (err)
-            {
-                return File.unlock(file,text,cb)
-            }
-        }
-        else
-        {
-            return File.unlock(file,text,cb)
-        }
-    }
+    {}
 
     static save (file, text, cb)
     {
@@ -216,7 +191,7 @@ class File
         }
         spans = []
         split = slash.split(file)
-        for (var _140_18_ = i = 0, _140_22_ = split.length - 1; (_140_18_ <= _140_22_ ? i < split.length - 1 : i > split.length - 1); (_140_18_ <= _140_22_ ? ++i : --i))
+        for (var _141_18_ = i = 0, _141_22_ = split.length - 1; (_141_18_ <= _141_22_ ? i < split.length - 1 : i > split.length - 1); (_141_18_ <= _141_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)

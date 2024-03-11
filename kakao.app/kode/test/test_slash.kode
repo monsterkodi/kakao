@@ -203,6 +203,7 @@ __dirname = import.meta.dirname
     ▸ file
         
         slash.file '/some/path.txt'        ▸ 'path.txt'
+        slash.file 'file:///files.css'     ▸ 'files.css'
 
     # 00000000  000   000  000000000  
     # 000        000 000      000     

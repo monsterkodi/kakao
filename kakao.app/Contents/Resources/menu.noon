@@ -39,5 +39,5 @@ Window
     Focus Previous          cmdctrl+shift+`
     -----
     Close                   cmdctrl+w
-    # DevTools                alt+cmdctrl+i
+    DevTools                alt+cmdctrl+i
     

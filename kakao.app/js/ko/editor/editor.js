@@ -312,7 +312,7 @@ Editor = (function ()
         l = state.line(pos[1])
         if (!(l != null))
         {
-            kerror(`no line at pos ${pos}?`)
+            console.error(`no line at pos ${pos}?`)
         }
         if (!(l != null))
         {

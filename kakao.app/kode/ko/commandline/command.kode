@@ -60,7 +60,7 @@ function Command
     execute: (command) ->
         
         if empty command
-            return kerror 'no command!'
+            return error 'no command!'
         
         if @commandList? 
             if 0 <= @selected < @commandList.numLines()
@@ -278,7 +278,7 @@ function Command
         
         @loadState() if not @history?
         if not @history is arr
-            kerror "Command.setCurrent -- #{@historyKey()} : history not an array?" typeof @history 
+            error "Command.setCurrent -- #{@historyKey()} : history not an array?" typeof @history 
             @history = []
         _.pull @history, command
         @history.push command if command.trim().length

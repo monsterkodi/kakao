@@ -103,7 +103,7 @@ class Meta
 
             if ((err != null))
             {
-                return kerror(`Meta.saveFileLineMetas -- readFile err:${err}`)
+                return console.error(`Meta.saveFileLineMetas -- readFile err:${err}`)
             }
             lines = data.split(/\r?\n/)
             var list = _k_.list(lineMetas)
@@ -119,7 +119,7 @@ class Meta
 
                 if ((err != null))
                 {
-                    return kerror(`Meta.saveFileLineMetas -- writeFile err:${err}`)
+                    return console.error(`Meta.saveFileLineMetas -- writeFile err:${err}`)
                 }
                 var list1 = _k_.list(lineMetas)
                 for (var _87_29_ = 0; _87_29_ < list1.length; _87_29_++)
@@ -334,7 +334,7 @@ class Meta
 
         if (!((meta != null ? meta[2] : undefined) != null))
         {
-            return kerror('no line meta?',meta)
+            return console.error('no line meta?',meta)
         }
         ;(meta[2].div != null ? meta[2].div.remove() : undefined)
         return meta[2].div = null
@@ -397,7 +397,7 @@ class Meta
 
         if (!((lineMeta != null ? lineMeta[2] : undefined) != null))
         {
-            return kerror('invalid line meta?',lineMeta)
+            return console.error('invalid line meta?',lineMeta)
         }
         this.lineMetas[lineMeta[0]] = ((_280_32_=this.lineMetas[lineMeta[0]]) != null ? _280_32_ : [])
         this.lineMetas[lineMeta[0]].push(lineMeta)
@@ -411,7 +411,7 @@ class Meta
 
         if (!(lineMeta != null) || d === 0)
         {
-            return kerror('invalid move?',lineMeta,d)
+            return console.error('invalid move?',lineMeta,d)
         }
         _.pull(this.lineMetas[lineMeta[0]],lineMeta)
         if (_k_.empty(this.lineMetas[lineMeta[0]]))
@@ -583,7 +583,7 @@ class Meta
     {
         if (!(meta != null))
         {
-            return kerror('del no meta?')
+            return console.error('del no meta?')
         }
         _.pull(this.lineMetas[meta[0]],meta)
         _.pull(this.metas,meta)

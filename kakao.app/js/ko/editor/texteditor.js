@@ -325,14 +325,14 @@ TextEditor = (function ()
         {
             if ((this.lineDivs[li] != null))
             {
-                kerror(`dangling line div? ${li}`,this.lineDivs[li])
+                console.error(`dangling line div? ${li}`,this.lineDivs[li])
             }
             delete this.spanCache[li]
             return
         }
         if (!this.lineDivs[oi])
         {
-            return kerror(`updateLine - out of bounds? li ${li} oi ${oi}`)
+            return console.error(`updateLine - out of bounds? li ${li} oi ${oi}`)
         }
         this.spanCache[li] = render.lineSpan(this.syntax.getDiss(li),this.size)
         div = this.lineDivs[oi]
@@ -514,13 +514,13 @@ TextEditor = (function ()
                 }
                 if (mc[1] > this.numLines() - 1)
                 {
-                    return kerror(`${this.name}.renderCursors mainCursor DAFUK?`,this.numLines(),str(this.mainCursor()))
+                    return console.error(`${this.name}.renderCursors mainCursor DAFUK?`,this.numLines(),str(this.mainCursor()))
                 }
                 ri = mc[1] - this.scroll.top
                 cursorLine = this.state.line(mc[1])
                 if (!(cursorLine != null))
                 {
-                    return kerror('no main cursor line?')
+                    return console.error('no main cursor line?')
                 }
                 if (mc[0] > cursorLine.length)
                 {

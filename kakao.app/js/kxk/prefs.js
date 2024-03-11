@@ -4,6 +4,10 @@ var _k_ = {clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (
 
 var Prefs
 
+import slash from "./slash.js"
+
+import store from "./store.js"
+
 
 Prefs = (function ()
 {
@@ -14,7 +18,7 @@ Prefs = (function ()
     Prefs["watcher"] = null
     Prefs["init"] = function (opt = {})
     {
-        var _18_64_
+        var _19_64_
 
         if ((this.store != null))
         {
@@ -28,7 +32,7 @@ Prefs = (function ()
 
     Prefs["unwatch"] = function ()
     {
-        var _28_28_, _28_33_, _30_16_
+        var _29_28_, _29_33_, _31_16_
 
         if (!((this.store != null ? this.store.app : undefined) != null))
         {
@@ -40,13 +44,13 @@ Prefs = (function ()
 
     Prefs["watch"] = function ()
     {
-        var _35_28_, _35_33_
+        var _36_28_, _36_33_
 
         if (!((this.store != null ? this.store.app : undefined) != null))
         {
             return
         }
-        slash.error = klog
+        slash.error = log
         if (slash.touch(this.store.file))
         {
             this.unwatch()
@@ -55,26 +59,26 @@ Prefs = (function ()
             this.watcher.on('rename',this.onFileUnlink)
             this.watcher.on('error',function (err)
             {
-                return kerror('Prefs watch error',err)
+                console.error('Prefs watch error',err)
             })
         }
         else
         {
-            kerror(`can't touch prefs file ${this.store.file}`)
+            console.error(`can't touch prefs file ${this.store.file}`)
         }
         return this.watcher
     }
 
     Prefs["onFileChange"] = function ()
     {
-        var _50_28_
+        var _51_28_
 
         return (this.store != null ? this.store.reload() : undefined)
     }
 
     Prefs["onFileUnlink"] = function ()
     {
-        var _51_40_
+        var _52_40_
 
         this.unwatch()
         return (this.store != null ? this.store.clear() : undefined)
@@ -94,7 +98,7 @@ Prefs = (function ()
 
     Prefs["set"] = function (key, value)
     {
-        var _54_45_
+        var _55_45_
 
         this.unwatch()
         ;(this.store != null ? this.store.set(key,value) : undefined)
@@ -103,7 +107,7 @@ Prefs = (function ()
 
     Prefs["del"] = function (key, value)
     {
-        var _55_45_
+        var _56_45_
 
         this.unwatch()
         ;(this.store != null ? this.store.del(key) : undefined)
@@ -112,7 +116,7 @@ Prefs = (function ()
 
     Prefs["save"] = function ()
     {
-        var _56_33_
+        var _57_33_
 
         return (this.store != null ? this.store.save() : undefined)
     }

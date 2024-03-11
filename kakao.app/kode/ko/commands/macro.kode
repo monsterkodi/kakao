@@ -66,7 +66,7 @@ function Macro extends command
 
     execute: (command) ->
 
-        return kerror 'no command!' if empty command
+        return error 'no command!' if empty command
 
         command = super command
 
@@ -283,7 +283,7 @@ function Macro extends command
                 if transform.transformNames and cmmd in transform.transformNames
                     window.textEditor.transform.do.apply null, [window.textEditor, cmmd].concat cmds
                 else
-                    kerror 'unhandled macro', cmmd, transform.transformNames
+                    error 'unhandled macro', cmmd, transform.transformNames
                     if last(@history) == command.trim()
                         @history.pop()
 

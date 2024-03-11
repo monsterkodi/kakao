@@ -197,7 +197,7 @@ function Commandline extends texteditor
                 @view.focus()
             @button.className = "commandline-button active #{@command.prefsID}"
         else
-            kerror "no command #{name}"
+            error "no command #{name}"
 
     commandForName: (name) ->
 

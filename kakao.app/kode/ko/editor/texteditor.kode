@@ -289,11 +289,11 @@ function TextEditor extends editor
         oi = li if not oi?
 
         if li < @scroll.top or li > @scroll.bot
-            kerror "dangling line div? #{li}", @lineDivs[li] if @lineDivs[li]?
+            error "dangling line div? #{li}", @lineDivs[li] if @lineDivs[li]?
             delete @spanCache[li]
             return
             
-        return kerror "updateLine - out of bounds? li #{li} oi #{oi}" if not @lineDivs[oi]
+        return error "updateLine - out of bounds? li #{li} oi #{oi}" if not @lineDivs[oi]
 
         @spanCache[li] = render.lineSpan @syntax.getDiss(li), @size
 
@@ -439,11 +439,11 @@ function TextEditor extends editor
                 return if mc[1] < 0
 
                 if mc[1] > @numLines()-1
-                    return kerror "#{@name}.renderCursors mainCursor DAFUK?", @numLines(), str @mainCursor()
+                    return error "#{@name}.renderCursors mainCursor DAFUK?", @numLines(), str @mainCursor()
 
                 ri = mc[1]-@scroll.top
                 cursorLine = @state.line(mc[1])
-                return kerror 'no main cursor line?' if not cursorLine?
+                return error 'no main cursor line?' if not cursorLine?
                 if mc[0] > cursorLine.length
                     cs[0][2] = 'virtual'
                     cs.push [cursorLine.length, ri, 'main off']
