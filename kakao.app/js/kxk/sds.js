@@ -1,6 +1,6 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var collect, find, get, regexp
+var collect, find, get, regexp, set
 
 
 regexp = function (s)
@@ -200,4 +200,59 @@ get = function (object, keypath, defaultValue)
     }
     return object
 }
-export default {find:find,get:get}
+
+set = function (object, keypath, value)
+{
+    var k, kp, o
+
+    if (typeof(keypath) === 'string')
+    {
+        keypath = keypath.split('.')
+    }
+    if (!(keypath instanceof Array))
+    {
+        throw `invalid keypath: ${JSON.stringify(keypath)}`
+    }
+    kp = [].concat(keypath)
+    if (_k_.in('__proto__',keypath))
+    {
+        throw `__proto__ in keypath: ${JSON.stringify(keypath)}`
+    }
+    o = object
+    while (kp.length > 1)
+    {
+        k = kp.shift()
+        if (!(o[k] != null))
+        {
+            if (!Number.isNaN(parseInt(k)))
+            {
+                o = o[k] = []
+            }
+            else
+            {
+                o = o[k] = {}
+            }
+        }
+        else
+        {
+            o = o[k]
+        }
+    }
+    if (kp.length === 1 && (o != null))
+    {
+        if (value === undefined)
+        {
+            delete o[kp[0]]
+        }
+        else
+        {
+            o[kp[0]] = value
+            if (o[kp[0]] !== value)
+            {
+                throw `couldn't set value ${JSON.stringify(value)} for keypath ${keypath.join('.')} in ${JSON.stringify(object)}`
+            }
+        }
+    }
+    return object
+}
+export default {find:find,get:get,set:set}

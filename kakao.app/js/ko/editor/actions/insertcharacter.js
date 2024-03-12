@@ -2,6 +2,9 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 import kstr from "../../../kxk/kstr.js"
 
+import util from "../../../kxk/util.js"
+let reversed = util.reversed
+
 export default {insertCharacter:function (ch)
 {
     var cc, cline, nc, newCursors, sline
@@ -27,12 +30,11 @@ export default {insertCharacter:function (ch)
     this.deleteSelection()
     newCursors = this.do.cursors()
     var list = _k_.list(newCursors)
-    for (var _29_15_ = 0; _29_15_ < list.length; _29_15_++)
+    for (var _30_15_ = 0; _30_15_ < list.length; _30_15_++)
     {
-        cc = list[_29_15_]
+        cc = list[_30_15_]
         cline = this.do.line(cc[1])
         sline = this.twiggleSubstitute(cline,cc,ch)
-        console.log('insertCharacter cline',cline.splice)
         if (sline)
         {
             this.do.change(cc[1],sline)
@@ -131,7 +133,7 @@ export default {insertCharacter:function (ch)
         c = list[_78_14_]
         if (c[0] > this.do.line(c[1]).length)
         {
-            this.do.change(c[1],this.do.line(c[1]).splice(c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))
+            this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))
         }
     }
     return this.do.end()

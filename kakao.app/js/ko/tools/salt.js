@@ -4,6 +4,9 @@ var font, salt
 
 import noon from "../../kxk/noon.js"
 
+import util from "../../kxk/util.js"
+let zip = util.zip
+
 font = noon.parse(`0   
     | 000000 |
     |000  000|
@@ -396,16 +399,16 @@ salt = function (text)
     s = text.toLowerCase().trim()
     cs = []
     var list = _k_.list(s)
-    for (var _405_10_ = 0; _405_10_ < list.length; _405_10_++)
+    for (var _404_10_ = 0; _404_10_ < list.length; _404_10_++)
     {
-        c = list[_405_10_]
+        c = list[_404_10_]
         if ((font[c] != null))
         {
             cs.push(font[c])
         }
     }
-    zs = _.zip.apply(null,cs)
-    rs = _.map(zs,function (j)
+    zs = zip.apply(null,cs)
+    rs = zs.map(function (j)
     {
         return j.join('  ')
     })

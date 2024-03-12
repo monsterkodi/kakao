@@ -5,11 +5,7 @@
 # 000        000   000       000     000     000
 # 000        000   000  0000000      000     00000000
 
-# kxk = require 'kxk'
-# { os, _ } = kxk
-
-# electron  = require 'electron'
-# clipboard = electron.clipboard
+use ../../../kxk/kstr
 
 export
 
@@ -48,7 +44,7 @@ export
         for ns in newSelections
             insert = lines.shift()
             oldLength = ns[1][1]-ns[1][0]
-            @do.change ns[0], @do.line(ns[0]).splice ns[1][0], oldLength, insert
+            @do.change ns[0], kstr.splice @do.line(ns[0]), ns[1][0], oldLength, insert
             ldiff = insert.length - oldLength
             for os in rangesAfterLineColInRanges ns[0], ns[1][1], newSelections
                 os[1][0] += ldiff
@@ -93,7 +89,7 @@ export
             for ci in [newCursors.length-1..0]
                 c = newCursors[ci]
                 insert = lines[ci % lines.length]
-                @do.change c[1], @do.line(c[1]).splice c[0], 0, insert
+                @do.change c[1], kstr.splice @do.line(c[1]), c[0], 0, insert
                 for c in positionsAfterLineColInPositions c[1], c[0]-1, newCursors
                     cursorDelta c, insert.length # move cursors after insertion
 

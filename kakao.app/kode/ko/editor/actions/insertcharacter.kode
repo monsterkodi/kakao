@@ -6,6 +6,7 @@
 # 000  000   000  0000000   00000000  000   000     000   
 
 use ../../../kxk/kstr
+use ../../../kxk/util ▪ reversed
 
 export
     
@@ -29,7 +30,6 @@ export
         for cc in newCursors
             cline = @do.line cc[1]
             sline = @twiggleSubstitute cline, cc, ch
-            log 'insertCharacter cline' cline.splice
             if sline
                 @do.change cc[1], sline
             else
@@ -77,6 +77,6 @@ export
         @do.start() 
         for c in reversed @do.cursors()
             if c[0] > @do.line(c[1]).length
-                @do.change c[1], @do.line(c[1]).splice c[0], 0, lpad c[0]-@do.line(c[1]).length
+                @do.change c[1], kstr.splice @do.line(c[1]), c[0], 0, lpad c[0]-@do.line(c[1]).length
         @do.end()
         

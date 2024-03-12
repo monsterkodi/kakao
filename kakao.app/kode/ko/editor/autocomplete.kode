@@ -8,13 +8,12 @@
 
 # Indexer = require '../main/indexer'
 
-use ../../kxk/dom
+use ../../kxk/util ▪ pickBy toPairs
+use ../../kxk/dom  ▪ $ stopEvent
 use ../../kxk/elem
 use ../../kxk/matchr
 use ../../kxk/events
 use ../tools/req
-
-{ $, stopEvent } = dom
 
 jsClass = 
     RegExp: ['test' 'compile' 'exec' 'toString']
@@ -144,8 +143,8 @@ class Autocomplete extends events
                 else
                     return if empty @wordinfo
                     
-                    matches = _.pickBy @wordinfo, (c,w) => w.startsWith(@word) and w.length > @word.length            
-                    matches = _.toPairs matches
+                    matches = pickBy @wordinfo, (w) => w.startsWith(@word) and w.length > @word.length            
+                    matches = toPairs matches
                     for m in matches
                         d = @editor.distanceOfWord m[0]
                         m[1].distance = 100 - Math.min d, 100

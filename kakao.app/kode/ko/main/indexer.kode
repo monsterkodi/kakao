@@ -8,6 +8,7 @@
 
 # { _, filter, kerror, matchr, post, slash } = require 'kxk'
 
+use ../../kxk/util ▪ pickBy
 Walker   = require '../tools/walker'
 forkfunc = require '../tools/forkfunc'
 IndexHpp = require './indexhpp'
@@ -132,7 +133,7 @@ class Indexer
                 
                 names = names.map (c) -> c?.toLowerCase()
                 
-                value = _.pickBy value, (value, key) ->
+                value = pickBy value, (key) ->
                     for cn in names
                         lc = key.toLowerCase()
                         if cn.length>1 and lc.indexOf(cn)>=0 or lc.startsWith(cn)

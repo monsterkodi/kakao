@@ -6,6 +6,7 @@
 # 000        0000000   000   000  00     00  000   000  000   000  0000000  
 
 use ../../../kxk/util ▪ reversed
+use ../../../kxk/kstr
 
 export
     
@@ -72,7 +73,7 @@ export
                         for nc in positionsBelowLineIndexInPositions c[1]+1, newCursors
                             cursorDelta nc, 0, -1
                 else
-                    @do.change c[1], @do.line(c[1]).splice c[0], 1
+                    @do.change c[1], kstr.splice @do.line(c[1]), c[0], 1
                     for nc in positionsAtLineIndexInPositions c[1], newCursors
                         if nc[0] > c[0]
                             cursorDelta nc, -1

@@ -144,7 +144,7 @@ body {
   overflow: visible;
 }
 .popup {
-  line-height: 0.8;
+  line-height: 1;
   z-index: 9999;
   position: absolute;
   border-radius: 3px;

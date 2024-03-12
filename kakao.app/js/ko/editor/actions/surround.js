@@ -221,11 +221,11 @@ export default {initSurround:function ()
             {
                 if (this.do.line(sr[0])[sr[1][0]] === "'")
                 {
-                    this.do.change(ns[0],this.do.line(ns[0]).splice(sr[1][0],1,'"'))
+                    this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),sr[1][0],1,'"'))
                 }
                 if (this.do.line(sr[0])[sr[1][1] - 1] === "'")
                 {
-                    this.do.change(ns[0],this.do.line(ns[0]).splice(sr[1][1] - 1,1,'"'))
+                    this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),sr[1][1] - 1,1,'"'))
                 }
             }
         }
@@ -239,7 +239,7 @@ export default {initSurround:function ()
             if (beforeGood && afterGood)
             {
                 spaces = before.length - trimmed.length
-                this.do.change(ns[0],this.do.line(ns[0]).splice(trimmed.length,spaces))
+                this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),trimmed.length,spaces))
                 var list5 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
                 for (var _159_26_ = 0; _159_26_ < list5.length; _159_26_++)
                 {
@@ -250,8 +250,8 @@ export default {initSurround:function ()
                 ns[1][1] -= spaces
             }
         }
-        this.do.change(ns[0],this.do.line(ns[0]).splice(ns[1][1],0,cr))
-        this.do.change(ns[0],this.do.line(ns[0]).splice(ns[1][0],0,cl))
+        this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][1],0,cr))
+        this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][0],0,cl))
         var list6 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
         for (var _167_18_ = 0; _167_18_ < list6.length; _167_18_++)
         {
@@ -324,7 +324,7 @@ export default {initSurround:function ()
         c = list2[_218_14_]
         var _219_20_ = openClosePairs.shift(); so = _219_20_[0]; sc = _219_20_[1]
 
-        this.do.change(c[1],this.do.line(c[1]).splice(c[0] - so.length,so.length + sc.length))
+        this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - so.length,so.length + sc.length))
         var list3 = _k_.list(positionsAfterLineColInPositions(c[1],c[0],cs))
         for (var _222_19_ = 0; _222_19_ < list3.length; _222_19_++)
         {
