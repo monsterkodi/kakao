@@ -1,6 +1,4 @@
 var toExport = {}
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var c, l, n, s

@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 class Invisibles

@@ -1,6 +1,4 @@
 var toExport = {}
-// monsterkodi/kakao 0.1.0
-
 var _k_
 
 import utils from "./utils.js"

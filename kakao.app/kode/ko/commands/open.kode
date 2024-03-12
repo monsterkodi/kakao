@@ -15,7 +15,7 @@ use ../../kxk/slash
 use ../../kxk/util ▪ uniqBy
 use ../../../lib/lib_ko ▪ fuzzy
 
-import File from '../tools/file.js'
+use ../tools/file ● File
                  
 relative = (rel, to) ->
     

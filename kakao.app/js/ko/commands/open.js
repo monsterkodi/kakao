@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var Open, relative
@@ -22,7 +20,8 @@ let uniqBy = util.uniqBy
 import lib_ko from "../../../lib/lib_ko.js"
 let fuzzy = lib_ko.fuzzy
 
-import File from '../tools/file.js'
+import File from "../tools/file.js"
+
 
 relative = function (rel, to)
 {

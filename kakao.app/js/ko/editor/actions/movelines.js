@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 export default {actions:{menu:'Line',moveLinesUp:{name:'Move Lines Up',combo:'alt+up'},moveLinesDown:{name:'Move Lines Down',combo:'alt+down'}},moveLinesUp:function ()

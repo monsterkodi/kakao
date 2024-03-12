@@ -8,6 +8,8 @@
 
 # walks through an abstract syntax tree and sorts operation chains by precedence
 
+use ./print
+
 precedence = (o) ->
     
     return 12 if o?.qmrkcolon
@@ -38,7 +40,6 @@ precedence = (o) ->
 
 assign = ['=''+=''-=''*=''/=''%=''^=''&=''|=''&&=''||=']
                                                   
-import print from './print.js'
 
 class Operator
 

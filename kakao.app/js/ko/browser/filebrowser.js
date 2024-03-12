@@ -1,14 +1,6 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var FileBrowser
-
-import browser from "./browser.js"
-
-import select from "./select.js"
-
-import shelf from "./shelf.js"
 
 import dom from "../../kxk/dom.js"
 let $ = dom.$
@@ -23,8 +15,16 @@ import post from "../../kxk/post.js"
 
 import ffs from "../../kxk/ffs.js"
 
-import File from '../tools/file.js'
-import Info from './info.js'
+import browser from "./browser.js"
+
+import select from "./select.js"
+
+import shelf from "./shelf.js"
+
+import File from "../tools/file.js"
+
+import Info from "./info.js"
+
 
 FileBrowser = (function ()
 {

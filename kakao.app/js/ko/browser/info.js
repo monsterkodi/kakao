@@ -1,23 +1,20 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_
 
-var $, fileInfo, imageInfo, moment, pbytes
+var fileInfo, imageInfo
 
 import dom from "../../kxk/dom.js"
+let $ = dom.$
 
 import elem from "../../kxk/elem.js"
 
 import slash from "../../kxk/slash.js"
 
 import lib_ko from "../../../lib/lib_ko.js"
+let moment = lib_ko.moment
+let pbytes = lib_ko.pbytes
 
-moment = lib_ko.moment
-pbytes = lib_ko.pbytes
+import File from "../tools/file.js"
 
-$ = dom.$
-
-import File from '../tools/file.js'
 
 imageInfo = function (file)
 {
@@ -43,7 +40,7 @@ imageInfo = function (file)
         stat = slash.fileExists(file)
         size = pbytes(stat.size).split(' ')
         age = moment().to(moment(stat.mtime),true)
-        var _45_21_ = age.split(' '); num = _45_21_[0]; range = _45_21_[1]
+        var _42_21_ = age.split(' '); num = _42_21_[0]; range = _42_21_[1]
 
         if (num[0] === 'a')
         {
@@ -67,7 +64,7 @@ fileInfo = function (file)
     size = pbytes(stat.size).split(' ')
     t = moment(stat.mtime)
     age = moment().to(t,true)
-    var _75_17_ = age.split(' '); num = _75_17_[0]; range = _75_17_[1]
+    var _72_17_ = age.split(' '); num = _72_17_[0]; range = _72_17_[1]
 
     if (num[0] === 'a')
     {

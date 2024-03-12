@@ -1,6 +1,4 @@
 var toExport = {}
-// monsterkodi/kakao 0.1.0
-
 var _k_
 
 var __filename
@@ -41,6 +39,11 @@ let moment = lib_ko.moment
 let immutable = lib_ko.immutable
 let fuzzy = lib_ko.fuzzy
 let pbytes = lib_ko.pbytes
+`)
+    })
+    section("named", function ()
+    {
+        compare(kc('use ./file ● File'),`import File from "./file.js"
 `)
     })
 }

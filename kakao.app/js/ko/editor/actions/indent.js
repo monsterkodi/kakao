@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 export default {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',accel:'ctrl+]'},deIndent:{name:'Outdent',combo:'command+[',accel:'ctrl+['}},indent:function ()

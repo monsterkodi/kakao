@@ -1,6 +1,4 @@
 var toExport = {}
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var t, __dirname, __filename, _129_21_, _130_21_, _131_21_, _25_29_, _26_30_, _27_38_, _34_34_, _35_33_, _39_32_, _40_33_, _50_26_, _51_27_, _55_27_, _56_25_

@@ -60,4 +60,12 @@ __filename = import.meta.filename
             let pbytes = lib_ko.pbytes
             
             """
+            
+    ▸ named
+    
+        kc 'use ./file ● File'             ▸ """
+            import File from "./file.js"
+            
+            """
+            
         

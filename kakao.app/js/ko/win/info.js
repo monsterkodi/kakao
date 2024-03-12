@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_
 
 var $, shortCount

@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, each_r: function (o) {return Array.isArray(o) ? [] : typeof o == 'string' ? o.split('') : {}}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}};_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.m5=_k_.k.F256(_k_.k.m(5));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w5=_k_.k.F256(_k_.k.w(5))
 
 var error, expand, parse
@@ -8,7 +6,8 @@ import kstr from "./kstr.js"
 
 import kolor from "./kolor.js"
 
-import noon from './noon.js'
+import noon from "./noon.js"
+
 kolor.globalize()
 
 expand = function (l)
@@ -16,9 +15,9 @@ expand = function (l)
     var a, match
 
     var list = _k_.list(l)
-    for (var _26_10_ = 0; _26_10_ < list.length; _26_10_++)
+    for (var _25_10_ = 0; _25_10_ < list.length; _25_10_++)
     {
-        a = list[_26_10_]
+        a = list[_25_10_]
         if (match = /^\-(\w\w+)$/.exec(a))
         {
             a = match[1].split('').map(function (i)
@@ -44,7 +43,7 @@ error = function (msg)
 
 parse = function (config, options = {})
 {
-    var addIgnored, addParam, addParamOrIgnore, arg, argv, cfg, df, expandedArgs, help, helpText, k, lng, lngHelp, long, long2key, maxHelp, maxLong, name, optionsText, org, param, paramList, result, short, short2key, sht, shtHelp, v, version, _211_19_, _212_21_, _214_21_, _217_28_, _218_23_, _237_23_
+    var addIgnored, addParam, addParamOrIgnore, arg, argv, cfg, df, expandedArgs, help, helpText, k, lng, lngHelp, long, long2key, maxHelp, maxLong, name, optionsText, org, param, paramList, result, short, short2key, sht, shtHelp, v, version, _210_19_, _211_21_, _213_21_, _216_28_, _217_23_, _236_23_
 
     if (typeof(config) === 'string')
     {
@@ -332,14 +331,14 @@ broken key: ${bold(_k_.y5(k))}`)
         helpText += optionsText
         helpText += '\n\n'
     }
-    short2key['h'] = ((_211_19_=short2key['h']) != null ? _211_19_ : 'help')
-    long2key['help'] = ((_212_21_=long2key['help']) != null ? _212_21_ : 'help')
+    short2key['h'] = ((_210_19_=short2key['h']) != null ? _210_19_ : 'help')
+    long2key['help'] = ((_211_21_=long2key['help']) != null ? _211_21_ : 'help')
     if ((config.version != null))
     {
         version = config.version
         delete config.version
-        long2key['version'] = ((_217_28_=long2key['version']) != null ? _217_28_ : 'version')
-        short2key['V'] = ((_218_23_=short2key['V']) != null ? _218_23_ : 'version')
+        long2key['version'] = ((_216_28_=long2key['version']) != null ? _216_28_ : 'version')
+        short2key['V'] = ((_217_23_=short2key['V']) != null ? _217_23_ : 'version')
     }
     delete config[name]
     if (Object.keys(config).length)
@@ -347,7 +346,7 @@ broken key: ${bold(_k_.y5(k))}`)
         helpText += noon.stringify(config,{maxalign:16,colors:{key:gray,string:white}})
         helpText += '\n'
     }
-    options.ignoreArgs = ((_237_23_=options.ignoreArgs) != null ? _237_23_ : 2)
+    options.ignoreArgs = ((_236_23_=options.ignoreArgs) != null ? _236_23_ : 2)
     if (options.argv)
     {
         argv = options.argv

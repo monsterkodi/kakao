@@ -7,13 +7,13 @@
 ###
 
 use ../tools/ranges
-use ../../kxk/dom ▪ $, stopEvent
+use ../../kxk/dom ▪ $ stopEvent
 use ../../kxk/util ▪ pull
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 
-import File from '../tools/file.js'
+use ../tools/file ● File
 
 class Meta
 
@@ -59,7 +59,7 @@ class Meta
                     localChange.newIndex = line
                     localChange.doIndex  = line
                     localChange.after    = @editor.line(meta[0])
-                    @editor.emit 'fileSearchResultChange', file, localChange
+                    @editor.emit 'fileSearchResultChange' file, localChange
                     meta[2].state = 'unsaved'
                     if meta[2].span?
                         button = @saveButton li

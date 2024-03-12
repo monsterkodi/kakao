@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_
 
 import kpos from "../../kxk/kpos.js"
@@ -8,7 +6,8 @@ import elem from "../../kxk/elem.js"
 
 import slash from "../../kxk/slash.js"
 
-import File from '../tools/file.js'
+import File from "../tools/file.js"
+
 class Crumb
 {
     constructor (column)
@@ -36,14 +35,14 @@ class Crumb
 
     onMouseDown (event)
     {
-        var _30_34_
+        var _29_34_
 
         return this.downPos = kpos((window.win != null ? window.win.getBounds() : undefined))
     }
 
     onMouseUp (event)
     {
-        var br, root, upPos, _36_31_
+        var br, root, upPos, _35_31_
 
         if (!this.downPos)
         {
