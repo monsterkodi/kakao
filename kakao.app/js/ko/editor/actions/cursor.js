@@ -1,6 +1,6 @@
 // monsterkodi/kakao 0.1.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 export default {actions:{menu:'Cursors',cursorInAllLines:{name:'Cursor in All Lines',combo:'alt+a'},alignCursorsUp:{separator:true,name:'Align Cursors with Top-most Cursor',combo:'alt+ctrl+shift+up'},alignCursorsDown:{name:'Align Cursors with Bottom-most Cursor',combo:'alt+ctrl+shift+down'},alignCursorsLeft:{name:'Align Cursors with Left-most Cursor'},alignCursorsRight:{name:'Align Cursors with Right-most Cursor'},alignCursorsAndText:{name:'Align Cursors and Text',text:'align text to the right of cursors by inserting spaces',combo:'alt+shift+a'},setCursorsAtSelectionBoundariesOrSelectSurround:{separator:true,name:'Cursors at Selection Boundaries or Select Brackets/Quotes',text:`set cursors at selection boundaries, if a selection exists.
 select brackets or quotes otherwise.`,combo:'command+alt+b',accel:'alt+ctrl+b'},addCursorsUp:{separator:true,name:'Add Cursors Up',combo:'command+up',accel:'ctrl+up'},addCursorsDown:{name:'Add Cursors Down',combo:'command+down',accel:'ctrl+down'},delCursorsUp:{separator:true,name:'Remove Cursors Up',combo:'command+shift+up',accel:'ctrl+shift+up'},delCursorsDown:{name:'Remove Cursors Down',combo:'command+shift+down',accel:'ctrl+shift+down'},cursorMoves:{name:'Move Cursors To Start',combos:['ctrl+home','ctrl+end','page up','page down','ctrl+shift+home','ctrl+shift+end','shift+page up','shift+page down','alt+-','alt+=','alt+[','alt+]']}},singleCursorAtPos:function (p, opt = {extend:false})
@@ -197,7 +197,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b',accel:'alt+ctrl+b'},
 
     this.do.start()
     newCursors = this.do.cursors()
-    newX = _.max((function () { var r_211_33_ = []; var list = _k_.list(newCursors); for (var _211_33_ = 0; _211_33_ < list.length; _211_33_++)  { c = list[_211_33_];r_211_33_.push(c[0])  } return r_211_33_ }).bind(this)())
+    newX = _k_.max((function () { var r_211_31_ = []; var list = _k_.list(newCursors); for (var _211_31_ = 0; _211_31_ < list.length; _211_31_++)  { c = list[_211_31_];r_211_31_.push(c[0])  } return r_211_31_ }).bind(this)())
     lines = {}
     var list1 = _k_.list(newCursors)
     for (var _213_15_ = 0; _213_15_ < list1.length; _213_15_++)
@@ -209,7 +209,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b',accel:'alt+ctrl+b'},
     for (li in lines)
     {
         cx = lines[li]
-        this.do.change(li,this.do.line(li).slice(0,cx) + _.padStart('',newX - cx) + this.do.line(li).slice(cx))
+        this.do.change(li,this.do.line(li).slice(0,cx) + _k_.lpad(newX - cx) + this.do.line(li).slice(cx))
     }
     this.do.setCursors(newCursors)
     return this.do.end()
@@ -244,10 +244,10 @@ select brackets or quotes otherwise.`,combo:'command+alt+b',accel:'alt+ctrl+b'},
                 return _k_.last(newCursors)[0]
 
             case 'left':
-                return _.min((function () { var r_233_48_ = []; var list = _k_.list(newCursors); for (var _233_48_ = 0; _233_48_ < list.length; _233_48_++)  { c = list[_233_48_];r_233_48_.push(c[0])  } return r_233_48_ }).bind(this)())
+                return _k_.min((function () { var r_233_46_ = []; var list = _k_.list(newCursors); for (var _233_46_ = 0; _233_46_ < list.length; _233_46_++)  { c = list[_233_46_];r_233_46_.push(c[0])  } return r_233_46_ }).bind(this)())
 
             case 'right':
-                return _.max((function () { var r_234_48_ = []; var list1 = _k_.list(newCursors); for (var _234_48_ = 0; _234_48_ < list1.length; _234_48_++)  { c = list1[_234_48_];r_234_48_.push(c[0])  } return r_234_48_ }).bind(this)())
+                return _k_.max((function () { var r_234_46_ = []; var list1 = _k_.list(newCursors); for (var _234_46_ = 0; _234_46_ < list1.length; _234_46_++)  { c = list1[_234_46_];r_234_46_.push(c[0])  } return r_234_46_ }).bind(this)())
 
         }
 

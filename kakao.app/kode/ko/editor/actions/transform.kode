@@ -59,7 +59,7 @@ class Transform
                 base = 10
 
         pad = Number(step*(cs.length-1)+offset).toString(base).length
-        numbers = (_.padStart Number(step*i+offset).toString(base), pad, '0' for i in [0...cs.length])
+        numbers = (lpad pad, Number(step*i+offset).toString(base), '0' for i in [0...cs.length])
 
         @editor.replaceSelectedText numbers
         @editor.do.end()

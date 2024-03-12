@@ -12,6 +12,7 @@ use ./noon
 use ./post
 use ./ffs
 use ./sds
+use ./util ▪ isEqual
 
 # simple key value store with delayed saving to userData folder
 # does sync changes between processes
@@ -98,7 +99,7 @@ function Store extends events
     set: (key, value) ->
 
         return if not key?.split?
-        # return if _.isEqual @get(key), value
+        return if isEqual @get(key), value
         return if @get(key) == value
 
         @data ?= {}

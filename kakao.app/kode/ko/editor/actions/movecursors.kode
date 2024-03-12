@@ -212,7 +212,7 @@ export
     moveCursorsDown: (e, n=1) ->
         
         if e and @numSelections() == 0 # selecting lines down
-            if 0 == _.max (c[0] for c in @cursors()) # all cursors in first column
+            if 0 == max (c[0] for c in @cursors()) # all cursors in first column
                 @do.start()
                 @do.select @rangesForCursorLines() # select lines without moving cursors
                 @do.end()

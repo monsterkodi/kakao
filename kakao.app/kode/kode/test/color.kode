@@ -6,9 +6,7 @@
  0000000   0000000   0000000   0000000   000   000
 ###
 
-use ./utils
-
-{ kc, ke } = utils
+use ./utils ▪ kc ke
 
 ▸ color
     

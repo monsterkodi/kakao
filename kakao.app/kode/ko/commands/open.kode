@@ -12,6 +12,7 @@ use ../editor/render
 use ../editor/syntax
 use ../../kxk/post
 use ../../kxk/slash
+use ../../kxk/util ▪ uniqBy
 use ../../../lib/lib_ko ▪ fuzzy
 
 import File from '../tools/file.js'
@@ -212,7 +213,7 @@ function Open extends command
                     items.push item
 
         items = @weightedItems items, opt
-        # items = _.uniqBy items, (o) -> o.text
+        items = uniqBy items, 'text'
         
         items.slice 0, opt.maxItems
     

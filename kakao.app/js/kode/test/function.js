@@ -3,12 +3,9 @@ var toExport = {}
 
 var _k_
 
-var kc, ke
-
 import utils from "./utils.js"
-
-kc = utils.kc
-ke = utils.ke
+let kc = utils.kc
+let ke = utils.ke
 
 toExport["function"] = function ()
 {

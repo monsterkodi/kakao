@@ -99,8 +99,6 @@ ranges = (regexes, text, flags) ->
                 for j in [0..match.length-2]
                     value = arg
                     if value is Array and j < value.length then value = value[j]
-                    # else if _.isObject(value) and j < _.size(value) 
-                        # value = [_.keys(value)[j], value[_.keys(value)[j]]]
                     else if value is obj and j < Object.keys(value).length 
                         value = [Object.keys(value)[j], value[Object.keys(value)[j]]]
                     break if not match[j+1]?

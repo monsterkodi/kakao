@@ -9,6 +9,7 @@
 use ../kxk/kstr
 use ../kxk/slash
 use ../kxk/kolor
+use ./print
 
 kolor.globalize()
 
@@ -165,10 +166,10 @@ class Tester
             log R1 r3(' ▸ ') 
             log g3 @showSpace fail.rhs
              
-            if "[object Object]" in ''+fail.lhs
-                print.noon 'lhs' fail.lhs            
-            if "[object Object]" in ''+fail.rhs
-                print.noon 'rhs' fail.rhs
+            # if "[object Object]" in ''+fail.lhs
+                # print.noon 'lhs' fail.lhs            
+            # if "[object Object]" in ''+fail.rhs
+                # print.noon 'rhs' fail.rhs
         
         if allsuccs or fails.length
             summary  = w2 kstr.now() + ' '

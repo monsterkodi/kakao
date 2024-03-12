@@ -1,6 +1,6 @@
 // monsterkodi/kakao 0.1.0
 
-var _k_
+var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 class Invisibles
 {
@@ -46,7 +46,7 @@ class Invisibles
             if (s[p] === '\t')
             {
                 n = 4 - (p % 4)
-                s = s.splice(p,1,_.padStart("",n))
+                s = s.splice(p,1,_k_.lpad(n))
                 this.editor.meta.add({line:li,html:'&#9656',start:p,end:p,yOffset:-1,clss:'invisible invisible-tab'})
             }
             p += n

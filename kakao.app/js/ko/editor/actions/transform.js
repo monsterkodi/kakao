@@ -1,6 +1,6 @@
 // monsterkodi/kakao 0.1.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isFunc: function (o) {return typeof o === 'function'}}
 
 import kstr from "../../../kxk/kstr.js"
 
@@ -48,7 +48,7 @@ class Transform
         }
 
         pad = Number(step * (cs.length - 1) + offset).toString(base).length
-        numbers = (function () { var r_62_83_ = []; for (var _62_87_ = i = 0, _62_91_ = cs.length; (_62_87_ <= _62_91_ ? i < cs.length : i > cs.length); (_62_87_ <= _62_91_ ? ++i : --i))  { r_62_83_.push(_.padStart(Number(step * i + offset).toString(base),pad,'0'))  } return r_62_83_ }).bind(this)()
+        numbers = (function () { var r_62_77_ = []; for (var _62_81_ = i = 0, _62_85_ = cs.length; (_62_81_ <= _62_85_ ? i < cs.length : i > cs.length); (_62_81_ <= _62_85_ ? ++i : --i))  { r_62_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_62_77_ }).bind(this)()
         this.editor.replaceSelectedText(numbers)
         this.editor.do.end()
         return 'count'

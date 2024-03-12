@@ -1,6 +1,6 @@
 // monsterkodi/kakao 0.1.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',text:'delete character to the left',combo:'backspace'},deleteBackwardIgnoreLineBoundary:{name:'Delete Backward Over Line Boundaries',combo:'command+backspace',accel:'ctrl+backspace'},deleteBackwardSwallowWhitespace:{name:'Delete Backward Over Whitespace',combo:'alt+backspace'}},deleteBackwardIgnoreLineBoundary:function ()
 {
@@ -39,7 +39,7 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',te
     }
     else if ((opt != null ? opt.ignoreTabBoundary : undefined))
     {
-        removeNum = Math.max(1,_.min(newCursors.map((function (c)
+        removeNum = Math.max(1,_k_.min(newCursors.map((function (c)
         {
             var n, t
 
@@ -54,7 +54,7 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',te
     }
     else
     {
-        removeNum = Math.max(1,_.min(newCursors.map((function (c)
+        removeNum = Math.max(1,_k_.min(newCursors.map((function (c)
         {
             var n, t
 

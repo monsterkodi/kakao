@@ -10,6 +10,7 @@ use ../../kxk/elem
 use ../editor/syntax
 use ./commandlist
 use ../../../lib/lib_ko ▪ fuzzy
+use ../../kxk/util ▪ pull
 
 function Command
 
@@ -279,7 +280,7 @@ function Command
         if not @history is arr
             error "Command.setCurrent -- #{@historyKey()} : history not an array?" typeof @history 
             @history = []
-        _.pull @history, command
+        pull @history, command
         @history.push command if command.trim().length
         while @history.length > @maxHistory
             @history.shift()

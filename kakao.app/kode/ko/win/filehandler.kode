@@ -9,6 +9,7 @@
 use ../../kxk/post 
 use ../../kxk/prefs 
 use ../../kxk/slash
+use ../../kxk/util ▪ pull
 
 import File from '../tools/file.js'
 
@@ -250,7 +251,7 @@ class FileHandler
     
         recent = window.state.get 'recentFiles' []
         return if file == first recent
-        _.pull recent, file
+        pull recent, file
         recent.unshift file
         while recent.length > prefs.get 'recentFilesLength' 15
             recent.pop()

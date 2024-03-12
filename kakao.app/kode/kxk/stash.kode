@@ -6,8 +6,6 @@
 0000000      000     000   000  0000000   000   000  
 ###
 
-# { _, fs, noon, post, sds, slash } = require './kxk'
-
 # simple key value store with delayed saving to userData folder
 # does not sync between processes
  
@@ -15,6 +13,7 @@ use ./post
 use ./slash
 use ./sds
 use ./ffs
+use ./util ▪ defaults
 
 function Stash
     
@@ -32,7 +31,7 @@ function Stash
         # fs.ensureDir slash.dir(@file), ->
         @data = @load()
         @data = {} if not @data is obj
-        # @data = _.defaults @data, opt.defaults if opt?.defaults?
+        @data = defaults @data, opt.defaults if opt?.defaults?
 
     keypath: (key) -> key.split @sep
     
