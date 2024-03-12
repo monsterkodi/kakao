@@ -6,9 +6,6 @@
 000       000  0000000  00000000        0000000    000   000   0000000   00     00  0000000   00000000  000   000
 ###
 
-use ./browser
-use ./select
-use ./shelf
 use ../../kxk/dom ▪ $
 use ../../kxk/slash
 use ../../kxk/elem
@@ -16,10 +13,13 @@ use ../../kxk/drag
 use ../../kxk/post
 use ../../kxk/ffs
 
+use ./browser
+use ./select
+use ./shelf
 # use ../git/hub
 
-import File from '../tools/file.js'
-import Info from './info.js'
+use ../tools/file ● File
+use ./info ● Info
 
 function FileBrowser extends browser
 

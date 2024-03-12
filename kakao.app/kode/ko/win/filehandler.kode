@@ -11,7 +11,7 @@ use ../../kxk/prefs
 use ../../kxk/slash
 use ../../kxk/util ▪ pull
 
-import File from '../tools/file.js'
+use ../tools/file ● File
 
 class FileHandler
 

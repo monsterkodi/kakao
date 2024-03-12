@@ -9,8 +9,7 @@
 use ../../kxk/kpos
 use ../../kxk/elem
 use ../../kxk/slash
-
-import File from '../tools/file.js'
+use ../tools/file ● File
 
 class Crumb
 

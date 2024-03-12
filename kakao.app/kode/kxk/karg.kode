@@ -8,8 +8,7 @@
 
 use ./kstr
 use ./kolor
-
-import noon  from './noon.js'
+use ./noon
 
 kolor.globalize()
 

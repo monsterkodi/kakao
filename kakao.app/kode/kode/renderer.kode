@@ -33,8 +33,10 @@ class Renderer
     
     render: (ast, source) ->
 
+        
         @file = source
         @source = slash.relative source, process.cwd()
+        # log @file, @source
         
         @ast = ast
             
@@ -348,12 +350,12 @@ class Renderer
         if valid n.items
             
             if n.toUse.length > 1
-                error 'items for multiple models?!'
+                error 'items for multiple modules?!'
                             
             m   = n.toUse[0]
             mod = m.text ? m
             
-            name = slash.name m.text
+            name = slash.name mod
             s += 'import ' + name
 
             if mod[0] == '.'
@@ -363,6 +365,23 @@ class Renderer
                 
             for item in n.items
                 s += "let #{item} = #{name}.#{item}\n"
+                
+        else if valid n.name
+
+            if n.toUse.length > 1
+                error 'named import for multiple modules?!'
+            
+            m   = n.toUse[0]
+            mod = m.text ? m
+            
+            name = slash.name mod
+            s += 'import ' + n.name
+
+            if mod[0] == '.'
+                s += " from \"#{slash.swapExt mod, 'js'}\"\n"
+            else
+                s += " from \"#{mod}\"\n"
+                
         else
         
             for m in n.toUse

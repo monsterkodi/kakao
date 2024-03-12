@@ -12,13 +12,14 @@ use ../../kxk/ffs
 use ../../kxk/kstr
 use ../../kxk/slash
 
-import Do from './do.js'
+use ./do ● Do
 
 __dirname = slash.dir import.meta.url[7..]
 
 function Editor extends buffer
 
     @actions: null
+    @actionEditors: []
 
     @: (name, config) ->
 
@@ -69,13 +70,15 @@ function Editor extends buffer
     @initActions: (editor) ○->
 
         Editor.actions = []
+        Editor.actionEditors.push editor
+        return if Editor.actionEditors.length > 1
         
         filelist = await ffs.list slash.path __dirname, 'actions'
         
         for item in filelist
             # TODO: move this stuff to a config.noon file
             actionFile = item.path
-            continue if slash.ext(actionFile) not in ['js' 'mjs' 'coffee' 'kode']
+            continue if slash.ext(actionFile) not in ['js' 'mjs' 'kode']
             # log 'action' actionFile
             actions = await import(actionFile)
             # log 'Editor.initActions' actions.default
@@ -86,16 +89,20 @@ function Editor extends buffer
                     for k,v of value
                         if not v is str
                             v.key = k if not v.key?
+                            # if v.name
                             Editor.actions.push v
+                            # else
+                                # log 'action without name?' kstr v
 
         # log 'Editor.initActions' Editor.actions
-        editor?.actionsInitialized()
-        # too early for log here!
-        # console.log str @actions
+        for editor in Editor.actionEditors
+            editor.actionsInitialized()
+
+        Editor.actions.sort (a,b) -> a.name?.localeCompare b.name
+        console.log Editor.actions.map (a) -> a.name ? a.key
 
     @actionWithName: (name) ->
 
-        log name, Editor.actions
         for action in Editor.actions
             if action.name == name
                 return action

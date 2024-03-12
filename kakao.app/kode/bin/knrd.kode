@@ -36,7 +36,7 @@ knrd = (files = [], opt = {}) ○->
             tgtExt:  'js'
             srcDir:  kodeDir
             tgtDir:  jsDir
-            compile: (srcText, srcFile) -> k0de = new kode; k0de.compile srcText, srcFile
+            compile: (srcText, srcFile) -> k0de = new kode header:false; k0de.compile srcText, srcFile
         styl:
             tgtExt:  'css'
             srcDir:  pugDir
@@ -51,7 +51,7 @@ knrd = (files = [], opt = {}) ○->
             tgtExt:  'json'
             srcDir:  kodeDir
             tgtDir:  jsDir
-            compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, 4
+            compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, '  '
     
     if empty files
         

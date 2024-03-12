@@ -8,8 +8,7 @@
 
 use ../kxk/kstr
 use ../kxk/slash
-
-import noon  from '../kxk/noon.js'
+use ../kxk/noon
 
 class Print
 

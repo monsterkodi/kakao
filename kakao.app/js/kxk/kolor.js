@@ -1,5 +1,3 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var b, B, B256, bg, BG_COLORS, bold, c, C, exports, f, F, F256, fg, FG_COLORS, g, G, i, init, m, M, noop, r, R, reset, s, STRIPANSI, w, W, wrap, y, Y, _113_16_

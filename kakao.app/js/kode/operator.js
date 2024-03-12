@@ -1,19 +1,19 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.g3=_k_.k.F256(_k_.k.g(3));_k_.b6=_k_.k.F256(_k_.k.b(6));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w4=_k_.k.F256(_k_.k.w(4))
 
 var assign, precedence
 
+import print from "./print.js"
+
 
 precedence = function (o)
 {
-    var t, _15_20_
+    var t, _17_20_
 
     if ((o != null ? o.qmrkcolon : undefined))
     {
         return 12
     }
-    t = (o != null ? (_15_20_=o.operation) != null ? _15_20_.operator.text : undefined : undefined)
+    t = (o != null ? (_17_20_=o.operation) != null ? _17_20_.operator.text : undefined : undefined)
     switch (t)
     {
         case 'new':
@@ -104,7 +104,6 @@ precedence = function (o)
 
 }
 assign = ['=','+=','-=','*=','/=','%=','^=','&=','|=','&&=','||=']
-import print from './print.js'
 class Operator
 {
     constructor (kode)
@@ -117,14 +116,14 @@ class Operator
 
     collect (tl)
     {
-        var e, _58_19_
+        var e, _59_19_
 
-        if ((tl != null ? (_58_19_=tl.exps) != null ? _58_19_.length : undefined : undefined))
+        if ((tl != null ? (_59_19_=tl.exps) != null ? _59_19_.length : undefined : undefined))
         {
             var list = _k_.list(tl.exps)
-            for (var _59_25_ = 0; _59_25_ < list.length; _59_25_++)
+            for (var _60_25_ = 0; _60_25_ < list.length; _60_25_++)
             {
-                e = list[_59_25_]
+                e = list[_60_25_]
                 this.exp(e)
             }
         }
@@ -133,7 +132,7 @@ class Operator
 
     exp (e)
     {
-        var key, v, val, _76_30_
+        var key, v, val, _77_30_
 
         if (!e)
         {
@@ -148,9 +147,9 @@ class Operator
             if (e.length)
             {
                 var list = _k_.list(e)
-                for (var _73_42_ = 0; _73_42_ < list.length; _73_42_++)
+                for (var _74_42_ = 0; _74_42_ < list.length; _74_42_++)
                 {
-                    v = list[_73_42_]
+                    v = list[_74_42_]
                     this.exp(v)
                 }
             }
@@ -190,7 +189,7 @@ class Operator
 
     op (e)
     {
-        var c, chain, i, p, _100_40_, _98_19_, _98_39_
+        var c, chain, i, p, _101_40_, _99_19_, _99_39_
 
         chain = [e]
         c = e.operation
@@ -209,7 +208,7 @@ class Operator
             {
                 this.logChain(chain,p)
             }
-            for (var _108_21_ = i = 1, _108_25_ = p.length; (_108_21_ <= _108_25_ ? i < p.length : i > p.length); (_108_21_ <= _108_25_ ? ++i : --i))
+            for (var _109_21_ = i = 1, _109_25_ = p.length; (_109_21_ <= _109_25_ ? i < p.length : i > p.length); (_109_21_ <= _109_25_ ? ++i : --i))
             {
                 if (p[i] > p[i - 1])
                 {
@@ -226,12 +225,12 @@ class Operator
 
     fixPrec (e)
     {
-        var newlhs, newop, op, _129_23_, _129_41_, _129_52_, _129_62_, _133_37_, _133_48_, _169_54_, _169_84_, _175_32_, _175_53_
+        var newlhs, newop, op, _130_23_, _130_41_, _130_52_, _130_62_, _134_37_, _134_48_, _170_54_, _170_84_, _176_32_, _176_53_
 
         op = e.operation || e.qmrkcolon
         if (precedence(e) < precedence(op.rhs))
         {
-            if (op.operator.text === 'not' && _k_.in(((op.rhs != null ? op.rhs.incond : undefined) || ((_129_41_=op.rhs) != null ? (_129_52_=_129_41_.operation) != null ? (_129_62_=_129_52_.operator) != null ? _129_62_.text : undefined : undefined : undefined)),assign))
+            if (op.operator.text === 'not' && _k_.in(((op.rhs != null ? op.rhs.incond : undefined) || ((_130_41_=op.rhs) != null ? (_130_52_=_130_41_.operation) != null ? (_130_62_=_130_52_.operator) != null ? _130_62_.text : undefined : undefined : undefined)),assign))
             {
                 return
             }
@@ -239,7 +238,7 @@ class Operator
             {
                 return
             }
-            if (_k_.in(((_133_37_=e.operation.rhs) != null ? (_133_48_=_133_37_.operation) != null ? _133_48_.operator.text : undefined : undefined),assign))
+            if (_k_.in(((_134_37_=e.operation.rhs) != null ? (_134_48_=_134_37_.operation) != null ? _134_48_.operator.text : undefined : undefined),assign))
             {
                 return
             }
@@ -285,7 +284,7 @@ class Operator
 
     logChain (chain, p)
     {
-        var rndr, s, _193_43_, _193_50_
+        var rndr, s, _194_43_, _194_50_
 
         s = ''
         rndr = (function (n)
@@ -310,7 +309,7 @@ class Operator
                 return (rndr(i.qmrkcolon.lhs)) + ' ? ' + (rndr(i.qmrkcolon.mid)) + ' '
             }
         }).bind(this)).join(' ')
-        s += ' ' + ((_193_50_=rndr((chain.slice(-1)[0].operation != null ? chain.slice(-1)[0].operation.rhs : undefined))) != null ? _193_50_ : '...')
+        s += ' ' + ((_194_50_=rndr((chain.slice(-1)[0].operation != null ? chain.slice(-1)[0].operation.rhs : undefined))) != null ? _194_50_ : '...')
         console.log(_k_.w4('▪'),s,_k_.g3(p))
     }
 

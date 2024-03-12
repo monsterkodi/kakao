@@ -6,18 +6,14 @@
 000   000   0000000   00     00
 ###
 
-# { $, _, elem, keyinfo, post, slash, stopEvent } = require 'kxk'
-
-use ../../kxk/dom
+use ../../kxk/dom ▪ $ stopEvent
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 use ../../kxk/keyinfo
 use ../editor/syntax
 
-import File from '../tools/file.js'
-
-{ $, stopEvent } = dom
+use ../tools/file ● File
 
 function Row
     

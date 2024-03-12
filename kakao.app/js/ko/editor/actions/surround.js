@@ -1,8 +1,6 @@
-// monsterkodi/kakao 0.1.0
-
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
-import util from "../../kxk/util.js"
+import util from "../../../kxk/util.js"
 let isEqual = util.isEqual
 let uniqEqual = util.uniqEqual
 let reversed = util.reversed
