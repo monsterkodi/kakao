@@ -350,7 +350,7 @@ function Column
     isEmpty: -> empty @parent
     clear:   ->
         if @parent?.file and @parent?.type == 'dir'
-            DirWatch.unwatch @parent.file
+            dirwatch.unwatch @parent.file
         delete @parent
         @clearSearch()
         @div.scrollTop = 0

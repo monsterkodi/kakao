@@ -6,7 +6,7 @@
 000   000  00000000  000   000   0000000
 ###
 
-# { filelist, klog, os, slash } = require 'kxk'
+# { filelist, os } = require 'kxk'
 
 use ../../kxk/slash
 
@@ -25,7 +25,7 @@ menu = (template) ->
     if template is arr
         template = clone template
     else
-        klog 'no array?' typeof(template), template
+        log 'no array?' typeof(template), template
         template = []
 
     actionFiles = filelist slash.join __dirname, '../editor/actions'

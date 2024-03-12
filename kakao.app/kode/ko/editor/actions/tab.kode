@@ -5,7 +5,8 @@
 #    000     000   000  000   000  
 #    000     000   000  0000000    
 
-# { _, stopEvent } = require 'kxk'
+use ../../../kxk/dom ▪ stopEvent
+use ../../../kxk/kstr
 
 export
     
@@ -31,7 +32,7 @@ export
             il = @indentString.length
             for c in newCursors
                 n = 4-(c[0]%il)
-                @do.change c[1], @do.line(c[1]).splice c[0], 0, _.padStart "", n
+                @do.change c[1], kstr.splice @do.line(c[1]), c[0], 0, lpad n
                 cursorDelta c, n
             @do.setCursors newCursors
             @do.end()   
@@ -48,7 +49,7 @@ export
                     n = (c[0] % @indentString.length) or @indentString.length
                     t = @do.textInRange [c[1], [c[0]-n, c[0]]]
                     if t.trim().length == 0
-                        @do.change c[1], @do.line(c[1]).splice c[0]-n, n
+                        @do.change c[1], kstr.splice @do.line(c[1]), c[0]-n, n
                         cursorDelta c, -n
             @do.setCursors newCursors
             @do.end()

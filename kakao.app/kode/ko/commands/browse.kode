@@ -81,7 +81,8 @@ function Browse extends command
     completeCallback: (files) =>
 
         if not empty @getText().trim()
-            text = slash.resolve @getText().trim()
+            # text = slash.resolve @getText().trim()
+            text = slash.path @getText().trim()
             matches = files.filter (f) -> f.file.startsWith text
 
             if not empty matches
@@ -113,19 +114,21 @@ function Browse extends command
     complete: ->
 
         text = @getText().trim()
+        
+        log 'complete not implemented!' text
 
-        if not text.endsWith('/') and slash.dirExists text
-            @setText text + '/'
-            @hideList()
-            true
-        else if text.endsWith '/'
-            if slash.dirExists slash.resolve text
-                slash.list slash.resolve(text), @completeCallback
-                true
-        else if not empty slash.dir text
-            if slash.dirExists slash.resolve slash.dir text
-                slash.list slash.resolve(slash.dir(text)), @completeCallback
-                true
+        # if not text.endsWith('/') and slash.dirExists text
+            # @setText text + '/'
+            # @hideList()
+            # true
+        # else if text.endsWith '/'
+            # if slash.dirExists slash.resolve text
+                # slash.list slash.resolve(text), @completeCallback
+                # true
+        # else if not empty slash.dir text
+            # if slash.dirExists slash.resolve slash.dir text
+                # slash.list slash.resolve(slash.dir(text)), @completeCallback
+                # true
 
     onTabCompletion: ->
 
@@ -148,7 +151,8 @@ function Browse extends command
 
     clearBrokenPartForFiles: (files) ->
 
-        brokenPath = slash.resolve @getText()
+        # brokenPath = slash.resolve @getText()
+        brokenPath = slash.path @getText()
         longestMatch = ''
         for file in files
             file = file.file
@@ -167,7 +171,8 @@ function Browse extends command
             @hideList()
             return
 
-        path = slash.resolve @getText().trim()
+        # path = slash.resolve @getText().trim()
+        path = slash.path @getText().trim()
         matches = files.filter (f) -> f.file.startsWith path
 
         if empty matches
@@ -207,11 +212,12 @@ function Browse extends command
 
     changed: (command) ->
 
-        # log 'browse.changed' command
+        log 'browse.changed' command
         text = @getText().trim()
         if not text.endsWith '/'
             @walker?.end()
-            @walker = slash.list slash.resolve(slash.dir(text)), @changedCallback
+            # @walker = slash.list slash.resolve(slash.dir(text)), @changedCallback
+            @walker = null
         else
             @hideList()
 

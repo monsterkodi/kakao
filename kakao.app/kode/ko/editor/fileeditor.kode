@@ -232,7 +232,7 @@ function FileEditor extends texteditor
 
     jumpToFile: (opt) =>
 
-        # klog 'jumpToFile' opt
+        # log 'jumpToFile' opt
         
         window.tabs.activeTab true
 
@@ -256,7 +256,7 @@ function FileEditor extends texteditor
             window.navigate.gotoFilePos opt
         else
             file = slash.joinFileLine opt.file, opt.line, opt.col
-            # klog 'bypass navigation history' file
+            # log 'bypass navigation history' file
             post.emit 'loadFile' file
 
     jumpTo: (word, opt) =>

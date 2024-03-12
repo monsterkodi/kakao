@@ -34,16 +34,16 @@ class Do
 
     foreignChanges (lineChanges)
     {
-        var change, _32_62_
+        var change, _30_62_
 
         this.start()
         var list = _k_.list(lineChanges)
-        for (var _31_19_ = 0; _31_19_ < list.length; _31_19_++)
+        for (var _29_19_ = 0; _29_19_ < list.length; _29_19_++)
         {
-            change = list[_31_19_]
+            change = list[_29_19_]
             if (change.change !== 'deleted' && !(change.after != null))
             {
-                kerror(`Do.foreignChanges -- no after? ${change}`)
+                console.error(`Do.foreignChanges -- no after? ${change}`)
                 continue
             }
             switch (change.change)
@@ -58,7 +58,7 @@ class Do
                     this.delete(change.doIndex)
                     break
                 default:
-                    kerror(`Do.foreignChanges -- unknown change ${change.change}`)
+                    console.error(`Do.foreignChanges -- unknown change ${change.change}`)
             }
 
         }
@@ -137,7 +137,7 @@ class Do
 
     end (opt)
     {
-        var changes, _133_27_
+        var changes, _131_27_
 
         this.redos = []
         this.groupCount -= 1
@@ -153,7 +153,7 @@ class Do
 
     undo ()
     {
-        var changes, _153_27_
+        var changes, _151_27_
 
         if (this.history.length)
         {
@@ -172,7 +172,7 @@ class Do
 
     redo ()
     {
-        var changes, _175_27_
+        var changes, _173_27_
 
         if (this.redos.length)
         {
@@ -211,7 +211,7 @@ class Do
 
         if (!(newCursors != null) || newCursors.length < 1)
         {
-            return kerror("Do.setCursors -- empty cursors?")
+            return console.error("Do.setCursors -- empty cursors?")
         }
         if ((opt != null ? opt.main : undefined))
         {
@@ -352,7 +352,7 @@ class Do
                 c = this.history[this.history.length - 3]
                 if ((a.numLines() === b.numLines() && b.numLines() === c.numLines()))
                 {
-                    for (var _337_31_ = li = 0, _337_35_ = a.numLines(); (_337_31_ <= _337_35_ ? li < a.numLines() : li > a.numLines()); (_337_31_ <= _337_35_ ? ++li : --li))
+                    for (var _335_31_ = li = 0, _335_35_ = a.numLines(); (_335_31_ <= _335_35_ ? li < a.numLines() : li > a.numLines()); (_335_31_ <= _335_35_ ? ++li : --li))
                     {
                         la = a.s.lines[li]
                         lb = b.s.lines[li]
@@ -381,16 +381,16 @@ class Do
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _355_14_ = 0; _355_14_ < list.length; _355_14_++)
+        for (var _353_14_ = 0; _353_14_ < list.length; _353_14_++)
         {
-            p = list[_355_14_]
+            p = list[_353_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _362_23_ = ci = cs.length - 1, _362_37_ = 0; (_362_23_ <= _362_37_ ? ci < 0 : ci > 0); (_362_23_ <= _362_37_ ? ++ci : --ci))
+            for (var _360_23_ = ci = cs.length - 1, _360_37_ = 0; (_360_23_ <= _360_37_ ? ci < 0 : ci > 0); (_360_23_ <= _360_37_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -470,7 +470,7 @@ class Do
 
     textInRange (r)
     {
-        var _391_41_
+        var _389_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

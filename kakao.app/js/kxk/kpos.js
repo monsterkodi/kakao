@@ -34,7 +34,7 @@ Pos = (function ()
 {
     function Pos (x, y)
     {
-        var br, event, _21_13_, _21_22_, _33_22_
+        var br, event, _21_13_, _21_22_, _29_18_, _33_22_
 
         this.x = x
         this.y = y
@@ -53,7 +53,7 @@ Pos = (function ()
                 this.y = event.clientY + window.scrollY + 1
             }
         }
-        else if (_k_.isFunc(this.x.getBoundingClientRect))
+        else if (_k_.isFunc((this.x != null ? this.x.getBoundingClientRect : undefined)))
         {
             br = this.x.getBoundingClientRect()
             this.x = br.left

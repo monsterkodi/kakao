@@ -80,7 +80,7 @@ class Select
         }
         if (row.isSelected())
         {
-            klog('unselect',row.item.file)
+            console.log('unselect',row.item.file)
             row.clearActive()
             row.clearSelected()
             return this.rows.splice(this.rows.indexOf(row),1)

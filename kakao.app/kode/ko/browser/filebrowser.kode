@@ -9,6 +9,7 @@
 use ./browser
 use ./select
 use ./shelf
+use ../../kxk/dom ▪ $
 use ../../kxk/slash
 use ../../kxk/elem
 use ../../kxk/drag
@@ -74,14 +75,14 @@ function FileBrowser extends browser
         
             if action == 'move' 
                 if source == target or slash.dir(source) == target
-                    klog 'noop' source, target
+                    log 'noop' source, target
                     return
                         
         for source in sources
             
             switch action
-                when 'move' then File.rename source, target, (source, target) => # klog 'file moved' source, target
-                when 'copy' then File.copy source, target, (source, target) => # klog 'file copied' source, target
+                when 'move' then File.rename source, target, (source, target) => # log 'file moved' source, target
+                when 'copy' then File.copy source, target, (source, target) => # log 'file copied' source, target
                     
     columnForFile: (file) ->
         
@@ -111,12 +112,12 @@ function FileBrowser extends browser
 
     browse: (file, opt) => 
 
-        klog 'browse' file, opt
+        log 'browse' file, opt
         if file then @loadItem @fileItem(file), opt
         
     onFile: (file) => 
     
-        # klog 'onFile' file
+        # log 'onFile' file
         if file and @flex then @navigateToFile file
     
     navigateToFile: (file) =>
@@ -171,7 +172,7 @@ function FileBrowser extends browser
 
     refresh: =>
 
-        hub.refresh()
+        # hub.refresh()
         @srcCache = {}
 
         if @lastUsedColumn()
@@ -185,7 +186,8 @@ function FileBrowser extends browser
     
     fileItem: (path) ->
         
-        p = slash.resolve path
+        # p = slash.resolve path
+        p = slash.path path
                 
         file:p
         type:slash.isFile(p) and 'file' or 'dir'
@@ -193,7 +195,7 @@ function FileBrowser extends browser
         
     onFileBrowser: (action, item, arg) =>
 
-        # klog 'onFileBrowser' action, item.type, arg
+        # log 'onFileBrowser' action, item.type, arg
         switch action
             when 'loadItem'     then @loadItem     item, arg
             when 'activateItem' then @activateItem item, arg
@@ -492,7 +494,7 @@ function FileBrowser extends browser
         file = item.file ? item.parent?.file
         return if empty file
 
-        hub.status file, (status) => @applyGitStatusFiles col, hub.statusFiles status
+        # hub.status file, (status) => @applyGitStatusFiles col, hub.statusFiles status
 
     applyGitStatusFiles: (col, files) =>
 
@@ -500,9 +502,9 @@ function FileBrowser extends browser
 
     onGitStatus: (gitDir, status) =>
 
-        files = hub.statusFiles status
-        for col in [0..@columns.length]
-            @applyGitStatusFiles col, files
+        # files = hub.statusFiles status
+        # for col in [0..@columns.length]
+            # @applyGitStatusFiles col, files
 
     #  0000000  000   000  00000000  000      00000000  
     # 000       000   000  000       000      000       
@@ -528,7 +530,7 @@ function FileBrowser extends browser
         if @shelfSize < 1
             @setShelfSize 200
         else
-            klog 'toggleShelf lastUsedColumn.focus'
+            log 'toggleShelf lastUsedColumn.focus'
             @lastUsedColumn()?.focus()
             @setShelfSize 0
             

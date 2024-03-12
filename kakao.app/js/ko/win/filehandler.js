@@ -50,7 +50,7 @@ class FileHandler
 
             if (!file.startsWith('untitled'))
             {
-                file = slash.resolve(file)
+                file = slash.path(file)
                 try
                 {
                     process.chdir(slash.dir(file))
@@ -132,13 +132,13 @@ class FileHandler
             window.stash.set('openFilePath',slash.dir(files[0]))
             if (!options.newWindow && !options.newTab)
             {
-                file = slash.resolve(files.shift())
+                file = slash.path(files.shift())
                 this.loadFile(file)
             }
             var list = _k_.list(files)
-            for (var _125_21_ = 0; _125_21_ < list.length; _125_21_++)
+            for (var _127_21_ = 0; _127_21_ < list.length; _127_21_++)
             {
-                file = list[_125_21_]
+                file = list[_127_21_]
                 if (options.newWindow)
                 {
                     post.toMain('newWindowWithFile',file)
@@ -187,7 +187,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _169_29_
+        var tab, _171_29_
 
         if (tab = tabs.activeTab())
         {
@@ -222,9 +222,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _194_16_ = 0; _194_16_ < list.length; _194_16_++)
+        for (var _196_16_ = 0; _196_16_ < list.length; _196_16_++)
         {
-            tab = list[_194_16_]
+            tab = list[_196_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -303,7 +303,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _267_29_
+        var _269_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges() && slash.fileExists(editor.currentFile))
         {
@@ -319,7 +319,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _283_18_
+        var cb, dir, _286_18_
 
         cb = function (files)
         {
@@ -329,13 +329,13 @@ class FileHandler
         {
             dir = slash.dir(editor.currentFile)
         }
-        dir = (dir != null ? dir : slash.resolve('.'))
+        dir = (dir != null ? dir : slash.path('.'))
         return (window.win != null ? window.win.openFileDialog({title:'Open File',defaultPath:window.stash.get('openFilePath',dir),properties:['openFile','multiSelections'],cb:cb}) : undefined)
     }
 
     saveFileAs ()
     {
-        var cb, _303_18_
+        var cb, _306_18_
 
         cb = (function (file)
         {

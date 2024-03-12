@@ -6,8 +6,6 @@
 0000000     0000000
 ###
 
-# { _, kerror, last, post } = require 'kxk'
-
 use ./state
 use ../tools/ranges
 use ../../kxk/post
@@ -30,14 +28,14 @@ class Do
         @start()
         for change in lineChanges
             if change.change != 'deleted' and not change.after?
-                kerror "Do.foreignChanges -- no after? #{change}"
+                error "Do.foreignChanges -- no after? #{change}"
                 continue
             switch change.change
                 'changed'  ➜ @change change.doIndex, change.after
                 'inserted' ➜ @insert change.doIndex, change.after
                 'deleted'  ➜ @delete change.doIndex
                  ➜
-                    kerror "Do.foreignChanges -- unknown change #{change.change}"
+                    error "Do.foreignChanges -- unknown change #{change.change}"
         @end foreign: true
 
     # 000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000
@@ -197,10 +195,10 @@ class Do
 
     setCursors: (newCursors, opt) ->
 
-        # klog 'do.setCursors' newCursors
+        # log 'do.setCursors' newCursors
         
         if not newCursors? or newCursors.length < 1
-            return kerror "Do.setCursors -- empty cursors?"
+            return error "Do.setCursors -- empty cursors?"
 
         if opt?.main
             switch opt.main
@@ -220,7 +218,7 @@ class Do
         @state = @state.setCursors newCursors
         @state = @state.setMain mainIndex
         
-        # klog 'setCursors' @editor.mainCursor()[1] if @editor.name == 'editor'
+        # log 'setCursors' @editor.mainCursor()[1] if @editor.name == 'editor'
         # @state
 
     #  0000000   0000000   000       0000000  000   000  000       0000000   000000000  00000000

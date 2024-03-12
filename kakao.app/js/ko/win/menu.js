@@ -38,7 +38,7 @@ menu = function (template)
     }
     else
     {
-        klog('no array?',typeof(template),template)
+        console.log('no array?',typeof(template),template)
         template = []
     }
     actionFiles = filelist(slash.join(__dirname,'../editor/actions'))

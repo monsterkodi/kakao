@@ -26,7 +26,7 @@ function Pos
             else
                 @x = event.clientX + window.scrollX + 1
                 @y = event.clientY + window.scrollY + 1
-        else if @x.getBoundingClientRect is func
+        else if @x?.getBoundingClientRect is func
             br = @x.getBoundingClientRect()
             @x = br.left
             @y = br.top

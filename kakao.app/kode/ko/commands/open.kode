@@ -85,27 +85,29 @@ function Open extends command
     #  0000000   0000000   000   000  000        0000000  00000000     000     00000000
 
     complete: ->
+        
+        log 'complete not implemented!'
 
-        if @commandList? and @commandList.line(@selected).startsWith(slash.file @getText()) and not @getText().trim().endsWith('/')
-            @setText slash.join(slash.dir(@getText()), @commandList.line(@selected))
-            if slash.dirExists @getText()
-                @setText @getText() + '/'
-                @changed @getText()
-            true
-        else if not @getText().trim().endsWith('/') and slash.dirExists @getText()
-            @setText @getText() + '/'
-            @changed @getText()
-            true            
-        else
-            projects = post.get 'indexer', 'projects'
-            for p in Object.keys(projects).sort()
-                if p.startsWith @getText()
-                    pdir = projects[p].dir
-                    pdir = slash.join(pdir, 'coffee') if slash.dirExists slash.join pdir, 'coffee'
-                    @setText pdir + '/'
-                    @changed @getText()
-                    return true
-            super()
+        # if @commandList? and @commandList.line(@selected).startsWith(slash.file @getText()) and not @getText().trim().endsWith('/')
+            # @setText slash.path(slash.dir(@getText()), @commandList.line(@selected))
+            # if slash.dirExists @getText()
+                # @setText @getText() + '/'
+                # @changed @getText()
+            # true
+        # else if not @getText().trim().endsWith('/') and slash.dirExists @getText()
+            # @setText @getText() + '/'
+            # @changed @getText()
+            # true            
+        # else
+            # projects = post.get 'indexer', 'projects'
+            # for p in Object.keys(projects).sort()
+                # if p.startsWith @getText()
+                    # pdir = projects[p].dir
+                    # pdir = slash.path(pdir, 'coffee') if slash.dirExists slash.path pdir, 'coffee'
+                    # @setText pdir + '/'
+                    # @changed @getText()
+                    # return true
+            # super()
     
     # 000   000  00000000  000   0000000   000   000  000000000
     # 000 0 000  000       000  000        000   000     000   
@@ -180,7 +182,8 @@ function Open extends command
         
         @lastFileIndex = 0
         
-        @dir = slash.resolve '~' if not @dir?
+        # @dir = slash.resolve '~' if not @dir?
+        @dir = slash.path '~' if not @dir?
         
         if @history? and not opt.currentText and @history.length > 1
             
@@ -273,7 +276,8 @@ function Open extends command
         if @commandline.lastFocus == 'commandline-editor' == window.lastFocus
             
             @file = window.editor.currentFile
-            if dir = slash.resolve @commandline.text()
+            # if dir = slash.resolve @commandline.text()
+            if dir = slash.path @commandline.text()
                 @dir = dir
             else
                 @dir = slash.dir(@file) ? process.cwd()
@@ -354,11 +358,14 @@ function Open extends command
     
     resolvedPath: (p, parent=@dir) ->
         
-        return (parent ? slash.resolve '~') if not p?
+        # return (parent ? slash.resolve '~') if not p?
+        return (parent ? slash.path '~') if not p?
         if p[0] in ['~', '/'] or p[1] == ':'
-            slash.resolve p
+            # slash.resolve p
+            slash.path p
         else
-            slash.resolve slash.join parent, p
+            # slash.resolve slash.path parent, p
+            slash.path parent, p
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000 

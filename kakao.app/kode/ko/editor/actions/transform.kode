@@ -152,17 +152,22 @@ class Transform
     toggleResolve: -> @toggle @resolveFuncs
 
     resolve: ->
+        
+        log 'transform.resolve not implemented!'
 
-        cwd = process.cwd()
-        if @editor.currentFile?
-            process.chdir slash.dir @editor.currentFile
-        @apply (t) -> slash.resolve t
-        process.chdir cwd
+        # cwd = process.cwd()
+        # if @editor.currentFile?
+            # process.chdir slash.dir @editor.currentFile
+        # @apply (t) -> slash.path t
+        # process.chdir cwd
+        
         'resolve'
 
     unresolve: ->
+        
+        log 'transform.unresolve not implemented!'
 
-        @apply (t) -> slash.unresolve t
+        # @apply (t) -> slash.unresolve t
         'unresolve'
 
     # 00000000    0000000   000000000  000   000
