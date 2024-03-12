@@ -292,7 +292,7 @@ function Shelf extends column
     onNavigateIndexChanged: (currentIndex, currentItem) =>
 
         if @showHistory
-            klog 'onNavigateIndexChanged' currentIndex, currentItem
+            log 'onNavigateIndexChanged' currentIndex, currentItem
             reverseIndex = @numRows() - currentIndex - 1
             # if currentItem.file != @activeRow()?.item.file
             @row(reverseIndex)?.setActive()

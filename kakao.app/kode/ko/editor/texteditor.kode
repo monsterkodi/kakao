@@ -351,7 +351,7 @@ function TextEditor extends editor
                 log "#{@name}.shiftLines.divInto - no div? #{top} #{bot} #{num} old #{oldTop} #{oldBot} lo #{lo} li #{li}"
                 return
                 
-            if not _.isElement @lineDivs[lo]
+            if not elem.isElement @lineDivs[lo]
                 log "#{@name}.shiftLines.divInto - no element? #{top} #{bot} #{num} old #{oldTop} #{oldBot} lo #{lo} li #{li}"
                 return
 
@@ -784,8 +784,6 @@ function TextEditor extends editor
 
     log: ->
         return if @name != 'editor'
-        klog.slog.depth = 3
-        klog.apply klog, [].splice.call arguments, 0
-        klog.slog.depth = 2
+        console.log.apply null, [].splice.call arguments, 0
 
 export TextEditor

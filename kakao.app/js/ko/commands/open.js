@@ -107,50 +107,12 @@ Open = (function ()
 
     Open.prototype["complete"] = function ()
     {
-        var p, pdir, projects, _89_23_
-
-        if ((this.commandList != null) && this.commandList.line(this.selected).startsWith(slash.file(this.getText())) && !this.getText().trim().endsWith('/'))
-        {
-            this.setText(slash.join(slash.dir(this.getText()),this.commandList.line(this.selected)))
-            if (slash.dirExists(this.getText()))
-            {
-                this.setText(this.getText() + '/')
-                this.changed(this.getText())
-            }
-            return true
-        }
-        else if (!this.getText().trim().endsWith('/') && slash.dirExists(this.getText()))
-        {
-            this.setText(this.getText() + '/')
-            this.changed(this.getText())
-            return true
-        }
-        else
-        {
-            projects = post.get('indexer','projects')
-            var list = _k_.list(Object.keys(projects).sort())
-            for (var _101_18_ = 0; _101_18_ < list.length; _101_18_++)
-            {
-                p = list[_101_18_]
-                if (p.startsWith(this.getText()))
-                {
-                    pdir = projects[p].dir
-                    if (slash.dirExists(slash.join(pdir,'coffee')))
-                    {
-                        pdir = slash.join(pdir,'coffee')
-                    }
-                    this.setText(pdir + '/')
-                    this.changed(this.getText())
-                    return true
-                }
-            }
-            return Open.__super__.complete.call(this)
-        }
+        console.log('complete not implemented!')
     }
 
     Open.prototype["weight"] = function (item, opt)
     {
-        var b, extensionBonus, f, lengthPenalty, localBonus, n, nameBonus, r, relBonus, updirPenalty, _127_26_
+        var b, extensionBonus, f, lengthPenalty, localBonus, n, nameBonus, r, relBonus, updirPenalty, _129_26_
 
         f = item.file
         r = item.text
@@ -226,11 +188,11 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _171_21_, _172_17_, _183_44_, _185_19_
+        var f, file, iconSpan, item, items, rel, _173_21_, _174_17_, _186_41_, _188_19_
 
         opt = (opt != null ? opt : {})
-        opt.maxItems = ((_171_21_=opt.maxItems) != null ? _171_21_ : 200)
-        opt.flat = ((_172_17_=opt.flat) != null ? _172_17_ : true)
+        opt.maxItems = ((_173_21_=opt.maxItems) != null ? _173_21_ : 200)
+        opt.flat = ((_174_17_=opt.flat) != null ? _174_17_ : true)
         iconSpan = function (file)
         {
             var className
@@ -242,7 +204,7 @@ Open = (function ()
         this.lastFileIndex = 0
         if (!(this.dir != null))
         {
-            this.dir = slash.resolve('~')
+            this.dir = slash.path('~')
         }
         if ((this.history != null) && !opt.currentText && this.history.length > 1)
         {
@@ -258,9 +220,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _199_21_ = 0; _199_21_ < list.length; _199_21_++)
+            for (var _202_21_ = 0; _202_21_ < list.length; _202_21_++)
             {
-                file = list[_199_21_]
+                file = list[_202_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -285,9 +247,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _227_18_ = 0; _227_18_ < list.length; _227_18_++)
+            for (var _230_18_ = 0; _230_18_ < list.length; _230_18_++)
             {
-                f = list[_227_18_]
+                f = list[_230_18_]
                 item = Object.create(null)
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -306,9 +268,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _243_58_, _243_65_
+        var _246_58_, _246_65_
 
-        if (this.commandList && this.selected === ((_243_58_=this.commandList.meta) != null ? (_243_65_=_243_58_.metas) != null ? _243_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_246_58_=this.commandList.meta) != null ? (_246_65_=_246_58_.metas) != null ? _246_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -321,7 +283,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _258_27_
+        var _261_27_
 
         if (name === this.names[0])
         {
@@ -335,19 +297,19 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _279_40_, _293_41_
+        var dir, item, _283_40_, _297_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
         {
             this.file = window.editor.currentFile
-            if (dir = slash.resolve(this.commandline.text()))
+            if (dir = slash.path(this.commandline.text()))
             {
                 this.dir = dir
             }
             else
             {
-                this.dir = ((_279_40_=slash.dir(this.file)) != null ? _279_40_ : process.cwd())
+                this.dir = ((_283_40_=slash.dir(this.file)) != null ? _283_40_ : process.cwd())
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -387,7 +349,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _324_27_
+        var file, path, pos, _328_27_
 
         if (this.selected < 0)
         {
@@ -397,7 +359,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _330_24_ = slash.splitFilePos(command); file = _330_24_[0]; pos = _330_24_[1]
+            var _334_24_ = slash.splitFilePos(command); file = _334_24_[0]; pos = _334_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)
@@ -422,15 +384,15 @@ Open = (function ()
     {
         if (!(p != null))
         {
-            return ((parent != null ? parent : slash.resolve('~')))
+            return ((parent != null ? parent : slash.path('~')))
         }
         if (_k_.in(p[0],['~','/']) || p[1] === ':')
         {
-            return slash.resolve(p)
+            return slash.path(p)
         }
         else
         {
-            return slash.resolve(slash.join(parent,p))
+            return slash.path(parent,p)
         }
     }
 

@@ -2,29 +2,11 @@
 
 var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, each_r: function (o) {return Array.isArray(o) ? [] : typeof o == 'string' ? o.split('') : {}}, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var activeWin, app, args, BrowserWindow, disableSnap, electron, filelist, fs, Indexer, klog, kolor, main, Main, mostRecentFile, Navigate, openFiles, pkg, post, prefs, slash, store, udp, visibleWins, win, WIN_SNAP_DIST, wins, winWithID, _
-
-_ = require('kxk')._
-app = require('kxk').app
-args = require('kxk').args
-filelist = require('kxk').filelist
-first = require('kxk').first
-fs = require('kxk').fs
-klog = require('kxk').klog
-kolor = require('kxk').kolor
-noon = require('kxk').noon
-post = require('kxk').post
-prefs = require('kxk').prefs
-slash = require('kxk').slash
-store = require('kxk').store
-udp = require('kxk').udp
-win = require('kxk').win
+var activeWin, disableSnap, Indexer, main, Main, mostRecentFile, Navigate, openFiles, pkg, visibleWins, WIN_SNAP_DIST, wins, winWithID
 
 pkg = require('../../package.json')
-electron = require('electron')
 Navigate = require('./navigate')
 Indexer = require('./indexer')
-BrowserWindow = electron.BrowserWindow
 disableSnap = false
 main = undefined
 openFiles = []
@@ -54,9 +36,9 @@ visibleWins = function ()
 
     ws = []
     var list = _k_.list(wins())
-    for (var _39_10_ = 0; _39_10_ < list.length; _39_10_++)
+    for (var _36_10_ = 0; _36_10_ < list.length; _36_10_++)
     {
-        w = list[_39_10_]
+        w = list[_36_10_]
         if ((w != null ? w.isVisible() : undefined) && !(w != null ? w.isMinimized() : undefined))
         {
             ws.push(w)
@@ -71,9 +53,9 @@ winWithID = function (winID)
 
     wid = parseInt(winID)
     var list = _k_.list(wins())
-    for (var _46_10_ = 0; _46_10_ < list.length; _46_10_++)
+    for (var _43_10_ = 0; _43_10_ < list.length; _43_10_++)
     {
-        w = list[_46_10_]
+        w = list[_43_10_]
         if (w.id === wid)
         {
             return w
@@ -87,7 +69,7 @@ post.onGet('debugMode',function ()
 post.onGet('winInfos',function ()
 {
     return     (function (o) {
-        var r_56_33_ = _k_.each_r(o)
+        var r_53_33_ = _k_.each_r(o)
         for (var k in o)
         {   
             var m = (function (w)
@@ -96,10 +78,10 @@ post.onGet('winInfos',function ()
         })(o[k])
             if (m != null)
             {
-                r_56_33_[k] = m
+                r_53_33_[k] = m
             }
         }
-        return typeof o == 'string' ? r_56_33_.join('') : r_56_33_
+        return typeof o == 'string' ? r_53_33_.join('') : r_53_33_
     })(wins())
 })
 post.onGet('logSync',function ()
@@ -212,7 +194,7 @@ Main = (function ()
 
     Main.prototype["onShow"] = function ()
     {
-        var file, height, recent, width, _163_50_, _164_42_
+        var file, height, recent, width, _160_50_, _161_42_
 
         width = this.screenSize().width
         height = this.screenSize().height
@@ -228,9 +210,9 @@ Main = (function ()
         if (!_k_.empty(this.openFiles))
         {
             var list = _k_.list(this.openFiles)
-            for (var _167_21_ = 0; _167_21_ < list.length; _167_21_++)
+            for (var _164_21_ = 0; _164_21_ < list.length; _164_21_++)
             {
-                file = list[_167_21_]
+                file = list[_164_21_]
                 this.createWindowWithFile({file:file})
             }
             delete this.openFiles
@@ -286,6 +268,8 @@ Main = (function ()
 
     Main.prototype["createWindow"] = function (cb)
     {
+        var win
+
         win = Main.__super__.createWindow.call(this,cb)
         return win.on('close',function (e)
         {
@@ -300,6 +284,8 @@ Main = (function ()
 
     Main.prototype["createWindowWithFile"] = function (opt)
     {
+        var win
+
         win = this.createWindow(function (win)
         {
             return post.toWin(win.id,'openFiles',[opt.file])
@@ -309,6 +295,8 @@ Main = (function ()
 
     Main.prototype["createWindowWithEmpty"] = function ()
     {
+        var win
+
         win = this.createWindow(function (win)
         {
             return post.toWin(win.id,'newEmptyTab')
@@ -348,9 +336,9 @@ Main = (function ()
         var w
 
         var list = _k_.list(wins())
-        for (var _242_14_ = 0; _242_14_ < list.length; _242_14_++)
+        for (var _239_14_ = 0; _239_14_ < list.length; _239_14_++)
         {
-            w = list[_242_14_]
+            w = list[_239_14_]
             w.hide()
             this.hideDock()
         }
@@ -362,9 +350,9 @@ Main = (function ()
         var w
 
         var list = _k_.list(wins())
-        for (var _249_14_ = 0; _249_14_ < list.length; _249_14_++)
+        for (var _246_14_ = 0; _246_14_ < list.length; _246_14_++)
         {
-            w = list[_249_14_]
+            w = list[_246_14_]
             w.show()
             this.showDock()
         }
@@ -378,9 +366,9 @@ Main = (function ()
         if (!_k_.empty(visibleWins()))
         {
             var list = _k_.list(visibleWins())
-            for (var _257_18_ = 0; _257_18_ < list.length; _257_18_++)
+            for (var _254_18_ = 0; _254_18_ < list.length; _254_18_++)
             {
-                w = list[_257_18_]
+                w = list[_254_18_]
                 w.showInactive()
             }
             visibleWins()[0].showInactive()
@@ -399,9 +387,9 @@ Main = (function ()
         }
         allWindows = wins()
         var list = _k_.list(allWindows)
-        for (var _267_14_ = 0; _267_14_ < list.length; _267_14_++)
+        for (var _264_14_ = 0; _264_14_ < list.length; _264_14_++)
         {
-            w = list[_267_14_]
+            w = list[_264_14_]
             if (w === win)
             {
                 i = 1 + allWindows.indexOf(w)
@@ -426,9 +414,9 @@ Main = (function ()
         }
         allWindows = wins()
         var list = _k_.list(allWindows)
-        for (var _279_14_ = 0; _279_14_ < list.length; _279_14_++)
+        for (var _276_14_ = 0; _276_14_ < list.length; _276_14_++)
         {
-            w = list[_279_14_]
+            w = list[_276_14_]
             if (w === win)
             {
                 i = -1 + allWindows.indexOf(w)
@@ -470,7 +458,7 @@ Main = (function ()
 
     Main.prototype["stackWindows"] = function ()
     {
-        var height, w, width, wl, ww, x, y, _307_81_
+        var height, w, width, wl, ww, x, y, _304_81_
 
         x = electron.screen.getDisplayMatching((this.activeWin() != null ? this.activeWin().getBounds() : undefined)).workArea.x
         y = electron.screen.getDisplayMatching((this.activeWin() != null ? this.activeWin().getBounds() : undefined)).workArea.y
@@ -480,9 +468,9 @@ Main = (function ()
         ww = height + 122
         wl = visibleWins()
         var list = _k_.list(wl)
-        for (var _310_14_ = 0; _310_14_ < list.length; _310_14_++)
+        for (var _307_14_ = 0; _307_14_ < list.length; _307_14_++)
         {
-            w = list[_310_14_]
+            w = list[_307_14_]
             w.showInactive()
             w.setBounds({x:x + parseInt((width - ww) / 2),y:y,width:parseInt(ww),height:parseInt(height)})
         }
@@ -499,9 +487,9 @@ Main = (function ()
             return false
         }
         var list = _k_.list(wl)
-        for (var _324_14_ = 0; _324_14_ < list.length; _324_14_++)
+        for (var _321_14_ = 0; _321_14_ < list.length; _321_14_++)
         {
-            w = list[_324_14_]
+            w = list[_321_14_]
             if (w.isFullScreen())
             {
                 w.setFullScreen(false)
@@ -515,7 +503,7 @@ Main = (function ()
         {
             return false
         }
-        for (var _334_19_ = wi = 1, _334_23_ = wl.length; (_334_19_ <= _334_23_ ? wi < wl.length : wi > wl.length); (_334_19_ <= _334_23_ ? ++wi : --wi))
+        for (var _331_19_ = wi = 1, _331_23_ = wl.length; (_331_19_ <= _331_23_ ? wi < wl.length : wi > wl.length); (_331_19_ <= _331_23_ ? ++wi : --wi))
         {
             if (!_.isEqual((wl[wi] != null ? wl[wi].getBounds() : undefined),bounds))
             {
@@ -527,7 +515,7 @@ Main = (function ()
 
     Main.prototype["arrangeWindows"] = function ()
     {
-        var display, frameSize, height, i, rh, w, w2, width, wl, x, y, _350_65_
+        var display, frameSize, height, i, rh, w, w2, width, wl, x, y, _347_65_
 
         disableSnap = true
         frameSize = 6
@@ -552,7 +540,7 @@ Main = (function ()
         else if (wl.length === 2 || wl.length === 3)
         {
             w = width / wl.length
-            for (var _363_22_ = i = 0, _363_26_ = wl.length; (_363_22_ <= _363_26_ ? i < wl.length : i > wl.length); (_363_22_ <= _363_26_ ? ++i : --i))
+            for (var _360_22_ = i = 0, _360_26_ = wl.length; (_360_22_ <= _360_26_ ? i < wl.length : i > wl.length); (_360_22_ <= _360_26_ ? ++i : --i))
             {
                 wl[i].showInactive()
                 wl[i].setBounds({x:x + parseInt(i * w - (i > 0 && frameSize / 2 || 0)),width:parseInt(w + ((i === 0 || i === wl.length - 1) && frameSize / 2 || frameSize)),y:y + parseInt(0),height:parseInt(height)})
@@ -562,13 +550,13 @@ Main = (function ()
         {
             w2 = parseInt(wl.length / 2)
             rh = height
-            for (var _373_22_ = i = 0, _373_26_ = w2; (_373_22_ <= _373_26_ ? i < w2 : i > w2); (_373_22_ <= _373_26_ ? ++i : --i))
+            for (var _370_22_ = i = 0, _370_26_ = w2; (_370_22_ <= _370_26_ ? i < w2 : i > w2); (_370_22_ <= _370_26_ ? ++i : --i))
             {
                 w = width / w2
                 wl[i].showInactive()
                 wl[i].setBounds({x:x + parseInt(i * w - (i > 0 && frameSize / 2 || 0)),width:parseInt(w + ((i === 0 || i === w2 - 1) && frameSize / 2 || frameSize)),y:y + parseInt(0),height:parseInt(rh / 2)})
             }
-            for (var _381_22_ = i = w2, _381_27_ = wl.length; (_381_22_ <= _381_27_ ? i < wl.length : i > wl.length); (_381_22_ <= _381_27_ ? ++i : --i))
+            for (var _378_22_ = i = w2, _378_27_ = wl.length; (_378_22_ <= _378_27_ ? i < wl.length : i > wl.length); (_378_22_ <= _378_27_ ? ++i : --i))
             {
                 w = width / (wl.length - w2)
                 wl[i].showInactive()
@@ -591,13 +579,13 @@ Main = (function ()
 
     Main.prototype["restoreWindows"] = function ()
     {
-        var file, newStash
+        var file, newStash, win
 
         fs.ensureDirSync(this.userData)
         var list = _k_.list(filelist(slash.join(this.userData,'old'),{matchExt:'noon'}))
-        for (var _406_17_ = 0; _406_17_ < list.length; _406_17_++)
+        for (var _403_17_ = 0; _403_17_ < list.length; _403_17_++)
         {
-            file = list[_406_17_]
+            file = list[_403_17_]
             win = this.createWindow()
             newStash = slash.join(this.userData,'win',`${win.id}.noon`)
             fs.copySync(file,newStash)
@@ -606,12 +594,14 @@ Main = (function ()
 
     Main.prototype["toggleWindowFromTray"] = function ()
     {
+        var win
+
         if (!_k_.empty(wins()))
         {
             var list = _k_.list(wins())
-            for (var _414_20_ = 0; _414_20_ < list.length; _414_20_++)
+            for (var _411_20_ = 0; _411_20_ < list.length; _411_20_++)
             {
-                win = list[_414_20_]
+                win = list[_411_20_]
                 win.show()
             }
         }
@@ -624,7 +614,7 @@ Main = (function ()
 
     Main.prototype["onResizeWin"] = function (event)
     {
-        var b, frameSize, w, wb, _430_25_
+        var b, frameSize, w, wb, _427_25_
 
         if (disableSnap)
         {
@@ -632,11 +622,11 @@ Main = (function ()
         }
         frameSize = 6
         wb = (event.sender != null ? event.sender.getBounds() : undefined)
-        klog('ko.main.onResizeWin')
+        console.log('ko.main.onResizeWin')
         var list = _k_.list(wins())
-        for (var _434_14_ = 0; _434_14_ < list.length; _434_14_++)
+        for (var _431_14_ = 0; _431_14_ < list.length; _431_14_++)
         {
-            w = list[_434_14_]
+            w = list[_431_14_]
             if (w === event.sender)
             {
                 continue
@@ -666,7 +656,7 @@ Main = (function ()
 
     Main.prototype["activateOneWindow"] = function (cb)
     {
-        var wxw
+        var win, wxw
 
         if (_k_.empty(visibleWins()))
         {
@@ -705,7 +695,7 @@ Main = (function ()
     {
         return this.activateOneWindow(function (win)
         {
-            var arg, file, fileargs, files, fpath, pos, _487_26_
+            var arg, file, fileargs, files, fpath, pos, _484_26_
 
             files = []
             if ((_k_.first(args) != null ? _k_.first(args).endsWith(`${pkg.name}.exe`) : undefined))
@@ -717,9 +707,9 @@ Main = (function ()
                 fileargs = args.slice(2)
             }
             var list = _k_.list(fileargs)
-            for (var _492_20_ = 0; _492_20_ < list.length; _492_20_++)
+            for (var _489_20_ = 0; _489_20_ < list.length; _489_20_++)
             {
-                arg = list[_492_20_]
+                arg = list[_489_20_]
                 if (arg.startsWith('-'))
                 {
                     continue
@@ -729,7 +719,7 @@ Main = (function ()
                 {
                     file = slash.join(slash.resolve(dir),arg)
                 }
-                var _497_29_ = slash.splitFilePos(file); fpath = _497_29_[0]; pos = _497_29_[1]
+                var _494_29_ = slash.splitFilePos(file); fpath = _494_29_[0]; pos = _494_29_[1]
 
                 if (slash.exists(fpath))
                 {
@@ -744,6 +734,8 @@ Main = (function ()
 
     Main.prototype["reloadWin"] = function (o)
     {
+        var win
+
         if (win = winWithID(o.winID))
         {
             win.webContents.reloadIgnoringCache()

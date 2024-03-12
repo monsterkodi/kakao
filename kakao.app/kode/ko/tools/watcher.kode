@@ -6,8 +6,7 @@
 00     00  000   000     000      0000000  000   000  00000000  000   000
 ###
 
-# { fs, klog, post, slash } = require 'kxk'
-
+use ../../kxk/slash
 use ../../kxk/post
 
 class Watcher
@@ -33,7 +32,7 @@ class Watcher
             else
                 setTimeout (=> slash.exists @file, @onRename), 200
         
-        @w.on 'unlink' (p) => klog "unlink #{@id}" slash.file(@file)
+        @w.on 'unlink' (p) => log "unlink #{@id}" slash.file(@file)
     
     onChange: (stat) =>
         
@@ -69,14 +68,14 @@ class FileWatcher
         
     onWatch: (file) =>
         
-        file = slash.resolve file
+        file = slash.path file
         
         if not @watchers[file]?
             @watchers[file] = new Watcher file
         
     onUnwatch: (file) =>
 
-        file = slash.resolve file
+        file = slash.path file
         
         @watchers[file]?.stop()
         delete @watchers[file]

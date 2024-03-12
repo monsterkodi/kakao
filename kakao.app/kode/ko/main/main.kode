@@ -6,18 +6,15 @@
 000   000  000   000  000  000   000
 ###
 
-{ _, app, args, filelist, first, fs, klog, kolor, noon, post, prefs, slash, store, udp, win } = require 'kxk'
+# { _, app, args, filelist, first, fs, kolor, noon, post, prefs, slash, store, udp, win } = require 'kxk'
 
 # post.debug()
 # log.slog.debug = true
 
 pkg      = require '../../package.json'
-electron = require 'electron'
 
 Navigate = require './navigate'
 Indexer  = require './indexer'
-
-BrowserWindow = electron.BrowserWindow
 
 disableSnap   = false
 main          = undefined
@@ -429,7 +426,7 @@ function Main extends app
         frameSize = 6
         wb = event.sender?.getBounds()
         
-        klog 'ko.main.onResizeWin'
+        log 'ko.main.onResizeWin'
         
         for w in wins()
             continue if w == event.sender

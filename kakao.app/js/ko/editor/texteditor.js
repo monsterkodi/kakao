@@ -394,7 +394,7 @@ TextEditor = (function ()
                 console.log(`${this.name}.shiftLines.divInto - no div? ${top} ${bot} ${num} old ${oldTop} ${oldBot} lo ${lo} li ${li}`)
                 return
             }
-            if (!_.isElement(this.lineDivs[lo]))
+            if (!elem.isElement(this.lineDivs[lo]))
             {
                 console.log(`${this.name}.shiftLines.divInto - no element? ${top} ${bot} ${num} old ${oldTop} ${oldBot} lo ${lo} li ${li}`)
                 return
@@ -1019,9 +1019,7 @@ TextEditor = (function ()
         {
             return
         }
-        klog.slog.depth = 3
-        klog.apply(klog,[].splice.call(arguments,0))
-        return klog.slog.depth = 2
+        return console.log.apply(null,[].splice.call(arguments,0))
     }
 
     return TextEditor

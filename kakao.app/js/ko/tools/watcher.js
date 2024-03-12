@@ -2,6 +2,8 @@
 
 var _k_
 
+import slash from "../../kxk/slash.js"
+
 import post from "../../kxk/post.js"
 
 class Watcher
@@ -47,7 +49,7 @@ class Watcher
         }).bind(this))
         return this.w.on('unlink',(function (p)
         {
-            return klog(`unlink ${this.id}`,slash.file(this.file))
+            console.log(`unlink ${this.id}`,slash.file(this.file))
         }).bind(this))
     }
 
@@ -71,7 +73,7 @@ class Watcher
 
     stop ()
     {
-        var _52_10_
+        var _51_10_
 
         ;(this.w != null ? this.w.close() : undefined)
         delete this.w
@@ -92,7 +94,7 @@ class FileWatcher
 
     onWatch (file)
     {
-        file = slash.resolve(file)
+        file = slash.path(file)
         if (!(this.watchers[file] != null))
         {
             return this.watchers[file] = new Watcher(file)
@@ -101,7 +103,7 @@ class FileWatcher
 
     onUnwatch (file)
     {
-        file = slash.resolve(file)
+        file = slash.path(file)
         ;(this.watchers[file] != null ? this.watchers[file].stop() : undefined)
         return delete this.watchers[file]
     }

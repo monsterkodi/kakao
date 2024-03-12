@@ -179,27 +179,13 @@ class Transform
 
     resolve ()
     {
-        var cwd, _157_30_
-
-        cwd = process.cwd()
-        if ((this.editor.currentFile != null))
-        {
-            process.chdir(slash.dir(this.editor.currentFile))
-        }
-        this.apply(function (t)
-        {
-            return slash.resolve(t)
-        })
-        process.chdir(cwd)
+        console.log('transform.resolve not implemented!')
         return 'resolve'
     }
 
     unresolve ()
     {
-        this.apply(function (t)
-        {
-            return slash.unresolve(t)
-        })
+        console.log('transform.unresolve not implemented!')
         return 'unresolve'
     }
 
@@ -251,7 +237,7 @@ class Transform
 
     tfunc (opt)
     {
-        var selections, tl, _228_42_, _229_42_
+        var selections, tl, _233_42_, _234_42_
 
         if (!this.editor.numSelections())
         {
@@ -309,9 +295,9 @@ class Transform
 
     static do (editor, transName, ...opts)
     {
-        var t, _268_29_
+        var t, _273_29_
 
-        t = ((_268_29_=editor.transform) != null ? _268_29_ : new Transform(editor))
+        t = ((_273_29_=editor.transform) != null ? _273_29_ : new Transform(editor))
         return t.do.apply(t,[transName].concat(opts))
     }
 }

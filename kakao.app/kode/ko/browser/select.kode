@@ -53,7 +53,7 @@ class Select
         
         if row.isSelected()
             
-            klog 'unselect' row.item.file
+            log 'unselect' row.item.file
             
             row.clearActive()
             row.clearSelected()            

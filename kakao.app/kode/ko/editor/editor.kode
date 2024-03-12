@@ -195,7 +195,7 @@ function Editor extends buffer
 
     setText: (text="") ->
         
-        # klog 'setText' text.length
+        # log 'setText' text.length
 
         if @syntax.name == 'txt'
             @syntax.name = syntax.shebang text.slice 0, text.search /\r?\n/

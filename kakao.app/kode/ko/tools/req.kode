@@ -6,15 +6,15 @@
 000   000  00000000   00000 00
 ###
 
-# { _, kstr, slash } = require 'kxk'
-# requireLike = require 'require-like'
+use ../../kxk/slash
+use ../../kxk/kstr
 
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/
 mathRegExp  = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
 
 moduleKeys = (moduleName, file) ->
     
-    # klog 'file' file
+    # log 'file' file
     # if moduleName.startsWith '.'
         # moduleName = slash.resolve(slash.join slash.dir(file), moduleName).replace '/coffee/' '/js/'
 
@@ -24,8 +24,6 @@ moduleKeys = (moduleName, file) ->
         else if moduleName == 'electron'
             required = require 'electron'
         else
-            # mRequire = requireLike file, true
-            # required = mRequire moduleName
             log 'require' moduleName
             required = require moduleName
         
@@ -37,9 +35,9 @@ moduleKeys = (moduleName, file) ->
     if required
         if required.prototype 
             keys = Object.keys required.prototype
-        else if _.isFunction required.getOwnPropertyNames
+        else if required.getOwnPropertyNames is func
             keys = required.getOwnPropertyNames()
-        else if _.isObject required
+        else if required is obj
             keys = Object.keys required
             
     if moduleName.endsWith 'kxk' 
@@ -134,7 +132,7 @@ req = (file, lines, editor) ->
         else 
             continue
                         
-        values = _.uniq values
+        # values = _.uniq values
         values = values.filter (v) -> v not in Object.keys(exports).concat ['state']
         
         if valid values

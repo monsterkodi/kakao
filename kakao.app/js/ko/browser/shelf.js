@@ -380,7 +380,7 @@ Shelf = (function ()
 
         if (this.showHistory)
         {
-            klog('onNavigateIndexChanged',currentIndex,currentItem)
+            console.log('onNavigateIndexChanged',currentIndex,currentItem)
             reverseIndex = this.numRows() - currentIndex - 1
             return (this.row(reverseIndex) != null ? this.row(reverseIndex).setActive() : undefined)
         }

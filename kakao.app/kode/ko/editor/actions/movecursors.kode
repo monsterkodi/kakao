@@ -5,7 +5,11 @@
 # 000 0 000  000   000     000     000           000       000   000  000   000       000  000   000  000   000       000  
 # 000   000   0000000       0      00000000       0000000   0000000   000   000  0000000    0000000   000   000  0000000   
 
-# { _, klog } = require 'kxk'
+removeFromArray = (arr, check) ->
+    
+    for index in arr.length-1..0
+        if check(arr[index])
+            arr.splice index, 1
 
 export
 
@@ -71,7 +75,7 @@ export
     moveMainCursor: (key, info) ->
         
         dir = key 
-        opt = _.clone info
+        opt = clone info
         opt.erase ?= info.mod?.indexOf('shift') < 0
         @do.start()
         [dx, dy] = switch dir
@@ -82,7 +86,7 @@ export
         newCursors = @do.cursors()
         oldMain = @mainCursor()
         newMain = [oldMain[0]+dx, oldMain[1]+dy]
-        _.remove newCursors, (c) -> 
+        removeFromArray newCursors, (c) -> 
             if opt?.erase
                 isSamePos(c, oldMain) or isSamePos(c, newMain)
             else
@@ -133,7 +137,7 @@ export
     moveCursors: (key, info = extend:false) ->
  
         if @stickySelection and info.mod == 'ctrl'
-            klog 'substract from sticky?' key
+            log 'substract from sticky?' key
         
         extend = info.extend ? 'shift' == info.mod
         switch key

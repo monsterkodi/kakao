@@ -151,7 +151,8 @@ class Syntax
 
         l = ""
         for d in dss
-            l = _.padEnd l, d.start
+            # l = _.padEnd l, d.start
+            l = rpad d.start, l
             l += d.match
         l
 

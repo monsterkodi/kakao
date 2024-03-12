@@ -478,7 +478,7 @@ Column = (function ()
 
         if ((this.parent != null ? this.parent.file : undefined) && (this.parent != null ? this.parent.type : undefined) === 'dir')
         {
-            DirWatch.unwatch(this.parent.file)
+            dirwatch.unwatch(this.parent.file)
         }
         delete this.parent
         this.clearSearch()
