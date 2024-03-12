@@ -6,9 +6,8 @@
 0000000   000   000  0000000     000   
 ###
 
-# { _, noon } = require 'kxk'
-
 use ../../kxk/noon
+use ../../kxk/util ▪ zip
 
 font = noon.parse """
 0   
@@ -406,8 +405,9 @@ salt = (text) ->
         if font[c]?
             cs.push font[c]
 
-    zs = _.zip.apply null, cs 
-    rs = _.map(zs, (j) -> j.join('  '))
+    zs = zip.apply null, cs 
+    # rs = _.map(zs, (j) -> j.join('  '))
+    rs = zs.map (j) -> j.join '  '
     
     rs.join '\n'
 

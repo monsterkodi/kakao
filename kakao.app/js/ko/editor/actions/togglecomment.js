@@ -22,7 +22,7 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
         for (var _42_18_ = 0; _42_18_ < list1.length; _42_18_++)
         {
             r = list1[_42_18_]
-            this.do.change(r[0],this.do.line(r[0]).splice(il,0,this.lineComment + ' '))
+            this.do.change(r[0],kstr.splice(this.do.line(r[0]),il,0,this.lineComment + ' '))
         }
         this.do.delete(_k_.first(rgs)[0] - 1)
         this.do.delete(_k_.last(rgs)[0])
@@ -35,7 +35,7 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
         for (var _50_18_ = 0; _50_18_ < list2.length; _50_18_++)
         {
             r = list2[_50_18_]
-            this.do.change(r[0],this.do.line(r[0]).splice(il,this.lineComment.length + 1))
+            this.do.change(r[0],kstr.splice(this.do.line(r[0]),il,this.lineComment.length + 1))
         }
         this.do.insert(_k_.last(rgs)[0] + 1,indent + this.multiComment.close)
         this.do.insert(_k_.first(rgs)[0],indent + this.multiComment.open)
@@ -84,12 +84,12 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
         {
             if (cs >= 0 && this.do.line(i).substr(0,cs).trim().length === 0)
             {
-                this.do.change(i,this.do.line(i).splice(cs,this.lineComment.length))
+                this.do.change(i,kstr.splice(this.do.line(i),cs,this.lineComment.length))
                 moveInLine(i,-this.lineComment.length)
                 si = indentationInLine(this.do.line(i))
                 if (si % this.indentString.length === 1)
                 {
-                    this.do.change(i,this.do.line(i).splice(si - 1,1))
+                    this.do.change(i,kstr.splice(this.do.line(i),si - 1,1))
                     moveInLine(i,-1)
                 }
             }
@@ -100,7 +100,7 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
             if (this.do.line(i).length > si)
             {
                 l = (this.lineComment + " ").length
-                this.do.change(i,this.do.line(i).splice(si,0,this.lineComment + " "))
+                this.do.change(i,kstr.splice(this.do.line(i),si,0,this.lineComment + " "))
                 moveInLine(i,l)
             }
         }

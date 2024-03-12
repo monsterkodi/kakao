@@ -900,7 +900,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _725_24_, _755_35_, _758_39_, _765_33_
+        var action, actionCombo, combos, _725_24_, _754_35_, _760_33_
 
         if ((this.autocomplete != null))
         {
@@ -929,27 +929,24 @@ TextEditor = (function ()
                 break
         }
 
-        console.log('combo ---------------------------------- ',combo)
         var list = _k_.list(Editor.actions)
-        for (var _741_19_ = 0; _741_19_ < list.length; _741_19_++)
+        for (var _740_19_ = 0; _740_19_ < list.length; _740_19_++)
         {
-            action = list[_741_19_]
-            combos = ((_755_35_=action.combos) != null ? _755_35_ : [action.combo])
+            action = list[_740_19_]
+            combos = ((_754_35_=action.combos) != null ? _754_35_ : [action.combo])
             if (_k_.empty(combos))
             {
-                console.log('skip',((_758_39_=action.name) != null ? _758_39_ : action.key))
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _763_28_ = 0; _763_28_ < list1.length; _763_28_++)
+            for (var _758_28_ = 0; _758_28_ < list1.length; _758_28_++)
             {
-                actionCombo = list1[_763_28_]
+                actionCombo = list1[_758_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))
                     {
                         this[action.key](key,{combo:combo,mod:mod,event:event})
-                        console.log('return action key is func',action)
                         return
                     }
                 }
@@ -959,7 +956,6 @@ TextEditor = (function ()
         {
             return this.insertCharacter(char)
         }
-        console.log('unhandled')
         return 'unhandled'
     }
 
@@ -976,7 +972,6 @@ TextEditor = (function ()
         {
             return
         }
-        console.log('onKeyDown',combo)
         result = this.handleModKeyComboCharEvent(mod,key,combo,char,event)
         if ('unhandled' !== result)
         {

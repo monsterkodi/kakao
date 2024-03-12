@@ -1,12 +1,18 @@
 var toExport = {}
 var _k_
 
-var a, arr, def, obj
+var a, arr, b, def, obj
 
 import util from "../kxk/util.js"
 
 toExport["util"] = function ()
 {
+    section("zip", function ()
+    {
+        a = [1,2,4]
+        b = ['c','d','e']
+        compare(util.zip(a,b),[[1,'c'],[2,'d'],[4,'e']])
+    })
     section("reversed", function ()
     {
         arr = [1,2,3]
@@ -77,6 +83,19 @@ toExport["util"] = function ()
         {
             return o.name + o.age
         }),[{name:'a',age:1},{name:'a',age:2},{name:'c',age:1}])
+    })
+    section("pickBy", function ()
+    {
+        obj = {a:1,b:2,c:4,d:8}
+        compare(util.pickBy(obj,function (k, v)
+        {
+            return k === 'a' || v > 3
+        }),{a:1,c:4,d:8})
+    })
+    section("toPairs", function ()
+    {
+        obj = {a:1,b:2,c:3}
+        compare(util.toPairs(obj),[['a',1],['b',2],['c',3]])
     })
     section("defaults", function ()
     {

@@ -7,6 +7,7 @@
 ###
 
 use ../../tools/salt
+use ../../../kxk/kstr
 use ../../../kxk/util ▪ uniq
 
 export
@@ -117,7 +118,7 @@ export
             if ci > 0
                 length = cols[ci]-cols[ci-1]
                 for r in rgs
-                    @do.change r[0], @do.line(r[0]).splice cols[ci-1], length
+                    @do.change r[0], kstr.splice @do.line(r[0]), cols[ci-1], length
                 @do.setCursors ([cols[ci-1], r[0]] for r in rgs)
         @do.end()
     

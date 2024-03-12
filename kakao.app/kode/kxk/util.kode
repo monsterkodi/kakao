@@ -26,6 +26,14 @@ export
     # 000   000  000   000  000   000  000   000     000     
     # 000   000  000   000  000   000  000   000     000     
     
+    zip: (args...) -> 
+        
+        result = []
+        maxLen = max args.map (a) -> a.length
+        for i in 0...maxLen
+            result.push args.map (a) -> a[i]
+        result
+    
     reversed: (arr) -> arr.slice(0).reverse()
     
     max:      (arr) -> Math.max.apply null, arr
@@ -98,3 +106,20 @@ export
         for key,val of def
             obj[key] ?= val
         obj
+        
+    pickBy: (obj, pred) ->
+        
+        result = {}
+        for key,val of obj
+            if pred key,val
+                result[key] = val
+        result
+        
+    toPairs: (obj) ->
+        
+        result = []
+        for key,val of obj
+            result.push [key, val]
+        result
+        
+        
