@@ -120,7 +120,7 @@ function Open extends command
         f = item.file
         r = item.text
         b = slash.file f
-        n = slash.base f
+        n = slash.name f
                 
         relBonus = 0
         nameBonus = 0

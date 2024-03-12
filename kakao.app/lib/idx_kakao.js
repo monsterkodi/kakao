@@ -1,7 +1,9 @@
 
-var stylus = require('stylus')
-var pug    = require('pug')
+import _stylus from 'stylus'
+import _pug    from 'pug'
 
-module.exports.stylus = (s) => { return stylus.render(s) }
-module.exports.pug    = (s) => { return pug.render(s, { pretty: true }) } 
+let stylus = (s) => { return _stylus.render(s) }
+let pug    = (s) => { return _pug.render(s, { pretty: true }) } 
+
+export default { stylus, pug }
 

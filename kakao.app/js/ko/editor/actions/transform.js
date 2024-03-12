@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isFunc: function (o) {return typeof o === 'function'}}
 
@@ -207,7 +207,7 @@ class Transform
     {
         this.apply(function (t)
         {
-            return slash.base(t)
+            return slash.name(t)
         })
         return 'basename'
     }
@@ -325,4 +325,4 @@ export default {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggle
 },doTransform:function (arg)
 {
     return Transform.do(this,arg)
-},Transform:Transform,transformNames:Transform.transformNames};
+},Transform:Transform,transformNames:Transform.transformNames}

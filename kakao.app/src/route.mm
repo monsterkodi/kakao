@@ -57,7 +57,7 @@
 
 + (id) app:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
-    NSLog(@"%d ▸ %@", (long)win.windowNumber, req);
+    // NSLog(@"%d ▸ %@", (long)win.windowNumber, req);
     id app = [NSApplication sharedApplication];
     if ([req isEqualToString:@"quit"])
     {
@@ -112,7 +112,7 @@
             
             id path = [dirPath stringByAppendingPathComponent:file];
             
-            NSLog(@"%@ file %@ path %@", type, file, path);
+            // NSLog(@"%@ file %@ path %@", type, file, path);
         
             NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
             [fileInfo setObject:type forKey:@"type"];
@@ -156,7 +156,7 @@
 
 + (void) request:(WKScriptMessage*)msg callback:(Callback)callback win:(Win*)win
 {
-    NSLog(@"%@ %@", msg.name, msg.body);
+    // NSLog(@"%@ %@", msg.name, msg.body);
     
     id reply = @"???";
     
@@ -224,7 +224,7 @@
         payload = [NSString stringWithFormat:@"{name:\"%@\", args:[%@]}", [msg objectForKey:@"name"], [msg objectForKey:@"args"]];
     }
     
-    NSLog(@"▸ %@", payload);
+    // NSLog(@"▸ %@", payload);
     id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
 
     [targetView evaluateJavaScript:script completionHandler:nil];

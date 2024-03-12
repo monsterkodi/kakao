@@ -65,7 +65,7 @@ class File
         file = slash.removeLinePos file
         
         clss  = icons.ext[slash.ext file]
-        clss ?= icons.base[slash.base(file).toLowerCase()]
+        clss ?= icons.base[slash.name(file).toLowerCase()]
         clss ?= 'file'
         "icon #{clss}"
         
@@ -119,7 +119,7 @@ class File
         
     @span: (text) ->
         
-        base = slash.base text
+        base = slash.name text
         ext  = slash.ext(text).toLowerCase()
         clss = valid(ext) and ' '+ext or ''
         

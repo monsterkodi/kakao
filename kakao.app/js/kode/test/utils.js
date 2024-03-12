@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_
 
@@ -43,4 +43,4 @@ export default {ast:function (c, p)
         k = k.slice(k.indexOf('\n') + 2)
     }
     return k
-}};
+}}

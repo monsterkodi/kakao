@@ -174,10 +174,10 @@ class Indexer
             root:        slash.resolve '~'
             include:     ['.git']
             ignore:      ['node_modules' 'img' 'bin' 'js' 'mjs' 'Library']
-            skipDir:     (p) -> slash.base(p) == '.git'
+            skipDir:     (p) -> slash.name(p) == '.git'
             filter:      (p) -> slash.ext(p) not in ['noon' 'json' 'git' '']
-            dir:         (p) => if slash.file(p) == '.git'    then @projects[slash.base slash.dir p] = dir: slash.tilde slash.dir p
-            file:        (p) => if slash.base(p) == 'package' then @projects[slash.base slash.dir p] = dir: slash.tilde slash.dir p
+            dir:         (p) => if slash.file(p) == '.git'    then @projects[slash.name slash.dir p] = dir: slash.tilde slash.dir p
+            file:        (p) => if slash.base(p) == 'package' then @projects[slash.name slash.dir p] = dir: slash.tilde slash.dir p
             done:        => log 'collectProjects done' @projects
         w.start()
 
@@ -501,8 +501,8 @@ class Indexer
                 while funcStack.length
                     last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
-                    funcInfo.class ?= slash.base funcInfo.file
-                    funcInfo.class ?= slash.base file
+                    funcInfo.class ?= slash.name funcInfo.file
+                    funcInfo.class ?= slash.name file
                     fileInfo.funcs.push funcInfo
 
                 if opt?.post != false

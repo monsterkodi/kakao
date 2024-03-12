@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
@@ -296,4 +296,4 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
             return [c[0],c[1] + n]
         }
     })(n),{extend:e,main:'bot'})
-}};
+}}

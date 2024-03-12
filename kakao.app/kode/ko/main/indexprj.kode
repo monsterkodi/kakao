@@ -97,7 +97,7 @@ indexProject = (file) ->
             if slash.isFile gitignore
                 addIgnores gitignore
             # log r4(path), slash.file(path)
-            if slash.basename(path) in ['node_modules' '.git']
+            if slash.name(path) in ['node_modules' '.git']
                 @ignore path
                 return
         else

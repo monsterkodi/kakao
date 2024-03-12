@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
@@ -47,9 +47,9 @@ export default {elem:elem,$:function (idOrQueryOrElement, queryOrElement = docum
     var rule
 
     var list = _k_.list(document.styleSheets[ssid].cssRules)
-    for (var _45_17_ = 0; _45_17_ < list.length; _45_17_++)
+    for (var _43_17_ = 0; _43_17_ < list.length; _43_17_++)
     {
-        rule = list[_45_17_]
+        rule = list[_43_17_]
         if (rule.selectorText === selector)
         {
             rule.style[key] = value
@@ -63,9 +63,9 @@ export default {elem:elem,$:function (idOrQueryOrElement, queryOrElement = docum
     var rule
 
     var list = _k_.list(document.styleSheets[ssid].cssRules)
-    for (var _53_17_ = 0; _53_17_ < list.length; _53_17_++)
+    for (var _51_17_ = 0; _51_17_ < list.length; _51_17_++)
     {
-        rule = list[_53_17_]
+        rule = list[_51_17_]
         if (rule.selectorText === selector)
         {
             if ((rule.style[key] != null ? rule.style[key].length : undefined))
@@ -75,4 +75,4 @@ export default {elem:elem,$:function (idOrQueryOrElement, queryOrElement = docum
         }
     }
     return value
-}};
+}}

@@ -5,7 +5,7 @@ undefined
 scripts
               clean     rm -rf lib_*.* node_modules
               modules   pnpm install && echo "module.exports = require('./lib/stylus')" > "./node_modules/stylus/index.js"
-              bundle    bun build idx_kakao.js --target=node --outfile=lib_kakao.mjs && bun build idx_ko.js --target=node --outfile=lib_ko.mjs
+              bundle    bun build idx_kakao.js --target=node --outfile=lib_kakao.mjs && bun build idx_ko.js --target=browser --outfile=lib_ko.mjs
               minify    uglifyjs lib_kakao.mjs -o lib_kakao.js &&  uglifyjs lib_ko.mjs -o lib_ko.js
               post      rm -rf lib_*.mjs
               make      pnpm run clean && pnpm run modules && pnpm run bundle && pnpm run minify && pnpm run post

@@ -173,7 +173,7 @@ class Transform
 
     base: ->
 
-        @apply (t) -> slash.base t
+        @apply (t) -> slash.name t
         'basename'
 
     dir: ->

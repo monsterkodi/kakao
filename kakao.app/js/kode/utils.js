@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
@@ -84,4 +84,4 @@ firstLineCol = function (e)
     }
     return {line:Infinity,col:Infinity}
 }
-export default {firstLineCol:firstLineCol,lastLineCol:lastLineCol};
+export default {firstLineCol:firstLineCol,lastLineCol:lastLineCol}

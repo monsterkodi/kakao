@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
@@ -132,7 +132,7 @@ indexProject = function (file)
             {
                 addIgnores(gitignore)
             }
-            if (_k_.in(slash.basename(path),['node_modules','.git']))
+            if (_k_.in(slash.name(path),['node_modules','.git']))
             {
                 this.ignore(path)
                 return

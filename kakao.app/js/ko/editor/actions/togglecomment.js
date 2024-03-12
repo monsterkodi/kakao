@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
@@ -110,4 +110,4 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
     this.do.select(newSelections)
     this.do.setCursors(newCursors)
     return this.do.end()
-}};
+}}
