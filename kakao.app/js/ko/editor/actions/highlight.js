@@ -2,9 +2,11 @@
 
 var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
+import post from "../../../kxk/post.js"
+
 export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects the first|next highlight.',combo:'command+d',accel:'ctrl+d'},selectAllWords:{name:'Select All Words',combo:'command+alt+d',accel:'alt+ctrl+d'},removeSelectedHighlight:{name:'Remove Highlighted Word from Selection',text:"does the inverse of 'highlight and select' word",combo:'command+shift+d',accel:'ctrl+shift+d'},highlightTextOfSelectionOrWordAtCursor:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects it. expands to the left if already selected.',combo:'command+e',accel:'ctrl+e'}},highlightText:function (text, opt)
 {
-    var hls, _50_90_, _51_91_
+    var hls, _49_90_, _50_91_
 
     hls = this.rangesForText(text,opt)
     if (hls.length && (opt != null ? opt.select : undefined))
@@ -12,10 +14,10 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
         switch (opt.select)
         {
             case 'after':
-                this.selectSingleRange(((_50_90_=rangeAfterPosInRanges(this.cursorPos(),hls)) != null ? _50_90_ : _k_.first(hls)))
+                this.selectSingleRange(((_49_90_=rangeAfterPosInRanges(this.cursorPos(),hls)) != null ? _49_90_ : _k_.first(hls)))
                 break
             case 'before':
-                this.selectSingleRange(((_51_91_=rangeBeforePosInRanges(this.cursorPos(),hls)) != null ? _51_91_ : _k_.first(hls)))
+                this.selectSingleRange(((_50_91_=rangeBeforePosInRanges(this.cursorPos(),hls)) != null ? _50_91_ : _k_.first(hls)))
                 break
             case 'first':
                 this.selectSingleRange(_k_.first(hls))
@@ -30,17 +32,17 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
 {
     return this.highlights().filter(function (h)
     {
-        var _63_111_, _63_65_
+        var _62_111_, _62_65_
 
-        return !(h[2] != null ? (_63_65_=h[2].clss) != null ? _63_65_.startsWith('stringmatch') : undefined : undefined) && !(h[2] != null ? (_63_111_=h[2].clss) != null ? _63_111_.startsWith('bracketmatch') : undefined : undefined)
+        return !(h[2] != null ? (_62_65_=h[2].clss) != null ? _62_65_.startsWith('stringmatch') : undefined : undefined) && !(h[2] != null ? (_62_111_=h[2].clss) != null ? _62_111_.startsWith('bracketmatch') : undefined : undefined)
     })
 },selectAllWords:function ()
 {
-    var editor, _68_42_, _68_51_
+    var editor, _67_42_, _67_51_
 
     if (this.name === 'commandline-editor')
     {
-        if (editor = ((_68_42_=window.commandline) != null ? (_68_51_=_68_42_.command) != null ? _68_51_.receivingEditor() : undefined : undefined))
+        if (editor = ((_67_42_=window.commandline) != null ? (_67_51_=_67_42_.command) != null ? _67_51_.receivingEditor() : undefined : undefined))
         {
             editor.selectAllWords()
             editor.focus()
@@ -84,7 +86,7 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
     }
 },highlightTextOfSelectionOrWordAtCursor:function ()
 {
-    var largerRange, largerText, nr, nt, sel, srange, text, _140_32_
+    var largerRange, largerText, nr, nt, sel, srange, text, _139_32_
 
     if (this.numSelections() === 0)
     {

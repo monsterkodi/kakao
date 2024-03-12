@@ -2,6 +2,9 @@
 
 var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
+import util from "../../../kxk/util.js"
+let reversed = util.reversed
+
 export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',text:'delete character to the left',combo:'backspace'},deleteBackwardIgnoreLineBoundary:{name:'Delete Backward Over Line Boundaries',combo:'command+backspace',accel:'ctrl+backspace'},deleteBackwardSwallowWhitespace:{name:'Delete Backward Over Whitespace',combo:'alt+backspace'}},deleteBackwardIgnoreLineBoundary:function ()
 {
     return this.deleteBackward({ignoreLineBoundary:true})

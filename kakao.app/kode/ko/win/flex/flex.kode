@@ -54,10 +54,9 @@ class Flex
         p.flex  ?= @
         p.index ?= @panes.length
 
-        newPane = new pane p
-            defaults p,
-                flex:   @ 
-                index:  @panes.length
+        newPane = new pane defaults p,
+            flex:   @ 
+            index:  @panes.length
             
         if lastPane = last @panes
             @handles.push new handle
@@ -233,10 +232,10 @@ class Flex
         return if not state?.length
         for si in [0...state.length]
             s = state[si]
-            pane = @pane si
-            delete pane.collapsed
-            pane.collapse()      if s.size < 0
-            pane.setSize(s.size) if s.size >= 0
+            p = @pane si
+            delete p.collapsed
+            p.collapse()      if s.size < 0
+            p.setSize(s.size) if s.size >= 0
 
         @updateHandles()
         @onPaneSize?()

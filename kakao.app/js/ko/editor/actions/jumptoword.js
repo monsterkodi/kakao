@@ -2,6 +2,12 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
+import matchr from "../../../kxk/matchr.js"
+
+import slash from "../../../kxk/slash.js"
+
+import post from "../../../kxk/post.js"
+
 export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at cursor',combo:'alt+enter'}},jumpToFileAtPos:function (p = this.cursorPos())
 {
     var col, cwd, d, diss, file, line, ranges, rgx, text
@@ -13,12 +19,12 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list = _k_.list(diss)
-        for (var _30_18_ = 0; _30_18_ < list.length; _30_18_++)
+        for (var _31_18_ = 0; _31_18_ < list.length; _31_18_++)
         {
-            d = list[_30_18_]
+            d = list[_31_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _33_38_ = slash.splitFileLine(d.match); file = _33_38_[0]; line = _33_38_[1]; col = _33_38_[2]
+                var _34_38_ = slash.splitFileLine(d.match); file = _34_38_[0]; line = _34_38_[1]; col = _34_38_[2]
 
                 if (slash.fileExists(file))
                 {
@@ -29,7 +35,7 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
             if (!slash.isAbsolute(d.match))
             {
                 cwd = window.cwd.cwd
-                var _41_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _41_38_[0]; line = _41_38_[1]; col = _41_38_[2]
+                var _42_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _42_38_[0]; line = _42_38_[1]; col = _42_38_[2]
 
                 if (slash.isFile(file))
                 {
@@ -51,12 +57,12 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list1 = _k_.list(diss)
-        for (var _56_18_ = 0; _56_18_ < list1.length; _56_18_++)
+        for (var _57_18_ = 0; _57_18_ < list1.length; _57_18_++)
         {
-            d = list1[_56_18_]
+            d = list1[_57_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _58_38_ = slash.splitFileLine(d.match); file = _58_38_[0]; line = _58_38_[1]; col = _58_38_[2]
+                var _59_38_ = slash.splitFileLine(d.match); file = _59_38_[0]; line = _59_38_[1]; col = _59_38_[2]
 
                 if (slash.fileExists(file))
                 {
