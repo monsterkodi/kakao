@@ -1,6 +1,6 @@
 // monsterkodi/kakao 0.1.0
 
-var _k_ = {clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var removeFromArray
 
@@ -284,7 +284,7 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
 
     if (e && this.numSelections() === 0)
     {
-        if (0 === _.max((function () { var r_215_38_ = []; var list = _k_.list(this.cursors()); for (var _215_38_ = 0; _215_38_ < list.length; _215_38_++)  { c = list[_215_38_];r_215_38_.push(c[0])  } return r_215_38_ }).bind(this)()))
+        if (0 === _k_.max((function () { var r_215_36_ = []; var list = _k_.list(this.cursors()); for (var _215_36_ = 0; _215_36_ < list.length; _215_36_++)  { c = list[_215_36_];r_215_36_.push(c[0])  } return r_215_36_ }).bind(this)()))
         {
             this.do.start()
             this.do.select(this.rangesForCursorLines())

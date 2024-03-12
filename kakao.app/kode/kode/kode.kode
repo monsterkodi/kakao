@@ -22,7 +22,7 @@ class Kode
     @: (@args) ->
         
         @args ?= {}
-        @args.header  = true
+        @args.header ?= true
         @version  = '0.1.0'
 
         @literals = ['bool''num''regex''single''double''triple']

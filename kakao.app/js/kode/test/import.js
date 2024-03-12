@@ -3,37 +3,10 @@ var toExport = {}
 
 var _k_
 
-var kc, ke, __filename
-
 import utils from "./utils.js"
+let kc = utils.kc
+let ke = utils.ke
 
-kc = utils.kc
-ke = utils.ke
-
-__filename = import.meta.filename
-toExport["use"] = function ()
-{
-    return
-    compare(kc('use blark'),'import blark from "blark"\n')
-    compare(kc('use flubb',__filename),'import flubb from "flubb"\n')
-    compare(kc('use ./loops',__filename),'import loops from "./loops.js"\n')
-    compare(kc('use ../returner',__filename),'import returner from "../returner.js"\n')
-    compare(kc('use ./kode/kode',__filename),'import kode from "./kode/kode.js"\n')
-    compare(kc('use ./loops'),'import loops from "./loops.js"\n')
-    compare(kc('use ../returner'),'import returner from "../returner.js"\n')
-    compare(kc('use ./kode/kode'),'import kode from "./kode/kode.js"\n')
-    compare(kc('use ./noon'),'import noon from "./noon.js"\n')
-    compare(kc('use mod1 mod2'),`import mod1 from "mod1"
-import mod2 from "mod2"\n`)
-    compare(kc('use mod3 mod4',__filename),`import mod3 from "mod3"
-import mod4 from "mod4"\n`)
-    compare(kc(`use mod5
-use ./mod6
-use mod7`),`import mod5 from "mod5"\n
-import mod6 from "./mod6.js"\n
-import mod7 from "mod7"\n`)
-}
-toExport["use"]._section_ = true
 toExport["import"] = function ()
 {
     compare(kc('import noon from "noon"'),'import noon from "noon"')
@@ -61,24 +34,5 @@ import b from './b'`)
     compare(kc('d = { import:1 }'),'d = {import:1}')
 }
 toExport["import"]._section_ = true
-toExport["export"] = function ()
-{
-    compare(kc('export { export1, export2 }'),'export { export1 , export2 };')
-    compare(kc('export { export1, export2 as blark }'),'export { export1 , export2 as blark };')
-    compare(kc(`export
-    k: 1
-    $: 2`),`export default {k:1,$:2};`)
-    compare(kc('export single'),'export default single;')
-    compare(kc('d = { export:1 }'),'d = {export:1}')
-}
-toExport["export"]._section_ = true
-toExport["await"] = function ()
-{
-    compare(kc('await someFunctionCall()'),'await someFunctionCall()')
-    compare(kc('await call(); await again()'),'await call()\nawait again()')
-    compare(kc('await call 1; await again 2'),'await call(1)\nawait again(2)')
-    compare(kc('d = { await:1 }'),'d = {await:1}')
-}
-toExport["await"]._section_ = true
 toExport._test_ = true
 export default toExport

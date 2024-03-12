@@ -9,6 +9,7 @@
 use ../../kxk/slash
 use ../../kxk/prefs
 use ../../kxk/post
+use ../../kxk/util ▪ pullAllWith
 
 class Navigate
 
@@ -44,7 +45,7 @@ class Navigate
                     pos = fp.pos
                     break
             
-        _.pullAllWith @filePositions, [file:file, pos:pos], (a,b) -> 
+        pullAllWith @filePositions, [file:file, pos:pos], (a,b) -> 
             slash.samePath(a.file, b.file) and (a.pos[1] == b.pos[1] or a.pos[1] <= 1)
 
         filePos = slash.tilde slash.joinFilePos file, pos

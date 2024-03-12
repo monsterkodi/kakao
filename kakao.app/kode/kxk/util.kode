@@ -1,0 +1,93 @@
+###
+    000   000  000000000  000  000    
+    000   000     000     000  000    
+    000   000     000     000  000    
+    000   000     000     000  000    
+     0000000      000     000  0000000
+###
+
+
+isEqual = (a,b) ->
+    
+    if a is arr and b is arr
+        return false if a.length != b.length
+        for index in 0...a.length
+            return false if not isEqual a[index], b[index]
+        return true
+    a == b
+
+export
+
+    isEqual: isEqual
+                            
+    #  0000000   00000000   00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000   000   000 000   
+    # 000000000  0000000    0000000    000000000    00000    
+    # 000   000  000   000  000   000  000   000     000     
+    # 000   000  000   000  000   000  000   000     000     
+    
+    reversed: (arr) -> arr.slice(0).reverse()
+    
+    max:      (arr) -> Math.max.apply null, arr
+    min:      (arr) -> Math.min.apply null, arr
+    
+    pull:     (arr, item) -> 
+    
+        arr.splice arr.indexOf(item), 1
+        arr
+    
+    pullAllWith: (arr, items, cmp=isEqual) ->
+        
+        for item in items
+            for index in arr.length-1..0
+                if cmp arr[index], item
+                    arr.splice index, 1
+        arr
+        
+    uniq: (arr) ->
+        
+        result = []
+        for item in arr
+            if item not in result
+                result.push item
+        result
+        
+    uniqEqual: (arr) ->
+        
+        result = []
+        for item in arr
+            add = true
+            for ritem in result
+                if isEqual item, ritem
+                    add = false
+                    break
+            result.push item if add
+        result
+        
+    uniqBy: (arr, prop) ->
+        
+        if prop is str
+            key = prop
+            prop = (o) -> o[key]
+            
+        result = []
+        for item in arr
+            add = true
+            for ritem in result
+                if prop(item) == prop(ritem)
+                    add = false
+                    break
+            result.push item if add
+        result
+        
+    #  0000000   0000000          000  00000000   0000000  000000000  
+    # 000   000  000   000        000  000       000          000     
+    # 000   000  0000000          000  0000000   000          000     
+    # 000   000  000   000  000   000  000       000          000     
+    #  0000000   0000000     0000000   00000000   0000000     000     
+    
+    defaults: (obj, def) ->
+        
+        for key,val of def
+            obj[key] ?= val
+        obj

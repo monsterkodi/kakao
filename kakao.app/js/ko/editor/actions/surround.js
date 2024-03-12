@@ -2,6 +2,11 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
+import util from "../../kxk/util.js"
+let isEqual = util.isEqual
+let uniqEqual = util.uniqEqual
+let reversed = util.reversed
+
 export default {initSurround:function ()
 {
     this.surroundStack = []
@@ -285,7 +290,7 @@ export default {initSurround:function ()
     var after, before, c, cs, nc, numPairs, openClosePairs, pairs, sc, so, uniquePairs
 
     cs = this.do.cursors()
-    pairs = _.uniqWith(_.values(this.surroundPairs),_.isEqual)
+    pairs = uniqEqual(Object.values(this.surroundPairs))
     openClosePairs = []
     var list = _k_.list(cs)
     for (var _200_14_ = 0; _200_14_ < list.length; _200_14_++)
@@ -314,7 +319,7 @@ export default {initSurround:function ()
     {
         return false
     }
-    uniquePairs = _.uniqWith(openClosePairs,_.isEqual)
+    uniquePairs = uniqEqual(openClosePairs)
     var list2 = _k_.list(cs)
     for (var _218_14_ = 0; _218_14_ < list2.length; _218_14_++)
     {
@@ -332,7 +337,7 @@ export default {initSurround:function ()
     }
     if (this.surroundStack.length)
     {
-        if (uniquePairs.length === 1 && _.isEqual(uniquePairs[0],_k_.last(this.surroundStack)))
+        if (uniquePairs.length === 1 && isEqual(uniquePairs[0],_k_.last(this.surroundStack)))
         {
             this.surroundStack.pop()
         }

@@ -6,7 +6,7 @@
 000   000  000   000  000   000   0000000   00000000  0000000 
 ###
 
-# { _ } = require 'kxk'
+use ../../kxk/util ▪ uniq
 
 class Ranges
     
@@ -115,7 +115,7 @@ class Ranges
         indices = []
         for p in pl
             indices.push p[1] 
-        _.uniq(indices).sort()
+        uniq(indices).sort()
 
     endPositionsFromRanges:   (ranges) -> (rangeEndPos(r) for r in ranges)
     startPositionsFromRanges: (ranges) -> (rangeStartPos(r) for r in ranges)        

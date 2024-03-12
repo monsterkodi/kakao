@@ -3,12 +3,11 @@ var toExport = {}
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var c, kc, ke, l, n, s
+var c, l, n, s
 
 import utils from "./utils.js"
-
-kc = utils.kc
-ke = utils.ke
+let kc = utils.kc
+let ke = utils.ke
 
 toExport["color"] = function ()
 {
@@ -18,9 +17,9 @@ toExport["color"] = function ()
     {
         s = ''
         var list = _k_.list('RGBCMYW')
-        for (var _21_14_ = 0; _21_14_ < list.length; _21_14_++)
+        for (var _19_14_ = 0; _19_14_ < list.length; _19_14_++)
         {
-            n = list[_21_14_]
+            n = list[_19_14_]
             l = n.toLowerCase()
             s += ke(`${n}${l}${c}(' ${n}${l}${c} ')`)
         }

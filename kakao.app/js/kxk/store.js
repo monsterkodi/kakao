@@ -16,6 +16,9 @@ import ffs from "./ffs.js"
 
 import sds from "./sds.js"
 
+import util from "./util.js"
+let isEqual = util.isEqual
+
 
 Store = (function ()
 {
@@ -28,13 +31,13 @@ Store = (function ()
 
     function Store (name, opt = {})
     {
-        var k, v, _37_22_, _38_22_, _77_21_
+        var k, v, _38_22_, _39_22_, _78_21_
 
         this["save"] = this["save"].bind(this)
         Store.__super__.constructor.call(this)
         this.name = name
-        opt.separator = ((_37_22_=opt.separator) != null ? _37_22_ : ':')
-        opt.timeout = ((_38_22_=opt.timeout) != null ? _38_22_ : 4000)
+        opt.separator = ((_38_22_=opt.separator) != null ? _38_22_ : ':')
+        opt.timeout = ((_39_22_=opt.timeout) != null ? _39_22_ : 4000)
         if (!this.name)
         {
             return console.error('no name for store?')
@@ -71,7 +74,7 @@ Store = (function ()
         for (k in opt.defaults)
         {
             v = opt.defaults[k]
-            this.data[k] = ((_77_21_=this.data[k]) != null ? _77_21_ : v)
+            this.data[k] = ((_78_21_=this.data[k]) != null ? _78_21_ : v)
         }
     }
 
@@ -82,7 +85,7 @@ Store = (function ()
 
     Store.prototype["get"] = function (key, value)
     {
-        var _89_45_
+        var _90_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -93,9 +96,13 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _100_32_, _104_14_
+        var _101_32_, _105_14_
 
         if (!((key != null ? key.split : undefined) != null))
+        {
+            return
+        }
+        if (isEqual(this.get(key),value))
         {
             return
         }
@@ -103,7 +110,7 @@ Store = (function ()
         {
             return
         }
-        this.data = ((_104_14_=this.data) != null ? _104_14_ : {})
+        this.data = ((_105_14_=this.data) != null ? _105_14_ : {})
         return sds.set(this.data,this.keypath(key),value)
     }
 

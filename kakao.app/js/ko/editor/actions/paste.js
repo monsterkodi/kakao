@@ -1,6 +1,6 @@
 // monsterkodi/kakao 0.1.0
 
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c','ctrl+c','command+v','ctrl+v']}},cutCopyPaste:function (key, info)
 {
@@ -103,7 +103,7 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
             var _107_32_ = this.splitStateLineAtPos(this.do,cp); before = _107_32_[0]; after = _107_32_[1]
 
             after = after.trimLeft()
-            indt = _.padStart("",indentationInLine(this.do.line(cp[1])))
+            indt = _k_.lpad(indentationInLine(this.do.line(cp[1])))
             if (before.trim().length)
             {
                 this.do.change(li,before)

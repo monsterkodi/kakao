@@ -5,9 +5,7 @@
 # 000   000       000     000     
 # 000   000  0000000      000     
 
-use ./utils
-
-{ ast } = utils
+use ./utils ▪ ast
 
 ▸ ast
 

@@ -208,13 +208,13 @@ export
 
         @do.start()
         newCursors = @do.cursors()
-        newX = _.max (c[0] for c in newCursors)
+        newX = max (c[0] for c in newCursors)
         lines = {}
         for nc in newCursors
             lines[nc[1]] = nc[0]
             cursorSet nc, newX, c[1]
         for li, cx of lines
-            @do.change li, @do.line(li).slice(0, cx) + _.padStart('', newX-cx) + @do.line(li).slice(cx)
+            @do.change li, @do.line(li).slice(0, cx) + lpad(newX-cx) + @do.line(li).slice(cx)
         @do.setCursors newCursors
         @do.end()
 
@@ -230,8 +230,8 @@ export
         charPos = switch dir
             when 'up'    then first(newCursors)[0]
             when 'down'  then last(newCursors)[0]
-            when 'left'  then _.min (c[0] for c in newCursors)
-            when 'right' then _.max (c[0] for c in newCursors)
+            when 'left'  then min (c[0] for c in newCursors)
+            when 'right' then max (c[0] for c in newCursors)
         for c in newCursors
             cursorSet c, charPos, c[1]
         main = switch dir

@@ -8,6 +8,9 @@ import prefs from "../../kxk/prefs.js"
 
 import slash from "../../kxk/slash.js"
 
+import util from "../../kxk/util.js"
+let pull = util.pull
+
 import File from '../tools/file.js'
 class FileHandler
 {
@@ -46,7 +49,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _43_28_ = slash.splitFilePos(file); file = _43_28_[0]; filePos = _43_28_[1]
+            var _44_28_ = slash.splitFilePos(file); file = _44_28_[0]; filePos = _44_28_[1]
 
             if (!file.startsWith('untitled'))
             {
@@ -136,9 +139,9 @@ class FileHandler
                 this.loadFile(file)
             }
             var list = _k_.list(files)
-            for (var _127_21_ = 0; _127_21_ < list.length; _127_21_++)
+            for (var _128_21_ = 0; _128_21_ < list.length; _128_21_++)
             {
-                file = list[_127_21_]
+                file = list[_128_21_]
                 if (options.newWindow)
                 {
                     post.toMain('newWindowWithFile',file)
@@ -187,7 +190,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _171_29_
+        var tab, _172_29_
 
         if (tab = tabs.activeTab())
         {
@@ -222,9 +225,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _196_16_ = 0; _196_16_ < list.length; _196_16_++)
+        for (var _197_16_ = 0; _197_16_ < list.length; _197_16_++)
         {
-            tab = list[_196_16_]
+            tab = list[_197_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -291,7 +294,7 @@ class FileHandler
         {
             return
         }
-        _.pull(recent,file)
+        pull(recent,file)
         recent.unshift(file)
         while (recent.length > prefs.get('recentFilesLength',15))
         {
@@ -303,7 +306,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _269_29_
+        var _270_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges() && slash.fileExists(editor.currentFile))
         {
@@ -319,7 +322,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _286_18_
+        var cb, dir, _287_18_
 
         cb = function (files)
         {
@@ -335,7 +338,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _306_18_
+        var cb, _307_18_
 
         cb = (function (file)
         {

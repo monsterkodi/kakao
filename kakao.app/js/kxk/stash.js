@@ -12,12 +12,15 @@ import sds from "./sds.js"
 
 import ffs from "./ffs.js"
 
+import util from "./util.js"
+let defaults = util.defaults
+
 
 Stash = (function ()
 {
     function Stash (name, opt)
     {
-        var _25_30_, _28_40_, _29_32_
+        var _24_30_, _27_40_, _28_32_, _34_61_
 
         this.name = name
     
@@ -26,15 +29,19 @@ Stash = (function ()
         {
             return console.error('stash.constructor -- no name?')
         }
-        this.sep = ((_25_30_=(opt != null ? opt.separator : undefined)) != null ? _25_30_ : ':')
+        this.sep = ((_24_30_=(opt != null ? opt.separator : undefined)) != null ? _24_30_ : ':')
         this.timer = null
-        this.file = slash.path(((_28_40_=(opt != null ? opt.file : undefined)) != null ? _28_40_ : `userDataFolder/${this.name}.noon`))
-        this.timeout = ((_29_32_=(opt != null ? opt.timeout : undefined)) != null ? _29_32_ : 4000)
+        this.file = slash.path(((_27_40_=(opt != null ? opt.file : undefined)) != null ? _27_40_ : `userDataFolder/${this.name}.noon`))
+        this.timeout = ((_28_32_=(opt != null ? opt.timeout : undefined)) != null ? _28_32_ : 4000)
         this.changes = []
         this.data = this.load()
         if (!(_k_.isObj(this.data)))
         {
             this.data = {}
+        }
+        if (((opt != null ? opt.defaults : undefined) != null))
+        {
+            this.data = defaults(this.data,opt.defaults)
         }
     }
 
@@ -45,7 +52,7 @@ Stash = (function ()
 
     Stash.prototype["get"] = function (key, value)
     {
-        var _47_63_, _48_38_
+        var _46_63_, _47_38_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -60,7 +67,7 @@ Stash = (function ()
 
     Stash.prototype["set"] = function (key, value)
     {
-        var _59_70_
+        var _58_70_
 
         if (!((key != null ? key.split : undefined) != null))
         {

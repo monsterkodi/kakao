@@ -9,7 +9,7 @@ import kode from "../kode.js"
 
 kde = function ()
 {
-    return new kode()
+    return new kode({header:false})
 }
 export default {ast:function (c, p)
 {

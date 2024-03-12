@@ -12,6 +12,7 @@ use ../../kxk/slash
 use ../../kxk/prefs
 use ../../kxk/post
 use ../../kxk/ffs
+use ../../kxk/util ▪ uniq reversed
 use ../tools/salt
 use ../tools/req
 # use ../win/gitinfo
@@ -53,8 +54,7 @@ function Macro extends command
 
     listItems: ->
 
-        # items = _.uniq _.concat reversed(@history), @macros
-        items = @history.concat @macros
+        items = uniq reversed(@history).concat @macros
 
         ({text: i, line: i in @macros and '◼' or '◆', type:'macro'} for i in items)
 
@@ -80,8 +80,7 @@ function Macro extends command
                 return argl
             else
                 cw = editor.wordsAtCursors positionsNotInRanges(editor.cursors(), editor.selections()), opt
-                # ws = _.uniq cw.concat editor.textsInRanges editor.selections()
-                ws = editor.textsInRanges.concat editor.selections()
+                ws = uniq cw.concat editor.textsInRanges editor.selections()
                 ws.filter (w) -> w.trim().length
 
         switch cmmd

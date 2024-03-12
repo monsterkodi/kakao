@@ -77,6 +77,6 @@ export
         @do.start() 
         for c in reversed @do.cursors()
             if c[0] > @do.line(c[1]).length
-                @do.change c[1], @do.line(c[1]).splice c[0], 0, _.padStart '', c[0]-@do.line(c[1]).length
+                @do.change c[1], @do.line(c[1]).splice c[0], 0, lpad c[0]-@do.line(c[1]).length
         @do.end()
         

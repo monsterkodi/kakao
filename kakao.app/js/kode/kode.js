@@ -26,12 +26,12 @@ class Kode
 {
     constructor (args)
     {
-        var _24_14_
+        var _24_14_, _25_21_
 
         this.args = args
     
         this.args = ((_24_14_=this.args) != null ? _24_14_ : {})
-        this.args.header = true
+        this.args.header = ((_25_21_=this.args.header) != null ? _25_21_ : true)
         this.version = '0.1.0'
         this.literals = ['bool','num','regex','single','double','triple']
         this.atoms = this.literals.concat(['var'])

@@ -139,9 +139,9 @@ class kk
         
             child_process.exec cmd, opt, (err, stdout, stderr) -> 
                 
-                if err 
+                if err
                     error 'ERROR' err
-                    reject err
+                    resolve() # don't reject here to keep test watch running
                 else
                     log stdout if valid stdout
                     resolve()

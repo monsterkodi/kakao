@@ -4,6 +4,9 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 import kstr from "../../../kxk/kstr.js"
 
+import util from "../../../kxk/util.js"
+let pull = util.pull
+
 export default {deleteSelectionOrCursorLines:function ()
 {
     this.do.start()
@@ -24,9 +27,9 @@ export default {deleteSelectionOrCursorLines:function ()
         oldSelections = this.do.selections()
         joinLines = []
         var list = _k_.list(this.do.cursors().reverse())
-        for (var _29_18_ = 0; _29_18_ < list.length; _29_18_++)
+        for (var _30_18_ = 0; _30_18_ < list.length; _30_18_++)
         {
-            c = list[_29_18_]
+            c = list[_30_18_]
             if (opt.deleteLines)
             {
                 csel = this.continuousSelectionAtPosInRanges(c,oldSelections)
@@ -41,30 +44,30 @@ export default {deleteSelectionOrCursorLines:function ()
             }
             if ((csel != null))
             {
-                var _37_29_ = csel; sp = _37_29_[0]; ep = _37_29_[1]
+                var _38_29_ = csel; sp = _38_29_[0]; ep = _38_29_[1]
 
                 var list1 = _k_.list(positionsBetweenPosAndPosInPositions(sp,ep,newCursors))
-                for (var _38_27_ = 0; _38_27_ < list1.length; _38_27_++)
+                for (var _39_27_ = 0; _39_27_ < list1.length; _39_27_++)
                 {
-                    nc = list1[_38_27_]
+                    nc = list1[_39_27_]
                     cursorSet(nc,sp)
                 }
                 if (sp[1] < ep[1] && sp[0] > 0 && ep[0] < this.do.line(ep[1]).length)
                 {
                     joinLines.push(sp[1])
                     var list2 = _k_.list(positionsAfterLineColInPositions(ep[1],ep[0],newCursors))
-                    for (var _43_31_ = 0; _43_31_ < list2.length; _43_31_++)
+                    for (var _44_31_ = 0; _44_31_ < list2.length; _44_31_++)
                     {
-                        nc = list2[_43_31_]
+                        nc = list2[_44_31_]
                         cursorSet(nc,sp[0] + nc[0] - ep[0],sp[1])
                     }
                 }
             }
         }
         var list3 = _k_.list(this.do.selections().reverse())
-        for (var _47_18_ = 0; _47_18_ < list3.length; _47_18_++)
+        for (var _48_18_ = 0; _48_18_ < list3.length; _48_18_++)
         {
-            s = list3[_47_18_]
+            s = list3[_48_18_]
             if (s[0] >= this.do.numLines())
             {
                 continue
@@ -74,9 +77,9 @@ export default {deleteSelectionOrCursorLines:function ()
             {
                 this.do.delete(s[0])
                 var list4 = _k_.list(positionsBelowLineIndexInPositions(s[0],newCursors))
-                for (var _52_27_ = 0; _52_27_ < list4.length; _52_27_++)
+                for (var _53_27_ = 0; _53_27_ < list4.length; _53_27_++)
                 {
-                    nc = list4[_52_27_]
+                    nc = list4[_53_27_]
                     cursorDelta(nc,0,-1)
                 }
             }
@@ -88,9 +91,9 @@ export default {deleteSelectionOrCursorLines:function ()
                 }
                 this.do.change(s[0],kstr.splice(this.do.line(s[0]),s[1][0],s[1][1] - s[1][0]))
                 var list5 = _k_.list(positionsAfterLineColInPositions(s[0],s[1][1],newCursors))
-                for (var _57_27_ = 0; _57_27_ < list5.length; _57_27_++)
+                for (var _58_27_ = 0; _58_27_ < list5.length; _58_27_++)
                 {
-                    nc = list5[_57_27_]
+                    nc = list5[_58_27_]
                     cursorDelta(nc,-(s[1][1] - s[1][0]))
                 }
             }
@@ -99,12 +102,12 @@ export default {deleteSelectionOrCursorLines:function ()
                 this.do.change(s[0],this.do.line(s[0]) + this.do.line(s[0] + 1))
                 this.do.delete(s[0] + 1)
                 var list6 = _k_.list(positionsBelowLineIndexInPositions(s[0],newCursors))
-                for (var _63_27_ = 0; _63_27_ < list6.length; _63_27_++)
+                for (var _64_27_ = 0; _64_27_ < list6.length; _64_27_++)
                 {
-                    nc = list6[_63_27_]
+                    nc = list6[_64_27_]
                     cursorDelta(nc,0,-1)
                 }
-                _.pull(joinLines,s[0])
+                pull(joinLines,s[0])
             }
         }
         this.do.select([])

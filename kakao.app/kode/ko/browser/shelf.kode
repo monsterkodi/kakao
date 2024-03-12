@@ -14,6 +14,7 @@ use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/keyinfo
 use ../../kxk/popup
+use ../../kxk/util ▪ pullAllWith
 
 { $, stopEvent } = dom
 
@@ -180,7 +181,7 @@ function Shelf extends column
         
     addItem:  (item, opt) ->
         
-        # _.pullAllWith @items, [item], _.isEqual # remove item if on shelf already
+        pullAllWith @items, [item] # remove item if on shelf already
         
         if opt?.pos
             index = @rowIndexAtPos opt.pos

@@ -8,7 +8,7 @@
 
 use ../kode
 
-kde = -> new kode()
+kde = -> new kode header:false
 
 export 
             

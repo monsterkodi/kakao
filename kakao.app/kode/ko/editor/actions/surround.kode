@@ -5,7 +5,7 @@
 #      000  000   000  000   000  000   000  000   000  000   000  000  0000  000   000
 # 0000000    0000000   000   000  000   000   0000000    0000000   000   000  0000000  
 
-# { _, os, reversed } = require 'kxk'
+use ../../kxk/util ▪ isEqual uniqEqual reversed
 
 export
 
@@ -193,7 +193,7 @@ export
             
         cs = @do.cursors()
 
-        pairs = _.uniqWith _.values(@surroundPairs), _.isEqual
+        pairs = uniqEqual Object.values @surroundPairs
 
         openClosePairs = []
         
@@ -214,7 +214,7 @@ export
             
         # all cursors in empty surround -> remove both surrounds
         
-        uniquePairs = _.uniqWith openClosePairs, _.isEqual
+        uniquePairs = uniqEqual openClosePairs
         for c in cs
             [so,sc] = openClosePairs.shift()
   
@@ -224,7 +224,7 @@ export
             c[0] -= so.length
         
         if @surroundStack.length # pop or clean surround stack
-            if uniquePairs.length == 1 and _.isEqual uniquePairs[0], last @surroundStack 
+            if uniquePairs.length == 1 and isEqual uniquePairs[0], last @surroundStack 
                 @surroundStack.pop()
             else
                 @surroundStack = []

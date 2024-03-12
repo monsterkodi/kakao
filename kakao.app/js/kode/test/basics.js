@@ -3,11 +3,8 @@ var toExport = {}
 
 var _k_
 
-var kc
-
 import utils from "./utils.js"
-
-kc = utils.kc
+let kc = utils.kc
 
 toExport["basics"] = function ()
 {

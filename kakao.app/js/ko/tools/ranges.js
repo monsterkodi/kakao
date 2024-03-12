@@ -2,6 +2,9 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
+import util from "../../kxk/util.js"
+let uniq = util.uniq
+
 class Ranges
 {
     static pollute ()
@@ -293,7 +296,7 @@ class Ranges
             p = list[_116_14_]
             indices.push(p[1])
         }
-        return _.uniq(indices).sort()
+        return uniq(indices).sort()
     }
 
     endPositionsFromRanges (ranges)

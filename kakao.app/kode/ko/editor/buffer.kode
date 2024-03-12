@@ -9,6 +9,7 @@
 use ./state
 use ../../kxk/matchr
 use ../../kxk/events
+use ../../kxk/util ▪ uniq
 use ../../../lib/lib_ko ▪ fuzzy
 
 startOf = (r) -> r[0]
@@ -183,12 +184,12 @@ function Buffer extends events
 
         @selections().filter (s) -> s[0] >= lineIndexRange[0] and s[0] <= lineIndexRange[1]
 
-    selectedLineIndices: -> _.uniq (s[0] for s in @selections())
-    cursorLineIndices:   -> _.uniq (c[1] for c in @cursors())
+    selectedLineIndices: -> uniq (s[0] for s in @selections())
+    cursorLineIndices:   -> uniq (c[1] for c in @cursors())
 
     selectedAndCursorLineIndices: ->
 
-        _.uniq @selectedLineIndices().concat @cursorLineIndices()
+        uniq @selectedLineIndices().concat @cursorLineIndices()
 
     continuousCursorAndSelectedLineIndexRanges: ->
 

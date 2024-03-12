@@ -11,6 +11,8 @@
 # post.debug()
 # log.slog.debug = true
 
+use ../../kxk/util ▪ isEqual
+
 pkg      = require '../../package.json'
 
 Navigate = require './navigate'
@@ -329,7 +331,7 @@ function Main extends app
         return false if wl.length == 1 and bounds.width == width
         
         for wi in [1...wl.length]
-            if not _.isEqual wl[wi]?.getBounds(), bounds
+            if not isEqual wl[wi]?.getBounds(), bounds
                 return false
         true
 

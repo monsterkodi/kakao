@@ -34,8 +34,8 @@ export
         
         rgs = @salterRangesAtPos @cursorPos()
         return if not rgs
-        il     = _.min (@indentationAtLineIndex r[0] for r in rgs)
-        indent = _.padStart "", il
+        il     = min (@indentationAtLineIndex r[0] for r in rgs)
+        indent = lpad il
         @do.start()
         if not @do.line(rgs[0][0]).slice(il).startsWith @lineComment
             # convert to line comments

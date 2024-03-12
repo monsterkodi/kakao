@@ -6,9 +6,8 @@
 0000000   000   000  0000000     000     00000000  000   000  
 ###
 
-# { _ } = require 'kxk'
-
 use ../../tools/salt
+use ../../../kxk/util ▪ uniq
 
 export
     
@@ -50,7 +49,7 @@ export
             
             word = opt?.word ? @selectionTextOrWordAtCursor().trim()
             if @textInRange(@rangeForLineAtIndex cp[1]).trim().length
-                indt = _.padStart '', @indentationAtLineIndex cp[1]
+                indt = lpad @indentationAtLineIndex cp[1]
             else
                 indt = @indentStringForLineAtIndex cp[1]
                 
@@ -171,15 +170,15 @@ export
     
     columnsInSalt: (slt) ->
         
-        min = _.min (s.search /0/ for s in slt)
-        if min < 0
-            min = _.min (s.search(/#/)+1 for s in slt)
-            return [min]
-        max = _.max (s.length for s in slt)
-        cols = [min, max]
-        for col in [min..max]
+        minv = min (s.search /0/ for s in slt)
+        if minv < 0
+            minv = min (s.search(/#/)+1 for s in slt)
+            return [minv]
+        maxv = max (s.length for s in slt)
+        cols = [minv, maxv]
+        for col in [minv..maxv]
             s = 0
             for i in [0...5]
                 s += 1 if slt[i].substr(col-2, 2) in ['  ', '# ']
             cols.push(col) if s == 5
-        _.sortBy _.uniq cols
+        uniq(cols).sort()

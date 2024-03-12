@@ -8,7 +8,8 @@
 
 use ../../kxk/slash
 use ../../kxk/kstr
-
+use ../../kxk/util ▪ uniq
+        
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/
 mathRegExp  = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
 
@@ -132,7 +133,7 @@ req = (file, lines, editor) ->
         else 
             continue
                         
-        # values = _.uniq values
+        values = uniq values
         values = values.filter (v) -> v not in Object.keys(exports).concat ['state']
         
         if valid values

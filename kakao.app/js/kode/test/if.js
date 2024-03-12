@@ -3,11 +3,9 @@ var toExport = {}
 
 var _k_
 
-var kc
-
 import utils from "./utils.js"
-
-kc = utils.kc
+let kc = utils.kc
+let ke = utils.ke
 
 toExport["if"] = function ()
 {

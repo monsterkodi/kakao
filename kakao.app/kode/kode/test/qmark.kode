@@ -6,9 +6,7 @@
  00000 00  000   000  000   000  000   000  000   000  
 ###
 
-use ./utils
-
-{ kc, ke } = utils
+use ./utils ▪ kc ke
 
 ▸ qmark
 

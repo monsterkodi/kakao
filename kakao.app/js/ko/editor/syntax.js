@@ -226,14 +226,14 @@ class Syntax
 
     static async init ()
     {
-        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _196_26_, _196_36_
+        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _195_26_, _195_36_
 
         syntaxDir = slash.path(__dirname,'../syntax/')
         syntaxFiles = await ffs.list(syntaxDir)
         var list = _k_.list(syntaxFiles)
-        for (var _187_23_ = 0; _187_23_ < list.length; _187_23_++)
+        for (var _186_23_ = 0; _186_23_ < list.length; _186_23_++)
         {
-            syntaxFile = list[_187_23_]
+            syntaxFile = list[_186_23_]
             syntaxName = slash.name(syntaxFile.path)
             patterns = JSON.parse(await ffs.read(syntaxFile.path))
             patterns['\\w+'] = 'text'
@@ -244,9 +244,9 @@ class Syntax
                 delete patterns.ko
                 config = matchr.config(patterns)
                 var list1 = _k_.list(extnames)
-                for (var _201_31_ = 0; _201_31_ < list1.length; _201_31_++)
+                for (var _200_31_ = 0; _200_31_ < list1.length; _200_31_++)
                 {
-                    syntaxName = list1[_201_31_]
+                    syntaxName = list1[_200_31_]
                     this.syntaxNames.push(syntaxName)
                     this.matchrConfigs[syntaxName] = config
                 }

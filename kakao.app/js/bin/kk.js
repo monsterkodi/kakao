@@ -154,7 +154,7 @@ class kk
                 if (err)
                 {
                     console.error('ERROR',err)
-                    return reject(err)
+                    return resolve()
                 }
                 else
                 {
