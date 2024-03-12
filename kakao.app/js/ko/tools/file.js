@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
@@ -97,7 +97,7 @@ class File
 
         file = slash.removeLinePos(file)
         clss = icons.ext[slash.ext(file)]
-        clss = (clss != null ? clss : icons.base[slash.base(file).toLowerCase()])
+        clss = (clss != null ? clss : icons.base[slash.name(file).toLowerCase()])
         clss = (clss != null ? clss : 'file')
         return `icon ${clss}`
     }
@@ -166,7 +166,7 @@ class File
     {
         var base, clss, ext, span
 
-        base = slash.base(text)
+        base = slash.name(text)
         ext = slash.ext(text).toLowerCase()
         clss = !_k_.empty((ext)) && ' ' + ext || ''
         if (base.startsWith('.'))

@@ -6,10 +6,10 @@
    000     00000000  000   000  000   000  000  000   000  000   000  0000000
 ###
 
-# { kpos, popup, post, stopEvent } = require 'kxk'
-
+use ../../kxk/dom ▪ stopEvent
 use ../../kxk/post
 use ../../kxk/kpos
+use ../../kxk/popup
 use ../tools/salt
 use ../editor/syntax
 use ../editor/texteditor

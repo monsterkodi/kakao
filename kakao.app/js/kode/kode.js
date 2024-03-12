@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -32,7 +32,7 @@ class Kode
     
         this.args = ((_24_14_=this.args) != null ? _24_14_ : {})
         this.args.header = true
-        this.version = '0.256.0'
+        this.version = '0.1.0'
         this.literals = ['bool','num','regex','single','double','triple']
         this.atoms = this.literals.concat(['var'])
         this.lexer = new lexer(this)

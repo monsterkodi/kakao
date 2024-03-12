@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
@@ -126,7 +126,7 @@ Row = (function ()
                 className = File.iconClassName(this.item.file)
             }
         }
-        if (slash.base(this.item.file).startsWith('.'))
+        if (slash.name(this.item.file).startsWith('.'))
         {
             className += ' dotfile'
         }
@@ -238,7 +238,7 @@ Row = (function ()
         this.input.addEventListener('keydown',this.onNameKeyDown)
         this.input.addEventListener('focusout',this.onNameFocusOut)
         this.input.focus()
-        return this.input.setSelectionRange(0,slash.base(this.item.file).length)
+        return this.input.setSelectionRange(0,slash.name(this.item.file).length)
     }
 
     Row.prototype["onNameKeyDown"] = function (event)

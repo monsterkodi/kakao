@@ -45,7 +45,7 @@ class Renderer
         s = ''
         
         if @kode.args.header
-            s += @js "// monsterkodi/kode #{@kode.version}\n\n" true
+            s += @js "// monsterkodi/kakao #{@kode.version}\n\n" true
             
         s += @js "var _k_\n\n", true
         
@@ -349,16 +349,20 @@ class Renderer
             
             if n.toUse.length > 1
                 error 'items for multiple models?!'
-                
-            s += 'import { ' + n.items.join(', ') + ' }' 
-            
+                            
             m   = n.toUse[0]
             mod = m.text ? m
+            
+            name = slash.name m.text
+            s += 'import ' + name
 
             if mod[0] == '.'
                 s += " from \"#{slash.swapExt mod, 'js'}\"\n"
             else
                 s += " from \"#{mod}\"\n"
+                
+            for item in n.items
+                s += "let #{item} = #{name}.#{item}\n"
         else
         
             for m in n.toUse
@@ -420,10 +424,10 @@ class Renderer
             if a[0] == "{" 
                 s += 'default ' + a
             else 
-                s += '{ ' + a + ' }'
+                s += '{ ' + a + ' };'
         else 
             s += 'default ' + @node n.args
-        s += ';'
+            s += ';'
         s
         
     #  0000000  000       0000000    0000000   0000000

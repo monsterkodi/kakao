@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -163,4 +163,4 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
     {
         return this.removeSelectionAtIndex(sel.indexOf(sr))
     }
-}};
+}}

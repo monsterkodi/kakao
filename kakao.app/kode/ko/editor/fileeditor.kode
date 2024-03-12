@@ -301,7 +301,7 @@ function FileEditor extends texteditor
         if not type or type == 'file'
             files = post.get 'indexer' 'files'
             for file, info of files
-                if slash.base(file).toLowerCase() == find and file != @currentFile
+                if slash.name(file).toLowerCase() == find and file != @currentFile
                     @jumpToFile file:file, line:6
 
         window.commandline.commands.search.start 'search'
@@ -463,7 +463,7 @@ function FileEditor extends texteditor
         fileSpan = (f) ->
             if f?
                 span  = syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
-                span += syntax.spanForTextAndSyntax '/' + slash.base(f), 'browser'
+                span += syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
             return span
         
         recent = window.state?.get 'recentFiles' []

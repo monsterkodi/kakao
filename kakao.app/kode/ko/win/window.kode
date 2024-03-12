@@ -6,9 +6,11 @@
 00     00  000  000   000  0000000     0000000   00     00
 ###
 
+log 'ko window'
+
 use ../../kakao
 
-# { klog, post, prefs, scheme, stash, stopEvent, store, win } = require 'kxk'
+use ../../kxk/dom ▪ stopEvent
 
 use ../../kxk/post
 use ../../kxk/stash
@@ -18,18 +20,21 @@ use ../../kxk/prefs
 use ./split
 use ./info
 use ./tabs
-use ./terminal
 use ./titlebar
 use ./filehandler
 use ../tools/watcher
 use ../tools/fps
 use ../tools/scheme
-use ../editor/editor
-use ../commandline/commandline
-use ../editor/fileeditor
 use ../tools/cwd
 use ../tools/projects
 use ../main/navigate
+
+use ./terminal
+use ../editor/editor
+use ../commandline/commandline
+use ../editor/fileeditor
+
+log 'ko window 3'
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  

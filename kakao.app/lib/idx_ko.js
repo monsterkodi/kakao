@@ -1,6 +1,8 @@
 
-module.exports.fuzzy       = require('fuzzy')
-module.exports.moment      = require('moment')
-module.exports.pbytes      = require('pretty-bytes')
-module.exports.immutable   = require('seamless-immutable')
+import fuzzy from 'fuzzy'
+import moment from 'moment'
+import pbytes from 'pretty-bytes'
+import immutable from 'seamless-immutable'
+
+export default { fuzzy, moment, pbytes, immutable }
 

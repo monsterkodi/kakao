@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -16,7 +16,8 @@ import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
-import { fuzzy } from "../../../lib/lib_ko.js"
+import lib_ko from "../../../lib/lib_ko.js"
+let fuzzy = lib_ko.fuzzy
 
 import File from '../tools/file.js'
 
@@ -154,7 +155,7 @@ Open = (function ()
         f = item.file
         r = item.text
         b = slash.file(f)
-        n = slash.base(f)
+        n = slash.name(f)
         relBonus = 0
         nameBonus = 0
         if ((opt.currentText != null ? opt.currentText.length : undefined))

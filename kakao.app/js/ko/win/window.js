@@ -1,10 +1,14 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
 var addToShelf, changeFontSize, changeZoom, reloadWin, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
 
+console.log('ko window')
 import kakao from "../../kakao.js"
+
+import dom from "../../kxk/dom.js"
+let stopEvent = dom.stopEvent
 
 import post from "../../kxk/post.js"
 
@@ -20,8 +24,6 @@ import info from "./info.js"
 
 import tabs from "./tabs.js"
 
-import terminal from "./terminal.js"
-
 import titlebar from "./titlebar.js"
 
 import filehandler from "./filehandler.js"
@@ -32,18 +34,21 @@ import fps from "../tools/fps.js"
 
 import scheme from "../tools/scheme.js"
 
-import editor from "../editor/editor.js"
-
-import commandline from "../commandline/commandline.js"
-
-import fileeditor from "../editor/fileeditor.js"
-
 import cwd from "../tools/cwd.js"
 
 import projects from "../tools/projects.js"
 
 import navigate from "../main/navigate.js"
 
+import terminal from "./terminal.js"
+
+import editor from "../editor/editor.js"
+
+import commandline from "../commandline/commandline.js"
+
+import fileeditor from "../editor/fileeditor.js"
+
+console.log('ko window 3')
 
 Window = (function ()
 {
@@ -144,7 +149,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _126_25_
+        var action, _131_25_
 
         console.log('onMenuAction',name)
         if (action = editor.actionWithName(name))
@@ -365,7 +370,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _279_14_
+    var _284_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -376,7 +381,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _285_22_
+    var _290_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -421,7 +426,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _330_32_
+    var _335_32_
 
     if (!(_k_.isNum(s)))
     {

@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 

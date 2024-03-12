@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_
 
@@ -71,4 +71,4 @@ export default {poster:poster,emit:function (event, ...args)
     {
         return cb.apply(cb,e.args)
     })
-}};
+}}

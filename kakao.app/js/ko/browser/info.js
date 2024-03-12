@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.256.0
+// monsterkodi/kakao 0.1.0
 
 var _k_
 
@@ -81,4 +81,4 @@ fileInfo = function (file)
     info = elem({class:'browserFileInfo',children:[elem('div',{class:`fileInfoIcon ${slash.ext(file)} ${File.iconClassName(file)}`}),elem('div',{class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),elem('table',{class:"fileInfoData",html:`<tr><th>${size[0]}</th><td>${size[1]}</td></tr><tr><th>${num}</th><td>${range}</td></tr>`})]})
     return info
 }
-export default {file:fileInfo,image:imageInfo};
+export default {file:fileInfo,image:imageInfo}
