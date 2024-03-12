@@ -31,6 +31,15 @@ toExport["util"] = function ()
         compare(util.pull(arr,2),[1,3])
         compare(arr,[1,3])
     })
+    section("pullIf", function ()
+    {
+        arr = [1,2,3]
+        compare(util.pullIf(arr,function (i)
+        {
+            return i === 2
+        }),[1,3])
+        compare(arr,[1,3])
+    })
     section("pullAllWith", function ()
     {
         arr = [1,2,3]

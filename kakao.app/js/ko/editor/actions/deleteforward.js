@@ -2,6 +2,9 @@
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
+import util from "../../../kxk/util.js"
+let reversed = util.reversed
+
 export default {actions:{menu:'Delete',deleteForward:{name:'Delete Forward',combo:'delete',text:'delete character to the right'},deleteToEndOfLine:{name:'Delete to End of Line',combo:'ctrl+shift+k',text:'delete characters to the end of line'},deleteToEndOfLineOrWholeLine:{name:'Delete to End of Line or Delete Whole Line',combo:'ctrl+k',text:`delete characters to the end of line, if cursor is not at end of line.
                 delete whole line otherwise.`}},deleteToEndOfLine:function ()
 {

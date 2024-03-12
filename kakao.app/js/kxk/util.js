@@ -39,15 +39,27 @@ export default {isEqual:isEqual,reversed:function (arr)
 {
     arr.splice(arr.indexOf(item),1)
     return arr
+},pullIf:function (arr, pred)
+{
+    var index
+
+    for (var _41_21_ = index = arr.length - 1, _41_35_ = 0; (_41_21_ <= _41_35_ ? index <= 0 : index >= 0); (_41_21_ <= _41_35_ ? ++index : --index))
+    {
+        if (pred(arr[index]))
+        {
+            arr.splice(index,1)
+        }
+    }
+    return arr
 },pullAllWith:function (arr, items, cmp = isEqual)
 {
     var index, item
 
     var list = _k_.list(items)
-    for (var _41_17_ = 0; _41_17_ < list.length; _41_17_++)
+    for (var _48_17_ = 0; _48_17_ < list.length; _48_17_++)
     {
-        item = list[_41_17_]
-        for (var _42_25_ = index = arr.length - 1, _42_39_ = 0; (_42_25_ <= _42_39_ ? index <= 0 : index >= 0); (_42_25_ <= _42_39_ ? ++index : --index))
+        item = list[_48_17_]
+        for (var _49_25_ = index = arr.length - 1, _49_39_ = 0; (_49_25_ <= _49_39_ ? index <= 0 : index >= 0); (_49_25_ <= _49_39_ ? ++index : --index))
         {
             if (cmp(arr[index],item))
             {
@@ -62,9 +74,9 @@ export default {isEqual:isEqual,reversed:function (arr)
 
     result = []
     var list = _k_.list(arr)
-    for (var _50_17_ = 0; _50_17_ < list.length; _50_17_++)
+    for (var _57_17_ = 0; _57_17_ < list.length; _57_17_++)
     {
-        item = list[_50_17_]
+        item = list[_57_17_]
         if (!(_k_.in(item,result)))
         {
             result.push(item)
@@ -77,14 +89,14 @@ export default {isEqual:isEqual,reversed:function (arr)
 
     result = []
     var list = _k_.list(arr)
-    for (var _58_17_ = 0; _58_17_ < list.length; _58_17_++)
+    for (var _65_17_ = 0; _65_17_ < list.length; _65_17_++)
     {
-        item = list[_58_17_]
+        item = list[_65_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _60_22_ = 0; _60_22_ < list1.length; _60_22_++)
+        for (var _67_22_ = 0; _67_22_ < list1.length; _67_22_++)
         {
-            ritem = list1[_60_22_]
+            ritem = list1[_67_22_]
             if (isEqual(item,ritem))
             {
                 add = false
@@ -111,14 +123,14 @@ export default {isEqual:isEqual,reversed:function (arr)
     }
     result = []
     var list = _k_.list(arr)
-    for (var _74_17_ = 0; _74_17_ < list.length; _74_17_++)
+    for (var _81_17_ = 0; _81_17_ < list.length; _81_17_++)
     {
-        item = list[_74_17_]
+        item = list[_81_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _76_22_ = 0; _76_22_ < list1.length; _76_22_++)
+        for (var _83_22_ = 0; _83_22_ < list1.length; _83_22_++)
         {
-            ritem = list1[_76_22_]
+            ritem = list1[_83_22_]
             if (prop(item) === prop(ritem))
             {
                 add = false
@@ -133,12 +145,12 @@ export default {isEqual:isEqual,reversed:function (arr)
     return result
 },defaults:function (obj, def)
 {
-    var key, val, _92_21_
+    var key, val, _99_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_92_21_=obj[key]) != null ? _92_21_ : val)
+        obj[key] = ((_99_21_=obj[key]) != null ? _99_21_ : val)
     }
     return obj
 }}

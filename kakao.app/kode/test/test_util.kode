@@ -32,6 +32,12 @@ use ../kxk/util
         util.pull arr, 2 ▸ [1 3]
         arr ▸ [1 3]
         
+    ▸ pullIf
+    
+        arr = [1 2 3]
+        util.pullIf(arr, (i) -> i == 2) ▸ [1 3]
+        arr ▸ [1 3]
+        
     ▸ pullAllWith
     
         arr = [1 2 3]

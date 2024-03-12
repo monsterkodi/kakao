@@ -2,21 +2,9 @@
 
 var _k_ = {clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
-var removeFromArray
+import util from "../../../kxk/util.js"
+let pullIf = util.pullIf
 
-
-removeFromArray = function (arr, check)
-{
-    var index
-
-    for (var _10_17_ = index = arr.length - 1, _10_31_ = 0; (_10_17_ <= _10_31_ ? index <= 0 : index >= 0); (_10_17_ <= _10_31_ ? ++index : --index))
-    {
-        if (check(arr[index]))
-        {
-            arr.splice(index,1)
-        }
-    }
-}
 export default {actions:{menu:'Cursors',moveCursorsAtBoundaryLeft:{name:'Move Cursors to Indent or Start of Line',combo:'command+left',accel:'ctrl+left'},moveCursorsAtBoundaryRight:{name:'Move Cursors to End of Line',combo:'command+right',accel:'ctrl+right'},moveCursorsToWordBoundary:{name:'move cursors to word boundaries',text:'moves cursors to word boundaries. extends selections, if shift is pressed.',combos:['alt+shift+left','alt+shift+right']},moveCursorsToWordBoundaryLeft:{separator:true,name:'Move Cursors to Start of Word',combo:'alt+left'},moveCursorsToWordBoundaryRight:{name:'Move Cursors to End of Word',combo:'alt+right'},moveCursorsToLineBoundary:{name:'move cursors to line boundaries',text:'moves cursors to line boundaries. extends selections, if shift is pressed.',combos:['home','end','command+shift+left','command+shift+right'],accels:['home','end','shift+home','shift+end','ctrl+shift+left','ctrl+shift+right']},moveMainCursor:{name:'move main cursor',text:`move main cursor independently of other cursors.
 keeps current main cursor position in cursors if shift is pressed.`,combos:['ctrl+shift+up','ctrl+shift+down','ctrl+shift+left','ctrl+shift+right','ctrl+up','ctrl+down','ctrl+left','ctrl+right']},moveCursors:{name:'move cursors',combos:['left','right','up','down','shift+down','shift+right','shift+up','shift+left','ctrl+left','ctrl+right']}},moveCursorsAtBoundaryLeft:function ()
 {
@@ -36,13 +24,13 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     }
 },moveMainCursor:function (key, info)
 {
-    var dir, dx, dy, newCursors, newMain, oldMain, opt, _79_18_, _79_29_
+    var dir, dx, dy, newCursors, newMain, oldMain, opt, _75_18_, _75_29_
 
     dir = key
     opt = _k_.clone(info)
-    opt.erase = ((_79_18_=opt.erase) != null ? _79_18_ : (info.mod != null ? info.mod.indexOf('shift') : undefined) < 0)
+    opt.erase = ((_75_18_=opt.erase) != null ? _75_18_ : (info.mod != null ? info.mod.indexOf('shift') : undefined) < 0)
     this.do.start()
-    var _81_17_ = ((function ()
+    var _77_17_ = ((function ()
     {
         switch (dir)
         {
@@ -60,12 +48,12 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
 
         }
 
-    }).bind(this))(); dx = _81_17_[0]; dy = _81_17_[1]
+    }).bind(this))(); dx = _77_17_[0]; dy = _77_17_[1]
 
     newCursors = this.do.cursors()
     oldMain = this.mainCursor()
     newMain = [oldMain[0] + dx,oldMain[1] + dy]
-    removeFromArray(newCursors,function (c)
+    pullIf(newCursors,function (c)
     {
         if ((opt != null ? opt.erase : undefined))
         {
@@ -87,9 +75,9 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     return this.moveCursorsToWordBoundary('right')
 },moveCursorsToWordBoundary:function (leftOrRight, info = {extend:false})
 {
-    var extend, f, _109_29_
+    var extend, f, _105_29_
 
-    extend = ((_109_29_=info.extend) != null ? _109_29_ : 0 <= info.mod.indexOf('shift'))
+    extend = ((_105_29_=info.extend) != null ? _105_29_ : 0 <= info.mod.indexOf('shift'))
     f = ((function ()
     {
         switch (leftOrRight)
@@ -107,10 +95,10 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     return true
 },moveCursorsToLineBoundary:function (key, info = {extend:false})
 {
-    var extend, func, _125_29_
+    var extend, func, _121_29_
 
     this.do.start()
-    extend = ((_125_29_=info.extend) != null ? _125_29_ : 0 <= info.mod.indexOf('shift'))
+    extend = ((_121_29_=info.extend) != null ? _121_29_ : 0 <= info.mod.indexOf('shift'))
     func = ((function ()
     {
         switch (key)
@@ -148,13 +136,13 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     return this.do.end()
 },moveCursors:function (key, info = {extend:false})
 {
-    var extend, _142_29_
+    var extend, _138_29_
 
     if (this.stickySelection && info.mod === 'ctrl')
     {
         console.log('substract from sticky?',key)
     }
-    extend = ((_142_29_=info.extend) != null ? _142_29_ : 'shift' === info.mod)
+    extend = ((_138_29_=info.extend) != null ? _138_29_ : 'shift' === info.mod)
     switch (key)
     {
         case 'left':
@@ -180,9 +168,9 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     newCursors = []
     main = 'last'
     var list = _k_.list(this.do.selections())
-    for (var _155_14_ = 0; _155_14_ < list.length; _155_14_++)
+    for (var _151_14_ = 0; _151_14_ < list.length; _151_14_++)
     {
-        s = list[_155_14_]
+        s = list[_151_14_]
         p = rangeIndexPos(s,i)
         newCursors.push(p)
         if (this.isCursorInRange(s))
@@ -204,9 +192,9 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     if (newCursors.length > 1)
     {
         var list = _k_.list(newCursors)
-        for (var _179_18_ = 0; _179_18_ < list.length; _179_18_++)
+        for (var _175_18_ = 0; _175_18_ < list.length; _175_18_++)
         {
-            c = list[_179_18_]
+            c = list[_175_18_]
             newPos = func(c)
             if (newPos[1] === c[1] || !opt.keepLine)
             {
@@ -284,7 +272,7 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
 
     if (e && this.numSelections() === 0)
     {
-        if (0 === _k_.max((function () { var r_215_36_ = []; var list = _k_.list(this.cursors()); for (var _215_36_ = 0; _215_36_ < list.length; _215_36_++)  { c = list[_215_36_];r_215_36_.push(c[0])  } return r_215_36_ }).bind(this)()))
+        if (0 === _k_.max((function () { var r_211_36_ = []; var list = _k_.list(this.cursors()); for (var _211_36_ = 0; _211_36_ < list.length; _211_36_++)  { c = list[_211_36_];r_211_36_.push(c[0])  } return r_211_36_ }).bind(this)()))
         {
             this.do.start()
             this.do.select(this.rangesForCursorLines())
