@@ -6,14 +6,14 @@
  0000000   000        00000000  000   000
 ###
 
-use ../tools/projects
-use ../commandline/command
-use ../editor/render
-use ../editor/syntax
+use ../../../lib/lib_ko ▪ fuzzy
+use ../../kxk/util ▪ uniqBy
 use ../../kxk/post
 use ../../kxk/slash
-use ../../kxk/util ▪ uniqBy
-use ../../../lib/lib_ko ▪ fuzzy
+use ../tools/projects
+use ../editor/render
+use ../editor/syntax
+use ../commandline/command ● Command
 
 use ../tools/file ● File
                  
@@ -29,15 +29,15 @@ relative = (rel, to) ->
         r = rel
     r    
 
-function Open extends command
+function Open extends Command
 
     @: (commandline) ->
         
         super commandline
         
-        post.on 'file', @onFile
+        post.on 'file' @onFile
         
-        @names    = ["open", "new window"]
+        @names    = ['open' 'new window']
         @files    = []
         @file     = null
         @dir      = null
@@ -158,7 +158,6 @@ function Open extends command
             
     weightedItems: (items, opt) -> 
         
-        # items.sort (a,b) => @weight(b, opt) - @weight(a, opt)
         items.sort (a,b) => b.weight - a.weight
         items
     
@@ -183,7 +182,6 @@ function Open extends command
         
         @lastFileIndex = 0
         
-        # @dir = slash.resolve '~' if not @dir?
         @dir = slash.path '~' if not @dir?
         
         if @history? and not opt.currentText and @history.length > 1
@@ -277,7 +275,6 @@ function Open extends command
         if @commandline.lastFocus == 'commandline-editor' == window.lastFocus
             
             @file = window.editor.currentFile
-            # if dir = slash.resolve @commandline.text()
             if dir = slash.path @commandline.text()
                 @dir = dir
             else
@@ -338,7 +335,8 @@ function Open extends command
             file = slash.joinFilePos file, pos
             
             if @name == 'new window'
-                post.toMain 'newWindowWithFile' file
+                # post.toMain 'newWindowWithFile' file
+                log 'open new window with file not implemented!'
             else
                 post.emit 'jumpToFile' type:'file' file:file
                         

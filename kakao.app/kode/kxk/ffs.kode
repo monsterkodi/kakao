@@ -10,6 +10,7 @@ class KFS
     
     @watch:         (p)  -> log 'KFS.watch' p
     @list:          (p) ○-> await kakao.request 'fs.list'       p
+    @listDeep:      (p) ○-> await kakao.request 'fs.listDeep'   p
     @read:          (p) ○-> await kakao.request 'fs.read'       p
     @write:      (p, t) ○-> await kakao.request 'fs.write'      p, t
     @exists:        (p) ○-> await kakao.request 'fs.exists'     p

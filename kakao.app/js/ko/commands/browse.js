@@ -1,23 +1,24 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var $, Browse
+var Browse
 
 import dom from "../../kxk/dom.js"
+let $ = dom.$
 
 import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
-import command from "../commandline/command.js"
+import kakao from "../../kakao.js"
 
-import filebrowser from "../browser/filebrowser.js"
+import Command from "../commandline/command.js"
 
-$ = dom.$
+import FileBrowser from "../browser/filebrowser.js"
 
 
 Browse = (function ()
 {
-    _k_.extend(Browse, command)
+    _k_.extend(Browse, Command)
     function Browse (commandline)
     {
         this["onBrowserItemActivated"] = this["onBrowserItemActivated"].bind(this)
@@ -27,10 +28,9 @@ Browse = (function ()
         this["onFile"] = this["onFile"].bind(this)
         Browse.__super__.constructor.call(this,commandline)
         this.cmdID = 0
-        this.browser = new filebrowser($('browser'))
-        console.log('Browser.browser',this.browser)
+        this.browser = new FileBrowser($('browser'))
         this.commands = Object.create(null)
-        this.names = ['browse','Browse','shelf']
+        this.names = ['browse','Browse','shelf','Small Browser','Large Browser']
         post.on('file',this.onFile)
         this.browser.on('itemActivated',this.onBrowserItemActivated)
         this.syntaxName = 'browser'
@@ -55,19 +55,19 @@ Browse = (function ()
 
     Browse.prototype["start"] = function (action)
     {
-        var name, _58_40_
+        var name, _56_40_
 
         this.browser.start()
         if (action !== 'shelf')
         {
-            if ((window.editor.currentFile != null) && slash.isFile(window.editor.currentFile))
+            if ((window.editor.currentFile != null))
             {
                 this.setText(slash.tilde(window.editor.currentFile))
                 this.browser.navigateToFile(window.editor.currentFile)
             }
             else
             {
-                post.emit('filebrowser','loadItem',{file:'~',type:'dir'})
+                post.emit('filebrowser','loadItem',{file:kakao.bundle.path,type:'dir'})
             }
             this.browser.focus({force:true})
         }
@@ -145,7 +145,7 @@ Browse = (function ()
         var i, prefix
 
         prefix = ''
-        for (var _147_18_ = i = 0, _147_22_ = Math.min(strA.length,strB.length); (_147_18_ <= _147_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_147_18_ <= _147_22_ ? ++i : --i))
+        for (var _146_18_ = i = 0, _146_22_ = Math.min(strA.length,strB.length); (_146_18_ <= _146_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_146_18_ <= _146_22_ ? ++i : --i))
         {
             if (strA[i] !== strB[i])
             {
@@ -163,9 +163,9 @@ Browse = (function ()
         brokenPath = slash.path(this.getText())
         longestMatch = ''
         var list = _k_.list(files)
-        for (var _157_17_ = 0; _157_17_ < list.length; _157_17_++)
+        for (var _156_17_ = 0; _156_17_ < list.length; _156_17_++)
         {
-            file = list[_157_17_]
+            file = list[_156_17_]
             file = file.file
             prefix = this.commonPrefix(file,brokenPath)
             if (prefix.length > longestMatch.length)
@@ -238,7 +238,7 @@ Browse = (function ()
 
     Browse.prototype["changed"] = function (command)
     {
-        var text, _218_19_
+        var text, _217_19_
 
         console.log('browse.changed',command)
         text = this.getText().trim()
@@ -255,7 +255,7 @@ Browse = (function ()
 
     Browse.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var focusBrowser, _234_74_
+        var focusBrowser, _233_74_
 
         switch (combo)
         {
@@ -299,7 +299,7 @@ Browse = (function ()
 
     Browse.prototype["select"] = function (i)
     {
-        var l, s, text, _269_42_, _275_20_, _276_20_
+        var l, s, text, _268_42_, _274_20_, _275_20_
 
         this.selected = _k_.clamp(-1,(this.commandList != null ? this.commandList.numLines() : undefined) - 1,i)
         if (this.selected < 0)
@@ -318,7 +318,7 @@ Browse = (function ()
 
     Browse.prototype["selectListItem"] = function (dir)
     {
-        var _286_34_
+        var _285_34_
 
         if (!(this.commandList != null))
         {
@@ -373,11 +373,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _333_32_, _333_56_, _340_64_, _340_72_, _342_61_, _342_69_
+        var pth, _332_32_, _332_56_, _339_64_, _339_72_, _341_61_, _341_69_
 
         if (!this.isActive())
         {
-            ;((_333_32_=this.commandline.command) != null ? typeof (_333_56_=_333_32_.onBrowserItemActivated) === "function" ? _333_56_(item) : undefined : undefined)
+            ;((_332_32_=this.commandline.command) != null ? typeof (_332_56_=_332_32_.onBrowserItemActivated) === "function" ? _332_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -386,9 +386,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_340_64_=this.browser.activeColumn()) != null ? (_340_72_=_340_64_.parent) != null ? _340_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_339_64_=this.browser.activeColumn()) != null ? (_339_72_=_339_64_.parent) != null ? _339_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_342_61_=this.browser.activeColumn()) != null ? (_342_69_=_342_61_.parent) != null ? _342_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_341_61_=this.browser.activeColumn()) != null ? (_341_69_=_341_61_.parent) != null ? _341_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)

@@ -6,21 +6,19 @@
 0000000   000   000  00000000  0000000  000     
 ###
 
-use ./row
-use ./scroller
-use ./column
-use ../../kxk/dom
+use ../../kxk/dom  ▪ $ stopEvent
+use ../../kxk/util ▪ pullAllWith
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/keyinfo
 use ../../kxk/popup
-use ../../kxk/util ▪ pullAllWith
 
-{ $, stopEvent } = dom
+use ./column ● Column
+use ./row    ● Row
 
 # use ../git/hub
     
-function Shelf extends column
+function Shelf extends Column
 
     @: (browser) ->
 

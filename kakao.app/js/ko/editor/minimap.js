@@ -1,22 +1,19 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var getStyle
-
-import mapscroll from "./mapscroll.js"
-
 import dom from "../../kxk/dom.js"
+let getStyle = dom.getStyle
 
 import elem from "../../kxk/elem.js"
 
 import drag from "../../kxk/drag.js"
 
-getStyle = dom.getStyle
+import MapScroll from "./mapscroll.js"
 
 class Minimap
 {
     constructor (editor)
     {
-        var minimapWidth, _44_56_
+        var minimapWidth, _42_56_
 
         this.editor = editor
     
@@ -60,7 +57,7 @@ class Minimap
         this.editor.on('changed',this.onChanged)
         this.editor.on('highlight',this.drawHighlights)
         this.editor.scroll.on('scroll',this.onEditorScroll)
-        this.scroll = new mapscroll({exposeMax:this.height / 4,lineHeight:4,viewHeight:2 * this.editor.viewHeight()})
+        this.scroll = new MapScroll({exposeMax:this.height / 4,lineHeight:4,viewHeight:2 * this.editor.viewHeight()})
         this.scroll.name = `${this.editor.name}.minimap`
         this.drag = new drag({target:this.elem,onStart:this.onStart,onMove:this.onDrag,cursor:'pointer'})
         this.scroll.on('clearLines',this.clearAll)
@@ -86,9 +83,9 @@ class Minimap
         ctx = this.selecti.getContext('2d')
         ctx.fillStyle = this.editor.syntax.colorForClassnames('selection')
         var list = _k_.list(rangesFromTopToBotInRanges(this.scroll.exposeTop,this.scroll.exposeBot,this.editor.selections()))
-        for (var _89_14_ = 0; _89_14_ < list.length; _89_14_++)
+        for (var _87_14_ = 0; _87_14_ < list.length; _87_14_++)
         {
-            r = list[_89_14_]
+            r = list[_87_14_]
             y = (r[0] - this.scroll.exposeTop) * this.scroll.lineHeight
             if (2 * r[1][0] < this.width)
             {
@@ -101,7 +98,7 @@ class Minimap
 
     drawLines (top = this.scroll.exposeTop, bot = this.scroll.exposeBot)
     {
-        var ctx, diss, li, r, y, _109_25_, _111_30_
+        var ctx, diss, li, r, y, _107_25_, _109_30_
 
         ctx = this.lines.getContext('2d')
         y = parseInt((top - this.scroll.exposeTop) * this.scroll.lineHeight)
@@ -115,14 +112,14 @@ class Minimap
         {
             return
         }
-        for (var _104_19_ = li = top, _104_24_ = bot; (_104_19_ <= _104_24_ ? li <= bot : li >= bot); (_104_19_ <= _104_24_ ? ++li : --li))
+        for (var _102_19_ = li = top, _102_24_ = bot; (_102_19_ <= _102_24_ ? li <= bot : li >= bot); (_102_19_ <= _102_24_ ? ++li : --li))
         {
             diss = this.editor.syntax.getDiss(li)
             y = parseInt((li - this.scroll.exposeTop) * this.scroll.lineHeight)
             var list = (diss != null ? diss : [])
-            for (var _107_18_ = 0; _107_18_ < list.length; _107_18_++)
+            for (var _105_18_ = 0; _105_18_ < list.length; _105_18_++)
             {
-                r = list[_107_18_]
+                r = list[_105_18_]
                 if (2 * r.start >= this.width)
                 {
                     break
@@ -153,9 +150,9 @@ class Minimap
         ctx = this.highlig.getContext('2d')
         ctx.fillStyle = this.editor.syntax.colorForClassnames('highlight')
         var list = _k_.list(rangesFromTopToBotInRanges(this.scroll.exposeTop,this.scroll.exposeBot,this.editor.highlights()))
-        for (var _122_14_ = 0; _122_14_ < list.length; _122_14_++)
+        for (var _120_14_ = 0; _120_14_ < list.length; _120_14_++)
         {
-            r = list[_122_14_]
+            r = list[_120_14_]
             y = (r[0] - this.scroll.exposeTop) * this.scroll.lineHeight
             if (2 * r[1][0] < this.width)
             {
@@ -177,9 +174,9 @@ class Minimap
         }
         ctx = this.cursors.getContext('2d')
         var list = _k_.list(rangesFromTopToBotInRanges(this.scroll.exposeTop,this.scroll.exposeBot,rangesFromPositions(this.editor.cursors())))
-        for (var _134_14_ = 0; _134_14_ < list.length; _134_14_++)
+        for (var _132_14_ = 0; _132_14_ < list.length; _132_14_++)
         {
-            r = list[_134_14_]
+            r = list[_132_14_]
             y = (r[0] - this.scroll.exposeTop) * this.scroll.lineHeight
             if (2 * r[1][0] < this.width)
             {
@@ -238,7 +235,7 @@ class Minimap
 
     onVanishLines (e)
     {
-        var _178_16_
+        var _176_16_
 
         if ((e.top != null))
         {
@@ -252,7 +249,7 @@ class Minimap
 
     onChanged (changeInfo)
     {
-        var change, li, _203_33_
+        var change, li, _201_33_
 
         if (this.scroll.numLines !== this.editor.numLines() || (changeInfo.inserts || changeInfo.deletes))
         {
@@ -272,10 +269,10 @@ class Minimap
             this.drawCursors()
         }
         var list = _k_.list(changeInfo.changes)
-        for (var _202_19_ = 0; _202_19_ < list.length; _202_19_++)
+        for (var _200_19_ = 0; _200_19_ < list.length; _200_19_++)
         {
-            change = list[_202_19_]
-            li = ((_203_33_=change.oldIndex) != null ? _203_33_ : change.doIndex)
+            change = list[_200_19_]
+            li = ((_201_33_=change.oldIndex) != null ? _201_33_ : change.doIndex)
             this.drawLines(li,li)
         }
     }

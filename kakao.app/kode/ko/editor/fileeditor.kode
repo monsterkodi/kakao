@@ -46,8 +46,6 @@ function FileEditor extends texteditor
         
     actionsInitialized: =>
         
-        log 'FileEditor.actionsInitialized'
-        
         super()
         
         @initPigments()

@@ -119,7 +119,8 @@ class Titlebar
     loadWindowWithID: (id) -> 
         
         @closeList()
-        post.toMain 'activateWindow' id
+        # post.toMain 'activateWindow' id
+        log 'titlebar loadWindowWithID unimplemented!'
         
     loadSelected: ->
         

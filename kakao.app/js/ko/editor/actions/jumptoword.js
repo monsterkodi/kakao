@@ -35,17 +35,8 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
                 cwd = window.cwd.cwd
                 var _42_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _42_38_[0]; line = _42_38_[1]; col = _42_38_[2]
 
-                if (slash.isFile(file))
-                {
-                    post.emit('jumpTo',{file:file,line:line,col:col})
-                    return true
-                }
-                else if (!_k_.empty(this.currentFile) && slash.isFile(slash.swapExt(file,slash.ext(this.currentFile))))
-                {
-                    file = slash.swapExt(file,slash.ext(this.currentFile))
-                    post.emit('jumpTo',{file:file,line:line,col:col})
-                    return true
-                }
+                post.emit('jumpTo',{file:file,line:line,col:col})
+                return true
             }
         }
     }
@@ -55,12 +46,12 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list1 = _k_.list(diss)
-        for (var _57_18_ = 0; _57_18_ < list1.length; _57_18_++)
+        for (var _61_18_ = 0; _61_18_ < list1.length; _61_18_++)
         {
-            d = list1[_57_18_]
+            d = list1[_61_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _59_38_ = slash.splitFileLine(d.match); file = _59_38_[0]; line = _59_38_[1]; col = _59_38_[2]
+                var _63_38_ = slash.splitFileLine(d.match); file = _63_38_[0]; line = _63_38_[1]; col = _63_38_[2]
 
                 if (slash.fileExists(file))
                 {

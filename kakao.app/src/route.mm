@@ -91,7 +91,49 @@
     }
     else if ([req isEqualToString:@"list"])
     {
-        NSString* dirPath = [args objectAtIndex:0];
+        NSString* dirPath = [[args objectAtIndex:0] stringByExpandingTildeInPath];
+        
+        NSLog(@"list %@", dirPath);
+        
+        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
+        
+        NSMutableArray* result = [NSMutableArray array];
+        
+        NSString *file;
+        while ((file = [dirEnum nextObject])) 
+        {
+            [dirEnum skipDescendants];
+            id type; 
+            id fileType = [dirEnum.fileAttributes objectForKey:NSFileType];
+            if ([fileType isEqualToString:NSFileTypeRegular])
+            {
+                type = @"file";
+            }
+            else if ([fileType isEqualToString:NSFileTypeDirectory])
+            {
+                type = @"dir";
+                // NSLog(@"dir %@", file);
+            }
+            
+            id path = [dirPath stringByAppendingPathComponent:file];
+            
+            // NSLog(@"%@ file %@ path %@", type, file, path);
+        
+            NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
+            [fileInfo setObject:type forKey:@"type"];
+            [fileInfo setObject:file forKey:@"file"];
+            [fileInfo setObject:path forKey:@"path"];
+            [result addObject:fileInfo];
+        }
+                
+        return result;
+    }
+    else if ([req isEqualToString:@"listDeep"])
+    {
+        NSString* dirPath = [[args objectAtIndex:0] stringByExpandingTildeInPath];
+        
+        NSLog(@"listDeep %@", dirPath);
+        
         NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
         
         NSMutableArray* result = [NSMutableArray array];
@@ -108,6 +150,7 @@
             else if ([fileType isEqualToString:NSFileTypeDirectory])
             {
                 type = @"dir";
+                // NSLog(@"dir %@", file);
             }
             
             id path = [dirPath stringByAppendingPathComponent:file];

@@ -2,17 +2,17 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var Command
 
-import elem from "../../kxk/elem.js"
-
-import syntax from "../editor/syntax.js"
-
-import commandlist from "./commandlist.js"
-
 import lib_ko from "../../../lib/lib_ko.js"
 let fuzzy = lib_ko.fuzzy
 
+import elem from "../../kxk/elem.js"
+
 import util from "../../kxk/util.js"
 let pull = util.pull
+
+import syntax from "../editor/syntax.js"
+
+import CommandList from "./commandlist.js"
 
 
 Command = (function ()
@@ -21,6 +21,7 @@ Command = (function ()
     {
         this.commandline = commandline
     
+        this["hideList"] = this["hideList"].bind(this)
         this["onBlur"] = this["onBlur"].bind(this)
         this["onBot"] = this["onBot"].bind(this)
         this["listClick"] = this["listClick"].bind(this)
@@ -163,7 +164,7 @@ Command = (function ()
         {
             listView = elem({class:`commandlist ${this.prefsID}`})
             window.split.elem.appendChild(listView)
-            return this.commandList = new commandlist(this,'.commandlist',{syntaxName:this.syntaxName})
+            return this.commandList = new CommandList(this,'.commandlist',{syntaxName:this.syntaxName})
         }
     }
 
@@ -340,11 +341,16 @@ Command = (function ()
 
     Command.prototype["hideList"] = function ()
     {
-        var _253_20_, _254_20_, _254_26_
+        var _257_20_, _258_20_, _258_26_
 
+        if (!this)
+        {
+            console.error('hideList dafuk?')
+            return
+        }
         this.selected = -1
         ;(this.commandList != null ? this.commandList.del() : undefined)
-        ;((_254_20_=this.commandList) != null ? (_254_26_=_254_20_.view) != null ? _254_26_.remove() : undefined : undefined)
+        ;((_258_20_=this.commandList) != null ? (_258_26_=_258_20_.view) != null ? _258_26_.remove() : undefined : undefined)
         return this.commandList = null
     }
 
@@ -374,7 +380,7 @@ Command = (function ()
 
     Command.prototype["setCurrent"] = function (command)
     {
-        var _279_36_
+        var _283_36_
 
         if (!(this.history != null))
         {
@@ -400,14 +406,14 @@ Command = (function ()
 
     Command.prototype["current"] = function ()
     {
-        var _290_36_
+        var _294_36_
 
-        return ((_290_36_=this.history[this.selected]) != null ? _290_36_ : '')
+        return ((_294_36_=this.history[this.selected]) != null ? _294_36_ : '')
     }
 
     Command.prototype["last"] = function ()
     {
-        var _293_23_
+        var _297_23_
 
         if ((this.commandList != null))
         {
@@ -450,7 +456,7 @@ Command = (function ()
 
     Command.prototype["complete"] = function ()
     {
-        var _322_34_
+        var _326_34_
 
         if (!(this.commandList != null))
         {
@@ -490,11 +496,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _360_17_, _362_28_, _362_39_
+        var _364_17_, _366_28_, _366_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_360_17_=this.history) != null ? _360_17_ : [])
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_362_39_=1) != null ? _362_39_ : 0)
+        this.history = ((_364_17_=this.history) != null ? _364_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_366_39_=1) != null ? _366_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -539,7 +545,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _390_31_
+        var _394_31_
 
         switch (combo)
         {

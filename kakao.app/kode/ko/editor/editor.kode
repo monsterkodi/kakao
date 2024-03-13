@@ -99,7 +99,7 @@ function Editor extends buffer
             editor.actionsInitialized()
 
         Editor.actions.sort (a,b) -> a.name?.localeCompare b.name
-        console.log Editor.actions.map (a) -> a.name ? a.key
+        # console.log Editor.actions.map (a) -> a.name ? a.key
 
     @actionWithName: (name) ->
 
@@ -131,23 +131,11 @@ function Editor extends buffer
 
         # _______________________________________________________________ strings
 
-        # @stringCharacters =
-            # "'":  'single'
-            # '"':  'double'
-
         switch @fileType
             when 'md'   then @stringCharacters['*'] = 'bold'
             when 'noon' then @stringCharacters['|'] = 'pipe'
 
         # _______________________________________________________________ brackets
-
-        # @bracketCharacters =
-            # open:
-                # '[': ']'
-                # '{': '}'
-                # '(': ')'
-            # close:   {}
-            # regexps: []
 
         switch @fileType
             when 'html' then @bracketCharacters.open['<'] = '>'
@@ -202,8 +190,6 @@ function Editor extends buffer
 
     setText: (text="") ->
         
-        # log 'setText' text.length
-
         if @syntax.name == 'txt'
             @syntax.name = syntax.shebang text.slice 0, text.search /\r?\n/
 

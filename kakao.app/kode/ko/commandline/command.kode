@@ -6,11 +6,11 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000  
 ###
 
-use ../../kxk/elem
-use ../editor/syntax
-use ./commandlist
 use ../../../lib/lib_ko ▪ fuzzy
+use ../../kxk/elem
 use ../../kxk/util ▪ pull
+use ../editor/syntax
+use ./commandlist ● CommandList
 
 function Command
 
@@ -134,7 +134,7 @@ function Command
         if not @commandList?
             listView = elem class: "commandlist #{@prefsID}"
             window.split.elem.appendChild listView
-            @commandList = new commandlist @, '.commandlist' syntaxName:@syntaxName
+            @commandList = new CommandList @, '.commandlist' syntaxName:@syntaxName
     
     # listItems: -> reversed @history
     listItems: -> @history
@@ -247,7 +247,11 @@ function Command
         else
             @skipBlur = null
             
-    hideList: ->
+    hideList: =>
+        
+        if not @
+            error 'hideList dafuk?'
+            return
 
         @selected = -1
         @commandList?.del()

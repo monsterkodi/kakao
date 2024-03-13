@@ -1,12 +1,13 @@
 var _k_
 
 import dom from "../../../kxk/dom.js"
+let getStyle = dom.getStyle
 
 class Pane
 {
     constructor (opt)
     {
-        var k, v, _16_19_, _17_17_, _17_27_, _17_34_, _19_17_, _19_24_, _19_29_, _20_17_, _20_46_, _20_53_, _20_62_, _21_17_, _21_65_, _21_69_, _22_17_, _22_81_, _22_92_, _23_17_
+        var k, v, _16_19_, _17_17_, _17_27_, _17_34_, _19_17_, _19_24_, _19_29_, _21_17_, _21_46_, _21_53_, _21_62_, _22_17_, _22_61_, _22_65_, _23_17_, _23_77_, _23_88_, _24_17_
 
         for (k in opt)
         {
@@ -20,19 +21,19 @@ class Pane
             this.size = -1
         }
         this.id = ((_19_17_=this.id) != null ? _19_17_ : ((_19_29_=(this.div != null ? this.div.id : undefined)) != null ? _19_29_ : "pane"))
-        if (((_20_46_=this.div) != null ? (_20_53_=_20_46_.style) != null ? (_20_62_=_20_53_.display) != null ? _20_62_.length : undefined : undefined : undefined))
+        if (((_21_46_=this.div) != null ? (_21_53_=_21_46_.style) != null ? (_21_62_=_21_53_.display) != null ? _21_62_.length : undefined : undefined : undefined))
         {
-            this.display = ((_20_17_=this.display) != null ? _20_17_ : this.div.style.display)
+            this.display = ((_21_17_=this.display) != null ? _21_17_ : this.div.style.display)
         }
         if (((this.div != null ? this.div.id : undefined) != null))
         {
-            this.display = ((_21_17_=this.display) != null ? _21_17_ : dom.getStyle(`#${this.div.id}`,'display'))
+            this.display = ((_22_17_=this.display) != null ? _22_17_ : getStyle(`#${this.div.id}`,'display'))
         }
-        if (((_22_81_=this.div) != null ? (_22_92_=_22_81_.className) != null ? _22_92_.length : undefined : undefined))
+        if (((_23_77_=this.div) != null ? (_23_88_=_23_77_.className) != null ? _23_88_.length : undefined : undefined))
         {
-            this.display = ((_22_17_=this.display) != null ? _22_17_ : dom.getStyle(' .' + this.div.className.split(' ').join(' .')))
+            this.display = ((_23_17_=this.display) != null ? _23_17_ : getStyle(' .' + this.div.className.split(' ').join(' .')))
         }
-        this.display = ((_23_17_=this.display) != null ? _23_17_ : 'initial')
+        this.display = ((_24_17_=this.display) != null ? _24_17_ : 'initial')
     }
 
     update ()
@@ -72,7 +73,7 @@ class Pane
 
     del ()
     {
-        var _47_15_
+        var _50_15_
 
         if ((this.div != null))
         {
@@ -88,10 +89,10 @@ class Pane
 
     expand ()
     {
-        var _52_53_
+        var _55_53_
 
         delete this.collapsed
-        return this.setSize(((_52_53_=this.fixed) != null ? _52_53_ : 0))
+        return this.setSize(((_55_53_=this.fixed) != null ? _55_53_ : 0))
     }
 
     isVisible ()

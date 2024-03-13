@@ -35,8 +35,8 @@ Terminal = (function ()
 
     Terminal.prototype["actionsInitialized"] = function ()
     {
-        console.log('Terminal.actionsInitialized')
         Terminal.__super__.actionsInitialized.call(this)
+    
         return this.initInvisibles()
     }
 
@@ -64,7 +64,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, _66_21_, _81_21_
+        var l, _65_21_, _80_21_
 
         if (!(meta != null))
         {
@@ -79,9 +79,9 @@ Terminal = (function ()
         {
             this.appendMeta({clss:'spacer'})
             var list = _k_.list(salt(meta.text).split('\n'))
-            for (var _73_22_ = 0; _73_22_ < list.length; _73_22_++)
+            for (var _72_22_ = 0; _72_22_ < list.length; _72_22_++)
             {
-                l = list[_73_22_]
+                l = list[_72_22_]
                 this.appendMeta({clss:'spacer',text:'# ' + l})
             }
             return this.appendMeta({clss:'spacer'})

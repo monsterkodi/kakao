@@ -6,13 +6,12 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  0000000      000
 ###
 
-use ../editor/texteditor
-use ../editor/syntax
-use ../tools/salt
-
 use ../../kxk/matchr
+use ../tools/salt
+use ../editor/syntax
+use ../editor/texteditor ● TextEditor
 
-function CommandList extends texteditor
+function CommandList extends TextEditor
 
     @: (@command, viewElem, opt) ->
 

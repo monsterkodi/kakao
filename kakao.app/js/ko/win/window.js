@@ -2,7 +2,6 @@ var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isNum: functio
 
 var addToShelf, changeFontSize, changeZoom, reloadWin, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
 
-console.log('ko window')
 import kakao from "../../kakao.js"
 
 import dom from "../../kxk/dom.js"
@@ -46,7 +45,6 @@ import commandline from "../commandline/commandline.js"
 
 import fileeditor from "../editor/fileeditor.js"
 
-console.log('ko window 3')
 
 Window = (function ()
 {
@@ -99,7 +97,6 @@ Window = (function ()
         this.info = window.info = new info(this.editor)
         this.fps = window.fps = new fps()
         this.cwd = window.cwd = new cwd()
-        console.log('split',this.split)
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
         scheme.set(prefs.get('scheme','dark'))
@@ -147,7 +144,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _131_25_
+        var action, _125_25_
 
         console.log('onMenuAction',name)
         if (action = editor.actionWithName(name))
@@ -187,13 +184,13 @@ Window = (function ()
                 return post.emit('newEmptyTab')
 
             case 'New Window':
-                return post.toMain('newWindowWithFile',this.editor.currentFile)
+                return console.log(`ko.window ${name} unimplemented!`)
 
             case 'Cycle Windows':
-                return post.toMain('activateNextWindow',window.winID)
+                return console.log(`ko.window ${name} unimplemented!`)
 
             case 'Arrange Windows':
-                return post.toMain('arrangeWindows')
+                return console.log(`ko.window ${name} unimplemented!`)
 
             case 'Toggle Scheme':
                 return scheme.toggle()
@@ -272,6 +269,12 @@ Window = (function ()
 
             case 'Close Other Windows':
                 return post.toOtherWins('closeWindow')
+
+            case 'Small Browser':
+                return window.commandline.startCommand('browse')
+
+            case 'Large Browser':
+                return window.commandline.startCommand('Browse')
 
             case 'Clear List':
                 window.state.set('recentFiles',[])
@@ -368,7 +371,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _284_14_
+    var _280_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -379,7 +382,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _290_22_
+    var _286_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -424,7 +427,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _335_32_
+    var _331_32_
 
     if (!(_k_.isNum(s)))
     {

@@ -6,25 +6,23 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 ###
 
-use ../../kxk/dom
 use ../../kxk/ffs
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
-use ../editor/texteditor
-
-{ $, stopEvent } = dom
+use ../../kxk/dom ▪ $ stopEvent
+use ../editor/texteditor ● TextEditor
 
 __dirname = slash.dir import.meta.url[7..]
 
-function Commandline extends texteditor
+function Commandline extends TextEditor
 
     @: (viewElem) ->
 
         super viewElem, features: [], fontSize: 24, syntaxName:'commandline'
 
         @mainCommands = ['browse' 'goto' 'open' 'search' 'find' 'macro']
-        @hideCommands = ['selecto' 'Browse' 'shelf']
+        @hideCommands = ['selecto' 'Browse' 'shelf' 'Small Browser' 'Large Browser']
 
         @size.lineHeight = 30
         @scroll.setLineHeight @size.lineHeight
@@ -106,19 +104,12 @@ function Commandline extends texteditor
         
         for file in files
             
-            # log file
-            
             continue if slash.ext(file.path) not in ['js' 'mjs']
             try
-                # log 'commandPath' file.path
                 commandModule = await import(file.path)
-                # log 'commandModule' commandModule
                 commandClass = commandModule.default
-                # log 'commandClass' file.path, commandClass
                 command = new commandClass @
-                # log 'commandObj' file.path, command
                 command.setPrefsID commandClass.name.toLowerCase()
-                # log 'command.prefsID' command.prefsID
                 @commands[command.prefsID] = command
             catch err
                 error "can't load command from file '#{file.path}': #{err}"
@@ -153,6 +144,7 @@ function Commandline extends texteditor
 
     changed: (changeInfo) ->
 
+        log 'changed' changeInfo
         @hideList()
         super changeInfo
         if changeInfo.changes.length
@@ -249,7 +241,7 @@ function Commandline extends texteditor
             @list = elem class: 'list commands'
             @positionList()
             window.split.elem.appendChild @list
-        @command?.hideList?()
+        @command.hideList()
         @listCommands()
         @focus()
         @positionList()
@@ -260,13 +252,10 @@ function Commandline extends texteditor
         @list.innerHTML = ""
         @list.style.display = 'unset'
         
-        log 'listCommands' @mainCommands
-        log 'listCommands' @commands
-        
         for name in @mainCommands
             cmmd = @commands[name]
             continue if empty cmmd
-            log name, cmmd
+            # log name, cmmd
             for ci in 0...cmmd.names.length
                 cname = cmmd.names[ci]
                 continue if cname in @hideCommands
@@ -323,7 +312,7 @@ function Commandline extends texteditor
 
     handleMenuAction: (name, opt) ->
 
-        log 'handleMenuAction' name
+        log 'handleMenuAction' name, opt?.command
         if opt?.command
             if @commandForName opt.command
                 @startCommand opt.command
