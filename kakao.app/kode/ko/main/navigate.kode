@@ -120,7 +120,8 @@ class Navigate
     loadFilePos: (filePos, opt) ->
 
         if opt?.newWindow
-            post.toMain 'newWindowWithFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
+            # post.toMain 'newWindowWithFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
+            log 'navigate new window with file not implemented!'
         else
             error 'no winID?' if not opt?.winID?
             post.toWin opt.winID, 'loadFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"

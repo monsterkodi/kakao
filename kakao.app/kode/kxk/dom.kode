@@ -47,8 +47,11 @@ export
         document.styleSheets[ssid].insertRule "#{selector} { #{key}: #{value} }", document.styleSheets[ssid].cssRules.length
         return
 
-    getStyle: (selector, key, value, ssid=0) ->
-        for rule in document.styleSheets[ssid].cssRules
-            if rule.selectorText == selector
-                return rule.style[key] if rule.style[key]?.length
+    getStyle: (selector, key, value) ->
+        
+        for styleSheet in document.styleSheets
+            for rule in styleSheet.cssRules
+                if rule.selectorText == selector
+                    return rule.style[key] if rule.style[key]?.length
+                
         return value

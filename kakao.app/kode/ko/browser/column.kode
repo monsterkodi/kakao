@@ -6,7 +6,6 @@
  0000000   0000000   0000000   0000000   000   000  000   000
 ###
 
-use ./row
 use ./crumb
 use ./scroller
 use ../tools/dirwatch
@@ -21,6 +20,7 @@ use ../../kxk/slash
 use ../../kxk/popup
 use ../../kxk/keyinfo
 use ../../../lib/lib_ko ▪ fuzzy
+use ./row ● Row
 
 function Column
     
@@ -105,7 +105,7 @@ function Column
         
         if valid @items
             for item in @items
-                @rows.push new row @, item
+                @rows.push new Row @, item
         
             @scroll.update()
             
@@ -647,7 +647,7 @@ function Column
 
         stateKey = "browser|hideExtensions"
         window.state.set stateKey, not window.state.get stateKey, false
-        setStyle '.browserRow .ext' 'display' window.state.get(stateKey) and 'none' or 'initial'
+        # setStyle '.browserRow .ext' 'display' window.state.get(stateKey) and 'none' or 'initial'
         @
         
     # 000000000  00000000    0000000    0000000  000   000  

@@ -6,13 +6,11 @@
 000   000  000  000   000  000  000   000  000   000  000
 ###
 
-use ./mapscroll
-
-use ../../kxk/dom
+use ../../kxk/dom ▪ getStyle
 use ../../kxk/elem
 use ../../kxk/drag
 
-{ getStyle } = dom
+use ./mapscroll ● MapScroll
 
 class Minimap
 
@@ -20,7 +18,7 @@ class Minimap
         
         # add highlights and cursors at right border
 
-        minimapWidth = parseInt getStyle '.minimap', 'width'
+        minimapWidth = parseInt getStyle '.minimap' 'width'
 
         @editor.layerScroll.style.right = "#{minimapWidth}px"
 
@@ -50,7 +48,7 @@ class Minimap
         @editor.on 'highlight'     @drawHighlights
         @editor.scroll.on 'scroll' @onEditorScroll
 
-        @scroll = new mapscroll
+        @scroll = new MapScroll
             exposeMax:  @height/4
             lineHeight: 4
             viewHeight: 2*@editor.viewHeight()

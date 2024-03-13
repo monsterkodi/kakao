@@ -1,7 +1,17 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
+var icons, __dirname
+
 import slash from "../../kxk/slash.js"
 
+import ffs from "../../kxk/ffs.js"
+
+icons = {}
+__dirname = slash.dir(import.meta.url.slice(7))
+ffs.read(slash.path(__dirname,'icons.json')).then(function (t)
+{
+    return icons = JSON.parse(t)
+})
 class File
 {
     static sourceFileExtensions = ['kode','coffee','styl','swift','pug','md','noon','txt','json','sh','py','cpp','mm','cc','c','cs','h','hpp','ts','js','mjs','frag','vert']
@@ -35,7 +45,7 @@ class File
             }
             return fs.move(from,to,{overwrite:true},function (err)
             {
-                var _39_39_
+                var _41_39_
 
                 if (err)
                 {
@@ -189,7 +199,7 @@ class File
         }
         spans = []
         split = slash.split(file)
-        for (var _141_18_ = i = 0, _141_22_ = split.length - 1; (_141_18_ <= _141_22_ ? i < split.length - 1 : i > split.length - 1); (_141_18_ <= _141_22_ ? ++i : --i))
+        for (var _143_18_ = i = 0, _143_22_ = split.length - 1; (_143_18_ <= _143_22_ ? i < split.length - 1 : i > split.length - 1); (_143_18_ <= _143_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)

@@ -28,7 +28,6 @@ function Terminal extends texteditor
         
     actionsInitialized: =>
         
-        log 'Terminal.actionsInitialized'
         super()
         @initInvisibles()
                 

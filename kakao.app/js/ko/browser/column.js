@@ -2,8 +2,6 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 var Column
 
-import row from "./row.js"
-
 import crumb from "./crumb.js"
 
 import scroller from "./scroller.js"
@@ -34,6 +32,8 @@ import keyinfo from "../../kxk/keyinfo.js"
 
 import lib_ko from "../../../lib/lib_ko.js"
 let fuzzy = lib_ko.fuzzy
+
+import Row from "./row.js"
 
 
 Column = (function ()
@@ -147,7 +147,7 @@ Column = (function ()
             for (var _107_21_ = 0; _107_21_ < list.length; _107_21_++)
             {
                 item = list[_107_21_]
-                this.rows.push(new row(this,item))
+                this.rows.push(new Row(this,item))
             }
             this.scroll.update()
         }
@@ -1022,7 +1022,6 @@ Column = (function ()
 
         stateKey = "browser|hideExtensions"
         window.state.set(stateKey,!window.state.get(stateKey,false))
-        setStyle('.browserRow .ext','display',window.state.get(stateKey) && 'none' || 'initial')
         return this
     }
 

@@ -6,17 +6,14 @@
 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
 ###
 
-# { childp, elem, fs, kpos, os, setStyle, slash } = require 'kxk'
-
-use ./column
-use ../win/flex/flex
-use ../../kxk/dom
+use ../../kxk/dom ▪ setStyle
 use ../../kxk/kpos
 use ../../kxk/elem
 use ../../kxk/slash
 use ../../kxk/events
 
-{ setStyle } = dom
+use ../win/flex/flex ● Flex
+use ./column         ● Column
 
 function Browser extends events
     
@@ -24,7 +21,7 @@ function Browser extends events
         
         @columns = []
         
-        setStyle '.browserRow .ext' 'display' window.state.get('browser|hideExtensions') and 'none' or 'initial'
+        # setStyle '.browserRow .ext' 'display' window.state.get('browser|hideExtensions') and 'none' or 'initial'
 
     # 000  000   000  000  000000000       0000000   0000000   000      000   000  00     00  000   000   0000000  
     # 000  0000  000  000     000         000       000   000  000      000   000  000   000  0000  000  000       
@@ -47,7 +44,7 @@ function Browser extends events
         
         @columns = []
 
-        @flex = new flex 
+        @flex = new Flex 
             view:       @cols
             onPaneSize: @updateColumnScrolls
         
@@ -177,7 +174,7 @@ function Browser extends events
         
         return if not @flex
 
-        col = new column @
+        col = new Column @
         @columns.push col
         @flex.addPane div:col.div, size:50
         col
@@ -295,15 +292,15 @@ function Browser extends events
                 # loadDelayed = => @loadImage row, tmpPNG
                 # setTimeout loadDelayed, 300
 
-    convertImage: (row) ->
-        
-        item   = row.item
-        file   = item.file
-        tmpImg = slash.join os.tmpdir(), "ko-#{slash.name file}.png"
-        
-        childp.exec "/usr/bin/sips -s format png \"#{file}\" --out \"#{tmpImg}\"", (err) =>
-            return error "can't convert image #{file}: #{err}" if err?
-            @loadImage row, tmpImg
+    # convertImage: (row) ->
+#         
+        # item   = row.item
+        # file   = item.file
+        # tmpImg = slash.join os.tmpdir(), "ko-#{slash.name file}.png"
+#         
+        # childp.exec "/usr/bin/sips -s format png \"#{file}\" --out \"#{tmpImg}\"", (err) =>
+            # return error "can't convert image #{file}: #{err}" if err?
+            # @loadImage row, tmpImg
 
     loadImage: (row, file) ->
         

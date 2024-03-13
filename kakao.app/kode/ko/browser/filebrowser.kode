@@ -186,12 +186,11 @@ function FileBrowser extends browser
     
     fileItem: (path) ->
         
-        # p = slash.resolve path
         p = slash.path path
                 
-        file:p
-        type:slash.isFile(p) and 'file' or 'dir'
-        name:slash.file p
+        file: p
+        type: undefined
+        name: slash.file p
         
     onFileBrowser: (action, item, arg) =>
 
@@ -216,6 +215,8 @@ function FileBrowser extends browser
                 
         clears all columns, loads the dir in column 0 and the file in column 1, if any
         ###
+        
+        log 'loadItem' item, opt
 
         opt ?= active:'..' focus:true
         item.name ?= slash.file item.file
@@ -223,11 +224,14 @@ function FileBrowser extends browser
         @clearColumnsFrom 1, pop:true, clear:opt.clear ? 1
 
         switch item.type
-            when 'dir'  then @loadDirItem item, 0, opt
-            when 'file' 
+            'dir'  ➜ @loadDirItem item, 0, opt
+            'file' 
                 opt.activate = item.file
                 while @numCols() < 2 then @addColumn()
                 @loadDirItem @fileItem(slash.dir(item.file)), 0, opt
+            ➜
+                ffs.isDir(item.file).then (stat) => if stat then @loadDirItem item, 0, opt
+                return
 
         if opt.focus
             @columns[0]?.focus()
@@ -380,15 +384,18 @@ function FileBrowser extends browser
 
         dir = item.file
         
+        log 'loadDirItem' dir
+        
         # opt.ignoreHidden = not prefs.get "browser▸showHidden▸#{dir}"
         ffs.list(dir).then (items) =>
             # post.toMain 'dirLoaded' dir
+            log 'loadDir items' items
             @loadDirItems dir, item, items, col, opt
             post.emit 'dir' dir
                 
     loadDirItems: (dir, item, items, col, opt) =>
 
-        log 'loadDirItems' dir, item, items, col, opt
+        # log 'loadDirItems' dir, item, items, col, opt
                     
         @updateColumnScrolls()
                             

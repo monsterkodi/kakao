@@ -6,8 +6,9 @@
 000       0000000  00000000  000   000  
 ###
 
-use ./pane
-use ./handle
+use ./pane   ● Pane
+use ./handle ● Handle
+
 use ../../../kxk/util ▪ defaults
 
 class Flex 
@@ -54,12 +55,10 @@ class Flex
         p.flex  ?= @
         p.index ?= @panes.length
 
-        newPane = new pane defaults p,
-            flex:   @ 
-            index:  @panes.length
+        newPane = new Pane p
             
         if lastPane = last @panes
-            @handles.push new handle
+            @handles.push new Handle
                 flex:  @
                 index: lastPane.index
                 panea: lastPane

@@ -6,11 +6,13 @@
 000       000  0000000  00000000
 ###
 
-# { childp, fs, error, log, slash } = kxk
-
-# icons = require './icons.json'
-
 use ../../kxk/slash
+use ../../kxk/ffs
+
+icons = {}
+__dirname = slash.dir import.meta.url[7..]
+ffs.read(slash.path __dirname, 'icons.json').then (t) -> 
+    icons = JSON.parse t
 
 class File
     

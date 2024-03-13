@@ -12,6 +12,11 @@ class KFS
         return await kakao.request('fs.list',p)
     }
 
+    static async listDeep (p)
+    {
+        return await kakao.request('fs.listDeep',p)
+    }
+
     static async read (p)
     {
         return await kakao.request('fs.read',p)

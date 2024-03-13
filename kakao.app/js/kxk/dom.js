@@ -56,19 +56,24 @@ export default {elem:elem,$:function (idOrQueryOrElement, queryOrElement = docum
     }
     document.styleSheets[ssid].insertRule(`${selector} { ${key}: ${value} }`,document.styleSheets[ssid].cssRules.length)
     return
-},getStyle:function (selector, key, value, ssid = 0)
+},getStyle:function (selector, key, value)
 {
-    var rule
+    var rule, styleSheet
 
-    var list = _k_.list(document.styleSheets[ssid].cssRules)
-    for (var _51_17_ = 0; _51_17_ < list.length; _51_17_++)
+    var list = _k_.list(document.styleSheets)
+    for (var _52_23_ = 0; _52_23_ < list.length; _52_23_++)
     {
-        rule = list[_51_17_]
-        if (rule.selectorText === selector)
+        styleSheet = list[_52_23_]
+        var list1 = _k_.list(styleSheet.cssRules)
+        for (var _53_21_ = 0; _53_21_ < list1.length; _53_21_++)
         {
-            if ((rule.style[key] != null ? rule.style[key].length : undefined))
+            rule = list1[_53_21_]
+            if (rule.selectorText === selector)
             {
-                return rule.style[key]
+                if ((rule.style[key] != null ? rule.style[key].length : undefined))
+                {
+                    return rule.style[key]
+                }
             }
         }
     }

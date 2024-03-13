@@ -40,11 +40,11 @@
       "command": "goto"
     },
     "Browse": {
-      "Small": {
+      "Small Browser": {
         "accel": "cmdctrl+.",
         "command": "browse"
       },
-      "Large": {
+      "Large Browser": {
         "accel": "alt+cmdctrl+.",
         "command": "Browse"
       },

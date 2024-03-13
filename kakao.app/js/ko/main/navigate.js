@@ -145,11 +145,11 @@ class Navigate
 
     loadFilePos (filePos, opt)
     {
-        var _125_47_
+        var _126_47_
 
         if ((opt != null ? opt.newWindow : undefined))
         {
-            post.toMain('newWindowWithFile',`${filePos.file}:${filePos.pos[1] + 1}:${filePos.pos[0]}`)
+            console.log('navigate new window with file not implemented!')
         }
         else
         {

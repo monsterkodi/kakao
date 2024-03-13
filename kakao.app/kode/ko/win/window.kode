@@ -6,8 +6,6 @@
 00     00  000  000   000  0000000     0000000   00     00
 ###
 
-log 'ko window'
-
 use ../../kakao
 
 use ../../kxk/dom ▪ stopEvent
@@ -33,8 +31,6 @@ use ./terminal
 use ../editor/editor
 use ../commandline/commandline
 use ../editor/fileeditor
-
-log 'ko window 3'
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
@@ -80,8 +76,6 @@ function Window #extends win
         @fps         = window.fps         = new fps()
         @cwd         = window.cwd         = new cwd()
     
-        log 'split' @split
-        
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
@@ -144,9 +138,9 @@ function Window #extends win
             'Copy'                  ➜ return window.focusEditor.copy()
             'Paste'                 ➜ return window.focusEditor.paste()
             'New Tab'               ➜ return post.emit 'newEmptyTab'
-            'New Window'            ➜ return post.toMain 'newWindowWithFile' @editor.currentFile
-            'Cycle Windows'         ➜ return post.toMain 'activateNextWindow' window.winID
-            'Arrange Windows'       ➜ return post.toMain 'arrangeWindows'
+            'New Window'            ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'newWindowWithFile' @editor.currentFile
+            'Cycle Windows'         ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'activateNextWindow' window.winID
+            'Arrange Windows'       ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
             'Toggle Scheme'         ➜ return scheme.toggle()
             'Toggle Center Text'    ➜ return toggleCenterText()
             'Toggle Tab Pinned'     ➜ return toggleTabPinned()
@@ -173,6 +167,8 @@ function Window #extends win
             'Close Tab or Window'   ➜ return post.emit 'closeTabOrWindow'
             'Close Other Tabs'      ➜ return post.emit 'closeOtherTabs'
             'Close Other Windows'   ➜ return post.toOtherWins 'closeWindow'
+            'Small Browser'         ➜ return window.commandline.startCommand 'browse'
+            'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Clear List'            
                 window.state.set 'recentFiles' []
                 window.titlebar.refreshMenu()

@@ -153,7 +153,7 @@ class Titlebar
     loadWindowWithID (id)
     {
         this.closeList()
-        return post.toMain('activateWindow',id)
+        console.log('titlebar loadWindowWithID unimplemented!')
     }
 
     loadSelected ()
@@ -203,7 +203,7 @@ class Titlebar
 
     globalModKeyComboEvent (mod, key, combo, event)
     {
-        var _153_16_
+        var _154_16_
 
         switch (combo)
         {

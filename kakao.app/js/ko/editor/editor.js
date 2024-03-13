@@ -107,18 +107,12 @@ Editor = (function ()
             editor = list1[_98_19_]
             editor.actionsInitialized()
         }
-        Editor.actions.sort(function (a, b)
+        return Editor.actions.sort(function (a, b)
         {
             var _101_43_
 
             return (a.name != null ? a.name.localeCompare(b.name) : undefined)
         })
-        return console.log(Editor.actions.map(function (a)
-        {
-            var _102_53_
-
-            return ((_102_53_=a.name) != null ? _102_53_ : a.key)
-        }))
     }
 
     Editor["actionWithName"] = function (name)
@@ -163,7 +157,7 @@ Editor = (function ()
 
     Editor.prototype["setFileType"] = function (fileType)
     {
-        var cstr, k, key, reg, v, _164_21_
+        var cstr, k, key, reg, v, _152_21_
 
         this.fileType = fileType
     
@@ -191,9 +185,9 @@ Editor = (function ()
         }
         this.bracketCharacters.regexp = []
         var list = ['open','close']
-        for (var _159_16_ = 0; _159_16_ < list.length; _159_16_++)
+        for (var _147_16_ = 0; _147_16_ < list.length; _147_16_++)
         {
-            key = list[_159_16_]
+            key = list[_147_16_]
             cstr = Object.keys(this.bracketCharacters[key]).join('')
             reg = new RegExp(`[${kstr.escapeRegexp(cstr)}]`)
             this.bracketCharacters.regexps.push([reg,key])
@@ -353,7 +347,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _276_33_, _277_50_, _283_52_
+        var e, il, indentLength, line, thisIndent, _262_33_, _263_50_, _269_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -370,9 +364,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _278_26_ = 0; _278_26_ < list.length; _278_26_++)
+                    for (var _264_26_ = 0; _264_26_ < list.length; _264_26_++)
                     {
-                        e = list[_278_26_]
+                        e = list[_264_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength

@@ -127,7 +127,8 @@ class FileHandler
     
             for file in files
                 if options.newWindow
-                    post.toMain 'newWindowWithFile' file
+                    # post.toMain 'newWindowWithFile' file
+                    log 'filehandler new window with file not implemented!'
                 else
                     post.emit 'newTabWithFile' file
     

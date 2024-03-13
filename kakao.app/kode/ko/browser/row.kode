@@ -7,6 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $ stopEvent
+use ../../kxk/kstr
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
@@ -19,14 +20,15 @@ function Row
     
     @: (@column, @item) ->
 
+        log "new Row" @item
         @browser = @column.browser
-        text = @item.text ? @item.name
+        text = @item.text ? @item.name ? @item.file
         if empty(text) or empty text.trim()
             html = '<span> </span>'
         else
             html = syntax.spanForTextAndSyntax text, 'browser'
         @div = elem class:'browserRow' html: html
-        @div.classList.add @item.type
+        @div.classList.add @item.type ? 'file'
         @column.table.appendChild @div
 
         if @item.type in ['file' 'dir'] or @item.icon

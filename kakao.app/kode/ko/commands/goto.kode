@@ -6,8 +6,6 @@
  0000000    0000000      000      0000000 
 ###
 
-# { _, post } = require 'kxk'
-
 use ../commandline/command
 
 function Goto extends command
@@ -39,7 +37,10 @@ function Goto extends command
     # 000      000       000     000     000     000     000       000 0 000       000
     # 0000000  000  0000000      000     000     000     00000000  000   000  0000000 
     
-    listItems: () -> 
+    listItems: -> 
+        
+        log 'goto listItems not implemented!'
+        return
         
         items = []
         @types = {}
