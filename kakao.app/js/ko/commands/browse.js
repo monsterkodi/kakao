@@ -361,15 +361,15 @@ Browse = (function ()
             fileExists = await ffs.fileExists(slash.removeLinePos(cmd))
             if (dirExists)
             {
-                this.browser.loadItem({file:cmd,type:'dir'})
+                this.browser.loadItem({path:cmd,type:'dir'})
                 this.commandline.setText(cmd)
                 return
             }
             else if (fileExists)
             {
                 this.commandline.setText(cmd)
-                console.log('browse emit jumpToFile',{file:cmd})
-                post.emit('jumpToFile',{file:cmd})
+                console.log('browse emit jumpToFile',{path:cmd})
+                post.emit('jumpToFile',{path:cmd})
                 return
             }
             else

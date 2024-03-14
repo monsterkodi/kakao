@@ -25,7 +25,7 @@ Row = (function ()
 {
     function Row (column, item)
     {
-        var html, text, _25_26_, _25_39_, _31_38_
+        var html, text, _25_26_, _25_39_, _25_52_, _31_38_
 
         this.column = column
         this.item = item
@@ -40,7 +40,7 @@ Row = (function ()
         this["onMouseOut"] = this["onMouseOut"].bind(this)
         console.log("new Row",this.item)
         this.browser = this.column.browser
-        text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.name) != null ? _25_39_ : this.item.file))
+        text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.name) != null ? _25_39_ : ((_25_52_=this.item.file) != null ? _25_52_ : slash.file(this.item.path))))
         if (_k_.empty((text)) || _k_.empty(text.trim()))
         {
             html = '<span> </span>'
@@ -91,13 +91,13 @@ Row = (function ()
     {
         var _44_21_, _46_20_, _46_26_
 
-        if ((this.item.file != null) && _k_.isStr(this.item.file))
+        if ((this.item.path != null) && _k_.isStr(this.item.path))
         {
-            return this.item.file
+            return this.item.path
         }
-        if (((this.item.obj != null ? this.item.obj.file : undefined) != null) && _k_.isStr(this.item.obj.file))
+        if (((this.item.obj != null ? this.item.obj.path : undefined) != null) && _k_.isStr(this.item.obj.path))
         {
-            return this.item.obj.file
+            return this.item.obj.path
         }
     }
 
@@ -105,7 +105,7 @@ Row = (function ()
     {
         var className, icon, _75_23_
 
-        if (slash.ext(this.item.file) === 'kode')
+        if (slash.ext(this.item.path) === 'kode')
         {
             icon = elem('span',{class:'kodeIcon'})
             icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M5.75 7.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zm5.25.75a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z"></path><path fill-rule="evenodd" d="M6.25 0a.75.75 0 000 1.5H7.5v2H3.75A2.25 2.25 0 001.5 5.75V8H.75a.75.75 0 000 1.5h.75v2.75a2.25 2.25 0 002.25 2.25h8.5a2.25 2.25 0 002.25-2.25V9.5h.75a.75.75 0 000-1.5h-.75V5.75a2.25 2.25 0 00-2.25-2.25H9V.75A.75.75 0 008.25 0h-2zM3 5.75A.75.75 0 013.75 5h8.5a.75.75 0 01.75.75v6.5a.75.75 0 01-.75.75h-8.5a.75.75 0 01-.75-.75v-6.5z"></path></svg>`
@@ -124,10 +124,10 @@ Row = (function ()
             }
             else
             {
-                className = File.iconClassName(this.item.file)
+                className = File.iconClassName(this.item.path)
             }
         }
-        if (slash.name(this.item.file).startsWith('.'))
+        if (slash.name(this.item.path).startsWith('.'))
         {
             className += ' dotfile'
         }
@@ -158,10 +158,10 @@ Row = (function ()
                 opt.line = this.item.line
                 opt.col = this.item.column
                 this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
-                console.log('Row emit jumpToFile',{file:this.item.path})
+                console.log('Row emit jumpToFile',{path:this.item.path})
                 if (emit)
             {
-                post.emit('jumpToFile',{file:this.item.path})
+                post.emit('jumpToFile',{path:this.item.path})
             }
         }
 
@@ -189,14 +189,6 @@ Row = (function ()
         if ((opt != null ? opt.emit : undefined))
         {
             this.browser.emit('itemActivated',this.item)
-            if (this.item.type === 'dir')
-            {
-                post.emit('setCWD',this.item.file)
-            }
-            else if (this.item.type === 'file')
-            {
-                post.emit('setCWD',slash.dir(this.item.file))
-            }
         }
         return this
     }
@@ -233,36 +225,37 @@ Row = (function ()
             return
         }
         this.input = elem('input',{class:'rowNameInput'})
-        this.input.value = slash.file(this.item.file)
+        this.input.value = slash.file(this.item.path)
         this.div.appendChild(this.input)
         this.input.addEventListener('change',this.onNameChange)
         this.input.addEventListener('keydown',this.onNameKeyDown)
         this.input.addEventListener('focusout',this.onNameFocusOut)
         this.input.focus()
-        return this.input.setSelectionRange(0,slash.name(this.item.file).length)
+        return this.input.setSelectionRange(0,slash.name(this.item.path).length)
     }
 
     Row.prototype["onNameKeyDown"] = function (event)
     {
-        var combo, key, mod
+        var combo, file, key, mod
 
         mod = keyinfo.forEvent(event).mod
         key = keyinfo.forEvent(event).key
         combo = keyinfo.forEvent(event).combo
 
+        file = slash.file(this.item.path)
         switch (combo)
         {
             case 'esc':
-                if (this.input.value !== slash.file(this.item.file))
+                if (this.input.value !== file)
                 {
-                    this.input.value = slash.file(this.item.file)
+                    this.input.value = file
                     event.preventDefault()
                     event.stopImmediatePropagation()
                 }
                 this.onNameFocusOut()
                 break
             case 'enter':
-                if (this.input.value !== slash.file(this.item.file))
+                if (this.input.value !== file)
                 {
                     this.onNameChange()
                 }
@@ -279,7 +272,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _194_28_, _201_37_
+        var _196_28_, _203_37_
 
         if (!(this.input != null))
         {
@@ -306,18 +299,18 @@ Row = (function ()
     {
         var targetFile
 
-        targetFile = slash.join(slash.dir(this.item.file),this.input.value.trim())
+        targetFile = slash.join(slash.dir(this.item.path),this.input.value.trim())
         this.removeInput()
         return this.rename(targetFile)
     }
 
     Row.prototype["rename"] = function (targetFile)
     {
-        if (slash.samePath(this.item.file,targetFile))
+        if (slash.samePath(this.item.path,targetFile))
         {
             return
         }
-        return File.rename(this.item.file,targetFile,(function (source, target)
+        return File.rename(this.item.path,targetFile,(function (source, target)
         {}).bind(this))
     }
 

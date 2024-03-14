@@ -105,7 +105,7 @@ Shelf = (function ()
         }
         for (var _80_22_ = index = 0, _80_26_ = this.items.length; (_80_22_ <= _80_26_ ? index < this.items.length : index > this.items.length); (_80_22_ <= _80_26_ ? ++index : --index))
         {
-            if (this.items[index].file === file)
+            if (this.items[index].path === file)
             {
                 this.rows[index].setActive()
                 return
@@ -115,7 +115,7 @@ Shelf = (function ()
         for (index in this.items)
         {
             item = this.items[index]
-            if ((file != null ? file.startsWith(item.file) : undefined))
+            if ((file != null ? file.startsWith(item.path) : undefined))
             {
                 matches.push([index,item])
             }
@@ -124,7 +124,7 @@ Shelf = (function ()
         {
             matches.sort(function (a, b)
             {
-                return b[1].file.length - a[1].file.length
+                return b[1].path.length - a[1].path.length
             })
             var _92_26_ = _k_.first(matches); index = _92_26_[0]; item = _92_26_[1]
 
@@ -504,11 +504,11 @@ Shelf = (function ()
             row.setActive({emit:false})
             if (row.item.type === 'file')
             {
-                return post.emit('jumpToFile',row.item)
+                return post.emit('jumpToFile',row.path)
             }
             else
             {
-                return post.emit('filebrowser','loadItem',row.item,{focus:false})
+                return post.emit('filebrowser','loadItem',row.path,{focus:false})
             }
         }
     }
@@ -521,7 +521,7 @@ Shelf = (function ()
         {
             if (item.type === 'file' && item.textFile)
             {
-                window.openFiles([item.file],{newWindow:true})
+                window.openFiles([item.path],{newWindow:true})
             }
         }
         return this

@@ -235,14 +235,14 @@ function FileEditor extends TextEditor
         
         if opt.newTab
 
-            file = opt.file
+            file = opt.path
             file += ':' + opt.line if opt.line
             file += ':' + opt.col if opt.col
             post.emit 'newTabWithFile' file
 
         else if window.lastFocus == 'editor'
             
-            [file, fpos] = slash.splitFilePos opt.file
+            [file, fpos] = slash.splitFilePos opt.path
             opt.pos = fpos
             opt.pos[0] = opt.col if opt.col
             opt.pos[1] = opt.line-1 if opt.line
@@ -264,7 +264,7 @@ function FileEditor extends TextEditor
 
         opt ?= {}
 
-        if opt.file?
+        if opt.path?
             @jumpToFile opt
             return true
 
@@ -299,7 +299,7 @@ function FileEditor extends TextEditor
             files = {} #post.get 'indexer' 'files'
             for file, info of files
                 if slash.name(file).toLowerCase() == find and file != @currentFile
-                    @jumpToFile file:file, line:6
+                    @jumpToFile path:file, line:6
 
         window.commandline.commands.search.start 'search'
         window.commandline.commands.search.execute word

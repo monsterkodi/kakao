@@ -6,6 +6,7 @@
   000   000   0000000    0000000      000     00000000
 */
 
+#import "fs.h"
 #import "app.h"
 #import "route.h"
 #import "bundle.h"
@@ -94,139 +95,6 @@
     return nil;
 }
 
-// 00000000   0000000  
-// 000       000       
-// 000000    0000000   
-// 000            000  
-// 000       0000000   
-
-+ (id) fs:(NSString*)req args:(NSArray*)args win:(Win*)win
-{
-    NSString* path = [[args objectAtIndex:0] stringByExpandingTildeInPath];
-          
-    if ([req isEqualToString:@"info"])
-    {
-        id attr = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
-        
-        NSMutableDictionary* info = [NSMutableDictionary dictionary];
-        [info setObject:[attr objectForKey:@"NSFileSize"                  ] forKey:@"size"];
-        [info setObject:[attr objectForKey:@"NSFileCreationDate"          ] forKey:@"created"];
-        [info setObject:[attr objectForKey:@"NSFileGroupOwnerAccountName" ] forKey:@"group"];
-        [info setObject:[attr objectForKey:@"NSFileOwnerAccountName"      ] forKey:@"owner"];
-        [info setObject:[attr objectForKey:@"NSFileModificationDate"      ] forKey:@"modified"];
-        [info setObject:[attr objectForKey:@"NSFilePosixPermissions"      ] forKey:@"permission"];
-        
-        if ([[attr objectForKey:@"NSFileType"] isEqualToString:@"NSFileTypeRegular"])
-        {
-            [info setObject:@"file" forKey:@"type"];
-        }
-        else
-        {
-            [info setObject:@"dir" forKey:@"type"];
-        }
-        return info;
-    }
-    if ([req isEqualToString:@"fileExists"])
-    {
-        BOOL isDir;
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
-        return [NSNumber numberWithBool:exists && !isDir];
-    }
-    if ([req isEqualToString:@"dirExists"])
-    {
-        BOOL isDir;
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
-        return [NSNumber numberWithBool:exists && isDir];
-    }
-    if ([req isEqualToString:@"exists"])
-    {
-        return [NSNumber numberWithBool:[[NSFileManager defaultManager] fileExistsAtPath:path]];
-    }
-    if ([req isEqualToString:@"isWritable"])
-    {
-        return [NSNumber numberWithBool:[[NSFileManager defaultManager] isWritableFileAtPath:path]];
-    }
-    if ([req isEqualToString:@"isReadable"])
-    {
-        return [NSNumber numberWithBool:[[NSFileManager defaultManager] isReadableFileAtPath:path]];
-    }
-    if ([req isEqualToString:@"read"])
-    {
-        return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    }
-    else if ([req isEqualToString:@"write"])
-    {
-        NSString* text = [args objectAtIndex:1];
-        NSData* data = [text dataUsingEncoding:NSUTF8StringEncoding];
-        if ([data writeToFile:path options:NSAtomicWrite error:nil])
-            return path;
-        else
-            return nil;
-    }
-    else if ([req isEqualToString:@"list"])
-    {
-        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
-        
-        NSMutableArray* result = [NSMutableArray array];
-        
-        NSString *file;
-        while ((file = [dirEnum nextObject])) 
-        {
-            [dirEnum skipDescendants];
-            id type; 
-            id fileType = [dirEnum.fileAttributes objectForKey:NSFileType];
-            if ([fileType isEqualToString:NSFileTypeRegular])
-            {
-                type = @"file";
-            }
-            else if ([fileType isEqualToString:NSFileTypeDirectory])
-            {
-                type = @"dir";
-            }
-            
-            NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
-            [fileInfo setObject:type forKey:@"type"];
-            [fileInfo setObject:file forKey:@"file"];
-            [fileInfo setObject:[path stringByAppendingPathComponent:file] forKey:@"path"];
-            [result addObject:fileInfo];
-        }
-                
-        return result;
-    }
-    else if ([req isEqualToString:@"listDeep"])
-    {
-        NSLog(@"listDeep %@", path);
-        
-        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
-        
-        NSMutableArray* result = [NSMutableArray array];
-        
-        NSString *file;
-        while ((file = [dirEnum nextObject])) 
-        {
-            id type; 
-            id fileType = [dirEnum.fileAttributes objectForKey:NSFileType];
-            if ([fileType isEqualToString:NSFileTypeRegular])
-            {
-                type = @"file";
-            }
-            else if ([fileType isEqualToString:NSFileTypeDirectory])
-            {
-                type = @"dir";
-            }
-                    
-            NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
-            [fileInfo setObject:type forKey:@"type"];
-            [fileInfo setObject:file forKey:@"file"];
-            [fileInfo setObject:[path stringByAppendingPathComponent:file] forKey:@"path"];
-            [result addObject:fileInfo];
-        }
-                
-        return result;
-    }
-    return nil;
-}
-
 // 000000000  00000000   0000000  000000000  
 //    000     000       000          000     
 //    000     0000000   0000000      000     
@@ -269,7 +137,7 @@
     else if ([route hasPrefix:@"window."]) { reply = [Route window:[route substringFromIndex:7] args:args win:win]; }
     else if ([route hasPrefix:@"win."   ]) { reply = [Route window:[route substringFromIndex:4] args:args win:win]; }
     else if ([route hasPrefix:@"app."   ]) { reply = [Route app:   [route substringFromIndex:4] args:args win:win]; }
-    else if ([route hasPrefix:@"fs."    ]) { reply = [Route fs:    [route substringFromIndex:3] args:args win:win]; }
+    else if ([route hasPrefix:@"fs."    ]) { reply = [FS    fs:    [route substringFromIndex:3] args:args win:win]; }
     else if ([route hasPrefix:@"test."  ]) { reply = [Route test:  [route substringFromIndex:5] args:args win:win]; }
     else NSLog(@"unknown request %@ %@", msg.name, msg.body);
     

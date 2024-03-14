@@ -110,7 +110,7 @@ Browser = (function ()
                 {
                     if (row = col.activeRow())
                     {
-                        this.loadItem(this.fileItem(row.item.file))
+                        this.loadItem(this.fileItem(row.item.path))
                     }
                     else
                     {

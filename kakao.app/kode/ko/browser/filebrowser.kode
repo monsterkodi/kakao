@@ -85,7 +85,7 @@ function FileBrowser extends Browser
     columnForFile: (file) ->
         
         for column in @columns
-            if column.parent?.file == slash.dir file
+            if column.parent?.path == slash.dir file
                 return column
         
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
@@ -185,19 +185,24 @@ function FileBrowser extends Browser
     fileItem: (path) ->
         
         p = slash.path path
-                
-        file: p
-        type: undefined
-        name: slash.file p
         
+        item = slash.parse p
+        item.type = undefined
+        
+        ffs.type(p).then ((i) -> (t) -> i.type = t)(item)
+        
+        log 'fileItem' item
+        
+        item
+                
     onFileBrowser: (action, item, arg) =>
 
-        # log 'onFileBrowser' action, item.type, arg
+        log 'onFileBrowser' action, item, arg
         switch action
             'loadItem'     ➜ @loadItem     item, arg
             'activateItem' ➜ @activateItem item, arg
     
-    loadDir: (path) -> @loadItem type:'dir' file:path
+    loadDir: (path) -> @loadItem type:'dir' path:path
     
     loadItem: (item, opt) -> 
     
@@ -217,18 +222,18 @@ function FileBrowser extends Browser
         log 'loadItem' item, opt
 
         opt ?= active:'..' focus:true
-        item.name ?= slash.file item.file
+        item.name ?= slash.file item.path
 
         @clearColumnsFrom 1, pop:true, clear:opt.clear ? 1
 
         switch item.type
             'dir'  ➜ @loadDirItem item, 0, opt
             'file' 
-                opt.activate = item.file
+                opt.activate = item.path
                 while @numCols() < 2 then @addColumn()
-                @loadDirItem @fileItem(slash.dir(item.file)), 0, opt
+                @loadDirItem @fileItem(slash.dir(item.path)), 0, opt
             ➜
-                ffs.isDir(item.file).then (stat) => if stat then @loadDirItem item, 0, opt
+                ffs.isDir(item.path).then (stat) => if stat then @loadDirItem item, 0, opt
                 return
 
         if opt.focus
@@ -254,7 +259,7 @@ function FileBrowser extends Browser
                 @loadDirItem  item, col+1, focus:false
             when 'file'
                 @loadFileItem item, col+1
-                if item.textFile or File.isText item.file
+                if item.textFile or File.isText item.path
                     log 'FileBrowser emit jumpToFile' item
                     post.emit 'jumpToFile' item
 
@@ -290,9 +295,9 @@ function FileBrowser extends Browser
                     else
                         @fileInfoColumn col, file
                 ➜
-                    if File.isText item.file
+                    if File.isText item.path
                         @loadSourceItem item, col
-                    if not File.isCode item.file
+                    if not File.isCode item.path
                         @fileInfoColumn col, file
 
         post.emit 'load' column:col, item:item
@@ -325,11 +330,11 @@ function FileBrowser extends Browser
              
     loadSourceItem: (item, col) ->
 
-        # if not @srcCache[item.file]?
+        # if not @srcCache[item.path]?
 
-            # @srcCache[item.file] = post.get 'indexer' 'file' item.file
+            # @srcCache[item.file] = post.get 'indexer' 'file' item.path
 
-        info = @srcCache[item.file]
+        info = @srcCache[item.path]
 
         if empty info
             # @columns[col].loadItems [], item
@@ -339,7 +344,7 @@ function FileBrowser extends Browser
         clsss = info.classes ? []
         for clss in clsss
             text = '● '+clss.name
-            items.push name:clss.name, text:text, type:'class', file:item.file, line:clss.line
+            items.push name:clss.name, text:text, type:'class', path:item.path, line:clss.line
 
         funcs = info.funcs ? []
         for func in funcs
@@ -357,7 +362,7 @@ function FileBrowser extends Browser
                     text = ' ○▸ '+func.name
                 else
                     text = '  ▸ '+func.name
-            items.push name:func.name, text:text, type:'func', file:item.file, line:func.line
+            items.push name:func.name, text:text, type:'func', path:item.path, line:func.line
 
         if valid items
             items.sort (a,b) -> a.line - b.line
@@ -381,21 +386,21 @@ function FileBrowser extends Browser
 
         return if col > 0 and item.name == '/'
 
-        dir = item.file
+        log 'loadDirItem' item
         
-        log 'loadDirItem' dir
+        dir = item.path
         
         # opt.ignoreHidden = not prefs.get "browser▸showHidden▸#{dir}"
         ffs.list(dir).then (items) =>
-            # post.toMain 'dirLoaded' dir
             log 'loadDir items' items
-            @loadDirItems dir, item, items, col, opt
+            @loadDirItems item, items, col, opt
             post.emit 'dir' dir
         true
                 
-    loadDirItems: (dir, item, items, col, opt) =>
+    loadDirItems: (item, items, col, opt) =>
+        
 
-        log 'loadDirItems' dir, item, items, col, opt
+        log 'loadDirItems' item, items, col, opt
                     
         @updateColumnScrolls()
                             
@@ -498,7 +503,7 @@ function FileBrowser extends Browser
 
     getGitStatus: (item, col) =>
 
-        file = item.file ? item.parent?.file
+        file = item.path ? item.parent?.path
         return if empty file
 
         # hub.status file, (status) => @applyGitStatusFiles col, hub.statusFiles status

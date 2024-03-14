@@ -78,17 +78,17 @@ function Shelf extends Column
             return
         
         for index in [0...@items.length]
-            if @items[index].file == file
+            if @items[index].path == file
                 @rows[index].setActive()
                 return
         
         matches = []
         for index,item of @items
-            if file?.startsWith item.file
+            if file?.startsWith item.path
                 matches.push [index, item]
 
         if not empty matches
-            matches.sort (a,b) -> b[1].file.length - a[1].file.length
+            matches.sort (a,b) -> b[1].path.length - a[1].path.length
             [index, item] = first matches
             @rows[index].setActive()
 
@@ -378,15 +378,15 @@ function Shelf extends Column
             row = @rows[index]
             row.setActive emit:false
             if row.item.type == 'file'
-                post.emit 'jumpToFile' row.item
+                post.emit 'jumpToFile' row.path
             else
-                post.emit 'filebrowser' 'loadItem' row.item, focus:false
+                post.emit 'filebrowser' 'loadItem' row.path, focus:false
     
     openFileInNewWindow: ->  
         
         if item = @activeRow()?.item
             if item.type == 'file' and item.textFile
-                window.openFiles [item.file], newWindow: true
+                window.openFiles [item.path], newWindow: true
         @
     
     removeObject: =>

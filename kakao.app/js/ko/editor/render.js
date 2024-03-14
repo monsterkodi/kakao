@@ -27,13 +27,22 @@ class Render
 
     static lineSpan (diss, size)
     {
-        var d, div, span, ss, st, _37_45_, _39_21_
+        var d, div, span, ss, st, _44_45_, _46_21_
 
         div = elem({class:'linespans'})
-        var list = (diss != null ? diss : [])
-        for (var _34_14_ = 0; _34_14_ < list.length; _34_14_++)
+        if (diss.length > 500)
         {
-            d = list[_34_14_]
+            console.log('line too long!')
+            span = elem('span')
+            span.className = 'line_to_long'
+            span.textContent = '*** line too long! ***'
+            div.appendChild(span)
+            return div
+        }
+        var list = (diss != null ? diss : [])
+        for (var _41_14_ = 0; _41_14_ < list.length; _41_14_++)
+        {
+            d = list[_41_14_]
             span = elem('span')
             span.style.transform = `translatex(${d.start * size.charWidth}px)`
             if ((d.clss != null))
@@ -44,9 +53,9 @@ class Render
             if ((d.styl != null))
             {
                 var list1 = _k_.list(d.styl.split(';'))
-                for (var _40_23_ = 0; _40_23_ < list1.length; _40_23_++)
+                for (var _47_23_ = 0; _47_23_ < list1.length; _47_23_++)
                 {
-                    st = list1[_40_23_]
+                    st = list1[_47_23_]
                     ss = st.split(':')
                     span.style[ss[0]] = ss[1]
                 }
@@ -65,9 +74,9 @@ class Render
         cw = size.charWidth
         lh = size.lineHeight
         var list = _k_.list(cs)
-        for (var _58_14_ = 0; _58_14_ < list.length; _58_14_++)
+        for (var _65_14_ = 0; _65_14_ < list.length; _65_14_++)
         {
-            c = list[_58_14_]
+            c = list[_65_14_]
             tx = c[0] * cw + size.offsetX
             ty = c[1] * lh
             cls = ""
@@ -84,17 +93,17 @@ class Render
 
     static selection (ss, size, clss = 'selection')
     {
-        var b, h, n, p, s, si, _83_58_, _83_65_
+        var b, h, n, p, s, si, _90_58_, _90_65_
 
         h = ""
         p = null
         n = null
-        for (var _79_19_ = si = 0, _79_23_ = ss.length; (_79_19_ <= _79_23_ ? si < ss.length : si > ss.length); (_79_19_ <= _79_23_ ? ++si : --si))
+        for (var _86_19_ = si = 0, _86_23_ = ss.length; (_86_19_ <= _86_23_ ? si < ss.length : si > ss.length); (_86_19_ <= _86_23_ ? ++si : --si))
         {
             s = ss[si]
             n = (si < ss.length - 1) && (ss[si + 1][0] === s[0] + 1) && ss[si + 1] || null
             b = (p != null ? p[0] : undefined) === s[0] - 1 && p || null
-            h += this.selectionSpan(b,s,n,size,((_83_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _83_58_ : ((_83_65_=s[2]) != null ? _83_65_ : clss)))
+            h += this.selectionSpan(b,s,n,size,((_90_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _90_58_ : ((_90_65_=s[2]) != null ? _90_65_ : clss)))
             p = s
         }
         return h

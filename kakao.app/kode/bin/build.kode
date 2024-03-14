@@ -10,8 +10,6 @@
 
 CMD = "zig c++" # is awesome!
 
-SRC = "main.cpp app.mm bundle.mm win.mm view.mm route.mm watch.mm"
-
 OUT = "../Contents/MacOS/kakao"
 
 LIB = "-framework WebKit -framework Cocoa"
@@ -19,8 +17,16 @@ FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
 use child_process
 use ../kxk/slash
+use ../kxk/fs
 
 export ○->
+    
+    srcDir = slash.path import.meta.dirname, '../../src'
+    
+    srcFiles = await fs.list srcDir
+    srcFiles = srcFiles.filter (f) -> slash.ext(f.path) in ['cpp''mm']
+    
+    SRC = srcFiles.map((f)->f.file).join ' '
     
     # the actual build command. 
     # could be a one-liner in a shell script but that would be too simple :)
@@ -29,7 +35,7 @@ export ○->
     
     # log cmd
     
-    cwd = slash.path import.meta.dirname, '../../src'
+    cwd = srcDir
     opt = shell:true cwd:cwd # build inside the kokoa.app/src folder
     
     new Promise (resolve, reject) ->

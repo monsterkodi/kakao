@@ -22,7 +22,7 @@ function Row
 
         log "new Row" @item
         @browser = @column.browser
-        text = @item.text ? @item.name ? @item.file
+        text = @item.text ? @item.name ? @item.file ? slash.file @item.path
         if empty(text) or empty text.trim()
             html = '<span> </span>'
         else
@@ -41,14 +41,14 @@ function Row
     onMouseOver: => @div?.classList.add 'hover'
 
     path: -> 
-        if @item.file? and @item.file is str
-            return @item.file
-        if @item.obj?.file? and @item.obj.file is str
-            return @item.obj.file
+        if @item.path? and @item.path is str
+            return @item.path
+        if @item.obj?.path? and @item.obj.path is str
+            return @item.obj.path
 
     setIcon: ->
 
-        if slash.ext(@item.file) == 'kode'
+        if slash.ext(@item.path) == 'kode'
 
             icon = elem 'span' class:'kodeIcon'
             icon.innerHTML =
@@ -65,9 +65,9 @@ function Row
             if @item.type == 'dir'
                 className = 'folder-icon'
             else
-                className = File.iconClassName @item.file
+                className = File.iconClassName @item.path
                 
-        if slash.name(@item.file).startsWith('.')
+        if slash.name(@item.path).startsWith('.')
             className += ' dotfile'
 
         icon = elem('span' class:className + ' browserFileIcon')
@@ -106,8 +106,8 @@ function Row
                     
                 @browser.clearColumnsFrom @column.index+1, pop:true
                 
-                log 'Row emit jumpToFile' file:@item.path
-                if emit then post.emit 'jumpToFile' file:@item.path
+                log 'Row emit jumpToFile' path:@item.path
+                if emit then post.emit 'jumpToFile' path:@item.path
         @
     
     isActive: -> @div.classList.contains 'active'
@@ -124,10 +124,10 @@ function Row
             
         if opt?.emit
             @browser.emit 'itemActivated' @item
-            if @item.type == 'dir'
-                post.emit 'setCWD' @item.file
-            else if @item.type == 'file'
-                post.emit 'setCWD' slash.dir @item.file
+            # if @item.type == 'dir'
+                # post.emit 'setCWD' @item.path
+            # else if @item.type == 'file'
+                # post.emit 'setCWD' slash.dir @item.path
         @
                  
     clearActive: ->
@@ -160,7 +160,7 @@ function Row
         
         return if @input? 
         @input = elem 'input' class:'rowNameInput'
-        @input.value = slash.file @item.file
+        @input.value = slash.file @item.path
         
         @div.appendChild @input
         @input.addEventListener 'change'   @onNameChange
@@ -168,21 +168,23 @@ function Row
         @input.addEventListener 'focusout' @onNameFocusOut
         @input.focus()
         
-        @input.setSelectionRange 0, slash.name(@item.file).length
+        @input.setSelectionRange 0, slash.name(@item.path).length
 
     onNameKeyDown: (event) =>
         
         {mod, key, combo} = keyinfo.forEvent event
+        
+        file = slash.file @item.path
 
         switch combo
             when 'esc'
-                if @input.value != slash.file @item.file
-                    @input.value = slash.file @item.file
+                if @input.value != file
+                    @input.value = file
                     event.preventDefault()
                     event.stopImmediatePropagation()
                 @onNameFocusOut()
             when 'enter'
-                if @input.value != slash.file @item.file
+                if @input.value != file
                     @onNameChange()
                 else
                     @removeInput()
@@ -211,7 +213,7 @@ function Row
     
     onNameChange: (event) =>
         
-        targetFile = slash.join slash.dir(@item.file), @input.value.trim()
+        targetFile = slash.join slash.dir(@item.path), @input.value.trim()
         
         @removeInput()
         
@@ -225,8 +227,8 @@ function Row
     
     rename: (targetFile) =>
         
-        return if slash.samePath @item.file, targetFile
+        return if slash.samePath @item.path, targetFile
                 
-        File.rename @item.file, targetFile, (source, target) =>
+        File.rename @item.path, targetFile, (source, target) =>
     
 export Row

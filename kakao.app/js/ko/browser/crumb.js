@@ -71,7 +71,7 @@ class Crumb
                 }
                 else
                 {
-                    this.column.browser.browse(this.column.parent.file)
+                    this.column.browser.browse(this.column.parent.path)
                 }
             }
         }

@@ -62,6 +62,14 @@ class KFS
         return await kakao.request('fs.info',p)
     }
 
+    static async type (p)
+    {
+        var i
+
+        i = await kakao.request('fs.info',p)
+        return i.type
+    }
+
     static async isFile (p)
     {
         return await KFS.fileExists(p)

@@ -20,7 +20,7 @@ class Select
         })
         return rows.map(function (row)
         {
-            return row.item.file
+            return row.item.path
         })
     }
 
@@ -78,7 +78,7 @@ class Select
         }
         if (row.isSelected())
         {
-            console.log('unselect',row.item.file)
+            console.log('unselect',row.item.path)
             row.clearActive()
             row.clearSelected()
             return this.rows.splice(this.rows.indexOf(row),1)

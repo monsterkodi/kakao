@@ -16,7 +16,7 @@ class Select
     files: -> 
     
         rows = @rows.filter (row) -> row.item.name != '..'
-        rows.map (row) -> row.item.file
+        rows.map (row) -> row.item.path
         
     freeIndex: ->
         
@@ -53,7 +53,7 @@ class Select
         
         if row.isSelected()
             
-            log 'unselect' row.item.file
+            log 'unselect' row.item.path
             
             row.clearActive()
             row.clearSelected()            

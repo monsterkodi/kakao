@@ -209,7 +209,7 @@ class Tab
 
     activate: ->
 
-        post.emit 'jumpToFile' file:@file
+        post.emit 'jumpToFile' path:@file
         @
 
     finishActivation: ->
