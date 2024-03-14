@@ -13,11 +13,11 @@ use ../../kxk/drag
 use ../../kxk/post
 use ../../kxk/ffs
 
-use ./select      ● Select
-use ../tools/file ● File
-use ./browser     ● Browser
-use ./shelf       ● Shelf
-use ./info        ● Info
+use ../tools/File
+use ./Select
+use ./Info
+use ./Browser
+use ./Shelf       
 
 function FileBrowser extends Browser
 

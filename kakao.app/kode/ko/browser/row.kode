@@ -12,9 +12,9 @@ use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 use ../../kxk/keyinfo
-use ../editor/syntax
 
-use ../tools/file ● File
+use ../editor/Syntax
+use ../tools/File
 
 function Row
     
@@ -26,7 +26,7 @@ function Row
         if empty(text) or empty text.trim()
             html = '<span> </span>'
         else
-            html = syntax.spanForTextAndSyntax text, 'browser'
+            html = Syntax.spanForTextAndSyntax text, 'browser'
         @div = elem class:'browserRow' html: html
         @div.classList.add @item.type ? 'file'
         @column.table.appendChild @div

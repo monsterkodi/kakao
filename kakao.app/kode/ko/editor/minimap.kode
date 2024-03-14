@@ -10,7 +10,7 @@ use ../../kxk/dom ▪ getStyle
 use ../../kxk/elem
 use ../../kxk/drag
 
-use ./mapscroll ● MapScroll
+use ./MapScroll
 
 class Minimap
 

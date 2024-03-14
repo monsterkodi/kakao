@@ -13,7 +13,7 @@ use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 
-use ../tools/file ● File
+use ../tools/File
 
 class Meta
 

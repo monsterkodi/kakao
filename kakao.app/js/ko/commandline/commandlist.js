@@ -6,9 +6,9 @@ import matchr from "../../kxk/matchr.js"
 
 import salt from "../tools/salt.js"
 
-import syntax from "../editor/syntax.js"
+import Syntax from "../editor/Syntax.js"
 
-import TextEditor from "../editor/texteditor.js"
+import TextEditor from "../editor/TextEditor.js"
 
 
 CommandList = (function ()
@@ -91,13 +91,13 @@ CommandList = (function ()
         this.meta.addDiv(this.meta.append(meta))
         if ((meta.diss != null))
         {
-            return this.appendLineDiss(syntax.lineForDiss(meta.diss),meta.diss)
+            return this.appendLineDiss(Syntax.lineForDiss(meta.diss),meta.diss)
         }
         else if ((meta.text != null) && meta.text.trim().length)
         {
             r = ((_106_29_=meta.rngs) != null ? _106_29_ : [])
             text = meta.text.trim()
-            rngs = r.concat(syntax.rangesForTextAndSyntax(text,meta.type || 'ko'))
+            rngs = r.concat(Syntax.rangesForTextAndSyntax(text,meta.type || 'ko'))
             matchr.sortRanges(rngs)
             diss = matchr.dissect(rngs,{join:true})
             return this.appendLineDiss(text,diss)

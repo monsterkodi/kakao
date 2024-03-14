@@ -2,6 +2,10 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Macro
 
+import util from "../../kxk/util.js"
+let uniq = util.uniq
+let reversed = util.reversed
+
 import slash from "../../kxk/slash.js"
 
 import prefs from "../../kxk/prefs.js"
@@ -10,24 +14,20 @@ import post from "../../kxk/post.js"
 
 import ffs from "../../kxk/ffs.js"
 
-import util from "../../kxk/util.js"
-let uniq = util.uniq
-let reversed = util.reversed
-
 import salt from "../tools/salt.js"
 
 import req from "../tools/req.js"
 
-import command from "../commandline/command.js"
-
-import syntax from "../editor/syntax.js"
+import Syntax from "../editor/Syntax.js"
 
 import transform from "../editor/actions/transform.js"
+
+import Command from "../commandline/Command.js"
 
 
 Macro = (function ()
 {
-    _k_.extend(Macro, command)
+    _k_.extend(Macro, Command)
     Macro["macroNames"] = ['clean','help','dbg','class','req','inv','blink','color','fps','cwd','git','unix']
     function Macro (commandline)
     {

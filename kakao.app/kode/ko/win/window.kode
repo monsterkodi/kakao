@@ -15,11 +15,6 @@ use ../../kxk/stash
 use ../../kxk/store
 use ../../kxk/prefs
 
-use ./split
-use ./info
-use ./tabs
-use ./titlebar
-use ./filehandler
 use ../tools/watcher
 use ../tools/fps
 use ../tools/scheme
@@ -27,10 +22,15 @@ use ../tools/cwd
 use ../tools/projects
 use ../main/navigate
 
-use ./terminal
-use ../editor/editor
-use ../commandline/commandline
-use ../editor/fileeditor
+use ./Split
+use ./Info
+use ./Tabs
+use ./Titlebar
+use ./FileHandler
+use ./Terminal
+use ../editor/Editor
+use ../commandline/CommandLine
+use ../editor/FileEditor
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
@@ -67,18 +67,20 @@ function Window #extends win
         
         window.stash = new stash "win/#{@id}" separator:'|'
             
-        @filehandler = window.filehandler = new filehandler
+        @filehandler = window.filehandler = new FileHandler
         @filewatcher = window.filewatcher = new watcher
-        @tabs        = window.tabs        = new tabs window.titlebar.elem
+        @tabs        = window.tabs        = new Tabs window.titlebar.elem
         # @titlebar    =                      new titlebar
         @navigate    = window.navigate    = new navigate()
-        @split       = window.split       = new split()
-        @terminal    = window.terminal    = new terminal 'terminal'
-        @editor      = window.editor      = new fileeditor 'editor'
-        @commandline = window.commandline = new commandline 'commandline-editor'
-        @info        = window.info        = new info @editor
+        @split       = window.split       = new Split()
+        @terminal    = window.terminal    = new Terminal 'terminal'
+        @editor      = window.editor      = new FileEditor 'editor'
+        @commandline = window.commandline = new CommandLine 'commandline-editor'
+        @info        = window.info        = new Info @editor
+        
         @fps         = window.fps         = new fps()
-        @cwd         = window.cwd         = new cwd()
+        
+        # @cwd         = window.cwd         = new cwd()
     
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
@@ -122,7 +124,7 @@ function Window #extends win
         
         log 'onMenuAction' name#, opts
         
-        if action = editor.actionWithName name
+        if action = Editor.actionWithName name
             
             log 'editor.actionWithName' name
             

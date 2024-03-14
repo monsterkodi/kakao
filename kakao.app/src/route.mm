@@ -169,7 +169,7 @@
     {
         NSString* dirPath = [[args objectAtIndex:0] stringByExpandingTildeInPath];
         
-        NSLog(@"list %@", dirPath);
+        // NSLog(@"list %@", dirPath);
         
         NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
         
@@ -188,13 +188,10 @@
             else if ([fileType isEqualToString:NSFileTypeDirectory])
             {
                 type = @"dir";
-                // NSLog(@"dir %@", file);
             }
             
             id path = [dirPath stringByAppendingPathComponent:file];
             
-            // NSLog(@"%@ file %@ path %@", type, file, path);
-        
             NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
             [fileInfo setObject:type forKey:@"type"];
             [fileInfo setObject:file forKey:@"file"];

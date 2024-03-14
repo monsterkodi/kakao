@@ -13,14 +13,14 @@ import popup from "../../kxk/popup.js"
 
 import salt from "../tools/salt.js"
 
-import syntax from "../editor/syntax.js"
+import Syntax from "../editor/Syntax.js"
 
-import texteditor from "../editor/texteditor.js"
+import TextEditor from "../editor/TextEditor.js"
 
 
 Terminal = (function ()
 {
-    _k_.extend(Terminal, texteditor)
+    _k_.extend(Terminal, TextEditor)
     function Terminal (viewElem)
     {
         this["showContextMenu"] = this["showContextMenu"].bind(this)
@@ -59,7 +59,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendDiss"] = function (diss)
     {
-        return this.appendLineDiss(syntax.lineForDiss(diss),diss)
+        return this.appendLineDiss(Syntax.lineForDiss(diss),diss)
     }
 
     Terminal.prototype["appendMeta"] = function (meta)
@@ -73,7 +73,7 @@ Terminal = (function ()
         this.meta.append(meta)
         if ((meta.diss != null))
         {
-            return this.appendLineDiss(syntax.lineForDiss(meta.diss),meta.diss)
+            return this.appendLineDiss(Syntax.lineForDiss(meta.diss),meta.diss)
         }
         else if (meta.clss === 'salt')
         {
@@ -88,7 +88,7 @@ Terminal = (function ()
         }
         else if (meta.clss === 'termCommand')
         {
-            return this.appendLineDiss(meta.command,syntax.dissForTextAndSyntax(meta.command,'term'))
+            return this.appendLineDiss(meta.command,Syntax.dissForTextAndSyntax(meta.command,'term'))
         }
         else if ((meta.text != null))
         {

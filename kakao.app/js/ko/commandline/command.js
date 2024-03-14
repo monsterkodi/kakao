@@ -5,12 +5,10 @@ var Command
 import lib_ko from "../../../lib/lib_ko.js"
 let fuzzy = lib_ko.fuzzy
 
-import elem from "../../kxk/elem.js"
-
 import util from "../../kxk/util.js"
 let pull = util.pull
 
-import syntax from "../editor/syntax.js"
+import elem from "../../kxk/elem.js"
 
 import CommandList from "./commandlist.js"
 

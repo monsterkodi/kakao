@@ -7,7 +7,7 @@ import elem from "../../kxk/elem.js"
 
 import drag from "../../kxk/drag.js"
 
-import MapScroll from "./mapscroll.js"
+import MapScroll from "./MapScroll.js"
 
 class Minimap
 {

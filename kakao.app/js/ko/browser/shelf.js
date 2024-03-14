@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, dbg: function (f,l,c,m,...a) { console.log(f + ':' + l + ':' + c + (m ? ' ' + m + '\n' : '\n') + a.map(function (a) { return _k_.noon(a) }).join(' '))}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }}
 
 var Shelf
 
@@ -21,11 +21,11 @@ import keyinfo from "../../kxk/keyinfo.js"
 
 import popup from "../../kxk/popup.js"
 
-import File from "../tools/file.js"
+import File from "../tools/File.js"
 
-import Column from "./column.js"
+import Column from "./Column.js"
 
-import Row from "./row.js"
+import Row from "./Row.js"
 
 
 Shelf = (function ()
@@ -69,7 +69,7 @@ Shelf = (function ()
 
     Shelf.prototype["activateRow"] = function (row)
     {
-        var item, _53_19_
+        var item, _51_19_
 
         ;($('.hover') != null ? $('.hover').classList.remove('hover') : undefined)
         item = row.item
@@ -103,7 +103,7 @@ Shelf = (function ()
             delete this.navigatingRows
             return
         }
-        for (var _82_22_ = index = 0, _82_26_ = this.items.length; (_82_22_ <= _82_26_ ? index < this.items.length : index > this.items.length); (_82_22_ <= _82_26_ ? ++index : --index))
+        for (var _80_22_ = index = 0, _80_26_ = this.items.length; (_80_22_ <= _80_26_ ? index < this.items.length : index > this.items.length); (_80_22_ <= _80_26_ ? ++index : --index))
         {
             if (this.items[index].file === file)
             {
@@ -126,7 +126,7 @@ Shelf = (function ()
             {
                 return b[1].file.length - a[1].file.length
             })
-            var _94_26_ = _k_.first(matches); index = _94_26_[0]; item = _94_26_[1]
+            var _92_26_ = _k_.first(matches); index = _92_26_[0]; item = _92_26_[1]
 
             return this.rows[index].setActive()
         }
@@ -182,12 +182,12 @@ Shelf = (function ()
 
     Shelf.prototype["setItems"] = function (items, opt)
     {
-        var _142_15_
+        var _140_15_
 
         this.items = items
     
         this.clear()
-        this.items = ((_142_15_=this.items) != null ? _142_15_ : [])
+        this.items = ((_140_15_=this.items) != null ? _140_15_ : [])
         this.addItems(this.items)
         if ((opt != null ? opt.save : undefined) !== false)
         {
@@ -205,9 +205,9 @@ Shelf = (function ()
             return
         }
         var list = _k_.list(items)
-        for (var _153_17_ = 0; _153_17_ < list.length; _153_17_++)
+        for (var _151_17_ = 0; _151_17_ < list.length; _151_17_++)
         {
-            item = list[_153_17_]
+            item = list[_151_17_]
             this.rows.push(new Row(this,item))
         }
         this.scroll.update()
@@ -235,7 +235,24 @@ Shelf = (function ()
     }
 
     Shelf.prototype["addFiles"] = async function (files, opt)
-    {}
+    {
+        var file
+
+        _k_.dbg("kode/ko/browser/Shelf.kode", 177, 8, "files", files,opt)
+        var list = _k_.list(files)
+        for (var _179_17_ = 0; _179_17_ < list.length; _179_17_++)
+        {
+            file = list[_179_17_]
+            if (await ffs.isDir(file))
+            {
+                this.addDir(file,opt)
+            }
+            else
+            {
+                this.addFile(file,opt)
+            }
+        }
+    }
 
     Shelf.prototype["addItem"] = function (item, opt)
     {

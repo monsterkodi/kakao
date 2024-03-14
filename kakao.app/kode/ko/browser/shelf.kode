@@ -15,12 +15,10 @@ use ../../kxk/slash
 use ../../kxk/keyinfo
 use ../../kxk/popup
 
-use ../tools/file  ● File
-use ./column       ● Column
-use ./row          ● Row
+use ../tools/File
+use ./Column
+use ./Row
 
-# use ../git/hub
-    
 function Shelf extends Column
 
     @: (browser) ->
@@ -176,11 +174,13 @@ function Shelf extends Column
         
     addFiles: (files, opt) ○->
         
-        # for file in files
-            # if await ffs.isDir file
-                # @addDir file, opt
-            # else
-                # @addFile file, opt
+        dbg files, opt
+        
+        for file in files
+            if await ffs.isDir file
+                @addDir file, opt
+            else
+                @addFile file, opt
         
     addItem:  (item, opt) ->
         

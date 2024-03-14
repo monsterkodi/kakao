@@ -15,16 +15,6 @@ import store from "../../kxk/store.js"
 
 import prefs from "../../kxk/prefs.js"
 
-import split from "./split.js"
-
-import info from "./info.js"
-
-import tabs from "./tabs.js"
-
-import titlebar from "./titlebar.js"
-
-import filehandler from "./filehandler.js"
-
 import watcher from "../tools/watcher.js"
 
 import fps from "../tools/fps.js"
@@ -37,13 +27,23 @@ import projects from "../tools/projects.js"
 
 import navigate from "../main/navigate.js"
 
-import terminal from "./terminal.js"
+import Split from "./Split.js"
 
-import editor from "../editor/editor.js"
+import Info from "./Info.js"
 
-import commandline from "../commandline/commandline.js"
+import Tabs from "./Tabs.js"
 
-import fileeditor from "../editor/fileeditor.js"
+import Titlebar from "./Titlebar.js"
+
+import FileHandler from "./FileHandler.js"
+
+import Terminal from "./Terminal.js"
+
+import Editor from "../editor/Editor.js"
+
+import CommandLine from "../commandline/CommandLine.js"
+
+import FileEditor from "../editor/FileEditor.js"
 
 
 Window = (function ()
@@ -87,17 +87,16 @@ Window = (function ()
         kakao.send('window.center')
         this.id = win.id
         window.stash = new stash(`win/${this.id}`,{separator:'|'})
-        this.filehandler = window.filehandler = new filehandler
+        this.filehandler = window.filehandler = new FileHandler
         this.filewatcher = window.filewatcher = new watcher
-        this.tabs = window.tabs = new tabs(window.titlebar.elem)
+        this.tabs = window.tabs = new Tabs(window.titlebar.elem)
         this.navigate = window.navigate = new navigate()
-        this.split = window.split = new split()
-        this.terminal = window.terminal = new terminal('terminal')
-        this.editor = window.editor = new fileeditor('editor')
-        this.commandline = window.commandline = new commandline('commandline-editor')
-        this.info = window.info = new info(this.editor)
+        this.split = window.split = new Split()
+        this.terminal = window.terminal = new Terminal('terminal')
+        this.editor = window.editor = new FileEditor('editor')
+        this.commandline = window.commandline = new CommandLine('commandline-editor')
+        this.info = window.info = new Info(this.editor)
         this.fps = window.fps = new fps()
-        this.cwd = window.cwd = new cwd()
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
         scheme.set(prefs.get('scheme','dark'))
@@ -145,10 +144,10 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _129_25_
+        var action, _131_25_
 
         console.log('onMenuAction',name)
-        if (action = editor.actionWithName(name))
+        if (action = Editor.actionWithName(name))
         {
             console.log('editor.actionWithName',name)
             if ((action.key != null) && _k_.isFunc(window.focusEditor[action.key]))
@@ -369,7 +368,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _284_14_
+    var _286_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -380,7 +379,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _290_22_
+    var _292_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -425,7 +424,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _335_32_
+    var _337_32_
 
     if (!(_k_.isNum(s)))
     {

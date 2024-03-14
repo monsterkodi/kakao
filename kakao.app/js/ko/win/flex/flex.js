@@ -1,8 +1,8 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-import Pane from "./pane.js"
+import Pane from "./Pane.js"
 
-import Handle from "./handle.js"
+import Handle from "./Handle.js"
 
 import util from "../../../kxk/util.js"
 let defaults = util.defaults

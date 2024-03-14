@@ -16,9 +16,9 @@ import popup from "../../kxk/popup.js"
 
 import slash from "../../kxk/slash.js"
 
-import Syntax from "./syntax.js"
+import Syntax from "./Syntax.js"
 
-import TextEditor from "./texteditor.js"
+import TextEditor from "./TextEditor.js"
 
 
 FileEditor = (function ()

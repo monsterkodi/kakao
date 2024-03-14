@@ -12,8 +12,8 @@ use ../../kxk/elem
 use ../../kxk/slash
 use ../../kxk/events
 
-use ../win/flex/flex ● Flex
-use ./column         ● Column
+use ../win/flex/Flex
+use ./Column
 
 function Browser extends events
     

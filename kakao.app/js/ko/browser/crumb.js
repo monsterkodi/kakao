@@ -6,7 +6,7 @@ import elem from "../../kxk/elem.js"
 
 import slash from "../../kxk/slash.js"
 
-import File from "../tools/file.js"
+import File from "../tools/File.js"
 
 class Crumb
 {

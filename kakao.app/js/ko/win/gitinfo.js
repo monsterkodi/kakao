@@ -8,7 +8,7 @@ import ffs from "../../kxk/ffs.js"
 
 import linediff from "../tools/linediff.js"
 
-import syntax from "../editor/syntax.js"
+import Syntax from "../editor/Syntax.js"
 
 class GitInfo
 {
@@ -34,7 +34,7 @@ class GitInfo
         var terminal
 
         terminal = window.terminal
-        return terminal.appendMeta({clss:'searchHeader',diss:syntax.dissForTextAndSyntax(text,'ko')})
+        return terminal.appendMeta({clss:'searchHeader',diss:Syntax.dissForTextAndSyntax(text,'ko')})
     }
 
     logChanges (changes)
@@ -43,7 +43,7 @@ class GitInfo
 
         terminal = window.terminal
         extn = slash.ext(changes.file)
-        if (_k_.in(extn,syntax.syntaxNames))
+        if (_k_.in(extn,Syntax.syntaxNames))
         {
             syntaxName = extn
         }
@@ -51,15 +51,15 @@ class GitInfo
         {
             syntaxName = 'txt'
         }
-        sytx = new syntax(syntaxName,function (i)
+        sytx = new Syntax(syntaxName,function (i)
         {
             return changes.lines[i]
         })
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _58_17_ = 0; _58_17_ < list.length; _58_17_++)
+        for (var _57_17_ = 0; _57_17_ < list.length; _57_17_++)
         {
-            text = list[_58_17_]
+            text = list[_57_17_]
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
             {
@@ -72,9 +72,9 @@ class GitInfo
             {
                 diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
                 var list1 = _k_.list(diffs)
-                for (var _69_25_ = 0; _69_25_ < list1.length; _69_25_++)
+                for (var _68_25_ = 0; _68_25_ < list1.length; _68_25_++)
                 {
-                    diff = list1[_69_25_]
+                    diff = list1[_68_25_]
                     if (diff.change === 'delete')
                     {
                         continue
@@ -113,16 +113,16 @@ class GitInfo
         }).bind(this))()
         text = `  ${symbol} `
         terminal = window.terminal
-        meta = {diss:syntax.dissForTextAndSyntax(`${slash.tilde(file)}`,'ko'),href:file,clss:'gitInfoFile',click:this.onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change}
+        meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(file)}`,'ko'),href:file,clss:'gitInfoFile',click:this.onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change}
         terminal.appendMeta(meta)
         return terminal.appendMeta({clss:'spacer'})
     }
 
     start ()
     {
-        var dirOrFile, terminal, _125_35_
+        var dirOrFile, terminal, _124_35_
 
-        dirOrFile = ((_125_35_=window.cwd.cwd) != null ? _125_35_ : window.editor.currentFile)
+        dirOrFile = ((_124_35_=window.cwd.cwd) != null ? _124_35_ : window.editor.currentFile)
         window.split.raise('terminal')
         terminal = window.terminal
         terminal.clear()
@@ -138,15 +138,15 @@ class GitInfo
             terminal.appendMeta({clss:'salt',text:slash.tilde(info.gitDir)})
             terminal.appendMeta({clss:'spacer'})
             var list = _k_.list(info.deleted)
-            for (var _139_21_ = 0; _139_21_ < list.length; _139_21_++)
+            for (var _138_21_ = 0; _138_21_ < list.length; _138_21_++)
             {
-                file = list[_139_21_]
+                file = list[_138_21_]
                 this.logFile('deleted',file)
             }
             var list1 = _k_.list(info.added)
-            for (var _143_21_ = 0; _143_21_ < list1.length; _143_21_++)
+            for (var _142_21_ = 0; _142_21_ < list1.length; _142_21_++)
             {
-                file = list1[_143_21_]
+                file = list1[_142_21_]
                 this.logFile('added',file)
                 if (slash.isText(file))
                 {
@@ -158,14 +158,14 @@ class GitInfo
                 terminal.appendMeta({clss:'spacer'})
             }
             var list2 = _k_.list(info.changed)
-            for (var _156_27_ = 0; _156_27_ < list2.length; _156_27_++)
+            for (var _155_27_ = 0; _155_27_ < list2.length; _155_27_++)
             {
-                changeInfo = list2[_156_27_]
+                changeInfo = list2[_155_27_]
                 this.logFile('changed',changeInfo.file)
                 var list3 = _k_.list(changeInfo.changes)
-                for (var _160_27_ = 0; _160_27_ < list3.length; _160_27_++)
+                for (var _159_27_ = 0; _159_27_ < list3.length; _159_27_++)
                 {
-                    change = list3[_160_27_]
+                    change = list3[_159_27_]
                     line = change.line
                     if (!_k_.empty(change.mod))
                     {

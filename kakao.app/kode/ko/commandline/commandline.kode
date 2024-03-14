@@ -11,7 +11,7 @@ use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 use ../../kxk/dom ▪ $ stopEvent
-use ../editor/texteditor ● TextEditor
+use ../editor/TextEditor
 
 __dirname = slash.dir import.meta.url[7..]
 

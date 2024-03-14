@@ -15,15 +15,15 @@ import post from "../../kxk/post.js"
 
 import ffs from "../../kxk/ffs.js"
 
-import Select from "./select.js"
+import File from "../tools/File.js"
 
-import File from "../tools/file.js"
+import Select from "./Select.js"
 
-import Browser from "./browser.js"
+import Info from "./Info.js"
 
-import Shelf from "./shelf.js"
+import Browser from "./Browser.js"
 
-import Info from "./info.js"
+import Shelf from "./Shelf.js"
 
 
 FileBrowser = (function ()

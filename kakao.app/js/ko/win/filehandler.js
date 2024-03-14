@@ -10,7 +10,7 @@ import util from "../../kxk/util.js"
 let pull = util.pull
 let reversed = util.reversed
 
-import File from "../tools/file.js"
+import File from "../tools/File.js"
 
 class FileHandler
 {

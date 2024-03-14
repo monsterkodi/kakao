@@ -6,12 +6,13 @@
 0000000     0000000   000       000       00000000  000   000
 ###
 
+use ../../../lib/lib_ko ▪ fuzzy
+
 use ./state
 use ../../kxk/kstr
 use ../../kxk/matchr
 use ../../kxk/events
 use ../../kxk/util ▪ uniq
-use ../../../lib/lib_ko ▪ fuzzy
 
 startOf = (r) -> r[0]
 endOf   = (r) -> r[0] + Math.max 1, r[1]-r[0]
