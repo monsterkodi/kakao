@@ -28,7 +28,7 @@ class File
 
     static isText (file)
     {
-        return _k_.in(slash.ext(file),File.sourceFileExtensions)
+        return true
     }
 
     static rename (from, to, cb)
@@ -45,7 +45,7 @@ class File
             }
             return fs.move(from,to,{overwrite:true},function (err)
             {
-                var _41_39_
+                var _42_39_
 
                 if (err)
                 {
@@ -185,7 +185,7 @@ class File
         }
         spans = []
         split = slash.split(file)
-        for (var _121_18_ = i = 0, _121_22_ = split.length - 1; (_121_18_ <= _121_22_ ? i < split.length - 1 : i > split.length - 1); (_121_18_ <= _121_22_ ? ++i : --i))
+        for (var _122_18_ = i = 0, _122_22_ = split.length - 1; (_122_18_ <= _122_22_ ? i < split.length - 1 : i > split.length - 1); (_122_18_ <= _122_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)

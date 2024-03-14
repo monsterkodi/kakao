@@ -9,6 +9,18 @@
 #import "fs.h"
 #import "bundle.h"
 
+NSString* typeForNSFileType(NSString* fileType)
+{
+    if ([fileType isEqualToString:NSFileTypeDirectory])
+    {
+        return @"dir";
+    }
+    else
+    {
+        return @"file";
+    }
+}
+
 @implementation FS
 
 + (id) fs:(NSString*)req args:(NSArray*)args win:(Win*)win
@@ -41,15 +53,7 @@
         [info setObject:[attr objectForKey:@"NSFileOwnerAccountName"      ] forKey:@"owner"];
         [info setObject:[attr objectForKey:@"NSFileModificationDate"      ] forKey:@"modified"];
         [info setObject:[attr objectForKey:@"NSFilePosixPermissions"      ] forKey:@"permission"];
-        
-        if ([[attr objectForKey:@"NSFileType"] isEqualToString:@"NSFileTypeRegular"])
-        {
-            [info setObject:@"file" forKey:@"type"];
-        }
-        else
-        {
-            [info setObject:@"dir" forKey:@"type"];
-        }
+        [info setObject:typeForNSFileType([attr objectForKey:@"NSFileType"]) forKey:@"type"];
         return info;
     }
     if ([req isEqualToString:@"fileExists"])
@@ -91,7 +95,7 @@
     }
     else if ([req isEqualToString:@"list"])
     {
-        NSLog(@"list %@", path);
+        // NSLog(@"list %@", path);
         
         NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
         
@@ -101,16 +105,8 @@
         while ((file = [dirEnum nextObject])) 
         {
             [dirEnum skipDescendants];
-            id type; 
-            id fileType = [dirEnum.fileAttributes objectForKey:NSFileType];
-            if ([fileType isEqualToString:NSFileTypeRegular])
-            {
-                type = @"file";
-            }
-            else if ([fileType isEqualToString:NSFileTypeDirectory])
-            {
-                type = @"dir";
-            }
+            
+            id type = typeForNSFileType([dirEnum.fileAttributes objectForKey:NSFileType]); 
             
             NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
             [fileInfo setObject:type forKey:@"type"];
@@ -119,7 +115,7 @@
             [result addObject:fileInfo];
         }
         
-        NSLog(@"results %d", [result count]);
+        // NSLog(@"results %d", [result count]);
                 
         return result;
     }
@@ -134,16 +130,7 @@
         NSString *file;
         while ((file = [dirEnum nextObject])) 
         {
-            id type; 
-            id fileType = [dirEnum.fileAttributes objectForKey:NSFileType];
-            if ([fileType isEqualToString:NSFileTypeRegular])
-            {
-                type = @"file";
-            }
-            else if ([fileType isEqualToString:NSFileTypeDirectory])
-            {
-                type = @"dir";
-            }
+            id type = typeForNSFileType([dirEnum.fileAttributes objectForKey:NSFileType]); 
                     
             NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
             [fileInfo setObject:type forKey:@"type"];
