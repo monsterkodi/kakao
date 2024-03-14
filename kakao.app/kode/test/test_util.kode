@@ -45,6 +45,14 @@ use ../kxk/util
         util.pull arr, 2 ▸ [1 3]
         arr ▸ [1 3]
         
+        util.pull ['a' 'b'], 'a' ▸ ['b']
+        util.pull ['a' 'b'], 'c' ▸ ['a' 'b']
+        util.pull [1 4], 2 ▸ [1 4]
+        util.pull [], 2 ▸ []
+        util.pull {}    ▸ {}
+        util.pull 1     ▸ 1
+        util.pull null  ▸ null
+        
     ▸ pullIf
     
         arr = [1 2 3]

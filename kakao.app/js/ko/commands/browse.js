@@ -5,6 +5,8 @@ var Browse
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 
+import ffs from "../../kxk/ffs.js"
+
 import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
@@ -342,9 +344,9 @@ Browse = (function ()
         return {focus:this.receiver,show:'editor'}
     }
 
-    Browse.prototype["execute"] = function (command)
+    Browse.prototype["execute"] = async function (command)
     {
-        var cmd
+        var cmd, dirExists, fileExists
 
         if (!(command != null))
         {
@@ -355,17 +357,24 @@ Browse = (function ()
         cmd = command.trim()
         if (cmd.length)
         {
-            if (slash.dirExists(slash.removeLinePos(cmd)))
+            dirExists = await ffs.dirExists(slash.removeLinePos(cmd))
+            fileExists = await ffs.fileExists(slash.removeLinePos(cmd))
+            if (dirExists)
             {
                 this.browser.loadItem({file:cmd,type:'dir'})
                 this.commandline.setText(cmd)
                 return
             }
-            else if (slash.fileExists(slash.removeLinePos(cmd)))
+            else if (fileExists)
             {
                 this.commandline.setText(cmd)
+                console.log('browse emit jumpToFile',{file:cmd})
                 post.emit('jumpToFile',{file:cmd})
                 return
+            }
+            else
+            {
+                console.error('browse.execute -- neither file nor dir',slash.removeLinePos(cmd))
             }
         }
         console.error('browse.execute -- unhandled',cmd)
@@ -373,11 +382,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _332_32_, _332_56_, _339_64_, _339_72_, _341_61_, _341_69_
+        var pth, _337_32_, _337_56_, _344_64_, _344_72_, _346_61_, _346_69_
 
         if (!this.isActive())
         {
-            ;((_332_32_=this.commandline.command) != null ? typeof (_332_56_=_332_32_.onBrowserItemActivated) === "function" ? _332_56_(item) : undefined : undefined)
+            ;((_337_32_=this.commandline.command) != null ? typeof (_337_56_=_337_32_.onBrowserItemActivated) === "function" ? _337_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -386,9 +395,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_339_64_=this.browser.activeColumn()) != null ? (_339_72_=_339_64_.parent) != null ? _339_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_344_64_=this.browser.activeColumn()) != null ? (_344_72_=_344_64_.parent) != null ? _344_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_341_61_=this.browser.activeColumn()) != null ? (_341_69_=_341_61_.parent) != null ? _341_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_346_61_=this.browser.activeColumn()) != null ? (_346_69_=_346_61_.parent) != null ? _346_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var FileSearcher, Search
 
@@ -35,7 +35,7 @@ Search = (function ()
 
     Search.prototype["execute"] = function (command)
     {
-        var file, rngs, _48_41_
+        var file, rngs
 
         if (!command.length)
         {
@@ -58,7 +58,7 @@ Search = (function ()
         }
 
         command = Search.__super__.execute.call(this,command)
-        file = ((_48_41_=window.editor.currentFile) != null ? _48_41_ : _k_.first(_.keys(post.get('indexer','files'))))
+        file = window.editor.currentFile
         if (!(file != null))
         {
             return
@@ -76,8 +76,7 @@ Search = (function ()
         terminal.appendMeta({clss:'searchHeader',diss:syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
-        dir = slash.pkg(slash.dir(opt.file))
-        dir = (dir != null ? dir : slash.dir(opt.file))
+        dir = slash.dir(opt.file)
         this.walker = new walker({root:dir,maxDepth:12,maxFiles:5000,includeDirs:false,file:(function (f, stat)
         {
             return this.searchInFile(opt,slash.path(f))
@@ -172,7 +171,7 @@ FileSearcher = (function ()
 
     FileSearcher.prototype["write"] = function (chunk, encoding, cb)
     {
-        var l, lines, rngs, _154_64_
+        var l, lines, rngs, _155_64_
 
         lines = chunk.split('\n')
         if (!(this.syntaxName != null))
@@ -180,9 +179,9 @@ FileSearcher = (function ()
             this.syntaxName = syntax.shebang(lines[0])
         }
         var list = _k_.list(lines)
-        for (var _155_14_ = 0; _155_14_ < list.length; _155_14_++)
+        for (var _156_14_ = 0; _156_14_ < list.length; _156_14_++)
         {
-            l = list[_155_14_]
+            l = list[_156_14_]
             this.line += 1
             rngs = matchr.ranges(this.patterns,l,this.flags)
             if (rngs.length)
@@ -203,7 +202,7 @@ FileSearcher = (function ()
             meta = {diss:syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
             terminal.appendMeta(meta)
             terminal.appendMeta({clss:'spacer'})
-            for (var _178_23_ = fi = 0, _178_27_ = this.found.length; (_178_23_ <= _178_27_ ? fi < this.found.length : fi > this.found.length); (_178_23_ <= _178_27_ ? ++fi : --fi))
+            for (var _179_23_ = fi = 0, _179_27_ = this.found.length; (_179_23_ <= _179_27_ ? fi < this.found.length : fi > this.found.length); (_179_23_ <= _179_27_ ? ++fi : --fi))
             {
                 f = this.found[fi]
                 regions = klor.dissect([f[1]],this.syntaxName)[0]

@@ -6,15 +6,14 @@
    000     000   000  0000000    0000000
 ###
 
+use ../../kxk/dom ▪ $ stopEvent
 use ../../kxk/post
 use ../../kxk/elem
 use ../../kxk/drag
 use ../../kxk/kpos
 use ../../kxk/slash
-use ../../kxk/dom
-use ./tab
-
-{ $, stopEvent } = dom
+use ../../kxk/popup
+use ./tab ● Tab
 
 class Tabs
 
@@ -24,7 +23,7 @@ class Tabs
         @tabs = []
         @div = elem class: 'tabs'
 
-        titlebar.insertBefore @div, $ ".minimize"
+        titlebar.insertBefore @div, $ '.minimize'
 
         @div.addEventListener 'click'       @onClick
         @div.addEventListener 'contextmenu' @onContextMenu
@@ -48,13 +47,13 @@ class Tabs
         post.on 'fileLineChanges'  @onFileLineChanges
         post.on 'fileSaved'        @onFileSaved
         post.on 'editorFocus'      @onEditorFocus
-
+        
     onSendTabs: (winID) =>
 
         t = ''
         for tab in @tabs
             t += tab.div.innerHTML
-        post.toOtherWins 'winTabs' window.winID, t
+        post.toWins 'winTabs' window.winID, t
 
     onFileLineChanges: (file, lineChanges) =>
 
@@ -86,50 +85,6 @@ class Tabs
                 tab.activate()
         true
 
-    # 0000000    00000000    0000000    0000000
-    # 000   000  000   000  000   000  000
-    # 000   000  0000000    000000000  000  0000
-    # 000   000  000   000  000   000  000   000
-    # 0000000    000   000  000   000   0000000
-
-    onDragStart: (d, event) =>
-
-        return 'skip' if event.target.classList.contains 'tab'
-        
-        if event.target.classList.contains 'tabstate'
-            # @dragTab?.togglePinned()
-            # delete @dragTab
-            return 'skip' 
-        
-        @dragTab = @tab event.target
-
-        return 'skip' if empty @dragTab
-        return 'skip' if event.button != 0
-
-        @dragDiv = @dragTab.div.cloneNode true
-        @dragTab.div.style.opacity = '0'
-        br = @dragTab.div.getBoundingClientRect()
-        @dragDiv.style.position = 'absolute'
-        @dragDiv.style.top      = "#{br.top}px"
-        @dragDiv.style.left     = "#{br.left}px"
-        @dragDiv.style.width    = "#{br.width}px"
-        @dragDiv.style.height   = "#{br.height}px"
-        @dragDiv.style.flex     = 'unset'
-        @dragDiv.style.pointerEvents = 'none'
-        document.body.appendChild @dragDiv
-
-    onDragMove: (d,e) =>
-
-        @dragDiv.style.transform = "translateX(#{d.deltaSum.x}px)"
-        if tab = @tabAtX d.pos.x
-            if tab.index() != @dragTab.index()
-                @swap tab, @dragTab
-
-    onDragStop: (d,e) =>
-
-        @dragTab.div.style.opacity = ''
-        @dragDiv.remove()
-
     # 000000000   0000000   0000000
     #    000     000   000  000   000
     #    000     000000000  0000000
@@ -145,6 +100,7 @@ class Tabs
     activeTab: (create) ->
 
         if not @tabs.length and create
+            log 'activeTab createEmpty'
             tab = @onNewEmptyTab()
             tab.setActive()
             return tab
@@ -221,7 +177,7 @@ class Tabs
                     @closeTab @tabs[index]
                     break
 
-        @tabs.push new tab @, file
+        @tabs.push new Tab @, file
         last @tabs
 
     getTmpTab: ->
@@ -240,6 +196,7 @@ class Tabs
         
     onNewEmptyTab: =>
 
+        log 'onNewEmptyTab'
         @emptyid += 1
         tab = @addTab("untitled-#{@emptyid}").activate()
         @update()
@@ -290,6 +247,50 @@ class Tabs
         switch key
             when 'left'  then @swap tab, tab.prev()
             when 'right' then @swap tab, tab.next()
+            
+    # 0000000    00000000    0000000    0000000
+    # 000   000  000   000  000   000  000
+    # 000   000  0000000    000000000  000  0000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000   0000000
+
+    onDragStart: (d, event) =>
+
+        return 'skip' if event.target.classList.contains 'tab'
+        
+        if event.target.classList.contains 'tabstate'
+            # @dragTab?.togglePinned()
+            # delete @dragTab
+            return 'skip' 
+        
+        @dragTab = @tab event.target
+
+        return 'skip' if empty @dragTab
+        return 'skip' if event.button != 0
+
+        @dragDiv = @dragTab.div.cloneNode true
+        @dragTab.div.style.opacity = '0'
+        br = @dragTab.div.getBoundingClientRect()
+        @dragDiv.style.position = 'absolute'
+        @dragDiv.style.top      = "#{br.top}px"
+        @dragDiv.style.left     = "#{br.left}px"
+        @dragDiv.style.width    = "#{br.width}px"
+        @dragDiv.style.height   = "#{br.height}px"
+        @dragDiv.style.flex     = 'unset'
+        @dragDiv.style.pointerEvents = 'none'
+        document.body.appendChild @dragDiv
+
+    onDragMove: (d,e) =>
+
+        @dragDiv.style.transform = "translateX(#{d.deltaSum.x}px)"
+        if tab = @tabAtX d.pos.x
+            if tab.index() != @dragTab.index()
+                @swap tab, @dragTab
+
+    onDragStop: (d,e) =>
+
+        @dragTab.div.style.opacity = ''
+        @dragDiv.remove()
 
     # 00000000   00000000   0000000  000000000   0000000   00000000   00000000
     # 000   000  000       000          000     000   000  000   000  000

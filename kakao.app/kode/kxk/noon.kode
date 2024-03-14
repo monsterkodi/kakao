@@ -582,9 +582,7 @@ load = (p, ext) ○->
         
     else if globalThis.kakao
     
-        fs = globalThis.kakao.fs
-     
-        str = await fs.read p
+        str = await globalThis.kakao.ffs.read p
              
         if valid str
             parseStr str, p, ext

@@ -90,8 +90,6 @@ function Row
         
         @setActive emit:emit
         
-        opt = file:@item.file
-
         switch @item.type
             
             when 'dir' 'file'
@@ -108,7 +106,8 @@ function Row
                     
                 @browser.clearColumnsFrom @column.index+1, pop:true
                 
-                if emit then post.emit 'jumpToFile' opt
+                log 'Row emit jumpToFile' file:@item.path
+                if emit then post.emit 'jumpToFile' file:@item.path
         @
     
     isActive: -> @div.classList.contains 'active'

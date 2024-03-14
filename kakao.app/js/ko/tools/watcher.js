@@ -4,6 +4,8 @@ import slash from "../../kxk/slash.js"
 
 import post from "../../kxk/post.js"
 
+import ffs from "../../kxk/ffs.js"
+
 class Watcher
 {
     static id = 0
@@ -16,40 +18,11 @@ class Watcher
         this.onChange = this.onChange.bind(this)
         this.onExists = this.onExists.bind(this)
         this.id = Watcher.id++
-        slash.exists(this.file,this.onExists)
+        ffs.exists(this.file).then(this.onExists)
     }
 
     onExists (stat)
-    {
-        if (!stat)
-        {
-            return
-        }
-        if (!this.id)
-        {
-            return
-        }
-        this.mtime = stat.mtimeMs
-        this.w = fs.watch(this.file)
-        this.w.on('change',(function (changeType, p)
-        {
-            if (changeType === 'change')
-            {
-                return slash.exists(this.file,this.onChange)
-            }
-            else
-            {
-                return setTimeout(((function ()
-                {
-                    return slash.exists(this.file,this.onRename)
-                }).bind(this)),200)
-            }
-        }).bind(this))
-        return this.w.on('unlink',(function (p)
-        {
-            console.log(`unlink ${this.id}`,slash.file(this.file))
-        }).bind(this))
-    }
+    {}
 
     onChange (stat)
     {
@@ -71,7 +44,7 @@ class Watcher
 
     stop ()
     {
-        var _51_10_
+        var _52_10_
 
         ;(this.w != null ? this.w.close() : undefined)
         delete this.w

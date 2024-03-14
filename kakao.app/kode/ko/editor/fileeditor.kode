@@ -6,17 +6,17 @@
 000       000  0000000  00000000        00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk/dom
+use ../../kxk/dom ▪ stopEvent setStyle
+use ../../kxk/ffs
 use ../../kxk/kpos
 use ../../kxk/post
 use ../../kxk/popup
 use ../../kxk/slash
-use ./texteditor
-use ./syntax
 
-{ stopEvent, setStyle } = dom
+use ./syntax     ● Syntax
+use ./texteditor ● TextEditor
 
-function FileEditor extends texteditor
+function FileEditor extends TextEditor
 
     @: (viewElem) ->
 
@@ -90,14 +90,15 @@ function FileEditor extends texteditor
 
         @setupFileType()
 
-        fileExists = @currentFile? and slash.fileExists @currentFile
+        fileExists = @currentFile? #and slash.fileExists @currentFile
 
         if restoreState
             @setText restoreState.text()
             @state = restoreState
             @dirty = true
         else if fileExists
-            @setText slash.readText @currentFile
+            # @setText slash.readText @currentFile
+            ffs.read(@currentFile).then @setText
 
         if fileExists
             window.tabs.activeTab()?.setFile @currentFile
@@ -110,10 +111,10 @@ function FileEditor extends texteditor
 
     currentDir: ->
         
-        if @currentFile? and slash.fileExists @currentFile
+        if @currentFile? #and slash.fileExists @currentFile
             slash.dir @currentFile
         else
-            slash.path process.cwd()
+            slash.path kakao.bundle.path
         
     restoreFromTabState: (tabState) ->
 
@@ -128,11 +129,11 @@ function FileEditor extends texteditor
 
     shebangFileType: ->
 
-        fileType = syntax.shebang @line(0) if @numLines()
+        fileType = Syntax.shebang @line(0) if @numLines()
         if fileType == 'txt'
             if @currentFile?
                 ext = slash.ext @currentFile
-                if ext in syntax.syntaxNames
+                if ext in Syntax.syntaxNames
                     return ext
         else if fileType
             return fileType
@@ -230,10 +231,8 @@ function FileEditor extends texteditor
 
     jumpToFile: (opt) =>
 
-        # log 'jumpToFile' opt
+        log 'jumpToFile' opt
         
-        window.tabs.activeTab true
-
         if opt.newTab
 
             file = opt.file
@@ -253,12 +252,12 @@ function FileEditor extends texteditor
             opt.oldFile = @currentFile
             window.navigate.gotoFilePos opt
         else
-            file = slash.joinFileLine opt.file, opt.line, opt.col
-            # log 'bypass navigation history' file
+            file = slash.joinFileLine opt.path, opt.line, opt.col
             post.emit 'loadFile' file
 
     jumpTo: (word, opt) =>
 
+        log 'FileEditor jumpTo' word, opt
         if typeof(word) == 'object' and not opt?
             opt  = word
             word = opt.word
@@ -279,14 +278,14 @@ function FileEditor extends texteditor
         type = opt?.type
 
         if not type or type == 'class'
-            classes = post.get 'indexer' 'classes'
+            classes = {} #post.get 'indexer' 'classes'
             for clss, info of classes
                 if clss.toLowerCase() == find
                     @jumpToFile info
                     return true
 
         if not type or type == 'func'
-            funcs = post.get 'indexer' 'funcs'
+            funcs = {} #post.get 'indexer' 'funcs'
             for func, infos of funcs
                 if func.toLowerCase() == find
                     info = infos[0]
@@ -297,7 +296,7 @@ function FileEditor extends texteditor
                     return true
 
         if not type or type == 'file'
-            files = post.get 'indexer' 'files'
+            files = {} #post.get 'indexer' 'files'
             for file, info of files
                 if slash.name(file).toLowerCase() == find and file != @currentFile
                     @jumpToFile file:file, line:6
@@ -315,24 +314,24 @@ function FileEditor extends texteditor
     # 000       000   000  000   000  000  0000     000     000       000   000  000        000   000  000   000     000
     #  0000000   0000000    0000000   000   000     000     00000000  000   000  000        000   000  000   000     000
 
-    jumpToCounterpart: () ->
+    jumpToCounterpart: ○->
 
         cp = @cursorPos()
         currext = slash.ext @currentFile
 
-        switch currext
-            when 'coffee' 'kode'
-                [file,line,col] = srcmap.toJs @currentFile, cp[1]+1, cp[0]
-            when 'js'
-                [file,line,col] = srcmap.toKode @currentFile, cp[1]+1, cp[0]
-                if not slash.fileExists file
-                    [file,line,col] = srcmap.toCoffee @currentFile, cp[1]+1, cp[0]
+        # switch currext
+            # 'coffee' 'kode'
+                # [file,line,col] = srcmap.toJs @currentFile, cp[1]+1, cp[0]
+            # 'js'
+                # [file,line,col] = srcmap.toKode @currentFile, cp[1]+1, cp[0]
+                # if not ffs.fileExists file
+                    # [file,line,col] = srcmap.toCoffee @currentFile, cp[1]+1, cp[0]
 
-        log 'counterpart' @currentFile, file, line, col
+        # log 'counterpart' @currentFile, file, line, col
                 
-        if valid(file) and not slash.samePath(@currentFile, file) and slash.fileExists file
-            post.emit 'loadFile' slash.joinFileLine file,line,col
-            return true
+        # if valid(file) and not slash.samePath(@currentFile, file) #and slash.fileExists file
+            # post.emit 'loadFile' slash.joinFileLine file,line,col
+            # return true
 
         # TODO: move this stuff to a config.noon file
         
@@ -352,7 +351,7 @@ function FileEditor extends texteditor
             styl:    ['css']
 
         for ext in counterparts[currext] ? []
-            if slash.fileExists slash.swapExt @currentFile, ext
+            if await ffs.fileExists slash.swapExt @currentFile, ext
                 post.emit 'loadFile' slash.swapExt @currentFile, ext
                 return true
 
@@ -360,12 +359,12 @@ function FileEditor extends texteditor
             counter = slash.swapExt @currentFile, ext
 
             counter = @swapLastDir counter, currext, ext
-            if slash.fileExists counter
+            if await ffs.fileExists counter
                 post.emit 'loadFile' counter
                 return true
                 
         log 'cant find counterpart' @currentFile
-        false
+        true
 
     swapLastDir: (path, from, to) ->
         
@@ -460,18 +459,18 @@ function FileEditor extends texteditor
         
         fileSpan = (f) ->
             if f?
-                span  = syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
-                span += syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
+                span  = Syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
+                span += Syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
             return span
         
-        recent = window.state?.get 'recentFiles' []
-        recent ?= []
-        for f in recent
-            if fs.existsSync f
-                RecentMenu.unshift
-                    html: fileSpan f
-                    arg: f
-                    cb: (arg) -> post.emit 'newTabWithFile' arg
+        # recent = window.state?.get 'recentFiles' []
+        # recent ?= []
+        # for f in recent
+            # if ffs.exists f
+                # RecentMenu.unshift
+                    # html: fileSpan f
+                    # arg: f
+                    # cb: (arg) -> post.emit 'newTabWithFile' arg
         
         getMenu = (template, name) ->
             for item in template

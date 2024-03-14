@@ -35,12 +35,12 @@ class Projects
             # log 'local index' file, dir, list
             return files[file]
             
-        if dir = slash.pkg file
-            # log 'request main index' file, dir
-            if info = post.get 'indexer' 'project' dir
-                Projects.onIndexed info
-                log 'got main index' info
-                return files[info.dir]
+        # if dir = slash.pkg file
+            # # log 'request main index' file, dir
+            # if info = post.get 'indexer' 'project' dir
+                # Projects.onIndexed info
+                # log 'got main index' info
+                # return files[info.dir]
                 
         for dir,list of files
             if file.startsWith(dir)

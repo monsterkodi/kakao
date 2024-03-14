@@ -6,6 +6,7 @@
   000   000   0000000    0000000      000     00000000
 */
 
+#import "app.h"
 #import "route.h"
 #import "bundle.h"
 
@@ -40,6 +41,33 @@
     if ([req isEqualToString:@"id"            ]) { return [NSNumber numberWithLong:win.windowNumber]; }
     if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[arg0 longValue]]; return nil; }
     if ([req isEqualToString:@"toggleInspector" ]) { [win.view toggleInspector]; return nil; }
+    if ([req isEqualToString:@"post" ]) 
+    { 
+        id payload = [NSString stringWithFormat:@"\"%@\"", [args objectAtIndex:0]];
+        id eventArgs = [args objectAtIndex:1];
+        if (eventArgs && [eventArgs isKindOfClass:[NSArray class]] && [eventArgs count])
+        {
+            for (id arg in eventArgs)
+            {
+                payload = [payload stringByAppendingString:[NSString stringWithFormat:@", \"%@\"", arg]];
+            }
+        }
+        id script = [NSString stringWithFormat:@"post.emit(%@);", payload];
+        
+        NSLog(@"post from win %lu %@", (unsigned long)[NSNumber numberWithLong:win.windowNumber], script);
+        
+
+        App* app = [App get];
+        for (Win* w in [app wins])
+        {
+            if (w == win) continue;
+                        
+            NSLog(@"run script in win %lu %@", (unsigned long)[NSNumber numberWithLong:w.windowNumber], script);
+            [w.view evaluateJavaScript:script completionHandler:nil];
+        }
+        
+        return nil; 
+    }
     
     return nil;
 }
@@ -74,6 +102,54 @@
 
 + (id) fs:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
+    NSString* path = [[args objectAtIndex:0] stringByExpandingTildeInPath];
+          
+    if ([req isEqualToString:@"info"])
+    {
+        id attr = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+        
+        NSMutableDictionary* info = [NSMutableDictionary dictionary];
+        [info setObject:[attr objectForKey:@"NSFileSize"                  ] forKey:@"size"];
+        [info setObject:[attr objectForKey:@"NSFileCreationDate"          ] forKey:@"created"];
+        [info setObject:[attr objectForKey:@"NSFileGroupOwnerAccountName" ] forKey:@"group"];
+        [info setObject:[attr objectForKey:@"NSFileOwnerAccountName"      ] forKey:@"owner"];
+        [info setObject:[attr objectForKey:@"NSFileModificationDate"      ] forKey:@"modified"];
+        [info setObject:[attr objectForKey:@"NSFilePosixPermissions"      ] forKey:@"permission"];
+        
+        if ([[attr objectForKey:@"NSFileType"] isEqualToString:@"NSFileTypeRegular"])
+        {
+            [info setObject:@"file" forKey:@"type"];
+        }
+        else
+        {
+            [info setObject:@"dir" forKey:@"type"];
+        }
+        return info;
+    }
+    if ([req isEqualToString:@"fileExists"])
+    {
+        BOOL isDir;
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+        return [NSNumber numberWithBool:exists && !isDir];
+    }
+    if ([req isEqualToString:@"dirExists"])
+    {
+        BOOL isDir;
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+        return [NSNumber numberWithBool:exists && isDir];
+    }
+    if ([req isEqualToString:@"exists"])
+    {
+        return [NSNumber numberWithBool:[[NSFileManager defaultManager] fileExistsAtPath:path]];
+    }
+    if ([req isEqualToString:@"isWritable"])
+    {
+        return [NSNumber numberWithBool:[[NSFileManager defaultManager] isWritableFileAtPath:path]];
+    }
+    if ([req isEqualToString:@"isReadable"])
+    {
+        return [NSNumber numberWithBool:[[NSFileManager defaultManager] isReadableFileAtPath:path]];
+    }
     if ([req isEqualToString:@"read"])
     {
         NSString* path = [args objectAtIndex:0];
@@ -254,8 +330,6 @@
 
 + (void) send:(id)msg win:(Win*)win
 {
-    View* targetView = win.view;
-    
     NSString* payload;
     
     if ([msg isKindOfClass:[NSString class]])
@@ -270,7 +344,7 @@
     // NSLog(@"▸ %@", payload);
     id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
 
-    [targetView evaluateJavaScript:script completionHandler:nil];
+    [win.view evaluateJavaScript:script completionHandler:nil];
 }
 
 @end

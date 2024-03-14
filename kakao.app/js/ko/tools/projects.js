@@ -25,7 +25,7 @@ class Projects
 
     static files (file)
     {
-        var dir, info, list
+        var dir, list
 
         if (!file)
         {
@@ -34,15 +34,6 @@ class Projects
         if ((files[file] != null))
         {
             return files[file]
-        }
-        if (dir = slash.pkg(file))
-        {
-            if (info = post.get('indexer','project',dir))
-            {
-                Projects.onIndexed(info)
-                console.log('got main index',info)
-                return files[info.dir]
-            }
         }
         for (dir in files)
         {

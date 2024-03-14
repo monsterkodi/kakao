@@ -1,16 +1,15 @@
 var _k_
 
-var $, shortCount
+var shortCount
 
 import dom from "../../kxk/dom.js"
+let $ = dom.$
 
 import post from "../../kxk/post.js"
 
 import elem from "../../kxk/elem.js"
 
 import tooltip from "../../kxk/tooltip.js"
-
-$ = dom.$
 
 
 shortCount = function (v)
@@ -101,7 +100,7 @@ class Info
 
     setEditor (editor)
     {
-        var _101_18_
+        var _97_18_
 
         if (editor === this.editor)
         {

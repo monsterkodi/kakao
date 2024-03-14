@@ -10,4 +10,4 @@ import win from "./win.js"
 
 import ffs from "./ffs.js"
 
-export default {win:win,dom:dom,elem:elem,post:post,fs:ffs}
+export default {win:win,dom:dom,elem:elem,post:post,ffs:ffs}

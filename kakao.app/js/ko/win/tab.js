@@ -18,8 +18,6 @@ class Tab
 {
     constructor (tabs, file)
     {
-        var _29_42_
-
         this.tabs = tabs
         this.file = file
     
@@ -28,14 +26,6 @@ class Tab
         this.pinned = false
         this.div = elem({class:'tab',text:''})
         this.tabs.div.appendChild(this.div)
-        if (!this.file.startsWith('untitled'))
-        {
-            this.pkg = slash.pkg(this.file)
-            if ((this.pkg != null))
-            {
-                this.pkg = slash.file(this.pkg)
-            }
-        }
         this.update()
         post.emit('watch',this.file)
     }

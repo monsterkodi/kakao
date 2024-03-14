@@ -128,7 +128,6 @@
   "Window": {
     "Arrange Windows": "alt+cmdctrl+a",
     "Cycle Windows": "cmdctrl+`",
-    "Open Window List": "alt+`",
     "-": null,
     "Toggle Menu": "alt+m",
     "Toggle Scheme": null,

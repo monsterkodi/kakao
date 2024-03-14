@@ -22,7 +22,7 @@ class File
 
     @isCode:  (file) -> slash.ext(file) in ['coffee' 'kode' 'py' 'cpp' 'cc' 'mm' 'c' 'cs' 'ts' 'js' 'mjs' 'h' 'hpp' 'frag' 'vert']
     @isImage: (file) -> slash.ext(file) in ['gif' 'png' 'jpg' 'jpeg' 'svg' 'bmp' 'ico']
-    @isText:  (file) -> slash.isText file
+    @isText:  (file) -> slash.ext(file) in File.sourceFileExtensions
    
     @rename: (from, to, cb) ->
         
@@ -89,33 +89,11 @@ class File
             else
                 File.write file, text, 0o666, cb
             
-    @p4edit: (file, text, cb) ->
-        
-        # slash.logErrors = true
-#         
-        # if slash.win()
-            # try
-                # childp.exec "p4 edit #{slash.unslash(file)}", (err) ->
-                    # if valid err
-                        # File.unlock file, text, cb
-                    # else
-                        # File.write file, text, 0o666, cb
-            # catch err
-                # File.unlock file, text, cb
-        # else
-            # File.unlock file, text, cb
-            
     @save: (file, text, cb) ->
     
-        slash.logErrors = true
-        slash.fileExists file, (stat) ->
+        ffs.fileExists(file).then (stat) ->
             if stat
-                slash.isWritable file, (writable) ->
-                    if writable
-                        File.write file, text, stat.mode, cb
-                        
-                    else
-                        File.p4edit file, text, cb
+                File.write file, text, stat.mode, cb
             else
                 File.write file, text, 0o666, cb
         

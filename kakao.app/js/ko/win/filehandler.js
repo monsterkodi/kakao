@@ -8,6 +8,7 @@ import slash from "../../kxk/slash.js"
 
 import util from "../../kxk/util.js"
 let pull = util.pull
+let reversed = util.reversed
 
 import File from "../tools/file.js"
 
@@ -39,8 +40,9 @@ class FileHandler
 
     loadFile (file, opt = {})
     {
-        var activeTab, fileExists, filePos, tab
+        var activeTab, filePos, tab
 
+        console.log('FileHandler.loadFile',file,opt)
         if ((file != null) && file.length <= 0)
         {
             file = null
@@ -48,27 +50,16 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _44_28_ = slash.splitFilePos(file); file = _44_28_[0]; filePos = _44_28_[1]
+            var _46_28_ = slash.splitFilePos(file); file = _46_28_[0]; filePos = _46_28_[1]
 
             if (!file.startsWith('untitled'))
             {
                 file = slash.path(file)
-                try
-                {
-                    process.chdir(slash.dir(file))
-                }
-                catch (err)
-                {
-                    console.error(err)
-                }
             }
         }
         if (file !== (editor != null ? editor.currentFile : undefined) || (opt != null ? opt.reload : undefined))
         {
-            if (fileExists = slash.fileExists(file))
-            {
-                this.addToRecent(file)
-            }
+            this.addToRecent(file)
             tab = tabs.tab(file)
             if (_k_.empty(tab))
             {
@@ -88,11 +79,7 @@ class FileHandler
             editor.setCurrentFile(file)
             tab.finishActivation()
             editor.restoreScrollCursorsAndSelections()
-            if (fileExists)
-            {
-                post.toOtherWins('fileLoaded',file)
-                post.emit('cwdSet',slash.dir(file))
-            }
+            post.emit('cwdSet',slash.dir(file))
         }
         split.raise('editor')
         if ((filePos != null) && (filePos[0] || filePos[1]))
@@ -138,9 +125,9 @@ class FileHandler
                 this.loadFile(file)
             }
             var list = _k_.list(files)
-            for (var _128_21_ = 0; _128_21_ < list.length; _128_21_++)
+            for (var _131_21_ = 0; _131_21_ < list.length; _131_21_++)
             {
-                file = list[_128_21_]
+                file = list[_131_21_]
                 if (options.newWindow)
                 {
                     console.log('filehandler new window with file not implemented!')
@@ -189,7 +176,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _173_29_
+        var tab, _176_29_
 
         if (tab = tabs.activeTab())
         {
@@ -198,7 +185,7 @@ class FileHandler
         this.loadFile(editor.currentFile,{reload:true})
         if ((editor.currentFile != null))
         {
-            return post.toOtherWins('reloadTab',editor.currentFile)
+            return post.toWins('reloadTab',editor.currentFile)
         }
     }
 
@@ -224,9 +211,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _198_16_ = 0; _198_16_ < list.length; _198_16_++)
+        for (var _201_16_ = 0; _201_16_ < list.length; _201_16_++)
         {
-            tab = list[_198_16_]
+            tab = list[_201_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -276,7 +263,7 @@ class FileHandler
                 editor.setCurrentFile(saved)
                 editor.do.history = tabState.history
                 editor.do.saveIndex = tabState.history.length
-                post.toOtherWins('fileSaved',saved,window.winID)
+                post.toWins('fileSaved',saved,window.winID)
                 post.emit('saved',saved)
                 post.emit('watch',saved)
             }
@@ -289,6 +276,7 @@ class FileHandler
         var recent
 
         recent = window.state.get('recentFiles',[])
+        console.log('recent',recent)
         if (file === _k_.first(recent))
         {
             return
@@ -300,14 +288,14 @@ class FileHandler
             recent.pop()
         }
         window.state.set('recentFiles',recent)
-        return commandline.commands.open.setHistory(recent.reversed())
+        return commandline.commands.open.setHistory(reversed(recent))
     }
 
     saveChanges ()
     {
-        var _271_29_
+        var _275_29_
 
-        if ((editor.currentFile != null) && editor.do.hasChanges() && slash.fileExists(editor.currentFile))
+        if ((editor.currentFile != null) && editor.do.hasChanges())
         {
             return File.save(editor.currentFile,editor.text(),function (err)
             {
@@ -321,7 +309,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _288_18_
+        var cb, dir, _292_18_
 
         cb = function (files)
         {
@@ -337,7 +325,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _308_18_
+        var cb, _312_18_
 
         cb = (function (file)
         {

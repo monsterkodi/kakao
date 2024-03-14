@@ -101,7 +101,7 @@ class Walker
                 
         catch err
             @running = false
-            kerror "Walker.start -- #{err} dir: #{dir} stack:", err.stack
+            error "Walker.start -- #{err} dir: #{dir} stack:", err.stack
 
     stop: ->
         

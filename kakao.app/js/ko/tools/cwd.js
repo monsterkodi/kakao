@@ -1,18 +1,15 @@
 var _k_
 
-var $
-
 import syntax from "../editor/syntax.js"
 
 import dom from "../../kxk/dom.js"
+let $ = dom.$
 
 import post from "../../kxk/post.js"
 
 import elem from "../../kxk/elem.js"
 
 import slash from "../../kxk/slash.js"
-
-$ = dom.$
 
 class CWD
 {

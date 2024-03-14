@@ -132,8 +132,8 @@ function find
 
 get = (object, keypath, defaultValue) ->
 
-    return if not object
-    return if not keypath?.length
+    return defaultValue if not object
+    return defaultValue if not keypath?.length
 
     keypath = keypath.split '.' if typeof(keypath) == 'string'
 

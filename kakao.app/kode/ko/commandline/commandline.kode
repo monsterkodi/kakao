@@ -107,12 +107,16 @@ function Commandline extends TextEditor
             continue if slash.ext(file.path) not in ['js' 'mjs']
             try
                 commandModule = await import(file.path)
+            catch err
+                error "can't import command from file '#{file.path}': #{err}"
+                throw err
+            try
                 commandClass = commandModule.default
                 command = new commandClass @
                 command.setPrefsID commandClass.name.toLowerCase()
                 @commands[command.prefsID] = command
             catch err
-                error "can't load command from file '#{file.path}': #{err}"
+                error "can't create command '#{commandClass}': #{err}"
                 throw err
 
     setName: (name) ->
@@ -144,7 +148,7 @@ function Commandline extends TextEditor
 
     changed: (changeInfo) ->
 
-        log 'changed' changeInfo
+        # log 'changed' changeInfo
         @hideList()
         super changeInfo
         if changeInfo.changes.length
@@ -182,7 +186,7 @@ function Commandline extends TextEditor
             @lastFocus = window.lastFocus
             @view.focus()
             @setName name
-            log 'startCommand' name
+            # log 'startCommand' name
             @results @command.start name # <-- command start
 
             if name in ['search' 'find']
@@ -312,7 +316,7 @@ function Commandline extends TextEditor
 
     handleMenuAction: (name, opt) ->
 
-        log 'handleMenuAction' name, opt?.command
+        # log 'handleMenuAction' name, opt?.command
         if opt?.command
             if @commandForName opt.command
                 @startCommand opt.command
@@ -333,7 +337,7 @@ function Commandline extends TextEditor
 
     handleModKeyComboCharEvent: (mod, key, combo, char, event) ->
 
-        log 'handleModKeyComboEvent' mod, key, combo, char
+        # log 'handleModKeyComboEvent' mod, key, combo, char
         if @command?
             return if 'unhandled' != @command.handleModKeyComboEvent mod, key, combo, event
 

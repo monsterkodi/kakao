@@ -24,9 +24,9 @@ class Tab
         @div = elem class: 'tab' text: ''
         @tabs.div.appendChild @div
 
-        if not @file.startsWith 'untitled'
-            @pkg = slash.pkg @file
-            @pkg = slash.file @pkg if @pkg?
+        # if not @file.startsWith 'untitled'
+            # @pkg = slash.pkg @file
+            # @pkg = slash.file @pkg if @pkg?
 
         @update()
 

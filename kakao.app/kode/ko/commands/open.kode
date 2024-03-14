@@ -278,7 +278,7 @@ function Open extends Command
             if dir = slash.path @commandline.text()
                 @dir = dir
             else
-                @dir = slash.dir(@file) ? process.cwd()
+                @dir = slash.dir(@file) ? kakao.bundle.app('kode')
         
         else if @commandline.lastFocus == 'shelf' or @commandline.lastFocus.startsWith 'FileBrowser'
             
@@ -300,7 +300,7 @@ function Open extends Command
         else 
             
             @file = null
-            @dir  = process.cwd()
+            @dir  = kakao.bundle.app('kode')
             
         @files = projects.files @dir
         

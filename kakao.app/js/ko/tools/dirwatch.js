@@ -86,6 +86,7 @@ Watch = (function ()
         {
             return
         }
+        return
         this.watch = ffs.watch(this.dir)
         this.watch.on('error',(function (err)
         {
@@ -97,9 +98,9 @@ Watch = (function ()
             items = await ffs.list(this.dir)
             this.watchers = []
             var list = _k_.list(items)
-            for (var _72_21_ = 0; _72_21_ < list.length; _72_21_++)
+            for (var _74_21_ = 0; _74_21_ < list.length; _74_21_++)
             {
-                item = list[_72_21_]
+                item = list[_74_21_]
                 if (item.type === 'dir')
                 {
                     if (_k_.in(item.file,['node_modules','.git']))
@@ -133,9 +134,9 @@ Watch = (function ()
         if (this.opt.ignore)
         {
             var list = _k_.list(this.opt.ignore)
-            for (var _95_22_ = 0; _95_22_ < list.length; _95_22_++)
+            for (var _97_22_ = 0; _97_22_ < list.length; _97_22_++)
             {
-                regex = list[_95_22_]
+                regex = list[_97_22_]
                 if (new RegExp(regex).test(path))
                 {
                     return true
@@ -146,7 +147,7 @@ Watch = (function ()
 
     Watch.prototype["close"] = function ()
     {
-        var watch, _107_14_
+        var watch, _109_14_
 
         ;(this.watch != null ? this.watch.close() : undefined)
         delete this.watch
@@ -154,9 +155,9 @@ Watch = (function ()
         if (this.opt.recursive)
         {
             var list = _k_.list(this.watchers)
-            for (var _111_22_ = 0; _111_22_ < list.length; _111_22_++)
+            for (var _113_22_ = 0; _113_22_ < list.length; _113_22_++)
             {
-                watch = list[_111_22_]
+                watch = list[_113_22_]
                 watch.close()
             }
             return delete this.watchers
@@ -165,7 +166,7 @@ Watch = (function ()
 
     Watch.prototype["onChange"] = function (change, path, dir = this.dir)
     {
-        var clearRemove, stat, _137_48_, _143_28_, _143_68_, _143_75_
+        var clearRemove, stat, _139_48_, _145_28_, _145_68_, _145_75_
 
         if (this.ignore(path))
         {
@@ -196,7 +197,7 @@ Watch = (function ()
                 setTimeout(clearRemove,100)
                 return
             }
-            if (path === (this.last != null ? this.last.path : undefined) && stat.mtime.getTime() === ((_143_68_=this.last) != null ? (_143_75_=_143_68_.mtime) != null ? _143_75_.getTime() : undefined : undefined))
+            if (path === (this.last != null ? this.last.path : undefined) && stat.mtime.getTime() === ((_145_68_=this.last) != null ? (_145_75_=_145_68_.mtime) != null ? _145_75_.getTime() : undefined : undefined))
             {
                 return
             }

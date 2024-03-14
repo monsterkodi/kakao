@@ -59,6 +59,8 @@ function Watch extends events
         
         return if not @dir
         
+        return
+        
         @watch = ffs.watch @dir
         @watch.on 'error' (err) => error "watch dir:'#{@dir}' error: #{err}"
         @watch.on 'change' @onChange

@@ -137,7 +137,7 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, opt, _89_19_
+        var col, _89_19_
 
         if (this.column.index < 0)
         {
@@ -146,7 +146,6 @@ Row = (function ()
         }
         ;($('.hover') != null ? $('.hover').classList.remove('hover') : undefined)
         this.setActive({emit:emit})
-        opt = {file:this.item.file}
         switch (this.item.type)
         {
             case 'dir':
@@ -159,9 +158,10 @@ Row = (function ()
                 opt.line = this.item.line
                 opt.col = this.item.column
                 this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
+                console.log('Row emit jumpToFile',{file:this.item.path})
                 if (emit)
             {
-                post.emit('jumpToFile',opt)
+                post.emit('jumpToFile',{file:this.item.path})
             }
         }
 
@@ -175,7 +175,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _119_31_
+        var _118_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -226,7 +226,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _162_24_
+        var _161_24_
 
         if ((this.input != null))
         {
@@ -279,7 +279,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _195_28_, _202_37_
+        var _194_28_, _201_37_
 
         if (!(this.input != null))
         {

@@ -8,13 +8,16 @@
 
 use ../../kxk/dom  ▪ $ stopEvent
 use ../../kxk/util ▪ pullAllWith
+use ../../kxk/ffs
 use ../../kxk/elem
 use ../../kxk/post
+use ../../kxk/slash
 use ../../kxk/keyinfo
 use ../../kxk/popup
 
-use ./column ● Column
-use ./row    ● Row
+use ../tools/file  ● File
+use ./column       ● Column
+use ./row          ● Row
 
 # use ../git/hub
     
@@ -58,6 +61,7 @@ function Shelf extends Column
         row.setActive emit:true
         
         if item.type == 'file'
+            log 'Shelf emit jumpToFile' item
             post.emit 'jumpToFile' item
         else
             post.emit 'filebrowser' 'loadItem' item
@@ -113,9 +117,9 @@ function Shelf extends Column
         items = window.state.get "shelf|items"
         @setItems items, save:false
                 
-    addPath: (path, opt) =>
+    addPath: (path, opt) ○=>
         
-        if slash.isDir path
+        if await ffs.isDir(path)
             @addDir path, opt
         else
             @addFile path, opt
@@ -167,15 +171,16 @@ function Shelf extends Column
             name: slash.file file
             type: 'file'
             file: slash.path file
-        item.textFile = true if slash.isText file
+        item.textFile = true if File.isText file
         @addItem item, opt
         
-    addFiles: (files, opt) ->
-        for file in files
-            if slash.isDir file
-                @addDir file, opt
-            else
-                @addFile file, opt
+    addFiles: (files, opt) ○->
+        
+        # for file in files
+            # if await ffs.isDir file
+                # @addDir file, opt
+            # else
+                # @addFile file, opt
         
     addItem:  (item, opt) ->
         
@@ -298,7 +303,7 @@ function Shelf extends Column
             
     loadHistory: ->
         
-        @setHistoryItems post.get 'navigate', 'filePositions'
+        # @setHistoryItems post.get 'navigate', 'filePositions'
 
     setHistoryItems: (items) ->
     

@@ -755,8 +755,7 @@ load = async function (p, ext)
     }
     else if (globalThis.kakao)
     {
-        fs = globalThis.kakao.fs
-        str = await fs.read(p)
+        str = await globalThis.kakao.ffs.read(p)
         if (!_k_.empty(str))
         {
             return parseStr(str,p,ext)

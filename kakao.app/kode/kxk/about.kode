@@ -8,10 +8,9 @@
     simple about window  
 ###
 
+use ../kxk/dom ▪ $ elem
+use ../kxk/post
 use ../kakao
-
-{ post, dom } = kakao
-{ $, elem   } = dom
 
 kakao.init ->
 

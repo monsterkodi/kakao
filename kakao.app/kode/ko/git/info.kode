@@ -54,7 +54,7 @@ else
     if not empty process.argv[2]
         dir = slash.resolve process.argv[2]
     else
-        dir = process.cwd()
+        dir = kakao.bundle.path
         
     log info dir
     

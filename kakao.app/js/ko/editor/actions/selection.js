@@ -19,7 +19,6 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     return this
 },toggleStickySelection:function ()
 {
-    console.log('toggleStickySelection')
     if (this.stickySelection)
     {
         return this.endStickySelection()
@@ -57,9 +56,9 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
         if (this.numSelections())
         {
             var list = _k_.list(this.startSelectionCursors)
-            for (var _113_22_ = 0; _113_22_ < list.length; _113_22_++)
+            for (var _112_22_ = 0; _112_22_ < list.length; _112_22_++)
             {
-                c = list[_113_22_]
+                c = list[_112_22_]
                 if (sel = this.continuousSelectionAtPosInRanges(c,this.do.selections()))
                 {
                     if (isSamePos(sel[1],c))
@@ -77,7 +76,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     }
 },endSelection:function (opt = {extend:false})
 {
-    var ci, nc, newCursors, newSelection, oc, oldCursors, ranges, _132_50_
+    var ci, nc, newCursors, newSelection, oc, oldCursors, ranges, _131_50_
 
     if (!(opt != null ? opt.extend : undefined))
     {
@@ -89,14 +88,14 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     }
     else
     {
-        oldCursors = ((_132_50_=this.startSelectionCursors) != null ? _132_50_ : this.do.cursors())
+        oldCursors = ((_131_50_=this.startSelectionCursors) != null ? _131_50_ : this.do.cursors())
         newSelection = this.stickySelection && this.do.selections() || []
         newCursors = this.do.cursors()
         if (oldCursors.length !== newCursors.length)
         {
             return console.error(`Editor.${this.name}.endSelection -- oldCursors.size != newCursors.size`,oldCursors.length,newCursors.length)
         }
-        for (var _139_23_ = ci = 0, _139_27_ = this.do.numCursors(); (_139_23_ <= _139_27_ ? ci < this.do.numCursors() : ci > this.do.numCursors()); (_139_23_ <= _139_27_ ? ++ci : --ci))
+        for (var _138_23_ = ci = 0, _138_27_ = this.do.numCursors(); (_138_23_ <= _138_27_ ? ci < this.do.numCursors() : ci > this.do.numCursors()); (_138_23_ <= _138_27_ ? ++ci : --ci))
         {
             oc = oldCursors[ci]
             nc = newCursors[ci]
@@ -156,7 +155,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
 
     invertedRanges = []
     sc = this.selectedAndCursorLineIndices()
-    for (var _202_19_ = li = 0, _202_23_ = this.numLines(); (_202_19_ <= _202_23_ ? li < this.numLines() : li > this.numLines()); (_202_19_ <= _202_23_ ? ++li : --li))
+    for (var _201_19_ = li = 0, _201_23_ = this.numLines(); (_201_19_ <= _201_23_ ? li < this.numLines() : li > this.numLines()); (_201_19_ <= _201_23_ ? ++li : --li))
     {
         if (!(_k_.in(li,sc)))
         {
@@ -180,7 +179,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
         newSelections = []
         newCursors = []
         oldCursors = this.do.cursors()
-        for (var _224_22_ = i = 0, _224_26_ = oldCursors.length; (_224_22_ <= _224_26_ ? i < oldCursors.length : i > oldCursors.length); (_224_22_ <= _224_26_ ? ++i : --i))
+        for (var _223_22_ = i = 0, _223_26_ = oldCursors.length; (_223_22_ <= _223_26_ ? i < oldCursors.length : i > oldCursors.length); (_223_22_ <= _223_26_ ? ++i : --i))
         {
             c0 = oldCursors[i]
             c1 = oldCursors[i + 1]
@@ -227,13 +226,13 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
         this.do.select(surr)
         if (this.do.numSelections())
         {
-            this.do.setCursors((function () { var r_255_53_ = []; var list = _k_.list(this.do.selections()); for (var _255_53_ = 0; _255_53_ < list.length; _255_53_++)  { r = list[_255_53_];r_255_53_.push(rangeEndPos(r))  } return r_255_53_ }).bind(this)(),{main:'closest'})
+            this.do.setCursors((function () { var r_254_53_ = []; var list = _k_.list(this.do.selections()); for (var _254_53_ = 0; _254_53_ < list.length; _254_53_++)  { r = list[_254_53_];r_254_53_.push(rangeEndPos(r))  } return r_254_53_ }).bind(this)(),{main:'closest'})
         }
         return this.do.end()
     }
 },selectNextHighlight:function ()
 {
-    var r, searchText, _267_57_, _274_33_
+    var r, searchText, _266_57_, _273_33_
 
     if (!this.numHighlights() && (window != null))
     {
@@ -256,7 +255,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b',acc
     }
 },selectPrevHighlight:function ()
 {
-    var hs, r, searchText, _279_57_
+    var hs, r, searchText, _278_57_
 
     if (!this.numHighlights() && (window != null))
     {

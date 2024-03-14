@@ -40,8 +40,11 @@ export
     min:      (arr) -> Math.min.apply null, arr
     
     pull:     (arr, item) -> 
-    
-        arr.splice arr.indexOf(item), 1
+        
+        if arr is arr
+            index = arr.indexOf(item)
+            if index >= 0
+                arr.splice index, 1
         arr
         
     pullIf: (arr, pred) ->
