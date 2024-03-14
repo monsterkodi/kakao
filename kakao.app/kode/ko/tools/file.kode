@@ -22,7 +22,8 @@ class File
 
     @isCode:  (file) -> slash.ext(file) in ['coffee' 'kode' 'py' 'cpp' 'cc' 'mm' 'c' 'cs' 'ts' 'js' 'mjs' 'h' 'hpp' 'frag' 'vert']
     @isImage: (file) -> slash.ext(file) in ['gif' 'png' 'jpg' 'jpeg' 'svg' 'bmp' 'ico']
-    @isText:  (file) -> slash.ext(file) in File.sourceFileExtensions
+    # @isText:  (file) -> slash.ext(file) in File.sourceFileExtensions
+    @isText:  (file) -> true
    
     @rename: (from, to, cb) ->
         
