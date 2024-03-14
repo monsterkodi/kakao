@@ -98,6 +98,20 @@ export
             result.push item if add
         result
         
+    sortBy: (arr, prop) ->
+        
+        if prop is str
+            key = prop
+            prop = (o) -> o[key]
+            
+        arr.sort (a,b) -> 
+            pa = prop a
+            pb = prop b
+            if pa is str and pb is str
+                pa.localeCompare pb, 'en' sensitivity:'variant' caseFirst:'upper' numeric:true
+            else 
+                Number(pa) - Number(pb)
+        
     #  0000000   0000000          000  00000000   0000000  000000000  
     # 000   000  000   000        000  000       000          000     
     # 000   000  0000000          000  0000000   000          000     

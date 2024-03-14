@@ -167,14 +167,41 @@ export default {isEqual:isEqual,zip:function (...args)
         }
     }
     return result
+},sortBy:function (arr, prop)
+{
+    var key
+
+    if (_k_.isStr(prop))
+    {
+        key = prop
+        prop = function (o)
+        {
+            return o[key]
+        }
+    }
+    return arr.sort(function (a, b)
+    {
+        var pa, pb
+
+        pa = prop(a)
+        pb = prop(b)
+        if (_k_.isStr(pa) && _k_.isStr(pb))
+        {
+            return pa.localeCompare(pb,'en',{sensitivity:'variant',caseFirst:'upper',numeric:true})
+        }
+        else
+        {
+            return Number(pa) - Number(pb)
+        }
+    })
 },defaults:function (obj, def)
 {
-    var key, val, _110_21_
+    var key, val, _124_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_110_21_=obj[key]) != null ? _110_21_ : val)
+        obj[key] = ((_124_21_=obj[key]) != null ? _124_21_ : val)
     }
     return obj
 },pickBy:function (obj, pred)

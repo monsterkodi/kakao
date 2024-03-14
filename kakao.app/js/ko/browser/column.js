@@ -955,8 +955,8 @@ Column = (function ()
         {
             var atype, btype
 
-            atype = a.item.type === 'file' && slash.ext(a.item.name) || '___'
-            btype = b.item.type === 'file' && slash.ext(b.item.name) || '___'
+            atype = a.item.type === 'file' && slash.ext(a.item.path) || '___'
+            btype = b.item.type === 'file' && slash.ext(b.item.path) || '___'
             return (a.item.type + atype + a.item.name).localeCompare(b.item.type + btype + b.item.name,undefined,{numeric:true})
         })
         this.table.innerHTML = ''
