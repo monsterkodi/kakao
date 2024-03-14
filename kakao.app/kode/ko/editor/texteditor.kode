@@ -12,9 +12,10 @@ use ../../kxk/post
 use ../../kxk/drag
 use ../../kxk/elem
 use ../../kxk/dom  ▪ $ stopEvent
-use ./editorscroll ● EditorScroll
-use ./editor       ● Editor
-use ./render
+
+use ./EditorScroll
+use ./Editor
+use ./Render
 
 function TextEditor extends Editor
 
@@ -297,7 +298,7 @@ function TextEditor extends Editor
             
         return error "updateLine - out of bounds? li #{li} oi #{oi}" if not @lineDivs[oi]
 
-        @spanCache[li] = render.lineSpan @syntax.getDiss(li), @size
+        @spanCache[li] = Render.lineSpan @syntax.getDiss(li), @size
 
         div = @lineDivs[oi]
         div.replaceChild @spanCache[li], div.firstChild
@@ -421,7 +422,7 @@ function TextEditor extends Editor
 
         if not @spanCache[li]
 
-            @spanCache[li] = render.lineSpan @syntax.getDiss(li), @size
+            @spanCache[li] = Render.lineSpan @syntax.getDiss(li), @size
 
         @spanCache[li]
 
@@ -463,7 +464,7 @@ function TextEditor extends Editor
                     vc.push [line.length, c[1], 'virtual']
             cs = cs.concat vc
 
-        html = render.cursors cs, @size
+        html = Render.cursors cs, @size
         @layerDict.cursors.innerHTML = html
         
         ty = (mc[1] - @scroll.top) * @size.lineHeight
@@ -477,7 +478,7 @@ function TextEditor extends Editor
         h = ""
         s = @selectionsInLineIndexRangeRelativeToLineIndex [@scroll.top, @scroll.bot], @scroll.top
         if s
-            h += render.selection s, @size
+            h += Render.selection s, @size
         @layerDict.selections.innerHTML = h
 
     renderHighlights: ->
@@ -485,7 +486,7 @@ function TextEditor extends Editor
         h = ""
         s = @highlightsInLineIndexRangeRelativeToLineIndex [@scroll.top, @scroll.bot], @scroll.top
         if s
-            h += render.selection s, @size, "highlight"
+            h += Render.selection s, @size, "highlight"
         @layerDict.highlights.innerHTML = h
 
     # 0000000    000      000  000   000  000   000

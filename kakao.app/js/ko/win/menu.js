@@ -4,11 +4,9 @@ var getMenu, menu
 
 import slash from "../../kxk/slash.js"
 
-import syntax from "../editor/syntax.js"
-
 import transform from "../editor/actions/transform.js"
 
-import macro from "../commands/macro.js"
+import Macro from "../commands/Macro.js"
 
 
 getMenu = function (template, name)
@@ -16,9 +14,9 @@ getMenu = function (template, name)
     var item
 
     var list = _k_.list(template)
-    for (var _19_13_ = 0; _19_13_ < list.length; _19_13_++)
+    for (var _16_13_ = 0; _16_13_ < list.length; _16_13_++)
     {
-        item = list[_19_13_]
+        item = list[_16_13_]
         if (item.text === name)
         {
             return item
@@ -28,7 +26,7 @@ getMenu = function (template, name)
 
 menu = function (template)
 {
-    var actionFile, actionFiles, actions, combo, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menuName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, v, value, _44_38_, _54_33_, _55_44_, _57_43_, _58_39_
+    var actionFile, actionFiles, actions, combo, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menuName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, v, value, _41_38_, _51_33_, _52_44_, _54_43_, _55_39_
 
     if (_k_.isArr(template))
     {
@@ -43,9 +41,9 @@ menu = function (template)
     submenu = {Misc:[]}
     EditMenu = []
     var list = _k_.list(actionFiles)
-    for (var _35_19_ = 0; _35_19_ < list.length; _35_19_++)
+    for (var _32_19_ = 0; _32_19_ < list.length; _32_19_++)
     {
-        actionFile = list[_35_19_]
+        actionFile = list[_32_19_]
         if (!(_k_.in(slash.ext(actionFile),['js','mjs','coffee','kode'])))
         {
             continue
@@ -60,7 +58,7 @@ menu = function (template)
                 if ((value['menu'] != null))
                 {
                     menuName = value['menu']
-                    submenu[menuName] = ((_44_38_=submenu[menuName]) != null ? _44_38_ : [])
+                    submenu[menuName] = ((_41_38_=submenu[menuName]) != null ? _41_38_ : [])
                 }
                 for (k in value)
                 {
@@ -75,13 +73,13 @@ menu = function (template)
                         item = {text:v.name,accel:combo}
                         if ((v.menu != null))
                         {
-                            submenu[v.menu] = ((_55_44_=submenu[v.menu]) != null ? _55_44_ : [])
+                            submenu[v.menu] = ((_52_44_=submenu[v.menu]) != null ? _52_44_ : [])
                         }
                         if (v.separator)
                         {
-                            submenu[((_57_43_=v.menu) != null ? _57_43_ : menuName)].push({text:''})
+                            submenu[((_54_43_=v.menu) != null ? _54_43_ : menuName)].push({text:''})
                         }
-                        submenu[((_58_39_=v.menu) != null ? _58_39_ : menuName)].push(item)
+                        submenu[((_55_39_=v.menu) != null ? _55_39_ : menuName)].push(item)
                     }
                 }
             }
@@ -96,9 +94,9 @@ menu = function (template)
     editMenu.menu = editMenu.menu.concat(EditMenu)
     MacroMenu = [{text:'Macro',combo:'command+m',accel:'ctrl+m',command:'macro'}]
     var list1 = _k_.list(Macro.macroNames)
-    for (var _67_14_ = 0; _67_14_ < list1.length; _67_14_++)
+    for (var _64_14_ = 0; _64_14_ < list1.length; _64_14_++)
     {
-        macro = list1[_67_14_]
+        macro = list1[_64_14_]
         MacroMenu.push({text:macro,actarg:macro,action:'doMacro'})
     }
     commandMenu = getMenu(template,'Command')
@@ -109,9 +107,9 @@ menu = function (template)
         transformList = transform.Transform.transformMenus[transformMenu]
         transformSubmenu = []
         var list2 = _k_.list(transformList)
-        for (var _79_22_ = 0; _79_22_ < list2.length; _79_22_++)
+        for (var _76_22_ = 0; _76_22_ < list2.length; _76_22_++)
         {
-            transform = list2[_79_22_]
+            transform = list2[_76_22_]
             transformSubmenu.push({text:transform,actarg:transform,action:'doTransform'})
         }
         TransformMenu.push({text:transformMenu,menu:transformSubmenu})

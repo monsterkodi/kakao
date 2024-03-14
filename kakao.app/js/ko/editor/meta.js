@@ -15,7 +15,7 @@ import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
-import File from "../tools/file.js"
+import File from "../tools/File.js"
 
 class Meta
 {

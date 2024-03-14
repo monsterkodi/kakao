@@ -10,12 +10,14 @@ use ../../../lib/lib_ko ▪ fuzzy
 use ../../kxk/util ▪ uniqBy
 use ../../kxk/post
 use ../../kxk/slash
-use ../tools/projects
-use ../editor/render
-use ../editor/syntax
-use ../commandline/command ● Command
 
-use ../tools/file ● File
+use ../tools/projects
+# use ../editor/Render
+# use ../editor/Syntax
+
+use ../commandline/Command
+
+use ../tools/File
                  
 relative = (rel, to) ->
     

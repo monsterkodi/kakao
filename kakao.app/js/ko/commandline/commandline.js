@@ -14,7 +14,7 @@ import dom from "../../kxk/dom.js"
 let $ = dom.$
 let stopEvent = dom.stopEvent
 
-import TextEditor from "../editor/texteditor.js"
+import TextEditor from "../editor/TextEditor.js"
 
 __dirname = slash.dir(import.meta.url.slice(7))
 

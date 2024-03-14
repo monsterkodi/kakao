@@ -13,9 +13,9 @@ import slash from "../../kxk/slash.js"
 
 import kakao from "../../kakao.js"
 
-import Command from "../commandline/command.js"
+import Command from "../commandline/Command.js"
 
-import FileBrowser from "../browser/filebrowser.js"
+import FileBrowser from "../browser/FileBrowser.js"
 
 
 Browse = (function ()

@@ -7,6 +7,7 @@
 ###
 
 use ../../../lib/lib_ko ▪ fuzzy
+
 use ../../kxk/dom ▪ $ setStyle stopEvent
 use ../../kxk/kpos
 use ../../kxk/elem
@@ -16,11 +17,13 @@ use ../../kxk/prefs
 use ../../kxk/slash
 use ../../kxk/popup
 use ../../kxk/keyinfo
-use ../tools/dirwatch
-use ../tools/file ● File
-use ./crumb       ● Crumb
-use ./scroller    ● Scroller
-use ./row         ● Row
+
+use ../tools/DirWatch
+use ../tools/File
+
+use ./Crumb
+use ./Scroller
+use ./Row
 
 function Column
     
@@ -66,10 +69,9 @@ function Column
     # 000      000   000  000   000  000   000  000     000     000       000 0 000       000  
     # 0000000   0000000   000   000  0000000    000     000     00000000  000   000  0000000   
     
-    loadItems: (items, parent) ->
+    loadItems: (items, parent) ○->
         
         log 'loadItems' items
-        return if empty items
         
         @clear()
 
@@ -92,7 +94,7 @@ function Column
         @crumb.show()
         
         if @parent.type == 'dir'
-            dirwatch.watch @parent.file
+            DirWatch.watch @parent.file
             @crumb.setFile @parent.file
         else
             if File.isCode @parent.file
@@ -353,7 +355,7 @@ function Column
     isEmpty: -> empty @parent
     clear:   ->
         if @parent?.file and @parent?.type == 'dir'
-            dirwatch.unwatch @parent.file
+            DirWatch.unwatch @parent.file
         delete @parent
         @clearSearch()
         @div.scrollTop = 0

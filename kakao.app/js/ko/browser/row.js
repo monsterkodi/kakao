@@ -16,9 +16,9 @@ import slash from "../../kxk/slash.js"
 
 import keyinfo from "../../kxk/keyinfo.js"
 
-import syntax from "../editor/syntax.js"
+import Syntax from "../editor/Syntax.js"
 
-import File from "../tools/file.js"
+import File from "../tools/File.js"
 
 
 Row = (function ()
@@ -47,7 +47,7 @@ Row = (function ()
         }
         else
         {
-            html = syntax.spanForTextAndSyntax(text,'browser')
+            html = Syntax.spanForTextAndSyntax(text,'browser')
         }
         this.div = elem({class:'browserRow',html:html})
         this.div.classList.add(((_31_38_=this.item.type) != null ? _31_38_ : 'file'))

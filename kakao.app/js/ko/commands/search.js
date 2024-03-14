@@ -12,14 +12,14 @@ import matchr from "../../kxk/matchr.js"
 
 import walker from "../tools/walker.js"
 
-import syntax from "../editor/syntax.js"
+import Syntax from "../editor/Syntax.js"
 
-import command from "../commandline/command.js"
+import Command from "../commandline/Command.js"
 
 
 Search = (function ()
 {
-    _k_.extend(Search, command)
+    _k_.extend(Search, Command)
     function Search (commandline)
     {
         this["onMetaClick"] = this["onMetaClick"].bind(this)
@@ -73,7 +73,7 @@ Search = (function ()
         var dir, terminal
 
         terminal = window.terminal
-        terminal.appendMeta({clss:'searchHeader',diss:syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
+        terminal.appendMeta({clss:'searchHeader',diss:Syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
         dir = slash.dir(opt.file)
@@ -159,7 +159,7 @@ FileSearcher = (function ()
         }).bind(this))()
         this.found = []
         extn = slash.ext(this.file)
-        if (_k_.in(extn,syntax.syntaxNames))
+        if (_k_.in(extn,Syntax.syntaxNames))
         {
             this.syntaxName = extn
         }
@@ -176,7 +176,7 @@ FileSearcher = (function ()
         lines = chunk.split('\n')
         if (!(this.syntaxName != null))
         {
-            this.syntaxName = syntax.shebang(lines[0])
+            this.syntaxName = Syntax.shebang(lines[0])
         }
         var list = _k_.list(lines)
         for (var _156_14_ = 0; _156_14_ < list.length; _156_14_++)
@@ -199,7 +199,7 @@ FileSearcher = (function ()
         if (this.found.length)
         {
             terminal = window.terminal
-            meta = {diss:syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
+            meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
             terminal.appendMeta(meta)
             terminal.appendMeta({clss:'spacer'})
             for (var _179_23_ = fi = 0, _179_27_ = this.found.length; (_179_23_ <= _179_27_ ? fi < this.found.length : fi > this.found.length); (_179_23_ <= _179_27_ ? ++fi : --fi))

@@ -9,7 +9,7 @@
 use ../../kxk/kpos
 use ../../kxk/elem
 use ../../kxk/slash
-use ../tools/file ● File
+use ../tools/File
 
 class Crumb
 

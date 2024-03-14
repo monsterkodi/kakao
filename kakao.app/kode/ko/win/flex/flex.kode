@@ -6,8 +6,8 @@
 000       0000000  00000000  000   000  
 ###
 
-use ./pane   ● Pane
-use ./handle ● Handle
+use ./Pane
+use ./Handle
 
 use ../../../kxk/util ▪ defaults
 

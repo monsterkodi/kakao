@@ -1,11 +1,5 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-import file from "../tools/file.js"
-
-import render from "../editor/render.js"
-
-import syntax from "../editor/syntax.js"
-
 import elem from "../../kxk/elem.js"
 
 import post from "../../kxk/post.js"
@@ -13,6 +7,12 @@ import post from "../../kxk/post.js"
 import slash from "../../kxk/slash.js"
 
 import tooltip from "../../kxk/tooltip.js"
+
+import File from "../tools/File.js"
+
+import Render from "../editor/Render.js"
+
+import Syntax from "../editor/Syntax.js"
 
 class Tab
 {
@@ -80,7 +80,7 @@ class Tab
             }
             if (this.state.state)
             {
-                return file.save(this.state.file,this.state.state.text(),(function (err)
+                return File.save(this.state.file,this.state.state.text(),(function (err)
                 {
                     if (err)
                     {
@@ -145,8 +145,8 @@ class Tab
         sep = "<span class='dot'>►</span>"
         this.pkgDiv = elem('span',{class:'pkg',html:this.pkg && (this.pkg + sep) || ''})
         this.div.appendChild(this.pkgDiv)
-        diss = syntax.dissForTextAndSyntax(slash.file(this.file),'ko')
-        name = elem('span',{class:'name',html:render.line(diss,{charWidth:0})})
+        diss = Syntax.dissForTextAndSyntax(slash.file(this.file),'ko')
+        name = elem('span',{class:'name',html:Render.line(diss,{charWidth:0})})
         this.div.appendChild(name)
         html = ''
         if (this.pinned)
@@ -167,8 +167,8 @@ class Tab
         this.div.appendChild(elem({class:'tabstate',html:html,click:this.togglePinned}))
         if ((this.file != null))
         {
-            diss = syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
-            html = render.line(diss,{charWidth:0})
+            diss = Syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
+            html = Render.line(diss,{charWidth:0})
             this.tooltip = new tooltip({elem:name,html:html,x:0})
         }
         if (this.dirty)

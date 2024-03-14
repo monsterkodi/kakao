@@ -11,7 +11,7 @@ use ../../kxk/prefs
 use ../../kxk/slash
 use ../../kxk/util ▪ pull reversed
 
-use ../tools/file ● File
+use ../tools/File
 
 class FileHandler
 

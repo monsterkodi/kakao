@@ -2,6 +2,10 @@ var _k_
 
 var file, image
 
+import lib_ko from "../../../lib/lib_ko.js"
+let moment = lib_ko.moment
+let pbytes = lib_ko.pbytes
+
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 
@@ -11,11 +15,7 @@ import elem from "../../kxk/elem.js"
 
 import slash from "../../kxk/slash.js"
 
-import lib_ko from "../../../lib/lib_ko.js"
-let moment = lib_ko.moment
-let pbytes = lib_ko.pbytes
-
-import File from "../tools/file.js"
+import File from "../tools/File.js"
 
 
 image = function (file)
@@ -43,7 +43,7 @@ image = function (file)
         info = await ffs.info(file)
         size = pbytes(info.size).split(' ')
         age = moment().to(moment(info.modified),true)
-        var _46_21_ = age.split(' '); num = _46_21_[0]; range = _46_21_[1]
+        var _47_21_ = age.split(' '); num = _47_21_[0]; range = _47_21_[1]
 
         if (num[0] === 'a')
         {
@@ -77,7 +77,7 @@ file = function (file)
         size = pbytes(info.size).split(' ')
         t = moment(info.modified)
         age = moment().to(t,true)
-        var _84_21_ = age.split(' '); num = _84_21_[0]; range = _84_21_[1]
+        var _85_21_ = age.split(' '); num = _85_21_[0]; range = _85_21_[1]
 
         if (num[0] === 'a')
         {

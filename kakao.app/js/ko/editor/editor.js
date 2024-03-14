@@ -8,11 +8,11 @@ import kstr from "../../kxk/kstr.js"
 
 import slash from "../../kxk/slash.js"
 
-import Do from "./do.js"
+import Do from "./Do.js"
 
-import Buffer from "./buffer.js"
+import Buffer from "./Buffer.js"
 
-import Syntax from "./syntax.js"
+import Syntax from "./Syntax.js"
 
 __dirname = slash.dir(import.meta.url.slice(7))
 

@@ -13,8 +13,8 @@ use ../../kxk/post
 use ../../kxk/popup
 use ../../kxk/slash
 
-use ./syntax     ● Syntax
-use ./texteditor ● TextEditor
+use ./Syntax
+use ./TextEditor
 
 function FileEditor extends TextEditor
 

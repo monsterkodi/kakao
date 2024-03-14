@@ -11,8 +11,8 @@ use ../../kxk/post
 use ../../kxk/slash
 use ../../kakao
 
-use ../commandline/command ● Command
-use ../browser/filebrowser ● FileBrowser
+use ../commandline/Command
+use ../browser/FileBrowser
 
 function Browse extends Command
 

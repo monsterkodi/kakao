@@ -6,14 +6,14 @@
    000     000   000  0000000
 ###
 
-use ../tools/file
-use ../editor/render
-use ../editor/syntax
-
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 use ../../kxk/tooltip
+
+use ../tools/File
+use ../editor/Render
+use ../editor/Syntax
 
 class Tab
 
@@ -63,7 +63,7 @@ class Tab
                             'deleted'  ➜ @state.state = @state.state.deleteLine change.doIndex
 
             if @state.state
-                file.save @state.file, @state.state.text(), (err) =>
+                File.save @state.file, @state.state.text(), (err) =>
                     return error "tab.saveChanges failed #{err}" if err
                     @revert()
             else
@@ -114,8 +114,8 @@ class Tab
         @pkgDiv = elem 'span' class:'pkg' html: @pkg and (@pkg + sep) or ''
         @div.appendChild @pkgDiv
 
-        diss = syntax.dissForTextAndSyntax slash.file(@file), 'ko'
-        name = elem 'span' class:'name' html:render.line diss, charWidth:0
+        diss = Syntax.dissForTextAndSyntax slash.file(@file), 'ko'
+        name = elem 'span' class:'name' html:Render.line diss, charWidth:0
         @div.appendChild name
 
         html = ''
@@ -138,8 +138,8 @@ class Tab
         @div.appendChild elem class:'tabstate' html:html, click:@togglePinned
 
         if @file?
-            diss = syntax.dissForTextAndSyntax slash.tilde(@file), 'ko'
-            html = render.line diss, charWidth:0
+            diss = Syntax.dissForTextAndSyntax slash.tilde(@file), 'ko'
+            html = Render.line diss, charWidth:0
             @tooltip = new tooltip elem:name, html:html, x:0
 
         @div.appendChild(elem 'span' class:'dot' text:'●') if @dirty

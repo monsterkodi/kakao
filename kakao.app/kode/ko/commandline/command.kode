@@ -7,9 +7,9 @@
 ###
 
 use ../../../lib/lib_ko ▪ fuzzy
-use ../../kxk/elem
 use ../../kxk/util ▪ pull
-use ../editor/syntax
+use ../../kxk/elem
+# use ../editor/Syntax
 use ./commandlist ● CommandList
 
 function Command

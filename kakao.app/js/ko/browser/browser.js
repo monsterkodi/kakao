@@ -13,9 +13,9 @@ import slash from "../../kxk/slash.js"
 
 import events from "../../kxk/events.js"
 
-import Flex from "../win/flex/flex.js"
+import Flex from "../win/flex/Flex.js"
 
-import Column from "./column.js"
+import Column from "./Column.js"
 
 
 Browser = (function ()

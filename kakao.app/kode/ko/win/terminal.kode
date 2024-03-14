@@ -11,10 +11,10 @@ use ../../kxk/post
 use ../../kxk/kpos
 use ../../kxk/popup
 use ../tools/salt
-use ../editor/syntax
-use ../editor/texteditor
+use ../editor/Syntax
+use ../editor/TextEditor
 
-function Terminal extends texteditor
+function Terminal extends TextEditor
 
     @: (viewElem) ->
         
@@ -46,7 +46,7 @@ function Terminal extends texteditor
             @singleCursorAtPos [0, @numLines()-1] 
             @scroll.to @scroll.fullHeight
             
-    appendDiss: (diss) -> @appendLineDiss syntax.lineForDiss(diss), diss        
+    appendDiss: (diss) -> @appendLineDiss Syntax.lineForDiss(diss), diss        
     
     # 00     00  00000000  000000000   0000000 
     # 000   000  000          000     000   000
@@ -64,7 +64,7 @@ function Terminal extends texteditor
         if 
             meta.diss?
             
-                @appendLineDiss syntax.lineForDiss(meta.diss), meta.diss 
+                @appendLineDiss Syntax.lineForDiss(meta.diss), meta.diss 
                         
             meta.clss == 'salt'
             
@@ -75,7 +75,7 @@ function Terminal extends texteditor
             
             meta.clss == 'termCommand'
             
-                @appendLineDiss meta.command, syntax.dissForTextAndSyntax meta.command, 'term'
+                @appendLineDiss meta.command, Syntax.dissForTextAndSyntax meta.command, 'term'
 
             meta.text?
             
