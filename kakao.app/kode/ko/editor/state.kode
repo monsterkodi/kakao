@@ -7,9 +7,7 @@
 ###
 
 use ../../kxk/kstr
-use ../../../lib/lib_ko
-
-{ immutable } = lib_ko
+use ../../../lib/lib_ko ▪ immutable
 
 class State
 

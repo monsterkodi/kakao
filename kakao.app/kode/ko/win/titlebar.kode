@@ -8,13 +8,12 @@
 
 use ../../kxk/post
 use ../../kxk/elem
-use ../../kxk/dom
-
-{ $, stopEvent } = dom
+use ../../kxk/dom ▪ $ stopEvent
 
 class Titlebar
     
     @: ->
+        log 'KO WIN TITLEBAR'
 
         @elem =$ 'titlebar'
         
@@ -49,32 +48,6 @@ class Titlebar
             @info.focus = focus
             @elem.classList.toggle 'focus' @info.focus
         
-    # 000      000   0000000  000000000
-    # 000      000  000          000   
-    # 000      000  0000000      000   
-    # 000      000       000     000   
-    # 0000000  000  0000000      000   
-    
-    showList: (event) =>
-              
-        return if @list?
-        winInfos = post.get 'winInfos'
-        return if winInfos.length <= 1
-        document.activeElement.blur()
-        @selected = -1
-        @list = elem class: 'winlist'
-        @elem.parentNode.insertBefore @list, @elem.nextSibling
-        @listWinInfos winInfos
-        stopEvent event
-
-    closeList: =>
-        
-        if @list?
-            window.split.focusAnything()
-            @selected = -1
-            @list?.remove()
-            @list = null
-
     # 000   000  000  000   000  000  000   000  00000000   0000000    0000000  
     # 000 0 000  000  0000  000  000  0000  000  000       000   000  000       
     # 000000000  000  000 0 000  000  000 0 000  000000    000   000  0000000   
@@ -101,7 +74,7 @@ class Titlebar
             div.addEventListener 'mousedown' activateWindow info.id
             @list.appendChild div
             
-        post.toOtherWins 'sendTabs' window.winID
+        post.toWins 'sendTabs' window.winID
         @navigate 'down'
         @
 
@@ -116,29 +89,6 @@ class Titlebar
                 width = div.getBoundingClientRect().width
                 break
 
-    loadWindowWithID: (id) -> 
-        
-        @closeList()
-        # post.toMain 'activateWindow' id
-        log 'titlebar loadWindowWithID unimplemented!'
-        
-    loadSelected: ->
-        
-        return @closeList() if @selected < 0
-        @loadWindowWithID @list.children[@selected].winID
-    
-    navigate: (dir = 'down') ->
-        
-        return if not @list
-        @list.children[@selected]?.classList.remove 'selected'
-        @selected += switch dir
-            'up'   ➜ -1
-            'down' ➜  1
-                   ➜  0
-        @selected = @list.children.length-1 if @selected < -1
-        @selected = -1 if @selected >= @list.children.length
-        @list.children[@selected].classList.add 'selected' if @selected > -1
-    
     # 000   000  00000000  000   000
     # 000  000   000        000 000 
     # 0000000    0000000     00000  
@@ -151,11 +101,6 @@ class Titlebar
             'command+alt+left' 'command+alt+right'              ➜ return winow.tabs.navigate key
             'command+alt+shift+left' 'command+alt+shift+right'  ➜ return window.tabs.move key
 
-        if @list?
-            switch combo
-                'esc' 'alt+`'   ➜ return @closeList()
-                'up' 'down'     ➜ return @navigate key
-                'enter'         ➜ return @loadSelected()
         'unhandled'
         
 export Titlebar

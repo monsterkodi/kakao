@@ -8,6 +8,7 @@
 
 use ../../kxk/slash
 use ../../kxk/post
+use ../../kxk/ffs
 
 class Watcher
 
@@ -16,23 +17,23 @@ class Watcher
     @: (@file) ->
 
         @id = Watcher.id++
-        slash.exists @file, @onExists
+        ffs.exists(@file).then @onExists
         
     onExists: (stat) =>
         
-        return if not stat
-        return if not @id
-        @mtime = stat.mtimeMs
-        
-        @w = fs.watch @file
-        @w.on 'change' (changeType, p) =>
-            
-            if changeType == 'change'
-                slash.exists @file, @onChange
-            else
-                setTimeout (=> slash.exists @file, @onRename), 200
-        
-        @w.on 'unlink' (p) => log "unlink #{@id}" slash.file(@file)
+        # return if not stat
+        # return if not @id
+        # @mtime = stat.mtimeMs
+#         
+        # @w = fs.watch @file
+        # @w.on 'change' (changeType, p) =>
+#             
+            # if changeType == 'change'
+                # ffs.exists(@file).then @onChange
+            # else
+                # setTimeout (=> ffs.exists(@file).then @onRename), 200
+#         
+        # @w.on 'unlink' (p) => log "unlink #{@id}" slash.file(@file)
     
     onChange: (stat) =>
         

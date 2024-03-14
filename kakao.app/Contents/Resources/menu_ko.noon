@@ -166,7 +166,7 @@ View
 Window
     Arrange Windows         alt+cmdctrl+a
     Cycle Windows           cmdctrl+`
-    Open Window List        alt+`
+    # Open Window List        alt+`
     -
     Toggle Menu             alt+m
     Toggle Scheme           

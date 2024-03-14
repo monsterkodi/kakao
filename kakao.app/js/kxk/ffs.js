@@ -47,9 +47,19 @@ class KFS
         return await kakao.request('fs.isWritable',p)
     }
 
+    static async isReadable (p)
+    {
+        return await kakao.request('fs.isReadable',p)
+    }
+
     static async remove (p)
     {
         return await kakao.request('fs.remove',p)
+    }
+
+    static async info (p)
+    {
+        return await kakao.request('fs.info',p)
     }
 
     static async isFile (p)

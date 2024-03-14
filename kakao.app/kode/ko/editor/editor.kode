@@ -6,17 +6,17 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ./buffer
-use ./syntax
 use ../../kxk/ffs
 use ../../kxk/kstr
 use ../../kxk/slash
 
 use ./do ● Do
+use ./buffer ● Buffer
+use ./syntax ● Syntax
 
 __dirname = slash.dir import.meta.url[7..]
 
-function Editor extends buffer
+function Editor extends Buffer
 
     @actions: null
     @actionEditors: []
@@ -43,7 +43,9 @@ function Editor extends buffer
 
         @indentString    = lpad 4 ""
         @stickySelection = false
-        @syntax          = new syntax @config.syntaxName, @line, @lines
+        @syntax          = new Syntax @config.syntaxName, @line, @lines
+        
+        log 'editor' @name, @syntax
         @do              = new Do @
         
         if empty Editor.actions
@@ -188,10 +190,12 @@ function Editor extends buffer
     #      000  000          000            000      000  000  0000  000            000
     # 0000000   00000000     000            0000000  000  000   000  00000000  0000000
 
-    setText: (text="") ->
+    setText: (text="") =>
+        
+        log 'setText' text
         
         if @syntax.name == 'txt'
-            @syntax.name = syntax.shebang text.slice 0, text.search /\r?\n/
+            @syntax.name = Syntax.shebang text.slice 0, text.search /\r?\n/
 
         lines = text.split /\n/
 

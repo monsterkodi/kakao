@@ -146,7 +146,7 @@ class Walker
         catch (err)
         {
             this.running = false
-            return kerror(`Walker.start -- ${err} dir: ${dir} stack:`,err.stack)
+            console.error(`Walker.start -- ${err} dir: ${dir} stack:`,err.stack)
         }
     }
 

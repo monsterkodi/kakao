@@ -40,7 +40,7 @@ Kakao = (function ()
     Kakao["window"] = kxk.win
     Kakao["dom"] = kxk.dom
     Kakao["post"] = kxk.post
-    Kakao["fs"] = kxk.fs
+    Kakao["ffs"] = kxk.ffs
     return Kakao
 })()
 

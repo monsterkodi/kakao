@@ -20,8 +20,6 @@ class Poster extends EventTarget
 
         out = new Event(event.event)
         out.args = event.args
-        out.senderID = event.senderID
-        out.receivers = event.receivers
         return this.dispatchEvent(out)
     }
 
@@ -31,38 +29,24 @@ class Poster extends EventTarget
         return window.removeEventListener('beforeunload',this.dispose)
     }
 
-    toAll (type, args)
+    post (event, args)
     {
-        return this.send('toAll',type,args)
-    }
+        var e
 
-    toWins (type, args)
-    {
-        return this.send('toWins',type,args)
-    }
-
-    toMain (type, args)
-    {
-        return this.send('toMain',type,args)
-    }
-
-    send (receivers, type, args, id)
-    {
-        var event
-
-        event = new Event(POST)
-        event.event = type
-        event.args = args
-        event.senderID = id
-        event.receivers = receivers
-        return this.dispatchEvent(event)
+        e = new Event(POST)
+        e.event = event
+        e.args = args
+        return this.dispatchEvent(e)
     }
 }
 
 poster = new Poster
 export default {poster:poster,emit:function (event, ...args)
 {
-    return poster.toAll(event,args)
+    return poster.post(event,args)
+},toWins:function (event, ...args)
+{
+    return kakao.send('window.post',event,args)
 },on:function (event, cb)
 {
     return poster.addEventListener(event,function (e)

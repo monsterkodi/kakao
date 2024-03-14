@@ -34,6 +34,13 @@ toExport["util"] = function ()
         arr = [1,2,3]
         compare(util.pull(arr,2),[1,3])
         compare(arr,[1,3])
+        compare(util.pull(['a','b'],'a'),['b'])
+        compare(util.pull(['a','b'],'c'),['a','b'])
+        compare(util.pull([1,4],2),[1,4])
+        compare(util.pull([],2),[])
+        compare(util.pull({}),{})
+        compare(util.pull(1),1)
+        compare(util.pull(null),null)
     })
     section("pullIf", function ()
     {

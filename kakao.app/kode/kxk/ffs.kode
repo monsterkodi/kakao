@@ -17,7 +17,9 @@ class KFS
     @fileExists:    (p) ○-> await kakao.request 'fs.fileExists' p
     @dirExists:     (p) ○-> await kakao.request 'fs.dirExists'  p
     @isWritable:    (p) ○-> await kakao.request 'fs.isWritable' p
+    @isReadable:    (p) ○-> await kakao.request 'fs.isReadable' p
     @remove:        (p) ○-> await kakao.request 'fs.remove'     p
+    @info:          (p) ○-> await kakao.request 'fs.info'       p
     @isFile:        (p) ○-> await KFS.fileExists                p
     @isDir:         (p) ○-> await KFS.dirExists                 p
         

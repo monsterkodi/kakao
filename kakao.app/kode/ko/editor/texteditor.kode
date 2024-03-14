@@ -692,11 +692,11 @@ function TextEditor extends Editor
 
     funcInfoAtLineIndex: (li) ->
 
-        files = post.get 'indexer' 'files' @currentFile
-        fileInfo = files[@currentFile]
-        for func in fileInfo.funcs
-            if func.line <= li <= func.last
-                return func.class + '.' + func.name + ' '
+        # files = post.get 'indexer' 'files' @currentFile
+        # fileInfo = files[@currentFile]
+        # for func in fileInfo.funcs
+            # if func.line <= li <= func.last
+                # return func.class + '.' + func.name + ' '
         ''
 
     #  0000000  000      000   0000000  000   000

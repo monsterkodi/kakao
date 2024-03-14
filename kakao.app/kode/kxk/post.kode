@@ -19,8 +19,6 @@ class Poster extends EventTarget
         
         out = new Event event.event
         out.args      = event.args
-        out.senderID  = event.senderID
-        out.receivers = event.receivers
         @dispatchEvent out
         
     dispose: =>
@@ -28,18 +26,12 @@ class Poster extends EventTarget
         @removeEventListener POST, @onPostEvent
         window.removeEventListener 'beforeunload' @dispose
 
-    toAll:  (type, args) -> @send 'toAll'  type, args
-    toWins: (type, args) -> @send 'toWins' type, args
-    toMain: (type, args) -> @send 'toMain' type, args
-     
-    send: (receivers, type, args, id) -> 
+    post: (event, args) -> 
     
-        event = new Event POST
-        event.event = type
-        event.args = args
-        event.senderID = id 
-        event.receivers = receivers
-        @dispatchEvent event 
+        e = new Event POST
+        e.event = event
+        e.args = args
+        @dispatchEvent e
 
 poster = new Poster
         
@@ -47,6 +39,7 @@ export
 
     poster: poster
 
-    emit: (event, args...) -> poster.toAll event, args
+    emit: (event, args...) -> poster.post event, args
+    toWins: (event, args...) -> kakao.send 'window.post' event, args
         
     on: (event, cb) -> poster.addEventListener event, (e) -> cb.apply cb, e.args

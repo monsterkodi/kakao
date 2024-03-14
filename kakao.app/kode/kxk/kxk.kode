@@ -17,5 +17,5 @@ export
     dom:    dom
     elem:   elem
     post:   post
-    fs:     ffs
+    ffs:    ffs
     

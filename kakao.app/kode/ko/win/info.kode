@@ -6,14 +6,10 @@
 000  000   000  000        0000000 
 ###
 
-# { $, elem, post, shortCount, tooltip } = require 'kxk'
-
-use ../../kxk/dom
+use ../../kxk/dom ▪ $
 use ../../kxk/post
 use ../../kxk/elem
 use ../../kxk/tooltip
-
-{ $ } = dom
 
 shortCount = (v) ->
     v = parseInt v

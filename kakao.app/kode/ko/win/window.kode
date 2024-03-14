@@ -58,6 +58,10 @@ function Window #extends win
         
     onWindowCreated:        (win)           => 
         
+        kakao.send 'window.setSize' 750 750
+        kakao.send 'window.center'
+        
+        
         @id = win.id
         # log 'onWindowCreated' win.id
         
@@ -66,7 +70,7 @@ function Window #extends win
         @filehandler = window.filehandler = new filehandler
         @filewatcher = window.filewatcher = new watcher
         @tabs        = window.tabs        = new tabs window.titlebar.elem
-        @titlebar    =                      new titlebar
+        # @titlebar    =                      new titlebar
         @navigate    = window.navigate    = new navigate()
         @split       = window.split       = new split()
         @terminal    = window.terminal    = new terminal 'terminal'
@@ -147,7 +151,7 @@ function Window #extends win
             'Increase'              ➜ return changeFontSize +1
             'Decrease'              ➜ return changeFontSize -1
             'Reset'                 ➜ return resetFontSize()
-            'Open Window List'      ➜ return @titlebar.showList()
+            # 'Open Window List'      ➜ return @titlebar.showList()
             'Navigate Backward'     ➜ return @navigate.backward()
             'Navigate Forward'      ➜ return @navigate.forward()
             'Maximize Editor'       ➜ return @split.maximizeEditor()
@@ -166,7 +170,7 @@ function Window #extends win
             'Revert'                ➜ return post.emit 'reloadFile'
             'Close Tab or Window'   ➜ return post.emit 'closeTabOrWindow'
             'Close Other Tabs'      ➜ return post.emit 'closeOtherTabs'
-            'Close Other Windows'   ➜ return post.toOtherWins 'closeWindow'
+            'Close Other Windows'   ➜ return post.toWins 'closeWindow'
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Clear List'            

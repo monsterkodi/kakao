@@ -7,12 +7,10 @@
 ###
 
 use ../editor/syntax
-use ../../kxk/dom
+use ../../kxk/dom ▪ $
 use ../../kxk/post
 use ../../kxk/elem
 use ../../kxk/slash
-
-{ $ } = dom
 
 class CWD
 

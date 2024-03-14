@@ -866,19 +866,6 @@ TextEditor = (function ()
 
     TextEditor.prototype["funcInfoAtLineIndex"] = function (li)
     {
-        var fileInfo, files, func
-
-        files = post.get('indexer','files',this.currentFile)
-        fileInfo = files[this.currentFile]
-        var list = _k_.list(fileInfo.funcs)
-        for (var _697_17_ = 0; _697_17_ < list.length; _697_17_++)
-        {
-            func = list[_697_17_]
-            if ((func.line <= li && li <= func.last))
-            {
-                return func.class + '.' + func.name + ' '
-            }
-        }
         return ''
     }
 

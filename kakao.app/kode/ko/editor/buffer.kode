@@ -7,6 +7,7 @@
 ###
 
 use ./state
+use ../../kxk/kstr
 use ../../kxk/matchr
 use ../../kxk/events
 use ../../kxk/util ▪ uniq
@@ -366,7 +367,7 @@ function Buffer extends events
                 while (mtch = re.exec(@line(i))) != null
                     r.push [i, [mtch.index, re.lastIndex]] if fuzzy.test t, @line(i).slice mtch.index, re.lastIndex
             else
-                t = _.escapeRegExp t if type in ['str', 'Str', 'glob']
+                t = kstr.escapeRegExp t if type in ['str', 'Str', 'glob']
                 if type == 'glob'
                     t = t.replace new RegExp("\\*", 'g'), "\w*"
                     return r if not t.length

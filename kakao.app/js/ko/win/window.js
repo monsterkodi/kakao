@@ -83,12 +83,13 @@ Window = (function ()
     {
         var s
 
+        kakao.send('window.setSize',750,750)
+        kakao.send('window.center')
         this.id = win.id
         window.stash = new stash(`win/${this.id}`,{separator:'|'})
         this.filehandler = window.filehandler = new filehandler
         this.filewatcher = window.filewatcher = new watcher
         this.tabs = window.tabs = new tabs(window.titlebar.elem)
-        this.titlebar = new titlebar
         this.navigate = window.navigate = new navigate()
         this.split = window.split = new split()
         this.terminal = window.terminal = new terminal('terminal')
@@ -144,7 +145,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _125_25_
+        var action, _129_25_
 
         console.log('onMenuAction',name)
         if (action = editor.actionWithName(name))
@@ -210,9 +211,6 @@ Window = (function ()
             case 'Reset':
                 return resetFontSize()
 
-            case 'Open Window List':
-                return this.titlebar.showList()
-
             case 'Navigate Backward':
                 return this.navigate.backward()
 
@@ -268,7 +266,7 @@ Window = (function ()
                 return post.emit('closeOtherTabs')
 
             case 'Close Other Windows':
-                return post.toOtherWins('closeWindow')
+                return post.toWins('closeWindow')
 
             case 'Small Browser':
                 return window.commandline.startCommand('browse')
@@ -371,7 +369,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _280_14_
+    var _284_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -382,7 +380,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _286_22_
+    var _290_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -427,7 +425,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _331_32_
+    var _335_32_
 
     if (!(_k_.isNum(s)))
     {

@@ -76,20 +76,19 @@ export
     
     toggleStickySelection: ->
 
-        log 'toggleStickySelection'
         if @stickySelection then @endStickySelection()
         else @startStickySelection()
     
     startStickySelection: ->
         
         @stickySelection = true
-        post.emit 'sticky', true
+        post.emit 'sticky' true
         @emit 'selection'
 
     endStickySelection: ->
         
         @stickySelection = false
-        post.emit 'sticky', false
+        post.emit 'sticky' false
         @emit 'selection'
 
     #  0000000  000000000   0000000   00000000   000000000          00000000  000   000  0000000    

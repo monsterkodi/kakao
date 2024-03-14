@@ -179,11 +179,11 @@ get = function (object, keypath, defaultValue)
 
     if (!object)
     {
-        return
+        return defaultValue
     }
     if (!(keypath != null ? keypath.length : undefined))
     {
-        return
+        return defaultValue
     }
     if (typeof(keypath) === 'string')
     {

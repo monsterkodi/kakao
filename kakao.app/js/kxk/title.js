@@ -1,8 +1,11 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var $, elem, stopEvent, Title
+var Title
 
 import dom from "./dom.js"
+let $ = dom.$
+let stopEvent = dom.stopEvent
+let elem = dom.elem
 
 import sds from "./sds.js"
 
@@ -16,16 +19,12 @@ import post from "./post.js"
 
 import noon from "./noon.js"
 
-$ = dom.$
-stopEvent = dom.stopEvent
-elem = dom.elem
-
 
 Title = (function ()
 {
     function Title (opt)
     {
-        var pkg, _29_13_, _33_27_
+        var pkg, _26_13_, _30_27_
 
         this.opt = opt
     
@@ -38,9 +37,9 @@ Title = (function ()
         this["onTitlebar"] = this["onTitlebar"].bind(this)
         this["onWindowBlur"] = this["onWindowBlur"].bind(this)
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
-        this.opt = ((_29_13_=this.opt) != null ? _29_13_ : {})
+        this.opt = ((_26_13_=this.opt) != null ? _26_13_ : {})
         pkg = this.opt.pkg
-        this.elem = $(((_33_27_=this.opt.elem) != null ? _33_27_ : "#titlebar"))
+        this.elem = $(((_30_27_=this.opt.elem) != null ? _30_27_ : "#titlebar"))
         this.elem.classList.add('focus')
         if (!this.elem)
         {
@@ -134,10 +133,10 @@ Title = (function ()
 
     Title.prototype["setTitle"] = function (opt)
     {
-        var html, parts, _130_26_
+        var html, parts, _127_26_
 
         html = ""
-        parts = ((_130_26_=opt.title) != null ? _130_26_ : [])
+        parts = ((_127_26_=opt.title) != null ? _127_26_ : [])
         if (opt.pkg)
         {
             if (opt.pkg.name && _k_.in('name',parts))
@@ -202,7 +201,7 @@ Title = (function ()
 
     Title.prototype["initMenu"] = async function ()
     {
-        var tc, _183_36_
+        var tc, _180_36_
 
         if (!this.opt.menu)
         {
@@ -247,7 +246,7 @@ Title = (function ()
             menuOrAccel = obj[text]
             tmpl.push(((function ()
             {
-                var item, _213_33_, _213_57_
+                var item, _210_33_, _210_57_
 
                 if (_k_.empty(menuOrAccel) && text.startsWith('-'))
                 {
@@ -293,15 +292,15 @@ Title = (function ()
 
     Title.prototype["showMenu"] = function ()
     {
-        var _228_68_, _228_75_
+        var _225_68_, _225_75_
 
         this.menu.elem.style.display = 'inline-block'
-        return ((_228_68_=this.menu) != null ? typeof (_228_75_=_228_68_.focus) === "function" ? _228_75_() : undefined : undefined)
+        return ((_225_68_=this.menu) != null ? typeof (_225_75_=_225_68_.focus) === "function" ? _225_75_() : undefined : undefined)
     }
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _229_25_
+        var _226_25_
 
         ;(this.menu != null ? this.menu.close() : undefined)
         return this.menu.elem.style.display = 'none'
@@ -334,7 +333,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _264_37_
+        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _261_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -354,9 +353,9 @@ Title = (function ()
         accels = sds.find.key(menu,'accel')
         combos = sds.find.key(menu,'combo')
         var list = _k_.list(combos.concat(accels))
-        for (var _258_20_ = 0; _258_20_ < list.length; _258_20_++)
+        for (var _255_20_ = 0; _255_20_ < list.length; _255_20_++)
         {
-            keypath = list[_258_20_]
+            keypath = list[_255_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -366,7 +365,7 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_264_37_=item.action) != null ? _264_37_ : item.text)
+                action = ((_261_37_=item.action) != null ? _261_37_ : item.text)
                 post.emit('menuAction',action)
                 return action
             }

@@ -77,7 +77,7 @@ else
     }
     else
     {
-        dir = process.cwd()
+        dir = kakao.bundle.path
     }
     console.log(info(dir))
 }

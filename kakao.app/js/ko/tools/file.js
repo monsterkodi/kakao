@@ -28,7 +28,7 @@ class File
 
     static isText (file)
     {
-        return slash.isText(file)
+        return _k_.in(slash.ext(file),File.sourceFileExtensions)
     }
 
     static rename (from, to, cb)
@@ -141,27 +141,13 @@ class File
         })
     }
 
-    static p4edit (file, text, cb)
-    {}
-
     static save (file, text, cb)
     {
-        slash.logErrors = true
-        return slash.fileExists(file,function (stat)
+        return ffs.fileExists(file).then(function (stat)
         {
             if (stat)
             {
-                return slash.isWritable(file,function (writable)
-                {
-                    if (writable)
-                    {
-                        return File.write(file,text,stat.mode,cb)
-                    }
-                    else
-                    {
-                        return File.p4edit(file,text,cb)
-                    }
-                })
+                return File.write(file,text,stat.mode,cb)
             }
             else
             {
@@ -199,7 +185,7 @@ class File
         }
         spans = []
         split = slash.split(file)
-        for (var _143_18_ = i = 0, _143_22_ = split.length - 1; (_143_18_ <= _143_22_ ? i < split.length - 1 : i > split.length - 1); (_143_18_ <= _143_22_ ? ++i : --i))
+        for (var _121_18_ = i = 0, _121_22_ = split.length - 1; (_121_18_ <= _121_22_ ? i < split.length - 1 : i > split.length - 1); (_121_18_ <= _121_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)

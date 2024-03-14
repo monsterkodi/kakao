@@ -312,7 +312,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_281_40_=slash.dir(this.file)) != null ? _281_40_ : process.cwd())
+                this.dir = ((_281_40_=slash.dir(this.file)) != null ? _281_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -339,7 +339,7 @@ Open = (function ()
         else
         {
             this.file = null
-            this.dir = process.cwd()
+            this.dir = kakao.bundle.app('kode')
         }
         this.files = projects.files(this.dir)
         this.loadState()

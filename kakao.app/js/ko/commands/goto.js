@@ -36,7 +36,7 @@ Goto = (function ()
         return
         items = []
         this.types = {}
-        files = post.get('indexer','files')
+        files = {}
         funcs = (files[window.editor.currentFile] != null ? files[window.editor.currentFile].funcs : undefined)
         funcs = (funcs != null ? funcs : [])
         var list = _k_.list(funcs)
@@ -46,8 +46,8 @@ Goto = (function ()
             items.push({text:func.name,line:'▸',clss:'method'})
             this.types[func.name] = 'func'
         }
-        clsss = post.get('indexer','classes')
-        var list1 = _k_.list(_.keys(clsss))
+        clsss = {}
+        var list1 = _k_.list(Object.keys(clsss))
         for (var _57_14_ = 0; _57_14_ < list1.length; _57_14_++)
         {
             k = list1[_57_14_]

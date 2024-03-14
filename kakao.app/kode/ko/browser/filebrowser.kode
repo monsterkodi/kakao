@@ -13,15 +13,13 @@ use ../../kxk/drag
 use ../../kxk/post
 use ../../kxk/ffs
 
-use ./browser
-use ./select
-use ./shelf
-# use ../git/hub
-
+use ./select      ● Select
 use ../tools/file ● File
-use ./info ● Info
+use ./browser     ● Browser
+use ./shelf       ● Shelf
+use ./info        ● Info
 
-function FileBrowser extends browser
+function FileBrowser extends Browser
 
     @: (view) ->
 
@@ -30,12 +28,12 @@ function FileBrowser extends browser
         window.filebrowser = @
 
         @loadID = 0
-        @shelf  = new shelf @
-        @select = new select @
+        @shelf  = new Shelf @
+        @select = new Select @
         @name   = 'FileBrowser'
         @srcCache = {}
         
-        post.on 'file'           @onFile
+        # post.on 'file'           @onFile
         post.on 'browse'         @browse
         post.on 'filebrowser'    @onFileBrowser
 
@@ -196,8 +194,8 @@ function FileBrowser extends browser
 
         # log 'onFileBrowser' action, item.type, arg
         switch action
-            when 'loadItem'     then @loadItem     item, arg
-            when 'activateItem' then @activateItem item, arg
+            'loadItem'     ➜ @loadItem     item, arg
+            'activateItem' ➜ @activateItem item, arg
     
     loadDir: (path) -> @loadItem type:'dir' file:path
     
@@ -257,6 +255,7 @@ function FileBrowser extends browser
             when 'file'
                 @loadFileItem item, col+1
                 if item.textFile or File.isText item.file
+                    log 'FileBrowser emit jumpToFile' item
                     post.emit 'jumpToFile' item
 
     # 00000000  000  000      00000000  000  000000000  00000000  00     00
@@ -272,7 +271,7 @@ function FileBrowser extends browser
         while col >= @numCols()
             @addColumn()
 
-        file = item.file
+        file = item.path
 
         @columns[col].parent = item
         
@@ -280,17 +279,17 @@ function FileBrowser extends browser
             @imageInfoColumn col, file
         else
             switch slash.ext file
-                when 'tiff' 'tif'
+                'tiff' 'tif'
                     if not slash.win()
                         @convertImage row
                     else
                         @fileInfoColumn col, file
-                when 'pxm'
+                'pxm'
                     if not slash.win()
                         @convertPXM row
                     else
                         @fileInfoColumn col, file
-                else
+                ➜
                     if File.isText item.file
                         @loadSourceItem item, col
                     if not File.isCode item.file
@@ -326,14 +325,14 @@ function FileBrowser extends browser
              
     loadSourceItem: (item, col) ->
 
-        if not @srcCache[item.file]?
+        # if not @srcCache[item.file]?
 
-            @srcCache[item.file] = post.get 'indexer' 'file' item.file
+            # @srcCache[item.file] = post.get 'indexer' 'file' item.file
 
         info = @srcCache[item.file]
 
         if empty info
-            @columns[col].loadItems [], item
+            # @columns[col].loadItems [], item
             return
 
         items = []
@@ -392,10 +391,11 @@ function FileBrowser extends browser
             log 'loadDir items' items
             @loadDirItems dir, item, items, col, opt
             post.emit 'dir' dir
+        true
                 
     loadDirItems: (dir, item, items, col, opt) =>
 
-        # log 'loadDirItems' dir, item, items, col, opt
+        log 'loadDirItems' dir, item, items, col, opt
                     
         @updateColumnScrolls()
                             

@@ -11,17 +11,14 @@
         - minimize, maximize and close buttons        
 ###
 
-use ./dom
+use ./dom ▪ $ stopEvent elem
 use ./sds
 use ./menu
 use ./keyinfo
 use ./slash
 use ./post
 use ./noon
-# import noon     from './noon.js'  
                                 
-{ $, stopEvent, elem } = dom
-
 function Title
     
     @: (@opt) ->
