@@ -330,7 +330,7 @@ function Column
         
         for item in @items
             @rows.push new Row @, item
-        
+                    
         @scroll.update()
         @
 
@@ -606,8 +606,8 @@ function Column
     sortByType: =>
         
         @rows.sort (a,b) -> 
-            atype = a.item.type == 'file' and slash.ext(a.item.name) or '___' #a.item.type
-            btype = b.item.type == 'file' and slash.ext(b.item.name) or '___' #b.item.type
+            atype = a.item.type == 'file' and slash.ext(a.item.path) or '___' #a.item.type
+            btype = b.item.type == 'file' and slash.ext(b.item.path) or '___' #b.item.type
             (a.item.type + atype + a.item.name).localeCompare(b.item.type + btype + b.item.name, undefined, numeric:true)
             
         @table.innerHTML = ''
