@@ -7,11 +7,13 @@
 ###
 
 # simple key value store with delayed saving to userData folder
-# does not sync between processes
+# stores state in separate files per window and does not sync between windows
  
 use ./post
 use ./slash
+use ./noon
 use ./sds
+use ./kstr
 use ./ffs
 use ./util ▪ defaults
 
@@ -23,15 +25,13 @@ function Stash
         
         @sep = opt?.separator ? ':'
         @timer   = null
-        # @file    = slash.path opt?.file ? "#{post.get 'userData'}/#{@name}.noon"
-        @file    = slash.path opt?.file ? "userDataFolder/#{@name}.noon"
+        @file    = slash.path kakao.bundle.path, "/.stash/#{@name}.noon"
         @timeout = opt?.timeout ? 4000
         @changes = []
         
-        # fs.ensureDir slash.dir(@file), ->
-        @data = @load()
-        @data = {} if not @data is obj
+        @data = {}
         @data = defaults @data, opt.defaults if opt?.defaults?
+        @load()
 
     keypath: (key) -> key.split @sep
     
@@ -76,13 +76,12 @@ function Stash
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
     
-    load: ->
+    load: ○->
         
-        log 'stash load not implemented!'
-        
-        # if slash.isFile @file
-            # return noon.load @file
-        {}
+        data = await noon.load @file
+        log 'stash load data' @file, data
+        if data
+            @data = data
         
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000     

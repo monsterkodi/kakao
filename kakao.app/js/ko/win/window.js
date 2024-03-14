@@ -76,6 +76,10 @@ Window = (function ()
         this.menuIcon = kakao.bundle.img('menu_ko.png')
         this.menuNoon = kakao.bundle.res('menu_ko.noon')
         post.on('menuAction',this.onMenuAction)
+        post.on('stash',function ()
+        {
+            return window.editor.saveScrollCursorsAndSelections()
+        })
         window.aboutImage = kakao.bundle.img('about_ko.png')
     }
 
@@ -86,7 +90,6 @@ Window = (function ()
         kakao.send('window.setSize',750,750)
         kakao.send('window.center')
         this.id = win.id
-        window.stash = new stash(`win/${this.id}`,{separator:'|'})
         this.filehandler = window.filehandler = new FileHandler
         this.filewatcher = window.filewatcher = new watcher
         this.tabs = window.tabs = new Tabs(window.titlebar.elem)
@@ -144,7 +147,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _131_25_
+        var action, _129_25_
 
         console.log('onMenuAction',name)
         if (action = Editor.actionWithName(name))
@@ -368,7 +371,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _286_14_
+    var _276_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -379,7 +382,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _292_22_
+    var _282_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -424,7 +427,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _337_32_
+    var _327_32_
 
     if (!(_k_.isNum(s)))
     {
