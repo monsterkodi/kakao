@@ -147,10 +147,12 @@ class Tabs
 
     onCloseTabOrWindow: (tab) =>
 
+        log 'onCloseTabOrWindow' @numTabs()
         if @numTabs() <= 1
             post.emit 'menuAction' 'close'
         else
             tab ?= @activeTab()
+            log 'activeTab' tab
             tab.nextOrPrev().activate()
             @closeTab tab
             @update()
@@ -158,7 +160,7 @@ class Tabs
     onCloseOtherTabs: =>
 
         return if not @activeTab() # should not happen
-        tabsToClose = filter @tabs, (t) => not t.pinned and t != @activeTab()
+        tabsToClose = @tabs.filter (t) => not t.pinned and t != @activeTab()
         for t in tabsToClose
             @closeTab t
         @update()
