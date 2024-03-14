@@ -152,12 +152,10 @@
     }
     if ([req isEqualToString:@"read"])
     {
-        NSString* path = [args objectAtIndex:0];
         return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     }
     else if ([req isEqualToString:@"write"])
     {
-        NSString* path = [args objectAtIndex:0];
         NSString* text = [args objectAtIndex:1];
         NSData* data = [text dataUsingEncoding:NSUTF8StringEncoding];
         if ([data writeToFile:path options:NSAtomicWrite error:nil])
@@ -167,11 +165,7 @@
     }
     else if ([req isEqualToString:@"list"])
     {
-        NSString* dirPath = [[args objectAtIndex:0] stringByExpandingTildeInPath];
-        
-        // NSLog(@"list %@", dirPath);
-        
-        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
+        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
         
         NSMutableArray* result = [NSMutableArray array];
         
@@ -190,12 +184,10 @@
                 type = @"dir";
             }
             
-            id path = [dirPath stringByAppendingPathComponent:file];
-            
             NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
             [fileInfo setObject:type forKey:@"type"];
             [fileInfo setObject:file forKey:@"file"];
-            [fileInfo setObject:path forKey:@"path"];
+            [fileInfo setObject:[path stringByAppendingPathComponent:file] forKey:@"path"];
             [result addObject:fileInfo];
         }
                 
@@ -203,11 +195,9 @@
     }
     else if ([req isEqualToString:@"listDeep"])
     {
-        NSString* dirPath = [[args objectAtIndex:0] stringByExpandingTildeInPath];
+        NSLog(@"listDeep %@", path);
         
-        NSLog(@"listDeep %@", dirPath);
-        
-        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
+        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
         
         NSMutableArray* result = [NSMutableArray array];
         
@@ -223,17 +213,12 @@
             else if ([fileType isEqualToString:NSFileTypeDirectory])
             {
                 type = @"dir";
-                // NSLog(@"dir %@", file);
             }
-            
-            id path = [dirPath stringByAppendingPathComponent:file];
-            
-            // NSLog(@"%@ file %@ path %@", type, file, path);
-        
+                    
             NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
             [fileInfo setObject:type forKey:@"type"];
             [fileInfo setObject:file forKey:@"file"];
-            [fileInfo setObject:path forKey:@"path"];
+            [fileInfo setObject:[path stringByAppendingPathComponent:file] forKey:@"path"];
             [result addObject:fileInfo];
         }
                 

@@ -16,14 +16,15 @@
 
 @implementation WinDelegate
 
-- (void) windowDidBecomeKey:(NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
-- (void) windowDidResignKey:(NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
+- (void) windowDidBecomeKey: (NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
+- (void) windowDidResignKey: (NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
 - (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
 - (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
+- (BOOL) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
 - (BOOL) windowShouldClose:(NSWindow*)window 
 { 
-    if ([[[App get] wins] count] == 1) // make sure the application closes if the last kakao window closes.
-        [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
+    // if ([[[App get] wins] count] == 1) // make sure the application closes if the last kakao window closes.
+        // [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
     return YES; 
 }
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame

@@ -53,6 +53,7 @@ function Window #extends win
         @menuNoon = kakao.bundle.res 'menu_ko.noon'
         
         post.on 'menuAction' @onMenuAction
+        post.on 'stash' -> window.editor.saveScrollCursorsAndSelections()
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         
@@ -61,12 +62,9 @@ function Window #extends win
         kakao.send 'window.setSize' 750 750
         kakao.send 'window.center'
         
-        
         @id = win.id
         # log 'onWindowCreated' win.id
-        
-        window.stash = new stash "win/#{@id}" separator:'|'
-            
+                    
         @filehandler = window.filehandler = new FileHandler
         @filewatcher = window.filewatcher = new watcher
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
@@ -153,7 +151,6 @@ function Window #extends win
             'Increase'              ➜ return changeFontSize +1
             'Decrease'              ➜ return changeFontSize -1
             'Reset'                 ➜ return resetFontSize()
-            # 'Open Window List'      ➜ return @titlebar.showList()
             'Navigate Backward'     ➜ return @navigate.backward()
             'Navigate Forward'      ➜ return @navigate.forward()
             'Maximize Editor'       ➜ return @split.maximizeEditor()
@@ -194,13 +191,6 @@ function Window #extends win
 window.state = new store 'state' separator:'|'
 window.prefs = prefs
 
-# saveStash = ->
-# 
-#     post.emit 'saveChanges' 
-#     post.emit 'stash'
-#     editor.saveScrollCursorsAndSelections()
-#     window.stash.save()
-#     
 # clearStash = ->
 #     post.emit 'saveChanges'
 #     window.stash.clear()
