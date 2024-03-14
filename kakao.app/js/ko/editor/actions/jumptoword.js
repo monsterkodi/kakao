@@ -26,7 +26,7 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
 
                 if (slash.fileExists(file))
                 {
-                    post.emit('jumpTo',{file:file,line:line,col:col})
+                    post.emit('jumpTo',{path:file,line:line,col:col})
                     return true
                 }
             }
@@ -35,7 +35,7 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
                 cwd = window.cwd.cwd
                 var _42_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _42_38_[0]; line = _42_38_[1]; col = _42_38_[2]
 
-                post.emit('jumpTo',{file:file,line:line,col:col})
+                post.emit('jumpTo',{path:file,line:line,col:col})
                 return true
             }
         }
@@ -55,7 +55,7 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
 
                 if (slash.fileExists(file))
                 {
-                    post.emit('jumpTo',{file:file,line:line,col:col})
+                    post.emit('jumpTo',{path:file,line:line,col:col})
                     return true
                 }
             }

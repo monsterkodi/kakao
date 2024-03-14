@@ -271,7 +271,7 @@ class Tab
 
     activate ()
     {
-        post.emit('jumpToFile',{file:this.file})
+        post.emit('jumpToFile',{path:this.file})
         return this
     }
 

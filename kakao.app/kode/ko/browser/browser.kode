@@ -84,7 +84,7 @@ function Browser extends events
             if @activeColumnIndex() > 0
                 if col = @activeColumn()
                     if row = col.activeRow()
-                        @loadItem @fileItem row.item.file
+                        @loadItem @fileItem row.item.path
                     else
                         @loadItem @fileItem col.path()
             else

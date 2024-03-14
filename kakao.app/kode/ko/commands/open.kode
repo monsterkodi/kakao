@@ -340,7 +340,7 @@ function Open extends Command
                 # post.toMain 'newWindowWithFile' file
                 log 'open new window with file not implemented!'
             else
-                post.emit 'jumpToFile' type:'file' file:file
+                post.emit 'jumpToFile' type:'file' path:file
                         
             super file
                 

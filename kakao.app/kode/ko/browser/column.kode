@@ -77,9 +77,9 @@ function Column
 
         @parent = parent
         
-        if @index == 0 or @index-1 < @browser.numCols() and @browser.columns[@index-1].activeRow()?.item.name == '..' and not slash.isRoot @parent.file
+        if @index == 0 or @index-1 < @browser.numCols() and @browser.columns[@index-1].activeRow()?.item.name == '..' and not slash.isRoot @parent.path
             if items[0]?.name not in ['..' '/']
-                dir = @parent.file
+                dir = @parent.path
                 updir = slash.dir dir
                 if updir != dir
                     items.unshift
@@ -94,17 +94,13 @@ function Column
         @crumb.show()
         
         if @parent.type == 'dir'
-            DirWatch.watch @parent.file
-            @crumb.setFile @parent.file
+            DirWatch.watch @parent.path
+            @crumb.setFile @parent.path
         else
-            if File.isCode @parent.file
-                @crumb.setFile @parent.file
+            if File.isCode @parent.path
+                @crumb.setFile @parent.path
                 @div.classList.add 'browserColumnCode'
-                
-        if @parent.type == undefined
-            log 'undefined parent type?'
-            @parent.type = slash.isDir(@parent.file) and 'dir' or 'file'
-        
+                        
         error "no parent item?" if not @parent?
         error "loadItems -- no parent type?", @parent if not @parent.type?
         
@@ -114,7 +110,7 @@ function Column
         
             @scroll.update()
             
-        if @parent.type == 'dir' and slash.samePath '~/Downloads' @parent.file
+        if @parent.type == 'dir' and slash.samePath '~/Downloads' @parent.path
             @sortByDateAdded()
         @
                 
@@ -208,7 +204,7 @@ function Column
             if row = @browser.rowAtPos d.pos
                 if row.item?.type == 'dir'
                     @browser.springLoadTimer = setTimeout onSpringLoadTimeout, 1000
-                    @browser.springLoadTarget = row.item.file
+                    @browser.springLoadTarget = row.item.path
             
             @updateDragIndicator e 
             @dragDiv.style.transform = "translateX(#{d.deltaSum.x}px) translateY(#{d.deltaSum.y}px)"
@@ -233,9 +229,9 @@ function Column
             
             if row = @browser.rowAtPos d.pos
                 column = row.column
-                target = row.item?.file
+                target = row.item?.path
             else if column = @browser.columnAtPos d.pos
-                target = column.parent?.file
+                target = column.parent?.path
             else
                 log 'no drop target'
                 return
@@ -354,8 +350,8 @@ function Column
         
     isEmpty: -> empty @parent
     clear:   ->
-        if @parent?.file and @parent?.type == 'dir'
-            DirWatch.unwatch @parent.file
+        if @parent?.path and @parent?.type == 'dir'
+            DirWatch.unwatch @parent.path
         delete @parent
         @clearSearch()
         @div.scrollTop = 0
@@ -379,12 +375,12 @@ function Column
     activateRow: (row) -> @row(row)?.activate()
        
     activeRow: -> @rows.find (r) -> r.isActive()
-    activePath: -> @activeRow()?.path() ? @parent.file
+    activePath: -> @activeRow()?.path() ? @parent.path
     selectedRow: -> @rows.find (r) -> r.isSelected()
     
     row: (row) -> # accepts element, index, string or row
         if      Number.isInteger(row) then return 0 <= row < @numRows() and @rows[row] or null
-        else if typeof(row) == 'string' then return @rows.find (r) -> r.item.name == row or r.item.file == row
+        else if typeof(row) == 'string' then return @rows.find (r) -> r.item.file == row or r.item.path == row
         else if row instanceof HTMLElement then return @rows.find (r) -> r.div.contains row
         else return row
             
@@ -392,7 +388,7 @@ function Column
     prevColumn: -> @browser.column @index-1
         
     name: -> "#{@browser.name}:#{@index}"
-    path: -> @parent?.file ? ''
+    path: -> @parent?.path ? ''
         
     numRows:    -> @rows.length ? 0   
     rowHeight:  -> @rows[0]?.div.clientHeight ? 0
@@ -455,7 +451,7 @@ function Column
             @browser.clearColumnsFrom 1 pop:true 
             @browser.loadDirItem item, 0 activate:false
         else
-            editor.focus() # test if editor.currentFile == item.file ?
+            editor.focus() # test if editor.currentFile == item.path ?
     
     extendSelection: (key) ->
         
@@ -514,15 +510,15 @@ function Column
                     type = item.type
                     if type == 'dir'
                         @browser.loadItem item
-                    else if item.file
+                    else if item.path
                         post.emit 'jumpTo' item
                         post.emit 'focus' 'editor'
         @
 
     navigateRoot: (key) -> 
         switch key 
-            'left'  ➜ @browser.browse slash.dir @parent.file
-            'right' ➜ @browser.browse @activeRow().item.file
+            'left'  ➜ @browser.browse slash.dir @parent.path
+            'right' ➜ @browser.browse @activeRow().item.path
         @
             
     #  0000000  00000000   0000000   00000000    0000000  000   000    
@@ -584,7 +580,7 @@ function Column
     removeRow: (row) ->
         
         if row == @activeRow()
-            if @nextColumn()?.parent?.file == row.item?.file
+            if @nextColumn()?.parent?.path == row.item?.path
                 @browser.clearColumnsFrom @index + 1
             
         row.div.remove()
@@ -636,11 +632,8 @@ function Column
     
     toggleDotFiles: =>
 
-        if @parent.type == undefined
-            @parent.type = slash.isDir(@parent.file) and 'dir' or 'file'
-            
         if @parent.type == 'dir'            
-            stateKey = "browser▸showHidden▸#{@parent.file}"
+            stateKey = "browser▸showHidden▸#{@parent.path}"
             if prefs.get stateKey
                 prefs.del stateKey
             else
@@ -736,7 +729,7 @@ function Column
         for row in @rows
             return if row.item.type not in ['dir' 'file']
             return if not row.div
-            status = files[row.item.file]
+            status = files[row.item.path]
 
             if icon =$ '.browserStatusIcon' row.div
                 icon.remove()
@@ -745,7 +738,7 @@ function Column
                 row.div.appendChild elem 'span' class:"git-#{status}-icon browserStatusIcon"
             else if row.item.type == 'dir'
                 for file, status of files
-                    if row.item.name != '..' and file.startsWith row.item.file
+                    if row.item.file != '..' and file.startsWith row.item.path
                         row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
                         break
         
@@ -764,11 +757,11 @@ function Column
         if @browser.columns[0].items[0].name != '..'
 
             @unshiftItem 
-                name: '..'
+                file: '..'
                 type: 'dir'
-                file: slash.dir @parent.file
+                path:  slash.dir @parent.path
                 
-        @crumb.setFile @parent.file
+        @crumb.setFile @parent.path
     
     onContextMenu: (event, column) => 
         
@@ -786,11 +779,11 @@ function Column
             ,
                 text:   'Add to Shelf'
                 combo:  'alt+shift+.'
-                cb:     => post.emit 'addToShelf' @parent.file
+                cb:     => post.emit 'addToShelf' @parent.path
             ,
                 text:   'Explorer'
                 combo:  'alt+e' 
-                cb:     => open @parent.file
+                cb:     => open @parent.path
             ]
             
             opt.x = absPos.x
@@ -885,9 +878,9 @@ function Column
             action = 'move'
         else
             action = 'copy'
-        target = @parent.file
+        target = @parent.path
         if @activeRow()?.item.type == 'dir'
-            target = @activeRow().item.file
+            target = @activeRow().item.path
         @browser.dropAction action, paths, target
         
     # 000   000  00000000  000   000  

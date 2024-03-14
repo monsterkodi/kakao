@@ -33,7 +33,7 @@ export
                 if d.start <= p[0] <= d.start+d.match.length
                     [file, line, col] = slash.splitFileLine d.match
                     if slash.fileExists file
-                        post.emit 'jumpTo', file:file, line:line, col:col
+                        post.emit 'jumpTo', path:file, line:line, col:col
                         return true
                         
                 if not slash.isAbsolute d.match
@@ -41,7 +41,7 @@ export
                     cwd = window.cwd.cwd
                     [file, line, col] = slash.splitFileLine slash.join cwd, d.match
                     
-                    post.emit 'jumpTo' file:file, line:line, col:col
+                    post.emit 'jumpTo' path:file, line:line, col:col
                     return true
                     
                     # if slash.isFile file
@@ -62,7 +62,7 @@ export
                 if d.start <= p[0] <= d.start+d.match.length
                     [file, line, col] = slash.splitFileLine d.match
                     if slash.fileExists file
-                        post.emit 'jumpTo', file:file, line:line, col:col
+                        post.emit 'jumpTo', path:file, line:line, col:col
                         return true
         false
     

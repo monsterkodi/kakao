@@ -264,7 +264,7 @@ FileEditor = (function ()
         console.log('jumpToFile',opt)
         if (opt.newTab)
         {
-            file = opt.file
+            file = opt.path
             if (opt.line)
             {
                 file += ':' + opt.line
@@ -277,7 +277,7 @@ FileEditor = (function ()
         }
         else if (window.lastFocus === 'editor')
         {
-            var _245_25_ = slash.splitFilePos(opt.file); file = _245_25_[0]; fpos = _245_25_[1]
+            var _245_25_ = slash.splitFilePos(opt.path); file = _245_25_[0]; fpos = _245_25_[1]
 
             opt.pos = fpos
             if (opt.col)
@@ -311,7 +311,7 @@ FileEditor = (function ()
             word = opt.word
         }
         opt = (opt != null ? opt : {})
-        if ((opt.file != null))
+        if ((opt.path != null))
         {
             this.jumpToFile(opt)
             return true
@@ -374,7 +374,7 @@ FileEditor = (function ()
                 info = files[file]
                 if (slash.name(file).toLowerCase() === find && file !== this.currentFile)
                 {
-                    this.jumpToFile({file:file,line:6})
+                    this.jumpToFile({path:file,line:6})
                 }
             }
         }

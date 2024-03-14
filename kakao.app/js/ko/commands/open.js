@@ -368,7 +368,7 @@ Open = (function ()
             }
             else
             {
-                post.emit('jumpToFile',{type:'file',file:file})
+                post.emit('jumpToFile',{type:'file',path:file})
             }
             Open.__super__.execute.call(this,file)
             return {text:file,focus:'editor',show:'editor',status:'ok'}

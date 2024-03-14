@@ -48,7 +48,7 @@ class Crumb
                 if kpos(event).x < br.left
                     @column.browser.browse root.id
                 else
-                    @column.browser.browse @column.parent.file
+                    @column.browser.browse @column.parent.path
         else
             @column.makeRoot()
             

@@ -318,13 +318,13 @@ function Browse extends Command
             dirExists = await ffs.dirExists slash.removeLinePos cmd
             fileExists = await ffs.fileExists slash.removeLinePos cmd
             if dirExists
-                @browser.loadItem file:cmd, type:'dir'
+                @browser.loadItem path:cmd, type:'dir'
                 @commandline.setText cmd
                 return
             else if fileExists
                 @commandline.setText cmd
-                log 'browse emit jumpToFile' file:cmd
-                post.emit 'jumpToFile' file:cmd
+                log 'browse emit jumpToFile' path:cmd
+                post.emit 'jumpToFile' path:cmd
                 return
             else
                 error 'browse.execute -- neither file nor dir' slash.removeLinePos cmd
