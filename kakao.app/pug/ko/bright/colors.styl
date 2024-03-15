@@ -24,8 +24,10 @@ separatorColor      = #0e0e0e
 crumbHoverColor     = #0e0e0e
 frameColor          = #111111
 shelfColor          = #181818
-titleColor          = #222
-backColor           = #282828
+commandColor        = #1a1a1a
+splitColor          = #1d1d1d
+titleColor          = #222222
+backColor           = #1a1a1a
 scrollColor         = #444
 textBlurColor       = #444
 textActiveColor     = #999
@@ -39,13 +41,11 @@ body
     color               #fff
 
 .split-handle
-    background          #1d1d1d
+    background          splitColor
 
 .browser
     background          shelfColor
     color               #fff
-    & .split-handle
-        background      titleColor
 
 .browserRow
 
@@ -87,10 +87,14 @@ body
     background          shelfColor
 
 #shelf
-    background          #1e1e1e
+    background          shelfColor
+    box-sizing          border-box
+    border-right-color  splitColor
     
 #shelf.focus
-    background          titleColor
+    background          #1e1e1e
+    border-right-color  #1e1e1e
+    border-right-width  0
     
 .fileInfoData
     margin-top          20px
@@ -107,7 +111,7 @@ body
 
 #commandline-editor
     color               #fff
-    background          titleColor
+    background          commandColor
 
 //  0000000   0000000   00     00  00     00   0000000   000   000  0000000    000      000   0000000  000000000
 // 000       000   000  000   000  000   000  000   000  0000  000  000   000  000      000  000          000
@@ -189,7 +193,7 @@ span.macro
 // 000  000   000  000        0000000
 
 #info
-    background          titleColor
+    background          commandColor
     border-left-color   frameColor
 
 .info-cursor-line
@@ -352,7 +356,7 @@ span.macro
         background      #111
       
 .cursor-line
-    background          rgba(0, 0, 0, 0.25)
+    background          rgba(0, 0, 0, 0.15)
         
 .commandlist .cursor
     background          transparent
@@ -372,7 +376,7 @@ span.macro
 .linenumber
     border-right-color  frameColor
     & span
-        color           frameColor
+        color           rgba(0, 0, 0, 0)
 
     &.highligd span
         color           rgba(155,155,255, 0.6)

@@ -5,78 +5,127 @@
      000     000     000  0000     000     000   000   000 000
 0000000      000     000   000     000     000   000  000   000
 */
-// 0000000    00000000   000   0000000   000   000  000000000
-// 000   000  000   000  000  000        000   000     000
-// 0000000    0000000    000  000  0000  000000000     000
-// 000   000  000   000  000  000   000  000   000     000
-// 0000000    000   000  000   0000000   000   000     000
+// 0000000     0000000   00000000   000   000
+// 000   000  000   000  000   000  000  000
+// 000   000  000000000  0000000    0000000
+// 000   000  000   000  000   000  000  000
+// 0000000    000   000  000   000  000   000
 
-// #eee #ddd #ccc #bbb #aaa #666 #333 #222
-// #0f0 #0d0 #0b0 #0a0 #090 #080 #060     
-// #00f #00c #00a #008 #006               
-// #ccf #88f #66f #55f #44f               
-// #f00 #c00 #a00 #800 #600               
-// #fa0 #f80 #a80 #880 #a32               
-// #f0f #c0c #a0a #808 #606               
-// #aaf #c0f #80f #80c                    
-// #f08 #2aa #a8a #48a                    
+// #181818 #222 #333 #444 #4f4f4f #666 #aaa
+// #f80 #fa0 #fd0 #ff0 #ff4 #ff8           
+// #00f #55f #66f #88f #aaf #ccf           
+// #040 #050 #060 #080 #0a0 #0f0           
+// #808 #a0a #c0c #f0f #f8f #fcf           
+// #a00 #d00 #f08 #48a                     
 
 .syntax
-    color           #888
+    color           #666
 
 .browserRow.array
-    color           #666
+    color           #aaa
 .browserRow .arrayIndex
-    color           #ddd
+    color           #444
     font-size       12px
 .browserRow .arrayDot
-    color           #eee
+    color           #333
 
 .invisible
-    color           #aaa
-    opacity         0.5
-
-.bool
-.true
-    color           #88f
-.false
-    color           #44f
-
-.nil
-.value
-    color           #808
-
-.dictionary
-    color           #880
+    color           #181818
+    &.invisible-tab
+        color       #333
+    &.trailing
+        color       #600
 
 .array
     color           #00f
 
+.type
+    color           #77f
+
+// 00000000  000   000  000   000   0000000  000000000  000   0000000   000   000  
+// 000       000   000  0000  000  000          000     000  000   000  0000  000  
+// 000000    000   000  000 0 000  000          000     000  000   000  000 0 000  
+// 000       000   000  000  0000  000          000     000  000   000  000  0000  
+// 000        0000000   000   000   0000000     000     000   0000000   000   000  
+
+.func
+.function
+    color           #fa0
+    &.post          
+        color       #bbf
+    &.call
+        color       #f80
+        &.class     
+            color   #fc0
+
+    &.marker
+        opacity     1
+        color       #55f
+                
+    &.async
+        opacity             1
+        color               #aaf
+        &.punct
+        &.marker
+            color               #55f
+            &.bound
+                color           #f80
+        
+    &.tail:before
+    &.head:before
+        color               #55f
+        
+    &.tail.bound:before
+    &.head.bound:before
+        color               #f80
+            
+    &.bracket
+        color       #55f
+
+.arrow
+    &.tail:before
+    &.head:before
+        color               #555
+        
+//  0000000  000       0000000    0000000   0000000  
+// 000       000      000   000  000       000       
+// 000       000      000000000  0000000   0000000   
+// 000       000      000   000       000       000  
+//  0000000  0000000  000   000  0000000   0000000   
+
 .obj
 .owner
 .callee
+.dictionary
+.class.object
 .class
-    color           #800
-
-.variable
-    color           #a0a
+    color           #ff8
 
 .range
-    color           #80f
+    color           #66f
 
 .require
     color           #0f0
 
 .this
-.marker
-    opacity         0.6
+    color           #f88
 
+.marker
+.punct
+    opacity         0.4
+    &.minor
+        opacity     0.3
+    &.dictionary
+        opacity     0.3
+
+.escape
+    opacity         0.2
+    
 .module
-    color           #a80
+    color           #ff8
 
 .property
-    opacity         0.8
-    color           #a32
+    color           #fa8
 
 .elem
 .namespace
@@ -84,113 +133,69 @@
     &.member
         color       #f80
 
-.number
-.int
-    color           #66f
-.float
-    color           #606
-     
-.dictionary.key.marker
-    color           #88f
-    opacity         1
-    
-// 00000000  000   000  000   000   0000000
-// 000       000   000  0000  000  000
-// 000000    000   000  000 0 000  000
-// 000       000   000  000  0000  000
-// 000        0000000   000   000   0000000
-
-.func
-.function
-    color           #00c
-    &.call
-        color       #d00
-    &.marker
-        color       #55f
-        opacity     1
-    &.bracket
-        color       #55f
-    &.argument
-        color       #aaf
-        &.punct
-            opacity  0.5
-
-    &.marker
-        opacity     1
-        color       #55f
+.member
+    color           #ccf
             
-    &.tail:before
-        color   #88f
-    &.head:before
-        color   #88f
-        
-    &.tail.bound:before
-        color   #f40
-    &.head.bound:before
-        color   #f40
-            
-// 00     00  00000000  000000000  000   000   0000000   0000000
-// 000   000  000          000     000   000  000   000  000   000
-// 000000000  0000000      000     000000000  000   000  000   000
-// 000 0 000  000          000     000   000  000   000  000   000
-// 000   000  00000000     000     000   000   0000000   0000000
-
-.class.function
 .method
-    color           #008
+    color           #ff0
+    &.static.async
+        color       #fff
+        &.marker
+            opacity 1
+            color   #99f
+    &.class
     &.call
-        color       #d00
+        color       #ff8
     &.definition
     &.template
-        color       #2aa
+        color       #48a
 
 .template
-    color           #2aa
+    color           #48a
 
 .operator
-    color           #a80
+    color           #fa0
     &.negate
-        color       #600
+        color       #ff0
 
-//  0000000  000       0000000    0000000   0000000
-// 000       000      000   000  000       000
-// 000       000      000000000  0000000   0000000
-// 000       000      000   000       000       000
-//  0000000  0000000  000   000  0000000   0000000
-
-.class
-    &.variable
-        color       #a0a
-    &.static
-        color       #c0c
-
-.static.class.marker
-    color           #ccf
-    opacity         1
-
+.regexp
+    color           #f4a
+    
 .keypath
-    color           #c00
+.semver
+.cssid
+    color           #f80
 
 .syntax.cond
 .keyword
-    color           #66f !important
+    color           #aaf
     &.null
-        color       #a00 !important
+        color       #a00
+    &.function
+        color       #666
 
-// 00     00   0000000    0000000  00000000    0000000
-// 000   000  000   000  000       000   000  000   000
-// 000000000  000000000  000       0000000    000   000
-// 000 0 000  000   000  000       000   000  000   000
-// 000   000  000   000   0000000  000   000   0000000
+.struct
+    color           #f63
+    
+// 00     00   0000000    0000000  00000000    0000000   
+// 000   000  000   000  000       000   000  000   000  
+// 000000000  000000000  000       0000000    000   000  
+// 000 0 000  000   000  000       000   000  000   000  
+// 000   000  000   000   0000000  000   000   0000000   
 
 .macro
-    color           #c0f
-    &.define
-        color       #80c
+    color           #f0f
     &.call
         color       #f0f
-    &.argument
-        color       #a8a
+
+&.argument
+    color           #0aa
+        
+.define
+    color           #666
+        
+.interpolation.marker
+        color       #f80
 
 .variable.err
     color           #f08
@@ -205,20 +210,36 @@
 // 0000000      000     000   000  000  000   000   0000000   
 
 .string
-    &.single
-        color       #0b0 !important
+    color           #0a0
     &.double
     &.triple
-        color       #090 !important
+        color       #0e0
+    &.backtick
+        color       #ccf
+    &.interpolation
+        opacity     0.5
+    &.dictionary
+        color       #0a0
 
-.interpolation.marker
-        color       #0d0
+.bool
+.true
+    color           #88f
 
-.interpolation.marker
-.string.marker
-    opacity   0.7
+.nil
+    color           #f04
+    
+.number
+.int
+    color           #88f
+.float
+    color           #f68
+.hex
+    color           #fa8
 
-
+.keyword.return
+.keyword.return.function.call    
+    color           #c0c
+    
 //  0000000   0000000   00     00  00     00  00000000  000   000  000000000
 // 000       000   000  000   000  000   000  000       0000  000     000
 // 000       000   000  000000000  000000000  0000000   000 0 000     000
@@ -226,47 +247,42 @@
 //  0000000   0000000   000   000  000   000  00000000  000   000     000
 
 .comment
-.comment.string
+.comment.text.keyword
 .comment.string.double
-    color               #ccc !important
+    color               #4f4f4f !important
 
 .comment.header
-    color               #ddd !important
-    background          #ddd
-    border-left-color   #ccc
-    border-bottom-color #bbb
+    border-left-color   #161
+    background          #151
+    color               #151 !important
+    border-bottom-color #141
 
 .comment.header.minimap
-    color               #999 !important
+    color               #0a0 !important
     opacity             1
 
 .comment.triple.header
-    color               #ccf !important
-    background          #ccf
-    border-left-color   #aaf
-    border-bottom-color #88f
+    border-left-color   #590
+    background          #480
+    color               #480 !important
+    border-bottom-color #040
 
 .comment.triple.header.minimap
-    color               #88f !important
+    color               #af0 !important
     
 .header.marker.minimap
     color               #222 !important
 
-// 00000000   00000000   0000000   000   000  000  00000000   00000000
-// 000   000  000       000   000  000   000  000  000   000  000
-// 0000000    0000000   000 00 00  000   000  000  0000000    0000000
-// 000   000  000       000 0000   000   000  000  000   000  000
-// 000   000  00000000   00000 00   0000000   000  000   000  00000000
-
 .require
+    color           #666
     &.variable
-        color       #080
+        color       #0f0
     &.string
-        color       #0a0
-    &.keyword.require
-        color       #666
-    &.syntax
-        opacity     0.5
+        color       #0f0
+    &.module
+        color       #0f0
+    &.keyword
+        color       #333
 
 // 000000000  00000000   0000000  000000000
 //    000     000       000          000
@@ -279,7 +295,7 @@
 .test-suite
     color           #88f
 .test-fail
-    color           #f00
+    color           #ff0
 .test-error
     color           #fa0
 .test-pass
@@ -292,37 +308,48 @@
 // 000   000  0000000
 
 &.h1
-    color       #00c
+    color       #ff0
 &.h2
-    color       #00a
+    color       #ff4
 &.h3
-    color       #008
+    color       #ff8
 &.h4
-    color       #006
+    color       #aaf
 &.h5
-    color       #060
+    color       #88f
 &.li1
-    color       transparent
-&.li1:before
-    color       #080
+    color   #0f0
+    &.marker
+        color       transparent
+        &:before
+            color   #0f0
 &.li2
-    color       transparent
-&.li2:before
-    color       #090
+    color   #0a0
+    &.marker
+        color       transparent
+        &:before
+            color   #0a0
 &.li3
-    color       transparent
-&.li3:before
-    color       #0a0
+    color   #080
+    &.marker
+        color       transparent
+        &:before
+            color   #080
 &.bold
-    color        #000
-    font-weight  bold
+    color       #ff8
+    font-weight bold
     &.marker
         opacity 0.3
-
 &.code
-    color       #88f
+    color       #ccf
+    &.punct
+        opacity 0.2
 &.italic
     font-style  italic
-        
+
 .found
     text-decoration  underline
+
+.git-deleted
+    opacity         0.26
+    

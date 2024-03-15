@@ -6,7 +6,7 @@
  0000000   0000000   0000000   0000000   000   000  0000000     
 */
 body {
-  background: #282828;
+  background: #1a1a1a;
   color: #fff;
 }
 .split-handle {
@@ -15,9 +15,6 @@ body {
 .browser {
   background: #181818;
   color: #fff;
-}
-.browser .split-handle {
-  background: #222;
 }
 .browserRow.hover {
   background: #111;
@@ -52,10 +49,14 @@ body {
   background: #181818;
 }
 #shelf {
-  background: #1e1e1e;
+  background: #181818;
+  box-sizing: border-box;
+  border-right-color: #1d1d1d;
 }
 #shelf.focus {
-  background: #222;
+  background: #1e1e1e;
+  border-right-color: #1e1e1e;
+  border-right-width: 0;
 }
 .fileInfoData {
   margin-top: 20px;
@@ -66,7 +67,7 @@ body {
 }
 #commandline-editor {
   color: #fff;
-  background: #222;
+  background: #1a1a1a;
 }
 .commandlist {
   background: #181818;
@@ -94,7 +95,7 @@ body {
   background: #181818;
 }
 #commandline-button.empty {
-  background: #282828;
+  background: #1a1a1a;
   border-right-color: #111;
 }
 #commandline-button.active {
@@ -148,7 +149,7 @@ span.macro.macro,
   color: #ff0;
 }
 #info {
-  background: #222;
+  background: #1a1a1a;
   border-left-color: #111;
 }
 .info-cursor-line,
@@ -251,7 +252,7 @@ span.macro.macro,
 #terminal,
 #editor {
   color: #ddd;
-  background: #282828;
+  background: #1a1a1a;
   border-color: #111;
 }
 #split {
@@ -288,7 +289,7 @@ span.macro.macro,
   background: #111;
 }
 .cursor-line {
-  background: rgba(0,0,0,0.25);
+  background: rgba(0,0,0,0.15);
 }
 .commandlist .cursor {
   background: transparent;
@@ -303,7 +304,7 @@ span.macro.macro,
   border-right-color: #111;
 }
 .linenumber span {
-  color: #111;
+  color: rgba(0,0,0,0);
 }
 .linenumber.highligd span {
   color: rgba(155,155,255,0.6);
@@ -390,7 +391,7 @@ span.macro.macro,
   border-left-color: #111;
 }
 .topbot {
-  background-color: #282828;
+  background-color: #1a1a1a;
 }
 .highlight {
   color: rgba(255,100,255,0.7);
