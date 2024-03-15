@@ -50,7 +50,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _46_28_ = slash.splitFilePos(file); file = _46_28_[0]; filePos = _46_28_[1]
+            var _47_28_ = slash.splitFilePos(file); file = _47_28_[0]; filePos = _47_28_[1]
 
             if (!file.startsWith('untitled'))
             {
@@ -125,9 +125,9 @@ class FileHandler
                 this.loadFile(file)
             }
             var list = _k_.list(files)
-            for (var _131_21_ = 0; _131_21_ < list.length; _131_21_++)
+            for (var _132_21_ = 0; _132_21_ < list.length; _132_21_++)
             {
-                file = list[_131_21_]
+                file = list[_132_21_]
                 if (options.newWindow)
                 {
                     console.log('filehandler new window with file not implemented!')
@@ -176,7 +176,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _176_29_
+        var tab, _177_29_
 
         if (tab = tabs.activeTab())
         {
@@ -211,9 +211,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _201_16_ = 0; _201_16_ < list.length; _201_16_++)
+        for (var _202_16_ = 0; _202_16_ < list.length; _202_16_++)
         {
-            tab = list[_201_16_]
+            tab = list[_202_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -288,12 +288,15 @@ class FileHandler
             recent.pop()
         }
         window.state.set('recentFiles',recent)
-        return commandline.commands.open.setHistory(reversed(recent))
+        console.log(commandline)
+        console.log(commandline.commands)
+        console.log(commandline.commands.open)
+        return window.commandline.commands.open.setHistory(reversed(recent))
     }
 
     saveChanges ()
     {
-        var _275_29_
+        var _279_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -309,7 +312,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _292_18_
+        var cb, dir, _296_18_
 
         cb = function (files)
         {
@@ -325,7 +328,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _312_18_
+        var cb, _316_18_
 
         cb = (function (file)
         {

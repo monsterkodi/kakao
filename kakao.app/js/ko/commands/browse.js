@@ -240,14 +240,13 @@ Browse = (function ()
 
     Browse.prototype["changed"] = function (command)
     {
-        var text, _217_19_
+        var text
 
         console.log('browse.changed',command)
         text = this.getText().trim()
         if (!text.endsWith('/'))
         {
-            ;(this.walker != null ? this.walker.end() : undefined)
-            return this.walker = null
+            return true
         }
         else
         {
@@ -257,7 +256,7 @@ Browse = (function ()
 
     Browse.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var focusBrowser, _233_74_
+        var focusBrowser, _234_74_
 
         switch (combo)
         {
@@ -301,7 +300,7 @@ Browse = (function ()
 
     Browse.prototype["select"] = function (i)
     {
-        var l, s, text, _268_42_, _274_20_, _275_20_
+        var l, s, text, _269_42_, _275_20_, _276_20_
 
         this.selected = _k_.clamp(-1,(this.commandList != null ? this.commandList.numLines() : undefined) - 1,i)
         if (this.selected < 0)
@@ -320,7 +319,7 @@ Browse = (function ()
 
     Browse.prototype["selectListItem"] = function (dir)
     {
-        var _285_34_
+        var _286_34_
 
         if (!(this.commandList != null))
         {
@@ -382,11 +381,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _337_32_, _337_56_, _344_64_, _344_72_, _346_61_, _346_69_
+        var pth, _338_32_, _338_56_, _345_64_, _345_72_, _347_61_, _347_69_
 
         if (!this.isActive())
         {
-            ;((_337_32_=this.commandline.command) != null ? typeof (_337_56_=_337_32_.onBrowserItemActivated) === "function" ? _337_56_(item) : undefined : undefined)
+            ;((_338_32_=this.commandline.command) != null ? typeof (_338_56_=_338_32_.onBrowserItemActivated) === "function" ? _338_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -395,9 +394,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_344_64_=this.browser.activeColumn()) != null ? (_344_72_=_344_64_.parent) != null ? _344_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_345_64_=this.browser.activeColumn()) != null ? (_345_72_=_345_64_.parent) != null ? _345_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_346_61_=this.browser.activeColumn()) != null ? (_346_69_=_346_61_.parent) != null ? _346_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_347_61_=this.browser.activeColumn()) != null ? (_347_69_=_347_61_.parent) != null ? _347_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)

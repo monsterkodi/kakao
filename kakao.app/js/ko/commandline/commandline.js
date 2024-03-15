@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var Commandline, __dirname
+var CommandLine, __dirname
 
 import ffs from "../../kxk/ffs.js"
 
@@ -18,17 +18,17 @@ import TextEditor from "../editor/TextEditor.js"
 
 __dirname = slash.dir(import.meta.url.slice(7))
 
-Commandline = (function ()
+CommandLine = (function ()
 {
-    _k_.extend(Commandline, TextEditor)
-    function Commandline (viewElem)
+    _k_.extend(CommandLine, TextEditor)
+    function CommandLine (viewElem)
     {
         this["onCmmdClick"] = this["onCmmdClick"].bind(this)
         this["onSplit"] = this["onSplit"].bind(this)
         this["restore"] = this["restore"].bind(this)
         this["stash"] = this["stash"].bind(this)
         this["onSearchText"] = this["onSearchText"].bind(this)
-        Commandline.__super__.constructor.call(this,viewElem,{features:[],fontSize:24,syntaxName:'commandline'})
+        CommandLine.__super__.constructor.call(this,viewElem,{features:[],fontSize:24,syntaxName:'commandline'})
         this.mainCommands = ['browse','goto','open','search','find','macro']
         this.hideCommands = ['selecto','Browse','shelf','Small Browser','Large Browser']
         this.size.lineHeight = 30
@@ -60,7 +60,7 @@ Commandline = (function ()
         }).bind(this)
     }
 
-    Commandline.prototype["onSearchText"] = function (text)
+    CommandLine.prototype["onSearchText"] = function (text)
     {
         var _62_23_
 
@@ -76,7 +76,7 @@ Commandline = (function ()
         return this.setAndSelectText(text)
     }
 
-    Commandline.prototype["stash"] = function ()
+    CommandLine.prototype["stash"] = function ()
     {
         var _76_19_
 
@@ -86,7 +86,7 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["restore"] = function ()
+    CommandLine.prototype["restore"] = function ()
     {
         var activeID, name, state, _83_29_, _85_27_, _93_41_
 
@@ -107,7 +107,7 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["loadCommands"] = async function ()
+    CommandLine.prototype["loadCommands"] = async function ()
     {
         var command, commandClass, commandModule, file, files
 
@@ -144,26 +144,26 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["setName"] = function (name)
+    CommandLine.prototype["setName"] = function (name)
     {
         this.button.innerHTML = name
         return this.layers.style.width = this.view.style.width
     }
 
-    Commandline.prototype["setLines"] = function (l)
+    CommandLine.prototype["setLines"] = function (l)
     {
         this.scroll.reset()
-        return Commandline.__super__.setLines.call(this,l)
+        return CommandLine.__super__.setLines.call(this,l)
     }
 
-    Commandline.prototype["setAndSelectText"] = function (t)
+    CommandLine.prototype["setAndSelectText"] = function (t)
     {
         this.setLines([(t != null ? t : '')])
         this.selectAll()
         return this.selectSingleRange(this.rangeForLineAtIndex(0))
     }
 
-    Commandline.prototype["setText"] = function (t)
+    CommandLine.prototype["setText"] = function (t)
     {
         var _141_26_
 
@@ -171,12 +171,12 @@ Commandline = (function ()
         return (typeof this.singleCursorAtPos === "function" ? this.singleCursorAtPos([this.line(0).length,0]) : undefined)
     }
 
-    Commandline.prototype["changed"] = function (changeInfo)
+    CommandLine.prototype["changed"] = function (changeInfo)
     {
         var _1_8_, _156_20_
 
         this.hideList()
-        Commandline.__super__.changed.call(this,changeInfo)
+        CommandLine.__super__.changed.call(this,changeInfo)
         if (changeInfo.changes.length)
         {
             this.button.className = `commandline-button active ${(this.command != null ? this.command.prefsID : undefined)}`
@@ -184,7 +184,7 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["onSplit"] = function (s)
+    CommandLine.prototype["onSplit"] = function (s)
     {
         var _160_16_, _160_23_
 
@@ -192,7 +192,7 @@ Commandline = (function ()
         return this.positionList()
     }
 
-    Commandline.prototype["startCommand"] = function (name)
+    CommandLine.prototype["startCommand"] = function (name)
     {
         var activeID, r, _171_20_
 
@@ -231,7 +231,7 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["commandForName"] = function (name)
+    CommandLine.prototype["commandForName"] = function (name)
     {
         var c, n
 
@@ -245,14 +245,14 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["execute"] = function ()
+    CommandLine.prototype["execute"] = function ()
     {
         var _211_33_
 
         return this.results((this.command != null ? this.command.execute(this.line(0)) : undefined))
     }
 
-    Commandline.prototype["results"] = function (r)
+    CommandLine.prototype["results"] = function (r)
     {
         var _221_34_, _222_34_, _224_47_, _225_48_, _226_45_
 
@@ -280,14 +280,14 @@ Commandline = (function ()
         return this
     }
 
-    Commandline.prototype["cancel"] = function ()
+    CommandLine.prototype["cancel"] = function ()
     {
         var _229_32_
 
         return this.results((this.command != null ? this.command.cancel() : undefined))
     }
 
-    Commandline.prototype["clear"] = function ()
+    CommandLine.prototype["clear"] = function ()
     {
         var _232_29_
 
@@ -297,11 +297,11 @@ Commandline = (function ()
         }
         else
         {
-            return Commandline.__super__.clear.call(this)
+            return CommandLine.__super__.clear.call(this)
         }
     }
 
-    Commandline.prototype["onCmmdClick"] = function (event)
+    CommandLine.prototype["onCmmdClick"] = function (event)
     {
         var _244_20_
 
@@ -318,7 +318,7 @@ Commandline = (function ()
         return stopEvent(event)
     }
 
-    Commandline.prototype["listCommands"] = function ()
+    CommandLine.prototype["listCommands"] = function ()
     {
         var ci, cmmd, cname, div, name, namespan, start
 
@@ -358,7 +358,7 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["hideList"] = function ()
+    CommandLine.prototype["hideList"] = function ()
     {
         var _278_13_
 
@@ -366,7 +366,7 @@ Commandline = (function ()
         return this.list = null
     }
 
-    Commandline.prototype["positionList"] = function ()
+    CommandLine.prototype["positionList"] = function ()
     {
         var flex, listHeight, listTop, spaceAbove, spaceBelow, _289_27_
 
@@ -389,16 +389,16 @@ Commandline = (function ()
         }
     }
 
-    Commandline.prototype["resized"] = function ()
+    CommandLine.prototype["resized"] = function ()
     {
         var _301_13_, _301_22_, _302_16_, _302_29_
 
         ;((_301_13_=this.list) != null ? typeof (_301_22_=_301_13_.resized) === "function" ? _301_22_() : undefined : undefined)
         ;((_302_16_=this.command) != null ? (_302_29_=_302_16_.commandList) != null ? _302_29_.resized() : undefined : undefined)
-        return Commandline.__super__.resized.call(this)
+        return CommandLine.__super__.resized.call(this)
     }
 
-    Commandline.prototype["focusTerminal"] = function ()
+    CommandLine.prototype["focusTerminal"] = function ()
     {
         if (window.terminal.numLines() === 0)
         {
@@ -407,7 +407,7 @@ Commandline = (function ()
         return window.split.do("focus terminal")
     }
 
-    Commandline.prototype["handleMenuAction"] = function (name, opt)
+    CommandLine.prototype["handleMenuAction"] = function (name, opt)
     {
         if ((opt != null ? opt.command : undefined))
         {
@@ -420,7 +420,7 @@ Commandline = (function ()
         return 'unhandled'
     }
 
-    Commandline.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
+    CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
         var _333_19_
 
@@ -439,7 +439,7 @@ Commandline = (function ()
         return 'unhandled'
     }
 
-    Commandline.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
+    CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
         var split, _1_8_, _341_19_, _349_55_, _350_55_, _360_58_
 
@@ -506,10 +506,10 @@ Commandline = (function ()
                 break
         }
 
-        return Commandline.__super__.handleModKeyComboCharEvent.call(this,mod,key,combo,char,event)
+        return CommandLine.__super__.handleModKeyComboCharEvent.call(this,mod,key,combo,char,event)
     }
 
-    return Commandline
+    return CommandLine
 })()
 
-export default Commandline;
+export default CommandLine;

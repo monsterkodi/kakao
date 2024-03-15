@@ -12,6 +12,7 @@ use ../../kxk/slash
 use ../../kxk/util ▪ pull reversed
 
 use ../tools/File
+# use ../commandline/CommandLine
 
 class FileHandler
 
@@ -262,7 +263,10 @@ class FileHandler
             recent.pop()
     
         window.state.set 'recentFiles' recent
-        commandline.commands.open.setHistory reversed recent
+        log commandline
+        log commandline.commands
+        log commandline.commands.open
+        window.commandline.commands.open.setHistory reversed recent
                 
     #  0000000   0000000   000   000  00000000         0000000  000   000   0000000   000   000   0000000   00000000   0000000  
     # 000       000   000  000   000  000             000       000   000  000   000  0000  000  000        000       000       

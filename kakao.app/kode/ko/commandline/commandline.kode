@@ -15,7 +15,7 @@ use ../editor/TextEditor
 
 __dirname = slash.dir import.meta.url[7..]
 
-function Commandline extends TextEditor
+function CommandLine extends TextEditor
 
     @: (viewElem) ->
 
@@ -361,4 +361,4 @@ function Commandline extends TextEditor
 
         return super mod, key, combo, char, event
 
-export Commandline
+export CommandLine

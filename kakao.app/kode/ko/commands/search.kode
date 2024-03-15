@@ -7,11 +7,12 @@
 ###
 
 use ../../klor/klor
+use ../../kxk/kstr
 use ../../kxk/post
 use ../../kxk/slash
 use ../../kxk/matchr
 
-use ../tools/walker
+use ../tools/Walker
 use ../editor/Syntax
 
 use ../commandline/Command
@@ -77,22 +78,18 @@ function Search extends Command
         # dir = slash.pkg slash.dir opt.file
         # dir ?= slash.dir opt.file
         dir = slash.dir opt.file
-        @walker = new walker
+        @walker = new Walker
             root:        dir
             maxDepth:    12
             maxFiles:    5000
             includeDirs: false
-            file:        (f,stat) => @searchInFile opt, slash.path f
+            file:        (f) => @searchInFile opt, f
         @walker.cfg.ignore.push 'js'  # these directories are not included in search results
         @walker.cfg.ignore.push 'lib' # they should be configurable, maybe in package.noon or .konrad.noon?
         @walker.cfg.ignore.push 'data' 
         @walker.start()
         
-    searchInFile: (opt, file) =>
-
-        log 'searchInFile not implemented!'
-        # stream = fs.createReadStream file, encoding:'utf8'
-        # stream.pipe new FileSearcher @, opt, file
+    searchInFile: (opt, file) => new FileSearcher @, opt, file
 
     # 00     00  00000000  000000000   0000000    0000000  000      000   0000000  000   000  
     # 000   000  000          000     000   000  000       000      000  000       000  000   
@@ -124,23 +121,22 @@ function Search extends Command
 #      000  000       000   000  000   000  000       000   000  000       000   000
 # 0000000   00000000  000   000  000   000   0000000  000   000  00000000  000   000
 
-# WritableStream = stream.Writable
-
-function FileSearcher #extends WritableStream
+function FileSearcher
     
     @: (@command, @opt, @file) ->
         
-        super()
+        log 'FileSearcher' @command, @opt, @file
+        
         @line = 0
         @flags = ''
         @patterns = switch @opt.name
-            when 'search'   then [[new RegExp(_.escapeRegExp(@opt.text), 'i'), 'found']]
-            when 'Search'   then [[new RegExp(_.escapeRegExp(@opt.text)),      'found']]
+            when 'search'   then [[new RegExp(kstr.escapeRegExp(@opt.text), 'i'), 'found']]
+            when 'Search'   then [[new RegExp(kstr.escapeRegExp(@opt.text)),      'found']]
             when '/search/' then @flags='i'; @opt.text
             when '/Search/' then @opt.text
             else
                 error "commands/search FileSearcher -- unhandled '#{@opt.name}' command:", @command.name, 'opt:', @opt, 'file:', @file
-                [[new RegExp(_.escapeRegExp(@opt.text), 'i'), 'found']]
+                [[new RegExp(kstr.escapeRegExp(@opt.text), 'i'), 'found']]
                 
         @found = []
         extn = slash.ext @file

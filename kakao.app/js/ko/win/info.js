@@ -100,7 +100,7 @@ class Info
 
     setEditor (editor)
     {
-        var _97_18_
+        var _98_18_
 
         if (editor === this.editor)
         {
@@ -136,7 +136,7 @@ class Info
     onCursor ()
     {
         this.cursorLine.textContent = this.editor.mainCursor()[1] + 1
-        this.cursorColumn.textContent = this.editor.mainCursor()[0]
+        this.cursorColumn.textContent = ((this.editor.mainCursor()[0] > 0) ? this.editor.mainCursor()[0] : '')
         this.cursors.textContent = this.editor.numCursors()
         this.cursorColumn.classList.toggle('virtual',this.editor.isCursorVirtual())
         this.cursors.classList.toggle('empty',this.editor.numCursors() === 1)
