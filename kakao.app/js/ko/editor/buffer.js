@@ -47,8 +47,10 @@ Buffer = (function ()
     {
         this.emit('numLines',0)
         this.state = new state({lines:lines})
-        console.log('emit numLines',this.numLines())
-        return this.emit('numLines',this.numLines())
+        if (this.name === 'editor')
+        {
+            return this.emit('numLines',this.numLines())
+        }
     }
 
     Buffer.prototype["setState"] = function (s)

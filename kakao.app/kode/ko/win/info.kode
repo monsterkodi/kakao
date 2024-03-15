@@ -12,6 +12,7 @@ use ../../kxk/elem
 use ../../kxk/tooltip
 
 shortCount = (v) ->
+    
     v = parseInt v
     if
         v > 999999 ➜ "#{Math.floor v/1000000}M"
@@ -128,22 +129,26 @@ class Info
     #  0000000   000   000        000  000  000
     
     onNumLines: (lc) => 
+        
         @lines.textContent = shortCount lc ? 0
             
     onCursor: => 
+        
         @cursorLine.textContent   = @editor.mainCursor()[1]+1
-        @cursorColumn.textContent = @editor.mainCursor()[0]
+        @cursorColumn.textContent = (@editor.mainCursor()[0] > 0) ? @editor.mainCursor()[0] : ''
         @cursors.textContent      = @editor.numCursors()
         @cursorColumn.classList.toggle 'virtual' @editor.isCursorVirtual()
         @cursors.classList.toggle 'empty' @editor.numCursors() == 1
         @sticky.classList.toggle 'empty' not @editor.stickySelection
         
     onSelection: =>
+        
         @selecti.textContent = @editor.numSelections()
         @selecti.classList.toggle 'empty' @editor.numSelections() == 0
         @sticky.classList.toggle 'empty' not @editor.stickySelection
         
     onHighlight: =>
+        
         @highlig.textContent = @editor.numHighlights()
         @highlig.classList.toggle 'empty' @editor.numHighlights() == 0
     

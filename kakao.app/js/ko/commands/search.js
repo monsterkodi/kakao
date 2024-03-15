@@ -4,13 +4,15 @@ var FileSearcher, Search
 
 import klor from "../../klor/klor.js"
 
+import kstr from "../../kxk/kstr.js"
+
 import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
 import matchr from "../../kxk/matchr.js"
 
-import walker from "../tools/walker.js"
+import Walker from "../tools/Walker.js"
 
 import Syntax from "../editor/Syntax.js"
 
@@ -77,9 +79,9 @@ Search = (function ()
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
         dir = slash.dir(opt.file)
-        this.walker = new walker({root:dir,maxDepth:12,maxFiles:5000,includeDirs:false,file:(function (f, stat)
+        this.walker = new Walker({root:dir,maxDepth:12,maxFiles:5000,includeDirs:false,file:(function (f)
         {
-            return this.searchInFile(opt,slash.path(f))
+            return this.searchInFile(opt,f)
         }).bind(this)})
         this.walker.cfg.ignore.push('js')
         this.walker.cfg.ignore.push('lib')
@@ -89,7 +91,7 @@ Search = (function ()
 
     Search.prototype["searchInFile"] = function (opt, file)
     {
-        console.log('searchInFile not implemented!')
+        return new FileSearcher(this,opt,file)
     }
 
     Search.prototype["onMetaClick"] = function (meta, event)
@@ -131,7 +133,7 @@ FileSearcher = (function ()
         this.file = file
     
         this["end"] = this["end"].bind(this)
-        FileSearcher.__super__.constructor.call(this)
+        console.log('FileSearcher',this.command,this.opt,this.file)
         this.line = 0
         this.flags = ''
         this.patterns = ((function ()
@@ -139,10 +141,10 @@ FileSearcher = (function ()
             switch (this.opt.name)
             {
                 case 'search':
-                    return [[new RegExp(_.escapeRegExp(this.opt.text),'i'),'found']]
+                    return [[new RegExp(kstr.escapeRegExp(this.opt.text),'i'),'found']]
 
                 case 'Search':
-                    return [[new RegExp(_.escapeRegExp(this.opt.text)),'found']]
+                    return [[new RegExp(kstr.escapeRegExp(this.opt.text)),'found']]
 
                 case '/search/':
                     this.flags = 'i'
@@ -153,7 +155,7 @@ FileSearcher = (function ()
 
                 default:
                     console.error(`commands/search FileSearcher -- unhandled '${this.opt.name}' command:`,this.command.name,'opt:',this.opt,'file:',this.file)
-                    return [[new RegExp(_.escapeRegExp(this.opt.text),'i'),'found']]
+                    return [[new RegExp(kstr.escapeRegExp(this.opt.text),'i'),'found']]
             }
 
         }).bind(this))()
@@ -171,7 +173,7 @@ FileSearcher = (function ()
 
     FileSearcher.prototype["write"] = function (chunk, encoding, cb)
     {
-        var l, lines, rngs, _155_64_
+        var l, lines, rngs, _151_64_
 
         lines = chunk.split('\n')
         if (!(this.syntaxName != null))
@@ -179,9 +181,9 @@ FileSearcher = (function ()
             this.syntaxName = Syntax.shebang(lines[0])
         }
         var list = _k_.list(lines)
-        for (var _156_14_ = 0; _156_14_ < list.length; _156_14_++)
+        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
         {
-            l = list[_156_14_]
+            l = list[_152_14_]
             this.line += 1
             rngs = matchr.ranges(this.patterns,l,this.flags)
             if (rngs.length)
@@ -202,7 +204,7 @@ FileSearcher = (function ()
             meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
             terminal.appendMeta(meta)
             terminal.appendMeta({clss:'spacer'})
-            for (var _179_23_ = fi = 0, _179_27_ = this.found.length; (_179_23_ <= _179_27_ ? fi < this.found.length : fi > this.found.length); (_179_23_ <= _179_27_ ? ++fi : --fi))
+            for (var _175_23_ = fi = 0, _175_27_ = this.found.length; (_175_23_ <= _175_27_ ? fi < this.found.length : fi > this.found.length); (_175_23_ <= _175_27_ ? ++fi : --fi))
             {
                 f = this.found[fi]
                 regions = klor.dissect([f[1]],this.syntaxName)[0]

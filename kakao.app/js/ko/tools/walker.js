@@ -1,161 +1,88 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-import file from "./file.js"
+import slash from "../../kxk/slash.js"
+
+import ffs from "../../kxk/ffs.js"
+
+import File from "./File.js"
 
 class Walker
 {
     constructor (cfg)
     {
-        var _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _26_25_, _27_25_
+        var _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _25_25_, _26_25_, _27_25_
 
         this.cfg = cfg
     
         this.cfg.files = []
         this.cfg.stats = []
-        this.cfg.maxDepth = ((_19_25_=this.cfg.maxDepth) != null ? _19_25_ : 3)
-        this.cfg.dotFiles = ((_20_25_=this.cfg.dotFiles) != null ? _20_25_ : false)
-        this.cfg.includeDirs = ((_21_25_=this.cfg.includeDirs) != null ? _21_25_ : true)
-        this.cfg.maxFiles = ((_22_25_=this.cfg.maxFiles) != null ? _22_25_ : 500)
-        this.cfg.ignore = ((_23_25_=this.cfg.ignore) != null ? _23_25_ : ['node_modules','build','Build','Library','Applications'])
-        this.cfg.include = ((_24_25_=this.cfg.include) != null ? _24_25_ : ['.konrad.noon','.gitignore','.npmignore'])
+        this.cfg.maxDepth = ((_20_25_=this.cfg.maxDepth) != null ? _20_25_ : 3)
+        this.cfg.dotFiles = ((_21_25_=this.cfg.dotFiles) != null ? _21_25_ : false)
+        this.cfg.includeDirs = ((_22_25_=this.cfg.includeDirs) != null ? _22_25_ : true)
+        this.cfg.maxFiles = ((_23_25_=this.cfg.maxFiles) != null ? _23_25_ : 500)
+        this.cfg.ignore = ((_24_25_=this.cfg.ignore) != null ? _24_25_ : ['node_modules','build','Build','Library','Applications'])
+        this.cfg.include = ((_25_25_=this.cfg.include) != null ? _25_25_ : ['.konrad.noon','.gitignore','.npmignore'])
         this.cfg.ignoreExt = ((_26_25_=this.cfg.ignoreExt) != null ? _26_25_ : ['asar'])
-        this.cfg.includeExt = ((_27_25_=this.cfg.includeExt) != null ? _27_25_ : file.sourceFileExtensions)
-        console.log('walker',this.cfg)
+        this.cfg.includeExt = ((_27_25_=this.cfg.includeExt) != null ? _27_25_ : File.sourceFileExtensions)
+        console.log('Walker',this.cfg)
     }
 
-    start ()
+    async start ()
     {
-        var dir, onWalkerPath
+        var dir, ext, file, item, items, listDir, toWalk, _103_37_, _116_21_, _98_36_
 
-        try
+        dir = this.cfg.root
+        console.log('Walker.start',dir)
+        if (1)
         {
             this.running = true
-            dir = this.cfg.root
-            this.walker = walkdir.walk(dir,{max_depth:this.cfg.maxDepth})
-            onWalkerPath = function (cfg)
+            toWalk = [dir]
+            while (!_k_.empty(toWalk))
             {
-                return function (p, stat)
+                listDir = toWalk.shift()
+                items = await ffs.list(listDir)
+                console.log('Walker items',items)
+                var list = _k_.list(items)
+                for (var _55_25_ = 0; _55_25_ < list.length; _55_25_++)
                 {
-                    var extn, name, sp, _48_29_, _54_38_, _80_24_, _83_31_, _84_34_, _88_32_
-
-                    sp = slash.path(p)
-                    name = slash.file(p)
-                    extn = slash.ext(p)
-                    if ((typeof cfg.filter === "function" ? cfg.filter(p) : undefined))
+                    item = list[_55_25_]
+                    console.log('item',item)
+                    file = item.file
+                    ext = slash.ext(file)
+                    console.log('file',file,ext)
+                    if (_k_.isFunc(this.cfg.path))
                     {
-                        return this.ignore(p)
+                        this.cfg.path(item.path)
                     }
-                    else if (_k_.in(name,['.DS_Store','Icon\r']) || _k_.in(extn,['pyc']))
+                    if (item.type === 'dir')
                     {
-                        return this.ignore(p)
-                    }
-                    else if (name.endsWith(`-${os.arch()}`))
-                    {
-                        return this.ignore(p)
-                    }
-                    else if ((cfg.includeDir != null) && slash.dir(p) === cfg.includeDir)
-                    {
-                        cfg.files.push(sp)
-                        cfg.stats.push(stat)
-                        if (_k_.in(name,cfg.ignore))
+                        if (this.cfg.includeDirs)
                         {
-                            this.ignore(p)
-                        }
-                        if (name.startsWith('.') && !cfg.dotFiles)
-                        {
-                            this.ignore(p)
-                        }
-                    }
-                    else if (_k_.in(name,cfg.ignore))
-                    {
-                        return this.ignore(p)
-                    }
-                    else if (_k_.in(name,cfg.include))
-                    {
-                        cfg.files.push(sp)
-                        cfg.stats.push(stat)
-                    }
-                    else if (name.startsWith('.'))
-                    {
-                        if (cfg.dotFiles)
-                        {
-                            cfg.files.push(sp)
-                            cfg.stats.push(stat)
-                        }
-                        else
-                        {
-                            return this.ignore(p)
-                        }
-                    }
-                    else if (_k_.in(extn,cfg.ignoreExt))
-                    {
-                        return this.ignore(p)
-                    }
-                    else if (_k_.in(extn,cfg.includeExt) || cfg.includeExt.indexOf('') >= 0)
-                    {
-                        cfg.files.push(sp)
-                        cfg.stats.push(stat)
-                    }
-                    else if (stat.isDirectory())
-                    {
-                        if (p !== cfg.root && cfg.includeDirs)
-                        {
-                            cfg.files.push(sp)
-                            cfg.stats.push(stat)
-                        }
-                    }
-                    ;(typeof cfg.path === "function" ? cfg.path(sp,stat) : undefined)
-                    if (stat.isDirectory())
-                    {
-                        if (cfg.includeDirs)
-                        {
-                            ;(typeof cfg.dir === "function" ? cfg.dir(sp,stat) : undefined)
-                        }
-                        if ((typeof cfg.skipDir === "function" ? cfg.skipDir(sp) : undefined))
-                        {
-                            this.ignore(p)
+                            ;(typeof this.cfg.dir === "function" ? this.cfg.dir(item.path) : undefined)
                         }
                     }
                     else
                     {
-                        if (_k_.in(slash.ext(sp),cfg.includeExt) || _k_.in(slash.file(sp),cfg.include) || cfg.includeExt.indexOf('') >= 0)
+                        if (_k_.in(ext,this.cfg.includeExt) || _k_.in(slash.file(item.path),this.cfg.include) || this.cfg.includeExt.indexOf('') >= 0)
                         {
-                            ;(typeof cfg.file === "function" ? cfg.file(sp,stat) : undefined)
+                            ;(typeof this.cfg.file === "function" ? this.cfg.file(item.path) : undefined)
                         }
                     }
-                    if (cfg.files.length > cfg.maxFiles)
+                    if (this.cfg.files.length > this.cfg.maxFiles)
                     {
-                        return this.end()
-                    }
-                    else if (cfg.slowdown && (cfg.files.length % 400) === 399)
-                    {
-                        this.pause()
-                        return setTimeout(this.resume,10)
+                        console.log('maxFiles reached')
+                        break
                     }
                 }
             }
-            this.walker.on('path',onWalkerPath(this.cfg))
-            return this.walker.on('end',(function ()
-            {
-                var _100_25_
-
-                this.running = false
-                return (typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
-            }).bind(this))
-        }
-        catch (err)
-        {
             this.running = false
-            console.error(`Walker.start -- ${err} dir: ${dir} stack:`,err.stack)
+            return (typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
         }
     }
 
     stop ()
     {
-        var _108_15_, _109_15_
-
-        ;(this.walker != null ? this.walker.pause() : undefined)
-        ;(this.walker != null ? this.walker.end() : undefined)
+        this.running = false
         return this.walker = null
     }
 }
