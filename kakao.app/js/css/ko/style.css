@@ -24,11 +24,14 @@ body {
   overflow: hidden;
 }
 #titlebar .winicon img {
-  padding-left: 10px;
-  padding-right: 23px;
+  padding-left: 20px;
+  padding-right: 14px;
 }
 #titlebar .winbutton {
   flex: 0 0 44px;
+}
+.menu {
+  padding-right: 10px;
 }
 #main {
   overflow: hidden;
@@ -241,6 +244,7 @@ body {
   left: 0;
   top: 0;
   bottom: 0;
+  border-right: 6px solid;
 }
 #shelfResize {
   background: transparent;
