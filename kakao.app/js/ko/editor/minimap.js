@@ -314,8 +314,8 @@ class Minimap
             this.editor.focus()
             return this.onEditorScroll()
         }).bind(this)
-        clearImmediate(this.jumpToTimer)
-        return this.jumpToTimer = setImmediate(jumpTo)
+        clearTimeout(this.jumpToTimer)
+        return this.jumpToTimer = setTimeout(jumpTo)
     }
 
     lineIndexForEvent (event)

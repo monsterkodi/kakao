@@ -231,8 +231,8 @@ class Minimap
             @editor.focus()
             @onEditorScroll()
 
-        clearImmediate @jumpToTimer
-        @jumpToTimer = setImmediate jumpTo
+        clearTimeout @jumpToTimer
+        @jumpToTimer = setTimeout jumpTo
             
     lineIndexForEvent: (event) ->
         st = @elem.scrollTop

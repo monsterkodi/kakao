@@ -59,8 +59,8 @@ class Scrollbar
             this.editor.scroll.by(this.scrollDelta)
             return this.scrollDelta = 0
         }).bind(this)
-        clearImmediate(this.scrollTimer)
-        return this.scrollTimer = setImmediate(scroll)
+        clearTimeout(this.scrollTimer)
+        return this.scrollTimer = setTimeout(scroll)
     }
 
     onWheel (event)

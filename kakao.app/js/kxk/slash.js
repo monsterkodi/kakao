@@ -168,6 +168,11 @@ class Slash
         })
     }
 
+    static contains (p, d)
+    {
+        return _k_.in(d,Slash.split(p))
+    }
+
     static splitDrive (p)
     {
         var parsed
@@ -205,7 +210,7 @@ class Slash
     {
         var c, clmn, d, f, l, line, split
 
-        var _170_14_ = Slash.splitDrive(p); f = _170_14_[0]; d = _170_14_[1]
+        var _172_14_ = Slash.splitDrive(p); f = _172_14_[0]; d = _172_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -236,7 +241,7 @@ class Slash
     {
         var c, f, l
 
-        var _182_16_ = Slash.splitFileLine(p); f = _182_16_[0]; l = _182_16_[1]; c = _182_16_[2]
+        var _184_16_ = Slash.splitFileLine(p); f = _184_16_[0]; l = _184_16_[1]; c = _184_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -250,7 +255,7 @@ class Slash
     {
         var f, l
 
-        var _187_14_ = Slash.splitFileLine(p); f = _187_14_[0]; l = _187_14_[1]
+        var _189_14_ = Slash.splitFileLine(p); f = _189_14_[0]; l = _189_14_[1]
 
         if (l > 1)
         {

@@ -464,7 +464,8 @@ stringify = (obj, options={}) ->
             maxKey = opt.indent
             if Object.keys(o).length > 1
                 for k,v of o
-                    if o.hasOwnProperty k
+                    # if o.hasOwnProperty k
+                    if true
                         kl = parseInt(Math.ceil((k.length+2)/opt.indent)*opt.indent)
                         maxKey = Math.max maxKey, kl
                         if opt.maxalign and (maxKey > opt.maxalign)
@@ -503,7 +504,8 @@ stringify = (obj, options={}) ->
                 l.push keyValue k, o[k]
         else
             for k,v of o
-                if o.hasOwnProperty k
+                # if o.hasOwnProperty k
+                if true
                     l.push keyValue k, v
             
         l.join '\n'

@@ -25,7 +25,6 @@ class Syntax
         this.getLine = getLine
         this.getLines = getLines
     
-        console.log('Syntax',this.name)
         this.diss = []
         this.colors = {}
     }
@@ -37,9 +36,9 @@ class Syntax
 
     getDiss (li)
     {
-        var _39_18_
+        var _38_18_
 
-        return this.diss[li] = ((_39_18_=this.diss[li]) != null ? _39_18_ : this.newDiss(li))
+        return this.diss[li] = ((_38_18_=this.diss[li]) != null ? _38_18_ : this.newDiss(li))
     }
 
     setDiss (li, dss)
@@ -57,10 +56,10 @@ class Syntax
         var ch, change, di, li
 
         var list = _k_.list(changeInfo.changes)
-        for (var _63_19_ = 0; _63_19_ < list.length; _63_19_++)
+        for (var _62_19_ = 0; _62_19_ < list.length; _62_19_++)
         {
-            change = list[_63_19_]
-            var _65_23_ = [change.doIndex,change.newIndex,change.change]; di = _65_23_[0]; li = _65_23_[1]; ch = _65_23_[2]
+            change = list[_62_19_]
+            var _64_23_ = [change.doIndex,change.newIndex,change.change]; di = _64_23_[0]; li = _64_23_[1]; ch = _64_23_[2]
 
             switch (ch)
             {
@@ -130,19 +129,19 @@ class Syntax
 
     static spanForTextAndSyntax (text, n)
     {
-        var clrzd, clss, d, di, diss, l, last, sp, spc, style, _127_30_, _132_30_
+        var clrzd, clss, d, di, diss, l, last, sp, spc, style, _126_30_, _131_30_
 
         l = ""
         diss = this.dissForTextAndSyntax(text,n)
         if ((diss != null ? diss.length : undefined))
         {
             last = 0
-            for (var _125_23_ = di = 0, _125_27_ = diss.length; (_125_23_ <= _125_27_ ? di < diss.length : di > diss.length); (_125_23_ <= _125_27_ ? ++di : --di))
+            for (var _124_23_ = di = 0, _124_27_ = diss.length; (_124_23_ <= _124_27_ ? di < diss.length : di > diss.length); (_124_23_ <= _124_27_ ? ++di : --di))
             {
                 d = diss[di]
                 style = (d.styl != null) && d.styl.length && ` style=\"${d.styl}\"` || ''
                 spc = ''
-                for (var _129_27_ = sp = last, _129_34_ = d.start; (_129_27_ <= _129_34_ ? sp < d.start : sp > d.start); (_129_27_ <= _129_34_ ? ++sp : --sp))
+                for (var _128_27_ = sp = last, _128_34_ = d.start; (_128_27_ <= _128_34_ ? sp < d.start : sp > d.start); (_128_27_ <= _128_34_ ? ++sp : --sp))
                 {
                     spc += '&nbsp;'
                 }
@@ -185,9 +184,9 @@ class Syntax
 
         l = ""
         var list = _k_.list(dss)
-        for (var _154_14_ = 0; _154_14_ < list.length; _154_14_++)
+        for (var _153_14_ = 0; _153_14_ < list.length; _153_14_++)
         {
-            d = list[_154_14_]
+            d = list[_153_14_]
             l = _k_.rpad(d.start,l)
             l += d.match
         }
@@ -225,14 +224,14 @@ class Syntax
 
     static async init ()
     {
-        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _196_26_, _196_36_
+        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _195_26_, _195_36_
 
         syntaxDir = slash.path(__dirname,'../syntax/')
         syntaxFiles = await ffs.list(syntaxDir)
         var list = _k_.list(syntaxFiles)
-        for (var _187_23_ = 0; _187_23_ < list.length; _187_23_++)
+        for (var _186_23_ = 0; _186_23_ < list.length; _186_23_++)
         {
-            syntaxFile = list[_187_23_]
+            syntaxFile = list[_186_23_]
             syntaxName = slash.name(syntaxFile.path)
             patterns = JSON.parse(await ffs.read(syntaxFile.path))
             patterns['\\w+'] = 'text'
@@ -243,9 +242,9 @@ class Syntax
                 delete patterns.ko
                 config = matchr.config(patterns)
                 var list1 = _k_.list(extnames)
-                for (var _201_31_ = 0; _201_31_ < list1.length; _201_31_++)
+                for (var _200_31_ = 0; _200_31_ < list1.length; _200_31_++)
                 {
-                    syntaxName = list1[_201_31_]
+                    syntaxName = list1[_200_31_]
                     this.syntaxNames.push(syntaxName)
                     this.matchrConfigs[syntaxName] = config
                 }

@@ -56,10 +56,12 @@ export
     
     pullAllWith: (arr, items, cmp=isEqual) ->
         
-        for item in items
-            for index in arr.length-1..0
-                if cmp arr[index], item
-                    arr.splice index, 1
+        if valid arr and arr is arr
+        
+            for item in items
+                for index in arr.length-1..0
+                    if cmp arr[index], item
+                        arr.splice index, 1
         arr
         
     uniq: (arr) ->

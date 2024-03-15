@@ -125,6 +125,10 @@ class kk
         }
         return start(async function (sourceFile)
         {
+            if (slash.contains(sourceFile,'.stash'))
+            {
+                return
+            }
             console.log(_k_.b5('🔧'),_k_.w3(sourceFile))
             if (_k_.in(slash.ext(sourceFile),['kode','pug','styl','noon']))
             {

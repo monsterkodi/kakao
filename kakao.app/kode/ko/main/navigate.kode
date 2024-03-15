@@ -15,26 +15,23 @@ class Navigate
 
     @: (@main) ->
         
-        return if not @main? # not very obvious: this is instantiated in main and window processes
+        post.on 'navigate' @navigate
+        @filePositions = prefs.get 'filePositions' []
+        log 'navigate filePositions' @filePositions
+        @currentIndex = -1
+        @navigating = false
 
-        # post.onGet 'navigate' @onGet
-        # post.on 'navigate' @navigate
-        # @filePositions = prefs.get 'filePositions' []
-        # @currentIndex = -1
-        # @navigating = false
-
-    # 00     00   0000000   000  000   000
-    # 000   000  000   000  000  0000  000
-    # 000000000  000000000  000  000 0 000
-    # 000 0 000  000   000  000  000  0000
-    # 000   000  000   000  000  000   000
-
-    onGet: (key) => @[key]
-
+    # 000   000  000   0000000  000000000   0000000   00000000   000   000  
+    # 000   000  000  000          000     000   000  000   000   000 000   
+    # 000000000  000  0000000      000     000   000  0000000      00000    
+    # 000   000  000       000     000     000   000  000   000     000     
+    # 000   000  000  0000000      000      0000000   000   000     000     
+    
     addToHistory: (file, pos) ->
 
-        return if not @main
         return if not file?
+        
+        log 'file' file, pos
         
         pos ?= [0,0]
         
@@ -44,7 +41,9 @@ class Navigate
                 if slash.samePath fp.file, file
                     pos = fp.pos
                     break
-            
+
+        log 'prepull' @filePositions
+                    
         pullAllWith @filePositions, [file:file, pos:pos], (a,b) -> 
             slash.samePath(a.file, b.file) and (a.pos[1] == b.pos[1] or a.pos[1] <= 1)
 
@@ -64,8 +63,16 @@ class Navigate
         while @filePositions.length > prefs.get 'navigateHistoryLength' 100
             @filePositions.shift()
             
+        log 'setFilePositions' @filePositions    
+        
         prefs.set 'filePositions' @filePositions
 
+    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
+    # 0000  000  000   000  000   000  000  000        000   000     000     000       
+    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
+    # 000  0000  000   000     000     000  000   000  000   000     000     000       
+    # 000   000  000   000      0      000   0000000   000   000     000     00000000  
+    
     navigate: (opt) =>
 
         switch opt.action
@@ -90,17 +97,19 @@ class Navigate
 
                 opt.item.line ?= opt.item.pos?[1]+1
 
-                @filePositions = filter @filePositions, (f) -> f.file != opt.item.file or f.line != opt.item.line
+                @filePositions = @filePositions.filter (f) -> f.file != opt.item.file or f.line != opt.item.line
                 @currentIndex = clamp 0, @filePositions.length-1, @currentIndex
                 post.toWins 'navigateHistoryChanged' @filePositions, @currentIndex
                 
             when 'addFilePos'
 
                 return if not opt?.file?.length
+                
+                log 'addFilePos' opt
 
                 @addToHistory opt.oldFile, opt.oldPos
 
-                hasFile = _.find @filePositions, (v) -> v.file == opt.file
+                hasFile = @filePositions.find (v) -> v.file == opt.file
 
                 if not @navigating or not hasFile or opt?.for in ['edit' 'goto']
 
@@ -117,42 +126,61 @@ class Navigate
                         @currentIndex = @filePositions.length
                         post.toWins 'navigateHistoryChanged' @filePositions, @currentIndex
 
+    # 000       0000000    0000000   0000000    00000000  000  000      00000000  00000000    0000000    0000000  
+    # 000      000   000  000   000  000   000  000       000  000      000       000   000  000   000  000       
+    # 000      000   000  000000000  000   000  000000    000  000      0000000   00000000   000   000  0000000   
+    # 000      000   000  000   000  000   000  000       000  000      000       000        000   000       000  
+    # 0000000   0000000   000   000  0000000    000       000  0000000  00000000  000         0000000   0000000   
+    
     loadFilePos: (filePos, opt) ->
 
         if opt?.newWindow
             # post.toMain 'newWindowWithFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
             log 'navigate new window with file not implemented!'
         else
-            error 'no winID?' if not opt?.winID?
-            post.toWin opt.winID, 'loadFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
+            post.emit 'loadFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
 
-        post.toWins 'navigateIndexChanged' @currentIndex, @filePositions[@currentIndex]
+        # post.toWins 'navigateIndexChanged' @currentIndex, @filePositions[@currentIndex]
 
         filePos
 
-    # 000   000  000  000   000
-    # 000 0 000  000  0000  000
-    # 000000000  000  000 0 000
-    # 000   000  000  000  0000
-    # 00     00  000  000   000
 
-    # these are called in window process
-
+    # 0000000    00000000  000      
+    # 000   000  000       000      
+    # 000   000  0000000   000      
+    # 000   000  000       000      
+    # 0000000    00000000  0000000  
+    
     delFilePos: (item) ->
-        # post.toMain 'navigate' action:'delFilePos' winID: window.winID, item:item
+        
+        post.emit 'navigate' action:'delFilePos' item:item
 
+    #  0000000   0000000    0000000    
+    # 000   000  000   000  000   000  
+    # 000000000  000   000  000   000  
+    # 000   000  000   000  000   000  
+    # 000   000  0000000    0000000    
+    
     addFilePos: (opt) -> # called on editing
-        # opt.action = 'addFilePos'
-        # opt.for = 'edit'
-        # post.toMain 'navigate' opt
+        
+        opt.action = 'addFilePos'
+        opt.for = 'edit'
+        post.emit 'navigate' opt
 
+    #  0000000    0000000   000000000   0000000   
+    # 000        000   000     000     000   000  
+    # 000  0000  000   000     000     000   000  
+    # 000   000  000   000     000     000   000  
+    #  0000000    0000000      000      0000000   
+    
     gotoFilePos: (opt) -> # called on jumpTo
-        # opt.action = 'addFilePos'
-        # opt.for = 'goto'
-        # post.toMain 'navigate' opt
+        
+        opt.action = 'addFilePos'
+        opt.for = 'goto'
+        post.emit 'navigate' opt
 
-    backward: -> #post.toMain 'navigate' action: 'backward' winID: window.winID
-    forward:  -> #post.toMain 'navigate' action: 'forward'  winID: window.winID
-    clear:    -> #post.toMain 'navigate' action: 'clear'    winID: window.winID
+    backward: -> post.emit 'navigate' action: 'backward'
+    forward:  -> post.emit 'navigate' action: 'forward' 
+    clear:    -> post.emit 'navigate' action: 'clear'   
 
 export Navigate

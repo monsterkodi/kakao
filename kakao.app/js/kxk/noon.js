@@ -580,7 +580,7 @@ stringify = function (obj, options = {})
                 for (k in o)
                 {
                     v = o[k]
-                    if (o.hasOwnProperty(k))
+                    if (true)
                     {
                         kl = parseInt(Math.ceil((k.length + 2) / opt.indent) * opt.indent)
                         maxKey = Math.max(maxKey,kl)
@@ -641,9 +641,9 @@ stringify = function (obj, options = {})
         if (opt.sort)
         {
             var list = _k_.list(Object.keys(o).sort())
-            for (var _502_18_ = 0; _502_18_ < list.length; _502_18_++)
+            for (var _503_18_ = 0; _503_18_ < list.length; _503_18_++)
             {
-                k = list[_502_18_]
+                k = list[_503_18_]
                 l.push(keyValue(k,o[k]))
             }
         }
@@ -652,7 +652,7 @@ stringify = function (obj, options = {})
             for (k in o)
             {
                 v = o[k]
-                if (o.hasOwnProperty(k))
+                if (true)
                 {
                     l.push(keyValue(k,v))
                 }
@@ -662,7 +662,7 @@ stringify = function (obj, options = {})
     }
     toStr = function (o, ind = '', arry = false, visited = [])
     {
-        var s, t, v, _537_32_, _541_37_
+        var s, t, v, _539_32_, _543_37_
 
         if (!(o != null))
         {
@@ -697,7 +697,7 @@ stringify = function (obj, options = {})
                     {
                         s += '\n'
                     }
-                    s += (function () { var r_540_69_ = []; var list = _k_.list(o); for (var _540_69_ = 0; _540_69_ < list.length; _540_69_++)  { v = list[_540_69_];r_540_69_.push(ind + toStr(v,ind + indstr,true,visited))  } return r_540_69_ }).bind(this)().join('\n')
+                    s += (function () { var r_542_69_ = []; var list = _k_.list(o); for (var _542_69_ = 0; _542_69_ < list.length; _542_69_++)  { v = list[_542_69_];r_542_69_.push(ind + toStr(v,ind + indstr,true,visited))  } return r_542_69_ }).bind(this)().join('\n')
                 }
                 else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp')
                 {

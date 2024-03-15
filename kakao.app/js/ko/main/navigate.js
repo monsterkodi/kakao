@@ -13,39 +13,29 @@ class Navigate
 {
     constructor (main)
     {
-        var _18_27_
-
         this.main = main
     
         this.navigate = this.navigate.bind(this)
-        this.onGet = this.onGet.bind(this)
-        if (!(this.main != null))
-        {
-            return
-        }
-    }
-
-    onGet (key)
-    {
-        return this[key]
+        post.on('navigate',this.navigate)
+        this.filePositions = prefs.get('filePositions',[])
+        console.log('navigate filePositions',this.filePositions)
+        this.currentIndex = -1
+        this.navigating = false
     }
 
     addToHistory (file, pos)
     {
         var filePos, fp, i
 
-        if (!this.main)
-        {
-            return
-        }
         if (!(file != null))
         {
             return
         }
+        console.log('file',file,pos)
         pos = (pos != null ? pos : [0,0])
         if (!pos[0] && !pos[1] && this.filePositions.length)
         {
-            for (var _42_22_ = i = this.filePositions.length - 1, _42_47_ = 0; (_42_22_ <= _42_47_ ? i <= 0 : i >= 0); (_42_22_ <= _42_47_ ? ++i : --i))
+            for (var _39_22_ = i = this.filePositions.length - 1, _39_47_ = 0; (_39_22_ <= _39_47_ ? i <= 0 : i >= 0); (_39_22_ <= _39_47_ ? ++i : --i))
             {
                 fp = this.filePositions[i]
                 if (slash.samePath(fp.file,file))
@@ -55,6 +45,7 @@ class Navigate
                 }
             }
         }
+        console.log('prepull',this.filePositions)
         pullAllWith(this.filePositions,[{file:file,pos:pos}],function (a, b)
         {
             return slash.samePath(a.file,b.file) && (a.pos[1] === b.pos[1] || a.pos[1] <= 1)
@@ -69,12 +60,13 @@ class Navigate
         {
             this.filePositions.shift()
         }
+        console.log('setFilePositions',this.filePositions)
         return prefs.set('filePositions',this.filePositions)
     }
 
     navigate (opt)
     {
-        var hasFile, _91_30_, _91_45_, _99_39_
+        var hasFile, _106_39_, _98_30_, _98_45_
 
         switch (opt.action)
         {
@@ -101,8 +93,8 @@ class Navigate
                 return this.loadFilePos(this.filePositions[this.currentIndex],opt)
 
             case 'delFilePos':
-                opt.item.line = ((_91_30_=opt.item.line) != null ? _91_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
-                this.filePositions = filter(this.filePositions,function (f)
+                opt.item.line = ((_98_30_=opt.item.line) != null ? _98_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
+                this.filePositions = this.filePositions.filter(function (f)
                 {
                     return f.file !== opt.item.file || f.line !== opt.item.line
                 })
@@ -110,12 +102,13 @@ class Navigate
                 return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
 
             case 'addFilePos':
-                if (!(opt != null ? (_99_39_=opt.file) != null ? _99_39_.length : undefined : undefined))
+                if (!(opt != null ? (_106_39_=opt.file) != null ? _106_39_.length : undefined : undefined))
                 {
                     return
                 }
+                console.log('addFilePos',opt)
                 this.addToHistory(opt.oldFile,opt.oldPos)
-                hasFile = _.find(this.filePositions,function (v)
+                hasFile = this.filePositions.find(function (v)
                 {
                     return v.file === opt.file
                 })
@@ -145,41 +138,50 @@ class Navigate
 
     loadFilePos (filePos, opt)
     {
-        var _126_47_
-
         if ((opt != null ? opt.newWindow : undefined))
         {
             console.log('navigate new window with file not implemented!')
         }
         else
         {
-            if (!((opt != null ? opt.winID : undefined) != null))
-            {
-                console.error('no winID?')
-            }
-            post.toWin(opt.winID,'loadFile',`${filePos.file}:${filePos.pos[1] + 1}:${filePos.pos[0]}`)
+            post.emit('loadFile',`${filePos.file}:${filePos.pos[1] + 1}:${filePos.pos[0]}`)
         }
-        post.toWins('navigateIndexChanged',this.currentIndex,this.filePositions[this.currentIndex])
         return filePos
     }
 
     delFilePos (item)
-    {}
+    {
+        return post.emit('navigate',{action:'delFilePos',item:item})
+    }
 
     addFilePos (opt)
-    {}
+    {
+        opt.action = 'addFilePos'
+        opt.for = 'edit'
+        return post.emit('navigate',opt)
+    }
 
     gotoFilePos (opt)
-    {}
+    {
+        opt.action = 'addFilePos'
+        opt.for = 'goto'
+        return post.emit('navigate',opt)
+    }
 
     backward ()
-    {}
+    {
+        return post.emit('navigate',{action:'backward'})
+    }
 
     forward ()
-    {}
+    {
+        return post.emit('navigate',{action:'forward'})
+    }
 
     clear ()
-    {}
+    {
+        return post.emit('navigate',{action:'clear'})
+    }
 }
 
 export default Navigate;

@@ -1,0 +1,85 @@
+{
+  "tabs": {
+    "files": [
+      "/Users/kodi/s/kakao/kakao.app/kode/bin/knrd.kode",
+      "/Users/kodi/s/kakao/kakao.app/kode/bin/kk.kode"
+    ],
+    "pinned": [
+      false,
+      false,
+      false
+    ],
+    "active": 1
+  },
+  "filePositions": {
+    "/Users/kodi/s/kakao/kakao.app/kode/bin/build.kode": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/.gitignore": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/.konrad.noon": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/.stash/win/19851.noon": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/.stash/win/19874.json": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/.stash/win/19874.noon": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/package.noon": {
+      "main": 0,
+      "cursors": [
+        [
+          12,
+          1
+        ]
+      ]
+    },
+    "/Users/kodi/s/kakao/kakao.app/package.json": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/.konrad.json": {
+      "main": 0
+    },
+    "19874.json": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/klor/klor.kode": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/klor/lang.kode": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/klor/lang.noon": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/klor/test.kode": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/kode/lexer.noon": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/kode/lexer.kode": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/kode/test/await.kode": {
+      "main": 0,
+      "cursors": [
+        [
+          23,
+          2
+        ]
+      ]
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/bin/kk.kode": {
+      "main": 0
+    },
+    "/Users/kodi/s/kakao/kakao.app/kode/bin/knrd.kode": {
+      "main": 0
+    }
+  }
+}

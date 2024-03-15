@@ -62,6 +62,9 @@ toExport["util"] = function ()
             return a >= b
         }),[1,2])
         compare(arr,[1,2])
+        compare(util.pullAllWith([],[],null),[])
+        compare(util.pullAllWith([],[1,3],null),[])
+        compare(util.pullAllWith([]),[])
     })
     section("uniq", function ()
     {

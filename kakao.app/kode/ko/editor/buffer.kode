@@ -28,8 +28,10 @@ function Buffer extends events
         @setState new state()
 
     setLines: (lines) ->
+        
         @emit 'numLines' 0 # give listeners a chance to clear their stuff
         @state = new state lines:lines
+        log 'emit numLines' @numLines()
         @emit 'numLines' @numLines()
 
     setState: (s) -> @state = new state s.s

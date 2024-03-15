@@ -146,6 +146,8 @@ class Slash
     
     @split: (p) -> Slash.path(p).split('/').filter (e) -> e.length
     
+    @contains: (p, d) -> d in Slash.split p
+    
     @splitDrive: (p) ->
         
         p = Slash.path p

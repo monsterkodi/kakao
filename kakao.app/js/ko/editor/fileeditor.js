@@ -261,7 +261,6 @@ FileEditor = (function ()
     {
         var file, fpos
 
-        console.log('jumpToFile',opt,window.lastFocus)
         if (opt.newTab)
         {
             file = opt.path
@@ -291,7 +290,7 @@ FileEditor = (function ()
             opt.winID = window.winID
             opt.oldPos = this.cursorPos()
             opt.oldFile = this.currentFile
-            console.log(opt)
+            console.log('jumpToFile',opt)
             return window.navigate.gotoFilePos(opt)
         }
         else
