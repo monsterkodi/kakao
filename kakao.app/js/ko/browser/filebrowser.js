@@ -500,13 +500,8 @@ FileBrowser = (function ()
         items = await ffs.list(dir)
         items = util.sortBy(items,function (i)
         {
-            var r
-
-            r = i.type + (((i.file[0].toUpperCase() === i.file[0]) ? '-' : '+')) + i.file
-            console.log(r)
-            return r
+            return i.type + (((i.file[0].toUpperCase() === i.file[0]) ? '-' : '+')) + i.file
         })
-        console.log('sorted?',items)
         this.loadDirItems(item,items,col,opt)
         post.emit('dir',dir)
         return true

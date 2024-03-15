@@ -43,11 +43,10 @@ str.encode = (s, spaces=true) ->
     else
         ''
   
-ESCAPEREGEXP = /[\-\\\^\$\*\+\?\.\(\)\|\[\]\{\}\/]/g
+ESCAPE_REGEXP = /[\-\\\^\$\*\+\?\.\(\)\|\[\]\{\}\/]/g
 
-str.escapeRegexp = (s) ->
-    
-    s.replace ESCAPEREGEXP, '\\$&'
+str.escapeRegexp = (s) -> s.replace ESCAPE_REGEXP, '\\$&'
+str.escapeRegExp = (s) -> s.replace ESCAPE_REGEXP, '\\$&'
            
 #  0000000  000000000  00000000   000  00000000   
 # 000          000     000   000  000  000   000  

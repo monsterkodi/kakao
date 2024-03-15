@@ -38,7 +38,6 @@ Row = (function ()
         this["activate"] = this["activate"].bind(this)
         this["onMouseOver"] = this["onMouseOver"].bind(this)
         this["onMouseOut"] = this["onMouseOut"].bind(this)
-        console.log("new Row",this.item)
         this.browser = this.column.browser
         text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.name) != null ? _25_39_ : ((_25_52_=this.item.file) != null ? _25_52_ : slash.file(this.item.path))))
         if (_k_.empty((text)) || _k_.empty(text.trim()))

@@ -70,8 +70,8 @@ class Scrollbar
             @editor.scroll.by @scrollDelta
             @scrollDelta = 0
         
-        clearImmediate @scrollTimer
-        @scrollTimer = setImmediate scroll
+        clearTimeout @scrollTimer
+        @scrollTimer = setTimeout scroll
 
     # 000   000  000   000  00000000  00000000  000
     # 000 0 000  000   000  000       000       000

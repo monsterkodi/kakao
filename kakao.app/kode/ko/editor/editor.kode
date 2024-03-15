@@ -43,25 +43,19 @@ function Editor extends Buffer
 
         @indentString    = lpad 4 ""
         @stickySelection = false
-        @syntax          = new Syntax @config.syntaxName, @line, @lines
         
-        log 'editor' @name, @syntax
-        @do              = new Do @
+        @syntax = new Syntax @config.syntaxName, @line, @lines
+        
+        @do = new Do @
         
         if empty Editor.actions
             Editor.initActions @
         else
             @actionsInitialized()
 
-    del: ->
-
-        @do.del()
+    del: -> @do.del()
         
-    actionsInitialized: =>
-        
-        # log 'Editor.actionsInitialized'
-        
-        @setupFileType()
+    actionsInitialized: => @setupFileType()
 
     #  0000000    0000000  000000000  000   0000000   000   000   0000000
     # 000   000  000          000     000  000   000  0000  000  000
@@ -192,7 +186,7 @@ function Editor extends Buffer
 
     setText: (text="") =>
         
-        log 'setText' text
+        # log 'setText' text
         
         if @syntax.name == 'txt'
             @syntax.name = Syntax.shebang text.slice 0, text.search /\r?\n/

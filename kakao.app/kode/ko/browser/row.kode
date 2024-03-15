@@ -20,7 +20,7 @@ function Row
     
     @: (@column, @item) ->
 
-        log "new Row" @item
+        # log "new Row" @item
         @browser = @column.browser
         text = @item.text ? @item.name ? @item.file ? slash.file @item.path
         if empty(text) or empty text.trim()

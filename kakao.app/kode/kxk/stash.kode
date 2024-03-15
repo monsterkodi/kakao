@@ -96,11 +96,13 @@ function Stash
         clearTimeout @timer
         @timer = null
         try
-            text = noon @data
-            log 'stash.save' text
-            ffs.write @file, text
-                # post.toMain 'stashSaved'
+            # log 'stash.save data' @data
+            text = noon.stringify @data
+            # log 'stash.save text' text
+            ffs.write(@file, text).then (file) ->
+                log 'stash.saved to' file
         catch err
             error "stash.save -- can't save to '#{@file}': #{err}"
+        true
         
 export Stash

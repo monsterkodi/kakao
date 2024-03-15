@@ -303,6 +303,17 @@ toExport["kslash"] = function ()
         compare((slash.sanitize('a.b\n')),'a.b')
         compare((slash.sanitize('\n\n c . d  \n\n\n')),' c . d  ')
     })
+    section("contains", function ()
+    {
+        compare(slash.contains('/c/users/home/','users'),true)
+        compare(slash.contains('/home','hom'),false)
+        compare(slash.contains('/abc.def/ghi.jkl','abc'),false)
+        compare(slash.contains('/abc.def/ghi.jkl','def'),false)
+        compare(slash.contains('/abc.def/ghi.jkl','ghi'),false)
+        compare(slash.contains('/abc.def/ghi.jkl','jkl'),false)
+        compare(slash.contains('/abc.def/ghi.jkl','abc.def'),true)
+        compare(slash.contains('/abc.def/ghi.jkl','ghi.jkl'),true)
+    })
 }
 toExport["kslash"]._section_ = true
 toExport._test_ = true
