@@ -67,7 +67,7 @@ body {
 }
 #commandline-editor {
   color: #fff;
-  background: #1a1a1a;
+  background: #181818;
 }
 .commandlist {
   background: #181818;
@@ -149,7 +149,7 @@ span.macro.macro,
   color: #ff0;
 }
 #info {
-  background: #1a1a1a;
+  background: #181818;
   border-left-color: #111;
 }
 .info-cursor-line,
@@ -289,13 +289,13 @@ span.macro.macro,
   background: #111;
 }
 .cursor-line {
-  background: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.1);
 }
 .commandlist .cursor {
   background: transparent;
 }
 .numbers {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.1);
 }
 .commandlist .layers .numbers {
   background: rgba(0,0,0,0.1);
@@ -387,7 +387,7 @@ span.macro.macro,
   background: #111;
 }
 .minimap {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.1);
   border-left-color: #111;
 }
 .topbot {
