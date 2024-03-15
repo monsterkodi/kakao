@@ -36,6 +36,12 @@ NSString* typeForNSFileType(NSString* fileType)
         NSLog(@"fallback to bundle path! %@", args);
     }
           
+    // 000  000   000  00000000   0000000   
+    // 000  0000  000  000       000   000  
+    // 000  000 0 000  000000    000   000  
+    // 000  000  0000  000       000   000  
+    // 000  000   000  000        0000000   
+    
     if ([req isEqualToString:@"info"])
     {
         id attr = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
@@ -56,35 +62,77 @@ NSString* typeForNSFileType(NSString* fileType)
         [info setObject:typeForNSFileType([attr objectForKey:@"NSFileType"]) forKey:@"type"];
         return info;
     }
+    // 00000000  000   000  000   0000000  000000000   0000000  
+    // 000        000 000   000  000          000     000       
+    // 0000000     00000    000  0000000      000     0000000   
+    // 000        000 000   000       000     000          000  
+    // 00000000  000   000  000  0000000      000     0000000   
+    
+    if ([req isEqualToString:@"exists"])
+    {
+        return [NSNumber numberWithBool:[[NSFileManager defaultManager] fileExistsAtPath:path]];
+    }
+    // 00000000  000  000      00000000        00000000  000   000  000   0000000  000000000   0000000  
+    // 000       000  000      000             000        000 000   000  000          000     000       
+    // 000000    000  000      0000000         0000000     00000    000  0000000      000     0000000   
+    // 000       000  000      000             000        000 000   000       000     000          000  
+    // 000       000  0000000  00000000        00000000  000   000  000  0000000      000     0000000   
+    
     if ([req isEqualToString:@"fileExists"])
     {
         BOOL isDir;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
         return [NSNumber numberWithBool:exists && !isDir];
     }
+    // 0000000    000  00000000         00000000  000   000  000   0000000  000000000   0000000  
+    // 000   000  000  000   000        000        000 000   000  000          000     000       
+    // 000   000  000  0000000          0000000     00000    000  0000000      000     0000000   
+    // 000   000  000  000   000        000        000 000   000       000     000          000  
+    // 0000000    000  000   000        00000000  000   000  000  0000000      000     0000000   
+    
     if ([req isEqualToString:@"dirExists"])
     {
         BOOL isDir;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
         return [NSNumber numberWithBool:exists && isDir];
     }
-    if ([req isEqualToString:@"exists"])
-    {
-        return [NSNumber numberWithBool:[[NSFileManager defaultManager] fileExistsAtPath:path]];
-    }
+    // 000   0000000        000   000  00000000   000  000000000   0000000   0000000    000      00000000  
+    // 000  000             000 0 000  000   000  000     000     000   000  000   000  000      000       
+    // 000  0000000         000000000  0000000    000     000     000000000  0000000    000      0000000   
+    // 000       000        000   000  000   000  000     000     000   000  000   000  000      000       
+    // 000  0000000         00     00  000   000  000     000     000   000  0000000    0000000  00000000  
+    
     if ([req isEqualToString:@"isWritable"])
     {
         return [NSNumber numberWithBool:[[NSFileManager defaultManager] isWritableFileAtPath:path]];
     }
+    // 000   0000000        00000000   00000000   0000000   0000000     0000000   0000000    000      00000000  
+    // 000  000             000   000  000       000   000  000   000  000   000  000   000  000      000       
+    // 000  0000000         0000000    0000000   000000000  000   000  000000000  0000000    000      0000000   
+    // 000       000        000   000  000       000   000  000   000  000   000  000   000  000      000       
+    // 000  0000000         000   000  00000000  000   000  0000000    000   000  0000000    0000000  00000000  
+    
     if ([req isEqualToString:@"isReadable"])
     {
         return [NSNumber numberWithBool:[[NSFileManager defaultManager] isReadableFileAtPath:path]];
     }
+    // 00000000   00000000   0000000   0000000    
+    // 000   000  000       000   000  000   000  
+    // 0000000    0000000   000000000  000   000  
+    // 000   000  000       000   000  000   000  
+    // 000   000  00000000  000   000  0000000    
+    
     if ([req isEqualToString:@"read"])
     {
         return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     }
-    else if ([req isEqualToString:@"write"])
+    // 000   000  00000000   000  000000000  00000000  
+    // 000 0 000  000   000  000     000     000       
+    // 000000000  0000000    000     000     0000000   
+    // 000   000  000   000  000     000     000       
+    // 00     00  000   000  000     000     00000000  
+    
+    if ([req isEqualToString:@"write"])
     {
         NSString* text = [args objectAtIndex:1];
         NSData* data = [text dataUsingEncoding:NSUTF8StringEncoding];
@@ -93,7 +141,26 @@ NSString* typeForNSFileType(NSString* fileType)
         else
             return nil;
     }
-    else if ([req isEqualToString:@"list"])
+    // 00000000   00000000  00     00   0000000   000   000  00000000  
+    // 000   000  000       000   000  000   000  000   000  000       
+    // 0000000    0000000   000000000  000   000   000 000   0000000   
+    // 000   000  000       000 0 000  000   000     000     000       
+    // 000   000  00000000  000   000   0000000       0      00000000  
+
+    if ([req isEqualToString:@"remove"])
+    {
+        if ([[NSFileManager defaultManager] removeItemAtPath:path error:nil])
+            return path;
+        else
+            return nil;
+    }
+    // 000      000   0000000  000000000  
+    // 000      000  000          000     
+    // 000      000  0000000      000     
+    // 000      000       000     000     
+    // 0000000  000  0000000      000     
+    
+    if ([req isEqualToString:@"list"])
     {
         // NSLog(@"list %@", path);
         
@@ -116,28 +183,6 @@ NSString* typeForNSFileType(NSString* fileType)
         }
         
         // NSLog(@"results %d", [result count]);
-                
-        return result;
-    }
-    else if ([req isEqualToString:@"listDeep"])
-    {
-        NSLog(@"listDeep %@", path);
-        
-        NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
-        
-        NSMutableArray* result = [NSMutableArray array];
-        
-        NSString *file;
-        while ((file = [dirEnum nextObject])) 
-        {
-            id type = typeForNSFileType([dirEnum.fileAttributes objectForKey:NSFileType]); 
-                    
-            NSMutableDictionary* fileInfo = [NSMutableDictionary dictionary];
-            [fileInfo setObject:type forKey:@"type"];
-            [fileInfo setObject:file forKey:@"file"];
-            [fileInfo setObject:[path stringByAppendingPathComponent:file] forKey:@"path"];
-            [result addObject:fileInfo];
-        }
                 
         return result;
     }

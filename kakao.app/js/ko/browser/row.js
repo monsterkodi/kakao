@@ -136,8 +136,9 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, _89_19_
+        var col, _91_19_
 
+        console.log('Row.active',this)
         if (this.column.index < 0)
         {
             this.column.activateRow(this)
@@ -174,7 +175,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _118_31_
+        var _120_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -217,7 +218,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _161_24_
+        var _163_24_
 
         if ((this.input != null))
         {
@@ -271,7 +272,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _196_28_, _203_37_
+        var _198_28_, _205_37_
 
         if (!(this.input != null))
         {

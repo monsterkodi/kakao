@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, dbg: function (f,l,c,m,...a) { console.log(f + ':' + l + ':' + c + (m ? ' ' + m + '\n' : '\n') + a.map(function (a) { return _k_.noon(a) }).join(' '))}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var Shelf
 
@@ -79,6 +79,7 @@ Shelf = (function ()
             return
         }
         row.setActive({emit:true})
+        console.log('activateRow',row)
         if (item.type === 'file')
         {
             console.log('Shelf emit jumpToFile',item)
@@ -103,7 +104,7 @@ Shelf = (function ()
             delete this.navigatingRows
             return
         }
-        for (var _80_22_ = index = 0, _80_26_ = this.items.length; (_80_22_ <= _80_26_ ? index < this.items.length : index > this.items.length); (_80_22_ <= _80_26_ ? ++index : --index))
+        for (var _82_22_ = index = 0, _82_26_ = this.items.length; (_82_22_ <= _82_26_ ? index < this.items.length : index > this.items.length); (_82_22_ <= _82_26_ ? ++index : --index))
         {
             if (this.items[index].path === file)
             {
@@ -126,7 +127,7 @@ Shelf = (function ()
             {
                 return b[1].path.length - a[1].path.length
             })
-            var _92_26_ = _k_.first(matches); index = _92_26_[0]; item = _92_26_[1]
+            var _94_26_ = _k_.first(matches); index = _94_26_[0]; item = _94_26_[1]
 
             return this.rows[index].setActive()
         }
@@ -182,12 +183,12 @@ Shelf = (function ()
 
     Shelf.prototype["setItems"] = function (items, opt)
     {
-        var _139_15_
+        var _141_15_
 
         this.items = items
     
         this.clear()
-        this.items = ((_139_15_=this.items) != null ? _139_15_ : [])
+        this.items = ((_141_15_=this.items) != null ? _141_15_ : [])
         this.addItems(this.items)
         if ((opt != null ? opt.save : undefined) !== false)
         {
@@ -205,9 +206,9 @@ Shelf = (function ()
             return
         }
         var list = _k_.list(items)
-        for (var _150_17_ = 0; _150_17_ < list.length; _150_17_++)
+        for (var _152_17_ = 0; _152_17_ < list.length; _152_17_++)
         {
-            item = list[_150_17_]
+            item = list[_152_17_]
             this.rows.push(new Row(this,item))
         }
         this.scroll.update()
@@ -218,7 +219,7 @@ Shelf = (function ()
     {
         var item
 
-        item = {name:slash.file(slash.tilde(dir)),type:'dir',file:slash.path(dir)}
+        item = {name:slash.file(slash.tilde(dir)),type:'dir',path:slash.path(dir),file:slash.file(dir)}
         return this.addItem(item,opt)
     }
 
@@ -226,7 +227,7 @@ Shelf = (function ()
     {
         var item
 
-        item = {name:slash.file(file),type:'file',file:slash.path(file)}
+        item = {name:slash.file(file),file:slash.file(file),path:slash.path(file),type:'file'}
         if (File.isText(file))
         {
             item.textFile = true
@@ -238,11 +239,10 @@ Shelf = (function ()
     {
         var file
 
-        _k_.dbg("kode/ko/browser/Shelf.kode", 176, 8, "files", files,opt)
         var list = _k_.list(files)
-        for (var _178_17_ = 0; _178_17_ < list.length; _178_17_++)
+        for (var _180_17_ = 0; _180_17_ < list.length; _180_17_++)
         {
-            file = list[_178_17_]
+            file = list[_180_17_]
             if (await ffs.isDir(file))
             {
                 this.addDir(file,opt)
@@ -333,7 +333,7 @@ Shelf = (function ()
     {
         var i
 
-        for (var _279_18_ = i = 0, _279_22_ = this.numRows(); (_279_18_ <= _279_22_ ? i < this.numRows() : i > this.numRows()); (_279_18_ <= _279_22_ ? ++i : --i))
+        for (var _281_18_ = i = 0, _281_22_ = this.numRows(); (_281_18_ <= _281_22_ ? i < this.numRows() : i > this.numRows()); (_281_18_ <= _281_22_ ? ++i : --i))
         {
             if (this.row(i).item.type === 'historySeparator')
             {
@@ -364,7 +364,7 @@ Shelf = (function ()
 
     Shelf.prototype["onNavigateIndexChanged"] = function (currentIndex, currentItem)
     {
-        var reverseIndex, _301_30_
+        var reverseIndex, _303_30_
 
         if (this.showHistory)
         {
@@ -401,16 +401,16 @@ Shelf = (function ()
 
     Shelf.prototype["onMouseOver"] = function (event)
     {
-        var _340_46_, _340_59_
+        var _342_46_, _342_59_
 
-        return ((_340_46_=this.row(event.target)) != null ? typeof (_340_59_=_340_46_.onMouseOver) === "function" ? _340_59_() : undefined : undefined)
+        return ((_342_46_=this.row(event.target)) != null ? typeof (_342_59_=_342_46_.onMouseOver) === "function" ? _342_59_() : undefined : undefined)
     }
 
     Shelf.prototype["onMouseOut"] = function (event)
     {
-        var _341_46_, _341_58_
+        var _343_46_, _343_58_
 
-        return ((_341_46_=this.row(event.target)) != null ? typeof (_341_58_=_341_46_.onMouseOut) === "function" ? _341_58_() : undefined : undefined)
+        return ((_343_46_=this.row(event.target)) != null ? typeof (_343_58_=_343_46_.onMouseOut) === "function" ? _343_58_() : undefined : undefined)
     }
 
     Shelf.prototype["onDblClick"] = function (event)
@@ -420,13 +420,13 @@ Shelf = (function ()
 
     Shelf.prototype["navigateRows"] = function (key)
     {
-        var index, navigate, row, _353_28_, _353_38_, _368_99_
+        var index, navigate, row, _355_28_, _355_38_, _370_99_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_353_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _353_38_ : -1)
+        index = ((_355_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _355_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -497,7 +497,7 @@ Shelf = (function ()
 
     Shelf.prototype["openFileInNewWindow"] = function ()
     {
-        var item, _386_30_
+        var item, _388_30_
 
         if (item = (this.activeRow() != null ? this.activeRow().item : undefined))
         {
@@ -511,9 +511,9 @@ Shelf = (function ()
 
     Shelf.prototype["removeObject"] = function ()
     {
-        var nextOrPrev, row, _393_27_, _403_36_
+        var nextOrPrev, row, _395_27_, _405_36_
 
-        row = ((_393_27_=this.activeRow()) != null ? _393_27_ : this.selectedRow())
+        row = ((_395_27_=this.activeRow()) != null ? _395_27_ : this.selectedRow())
         if (row)
         {
             if (this.showHistory)
@@ -528,7 +528,7 @@ Shelf = (function ()
                     window.navigate.delFilePos(row.item)
                 }
             }
-            nextOrPrev = ((_403_36_=row.next()) != null ? _403_36_ : row.prev())
+            nextOrPrev = ((_405_36_=row.next()) != null ? _405_36_ : row.prev())
             row.div.remove()
             this.items.splice(row.index(),1)
             this.rows.splice(row.index(),1)
@@ -567,6 +567,9 @@ Shelf = (function ()
             case 'ctrl+enter':
                 return this.openFileInNewWindow()
 
+            case 'enter':
+                return stopEvent(event,this.navigateCols(key))
+
             case 'backspace':
             case 'delete':
                 return stopEvent(event,this.clearSearch().removeObject())
@@ -581,26 +584,6 @@ Shelf = (function ()
             case 'ctrl+e':
                 this.toggleExtensions()
                 break
-            case 'tab':
-                if (this.search.length)
-                {
-                    this.doSearch('')
-                }
-                return stopEvent(event)
-
-            case 'esc':
-                if (this.dragDiv)
-                {
-                    this.dragDiv.drag.dragStop()
-                    this.dragDiv.remove()
-                    delete this.dragDiv
-                }
-                if (this.search.length)
-                {
-                    this.clearSearch()
-                }
-                return stopEvent(event)
-
             case 'up':
             case 'down':
             case 'page up':
@@ -613,6 +596,26 @@ Shelf = (function ()
             case 'alt+right':
             case 'enter':
                 return stopEvent(event,this.focusBrowser())
+
+            case 'tab':
+                if (this.search.length)
+                {
+                    this.doSearch('')
+                    return stopEvent(event)
+                }
+                break
+            case 'esc':
+                if (this.dragDiv)
+                {
+                    this.dragDiv.drag.dragStop()
+                    this.dragDiv.remove()
+                    delete this.dragDiv
+                }
+                if (this.search.length)
+                {
+                    this.clearSearch()
+                }
+                return stopEvent(event)
 
         }
 

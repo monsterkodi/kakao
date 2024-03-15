@@ -182,9 +182,6 @@ Win = (function ()
             case 'screenshot':
                 kakao.send('window.snapshot')
                 break
-            case 'close':
-                kakao.send('window.close')
-                break
             case 'reload':
                 kakao.send('window.reload')
                 break
@@ -196,6 +193,10 @@ Win = (function ()
                 break
             case 'open ...':
                 kakao.send('window.new','ko.html')
+                break
+            case 'close':
+                window.stash.clear()
+                kakao.send('window.close')
                 break
             case 'about':
                 if (window.aboutImage)
@@ -214,24 +215,24 @@ Win = (function ()
 
     Win.prototype["onKeyDown"] = function (event)
     {
-        var info, _143_21_, _143_38_
+        var info, _145_21_, _145_38_
 
         info = keyinfo.forEvent(event)
         info.event = event
         stopEvent(event)
         if ('unhandled' === window.titlebar.handleKeyInfo(info))
         {
-            return ((_143_21_=this.delegate) != null ? typeof (_143_38_=_143_21_.onWindowKeyDown) === "function" ? _143_38_(this,info) : undefined : undefined)
+            return ((_145_21_=this.delegate) != null ? typeof (_145_38_=_145_21_.onWindowKeyDown) === "function" ? _145_38_(this,info) : undefined : undefined)
         }
     }
 
     Win.prototype["onKeyUp"] = function (event)
     {
-        var info, _150_17_, _150_32_
+        var info, _152_17_, _152_32_
 
         info = keyinfo.forEvent(event)
         info.event = event
-        return ((_150_17_=this.delegate) != null ? typeof (_150_32_=_150_17_.onWindowKeyUp) === "function" ? _150_32_(this,info) : undefined : undefined)
+        return ((_152_17_=this.delegate) != null ? typeof (_152_32_=_152_17_.onWindowKeyUp) === "function" ? _152_32_(this,info) : undefined : undefined)
     }
 
     return Win

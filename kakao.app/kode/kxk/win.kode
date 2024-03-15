@@ -113,11 +113,13 @@ function Win
             'maximize'       ➜ kakao.send 'window.maximize'
             'minimize'       ➜ kakao.send 'window.minimize'
             'screenshot'     ➜ kakao.send 'window.snapshot'
-            'close'          ➜ kakao.send 'window.close'
             'reload'         ➜ kakao.send 'window.reload'
             'devtools'       ➜ kakao.send 'window.toggleInspector'
             'quit'           ➜ kakao.send 'app.quit'
             'open ...'       ➜ kakao.send 'window.new' 'ko.html'
+            'close'          
+                window.stash.clear()
+                kakao.send 'window.close'
             'about'          
                 if window.aboutImage
                     kakao.send 'window.new' 'about.html' "window.aboutImage = \"#{window.aboutImage}\";"

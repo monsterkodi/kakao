@@ -50,7 +50,7 @@ function Store extends events
             log "#{@name}Loaded" @data
             post.emit "#{@name}Loaded"
         
-    keypath: (key) -> key.split @sep
+    keypath: (key) => key.split @sep
     
     #  0000000   00000000  000000000
     # 000        000          000   
@@ -58,7 +58,7 @@ function Store extends events
     # 000   000  000          000   
     #  0000000   00000000     000   
         
-    get: (key, value) ->
+    get: (key, value) =>
         
         return clone(value) if not key?.split?
         clone sds.get @data, @keypath(key), value
@@ -69,7 +69,9 @@ function Store extends events
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: (key, value) ->
+    set: (key, value) =>
+        
+        log "Store[#{@name}].set" key, value
 
         return if not key?.split?
         return if isEqual @get(key), value
@@ -81,7 +83,7 @@ function Store extends events
         @timer = setTimeout @save, @timeout
         post.toWins 'store' @name, 'set' key, value
                     
-    del: (key) -> 
+    del: (key) => 
     
         return if not @data
         sds.del @data, @keypath key
@@ -90,7 +92,7 @@ function Store extends events
         @timer = setTimeout @save, @timeout
         post.toWins 'store' @name, 'del' key
                 
-    clear: ->
+    clear: =>
         
         @data = {}
         
@@ -103,7 +105,7 @@ function Store extends events
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
     
-    reload: ->
+    reload: =>
 
         @load().then -> post.toWins 'store' @name, 'data' @data
     
@@ -121,7 +123,9 @@ function Store extends events
     #      000  000   000     000     000     
     # 0000000   000   000      0      00000000
 
-    save: ○=>
+    save: =>
+        
+        log "store '#{@name}' save"
         
         return if not @file
         return if empty @data
@@ -133,8 +137,8 @@ function Store extends events
 
         try
             text = noon.stringify(@data, {indent: 2, maxalign: 8})+'\n'
-            await ffs.write @file, text
-            log "store '#@name' saved:\n" text
+            ffs.write(@file, text).then =>
+                log "store '#@name' saved:\n" text
         catch err
             error "store.save -- can't save to '#{@file}:" err
 

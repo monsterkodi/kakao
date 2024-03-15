@@ -58,6 +58,8 @@ function Shelf extends Column
         
         row.setActive emit:true
         
+        log 'activateRow' row
+        
         if item.type == 'file'
             log 'Shelf emit jumpToFile' item
             post.emit 'jumpToFile' item
@@ -158,7 +160,8 @@ function Shelf extends Column
         item = 
             name: slash.file slash.tilde dir
             type: 'dir'
-            file: slash.path dir
+            path: slash.path dir
+            file: slash.file dir
         
         @addItem item, opt
 
@@ -166,14 +169,13 @@ function Shelf extends Column
         
         item = 
             name: slash.file file
+            file: slash.file file
+            path: slash.path file
             type: 'file'
-            file: slash.path file
         item.textFile = true if File.isText file
         @addItem item, opt
         
     addFiles: (files, opt) ○->
-        
-        dbg files, opt
         
         for file in files
             if await ffs.isDir file
@@ -451,24 +453,29 @@ function Shelf extends Column
         { mod, key, combo, char } = keyinfo.forEvent event
         
         switch combo
-            when 'command+enter' 'ctrl+enter' then return @openFileInNewWindow()
-            when 'backspace' 'delete' then return stopEvent event, @clearSearch().removeObject()
-            when 'command+k' 'ctrl+k' then return stopEvent event if @browser.cleanUp()
-            when 'ctrl+e' then @toggleExtensions()
-            when 'tab'    
-                if @search.length then @doSearch ''
-                return stopEvent event
-            when 'esc'
+            'command+enter' 
+            'ctrl+enter'    ➜ return @openFileInNewWindow()
+            'enter'         ➜ return stopEvent event, @navigateCols key
+            'backspace' 
+            'delete'        ➜ return stopEvent event, @clearSearch().removeObject()
+            'command+k' 
+            'ctrl+k'        ➜ return stopEvent event if @browser.cleanUp()
+            'ctrl+e'        ➜ @toggleExtensions()
+            'up' 'down' 
+            'page up' 
+            'page down' 
+            'home' 'end'    ➜ return stopEvent event, @navigateRows key
+            'right' 
+            'alt+right' 
+            'enter'         ➜ return stopEvent event, @focusBrowser()
+            'tab'           ➜ if @search.length ➜ @doSearch ''; return stopEvent event
+            'esc'
                 if @dragDiv
                     @dragDiv.drag.dragStop()
                     @dragDiv.remove()
                     delete @dragDiv
-                if @search.length then @clearSearch()
+                if @search.length ➜ @clearSearch()
                 return stopEvent event
-            when 'up' 'down' 'page up' 'page down' 'home' 'end' 
-                return stopEvent event, @navigateRows key
-            when 'right' 'alt+right' 'enter'
-                return stopEvent event, @focusBrowser()
                 
         if mod in ['shift' ''] and char then @doSearch char
         

@@ -57,7 +57,7 @@ image = (file) ->
         elem 'div' class:"fileInfoFile #{slash.ext file}" html:File.span file
         table
     ]
-    cnt =$ '.browserImageContainer'
+    # cnt =$ '.browserImageContainer'
     cnt.appendChild info
     
     cnt
