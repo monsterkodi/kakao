@@ -304,7 +304,7 @@ class Tabs
 
         files  = ( t.file for t in @tabs )
         pinned = ( t.pinned for t in @tabs )
-        files  = files.filter (file) -> not file.startsWith 'untitled'
+        files  = files.filter (file) -> not file?.startsWith 'untitled'
 
         window.stash.set 'tabs',
             files:  files

@@ -25,10 +25,16 @@ Store = (function ()
     Store["stores"] = {}
     function Store (name, opt = {})
     {
-        Store.__super__.constructor.call(this)
-    
         var _29_22_, _30_22_
 
+        this["save"] = this["save"].bind(this)
+        this["reload"] = this["reload"].bind(this)
+        this["clear"] = this["clear"].bind(this)
+        this["del"] = this["del"].bind(this)
+        this["set"] = this["set"].bind(this)
+        this["get"] = this["get"].bind(this)
+        this["keypath"] = this["keypath"].bind(this)
+        Store.__super__.constructor.call(this)
         this.name = name
         opt.separator = ((_29_22_=opt.separator) != null ? _29_22_ : '|')
         opt.timeout = ((_30_22_=opt.timeout) != null ? _30_22_ : 1000)
@@ -87,8 +93,9 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _74_32_, _78_14_
+        var _76_32_, _80_14_
 
+        console.log(`Store[${this.name}].set`,key,value)
         if (!((key != null ? key.split : undefined) != null))
         {
             return
@@ -101,7 +108,7 @@ Store = (function ()
         {
             return
         }
-        this.data = ((_78_14_=this.data) != null ? _78_14_ : {})
+        this.data = ((_80_14_=this.data) != null ? _80_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         clearTimeout(this.timer)
         this.timer = setTimeout(this.save,this.timeout)
@@ -151,10 +158,11 @@ Store = (function ()
         }
     }
 
-    Store.prototype["save"] = async function ()
+    Store.prototype["save"] = function ()
     {
         var text
 
+        console.log(`store '${this.name}' save`)
         if (!this.file)
         {
             return
@@ -169,8 +177,10 @@ Store = (function ()
         try
         {
             text = noon.stringify(this.data,{indent:2,maxalign:8}) + '\n'
-            await ffs.write(this.file,text)
-            console.log("store '#@name' saved:\n",text)
+            ffs.write(this.file,text).then((function ()
+            {
+                console.log("store '#@name' saved:\n",text)
+            }).bind(this))
         }
         catch (err)
         {

@@ -445,7 +445,7 @@ class Tabs
         pinned = (function () { var r_306_34_ = []; var list1 = _k_.list(this.tabs); for (var _306_34_ = 0; _306_34_ < list1.length; _306_34_++)  { t = list1[_306_34_];r_306_34_.push(t.pinned)  } return r_306_34_ }).bind(this)()
         files = files.filter(function (file)
         {
-            return !file.startsWith('untitled')
+            return !(file != null ? file.startsWith('untitled') : undefined)
         })
         return window.stash.set('tabs',{files:files,pinned:pinned,active:Math.min((this.activeTab() != null ? this.activeTab().index() : undefined),files.length - 1)})
     }

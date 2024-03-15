@@ -68,7 +68,7 @@ function Stash
         @data = {}
         clearTimeout @timer
         @timer = null
-        fs.removeSync @file
+        ffs.remove @file
         
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  

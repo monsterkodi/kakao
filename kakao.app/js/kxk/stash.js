@@ -90,7 +90,7 @@ Stash = (function ()
         this.data = {}
         clearTimeout(this.timer)
         this.timer = null
-        return fs.removeSync(this.file)
+        return ffs.remove(this.file)
     }
 
     Stash.prototype["load"] = async function ()

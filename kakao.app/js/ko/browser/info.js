@@ -55,7 +55,6 @@ image = function (file)
         return table.innerHTML = html
     }
     info = elem({class:'browserFileInfo',children:[elem('div',{class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),table]})
-    cnt = $('.browserImageContainer')
     cnt.appendChild(info)
     return cnt
 }
