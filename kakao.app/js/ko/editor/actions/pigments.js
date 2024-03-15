@@ -72,7 +72,7 @@ Pigments = (function ()
 
     Pigments.prototype["onFile"] = function (file)
     {
-        if (window.state.get(`pigments|${file}`))
+        if (window.stash.get(`pigments|${file}`))
         {
             return this.pigmentize()
         }
@@ -80,13 +80,13 @@ Pigments = (function ()
 
     Pigments.prototype["activate"] = function ()
     {
-        window.state.set(`pigments|${this.editor.currentFile}`,true)
+        window.stash.set(`pigments|${this.editor.currentFile}`,true)
         return this.pigmentize()
     }
 
     Pigments.prototype["deactivate"] = function ()
     {
-        window.state.set(`pigments|${this.editor.currentFile}`)
+        window.stash.set(`pigments|${this.editor.currentFile}`)
         return this.clear()
     }
 
@@ -120,7 +120,7 @@ export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pig
     return this.pigments = ((_117_31_=this.pigments) != null ? _117_31_ : new Pigments(this))
 },togglePigments:function ()
 {
-    if (window.state.get(`pigments|${this.currentFile}`))
+    if (window.stash.get(`pigments|${this.currentFile}`))
     {
         return this.pigments.deactivate()
     }

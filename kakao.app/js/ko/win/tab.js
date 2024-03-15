@@ -24,7 +24,7 @@ class Tab
         this.togglePinned = this.togglePinned.bind(this)
         this.dirty = false
         this.pinned = false
-        this.div = elem({class:'tab',text:''})
+        this.div = elem({class:'tab app-drag-region',text:''})
         this.tabs.div.appendChild(this.div)
         this.update()
         post.emit('watch',this.file)

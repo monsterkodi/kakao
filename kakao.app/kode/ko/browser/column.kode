@@ -644,8 +644,8 @@ function Column
     toggleExtensions: =>
 
         stateKey = "browser|hideExtensions"
-        window.state.set stateKey, not window.state.get stateKey, false
-        # setStyle '.browserRow .ext' 'display' window.state.get(stateKey) and 'none' or 'initial'
+        window.stash.set stateKey, not window.stash.get stateKey, false
+        setStyle '.browserRow .ext' 'display' window.stash.get(stateKey) and 'none' or 'initial'
         @
         
     # 000000000  00000000    0000000    0000000  000   000  

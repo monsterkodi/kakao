@@ -23,8 +23,8 @@
 - (BOOL) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
 - (BOOL) windowShouldClose:(NSWindow*)window 
 { 
-    // if ([[[App get] wins] count] == 1) // make sure the application closes if the last kakao window closes.
-        // [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
+    if ([[[App get] wins] count] == 1) // make sure the application closes if the last kakao window closes.
+        [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
     return YES; 
 }
 - (BOOL) windowShouldZoom:(NSWindow*)window toFrame:(NSRect)frame

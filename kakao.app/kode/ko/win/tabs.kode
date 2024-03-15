@@ -21,9 +21,9 @@ class Tabs
 
         @emptyid = 0
         @tabs = []
-        @div = elem class: 'tabs'
-
-        titlebar.insertBefore @div, $ '.minimize'
+        
+        @div =$ 'title'
+        @div.classList.add 'tabs'
 
         @div.addEventListener 'click'       @onClick
         @div.addEventListener 'contextmenu' @onContextMenu

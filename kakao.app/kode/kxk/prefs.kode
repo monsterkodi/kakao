@@ -1,9 +1,11 @@
 ###
-00000000   00000000   00000000  00000000   0000000
-000   000  000   000  000       000       000     
-00000000   0000000    0000000   000000    0000000 
-000        000   000  000       000            000
-000        000   000  00000000  000       0000000 
+    00000000   00000000   00000000  00000000   0000000
+    000   000  000   000  000       000       000     
+    00000000   0000000    0000000   000000    0000000 
+    000        000   000  000       000            000
+    000        000   000  00000000  000       0000000 
+    
+    stores application wide preferences in .app/.stash/prefs.noon
 ###
 
 use ./slash
@@ -11,59 +13,28 @@ use ./store
 
 function Prefs
     
-    @store:   null
-    @watcher: null
+    @store: null
     
-    @init: (opt={}) ->
+    @init: ->
 
         return error 'prefs.init -- duplicate stores?' if @store?
+        @store = new store 'prefs'
 
-        @store = new store 'prefs' opt
-
-        @store.on 'willSave' @unwatch
-        @store.on 'didSave'  @watch
-        @watch() 
-      
-    @unwatch: =>
-        
-        return if not @store?.app?
-        
-        @watcher?.close()
-        @watcher = null
-        
-    @watch: =>
-        
-        return if not @store?.app?
-        
-        slash.error = log
-        if slash.touch @store.file
-        
-            @unwatch()
-            @watcher = fs.watch @store.file
-            @watcher.on 'change' @onFileChange
-            @watcher.on 'rename' @onFileUnlink
-            @watcher.on 'error'  (err) -> error 'Prefs watch error' err
-                
-        else
-            error "can't touch prefs file #{@store.file}"
-        @watcher
-        
-    @onFileChange: => @store?.reload()
-    @onFileUnlink: => @unwatch(); @store?.clear()
-            
     @get:  (key, value) -> if @store then @store.get(key, value) else clone value
-    @set:  (key, value) -> @unwatch(); @store?.set(key, value); @watch()
-    @del:  (key, value) -> @unwatch(); @store?.del(key); @watch()
+    @set:  (key, value) -> @store?.set(key, value)
+    @del:  (key, value) -> @store?.del(key)
     @save:              -> @store?.save()
     
-    @toggle: (key, cb) -> 
+    @toggle: (key, cb) ->
+        
         val = not @get key, false
         @set key, val
         cb? val
         
     @apply: (key, deflt=false, cb) ->
+        
         if not cb? and deflt != false
             cb = deflt
         cb? @get key, deflt
-        
+      
 export Prefs

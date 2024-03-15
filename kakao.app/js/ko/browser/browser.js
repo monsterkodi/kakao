@@ -29,6 +29,7 @@ Browser = (function ()
         this["updateColumnScrolls"] = this["updateColumnScrolls"].bind(this)
         this["focus"] = this["focus"].bind(this)
         this.columns = []
+        setStyle('.browserRow .ext','display',window.stash.get('browser|hideExtensions') && 'none' || 'initial')
         return Browser.__super__.constructor.apply(this, arguments)
     }
 

@@ -13,73 +13,15 @@ Prefs = (function ()
     {}
 
     Prefs["store"] = null
-    Prefs["watcher"] = null
-    Prefs["init"] = function (opt = {})
+    Prefs["init"] = function ()
     {
-        var _19_64_
+        var _20_64_
 
         if ((this.store != null))
         {
             return console.error('prefs.init -- duplicate stores?')
         }
-        this.store = new store('prefs',opt)
-        this.store.on('willSave',this.unwatch)
-        this.store.on('didSave',this.watch)
-        return this.watch()
-    }
-
-    Prefs["unwatch"] = function ()
-    {
-        var _29_28_, _29_33_, _31_16_
-
-        if (!((this.store != null ? this.store.app : undefined) != null))
-        {
-            return
-        }
-        ;(this.watcher != null ? this.watcher.close() : undefined)
-        return this.watcher = null
-    }
-
-    Prefs["watch"] = function ()
-    {
-        var _36_28_, _36_33_
-
-        if (!((this.store != null ? this.store.app : undefined) != null))
-        {
-            return
-        }
-        slash.error = log
-        if (slash.touch(this.store.file))
-        {
-            this.unwatch()
-            this.watcher = fs.watch(this.store.file)
-            this.watcher.on('change',this.onFileChange)
-            this.watcher.on('rename',this.onFileUnlink)
-            this.watcher.on('error',function (err)
-            {
-                console.error('Prefs watch error',err)
-            })
-        }
-        else
-        {
-            console.error(`can't touch prefs file ${this.store.file}`)
-        }
-        return this.watcher
-    }
-
-    Prefs["onFileChange"] = function ()
-    {
-        var _51_28_
-
-        return (this.store != null ? this.store.reload() : undefined)
-    }
-
-    Prefs["onFileUnlink"] = function ()
-    {
-        var _52_40_
-
-        this.unwatch()
-        return (this.store != null ? this.store.clear() : undefined)
+        return this.store = new store('prefs')
     }
 
     Prefs["get"] = function (key, value)
@@ -96,25 +38,21 @@ Prefs = (function ()
 
     Prefs["set"] = function (key, value)
     {
-        var _55_45_
+        var _24_33_
 
-        this.unwatch()
-        ;(this.store != null ? this.store.set(key,value) : undefined)
-        return this.watch()
+        return (this.store != null ? this.store.set(key,value) : undefined)
     }
 
     Prefs["del"] = function (key, value)
     {
-        var _56_45_
+        var _25_33_
 
-        this.unwatch()
-        ;(this.store != null ? this.store.del(key) : undefined)
-        return this.watch()
+        return (this.store != null ? this.store.del(key) : undefined)
     }
 
     Prefs["save"] = function ()
     {
-        var _57_33_
+        var _26_33_
 
         return (this.store != null ? this.store.save() : undefined)
     }

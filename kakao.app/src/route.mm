@@ -57,7 +57,6 @@
         
         NSLog(@"post from win %lu %@", (unsigned long)[NSNumber numberWithLong:win.windowNumber], script);
         
-
         App* app = [App get];
         for (Win* w in [app wins])
         {

@@ -112,7 +112,7 @@ function Shelf extends Column
                 
     loadShelfItems: ->
         
-        items = window.state.get "shelf|items"
+        items = window.stash.get "shelf|items"
         @setItems items, save:false
                 
     addPath: (path, opt) ○=>
@@ -130,8 +130,7 @@ function Shelf extends Column
 
     itemPaths: -> @rows.map (r) -> r.path()
     
-    savePrefs: -> window.state.set "shelf|items" @items
-        # prefs.set "shelf▸items" @items
+    savePrefs: -> prefs.set "shelf|items" @items
     
     setItems: (@items, opt) ->
         
@@ -224,13 +223,13 @@ function Shelf extends Column
         
         # log 'onGitStatus' gitDir, status
         
-        for row in @rows
-            if gitDir.startsWith row.path()
-                if row.item.type == 'dir'
-                    status = 'dirs'
-                $('.browserStatusIcon', row.div)?.remove()
-                row.div.appendChild elem 'span', class:"git-#{status}-icon browserStatusIcon"
-                return
+        # for row in @rows
+            # if gitDir.startsWith row.path()
+                # if row.item.type == 'dir'
+                    # status = 'dirs'
+                # $('.browserStatusIcon', row.div)?.remove()
+                # row.div.appendChild elem 'span', class:"git-#{status}-icon browserStatusIcon"
+                # return
         
     loadGitStatus: =>
         

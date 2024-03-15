@@ -1014,7 +1014,8 @@ Column = (function ()
         var stateKey
 
         stateKey = "browser|hideExtensions"
-        window.state.set(stateKey,!window.state.get(stateKey,false))
+        window.stash.set(stateKey,!window.stash.get(stateKey,false))
+        setStyle('.browserRow .ext','display',window.stash.get(stateKey) && 'none' || 'initial')
         return this
     }
 

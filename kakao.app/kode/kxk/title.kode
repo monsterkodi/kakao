@@ -37,6 +37,10 @@ function Title
         post.on 'menuAction'    @onMenuAction
         post.on 'window.blur'   @onWindowBlur
         post.on 'window.focus'  @onWindowFocus
+        post.on 'prefsLoaded' =>
+            if not window.prefs.get 'menu'
+                log 'prefs menu false'
+                @hideMenu()
 
         @elem.addEventListener 'dblclick' (event) -> # maximize window on double click in title bar
             stopEvent event 
@@ -189,7 +193,6 @@ function Title
         
         @menu = new menu items:@templateCache
         @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
-        # @hideMenu()
                 
     makeTemplate: (obj) ->
         
@@ -222,8 +225,8 @@ function Title
         @initMenu()
 
     menuVisible: => @menu.elem.style.display != 'none'
-    showMenu:    => @menu.elem.style.display = 'inline-block'; @menu?.focus?()
-    hideMenu:    => @menu?.close(); @menu.elem.style.display = 'none'
+    showMenu:    => @menu.elem.style.display = 'inline-block'; @menu?.focus?(); prefs.set 'menu' true
+    hideMenu:    => @menu?.close(); @menu.elem.style.display = 'none'; prefs.set 'menu' false
     toggleMenu:  => if @menuVisible() then @hideMenu() else @showMenu()
     openMenu:    => if @menuVisible() then @hideMenu() else @showMenu(); @menu.open()
 

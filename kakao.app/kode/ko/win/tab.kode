@@ -21,7 +21,7 @@ class Tab
 
         @dirty = false
         @pinned = false
-        @div = elem class: 'tab' text: ''
+        @div = elem class: 'tab app-drag-region' text: ''
         @tabs.div.appendChild @div
 
         # if not @file.startsWith 'untitled'

@@ -23,7 +23,7 @@ function Stash
 
         return error 'stash.constructor -- no name?' if not @name
         
-        @sep = opt?.separator ? ':'
+        @sep = opt?.separator ? '|'
         @timer   = null
         @file    = slash.path kakao.bundle.path, "/.stash/#{@name}.noon"
         @timeout = opt?.timeout ? 4000

@@ -466,7 +466,7 @@ function FileEditor extends TextEditor
                 span += Syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
             return span
         
-        # recent = window.state?.get 'recentFiles' []
+        # recent = window.stash.get 'recentFiles' []
         # recent ?= []
         # for f in recent
             # if ffs.exists f

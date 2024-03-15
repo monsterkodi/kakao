@@ -63,7 +63,7 @@ function Pigments
 
     onFile: (file) =>
 
-        if window.state.get "pigments|#{file}"
+        if window.stash.get "pigments|#{file}"
             @pigmentize()
 
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000
@@ -74,12 +74,12 @@ function Pigments
 
     activate: ->
 
-        window.state.set "pigments|#{@editor.currentFile}", true
+        window.stash.set "pigments|#{@editor.currentFile}", true
         @pigmentize()
 
     deactivate: ->
 
-        window.state.set "pigments|#{@editor.currentFile}"
+        window.stash.set "pigments|#{@editor.currentFile}"
         @clear()
 
     clear: ->
@@ -118,7 +118,7 @@ export
 
     togglePigments: ->
 
-        if window.state.get "pigments|#{@currentFile}"
+        if window.stash.get "pigments|#{@currentFile}"
             @pigments.deactivate()
         else
             @pigments.activate()

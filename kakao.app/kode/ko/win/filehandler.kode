@@ -254,7 +254,7 @@ class FileHandler
     
     addToRecent: (file) ->
     
-        recent = window.state.get 'recentFiles' []
+        recent = window.stash.get 'recentFiles' []
         log 'recent' recent
         return if file == first recent
         pull recent, file
@@ -262,7 +262,7 @@ class FileHandler
         while recent.length > prefs.get 'recentFilesLength' 15
             recent.pop()
     
-        window.state.set 'recentFiles' recent
+        window.stash.set 'recentFiles' recent
         log commandline
         log commandline.commands
         log commandline.commands.open
