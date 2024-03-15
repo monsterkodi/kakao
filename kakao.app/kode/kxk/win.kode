@@ -14,6 +14,7 @@ use ./dom ▪ $ stopEvent
 use ./elem
 use ./post
 use ./title
+use ./prefs
 use ./stash
 use ./keyinfo
 
@@ -31,6 +32,9 @@ class WinDelegate
 function Win
 
     @: (@delegate) ->
+        
+        window.prefs = prefs
+        window.prefs.init()
         
         @delegate ?= new WinDelegate
         
@@ -54,10 +58,11 @@ function Win
         main.focus()
         
         kakao.request('window.id').then (@id) =>
+            
             # elem class:'test' text:"○○" parent:main
             # elem class:'test' text:"#{id}" parent:main
             
-            window.stash = new stash "win/#{@id}" separator:'|'
+            window.stash = new stash "win/#{@id}"
             
             @delegate?.onWindowCreated? @
             kakao.send 'win.setMinSize' 250 125
@@ -69,6 +74,7 @@ function Win
      
         post.emit 'saveChanges' 
         post.emit 'stash'
+        window.prefs.save()
         window.stash.save()
             
     animate: =>

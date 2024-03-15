@@ -509,7 +509,7 @@ Command = (function ()
         }
         if (this.prefsID)
         {
-            return window.state.set(`command|${this.prefsID}|${key}`,value)
+            return window.stash.set(`command|${this.prefsID}|${key}`,value)
         }
     }
 
@@ -519,7 +519,7 @@ Command = (function ()
         {
             return value
         }
-        return window.state.get(`command|${this.prefsID}|${key}`,value)
+        return window.stash.get(`command|${this.prefsID}|${key}`,value)
     }
 
     Command.prototype["delState"] = function (key)
@@ -528,7 +528,7 @@ Command = (function ()
         {
             return
         }
-        return window.state.del(`command|${this.prefsID}|${key}`)
+        return window.stash.del(`command|${this.prefsID}|${key}`)
     }
 
     Command.prototype["isActive"] = function ()

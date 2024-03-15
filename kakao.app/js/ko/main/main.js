@@ -15,7 +15,7 @@ WIN_SNAP_DIST = 150
 
 mostRecentFile = function ()
 {
-    return _k_.first(state.get('recentFiles'))
+    return _k_.first(window.stash.get('recentFiles'))
 }
 
 wins = function ()

@@ -368,15 +368,15 @@ function Command
     setState: (key, value) ->
         return if not @prefsID
         if @prefsID
-            window.state.set "command|#{@prefsID}|#{key}", value
+            window.stash.set "command|#{@prefsID}|#{key}", value
         
     getState: (key, value) ->
         return value if not @prefsID
-        window.state.get "command|#{@prefsID}|#{key}", value
+        window.stash.get "command|#{@prefsID}|#{key}", value
         
     delState: (key) ->
         return if not @prefsID
-        window.state.del "command|#{@prefsID}|#{key}"
+        window.stash.del "command|#{@prefsID}|#{key}"
 
     isActive: -> @commandline.command == @
         

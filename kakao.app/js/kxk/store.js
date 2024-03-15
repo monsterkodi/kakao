@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var Store
 
@@ -16,64 +16,57 @@ import sds from "./sds.js"
 
 import util from "./util.js"
 let isEqual = util.isEqual
+let defaults = util.defaults
 
 
 Store = (function ()
 {
     _k_.extend(Store, events)
     Store["stores"] = {}
-    Store["addStore"] = function (store)
-    {
-        return this.stores[store.name] = store
-    }
-
     function Store (name, opt = {})
     {
-        var k, v, _38_22_, _39_22_, _78_21_
-
-        this["save"] = this["save"].bind(this)
         Store.__super__.constructor.call(this)
+    
+        var _29_22_, _30_22_
+
         this.name = name
-        opt.separator = ((_38_22_=opt.separator) != null ? _38_22_ : ':')
-        opt.timeout = ((_39_22_=opt.timeout) != null ? _39_22_ : 4000)
+        opt.separator = ((_29_22_=opt.separator) != null ? _29_22_ : '|')
+        opt.timeout = ((_30_22_=opt.timeout) != null ? _30_22_ : 1000)
         if (!this.name)
         {
             return console.error('no name for store?')
         }
         this.sep = opt.separator
-        if (true)
+        this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
+        post.on('store',(function (name, action, ...argl)
         {
-            this.file = slash.path(`userData/${this.name}.noon`)
-            post.on('store',(function (name, action, ...argl)
+            if (this.name !== name)
             {
-                if (this.name !== name)
-                {
-                    return
-                }
-                switch (action)
-                {
-                    case 'data':
-                        return this.data = argl[0]
+                return
+            }
+            switch (action)
+            {
+                case 'data':
+                    return this.data = argl[0]
 
-                    case 'set':
-                        return sds.set(this.data,this.keypath(argl[0]),argl[1])
+                case 'set':
+                    return sds.set(this.data,this.keypath(argl[0]),argl[1])
 
-                    case 'get':
-                        return sds.get(this.data,this.keypath(argl[0]),argl[1])
+                case 'get':
+                    return sds.get(this.data,this.keypath(argl[0]),argl[1])
 
-                    case 'del':
-                        return sds.del(this.data,this.keypath(argl[0]))
+                case 'del':
+                    return sds.del(this.data,this.keypath(argl[0]))
 
-                }
+            }
 
-            }).bind(this))
-        }
-        this.data = this.load()
-        for (k in opt.defaults)
+        }).bind(this))
+        this.load().then((function ()
         {
-            v = opt.defaults[k]
-            this.data[k] = ((_78_21_=this.data[k]) != null ? _78_21_ : v)
-        }
+            defaults(this.data,opt.defaults)
+            console.log(`${this.name}Loaded`,this.data)
+            return post.emit(`${this.name}Loaded`)
+        }).bind(this))
     }
 
     Store.prototype["keypath"] = function (key)
@@ -83,7 +76,7 @@ Store = (function ()
 
     Store.prototype["get"] = function (key, value)
     {
-        var _90_45_
+        var _63_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -94,7 +87,7 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _101_32_, _105_14_
+        var _74_32_, _78_14_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -108,8 +101,11 @@ Store = (function ()
         {
             return
         }
-        this.data = ((_105_14_=this.data) != null ? _105_14_ : {})
-        return sds.set(this.data,this.keypath(key),value)
+        this.data = ((_78_14_=this.data) != null ? _78_14_ : {})
+        sds.set(this.data,this.keypath(key),value)
+        clearTimeout(this.timer)
+        this.timer = setTimeout(this.save,this.timeout)
+        return post.toWins('store',this.name,'set',key,value)
     }
 
     Store.prototype["del"] = function (key)
@@ -118,24 +114,70 @@ Store = (function ()
         {
             return
         }
-        return sds.del(this.data,this.keypath(key))
+        sds.del(this.data,this.keypath(key))
+        clearTimeout(this.timer)
+        this.timer = setTimeout(this.save,this.timeout)
+        return post.toWins('store',this.name,'del',key)
     }
 
     Store.prototype["clear"] = function ()
     {
-        return this.data = {}
+        this.data = {}
+        if (this.timer)
+        {
+            clearTimeout(this.timer)
+        }
+        return post.toWins('store',this.name,'data',{})
     }
 
     Store.prototype["reload"] = function ()
-    {}
-
-    Store.prototype["load"] = function ()
     {
-        console.log('store load not implemented!')
+        return this.load().then(function ()
+        {
+            return post.toWins('store',this.name,'data',this.data)
+        })
     }
 
-    Store.prototype["save"] = function ()
-    {}
+    Store.prototype["load"] = async function ()
+    {
+        try
+        {
+            return this.data = await noon.load(this.file)
+        }
+        catch (err)
+        {
+            console.error(`store.save -- can't load '${this.file}':`,err)
+            return {}
+        }
+    }
+
+    Store.prototype["save"] = async function ()
+    {
+        var text
+
+        if (!this.file)
+        {
+            return
+        }
+        if (_k_.empty(this.data))
+        {
+            return
+        }
+        this.emit('willSave')
+        clearTimeout(this.timer)
+        this.timer = null
+        try
+        {
+            text = noon.stringify(this.data,{indent:2,maxalign:8}) + '\n'
+            await ffs.write(this.file,text)
+            console.log("store '#@name' saved:\n",text)
+        }
+        catch (err)
+        {
+            console.error(`store.save -- can't save to '${this.file}:`,err)
+        }
+        return this.emit('didSave')
+    }
 
     return Store
 })()

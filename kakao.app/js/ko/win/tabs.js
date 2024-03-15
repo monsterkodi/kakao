@@ -42,8 +42,8 @@ class Tabs
         this.onSendTabs = this.onSendTabs.bind(this)
         this.emptyid = 0
         this.tabs = []
-        this.div = elem({class:'tabs'})
-        titlebar.insertBefore(this.div,$('.minimize'))
+        this.div = $('title')
+        this.div.classList.add('tabs')
         this.div.addEventListener('click',this.onClick)
         this.div.addEventListener('contextmenu',this.onContextMenu)
         this.drag = new drag({target:this.div,onStart:this.onDragStart,onMove:this.onDragMove,onStop:this.onDragStop})

@@ -275,7 +275,7 @@ class FileHandler
     {
         var recent
 
-        recent = window.state.get('recentFiles',[])
+        recent = window.stash.get('recentFiles',[])
         console.log('recent',recent)
         if (file === _k_.first(recent))
         {
@@ -287,7 +287,7 @@ class FileHandler
         {
             recent.pop()
         }
-        window.state.set('recentFiles',recent)
+        window.stash.set('recentFiles',recent)
         console.log(commandline)
         console.log(commandline.commands)
         console.log(commandline.commands.open)

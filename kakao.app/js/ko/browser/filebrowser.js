@@ -66,7 +66,7 @@ FileBrowser = (function ()
         this.shelfResize.style.width = '6px'
         this.shelfResize.style.cursor = 'ew-resize'
         this.drag = new drag({target:this.shelfResize,onMove:this.onShelfDrag})
-        this.shelfSize = window.state.get('shelf|size',200)
+        this.shelfSize = window.stash.get('shelf|size',200)
         this.initColumns()
     }
 
@@ -675,7 +675,7 @@ FileBrowser = (function ()
     {
         this.shelfSize = shelfSize
     
-        window.state.set('shelf|size',this.shelfSize)
+        window.stash.set('shelf|size',this.shelfSize)
         this.shelfResize.style.left = `${this.shelfSize}px`
         this.shelf.div.style.width = `${this.shelfSize}px`
         this.cols.style.left = `${this.shelfSize}px`

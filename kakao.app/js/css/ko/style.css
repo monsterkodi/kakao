@@ -23,6 +23,13 @@ pre {
 body {
   overflow: hidden;
 }
+#titlebar .winicon img {
+  padding-left: 10px;
+  padding-right: 23px;
+}
+#titlebar .winbutton {
+  flex: 0 0 44px;
+}
 #main {
   overflow: hidden;
   animation: fadein 2s;
@@ -395,6 +402,9 @@ body {
   flex-direction: row;
   overflow-x: auto;
   overflow-y: hidden;
+  padding-top: 0;
+  padding-right: 0;
+  padding-left: 1px;
 }
 .tabs::-webkit-scrollbar {
   height: 2px;

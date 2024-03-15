@@ -5,80 +5,97 @@
 000       000   000  000      000   000  000   000       000    
  0000000   0000000   0000000   0000000   000   000  0000000     
 */
-// 0000000    00000000   000   0000000   000   000  000000000
-// 000   000  000   000  000  000        000   000     000
-// 0000000    0000000    000  000  0000  000000000     000
-// 000   000  000   000  000  000   000  000   000     000
-// 0000000    000   000  000   0000000   000   000     000
+// 0000000    00000000   000   0000000   000   000  000000000    
+// 000   000  000   000  000  000        000   000     000       
+// 0000000    0000000    000  000  0000  000000000     000       
+// 000   000  000   000  000  000   000  000   000     000       
+// 0000000    000   000  000   0000000   000   000     000       
 
-// #333 #444 #555 #666 #888 #aaa #bbb #ccc #ddd #eee #fff
-// #008 #00a #00f #44f #66f #88f #aaf #ddf               
-// #800 #a00 #b00 #f00 #f60 #f80 #ff0                    
-// #040 #060 #080 #0a0 #3c3 #6f6                         
+// #000 #111 #181818 #282828 #333 #444 #555 
+// #666 #888 #aaa #bbb #ccc #ddd #fff       
+// #008 #22a #44f #66f #88f #aaf #bbf       
+// #b00 #f00 #f40 #f80 #fd0 #ff0 #ff8       
+// #050 #060 #080 #0a0 #3c3 #0f0            
+// #08f #f5f                                
 
-frameColor  = #eee
-titleColor  = #ddd
-backColor   = #fff
-textColor   = #000
-focusColor  = #ddf
-brightColor = #fafafa
+backColor           = #282828
+darkColor           = #0a0a0a
+
+separatorColor      = #0e0e0e
+frameColor          = #111111
+scrollHoverColor    = #b00
+crumbHoverColor     = #0e0e0e
+titleRedColor       = #f00
+titleColor          = #222
+scrollColor         = #444
+textBlurColor       = #444
+textActiveColor     = #999
+textFocusColor      = #fff
 
 body
     background          backColor
-    color               textColor
+    color               #fff
 
 .split-handle
     background          frameColor
 
-// 00000000    0000000   00000000   000   000  00000000
-// 000   000  000   000  000   000  000   000  000   000
-// 00000000   000   000  00000000   000   000  00000000
-// 000        000   000  000        000   000  000
-// 000         0000000   000         0000000   000
-
-.popup
-    background-color    frameColor
-
-.popupWindow
-    background-color    frameColor
-
-.popupItem
-    color               #888
-    &:not(:last-child)
-        border-bottom       1px solid frameColor
-    &.selected
-        color           textColor
-
-.popupItem:active
-    color               textColor
-
-.popupCombo
-    color               titleColor
-    
-// 0000000    00000000    0000000   000   000   0000000  00000000  00000000
-// 000   000  000   000  000   000  000 0 000  000       000       000   000
-// 0000000    0000000    000   000  000000000  0000000   0000000   0000000
-// 000   000  000   000  000   000  000   000       000  000       000   000
-// 0000000    000   000   0000000   00     00  0000000   00000000  000   000
-
 .browser
     background          backColor
-    color               textColor
+    color               #fff
 
 .browserRow
 
     &.hover
-        background      brightColor
+        background      #111
 
     &.active
+        &.dir
+            color       #ff8
         background      frameColor
 
+    &.selected
+        background      #116
+                
+.rowNameInput
+    color               #ff0
+    background-color    frameColor
+    // margin-left         -2px
+        
 .browserColumn.focus .browserRow.active
-    background          focusColor
-
+    background          #22a
+    
 .browserImage
     border              1px solid frameColor
+    background-image    linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%)
+    
+.browserRow.historySeparator *
+    color               #555
+    
+.browserRow.historySeparator.active *
+    color               #888
+    
+//  0000000  000   000  00000000  000      00000000    
+// 000       000   000  000       000      000         
+// 0000000   000000000  0000000   000      000000      
+//      000  000   000  000       000      000         
+// 0000000   000   000  00000000  0000000  000         
 
+#shelf .browserRow.active
+    background          backColor
+
+#shelf
+    background          darkColor
+    
+#shelf.focus
+    background          frameColor
+    
+.fileInfoData
+    margin-top          20px
+    color               #444
+    
+    & .punct
+        color           #222
+    
 //  0000000   0000000   00     00  00     00   0000000   000   000  0000000    000      000  000   000  00000000
 // 000       000   000  000   000  000   000  000   000  0000  000  000   000  000      000  0000  000  000
 // 000       000   000  000000000  000000000  000000000  000 0 000  000   000  000      000  000 0 000  0000000
@@ -86,11 +103,17 @@ body
 //  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 
 #commandline-editor
-    color               textColor
+    color               #fff
     background          backColor
 
+//  0000000   0000000   00     00  00     00   0000000   000   000  0000000    000      000   0000000  000000000
+// 000       000   000  000   000  000   000  000   000  0000  000  000   000  000      000  000          000
+// 000       000   000  000000000  000000000  000000000  000 0 000  000   000  000      000  0000000      000
+// 000       000   000  000 0 000  000 0 000  000   000  000  0000  000   000  000      000       000     000
+//  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  0000000      000
+
 .commandlist
-    background              brightColor
+    background          darkColor
 
 .commandlist.open .linenumber.selected span
     color                   #aaf
@@ -98,6 +121,14 @@ body
     color                   #66f
 .commandlist.term .linenumber.selected span
     color                   #f80
+
+.commandlistItem
+    cursor                  pointer
+    padding-right                    4px
+    &:hover  
+        border-top-right-radius      4px
+        border-bottom-right-radius   4px
+        background          #111
 
 // 0000000    000   000  000000000  000000000   0000000   000   000
 // 000   000  000   000     000        000     000   000  0000  000
@@ -115,19 +146,22 @@ body
         background      titleColor
 
 span.ko
+span.macro
 #commandline-button.active
     &.open
-        color           #000
+        color           #0f0
     &.goto
-        color           #666
-    &.browse
         color           #66f
+    &.browse
+        color           #ff0
     &.find
-        color           #00a
+        color           #f5f
     &.search
-        color           #a00
+        color           #0a0
+    &.build
+        color           #aaa
     &.macro
-        color           #ccc
+        color           #888
 
 #commandline-button.macro
     color               #aaa
@@ -141,9 +175,9 @@ span.ko
 .ctrl
     color               #888
     &:hover
-        color           textColor
+        color           #fff
     &:active
-        color           #000
+        color           #ff0
 
 // 000  000   000  00000000   0000000
 // 000  0000  000  000       000   000
@@ -159,7 +193,7 @@ span.ko
 .info-cursor-column
     color               #bbb
     &.virtual
-        color           #88f
+        color           #08f
 
 .info-lines
     color               #555
@@ -168,10 +202,10 @@ span.ko
     color               #0a0
 
 .info-classes
-    color               #f00
+    color               #ff8
 
 .info-funcs
-    color               #f60
+    color               #f80
 
 .info-files
     color               #44f
@@ -187,30 +221,12 @@ span.ko
 
 .info-highlights
     color               rgb(103,103,171)
-
-// 000000000  000  000000000  000      00000000  0000000     0000000   00000000
-//    000     000     000     000      000       000   000  000   000  000   000
-//    000     000     000     000      0000000   0000000    000000000  0000000
-//    000     000     000     000      000       000   000  000   000  000   000
-//    000     000     000     0000000  00000000  0000000    000   000  000   000
-
-#titlebar
-    background          backColor
-    color               #333
-
-.dot:hover
-    color               #f00
-
-#titlebar .winid
-    color               #555
-    &.focus
-        color           #080
-
-#titlebar .winnum
-    color               backColor
-
-#titlebar.focus .winnum
-    color               titleColor
+    
+// 000000000   0000000    0000000   000      000000000  000  00000000
+//    000     000   000  000   000  000         000     000  000   000
+//    000     000   000  000   000  000         000     000  00000000
+//    000     000   000  000   000  000         000     000  000
+//    000      0000000    0000000   0000000     000     000  000
 
 .tooltip
     background          frameColor
@@ -222,25 +238,42 @@ span.ko
 //    000     000   000  0000000    0000000
 
 .tabs
-    background          backColor
-    color               #333
+    background          frameColor
+    color               #aaa
 
 #titlebar.focus .tabs
     color               #3c3
 
+// 000000000   0000000   0000000
+//    000     000   000  000   000
+//    000     000000000  0000000
+//    000     000   000  000   000
+//    000     000   000  0000000
+
+.tab .dot
+    color               #444
+    &.focus
+        color           #060
+        
 .tab.dirty
 .tab.dirty .dot
     color               #aaf
 
-.tab.clean .dot
-    color               #444
-    &.focus
-        color           #060
-
+.tab:hover
+    opacity             1
+    
+.dot:hover
+    color               #f80
+    
 .tab
-    background          backColor
+    background          frameColor
     &.active
-        background      frameColor
+        background      titleColor
+        
+.tabstate
+    stroke              #888
+    &:hover
+        background      #333
 
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  
@@ -249,9 +282,25 @@ span.ko
 // 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
 
 #browser
-    background          backColor
+    background          #181818
     border-color        frameColor
+    
+.crumb 
+    // background          darkColor
+    background          rgba(0,0,0,0)
+    &:hover
+        background      crumbHoverColor
+    & .path:hover
+        color       #aaf
+    
+.crumb
+.dir
+    color           #aaf
 
+.crumb .inline:hover
+    color           white
+    opacity         1
+    
 // 00000000  0000000    000  000000000   0000000   00000000
 // 000       000   000  000     000     000   000  000   000
 // 0000000   000   000  000     000     000   000  0000000
@@ -260,12 +309,12 @@ span.ko
 
 #terminal
 #editor
+    color               #ddd
     background          backColor
-    color               #333
     border-color        frameColor
 
 #split
-    border-color        frameColor
+    border-color   frameColor
 
 //  0000000  000   000  00000000    0000000   0000000   00000000
 // 000       000   000  000   000  000       000   000  000   000
@@ -274,28 +323,34 @@ span.ko
 //  0000000   0000000   000   000  0000000    0000000   000   000
 
 *:focus .cursor         // focus colors
-    background          #888
+    background          #f80
     &.virtual
-        background      frameColor
+        background      #008
     &.main
-        background      #000
+        background      #ff0
     &.blink
-        background      #888
+        background      #f80
     &.blink.off
         background      transparent
-
+        
 .cursors.salterMode .cursor
-    background          #040
+    background          #050
     &.main
         background      #080
 
 .cursor                 // blur colors
-    background          #aaa
+    background          #444
     &.main
-        background      #888
+        background      #666
     &.virtual
-        background      #fff
-
+        background      #111
+      
+.cursor-line
+    background          #080808
+        
+.commandlist .cursor
+    background          transparent
+        
 // 000   000  000   000  00     00  0000000    00000000  00000000    0000000
 // 0000  000  000   000  000   000  000   000  000       000   000  000
 // 000 0 000  000   000  000000000  0000000    0000000   0000000    0000000
@@ -303,32 +358,30 @@ span.ko
 // 000   000   0000000   000   000  0000000    00000000  000   000  0000000
 
 .numbers
-    background          rgba(255, 255, 255, 0.5) // this brightens selection
+    background          rgba(15, 15, 15, 0.5) // this darkens selection
 
 .commandlist .layers .numbers
-    background          rgba(255, 255, 255, 0.1) // this brightens selection
+    background          rgba(0, 0, 0, 0.1) // this darkens selection
 
 .linenumber
     border-right-color  frameColor
     & span
-        color           #eee
-
-    &.cursored span
-        color           #888
-    &.cursored.main span
-        color           #000
+        color           frameColor
 
     &.highligd span
-        color           #aaa
+        color           rgba(155,155,255, 0.6)
     &.selected span
-        color           #88f
+        color           #555
     &.highligd.selected:not(.cursored) span
-        color           #00f
-
+        color           #bbf
+    &.cursored span
+        color           #f00
     &.cursored.selected span
-        color           #44f
+        color           #f80
+    &.cursored.main span
+        color           #fd0
     &.cursored.main.selected span
-        color           #008
+        color           #ff0
 
 // 00     00  00000000  000000000   0000000
 // 000   000  000          000     000   000
@@ -337,29 +390,62 @@ span.ko
 // 000   000  00000000     000     000   000
 
 .meta
-    // background              backColor
 
     &.href
-        background-color    #aaf
+        background-color    titleColor
+
+    &.gitInfoFile
+        background          titleColor
+        opacity             0.5
+        padding-right       10px
+        border-top-right-radius     4px
+        border-bottom-right-radius  4px
+
+    &.gitInfoChange
+        background          #080
+        opacity             0.25
+        
+    // &.coffeeCommand
+    // &.termCommand
+        // background          frameColor
 
     &.git
         opacity             0.4
+        background          #0f0
         &.del
-            background      #f60
+            background      #f00
         &.mod
-            background      #6f6
+            background      #0f0
         &.add
-            background      #aaf
+            background      #88f
         &.boring
-            background      #ddd
-
+            background      #666
+            
     &.dbg
         opacity             0.8
         background          #f00
+        &.pointer
+            opacity         1
+            border-left-color #ff0
+
+    &.pigment
+        opacity             1
 
 .linenumber span .saveButton
     background              #f80
 
+.linenumber span.gitInfoLine
+    transform               translateY(-4px)
+    &.changed 
+        color               #080
+    &.deleted 
+        color               #f00
+    &.added 
+        color               #ff0
+
+.linenumber.gitInfoLine
+    background              frameColor
+    
 // 00     00  000  000   000  000  00     00   0000000   00000000
 // 000   000  000  0000  000  000  000   000  000   000  000   000
 // 000000000  000  000 0 000  000  000000000  000000000  00000000
@@ -371,10 +457,10 @@ span.ko
     border-left-color       frameColor
 
 .topbot
-    background-color        frameColor
+    background-color        frameColor // bgColor
 
-.minimapTopBot
-    background-color        backColor
+// .minimapTopBot
+    // background-color        frameColor // backColor
 
 // 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000
 // 000   000  000  000        000   000  000      000  000        000   000     000
@@ -383,14 +469,14 @@ span.ko
 // 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000
 
 .highlight
-    color               rgba(0,0,0, 0.3) // used by minimap
-    background          rgba(0,0,0, 0.1)
+    color                   rgba(255, 100, 255, 0.7) // used by minimap
+    background              rgba(100, 50, 255, 0.2)
 
 .bracketmatch
-    background          rgba(0,0,0, 0.1)
+    background              rgba(255, 255, 255, 0.2)
 
 .stringmatch
-    background          rgba(0,255,0, 0.3)
+    background              rgba(0,255,0, 0.3)
 
 //  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000
 // 000       000       000      000       000          000     000  000   000  0000  000
@@ -399,11 +485,11 @@ span.ko
 // 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 *:focus .selection
-        background          #ddf // focus
+        background          #222 // focus
 
 .selection
-    color                   #ddf // used by minimap
-    background              #eee // no focus
+    color                   #444 // used by minimap
+    background              #111 // no focus
 
 // 000      000   0000000  000000000
 // 000      000  000          000
@@ -413,7 +499,7 @@ span.ko
 
 .winlist
 .list
-    background              brightColor
+    background              frameColor
 
 .winlist-item.selected
 .list-item.selected
@@ -422,7 +508,7 @@ span.ko
 .winlist-item
 .list-item
     &:hover
-        background          frameColor
+        background          titleColor
 
 .winlist
     & .dot
@@ -436,6 +522,12 @@ span.ko
 // 000   000  000   000     000     000   000  000       000   000  000 0 000  000        000      000          000     000
 // 000   000   0000000      000      0000000    0000000   0000000   000   000  000        0000000  00000000     000     00000000
 
+.autocomplete-span
+    background              #22a
+    color                   #ff0
+    &.selected
+        color               #fff
+
 .autocomplete-list
     background              frameColor
     &::-webkit-scrollbar
@@ -444,9 +536,9 @@ span.ko
         background-color    #44f
 
 .autocomplete-item
-    color                   textColor
+    color                   #ccc
     &.selected
-        background          #88f
+        background          #44f
         color               #ff0
 
 //  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000
@@ -456,24 +548,14 @@ span.ko
 // 0000000    0000000  000   000   0000000   0000000  0000000  0000000    000   000  000   000
 
 .scroller.long
+    color                   frameColor
 .scrollbar.long
-    color   frameColor
+    color                   #181818
 
 .scroller.short
+    color                   rgb(127,127,255)
 .scrollbar.short
-    color   #000
-
-::-webkit-scrollbar-corner
-    background-color        frameColor
-
-::-webkit-scrollbar-thumb
-    background-color        titleColor
-
-::-webkit-scrollbar-thumb
-    background-color        titleColor
-
-::-webkit-scrollbar-thumb:hover
-    background-color        #b00
+    color                   rgb(160,160,255)
 
 .scrollhandle
     background              #88f

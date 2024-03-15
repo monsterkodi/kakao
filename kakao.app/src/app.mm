@@ -237,7 +237,7 @@
 
 -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)sender
 {
-    NSLog(@"terminate %@", sender);
+    // NSLog(@"terminate %@", sender);
     return NSTerminateNow;
 }
 

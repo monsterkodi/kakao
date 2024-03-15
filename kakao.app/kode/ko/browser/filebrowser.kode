@@ -54,7 +54,7 @@ function FileBrowser extends Browser
             target:  @shelfResize
             onMove:  @onShelfDrag
 
-        @shelfSize = window.state.get 'shelf|size' 200
+        @shelfSize = window.stash.get 'shelf|size' 200
 
         @initColumns()
         
@@ -530,7 +530,7 @@ function FileBrowser extends Browser
 
     setShelfSize: (@shelfSize) ->
 
-        window.state.set 'shelf|size' @shelfSize
+        window.stash.set 'shelf|size' @shelfSize
         @shelfResize.style.left = "#{@shelfSize}px"
         @shelf.div.style.width = "#{@shelfSize}px"
         @cols.style.left = "#{@shelfSize}px"

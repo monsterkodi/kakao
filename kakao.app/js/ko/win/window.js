@@ -102,7 +102,10 @@ Window = (function ()
         this.fps = window.fps = new fps()
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
-        scheme.set(prefs.get('scheme','dark'))
+        post.on('prefsLoaded',(function ()
+        {
+            return scheme.set(prefs.get('scheme','dark'))
+        }).bind(this))
         this.terminal.on('fileSearchResultChange',function (file, lineChange)
         {
             return post.toWins('fileLineChanges',file,[lineChange])
@@ -147,7 +150,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, opts)
     {
-        var action, _129_25_
+        var action, _128_25_
 
         console.log('onMenuAction',name)
         if (action = Editor.actionWithName(name))
@@ -277,7 +280,7 @@ Window = (function ()
                 return window.commandline.startCommand('Browse')
 
             case 'Clear List':
-                window.state.set('recentFiles',[])
+                window.stash.set('recentFiles',[])
                 window.titlebar.refreshMenu()
                 return
 
@@ -295,8 +298,6 @@ Window = (function ()
     return Window
 })()
 
-window.state = new store('state',{separator:'|'})
-window.prefs = prefs
 post.on('singleCursorAtPos',function (pos, opt)
 {
     window.editor.singleCursorAtPos(pos,opt)
@@ -371,7 +372,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _276_14_
+    var _272_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -382,7 +383,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _282_22_
+    var _278_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -394,7 +395,7 @@ toggleCenterText = function ()
 {
     var restoreInvisibles
 
-    if (window.state.get(`invisibles|${window.editor.currentFile}`,false))
+    if (window.stash.get(`invisibles|${window.editor.currentFile}`,false))
     {
         window.editor.toggleInvisibles()
         restoreInvisibles = true
@@ -427,7 +428,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _327_32_
+    var _323_32_
 
     if (!(_k_.isNum(s)))
     {

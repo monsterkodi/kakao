@@ -68,7 +68,6 @@ function Window #extends win
         @filehandler = window.filehandler = new FileHandler
         @filewatcher = window.filewatcher = new watcher
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
-        # @titlebar    =                      new titlebar
         @navigate    = window.navigate    = new navigate()
         @split       = window.split       = new Split()
         @terminal    = window.terminal    = new Terminal 'terminal'
@@ -83,7 +82,7 @@ function Window #extends win
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
-        scheme.set prefs.get 'scheme' 'dark'
+        post.on 'prefsLoaded' => scheme.set prefs.get 'scheme' 'dark'
 
         @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
             post.toWins 'fileLineChanges' file, [lineChange]
@@ -173,7 +172,7 @@ function Window #extends win
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Clear List'            
-                window.state.set 'recentFiles' []
+                window.stash.set 'recentFiles' []
                 window.titlebar.refreshMenu()
                 return 
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
@@ -187,9 +186,6 @@ function Window #extends win
 # 00000000   0000000    0000000   000000    0000000
 # 000        000   000  000       000            000
 # 000        000   000  00000000  000       0000000
-
-window.state = new store 'state' separator:'|'
-window.prefs = prefs
 
 # clearStash = ->
 #     post.emit 'saveChanges'
@@ -292,7 +288,7 @@ post.on 'split' (s) ->
 
 toggleCenterText = ->
 
-    if window.state.get "invisibles|#{window.editor.currentFile}" false
+    if window.stash.get "invisibles|#{window.editor.currentFile}" false
         window.editor.toggleInvisibles()
         restoreInvisibles = true
 

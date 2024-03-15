@@ -19,7 +19,7 @@ class Invisibles
 
     onFile (file)
     {
-        if (window.state.get(`invisibles|${file}`))
+        if (window.stash.get(`invisibles|${file}`))
         {
             return this.show()
         }
@@ -71,13 +71,13 @@ class Invisibles
     {
         var _1_20_
 
-        window.state.set(`invisibles|${((_1_20_=this.editor.currentFile) != null ? _1_20_ : this.editor.name)}`,true)
+        window.stash.set(`invisibles|${((_1_20_=this.editor.currentFile) != null ? _1_20_ : this.editor.name)}`,true)
         return this.show()
     }
 
     deactivate ()
     {
-        window.state.set(`invisibles|${this.editor.currentFile}`)
+        window.stash.set(`invisibles|${this.editor.currentFile}`)
         return this.clear()
     }
 
@@ -110,7 +110,7 @@ export default {actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'toggle
     {
         return
     }
-    if (window.state.get(`invisibles|${((_1_13_=this.currentFile) != null ? _1_13_ : this.name)}`,false))
+    if (window.stash.get(`invisibles|${((_1_13_=this.currentFile) != null ? _1_13_ : this.name)}`,false))
     {
         return this.invisibles.deactivate()
     }

@@ -13,7 +13,7 @@ class Invisibles
 
     onFile: (file) =>
 
-        if window.state.get "invisibles|#{file}"
+        if window.stash.get "invisibles|#{file}"
             @show()
         else
             @clear()
@@ -73,12 +73,12 @@ class Invisibles
     
     activate: ->
 
-        window.state.set "invisibles|#{@editor.currentFile ? @editor.name}", true
+        window.stash.set "invisibles|#{@editor.currentFile ? @editor.name}", true
         @show()
         
     deactivate: ->
 
-        window.state.set "invisibles|#{@editor.currentFile}"
+        window.stash.set "invisibles|#{@editor.currentFile}"
         @clear()
 
     #  0000000  000      00000000   0000000   00000000   
@@ -122,7 +122,7 @@ export
 
         return if not @invisibles
         
-        if window.state.get "invisibles|#{@currentFile ? @name}", false
+        if window.stash.get "invisibles|#{@currentFile ? @name}", false
             @invisibles.deactivate()
         else
             @invisibles.activate()
