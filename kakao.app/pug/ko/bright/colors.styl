@@ -18,30 +18,34 @@
 // #050 #060 #080 #0a0 #3c3 #0f0            
 // #08f #f5f                                
 
-backColor           = #282828
-darkColor           = #0a0a0a
 
+darkColor           = #0a0a0a
 separatorColor      = #0e0e0e
-frameColor          = #111111
-scrollHoverColor    = #b00
 crumbHoverColor     = #0e0e0e
-titleRedColor       = #f00
+frameColor          = #111111
+shelfColor          = #181818
 titleColor          = #222
+backColor           = #282828
 scrollColor         = #444
 textBlurColor       = #444
 textActiveColor     = #999
 textFocusColor      = #fff
+titleRedColor       = #f00
+scrollHoverColor    = #b00
+numbersColor        = rgba(0, 0, 0, 0.2)
 
 body
     background          backColor
     color               #fff
 
 .split-handle
-    background          frameColor
+    background          #1d1d1d
 
 .browser
-    background          backColor
+    background          shelfColor
     color               #fff
+    & .split-handle
+        background      titleColor
 
 .browserRow
 
@@ -59,7 +63,6 @@ body
 .rowNameInput
     color               #ff0
     background-color    frameColor
-    // margin-left         -2px
         
 .browserColumn.focus .browserRow.active
     background          #22a
@@ -81,13 +84,13 @@ body
 // 0000000   000   000  00000000  0000000  000         
 
 #shelf .browserRow.active
-    background          backColor
+    background          shelfColor
 
 #shelf
-    background          darkColor
+    background          #1e1e1e
     
 #shelf.focus
-    background          frameColor
+    background          titleColor
     
 .fileInfoData
     margin-top          20px
@@ -104,7 +107,7 @@ body
 
 #commandline-editor
     color               #fff
-    background          backColor
+    background          titleColor
 
 //  0000000   0000000   00     00  00     00   0000000   000   000  0000000    000      000   0000000  000000000
 // 000       000   000  000   000  000   000  000   000  0000  000  000   000  000      000  000          000
@@ -113,7 +116,7 @@ body
 //  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  0000000      000
 
 .commandlist
-    background          darkColor
+    background          shelfColor
 
 .commandlist.open .linenumber.selected span
     color                   #aaf
@@ -138,7 +141,7 @@ body
 
 #commandline-button
     color               #aaa
-    background          frameColor
+    background          shelfColor
     &.empty
         background      backColor
         border-right-color frameColor
@@ -186,7 +189,7 @@ span.macro
 // 000  000   000  000        0000000
 
 #info
-    background          backColor
+    background          titleColor
     border-left-color   frameColor
 
 .info-cursor-line
@@ -282,17 +285,20 @@ span.macro
 // 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
 
 #browser
-    background          #181818
+    background          shelfColor
     border-color        frameColor
     
 .crumb 
-    // background          darkColor
+    // background          titleColor
     background          rgba(0,0,0,0)
     &:hover
         background      crumbHoverColor
     & .path:hover
         color       #aaf
-    
+
+#shelf .crumb 
+    background          rgba(0,0,0,0)
+        
 .crumb
 .dir
     color           #aaf
@@ -346,7 +352,7 @@ span.macro
         background      #111
       
 .cursor-line
-    background          #080808
+    background          rgba(0, 0, 0, 0.25)
         
 .commandlist .cursor
     background          transparent
@@ -358,7 +364,7 @@ span.macro
 // 000   000   0000000   000   000  0000000    00000000  000   000  0000000
 
 .numbers
-    background          rgba(15, 15, 15, 0.5) // this darkens selection
+    background          numbersColor // this darkens selection
 
 .commandlist .layers .numbers
     background          rgba(0, 0, 0, 0.1) // this darkens selection
@@ -405,10 +411,6 @@ span.macro
         background          #080
         opacity             0.25
         
-    // &.coffeeCommand
-    // &.termCommand
-        // background          frameColor
-
     &.git
         opacity             0.4
         background          #0f0
@@ -453,11 +455,11 @@ span.macro
 // 000   000  000  000   000  000  000   000  000   000  000
 
 .minimap
-    background              backColor
+    background              numbersColor
     border-left-color       frameColor
 
 .topbot
-    background-color        frameColor // bgColor
+    background-color        backColor
 
 // .minimapTopBot
     // background-color        frameColor // backColor
@@ -485,11 +487,11 @@ span.macro
 // 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 *:focus .selection
-        background          #222 // focus
+        background          #444 // focus
 
 .selection
     color                   #444 // used by minimap
-    background              #111 // no focus
+    background              #181818 // no focus
 
 // 000      000   0000000  000000000
 // 000      000  000          000
@@ -499,7 +501,7 @@ span.macro
 
 .winlist
 .list
-    background              frameColor
+    background              shelfColor
 
 .winlist-item.selected
 .list-item.selected

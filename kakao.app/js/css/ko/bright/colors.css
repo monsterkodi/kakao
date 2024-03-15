@@ -10,11 +10,14 @@ body {
   color: #fff;
 }
 .split-handle {
-  background: #111;
+  background: #1d1d1d;
 }
 .browser {
-  background: #282828;
+  background: #181818;
   color: #fff;
+}
+.browser .split-handle {
+  background: #222;
 }
 .browserRow.hover {
   background: #111;
@@ -46,13 +49,13 @@ body {
   color: #888;
 }
 #shelf .browserRow.active {
-  background: #282828;
+  background: #181818;
 }
 #shelf {
-  background: #0a0a0a;
+  background: #1e1e1e;
 }
 #shelf.focus {
-  background: #111;
+  background: #222;
 }
 .fileInfoData {
   margin-top: 20px;
@@ -63,10 +66,10 @@ body {
 }
 #commandline-editor {
   color: #fff;
-  background: #282828;
+  background: #222;
 }
 .commandlist {
-  background: #0a0a0a;
+  background: #181818;
 }
 .commandlist.open .linenumber.selected span {
   color: #aaf;
@@ -88,7 +91,7 @@ body {
 }
 #commandline-button {
   color: #aaa;
-  background: #111;
+  background: #181818;
 }
 #commandline-button.empty {
   background: #282828;
@@ -145,7 +148,7 @@ span.macro.macro,
   color: #ff0;
 }
 #info {
-  background: #282828;
+  background: #222;
   border-left-color: #111;
 }
 .info-cursor-line,
@@ -234,6 +237,9 @@ span.macro.macro,
 .crumb .path:hover {
   color: #aaf;
 }
+#shelf .crumb {
+  background: rgba(0,0,0,0);
+}
 .crumb,
 .dir {
   color: #aaf;
@@ -282,13 +288,13 @@ span.macro.macro,
   background: #111;
 }
 .cursor-line {
-  background: #080808;
+  background: rgba(0,0,0,0.25);
 }
 .commandlist .cursor {
   background: transparent;
 }
 .numbers {
-  background: rgba(15,15,15,0.5);
+  background: rgba(0,0,0,0.2);
 }
 .commandlist .layers .numbers {
   background: rgba(0,0,0,0.1);
@@ -380,11 +386,11 @@ span.macro.macro,
   background: #111;
 }
 .minimap {
-  background: #282828;
+  background: rgba(0,0,0,0.2);
   border-left-color: #111;
 }
 .topbot {
-  background-color: #111;
+  background-color: #282828;
 }
 .highlight {
   color: rgba(255,100,255,0.7);
@@ -397,15 +403,15 @@ span.macro.macro,
   background: rgba(0,255,0,0.3);
 }
 *:focus .selection {
-  background: #222;
+  background: #444;
 }
 .selection {
   color: #444;
-  background: #111;
+  background: #181818;
 }
 .winlist,
 .list {
-  background: #111;
+  background: #181818;
 }
 .winlist-item.selected,
 .list-item.selected {

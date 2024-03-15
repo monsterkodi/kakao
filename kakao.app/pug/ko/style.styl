@@ -52,15 +52,8 @@ pre
 // 000   000  000   000  000   000     000
 // 0000000     0000000   0000000       000
 
-//*
-//    outline-width       0
-
 body
-//    fill-abs()
-//    margin              0
     overflow            hidden
-//    font-family         Arial,fontMono
-//    -webkit-user-select none
 
 @keyframes fadein
    from
@@ -78,12 +71,6 @@ body
 #main
     overflow            hidden
     animation           fadein 2.0s
-//    position            absolute
-//    font-family         fontMono    
-//    top                 titlebarHeight
-//    left                0
-//    right               0
-//    bottom              0
 
 //  0000000  00000000   000      000  000000000
 // 000       000   000  000      000     000
@@ -94,10 +81,6 @@ body
 #split
     position            relative
     overflow            hidden
-    // border-left         frameBorder
-    // border-right        frameBorder
-    // border-bottom       frameBorder
-    // box-sizing          border-box
     width               100%
 
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000
@@ -293,12 +276,16 @@ unicode(char)
     text-align      center
     cursor          pointer
     position        absolute
+    overflow-x      scroll
+    overflow-y      hidden
     left            0
     right           0
     top             0  
     display         block
     white-space     nowrap
     height          titlebarHeight
+    &::-webkit-scrollbar
+        height          2px
     & .path    
         opacity     0.5
     & .punct    

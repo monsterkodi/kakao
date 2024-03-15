@@ -212,12 +212,17 @@ body {
   text-align: center;
   cursor: pointer;
   position: absolute;
+  overflow-x: scroll;
+  overflow-y: hidden;
   left: 0;
   right: 0;
   top: 0;
   display: block;
   white-space: nowrap;
   height: 30px;
+}
+.crumb::-webkit-scrollbar {
+  height: 2px;
 }
 .crumb .path {
   opacity: 0.5;
