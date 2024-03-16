@@ -206,6 +206,9 @@ class FS
                 fs.mkdirSync dir, recursive:true
             if not FS.fileExists p
                 fs.writeFileSync p, ''
+            else
+                date = new Date
+                fsp.utimes p, date, date
             return p
         catch err
             FS.error "fs.touch -- " + String(err)

@@ -182,11 +182,13 @@ NSDictionary* dictForRect(NSRect rect)
 
 -(void) webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation
 {
-    if ([self.initScript length])
+    id script = [NSString stringWithFormat:@"window.winID = %d;\n", self.windowNumber]; 
+    if (self.initScript)
     {
-        NSLog(@"init script: %@", self.initScript);
-        [webView evaluateJavaScript:self.initScript completionHandler:nil];
+        script = [script stringByAppendingString:self.initScript];
     }
+    NSLog(@"init script: %@", script);
+    [webView evaluateJavaScript:script completionHandler:nil];
 }
 
 // 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  

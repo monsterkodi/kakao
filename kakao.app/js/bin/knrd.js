@@ -84,9 +84,13 @@ knrd = async function (files = [], opt = {})
                     await fs.write(tgtFile,compText)
                     console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(tgtFile)))
                 }
-                else if (opt.logVerbose)
+                else
                 {
-                    console.log(_k_.g2('✔ '),_k_.m3(slash.tilde(srcFile)))
+                    fs.touch(tgtFile)
+                    if (opt.logVerbose)
+                    {
+                        console.log(_k_.g2('✔ '),_k_.m3(slash.tilde(srcFile)))
+                    }
                 }
             }
         }

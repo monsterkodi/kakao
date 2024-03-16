@@ -27,7 +27,7 @@ function Stash
         @sep = opt?.separator ? '|'
         @timer   = null
         @file    = slash.path kakao.bundle.path, "/.stash/#{@name}.noon"
-        @timeout = opt?.timeout ? 500
+        @timeout = opt?.timeout ? 1000
         @changes = []
         
         @data = {}

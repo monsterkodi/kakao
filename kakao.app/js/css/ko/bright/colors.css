@@ -10,7 +10,7 @@ body {
   color: #fff;
 }
 .split-handle {
-  background: #1d1d1d;
+  background: #141414;
 }
 .browser {
   background: #181818;
@@ -51,7 +51,7 @@ body {
 #shelf {
   background: #181818;
   box-sizing: border-box;
-  border-right-color: #1d1d1d;
+  border-right-color: #141414;
 }
 #shelf.focus {
   background: #1e1e1e;
