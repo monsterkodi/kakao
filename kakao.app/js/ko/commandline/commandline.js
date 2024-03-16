@@ -25,7 +25,7 @@ CommandLine = (function ()
     {
         this["onCmmdClick"] = this["onCmmdClick"].bind(this)
         this["onSplit"] = this["onSplit"].bind(this)
-        this["restore"] = this["restore"].bind(this)
+        this["onStashLoaded"] = this["onStashLoaded"].bind(this)
         this["stash"] = this["stash"].bind(this)
         this["onSearchText"] = this["onSearchText"].bind(this)
         CommandLine.__super__.constructor.call(this,viewElem,{features:[],fontSize:24,syntaxName:'commandline'})
@@ -40,7 +40,7 @@ CommandLine = (function ()
         this.command = null
         this.loadCommands()
         post.on('split',this.onSplit)
-        post.on('restore',this.restore)
+        post.on('stashLoaded',this.onStashLoaded)
         post.on('stash',this.stash)
         post.on('searchText',this.onSearchText)
         this.view.onblur = (function ()
@@ -86,7 +86,7 @@ CommandLine = (function ()
         }
     }
 
-    CommandLine.prototype["restore"] = function ()
+    CommandLine.prototype["onStashLoaded"] = function ()
     {
         var activeID, name, state, _83_29_, _85_27_, _93_41_
 

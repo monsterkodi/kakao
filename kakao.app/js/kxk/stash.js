@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var Stash
 
@@ -22,7 +22,7 @@ Stash = (function ()
 {
     function Stash (name, opt)
     {
-        var _26_30_, _29_32_, _33_61_
+        var _27_30_, _30_32_, _34_61_
 
         this.name = name
     
@@ -31,10 +31,10 @@ Stash = (function ()
         {
             return console.error('stash.constructor -- no name?')
         }
-        this.sep = ((_26_30_=(opt != null ? opt.separator : undefined)) != null ? _26_30_ : '|')
+        this.sep = ((_27_30_=(opt != null ? opt.separator : undefined)) != null ? _27_30_ : '|')
         this.timer = null
         this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
-        this.timeout = ((_29_32_=(opt != null ? opt.timeout : undefined)) != null ? _29_32_ : 4000)
+        this.timeout = ((_30_32_=(opt != null ? opt.timeout : undefined)) != null ? _30_32_ : 500)
         this.changes = []
         this.data = {}
         if (((opt != null ? opt.defaults : undefined) != null))
@@ -51,13 +51,11 @@ Stash = (function ()
 
     Stash.prototype["get"] = function (key, value)
     {
-        var _46_63_, _47_38_
-
-        if (!((key != null ? key.split : undefined) != null))
+        if (!(_k_.isStr(key)))
         {
             console.error('stash.get -- invalid key',key)
         }
-        if (!((key != null ? key.split : undefined) != null))
+        if (!(_k_.isStr(key)))
         {
             return value
         }
@@ -66,9 +64,7 @@ Stash = (function ()
 
     Stash.prototype["set"] = function (key, value)
     {
-        var _58_70_
-
-        if (!((key != null ? key.split : undefined) != null))
+        if (!(_k_.isStr(key)))
         {
             return console.error('stash.set -- invalid key',key)
         }
@@ -102,8 +98,10 @@ Stash = (function ()
         console.log('stash load data',file,data)
         if (!_k_.empty(data))
         {
-            return this.data = data
+            this.data = data
+            post.emit('stashLoaded')
         }
+        return this.data
     }
 
     Stash.prototype["save"] = function ()
@@ -121,7 +119,7 @@ Stash = (function ()
             text = noon.stringify(this.data)
             ffs.write(this.file,text).then(function (file)
             {
-                console.log('stash.saved to',file)
+                console.log('stash.saved',file)
             })
         }
         catch (err)

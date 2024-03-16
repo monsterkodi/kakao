@@ -42,7 +42,7 @@ NSDictionary* dictForRect(NSRect rect)
 - (BOOL) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
 - (BOOL) windowShouldClose:(NSWindow*)window 
 { 
-    if ([[[App get] wins] count] == 1) // make sure the application closes if the last kakao window closes.
+    if ([[App wins] count] == 1) // make sure the application closes if the last kakao window closes.
         [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
     return YES; 
 }
@@ -217,14 +217,8 @@ NSDictionary* dictForRect(NSRect rect)
 - (Win*) focusPrev { return [self focusSibling:-1]; }
 - (Win*) focusSibling:(int)offset
 {
-    // NSArray* windows = [[NSApplication sharedApplication] windows];
-    NSArray* windows = [[App get] wins];
+    NSArray* windows = [App wins];
     NSUInteger index = [windows indexOfObject:self];
-    
-    //for (id window in windows)
-    //{
-    //    NSLog(@"window %@", window);
-    //}
     
     if (index != NSNotFound && [windows count] > 1)
     {    
@@ -241,6 +235,15 @@ NSDictionary* dictForRect(NSRect rect)
     }
     NSLog(@"no sibling window!");
     return nil;
+}
+
+- (void) setFrame:(id)frame
+{
+    NSLog(@"setFrame %@", frame);
+    [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
+                                [[frame objectForKey:@"y"] floatValue], 
+                                [[frame objectForKey:@"w"] floatValue], 
+                                [[frame objectForKey:@"h"] floatValue]) display:YES];
 }
 
 - (void) setWidth:(unsigned int)width height:(unsigned int)height

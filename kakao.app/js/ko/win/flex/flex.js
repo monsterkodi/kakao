@@ -257,13 +257,13 @@ class Flex
 
     restoreState (state)
     {
-        var p, s, si, _240_19_
+        var p, s, si, _241_19_
 
         if (!(state != null ? state.length : undefined))
         {
             return
         }
-        for (var _232_19_ = si = 0, _232_23_ = state.length; (_232_19_ <= _232_23_ ? si < state.length : si > state.length); (_232_19_ <= _232_23_ ? ++si : --si))
+        for (var _233_19_ = si = 0, _233_23_ = state.length; (_233_19_ <= _233_23_ ? si < state.length : si > state.length); (_233_19_ <= _233_23_ ? ++si : --si))
         {
             s = state[si]
             p = this.pane(si)
@@ -287,9 +287,9 @@ class Flex
 
         state = []
         var list = _k_.list(this.panes)
-        for (var _244_14_ = 0; _244_14_ < list.length; _244_14_++)
+        for (var _246_14_ = 0; _246_14_ < list.length; _246_14_++)
         {
-            p = list[_244_14_]
+            p = list[_246_14_]
             state.push({id:p.id,size:p.size,pos:p.pos()})
         }
         return state
@@ -310,9 +310,9 @@ class Flex
         var p
 
         var list = _k_.list(this.panes)
-        for (var _260_39_ = 0; _260_39_ < list.length; _260_39_++)
+        for (var _262_39_ = 0; _262_39_ < list.length; _262_39_++)
         {
-            p = list[_260_39_]
+            p = list[_262_39_]
             p.update()
         }
         return this
@@ -323,9 +323,9 @@ class Flex
         var h
 
         var list = _k_.list(this.handles)
-        for (var _261_39_ = 0; _261_39_ < list.length; _261_39_++)
+        for (var _263_39_ = 0; _263_39_ < list.length; _263_39_++)
         {
-            h = list[_261_39_]
+            h = list[_263_39_]
             h.update()
         }
         return this
@@ -333,14 +333,14 @@ class Flex
 
     handleStart (handle)
     {
-        var _265_41_
+        var _267_41_
 
         return (typeof this.onDragStart === "function" ? this.onDragStart() : undefined)
     }
 
     handleDrag (handle, drag)
     {
-        var _268_15_
+        var _270_15_
 
         this.moveHandleToPos(handle,drag.pos[this.axis] - this.pos() - 4)
         return (typeof this.onDrag === "function" ? this.onDrag() : undefined)
@@ -348,7 +348,7 @@ class Flex
 
     handleEnd ()
     {
-        var _271_18_
+        var _273_18_
 
         this.update()
         return (typeof this.onDragEnd === "function" ? this.onDragEnd() : undefined)
@@ -371,14 +371,14 @@ class Flex
     {
         var p
 
-        return (function () { var r_281_40_ = []; var list = _k_.list(this.panes); for (var _281_40_ = 0; _281_40_ < list.length; _281_40_++)  { p = list[_281_40_];r_281_40_.push(p.pos())  } return r_281_40_ }).bind(this)()
+        return (function () { var r_283_40_ = []; var list = _k_.list(this.panes); for (var _283_40_ = 0; _283_40_ < list.length; _283_40_++)  { p = list[_283_40_];r_283_40_.push(p.pos())  } return r_283_40_ }).bind(this)()
     }
 
     paneSizes ()
     {
         var p
 
-        return (function () { var r_282_39_ = []; var list = _k_.list(this.panes); for (var _282_39_ = 0; _282_39_ < list.length; _282_39_++)  { p = list[_282_39_];r_282_39_.push(p.size)  } return r_282_39_ }).bind(this)()
+        return (function () { var r_284_39_ = []; var list = _k_.list(this.panes); for (var _284_39_ = 0; _284_39_ < list.length; _284_39_++)  { p = list[_284_39_];r_284_39_.push(p.size)  } return r_284_39_ }).bind(this)()
     }
 
     sizeOfPane (i)
@@ -445,7 +445,7 @@ class Flex
 
     expand (i, factor = 0.5)
     {
-        var flex, pane, size, _314_38_
+        var flex, pane, size, _316_38_
 
         if (pane = this.pane(i))
         {
@@ -454,7 +454,7 @@ class Flex
                 pane.expand()
                 if (flex = this.closestVisFlex(pane))
                 {
-                    size = ((_314_38_=pane.fixed) != null ? _314_38_ : flex.size * factor)
+                    size = ((_316_38_=pane.fixed) != null ? _316_38_ : flex.size * factor)
                     flex.size -= size
                     pane.size = size
                 }

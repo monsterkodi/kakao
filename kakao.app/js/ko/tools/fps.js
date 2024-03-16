@@ -17,7 +17,7 @@ class FPS
         var x, y
 
         this.stash = this.stash.bind(this)
-        this.restore = this.restore.bind(this)
+        this.onStashLoaded = this.onStashLoaded.bind(this)
         this.draw = this.draw.bind(this)
         this.elem = elem({class:'fps'})
         this.elem.style.display = 'none'
@@ -30,7 +30,7 @@ class FPS
         this.last = performance.now()
         $('commandline-span').appendChild(this.elem)
         post.on('stash',this.stash)
-        post.on('restore',this.restore)
+        post.on('stashLoaded',this.onStashLoaded)
     }
 
     draw ()
@@ -66,7 +66,7 @@ class FPS
         return this.elem.style.display !== 'none'
     }
 
-    restore ()
+    onStashLoaded ()
     {
         if (window.stash.get('fps'))
         {

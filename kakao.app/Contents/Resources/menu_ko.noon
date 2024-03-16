@@ -164,16 +164,17 @@ View
 # 00     00  000  000   000  0000000     0000000   00     00
 
 Window
-    Arrange Windows         alt+cmdctrl+a
-    Cycle Windows           cmdctrl+`
-    -
     Toggle Menu             alt+m
     Toggle Scheme           
-    --
+    -
     Minimize                alt+cmdctrl+shift+m
     Maximize                alt+cmdctrl+m
     Fullscreen              alt+cmdctrl+f
     Hide                    cmdctrl+h
+    --    
+    Arrange Windows         alt+cmdctrl+a
+    Focus Next              cmdctrl+`
+    Focus Previous          cmdctrl+shift+`
     ---
     Screenshot              f3
     Reload                  alt+cmdctrl+l

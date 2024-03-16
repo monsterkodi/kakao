@@ -31,9 +31,9 @@ class Split
         @commandline =$ 'commandline'
         @editor      =$ 'editor'
 
-        post.on 'focus'   @focus
-        post.on 'stash'   @stash
-        post.on 'restore' @restore
+        post.on 'focus'       @focus
+        post.on 'stash'       @stash
+        post.on 'stashLoaded' @onStashLoaded
 
         @flex = new flex
             panes: [
@@ -68,7 +68,7 @@ class Split
         window.stash.set 'split|flex' @flex.getState()
         window.stash.set 'split|browser' @flex.panes[0].div == @browser
         
-    restore: => 
+    stashLoaded: =>
 
         if state = window.stash.get 'split|flex'
             @flex.restoreState state

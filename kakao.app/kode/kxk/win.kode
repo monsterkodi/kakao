@@ -16,6 +16,7 @@ use ./elem
 use ./post
 use ./title
 use ./prefs
+use ./slash
 use ./stash
 use ./keyinfo
 
@@ -28,7 +29,7 @@ class WinDelegate
     onWindowBlur:           (win)           -> #log "onWindowBlur"
     onWindowKeyDown:        (win, keyInfo)  -> log "key #{keyInfo.combo}" if not empty keyInfo.combo
     onWindowKeyUp:          (win, keyInfo)  -> #log "up  " keyInfo.combo
-    onWindowClose:          (win)           -> log "onWindowClose #{win.id}"; post.emit 'saveStash'
+    onWindowClose:          (win)           -> log "onWindowClose #{win.id}"
     
 function Win
 
@@ -37,6 +38,7 @@ function Win
         window.prefs = prefs
         window.prefs.init()
         
+        @saveStashOnClose = true
         @delegate ?= new WinDelegate
         
         post.on 'menuAction'   @onMenuAction
@@ -44,6 +46,8 @@ function Win
         post.on 'window.focus' @onWindowFocus
         post.on 'window.close' @onWindowClose
         post.on 'window.frame' @onWindowFrame
+        post.on 'stashLoaded'  @onStashLoaded
+        post.on 'saveStash'    @saveStash
         
         menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu.png'
         menuNoon = @delegate.menuNoon ? kakao.bundle.res 'menu.noon'
@@ -65,19 +69,24 @@ function Win
             # elem class:'test' text:"#{id}" parent:main
             
             window.stash = new stash "win/#{@id}"
-            
-            ffs.list(kakao.bundle.app '.stash/old').then (list) =>
-                if valid list
-                    old = list.shift()
-                    # log 'old' old.path
-                    window.stash.load(old.path).then ->
-                        ffs.remove old.path
+
+            @restoreFromStash()
             
             kakao.request('win.frameInfo').then (info) -> log 'frameInfo' info
                         
             @delegate?.onWindowCreated? @
             kakao.send 'win.setMinSize' 250 125
             # kakao.request('fs.write' kakao.bundle.app('test.txt'), "hello from #{@id}!").then (ok) -> log 'wrote' ok
+        
+    restoreFromStash: ○=>
+        
+        list = await ffs.list kakao.bundle.app '.stash/old'
+        if valid list
+            old = list.shift()
+            window.stash.load(old.path).then ->
+                ffs.remove old.path
+                if valid list
+                    kakao.send 'window.new' 'ko.html' #"window.aboutImage = \"#{window.aboutImage}\";"
         
     saveStash: ->
         
@@ -105,8 +114,12 @@ function Win
     onResize: (event)  => @delegate?.onWindowResize? @, event
     onWindowFocus:     => @delegate?.onWindowFocus?  @
     onWindowBlur:      => @delegate?.onWindowBlur?   @
-    onWindowClose:     => @saveStash(); @delegate?.onWindowClose?  @
-    onWindowFrame: (i) => log 'onWindowFrame' i
+    onWindowClose:     => post.emit 'saveStash' if @saveStashOnClose; @delegate?.onWindowClose?  @
+    onWindowFrame: (info) => window.stash.set 'frame' info.frame
+    onStashLoaded: => 
+        
+        if frame = window.stash.get 'frame'
+            kakao.send 'window.setFrame' frame
     
     # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
@@ -121,7 +134,7 @@ function Win
         switch action.toLowerCase()
             'focus next'     ➜ kakao.send 'window.focusNext'
             'focus previous' ➜ kakao.send 'window.focusPrev'
-            'new window'     ➜ kakao.send 'window.new'
+            'new window'     ➜ kakao.send 'window.new' slash.file document.URL
             'maximize'       ➜ kakao.send 'window.maximize'
             'minimize'       ➜ kakao.send 'window.minimize'
             'screenshot'     ➜ kakao.send 'window.snapshot'
@@ -130,8 +143,13 @@ function Win
             'quit'           ➜ kakao.send 'app.quit'
             'open ...'       ➜ kakao.send 'window.new' 'ko.html'
             'close'          
-                window.stash.clear()
-                kakao.send 'window.close'
+                # if the window is closed by the user 
+                # (titlebar close button, menu item or keyboard shortcut)
+                ffs.list(kakao.bundle.app '.stash/win').then (list) =>
+                    if list.length > 1              # if not the last window
+                        window.stash.clear()        #   remove the stash file
+                        @saveStashOnClose = false   #   and prevent saving it 
+                    kakao.send 'window.close'
             'about'          
                 if window.aboutImage
                     kakao.send 'window.new' 'about.html' "window.aboutImage = \"#{window.aboutImage}\";"

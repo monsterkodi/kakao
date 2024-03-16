@@ -85,6 +85,7 @@
 // 000   000  000  000  0000       000  
 // 00     00  000  000   000  0000000   
 
++ (NSArray*) wins { return [[App get] wins]; }
 - (NSArray*) wins
 {
     NSMutableArray* wins = [NSMutableArray array];
