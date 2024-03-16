@@ -72,21 +72,24 @@ function Column
     
     loadItems: (items, parent) ○->
         
-        log 'loadItems' items
+        log 'loadItems parent:' parent
+        log 'loadItems items:' items
         
         @clear()
 
         @parent = parent
         
-        if @index == 0 or @index-1 < @browser.numCols() and @browser.columns[@index-1].activeRow()?.item.file == '..' and not slash.isRoot @parent.path
-            if items[0]?.file not in ['..' '/']
-                dir = @parent.path
-                updir = slash.dir dir
-                if updir != dir
-                    items.unshift
-                        file: '..'
-                        type: 'dir'
-                        file:  updir
+        if @index == 0 or @index-1 < @browser.numCols() and @browser.columns[@index-1].activeRow()?.item.file == '..'
+            if not slash.isRoot @parent.path
+                if items[0]?.file not in ['..' '/']
+                    dir = @parent.path
+                    updir = slash.dir dir
+                    if updir != dir
+                        log 'unshift updir' updir, @parent
+                        items.unshift
+                            file: '..'
+                            type: 'dir'
+                            path:  updir
         
         @items = items
   

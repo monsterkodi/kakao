@@ -113,11 +113,16 @@ class File
         return "<span>/</span>" if file in ['/' '']
         
         spans = []
+        root = ''
+        if slash.isAbsolute file
+            spans.push ""
+            root = '/'
+        
         split = slash.split file
         
         for i in [0...split.length-1]
             s = split[i]
-            spans.push "<div class='inline path' id='#{split[0..i].join '/'}'>#{s}</div>"
+            spans.push "<div class='inline path' id='#{root}#{split[0..i].join '/'}'>#{s}</div>"
         spans.push "<div class='inline' id='#{file}'>#{split[-1]}</div>"
         spans.join "<span class='punct'>/</span>"
                 

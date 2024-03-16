@@ -161,18 +161,24 @@ class File
 
     static crumbSpan (file)
     {
-        var i, s, spans, split
+        var i, root, s, spans, split
 
         if (_k_.in(file,['/','']))
         {
             return "<span>/</span>"
         }
         spans = []
+        root = ''
+        if (slash.isAbsolute(file))
+        {
+            spans.push("")
+            root = '/'
+        }
         split = slash.split(file)
-        for (var _118_18_ = i = 0, _118_22_ = split.length - 1; (_118_18_ <= _118_22_ ? i < split.length - 1 : i > split.length - 1); (_118_18_ <= _118_22_ ? ++i : --i))
+        for (var _123_18_ = i = 0, _123_22_ = split.length - 1; (_123_18_ <= _123_22_ ? i < split.length - 1 : i > split.length - 1); (_123_18_ <= _123_22_ ? ++i : --i))
         {
             s = split[i]
-            spans.push(`<div class='inline path' id='${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)
+            spans.push(`<div class='inline path' id='${root}${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)
         }
         spans.push(`<div class='inline' id='${file}'>${split.slice(-1)[0]}</div>`)
         return spans.join("<span class='punct'>/</span>")

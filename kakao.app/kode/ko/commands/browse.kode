@@ -59,7 +59,7 @@ function Browse extends Command
             else
                 # post.emit 'filebrowser' 'loadItem' file:process.cwd(), type:'dir'
                 # post.emit 'filebrowser' 'loadItem' file:'~', type:'dir'
-                post.emit 'filebrowser' 'loadItem' file:kakao.bundle.path, type:'dir'
+                post.emit 'filebrowser' 'loadItem' path:kakao.bundle.path, type:'dir'
             @browser.focus force:true
 
         name = action
