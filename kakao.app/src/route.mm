@@ -28,8 +28,9 @@
     
     //NSLog(@"%d ▸ %@ %@", win.windowNumber, req, arg0 ? arg0 : @"");
 
-    if ([req isEqualToString:@"focusNext"     ]) { return [win focusNext];  }
-    if ([req isEqualToString:@"focusPrev"     ]) { return [win focusPrev];  }
+    if ([req isEqualToString:@"focusNext"     ]) { return [win focusNext]; }
+    if ([req isEqualToString:@"focusPrev"     ]) { return [win focusPrev]; }
+    if ([req isEqualToString:@"frameInfo"     ]) { return [win frameInfo]; }
     if ([req isEqualToString:@"new"           ]) { return [NSNumber numberWithLong:[win new:arg0 script:arg1].windowNumber]; }
     if ([req isEqualToString:@"snapshot"      ]) { return [win snapshot:arg0]; }
     if ([req isEqualToString:@"close"         ]) { [win performClose:nil]; return nil; }
@@ -187,11 +188,12 @@
     }
     else
     {
-        payload = [NSString stringWithFormat:@"{name:\"%@\", args:[%@]}", [msg objectForKey:@"name"], [msg objectForKey:@"args"]];
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:msg options:NSJSONWritingPrettyPrinted error:nil];
+        payload = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
     
-    // NSLog(@"▸ %@", payload);
     id script = [NSString stringWithFormat:@"window.kakao.receive(%@)", payload];
+    // NSLog(@"▸ %@", script);
 
     [win.view evaluateJavaScript:script completionHandler:nil];
 }

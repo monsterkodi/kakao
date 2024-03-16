@@ -76,13 +76,14 @@ function Stash
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
     
-    load: ○->
+    load: (file) ○->
         
-        data = await noon.load @file
-        log 'stash load data' @file, data
-        if data
+        file ?= @file
+        data = await noon.load file
+        log 'stash load data' file, data
+        if valid data
             @data = data
-        
+            
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000     
     # 0000000   000000000   000 000   0000000 

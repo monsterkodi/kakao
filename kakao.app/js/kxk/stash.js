@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var Stash
 
@@ -93,13 +93,14 @@ Stash = (function ()
         return ffs.remove(this.file)
     }
 
-    Stash.prototype["load"] = async function ()
+    Stash.prototype["load"] = async function (file)
     {
         var data
 
-        data = await noon.load(this.file)
-        console.log('stash load data',this.file,data)
-        if (data)
+        file = (file != null ? file : this.file)
+        data = await noon.load(file)
+        console.log('stash load data',file,data)
+        if (!_k_.empty(data))
         {
             return this.data = data
         }

@@ -11,11 +11,30 @@
 #import "route.h"
 #import "bundle.h"
 
+NSDictionary* dictForRect(NSRect rect)
+{
+    id dict = [NSMutableDictionary dictionary];
+    [dict setObject:[NSNumber numberWithFloat:rect.origin.x] forKey:@"x"];
+    [dict setObject:[NSNumber numberWithFloat:rect.origin.y] forKey:@"y"];
+    [dict setObject:[NSNumber numberWithFloat:rect.size.width] forKey:@"w"];
+    [dict setObject:[NSNumber numberWithFloat:rect.size.height] forKey:@"h"];
+    return dict;
+}
+
 @interface WinDelegate : NSObject <NSWindowDelegate> {}
 @end
 
 @implementation WinDelegate
 
+- (void) sendFrame:(Win*)win
+{ 
+    id msg = [NSMutableDictionary dictionary];
+    [msg setObject:@"window.frame" forKey:@"name"];
+    [msg setObject:[NSArray arrayWithObject:[win frameInfo]] forKey:@"args"];
+    [Route send:msg win:win];
+}
+- (void) windowDidResize:    (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
+- (void) windowDidMove:      (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
 - (void) windowDidBecomeKey: (NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
 - (void) windowDidResignKey: (NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
 - (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
@@ -227,6 +246,20 @@
 - (void) setWidth:(unsigned int)width height:(unsigned int)height
 {
     [self setFrame:CGRectMake(0, 0, width, height) display:YES];
+}
+
+- (NSDictionary*) frameInfo
+{
+    id info = [NSMutableDictionary dictionary];
+    
+    [info setObject:[NSNumber numberWithLong:self.windowNumber] forKey:@"id"];
+    [info addObject:dictForRect([self frame]) forKey:@"frame"];
+    if ([self screen])
+    {
+        [info addObject:dictForRect([[self screen] frame]) forKey:@"screen"];
+    }
+    
+    return info;
 }
 
 - (void) center
