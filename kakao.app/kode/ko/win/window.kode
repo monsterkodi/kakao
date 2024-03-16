@@ -102,7 +102,7 @@ function Window #extends win
         if window.stash.get 'centerText'
             @editor.centerText true 0
     
-        post.emit 'restore'
+        # post.emit 'restore'
         
         window.split.resized()
         window.info.reload()
@@ -204,7 +204,6 @@ post.on 'singleCursorAtPos' (pos, opt) -> # browser double click and newTabWithF
 post.on 'focusEditor'  -> window.split.focus 'editor'
 post.on 'cloneFile'    -> post.toMain 'newWindowWithFile' window.editor.currentFile
 post.on 'closeWindow'  -> post.emit 'menuAction' 'Close'
-post.on 'saveStash'    -> saveStash()
 post.on 'clearStash'   -> clearStash()
 post.on 'editorFocus' (editor) ->
     window.setLastFocus window.editor.name
@@ -256,7 +255,7 @@ window.editorWithName = (n) ->
  
 reloadWin = ->
  
-    saveStash()
+    # saveStash()
     clearListeners()
     post.toMain 'reloadWin' winID:window.winID, file:window.editor.currentFile
  

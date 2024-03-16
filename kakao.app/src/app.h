@@ -20,6 +20,7 @@
 - (void) run; 
 - (void) setIcon:(NSString*) pngFilePath;
 - (BOOL) executeNodeScript:(NSString*)scriptPath args:(NSArray*)args;
++ (NSArray*) wins;
 - (NSArray*) wins;
 
 @end

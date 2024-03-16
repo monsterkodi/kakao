@@ -35,8 +35,8 @@ class FPS
         
         $('commandline-span').appendChild @elem
         
-        post.on 'stash',   @stash
-        post.on 'restore', @restore
+        post.on 'stash'       @stash
+        post.on 'stashLoaded' @onStashLoaded
             
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
@@ -64,8 +64,8 @@ class FPS
 
     visible: -> @elem.style.display != 'none'
 
-    restore: => @toggle() if window.stash.get 'fps'
-    stash:   => if @visible() then window.stash.set('fps' true) else window.stash.set 'fps'
+    onStashLoaded: => @toggle() if window.stash.get 'fps'
+    stash:         => if @visible() then window.stash.set('fps' true) else window.stash.set 'fps'
 
     toggle: -> 
         

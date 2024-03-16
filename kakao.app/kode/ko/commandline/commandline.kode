@@ -36,10 +36,10 @@ function CommandLine extends TextEditor
 
         @loadCommands()
 
-        post.on 'split'      @onSplit
-        post.on 'restore'    @restore
-        post.on 'stash'      @stash
-        post.on 'searchText' @onSearchText
+        post.on 'split'       @onSplit
+        post.on 'stashLoaded' @onStashLoaded
+        post.on 'stash'       @stash
+        post.on 'searchText'  @onSearchText
 
         @view.onblur = =>
             @button.classList.remove 'active'
@@ -76,7 +76,7 @@ function CommandLine extends TextEditor
         if @command?
             window.stash.set 'commandline' @command.state()
 
-    restore: =>
+    onStashLoaded: =>
 
         state = window.stash.get 'commandline'
 

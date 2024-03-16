@@ -16,12 +16,12 @@ class CWD
     constructor ()
     {
         this.stash = this.stash.bind(this)
-        this.restore = this.restore.bind(this)
+        this.onStashLoaded = this.onStashLoaded.bind(this)
         this.onCwdSet = this.onCwdSet.bind(this)
         this.elem = elem({class:'cwd'})
         $('commandline-span').appendChild(this.elem)
         post.on('stash',this.stash)
-        post.on('restore',this.restore)
+        post.on('stashLoaded',this.onStashLoaded)
         post.on('cwdSet',this.onCwdSet)
         this.restore()
     }
@@ -42,7 +42,7 @@ class CWD
         return this.elem.style.display !== 'none'
     }
 
-    restore ()
+    onStashLoaded ()
     {}
 
     stash ()

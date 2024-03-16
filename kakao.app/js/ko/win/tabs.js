@@ -26,7 +26,7 @@ class Tabs
         this.onContextMenu = this.onContextMenu.bind(this)
         this.onDirty = this.onDirty.bind(this)
         this.revertFile = this.revertFile.bind(this)
-        this.restore = this.restore.bind(this)
+        this.onStashLoaded = this.onStashLoaded.bind(this)
         this.stash = this.stash.bind(this)
         this.onDragStop = this.onDragStop.bind(this)
         this.onDragMove = this.onDragMove.bind(this)
@@ -53,7 +53,7 @@ class Tabs
         post.on('closeOtherTabs',this.onCloseOtherTabs)
         post.on('stash',this.stash)
         post.on('dirty',this.onDirty)
-        post.on('restore',this.restore)
+        post.on('stashLoaded',this.onStashLoaded)
         post.on('revertFile',this.revertFile)
         post.on('sendTabs',this.onSendTabs)
         post.on('fileLineChanges',this.onFileLineChanges)
@@ -450,7 +450,7 @@ class Tabs
         return window.stash.set('tabs',{files:files,pinned:pinned,active:Math.min((this.activeTab() != null ? this.activeTab().index() : undefined),files.length - 1)})
     }
 
-    restore ()
+    onStashLoaded ()
     {
         var active, files, pi, pinned
 

@@ -20,9 +20,9 @@ class CWD
 
         $('commandline-span').appendChild @elem
         
-        post.on 'stash'   @stash
-        post.on 'restore' @restore
-        post.on 'cwdSet'  @onCwdSet
+        post.on 'stash'       @stash
+        post.on 'stashLoaded' @onStashLoaded
+        post.on 'cwdSet'      @onCwdSet
         
         @restore()
             
@@ -34,7 +34,7 @@ class CWD
     
     visible: -> @elem.style.display != 'none'
 
-    restore: => #@toggle() if window.stash.get('cwd' false) != @visible()
+    onStashLoaded: => #@toggle() if window.stash.get('cwd' false) != @visible()
     stash:   => #window.stash.set 'cwd' @visible()
 
     toggle: -> 

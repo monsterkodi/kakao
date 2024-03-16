@@ -137,7 +137,6 @@ Window = (function ()
         {
             this.editor.centerText(true,0)
         }
-        post.emit('restore')
         window.split.resized()
         window.info.reload()
         return this.editor.focus()
@@ -315,10 +314,6 @@ post.on('closeWindow',function ()
 {
     return post.emit('menuAction','Close')
 })
-post.on('saveStash',function ()
-{
-    return saveStash()
-})
 post.on('clearStash',function ()
 {
     return clearStash()
@@ -365,14 +360,13 @@ window.editorWithName = function (n)
 
 reloadWin = function ()
 {
-    saveStash()
     clearListeners()
     return post.toMain('reloadWin',{winID:window.winID,file:window.editor.currentFile})
 }
 
 window.onresize = function ()
 {
-    var _272_14_
+    var _271_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -383,7 +377,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _278_22_
+    var _277_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -428,7 +422,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _323_32_
+    var _322_32_
 
     if (!(_k_.isNum(s)))
     {

@@ -38,6 +38,7 @@
     if ([req isEqualToString:@"maximize"      ]) { [win zoom:nil];         return nil; }
     if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
     if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }
+    if ([req isEqualToString:@"setFrame"      ]) { [win setFrame:arg0];    return nil; }
     if ([req isEqualToString:@"setSize"       ]) { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
     if ([req isEqualToString:@"setMinSize"    ]) { [win setContentMinSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
     if ([req isEqualToString:@"id"            ]) { return [NSNumber numberWithLong:win.windowNumber]; }
@@ -58,8 +59,7 @@
         
         NSLog(@"post from win %lu %@", (unsigned long)[NSNumber numberWithLong:win.windowNumber], script);
         
-        App* app = [App get];
-        for (Win* w in [app wins])
+        for (Win* w in [App wins])
         {
             if (w == win) continue;
                         
@@ -84,12 +84,22 @@
     return [Bundle performSelector:sel_getUid([req cStringUsingEncoding:NSUTF8StringEncoding])];
 }
 
+//  0000000   00000000   00000000   
+// 000   000  000   000  000   000  
+// 000000000  00000000   00000000   
+// 000   000  000        000        
+// 000   000  000        000        
+
 + (id) app:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
     // NSLog(@"%d ▸ %@", (long)win.windowNumber, req);
     id app = [NSApplication sharedApplication];
     if ([req isEqualToString:@"quit"])
     {
+        for (Win* win in [App wins])
+        {
+            [win close];
+        }
         [app terminate:nil];
     }
     return nil;
@@ -163,12 +173,17 @@
 
 + (void) emit:(NSString*)event
 {
-    for (id win in [[NSApplication sharedApplication] windows])
+    // for (id win in [[NSApplication sharedApplication] windows])
+    // {
+        // if ([win isKindOfClass:[Win class]])
+        // {
+            // [self send:event win:(Win*)win];
+        // }
+    // }
+    
+    for (Win* win in [App wins])
     {
-        if ([win isKindOfClass:[Win class]])
-        {
-            [self send:event win:(Win*)win];
-        }
+        [self send:event win:win];
     }
 }
 

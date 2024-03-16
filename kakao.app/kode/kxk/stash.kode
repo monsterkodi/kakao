@@ -7,7 +7,8 @@
 ###
 
 # simple key value store with delayed saving to userData folder
-# stores state in separate files per window and does not sync between windows
+# stores state in separate files per window 
+# does not sync between windows
  
 use ./post
 use ./slash
@@ -26,7 +27,7 @@ function Stash
         @sep = opt?.separator ? '|'
         @timer   = null
         @file    = slash.path kakao.bundle.path, "/.stash/#{@name}.noon"
-        @timeout = opt?.timeout ? 4000
+        @timeout = opt?.timeout ? 500
         @changes = []
         
         @data = {}
@@ -43,8 +44,8 @@ function Stash
         
     get: (key, value) ->
         
-        error 'stash.get -- invalid key', key if not key?.split?
-        return value if not key?.split?
+        error 'stash.get -- invalid key', key if not key is str
+        return value if not key is str
         sds.get @data, @keypath(key), value
          
     #  0000000  00000000  000000000  
@@ -55,7 +56,7 @@ function Stash
     
     set: (key, value) ->
         
-        return error 'stash.set -- invalid key', key if not key?.split?
+        return error 'stash.set -- invalid key', key if not key is str
         sds.set @data, @keypath(key), value
         
         clearTimeout @timer if @timer
@@ -83,6 +84,8 @@ function Stash
         log 'stash load data' file, data
         if valid data
             @data = data
+            post.emit 'stashLoaded'
+        @data
             
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000     
@@ -101,7 +104,7 @@ function Stash
             text = noon.stringify @data
             # log 'stash.save text' text
             ffs.write(@file, text).then (file) ->
-                log 'stash.saved to' file
+                log 'stash.saved' file
         catch err
             error "stash.save -- can't save to '#{@file}': #{err}"
         true

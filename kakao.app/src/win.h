@@ -22,6 +22,7 @@
 - (void) reload;
 - (void) framerateDrop:(long)ms;
 - (void) center;
+- (void) setFrame:(id)frame;
 - (void) setWidth:(unsigned int)width height:(unsigned int)height;
 - (NSString*) snapshot:(NSString*)pngFilePath;
 - (NSDictionary*) frameInfo;
