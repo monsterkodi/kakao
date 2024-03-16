@@ -11,6 +11,7 @@
 ###
 
 use ./dom ▪ $ stopEvent
+use ./ffs
 use ./elem
 use ./post
 use ./title
@@ -42,6 +43,7 @@ function Win
         post.on 'window.blur'  @onWindowBlur
         post.on 'window.focus' @onWindowFocus
         post.on 'window.close' @onWindowClose
+        post.on 'window.frame' @onWindowFrame
         
         menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu.png'
         menuNoon = @delegate.menuNoon ? kakao.bundle.res 'menu.noon'
@@ -64,6 +66,15 @@ function Win
             
             window.stash = new stash "win/#{@id}"
             
+            ffs.list(kakao.bundle.app '.stash/old').then (list) =>
+                if valid list
+                    old = list.shift()
+                    # log 'old' old.path
+                    window.stash.load(old.path).then ->
+                        ffs.remove old.path
+            
+            kakao.request('win.frameInfo').then (info) -> log 'frameInfo' info
+                        
             @delegate?.onWindowCreated? @
             kakao.send 'win.setMinSize' 250 125
             # kakao.request('fs.write' kakao.bundle.app('test.txt'), "hello from #{@id}!").then (ok) -> log 'wrote' ok
@@ -91,10 +102,11 @@ function Win
             
         @delegate?.onWindowAnimationTick? @, delta:delta, fps:fps, time:now
                                     
-    onResize: (event) => @delegate?.onWindowResize? @, event
-    onWindowFocus:    => @delegate?.onWindowFocus?  @
-    onWindowBlur:     => @delegate?.onWindowBlur?   @
-    onWindowClose:    => @saveStash(); @delegate?.onWindowClose?  @
+    onResize: (event)  => @delegate?.onWindowResize? @, event
+    onWindowFocus:     => @delegate?.onWindowFocus?  @
+    onWindowBlur:      => @delegate?.onWindowBlur?   @
+    onWindowClose:     => @saveStash(); @delegate?.onWindowClose?  @
+    onWindowFrame: (i) => log 'onWindowFrame' i
     
     # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  

@@ -44,7 +44,10 @@ function Kakao
         
     @receive: (msg) ->
         
-        kxk.post.emit msg
+        if msg is str
+            kxk.post.emit msg
+        else if msg is obj
+            kxk.post.emit.apply null, [msg.name].concat msg.args
             
     # some redirections to make working with kakao modules a little simpler ...
             

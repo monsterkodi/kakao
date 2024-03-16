@@ -24,5 +24,6 @@
 - (void) center;
 - (void) setWidth:(unsigned int)width height:(unsigned int)height;
 - (NSString*) snapshot:(NSString*)pngFilePath;
+- (NSDictionary*) frameInfo;
 
 @end

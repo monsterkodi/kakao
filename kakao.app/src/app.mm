@@ -17,13 +17,23 @@
 
 @property (readwrite,retain) Watch* watch;
 
++ (void) moveStashWins;
+
 @end
 
 @implementation App
 
+// 000  000   000  0000000    00000000  000   000
+// 000  0000  000  000   000  000        000 000 
+// 000  000 0 000  000   000  0000000     00000  
+// 000  000  0000  000   000  000        000 000 
+// 000  000   000  0000000    00000000  000   000
+
 + (id) new:(NSString*)indexFile
 {
     //freopen([[Bundle appPath:@"log.txt"] cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
+    
+    [App moveStashWins];
         
     App* app = [[App alloc] init];
     [app setIcon:[Bundle resourcePath:@"img/app.icns"]];
@@ -40,7 +50,7 @@
     NSMutableString* indexHTML = [NSMutableString stringWithString:indexFile];
     if (![indexHTML length])
     {
-        indexHTML = @"index.html";
+        indexHTML = [NSMutableString stringWithString:@"index.html"];
     }
     if (![indexHTML hasSuffix:@".html"])
     {
@@ -69,6 +79,12 @@
     [[NSApplication sharedApplication] run]; // does not return
 }
 
+// 000   000  000  000   000   0000000  
+// 000 0 000  000  0000  000  000       
+// 000000000  000  000 0 000  0000000   
+// 000   000  000  000  0000       000  
+// 00     00  000  000   000  0000000   
+
 - (NSArray*) wins
 {
     NSMutableArray* wins = [NSMutableArray array];
@@ -82,6 +98,31 @@
     }
     return wins;   
 }
+
++ (void) moveStashWins
+{
+    id error;
+    id path = [Bundle appPath:@".stash/win"];
+    id dest = [Bundle appPath:@".stash/old"];
+    
+    id FM = [NSFileManager defaultManager];
+    [FM removeItemAtPath:dest error:&error];
+    if (![FM fileExistsAtPath:path])
+    {
+        [FM createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+        return;
+    }
+    if ([FM moveItemAtPath:path toPath:dest error:&error])
+    {
+        [FM createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+    }
+}
+
+// 00000000   00000000  000       0000000    0000000   0000000    
+// 000   000  000       000      000   000  000   000  000   000  
+// 0000000    0000000   000      000   000  000000000  000   000  
+// 000   000  000       000      000   000  000   000  000   000  
+// 000   000  00000000  0000000   0000000   000   000  0000000    
 
 - (void) reload
 {

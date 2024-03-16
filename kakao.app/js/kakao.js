@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
 
 var Kakao
 
@@ -33,7 +33,14 @@ Kakao = (function ()
 
     Kakao["receive"] = function (msg)
     {
-        return kxk.post.emit(msg)
+        if (_k_.isStr(msg))
+        {
+            return kxk.post.emit(msg)
+        }
+        else if (_k_.isObj(msg))
+        {
+            return kxk.post.emit.apply(null,[msg.name].concat(msg.args))
+        }
     }
 
     Kakao["bundle"] = bundle
