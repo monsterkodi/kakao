@@ -31,72 +31,56 @@ class File
         return true
     }
 
-    static rename (from, to, cb)
+    static async rename (from, to)
     {
-        return fs.mkdir(slash.dir(to),{recursive:true},function (err)
-        {
-            if (err)
-            {
-                return console.error(`mkdir failed ${err}`)
-            }
-            if (slash.isDir(to))
-            {
-                to = slash.join(to,slash.file(from))
-            }
-            return fs.move(from,to,{overwrite:true},function (err)
-            {
-                var _42_39_
+        var _39_35_
 
-                if (err)
-                {
-                    return console.error(`rename failed ${err}`)
-                }
-                if (editor.currentFile === from)
-                {
-                    editor.currentFile = to
-                    if ((tabs.activeTab() != null ? tabs.activeTab().file : undefined) === from)
-                    {
-                        tabs.activeTab().setFile(to)
-                    }
-                    if (commandline.command.name === 'browse')
-                    {
-                        if (commandline.text() === slash.tilde(from))
-                        {
-                            commandline.setText(slash.tilde(to))
-                        }
-                    }
-                    if (!tabs.tab(to))
-                    {
-                        console.log('recreate tab!',tabs.activeTab().file,to)
-                    }
-                }
-                return cb(from,to)
-            })
-        })
-    }
-
-    static duplicate (from, cb)
-    {
-        return slash.unused(from,(function (target)
+        await ffs.mkdir(slash.dir(to))
+        if (await ffs.isDir(to))
         {
-            return this.copy(from,target,cb)
-        }).bind(this))
-    }
-
-    static copy (from, to, cb)
-    {
-        if (slash.isDir(to))
-        {
-            to = slash.join(to,slash.file(from))
+            to = slash.path(to,slash.file(from))
         }
-        return fs.copy(from,to,function (err)
+        if (await ffs.move(from,to))
         {
-            if (err)
+            if (editor.currentFile === from)
             {
-                return console.error(`copy failed ${err}`)
+                editor.currentFile = to
+                if ((tabs.activeTab() != null ? tabs.activeTab().file : undefined) === from)
+                {
+                    tabs.activeTab().setFile(to)
+                }
+                if (commandline.command.name === 'browse')
+                {
+                    if (commandline.text() === slash.tilde(from))
+                    {
+                        commandline.setText(slash.tilde(to))
+                    }
+                }
+                if (!tabs.tab(to))
+                {
+                    console.log('recreate tab!',tabs.activeTab().file,to)
+                }
             }
-            return cb(from,to)
-        })
+            return [from,to]
+        }
+        else
+        {
+            return null
+        }
+    }
+
+    static async duplicate (from)
+    {
+        return await ffs.duplicate(from)
+    }
+
+    static async copy (from, to)
+    {
+        if (await ffs.isDir(to))
+        {
+            to = slash.path(to,slash.file(from))
+        }
+        return await ffs.copy(from,to)
     }
 
     static iconClassName (file)
@@ -185,7 +169,7 @@ class File
         }
         spans = []
         split = slash.split(file)
-        for (var _122_18_ = i = 0, _122_22_ = split.length - 1; (_122_18_ <= _122_22_ ? i < split.length - 1 : i > split.length - 1); (_122_18_ <= _122_22_ ? ++i : --i))
+        for (var _118_18_ = i = 0, _118_22_ = split.length - 1; (_118_18_ <= _118_22_ ? i < split.length - 1 : i > split.length - 1); (_118_18_ <= _118_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)

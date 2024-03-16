@@ -111,11 +111,11 @@ Browser = (function ()
                 {
                     if (row = col.activeRow())
                     {
-                        this.loadItem(this.fileItem(row.item.path))
+                        this.loadItem(row.item)
                     }
                     else
                     {
-                        this.loadItem(this.fileItem(col.path()))
+                        this.loadItem(this.dirItem(col.path()))
                     }
                 }
             }

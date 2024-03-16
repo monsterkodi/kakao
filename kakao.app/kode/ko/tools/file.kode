@@ -25,43 +25,39 @@ class File
     # @isText:  (file) -> slash.ext(file) in File.sourceFileExtensions
     @isText:  (file) -> true
    
-    @rename: (from, to, cb) ->
+    @rename: (from, to) ○->
         
-        fs.mkdir slash.dir(to), recursive:true, (err) ->
+        await ffs.mkdir slash.dir to
             
-            return error "mkdir failed #{err}" if err
+        if await ffs.isDir to
+            to = slash.path to, slash.file from
+
+        if await ffs.move from, to
+                
+            if editor.currentFile == from
+                editor.currentFile = to
+                if tabs.activeTab()?.file == from
+                    tabs.activeTab().setFile to
+                if commandline.command.name == 'browse'
+                    if commandline.text() == slash.tilde from
+                        commandline.setText slash.tilde to
+                if not tabs.tab to
+                    log 'recreate tab!' tabs.activeTab().file, to
             
-            if slash.isDir(to)
-                to = slash.join to, slash.file from
+            [from, to]
+        else 
+            null
 
-            fs.move from, to, overwrite:true, (err) ->
-                return error "rename failed #{err}" if err
-                
-                if editor.currentFile == from
-                    editor.currentFile = to
-                    if tabs.activeTab()?.file == from
-                        tabs.activeTab().setFile to
-                    if commandline.command.name == 'browse'
-                        if commandline.text() == slash.tilde from
-                            commandline.setText slash.tilde to
-                    if not tabs.tab to
-                        log 'recreate tab!' tabs.activeTab().file, to
-                
-                cb from, to
+    @duplicate: (from) ○-> 
 
-    @duplicate: (from, cb) -> 
-
-        slash.unused from, (target) =>          
-            @copy from, target, cb
+        await ffs.duplicate from
     
-    @copy: (from, to, cb) ->
+    @copy: (from, to) ○->
         
-        if slash.isDir(to)
-            to = slash.join to, slash.file from
-
-        fs.copy from, to, (err) ->
-            return error "copy failed #{err}" if err
-            cb from, to
+        if await ffs.isDir to
+            to = slash.path to, slash.file from
+        
+        await ffs.copy from, to
     
     @iconClassName: (file) ->
         

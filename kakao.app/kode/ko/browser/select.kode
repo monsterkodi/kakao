@@ -15,8 +15,14 @@ class Select
         
     files: -> 
     
-        rows = @rows.filter (row) -> row.item.name != '..'
-        rows.map (row) -> row.item.path
+        # rows = @rows.filter (row) -> row.item.file != '..'
+        # rows.map (row) -> row.item.path
+        @items().map (item) -> item.path
+        
+    items: -> 
+    
+        rows = @rows.filter (row) -> row.item.file != '..'
+        rows.map (row) -> row.item
         
     freeIndex: ->
         

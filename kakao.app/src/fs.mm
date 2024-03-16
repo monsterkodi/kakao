@@ -136,10 +136,16 @@ NSString* typeForNSFileType(NSString* fileType)
     {
         NSString* text = [args objectAtIndex:1];
         NSData* data = [text dataUsingEncoding:NSUTF8StringEncoding];
-        if ([data writeToFile:path options:NSAtomicWrite error:nil])
+        id error;
+        if ([data writeToFile:path options:NSAtomicWrite error:&error])
+        {
             return path;
+        }
         else
+        {
+            NSLog(@"fs.write %@", error);
             return nil;
+        }
     }
     // 00000000   00000000  00     00   0000000   000   000  00000000  
     // 000   000  000       000   000  000   000  000   000  000       
@@ -149,11 +155,39 @@ NSString* typeForNSFileType(NSString* fileType)
 
     if ([req isEqualToString:@"remove"])
     {
-        if ([[NSFileManager defaultManager] removeItemAtPath:path error:nil])
+        id error;
+        if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error])
+        {
             return path;
+        }
         else
+        {
+            NSLog(@"fs.remove %@", error);
             return nil;
+        }
     }
+    
+    // 000000000  00000000    0000000    0000000  000   000  
+    //    000     000   000  000   000  000       000   000  
+    //    000     0000000    000000000  0000000   000000000  
+    //    000     000   000  000   000       000  000   000  
+    //    000     000   000  000   000  0000000   000   000  
+    
+    if ([req isEqualToString:@"trash"])
+    {
+        NSURL* dest;
+        id error;
+        if ([[NSFileManager defaultManager] trashItemAtURL:[NSURL fileURLWithPath:path] resultingItemURL:&dest error:&error])
+        {
+            return [dest path];
+        }
+        else
+        {
+            NSLog(@"fs.trash %@", error);
+            return nil;
+        }
+    }
+    
     // 00     00   0000000   000   000  00000000  
     // 000   000  000   000  000   000  000       
     // 000000000  000   000   000 000   0000000   
@@ -166,17 +200,107 @@ NSString* typeForNSFileType(NSString* fileType)
         
         id dest;
         if ([args count] > 1 && [[args objectAtIndex:1] isKindOfClass:[NSString class]]) 
+        {
             dest = [[args objectAtIndex:1] stringByExpandingTildeInPath];
+        }
         else
+        {
+            NSLog(@"fs.move no target?");
             return nil;
+        }
             
         NSLog(@"move %@ ▸ %@", path, dest);
         
-        if ([[NSFileManager defaultManager] moveItemAtPath:path toPath:dest error:nil])
+        id error;
+        if ([[NSFileManager defaultManager] moveItemAtPath:path toPath:dest error:&error])
+        {
             return dest;
+        }
         else
+        {
+            NSLog(@"fs.move %@", error);
             return nil;
+        }
     }
+    
+    if ([req isEqualToString:@"duplicate"])
+    {
+        NSLog(@"duplicate %@ %@", path, args);
+        
+        id dest;
+        id ext = [path pathExtension];
+        if ([ext length]) ext = [NSString stringWithFormat:@".%@", ext];
+        dest = [[[path stringByDeletingPathExtension] stringByAppendingString:@" copy"] stringByAppendingString:ext];
+            
+        NSLog(@"duplicate %@ ▸ %@", path, dest);
+        
+        id error;
+        if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:dest error:&error])
+        {
+            return dest;
+        }
+        else
+        {
+            NSLog(@"fs.duplicate %@", error);
+            return nil;
+        }
+    }
+    
+    //  0000000   0000000   00000000   000   000  
+    // 000       000   000  000   000   000 000   
+    // 000       000   000  00000000     00000    
+    // 000       000   000  000           000     
+    //  0000000   0000000   000           000     
+    
+    if ([req isEqualToString:@"copy"])
+    {
+        NSLog(@"copy %@ %@", path, args);
+        
+        id dest;
+        if ([args count] > 1 && [[args objectAtIndex:1] isKindOfClass:[NSString class]]) 
+        {
+            dest = [[args objectAtIndex:1] stringByExpandingTildeInPath];
+        }
+        else
+        {
+            NSLog(@"fs.copy no target?");
+            return nil;
+        }
+            
+        NSLog(@"copy %@ ▸ %@", path, dest);
+        
+        id error;
+        if ([[NSFileManager defaultManager] copyItemAtPath:path toPath:dest error:&error])
+        {
+            return dest;
+        }
+        else
+        {
+            NSLog(@"fs.copy %@", error);
+            return nil;
+        }
+    }
+    
+    // 00     00  000   000  0000000    000  00000000   
+    // 000   000  000  000   000   000  000  000   000  
+    // 000000000  0000000    000   000  000  0000000    
+    // 000 0 000  000  000   000   000  000  000   000  
+    // 000   000  000   000  0000000    000  000   000  
+    
+    if ([req isEqualToString:@"mkdir"])
+    {
+        id error;
+        if ([[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
+        {
+            return path;
+        }
+        else
+        {
+            NSLog(@"fs.mkdir %@", error);
+            return nil;
+        }
+    }
+    
     // 000      000   0000000  000000000  
     // 000      000  000          000     
     // 000      000  0000000      000     

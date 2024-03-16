@@ -388,7 +388,7 @@ class Slash
         {
             dir = Slash.sep
         }
-        return {dir:dir,file:file,name:name,ext:ext}
+        return {path:p,dir:dir,file:file,name:name,ext:ext}
     }
 
     static home ()

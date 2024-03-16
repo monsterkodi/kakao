@@ -47,14 +47,34 @@ class KFS
         return await kakao.request('fs.isReadable',p)
     }
 
+    static async duplicate (p)
+    {
+        return await kakao.request('fs.duplicate',p)
+    }
+
     static async remove (p)
     {
         return await kakao.request('fs.remove',p)
     }
 
+    static async trash (p)
+    {
+        return await kakao.request('fs.trash',p)
+    }
+
     static async move (p, d)
     {
         return await kakao.request('fs.move',p,d)
+    }
+
+    static async copy (p, d)
+    {
+        return await kakao.request('fs.copy',p,d)
+    }
+
+    static async mkdir (p)
+    {
+        return await kakao.request('fs.mkdir',p)
     }
 
     static async info (p)

@@ -70,6 +70,7 @@ Column = (function ()
         this["onMouseOver"] = this["onMouseOver"].bind(this)
         this["onBlur"] = this["onBlur"].bind(this)
         this["onFocus"] = this["onFocus"].bind(this)
+        this["insertDir"] = this["insertDir"].bind(this)
         this["insertFile"] = this["insertFile"].bind(this)
         this["removeFile"] = this["removeFile"].bind(this)
         this["onDragStop"] = this["onDragStop"].bind(this)
@@ -104,15 +105,15 @@ Column = (function ()
         console.log('loadItems',items)
         this.clear()
         this.parent = parent
-        if (this.index === 0 || this.index - 1 < this.browser.numCols() && (this.browser.columns[this.index - 1].activeRow() != null ? this.browser.columns[this.index - 1].activeRow().item.name : undefined) === '..' && !slash.isRoot(this.parent.path))
+        if (this.index === 0 || this.index - 1 < this.browser.numCols() && (this.browser.columns[this.index - 1].activeRow() != null ? this.browser.columns[this.index - 1].activeRow().item.file : undefined) === '..' && !slash.isRoot(this.parent.path))
         {
-            if (!(_k_.in((items[0] != null ? items[0].name : undefined),['..','/'])))
+            if (!(_k_.in((items[0] != null ? items[0].file : undefined),['..','/'])))
             {
                 dir = this.parent.path
                 updir = slash.dir(dir)
                 if (updir !== dir)
                 {
-                    items.unshift({name:'..',type:'dir',file:updir})
+                    items.unshift({file:'..',type:'dir',file:updir})
                 }
             }
         }
@@ -384,6 +385,16 @@ Column = (function ()
         return row
     }
 
+    Column.prototype["insertDir"] = function (dir)
+    {
+        var item, row
+
+        item = this.browser.dirItem(dir)
+        row = new Row(this,item)
+        this.rows.push(row)
+        return row
+    }
+
     Column.prototype["unshiftItem"] = function (item)
     {
         this.items.unshift(item)
@@ -412,7 +423,7 @@ Column = (function ()
 
     Column.prototype["setItems"] = function (items, opt)
     {
-        var item, _329_46_, _330_72_
+        var item, _336_46_, _337_72_
 
         this.items = items
     
@@ -427,9 +438,9 @@ Column = (function ()
             console.error("setItems -- no parent type?",this.parent)
         }
         var list = _k_.list(this.items)
-        for (var _332_17_ = 0; _332_17_ < list.length; _332_17_++)
+        for (var _339_17_ = 0; _339_17_ < list.length; _339_17_++)
         {
-            item = list[_332_17_]
+            item = list[_339_17_]
             this.rows.push(new Row(this,item))
         }
         this.scroll.update()
@@ -438,21 +449,21 @@ Column = (function ()
 
     Column.prototype["isDir"] = function ()
     {
-        var _344_22_
+        var _351_22_
 
         return (this.parent != null ? this.parent.type : undefined) === 'dir'
     }
 
     Column.prototype["isFile"] = function ()
     {
-        var _345_22_
+        var _352_22_
 
         return (this.parent != null ? this.parent.type : undefined) === 'file'
     }
 
     Column.prototype["isSrc"] = function ()
     {
-        var _347_18_
+        var _354_18_
 
         if ((this.parent != null ? this.parent.type : undefined) === 'file')
         {
@@ -471,7 +482,7 @@ Column = (function ()
 
     Column.prototype["clear"] = function ()
     {
-        var _354_18_, _354_36_
+        var _361_18_, _361_36_
 
         if ((this.parent != null ? this.parent.path : undefined) && (this.parent != null ? this.parent.type : undefined) === 'dir')
         {
@@ -488,7 +499,7 @@ Column = (function ()
 
     Column.prototype["setIndex"] = function (index)
     {
-        var _366_17_
+        var _373_17_
 
         this.index = index
     
@@ -505,7 +516,7 @@ Column = (function ()
 
     Column.prototype["activateRow"] = function (row)
     {
-        var _376_35_
+        var _383_35_
 
         return (this.row(row) != null ? this.row(row).activate() : undefined)
     }
@@ -520,9 +531,9 @@ Column = (function ()
 
     Column.prototype["activePath"] = function ()
     {
-        var _379_31_, _379_40_
+        var _386_31_, _386_40_
 
-        return ((_379_40_=(this.activeRow() != null ? this.activeRow().path() : undefined)) != null ? _379_40_ : this.parent.path)
+        return ((_386_40_=(this.activeRow() != null ? this.activeRow().path() : undefined)) != null ? _386_40_ : this.parent.path)
     }
 
     Column.prototype["selectedRow"] = function ()
@@ -576,23 +587,23 @@ Column = (function ()
 
     Column.prototype["path"] = function ()
     {
-        var _392_20_, _392_27_
+        var _399_20_, _399_27_
 
-        return ((_392_27_=(this.parent != null ? this.parent.path : undefined)) != null ? _392_27_ : '')
+        return ((_399_27_=(this.parent != null ? this.parent.path : undefined)) != null ? _399_27_ : '')
     }
 
     Column.prototype["numRows"] = function ()
     {
-        var _394_32_
+        var _401_32_
 
-        return ((_394_32_=this.rows.length) != null ? _394_32_ : 0)
+        return ((_401_32_=this.rows.length) != null ? _401_32_ : 0)
     }
 
     Column.prototype["rowHeight"] = function ()
     {
-        var _395_46_
+        var _402_46_
 
-        return ((_395_46_=(this.rows[0] != null ? this.rows[0].div.clientHeight : undefined)) != null ? _395_46_ : 0)
+        return ((_402_46_=(this.rows[0] != null ? this.rows[0].div.clientHeight : undefined)) != null ? _402_46_ : 0)
     }
 
     Column.prototype["numVisible"] = function ()
@@ -661,21 +672,21 @@ Column = (function ()
 
     Column.prototype["onMouseOver"] = function (event)
     {
-        var _444_46_, _444_59_
+        var _451_46_, _451_59_
 
-        return ((_444_46_=this.row(event.target)) != null ? typeof (_444_59_=_444_46_.onMouseOver) === "function" ? _444_59_() : undefined : undefined)
+        return ((_451_46_=this.row(event.target)) != null ? typeof (_451_59_=_451_46_.onMouseOver) === "function" ? _451_59_() : undefined : undefined)
     }
 
     Column.prototype["onMouseOut"] = function (event)
     {
-        var _445_46_, _445_58_
+        var _452_46_, _452_58_
 
-        return ((_445_46_=this.row(event.target)) != null ? typeof (_445_58_=_445_46_.onMouseOut) === "function" ? _445_58_() : undefined : undefined)
+        return ((_452_46_=this.row(event.target)) != null ? typeof (_452_58_=_452_46_.onMouseOut) === "function" ? _452_58_() : undefined : undefined)
     }
 
     Column.prototype["onDblClick"] = function (event)
     {
-        var item, _450_27_
+        var item, _457_27_
 
         this.browser.skipOnDblClick = true
         item = (this.activeRow() != null ? this.activeRow().item : undefined)
@@ -692,13 +703,13 @@ Column = (function ()
 
     Column.prototype["extendSelection"] = function (key)
     {
-        var index, toIndex, _460_28_, _460_38_
+        var index, toIndex, _467_28_, _467_38_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_460_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _460_38_ : -1)
+        index = ((_467_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _467_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -735,13 +746,13 @@ Column = (function ()
 
     Column.prototype["navigateRows"] = function (key)
     {
-        var index, newIndex, _483_28_, _483_38_
+        var index, newIndex, _490_28_, _490_38_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_483_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _483_38_ : -1)
+        index = ((_490_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _490_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -786,7 +797,7 @@ Column = (function ()
 
     Column.prototype["navigateCols"] = function (key)
     {
-        var item, type, _510_38_
+        var item, type, _517_38_
 
         switch (key)
         {
@@ -857,14 +868,14 @@ Column = (function ()
 
     Column.prototype["setSearch"] = function (search)
     {
-        var activeIndex, fuzzied, row, rows, _552_35_, _552_45_
+        var activeIndex, fuzzied, row, rows, _559_35_, _559_45_
 
         this.search = search
     
         clearTimeout(this.searchTimer)
         this.searchTimer = setTimeout(this.clearSearch,2000)
         this.searchDiv.textContent = this.search
-        activeIndex = ((_552_45_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _552_45_ : 0)
+        activeIndex = ((_559_45_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _559_45_ : 0)
         if ((this.search.length === 1))
         {
             activeIndex += 1
@@ -874,9 +885,9 @@ Column = (function ()
             activeIndex = 0
         }
         var list = [this.rows.slice(activeIndex),this.rows.slice(0,activeIndex + 1)]
-        for (var _556_17_ = 0; _556_17_ < list.length; _556_17_++)
+        for (var _563_17_ = 0; _563_17_ < list.length; _563_17_++)
         {
-            rows = list[_556_17_]
+            rows = list[_563_17_]
             fuzzied = fuzzy.filter(this.search,rows,{extract:function (r)
             {
                 return r.item.name
@@ -894,7 +905,7 @@ Column = (function ()
 
     Column.prototype["clearSearch"] = function ()
     {
-        var _569_18_
+        var _576_18_
 
         this.search = ''
         ;(this.searchDiv != null ? this.searchDiv.remove() : undefined)
@@ -904,11 +915,11 @@ Column = (function ()
 
     Column.prototype["removeObject"] = function ()
     {
-        var nextOrPrev, row, _576_36_
+        var nextOrPrev, row, _583_36_
 
         if (row = this.activeRow())
         {
-            nextOrPrev = ((_576_36_=row.next()) != null ? _576_36_ : row.prev())
+            nextOrPrev = ((_583_36_=row.next()) != null ? _583_36_ : row.prev())
             this.removeRow(row)
             ;(nextOrPrev != null ? nextOrPrev.activate() : undefined)
         }
@@ -917,11 +928,11 @@ Column = (function ()
 
     Column.prototype["removeRow"] = function (row)
     {
-        var _584_28_, _584_36_, _584_54_
+        var _591_28_, _591_36_, _591_54_
 
         if (row === this.activeRow())
         {
-            if (((_584_28_=this.nextColumn()) != null ? (_584_36_=_584_28_.parent) != null ? _584_36_.path : undefined : undefined) === (row.item != null ? row.item.path : undefined))
+            if (((_591_28_=this.nextColumn()) != null ? (_591_36_=_591_28_.parent) != null ? _591_36_.path : undefined : undefined) === (row.item != null ? row.item.path : undefined))
             {
                 this.browser.clearColumnsFrom(this.index + 1)
             }
@@ -941,9 +952,9 @@ Column = (function ()
         })
         this.table.innerHTML = ''
         var list = _k_.list(this.rows)
-        for (var _603_16_ = 0; _603_16_ < list.length; _603_16_++)
+        for (var _610_16_ = 0; _610_16_ < list.length; _610_16_++)
         {
-            row = list[_603_16_]
+            row = list[_610_16_]
             this.table.appendChild(row.div)
         }
         return this
@@ -963,9 +974,9 @@ Column = (function ()
         })
         this.table.innerHTML = ''
         var list = _k_.list(this.rows)
-        for (var _615_16_ = 0; _615_16_ < list.length; _615_16_++)
+        for (var _622_16_ = 0; _622_16_ < list.length; _622_16_++)
         {
-            row = list[_615_16_]
+            row = list[_622_16_]
             this.table.appendChild(row.div)
         }
         return this
@@ -977,15 +988,15 @@ Column = (function ()
 
         this.rows.sort(function (a, b)
         {
-            var _621_39_, _621_62_
+            var _628_39_, _628_62_
 
             return (b.item.stat != null ? b.item.stat.atimeMs : undefined) - (a.item.stat != null ? a.item.stat.atimeMs : undefined)
         })
         this.table.innerHTML = ''
         var list = _k_.list(this.rows)
-        for (var _624_16_ = 0; _624_16_ < list.length; _624_16_++)
+        for (var _631_16_ = 0; _631_16_ < list.length; _631_16_++)
         {
-            row = list[_624_16_]
+            row = list[_631_16_]
             this.table.appendChild(row.div)
         }
         return this
@@ -1023,7 +1034,7 @@ Column = (function ()
 
     Column.prototype["moveToTrash"] = function ()
     {
-        var index, row, selectRow, trashPath
+        var index, row, selectRow
 
         index = this.browser.select.freeIndex()
         if (index >= 0)
@@ -1031,14 +1042,11 @@ Column = (function ()
             selectRow = this.row(index)
         }
         var list = _k_.list(this.browser.select.rows)
-        for (var _664_16_ = 0; _664_16_ < list.length; _664_16_++)
+        for (var _671_16_ = 0; _671_16_ < list.length; _671_16_++)
         {
-            row = list[_664_16_]
-            trashPath = slash.path('~/.Trash/' + slash.file(row.path()))
-            console.log('▸▸▸▸▸▸▸trashPath',trashPath)
-            ffs.move(row.path(),trashPath).then((function (d)
+            row = list[_671_16_]
+            ffs.trash(row.path()).then((function (d)
             {
-                console.log('moved to trash',d)
                 if (d)
                 {
                     return this.removeRow(row)
@@ -1066,31 +1074,59 @@ Column = (function ()
     }
 
     Column.prototype["newFolder"] = function ()
-    {}
+    {
+        var newDir
+
+        newDir = slash.path(this.path(),'New folder')
+        return ffs.mkdir(newDir).then((function (d)
+        {
+            var row
+
+            if (d)
+            {
+                console.log('new folder',d)
+                row = this.insertFile(d)
+                console.log('new row',row)
+                this.browser.select.row(row)
+                return row.editName()
+            }
+        }).bind(this))
+    }
 
     Column.prototype["duplicateFile"] = function ()
     {
-        var file
+        var item
 
-        var list = _k_.list(this.browser.select.files())
-        for (var _698_17_ = 0; _698_17_ < list.length; _698_17_++)
+        var list = _k_.list(this.browser.select.items())
+        for (var _704_17_ = 0; _704_17_ < list.length; _704_17_++)
         {
-            file = list[_698_17_]
-            File.duplicate(file,(function (source, target)
+            item = list[_704_17_]
+            File.duplicate(item.path).then((function (target)
             {
                 var col, row
 
-                if (this.parent.type === 'file')
+                if (target)
                 {
-                    col = this.prevColumn()
-                    col.focus()
+                    console.log('duplicated',target)
+                    if (this.parent.type === 'file')
+                    {
+                        col = this.prevColumn()
+                        col.focus()
+                    }
+                    else
+                    {
+                        col = this
+                    }
+                    if (item.type === 'file')
+                    {
+                        row = col.insertFile(target)
+                    }
+                    else
+                    {
+                        row = col.insertDir(target)
+                    }
+                    return this.browser.select.row(row)
                 }
-                else
-                {
-                    col = this
-                }
-                row = col.insertFile(target)
-                return this.browser.select.row(row)
             }).bind(this))
         }
     }
@@ -1110,9 +1146,9 @@ Column = (function ()
         var file, icon, row, status
 
         var list = _k_.list(this.rows)
-        for (var _729_16_ = 0; _729_16_ < list.length; _729_16_++)
+        for (var _740_16_ = 0; _740_16_ < list.length; _740_16_++)
         {
-            row = list[_729_16_]
+            row = list[_740_16_]
             if (!(_k_.in(row.item.type,['dir','file'])))
             {
                 return
@@ -1152,7 +1188,7 @@ Column = (function ()
             return
         }
         this.browser.shiftColumnsTo(this.index)
-        if (this.browser.columns[0].items[0].name !== '..')
+        if (this.browser.columns[0].items[0].file !== '..')
         {
             this.unshiftItem({file:'..',type:'dir',path:slash.dir(this.parent.path)})
         }
@@ -1218,7 +1254,7 @@ Column = (function ()
 
     Column.prototype["pastePaths"] = function ()
     {
-        var action, paths, target, text, _882_23_
+        var action, paths, target, text, _893_23_
 
         text = electron.clipboard.readText()
         paths = text.split('\n')
@@ -1240,7 +1276,7 @@ Column = (function ()
 
     Column.prototype["onKey"] = function (event)
     {
-        var char, combo, key, mod, _919_88_
+        var char, combo, key, mod, _930_88_
 
         mod = keyinfo.forEvent(event).mod
         key = keyinfo.forEvent(event).key

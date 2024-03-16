@@ -78,13 +78,13 @@ function Column
 
         @parent = parent
         
-        if @index == 0 or @index-1 < @browser.numCols() and @browser.columns[@index-1].activeRow()?.item.name == '..' and not slash.isRoot @parent.path
-            if items[0]?.name not in ['..' '/']
+        if @index == 0 or @index-1 < @browser.numCols() and @browser.columns[@index-1].activeRow()?.item.file == '..' and not slash.isRoot @parent.path
+            if items[0]?.file not in ['..' '/']
                 dir = @parent.path
                 updir = slash.dir dir
                 if updir != dir
                     items.unshift
-                        name: '..'
+                        file: '..'
                         type: 'dir'
                         file:  updir
         
@@ -292,7 +292,14 @@ function Column
         row = new Row @, item
         @rows.push row
         row
-            
+
+    insertDir: (dir) => 
+
+        item = @browser.dirItem dir
+        row = new Row @, item
+        @rows.push row
+        row
+        
     # 000  000000000  00000000  00     00  
     # 000     000     000       000   000  
     # 000     000     0000000   000000000  
@@ -662,10 +669,7 @@ function Column
             selectRow = @row index
          
         for row in @browser.select.rows
-            trashPath = slash.path '~/.Trash/' + slash.file row.path()
-            log '▸▸▸▸▸▸▸trashPath' trashPath
-            ffs.move(row.path(), trashPath).then (d) =>
-                log 'moved to trash' d 
+            ffs.trash(row.path()).then (d) =>
                 @removeRow row if d
             
         if selectRow
@@ -680,12 +684,14 @@ function Column
         
     newFolder: =>
         
-        # slash.unused slash.join(@path(), 'New folder'), (newDir) =>
-            # fs.mkdir newDir, (err) =>
-                # if empty err
-                    # row = @insertFile newDir
-                    # @browser.select.row row
-                    # row.editName()
+        newDir = slash.path @path(), 'New folder'
+        ffs.mkdir(newDir).then (d) =>
+            if d
+                log 'new folder' d
+                row = @insertFile d
+                log 'new row' row
+                @browser.select.row row
+                row.editName()
             
     # 0000000    000   000  00000000   000      000   0000000   0000000   000000000  00000000  
     # 000   000  000   000  000   000  000      000  000       000   000     000     000       
@@ -695,14 +701,19 @@ function Column
     
     duplicateFile: =>
                 
-        for file in @browser.select.files()
-            File.duplicate file, (source, target) =>
-                if @parent.type == 'file'
-                    col = @prevColumn()
-                    col.focus()
-                else col = @
-                row = col.insertFile target
-                @browser.select.row row
+        for item in @browser.select.items()
+            File.duplicate(item.path).then (target) =>
+                if target
+                    log 'duplicated' target
+                    if @parent.type == 'file'
+                        col = @prevColumn()
+                        col.focus()
+                    else col = @
+                    if item.type == 'file'
+                        row = col.insertFile target
+                    else
+                        row = col.insertDir target
+                    @browser.select.row row
                     
     # 00000000  000   000  00000000   000       0000000   00000000   00000000  00000000   
     # 000        000 000   000   000  000      000   000  000   000  000       000   000  
@@ -754,7 +765,7 @@ function Column
         
         @browser.shiftColumnsTo @index
         
-        if @browser.columns[0].items[0].name != '..'
+        if @browser.columns[0].items[0].file != '..'
 
             @unshiftItem 
                 file: '..'

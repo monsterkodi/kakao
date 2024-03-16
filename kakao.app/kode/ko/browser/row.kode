@@ -22,7 +22,7 @@ function Row
 
         # log "new Row" @item
         @browser = @column.browser
-        text = @item.text ? @item.name ? @item.file ? slash.file @item.path
+        text = @item.text ? @item.file ? @item.name ? slash.file @item.path
         if empty(text) or empty text.trim()
             html = '<span> </span>'
         else
@@ -215,7 +215,7 @@ function Row
     
     onNameChange: (event) =>
         
-        targetFile = slash.join slash.dir(@item.path), @input.value.trim()
+        targetFile = slash.path slash.dir(@item.path), @input.value.trim()
         
         @removeInput()
         
@@ -231,6 +231,6 @@ function Row
         
         return if slash.samePath @item.path, targetFile
                 
-        File.rename @item.path, targetFile, (source, target) =>
+        File.rename @item.path, targetFile
     
 export Row

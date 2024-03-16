@@ -273,7 +273,7 @@ Shelf = (function ()
 
         action = event.getModifierState('Shift') && 'copy' || 'move'
         source = event.dataTransfer.getData('text/plain')
-        item = this.browser.fileItem(source)
+        item = this.browser.pathItem(source)
         return this.addItem(item,{pos:kpos(event)})
     }
 

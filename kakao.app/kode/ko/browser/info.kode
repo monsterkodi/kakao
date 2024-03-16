@@ -72,6 +72,8 @@ file = (file) ->
     
     table = elem 'table' class:"fileInfoData"
 
+    log 'file ○ ○' file
+    
     ffs.fileExists(file).then (stat) ○->
          
         if not stat
