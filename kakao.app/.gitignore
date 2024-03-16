@@ -3,3 +3,4 @@ lib/test*
 lib/bin*.mjs
 lib/package.json
 .stash
+.konrad.json

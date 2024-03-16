@@ -9,6 +9,7 @@
 use ../../../lib/lib_ko ▪ fuzzy
 
 use ../../kxk/dom ▪ $ setStyle stopEvent
+use ../../kxk/ffs
 use ../../kxk/kpos
 use ../../kxk/elem
 use ../../kxk/drag
@@ -656,22 +657,21 @@ function Column
     
     moveToTrash: =>
         
-        # index = @browser.select.freeIndex()
-        # if index >= 0
-            # selectRow = @row index
-#         
-        # for row in @browser.select.rows
-            # if slash.win()
-                # wxw 'trash' row.path()
-            # else
-                # trashPath = slash.resolve '~/.Trash/' + slash.base row.path()
-                # fs.rename row.path(), trashPath, -> 
-            # @removeRow row
-#            
-        # if selectRow
-            # @browser.select.row selectRow
-        # else
-            # @navigateCols 'left'
+        index = @browser.select.freeIndex()
+        if index >= 0
+            selectRow = @row index
+         
+        for row in @browser.select.rows
+            trashPath = slash.path '~/.Trash/' + slash.file row.path()
+            log '▸▸▸▸▸▸▸trashPath' trashPath
+            ffs.move(row.path(), trashPath).then (d) =>
+                log 'moved to trash' d 
+                @removeRow row if d
+            
+        if selectRow
+            @browser.select.row selectRow
+        else
+            @navigateCols 'left'
 
     addToShelf: =>
         
