@@ -309,7 +309,7 @@ NSString* typeForNSFileType(NSString* fileType)
     
     if ([req isEqualToString:@"list"])
     {
-        // NSLog(@"list %@", path);
+        NSLog(@"list %@", path);
         
         NSDirectoryEnumerator<NSString*>* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:path];
         
@@ -329,7 +329,8 @@ NSString* typeForNSFileType(NSString* fileType)
             [result addObject:fileInfo];
         }
         
-        // NSLog(@"results %d", [result count]);
+        NSLog(@"results %d", [result count]);
+        NSLog(@"results %@", result);
                 
         return result;
     }

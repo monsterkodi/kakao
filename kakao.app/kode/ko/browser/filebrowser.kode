@@ -403,19 +403,22 @@ function FileBrowser extends Browser
 
         return if col > 0 and item.name == '/'
 
+        log 'loadDirItem' item
+        
         dir = item.path
         
         # opt.ignoreHidden = not prefs.get "browser▸showHidden▸#{dir}"
         items = await ffs.list dir
+        log 'list?' items
         items = util.sortBy items, (i) -> i.type + ((i.file[0].toUpperCase()==i.file[0]) ? '-' : '+') + i.file
-        # log 'sorted?' items
+        log 'sorted?' items
         @loadDirItems item, items, col, opt
         post.emit 'dir' dir
         true
                 
     loadDirItems: (item, items, col, opt) =>
         
-        # log 'loadDirItems' item, items, col, opt
+        log 'loadDirItems' item, items, col, opt
                     
         @updateColumnScrolls()
                             

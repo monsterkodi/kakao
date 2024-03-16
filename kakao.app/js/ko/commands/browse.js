@@ -69,7 +69,7 @@ Browse = (function ()
             }
             else
             {
-                post.emit('filebrowser','loadItem',{file:kakao.bundle.path,type:'dir'})
+                post.emit('filebrowser','loadItem',{path:kakao.bundle.path,type:'dir'})
             }
             this.browser.focus({force:true})
         }
