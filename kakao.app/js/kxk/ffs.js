@@ -52,6 +52,11 @@ class KFS
         return await kakao.request('fs.remove',p)
     }
 
+    static async move (p, d)
+    {
+        return await kakao.request('fs.move',p,d)
+    }
+
     static async info (p)
     {
         return await kakao.request('fs.info',p)

@@ -154,6 +154,29 @@ NSString* typeForNSFileType(NSString* fileType)
         else
             return nil;
     }
+    // 00     00   0000000   000   000  00000000  
+    // 000   000  000   000  000   000  000       
+    // 000000000  000   000   000 000   0000000   
+    // 000 0 000  000   000     000     000       
+    // 000   000   0000000       0      00000000  
+    
+    if ([req isEqualToString:@"move"])
+    {
+        NSLog(@"move %@ %@", path, args);
+        
+        id dest;
+        if ([args count] > 1 && [[args objectAtIndex:1] isKindOfClass:[NSString class]]) 
+            dest = [[args objectAtIndex:1] stringByExpandingTildeInPath];
+        else
+            return nil;
+            
+        NSLog(@"move %@ ▸ %@", path, dest);
+        
+        if ([[NSFileManager defaultManager] moveItemAtPath:path toPath:dest error:nil])
+            return dest;
+        else
+            return nil;
+    }
     // 000      000   0000000  000000000  
     // 000      000  000          000     
     // 000      000  0000000      000     
