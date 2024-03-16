@@ -12,15 +12,23 @@ class Select
 
     files ()
     {
+        return this.items().map(function (item)
+        {
+            return item.path
+        })
+    }
+
+    items ()
+    {
         var rows
 
         rows = this.rows.filter(function (row)
         {
-            return row.item.name !== '..'
+            return row.item.file !== '..'
         })
         return rows.map(function (row)
         {
-            return row.item.path
+            return row.item
         })
     }
 
@@ -55,12 +63,12 @@ class Select
 
     clear ()
     {
-        var row, _40_25_
+        var row, _46_25_
 
-        var list = ((_40_25_=this.rows) != null ? _40_25_ : [])
-        for (var _40_16_ = 0; _40_16_ < list.length; _40_16_++)
+        var list = ((_46_25_=this.rows) != null ? _46_25_ : [])
+        for (var _46_16_ = 0; _46_16_ < list.length; _46_16_++)
         {
-            row = list[_40_16_]
+            row = list[_46_16_]
             row.clearSelected()
         }
         this.rows = []
@@ -69,7 +77,7 @@ class Select
 
     toggle (row)
     {
-        var _50_32_
+        var _56_32_
 
         if (row.column !== (this.active != null ? this.active.column : undefined))
         {
@@ -93,7 +101,7 @@ class Select
 
     row (row, activate = true)
     {
-        var _70_18_, _71_19_
+        var _76_18_, _77_19_
 
         if (!row)
         {
@@ -115,7 +123,7 @@ class Select
 
     to (row, moveActive = false)
     {
-        var from, index, r, to, _106_19_
+        var from, index, r, to, _112_19_
 
         if (!row)
         {
@@ -144,7 +152,7 @@ class Select
             from = row.index()
             to = this.active.index() - 1
         }
-        for (var _99_22_ = index = from, _99_28_ = to; (_99_22_ <= _99_28_ ? index <= to : index >= to); (_99_22_ <= _99_28_ ? ++index : --index))
+        for (var _105_22_ = index = from, _105_28_ = to; (_105_22_ <= _105_28_ ? index <= to : index >= to); (_105_22_ <= _105_28_ ? ++index : --index))
         {
             r = this.active.column.rows[index]
             if (!r.isSelected())

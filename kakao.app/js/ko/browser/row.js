@@ -39,7 +39,7 @@ Row = (function ()
         this["onMouseOver"] = this["onMouseOver"].bind(this)
         this["onMouseOut"] = this["onMouseOut"].bind(this)
         this.browser = this.column.browser
-        text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.name) != null ? _25_39_ : ((_25_52_=this.item.file) != null ? _25_52_ : slash.file(this.item.path))))
+        text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.file) != null ? _25_39_ : ((_25_52_=this.item.name) != null ? _25_52_ : slash.file(this.item.path))))
         if (_k_.empty((text)) || _k_.empty(text.trim()))
         {
             html = '<span> </span>'
@@ -299,7 +299,7 @@ Row = (function ()
     {
         var targetFile
 
-        targetFile = slash.join(slash.dir(this.item.path),this.input.value.trim())
+        targetFile = slash.path(slash.dir(this.item.path),this.input.value.trim())
         this.removeInput()
         return this.rename(targetFile)
     }
@@ -310,8 +310,7 @@ Row = (function ()
         {
             return
         }
-        return File.rename(this.item.path,targetFile,(function (source, target)
-        {}).bind(this))
+        return File.rename(this.item.path,targetFile)
     }
 
     return Row

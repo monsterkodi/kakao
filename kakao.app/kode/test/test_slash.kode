@@ -115,10 +115,10 @@ __dirname = import.meta.dirname
     
     ▸ parse
     
-        slash.parse('/a/b/c.txt') ▸ dir: '/a/b' file: 'c.txt' name: 'c' ext: 'txt'
-        slash.parse('/a/b/c')     ▸ dir: '/a/b' file: 'c'     name: 'c' ext: ''
-        slash.parse('/a/b/c/')    ▸ dir: '/a/b' file: 'c'     name: 'c' ext: ''
-        slash.parse('/a')         ▸ dir: '/'    file: 'a'     name: 'a' ext: ''
+        slash.parse('/a/b/c.txt') ▸ path:'/a/b/c.txt' dir: '/a/b' file: 'c.txt' name: 'c' ext: 'txt'
+        slash.parse('/a/b/c')     ▸ path:'/a/b/c'     dir: '/a/b' file: 'c'     name: 'c' ext: ''
+        slash.parse('/a/b/c/')    ▸ path:'/a/b/c'     dir: '/a/b' file: 'c'     name: 'c' ext: ''
+        slash.parse('/a')         ▸ path:'/a'         dir: '/'    file: 'a'     name: 'a' ext: ''
         
         if slash.win()
             

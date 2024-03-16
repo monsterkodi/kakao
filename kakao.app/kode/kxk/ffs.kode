@@ -17,8 +17,12 @@ class KFS
     @dirExists:     (p) ○-> await kakao.request 'fs.dirExists'  p
     @isWritable:    (p) ○-> await kakao.request 'fs.isWritable' p
     @isReadable:    (p) ○-> await kakao.request 'fs.isReadable' p
+    @duplicate:     (p) ○-> await kakao.request 'fs.duplicate'  p
     @remove:        (p) ○-> await kakao.request 'fs.remove'     p
+    @trash:         (p) ○-> await kakao.request 'fs.trash'      p
     @move:       (p, d) ○-> await kakao.request 'fs.move'       p, d
+    @copy:       (p, d) ○-> await kakao.request 'fs.copy'       p, d
+    @mkdir:         (p) ○-> await kakao.request 'fs.mkdir'      p
     @info:          (p) ○-> await kakao.request 'fs.info'       p
     @type:          (p) ○-> i = await kakao.request 'fs.info'   p; i.type
     @isFile:        (p) ○-> await KFS.fileExists                p
