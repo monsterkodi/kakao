@@ -279,7 +279,7 @@ class FS
 
     static touch (p)
     {
-        var dir
+        var date, dir
 
         try
         {
@@ -291,6 +291,11 @@ class FS
             if (!FS.fileExists(p))
             {
                 fs.writeFileSync(p,'')
+            }
+            else
+            {
+                date = new Date
+                fsp.utimes(p,date,date)
             }
             return p
         }

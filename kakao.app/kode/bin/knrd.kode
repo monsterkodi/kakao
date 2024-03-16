@@ -84,8 +84,10 @@ knrd = (files = [], opt = {}) ○->
                     # log m3('▶ '), m4 slash.tilde srcFile
                     await fs.write tgtFile, compText
                     log b5('✔ '), g5 slash.tilde tgtFile
-                else if opt.logVerbose
-                    log g2('✔ '), m3 slash.tilde srcFile
+                else 
+                    fs.touch tgtFile
+                    if opt.logVerbose
+                        log g2('✔ '), m3 slash.tilde srcFile
         else
             # if slash.ext(file) not in ['css' 'html' 'json']
             error 'unknown file type' file
