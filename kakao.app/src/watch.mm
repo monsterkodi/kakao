@@ -510,7 +510,10 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     NSString *actualPath = [actualPaths firstObject];
     // NSLog(@"Watch: %@", actualPath);
 
-    FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    //FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    
+    //dispatch_queue_t q = ;
+    FSEventStreamSetDispatchQueue(streamRef, dispatch_get_main_queue());
     
     if (!FSEventStreamStart(streamRef)) 
     {

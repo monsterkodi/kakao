@@ -2,9 +2,6 @@ var _k_
 
 class FFS
 {
-    static watch (p)
-    {}
-
     static async list (p)
     {
         return await kakao('fs.list',p)
@@ -90,12 +87,12 @@ class FFS
 
     static async isFile (p)
     {
-        return await KFS.fileExists(p)
+        return await FFS.fileExists(p)
     }
 
     static async isDir (p)
     {
-        return await KFS.dirExists(p)
+        return await FFS.dirExists(p)
     }
 }
 

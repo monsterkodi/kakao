@@ -158,7 +158,15 @@
                 case 2: type = @"changed"; break;
             }
             NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
-            [Route emit:@"fs.change"];
+            
+            id msg = [NSMutableDictionary dictionary];
+            id args = [NSMutableArray array];
+            [args addObject:type];
+            [args addObject:[NSString stringWithFormat:@"%@/%@", folder, change.path]];
+            [msg setObject:@"fs.change" forKey:@"name"];
+            [msg setObject:args forKey:@"args"];
+            
+            [Route emit:msg];
         }
         
         return;
@@ -178,7 +186,7 @@
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
         }
-        NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+        // NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
         
         if ([change.path hasPrefix:@"js/"]) { reloadPage = YES; }
 

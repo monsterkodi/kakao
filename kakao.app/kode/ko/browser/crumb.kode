@@ -41,7 +41,7 @@ class Crumb
 
         if @column.index == 0
             
-            log 'Crumb.onMouseUp' event.target.id
+            # log 'Crumb.onMouseUp' event.target.id
             
             if event.target.id
                 @column.browser.browse event.target.id
@@ -59,7 +59,7 @@ class Crumb
         
     setFile: (file) ->
         
-        log 'Crumb.setFile' file, slash.tilde file
+        # log 'Crumb.setFile' file, slash.tilde file
         
         if @column.index == 0
             @elem.innerHTML = File.crumbSpan slash.tilde file
