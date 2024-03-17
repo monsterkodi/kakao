@@ -6,12 +6,10 @@
     000   000  00000000  000   000   0000000   
 ###
 
-use ./dom
+use ./dom ▪ elem stopEvent
 use ./post
 use ./keyinfo
 use ./popup
-
-{ elem, stopEvent } = dom
 
 function Menu
     
@@ -38,11 +36,11 @@ function Menu
         post.on 'window.blur'  @blur
         post.on 'window.focus' @focus
         
-    del: ->
-        
-        @close()
-        @elem?.remove()
-        @elem = null
+    # del: ->
+#         
+        # @close()
+        # @elem?.remove()
+        # @elem = null
         
     # 00000000   0000000    0000000  000   000   0000000  
     # 000       000   000  000       000   000  000       

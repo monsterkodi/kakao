@@ -225,24 +225,23 @@ class FileHandler
         
         tabState = editor.do.tabState()
         
-        try
-            post.emit 'menuAction' 'doMacro' actarg:'req' # !!!!!!!
-        catch err
-            error "macro req failed #{err}"
+        # try
+            # post.emit 'menuAction' 'doMacro' actarg:'req' # !!!!!!!
+        # catch err
+            # error "macro req failed #{err}"
             
-        File.save file, editor.text(), (err, saved) ->
+        File.save file, editor.text(), (saved) ->
+            
+            return error 'File.save failed!' if not saved
             
             editor.saveScrollCursorsAndSelections()
             
-            if valid err
-                error "saving '#{file}' failed:" err
-            else
-                editor.setCurrentFile     saved
-                editor.do.history   = tabState.history
-                editor.do.saveIndex = tabState.history.length
-                post.toWins 'fileSaved' saved, window.winID
-                post.emit   'saved'     saved
-                post.emit   'watch'     saved
+            editor.setCurrentFile   saved
+            editor.do.history   = tabState.history
+            editor.do.saveIndex = tabState.history.length
+            post.toWins 'fileSaved' saved, window.winID
+            post.emit   'saved'     saved
+            post.emit   'watch'     saved
 
             editor.restoreScrollCursorsAndSelections()
                   
@@ -255,7 +254,6 @@ class FileHandler
     addToRecent: (file) ->
     
         recent = window.stash.get 'recentFiles' []
-        log 'recent' recent
         return if file == first recent
         pull recent, file
         recent.unshift file
@@ -263,9 +261,9 @@ class FileHandler
             recent.pop()
     
         window.stash.set 'recentFiles' recent
-        log commandline
-        log commandline.commands
-        log commandline.commands.open
+        # log commandline
+        # log commandline.commands
+        # log commandline.commands.open
         window.commandline.commands.open.setHistory reversed recent
                 
     #  0000000   0000000   000   000  00000000         0000000  000   000   0000000   000   000   0000000   00000000   0000000  
@@ -277,8 +275,8 @@ class FileHandler
     saveChanges: =>
         
         if editor.currentFile? and editor.do.hasChanges() #and slash.fileExists editor.currentFile
-            File.save editor.currentFile, editor.text(), (err) ->
-                error "FileHandler.saveChanges failed #{err}" if err
+            File.save editor.currentFile, editor.text(), (file) ->
+                error "FileHandler.saveChanges failed #{err}" if not file
     
     #  0000000   00000000   00000000  000   000        00000000  000  000      00000000  
     # 000   000  000   000  000       0000  000        000       000  000      000       

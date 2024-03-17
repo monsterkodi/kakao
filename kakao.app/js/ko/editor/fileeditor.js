@@ -290,7 +290,6 @@ FileEditor = (function ()
             opt.winID = window.winID
             opt.oldPos = this.cursorPos()
             opt.oldFile = this.currentFile
-            console.log('jumpToFile',opt)
             return window.navigate.gotoFilePos(opt)
         }
         else
@@ -541,9 +540,9 @@ FileEditor = (function ()
             var item
 
             var list = _k_.list(template)
-            for (var _479_21_ = 0; _479_21_ < list.length; _479_21_++)
+            for (var _477_21_ = 0; _477_21_ < list.length; _477_21_++)
             {
-                item = list[_479_21_]
+                item = list[_477_21_]
                 if (item.text === name)
                 {
                     return item

@@ -243,30 +243,19 @@ class FileHandler
         }
         post.emit('unwatch',file)
         tabState = editor.do.tabState()
-        try
+        return File.save(file,editor.text(),function (saved)
         {
-            post.emit('menuAction','doMacro',{actarg:'req'})
-        }
-        catch (err)
-        {
-            console.error(`macro req failed ${err}`)
-        }
-        return File.save(file,editor.text(),function (err, saved)
-        {
+            if (!saved)
+            {
+                return console.error('File.save failed!')
+            }
             editor.saveScrollCursorsAndSelections()
-            if (!_k_.empty(err))
-            {
-                console.error(`saving '${file}' failed:`,err)
-            }
-            else
-            {
-                editor.setCurrentFile(saved)
-                editor.do.history = tabState.history
-                editor.do.saveIndex = tabState.history.length
-                post.toWins('fileSaved',saved,window.winID)
-                post.emit('saved',saved)
-                post.emit('watch',saved)
-            }
+            editor.setCurrentFile(saved)
+            editor.do.history = tabState.history
+            editor.do.saveIndex = tabState.history.length
+            post.toWins('fileSaved',saved,window.winID)
+            post.emit('saved',saved)
+            post.emit('watch',saved)
             return editor.restoreScrollCursorsAndSelections()
         })
     }
@@ -276,7 +265,6 @@ class FileHandler
         var recent
 
         recent = window.stash.get('recentFiles',[])
-        console.log('recent',recent)
         if (file === _k_.first(recent))
         {
             return
@@ -288,21 +276,18 @@ class FileHandler
             recent.pop()
         }
         window.stash.set('recentFiles',recent)
-        console.log(commandline)
-        console.log(commandline.commands)
-        console.log(commandline.commands.open)
         return window.commandline.commands.open.setHistory(reversed(recent))
     }
 
     saveChanges ()
     {
-        var _279_29_
+        var _277_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
-            return File.save(editor.currentFile,editor.text(),function (err)
+            return File.save(editor.currentFile,editor.text(),function (file)
             {
-                if (err)
+                if (!file)
                 {
                     console.error(`FileHandler.saveChanges failed ${err}`)
                 }
@@ -312,7 +297,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _296_18_
+        var cb, dir, _294_18_
 
         cb = function (files)
         {
@@ -328,7 +313,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _316_18_
+        var cb, _314_18_
 
         cb = (function (file)
         {

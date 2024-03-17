@@ -39,7 +39,6 @@ function Title
         post.on 'window.focus'  @onWindowFocus
         post.on 'prefsLoaded' =>
             if not window.prefs.get 'menu'
-                log 'prefs menu false'
                 @hideMenu()
 
         @elem.addEventListener 'dblclick' (event) -> # maximize window on double click in title bar
@@ -178,11 +177,10 @@ function Title
         return [] if not @opt.menu
                 
         if empty @templateCache
+            log 'menu.initMenu load' @opt.menu 
             tc = await noon.load @opt.menu 
-            if valid tc
+            if valid tc            
                 @templateCache = @makeTemplate tc
-                if @opt.menuTemplate? and @opt.menuTemplate is func
-                    @templateCache = @opt.menuTemplate @templateCache
                 @initFromCache()
             else
                 error 'title.initMenu - empty template?' @opt.menu
@@ -191,6 +189,8 @@ function Title
             
     initFromCache: ->
         
+        log 'menu.initFromCache' @templateCache
+        post.emit 'menu.init' @templateCache
         @menu = new menu items:@templateCache
         @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
                 
@@ -219,11 +219,6 @@ function Title
                     menu:@makeTemplate menuOrAccel
         tmpl
         
-    refreshMenu: ->
-        
-        @menu.del()
-        @initMenu()
-
     menuVisible: => @menu.elem.style.display != 'none'
     showMenu:    => @menu.elem.style.display = 'inline-block'; @menu?.focus?(); prefs.set 'menu' true
     hideMenu:    => @menu?.close(); @menu.elem.style.display = 'none'; prefs.set 'menu' false

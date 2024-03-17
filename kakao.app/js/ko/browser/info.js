@@ -64,7 +64,6 @@ file = function (file)
     var info, table
 
     table = elem('table',{class:"fileInfoData"})
-    console.log('file ○ ○',file)
     ffs.fileExists(file).then(async function (stat)
     {
         var age, info, num, range, size, t
@@ -77,7 +76,7 @@ file = function (file)
         size = pbytes(info.size).split(' ')
         t = moment(info.modified)
         age = moment().to(t,true)
-        var _87_21_ = age.split(' '); num = _87_21_[0]; range = _87_21_[1]
+        var _85_21_ = age.split(' '); num = _85_21_[0]; range = _85_21_[1]
 
         if (num[0] === 'a')
         {

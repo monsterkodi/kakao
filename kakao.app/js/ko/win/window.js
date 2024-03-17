@@ -52,9 +52,7 @@ Window = (function ()
     {}
 
     Window.prototype["onWindowResize"] = function (win, event)
-    {
-        console.log('onWindowResize',win.id)
-    }
+    {}
 
     Window.prototype["onWindowFocus"] = function (win)
     {}
@@ -151,7 +149,7 @@ Window = (function ()
     {
         var action, _128_25_
 
-        console.log('onMenuAction',name)
+        console.log('ko.Window.onMenuAction',name,opts)
         if (action = Editor.actionWithName(name))
         {
             console.log('editor.actionWithName',name)
@@ -278,20 +276,11 @@ Window = (function ()
             case 'Large Browser':
                 return window.commandline.startCommand('Browse')
 
-            case 'Clear List':
-                window.stash.set('recentFiles',[])
-                window.titlebar.refreshMenu()
-                return
-
             case 'Preferences':
                 return post.emit('openFiles',[prefs.store.file],{newTab:true})
 
-            case 'Cycle Windows':
-                opts = this.id
-                break
         }
 
-        console.log('onMenuAction unhandled',name)
     }
 
     return Window
@@ -366,7 +355,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _271_14_
+    var _265_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -377,7 +366,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _277_22_
+    var _271_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -422,7 +411,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _322_32_
+    var _316_32_
 
     if (!(_k_.isNum(s)))
     {

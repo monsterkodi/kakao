@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var Title
 
@@ -53,7 +53,6 @@ Title = (function ()
         {
             if (!window.prefs.get('menu'))
             {
-                console.log('prefs menu false')
                 return this.hideMenu()
             }
         }).bind(this))
@@ -141,10 +140,10 @@ Title = (function ()
 
     Title.prototype["setTitle"] = function (opt)
     {
-        var html, parts, _131_26_
+        var html, parts, _130_26_
 
         html = ""
-        parts = ((_131_26_=opt.title) != null ? _131_26_ : [])
+        parts = ((_130_26_=opt.title) != null ? _130_26_ : [])
         if (opt.pkg)
         {
             if (opt.pkg.name && _k_.in('name',parts))
@@ -209,7 +208,7 @@ Title = (function ()
 
     Title.prototype["initMenu"] = async function ()
     {
-        var tc, _184_36_
+        var tc
 
         if (!this.opt.menu)
         {
@@ -217,14 +216,11 @@ Title = (function ()
         }
         if (_k_.empty(this.templateCache))
         {
+            console.log('menu.initMenu load',this.opt.menu)
             tc = await noon.load(this.opt.menu)
             if (!_k_.empty(tc))
             {
                 this.templateCache = this.makeTemplate(tc)
-                if ((this.opt.menuTemplate != null) && _k_.isFunc(this.opt.menuTemplate))
-                {
-                    this.templateCache = this.opt.menuTemplate(this.templateCache)
-                }
                 return this.initFromCache()
             }
             else
@@ -240,6 +236,8 @@ Title = (function ()
 
     Title.prototype["initFromCache"] = function ()
     {
+        console.log('menu.initFromCache',this.templateCache)
+        post.emit('menu.init',this.templateCache)
         this.menu = new menu({items:this.templateCache})
         return this.elem.insertBefore(this.menu.elem,this.elem.firstChild.nextSibling)
     }
@@ -287,12 +285,6 @@ Title = (function ()
         return tmpl
     }
 
-    Title.prototype["refreshMenu"] = function ()
-    {
-        this.menu.del()
-        return this.initMenu()
-    }
-
     Title.prototype["menuVisible"] = function ()
     {
         return this.menu.elem.style.display !== 'none'
@@ -300,16 +292,16 @@ Title = (function ()
 
     Title.prototype["showMenu"] = function ()
     {
-        var _228_68_, _228_75_
+        var _223_68_, _223_75_
 
         this.menu.elem.style.display = 'inline-block'
-        ;((_228_68_=this.menu) != null ? typeof (_228_75_=_228_68_.focus) === "function" ? _228_75_() : undefined : undefined)
+        ;((_223_68_=this.menu) != null ? typeof (_223_75_=_223_68_.focus) === "function" ? _223_75_() : undefined : undefined)
         return prefs.set('menu',true)
     }
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _229_25_
+        var _224_25_
 
         ;(this.menu != null ? this.menu.close() : undefined)
         this.menu.elem.style.display = 'none'
@@ -343,7 +335,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _264_37_
+        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _259_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -363,9 +355,9 @@ Title = (function ()
         accels = sds.find.key(menu,'accel')
         combos = sds.find.key(menu,'combo')
         var list = _k_.list(combos.concat(accels))
-        for (var _258_20_ = 0; _258_20_ < list.length; _258_20_++)
+        for (var _253_20_ = 0; _253_20_ < list.length; _253_20_++)
         {
-            keypath = list[_258_20_]
+            keypath = list[_253_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -375,7 +367,7 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_264_37_=item.action) != null ? _264_37_ : item.text)
+                action = ((_259_37_=item.action) != null ? _259_37_ : item.text)
                 post.emit('menuAction',action)
                 return action
             }

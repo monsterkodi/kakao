@@ -63,8 +63,9 @@ class Tab
                             'deleted'  ➜ @state.state = @state.state.deleteLine change.doIndex
 
             if @state.state
-                File.save @state.file, @state.state.text(), (err) =>
-                    return error "tab.saveChanges failed #{err}" if err
+                
+                File.save @state.file, @state.state.text(), (file) =>
+                    return error "tab.saveChanges failed #{err}" if not file
                     @revert()
             else
                 error 'tab.saveChanges -- nothing to save?'

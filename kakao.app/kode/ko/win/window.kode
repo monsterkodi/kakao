@@ -41,7 +41,7 @@ use ../editor/FileEditor
 function Window #extends win
 
     onWindowAnimationTick:  (win, tickInfo) -> #log 'onWindowAnimationTick' win.id
-    onWindowResize:         (win, event)    -> log 'onWindowResize'        win.id
+    onWindowResize:         (win, event)    -> #log 'onWindowResize'        win.id
     onWindowFocus:          (win)           -> #log 'onWindowFocus'         win.id
     onWindowBlur:           (win)           -> #log 'onWindowBlur'          win.id
     onWindowKeyDown:        (win, keyInfo)  -> #log 'onWindowKeyDown'       win.id, keyInfo
@@ -119,7 +119,7 @@ function Window #extends win
     
     onMenuAction: (name, opts) =>
         
-        log 'onMenuAction' name#, opts
+        log 'ko.Window.onMenuAction' name, opts
         
         if action = Editor.actionWithName name
             
@@ -171,15 +171,9 @@ function Window #extends win
             'Close Other Windows'   ➜ return post.toWins 'closeWindow'
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
-            'Clear List'            
-                window.stash.set 'recentFiles' []
-                window.titlebar.refreshMenu()
-                return 
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
-            'Cycle Windows'         ➜ opts = @id
     
-        log 'onMenuAction unhandled' name#, opts            
-        # super name, opts
+        # log 'onMenuAction unhandled' name#, opts            
             
 # 00000000   00000000   00000000  00000000   0000000
 # 000   000  000   000  000       000       000

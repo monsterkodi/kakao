@@ -187,7 +187,7 @@ NSDictionary* dictForRect(NSRect rect)
     {
         script = [script stringByAppendingString:self.initScript];
     }
-    NSLog(@"init script: %@", script);
+    // NSLog(@"init script: %@", script);
     [webView evaluateJavaScript:script completionHandler:nil];
 }
 
@@ -241,7 +241,6 @@ NSDictionary* dictForRect(NSRect rect)
 
 - (void) setFrame:(id)frame
 {
-    NSLog(@"setFrame %@", frame);
     [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
                                 [[frame objectForKey:@"y"] floatValue], 
                                 [[frame objectForKey:@"w"] floatValue], 

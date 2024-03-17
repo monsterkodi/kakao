@@ -79,10 +79,8 @@ Shelf = (function ()
             return
         }
         row.setActive({emit:true})
-        console.log('activateRow',row)
         if (item.type === 'file')
         {
-            console.log('Shelf emit jumpToFile',item)
             return post.emit('jumpToFile',item)
         }
         else
@@ -148,7 +146,6 @@ Shelf = (function ()
         var items
 
         items = window.prefs.get("shelf|items")
-        console.log('loadShelfItems',items)
         return this.setItems(items,{save:false})
     }
 

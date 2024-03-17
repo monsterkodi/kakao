@@ -94,50 +94,9 @@ class File
         return `icon ${clss}`
     }
 
-    static write (file, text, mode, cb)
-    {
-        slash.logErrors = true
-        return slash.writeText(file,text,function (done)
-        {
-            if (_k_.empty(done))
-            {
-                return cb(`can't write ${file}`)
-            }
-            else
-            {
-                return cb(null,done)
-            }
-        })
-    }
-
-    static unlock (file, text, cb)
-    {
-        return fs.chmod(file,0o666,function (err)
-        {
-            if (!_k_.empty(err))
-            {
-                return cb(err)
-            }
-            else
-            {
-                return File.write(file,text,0o666,cb)
-            }
-        })
-    }
-
     static save (file, text, cb)
     {
-        return ffs.fileExists(file).then(function (stat)
-        {
-            if (stat)
-            {
-                return File.write(file,text,stat.mode,cb)
-            }
-            else
-            {
-                return File.write(file,text,0o666,cb)
-            }
-        })
+        return ffs.write(file,text).then(cb)
     }
 
     static span (text)
@@ -175,7 +134,7 @@ class File
             root = '/'
         }
         split = slash.split(file)
-        for (var _123_18_ = i = 0, _123_22_ = split.length - 1; (_123_18_ <= _123_22_ ? i < split.length - 1 : i > split.length - 1); (_123_18_ <= _123_22_ ? ++i : --i))
+        for (var _101_18_ = i = 0, _101_22_ = split.length - 1; (_101_18_ <= _101_22_ ? i < split.length - 1 : i > split.length - 1); (_101_18_ <= _101_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${root}${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)
