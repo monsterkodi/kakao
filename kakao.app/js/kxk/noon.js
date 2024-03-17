@@ -790,4 +790,4 @@ save = function (p, data, strOpt, cb)
         console.error('noon.save - no callback!')
     }
 }
-export default {extnames:['.json','.noon'],extensions:['json','noon'],save:save,load:load,parse:parse,stringify:stringify}
+export default {save:save,load:load,parse:parse,stringify:stringify}

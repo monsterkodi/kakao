@@ -20,8 +20,6 @@ class Numbers extends events
 
         @elem =$ '.numbers' @editor.view
         
-        log 'Numbers' @elem, @editor, @editor.view
-
         @editor.on 'clearLines'       @onClearLines
 
         @editor.on 'linesShown'       @onLinesShown

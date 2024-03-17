@@ -414,10 +414,18 @@ CommandLine = (function ()
         if (trail.startsWith('Command▸'))
         {
             cmdName = trail.split('▸')[1].toLowerCase()
-            console.log('CommandLine.handleMenuAction',this.commandForName(cmdName))
             if (cmd = this.commandForName(cmdName))
             {
-                console.log('startCommand',cmdName,name)
+                this.startCommand(cmdName)
+                return
+            }
+        }
+        else if (trail === 'Command')
+        {
+            cmdName = name.toLowerCase()
+            console.log('trail',cmdName)
+            if (cmd = this.commandForName(cmdName))
+            {
                 this.startCommand(cmdName)
                 return
             }
@@ -427,7 +435,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _335_19_
+        var _339_19_
 
         if (combo === 'esc')
         {
@@ -446,7 +454,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _343_19_, _351_55_, _352_55_, _362_58_
+        var split, _1_8_, _347_19_, _355_55_, _356_55_, _366_58_
 
         if ((this.command != null))
         {

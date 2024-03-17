@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {isFunc: function (o) {return typeof o === 'function'}}
 
 var POST, poster
 
@@ -49,10 +49,17 @@ export default {poster:poster,emit:function (event, ...args)
     return kakao.send('window.post',event,args)
 },on:function (event, cb)
 {
-    return poster.addEventListener(event,function (e)
+    if (_k_.isFunc(cb))
     {
-        return cb.apply(cb,e.args)
-    })
+        return poster.addEventListener(event,function (e)
+        {
+            return cb.apply(cb,e.args)
+        })
+    }
+    else
+    {
+        console.log('post.on no func?',event,cb)
+    }
 },removeListener:function (event, cb)
 {
     return poster.removeEventListener(event,cb)

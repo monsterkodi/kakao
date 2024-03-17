@@ -42,5 +42,9 @@ export
     emit: (event, args...) -> poster.post event, args
     toWins: (event, args...) -> kakao.send 'window.post' event, args
         
-    on: (event, cb) -> poster.addEventListener event, (e) -> cb.apply cb, e.args
+    on: (event, cb) -> 
+        if cb is func
+            poster.addEventListener event, (e) -> cb.apply cb, e.args
+        else
+            log 'post.on no func?' event, cb
     removeListener: (event, cb) -> poster.removeEventListener event, cb

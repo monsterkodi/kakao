@@ -618,8 +618,6 @@ save = (p, data, strOpt, cb) ->
         error 'noon.save - no callback!'
             
 export
-    extnames:   ['.json' '.noon']
-    extensions: [ 'json'  'noon']
     save:       save
     load:       load
     parse:      parse

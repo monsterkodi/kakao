@@ -17,6 +17,16 @@ use ./EditorScroll
 use ./Editor
 use ./Render
 
+use ./Do
+use ./Meta
+use ./Autocomplete
+use ./Scrollbar
+use ./Brackets
+use ./Numbers
+use ./Diffbar
+use ./Minimap
+use ./Strings
+
 function TextEditor extends Editor
 
     @: (viewElem, config) ->
@@ -28,8 +38,6 @@ function TextEditor extends Editor
 
         @view =$ viewElem
         
-        log 'TextEditor' @view
-
         @layers      = elem class:'layers'
         @layerScroll = elem class:'layerScroll' child:@layers, parent:@view
 
@@ -65,23 +73,24 @@ function TextEditor extends Editor
 
         post.on 'schemeChanged' @onSchemeChanged
 
-    installFeatures: ○->
+    # 00000000  00000000   0000000   000000000  000   000  00000000   00000000   0000000  
+    # 000       000       000   000     000     000   000  000   000  000       000       
+    # 000000    0000000   000000000     000     000   000  0000000    0000000   0000000   
+    # 000       000       000   000     000     000   000  000   000  000            000  
+    # 000       00000000  000   000     000      0000000   000   000  00000000  0000000   
+    
+    installFeatures: ->
         
-        log 'TextEditor.installFeatures' @config
+        # log 'TextEditor.installFeatures' @config
         
         for feature in @config.features
             if feature == 'CursorLine'
                 @cursorLine = elem 'div' class:'cursor-line'
             else
                 featureName = feature.toLowerCase()
-                try
-                    featureModule = await import("./#{featureName}.js")
-                catch err
-                    error 'feature' featureName, err
-                    continue
-                featureClss = featureModule.default
+                featureClss = eval feature
                 @[featureName] = new featureClss @
-                log 'feature' featureName, featureClss, @[featureName]
+                # log 'feature' featureName, featureClss, @[featureName]
         
     # 0000000    00000000  000
     # 000   000  000       000
