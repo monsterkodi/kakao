@@ -27,12 +27,12 @@ class File
    
     @rename: (from, to) ○->
         
-        await ffs.mkdir slash.dir to
+        ○ ffs.mkdir slash.dir to
             
-        if await ffs.isDir to
+        if ○ ffs.isDir to
             to = slash.path to, slash.file from
 
-        if await ffs.move from, to
+        if ○ ffs.move from, to
                 
             if editor.currentFile == from
                 editor.currentFile = to
@@ -50,14 +50,14 @@ class File
 
     @duplicate: (from) ○-> 
 
-        await ffs.duplicate from
+        ○ ffs.duplicate from
     
     @copy: (from, to) ○->
         
-        if await ffs.isDir to
+        if ○ ffs.isDir to
             to = slash.path to, slash.file from
         
-        await ffs.copy from, to
+        ○ ffs.copy from, to
     
     @iconClassName: (file) ->
         

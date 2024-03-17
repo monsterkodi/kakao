@@ -21,7 +21,7 @@ log Gg2(' output: '), g2 jsonFile
 
 lang = {}
 exts = ['txt''log']
-langNoon = await noon.load noonFile
+langNoon = ○ noon.load noonFile
 for names, keywords of langNoon
 
     # log names
@@ -33,14 +33,14 @@ for names, keywords of langNoon
                 lang[ext][word] = value
 
 json = JSON.stringify {exts:exts, lang:lang}, null, 4
-if await fs.write jsonFile, json
+if ○ fs.write jsonFile, json
     log Gg1 ' ok ' 
 else
     log Rr1 ' fail ' 
 
 extlang = "export default #{json}"
     
-if await fs.write extlangFile, extlang
+if ○ fs.write extlangFile, extlang
     log Gg1 ' ok ' 
 else
     log Rr1 ' fail ' 

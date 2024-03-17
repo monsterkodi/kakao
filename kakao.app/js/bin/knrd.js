@@ -18,14 +18,14 @@ __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, jsDir, kodeDir, list, pugDir, rule, rules, srcFile, srcText, tgtFile, tgtText, transpiled, _25_23_, _26_19_
+    var compText, file, jsDir, kodeDir, list, pugDir, rule, rules, srcFile, srcText, tgtFile, tgtText, transpiled, _26_23_, _27_19_
 
     if (_k_.isStr(files))
     {
         files = [files]
     }
-    opt.rerunWhenDirty = ((_25_23_=opt.rerunWhenDirty) != null ? _25_23_ : true)
-    opt.logVerbose = ((_26_19_=opt.logVerbose) != null ? _26_19_ : false)
+    opt.rerunWhenDirty = ((_26_23_=opt.rerunWhenDirty) != null ? _26_23_ : true)
+    opt.logVerbose = ((_27_19_=opt.logVerbose) != null ? _27_19_ : false)
     _k_.profile('🔨')
     kodeDir = slash.path(__dirname + '/../../kode')
     pugDir = slash.path(__dirname + '/../../pug')
@@ -62,9 +62,9 @@ knrd = async function (files = [], opt = {})
     console.log('🔨 ',files.length)
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _67_13_ = 0; _67_13_ < list1.length; _67_13_++)
+    for (var _68_13_ = 0; _68_13_ < list1.length; _68_13_++)
     {
-        file = list1[_67_13_]
+        file = list1[_68_13_]
         if (rule = rules[slash.ext(file)])
         {
             srcFile = file

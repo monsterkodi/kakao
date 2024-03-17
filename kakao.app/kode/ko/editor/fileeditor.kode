@@ -354,7 +354,7 @@ function FileEditor extends TextEditor
             styl:    ['css']
 
         for ext in counterparts[currext] ? []
-            if await ffs.fileExists slash.swapExt @currentFile, ext
+            if ○ ffs.fileExists slash.swapExt @currentFile, ext
                 post.emit 'loadFile' slash.swapExt @currentFile, ext
                 return true
 
@@ -362,7 +362,7 @@ function FileEditor extends TextEditor
             counter = slash.swapExt @currentFile, ext
 
             counter = @swapLastDir counter, currext, ext
-            if await ffs.fileExists counter
+            if ○ ffs.fileExists counter
                 post.emit 'loadFile' counter
                 return true
                 

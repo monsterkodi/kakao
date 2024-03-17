@@ -338,4 +338,19 @@ NSString* typeForNSFileType(NSString* fileType)
     return nil;
 }
 
++ (NSString*) userName
+{
+    return NSUserName();
+}
+
++ (NSString*) homeDir
+{
+    return NSHomeDirectory();
+}
+
++ (NSString*) tmpDir
+{
+    return NSTemporaryDirectory();
+}
+
 @end

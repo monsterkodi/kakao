@@ -30,9 +30,9 @@ export
     copy: ○-> 
         
         text = @textOfSelectionForClipboard()
-        copied = await kakao 'clipboard.set' text
+        copied =○ kakao 'clipboard.set' text
 
-    paste: ○-> @pasteText await kakao 'clipboard.get'
+    paste: ○-> @pasteText ○ kakao 'clipboard.get'
 
     # 00000000   00000000  00000000   000       0000000    0000000  00000000
     # 000   000  000       000   000  000      000   000  000       000

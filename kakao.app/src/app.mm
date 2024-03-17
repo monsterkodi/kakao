@@ -6,6 +6,7 @@
   000   000  000        000        
 */
 
+#import "fs.h"
 #import "app.h"
 #import "bundle.h"
 #import "watch.h"
@@ -16,6 +17,7 @@
 @interface App ()
 
 @property (readwrite,retain) Watch* watch;
+@property (readwrite,retain) Watch* watchHome;
 
 + (void) moveStashWins;
 
@@ -41,6 +43,7 @@
     app.snapshotFolder = @"~/Desktop";
     app.snapshotFile   = @"kakao";
     app.watch = [Watch path:[Bundle path] delegate:app];
+    app.watchHome = [Watch path:[FS homeDir] delegate:app];
     
     id nsApp = [NSApplication sharedApplication];
     [nsApp setDelegate:app];
@@ -141,10 +144,28 @@
 
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    // NSLog(@"● changes %@ ▸▸▸", folder);
+    // NSLog(@"● change ▸▸▸ %@", folder);
     
-    BOOL reloadPage  = NO;
-    BOOL rebuildApp  = NO;
+    if ([folder isEqualToString:[FS homeDir]])
+    {
+        for (WatchChange* change in changes)
+        {
+            id type;
+            switch (change.type)
+            {
+                case 0: type = @"deleted"; break;
+                case 1: type = @"created"; break;
+                case 2: type = @"changed"; break;
+            }
+            NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+            [Route emit:@"fs.change"];
+        }
+        
+        return;
+    }
+    
+    BOOL reloadPage = NO;
+    BOOL rebuildApp = NO;
     
     NSMutableArray* filesToTranspile = [NSMutableArray array];
     
@@ -157,7 +178,7 @@
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
         }
-        // NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+        NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
         
         if ([change.path hasPrefix:@"js/"]) { reloadPage = YES; }
 

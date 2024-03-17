@@ -69,14 +69,14 @@ function Editor extends Buffer
         Editor.actionEditors.push editor
         return if Editor.actionEditors.length > 1
         
-        filelist = await ffs.list slash.path __dirname, 'actions'
+        filelist =○ ffs.list slash.path __dirname, 'actions'
         
         for item in filelist
             # TODO: move this stuff to a config.noon file
             actionFile = item.path
             continue if slash.ext(actionFile) not in ['js' 'mjs' 'kode']
             # log 'action' actionFile
-            actions = await import(actionFile)
+            actions =○ import(actionFile)
             # log 'Editor.initActions' actions.default
             for key,value of actions.default
                 if value is func

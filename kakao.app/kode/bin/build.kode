@@ -23,7 +23,7 @@ export ○->
     
     srcDir = slash.path import.meta.dirname, '../../src'
     
-    srcFiles = await fs.list srcDir
+    srcFiles =○ fs.list srcDir
     srcFiles = srcFiles.filter (f) -> slash.ext(f.path) in ['cpp''mm']
     
     SRC = srcFiles.map((f)->f.file).join ' '
@@ -47,6 +47,7 @@ export ○->
                 return reject err
                 
             log stdout if valid stdout
+            log stderr if valid stderr
             resolve()
     
     

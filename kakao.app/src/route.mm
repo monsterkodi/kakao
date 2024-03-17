@@ -35,7 +35,7 @@
     else if ([route hasPrefix:@"win."       ]) { reply = [Route window:     [route substringFromIndex:4]    args:args win:win]; }
     else if ([route hasPrefix:@"app."       ]) { reply = [Route app:        [route substringFromIndex:4]    args:args win:win]; }
     else if ([route hasPrefix:@"fs."        ]) { reply = [FS    fs:         [route substringFromIndex:3]    args:args win:win]; }
-    else if ([route hasPrefix:@"test."      ]) { reply = [Route test:       [route substringFromIndex:5]    args:args win:win]; }
+    else if ([route hasPrefix:@"test."      ]) { reply = [Route test:       [route substringFromIndex:5]    args:args        ]; }
     else NSLog(@"unknown request %@ %@", msg.name, msg.body);
     
     if (callback) callback(reply, nil);
@@ -91,7 +91,7 @@
         {
             if (w == win) continue;
                         
-            NSLog(@"run script in win %d %@", (long)[NSNumber numberWithLong:w.windowNumber], script);
+            NSLog(@"run script in win %ld %@", (long)[NSNumber numberWithLong:w.windowNumber], script);
             [w.view evaluateJavaScript:script completionHandler:nil];
         }
         
@@ -113,7 +113,7 @@
     if ([req isEqualToString:@"get"]) { return [pb stringForType:NSPasteboardTypeString]; }
     if ([req isEqualToString:@"set"]) 
     { 
-        [pb declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:nil]; // wtf?
+        [pb declareTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, nil] owner:nil]; // wtf?
         if ([pb setString:[args objectAtIndex:0] forType:NSPasteboardTypeString]) 
         {
             return [args objectAtIndex:0];
@@ -193,11 +193,11 @@
 // 000       000 0 000  000     000     
 // 00000000  000   000  000     000     
 
-+ (void) emit:(NSString*)event
++ (void) emit:(id)msg
 {
     for (Win* win in [App wins])
     {
-        [self send:event win:win];
+        [self send:msg win:win];
     }
 }
 

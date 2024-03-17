@@ -178,7 +178,7 @@ function Title
                 
         if empty @templateCache
             log 'menu.initMenu load' @opt.menu 
-            tc = await noon.load @opt.menu 
+            tc =○ noon.load @opt.menu 
             if valid tc            
                 @templateCache = @makeTemplate tc
                 @initFromCache()

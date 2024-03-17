@@ -49,7 +49,7 @@ class Walker
                 
                 listDir = toWalk.shift()
             
-                items = await ffs.list listDir
+                items = ○ ffs.list listDir
                 log 'Walker items' items
                 
                 for item in items

@@ -112,7 +112,7 @@ function Store extends events
     load: ○=>
         
         try
-            @data = await noon.load @file
+            @data =○ noon.load @file
         catch err
             error "store.save -- can't load '#{@file}':" err
             {}

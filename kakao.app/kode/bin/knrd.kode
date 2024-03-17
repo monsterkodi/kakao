@@ -8,6 +8,7 @@
     transpiles kode, noon, styl and pug files
 ###
 
+
 use ../kode/kode
 use ../kxk/fs
 use ../kxk/slash
@@ -55,8 +56,8 @@ knrd = (files = [], opt = {}) ○->
     
     if empty files
         
-        list  = await fs.list kodeDir
-        list  = list.concat await fs.list pugDir
+        list  =○ fs.list kodeDir
+        list  = list.concat ○ fs.list pugDir
         list  = list.filter (item) -> item.type == 'file'
         files = list.map (item) -> item.path
         
@@ -71,8 +72,8 @@ knrd = (files = [], opt = {}) ○->
             srcFile = file
             tgtFile = slash.swapExt srcFile.replace(rule.srcDir, rule.tgtDir), rule.tgtExt
             
-            srcText = await fs.read srcFile
-            tgtText = await fs.read tgtFile
+            srcText =○ fs.read srcFile
+            tgtText =○ fs.read tgtFile
             
             compText = rule.compile srcText, srcFile
                 
@@ -82,7 +83,7 @@ knrd = (files = [], opt = {}) ○->
                 if tgtText != compText
                     transpiled++
                     # log m3('▶ '), m4 slash.tilde srcFile
-                    await fs.write tgtFile, compText
+                    ○ fs.write tgtFile, compText
                     log b5('✔ '), g5 slash.tilde tgtFile
                 else 
                     fs.touch tgtFile

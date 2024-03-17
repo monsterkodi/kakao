@@ -79,7 +79,7 @@ function Win
         
     restoreFromStash: ○=>
         
-        list = await ffs.list kakao.bundle.app '.stash/old'
+        list =○ ffs.list kakao.bundle.app '.stash/old'
         if valid list
             old = list.shift()
             window.stash.load(old.path).then ->

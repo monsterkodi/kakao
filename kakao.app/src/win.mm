@@ -6,6 +6,7 @@
 0000000    00000000  0000000  00000000   0000000   000   000     000     00000000  
 */
 
+#import "fs.h"
 #import "win.h"
 #import "app.h"
 #import "route.h"
@@ -39,7 +40,7 @@ NSDictionary* dictForRect(NSRect rect)
 - (void) windowDidResignKey: (NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
 - (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
 - (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
-- (BOOL) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
+- (void) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
 - (BOOL) windowShouldClose:(NSWindow*)window 
 { 
     if ([[App wins] count] == 1) // make sure the application closes if the last kakao window closes.
@@ -182,7 +183,9 @@ NSDictionary* dictForRect(NSRect rect)
 
 -(void) webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation
 {
-    id script = [NSString stringWithFormat:@"window.winID = %d;\n", self.windowNumber]; 
+    id script = [NSString stringWithFormat:@"window.winID = %ld;window.userName = \"%@\";window.homeDir = \"%@\";window.tmpDir = \"%@\";\n", 
+        (long)self.windowNumber, [FS userName], [FS homeDir], [FS tmpDir]
+    ]; 
     if (self.initScript)
     {
         script = [script stringByAppendingString:self.initScript];
@@ -254,13 +257,13 @@ NSDictionary* dictForRect(NSRect rect)
 
 - (NSDictionary*) frameInfo
 {
-    id info = [NSMutableDictionary dictionary];
+    NSMutableDictionary* info = [NSMutableDictionary dictionary];
     
     [info setObject:[NSNumber numberWithLong:self.windowNumber] forKey:@"id"];
-    [info addObject:dictForRect([self frame]) forKey:@"frame"];
+    [info setObject:dictForRect([self frame]) forKey:@"frame"];
     if ([self screen])
     {
-        [info addObject:dictForRect([[self screen] frame]) forKey:@"screen"];
+        [info setObject:dictForRect([[self screen] frame]) forKey:@"screen"];
     }
     
     return info;

@@ -23,6 +23,43 @@
 #define INTERVAL 0.1 // minimum time in seconds between change dispatches
                      // increases automatically if folder scanning takes a long time
 
+BOOL shouldIgnorePath(NSString* path)
+{
+    NSString* dir = [path lastPathComponent];
+    
+    if ([dir isEqualToString:@"node_modules"]   ||
+        [dir isEqualToString:@".git"]           ||
+        [dir isEqualToString:@".npm"]           ||
+        [dir isEqualToString:@".bun"]           ||
+        [dir isEqualToString:@".cargo"]         ||
+        [dir isEqualToString:@".cache"]         ||
+        [dir isEqualToString:@".pnpm-state"]    ||
+        [dir isEqualToString:@".pnpm-store"]    ||
+        [dir isEqualToString:@".electron-gyp"]  ||
+        [dir isEqualToString:@"Library"]        ||
+        [dir isEqualToString:@"Pictures"]       ||
+        [dir isEqualToString:@"WebKit"]
+        )
+    {
+        return YES;
+    }
+    
+    return NO;
+}                     
+
+BOOL shouldIgnoreChangedPath(NSString* path)
+{
+    if ([path hasPrefix:NSHomeDirectory()])
+    {
+        NSString* homePath = [path substringFromIndex:[NSHomeDirectory() length]+1];        
+        if ([homePath hasPrefix:@"Library/"] || [homePath hasPrefix:@"Pictures/"])
+        {
+            return YES;
+        }
+    }
+    return NO;
+} 
+
 //  0000000  000   000   0000000   000   000   0000000   00000000  
 // 000       000   000  000   000  0000  000  000        000       
 // 000       000000000  000000000  000 0 000  000  0000  0000000   
@@ -138,9 +175,19 @@ struct FSTreeItem
                     FSTreeItem *item = &self.items[next];
                     if (item->st_mode == S_IFDIR) 
                     {
+                        NSString* itemName = (__bridge NSString *)item->name;
+                        
+                        if (shouldIgnorePath(itemName))
+                        {
+                            // NSLog(@"✘ %@", dirName);
+                            continue;
+                        }
+                        
                         [self.folders addObject:(__bridge NSString *)item->name];
 
-                        NSString *itemPath = [self.rootPath stringByAppendingPathComponent:(__bridge NSString *)(item->name)];
+                        NSString *itemPath = [self.rootPath stringByAppendingPathComponent:itemName];
+                        
+                        // NSLog(@"👁  %@", itemName);
                         
                         for (NSString *child in [[fm contentsOfDirectoryAtPath:itemPath error:nil] sortedArrayUsingSelector:@selector(compare:)]) 
                         {
@@ -148,7 +195,7 @@ struct FSTreeItem
                             
                             if (0 == lstat([subpath UTF8String], &st)) 
                             {
-                                NSString *relativeChildPath = (CFStringGetLength(item->name) > 0 ? [(__bridge NSString *)item->name stringByAppendingPathComponent:child] : child);
+                                NSString *relativeChildPath = (CFStringGetLength(item->name) > 0 ? [itemName stringByAppendingPathComponent:child] : child);
                                 if (self.count == maxItems) 
                                 {
                                     NSLog(@"Warning: max monitored files reached! %ld", maxItems);
@@ -496,6 +543,14 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 
 - (void)sendChangeEventWithPath:(NSString *)path flags:(FSEventStreamEventFlags)flags 
 {    
+    // if (flags == kFSEventStreamEventFlagNone)       return;
+    if (flags == kFSEventStreamEventFlagItemCloned) return;
+    // NSLog(@"change %d %08x %@", shouldIgnoreChangedPath(path), flags, path);
+    if (shouldIgnoreChangedPath(path))
+    {
+        return;
+    }
+    // NSLog(@"change %08x %@", flags, path);
     [self.eventCache addObject:path];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSelector:@selector(sendChangeEventsFromCache) withObject:nil afterDelay:MAX(self.eventProcessingDelay, self.cacheWaitingTime)];

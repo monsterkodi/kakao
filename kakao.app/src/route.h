@@ -17,7 +17,7 @@ typedef void (^Callback)(id, NSString*);
 {
 }
 
-+ (void) emit:(NSString*)event;      // send string to js in web views of all windows
++ (void) emit:(id)msg;               // send string or object to js in web views of all windows
 + (void) send:(id)msg win:(Win*)win; // send string or object to js in web view of win
 + (void) message:(WKScriptMessage*)msg win:(Win*)win; // message received from js in web view of win
 // message recieved from js in web view of win that expects a callback
