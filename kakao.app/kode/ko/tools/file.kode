@@ -68,32 +68,10 @@ class File
         clss ?= 'file'
         "icon #{clss}"
         
-    @write: (file, text, mode, cb) ->
-  
-        slash.logErrors = true
-        slash.writeText file, text, (done) ->
-            if empty done
-                cb "can't write #{file}"
-            else
-                cb null, done
-    
-    @unlock: (file, text, cb) ->
-        
-        fs.chmod file, 0o666, (err) ->
-            
-            if valid err
-                cb err
-            else
-                File.write file, text, 0o666, cb
-            
     @save: (file, text, cb) ->
-    
-        ffs.fileExists(file).then (stat) ->
-            if stat
-                File.write file, text, stat.mode, cb
-            else
-                File.write file, text, 0o666, cb
         
+        ffs.write(file, text).then cb
+    
     @span: (text) ->
         
         base = slash.name text

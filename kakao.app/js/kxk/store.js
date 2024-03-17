@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var Store
 
@@ -70,7 +70,6 @@ Store = (function ()
         this.load().then((function ()
         {
             defaults(this.data,opt.defaults)
-            console.log(`${this.name}Loaded`,this.data)
             return post.emit(`${this.name}Loaded`)
         }).bind(this))
     }
@@ -93,10 +92,9 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _76_32_, _80_14_
+        var _80_14_
 
-        console.log(`Store[${this.name}].set`,key,value)
-        if (!((key != null ? key.split : undefined) != null))
+        if (!(_k_.isStr(key)))
         {
             return
         }
@@ -162,7 +160,6 @@ Store = (function ()
     {
         var text
 
-        console.log(`store '${this.name}' save`)
         if (!this.file)
         {
             return
@@ -178,9 +175,7 @@ Store = (function ()
         {
             text = noon.stringify(this.data,{indent:2,maxalign:8}) + '\n'
             ffs.write(this.file,text).then((function ()
-            {
-                console.log("store '#@name' saved:\n",text)
-            }).bind(this))
+            {}).bind(this))
         }
         catch (err)
         {

@@ -75,14 +75,15 @@ class Meta
     saveFileLineMetas: (file, lineMetas) ->
 
         fs.readFile file, encoding:'utf8' (err, data) ->
+            
             if err? then return error "Meta.saveFileLineMetas -- readFile err:#{err}"
             lines = data.split /\r?\n/
             for lineMeta in lineMetas
                 lines[lineMeta[0]] = lineMeta[1]
             data = lines.join '\n'
             
-            File.save file, data, (err, file) ->
-                if err? then return error "Meta.saveFileLineMetas -- writeFile err:#{err}"
+            File.save file, data, (file) ->
+                return error "Meta.saveFileLineMetas -- writeFile err:#{err}" if not file
                 for lineMeta in lineMetas
                     if meta = lineMeta[2]
                         delete meta[2].state if meta[2]

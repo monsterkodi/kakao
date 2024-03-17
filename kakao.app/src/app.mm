@@ -56,7 +56,7 @@
     {
         [indexHTML appendString:@".html"];
     }
-    NSLog(@"indexFile: %@", indexFile);
+    // NSLog(@"indexFile: %@", indexFile);
     id indexURL = [Bundle jsURL:indexHTML];
     id win = [Win withURL:indexURL script:nil];
         
@@ -141,7 +141,7 @@
 
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    NSLog(@"● changes %@ ▸▸▸", folder);
+    // NSLog(@"● changes %@ ▸▸▸", folder);
     
     BOOL reloadPage  = NO;
     BOOL rebuildApp  = NO;

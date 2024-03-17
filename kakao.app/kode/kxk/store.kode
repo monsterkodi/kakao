@@ -47,7 +47,7 @@ function Store extends events
         
             defaults @data, opt.defaults
             
-            log "#{@name}Loaded" @data
+            # log "#{@name}Loaded" @data
             post.emit "#{@name}Loaded"
         
     keypath: (key) => key.split @sep
@@ -71,9 +71,9 @@ function Store extends events
     
     set: (key, value) =>
         
-        log "Store[#{@name}].set" key, value
+        # log "Store[#{@name}].set" key, value
 
-        return if not key?.split?
+        return if not key is str
         return if isEqual @get(key), value
         return if @get(key) == value
 
@@ -125,7 +125,7 @@ function Store extends events
 
     save: =>
         
-        log "store '#{@name}' save"
+        # log "store '#{@name}' save"
         
         return if not @file
         return if empty @data
@@ -138,7 +138,7 @@ function Store extends events
         try
             text = noon.stringify(@data, {indent: 2, maxalign: 8})+'\n'
             ffs.write(@file, text).then =>
-                log "store '#@name' saved:\n" text
+                # log "store '#{@name}' saved:\n" text
         catch err
             error "store.save -- can't save to '#{@file}:" err
 

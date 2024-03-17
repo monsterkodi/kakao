@@ -158,7 +158,7 @@ NSString* typeForNSFileType(NSString* fileType)
         id error;
         if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error])
         {
-            NSLog(@"fs.removed %@", path);
+            // NSLog(@"fs.removed %@", path);
             return path;
         }
         else

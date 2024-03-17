@@ -64,7 +64,7 @@ function Win
         main.focus()
         
         @id = window.winID
-        log 'winID' @id
+        # log 'winID' @id
                     
         window.stash = new stash "win/#{@id}"
 
@@ -72,8 +72,6 @@ function Win
         
         kakao.send 'win.setMinSize' 250 125
         
-        kakao.request('win.frameInfo').then (info) -> log 'frameInfo' info
-                    
         # elem class:'test' text:"○○" parent:main
         # elem class:'test' text:"#{id}" parent:main
         
@@ -91,7 +89,7 @@ function Win
         
     saveStash: ->
         
-        log 'saveStash'
+        # log 'saveStash'
      
         post.emit 'saveChanges' 
         post.emit 'stash'

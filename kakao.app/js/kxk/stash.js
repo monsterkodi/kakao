@@ -95,7 +95,6 @@ Stash = (function ()
 
         file = (file != null ? file : this.file)
         data = await noon.load(file)
-        console.log('stash load data',file,data)
         if (!_k_.empty(data))
         {
             this.data = data
@@ -118,9 +117,7 @@ Stash = (function ()
         {
             text = noon.stringify(this.data)
             ffs.write(this.file,text).then(function (file)
-            {
-                console.log('stash.saved',file)
-            })
+            {})
         }
         catch (err)
         {

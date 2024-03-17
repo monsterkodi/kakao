@@ -313,17 +313,18 @@ Popup = (function ()
 
     Popup.prototype["activate"] = function (item)
     {
-        var _225_20_, _225_24_, _227_39_, _230_52_
+        var _227_20_, _227_24_, _229_39_, _232_52_
 
+        console.log('popup activate item',item)
         if (((item.item != null ? item.item.cb : undefined) != null))
         {
             this.close({all:true})
-            return item.item.cb(((_227_39_=item.item.arg) != null ? _227_39_ : item.item.text))
+            return item.item.cb(((_229_39_=item.item.arg) != null ? _229_39_ : item.item.text))
         }
         else if (!item.item.menu)
         {
             this.close({all:true})
-            return post.emit('menuAction',((_230_52_=item.item.action) != null ? _230_52_ : item.item.text))
+            return post.emit('menuAction',((_232_52_=item.item.action) != null ? _232_52_ : item.item.text))
         }
     }
 
@@ -386,14 +387,14 @@ Popup = (function ()
 
     Popup.prototype["focus"] = function ()
     {
-        var _279_20_
+        var _281_20_
 
         return (this.items != null ? this.items.focus() : undefined)
     }
 
     Popup.prototype["onFocusOut"] = function (event)
     {
-        var _283_34_
+        var _285_34_
 
         if (!(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {
