@@ -97,7 +97,7 @@ menu = function (template)
     for (var _64_14_ = 0; _64_14_ < list1.length; _64_14_++)
     {
         macro = list1[_64_14_]
-        MacroMenu.push({text:macro,actarg:macro,action:'doMacro'})
+        MacroMenu.push({text:macro,action:'doMacro'})
     }
     commandMenu = getMenu(template,'Command')
     commandMenu.menu = commandMenu.menu.concat({text:'Macro',menu:MacroMenu})
@@ -107,10 +107,10 @@ menu = function (template)
         transformList = transform.Transform.transformMenus[transformMenu]
         transformSubmenu = []
         var list2 = _k_.list(transformList)
-        for (var _76_22_ = 0; _76_22_ < list2.length; _76_22_++)
+        for (var _75_22_ = 0; _75_22_ < list2.length; _75_22_++)
         {
-            transform = list2[_76_22_]
-            transformSubmenu.push({text:transform,actarg:transform,action:'doTransform'})
+            transform = list2[_75_22_]
+            transformSubmenu.push({text:transform,action:'doTransform'})
         }
         TransformMenu.push({text:transformMenu,menu:transformSubmenu})
     }

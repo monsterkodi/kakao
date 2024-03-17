@@ -7,10 +7,11 @@ let fuzzy = lib_ko.fuzzy
 
 import util from "../../kxk/util.js"
 let pull = util.pull
+let reversed = util.reversed
 
 import elem from "../../kxk/elem.js"
 
-import CommandList from "./commandlist.js"
+import CommandList from "./CommandList.js"
 
 
 Command = (function ()
@@ -168,12 +169,13 @@ Command = (function ()
 
     Command.prototype["listItems"] = function ()
     {
-        return this.history
+        console.log('Command.listItems',this.history)
+        return reversed(this.history)
     }
 
     Command.prototype["showItems"] = function (items)
     {
-        var _144_34_, _146_39_
+        var _145_34_, _147_39_
 
         if (!(this.commandList != null) && !items.length)
         {
@@ -204,7 +206,7 @@ Command = (function ()
 
     Command.prototype["positionList"] = function ()
     {
-        var flex, listHeight, listTop, spaceBelow, _159_34_
+        var flex, listHeight, listTop, spaceBelow, _160_34_
 
         if (!(this.commandList != null))
         {
@@ -236,7 +238,7 @@ Command = (function ()
 
     Command.prototype["select"] = function (i)
     {
-        var _182_34_
+        var _183_34_
 
         if (!(this.commandList != null))
         {
@@ -270,7 +272,7 @@ Command = (function ()
 
     Command.prototype["prev"] = function ()
     {
-        var _203_23_
+        var _204_23_
 
         if ((this.commandList != null))
         {
@@ -301,7 +303,7 @@ Command = (function ()
 
     Command.prototype["next"] = function ()
     {
-        var _224_27_, _227_23_
+        var _225_27_, _228_23_
 
         if (!(this.commandList != null) && this.listItems().length)
         {
@@ -339,7 +341,7 @@ Command = (function ()
 
     Command.prototype["hideList"] = function ()
     {
-        var _257_20_, _258_20_, _258_26_
+        var _258_20_, _259_20_, _259_26_
 
         if (!this)
         {
@@ -348,7 +350,7 @@ Command = (function ()
         }
         this.selected = -1
         ;(this.commandList != null ? this.commandList.del() : undefined)
-        ;((_258_20_=this.commandList) != null ? (_258_26_=_258_20_.view) != null ? _258_26_.remove() : undefined : undefined)
+        ;((_259_20_=this.commandList) != null ? (_259_26_=_259_20_.view) != null ? _259_26_.remove() : undefined : undefined)
         return this.commandList = null
     }
 
@@ -378,7 +380,7 @@ Command = (function ()
 
     Command.prototype["setCurrent"] = function (command)
     {
-        var _283_36_
+        var _284_36_
 
         if (!(this.history != null))
         {
@@ -404,14 +406,14 @@ Command = (function ()
 
     Command.prototype["current"] = function ()
     {
-        var _294_36_
+        var _295_36_
 
-        return ((_294_36_=this.history[this.selected]) != null ? _294_36_ : '')
+        return ((_295_36_=this.history[this.selected]) != null ? _295_36_ : '')
     }
 
     Command.prototype["last"] = function ()
     {
-        var _297_23_
+        var _298_23_
 
         if ((this.commandList != null))
         {
@@ -454,7 +456,7 @@ Command = (function ()
 
     Command.prototype["complete"] = function ()
     {
-        var _326_34_
+        var _327_34_
 
         if (!(this.commandList != null))
         {
@@ -494,11 +496,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _364_17_, _366_28_, _366_39_
+        var _365_17_, _367_28_, _367_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_364_17_=this.history) != null ? _364_17_ : [])
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_366_39_=1) != null ? _366_39_ : 0)
+        this.history = ((_365_17_=this.history) != null ? _365_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_367_39_=1) != null ? _367_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -543,7 +545,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _394_31_
+        var _395_31_
 
         switch (combo)
         {

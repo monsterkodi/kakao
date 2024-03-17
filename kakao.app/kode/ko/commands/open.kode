@@ -12,8 +12,6 @@ use ../../kxk/post
 use ../../kxk/slash
 
 use ../tools/projects
-# use ../editor/Render
-# use ../editor/Syntax
 
 use ../commandline/Command
 

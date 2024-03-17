@@ -53,4 +53,7 @@ export default {poster:poster,emit:function (event, ...args)
     {
         return cb.apply(cb,e.args)
     })
+},removeListener:function (event, cb)
+{
+    return poster.removeEventListener(event,cb)
 }}

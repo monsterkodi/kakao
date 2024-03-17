@@ -64,7 +64,6 @@ menu = (template) ->
     for macro in Macro.macroNames
         MacroMenu.push
             text:   macro
-            actarg: macro
             action: 'doMacro'
 
     commandMenu = getMenu template, 'Command'
@@ -76,7 +75,6 @@ menu = (template) ->
         for transform in transformList
             transformSubmenu.push
                 text:   transform
-                actarg: transform
                 action: 'doTransform'
 
         TransformMenu.push

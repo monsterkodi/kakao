@@ -245,7 +245,7 @@ function CommandLine extends TextEditor
             @list = elem class: 'list commands'
             @positionList()
             window.split.elem.appendChild @list
-        @command.hideList()
+        @command?.hideList()
         @listCommands()
         @focus()
         @positionList()
@@ -314,12 +314,14 @@ function CommandLine extends TextEditor
     # 000  000   000          000
     # 000   000  00000000     000
 
-    handleMenuAction: (name, opt) ->
+    handleMenuAction: (name, trail) ->
 
-        # log 'handleMenuAction' name, opt?.command
-        if opt?.command
-            if @commandForName opt.command
-                @startCommand opt.command
+        if trail.startsWith 'Command▸'
+            cmdName = trail.split('▸')[1].toLowerCase()
+            log 'CommandLine.handleMenuAction' @commandForName cmdName
+            if cmd = @commandForName cmdName
+                log 'startCommand' cmdName, name
+                @startCommand cmdName
                 return
         'unhandled'
 

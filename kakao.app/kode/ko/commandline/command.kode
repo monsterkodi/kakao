@@ -7,10 +7,10 @@
 ###
 
 use ../../../lib/lib_ko ▪ fuzzy
-use ../../kxk/util ▪ pull
+use ../../kxk/util ▪ pull reversed
 use ../../kxk/elem
-# use ../editor/Syntax
-use ./commandlist ● CommandList
+
+use ./CommandList
 
 function Command
 
@@ -136,8 +136,9 @@ function Command
             window.split.elem.appendChild listView
             @commandList = new CommandList @, '.commandlist' syntaxName:@syntaxName
     
-    # listItems: -> reversed @history
-    listItems: -> @history
+    listItems: -> 
+        log 'Command.listItems' @history
+        reversed @history
 
     showItems: (items) ->
         

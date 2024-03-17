@@ -1,4 +1,4 @@
-var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
+var _k_ = {isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
 var addToShelf, changeFontSize, changeZoom, reloadWin, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
 
@@ -145,29 +145,21 @@ Window = (function ()
         return window.stash.set('bounds',bounds)
     }
 
-    Window.prototype["onMenuAction"] = function (name, opts)
+    Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _128_25_
+        var action
 
-        console.log('ko.Window.onMenuAction',name,opts)
+        console.log('ko.Window.onMenuAction',name,trail)
         if (action = Editor.actionWithName(name))
         {
             console.log('editor.actionWithName',name)
-            if ((action.key != null) && _k_.isFunc(window.focusEditor[action.key]))
-            {
-                window.focusEditor[action.key](opts.actarg)
-                return
-            }
         }
-        if ('unhandled' !== window.commandline.handleMenuAction(name,opts))
+        if ('unhandled' !== window.commandline.handleMenuAction(name,trail))
         {
             return
         }
         switch (name)
         {
-            case 'doMacro':
-                return window.commandline.commands.macro.execute(opts.actarg)
-
             case 'Undo':
                 return window.focusEditor.do.undo()
 

@@ -149,12 +149,16 @@ Menu = (function ()
         }
     }
 
+    Menu.prototype["trail"] = function ()
+    {
+        return ''
+    }
+
     Menu.prototype["activate"] = function (item, opt = {})
     {
-        var br, items, pr
+        var br, items, pr, _135_29_
 
-        items = item.item.menu
-        if (items)
+        if (items = (item != null ? (_135_29_=item.item) != null ? _135_29_.menu : undefined : undefined))
         {
             if (this.popup)
             {
@@ -165,6 +169,7 @@ Menu = (function ()
             pr = item.parentNode.getBoundingClientRect()
             opt.items = items
             opt.parent = this
+            opt.trail = item.item.text
             opt.x = br.left - 1
             opt.y = pr.top + pr.height - 1
             opt.class = 'titlemenu'
@@ -209,14 +214,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _169_39_
+        var _172_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _170_39_
+        var _173_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }

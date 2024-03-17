@@ -6,13 +6,13 @@
 000   000  00000000     000     000   000
 ###
 
-use ../tools/ranges
 use ../../kxk/dom ▪ $ stopEvent
 use ../../kxk/util ▪ pull
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
 
+use ../tools/ranges
 use ../tools/File
 
 class Meta
@@ -37,7 +37,7 @@ class Meta
             @editor.numbers.on 'numberAdded'   @onNumber
             @editor.numbers.on 'numberChanged' @onNumber
 
-        @elem.addEventListener 'mousedown' @onMouseDown
+        @elem?.addEventListener 'mousedown' @onMouseDown
 
     #  0000000  000   000   0000000   000   000   0000000   00000000  0000000
     # 000       000   000  000   000  0000  000  000        000       000   000

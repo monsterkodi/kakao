@@ -85,13 +85,13 @@
         }
         id script = [NSString stringWithFormat:@"post.emit(%@);", payload];
         
-        NSLog(@"post from win %lu %@", (unsigned long)[NSNumber numberWithLong:win.windowNumber], script);
+        // NSLog(@"post from win %d %@", (long)[NSNumber numberWithLong:win.windowNumber], script);
         
         for (Win* w in [App wins])
         {
             if (w == win) continue;
                         
-            NSLog(@"run script in win %lu %@", (unsigned long)[NSNumber numberWithLong:w.windowNumber], script);
+            NSLog(@"run script in win %d %@", (long)[NSNumber numberWithLong:w.windowNumber], script);
             [w.view evaluateJavaScript:script completionHandler:nil];
         }
         

@@ -117,24 +117,24 @@ function Window #extends win
     # 000 0 000  000       000  0000  000   000     000   000  000          000     000  000   000  000  0000
     # 000   000  00000000  000   000   0000000      000   000   0000000     000     000   0000000   000   000
     
-    onMenuAction: (name, opts) =>
+    onMenuAction: (name, trail) =>
         
-        log 'ko.Window.onMenuAction' name, opts
+        log 'ko.Window.onMenuAction' name, trail
         
         if action = Editor.actionWithName name
             
             log 'editor.actionWithName' name
             
-            if action.key? and window.focusEditor[action.key] is func
-                window.focusEditor[action.key] opts.actarg
-                return 
+            # if action.key? and window.focusEditor[action.key] is func
+                # window.focusEditor[action.key] trail
+                # return 
     
-        if 'unhandled' != window.commandline.handleMenuAction name, opts
+        if 'unhandled' != window.commandline.handleMenuAction name, trail
             return 
             
         switch name
     
-            'doMacro'               ➜ return window.commandline.commands.macro.execute opts.actarg
+            # 'doMacro'               ➜ return window.commandline.commands.macro.execute opts.actarg
             'Undo'                  ➜ return window.focusEditor.do.undo()
             'Redo'                  ➜ return window.focusEditor.do.redo()
             'Cut'                   ➜ return window.focusEditor.cut()
@@ -173,7 +173,7 @@ function Window #extends win
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
     
-        # log 'onMenuAction unhandled' name#, opts            
+        # log 'onMenuAction unhandled' name, trail
             
 # 00000000   00000000   00000000  00000000   0000000
 # 000   000  000   000  000       000       000
