@@ -17,7 +17,7 @@ class Brackets
         
         @setupConfig()
             
-    setupConfig: => 
+    setupConfig: =>
 
         @open   = @editor.bracketCharacters.open
         @config = @editor.bracketCharacters.regexps

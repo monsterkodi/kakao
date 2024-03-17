@@ -13,6 +13,34 @@
 
 @implementation Route
 
+// 00000000   00000000   0000000   000   000  00000000   0000000  000000000  
+// 000   000  000       000   000  000   000  000       000          000     
+// 0000000    0000000   000 00 00  000   000  0000000   0000000      000     
+// 000   000  000       000 0000   000   000  000            000     000     
+// 000   000  00000000   00000 00   0000000   00000000  0000000      000     
+
++ (void) request:(WKScriptMessage*)msg callback:(Callback)callback win:(Win*)win
+{
+    // NSLog(@"%@ %@", msg.name, msg.body);
+    
+    id reply = @"???";
+    
+    NSString* route = [msg.body valueForKey:@"route"];
+    NSArray*  args  = [msg.body valueForKey:@"args"];
+
+         if ([route isEqualToString:@"log"  ]) { NSLog(@"%ld %@ %@", (long)win.windowNumber, msg.name, msg.body); }
+    else if ([route hasPrefix:@"bundle."    ]) { reply = [Route bundle:     [route substringFromIndex:7]    args:args win:win]; }
+    else if ([route hasPrefix:@"window."    ]) { reply = [Route window:     [route substringFromIndex:7]    args:args win:win]; }
+    else if ([route hasPrefix:@"clipboard." ]) { reply = [Route clipboard:  [route substringFromIndex:10]   args:args win:win]; }
+    else if ([route hasPrefix:@"win."       ]) { reply = [Route window:     [route substringFromIndex:4]    args:args win:win]; }
+    else if ([route hasPrefix:@"app."       ]) { reply = [Route app:        [route substringFromIndex:4]    args:args win:win]; }
+    else if ([route hasPrefix:@"fs."        ]) { reply = [FS    fs:         [route substringFromIndex:3]    args:args win:win]; }
+    else if ([route hasPrefix:@"test."      ]) { reply = [Route test:       [route substringFromIndex:5]    args:args win:win]; }
+    else NSLog(@"unknown request %@ %@", msg.name, msg.body);
+    
+    if (callback) callback(reply, nil);
+}
+
 // 000   000  000  000   000  0000000     0000000   000   000  
 // 000 0 000  000  0000  000  000   000  000   000  000 0 000  
 // 000000000  000  000 0 000  000   000  000   000  000000000  
@@ -73,6 +101,27 @@
     return nil;
 }
 
+//  0000000  000      000  00000000   0000000     0000000    0000000   00000000   0000000    
+// 000       000      000  000   000  000   000  000   000  000   000  000   000  000   000  
+// 000       000      000  00000000   0000000    000   000  000000000  0000000    000   000  
+// 000       000      000  000        000   000  000   000  000   000  000   000  000   000  
+//  0000000  0000000  000  000        0000000     0000000   000   000  000   000  0000000    
+
++ (id) clipboard:(NSString*)req args:(NSArray*)args win:(Win*)win
+{
+    id pb = [NSPasteboard generalPasteboard];
+    if ([req isEqualToString:@"get"]) { return [pb stringForType:NSPasteboardTypeString]; }
+    if ([req isEqualToString:@"set"]) 
+    { 
+        [pb declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:nil]; // wtf?
+        if ([pb setString:[args objectAtIndex:0] forType:NSPasteboardTypeString]) 
+        {
+            return [args objectAtIndex:0];
+        } 
+    }
+    return nil;
+}
+
 // 0000000    000   000  000   000  0000000    000      00000000  
 // 000   000  000   000  0000  000  000   000  000      000       
 // 0000000    000   000  000 0 000  000   000  000      0000000   
@@ -127,33 +176,6 @@
     return nil;
 }
 
-// 00000000   00000000   0000000   000   000  00000000   0000000  000000000  
-// 000   000  000       000   000  000   000  000       000          000     
-// 0000000    0000000   000 00 00  000   000  0000000   0000000      000     
-// 000   000  000       000 0000   000   000  000            000     000     
-// 000   000  00000000   00000 00   0000000   00000000  0000000      000     
-
-+ (void) request:(WKScriptMessage*)msg callback:(Callback)callback win:(Win*)win
-{
-    // NSLog(@"%@ %@", msg.name, msg.body);
-    
-    id reply = @"???";
-    
-    NSString* route = [msg.body valueForKey:@"route"];
-    NSArray*  args  = [msg.body valueForKey:@"args"];
-
-         if ([route isEqualToString:@"log"]) { NSLog(@"%ld %@ %@", (long)win.windowNumber, msg.name, msg.body); }
-    else if ([route hasPrefix:@"bundle."]) { reply = [Route bundle:[route substringFromIndex:7] args:args win:win]; }
-    else if ([route hasPrefix:@"window."]) { reply = [Route window:[route substringFromIndex:7] args:args win:win]; }
-    else if ([route hasPrefix:@"win."   ]) { reply = [Route window:[route substringFromIndex:4] args:args win:win]; }
-    else if ([route hasPrefix:@"app."   ]) { reply = [Route app:   [route substringFromIndex:4] args:args win:win]; }
-    else if ([route hasPrefix:@"fs."    ]) { reply = [FS    fs:    [route substringFromIndex:3] args:args win:win]; }
-    else if ([route hasPrefix:@"test."  ]) { reply = [Route test:  [route substringFromIndex:5] args:args win:win]; }
-    else NSLog(@"unknown request %@ %@", msg.name, msg.body);
-    
-    if (callback) callback(reply, nil);
-}
-
 // 00     00  00000000   0000000   0000000   0000000    0000000   00000000  
 // 000   000  000       000       000       000   000  000        000       
 // 000000000  0000000   0000000   0000000   000000000  000  0000  0000000   
@@ -173,14 +195,6 @@
 
 + (void) emit:(NSString*)event
 {
-    // for (id win in [[NSApplication sharedApplication] windows])
-    // {
-        // if ([win isKindOfClass:[Win class]])
-        // {
-            // [self send:event win:(Win*)win];
-        // }
-    // }
-    
     for (Win* win in [App wins])
     {
         [self send:event win:win];
