@@ -23,12 +23,17 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
     this.copy()
     this.deleteSelectionOrCursorLines()
     return this.do.end()
-},copy:function ()
+},copy:async function ()
 {
-    return (clipboard != null ? clipboard.writeText(this.textOfSelectionForClipboard()) : undefined)
-},paste:function ()
+    var copied, text
+
+    text = this.textOfSelectionForClipboard()
+    console.log('copy',text)
+    copied = await kakao.send('clipboard.set',text)
+    console.log('copied',copied)
+},paste:async function ()
 {
-    return this.pasteText((clipboard != null ? clipboard.readText() : undefined))
+    return this.pasteText(await kakao.request('clipboard.get'))
 },replaceSelectedText:function (lines)
 {
     var insert, ldiff, newSelections, ns, oldLength, os
@@ -36,17 +41,17 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
     this.do.start()
     newSelections = this.do.selections()
     var list = _k_.list(newSelections)
-    for (var _44_15_ = 0; _44_15_ < list.length; _44_15_++)
+    for (var _50_15_ = 0; _50_15_ < list.length; _50_15_++)
     {
-        ns = list[_44_15_]
+        ns = list[_50_15_]
         insert = lines.shift()
         oldLength = ns[1][1] - ns[1][0]
         this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][0],oldLength,insert))
         ldiff = insert.length - oldLength
         var list1 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][1],newSelections))
-        for (var _49_19_ = 0; _49_19_ < list1.length; _49_19_++)
+        for (var _55_19_ = 0; _55_19_ < list1.length; _55_19_++)
         {
-            os = list1[_49_19_]
+            os = list1[_55_19_]
             os[1][0] += ldiff
             os[1][1] += ldiff
         }
@@ -59,6 +64,7 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
 {
     var after, before, c, ci, cp, indt, insert, li, line, lines, newCursors, removeLastLine
 
+    console.log(`pasteText '${text}'`)
     lines = text.split('\n')
     if (lines.length === this.numSelections())
     {
@@ -76,19 +82,19 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
     newCursors = this.do.cursors()
     if (newCursors.length > 1 && lines.length === 1)
     {
-        lines = (function () { var r_85_36_ = []; var list = _k_.list(newCursors); for (var _85_36_ = 0; _85_36_ < list.length; _85_36_++)  { c = list[_85_36_];r_85_36_.push(lines[0])  } return r_85_36_ }).bind(this)()
+        lines = (function () { var r_93_36_ = []; var list = _k_.list(newCursors); for (var _93_36_ = 0; _93_36_ < list.length; _93_36_++)  { c = list[_93_36_];r_93_36_.push(lines[0])  } return r_93_36_ }).bind(this)()
     }
     if (newCursors.length > 1 || (lines.length === 1))
     {
-        for (var _89_23_ = ci = newCursors.length - 1, _89_44_ = 0; (_89_23_ <= _89_44_ ? ci <= 0 : ci >= 0); (_89_23_ <= _89_44_ ? ++ci : --ci))
+        for (var _97_23_ = ci = newCursors.length - 1, _97_44_ = 0; (_97_23_ <= _97_44_ ? ci <= 0 : ci >= 0); (_97_23_ <= _97_44_ ? ++ci : --ci))
         {
             c = newCursors[ci]
             insert = lines[ci % lines.length]
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,insert))
             var list1 = _k_.list(positionsAfterLineColInPositions(c[1],c[0] - 1,newCursors))
-            for (var _93_22_ = 0; _93_22_ < list1.length; _93_22_++)
+            for (var _101_22_ = 0; _101_22_ < list1.length; _101_22_++)
             {
-                c = list1[_93_22_]
+                c = list1[_101_22_]
                 cursorDelta(c,insert.length)
             }
         }
@@ -100,7 +106,7 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
         newCursors = null
         if (cp[0] > 0)
         {
-            var _103_32_ = this.splitStateLineAtPos(this.do,cp); before = _103_32_[0]; after = _103_32_[1]
+            var _111_32_ = this.splitStateLineAtPos(this.do,cp); before = _111_32_[0]; after = _111_32_[1]
 
             after = after.trimLeft()
             indt = _k_.lpad(indentationInLine(this.do.line(cp[1])))
@@ -123,9 +129,9 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
             }
         }
         var list2 = _k_.list(lines)
-        for (var _117_21_ = 0; _117_21_ < list2.length; _117_21_++)
+        for (var _125_21_ = 0; _125_21_ < list2.length; _125_21_++)
         {
-            line = list2[_117_21_]
+            line = list2[_125_21_]
             this.do.insert(li,line)
             li += 1
         }
