@@ -68,7 +68,7 @@ class Split
         window.stash.set 'split|flex' @flex.getState()
         window.stash.set 'split|browser' @flex.panes[0].div == @browser
         
-    stashLoaded: =>
+    onStashLoaded: =>
 
         if state = window.stash.get 'split|flex'
             @flex.restoreState state

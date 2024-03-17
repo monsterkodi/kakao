@@ -37,6 +37,8 @@ function CommandList extends TextEditor
 
     addItems: (items) ->
 
+        log 'CommandList.addItems' items
+        
         @clear()
         index = 0
         
@@ -129,7 +131,7 @@ function CommandList extends TextEditor
     clear: ->
         
         @items = []
-        @meta.clear()
+        @meta?.clear()
         super()
 
 export CommandList

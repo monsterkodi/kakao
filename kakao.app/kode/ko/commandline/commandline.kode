@@ -318,9 +318,13 @@ function CommandLine extends TextEditor
 
         if trail.startsWith 'Command▸'
             cmdName = trail.split('▸')[1].toLowerCase()
-            log 'CommandLine.handleMenuAction' @commandForName cmdName
             if cmd = @commandForName cmdName
-                log 'startCommand' cmdName, name
+                @startCommand cmdName
+                return
+        else if trail == 'Command'
+            cmdName = name.toLowerCase()
+            log 'trail' cmdName
+            if cmd = @commandForName cmdName
                 @startCommand cmdName
                 return
         'unhandled'

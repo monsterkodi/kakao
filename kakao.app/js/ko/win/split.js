@@ -17,7 +17,7 @@ class Split
         this.resized = this.resized.bind(this)
         this.hideTerminal = this.hideTerminal.bind(this)
         this.hideEditor = this.hideEditor.bind(this)
-        this.stashLoaded = this.stashLoaded.bind(this)
+        this.onStashLoaded = this.onStashLoaded.bind(this)
         this.stash = this.stash.bind(this)
         this.emitSplit = this.emitSplit.bind(this)
         this.onDrag = this.onDrag.bind(this)
@@ -55,7 +55,7 @@ class Split
         return window.stash.set('split|browser',this.flex.panes[0].div === this.browser)
     }
 
-    stashLoaded ()
+    onStashLoaded ()
     {
         var state
 
