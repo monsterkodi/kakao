@@ -80,7 +80,7 @@ function Stash
     load: (file) ○->
         
         file ?= @file
-        data = await noon.load file
+        data =○ noon.load file
         # log 'stash load data' file, data
         if valid data
             @data = data

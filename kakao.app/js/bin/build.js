@@ -42,6 +42,10 @@ export default async function ()
             {
                 console.log(stdout)
             }
+            if (!_k_.empty(stderr))
+            {
+                console.log(stderr)
+            }
             return resolve()
         })
     })

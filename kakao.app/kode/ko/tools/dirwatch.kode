@@ -67,7 +67,7 @@ function Watch extends events
         
         if @opt.recursive
             
-            items = await ffs.list @dir
+            items =○ ffs.list @dir
             
             @watchers = []
             

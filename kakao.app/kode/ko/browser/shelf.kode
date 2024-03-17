@@ -116,7 +116,7 @@ function Shelf extends Column
                 
     addPath: (path, opt) ○=>
         
-        if await ffs.isDir(path)
+        if ○ ffs.isDir(path)
             @addDir path, opt
         else
             @addFile path, opt
@@ -173,7 +173,7 @@ function Shelf extends Column
     addFiles: (files, opt) ○->
         
         for file in files
-            if await ffs.isDir file
+            if ○ ffs.isDir file
                 @addDir file, opt
             else
                 @addFile file, opt

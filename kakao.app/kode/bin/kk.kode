@@ -45,7 +45,7 @@ class kk
     
     @run: ○->
         
-        sleep = (ms) ○-> await new Promise((r) => setTimeout(r, ms)); true
+        sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
         
         while not os.loaded # todo: move this check somewhere else!
             await sleep 150
@@ -58,14 +58,14 @@ class kk
             args.test  = true
             args.run   = true
         
-        if args.info    ➜ await kk.info()
-        if args.knrd    ➜ await knrd args.options
-        if args.build   ➜ await kk.build()
-        if args.test    ➜ await kk.test args.options[0]
-        if args.run     ➜ await kk.spawn args.options
-        if args.clean   ➜ await kk.clean()
-        if args.rebuild ➜ await kk.rebuild()                            
-        if args.watch   ➜ await kk.watch()                            
+        if args.info    ➜ ○ kk.info()
+        if args.knrd    ➜ ○ knrd args.options
+        if args.build   ➜ ○ kk.build()
+        if args.test    ➜ ○ kk.test args.options[0]
+        if args.run     ➜ ○ kk.spawn args.options
+        if args.clean   ➜ ○ kk.clean()
+        if args.rebuild ➜ ○ kk.rebuild()                            
+        if args.watch   ➜ ○ kk.watch()                            
             
         # if valid args.options
             # log 'leftover options' args.options
@@ -83,8 +83,8 @@ class kk
         
     @rebuild: ○->
         
-        await knrd()
-        await kk.build()
+        ○ knrd()
+        ○ kk.build()
         kk.spawn()
                         
     # 000  000   000  00000000   0000000   
@@ -120,8 +120,8 @@ class kk
             log b5('🔧'), w3 sourceFile
             
             if slash.ext(sourceFile) in ['kode' 'pug' 'styl' 'noon']
-                await knrd sourceFile
-                await kk.test 'silent'
+                ○ knrd sourceFile
+                ○ kk.test 'silent'
     
     # 000000000  00000000   0000000  000000000  
     #    000     000       000          000     
@@ -158,8 +158,8 @@ class kk
         
         jsDir  = slash.path import.meta.dirname, '../../js'
         appExe = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
-        await fs.rm jsDir, recursive:true, force:true 
-        await fs.unlink appExe
+        ○ fs.rm jsDir, recursive:true, force:true 
+        ○ fs.unlink appExe
 
     #  0000000  00000000    0000000   000   000  000   000  
     # 000       000   000  000   000  000 0 000  0000  000  

@@ -9,11 +9,15 @@
 #import <Cocoa/Cocoa.h>
 #include "win.h"
 
-@interface FS
+@interface FS : NSObject
 {
 }
 
-+ (id) req:(NSString*)req args:(NSArray*)args win:(Win*)win;
++ (id) fs:(NSString*)req args:(NSArray*)args win:(Win*)win;
+
++ (NSString*) userName;
++ (NSString*) homeDir;
++ (NSString*) tmpDir;
 
 @end
 

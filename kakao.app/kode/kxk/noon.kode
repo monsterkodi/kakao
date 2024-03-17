@@ -573,9 +573,9 @@ load = (p, ext) ○->
     # log globalThis
     
     if globalThis.global
-        fs = await import('fs/promises')
-     
-        str = await fs.readFile p, 'utf8'
+        
+        fs  =○ import('fs/promises')
+        str =○ fs.readFile p, 'utf8'
              
         if valid str
             parseStr str, p, ext

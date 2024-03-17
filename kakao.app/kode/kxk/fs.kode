@@ -23,7 +23,7 @@ class FS
     
     @listdir: (dir, found) ○->
             
-        dirents = await fsp.readdir dir, { withFileTypes: true }
+        dirents =○ fsp.readdir dir, { withFileTypes: true }
         
         for dirent in dirents
     
@@ -42,12 +42,12 @@ class FS
             
             if isDir
     
-                await FS.listdir absPath, found
+                ○ FS.listdir absPath, found
                 
         found
     
-    @list:    (p) ○-> await FS.listdir p, []
-    @dirlist: (p) ○-> await FS.listdir p, []
+    @list:    (p) ○->○ FS.listdir p, []
+    @dirlist: (p) ○->○ FS.listdir p, []
 
     # 00000000   00000000  00     00   0000000   000   000  00000000  
     # 000   000  000       000   000  000   000  000   000  000       
@@ -58,7 +58,7 @@ class FS
     @read: (p) ○-> 
         
         try
-            await fsp.readFile p, 'utf8'
+            ○ fsp.readFile p, 'utf8'
         catch err
             ''
             
@@ -74,15 +74,15 @@ class FS
             tmpfile = slash.tmpfile()
 
             try
-                stat = await fsp.stat p
+                stat = ○ fsp.stat p
                 mode = stat.mode
-                await fsp.access p, (fs.R_OK | fs.F_OK)
+                ○ fsp.access p, (fs.R_OK | fs.F_OK)
             catch err
                 mode = 0o666
-                await fsp.mkdir slash.dir(p), recursive: true
+                ○ fsp.mkdir slash.dir(p), recursive: true
                 
-            await fsp.writeFile tmpfile, text, mode:mode
-            await fsp.rename tmpfile, p
+            ○ fsp.writeFile tmpfile, text, mode:mode
+            ○ fsp.rename tmpfile, p
             p
             
         catch err

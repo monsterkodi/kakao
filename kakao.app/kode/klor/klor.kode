@@ -7,9 +7,7 @@
 ###
 
 use ../kxk/kolor
-use ./extlang
-
-{ exts, lang } = extlang
+use ./extlang ▪ exts lang
 
 swtch =
     pug:

@@ -100,13 +100,13 @@ function CommandLine extends TextEditor
 
     loadCommands: ○->
 
-        files = await ffs.list slash.path __dirname, '../commands'
+        files =○ ffs.list slash.path __dirname, '../commands'
         
         for file in files
             
             continue if slash.ext(file.path) not in ['js' 'mjs']
             try
-                commandModule = await import(file.path)
+                commandModule =○ import(file.path)
             catch err
                 error "can't import command from file '#{file.path}': #{err}"
                 throw err

@@ -182,12 +182,12 @@ class Syntax
 
         syntaxDir = slash.path __dirname, '../syntax/'
 
-        syntaxFiles = await ffs.list syntaxDir
+        syntaxFiles = ○ ffs.list syntaxDir
         for syntaxFile in syntaxFiles
 
             syntaxName = slash.name syntaxFile.path
             
-            patterns = JSON.parse await ffs.read syntaxFile.path
+            patterns = JSON.parse ○ ffs.read syntaxFile.path
             
             patterns['\\w+']       = 'text'   # this ensures that all ...
             patterns['[^\\w\\s]+'] = 'syntax' # non-space characters match
