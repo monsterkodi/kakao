@@ -27,6 +27,8 @@ function TextEditor extends Editor
         super name, config
 
         @view =$ viewElem
+        
+        log 'TextEditor' @view
 
         @layers      = elem class:'layers'
         @layerScroll = elem class:'layerScroll' child:@layers, parent:@view
@@ -65,6 +67,8 @@ function TextEditor extends Editor
 
     installFeatures: ○->
         
+        log 'TextEditor.installFeatures' @config
+        
         for feature in @config.features
             if feature == 'CursorLine'
                 @cursorLine = elem 'div' class:'cursor-line'
@@ -77,7 +81,7 @@ function TextEditor extends Editor
                     continue
                 featureClss = featureModule.default
                 @[featureName] = new featureClss @
-                # log 'feature' featureName, featureClss, @[featureName]
+                log 'feature' featureName, featureClss, @[featureName]
         
     # 0000000    00000000  000
     # 000   000  000       000
@@ -772,7 +776,6 @@ function TextEditor extends Editor
 
         { mod, key, combo, char } = keyinfo.forEvent event
         
-
         return if not combo
         # return if key == 'right click' # weird right command key
         

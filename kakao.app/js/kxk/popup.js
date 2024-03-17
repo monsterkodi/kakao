@@ -1,10 +1,12 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var elem, Popup, stopEvent
+var Popup
 
 import os from "./os.js"
 
 import dom from "./dom.js"
+let elem = dom.elem
+let stopEvent = dom.stopEvent
 
 import post from "./post.js"
 
@@ -12,17 +14,12 @@ import slash from "./slash.js"
 
 import keyinfo from "./keyinfo.js"
 
-import popup from "./popup.js"
-
-elem = dom.elem
-stopEvent = dom.stopEvent
-
 
 Popup = (function ()
 {
     function Popup (opt)
     {
-        var br, child, div, item, text, _49_30_, _50_64_, _50_92_
+        var br, child, div, item, text, _47_30_, _48_64_, _48_92_
 
         this["onKeyDown"] = this["onKeyDown"].bind(this)
         this["onFocusOut"] = this["onFocusOut"].bind(this)
@@ -36,14 +33,15 @@ Popup = (function ()
         this.items = elem({class:'popup',tabindex:0})
         this.parent = opt.parent
         this.onClose = opt.onClose
+        this.trail = opt.trail
         if (opt.class)
         {
             this.items.classList.add(opt.class)
         }
         var list = _k_.list(opt.items)
-        for (var _29_17_ = 0; _29_17_ < list.length; _29_17_++)
+        for (var _27_17_ = 0; _27_17_ < list.length; _27_17_++)
         {
-            item = list[_29_17_]
+            item = list[_27_17_]
             if (item.hide)
             {
                 continue
@@ -72,18 +70,18 @@ Popup = (function ()
                     if (item.children)
                     {
                         var list1 = _k_.list(item.children)
-                        for (var _43_34_ = 0; _43_34_ < list1.length; _43_34_++)
+                        for (var _41_34_ = 0; _41_34_ < list1.length; _41_34_++)
                         {
-                            child = list1[_43_34_]
+                            child = list1[_41_34_]
                             div.appendChild(child)
                         }
                     }
                 }
                 div.item = item
                 div.addEventListener('mouseup',this.onItemMouseUp)
-                if (((_49_30_=item.combo) != null ? _49_30_ : item.accel))
+                if (((_47_30_=item.combo) != null ? _47_30_ : item.accel))
                 {
-                    text = keyinfo.short((os.isMac ? (((_50_64_=item.combo) != null ? _50_64_ : item.accel)) : (((_50_92_=item.accel) != null ? _50_92_ : item.combo))))
+                    text = keyinfo.short((os.isMac ? (((_48_64_=item.combo) != null ? _48_64_ : item.accel)) : (((_48_92_=item.accel) != null ? _48_92_ : item.combo))))
                     div.appendChild(elem('span',{class:'popupCombo',text:text}))
                 }
                 else if (item.menu)
@@ -124,9 +122,9 @@ Popup = (function ()
 
     Popup.prototype["close"] = function (opt = {})
     {
-        var _100_14_, _101_14_, _105_15_, _108_22_, _112_22_, _89_42_, _89_48_, _90_33_, _94_14_, _97_14_, _98_14_, _99_14_
+        var _103_15_, _106_22_, _110_22_, _87_42_, _87_48_, _88_33_, _92_14_, _95_14_, _96_14_, _97_14_, _98_14_, _99_14_
 
-        if (_k_.empty((this.parent)) || ((_89_42_=this.parentMenu()) != null ? (_89_48_=_89_42_.elem) != null ? _89_48_.classList.contains('menu') : undefined : undefined))
+        if (_k_.empty((this.parent)) || ((_87_42_=this.parentMenu()) != null ? (_87_48_=_87_42_.elem) != null ? _87_48_.classList.contains('menu') : undefined : undefined))
         {
             if ('skip' === (typeof this.onClose === "function" ? this.onClose() : undefined))
             {
@@ -169,7 +167,7 @@ Popup = (function ()
 
     Popup.prototype["select"] = function (item, opt = {})
     {
-        var _131_17_, _134_17_, _138_20_
+        var _129_17_, _132_17_, _136_20_
 
         if (!(item != null))
         {
@@ -203,14 +201,14 @@ Popup = (function ()
             else
             {
                 br = item.getBoundingClientRect()
-                return this.popup = new Popup({items:items,parent:this,x:br.left + br.width,y:br.top,selectFirstItem:(opt != null ? opt.selectFirstItem : undefined)})
+                return this.popup = new Popup({items:items,parent:this,trail:this.trail + '▸' + item.item.text,x:br.left + br.width,y:br.top,selectFirstItem:(opt != null ? opt.selectFirstItem : undefined)})
             }
         }
     }
 
     Popup.prototype["closePopup"] = function ()
     {
-        var _161_14_
+        var _159_14_
 
         ;(this.popup != null ? this.popup.close({focus:false}) : undefined)
         return delete this.popup
@@ -236,7 +234,7 @@ Popup = (function ()
 
     Popup.prototype["activateOrNavigateRight"] = function ()
     {
-        var _181_20_
+        var _179_20_
 
         if ((this.selected != null))
         {
@@ -253,7 +251,7 @@ Popup = (function ()
 
     Popup.prototype["navigateRight"] = function ()
     {
-        var _190_25_, _193_25_
+        var _188_25_, _191_25_
 
         if (this.popup)
         {
@@ -271,7 +269,7 @@ Popup = (function ()
 
     Popup.prototype["parentMenu"] = function ()
     {
-        var _196_18_
+        var _194_18_
 
         if ((this.parent != null) && !this.parent.parent)
         {
@@ -281,7 +279,7 @@ Popup = (function ()
 
     Popup.prototype["nextItem"] = function ()
     {
-        var next, _208_38_
+        var next, _206_38_
 
         if (next = this.selected)
         {
@@ -297,7 +295,7 @@ Popup = (function ()
 
     Popup.prototype["prevItem"] = function ()
     {
-        var prev, _214_38_
+        var prev, _212_38_
 
         if (prev = this.selected)
         {
@@ -313,18 +311,17 @@ Popup = (function ()
 
     Popup.prototype["activate"] = function (item)
     {
-        var _227_20_, _227_24_, _229_39_, _232_52_
+        var _223_20_, _223_24_, _225_39_, _228_52_
 
-        console.log('popup activate item',item)
         if (((item.item != null ? item.item.cb : undefined) != null))
         {
             this.close({all:true})
-            return item.item.cb(((_229_39_=item.item.arg) != null ? _229_39_ : item.item.text))
+            return item.item.cb(((_225_39_=item.item.arg) != null ? _225_39_ : item.item.text))
         }
         else if (!item.item.menu)
         {
             this.close({all:true})
-            return post.emit('menuAction',((_232_52_=item.item.action) != null ? _232_52_ : item.item.text))
+            return post.emit('menuAction',((_228_52_=item.item.action) != null ? _228_52_ : item.item.text),this.trail)
         }
     }
 
@@ -387,14 +384,14 @@ Popup = (function ()
 
     Popup.prototype["focus"] = function ()
     {
-        var _281_20_
+        var _277_20_
 
         return (this.items != null ? this.items.focus() : undefined)
     }
 
     Popup.prototype["onFocusOut"] = function (event)
     {
-        var _285_34_
+        var _281_34_
 
         if (!(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {

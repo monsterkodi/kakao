@@ -43,3 +43,4 @@ export
     toWins: (event, args...) -> kakao.send 'window.post' event, args
         
     on: (event, cb) -> poster.addEventListener event, (e) -> cb.apply cb, e.args
+    removeListener: (event, cb) -> poster.removeEventListener event, cb

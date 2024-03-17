@@ -6,9 +6,9 @@
  0000000    0000000      000      0000000 
 ###
 
-use ../commandline/command
+use ../commandline/Command
 
-function Goto extends command
+function Goto extends Command
 
     @: (commandline) ->
         
@@ -23,6 +23,7 @@ function Goto extends command
     # 0000000      000     000   000  000   000     000   
         
     start: (name) ->
+        
         super name
         @showList()
         @showItems @listItems() 
@@ -38,9 +39,6 @@ function Goto extends command
     # 0000000  000  0000000      000     000     000     00000000  000   000  0000000 
     
     listItems: -> 
-        
-        log 'goto listItems not implemented!'
-        return
         
         items = []
         @types = {}
@@ -58,7 +56,8 @@ function Goto extends command
             name = k
             items.push text: k, line:'●' clss:'class'
             @types[name] = 'class'
-            
+           
+        log 'Goto.listItems' items
         items
 
     # 00000000  000   000  00000000   0000000  000   000  000000000  00000000

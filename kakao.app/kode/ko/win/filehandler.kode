@@ -225,11 +225,6 @@ class FileHandler
         
         tabState = editor.do.tabState()
         
-        # try
-            # post.emit 'menuAction' 'doMacro' actarg:'req' # !!!!!!!
-        # catch err
-            # error "macro req failed #{err}"
-            
         File.save file, editor.text(), (saved) ->
             
             return error 'File.save failed!' if not saved

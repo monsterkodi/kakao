@@ -335,7 +335,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var accels, action, combo, combos, event, item, key, keypath, menu, mod, _259_37_
+        var action, combo, combos, event, item, key, keypath, keypaths, menu, mod, trail, _253_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -349,15 +349,13 @@ Title = (function ()
         menu = this.templateCache
         if (_k_.empty(menu))
         {
-            console.log('no menu')
             return 'unhandled'
         }
-        accels = sds.find.key(menu,'accel')
-        combos = sds.find.key(menu,'combo')
-        var list = _k_.list(combos.concat(accels))
-        for (var _253_20_ = 0; _253_20_ < list.length; _253_20_++)
+        keypaths = sds.find.key(menu,'accel')
+        var list = _k_.list(keypaths)
+        for (var _247_20_ = 0; _247_20_ < list.length; _247_20_++)
         {
-            keypath = list[_253_20_]
+            keypath = list[_247_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -367,8 +365,16 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_259_37_=item.action) != null ? _259_37_ : item.text)
-                post.emit('menuAction',action)
+                action = ((_253_37_=item.action) != null ? _253_37_ : item.text)
+                trail = []
+                while (keypath.length > 1)
+                {
+                    keypath.pop()
+                    keypath.pop()
+                    trail.unshift(sds.get(menu,keypath).text)
+                }
+                trail = trail.join('▸')
+                post.emit('menuAction',action,trail)
                 return action
             }
         }

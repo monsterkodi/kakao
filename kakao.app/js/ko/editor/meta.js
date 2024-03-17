@@ -1,7 +1,5 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-import ranges from "../tools/ranges.js"
-
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 let stopEvent = dom.stopEvent
@@ -15,13 +13,15 @@ import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
+import ranges from "../tools/ranges.js"
+
 import File from "../tools/File.js"
 
 class Meta
 {
     constructor (editor)
     {
-        var _36_26_
+        var _36_26_, _40_13_
 
         this.editor = editor
     
@@ -49,7 +49,7 @@ class Meta
             this.editor.numbers.on('numberAdded',this.onNumber)
             this.editor.numbers.on('numberChanged',this.onNumber)
         }
-        this.elem.addEventListener('mousedown',this.onMouseDown)
+        ;(this.elem != null ? this.elem.addEventListener('mousedown',this.onMouseDown) : undefined)
     }
 
     onChanged (changeInfo)

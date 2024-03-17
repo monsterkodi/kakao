@@ -303,7 +303,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["onCmmdClick"] = function (event)
     {
-        var _244_20_
+        var _244_20_, _248_16_
 
         if (!(this.list != null))
         {
@@ -311,7 +311,7 @@ CommandLine = (function ()
             this.positionList()
             window.split.elem.appendChild(this.list)
         }
-        this.command.hideList()
+        ;(this.command != null ? this.command.hideList() : undefined)
         this.listCommands()
         this.focus()
         this.positionList()
@@ -407,13 +407,18 @@ CommandLine = (function ()
         return window.split.do("focus terminal")
     }
 
-    CommandLine.prototype["handleMenuAction"] = function (name, opt)
+    CommandLine.prototype["handleMenuAction"] = function (name, trail)
     {
-        if ((opt != null ? opt.command : undefined))
+        var cmd, cmdName
+
+        if (trail.startsWith('Command▸'))
         {
-            if (this.commandForName(opt.command))
+            cmdName = trail.split('▸')[1].toLowerCase()
+            console.log('CommandLine.handleMenuAction',this.commandForName(cmdName))
+            if (cmd = this.commandForName(cmdName))
             {
-                this.startCommand(opt.command)
+                console.log('startCommand',cmdName,name)
+                this.startCommand(cmdName)
                 return
             }
         }
@@ -422,7 +427,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _333_19_
+        var _335_19_
 
         if (combo === 'esc')
         {
@@ -441,7 +446,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _341_19_, _349_55_, _350_55_, _360_58_
+        var split, _1_8_, _343_19_, _351_55_, _352_55_, _362_58_
 
         if ((this.command != null))
         {

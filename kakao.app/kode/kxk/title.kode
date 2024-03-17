@@ -235,30 +235,32 @@ function Title
 
         { mod, key, combo, event } = modKeyComboEvent
         
-        # log "mod #{mod} key #{key} combo #{combo}"
+        # log "Title.handleKeyInfo mod #{mod} key #{key} combo #{combo}"
         
-        if empty combo
-            # log 'no combo'
-            return 'unhandled'
+        if empty combo ➜ return 'unhandled'
         
         menu = @templateCache
         
-        if empty menu
-            log 'no menu'
-            return 'unhandled'
+        if empty menu ➜ return 'unhandled'
+        keypaths = sds.find.key menu, 'accel'
         
-        accels = sds.find.key menu, 'accel'
-        combos = sds.find.key menu, 'combo'
-        
-        for keypath in combos.concat accels # swap on win?
+        for keypath in keypaths 
             combos = sds.get(menu, keypath).split ' '
             combos = combos.map (c) -> keyinfo.convertCmdCtrl c
             if combo in combos
                 keypath.pop()
                 item = sds.get menu, keypath
                 action = item.action ? item.text
-                # log 'menuAction' action
-                post.emit 'menuAction' action
+                
+                trail = []
+                while keypath.length > 1
+                    keypath.pop()
+                    keypath.pop()
+                    trail.unshift sds.get(menu, keypath).text
+                trail = trail.join '▸'
+                
+                # log 'Title.handleKeyInfo post menuAction' action, trail
+                post.emit 'menuAction' action, trail
                 return action
 
         'unhandled'

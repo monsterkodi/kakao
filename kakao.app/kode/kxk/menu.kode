@@ -19,11 +19,11 @@ function Menu
         
         for item in opt.items
             continue if item.hide
-            div = elem class: 'menuItem' text: item.text
+            div = elem class:'menuItem' text:item.text
             div.item = item
             div.addEventListener 'mousedown' @onMouseDown
             if item.combo?
-                combo = elem 'span' class:'popupCombo' text: keyinfo.short item.combo
+                combo = elem 'span' class:'popupCombo' text:keyinfo.short item.combo
                 div.appendChild combo
             @elem.appendChild div
 
@@ -126,11 +126,13 @@ function Menu
     # 000   000  000          000     000     000     000   000     000     000       
     # 000   000   0000000     000     000      0      000   000     000     00000000  
     
+    trail: -> ''
+    
     activate: (item, opt={}) -> 
         
-        items = item.item.menu
+        # log 'kxk.menu.activate' item.item
         
-        if items
+        if items = item?.item?.menu
             
             if @popup
                 @popup.close focus:false
@@ -140,8 +142,9 @@ function Menu
             pr = item.parentNode.getBoundingClientRect()
             opt.items = items
             opt.parent = @
+            opt.trail = item.item.text
             opt.x = br.left - 1
-            opt.y = pr.top+pr.height-1
+            opt.y = pr.top + pr.height - 1
             opt.class = 'titlemenu'
             @popup = popup.menu opt
             if opt.selectFirstItem == false

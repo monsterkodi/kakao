@@ -1,15 +1,12 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var $, setStyle
-
 import events from "../../kxk/events.js"
 
 import elem from "../../kxk/elem.js"
 
 import dom from "../../kxk/dom.js"
-
-$ = dom.$
-setStyle = dom.setStyle
+let $ = dom.$
+let setStyle = dom.setStyle
 
 class Numbers extends events
 {
@@ -27,6 +24,7 @@ class Numbers extends events
         this.onLinesShown = this.onLinesShown.bind(this)
         this.lineDivs = {}
         this.elem = $('.numbers',this.editor.view)
+        console.log('Numbers',this.elem,this.editor,this.editor.view)
         this.editor.on('clearLines',this.onClearLines)
         this.editor.on('linesShown',this.onLinesShown)
         this.editor.on('linesShifted',this.onLinesShifted)
@@ -130,10 +128,10 @@ class Numbers extends events
 
     onFontSizeChange ()
     {
-        var fsz
+        var fsz, _143_13_
 
         fsz = Math.min(22,this.editor.size.fontSize - 4)
-        this.elem.style.fontSize = `${fsz}px`
+        if ((this.elem != null)) { this.elem.style.fontSize = `${fsz}px` }
         return setStyle('.linenumber','padding-top',`${parseInt(this.editor.size.fontSize / 10)}px`)
     }
 

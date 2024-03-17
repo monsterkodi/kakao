@@ -2,12 +2,12 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Goto
 
-import command from "../commandline/command.js"
+import Command from "../commandline/Command.js"
 
 
 Goto = (function ()
 {
-    _k_.extend(Goto, command)
+    _k_.extend(Goto, Command)
     function Goto (commandline)
     {
         Goto.__super__.constructor.call(this,commandline)
@@ -19,48 +19,47 @@ Goto = (function ()
     {
         Goto.__super__.start.call(this,name)
     
-        var _31_26_, _31_36_
+        var _32_26_, _32_36_
 
         this.showList()
         this.showItems(this.listItems())
         this.select(0)
         this.positionList()
-        return {text:((_31_36_=(this.commandList != null ? this.commandList.line(0) : undefined)) != null ? _31_36_ : ''),select:true}
+        return {text:((_32_36_=(this.commandList != null ? this.commandList.line(0) : undefined)) != null ? _32_36_ : ''),select:true}
     }
 
     Goto.prototype["listItems"] = function ()
     {
         var clsss, files, func, funcs, items, k, name
 
-        console.log('goto listItems not implemented!')
-        return
         items = []
         this.types = {}
         files = {}
         funcs = (files[window.editor.currentFile] != null ? files[window.editor.currentFile].funcs : undefined)
         funcs = (funcs != null ? funcs : [])
         var list = _k_.list(funcs)
-        for (var _52_17_ = 0; _52_17_ < list.length; _52_17_++)
+        for (var _50_17_ = 0; _50_17_ < list.length; _50_17_++)
         {
-            func = list[_52_17_]
+            func = list[_50_17_]
             items.push({text:func.name,line:'▸',clss:'method'})
             this.types[func.name] = 'func'
         }
         clsss = {}
         var list1 = _k_.list(Object.keys(clsss))
-        for (var _57_14_ = 0; _57_14_ < list1.length; _57_14_++)
+        for (var _55_14_ = 0; _55_14_ < list1.length; _55_14_++)
         {
-            k = list1[_57_14_]
+            k = list1[_55_14_]
             name = k
             items.push({text:k,line:'●',clss:'class'})
             this.types[name] = 'class'
         }
+        console.log('Goto.listItems',items)
         return items
     }
 
     Goto.prototype["execute"] = function (command)
     {
-        var editor, line, type, _88_35_
+        var editor, line, type, _87_35_
 
         command = Goto.__super__.execute.call(this,command)
         if (/^\-?\d+$/.test(command))
@@ -86,7 +85,7 @@ Goto = (function ()
         }
         else if (command.length)
         {
-            type = ((_88_35_=this.types[command]) != null ? _88_35_ : 'func')
+            type = ((_87_35_=this.types[command]) != null ? _87_35_ : 'func')
             window.editor.jumpTo(command,{type:type,dontList:true,extend:this.name === 'selecto'})
             return {focus:'editor',do:"show editor"}
         }

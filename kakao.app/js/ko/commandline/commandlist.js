@@ -27,7 +27,6 @@ CommandList = (function ()
         this.items = []
         this.metaQueue = []
         this.maxLines = 17
-        this.numbers.elem.style.fontSize = '19px'
     }
 
     CommandList.prototype["addItems"] = function (items)

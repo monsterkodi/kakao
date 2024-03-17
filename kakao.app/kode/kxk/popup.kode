@@ -7,13 +7,10 @@
 ###
 
 use ./os
-use ./dom
+use ./dom ▪ elem stopEvent
 use ./post
 use ./slash
 use ./keyinfo
-use ./popup
-
-{ elem, stopEvent } = dom
 
 function Popup
     
@@ -23,6 +20,7 @@ function Popup
         @items     = elem class:'popup' tabindex:0
         @parent    = opt.parent
         @onClose   = opt.onClose
+        @trail     = opt.trail
         
         @items.classList.add opt.class if opt.class
         
@@ -154,7 +152,7 @@ function Popup
                 @closePopup()
             else
                 br = item.getBoundingClientRect()
-                @popup = new Popup items:items, parent:@, x:br.left+br.width, y:br.top, selectFirstItem:opt?.selectFirstItem
+                @popup = new Popup items:items, parent:@, trail:@trail+'▸'+item.item.text, x:br.left+br.width, y:br.top, selectFirstItem:opt?.selectFirstItem
 
     closePopup: ->
         
@@ -222,14 +220,12 @@ function Popup
     
     activate: (item) =>
         
-        log 'popup activate item' item
-
         if item.item?.cb?
             @close all:true
             item.item.cb item.item.arg ? item.item.text
         else if not item.item.menu
             @close all:true
-            post.emit 'menuAction' item.item.action ? item.item.text#, item.item
+            post.emit 'menuAction' item.item.action ? item.item.text, @trail
 
     toggle: (item) ->
         
