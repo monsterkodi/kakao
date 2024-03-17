@@ -57,7 +57,6 @@ class Crumb
         }
         if (this.column.index === 0)
         {
-            console.log('Crumb.onMouseUp',event.target.id)
             if (event.target.id)
             {
                 this.column.browser.browse(event.target.id)
@@ -85,7 +84,6 @@ class Crumb
 
     setFile (file)
     {
-        console.log('Crumb.setFile',file,slash.tilde(file))
         if (this.column.index === 0)
         {
             return this.elem.innerHTML = File.crumbSpan(slash.tilde(file))

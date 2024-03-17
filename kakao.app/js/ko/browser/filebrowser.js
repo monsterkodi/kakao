@@ -490,7 +490,7 @@ FileBrowser = (function ()
             column = list[_394_19_]
             if (column.path() === info.dir)
             {
-                this.loadDirItem({file:info.dir,type:'dir'},column.index,{active:column.activePath(),focus:false})
+                this.loadDirItem({path:info.dir,type:'dir'},column.index,{active:column.activePath(),focus:false})
             }
             if (column.path() === info.path && info.change === 'remove')
             {

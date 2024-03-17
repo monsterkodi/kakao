@@ -8,7 +8,6 @@
 
 class FFS
     
-    @watch:         (p)  -> #log 'FFS.watch' p
     @list:          (p) ○-> await kakao 'fs.list'       p
     @read:          (p) ○-> await kakao 'fs.read'       p
     @write:      (p, t) ○-> await kakao 'fs.write'      p, t
@@ -25,7 +24,7 @@ class FFS
     @mkdir:         (p) ○-> await kakao 'fs.mkdir'      p
     @info:          (p) ○-> await kakao 'fs.info'       p
     @type:          (p) ○-> i = await kakao 'fs.info'   p; i.type
-    @isFile:        (p) ○-> await KFS.fileExists        p
-    @isDir:         (p) ○-> await KFS.dirExists         p
+    @isFile:        (p) ○-> await FFS.fileExists        p
+    @isDir:         (p) ○-> await FFS.dirExists         p
         
 export FFS
