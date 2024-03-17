@@ -1,6 +1,6 @@
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
 
-var Kakao
+var k, kakao, Kakao, v
 
 import bundle from "./bundle.js"
 
@@ -51,6 +51,16 @@ Kakao = (function ()
     return Kakao
 })()
 
-window.kakao = Kakao
+
+kakao = function ()
+{
+    return Kakao.request.apply(null,arguments)
+}
+for (k in Kakao)
+{
+    v = Kakao[k]
+    kakao[k] = v
+}
+window.kakao = kakao
 window.process = {env:{home:'sweet/home',tmpdir:'/tmp',user:'kakao_user'}}
-export default Kakao;
+export default kakao;

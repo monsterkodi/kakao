@@ -1,31 +1,31 @@
 ###
-    000   000  00000000   0000000  
-    000  000   000       000       
-    0000000    000000    0000000   
-    000  000   000            000  
-    000   000  000       0000000   
+    00000000   00000000   0000000  
+    000        000       000       
+    000000     000000    0000000   
+    000        000            000  
+    000        000       0000000   
 ###
 
-class KFS
+class FFS
     
-    @watch:         (p)  -> log 'KFS.watch' p
-    @list:          (p) ○-> await kakao.request 'fs.list'       p
-    @read:          (p) ○-> await kakao.request 'fs.read'       p
-    @write:      (p, t) ○-> await kakao.request 'fs.write'      p, t
-    @exists:        (p) ○-> await kakao.request 'fs.exists'     p
-    @fileExists:    (p) ○-> await kakao.request 'fs.fileExists' p
-    @dirExists:     (p) ○-> await kakao.request 'fs.dirExists'  p
-    @isWritable:    (p) ○-> await kakao.request 'fs.isWritable' p
-    @isReadable:    (p) ○-> await kakao.request 'fs.isReadable' p
-    @duplicate:     (p) ○-> await kakao.request 'fs.duplicate'  p
-    @remove:        (p) ○-> await kakao.request 'fs.remove'     p
-    @trash:         (p) ○-> await kakao.request 'fs.trash'      p
-    @move:       (p, d) ○-> await kakao.request 'fs.move'       p, d
-    @copy:       (p, d) ○-> await kakao.request 'fs.copy'       p, d
-    @mkdir:         (p) ○-> await kakao.request 'fs.mkdir'      p
-    @info:          (p) ○-> await kakao.request 'fs.info'       p
-    @type:          (p) ○-> i = await kakao.request 'fs.info'   p; i.type
-    @isFile:        (p) ○-> await KFS.fileExists                p
-    @isDir:         (p) ○-> await KFS.dirExists                 p
+    @watch:         (p)  -> #log 'FFS.watch' p
+    @list:          (p) ○-> await kakao 'fs.list'       p
+    @read:          (p) ○-> await kakao 'fs.read'       p
+    @write:      (p, t) ○-> await kakao 'fs.write'      p, t
+    @exists:        (p) ○-> await kakao 'fs.exists'     p
+    @fileExists:    (p) ○-> await kakao 'fs.fileExists' p
+    @dirExists:     (p) ○-> await kakao 'fs.dirExists'  p
+    @isWritable:    (p) ○-> await kakao 'fs.isWritable' p
+    @isReadable:    (p) ○-> await kakao 'fs.isReadable' p
+    @duplicate:     (p) ○-> await kakao 'fs.duplicate'  p
+    @remove:        (p) ○-> await kakao 'fs.remove'     p
+    @trash:         (p) ○-> await kakao 'fs.trash'      p
+    @move:       (p, d) ○-> await kakao 'fs.move'       p, d
+    @copy:       (p, d) ○-> await kakao 'fs.copy'       p, d
+    @mkdir:         (p) ○-> await kakao 'fs.mkdir'      p
+    @info:          (p) ○-> await kakao 'fs.info'       p
+    @type:          (p) ○-> i = await kakao 'fs.info'   p; i.type
+    @isFile:        (p) ○-> await KFS.fileExists        p
+    @isDir:         (p) ○-> await KFS.dirExists         p
         
-export KFS
+export FFS

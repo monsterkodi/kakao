@@ -12,15 +12,15 @@ kakao.init(function ()
 {
     var main, _27_22_
 
-    kakao.send('window.setSize',250,250)
-    kakao.send('window.center')
+    kakao('window.setSize',250,250)
+    kakao('window.center')
     post.on('window.blur',function ()
     {
-        return kakao.send('window.close')
+        return kakao('window.close')
     })
     window.onkeydown = function ()
     {
-        return kakao.send('window.close')
+        return kakao('window.close')
     }
     main = $('#main')
     main.classList.add('app-drag-region')

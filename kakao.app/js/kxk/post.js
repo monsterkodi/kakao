@@ -46,7 +46,7 @@ export default {poster:poster,emit:function (event, ...args)
     return poster.post(event,args)
 },toWins:function (event, ...args)
 {
-    return kakao.send('window.post',event,args)
+    return kakao('window.post',event,args)
 },on:function (event, cb)
 {
     if (_k_.isFunc(cb))
