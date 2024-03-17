@@ -85,8 +85,8 @@ Window = (function ()
     {
         var s
 
-        kakao.send('window.setSize',750,750)
-        kakao.send('window.center')
+        kakao('window.setSize',750,750)
+        kakao('window.center')
         this.id = win.id
         this.filehandler = window.filehandler = new FileHandler
         this.filewatcher = window.filewatcher = new watcher

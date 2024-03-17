@@ -57,12 +57,16 @@ function Kakao
     @post:   kxk.post    # posts messages to modules in the window process
     @ffs:    kxk.ffs     # fake fs
 
-window.kakao = Kakao # kakao sets itself in the global window scope
+kakao = -> Kakao.request.apply null, arguments
+for k,v of Kakao
+    kakao[k] = v
+    
+window.kakao = kakao # kakao sets itself in the global window scope
 
 window.process = 
     env:
         home:   'sweet/home'
         tmpdir: '/tmp'
         user:   'kakao_user'
-
-export Kakao
+        
+export kakao

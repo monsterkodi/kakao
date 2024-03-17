@@ -70,7 +70,7 @@ function Win
 
         @restoreFromStash()
         
-        kakao.send 'win.setMinSize' 250 125
+        kakao 'win.setMinSize' 250 125
         
         # elem class:'test' text:"○○" parent:main
         # elem class:'test' text:"#{id}" parent:main
@@ -85,7 +85,7 @@ function Win
             window.stash.load(old.path).then ->
                 ffs.remove old.path
                 if valid list
-                    kakao.send 'window.new' 'ko.html' #"window.aboutImage = \"#{window.aboutImage}\";"
+                    kakao 'window.new' 'ko.html' #"window.aboutImage = \"#{window.aboutImage}\";"
         
     saveStash: ->
         
@@ -106,7 +106,7 @@ function Win
         
         fps = parseInt 1000/delta
         if fps < 20
-            kakao.send "window.framerateDrop" fps
+            kakao "window.framerateDrop" fps
             
         @delegate?.onWindowAnimationTick? @, delta:delta, fps:fps, time:now
                                     
@@ -118,7 +118,7 @@ function Win
     onStashLoaded: => 
         
         if frame = window.stash.get 'frame'
-            kakao.send 'window.setFrame' frame
+            kakao 'window.setFrame' frame
     
     # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
@@ -131,16 +131,16 @@ function Win
         return if @delegate?.onWindowMenuAction? @, action
             
         switch action.toLowerCase()
-            'focus next'     ➜ kakao.send 'window.focusNext'
-            'focus previous' ➜ kakao.send 'window.focusPrev'
-            'new window'     ➜ kakao.send 'window.new' slash.file document.URL
-            'maximize'       ➜ kakao.send 'window.maximize'
-            'minimize'       ➜ kakao.send 'window.minimize'
-            'screenshot'     ➜ kakao.send 'window.snapshot'
-            'reload'         ➜ kakao.send 'window.reload'
-            'devtools'       ➜ kakao.send 'window.toggleInspector'
-            'quit'           ➜ kakao.send 'app.quit'
-            'open ...'       ➜ kakao.send 'window.new' 'ko.html'
+            'focus next'     ➜ kakao 'window.focusNext'
+            'focus previous' ➜ kakao 'window.focusPrev'
+            'new window'     ➜ kakao 'window.new' slash.file document.URL
+            'maximize'       ➜ kakao 'window.maximize'
+            'minimize'       ➜ kakao 'window.minimize'
+            'screenshot'     ➜ kakao 'window.snapshot'
+            'reload'         ➜ kakao 'window.reload'
+            'devtools'       ➜ kakao 'window.toggleInspector'
+            'quit'           ➜ kakao 'app.quit'
+            'open ...'       ➜ kakao 'window.new' 'ko.html'
             'close'          
                 # if the window is closed by the user 
                 # (titlebar close button, menu item or keyboard shortcut)
@@ -148,12 +148,12 @@ function Win
                     if list.length > 1              # if not the last window
                         window.stash.clear()        #   remove the stash file
                         @saveStashOnClose = false   #   and prevent saving it 
-                    kakao.send 'window.close'
+                    kakao 'window.close'
             'about'          
                 if window.aboutImage
-                    kakao.send 'window.new' 'about.html' "window.aboutImage = \"#{window.aboutImage}\";"
+                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{window.aboutImage}\";"
                 else
-                    kakao.send 'window.new' 'about.html'
+                    kakao 'window.new' 'about.html'
         0
         
     # 000   000  00000000  000   000

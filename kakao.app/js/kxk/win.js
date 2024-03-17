@@ -100,7 +100,7 @@ Win = (function ()
         this.id = window.winID
         window.stash = new stash(`win/${this.id}`)
         this.restoreFromStash()
-        kakao.send('win.setMinSize',250,125)
+        kakao('win.setMinSize',250,125)
         ;((_78_17_=this.delegate) != null ? typeof (_78_34_=_78_17_.onWindowCreated) === "function" ? _78_34_(this) : undefined : undefined)
     }
 
@@ -117,7 +117,7 @@ Win = (function ()
                 ffs.remove(old.path)
                 if (!_k_.empty(list))
                 {
-                    return kakao.send('window.new','ko.html')
+                    return kakao('window.new','ko.html')
                 }
             })
         }
@@ -142,7 +142,7 @@ Win = (function ()
         fps = parseInt(1000 / delta)
         if (fps < 20)
         {
-            kakao.send("window.framerateDrop",fps)
+            kakao("window.framerateDrop",fps)
         }
         return ((_111_17_=this.delegate) != null ? typeof (_111_40_=_111_17_.onWindowAnimationTick) === "function" ? _111_40_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined)
     }
@@ -190,7 +190,7 @@ Win = (function ()
 
         if (frame = window.stash.get('frame'))
         {
-            return kakao.send('window.setFrame',frame)
+            return kakao('window.setFrame',frame)
         }
     }
 
@@ -205,34 +205,34 @@ Win = (function ()
         switch (action.toLowerCase())
         {
             case 'focus next':
-                kakao.send('window.focusNext')
+                kakao('window.focusNext')
                 break
             case 'focus previous':
-                kakao.send('window.focusPrev')
+                kakao('window.focusPrev')
                 break
             case 'new window':
-                kakao.send('window.new',slash.file(document.URL))
+                kakao('window.new',slash.file(document.URL))
                 break
             case 'maximize':
-                kakao.send('window.maximize')
+                kakao('window.maximize')
                 break
             case 'minimize':
-                kakao.send('window.minimize')
+                kakao('window.minimize')
                 break
             case 'screenshot':
-                kakao.send('window.snapshot')
+                kakao('window.snapshot')
                 break
             case 'reload':
-                kakao.send('window.reload')
+                kakao('window.reload')
                 break
             case 'devtools':
-                kakao.send('window.toggleInspector')
+                kakao('window.toggleInspector')
                 break
             case 'quit':
-                kakao.send('app.quit')
+                kakao('app.quit')
                 break
             case 'open ...':
-                kakao.send('window.new','ko.html')
+                kakao('window.new','ko.html')
                 break
             case 'close':
                 ffs.list(kakao.bundle.app('.stash/win')).then((function (list)
@@ -242,17 +242,17 @@ Win = (function ()
                         window.stash.clear()
                         this.saveStashOnClose = false
                     }
-                    return kakao.send('window.close')
+                    return kakao('window.close')
                 }).bind(this))
                 break
             case 'about':
                 if (window.aboutImage)
                 {
-                    kakao.send('window.new','about.html',`window.aboutImage = \"${window.aboutImage}\";`)
+                    kakao('window.new','about.html',`window.aboutImage = \"${window.aboutImage}\";`)
                 }
                 else
                 {
-                    kakao.send('window.new','about.html')
+                    kakao('window.new','about.html')
                 }
                 break
         }

@@ -57,10 +57,10 @@ function Window #extends win
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         
-    onWindowCreated:        (win)           => 
+    onWindowCreated: (win) => 
         
-        kakao.send 'window.setSize' 750 750
-        kakao.send 'window.center'
+        kakao 'window.setSize' 750 750
+        kakao 'window.center'
         
         @id = win.id
         # log 'onWindowCreated' win.id

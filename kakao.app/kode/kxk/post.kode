@@ -40,7 +40,7 @@ export
     poster: poster
 
     emit: (event, args...) -> poster.post event, args
-    toWins: (event, args...) -> kakao.send 'window.post' event, args
+    toWins: (event, args...) -> kakao 'window.post' event, args
         
     on: (event, cb) -> 
         if cb is func
