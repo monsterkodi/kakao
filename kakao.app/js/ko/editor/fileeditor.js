@@ -210,7 +210,6 @@ FileEditor = (function ()
         {
             return fp.main === 0 && _k_.empty(fp.cursors) && _k_.empty(fp.selections) && _k_.empty(fp.highlights)
         })
-        console.log('stash filePositions',filePositions)
         return window.stash.set('filePositions',filePositions)
     }
 
@@ -226,19 +225,16 @@ FileEditor = (function ()
         if ((filePositions[this.currentFile] != null))
         {
             s = filePositions[this.currentFile]
-            console.log('restoreScrollCursorsAndSelections',this.currentFile,s)
             cursors = ((_210_32_=s.cursors) != null ? _210_32_ : [[0,0]])
             cursors = cursors.map((function (c)
             {
                 return [c[0],_k_.clamp(0,this.numLines() - 1,c[1])]
             }).bind(this))
-            console.log('@numLines',this.numLines(),cursors)
             this.setCursors(cursors)
             this.setSelections(((_216_40_=s.selections) != null ? _216_40_ : []))
             this.setHighlights(((_217_40_=s.highlights) != null ? _217_40_ : []))
             this.setMain(((_218_34_=s.main) != null ? _218_34_ : 0))
             this.setState(this.state)
-            console.log('@state',this.state)
             if (s.scroll)
             {
                 this.scroll.to(s.scroll)

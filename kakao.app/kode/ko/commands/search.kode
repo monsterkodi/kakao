@@ -6,7 +6,7 @@
 0000000   00000000  000   000  000   000   0000000  000   000
 ###
 
-use ../../klor/klor
+use ../../kolor/kolor
 use ../../kxk/kstr
 use ../../kxk/post
 use ../../kxk/slash
@@ -176,7 +176,7 @@ function FileSearcher
                 
                 f = @found[fi]
                 
-                regions = klor.dissect([f[1]], @syntaxName)[0]
+                regions = kolor.dissect([f[1]], @syntaxName)[0]
                 dss = matchr.merge regions, matchr.dissect f[2]
                 
                 meta =

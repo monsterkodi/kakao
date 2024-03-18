@@ -6,7 +6,7 @@
 000   000  0000000   0000000   000   000
 ###
 
-use ../kxk/kolor
+use ../kxk/klor
 use ./extlang ▪ exts lang
 
 swtch =
@@ -1458,7 +1458,7 @@ syntax = (arg) ->
 
 export
 
-    kolor:      kolor
+    klor:       klor
     exts:       exts
     parse:      parse
     chunked:    chunked

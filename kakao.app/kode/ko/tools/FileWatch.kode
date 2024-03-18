@@ -31,7 +31,7 @@ class FileWatch
         @watchers[file] ?= 0
         @watchers[file]++
         
-        log 'onWatch' @watchers
+        # log 'onWatch' @watchers
                 
     onUnwatch: (file) =>
 
@@ -42,13 +42,13 @@ class FileWatch
             if @watchers[file] <= 0
                 delete @watchers[file]
             
-        log 'onUnwatch' @watchers
+        # log 'onUnwatch' @watchers
         
     onChange: (change, path) =>
         
         for k,v of @watchers
             if k == path
-                log 'watchers' @watchers
+                # log 'watchers' @watchers
                 log 'filewatch!' change, path
                 switch change
                     'deleted' ➜ post.emit 'removeFile' path

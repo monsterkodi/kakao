@@ -183,7 +183,7 @@ function FileEditor extends TextEditor
             
         deleteBy filePositions, (f,fp) -> fp.main == 0 and empty fp.cursors and empty fp.selections and empty fp.highlights
         
-        log 'stash filePositions' filePositions
+        # log 'stash filePositions' filePositions
         
         window.stash.set 'filePositions' filePositions
 
@@ -205,12 +205,12 @@ function FileEditor extends TextEditor
 
             s = filePositions[@currentFile]
             
-            log 'restoreScrollCursorsAndSelections' @currentFile, s
+            # log 'restoreScrollCursorsAndSelections' @currentFile, s
 
             cursors = s.cursors ? [[0,0]]
             cursors = cursors.map (c) => [c[0], clamp(0,@numLines()-1,c[1])]
             
-            log '@numLines' @numLines(), cursors
+            # log '@numLines' @numLines(), cursors
 
             @setCursors    cursors
             @setSelections s.selections ? []
@@ -218,7 +218,7 @@ function FileEditor extends TextEditor
             @setMain       s.main ? 0
             @setState      @state
             
-            log '@state' @state
+            # log '@state' @state
 
             @scroll.to s.scroll if s.scroll
             @scroll.cursorIntoView()

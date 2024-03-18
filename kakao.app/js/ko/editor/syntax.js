@@ -2,7 +2,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var __dirname
 
-import klor from "../../klor/klor.js"
+import kolor from "../../kolor/kolor.js"
 
 import slash from "../../kxk/slash.js"
 
@@ -29,7 +29,7 @@ class Syntax
 
     newDiss (li)
     {
-        return klor.dissect([this.getLine(li)],this.name)[0]
+        return kolor.dissect([this.getLine(li)],this.name)[0]
     }
 
     getDiss (li)
@@ -46,7 +46,7 @@ class Syntax
 
     setLines (lines)
     {
-        return this.diss = klor.dissect(lines,this.name)
+        return this.diss = kolor.dissect(lines,this.name)
     }
 
     changed (changeInfo)
@@ -163,7 +163,7 @@ class Syntax
 
         if (!(_k_.in(n,['browser','ko','commandline','macro','term','test'])))
         {
-            result = klor.ranges(text,n)
+            result = kolor.ranges(text,n)
         }
         else
         {
@@ -253,7 +253,7 @@ class Syntax
                 this.matchrConfigs[syntaxName] = matchr.config(patterns)
             }
         }
-        this.syntaxNames = this.syntaxNames.concat(klor.exts)
+        this.syntaxNames = this.syntaxNames.concat(kolor.exts)
         console.log('Syntax.init',this.syntaxNames)
         return this.syntaxNames
     }
