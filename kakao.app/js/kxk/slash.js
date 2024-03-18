@@ -13,7 +13,7 @@ class Slash
 
     static path (p)
     {
-        var arr
+        var arr, tilde
 
         if (arguments.length > 1)
         {
@@ -28,8 +28,13 @@ class Slash
         {
             return ''
         }
+        if (p.startsWith('~/'))
+        {
+            p = Slash.untilde(p)
+            tilde = true
+        }
+        p = Slash.unenv(p)
         p = Slash.normalize(p)
-        p = Slash.untilde(p)
         if (!p)
         {
             console.log('no pee?',p)
@@ -42,6 +47,10 @@ class Slash
         if (p.endsWith(':') && p.length === 2)
         {
             p = p + '/'
+        }
+        if (tilde)
+        {
+            p = Slash.tilde(p)
         }
         return p
     }
@@ -210,7 +219,7 @@ class Slash
     {
         var c, clmn, d, f, l, line, split
 
-        var _172_14_ = Slash.splitDrive(p); f = _172_14_[0]; d = _172_14_[1]
+        var _175_14_ = Slash.splitDrive(p); f = _175_14_[0]; d = _175_14_[1]
 
         split = String(f).split(':')
         if (split.length > 1)
@@ -241,7 +250,7 @@ class Slash
     {
         var c, f, l
 
-        var _184_16_ = Slash.splitFileLine(p); f = _184_16_[0]; l = _184_16_[1]; c = _184_16_[2]
+        var _187_16_ = Slash.splitFileLine(p); f = _187_16_[0]; l = _187_16_[1]; c = _187_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -255,7 +264,7 @@ class Slash
     {
         var f, l
 
-        var _189_14_ = Slash.splitFileLine(p); f = _189_14_[0]; l = _189_14_[1]
+        var _192_14_ = Slash.splitFileLine(p); f = _192_14_[0]; l = _192_14_[1]
 
         if (l > 1)
         {
@@ -323,7 +332,7 @@ class Slash
 
     static pathlist (p)
     {
-        var list
+        var comp, list
 
         if (!(p != null ? p.length : undefined))
         {
@@ -335,11 +344,23 @@ class Slash
         {
             p = p.slice(0, p.length - 1)
         }
-        list = [p]
-        while (Slash.dir(p) !== '')
+        else if (p === '/')
         {
-            list.unshift(Slash.dir(p))
-            p = Slash.dir(p)
+            return ['/']
+        }
+        list = [p]
+        comp = p.split(Slash.sep)
+        while (comp.length > 1)
+        {
+            comp.pop()
+            if (comp.length === 1 && comp[0] === '')
+            {
+                list.unshift(Slash.sep)
+            }
+            else
+            {
+                list.unshift(comp.join(Slash.sep))
+            }
         }
         return list
     }
@@ -378,7 +399,14 @@ class Slash
         {
             p = p.slice(0, -1)
         }
-        components = p.split(Slash.sep)
+        if (p === '~')
+        {
+            components = Slash.untilde(p).split(Slash.sep)
+        }
+        else
+        {
+            components = p.split(Slash.sep)
+        }
         file = components.slice(-1)[0]
         dots = file.split('.')
         ext = ((dots.length > 1 && dots.slice(-1)[0].length) ? dots.pop() : '')
@@ -393,17 +421,23 @@ class Slash
 
     static home ()
     {
-        return process.env.HOME
+        var _311_35_
+
+        return ((_311_35_=globalThis.homeDir) != null ? _311_35_ : process.env.HOME)
     }
 
     static user ()
     {
-        return process.env.USER
+        var _312_35_
+
+        return ((_312_35_=globalThis.useName) != null ? _312_35_ : process.env.USER)
     }
 
     static tmpdir ()
     {
-        return process.env.TMPDIR
+        var _313_35_
+
+        return ((_313_35_=globalThis.tmpDir) != null ? _313_35_ : process.env.TMPDIR)
     }
 
     static tmpfile (ext)
@@ -439,7 +473,7 @@ class Slash
             }
             i = p.indexOf('$',i + 1)
         }
-        return Slash.path(p)
+        return p
     }
 
     static fileUrl (p)

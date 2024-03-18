@@ -31,10 +31,11 @@ class Slash
             
         return '' if empty p
         
+        if p.startsWith '~/'
+            p = Slash.untilde p
+            tilde = true
+        p = Slash.unenv p
         p = Slash.normalize p
-        
-        p = Slash.untilde p
-        # p = Slash.unenv p
         
         if not p
             log 'no pee?' p
@@ -45,6 +46,8 @@ class Slash
             
         if p.endsWith(':') and p.length == 2
             p = p + '/'
+            
+        p = Slash.tilde p if tilde
             
         p
         
@@ -235,15 +238,24 @@ class Slash
         if not p?.length
             Slash.error "Slash.pathlist -- no path?" 
             return []
-
+            
         p = Slash.path p
             
         if p.length > 1 and p[p.length-1] == '/' and p[p.length-2] != ':'
             p = p[...p.length-1] 
+        else if p == '/'
+            return ['/']
+            
         list = [p]
-        while Slash.dir(p) != ''
-            list.unshift Slash.dir p
-            p = Slash.dir p
+        
+        comp = p.split Slash.sep
+        while comp.length > 1
+            comp.pop()
+            if comp.length == 1 and comp[0] == ''
+                list.unshift Slash.sep
+            else
+                list.unshift comp.join Slash.sep
+            
         list
         
     # 0000000    000  00000000           00000000  000  000      00000000        000   000   0000000   00     00  00000000
@@ -266,11 +278,14 @@ class Slash
     # 000        000   000  000   000  0000000   00000000  
     
     @parse: (p) ->
-        
+                
         p = Slash.path p
-
         p = p[...-1] if p.endsWith Slash.sep
-        components = p.split Slash.sep
+        
+        if p == '~'
+            components = Slash.untilde(p).split Slash.sep
+        else
+            components = p.split Slash.sep
         
         file = components[-1]
 
@@ -293,9 +308,10 @@ class Slash
     # 000 0 000  000       000  000         
     # 000   000  000  0000000    0000000    
     
-    @home:      -> process.env.HOME  
-    @user:      -> process.env.USER  
-    @tmpdir:    -> process.env.TMPDIR
+    @home:   -> globalThis.homeDir ? process.env.HOME  
+    @user:   -> globalThis.useName ? process.env.USER  
+    @tmpdir: -> globalThis.tmpDir  ? process.env.TMPDIR
+    
     @tmpfile: (ext) ->
 
         Slash.path Slash.tmpdir(), "#{Date.now()}#{Math.random()}" + (ext and ".#{ext}" or '')
@@ -312,7 +328,7 @@ class Slash
                     break
             i = p.indexOf '$', i+1
             
-        Slash.path p
+        p
                 
     @fileUrl: (p) -> "file:///#{Slash.encode p}"
 
