@@ -5,8 +5,8 @@
 //      000     000        000     000    
 // 0000000      000        000     0000000
 
-bgColor             = #000
-frameColor          = #000
+bgColor             = #1c1c1c
+frameColor          = #1a1a1a
 textBlurColor       = #444
 textActiveColor     = #999
 textFocusColor      = #fff
@@ -15,7 +15,7 @@ frameWidth          = 6px
 frameRadius         = 10px
 borderRadius        = 10px
 frameBorder         = frameWidth solid frameColor
-bodyBorder          = 1px solid #222
+bodyBorder          = 0px solid frameColor
 
 fadeInAnim() {         
   animation       300ms ease-in-out fadeIn
@@ -90,10 +90,10 @@ body
 .image 
     pointer-events      none
     position            absolute
-    height              70%
-    max-height          70%
+    height              80%
+    max-height          80%
     left                50%
-    top                 50%
+    top                 49%
     transform           translate(-50%, -50%)
 
 .version 

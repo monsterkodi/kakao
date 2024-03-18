@@ -7,7 +7,7 @@
 
     handles application initialization
     handles sending and receiving messages to/from the application process
-    provides shortcuts to useful internal modules
+    provides shortcuts to internal modules
     sets itself in the global window scope
 ###
 

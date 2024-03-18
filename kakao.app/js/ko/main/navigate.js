@@ -63,7 +63,7 @@ class Navigate
 
     navigate (opt)
     {
-        var hasFile, _106_39_, _98_30_, _98_45_
+        var hasFile, _108_39_, _98_30_, _98_45_
 
         switch (opt.action)
         {
@@ -99,11 +99,11 @@ class Navigate
                 return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
 
             case 'addFilePos':
-                if (!(opt != null ? (_106_39_=opt.file) != null ? _106_39_.length : undefined : undefined))
+                console.log('addFilePos',opt)
+                if (!(opt != null ? (_108_39_=opt.file) != null ? _108_39_.length : undefined : undefined))
                 {
                     return
                 }
-                console.log('addFilePos',opt)
                 this.addToHistory(opt.oldFile,opt.oldPos)
                 hasFile = this.filePositions.find(function (v)
                 {

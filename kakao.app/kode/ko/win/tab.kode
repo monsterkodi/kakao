@@ -19,9 +19,9 @@ class Tab
 
     @: (@tabs, @file) ->
 
-        @dirty = false
+        @dirty  = false
         @pinned = false
-        @div = elem class: 'tab app-drag-region' text: ''
+        @div    = elem class: 'tab app-drag-region' text: ''
         @tabs.div.appendChild @div
 
         # if not @file.startsWith 'untitled'
@@ -114,15 +114,23 @@ class Tab
         sep = "<span class='dot'>►</span>"
         @pkgDiv = elem 'span' class:'pkg' html: @pkg and (@pkg + sep) or ''
         @div.appendChild @pkgDiv
+        
+        file = @file
 
-        diss = Syntax.dissForTextAndSyntax slash.file(@file), 'ko'
+        diss = Syntax.dissForTextAndSyntax slash.file(file), 'ko'
+        
+        if not prefs.get 'tabs|extension'
+            if valid slash.ext file
+                diss.pop()
+                diss.pop()
+        
         name = elem 'span' class:'name' html:Render.line diss, charWidth:0
         @div.appendChild name
 
         html = ''
         if @pinned
             html = """
-            <svg width="100%" height="100%" viewBox="0 0 30 30">
+            <svg width="100%" height="100%" viewBox="0 0 30 30" fill="transparent">
                 <circle cx="15" cy="12" r="4" />
                 <line x1="15" y1="16"  x2="15"  y2="22" stroke-linecap="round"></line>
             </svg>
@@ -130,9 +138,9 @@ class Tab
         else if @tmpTab
             html = """
             <svg width="100%" height="100%" viewBox="0 0 30 30">
-                <circle cx="15" cy="10" r="2" />
+                <circle cx="15" cy="9"  r="2" />
                 <circle cx="15" cy="15" r="2" />
-                <circle cx="15" cy="20" r="2" />
+                <circle cx="15" cy="21" r="2" />
             </svg>
             """
                 
@@ -210,7 +218,8 @@ class Tab
 
     activate: ->
 
-        post.emit 'jumpToFile' path:@file
+        log 'tab.activate' @file
+        post.emit 'jumpToFile' @file
         @
 
     finishActivation: ->

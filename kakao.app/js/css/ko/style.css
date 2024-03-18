@@ -24,6 +24,8 @@ body {
   overflow: hidden;
 }
 #titlebar .winicon img {
+  opacity: 0.6;
+  padding-top: 4px;
   padding-left: 20px;
   padding-right: 14px;
 }
@@ -432,10 +434,13 @@ body {
   font-size: 15px;
   font-family: titlebarFont;
 }
-.tab:not(.active) {
+.tab:not(.active) .dot,
+.tab:not(.active) .name,
+.tab:not(.active) .tabstate {
   opacity: 0.5;
 }
 .tabstate {
+  border-radius: 6px;
   stroke-width: 2;
   height: 30px;
   width: 30px;

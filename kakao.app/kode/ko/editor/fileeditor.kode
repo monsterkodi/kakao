@@ -247,11 +247,16 @@ function FileEditor extends TextEditor
 
         # log 'jumpToFile' opt, window.lastFocus
         
+        if opt is str ➜ opt = path:opt
+        
         if opt.newTab
 
             file = opt.path
             file += ':' + opt.line if opt.line
             file += ':' + opt.col if opt.col
+            
+            log 'jumpToFile post newTabWithFile' file
+            
             post.emit 'newTabWithFile' file
 
         else if window.lastFocus == 'editor'
@@ -265,11 +270,16 @@ function FileEditor extends TextEditor
             opt.oldPos = @cursorPos()
             opt.oldFile = @currentFile
             
-            # log 'jumpToFile' opt
+            opt.file ?= opt.path
+            log 'jumpToFile navigate.gotoFilePos' opt
             
             window.navigate.gotoFilePos opt
         else
+            
             file = slash.joinFileLine opt.path, opt.line, opt.col
+            
+            log 'jumpToFile post loadFile' file
+            
             post.emit 'loadFile' file
 
     jumpTo: (word, opt) =>

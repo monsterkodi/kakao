@@ -114,8 +114,7 @@ function Column
         
             @scroll.update()
             
-        if @parent.type == 'dir' and slash.samePath '~/Downloads' @parent.path
-            @sortByDateAdded()
+        @sort()
         @
                 
     # 0000000    00000000    0000000    0000000   
@@ -327,8 +326,16 @@ function Column
     addItem: (item) ->
         
         row = @pushItem item
-        @sortByName()
+        @sort()
         row
+        
+    sort: ->
+        
+        sortBy = prefs.get 'browser|sort'
+        switch sortBy[@parent.path]
+            'type'  ➜ @sortByType()
+            'date'  ➜ @sortByDateAdded()
+                    ➜ @sortByName()
 
     setItems: (@items, opt) ->
         
@@ -612,6 +619,8 @@ function Column
         @table.innerHTML = ''
         for row in @rows
             @table.appendChild row.div
+            
+        prefs.set "browser|sort|#{@parent.path}"
         @
         
     sortByType: =>
@@ -624,6 +633,8 @@ function Column
         @table.innerHTML = ''
         for row in @rows
             @table.appendChild row.div
+            
+        prefs.set "browser|sort|#{@parent.path}" 'type'
         @
 
     sortByDateAdded: =>
@@ -633,6 +644,8 @@ function Column
         @table.innerHTML = ''
         for row in @rows
             @table.appendChild row.div
+            
+        prefs.set "browser|sort|#{@parent.path}" 'date'
         @
         
     # 000000000   0000000    0000000    0000000   000      00000000  

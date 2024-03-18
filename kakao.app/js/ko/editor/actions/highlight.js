@@ -1,8 +1,8 @@
-var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 import post from "../../../kxk/post.js"
 
-export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects the first|next highlight.',combo:'command+d',accel:'ctrl+d'},selectAllWords:{name:'Select All Words',combo:'command+alt+d',accel:'alt+ctrl+d'},removeSelectedHighlight:{name:'Remove Highlighted Word from Selection',text:"does the inverse of 'highlight and select' word",combo:'command+shift+d',accel:'ctrl+shift+d'},highlightTextOfSelectionOrWordAtCursor:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects it. expands to the left if already selected.',combo:'command+e',accel:'ctrl+e'}},highlightText:function (text, opt)
+export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects the first|next highlight.',combo:'command+d',accel:'ctrl+d'},selectAllWords:{name:'Select All Words',combo:'command+alt+d',accel:'alt+ctrl+d'},removeSelectedHighlight:{name:'Remove Highlighted Word from Selection',text:"does the inverse of 'highlight and select' word",combo:'command+shift+d',accel:'ctrl+shift+d'},highlightTextOfSelectionOrWordAtCursor:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects it.',combo:'command+e',accel:'ctrl+e'}},highlightText:function (text, opt)
 {
     var hls, _49_90_, _50_91_
 
@@ -84,7 +84,7 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
     }
 },highlightTextOfSelectionOrWordAtCursor:function ()
 {
-    var largerRange, largerText, nr, nt, sel, srange, text, _139_32_
+    var sel, srange, text, _139_32_
 
     if (this.numSelections() === 0)
     {
@@ -101,40 +101,6 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
     text = this.textInRange(sel)
     if (text.length)
     {
-        if (this.numHighlights())
-        {
-            if (text === this.textInRange(this.highlight(0)))
-            {
-                largerRange = [sel[0],[sel[1][0] - 1,sel[1][1]]]
-                largerText = this.textInRange(largerRange)
-                if (_k_.in(largerText[0],"@#$%&*+-!?:.'\"/") || /[A-Za-z]/.test(largerText[0]))
-                {
-                    if (_k_.in(largerText[0],"'\""))
-                    {
-                        nr = [sel[0],[sel[1][0] - 1,sel[1][1] + 1]]
-                        nt = this.textInRange(nr)
-                        if (nt[nt.length - 1] === largerText[0])
-                        {
-                            largerText = nt
-                            largerRange = nr
-                        }
-                    }
-                    else if (/[A-Za-z]/.test(largerText[0]))
-                    {
-                        while (largerRange[1][0] > 0 && /[A-Za-z]/.test(this.line(largerRange[0])[largerRange[1][0] - 1]))
-                        {
-                            largerRange[1][0] -= 1
-                            largerText = this.textInRange(largerRange)
-                        }
-                    }
-                    text = largerText
-                    if (this.numSelections() === 1)
-                    {
-                        this.selectSingleRange(largerRange)
-                    }
-                }
-            }
-        }
         this.setHighlights(this.rangesForText(text,{max:9999}))
         if ((this.renderHighlights != null))
         {

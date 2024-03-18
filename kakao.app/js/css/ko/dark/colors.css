@@ -216,10 +216,14 @@ span.macro.macro,
   background: #222;
 }
 .tabstate {
-  stroke: #888;
+  stroke: #444;
+  fill: #444;
 }
 .tabstate:hover {
-  background: #333;
+  background: #181818;
+}
+.tab.active .tabstate:hover {
+  background: #282828;
 }
 #browser {
   background: #181818;
