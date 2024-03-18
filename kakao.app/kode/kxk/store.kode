@@ -27,7 +27,7 @@ function Store extends events
         
         @name = name
         opt.separator ?= '|'
-        opt.timeout   ?= 1000
+        opt.timeout   ?= 4000
         
         return error 'no name for store?' if not @name
 

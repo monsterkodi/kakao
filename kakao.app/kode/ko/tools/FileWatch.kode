@@ -8,50 +8,6 @@
 
 use ../../kxk/slash
 use ../../kxk/post
-use ../../kxk/ffs
-
-class Watcher
-
-    @id: 0
-    
-    @: (@file) ->
-
-        @id = Watcher.id++
-        ffs.exists(@file).then @onExists
-        
-    onExists: (stat) =>
-        
-        # return if not stat
-        # return if not @id
-        # @mtime = stat.mtimeMs
-#         
-        # @w = fs.watch @file
-        # @w.on 'change' (changeType, p) =>
-#             
-            # if changeType == 'change'
-                # ffs.exists(@file).then @onChange
-            # else
-                # setTimeout (=> ffs.exists(@file).then @onRename), 200
-#         
-        # @w.on 'unlink' (p) => log "unlink #{@id}" slash.file(@file)
-    
-    onChange: (stat) =>
-        
-        if stat.mtimeMs != @mtime
-            @mtime = stat.mtimeMs
-            post.emit 'reloadFile' @file
-
-    onRename: (stat) =>
-        
-        if not stat
-            @stop()
-            post.emit 'removeFile' @file
-    
-    stop: ->
-
-        @w?.close()
-        delete @w
-        @id = 0
 
 # 00000000  000  000      00000000  000   000   0000000   000000000   0000000  000   000  
 # 000       000  000      000       000 0 000  000   000     000     000       000   000  
@@ -64,21 +20,37 @@ class FileWatch
     @: ->
         
         @watchers = {}
-        post.on 'watch'   @onWatch
-        post.on 'unwatch' @onUnwatch
+        post.on 'fs.change' @onChange
+        post.on 'watch'     @onWatch
+        post.on 'unwatch'   @onUnwatch
         
     onWatch: (file) =>
         
-        file = slash.path file
+        file = slash.untilde slash.path file
         
-        if not @watchers[file]?
-            @watchers[file] = new Watcher file
+        @watchers[file] ?= 0
+        @watchers[file]++
         
+        log @watchers
+                
     onUnwatch: (file) =>
 
-        file = slash.path file
+        file = slash.untilde slash.path file
         
-        @watchers[file]?.stop()
-        delete @watchers[file]
+        @watchers[file]--
+        if @watchers[file] <= 0
+            delete @watchers[file]
+            
+        log @watchers
+        
+    onChange: (change, path) =>
+        
+        for k,v of @watchers
+            if k == path
+                log 'filewatch!' change, path
+                switch change
+                    'deleted' ➜ post.emit 'removeFile' path
+                    'changed' ➜ post.emit 'reloadFile' path
+                return
         
 export FileWatch

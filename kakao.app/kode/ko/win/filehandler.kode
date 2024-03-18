@@ -6,13 +6,12 @@
 000       000  0000000  00000000  000   000  000   000  000   000  0000000    0000000  00000000  000   000
 ###
 
-use ../../kxk/post 
+use ../../kxk/util ▪ pull reversed
 use ../../kxk/prefs 
 use ../../kxk/slash
-use ../../kxk/util ▪ pull reversed
+use ../../kxk/post 
 
 use ../tools/File
-# use ../commandline/CommandLine
 
 class FileHandler
 
@@ -37,7 +36,7 @@ class FileHandler
     
     loadFile: (file, opt={}) =>
         
-        log 'FileHandler.loadFile' file, opt
+        # log 'FileHandler.loadFile' file, opt
     
         file = null if file? and file.length <= 0
     
@@ -46,17 +45,10 @@ class FileHandler
         if file?
             [file, filePos] = slash.splitFilePos file
             if not file.startsWith 'untitled'
-                # file = slash.resolve file
                 file = slash.path file
-                # try
-                    # process.chdir slash.dir file
-                # catch err
-                    # error err
     
         if file != editor?.currentFile or opt?.reload
     
-            # if fileExists = slash.fileExists file
-            
             @addToRecent file
             
             tab = tabs.tab file
@@ -77,7 +69,6 @@ class FileHandler
             
             # if fileExists
             # post.toWins 'fileLoaded' file # indexer
-            post.emit 'cwdSet' slash.dir file
                 
         split.raise 'editor'
     
@@ -125,7 +116,6 @@ class FileHandler
             window.stash.set 'openFilePath' slash.dir files[0]
     
             if not options.newWindow and not options.newTab
-                # file = slash.resolve files.shift()
                 file = slash.path files.shift()
                 @loadFile file
     
@@ -256,9 +246,6 @@ class FileHandler
             recent.pop()
     
         window.stash.set 'recentFiles' recent
-        # log commandline
-        # log commandline.commands
-        # log commandline.commands.open
         window.commandline.commands.open.setHistory reversed recent
                 
     #  0000000   0000000   000   000  00000000         0000000  000   000   0000000   000   000   0000000   00000000   0000000  
@@ -269,7 +256,7 @@ class FileHandler
     
     saveChanges: =>
         
-        if editor.currentFile? and editor.do.hasChanges() #and slash.fileExists editor.currentFile
+        if editor.currentFile? and editor.do.hasChanges()
             File.save editor.currentFile, editor.text(), (file) ->
                 error "FileHandler.saveChanges failed #{err}" if not file
     
@@ -284,7 +271,6 @@ class FileHandler
         cb = (files) -> post.emit 'openFiles' files, opt
         
         dir = slash.dir editor.currentFile if editor?.currentFile
-        # dir ?= slash.resolve '.'
         dir ?= slash.path '.'
         window.win?.openFileDialog(
             title: 'Open File'

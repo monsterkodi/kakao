@@ -102,8 +102,6 @@ Column = (function ()
     {
         var dir, item, updir, _108_46_, _109_73_, _82_98_
 
-        console.log('loadItems parent:',parent)
-        console.log('loadItems items:',items)
         this.clear()
         this.parent = parent
         if (this.index === 0 || this.index - 1 < this.browser.numCols() && (this.browser.columns[this.index - 1].activeRow() != null ? this.browser.columns[this.index - 1].activeRow().item.file : undefined) === '..')
@@ -116,7 +114,6 @@ Column = (function ()
                     updir = slash.dir(dir)
                     if (updir !== dir)
                     {
-                        console.log('unshift updir',updir,this.parent)
                         items.unshift({file:'..',type:'dir',path:updir})
                     }
                 }

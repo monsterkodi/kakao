@@ -82,7 +82,7 @@ function Row
     
     activate: (event, emit=true) =>
         
-        log 'Row.active' @
+        # log 'Row.active' @
 
         if @column.index < 0 # shelf handles row activation
             @column.activateRow @
@@ -108,7 +108,7 @@ function Row
                     
                 @browser.clearColumnsFrom @column.index+1, pop:true
                 
-                log 'Row emit jumpToFile' path:@item.path
+                # log 'Row emit jumpToFile' path:@item.path
                 if emit then post.emit 'jumpToFile' path:@item.path
         @
     

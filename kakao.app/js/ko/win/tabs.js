@@ -468,7 +468,7 @@ class Tabs
             this.addTab(files.shift())
         }
         ;(this.tabs[active] != null ? this.tabs[active].activate() : undefined)
-        for (var _330_18_ = pi = 0, _330_22_ = pinned.length; (_330_18_ <= _330_22_ ? pi < pinned.length : pi > pinned.length); (_330_18_ <= _330_22_ ? ++pi : --pi))
+        for (var _332_18_ = pi = 0, _332_22_ = pinned.length; (_332_18_ <= _332_22_ ? pi < pinned.length : pi > pinned.length); (_332_18_ <= _332_22_ ? ++pi : --pi))
         {
             if (pinned[pi])
             {
@@ -480,7 +480,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _336_36_
+        var _338_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -497,9 +497,9 @@ class Tabs
         pkg = this.tabs[0].pkg
         this.tabs[0].showPkg()
         var list = _k_.list(this.tabs.slice(1))
-        for (var _352_16_ = 0; _352_16_ < list.length; _352_16_++)
+        for (var _354_16_ = 0; _354_16_ < list.length; _354_16_++)
         {
-            tab = list[_352_16_]
+            tab = list[_354_16_]
             if (tab.pkg === pkg)
             {
                 tab.hidePkg()
@@ -515,7 +515,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _362_20_
+        var _364_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

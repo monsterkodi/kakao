@@ -138,7 +138,6 @@ Row = (function ()
     {
         var col, _91_19_
 
-        console.log('Row.active',this)
         if (this.column.index < 0)
         {
             this.column.activateRow(this)
@@ -158,7 +157,6 @@ Row = (function ()
                 opt.line = this.item.line
                 opt.col = this.item.column
                 this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
-                console.log('Row emit jumpToFile',{path:this.item.path})
                 if (emit)
             {
                 post.emit('jumpToFile',{path:this.item.path})

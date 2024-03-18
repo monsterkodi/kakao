@@ -37,7 +37,7 @@ Store = (function ()
         Store.__super__.constructor.call(this)
         this.name = name
         opt.separator = ((_29_22_=opt.separator) != null ? _29_22_ : '|')
-        opt.timeout = ((_30_22_=opt.timeout) != null ? _30_22_ : 1000)
+        opt.timeout = ((_30_22_=opt.timeout) != null ? _30_22_ : 4000)
         if (!this.name)
         {
             return console.error('no name for store?')

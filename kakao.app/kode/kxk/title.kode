@@ -177,7 +177,7 @@ function Title
         return [] if not @opt.menu
                 
         if empty @templateCache
-            log 'menu.initMenu load' @opt.menu 
+            # log 'menu.initMenu load' @opt.menu 
             tc =○ noon.load @opt.menu 
             if valid tc            
                 @templateCache = @makeTemplate tc
@@ -189,7 +189,7 @@ function Title
             
     initFromCache: ->
         
-        log 'menu.initFromCache' @templateCache
+        # log 'menu.initFromCache' @templateCache
         post.emit 'menu.init' @templateCache
         @menu = new menu items:@templateCache
         @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
