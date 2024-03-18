@@ -1,9 +1,15 @@
 ###
-000       0000000   000   000   0000000 
-000      000   000  0000  000  000      
-000      000000000  000 0 000  000  0000
-000      000   000  000  0000  000   000
-0000000  000   000  000   000   0000000 
+    000       0000000   000   000   0000000 
+    000      000   000  0000  000  000      
+    000      000000000  000 0 000  000  0000
+    000      000   000  000  0000  000   000
+    0000000  000   000  000   000   0000000 
+    
+    builds lang.json from lang.noon
+    
+    to regenerate use
+        
+        node js/kolor/lang.js
 ###
 
 use ../kxk/noon
@@ -12,7 +18,7 @@ use ../kxk/fs
 
 __dirname = import.meta.dirname
 
-noonFile    = slash.path __dirname, '..' '..' 'kode' 'klor' 'lang.noon'
+noonFile    = slash.path __dirname, '..' '..' 'kode' 'kolor' 'lang.noon'
 jsonFile    = slash.path __dirname, 'lang.json'
 extlangFile = slash.path __dirname, 'extlang.js'
 

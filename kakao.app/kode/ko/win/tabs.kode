@@ -90,7 +90,10 @@ class Tabs
                 log 'activate tab!' tab
                 tab.activate()
         else
-            log 'no tab?' event.target, @tabs
+            log 'no tab?' event.target, event.target?.parentNode, @tabs
+            if tabElem = elem.upElem event.target, class:'tab'
+                log 'remove tab elem' tabElem
+                tabElem.remove()
         true
 
     # 000000000   0000000   0000000
@@ -150,6 +153,7 @@ class Tabs
         @tabs.splice @tabs.indexOf(tab.close()), 1
         
         if empty @tabs
+            log 'closeTab lastTab closed: create new empty tab~'
             @onNewEmptyTab()
         @
 
@@ -197,10 +201,11 @@ class Tabs
         
     addTmpTab: (file) ->
         
-        @closeTab @getTmpTab()
-        
-        tab = @addTab file
-        tab.tmpTab = true
+        if tab = @getTmpTab()
+            tab.file = file
+        else
+            tab = @addTab file
+            tab.tmpTab = true
         tab.update()
         tab
         
@@ -400,6 +405,9 @@ class Tabs
         ,
             text:   'New Window'
             combo:  'ctrl+shift+n'
+        ,
+            text:   'Toggle Tab Extensions'
+            combo:  'alt+cmdctrl+t'
         ]
 
         opt.x = absPos.x

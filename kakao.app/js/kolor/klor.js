@@ -1748,9 +1748,9 @@ blocked = function (lines)
             handl = handlers[ext = line.ext]
             if (!handl)
             {
-                _k_.dbg("kode/klor/klor.kode", 1316, 16, "ext", ext)
-                _k_.dbg("kode/klor/klor.kode", 1317, 16, "line", line)
-                _k_.dbg("kode/klor/klor.kode", 1318, 16, null, handlers[ext])
+                _k_.dbg("kode/kolor/klor.kode", 1316, 16, "ext", ext)
+                _k_.dbg("kode/kolor/klor.kode", 1317, 16, "line", line)
+                _k_.dbg("kode/kolor/klor.kode", 1318, 16, null, handlers[ext])
             }
         }
         chunkIndex = 0

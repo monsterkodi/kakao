@@ -23,8 +23,7 @@ class FileWatch
 
         file = slash.untilde(slash.path(file))
         this.watchers[file] = ((_31_24_=this.watchers[file]) != null ? _31_24_ : 0)
-        this.watchers[file]++
-        console.log('onWatch',this.watchers)
+        return this.watchers[file]++
     }
 
     onUnwatch (file)
@@ -35,10 +34,9 @@ class FileWatch
             this.watchers[file]--
             if (this.watchers[file] <= 0)
             {
-                delete this.watchers[file]
+                return delete this.watchers[file]
             }
         }
-        console.log('onUnwatch',this.watchers)
     }
 
     onChange (change, path)
@@ -50,7 +48,6 @@ class FileWatch
             v = this.watchers[k]
             if (k === path)
             {
-                console.log('watchers',this.watchers)
                 console.log('filewatch!',change,path)
                 switch (change)
                 {

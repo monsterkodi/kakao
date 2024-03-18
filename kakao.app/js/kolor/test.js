@@ -3,7 +3,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var b, dissect, dss, ext, i, inc, lang, parse, ranges, rgs
 
-import klor from "./klor.js"
+import kolor from "./kolor.js"
 
 
 inc = function (rgs, start, match)
@@ -29,17 +29,17 @@ lang = function (l)
 
 ranges = function (s, e)
 {
-    return klor.ranges(s,(e != null ? e : ext))
+    return kolor.ranges(s,(e != null ? e : ext))
 }
 
 parse = function (c, e)
 {
-    return klor.parse(c.split('\n'),(e != null ? e : ext))
+    return kolor.parse(c.split('\n'),(e != null ? e : ext))
 }
 
 dissect = function (c, e)
 {
-    return klor.dissect(c.split('\n'),(e != null ? e : ext))
+    return kolor.dissect(c.split('\n'),(e != null ? e : ext))
 }
 toExport["ranges"] = function ()
 {
@@ -1114,13 +1114,13 @@ toExport["globalize"] = function ()
 {
     section("enable", function ()
     {
-        klor.kolor.globalize()
-        compare(global['red'],klor.kolor.red)
-        compare(global['red']('txt'),klor.kolor.red('txt'))
+        kolor.klor.globalize()
+        compare(global['red'],kolor.klor.red)
+        compare(global['red']('txt'),kolor.klor.red('txt'))
     })
     section("disable", function ()
     {
-        klor.kolor.globalize(false)
+        kolor.klor.globalize(false)
         compare(global['red']('txt'),'txt')
     })
 }

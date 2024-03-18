@@ -6,15 +6,15 @@
    000     00000000  0000000      000   
 ###
 
-use ./klor
+use ./kolor
 
 inc = (rgs, start, match) -> for r in rgs then if r.start == start and r.match == match ➜ return r.clss
 
 ext = 'coffee'
 lang    = (l) -> ext = l
-ranges  = (s,e) -> klor.ranges  s, e ? ext
-parse   = (c,e) -> klor.parse   c.split('\n'), e ? ext
-dissect = (c,e) -> klor.dissect c.split('\n'), e ? ext
+ranges  = (s,e) -> kolor.ranges  s, e ? ext
+parse   = (c,e) -> kolor.parse   c.split('\n'), e ? ext
+dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
   
 ###
 00000000    0000000   000   000   0000000   00000000   0000000  
@@ -1615,12 +1615,12 @@ dissect = (c,e) -> klor.dissect c.split('\n'), e ? ext
 ▸ globalize
 
     ▸ enable
-        klor.kolor.globalize()
-        global['red'] ▸ klor.kolor.red
-        global['red']('txt') ▸ klor.kolor.red 'txt'
+        kolor.klor.globalize()
+        global['red'] ▸ kolor.klor.red
+        global['red']('txt') ▸ kolor.klor.red 'txt'
 
     ▸ disable  
-        klor.kolor.globalize false
+        kolor.klor.globalize false
         global['red']('txt') ▸ 'txt'
         
         

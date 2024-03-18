@@ -6,7 +6,7 @@
 0000000      000     000   000     000     000   000  000   000
 ###
 
-use ../../klor/klor
+use ../../kolor/kolor
 use ../../kxk/slash
 use ../../kxk/matchr
 use ../../kxk/elem
@@ -30,7 +30,7 @@ class Syntax
 
     newDiss: (li) ->
         
-        klor.dissect([@getLine li], @name)[0]
+        kolor.dissect([@getLine li], @name)[0]
 
     getDiss: (li) ->
 
@@ -48,7 +48,7 @@ class Syntax
     
     setLines: (lines) ->
         
-        @diss = klor.dissect lines, @name
+        @diss = kolor.dissect lines, @name
             
     #  0000000  000   000   0000000   000   000   0000000   00000000  0000000
     # 000       000   000  000   000  0000  000  000        000       000   000
@@ -139,7 +139,7 @@ class Syntax
     @dissForTextAndSyntax: (text, n) ->
 
         if n not in ['browser' 'ko' 'commandline' 'macro' 'term' 'test']
-            result = klor.ranges text, n
+            result = kolor.ranges text, n
         else
             if not n? or not Syntax.matchrConfigs[n]?
                 return error "no syntax? #{n}"
@@ -203,7 +203,7 @@ class Syntax
                 @syntaxNames.push syntaxName
                 @matchrConfigs[syntaxName] = matchr.config patterns
 
-        @syntaxNames = @syntaxNames.concat klor.exts
+        @syntaxNames = @syntaxNames.concat kolor.exts
         log 'Syntax.init' @syntaxNames
         @syntaxNames
         

@@ -2,7 +2,7 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var FileSearcher, Search
 
-import klor from "../../klor/klor.js"
+import kolor from "../../kolor/kolor.js"
 
 import kstr from "../../kxk/kstr.js"
 
@@ -207,7 +207,7 @@ FileSearcher = (function ()
             for (var _175_23_ = fi = 0, _175_27_ = this.found.length; (_175_23_ <= _175_27_ ? fi < this.found.length : fi > this.found.length); (_175_23_ <= _175_27_ ? ++fi : --fi))
             {
                 f = this.found[fi]
-                regions = klor.dissect([f[1]],this.syntaxName)[0]
+                regions = kolor.dissect([f[1]],this.syntaxName)[0]
                 dss = matchr.merge(regions,matchr.dissect(f[2]))
                 meta = {diss:dss,href:`${this.file}:${f[0]}`,clss:'searchResult',click:this.command.onMetaClick}
                 if (fi && this.found[fi - 1][0] !== f[0] - 1)
