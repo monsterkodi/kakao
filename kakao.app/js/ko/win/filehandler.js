@@ -247,14 +247,11 @@ class FileHandler
             {
                 return console.error('File.save failed!')
             }
-            editor.saveScrollCursorsAndSelections()
-            editor.setCurrentFile(saved)
             editor.do.history = tabState.history
             editor.do.saveIndex = tabState.history.length
             post.toWins('fileSaved',saved,window.winID)
             post.emit('saved',saved)
-            post.emit('watch',saved)
-            return editor.restoreScrollCursorsAndSelections()
+            return post.emit('dirty',false)
         })
     }
 
@@ -279,7 +276,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _259_29_
+        var _261_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -295,7 +292,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _275_18_
+        var cb, dir, _277_18_
 
         cb = function (files)
         {
@@ -311,7 +308,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _295_18_
+        var cb, _297_18_
 
         cb = (function (file)
         {
