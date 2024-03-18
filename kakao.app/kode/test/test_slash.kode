@@ -54,7 +54,7 @@ __dirname = import.meta.dirname
         
         slash.path 'C:\\FOO' '.\\BAR' 'that\\sucks'  ▸ 'C:/FOO/BAR/that/sucks'
         
-        slash.path '~'                      ▸ slash.home()
+        slash.path '~'                      ▸ '~'
         slash.path '/'                      ▸ '/'
         slash.path './'                     ▸ './'
         slash.path '../'                    ▸ '../'
@@ -120,6 +120,9 @@ __dirname = import.meta.dirname
         slash.parse('/a/b/c/')    ▸ path:'/a/b/c'     dir: '/a/b' file: 'c'     name: 'c' ext: ''
         slash.parse('/a')         ▸ path:'/a'         dir: '/'    file: 'a'     name: 'a' ext: ''
         
+        user = slash.user()
+        slash.parse('~') ▸ path:'~' dir:'/Users' file:user, name:user, ext: ''
+        
         if slash.win()
             
             slash.parse('c:').root  ▸ 'c:/'
@@ -177,7 +180,8 @@ __dirname = import.meta.dirname
         slash.pathlist '/c/Slash'          ▸ ['/' '/c' '/c/Slash']
         slash.pathlist '\\d\\Slash'        ▸ ['/' '/d' '/d/Slash']
 
-        slash.pathlist '~'                 ▸ slash.pathlist slash.home()
+        slash.pathlist '~'                 ▸ ['~']
+        slash.pathlist '~/p/in/../home'    ▸ ['~' '~/p' '~/p/home']
 
         if slash.win()
             
@@ -352,6 +356,8 @@ __dirname = import.meta.dirname
         slash.split '/c/users/home/'      ▸ ['c' 'users' 'home']
         slash.split "d/users/home"        ▸ ['d' 'users' 'home']
         slash.split "c:/some/path"        ▸ ['c:' 'some' 'path']
+        
+        slash.split '~/home/path'         ▸ ['~' 'home' 'path']
         slash.split 'd:\\some\\path\\'    ▸ ['d:' 'some' 'path'] # this breaks klor highlight!
             
     #  0000000  00000000   000      000  000000000  0000000    00000000   000  000   000  00000000  

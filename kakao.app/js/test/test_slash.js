@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-var home, __dirname, __filename
+var home, user, __dirname, __filename
 
 import slash from "../kxk/slash.js"
 
@@ -35,7 +35,7 @@ toExport["kslash"] = function ()
         compare(slash.path('','','void','',''),'void')
         compare(slash.path('','','oops','','alla'),'oops/alla')
         compare(slash.path('C:\\FOO','.\\BAR','that\\sucks'),'C:/FOO/BAR/that/sucks')
-        compare(slash.path('~'),slash.home())
+        compare(slash.path('~'),'~')
         compare(slash.path('/'),'/')
         compare(slash.path('./'),'./')
         compare(slash.path('../'),'../')
@@ -81,6 +81,8 @@ toExport["kslash"] = function ()
         compare(slash.parse('/a/b/c'),{path:'/a/b/c',dir:'/a/b',file:'c',name:'c',ext:''})
         compare(slash.parse('/a/b/c/'),{path:'/a/b/c',dir:'/a/b',file:'c',name:'c',ext:''})
         compare(slash.parse('/a'),{path:'/a',dir:'/',file:'a',name:'a',ext:''})
+        user = slash.user()
+        compare(slash.parse('~'),{path:'~',dir:'/Users',file:user,name:user,ext:''})
         if (slash.win())
         {
             compare(slash.parse('c:').root,'c:/')
@@ -123,7 +125,8 @@ toExport["kslash"] = function ()
         compare(slash.pathlist('.'),['.'])
         compare(slash.pathlist('/c/Slash'),['/','/c','/c/Slash'])
         compare(slash.pathlist('\\d\\Slash'),['/','/d','/d/Slash'])
-        compare(slash.pathlist('~'),slash.pathlist(slash.home()))
+        compare(slash.pathlist('~'),['~'])
+        compare(slash.pathlist('~/p/in/../home'),['~','~/p','~/p/home'])
         if (slash.win())
         {
             compare(slash.pathlist('C:\\Back\\Slash\\'),['C:/','C:/Back','C:/Back/Slash'])
@@ -234,6 +237,7 @@ toExport["kslash"] = function ()
         compare(slash.split('/c/users/home/'),['c','users','home'])
         compare(slash.split("d/users/home"),['d','users','home'])
         compare(slash.split("c:/some/path"),['c:','some','path'])
+        compare(slash.split('~/home/path'),['~','home','path'])
         compare(slash.split('d:\\some\\path\\'),['d:','some','path'])
     })
     section("splitDrive", function ()
