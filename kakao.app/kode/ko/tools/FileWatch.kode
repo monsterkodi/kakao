@@ -31,22 +31,24 @@ class FileWatch
         @watchers[file] ?= 0
         @watchers[file]++
         
-        log @watchers
+        log 'onWatch' @watchers
                 
     onUnwatch: (file) =>
 
         file = slash.untilde slash.path file
         
-        @watchers[file]--
-        if @watchers[file] <= 0
-            delete @watchers[file]
+        if @watchers[file]?
+            @watchers[file]--
+            if @watchers[file] <= 0
+                delete @watchers[file]
             
-        log @watchers
+        log 'onUnwatch' @watchers
         
     onChange: (change, path) =>
         
         for k,v of @watchers
             if k == path
+                log 'watchers' @watchers
                 log 'filewatch!' change, path
                 switch change
                     'deleted' ➜ post.emit 'removeFile' path

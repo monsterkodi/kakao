@@ -221,6 +221,19 @@ export default {isEqual:isEqual,zip:function (...args)
         }
     }
     return result
+},deleteBy:function (obj, pred)
+{
+    var key, val
+
+    for (key in obj)
+    {
+        val = obj[key]
+        if (pred(key,val))
+        {
+            delete obj[key]
+        }
+    }
+    return obj
 },toPairs:function (obj)
 {
     var key, result, val

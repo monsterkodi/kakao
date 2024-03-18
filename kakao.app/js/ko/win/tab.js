@@ -27,7 +27,6 @@ class Tab
         this.div = elem({class:'tab app-drag-region',text:''})
         this.tabs.div.appendChild(this.div)
         this.update()
-        post.emit('watch',this.file)
     }
 
     foreignChanges (lineChanges)
@@ -105,7 +104,6 @@ class Tab
         if (!slash.samePath(this.file,newFile))
         {
             this.file = slash.path(newFile)
-            post.emit('watch',this.file)
             return this.update()
         }
     }

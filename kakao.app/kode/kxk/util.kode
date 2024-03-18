@@ -133,6 +133,13 @@ export
                 result[key] = val
         result
         
+    deleteBy: (obj, pred) ->
+        
+        for key,val of obj
+            if pred key,val
+                delete obj[key]
+        obj
+        
     toPairs: (obj) ->
         
         result = []
