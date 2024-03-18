@@ -30,7 +30,6 @@ class Navigate
         {
             return
         }
-        console.log('file',file,pos)
         pos = (pos != null ? pos : [0,0])
         if (!pos[0] && !pos[1] && this.filePositions.length)
         {
@@ -44,7 +43,6 @@ class Navigate
                 }
             }
         }
-        console.log('prepull',this.filePositions)
         pullAllWith(this.filePositions,[{file:file,pos:pos}],function (a, b)
         {
             return slash.samePath(a.file,b.file) && (a.pos[1] === b.pos[1] || a.pos[1] <= 1)

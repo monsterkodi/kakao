@@ -4,19 +4,16 @@ import slash from "../../kxk/slash.js"
 
 import post from "../../kxk/post.js"
 
-import ffs from "../../kxk/ffs.js"
-
 class DirWatch
 {
     static watches = {}
 
     static watch (dir)
     {
-        var _19_30_
+        var _18_30_
 
-        DirWatch.watches[dir] = ((_19_30_=DirWatch.watches[dir]) != null ? _19_30_ : 0)
-        DirWatch.watches[dir]++
-        console.log('watch',dir,DirWatch.watches)
+        DirWatch.watches[dir] = ((_18_30_=DirWatch.watches[dir]) != null ? _18_30_ : 0)
+        return DirWatch.watches[dir]++
     }
 
     static unwatch (dir)
@@ -24,9 +21,8 @@ class DirWatch
         DirWatch.watches[dir]--
         if (DirWatch.watches[dir] <= 0)
         {
-            delete DirWatch.watches[dir]
+            return delete DirWatch.watches[dir]
         }
-        console.log('unwatch',dir,DirWatch.watches)
     }
 
     static onChange (change, path)
@@ -39,7 +35,6 @@ class DirWatch
             v = DirWatch.watches[k]
             if (k === dir)
             {
-                console.log('post.dirChanged',{change:change,path:path,dir:dir})
                 post.emit('dirChanged',{change:change,path:path,dir:dir})
                 return
             }

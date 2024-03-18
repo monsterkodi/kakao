@@ -31,7 +31,7 @@ class Navigate
 
         return if not file?
         
-        log 'file' file, pos
+        # log 'file' file, pos
         
         pos ?= [0,0]
         
@@ -42,7 +42,7 @@ class Navigate
                     pos = fp.pos
                     break
 
-        log 'prepull' @filePositions
+        # log 'prepull' @filePositions
                     
         pullAllWith @filePositions, [file:file, pos:pos], (a,b) -> 
             slash.samePath(a.file, b.file) and (a.pos[1] == b.pos[1] or a.pos[1] <= 1)

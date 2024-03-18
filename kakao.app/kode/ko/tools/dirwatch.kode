@@ -8,7 +8,6 @@
 
 use ../../kxk/slash
 use ../../kxk/post
-use ../../kxk/ffs
 
 class DirWatch
        
@@ -18,23 +17,19 @@ class DirWatch
         
         DirWatch.watches[dir] ?= 0
         DirWatch.watches[dir]++
-        log 'watch' dir, DirWatch.watches
                 
     @unwatch: (dir) -> 
         
         DirWatch.watches[dir]--
         if DirWatch.watches[dir] <= 0
             delete DirWatch.watches[dir]
-        log 'unwatch' dir, DirWatch.watches
         
     @onChange: (change, path) ->
         
         dir = slash.dir path
         
-        # log change, dir, path
         for k,v of DirWatch.watches
             if k == dir
-                log 'post.dirChanged' change:change, path:path, dir:dir
                 post.emit 'dirChanged' change:change, path:path, dir:dir
                 return
 

@@ -1,14 +1,14 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
-import post from "../../kxk/post.js"
+import util from "../../kxk/util.js"
+let pull = util.pull
+let reversed = util.reversed
 
 import prefs from "../../kxk/prefs.js"
 
 import slash from "../../kxk/slash.js"
 
-import util from "../../kxk/util.js"
-let pull = util.pull
-let reversed = util.reversed
+import post from "../../kxk/post.js"
 
 import File from "../tools/File.js"
 
@@ -42,7 +42,6 @@ class FileHandler
     {
         var activeTab, filePos, tab
 
-        console.log('FileHandler.loadFile',file,opt)
         if ((file != null) && file.length <= 0)
         {
             file = null
@@ -50,7 +49,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _47_28_ = slash.splitFilePos(file); file = _47_28_[0]; filePos = _47_28_[1]
+            var _46_28_ = slash.splitFilePos(file); file = _46_28_[0]; filePos = _46_28_[1]
 
             if (!file.startsWith('untitled'))
             {
@@ -79,7 +78,6 @@ class FileHandler
             editor.setCurrentFile(file)
             tab.finishActivation()
             editor.restoreScrollCursorsAndSelections()
-            post.emit('cwdSet',slash.dir(file))
         }
         split.raise('editor')
         if ((filePos != null) && (filePos[0] || filePos[1]))
@@ -125,9 +123,9 @@ class FileHandler
                 this.loadFile(file)
             }
             var list = _k_.list(files)
-            for (var _132_21_ = 0; _132_21_ < list.length; _132_21_++)
+            for (var _122_21_ = 0; _122_21_ < list.length; _122_21_++)
             {
-                file = list[_132_21_]
+                file = list[_122_21_]
                 if (options.newWindow)
                 {
                     console.log('filehandler new window with file not implemented!')
@@ -176,7 +174,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _177_29_
+        var tab, _167_29_
 
         if (tab = tabs.activeTab())
         {
@@ -211,9 +209,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _202_16_ = 0; _202_16_ < list.length; _202_16_++)
+        for (var _192_16_ = 0; _192_16_ < list.length; _192_16_++)
         {
-            tab = list[_202_16_]
+            tab = list[_192_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -281,7 +279,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _272_29_
+        var _259_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -297,7 +295,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _289_18_
+        var cb, dir, _275_18_
 
         cb = function (files)
         {
@@ -313,7 +311,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _309_18_
+        var cb, _295_18_
 
         cb = (function (file)
         {

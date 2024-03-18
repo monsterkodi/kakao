@@ -15,7 +15,7 @@ use ../../kxk/stash
 use ../../kxk/store
 use ../../kxk/prefs
 
-use ../tools/watcher
+use ../tools/FileWatch
 use ../tools/fps
 use ../tools/scheme
 use ../tools/cwd
@@ -65,8 +65,8 @@ function Window #extends win
         @id = win.id
         # log 'onWindowCreated' win.id
                     
-        @filehandler = window.filehandler = new FileHandler
-        @filewatcher = window.filewatcher = new watcher
+        new FileHandler
+        new FileWatch
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
         @navigate    = window.navigate    = new navigate()
         @split       = window.split       = new Split()

@@ -322,6 +322,8 @@ class Tabs
 
         @tabs = []
 
+        # log 'onStashLoaded' files
+        
         while files.length
             @addTab files.shift()
 

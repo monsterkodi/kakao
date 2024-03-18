@@ -15,7 +15,7 @@ import store from "../../kxk/store.js"
 
 import prefs from "../../kxk/prefs.js"
 
-import watcher from "../tools/watcher.js"
+import FileWatch from "../tools/FileWatch.js"
 
 import fps from "../tools/fps.js"
 
@@ -88,8 +88,8 @@ Window = (function ()
         kakao('window.setSize',750,750)
         kakao('window.center')
         this.id = win.id
-        this.filehandler = window.filehandler = new FileHandler
-        this.filewatcher = window.filewatcher = new watcher
+        new FileHandler
+        new FileWatch
         this.tabs = window.tabs = new Tabs(window.titlebar.elem)
         this.navigate = window.navigate = new navigate()
         this.split = window.split = new Split()

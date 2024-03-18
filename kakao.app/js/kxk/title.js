@@ -216,7 +216,6 @@ Title = (function ()
         }
         if (_k_.empty(this.templateCache))
         {
-            console.log('menu.initMenu load',this.opt.menu)
             tc = await noon.load(this.opt.menu)
             if (!_k_.empty(tc))
             {
@@ -236,7 +235,6 @@ Title = (function ()
 
     Title.prototype["initFromCache"] = function ()
     {
-        console.log('menu.initFromCache',this.templateCache)
         post.emit('menu.init',this.templateCache)
         this.menu = new menu({items:this.templateCache})
         return this.elem.insertBefore(this.menu.elem,this.elem.firstChild.nextSibling)

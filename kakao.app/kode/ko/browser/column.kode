@@ -72,8 +72,8 @@ function Column
     
     loadItems: (items, parent) ○->
         
-        log 'loadItems parent:' parent
-        log 'loadItems items:' items
+        # log 'loadItems parent:' parent
+        # log 'loadItems items:' items
         
         @clear()
 
@@ -85,7 +85,7 @@ function Column
                     dir = @parent.path
                     updir = slash.dir dir
                     if updir != dir
-                        log 'unshift updir' updir, @parent
+                        # log 'unshift updir' updir, @parent
                         items.unshift
                             file: '..'
                             type: 'dir'
