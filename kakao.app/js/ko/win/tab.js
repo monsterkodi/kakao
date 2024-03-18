@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 import elem from "../../kxk/elem.js"
 
@@ -130,7 +130,7 @@ class Tab
 
     update ()
     {
-        var diss, html, name, sep, _141_16_
+        var diss, file, html, name, sep, _149_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
@@ -143,13 +143,22 @@ class Tab
         sep = "<span class='dot'>►</span>"
         this.pkgDiv = elem('span',{class:'pkg',html:this.pkg && (this.pkg + sep) || ''})
         this.div.appendChild(this.pkgDiv)
-        diss = Syntax.dissForTextAndSyntax(slash.file(this.file),'ko')
+        file = this.file
+        diss = Syntax.dissForTextAndSyntax(slash.file(file),'ko')
+        if (!prefs.get('tabs|extension'))
+        {
+            if (!_k_.empty(slash.ext(file)))
+            {
+                diss.pop()
+                diss.pop()
+            }
+        }
         name = elem('span',{class:'name',html:Render.line(diss,{charWidth:0})})
         this.div.appendChild(name)
         html = ''
         if (this.pinned)
         {
-            html = `<svg width="100%" height="100%" viewBox="0 0 30 30">
+            html = `<svg width="100%" height="100%" viewBox="0 0 30 30" fill="transparent">
     <circle cx="15" cy="12" r="4" />
     <line x1="15" y1="16"  x2="15"  y2="22" stroke-linecap="round"></line>
 </svg>`
@@ -157,9 +166,9 @@ class Tab
         else if (this.tmpTab)
         {
             html = `<svg width="100%" height="100%" viewBox="0 0 30 30">
-    <circle cx="15" cy="10" r="2" />
+    <circle cx="15" cy="9"  r="2" />
     <circle cx="15" cy="15" r="2" />
-    <circle cx="15" cy="20" r="2" />
+    <circle cx="15" cy="21" r="2" />
 </svg>`
         }
         this.div.appendChild(elem({class:'tabstate',html:html,click:this.togglePinned}))
@@ -199,14 +208,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _152_27_
+        var _160_27_
 
-        return ((_152_27_=this.next()) != null ? _152_27_ : this.prev())
+        return ((_160_27_=this.next()) != null ? _160_27_ : this.prev())
     }
 
     close ()
     {
-        var _162_16_
+        var _170_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -269,13 +278,14 @@ class Tab
 
     activate ()
     {
-        post.emit('jumpToFile',{path:this.file})
+        console.log('tab.activate',this.file)
+        post.emit('jumpToFile',this.file)
         return this
     }
 
     finishActivation ()
     {
-        var changes, _220_17_, _223_19_
+        var changes, _229_17_, _232_19_
 
         this.setActive()
         if ((this.state != null))
@@ -285,9 +295,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _224_24_ = 0; _224_24_ < list.length; _224_24_++)
+            for (var _233_24_ = 0; _233_24_ < list.length; _233_24_++)
             {
-                changes = list[_224_24_]
+                changes = list[_233_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

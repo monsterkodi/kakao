@@ -77,23 +77,23 @@ class Navigate
 
         switch opt.action
 
-            when 'clear'
+            'clear'
                 @filePositions = []
                 @currentIndex = -1
 
-            when 'backward'
+            'backward'
                 return if not @filePositions.length
                 @currentIndex = clamp 0, Math.max(0,@filePositions.length-2), @currentIndex-1
                 @navigating = true
                 @loadFilePos @filePositions[@currentIndex], opt
 
-            when 'forward'
+            'forward'
                 return if not @filePositions.length
                 @currentIndex = clamp 0, @filePositions.length-1, @currentIndex+1
                 @navigating = true
                 @loadFilePos @filePositions[@currentIndex], opt
                 
-            when 'delFilePos'
+            'delFilePos'
 
                 opt.item.line ?= opt.item.pos?[1]+1
 
@@ -101,11 +101,11 @@ class Navigate
                 @currentIndex = clamp 0, @filePositions.length-1, @currentIndex
                 post.toWins 'navigateHistoryChanged' @filePositions, @currentIndex
                 
-            when 'addFilePos'
+            'addFilePos'
 
-                return if not opt?.file?.length
-                
                 log 'addFilePos' opt
+                
+                return if not opt?.file?.length
 
                 @addToHistory opt.oldFile, opt.oldPos
 

@@ -10,7 +10,6 @@ use ../../klor/klor
 use ../../kxk/slash
 use ../../kxk/matchr
 use ../../kxk/elem
-use ../../kxk/noon
 use ../../kxk/kstr
 use ../../kxk/ffs
 
@@ -205,7 +204,9 @@ class Syntax
                 @matchrConfigs[syntaxName] = matchr.config patterns
 
         @syntaxNames = @syntaxNames.concat klor.exts
-
-Syntax.init()
+        log 'Syntax.init' @syntaxNames
+        @syntaxNames
+        
+# Syntax.init()
 
 export Syntax

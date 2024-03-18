@@ -51,12 +51,12 @@ body
 .browserRow
 
     &.hover
-        background      #111
+        background      splitColor
 
     &.active
         &.dir
             color       #ff8
-        background      frameColor
+        background      splitColor
 
     &.selected
         background      #116
@@ -246,7 +246,7 @@ span.macro
 //    000     000   000  0000000    0000000
 
 .tabs
-    background          frameColor
+    background          splitColor
     color               #aaa
 
 #titlebar.focus .tabs
@@ -274,14 +274,18 @@ span.macro
     color               #f80
     
 .tab
-    background          frameColor
+    background          splitColor
     &.active
         background      titleColor
         
 .tabstate
-    stroke              #888
+    stroke              #444
+    fill                #444
     &:hover
-        background      #333
+        background      #1e1e1e
+        
+.tab.active .tabstate:hover
+    background          #282828
 
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  

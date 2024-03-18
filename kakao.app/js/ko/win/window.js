@@ -41,9 +41,11 @@ import Terminal from "./Terminal.js"
 
 import Editor from "../editor/Editor.js"
 
-import CommandLine from "../commandline/CommandLine.js"
+import Syntax from "../editor/Syntax.js"
 
 import FileEditor from "../editor/FileEditor.js"
+
+import CommandLine from "../commandline/CommandLine.js"
 
 
 Window = (function ()
@@ -81,12 +83,15 @@ Window = (function ()
         window.aboutImage = kakao.bundle.img('about_ko.png')
     }
 
+    Window.prototype["onWindowAboutToShow"] = async function ()
+    {
+        return await Syntax.init()
+    }
+
     Window.prototype["onWindowCreated"] = function (win)
     {
         var s
 
-        kakao('window.setSize',750,750)
-        kakao('window.center')
         this.id = win.id
         new FileHandler
         new FileWatch
@@ -181,9 +186,6 @@ Window = (function ()
             case 'New Window':
                 return console.log(`ko.window ${name} unimplemented!`)
 
-            case 'Cycle Windows':
-                return console.log(`ko.window ${name} unimplemented!`)
-
             case 'Arrange Windows':
                 return console.log(`ko.window ${name} unimplemented!`)
 
@@ -195,6 +197,9 @@ Window = (function ()
 
             case 'Toggle Tab Pinned':
                 return toggleTabPinned()
+
+            case 'Toggle Tab Extensions':
+                return tabs.toggleExtension()
 
             case 'Increase':
                 return changeFontSize(1)
@@ -347,7 +352,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _265_14_
+    var _270_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -358,7 +363,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _271_22_
+    var _276_22_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     window.terminal.resized()
@@ -403,7 +408,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _316_32_
+    var _321_32_
 
     if (!(_k_.isNum(s)))
     {

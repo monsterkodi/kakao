@@ -115,17 +115,19 @@ Command
 View
     Maximize Editor         cmdctrl+shift+y
     Toggle Center Text      cmdctrl+\
-    Toggle Tab Pinned       alt+cmdctrl+p
     -
+    Toggle Tab Pinned       alt+cmdctrl+p
+    Toggle Tab Extensions   alt+cmdctrl+t
+    --
     Navigate Backward       cmdctrl+1
     Navigate Forward        cmdctrl+2
-    --
+    ---
     Activate Previous Tab   alt+cmdctrl+shift+left 
     Activate Next Tab       alt+cmdctrl+shift+right 
-    ---
+    ----
     Move Tab Left           alt+cmdctrl+shift+,
     Move Tab Right          alt+cmdctrl+shift+.
-    ----
+    -----
     Font Size
         Increase            cmdctrl+=
         Decrease            cmdctrl+-

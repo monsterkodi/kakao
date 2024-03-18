@@ -17,10 +17,10 @@ body {
   color: #fff;
 }
 .browserRow.hover {
-  background: #111;
+  background: #141414;
 }
 .browserRow.active {
-  background: #111;
+  background: #141414;
 }
 .browserRow.active.dir {
   color: #ff8;
@@ -191,7 +191,7 @@ span.macro.macro,
   background: #111;
 }
 .tabs {
-  background: #111;
+  background: #141414;
   color: #aaa;
 }
 #titlebar.focus .tabs {
@@ -214,16 +214,20 @@ span.macro.macro,
   color: #f80;
 }
 .tab {
-  background: #111;
+  background: #141414;
 }
 .tab.active {
   background: #222;
 }
 .tabstate {
-  stroke: #888;
+  stroke: #444;
+  fill: #444;
 }
 .tabstate:hover {
-  background: #333;
+  background: #1e1e1e;
+}
+.tab.active .tabstate:hover {
+  background: #282828;
 }
 #browser {
   background: #181818;

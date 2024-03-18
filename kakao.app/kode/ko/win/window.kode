@@ -28,9 +28,11 @@ use ./Tabs
 use ./Titlebar
 use ./FileHandler
 use ./Terminal
+
 use ../editor/Editor
-use ../commandline/CommandLine
+use ../editor/Syntax
 use ../editor/FileEditor
+use ../commandline/CommandLine
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
@@ -57,16 +59,21 @@ function Window #extends win
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         
+    onWindowAboutToShow: ○=>
+        
+        ○ Syntax.init()
+        
     onWindowCreated: (win) => 
         
-        kakao 'window.setSize' 750 750
-        kakao 'window.center'
+        # kakao 'window.setSize' 750 750
+        # kakao 'window.center'
         
         @id = win.id
         # log 'onWindowCreated' win.id
                     
         new FileHandler
         new FileWatch
+        
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
         @navigate    = window.navigate    = new navigate()
         @split       = window.split       = new Split()
@@ -77,8 +84,6 @@ function Window #extends win
         
         @fps         = window.fps         = new fps()
         
-        # @cwd         = window.cwd         = new cwd()
-    
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
@@ -142,11 +147,11 @@ function Window #extends win
             'Paste'                 ➜ return window.focusEditor.paste()
             'New Tab'               ➜ return post.emit 'newEmptyTab'
             'New Window'            ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'newWindowWithFile' @editor.currentFile
-            'Cycle Windows'         ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'activateNextWindow' window.winID
             'Arrange Windows'       ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
             'Toggle Scheme'         ➜ return scheme.toggle()
             'Toggle Center Text'    ➜ return toggleCenterText()
             'Toggle Tab Pinned'     ➜ return toggleTabPinned()
+            'Toggle Tab Extensions' ➜ return tabs.toggleExtension()
             'Increase'              ➜ return changeFontSize +1
             'Decrease'              ➜ return changeFontSize -1
             'Reset'                 ➜ return resetFontSize()
@@ -299,7 +304,7 @@ toggleTabPinned = ->
     
     if t = window.tabs.activeTab()
         t.togglePinned()
-
+        
 # 00000000   0000000   000   000  000000000      0000000  000  0000000  00000000
 # 000       000   000  0000  000     000        000       000     000   000
 # 000000    000   000  000 0 000     000        0000000   000    000    0000000

@@ -411,7 +411,7 @@ CommandLine = (function ()
     {
         var cmd, cmdName
 
-        if (trail.startsWith('Command▸'))
+        if ((trail != null ? trail.startsWith('Command▸') : undefined))
         {
             cmdName = trail.split('▸')[1].toLowerCase()
             if (cmd = this.commandForName(cmdName))

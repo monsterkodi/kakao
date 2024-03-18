@@ -41,13 +41,13 @@ class Tabs
         post.on 'closeOtherTabs'   @onCloseOtherTabs
         post.on 'stash'            @stash
         post.on 'dirty'            @onDirty
-        post.on 'stashLoaded'      @onStashLoaded
         post.on 'revertFile'       @revertFile
         post.on 'sendTabs'         @onSendTabs
         post.on 'fileLineChanges'  @onFileLineChanges
         post.on 'fileSaved'        @onFileSaved # saved in another window
         post.on 'saved'            @onSaved     # saved in this window
         post.on 'editorFocus'      @onEditorFocus
+        post.on 'stashLoaded'      @onStashLoaded
         
     onSendTabs: (winID) =>
 
@@ -87,7 +87,10 @@ class Tabs
             if event.target.classList.contains 'dot'
                 @onCloseTabOrWindow tab
             else
+                log 'activate tab!' tab
                 tab.activate()
+        else
+            log 'no tab?' event.target, @tabs
         true
 
     # 000000000   0000000   0000000
@@ -347,6 +350,13 @@ class Tabs
     # 000   000  00000000   000   000  000000000     000     0000000
     # 000   000  000        000   000  000   000     000     000
     #  0000000   000        0000000    000   000     000     00000000
+    
+    toggleExtension: ->
+        
+        prefs.toggle 'tabs|extension'
+        
+        for tab in @tabs
+            tab.update()
 
     update: ->
 
