@@ -150,7 +150,7 @@ function FileEditor extends TextEditor
 
         switch e
             'hidden' 'shown'
-                d = window.split.commandlineHeight + window.split.handleHeight
+                d = window.split.commandlineHeight + window.split.flex.handleSize
                 d = Math.min d, @scroll.scrollMax - @scroll.scroll
                 d *= -1 if e == 'hidden'
                 @scroll.by d

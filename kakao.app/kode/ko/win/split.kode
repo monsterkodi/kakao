@@ -8,9 +8,7 @@
 
 use ./flex/flex
 use ../../kxk/post
-use ../../kxk/dom
-
-{ $ } = dom
+use ../../kxk/dom ▪ $
 
 class Split
     
@@ -23,7 +21,6 @@ class Split
     @: ->
 
         @commandlineHeight = 30
-        @handleHeight      = 6
         
         @elem        =$ 'split'
         @terminal    =$ 'terminal'
@@ -46,7 +43,6 @@ class Split
                     div:        @editor
             ]
             direction:  'vertical'
-            handleSize: @handleHeight
             onDrag:     @onDrag
             onDragEnd:  @onDrag
             onPaneSize: @onDrag
@@ -259,7 +255,7 @@ class Split
     # 000        000   000       000    0         000  000   000     000     
     # 000         0000000   0000000          0000000   000  0000000  00000000
     
-    elemHeight: -> @elem.getBoundingClientRect().height - @handleHeight
+    elemHeight: -> @elem.getBoundingClientRect().height - @flex.handleSize
     
     splitPosY:  (i) -> @flex.posOfHandle i
     terminalHeight: -> @flex.sizeOfPane 0

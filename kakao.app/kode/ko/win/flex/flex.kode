@@ -15,7 +15,8 @@ class Flex
     
     @: (opt) ->
         
-        @handleSize  = opt.handleSize ? 6
+        # @handleSize  = opt.handleSize ? 4
+        @handleSize  = 4
         @direction   = opt.direction ? 'horizontal'
         @snapFirst   = opt.snapFirst
         @snapLast    = opt.snapLast

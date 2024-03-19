@@ -52,13 +52,14 @@ body {
   top: 0;
 }
 .browserColumn {
+  border-top: 4px solid;
   position: relative;
 }
 .browserColumnContent {
   position: absolute;
   width: 100%;
   bottom: 0px;
-  top: 30px;
+  top: 25px;
 }
 .browserColumnCode {
   font-family: fontMono;
@@ -101,7 +102,7 @@ body {
 }
 .browserImageContainer {
   position: relative;
-  padding: 6px;
+  padding: 4px;
   text-align: center;
 }
 .browserImage {
@@ -132,7 +133,7 @@ body {
 }
 .browserFileInfo {
   position: relative;
-  padding: 6px;
+  padding: 4px;
 }
 .fileInfoIcon {
   text-align: center;
@@ -211,8 +212,7 @@ body {
 }
 .crumb {
   font-size: 15px;
-  padding-top: 1px;
-  line-height: 30px;
+  padding-top: 2px;
   position: absolute;
   text-align: center;
   cursor: pointer;
@@ -224,7 +224,7 @@ body {
   top: 0;
   display: block;
   white-space: nowrap;
-  height: 30px;
+  height: 25px;
 }
 .crumb::-webkit-scrollbar {
   height: 2px;
@@ -246,7 +246,7 @@ body {
   left: 0;
   top: 0;
   bottom: 0;
-  border-right: 6px solid;
+  border-right: 4px solid;
 }
 #shelfResize {
   background: transparent;
@@ -394,10 +394,10 @@ body {
 .tooltip {
   white-space: nowrap;
   padding: 3px;
-  padding-left: 6px;
-  padding-right: 6px;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
   position: absolute;
   top: 30px;
   font-size: 15px;
@@ -780,7 +780,7 @@ body {
 .winlist {
   font-family: titlebarFont;
   position: absolute;
-  right: 6px;
+  right: 4px;
   top: 30px;
   min-width: 100px;
   max-width: 800px;
