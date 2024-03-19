@@ -21,7 +21,7 @@ function Pigments
 
         @editor.on 'file', @onFile
 
-    del: -> @editor.removeListener 'file', @onFile
+    del: -> @editor.removeListener 'file' @onFile
 
     # 000  000   000   0000000  00000000  00000000   000000000  00000000  0000000
     # 000  0000  000  000       000       000   000     000     000       000   000
@@ -114,11 +114,13 @@ export
             combo: 'command+alt+shift+p'
             accel: 'alt+ctrl+shift+p'
 
-    initPigments: -> @pigments ?= new Pigments @
+    initPigments: -> @pigments ?= new Pigments @; log 'initPigments' @pigments
 
     togglePigments: ->
+        
+        log 'togglePigments' @pigments
 
         if window.stash.get "pigments|#{@currentFile}"
-            @pigments.deactivate()
+            @pigments?.deactivate()
         else
-            @pigments.activate()
+            @pigments?.activate()

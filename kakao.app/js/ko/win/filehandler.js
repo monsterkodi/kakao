@@ -87,56 +87,57 @@ class FileHandler
         }
     }
 
-    openFiles (ofiles, options)
+    openFiles (files, options)
     {
-        var file, files, maxTabs
+        var file, maxTabs
 
-        options = (options != null ? options : {})
-        if ((ofiles != null ? ofiles.length : undefined))
+        console.log('FileHandler.openFiles',files)
+        if (_k_.empty(files))
         {
-            files = filelist(ofiles,{ignoreHidden:false})
-            maxTabs = prefs.get('maximalNumberOfTabs',8)
-            if (!options.newWindow)
-            {
-                files = files.slice(0, typeof maxTabs === 'number' ? maxTabs : -1)
-            }
-            if (files.length >= Math.max(11,maxTabs) && !options.skipCheck)
-            {
-                window.win.messageBox({type:'warning',buttons:['Cancel','Open All'],defaultId:1,cancelId:0,title:'A Lot of Files Warning',message:`You have selected ${files.length} files.`,detail:'Are you sure you want to open that many files?',cb:(function (answer)
-                {
-                    if (answer === 1)
-                    {
-                        options.skipCheck = true
-                        return this.openFiles(ofiles,options)
-                    }
-                }).bind(this)})
-                return
-            }
-            if (files.length === 0)
-            {
-                return []
-            }
-            window.stash.set('openFilePath',slash.dir(files[0]))
-            if (!options.newWindow && !options.newTab)
-            {
-                file = slash.path(files.shift())
-                this.loadFile(file)
-            }
-            var list = _k_.list(files)
-            for (var _122_21_ = 0; _122_21_ < list.length; _122_21_++)
-            {
-                file = list[_122_21_]
-                if (options.newWindow)
-                {
-                    console.log('filehandler new window with file not implemented!')
-                }
-                else
-                {
-                    post.emit('newTabWithFile',file)
-                }
-            }
-            return ofiles
+            return
         }
+        options = (options != null ? options : {})
+        maxTabs = prefs.get('maximalNumberOfTabs',8)
+        if (!options.newWindow)
+        {
+            files = files.slice(0, typeof maxTabs === 'number' ? maxTabs : -1)
+        }
+        if (files.length >= Math.max(11,maxTabs) && !options.skipCheck)
+        {
+            window.win.messageBox({type:'warning',buttons:['Cancel','Open All'],defaultId:1,cancelId:0,title:'A Lot of Files Warning',message:`You have selected ${files.length} files.`,detail:'Are you sure you want to open that many files?',cb:(function (answer)
+            {
+                if (answer === 1)
+                {
+                    options.skipCheck = true
+                    return this.openFiles(ofiles,options)
+                }
+            }).bind(this)})
+            return
+        }
+        if (files.length === 0)
+        {
+            return []
+        }
+        window.stash.set('openFilePath',slash.dir(files[0]))
+        if (!options.newWindow && !options.newTab)
+        {
+            file = slash.path(files.shift())
+            this.loadFile(file)
+        }
+        var list = _k_.list(files)
+        for (var _125_17_ = 0; _125_17_ < list.length; _125_17_++)
+        {
+            file = list[_125_17_]
+            if (options.newWindow)
+            {
+                console.log('filehandler new window with file not implemented!')
+            }
+            else
+            {
+                post.emit('newTabWithFile',file)
+            }
+        }
+        return true
     }
 
     reloadTab (file)
@@ -174,7 +175,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _167_29_
+        var tab, _170_29_
 
         if (tab = tabs.activeTab())
         {
@@ -209,9 +210,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _192_16_ = 0; _192_16_ < list.length; _192_16_++)
+        for (var _195_16_ = 0; _195_16_ < list.length; _195_16_++)
         {
-            tab = list[_192_16_]
+            tab = list[_195_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -276,7 +277,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _261_29_
+        var _264_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -292,7 +293,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _277_18_
+        var cb, dir, _280_18_
 
         cb = function (files)
         {
@@ -308,7 +309,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _297_18_
+        var cb, _300_18_
 
         cb = (function (file)
         {

@@ -63,7 +63,7 @@ class Navigate
         while @filePositions.length > prefs.get 'navigateHistoryLength' 100
             @filePositions.shift()
             
-        log 'setFilePositions' @filePositions    
+        # log 'setFilePositions' @filePositions    
         
         prefs.set 'filePositions' @filePositions
 
@@ -103,7 +103,7 @@ class Navigate
                 
             'addFilePos'
 
-                log 'addFilePos' opt
+                # log 'addFilePos' opt
                 
                 return if not opt?.file?.length
 

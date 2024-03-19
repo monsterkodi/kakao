@@ -108,7 +108,6 @@ Store = (function ()
         }
         this.data = ((_80_14_=this.data) != null ? _80_14_ : {})
         sds.set(this.data,this.keypath(key),value)
-        console.log(this.data)
         clearTimeout(this.timer)
         this.timer = setTimeout(this.save,this.timeout)
         return post.toWins('store',this.name,'set',key,value)

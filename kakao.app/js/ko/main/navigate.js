@@ -57,7 +57,6 @@ class Navigate
         {
             this.filePositions.shift()
         }
-        console.log('setFilePositions',this.filePositions)
         return prefs.set('filePositions',this.filePositions)
     }
 
@@ -99,7 +98,6 @@ class Navigate
                 return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
 
             case 'addFilePos':
-                console.log('addFilePos',opt)
                 if (!(opt != null ? (_108_39_=opt.file) != null ? _108_39_.length : undefined : undefined))
                 {
                     return

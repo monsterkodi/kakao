@@ -4,6 +4,8 @@ var getMenu, Menu
 
 import slash from "../../kxk/slash.js"
 
+import transform from "../editor/actions/transform.js"
+
 import Editor from "../editor/Editor.js"
 
 import Macro from "../commands/Macro.js"
@@ -26,7 +28,7 @@ getMenu = function (template, name)
 
 Menu = function (template)
 {
-    var actions, combo, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menu, menuName, modName, submenu, v, value, _40_38_, _44_40_, _48_33_, _49_44_, _51_43_, _52_39_
+    var actions, combo, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menu, menuName, modName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, v, value, _40_38_, _44_40_, _48_33_, _49_44_, _51_43_, _52_39_, _69_27_
 
     if (_k_.isArr(template))
     {
@@ -42,7 +44,6 @@ Menu = function (template)
     for (modName in Editor.actionModules)
     {
         actions = Editor.actionModules[modName]
-        console.log(modName,actions)
         for (key in actions)
         {
             value = actions[key]
@@ -91,7 +92,23 @@ Menu = function (template)
     }
     commandMenu = getMenu(template,'Command')
     commandMenu.menu = commandMenu.menu.concat({text:'Macro',menu:MacroMenu})
-    console.log('tranform menu?',Editor.actions.length,Editor.actionModules.length)
+    if (((transform != null ? transform.Transform : undefined) != null))
+    {
+        TransformMenu = []
+        for (transformMenu in transform.Transform.transformMenus)
+        {
+            transformList = transform.Transform.transformMenus[transformMenu]
+            transformSubmenu = []
+            var list1 = _k_.list(transformList)
+            for (var _73_26_ = 0; _73_26_ < list1.length; _73_26_++)
+            {
+                transform = list1[_73_26_]
+                transformSubmenu.push({text:transform,action:'doTransform'})
+            }
+            TransformMenu.push({text:transformMenu,menu:transformSubmenu})
+        }
+        editMenu.menu = editMenu.menu.concat({text:'Transform',menu:TransformMenu})
+    }
     return template
 }
 export default Menu;

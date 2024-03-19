@@ -20,17 +20,17 @@
 
 
 darkColor           = #0a0a0a
-separatorColor      = #0e0e0e
+separatorColor      = #1a1a1a
 crumbHoverColor     = #0e0e0e
 frameColor          = #111111
 commandColor        = #181818
 shelfColor          = #181818
-// splitColor          = #1d1d1d
 splitColor          = #141414
 titleColor          = #222222
 backColor           = #1a1a1a
 scrollColor         = #444
 textBlurColor       = #444
+textPopupColor      = #666
 textActiveColor     = #999
 textFocusColor      = #fff
 titleRedColor       = #f00
@@ -40,6 +40,12 @@ numbersColor        = rgba(0, 0, 0, 0.1)
 body
     background          backColor
     color               #fff
+
+// 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
+// 000   000  000   000  000   000  000 0 000  000       000       000   000  
+// 0000000    0000000    000   000  000000000  0000000   0000000   0000000    
+// 000   000  000   000  000   000  000   000       000  000       000   000  
+// 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
 
 .split-handle
     background          splitColor
@@ -80,6 +86,26 @@ body
     
 .browserRow.historySeparator.active *
     color               #888
+    
+// 00000000    0000000   00000000   000   000  00000000   
+// 000   000  000   000  000   000  000   000  000   000  
+// 00000000   000   000  00000000   000   000  00000000   
+// 000        000   000  000        000   000  000        
+// 000         0000000   000         0000000   000        
+
+.popupItem
+    color               textPopupColor
+    //&:not(:last-child)
+    //    border-bottom   1px solid frameColor
+    //&.selected
+    //    color           textFocusColor
+    //    & .popupCombo
+    //        color       textBlurColor
+    &.separator
+        border-top      1px solid separatorColor
+    //&:not(:last-child)
+    //    border-bottom   1px solid frameColor
+    
     
 //  0000000  000   000  00000000  000      00000000    
 // 000       000   000  000       000      000         

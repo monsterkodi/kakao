@@ -1,8 +1,10 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var FileSearcher, Search
 
 import kolor from "../../kolor/kolor.js"
+
+import ffs from "../../kxk/ffs.js"
 
 import kstr from "../../kxk/kstr.js"
 
@@ -132,7 +134,7 @@ FileSearcher = (function ()
         this.opt = opt
         this.file = file
     
-        this["end"] = this["end"].bind(this)
+        this["report"] = this["report"].bind(this)
         this.line = 0
         this.flags = ''
         this.patterns = ((function ()
@@ -168,57 +170,61 @@ FileSearcher = (function ()
         {
             this.syntaxName = null
         }
-    }
-
-    FileSearcher.prototype["write"] = function (chunk, encoding, cb)
-    {
-        var l, lines, rngs, _151_64_
-
-        lines = chunk.split('\n')
-        if (!(this.syntaxName != null))
+        console.log('FileSearcher',this.file,this.syntaxName)
+        ffs.read(this.file).then((function (text)
         {
-            this.syntaxName = Syntax.shebang(lines[0])
-        }
-        var list = _k_.list(lines)
-        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
-        {
-            l = list[_152_14_]
-            this.line += 1
-            rngs = matchr.ranges(this.patterns,l,this.flags)
-            if (rngs.length)
+            var l, lines, rngs, _157_68_
+
+            if (_k_.empty(text))
             {
-                this.found.push([this.line,l,rngs])
+                return
             }
-        }
-        return true
+            lines = text.split('\n')
+            if (!(this.syntaxName != null))
+            {
+                this.syntaxName = Syntax.shebang(lines[0])
+            }
+            var list = _k_.list(lines)
+            for (var _158_18_ = 0; _158_18_ < list.length; _158_18_++)
+            {
+                l = list[_158_18_]
+                this.line += 1
+                rngs = matchr.ranges(this.patterns,l,this.flags)
+                if (rngs.length)
+                {
+                    this.found.push([this.line,l,rngs])
+                }
+            }
+            if (!_k_.empty(this.found))
+            {
+                return this.report()
+            }
+        }).bind(this))
     }
 
-    FileSearcher.prototype["end"] = function (chunk, encoding, cb)
+    FileSearcher.prototype["report"] = function ()
     {
         var dss, f, fi, meta, regions, terminal
 
-        if (this.found.length)
+        terminal = window.terminal
+        meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
+        terminal.appendMeta(meta)
+        terminal.appendMeta({clss:'spacer'})
+        for (var _180_19_ = fi = 0, _180_23_ = this.found.length; (_180_19_ <= _180_23_ ? fi < this.found.length : fi > this.found.length); (_180_19_ <= _180_23_ ? ++fi : --fi))
         {
-            terminal = window.terminal
-            meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
-            terminal.appendMeta(meta)
-            terminal.appendMeta({clss:'spacer'})
-            for (var _175_23_ = fi = 0, _175_27_ = this.found.length; (_175_23_ <= _175_27_ ? fi < this.found.length : fi > this.found.length); (_175_23_ <= _175_27_ ? ++fi : --fi))
+            f = this.found[fi]
+            regions = kolor.dissect([f[1]],this.syntaxName)[0]
+            dss = matchr.merge(regions,matchr.dissect(f[2]))
+            meta = {diss:dss,href:`${this.file}:${f[0]}`,clss:'searchResult',click:this.command.onMetaClick}
+            if (fi && this.found[fi - 1][0] !== f[0] - 1)
             {
-                f = this.found[fi]
-                regions = kolor.dissect([f[1]],this.syntaxName)[0]
-                dss = matchr.merge(regions,matchr.dissect(f[2]))
-                meta = {diss:dss,href:`${this.file}:${f[0]}`,clss:'searchResult',click:this.command.onMetaClick}
-                if (fi && this.found[fi - 1][0] !== f[0] - 1)
-                {
-                    terminal.appendMeta({clss:'spacer'})
-                }
-                terminal.appendMeta(meta)
-                post.emit('search-result',meta)
+                terminal.appendMeta({clss:'spacer'})
             }
-            terminal.appendMeta({clss:'spacer'})
-            return terminal.scroll.cursorToTop()
+            terminal.appendMeta(meta)
+            post.emit('search-result',meta)
         }
+        terminal.appendMeta({clss:'spacer'})
+        return terminal.scroll.cursorToTop()
     }
 
     return FileSearcher

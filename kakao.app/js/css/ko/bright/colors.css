@@ -48,6 +48,12 @@ body {
 .browserRow.historySeparator.active * {
   color: #888;
 }
+.popupItem {
+  color: #666;
+}
+.popupItem.separator {
+  border-top: 1px solid #1a1a1a;
+}
 #shelf .browserRow.active {
   background: #181818;
 }

@@ -53,6 +53,7 @@ function Kakao
             kxk.post.emit.apply null, [msg.name].concat msg.args
             
     # some redirections to make working with kakao modules a little simpler ...
+    # not sure if that actually makes sense for anything beside the bundle ???
             
     @bundle: bundle      # provides paths and urls relative to the application folder
     @window: kxk.win     # base class for kakao windows
@@ -60,10 +61,12 @@ function Kakao
     @post:   kxk.post    # posts messages to modules in the window process
     @ffs:    kxk.ffs     # fake fs
 
-kakao = -> Kakao.request.apply null, arguments
-for k,v of Kakao
-    kakao[k] = v
+# this is slightly evil: instead of exporting Kakao we just export it's request function
+# and attach the other functions to it. just makes requesting stuff a bit more convenient
     
-window.kakao = kakao # kakao sets itself in the global window scope
+kakao = -> Kakao.request.apply null, arguments
+for k,v of Kakao ➜ kakao[k] = v
+    
+window.kakao = kakao # make kakao available in the global window scope
 
 export kakao

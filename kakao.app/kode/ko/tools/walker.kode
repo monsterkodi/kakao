@@ -16,7 +16,6 @@ class Walker
     @: (@cfg) ->
 
         @cfg.files       = []
-        @cfg.stats       = []
         @cfg.maxDepth    ?= 3
         @cfg.dotFiles    ?= false
         @cfg.includeDirs ?= true
@@ -50,46 +49,37 @@ class Walker
                 listDir = toWalk.shift()
             
                 items = ○ ffs.list listDir
-                log 'Walker items' items
+                # log 'Walker items' items
                 
                 for item in items
-                    log 'item' item
+                    # log 'item' item
                     file = item.file
                     ext = slash.ext file
                     
-                    log 'file' file, ext
-    
-                    # if @cfg.filter?(p)
-                        # return @ignore p
-                    # else if file in ['.DS_Store' 'Icon\r'] or ext in ['pyc']
-                        # return @ignore p
-                    # else if file.endsWith "-#{os.arch()}"
-                        # return @ignore p
-                    # else if @cfg.includeDir? and slash.dir(p) == @cfg.includeDir
-                        # @cfg.files.push item.path
-                        # @cfg.stats.push stat
-                        # @ignore p if file in @cfg.ignore
-                        # @ignore p if file.startsWith('.') and not @cfg.dotFiles
-                    # else if file in @cfg.ignore
-                        # return @ignore p
-                    # else if file in @cfg.include
-                        # @cfg.files.push item.path
-                        # @cfg.stats.push stat
-                    # else if file.startsWith '.'
-                        # if @cfg.dotFiles
-                            # @cfg.files.push item.path
-                            # @cfg.stats.push stat
-                        # else
-                            # return @ignore p 
-                    # else if ext in @cfg.ignoreExt
-                        # return @ignore p
-                    # else if ext in @cfg.includeExt or @cfg.includeExt.indexOf('') >= 0
-                        # @cfg.files.push item.path
-                        # @cfg.stats.push stat
-                    # else if stat.isDirectory()
-                        # if p != @cfg.root and @cfg.includeDirs
-                            # @cfg.files.push item.path 
-                            # @cfg.stats.push stat
+                    if @cfg.filter?(p)
+                        return @ignore p
+                    else if file in ['.DS_Store' 'Icon\r'] or ext in ['pyc']
+                        return @ignore p
+                    else if @cfg.includeDir? and slash.dir(p) == @cfg.includeDir
+                        @cfg.files.push item.path
+                        @ignore p if file in @cfg.ignore
+                        @ignore p if file.startsWith('.') and not @cfg.dotFiles
+                    else if file in @cfg.ignore
+                        return @ignore p
+                    else if file in @cfg.include
+                        @cfg.files.push item.path
+                    else if file.startsWith '.'
+                        if @cfg.dotFiles
+                            @cfg.files.push item.path
+                        else
+                            return @ignore p 
+                    else if ext in @cfg.ignoreExt
+                        return @ignore p
+                    else if ext in @cfg.includeExt or @cfg.includeExt.indexOf('') >= 0
+                        @cfg.files.push item.path
+                    else if stat.isDirectory()
+                        if p != @cfg.root and @cfg.includeDirs
+                            @cfg.files.push item.path 
                             
                     @cfg.path item.path if @cfg.path is func 
                     
@@ -106,19 +96,9 @@ class Walker
                         log 'maxFiles reached'
                         break
     
-                    # else if cfg.slowdown and (cfg.files.length % 400) == 399
-                        # @pause()
-                        # setTimeout @resume, 10
-                    
-            # @walker.on 'path' onWalkerPath @cfg
-
             @running = false
             @cfg.done? @
                 
-        # catch err
-            # @running = false
-            # error "Walker.start -- #{err} dir: #{dir} stack:", err.stack
-
     stop: ->
         
         @running = false
