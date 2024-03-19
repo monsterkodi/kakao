@@ -162,7 +162,7 @@ FileEditor = (function ()
         {
             case 'hidden':
             case 'shown':
-                d = window.split.commandlineHeight + window.split.handleHeight
+                d = window.split.commandlineHeight + window.split.flex.handleSize
                 d = Math.min(d,this.scroll.scrollMax - this.scroll.scroll)
                 if (e === 'hidden')
                 {

@@ -1,14 +1,11 @@
 var _k_
 
-var $
-
 import flex from "./flex/flex.js"
 
 import post from "../../kxk/post.js"
 
 import dom from "../../kxk/dom.js"
-
-$ = dom.$
+let $ = dom.$
 
 class Split
 {
@@ -22,7 +19,6 @@ class Split
         this.emitSplit = this.emitSplit.bind(this)
         this.onDrag = this.onDrag.bind(this)
         this.commandlineHeight = 30
-        this.handleHeight = 6
         this.elem = $('split')
         this.terminal = $('terminal')
         this.browser = $('browser')
@@ -31,12 +27,12 @@ class Split
         post.on('focus',this.focus)
         post.on('stash',this.stash)
         post.on('stashLoaded',this.onStashLoaded)
-        this.flex = new flex({panes:[{div:this.terminal,collapsed:true},{div:this.commandline,fixed:this.commandlineHeight},{div:this.editor}],direction:'vertical',handleSize:this.handleHeight,onDrag:this.onDrag,onDragEnd:this.onDrag,onPaneSize:this.onDrag,snapFirst:20,snapLast:100})
+        this.flex = new flex({panes:[{div:this.terminal,collapsed:true},{div:this.commandline,fixed:this.commandlineHeight},{div:this.editor}],direction:'vertical',onDrag:this.onDrag,onDragEnd:this.onDrag,onPaneSize:this.onDrag,snapFirst:20,snapLast:100})
     }
 
     onDrag ()
     {
-        var _56_23_
+        var _52_23_
 
         if ((this.flex != null))
         {
@@ -292,7 +288,7 @@ class Split
 
     focus (n)
     {
-        var e, _228_31_, _232_22_
+        var e, _224_31_, _228_22_
 
         if (n === 'commandline')
         {
@@ -338,7 +334,7 @@ class Split
 
     elemHeight ()
     {
-        return this.elem.getBoundingClientRect().height - this.handleHeight
+        return this.elem.getBoundingClientRect().height - this.flex.handleSize
     }
 
     splitPosY (i)

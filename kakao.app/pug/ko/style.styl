@@ -15,14 +15,14 @@ scrollbarWidth        = 12px // transparent scroll area
 numbersWidth          = 50px
 editorPadding         = (8px + numbersWidth)
 bottomCornerRadius    = 4px
-frameWidth            = 6px
+frameWidth            = 4px
 frameBorder           = frameWidth solid
 commandlineHeight     = 30px
-splithandleHeight     = 6px
 thinBorder            = 1px solid
 
 titlebarHeight        = 30px
 titlebarFontSize      = 15px
+crumbHeight           = 25px
 
 @font-face 
     font-family     titlebarFont
@@ -102,13 +102,14 @@ body
     top                 0
 
 .browserColumn
+    border-top          frameWidth solid
     position            relative
 
 .browserColumnContent
     position            absolute
     width               100%
     bottom              0px
-    top                 titlebarHeight
+    top                 crumbHeight
     
 .browserColumnCode
     font-family         fontMono
@@ -275,8 +276,7 @@ unicode(char)
 
 .crumb
     font-size       15px
-    padding-top     1px
-    line-height     titlebarHeight
+    padding-top     2px
     position        absolute
     text-align      center
     cursor          pointer
@@ -288,7 +288,7 @@ unicode(char)
     top             0  
     display         block
     white-space     nowrap
-    height          titlebarHeight
+    height          crumbHeight
     &::-webkit-scrollbar
         height          2px
     & .path    

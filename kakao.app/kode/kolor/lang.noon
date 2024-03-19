@@ -864,7 +864,7 @@ mm
         readwrite
         assign
         retain
-        
+        path        
     keyword
         id
         in
@@ -872,29 +872,42 @@ mm
         super
         alloc
         init
+        count
+        length
         release
+        array
+        dictionary
+        longValue
         autorelease
         isKindOfClass
+        generalPasteboard
         sharedApplication
         mainBundle
         setObject
         hasPrefix
         hasSuffix
+        setString
+        forType
         appendString
         stringWithString
+        completionHandler
+        dataWithJSONObject
         forKey
         addObject
         isDirectory
         writeToFile
         initWithData
+        valueForKey
         objectForKey
         objectAtIndex
         trashItemAtURL
+        resultingItemURL
         numberWithBool
         moveItemAtPath
         copyItemAtPath
         toPath
         nextObject
+        skipDescendants
         floatValue
         numberWithInt
         numberWithLong
@@ -922,6 +935,7 @@ mm
         arrayByAddingObject
         arrayWithObject
         arrayWithObjects
+        stringForType
         stringWithFormat
         stringByAppendingString
         stringByStandardizingPath
@@ -961,6 +975,7 @@ mm
         NSMutableSet
         WKNavigation
         NSURLRequest
+        NSPasteboard
         NSFileManager
         NSApplication
         NSCharacterSet
@@ -988,6 +1003,7 @@ mm
         NSArray        
         NSNumber
         NSString
+        NSFileType
         NSDictionary
         NSMutableArray
         NSMutableString
