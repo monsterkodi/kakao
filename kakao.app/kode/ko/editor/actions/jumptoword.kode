@@ -8,6 +8,7 @@
 use ../../../kxk/matchr
 use ../../../kxk/slash
 use ../../../kxk/post
+use ../../../kxk/ffs
 
 export
     
@@ -32,9 +33,18 @@ export
                 
                 if d.start <= p[0] <= d.start+d.match.length
                     [file, line, col] = slash.splitFileLine d.match
-                    if slash.fileExists file
-                        post.emit 'jumpTo', path:file, line:line, col:col
-                        return true
+                    log 'jumpToFileAtPos check file exists -----------' slash.dir(@currentFile), file, slash.path slash.dir(@currentFile), file
+                    ffs.fileExists(file).catch((err)->error "fileExists fail! #{err}").then (f) ->
+                        if f
+                            log 'file exists! ---------!!!!!!!!!!!' f, file
+                            post.emit 'jumpTo' path:file, line:line, col:col
+                        else if not slash.isAbsolute d.match
+                            cwd = kakao.bundle.path
+                            [file, line, col] = slash.splitFileLine slash.path cwd, d.match
+                            log 'jumpTo' cwd, path:file, line:line, col:col
+                            post.emit 'jumpTo ++++++++++++' path:file, line:line, col:col
+                    log 'wait for file jump?' d
+                    return        
                         
                 if not slash.isAbsolute d.match
                     

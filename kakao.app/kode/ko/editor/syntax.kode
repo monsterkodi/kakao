@@ -207,6 +207,4 @@ class Syntax
         log 'Syntax.init' @syntaxNames
         @syntaxNames
         
-# Syntax.init()
-
 export Syntax

@@ -235,7 +235,12 @@ Title = (function ()
 
     Title.prototype["initFromCache"] = function ()
     {
+        delete kakao.menuTemplate
         post.emit('menu.init',this.templateCache)
+        if (kakao.menuTemplate)
+        {
+            this.templateCache = kakao.menuTemplate
+        }
         this.menu = new menu({items:this.templateCache})
         return this.elem.insertBefore(this.menu.elem,this.elem.firstChild.nextSibling)
     }
@@ -250,7 +255,7 @@ Title = (function ()
             menuOrAccel = obj[text]
             tmpl.push(((function ()
             {
-                var item, _213_33_, _213_57_
+                var item, _215_33_, _215_57_
 
                 if (_k_.empty(menuOrAccel) && text.startsWith('-'))
                 {
@@ -290,16 +295,16 @@ Title = (function ()
 
     Title.prototype["showMenu"] = function ()
     {
-        var _223_68_, _223_75_
+        var _225_68_, _225_75_
 
         this.menu.elem.style.display = 'inline-block'
-        ;((_223_68_=this.menu) != null ? typeof (_223_75_=_223_68_.focus) === "function" ? _223_75_() : undefined : undefined)
+        ;((_225_68_=this.menu) != null ? typeof (_225_75_=_225_68_.focus) === "function" ? _225_75_() : undefined : undefined)
         return prefs.set('menu',true)
     }
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _224_25_
+        var _226_25_
 
         ;(this.menu != null ? this.menu.close() : undefined)
         this.menu.elem.style.display = 'none'
@@ -333,7 +338,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var action, combo, combos, event, item, key, keypath, keypaths, menu, mod, trail, _253_37_
+        var action, combo, combos, event, item, key, keypath, keypaths, menu, mod, trail, _255_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -351,9 +356,9 @@ Title = (function ()
         }
         keypaths = sds.find.key(menu,'accel')
         var list = _k_.list(keypaths)
-        for (var _247_20_ = 0; _247_20_ < list.length; _247_20_++)
+        for (var _249_20_ = 0; _249_20_ < list.length; _249_20_++)
         {
-            keypath = list[_247_20_]
+            keypath = list[_249_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -363,7 +368,7 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_253_37_=item.action) != null ? _253_37_ : item.text)
+                action = ((_255_37_=item.action) != null ? _255_37_ : item.text)
                 trail = []
                 while (keypath.length > 1)
                 {

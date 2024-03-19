@@ -6,6 +6,8 @@ import slash from "../../../kxk/slash.js"
 
 import post from "../../../kxk/post.js"
 
+import ffs from "../../../kxk/ffs.js"
+
 export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at cursor',combo:'alt+enter'}},jumpToFileAtPos:function (p = this.cursorPos())
 {
     var col, cwd, d, diss, file, line, ranges, rgx, text
@@ -17,23 +19,42 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list = _k_.list(diss)
-        for (var _31_18_ = 0; _31_18_ < list.length; _31_18_++)
+        for (var _32_18_ = 0; _32_18_ < list.length; _32_18_++)
         {
-            d = list[_31_18_]
+            d = list[_32_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _34_38_ = slash.splitFileLine(d.match); file = _34_38_[0]; line = _34_38_[1]; col = _34_38_[2]
+                var _35_38_ = slash.splitFileLine(d.match); file = _35_38_[0]; line = _35_38_[1]; col = _35_38_[2]
 
-                if (slash.fileExists(file))
+                console.log('jumpToFileAtPos check file exists -----------',slash.dir(this.currentFile),file,slash.path(slash.dir(this.currentFile),file))
+                ffs.fileExists(file).catch(function (err)
                 {
-                    post.emit('jumpTo',{path:file,line:line,col:col})
-                    return true
-                }
+                    console.error(`fileExists fail! ${err}`)
+                }).then(function (f)
+                {
+                    var cwd
+
+                    if (f)
+                    {
+                        console.log('file exists! ---------!!!!!!!!!!!',f,file)
+                        return post.emit('jumpTo',{path:file,line:line,col:col})
+                    }
+                    else if (!slash.isAbsolute(d.match))
+                    {
+                        cwd = kakao.bundle.path
+                        var _43_46_ = slash.splitFileLine(slash.path(cwd,d.match)); file = _43_46_[0]; line = _43_46_[1]; col = _43_46_[2]
+
+                        console.log('jumpTo',cwd,{path:file,line:line,col:col})
+                        return post.emit('jumpTo ++++++++++++',{path:file,line:line,col:col})
+                    }
+                })
+                console.log('wait for file jump?',d)
+                return
             }
             if (!slash.isAbsolute(d.match))
             {
                 cwd = window.cwd.cwd
-                var _42_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _42_38_[0]; line = _42_38_[1]; col = _42_38_[2]
+                var _52_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _52_38_[0]; line = _52_38_[1]; col = _52_38_[2]
 
                 post.emit('jumpTo',{path:file,line:line,col:col})
                 return true
@@ -46,12 +67,12 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list1 = _k_.list(diss)
-        for (var _61_18_ = 0; _61_18_ < list1.length; _61_18_++)
+        for (var _71_18_ = 0; _71_18_ < list1.length; _71_18_++)
         {
-            d = list1[_61_18_]
+            d = list1[_71_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _63_38_ = slash.splitFileLine(d.match); file = _63_38_[0]; line = _63_38_[1]; col = _63_38_[2]
+                var _73_38_ = slash.splitFileLine(d.match); file = _73_38_[0]; line = _73_38_[1]; col = _73_38_[2]
 
                 if (slash.fileExists(file))
                 {

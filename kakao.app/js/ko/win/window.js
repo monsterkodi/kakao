@@ -1,4 +1,4 @@
-var _k_ = {isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
 var addToShelf, changeFontSize, changeZoom, reloadWin, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
 
@@ -6,6 +6,8 @@ import kakao from "../../kakao.js"
 
 import dom from "../../kxk/dom.js"
 let stopEvent = dom.stopEvent
+
+import win from "../../kxk/win.js"
 
 import post from "../../kxk/post.js"
 
@@ -33,7 +35,7 @@ import Info from "./Info.js"
 
 import Tabs from "./Tabs.js"
 
-import Titlebar from "./Titlebar.js"
+import Menu from "./Menu.js"
 
 import FileHandler from "./FileHandler.js"
 
@@ -50,6 +52,7 @@ import CommandLine from "../commandline/CommandLine.js"
 
 Window = (function ()
 {
+    _k_.extend(Window, win.Delegate)
     Window.prototype["onWindowAnimationTick"] = function (win, tickInfo)
     {}
 
@@ -68,6 +71,11 @@ Window = (function ()
     Window.prototype["onWindowKeyUp"] = function (win, keyInfo)
     {}
 
+    Window.prototype["onWindowMenuTemplate"] = function (win, template)
+    {
+        return kakao.menuTemplate = Menu(template)
+    }
+
     function Window ()
     {
         this["onMenuAction"] = this["onMenuAction"].bind(this)
@@ -81,11 +89,7 @@ Window = (function ()
             return window.editor.saveScrollCursorsAndSelections()
         })
         window.aboutImage = kakao.bundle.img('about_ko.png')
-    }
-
-    Window.prototype["onWindowAboutToShow"] = async function ()
-    {
-        return await Syntax.init()
+        return Window.__super__.constructor.apply(this, arguments)
     }
 
     Window.prototype["onWindowCreated"] = function (win)
@@ -352,7 +356,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _270_14_
+    var _273_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -363,10 +367,10 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _276_22_
+    var _279_22_, _280_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
-    window.terminal.resized()
+    ;(window.terminal != null ? window.terminal.resized() : undefined)
     window.commandline.resized()
     return window.editor.resized()
 })
@@ -408,7 +412,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _321_32_
+    var _324_32_
 
     if (!(_k_.isNum(s)))
     {
@@ -517,9 +521,13 @@ window.setLastFocus = function (name)
 {
     return window.lastFocus = name
 }
+
+kakao.preInit = async function ()
+{
+    await Syntax.init()
+    return await Editor.init()
+}
 kakao.init(function ()
 {
-    var kwin
-
-    return kwin = new kakao.window(new Window)
+    return new kakao.window(new Window)
 })

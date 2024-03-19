@@ -125,7 +125,7 @@ function FileSearcher
     
     @: (@command, @opt, @file) ->
         
-        log 'FileSearcher' @command, @opt, @file
+        # log 'FileSearcher' @command, @opt, @file
         
         @line = 0
         @flags = ''

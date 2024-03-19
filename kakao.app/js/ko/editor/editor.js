@@ -1,10 +1,12 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var Editor, __dirname
 
 import ffs from "../../kxk/ffs.js"
 
 import kstr from "../../kxk/kstr.js"
+
+import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
@@ -19,65 +21,35 @@ __dirname = slash.dir(import.meta.url.slice(7))
 Editor = (function ()
 {
     _k_.extend(Editor, Buffer)
-    Editor["actions"] = null
-    Editor["actionEditors"] = []
-    function Editor (name, config)
+    Editor["actions"] = []
+    Editor["actionModules"] = []
+    Editor["init"] = async function ()
     {
-        var _42_27_
+        var actionFile, actions, filelist, item, k, key, moduleJS, moduleName, v, value, _57_50_
 
-        this["setText"] = this["setText"].bind(this)
-        this["actionsInitialized"] = this["actionsInitialized"].bind(this)
-        this.stringCharacters = {"'":'single','"':'double'}
-        this.bracketCharacters = {open:{'[':']','{':'}','(':')'},close:{},regexps:[]}
-        Editor.__super__.constructor.call(this)
-        this.name = name
-        this.config = (config != null ? config : {})
-        this.config.syntaxName = ((_42_27_=this.config.syntaxName) != null ? _42_27_ : 'txt')
-        this.indentString = _k_.lpad(4,"")
-        this.stickySelection = false
-        this.syntax = new Syntax(this.config.syntaxName,this.line,this.lines)
-        this.do = new Do(this)
-        if (_k_.empty(Editor.actions))
-        {
-            Editor.initActions(this)
-        }
-        else
-        {
-            this.actionsInitialized()
-        }
-    }
-
-    Editor.prototype["del"] = function ()
-    {
-        return this.do.del()
-    }
-
-    Editor.prototype["actionsInitialized"] = function ()
-    {
-        return this.setupFileType()
-    }
-
-    Editor["initActions"] = async function (editor)
-    {
-        var actionFile, actions, filelist, item, k, key, v, value, _87_50_
-
-        Editor.actions = []
-        Editor.actionEditors.push(editor)
-        if (Editor.actionEditors.length > 1)
-        {
-            return
-        }
         filelist = await ffs.list(slash.path(__dirname,'actions'))
+        console.log('Editor.init',filelist)
         var list = _k_.list(filelist)
-        for (var _74_17_ = 0; _74_17_ < list.length; _74_17_++)
+        for (var _35_17_ = 0; _35_17_ < list.length; _35_17_++)
         {
-            item = list[_74_17_]
+            item = list[_35_17_]
             actionFile = item.path
             if (!(_k_.in(slash.ext(actionFile),['js','mjs','kode'])))
             {
                 continue
             }
-            actions = await import(actionFile)
+            try
+            {
+                moduleJS = './' + slash.relative(actionFile,__dirname)
+                actions = await import(moduleJS)
+            }
+            catch (err)
+            {
+                console.log(`import of ${moduleJS} failed`,err)
+                continue
+            }
+            moduleName = slash.name(actionFile)
+            Editor.actionModules[moduleName] = actions.default
             for (key in actions.default)
             {
                 value = actions.default[key]
@@ -102,18 +74,42 @@ Editor = (function ()
                 }
             }
         }
-        var list1 = _k_.list(Editor.actionEditors)
-        for (var _94_19_ = 0; _94_19_ < list1.length; _94_19_++)
+        Editor.actions.sort(function (a, b)
         {
-            editor = list1[_94_19_]
-            editor.actionsInitialized()
-        }
-        return Editor.actions.sort(function (a, b)
-        {
-            var _97_43_
+            var _60_43_
 
             return (a.name != null ? a.name.localeCompare(b.name) : undefined)
         })
+        console.log('Editor.actions',Editor.actions.map(function (a)
+        {
+            var _61_62_
+
+            return ((_61_62_=a.name) != null ? _61_62_ : a.key)
+        }).join('\n'))
+        return post.emit('editor.init')
+    }
+
+    function Editor (name, config)
+    {
+        var _82_27_
+
+        this["setText"] = this["setText"].bind(this)
+        this.stringCharacters = {"'":'single','"':'double'}
+        this.bracketCharacters = {open:{'[':']','{':'}','(':')'},close:{},regexps:[]}
+        Editor.__super__.constructor.call(this)
+        this.name = name
+        this.config = (config != null ? config : {})
+        this.config.syntaxName = ((_82_27_=this.config.syntaxName) != null ? _82_27_ : 'txt')
+        this.indentString = _k_.lpad(4,"")
+        this.stickySelection = false
+        this.syntax = new Syntax(this.config.syntaxName,this.line,this.lines)
+        this.do = new Do(this)
+        this.setupFileType()
+    }
+
+    Editor.prototype["del"] = function ()
+    {
+        return this.do.del()
     }
 
     Editor["actionWithName"] = function (name)
@@ -121,9 +117,9 @@ Editor = (function ()
         var action
 
         var list = _k_.list(Editor.actions)
-        for (var _102_19_ = 0; _102_19_ < list.length; _102_19_++)
+        for (var _103_19_ = 0; _103_19_ < list.length; _103_19_++)
         {
-            action = list[_102_19_]
+            action = list[_103_19_]
             if (action.name === name)
             {
                 return action
@@ -134,9 +130,9 @@ Editor = (function ()
 
     Editor.prototype["shebangFileType"] = function ()
     {
-        var _113_31_, _113_44_
+        var _114_31_, _114_44_
 
-        return ((_113_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _113_44_ : 'txt')
+        return ((_114_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _114_44_ : 'txt')
     }
 
     Editor.prototype["setupFileType"] = function ()
@@ -158,7 +154,7 @@ Editor = (function ()
 
     Editor.prototype["setFileType"] = function (fileType)
     {
-        var cstr, k, key, reg, v, _148_21_
+        var cstr, k, key, reg, v, _149_21_
 
         this.fileType = fileType
     
@@ -186,9 +182,9 @@ Editor = (function ()
         }
         this.bracketCharacters.regexp = []
         var list = ['open','close']
-        for (var _143_16_ = 0; _143_16_ < list.length; _143_16_++)
+        for (var _144_16_ = 0; _144_16_ < list.length; _144_16_++)
         {
-            key = list[_143_16_]
+            key = list[_144_16_]
             cstr = Object.keys(this.bracketCharacters[key]).join('')
             reg = new RegExp(`[${kstr.escapeRegexp(cstr)}]`)
             this.bracketCharacters.regexps.push([reg,key])
@@ -348,7 +344,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _260_33_, _261_50_, _267_52_
+        var e, il, indentLength, line, thisIndent, _261_33_, _262_50_, _268_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -365,9 +361,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _262_26_ = 0; _262_26_ < list.length; _262_26_++)
+                    for (var _263_26_ = 0; _263_26_ < list.length; _263_26_++)
                     {
-                        e = list[_262_26_]
+                        e = list[_263_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength

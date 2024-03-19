@@ -133,7 +133,6 @@ FileSearcher = (function ()
         this.file = file
     
         this["end"] = this["end"].bind(this)
-        console.log('FileSearcher',this.command,this.opt,this.file)
         this.line = 0
         this.flags = ''
         this.patterns = ((function ()

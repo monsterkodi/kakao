@@ -24,7 +24,6 @@ class Walker
         this.cfg.include = ((_25_25_=this.cfg.include) != null ? _25_25_ : ['.konrad.noon','.gitignore','.npmignore'])
         this.cfg.ignoreExt = ((_26_25_=this.cfg.ignoreExt) != null ? _26_25_ : ['asar'])
         this.cfg.includeExt = ((_27_25_=this.cfg.includeExt) != null ? _27_25_ : File.sourceFileExtensions)
-        console.log('Walker',this.cfg)
     }
 
     async start ()

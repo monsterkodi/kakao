@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-export default {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',accel:'ctrl+]'},deIndent:{name:'Outdent',combo:'command+[',accel:'ctrl+['}},indent:function ()
+export default {actions:{menu:'Line',indent:{name:'Indent',accel:'alt+cmdctrl+shift+left'},deIndent:{name:'Outdent',accel:'alt+cmdctrl+shift+right'}},indent:function ()
 {
     var i, nc, newCursors, newSelections, ns
 
@@ -8,20 +8,20 @@ export default {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',acc
     newSelections = this.do.selections()
     newCursors = this.do.cursors()
     var list = _k_.list(this.selectedAndCursorLineIndices())
-    for (var _27_14_ = 0; _27_14_ < list.length; _27_14_++)
+    for (var _25_14_ = 0; _25_14_ < list.length; _25_14_++)
     {
-        i = list[_27_14_]
+        i = list[_25_14_]
         this.do.change(i,this.indentString + this.do.line(i))
         var list1 = _k_.list(positionsAtLineIndexInPositions(i,newCursors))
-        for (var _29_19_ = 0; _29_19_ < list1.length; _29_19_++)
+        for (var _27_19_ = 0; _27_19_ < list1.length; _27_19_++)
         {
-            nc = list1[_29_19_]
+            nc = list1[_27_19_]
             cursorDelta(nc,this.indentString.length)
         }
         var list2 = _k_.list(rangesAtLineIndexInRanges(i,newSelections))
-        for (var _31_19_ = 0; _31_19_ < list2.length; _31_19_++)
+        for (var _29_19_ = 0; _29_19_ < list2.length; _29_19_++)
         {
-            ns = list2[_31_19_]
+            ns = list2[_29_19_]
             ns[1][0] += this.indentString.length
             ns[1][1] += this.indentString.length
         }
@@ -37,23 +37,23 @@ export default {actions:{menu:'Line',indent:{name:'Indent',combo:'command+]',acc
     newSelections = this.do.selections()
     newCursors = this.do.cursors()
     var list = _k_.list(this.selectedAndCursorLineIndices())
-    for (var _42_14_ = 0; _42_14_ < list.length; _42_14_++)
+    for (var _40_14_ = 0; _40_14_ < list.length; _40_14_++)
     {
-        i = list[_42_14_]
+        i = list[_40_14_]
         if (this.do.line(i).startsWith(this.indentString))
         {
             this.do.change(i,this.do.line(i).substr(this.indentString.length))
             lineCursors = positionsAtLineIndexInPositions(i,newCursors)
             var list1 = _k_.list(lineCursors)
-            for (var _46_23_ = 0; _46_23_ < list1.length; _46_23_++)
+            for (var _44_23_ = 0; _44_23_ < list1.length; _44_23_++)
             {
-                nc = list1[_46_23_]
+                nc = list1[_44_23_]
                 cursorDelta(nc,-this.indentString.length)
             }
             var list2 = _k_.list(rangesAtLineIndexInRanges(i,newSelections))
-            for (var _48_23_ = 0; _48_23_ < list2.length; _48_23_++)
+            for (var _46_23_ = 0; _46_23_ < list2.length; _46_23_++)
             {
-                ns = list2[_48_23_]
+                ns = list2[_46_23_]
                 ns[1][0] -= this.indentString.length
                 ns[1][1] -= this.indentString.length
             }

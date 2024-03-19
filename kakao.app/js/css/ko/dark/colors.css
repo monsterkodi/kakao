@@ -229,6 +229,9 @@ span.macro.macro,
   background: #181818;
   border-color: #111;
 }
+.browserColumn {
+  border-top-color: #111;
+}
 .crumb {
   background: rgba(0,0,0,0);
 }

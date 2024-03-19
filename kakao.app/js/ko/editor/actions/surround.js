@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 import util from "../../../kxk/util.js"
 let isEqual = util.isEqual
@@ -287,19 +287,23 @@ export default {initSurround:function ()
 {
     var after, before, c, cs, nc, numPairs, openClosePairs, pairs, sc, so, uniquePairs
 
+    if (_k_.empty(this.surroundPairs))
+    {
+        return
+    }
     cs = this.do.cursors()
     pairs = uniqEqual(Object.values(this.surroundPairs))
     openClosePairs = []
     var list = _k_.list(cs)
-    for (var _200_14_ = 0; _200_14_ < list.length; _200_14_++)
+    for (var _202_14_ = 0; _202_14_ < list.length; _202_14_++)
     {
-        c = list[_200_14_]
+        c = list[_202_14_]
         numPairs = openClosePairs.length
         var list1 = _k_.list(pairs)
-        for (var _203_25_ = 0; _203_25_ < list1.length; _203_25_++)
+        for (var _205_25_ = 0; _205_25_ < list1.length; _205_25_++)
         {
-            so = list1[_203_25_][0]
-            sc = list1[_203_25_][1]
+            so = list1[_205_25_][0]
+            sc = list1[_205_25_][1]
             before = this.do.line(c[1]).slice(c[0] - so.length,c[0])
             after = this.do.line(c[1]).slice(c[0],c[0] + sc.length)
             if (so === before && sc === after)
@@ -319,16 +323,16 @@ export default {initSurround:function ()
     }
     uniquePairs = uniqEqual(openClosePairs)
     var list2 = _k_.list(cs)
-    for (var _218_14_ = 0; _218_14_ < list2.length; _218_14_++)
+    for (var _220_14_ = 0; _220_14_ < list2.length; _220_14_++)
     {
-        c = list2[_218_14_]
-        var _219_20_ = openClosePairs.shift(); so = _219_20_[0]; sc = _219_20_[1]
+        c = list2[_220_14_]
+        var _221_20_ = openClosePairs.shift(); so = _221_20_[0]; sc = _221_20_[1]
 
         this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - so.length,so.length + sc.length))
         var list3 = _k_.list(positionsAfterLineColInPositions(c[1],c[0],cs))
-        for (var _222_19_ = 0; _222_19_ < list3.length; _222_19_++)
+        for (var _224_19_ = 0; _224_19_ < list3.length; _224_19_++)
         {
-            nc = list3[_222_19_]
+            nc = list3[_224_19_]
             nc[0] -= sc.length + so.length
         }
         c[0] -= so.length
