@@ -103,6 +103,7 @@ kode
         and
         not
         yes
+        ok
         when
         empty
         valid
@@ -126,6 +127,7 @@ kode
         
     nil
         no
+        fail
         
     require
         use
@@ -854,6 +856,15 @@ iss ini md
 # 000   000  000   000  
 
 mm
+    method
+        defaultManager
+        
+    property
+        nonatomic
+        readwrite
+        assign
+        retain
+        
     keyword
         id
         in
@@ -866,6 +877,65 @@ mm
         isKindOfClass
         sharedApplication
         mainBundle
+        setObject
+        hasPrefix
+        hasSuffix
+        appendString
+        stringWithString
+        forKey
+        addObject
+        isDirectory
+        writeToFile
+        initWithData
+        objectForKey
+        objectAtIndex
+        trashItemAtURL
+        numberWithBool
+        moveItemAtPath
+        copyItemAtPath
+        toPath
+        nextObject
+        floatValue
+        numberWithInt
+        numberWithLong
+        numberWithBool
+        numberWithFloat
+        fileURLWithPath
+        removeItemAtPath
+        enumeratorAtPath
+        fileExistsAtPath
+        dataUsingEncoding
+        isWritableFileAtPath
+        createDirectoryAtPath
+        withIntermediateDirectories
+        attributesOfItemAtPath
+        isReadableFileAtPath
+        addObjectsFromArray
+        substringFromIndex
+        pathWithComponents
+        pathExtension
+        performSelector
+        evaluateJavaScript
+        cStringUsingEncoding
+        characterSetWithCharactersInString
+        componentsSeparatedByCharactersInSet
+        arrayByAddingObject
+        arrayWithObject
+        arrayWithObjects
+        stringWithFormat
+        stringByAppendingString
+        stringByStandardizingPath
+        stringByExpandingTildeInPath
+        stringByDeletingPathExtension
+        stringByAppendingPathComponent
+        stringWithContentsOfFile
+        componentsJoinedByString
+        isEqualToString
+        dictionaryWithObjectsAndKeys
+        options
+        encoding
+        attributes
+        configuration
         delegate
         YES
         BOOL
@@ -879,41 +949,62 @@ mm
     nil
         nil
         NO
+        NSError
         NSNotFound
     module
         Win
         View
-        NSSet
-        NSURL
-        CGRect
-        NSData
-        NSPoint
-        NSArray
-        NSImage
-        NSObject
-        NSString
-        NSNumber
         NSWindow
         NSBundle
         WKWebView
+        NSWorkspace
         NSMutableSet
         WKNavigation
         NSURLRequest
-        NSDictionary
+        NSFileManager
         NSApplication
         NSCharacterSet
         NSNotification
-        NSMutableArray
-        NSMutableString
+        WKContentWorld
         WKScriptMessage
-        NSMutableDictionary
+        NSBitmapImageRep
+        WKWebsiteDataStore
+        NSJSONSerialization
         NSImageDataBitmapRep
+        NSRunningApplication
+        NSDirectoryEnumerator
+        WKWebViewConfiguration
         WKSnapshotConfiguration
     type
+        NSSet
+        NSURL
+        NSObject
+        NSValue
+        CGRect
+        NSImage
+        NSPoint
+        NSDate
+        NSData
+        NSArray        
+        NSNumber
+        NSString
+        NSDictionary
+        NSMutableArray
+        NSMutableString
+        NSMutableDictionary
         NSApplicationActivationPolicyRegular
+        WKInactiveSchedulingPolicyNone
+        NSWorkspaceOpenConfiguration
         NSApplicationTerminateReply
+        NSJSONWritingPrettyPrinted
         NSBitmapImageFileTypePNG
+        WKUserContentController
+        NSPasteboardTypeString
+        NSUTF8StringEncoding
+        NSFileTypeDirectory
         NSTimeInterval
+        NSOrderedSame
+        NSAtomicWrite
         NSUInteger
         NSInteger
         NSRect
