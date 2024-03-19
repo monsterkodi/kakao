@@ -6,4 +6,5 @@ kode  . replace  .. kode/ js/ .. js/bin/js/ js/bin/kode/
 
 ignore
     .stash
+    kode/kolor/lang.noon
         

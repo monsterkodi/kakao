@@ -11,7 +11,7 @@
 
 use ../kode/kode
 use ../kxk/fs
-use ../kxk/slash
+use ../kxk/slash ▪ tilde
 use ../kxk/noon
 
 use ../../lib/lib_kakao ▪ pug stylus
@@ -53,6 +53,10 @@ knrd = (files = [], opt = {}) ○->
             srcDir:  kodeDir
             tgtDir:  jsDir
             compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, '  '
+            
+        ignore: [
+            'kolor/lang.noon'
+            ]
     
     if empty files
         
@@ -67,6 +71,14 @@ knrd = (files = [], opt = {}) ○->
         
     for file in files
         
+        skip = false
+        for ignore in rules.ignore
+            if file.endsWith ignore
+                log w2('✘  '), w3 tilde file
+                skip = true
+                break
+        if skip ➜ continue
+        
         if rule = rules[slash.ext file]
             
             srcFile = file
@@ -78,17 +90,17 @@ knrd = (files = [], opt = {}) ○->
             compText = rule.compile srcText, srcFile
                 
             if empty compText
-                log y5('✘ '), r5(srcFile), r4('transpiles to empty!')
+                log y5('✘ '), r5(tilde srcFile), r4('transpiles to empty!')
             else
                 if tgtText != compText
                     transpiled++
-                    # log m3('▶ '), m4 slash.tilde srcFile
+                    # log m3('▶ '), m4 tilde srcFile
                     ○ fs.write tgtFile, compText
-                    log b5('✔ '), g5 slash.tilde tgtFile
+                    log b5('✔ '), g5 tilde tgtFile
                 else 
                     fs.touch tgtFile
                     if opt.logVerbose
-                        log g2('✔ '), m3 slash.tilde srcFile
+                        log g2('✔ '), m3 tilde srcFile
         else
             # if slash.ext(file) not in ['css' 'html' 'json']
             error 'unknown file type' file

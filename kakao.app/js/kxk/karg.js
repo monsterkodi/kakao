@@ -4,11 +4,11 @@ var error, expand, parse
 
 import kstr from "./kstr.js"
 
-import kolor from "./kolor.js"
+import klor from "./klor.js"
 
 import noon from "./noon.js"
 
-kolor.globalize()
+klor.globalize()
 
 expand = function (l)
 {
