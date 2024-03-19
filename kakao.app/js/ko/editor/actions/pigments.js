@@ -117,15 +117,19 @@ export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pig
 {
     var _117_31_
 
-    return this.pigments = ((_117_31_=this.pigments) != null ? _117_31_ : new Pigments(this))
+    this.pigments = ((_117_31_=this.pigments) != null ? _117_31_ : new Pigments(this))
+    console.log('initPigments',this.pigments)
 },togglePigments:function ()
 {
+    var _124_21_, _126_21_
+
+    console.log('togglePigments',this.pigments)
     if (window.stash.get(`pigments|${this.currentFile}`))
     {
-        return this.pigments.deactivate()
+        return (this.pigments != null ? this.pigments.deactivate() : undefined)
     }
     else
     {
-        return this.pigments.activate()
+        return (this.pigments != null ? this.pigments.activate() : undefined)
     }
 }}

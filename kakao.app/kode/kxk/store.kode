@@ -79,7 +79,7 @@ function Store extends events
 
         @data ?= {}
         sds.set @data, @keypath(key), value
-        log @data
+        # log @data
         clearTimeout @timer
         @timer = setTimeout @save, @timeout
         post.toWins 'store' @name, 'set' key, value

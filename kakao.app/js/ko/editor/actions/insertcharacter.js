@@ -19,7 +19,6 @@ export default {insertCharacter:function (ch)
     }
     this.do.start()
     this.clampCursorOrFillVirtualSpaces()
-    console.log('surroundCharacters',this.surroundCharacters)
     if (!_k_.empty(this.surroundCharacters))
     {
         if (_k_.in(ch,this.surroundCharacters))

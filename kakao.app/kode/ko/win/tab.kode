@@ -218,7 +218,7 @@ class Tab
 
     activate: ->
 
-        log 'tab.activate' @file
+        # log 'tab.activate' @file
         post.emit 'jumpToFile' @file
         @
 

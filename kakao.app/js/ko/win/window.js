@@ -158,7 +158,6 @@ Window = (function ()
     {
         var action
 
-        console.log('ko.Window.onMenuAction',name,trail)
         if (action = Editor.actionWithName(name))
         {
             console.log('editor.actionWithName',name)

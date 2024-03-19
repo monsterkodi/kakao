@@ -83,18 +83,24 @@ function Win
         @delegate?.onWindowCreated? @
         
     restoreFromStash: ○=>
-        
-        if @delegate?.onWindowAboutToShow is func
-            ○ @delegate.onWindowAboutToShow @
-            
+                    
         list =○ ffs.list kakao.bundle.app '.stash/old'
         if valid list
             old = list.shift()
-            window.stash.load(old.path).then ->
-                ffs.remove old.path
-                if valid list
-                    kakao 'window.new' 'ko.html' #"window.aboutImage = \"#{window.aboutImage}\";"
-        
+            
+            if @delegate?.onWindowAboutToRestoreFromStash is func
+                ○ @delegate.onWindowAboutToRestoreFromStash @
+            
+            ○ window.stash.load(old.path)
+            
+            ffs.remove old.path
+            
+            if valid list
+                kakao 'window.new' 'ko.html'
+
+        if @delegate?.onWindowAboutToShow is func
+            ○ @delegate.onWindowAboutToShow @
+                    
     saveStash: ->
         
         # log 'saveStash'

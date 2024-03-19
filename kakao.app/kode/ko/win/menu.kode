@@ -8,7 +8,7 @@
 
 use ../../kxk/slash
 
-# use ../editor/actions/transform
+use ../editor/actions/transform
 use ../editor/Editor
 use ../commands/Macro
 
@@ -31,7 +31,7 @@ Menu = (template) ->
     EditMenu = []
 
     for modName, actions of Editor.actionModules
-        log modName, actions
+        # log modName, actions
         for key,value of actions
             menuName = 'Misc'
             if key == 'actions'
@@ -66,21 +66,21 @@ Menu = (template) ->
     commandMenu = getMenu template, 'Command'
     commandMenu.menu = commandMenu.menu.concat text:'Macro' menu:MacroMenu
 
-    log 'tranform menu?' Editor.actions.length, Editor.actionModules.length
-    # TransformMenu = []
-    # for transformMenu, transformList of transform.Transform.transformMenus
-        # transformSubmenu = []
-        # for transform in transformList
-            # transformSubmenu.push
-                # text:   transform
-                # action: 'doTransform'
-
-        # TransformMenu.push
-            # text: transformMenu
-            # menu: transformSubmenu
-
-    # editMenu.menu = editMenu.menu.concat text:'Transform' menu:TransformMenu
-
+    if transform?.Transform?
+        TransformMenu = []
+        for transformMenu, transformList of transform.Transform.transformMenus
+            transformSubmenu = []
+            for transform in transformList
+                transformSubmenu.push
+                    text:   transform
+                    action: 'doTransform'
+    
+            TransformMenu.push
+                text: transformMenu
+                menu: transformSubmenu
+    
+        editMenu.menu = editMenu.menu.concat text:'Transform' menu:TransformMenu
+    
     template
 
 export Menu

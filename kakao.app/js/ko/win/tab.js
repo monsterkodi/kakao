@@ -278,7 +278,6 @@ class Tab
 
     activate ()
     {
-        console.log('tab.activate',this.file)
         post.emit('jumpToFile',this.file)
         return this
     }
