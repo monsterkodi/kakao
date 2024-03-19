@@ -122,11 +122,11 @@ View
     Navigate Backward       cmdctrl+1
     Navigate Forward        cmdctrl+2
     ---
-    Activate Previous Tab   alt+cmdctrl+shift+left 
-    Activate Next Tab       alt+cmdctrl+shift+right 
+    Activate Previous Tab   cmdctrl+[
+    Activate Next Tab       cmdctrl+]
     ----
-    Move Tab Left           alt+cmdctrl+shift+,
-    Move Tab Right          alt+cmdctrl+shift+.
+    Move Tab Left           alt+cmdctrl+[
+    Move Tab Right          alt+cmdctrl+]
     -----
     Font Size
         Increase            cmdctrl+=

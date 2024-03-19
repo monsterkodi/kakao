@@ -10,6 +10,7 @@ use ../../kakao
 
 use ../../kxk/dom ▪ stopEvent
 
+use ../../kxk/win
 use ../../kxk/post
 use ../../kxk/stash
 use ../../kxk/store
@@ -25,7 +26,7 @@ use ../main/navigate
 use ./Split
 use ./Info
 use ./Tabs
-use ./Titlebar
+use ./Menu
 use ./FileHandler
 use ./Terminal
 
@@ -40,7 +41,7 @@ use ../commandline/CommandLine
 # 000   000  000  000  0000  000   000  000   000  000   000  
 # 00     00  000  000   000  0000000     0000000   00     00  
 
-function Window #extends win
+function Window extends win.Delegate
 
     onWindowAnimationTick:  (win, tickInfo) -> #log 'onWindowAnimationTick' win.id
     onWindowResize:         (win, event)    -> #log 'onWindowResize'        win.id
@@ -48,6 +49,7 @@ function Window #extends win
     onWindowBlur:           (win)           -> #log 'onWindowBlur'          win.id
     onWindowKeyDown:        (win, keyInfo)  -> #log 'onWindowKeyDown'       win.id, keyInfo
     onWindowKeyUp:          (win, keyInfo)  -> #log 'onWindowKeyUp'         win.id, keyInfo
+    onWindowMenuTemplate:   (win, template) -> kakao.menuTemplate = Menu template
     
     @: ->
         
@@ -59,9 +61,10 @@ function Window #extends win
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         
-    onWindowAboutToShow: ○=>
-        
-        ○ Syntax.init()
+    # onWindowAboutToShow: ○=>
+#         
+        # ○ Syntax.init()
+        # ○ Editor.init()
         
     onWindowCreated: (win) => 
         
@@ -115,7 +118,7 @@ function Window #extends win
         @editor.focus()
 
     onMoved: (bounds) => window.stash.set 'bounds' bounds
-        
+                
     # 00     00  00000000  000   000  000   000      0000000    0000000  000000000  000   0000000   000   000
     # 000   000  000       0000  000  000   000     000   000  000          000     000  000   000  0000  000
     # 000000000  0000000   000 0 000  000   000     000000000  000          000     000  000   000  000 0 000
@@ -274,7 +277,7 @@ window.onresize = ->
 post.on 'split' (s) ->
 
     window.filebrowser?.resized()
-    window.terminal.resized()
+    window.terminal?.resized()
     window.commandline.resized()
     window.editor.resized()
 
@@ -410,4 +413,9 @@ window.setLastFocus = (name) -> window.lastFocus = name
 
 # post.on 'combo' onCombo
     
-kakao.init -> kwin = new kakao.window new Window
+kakao.preInit = ○->
+    
+    ○ Syntax.init()
+    ○ Editor.init()
+
+kakao.init -> new kakao.window new Window

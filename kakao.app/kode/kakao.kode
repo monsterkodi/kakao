@@ -23,9 +23,12 @@ function Kakao
         # request the bundle url (toplevel .app folder of the application)
         # without it, the window can't load any resources (menu, icon ...)
         
-        Kakao.request('bundle.path').then (bundlePath) ->
+        Kakao.request('bundle.path').then (bundlePath) ○->
         
             bundle.path = bundlePath # forward the path to the bundle module
+            
+            ○ window.kakao.preInit() if window.kakao.preInit is func
+            
             cb bundlePath            # ... the application is ready to run
 
     # sends a message (fire and forget) to the application process with optional args.
@@ -63,10 +66,4 @@ for k,v of Kakao
     
 window.kakao = kakao # kakao sets itself in the global window scope
 
-window.process = 
-    env:
-        home:   'sweet/home'
-        tmpdir: '/tmp'
-        user:   'kakao_user'
-        
 export kakao

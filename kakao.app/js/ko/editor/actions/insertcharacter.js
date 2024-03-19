@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kstr from "../../../kxk/kstr.js"
 
@@ -19,20 +19,24 @@ export default {insertCharacter:function (ch)
     }
     this.do.start()
     this.clampCursorOrFillVirtualSpaces()
-    if (_k_.in(ch,this.surroundCharacters))
+    console.log('surroundCharacters',this.surroundCharacters)
+    if (!_k_.empty(this.surroundCharacters))
     {
-        if (this.insertSurroundCharacter(ch))
+        if (_k_.in(ch,this.surroundCharacters))
         {
-            this.do.end()
-            return
+            if (this.insertSurroundCharacter(ch))
+            {
+                this.do.end()
+                return
+            }
         }
     }
     this.deleteSelection()
     newCursors = this.do.cursors()
     var list = _k_.list(newCursors)
-    for (var _30_15_ = 0; _30_15_ < list.length; _30_15_++)
+    for (var _32_15_ = 0; _32_15_ < list.length; _32_15_++)
     {
-        cc = list[_30_15_]
+        cc = list[_32_15_]
         cline = this.do.line(cc[1])
         sline = this.twiggleSubstitute(cline,cc,ch)
         if (sline)
@@ -43,9 +47,9 @@ export default {insertCharacter:function (ch)
         {
             this.do.change(cc[1],kstr.splice(cline,cc[0],0,ch))
             var list1 = _k_.list(positionsAtLineIndexInPositions(cc[1],newCursors))
-            for (var _37_23_ = 0; _37_23_ < list1.length; _37_23_++)
+            for (var _39_23_ = 0; _39_23_ < list1.length; _39_23_++)
             {
-                nc = list1[_37_23_]
+                nc = list1[_39_23_]
                 if (nc[0] >= cc[0])
                 {
                     nc[0] += 1
@@ -128,9 +132,9 @@ export default {insertCharacter:function (ch)
 
     this.do.start()
     var list = _k_.list(reversed(this.do.cursors()))
-    for (var _78_14_ = 0; _78_14_ < list.length; _78_14_++)
+    for (var _80_14_ = 0; _80_14_ < list.length; _80_14_++)
     {
-        c = list[_78_14_]
+        c = list[_80_14_]
         if (c[0] > this.do.line(c[1]).length)
         {
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))

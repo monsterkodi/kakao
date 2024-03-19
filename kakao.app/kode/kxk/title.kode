@@ -190,7 +190,9 @@ function Title
     initFromCache: ->
         
         # log 'menu.initFromCache' @templateCache
+        delete kakao.menuTemplate
         post.emit 'menu.init' @templateCache
+        if kakao.menuTemplate ➜ @templateCache = kakao.menuTemplate
         @menu = new menu items:@templateCache
         @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
                 

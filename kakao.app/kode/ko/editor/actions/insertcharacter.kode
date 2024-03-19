@@ -18,10 +18,12 @@ export
         @do.start()
         @clampCursorOrFillVirtualSpaces()
         
-        if ch in @surroundCharacters
-            if @insertSurroundCharacter ch
-                @do.end()
-                return
+        log 'surroundCharacters' @surroundCharacters
+        if valid @surroundCharacters
+            if ch in @surroundCharacters
+                if @insertSurroundCharacter ch
+                    @do.end()
+                    return
     
         @deleteSelection()
 

@@ -8,7 +8,8 @@
 
 use ../../kxk/slash
 
-use ../editor/actions/transform
+# use ../editor/actions/transform
+use ../editor/Editor
 use ../commands/Macro
 
 getMenu = (template, name) ->
@@ -17,7 +18,7 @@ getMenu = (template, name) ->
         if item.text == name
             return item
 
-menu = (template) ->
+Menu = (template) ->
 
     if template is arr
         template = clone template
@@ -25,14 +26,12 @@ menu = (template) ->
         log 'no array?' typeof(template), template
         template = []
 
-    actionFiles = filelist slash.join __dirname, '../editor/actions'
     submenu = Misc: []
 
     EditMenu = []
-    for actionFile in actionFiles
-        # TODO: move this stuff to a config.noon file
-        continue if slash.ext(actionFile) not in ['js' 'mjs' 'coffee' 'kode']
-        actions = require actionFile
+
+    for modName, actions of Editor.actionModules
+        log modName, actions
         for key,value of actions
             menuName = 'Misc'
             if key == 'actions'
@@ -42,9 +41,7 @@ menu = (template) ->
                 for k,v of value
                     if v.name and v.combo
                         # menuAction = (c) -> (i,win) -> post.toWin win.id, 'menuAction' c
-                        combo = v.combo
-                        if os.platform() != 'darwin' and v.accel
-                            combo = v.accel
+                        combo = v.combo ? v.accel
                         item =
                             text:   v.name
                             accel:  combo
@@ -69,20 +66,21 @@ menu = (template) ->
     commandMenu = getMenu template, 'Command'
     commandMenu.menu = commandMenu.menu.concat text:'Macro' menu:MacroMenu
 
-    TransformMenu = []
-    for transformMenu, transformList of transform.Transform.transformMenus
-        transformSubmenu = []
-        for transform in transformList
-            transformSubmenu.push
-                text:   transform
-                action: 'doTransform'
+    log 'tranform menu?' Editor.actions.length, Editor.actionModules.length
+    # TransformMenu = []
+    # for transformMenu, transformList of transform.Transform.transformMenus
+        # transformSubmenu = []
+        # for transform in transformList
+            # transformSubmenu.push
+                # text:   transform
+                # action: 'doTransform'
 
-        TransformMenu.push
-            text: transformMenu
-            menu: transformSubmenu
+        # TransformMenu.push
+            # text: transformMenu
+            # menu: transformSubmenu
 
-    editMenu.menu = editMenu.menu.concat text:'Transform' menu:TransformMenu
+    # editMenu.menu = editMenu.menu.concat text:'Transform' menu:TransformMenu
 
     template
 
-export menu
+export Menu

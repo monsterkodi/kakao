@@ -22,13 +22,14 @@ function Terminal extends TextEditor
         
         @view.addEventListener "contextmenu" @onContextMenu
         
+        post.on 'editor.init' @onEditorInit
+        
         @metaQueue = []
         
         @setLines ['']
         
-    actionsInitialized: =>
+    onEditorInit: =>
         
-        super()
         @initInvisibles()
                 
     #  0000000   00000000   00000000   00000000  000   000  0000000  

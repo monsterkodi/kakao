@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var b, B, B256, bg, BG_COLORS, bold, c, C, exports, f, F, F256, fg, FG_COLORS, g, G, i, init, m, M, noop, r, R, reset, s, STRIPANSI, w, W, wrap, y, Y, _113_16_
+var b, B, B256, bg, BG_COLORS, bold, c, C, exports, f, F, F256, fg, FG_COLORS, g, G, i, init, m, M, noop, r, R, reset, s, STRIPANSI, w, W, wrap, y, Y, _113_21_, _113_27_
 
 
 f = function (r, g, b)
@@ -198,7 +198,7 @@ exports.strip = function (s)
 {
     return String(s).replace(STRIPANSI,'')
 }
-if (((process != null ? process.argv : undefined) != null) && import.meta.filename === process.argv[1])
+if (((globalThis.process != null ? globalThis.process.argv : undefined) != null) && import.meta.filename === process.argv[1])
 {
     reset = '\x1b[0m'
     bold = '\x1b[1m'

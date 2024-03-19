@@ -8,6 +8,7 @@
 
 use ../../kxk/ffs
 use ../../kxk/kstr
+use ../../kxk/post
 use ../../kxk/slash
 
 use ./Do
@@ -18,8 +19,47 @@ __dirname = slash.dir import.meta.url[7..]
 
 function Editor extends Buffer
 
-    @actions: null
-    @actionEditors: []
+    @actions: []
+    @actionModules: []
+    
+    # 000  000   000  000  000000000
+    # 000  0000  000  000     000
+    # 000  000 0 000  000     000
+    # 000  000  0000  000     000
+    # 000  000   000  000     000
+
+    @init: ○->
+        
+        filelist =○ ffs.list slash.path __dirname, 'actions'
+        log 'Editor.init' filelist
+        for item in filelist
+            # TODO: move this stuff to a config.noon file
+            actionFile = item.path
+            continue if slash.ext(actionFile) not in ['js' 'mjs' 'kode']
+            # log 'action' actionFile
+            try
+                moduleJS = './' + slash.relative actionFile, __dirname
+                # log 'moduleJS' moduleJS
+                actions =○ import(moduleJS)
+            catch err
+                log "import of #{moduleJS} failed" err
+                continue
+            moduleName = slash.name actionFile
+            Editor.actionModules[moduleName] = actions.default
+            # log "Editor.actionModules.#{moduleName}" actions.default
+            
+            for key,value of actions.default
+                if value is func
+                    @prototype[key] = value
+                else if key == 'actions'
+                    for k,v of value
+                        if not v is str
+                            v.key = k if not v.key?
+                            Editor.actions.push v
+
+        Editor.actions.sort (a,b) -> a.name?.localeCompare b.name
+        log 'Editor.actions' Editor.actions.map((a) -> a.name ? a.key).join '\n'
+        post.emit 'editor.init'
 
     @: (name, config) ->
 
@@ -48,54 +88,15 @@ function Editor extends Buffer
         
         @do = new Do @
         
-        if empty Editor.actions
-            Editor.initActions @
-        else
-            @actionsInitialized()
-
+        @setupFileType()
+        
     del: -> @do.del()
         
-    actionsInitialized: => @setupFileType()
-
     #  0000000    0000000  000000000  000   0000000   000   000   0000000
     # 000   000  000          000     000  000   000  0000  000  000
     # 000000000  000          000     000  000   000  000 0 000  0000000
     # 000   000  000          000     000  000   000  000  0000       000
     # 000   000   0000000     000     000   0000000   000   000  0000000
-
-    @initActions: (editor) ○->
-
-        Editor.actions = []
-        Editor.actionEditors.push editor
-        return if Editor.actionEditors.length > 1
-        
-        filelist =○ ffs.list slash.path __dirname, 'actions'
-        
-        for item in filelist
-            # TODO: move this stuff to a config.noon file
-            actionFile = item.path
-            continue if slash.ext(actionFile) not in ['js' 'mjs' 'kode']
-            # log 'action' actionFile
-            actions =○ import(actionFile)
-            # log 'Editor.initActions' actions.default
-            for key,value of actions.default
-                if value is func
-                    @prototype[key] = value
-                else if key == 'actions'
-                    for k,v of value
-                        if not v is str
-                            v.key = k if not v.key?
-                            # if v.name
-                            Editor.actions.push v
-                            # else
-                                # log 'action without name?' kstr v
-
-        # log 'Editor.initActions' Editor.actions
-        for editor in Editor.actionEditors
-            editor.actionsInitialized()
-
-        Editor.actions.sort (a,b) -> a.name?.localeCompare b.name
-        # console.log Editor.actions.map (a) -> a.name ? a.key
 
     @actionWithName: (name) ->
 

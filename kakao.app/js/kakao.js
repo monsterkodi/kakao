@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
+var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
 
 var k, kakao, Kakao, v
 
@@ -14,9 +14,13 @@ Kakao = (function ()
 
     Kakao["init"] = async function (cb)
     {
-        return Kakao.request('bundle.path').then(function (bundlePath)
+        return Kakao.request('bundle.path').then(async function (bundlePath)
         {
             bundle.path = bundlePath
+            if (_k_.isFunc(window.kakao.preInit))
+            {
+                await window.kakao.preInit()
+            }
             return cb(bundlePath)
         })
     }
@@ -62,5 +66,4 @@ for (k in Kakao)
     kakao[k] = v
 }
 window.kakao = kakao
-window.process = {env:{home:'sweet/home',tmpdir:'/tmp',user:'kakao_user'}}
 export default kakao;
