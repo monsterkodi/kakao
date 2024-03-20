@@ -204,7 +204,8 @@ NSDictionary* dictForRect(NSRect rect)
 {
     if ([url isFileURL])
     {
-        [self.view loadFileRequest:[NSURLRequest requestWithURL:url] allowingReadAccessToURL:[Bundle fileURL:@"/"]]; // ▸ WKNavigation*
+        // [self.view loadFileRequest:[NSURLRequest requestWithURL:url] allowingReadAccessToURL:[Bundle fileURL:@"/"]]; // ▸ WKNavigation*
+        [self.view loadFileRequest:[NSURLRequest requestWithURL:url] allowingReadAccessToURL:[NSURL fileURLWithPath:@"/"]]; // ▸ WKNavigation*
     }
     else
     {

@@ -76,8 +76,6 @@ function Search extends Command
         terminal.appendMeta clss:'searchHeader' diss:Syntax.dissForTextAndSyntax "▸ Search for '#{opt.text}':" 'ko'
         terminal.appendMeta clss:'spacer'
         terminal.singleCursorAtPos [0, terminal.numLines()-2]
-        # dir = slash.pkg slash.dir opt.file
-        # dir ?= slash.dir opt.file
         dir = slash.dir opt.file
         @walker = new Walker
             root:        dir
@@ -126,8 +124,6 @@ function FileSearcher
     
     @: (@command, @opt, @file) ->
         
-        # log 'FileSearcher' @command, @opt, @file
-        
         @line = 0
         @flags = ''
         @patterns = switch @opt.name
@@ -146,8 +142,6 @@ function FileSearcher
         else
             @syntaxName = null
             
-        log 'FileSearcher' @file, @syntaxName
-        
         ffs.read(@file).then (text) =>
             
             return if empty text
@@ -177,7 +171,7 @@ function FileSearcher
         terminal.appendMeta meta
         terminal.appendMeta clss: 'spacer'
                     
-        for fi in [0...@found.length]
+        for fi in 0...@found.length
             
             f = @found[fi]
             
@@ -195,7 +189,7 @@ function FileSearcher
                 
             terminal.appendMeta meta
             post.emit 'search-result' meta
-            
+                        
         terminal.appendMeta clss: 'spacer'
         terminal.scroll.cursorToTop()
                 

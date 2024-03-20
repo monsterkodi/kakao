@@ -59,7 +59,7 @@ export
                 when 'S' then '■'
                 when 't' then '➜'
             if substitute
-                return line.splice cursor[0]-1, 1, substitute
+                return kstr.splice line, cursor[0]-1, 1, substitute
     
     clampCursorOrFillVirtualSpaces: ->
         

@@ -104,7 +104,7 @@ export default {insertCharacter:function (ch)
         }).bind(this))()
         if (substitute)
         {
-            return line.splice(cursor[0] - 1,1,substitute)
+            return kstr.splice(line,cursor[0] - 1,1,substitute)
         }
     }
 },clampCursorOrFillVirtualSpaces:function ()

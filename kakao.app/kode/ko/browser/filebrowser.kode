@@ -405,8 +405,11 @@ function FileBrowser extends Browser
         
         dir = item.path
         
-        # opt.ignoreHidden = not prefs.get "browser▸showHidden▸#{dir}"
         items = ○ ffs.list dir
+        
+        if not prefs.get "browser|showHidden|#{dir}"
+            items = items.filter (i) -> i.file[0] != '.'
+        
         items = util.sortBy items, (i) -> i.type + ((i.file[0].toUpperCase()==i.file[0]) ? '-' : '+') + i.file
 
         @loadDirItems item, items, col, opt
