@@ -6,11 +6,11 @@ import kstr from "../kxk/kstr.js"
 
 import slash from "../kxk/slash.js"
 
-import kolor from "../kxk/kolor.js"
+import klor from "../kxk/klor.js"
 
 import print from "./print.js"
 
-kolor.globalize()
+klor.globalize()
 comps = 0
 succs = 0
 fails = []

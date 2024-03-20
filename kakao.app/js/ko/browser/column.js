@@ -1029,7 +1029,7 @@ Column = (function ()
 
         if (this.parent.type === 'dir')
         {
-            stateKey = `browser▸showHidden▸${this.parent.path}`
+            stateKey = `browser|showHidden|${this.parent.path}`
             if (prefs.get(stateKey))
             {
                 prefs.del(stateKey)

@@ -1,22 +1,21 @@
 ###
-00000000    0000000   00000000    0000000  00000000  00000000
-000   000  000   000  000   000  000       000       000   000
-00000000   000000000  0000000    0000000   0000000   0000000
-000        000   000  000   000       000  000       000   000
-000        000   000  000   000  0000000   00000000  000   000
-###
+    00000000    0000000   00000000    0000000  00000000  00000000
+    000   000  000   000  000   000  000       000       000   000
+    00000000   000000000  0000000    0000000   0000000   0000000
+    000        000   000  000   000       000  000       000   000
+    000        000   000  000   000  0000000   00000000  000   000
 
-# this is the equivalent of a BNF or grammar for this little language.
-#    
-# instead of converting an essentially dynamic problem to a static 
-# representation and then converting that back into dynamic code again,
-# i decided to go the direct route.
-#
-# it might be less formal and slightly less concise, but it's definitely 
-# more customizable and easier to debug.
-#
-# the biggest advantage is that the main features are seperated from
-# the nasty details and corner cases, which are handled in the base class.
+    the equivalent of a grammar for kode.
+       
+    instead of converting an essentially dynamic problem to a static 
+    representation and then converting it back to dynamic code again,
+    it goes the direct route:
+    
+    less formal, but faster and easier to customize and debug.
+    
+    handles the main features of kode, the nasty details
+    and corner cases are handled in the base class 'parse'.
+###
 
 use ./print
 use ./parse

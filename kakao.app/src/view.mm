@@ -7,7 +7,6 @@
 */
 
 #import "view.h"
-#import "bundle.h"
 #import "route.h"
 
 @interface WebInspector : NSObject  { WKWebView *_webView; }

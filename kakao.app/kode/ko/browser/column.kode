@@ -657,7 +657,7 @@ function Column
     toggleDotFiles: =>
 
         if @parent.type == 'dir'            
-            stateKey = "browser▸showHidden▸#{@parent.path}"
+            stateKey = "browser|showHidden|#{@parent.path}"
             if prefs.get stateKey
                 prefs.del stateKey
             else

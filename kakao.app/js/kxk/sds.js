@@ -1,6 +1,6 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var collect, find, get, regexp, set
+var collect, del, find, get, regexp, set
 
 
 regexp = function (s)
@@ -255,4 +255,41 @@ set = function (object, keypath, value)
     }
     return object
 }
-export default {find:find,get:get,set:set}
+
+del = function (object, keypath)
+{
+    var k, kp, o
+
+    if (typeof(keypath) === 'string')
+    {
+        keypath = keypath.split('.')
+    }
+    if (!(keypath instanceof Array))
+    {
+        throw `invalid keypath: ${JSON.stringify(keypath)}`
+    }
+    kp = [].concat(keypath)
+    o = object
+    while (kp.length > 1)
+    {
+        k = kp.shift()
+        o = o[k]
+        if (!o)
+        {
+            break
+        }
+    }
+    if (kp.length === 1 && (o != null))
+    {
+        if (o instanceof Array)
+        {
+            o.splice(parseInt(kp[0]))
+        }
+        else if (o instanceof Object)
+        {
+            delete o[kp[0]]
+        }
+    }
+    return object
+}
+export default {find:find,get:get,set:set,del:del}

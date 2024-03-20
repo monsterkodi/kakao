@@ -8,10 +8,10 @@
 
 use ../kxk/kstr
 use ../kxk/slash
-use ../kxk/kolor
+use ../kxk/klor
 use ./print
 
-kolor.globalize()
+klor.globalize()
 
 comps = 0
 succs = 0

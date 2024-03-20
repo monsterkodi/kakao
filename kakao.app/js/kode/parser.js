@@ -27,7 +27,7 @@ Parser = (function ()
 
     Parser.prototype["if"] = function (tok, tokens)
     {
-        var cond, e, thn, _67_23_
+        var cond, e, thn, _66_23_
 
         if (tokens[0].type === 'block')
         {
@@ -50,7 +50,7 @@ Parser = (function ()
         {
             tokens.shift()
             tokens.shift()
-            e.if.elifs = ((_67_23_=e.if.elifs) != null ? _67_23_ : [])
+            e.if.elifs = ((_66_23_=e.if.elifs) != null ? _66_23_ : [])
             cond = this.exp(tokens)
             thn = this.then('elif',tokens)
             this.shiftNewlineTok('if after elif then',tokens,tok,(tokens[1] != null ? tokens[1].text : undefined) === 'else')
@@ -67,7 +67,7 @@ Parser = (function ()
 
     Parser.prototype["ifBlock"] = function (tok, tokens, e)
     {
-        var cond, subbs, thn, _117_23_
+        var cond, subbs, thn, _116_23_
 
         this.push('if')
         subbs = this.subBlocks(tokens.shift().tokens)
@@ -87,7 +87,7 @@ Parser = (function ()
             }
             cond = this.exp(tokens)
             thn = this.then('elif',tokens)
-            e.if.elifs = ((_117_23_=e.if.elifs) != null ? _117_23_ : [])
+            e.if.elifs = ((_116_23_=e.if.elifs) != null ? _116_23_ : [])
             e.if.elifs.push({elif:{cond:cond,then:thn}})
         }
         this.pop('if')
@@ -650,8 +650,8 @@ Parser = (function ()
         close = this.shiftClose('curly','}',tokens)
         if (!close)
         {
-            _k_.dbg("kode/kode/parser.kode", 826, 12, "exps", exps)
-            _k_.dbg("kode/kode/parser.kode", 827, 12, "tokens", tokens)
+            _k_.dbg("kode/kode/parser.kode", 825, 12, "exps", exps)
+            _k_.dbg("kode/kode/parser.kode", 826, 12, "tokens", tokens)
         }
         this.pop('{')
         return {object:{open:open,keyvals:exps,close:close}}

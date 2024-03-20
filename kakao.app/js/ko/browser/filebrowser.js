@@ -509,6 +509,14 @@ FileBrowser = (function ()
         }
         dir = item.path
         items = await ffs.list(dir)
+        if (!prefs.get(`browser|showHidden|${dir}`))
+        {
+            items = items.filter(function (i)
+            {
+                console.log('ignore?',i)
+                return i.file[0] !== '.'
+            })
+        }
         items = util.sortBy(items,function (i)
         {
             return i.type + (((i.file[0].toUpperCase() === i.file[0]) ? '-' : '+')) + i.file
@@ -520,7 +528,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadDirItems"] = function (item, items, col, opt)
     {
-        var lastColumn, row, _438_52_, _442_85_, _446_14_
+        var lastColumn, row, _441_52_, _445_85_, _449_14_
 
         this.updateColumnScrolls()
         if (this.skipOnDblClick && col > 0)
@@ -650,16 +658,16 @@ FileBrowser = (function ()
     {
         FileBrowser.__super__.updateColumnScrolls.call(this)
     
-        var _511_14_
+        var _514_14_
 
         return (this.shelf != null ? this.shelf.scroll.update() : undefined)
     }
 
     FileBrowser.prototype["getGitStatus"] = function (item, col)
     {
-        var file, _521_25_, _521_38_
+        var file, _524_25_, _524_38_
 
-        file = ((_521_25_=item.path) != null ? _521_25_ : (item.parent != null ? item.parent.path : undefined))
+        file = ((_524_25_=item.path) != null ? _524_25_ : (item.parent != null ? item.parent.path : undefined))
         if (_k_.empty(file))
         {
             return
@@ -695,7 +703,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["toggleShelf"] = function ()
     {
-        var _561_29_
+        var _564_29_
 
         if (this.shelfSize < 1)
         {
