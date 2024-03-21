@@ -8,6 +8,7 @@
 
 class FFS
     
+    @pkg:           (p) ○-> await kakao 'fs.pkg'        p
     @list:          (p) ○-> await kakao 'fs.list'       p
     @read:          (p) ○-> await kakao 'fs.read'       p
     @write:      (p, t) ○-> await kakao 'fs.write'      p, t

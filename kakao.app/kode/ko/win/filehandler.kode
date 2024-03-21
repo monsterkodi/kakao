@@ -67,8 +67,7 @@ class FileHandler
             
             editor.restoreScrollCursorsAndSelections()
             
-            # if fileExists
-            # post.toWins 'fileLoaded' file # indexer
+            post.emit 'fileLoaded' file
                 
         split.raise 'editor'
     

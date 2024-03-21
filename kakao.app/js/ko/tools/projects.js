@@ -27,7 +27,7 @@ class Projects
     {
         var dir, list
 
-        if (!file)
+        if (_k_.empty(file))
         {
             return []
         }

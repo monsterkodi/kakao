@@ -7,6 +7,7 @@
 */
 
 #import "fs.h"
+#import "js.h"
 #import "app.h"
 #import "route.h"
 #import "bundle.h"
@@ -35,6 +36,7 @@
     else if ([route hasPrefix:@"win."       ]) { reply = [Route window:     [route substringFromIndex:4]    args:args win:win]; }
     else if ([route hasPrefix:@"app."       ]) { reply = [Route app:        [route substringFromIndex:4]    args:args win:win]; }
     else if ([route hasPrefix:@"fs."        ]) { reply = [FS    fs:         [route substringFromIndex:3]    args:args win:win]; }
+    else if ([route hasPrefix:@"js."        ]) { reply = [JS    js:         [route substringFromIndex:3]    args:args win:win]; }
     else if ([route hasPrefix:@"test."      ]) { reply = [Route test:       [route substringFromIndex:5]    args:args        ]; }
     else NSLog(@"unknown request %@ %@", msg.name, msg.body);
     

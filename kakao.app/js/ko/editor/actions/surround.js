@@ -5,6 +5,8 @@ let isEqual = util.isEqual
 let uniqEqual = util.uniqEqual
 let reversed = util.reversed
 
+import kstr from "../../../kxk/kstr.js"
+
 export default {initSurround:function ()
 {
     this.surroundStack = []
@@ -34,21 +36,21 @@ export default {initSurround:function ()
     {
         return false
     }
-    var _43_16_ = this.surroundPairs[ch]; cl = _43_16_[0]; cr = _43_16_[1]
+    var _44_16_ = this.surroundPairs[ch]; cl = _44_16_[0]; cr = _44_16_[1]
 
     if (cl.length > 1)
     {
         return false
     }
     var list = _k_.list(this.cursors())
-    for (var _45_19_ = 0; _45_19_ < list.length; _45_19_++)
+    for (var _46_19_ = 0; _46_19_ < list.length; _46_19_++)
     {
-        cursor = list[_45_19_]
+        cursor = list[_46_19_]
         count = 0
         var list1 = _k_.list(this.line(cursor[1]))
-        for (var _47_18_ = 0; _47_18_ < list1.length; _47_18_++)
+        for (var _48_18_ = 0; _48_18_ < list1.length; _48_18_++)
         {
-            c = list1[_47_18_]
+            c = list1[_48_18_]
             if (c === cl)
             {
                 count += 1
@@ -69,9 +71,9 @@ export default {initSurround:function ()
     var c
 
     var list = _k_.list(this.textOfSelection())
-    for (var _58_14_ = 0; _58_14_ < list.length; _58_14_++)
+    for (var _59_14_ = 0; _59_14_ < list.length; _59_14_++)
     {
-        c = list[_58_14_]
+        c = list[_59_14_]
         if (c === '\n')
         {
             continue
@@ -95,7 +97,7 @@ export default {initSurround:function ()
         return false
     }
     p = this.cursorPos()
-    var _69_24_ = this.splitStateLineAtPos(this.state,p); before = _69_24_[0]; after = _69_24_[1]
+    var _70_24_ = this.splitStateLineAtPos(this.state,p); before = _70_24_[0]; after = _70_24_[1]
 
     if (!before.endsWith('""'))
     {
@@ -136,9 +138,9 @@ export default {initSurround:function ()
         if (_k_.last(this.surroundStack)[1] === ch)
         {
             var list = _k_.list(newCursors)
-            for (var _100_22_ = 0; _100_22_ < list.length; _100_22_++)
+            for (var _101_22_ = 0; _101_22_ < list.length; _101_22_++)
             {
-                c = list[_100_22_]
+                c = list[_101_22_]
                 if (this.do.line(c[1])[c[0]] !== ch)
                 {
                     this.surroundStack = []
@@ -160,9 +162,9 @@ export default {initSurround:function ()
     {
         found = false
         var list1 = _k_.list(this.do.selections())
-        for (var _114_18_ = 0; _114_18_ < list1.length; _114_18_++)
+        for (var _115_18_ = 0; _115_18_ < list1.length; _115_18_++)
         {
-            s = list1[_114_18_]
+            s = list1[_115_18_]
             if (this.isRangeInString(s))
             {
                 found = true
@@ -172,9 +174,9 @@ export default {initSurround:function ()
         if (!found)
         {
             var list2 = _k_.list(newCursors)
-            for (var _120_22_ = 0; _120_22_ < list2.length; _120_22_++)
+            for (var _121_22_ = 0; _121_22_ < list2.length; _121_22_++)
             {
-                c = list2[_120_22_]
+                c = list2[_121_22_]
                 if (this.isRangeInString(rangeForPos(c)))
                 {
                     found = true
@@ -190,9 +192,9 @@ export default {initSurround:function ()
     if (ch === "'" && !this.numSelections())
     {
         var list3 = _k_.list(newCursors)
-        for (var _127_18_ = 0; _127_18_ < list3.length; _127_18_++)
+        for (var _128_18_ = 0; _128_18_ < list3.length; _128_18_++)
         {
-            c = list3[_127_18_]
+            c = list3[_128_18_]
             if (c[0] > 0 && /[A-Za-z]/.test(this.do.line(c[1])[c[0] - 1]))
             {
                 return false
@@ -208,13 +210,13 @@ export default {initSurround:function ()
     {
         newSelections = this.do.selections()
     }
-    var _137_16_ = this.surroundPairs[ch]; cl = _137_16_[0]; cr = _137_16_[1]
+    var _138_16_ = this.surroundPairs[ch]; cl = _138_16_[0]; cr = _138_16_[1]
 
     this.surroundStack.push([cl,cr])
     var list4 = _k_.list(reversed(newSelections))
-    for (var _141_15_ = 0; _141_15_ < list4.length; _141_15_++)
+    for (var _142_15_ = 0; _142_15_ < list4.length; _142_15_++)
     {
-        ns = list4[_141_15_]
+        ns = list4[_142_15_]
         if (cl === '#{')
         {
             if (sr = this.rangeOfStringSurroundingRange(ns))
@@ -231,7 +233,7 @@ export default {initSurround:function ()
         }
         else if (_k_.in(this.fileType,['coffee','kode']) && cl === '(' && lengthOfRange(ns) > 0)
         {
-            var _151_32_ = this.splitStateLineAtPos(this.do,rangeStartPos(ns)); before = _151_32_[0]; after = _151_32_[1]
+            var _152_32_ = this.splitStateLineAtPos(this.do,rangeStartPos(ns)); before = _152_32_[0]; after = _152_32_[1]
 
             trimmed = before.trimRight()
             beforeGood = /\w$/.test(trimmed) && !/(if|when|in|and|or|is|not|else|return)$/.test(trimmed)
@@ -241,9 +243,9 @@ export default {initSurround:function ()
                 spaces = before.length - trimmed.length
                 this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),trimmed.length,spaces))
                 var list5 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
-                for (var _159_26_ = 0; _159_26_ < list5.length; _159_26_++)
+                for (var _160_26_ = 0; _160_26_ < list5.length; _160_26_++)
                 {
-                    c = list5[_159_26_]
+                    c = list5[_160_26_]
                     c[0] -= spaces
                 }
                 ns[1][0] -= spaces
@@ -253,29 +255,29 @@ export default {initSurround:function ()
         this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][1],0,cr))
         this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][0],0,cl))
         var list6 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
-        for (var _167_18_ = 0; _167_18_ < list6.length; _167_18_++)
+        for (var _168_18_ = 0; _168_18_ < list6.length; _168_18_++)
         {
-            c = list6[_167_18_]
+            c = list6[_168_18_]
             c[0] += cl.length
         }
         var list7 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][1] - 1,newSelections))
-        for (var _170_19_ = 0; _170_19_ < list7.length; _170_19_++)
+        for (var _171_19_ = 0; _171_19_ < list7.length; _171_19_++)
         {
-            os = list7[_170_19_]
+            os = list7[_171_19_]
             os[1][0] += cr.length
             os[1][1] += cr.length
         }
         var list8 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][0] - 1,newSelections))
-        for (var _174_19_ = 0; _174_19_ < list8.length; _174_19_++)
+        for (var _175_19_ = 0; _175_19_ < list8.length; _175_19_++)
         {
-            os = list8[_174_19_]
+            os = list8[_175_19_]
             os[1][0] += cl.length
             os[1][1] += cl.length
         }
         var list9 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][1],newCursors))
-        for (var _178_18_ = 0; _178_18_ < list9.length; _178_18_++)
+        for (var _179_18_ = 0; _179_18_ < list9.length; _179_18_++)
         {
-            c = list9[_178_18_]
+            c = list9[_179_18_]
             c[0] += cr.length
         }
     }
@@ -295,15 +297,15 @@ export default {initSurround:function ()
     pairs = uniqEqual(Object.values(this.surroundPairs))
     openClosePairs = []
     var list = _k_.list(cs)
-    for (var _202_14_ = 0; _202_14_ < list.length; _202_14_++)
+    for (var _203_14_ = 0; _203_14_ < list.length; _203_14_++)
     {
-        c = list[_202_14_]
+        c = list[_203_14_]
         numPairs = openClosePairs.length
         var list1 = _k_.list(pairs)
-        for (var _205_25_ = 0; _205_25_ < list1.length; _205_25_++)
+        for (var _206_25_ = 0; _206_25_ < list1.length; _206_25_++)
         {
-            so = list1[_205_25_][0]
-            sc = list1[_205_25_][1]
+            so = list1[_206_25_][0]
+            sc = list1[_206_25_][1]
             before = this.do.line(c[1]).slice(c[0] - so.length,c[0])
             after = this.do.line(c[1]).slice(c[0],c[0] + sc.length)
             if (so === before && sc === after)
@@ -323,16 +325,16 @@ export default {initSurround:function ()
     }
     uniquePairs = uniqEqual(openClosePairs)
     var list2 = _k_.list(cs)
-    for (var _220_14_ = 0; _220_14_ < list2.length; _220_14_++)
+    for (var _221_14_ = 0; _221_14_ < list2.length; _221_14_++)
     {
-        c = list2[_220_14_]
-        var _221_20_ = openClosePairs.shift(); so = _221_20_[0]; sc = _221_20_[1]
+        c = list2[_221_14_]
+        var _222_20_ = openClosePairs.shift(); so = _222_20_[0]; sc = _222_20_[1]
 
         this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - so.length,so.length + sc.length))
         var list3 = _k_.list(positionsAfterLineColInPositions(c[1],c[0],cs))
-        for (var _224_19_ = 0; _224_19_ < list3.length; _224_19_++)
+        for (var _225_19_ = 0; _225_19_ < list3.length; _225_19_++)
         {
-            nc = list3[_224_19_]
+            nc = list3[_225_19_]
             nc[0] -= sc.length + so.length
         }
         c[0] -= so.length

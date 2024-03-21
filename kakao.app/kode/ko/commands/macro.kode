@@ -20,6 +20,8 @@ use ../editor/actions/transform
 
 use ../commandline/Command
 
+__dirname = slash.dir import.meta.url[7..]
+
 function Macro extends Command
 
     @macroNames: ['clean' 'help' 'dbg' 'class' 'req' 'inv' 'blink' 'color' 'fps' 'cwd' 'git' 'unix']
@@ -134,15 +136,16 @@ function Macro extends Command
             # 000   000  00000000  0000000  000
 
             'help'
-
-                terminal = window.terminal
-                # text = fs.readFileSync "#{__dirname}/../../bin/cheet.noon" encoding:'utf8'
-                # terminal.clear()
-                # for l in text.split '\n'
-                    # terminal.appendLineDiss l, Syntax.dissForTextAndSyntax l, 'noon'
-
-                # terminal.scroll.cursorToTop 1
-                # window.split.do 'show terminal'
+            
+                helpFile = slash.path kakao.bundle.path, 'kode/ko/help.noon'
+                log 'helpFile' helpFile
+                ffs.read(helpFile).then (text) ->
+                    window.terminal.clear()
+                    for l in text.split '\n'
+                        window.terminal.appendLineDiss l, Syntax.dissForTextAndSyntax l, 'noon'
+        
+                    window.terminal.scroll.cursorToTop 1
+                    window.split.do 'show terminal'
 
             # 00000000   00000000   0000000
             # 000   000  000       000   000

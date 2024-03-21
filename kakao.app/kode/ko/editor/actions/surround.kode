@@ -6,6 +6,7 @@
 # 0000000    0000000   000   000  000   000   0000000    0000000   000   000  0000000  
 
 use ../../../kxk/util ▪ isEqual uniqEqual reversed
+use ../../../kxk/kstr
 
 export
 

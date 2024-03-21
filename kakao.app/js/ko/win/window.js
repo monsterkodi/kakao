@@ -19,6 +19,8 @@ import prefs from "../../kxk/prefs.js"
 
 import FileWatch from "../tools/FileWatch.js"
 
+import Indexer from "../tools/Indexer.js"
+
 import fps from "../tools/fps.js"
 
 import scheme from "../tools/scheme.js"
@@ -107,6 +109,7 @@ Window = (function ()
         this.commandline = window.commandline = new CommandLine('commandline-editor')
         this.info = window.info = new Info(this.editor)
         this.fps = window.fps = new fps()
+        this.indexer = new Indexer()
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
         post.on('prefsLoaded',(function ()
@@ -355,7 +358,7 @@ reloadWin = function ()
 
 window.onresize = function ()
 {
-    var _273_14_
+    var _276_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -366,7 +369,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _279_22_, _280_19_
+    var _282_22_, _283_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -411,7 +414,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _324_32_
+    var _327_32_
 
     if (!(_k_.isNum(s)))
     {

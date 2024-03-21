@@ -7,11 +7,11 @@
 ###
 
 use ../../../lib/lib_ko ▪ fuzzy
-use ../../kxk/util ▪ uniqBy
+use ../../kxk/util ▪ uniqBy reversed
 use ../../kxk/post
 use ../../kxk/slash
 
-use ../tools/projects
+use ../tools/Projects
 
 use ../commandline/Command
 
@@ -169,6 +169,9 @@ function Open extends Command
         
     listItems: (opt) ->
         
+        log 'Open.listItems history:' @history
+        log 'Open.listItems files:' @files
+        
         opt ?= {}
         opt.maxItems ?= 200
         opt.flat ?= true
@@ -214,6 +217,8 @@ function Open extends Command
         items = uniqBy items, 'text'
         
         items.slice 0, opt.maxItems
+        log 'Open.listItems' items
+        reversed items
     
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   
@@ -222,6 +227,8 @@ function Open extends Command
     # 000   000  000  0000000      000      0000000   000   000     000     
     
     showHistory: ->
+        
+        log 'Open.showHistory' @history
 
         if @history.length > 1 and @selected <= 0
             items = []
@@ -302,7 +309,7 @@ function Open extends Command
             @file = null
             @dir  = kakao.bundle.app('kode')
             
-        @files = projects.files @dir
+        @files = Projects.files @dir
         
         @loadState()
         @showList()

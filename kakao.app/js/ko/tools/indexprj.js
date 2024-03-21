@@ -1,6 +1,6 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var indexKoFiles, indexProject, info, shouldIndex, slash, walkdir
+var indexProject, info, shouldIndex, slash, walkdir
 
 slash = require('kslash')
 walkdir = require('walkdir')
@@ -22,47 +22,6 @@ shouldIndex = function (path, stat)
         }
     }
     return false
-}
-
-indexKoFiles = function (kofiles, info)
-{
-    var absDir, cfg, dir, kodata, kofile, noon, opt, _34_37_
-
-    var list = _k_.list(kofiles)
-    for (var _25_15_ = 0; _25_15_ < list.length; _25_15_++)
-    {
-        kofile = list[_25_15_]
-        noon = require('noon')
-        kodata = noon.load(kofile)
-        if (!kodata.index)
-        {
-            return
-        }
-        for (dir in kodata.index)
-        {
-            cfg = kodata.index[dir]
-            opt = {max_depth:((_34_37_=cfg.depth) != null ? _34_37_ : 4),no_return:true}
-            absDir = slash.join(slash.dir(kofile),dir)
-            walkdir.sync(absDir,opt,function (path, stat)
-            {
-                if (stat.isDirectory())
-                {
-                    if (_k_.in(slash.file(path),['node_modules','.git']))
-                    {
-                        this.ignore(path)
-                        return
-                    }
-                }
-                if (stat.isFile())
-                {
-                    if (shouldIndex(path,stat))
-                    {
-                        return info.files.push(slash.path(path))
-                    }
-                }
-            })
-        }
-    }
 }
 
 indexProject = function (file)
@@ -102,7 +61,7 @@ indexProject = function (file)
             gitign = gitign.split(/\r?\n/)
             gitign = gitign.filter(function (i)
             {
-                var _84_55_
+                var _54_55_
 
                 return ((i != null ? i.startsWith : undefined) != null) && !i.startsWith("#")
             })
@@ -144,17 +103,12 @@ indexProject = function (file)
                 addIgnores(path)
                 return
             }
-            if (file === '.ko.noon')
-            {
-                kofiles.push(path)
-            }
             if (shouldIndex(path,stat))
             {
                 return info.files.push(slash.path(path))
             }
         }
     })
-    indexKoFiles(kofiles,info)
     return info
 }
 if (module.parent)

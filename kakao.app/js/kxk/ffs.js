@@ -2,6 +2,11 @@ var _k_
 
 class FFS
 {
+    static async pkg (p)
+    {
+        return await kakao('fs.pkg',p)
+    }
+
     static async list (p)
     {
         return await kakao('fs.list',p)
