@@ -83,7 +83,6 @@ function Search extends Command
             root:        dir
             maxDepth:    12
             maxFiles:    5000
-            includeDirs: false
             file:        (f) => @searchInFile opt, f
             
         @walker.cfg.ignore.push 'js'  # these directories are not included in search results
