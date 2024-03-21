@@ -254,7 +254,7 @@ function FileEditor extends TextEditor
             file += ':' + opt.line if opt.line
             file += ':' + opt.col if opt.col
             
-            log 'jumpToFile post newTabWithFile' file
+            # log 'jumpToFile post newTabWithFile' file
             
             post.emit 'newTabWithFile' file
 
@@ -270,14 +270,14 @@ function FileEditor extends TextEditor
             opt.oldFile = @currentFile
             
             opt.file ?= opt.path
-            log 'jumpToFile navigate.gotoFilePos' opt
+            # log 'jumpToFile navigate.gotoFilePos' opt
             
             window.navigate.gotoFilePos opt
         else
             
             file = slash.joinFileLine opt.path, opt.line, opt.col
             
-            log 'jumpToFile post loadFile' file
+            # log 'jumpToFile post loadFile' file
             
             post.emit 'loadFile' file
 

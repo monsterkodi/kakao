@@ -25,108 +25,112 @@ class Walker
         this.cfg.includeExt = ((_26_25_=this.cfg.includeExt) != null ? _26_25_ : File.sourceFileExtensions)
     }
 
+    ignore (p)
+    {
+        console.log('ignore',p)
+        return true
+    }
+
     async start ()
     {
-        var dir, ext, file, item, items, listDir, toWalk, _100_21_, _59_34_, _63_43_, _88_36_, _93_37_
+        var dir, ext, file, item, items, listDir, p, toWalk, _103_17_, _61_30_, _65_39_, _91_32_, _96_33_
 
         dir = this.cfg.root
         console.log('Walker.start',dir)
-        if (1)
+        this.running = true
+        toWalk = [dir]
+        while (!_k_.empty(toWalk))
         {
-            this.running = true
-            toWalk = [dir]
-            while (!_k_.empty(toWalk))
+            listDir = toWalk.shift()
+            items = await ffs.list(listDir)
+            var list = _k_.list(items)
+            for (var _55_21_ = 0; _55_21_ < list.length; _55_21_++)
             {
-                listDir = toWalk.shift()
-                items = await ffs.list(listDir)
-                var list = _k_.list(items)
-                for (var _54_25_ = 0; _54_25_ < list.length; _54_25_++)
+                item = list[_55_21_]
+                file = item.file
+                ext = slash.ext(file)
+                p = item.path
+                if ((typeof this.cfg.filter === "function" ? this.cfg.filter(p) : undefined))
                 {
-                    item = list[_54_25_]
-                    file = item.file
-                    ext = slash.ext(file)
-                    if ((typeof this.cfg.filter === "function" ? this.cfg.filter(p) : undefined))
+                    return this.ignore(p)
+                }
+                else if (_k_.in(file,['.DS_Store','Icon\r']) || _k_.in(ext,['pyc']))
+                {
+                    return this.ignore(p)
+                }
+                else if ((this.cfg.includeDir != null) && slash.dir(p) === this.cfg.includeDir)
+                {
+                    this.cfg.files.push(item.path)
+                    if (_k_.in(file,this.cfg.ignore))
                     {
-                        return this.ignore(p)
+                        this.ignore(p)
                     }
-                    else if (_k_.in(file,['.DS_Store','Icon\r']) || _k_.in(ext,['pyc']))
+                    if (file.startsWith('.') && !this.cfg.dotFiles)
                     {
-                        return this.ignore(p)
+                        this.ignore(p)
                     }
-                    else if ((this.cfg.includeDir != null) && slash.dir(p) === this.cfg.includeDir)
+                }
+                else if (_k_.in(file,this.cfg.ignore))
+                {
+                    return this.ignore(p)
+                }
+                else if (_k_.in(file,this.cfg.include))
+                {
+                    this.cfg.files.push(item.path)
+                }
+                else if (file.startsWith('.'))
+                {
+                    if (this.cfg.dotFiles)
                     {
                         this.cfg.files.push(item.path)
-                        if (_k_.in(file,this.cfg.ignore))
-                        {
-                            this.ignore(p)
-                        }
-                        if (file.startsWith('.') && !this.cfg.dotFiles)
-                        {
-                            this.ignore(p)
-                        }
-                    }
-                    else if (_k_.in(file,this.cfg.ignore))
-                    {
-                        return this.ignore(p)
-                    }
-                    else if (_k_.in(file,this.cfg.include))
-                    {
-                        this.cfg.files.push(item.path)
-                    }
-                    else if (file.startsWith('.'))
-                    {
-                        if (this.cfg.dotFiles)
-                        {
-                            this.cfg.files.push(item.path)
-                        }
-                        else
-                        {
-                            return this.ignore(p)
-                        }
-                    }
-                    else if (_k_.in(ext,this.cfg.ignoreExt))
-                    {
-                        return this.ignore(p)
-                    }
-                    else if (_k_.in(ext,this.cfg.includeExt) || this.cfg.includeExt.indexOf('') >= 0)
-                    {
-                        this.cfg.files.push(item.path)
-                    }
-                    else if (stat.isDirectory())
-                    {
-                        if (p !== this.cfg.root && this.cfg.includeDirs)
-                        {
-                            this.cfg.files.push(item.path)
-                        }
-                    }
-                    if (_k_.isFunc(this.cfg.path))
-                    {
-                        this.cfg.path(item.path)
-                    }
-                    if (item.type === 'dir')
-                    {
-                        if (this.cfg.includeDirs)
-                        {
-                            ;(typeof this.cfg.dir === "function" ? this.cfg.dir(item.path) : undefined)
-                        }
                     }
                     else
                     {
-                        if (_k_.in(ext,this.cfg.includeExt) || _k_.in(slash.file(item.path),this.cfg.include) || this.cfg.includeExt.indexOf('') >= 0)
-                        {
-                            ;(typeof this.cfg.file === "function" ? this.cfg.file(item.path) : undefined)
-                        }
-                    }
-                    if (this.cfg.files.length > this.cfg.maxFiles)
-                    {
-                        console.log('maxFiles reached')
-                        break
+                        return this.ignore(p)
                     }
                 }
+                else if (_k_.in(ext,this.cfg.ignoreExt))
+                {
+                    return this.ignore(p)
+                }
+                else if (_k_.in(ext,this.cfg.includeExt) || this.cfg.includeExt.indexOf('') >= 0)
+                {
+                    this.cfg.files.push(item.path)
+                }
+                else if (item.type === 'dir')
+                {
+                    if (p !== this.cfg.root && this.cfg.includeDirs)
+                    {
+                        this.cfg.files.push(item.path)
+                    }
+                }
+                if (_k_.isFunc(this.cfg.path))
+                {
+                    this.cfg.path(item.path)
+                }
+                if (item.type === 'dir')
+                {
+                    if (this.cfg.includeDirs)
+                    {
+                        ;(typeof this.cfg.dir === "function" ? this.cfg.dir(item.path) : undefined)
+                    }
+                }
+                else
+                {
+                    if (_k_.in(ext,this.cfg.includeExt) || _k_.in(slash.file(item.path),this.cfg.include) || this.cfg.includeExt.indexOf('') >= 0)
+                    {
+                        ;(typeof this.cfg.file === "function" ? this.cfg.file(item.path) : undefined)
+                    }
+                }
+                if (this.cfg.files.length > this.cfg.maxFiles)
+                {
+                    console.log('maxFiles reached')
+                    break
+                }
             }
-            this.running = false
-            return (typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
         }
+        this.running = false
+        return (typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
     }
 
     stop ()

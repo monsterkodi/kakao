@@ -31,7 +31,7 @@ function Editor extends Buffer
     @init: ○->
         
         filelist =○ ffs.list slash.path __dirname, 'actions'
-        log 'Editor.init' filelist
+        # log 'Editor.init' filelist
         for item in filelist
             # TODO: move this stuff to a config.noon file
             actionFile = item.path
@@ -58,7 +58,7 @@ function Editor extends Buffer
                             Editor.actions.push v
 
         Editor.actions.sort (a,b) -> a.name?.localeCompare b.name
-        log 'Editor.actions' Editor.actions.map((a) -> a.name ? a.key).join '\n'
+        # log 'Editor.actions' Editor.actions.map((a) -> a.name ? a.key).join '\n'
         post.emit 'editor.init'
 
     @: (name, config) ->

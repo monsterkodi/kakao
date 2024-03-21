@@ -28,7 +28,6 @@ Editor = (function ()
         var actionFile, actions, filelist, item, k, key, moduleJS, moduleName, v, value, _57_50_
 
         filelist = await ffs.list(slash.path(__dirname,'actions'))
-        console.log('Editor.init',filelist)
         var list = _k_.list(filelist)
         for (var _35_17_ = 0; _35_17_ < list.length; _35_17_++)
         {
@@ -80,12 +79,6 @@ Editor = (function ()
 
             return (a.name != null ? a.name.localeCompare(b.name) : undefined)
         })
-        console.log('Editor.actions',Editor.actions.map(function (a)
-        {
-            var _61_62_
-
-            return ((_61_62_=a.name) != null ? _61_62_ : a.key)
-        }).join('\n'))
         return post.emit('editor.init')
     }
 

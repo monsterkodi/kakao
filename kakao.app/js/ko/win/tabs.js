@@ -122,7 +122,6 @@ class Tabs
             }
             else
             {
-                console.log('activate tab!',tab)
                 tab.activate()
             }
         }

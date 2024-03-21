@@ -14,15 +14,12 @@ Kakao = (function ()
 
     Kakao["init"] = async function (cb)
     {
-        return Kakao.request('bundle.path').then(async function (bundlePath)
+        bundle.path = window.bundlePath
+        if (_k_.isFunc(window.kakao.preInit))
         {
-            bundle.path = bundlePath
-            if (_k_.isFunc(window.kakao.preInit))
-            {
-                await window.kakao.preInit()
-            }
-            return cb(bundlePath)
-        })
+            await window.kakao.preInit()
+        }
+        return cb(bundle.path)
     }
 
     Kakao["send"] = function (route, ...args)
@@ -49,8 +46,6 @@ Kakao = (function ()
 
     Kakao["bundle"] = bundle
     Kakao["window"] = kxk.win
-    Kakao["dom"] = kxk.dom
-    Kakao["post"] = kxk.post
     Kakao["ffs"] = kxk.ffs
     return Kakao
 })()

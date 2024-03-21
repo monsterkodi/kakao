@@ -204,7 +204,7 @@ class Syntax
                 @matchrConfigs[syntaxName] = matchr.config patterns
 
         @syntaxNames = @syntaxNames.concat kolor.exts
-        log 'Syntax.init' @syntaxNames
+        # log 'Syntax.init' @syntaxNames
         @syntaxNames
         
 export Syntax

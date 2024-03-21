@@ -13,7 +13,7 @@ use ../../kxk/slash
 use ../../kxk/post
 use ../../kxk/ffs
 
-# use ./Walker
+use ./Walker
 # use ./forkfunc
 # use ./IndexHpp
 
@@ -101,8 +101,6 @@ class Indexer
         
         @indexedProjects = []
         
-        log 'indexer!'
-
     #  0000000   000   000   0000000   00000000  000000000  
     # 000   000  0000  000  000        000          000     
     # 000   000  000 0 000  000  0000  0000000      000     
@@ -183,27 +181,43 @@ class Indexer
     
     indexProject: (file) ○=>
         
-        prjPath = ○ ffs.pkg file
-        
-        log 'Indexer.indexProject' prjPath
-        
-        if @currentlyIndexing
-            @indexQueue ?= []
-            if file not in @indexQueue
-                @indexQueue.push file
-                log 'queue' @indexQueue
-            return
-            
         sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
         
-        log 'sleep'
-            
+        prjPath = ○ ffs.pkg file
+        
+        # log 'Indexer.indexProject' prjPath
+        
+        if @currentlyIndexing
+            return if @currentlyIndexing == prjPath
+            @indexQueue ?= []
+            if prjPath not in @indexQueue
+                @indexQueue.push prjPath
+                log 'Indexer.indexProject -- queue' @indexQueue
+            return
+        
         # return  if valid @projectInfo file
               
-        @currentlyIndexing = file
+        @currentlyIndexing = prjPath
         
-        ○ sleep 1000
-        log 'done'
+        walker = new Walker
+            root:        prjPath
+            maxDepth:    12
+            maxFiles:    5000
+            includeDirs: false
+            file:        (f) => log 'Indexer.walker.file' f
+                    
+        ○ walker.start()
+        
+        # list = ○ ffs.list prjPath
+        # log 'Indexer.indexProject' prjPath, list
+        
+        # ○ sleep 1000
+        # log 'Indexer.indexProject done' prjPath
+        
+        delete @currentlyIndexing
+        
+        if valid @indexQueue
+            await @indexProject @indexQueue.shift()
         
         # forkfunc "#{__dirname}/indexprj" file, (err, info) =>
 #             
