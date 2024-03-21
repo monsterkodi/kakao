@@ -20,17 +20,10 @@ function Kakao
 
     @init: (cb) ○->
         
-        # request the bundle url (toplevel .app folder of the application)
-        # without it, the window can't load any resources (menu, icon ...)
+        bundle.path = window.bundlePath
+        ○ window.kakao.preInit() if window.kakao.preInit is func # preload modules if necessary
+        cb bundle.path # ... the application is ready to run
         
-        Kakao.request('bundle.path').then (bundlePath) ○->
-        
-            bundle.path = bundlePath # forward the path to the bundle module
-            
-            ○ window.kakao.preInit() if window.kakao.preInit is func
-            
-            cb bundlePath            # ... the application is ready to run
-
     # sends a message (fire and forget) to the application process with optional args.
     
     @send: (route, args...) ->
@@ -53,12 +46,9 @@ function Kakao
             kxk.post.emit.apply null, [msg.name].concat msg.args
             
     # some redirections to make working with kakao modules a little simpler ...
-    # not sure if that actually makes sense for anything beside the bundle ???
             
     @bundle: bundle      # provides paths and urls relative to the application folder
     @window: kxk.win     # base class for kakao windows
-    @dom:    kxk.dom     # dom expection and manipulation
-    @post:   kxk.post    # posts messages to modules in the window process
     @ffs:    kxk.ffs     # fake fs
 
 # this is slightly evil: instead of exporting Kakao we just export it's request function

@@ -26,6 +26,8 @@ class Walker
         @cfg.includeExt  ?= File.sourceFileExtensions
         
         # log 'Walker' @cfg
+        
+    ignore: (p) -> log 'ignore' p; true
       
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000   
@@ -39,65 +41,66 @@ class Walker
         
         log 'Walker.start' dir
         
-        if 1
-            @running = true
+        @running = true
+        
+        toWalk = [dir]
+        
+        while valid toWalk
             
-            toWalk = [dir]
+            listDir = toWalk.shift()
+        
+            items = ○ ffs.list listDir
+            # log 'Walker items' items
             
-            while valid toWalk
+            for item in items
+                # log 'item' item
+                file = item.file
+                ext = slash.ext file
+                p = item.path
                 
-                listDir = toWalk.shift()
-            
-                items = ○ ffs.list listDir
-                # log 'Walker items' items
-                
-                for item in items
-                    # log 'item' item
-                    file = item.file
-                    ext = slash.ext file
-                    
-                    if @cfg.filter?(p)
-                        return @ignore p
-                    else if file in ['.DS_Store' 'Icon\r'] or ext in ['pyc']
-                        return @ignore p
-                    else if @cfg.includeDir? and slash.dir(p) == @cfg.includeDir
+                if @cfg.filter?(p)
+                    return @ignore p
+                else if file in ['.DS_Store' 'Icon\r'] or ext in ['pyc']
+                    return @ignore p
+                else if @cfg.includeDir? and slash.dir(p) == @cfg.includeDir
+                    @cfg.files.push item.path
+                    @ignore p if file in @cfg.ignore
+                    @ignore p if file.startsWith('.') and not @cfg.dotFiles
+                else if file in @cfg.ignore
+                    return @ignore p
+                else if file in @cfg.include
+                    @cfg.files.push item.path
+                else if file.startsWith '.'
+                    if @cfg.dotFiles
                         @cfg.files.push item.path
-                        @ignore p if file in @cfg.ignore
-                        @ignore p if file.startsWith('.') and not @cfg.dotFiles
-                    else if file in @cfg.ignore
-                        return @ignore p
-                    else if file in @cfg.include
-                        @cfg.files.push item.path
-                    else if file.startsWith '.'
-                        if @cfg.dotFiles
-                            @cfg.files.push item.path
-                        else
-                            return @ignore p 
-                    else if ext in @cfg.ignoreExt
-                        return @ignore p
-                    else if ext in @cfg.includeExt or @cfg.includeExt.indexOf('') >= 0
-                        @cfg.files.push item.path
-                    else if stat.isDirectory()
-                        if p != @cfg.root and @cfg.includeDirs
-                            @cfg.files.push item.path 
-                            
-                    @cfg.path item.path if @cfg.path is func 
-                    
-                    if item.type == 'dir'
-                        if @cfg.includeDirs
-                            @cfg.dir? item.path
-                        # if cfg.skipDir? item.path
-                            # @ignore p
                     else
-                        if ext in @cfg.includeExt or slash.file(item.path) in @cfg.include or @cfg.includeExt.indexOf('') >= 0
-                            @cfg.file? item.path
-                                                    
-                    if @cfg.files.length > @cfg.maxFiles
-                        log 'maxFiles reached'
-                        break
-    
-            @running = false
-            @cfg.done? @
+                        return @ignore p 
+                else if ext in @cfg.ignoreExt
+                    return @ignore p
+                else if ext in @cfg.includeExt or @cfg.includeExt.indexOf('') >= 0
+                    @cfg.files.push item.path
+                # else if stat.isDirectory()
+                else if item.type == 'dir'
+                    if p != @cfg.root and @cfg.includeDirs
+                        @cfg.files.push item.path 
+                        
+                @cfg.path item.path if @cfg.path is func 
+                
+                if item.type == 'dir'
+                    if @cfg.includeDirs
+                        @cfg.dir? item.path
+                    # if cfg.skipDir? item.path
+                        # @ignore p
+                else
+                    if ext in @cfg.includeExt or slash.file(item.path) in @cfg.include or @cfg.includeExt.indexOf('') >= 0
+                        @cfg.file? item.path
+                                                
+                if @cfg.files.length > @cfg.maxFiles
+                    log 'maxFiles reached'
+                    break
+
+        @running = false
+        @cfg.done? @
                 
     stop: ->
         

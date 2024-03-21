@@ -183,8 +183,8 @@ NSDictionary* dictForRect(NSRect rect)
 
 -(void) webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation
 {
-    id script = [NSString stringWithFormat:@"window.winID = %ld;window.userName = \"%@\";window.homeDir = \"%@\";window.tmpDir = \"%@\";\n", 
-        (long)self.windowNumber, [FS userName], [FS homeDir], [FS tmpDir]
+    id script = [NSString stringWithFormat:@"window.winID = %ld;window.userName = \"%@\";window.homeDir = \"%@\";window.tmpDir = \"%@\";window.bundlePath = \"%@\";\n", 
+        (long)self.windowNumber, [FS userName], [FS homeDir], [FS tmpDir], [Bundle path]
     ]; 
     if (self.initScript)
     {

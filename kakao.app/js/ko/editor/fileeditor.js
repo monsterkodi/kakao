@@ -277,7 +277,6 @@ FileEditor = (function ()
             {
                 file += ':' + opt.col
             }
-            console.log('jumpToFile post newTabWithFile',file)
             return post.emit('newTabWithFile',file)
         }
         else if (window.lastFocus === 'editor')
@@ -297,13 +296,11 @@ FileEditor = (function ()
             opt.oldPos = this.cursorPos()
             opt.oldFile = this.currentFile
             opt.file = ((_272_21_=opt.file) != null ? _272_21_ : opt.path)
-            console.log('jumpToFile navigate.gotoFilePos',opt)
             return window.navigate.gotoFilePos(opt)
         }
         else
         {
             file = slash.joinFileLine(opt.path,opt.line,opt.col)
-            console.log('jumpToFile post loadFile',file)
             return post.emit('loadFile',file)
         }
     }

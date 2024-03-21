@@ -87,7 +87,7 @@ class Tabs
             if event.target.classList.contains 'dot'
                 @onCloseTabOrWindow tab
             else
-                log 'activate tab!' tab
+                # log 'activate tab!' tab
                 tab.activate()
         else
             log 'no tab?' event.target, event.target?.parentNode, @tabs

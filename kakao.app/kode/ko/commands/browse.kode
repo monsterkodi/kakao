@@ -324,7 +324,7 @@ function Browse extends Command
                 return
             else if fileExists
                 @commandline.setText cmd
-                log 'browse emit jumpToFile' path:cmd
+                # log 'browse emit jumpToFile' path:cmd
                 post.emit 'jumpToFile' path:cmd
                 return
             else

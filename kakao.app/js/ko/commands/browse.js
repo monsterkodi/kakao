@@ -367,7 +367,6 @@ Browse = (function ()
             else if (fileExists)
             {
                 this.commandline.setText(cmd)
-                console.log('browse emit jumpToFile',{path:cmd})
                 post.emit('jumpToFile',{path:cmd})
                 return
             }
