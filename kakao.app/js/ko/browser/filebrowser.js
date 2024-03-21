@@ -513,7 +513,6 @@ FileBrowser = (function ()
         {
             items = items.filter(function (i)
             {
-                console.log('ignore?',i)
                 return i.file[0] !== '.'
             })
         }

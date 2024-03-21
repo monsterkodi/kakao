@@ -12,7 +12,7 @@ CMD = "zig c++" # is awesome!
 
 OUT = "../Contents/MacOS/kakao"
 
-LIB = "-framework WebKit -framework Cocoa"
+LIB = "-framework WebKit -framework Cocoa -framework JavaScriptCore"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
 use child_process

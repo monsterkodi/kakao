@@ -6,7 +6,6 @@
 000  000   000  0000000    00000000  000   000  000        000   000   0000000     
 ###
 
-# ignore  = require 'ignore'
 slash   = require 'kslash'
 walkdir = require 'walkdir'
 
@@ -20,36 +19,6 @@ shouldIndex = (path, stat) ->
         else
             return true
     false
-
-indexKoFiles = (kofiles, info) ->
-    
-    for kofile in kofiles
-        
-        noon = require 'noon'
-        kodata = noon.load kofile
-        return if not kodata.index
-        
-        for dir,cfg of kodata.index
-            
-            opt = 
-                max_depth: cfg.depth ? 4
-                no_return: true
-                
-            # ign = ignore()
-            # ign.add cfg.ignore if cfg.ignore
-                        
-            absDir = slash.join slash.dir(kofile), dir
-            
-            walkdir.sync absDir, opt, (path, stat) ->
-                  
-                if stat.isDirectory()
-                    if slash.file(path) in ['node_modules' '.git']
-                        @ignore path
-                        return
-                
-                if stat.isFile() 
-                    if shouldIndex path, stat
-                        info.files.push slash.path path
 
 indexProject = (file) ->
 
@@ -106,18 +75,12 @@ indexProject = (file) ->
                 addIgnores path
                 return
                 
-            if file == '.ko.noon' # ???
-                kofiles.push path
-                
             # log 'shouldIndex' path
                 
             if shouldIndex path, stat
                 
                 # log 'index' path
                 info.files.push slash.path path
-                
-    indexKoFiles kofiles, info
-      
     info
 
 if module.parent

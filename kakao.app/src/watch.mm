@@ -369,7 +369,17 @@ struct FSTreeItem
 
     free(corresponding);
     free(rcorresponding);
-
+    
+    [changes filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id wc, NSDictionary *bindings) 
+    {
+        if ([[[wc path] lastPathComponent] isEqualToString:@".DS_Store"])
+        {
+            NSLog(@"filter!");
+            return NO;
+        }
+        return YES;
+    }]];
+    
     return changes;
 }
 
@@ -540,20 +550,13 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
         [self.eventCache removeAllObjects];
         self.cacheWaitingTime = MAX(self.differ.savedTree.buildTime, INTERVAL);
     }
-    // NSLog(@"onChanges");
     [self.delegate onChanges:[self.differ changesInPaths:cachedPaths] inFolder:self.path];
 }
 
 - (void)sendChangeEventWithPath:(NSString *)path flags:(FSEventStreamEventFlags)flags 
 {    
-    // if (flags == kFSEventStreamEventFlagNone)       return;
     if (flags == kFSEventStreamEventFlagItemCloned) return;
-    // NSLog(@"change %d %08x %@", shouldIgnoreChangedPath(path), flags, path);
-    if (shouldIgnoreChangedPath(path))
-    {
-        return;
-    }
-    // NSLog(@"change %08x %@", flags, path);
+    if (shouldIgnoreChangedPath(path)) return;
     [self.eventCache addObject:path];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSelector:@selector(sendChangeEventsFromCache) withObject:nil afterDelay:MAX(self.eventProcessingDelay, self.cacheWaitingTime)];

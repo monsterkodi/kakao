@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
-var Macro
+var Macro, __dirname
 
 import util from "../../kxk/util.js"
 let uniq = util.uniq
@@ -24,6 +24,7 @@ import transform from "../editor/actions/transform.js"
 
 import Command from "../commandline/Command.js"
 
+__dirname = slash.dir(import.meta.url.slice(7))
 
 Macro = (function ()
 {
@@ -57,12 +58,12 @@ Macro = (function ()
         var i, items
 
         items = uniq(reversed(this.history).concat(this.macros))
-        return (function () { var r_59_74_ = []; var list = _k_.list(items); for (var _59_74_ = 0; _59_74_ < list.length; _59_74_++)  { i = list[_59_74_];r_59_74_.push({text:i,line:_k_.in(i,this.macros) && '◼' || '◆',type:'macro'})  } return r_59_74_ }).bind(this)()
+        return (function () { var r_61_74_ = []; var list = _k_.list(items); for (var _61_74_ = 0; _61_74_ < list.length; _61_74_++)  { i = list[_61_74_];r_61_74_.push({text:i,line:_k_.in(i,this.macros) && '◼' || '◆',type:'macro'})  } return r_61_74_ }).bind(this)()
     }
 
     Macro.prototype["execute"] = function (command)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, indent, insert, li, line, lines, lst, num, s, step, t, terminal, text, ti, words, wordsInArgsOrCursorsOrSelection, _124_35_, _125_35_, _210_40_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, words, wordsInArgsOrCursorsOrSelection, _126_35_, _127_35_, _213_40_
 
         if (_k_.empty(command))
         {
@@ -124,7 +125,22 @@ Macro = (function ()
                 throw new Error('err')
                 break
             case 'help':
-                terminal = window.terminal
+                helpFile = slash.path(kakao.bundle.path,'kode/ko/help.noon')
+                console.log('helpFile',helpFile)
+                ffs.read(helpFile).then(function (text)
+                {
+                    var l
+
+                    window.terminal.clear()
+                    var list = _k_.list(text.split('\n'))
+                    for (var _144_26_ = 0; _144_26_ < list.length; _144_26_++)
+                    {
+                        l = list[_144_26_]
+                        window.terminal.appendLineDiss(l,Syntax.dissForTextAndSyntax(l,'noon'))
+                    }
+                    window.terminal.scroll.cursorToTop(1)
+                    return window.split.do('show terminal')
+                })
                 break
             case 'req':
                 if (!(_k_.in(slash.ext(editor.currentFile),['coffee','kode'])))
@@ -136,9 +152,9 @@ Macro = (function ()
                 {
                     editor.do.start()
                     var list = _k_.list(lines)
-                    for (var _160_29_ = 0; _160_29_ < list.length; _160_29_++)
+                    for (var _163_29_ = 0; _163_29_ < list.length; _163_29_++)
                     {
-                        line = list[_160_29_]
+                        line = list[_163_29_]
                         if (line.op === 'insert')
                         {
                             editor.do.insert(line.index,line.text)
@@ -167,7 +183,7 @@ Macro = (function ()
                     cmds.shift()
                 }
                 words = wordsInArgsOrCursorsOrSelection(cmds,{include:"#@.-"})
-                for (var _185_27_ = ti = 0, _185_31_ = words.length - lst; (_185_27_ <= _185_31_ ? ti < words.length - lst : ti > words.length - lst); (_185_27_ <= _185_31_ ? ++ti : --ti))
+                for (var _188_27_ = ti = 0, _188_31_ = words.length - lst; (_188_27_ <= _188_31_ ? ti < words.length - lst : ti > words.length - lst); (_188_27_ <= _188_31_ ? ++ti : --ti))
                 {
                     t = words[ti]
                     insert += `${t}:\#{kstr ${t}} `
@@ -176,7 +192,7 @@ Macro = (function ()
                 insert += '"'
                 if (lst)
                 {
-                    insert += (function () { var r_191_61_ = []; for (var _191_65_ = ti = words.length - lst, _191_86_ = words.length; (_191_65_ <= _191_86_ ? ti < words.length : ti > words.length); (_191_65_ <= _191_86_ ? ++ti : --ti))  { r_191_61_.push(`, kstr(${words[ti]})`)  } return r_191_61_ }).bind(this)().join('')
+                    insert += (function () { var r_194_61_ = []; for (var _194_65_ = ti = words.length - lst, _194_86_ = words.length; (_194_65_ <= _194_86_ ? ti < words.length : ti > words.length); (_194_65_ <= _194_86_ ? ++ti : --ti))  { r_194_61_.push(`, kstr(${words[ti]})`)  } return r_194_61_ }).bind(this)().join('')
                 }
                 editor.do.start()
                 editor.do.insert(li,insert)
@@ -190,7 +206,7 @@ Macro = (function ()
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || kakao.bundle.app('kode')
                 file = slash.join(dir,clss.toLowerCase() + '.kode')
                 text = "###\n"
-                text += (function () { var r_215_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _215_33_ = 0; _215_33_ < list1.length; _215_33_++)  { s = list1[_215_33_];r_215_33_.push(s)  } return r_215_33_ }).bind(this)().join('\n')
+                text += (function () { var r_218_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _218_33_ = 0; _218_33_ < list1.length; _218_33_++)  { s = list1[_218_33_];r_218_33_.push(s)  } return r_218_33_ }).bind(this)().join('\n')
                 text += "\n###\n"
                 text += `
 function ${clss}
@@ -207,7 +223,7 @@ export ${clss}
 
             case 'clean':
                 editor.do.start()
-                for (var _240_27_ = li = 0, _240_31_ = editor.numLines(); (_240_27_ <= _240_31_ ? li < editor.numLines() : li > editor.numLines()); (_240_27_ <= _240_31_ ? ++li : --li))
+                for (var _243_27_ = li = 0, _243_31_ = editor.numLines(); (_243_27_ <= _243_31_ ? li < editor.numLines() : li > editor.numLines()); (_243_27_ <= _243_31_ ? ++li : --li))
                 {
                     line = editor.line(li)
                     cleaned = line.trimRight()

@@ -335,6 +335,43 @@ NSString* typeForNSFileType(NSString* fileType)
                 
         return result;
     }
+    
+    // 00000000   000   000   0000000   
+    // 000   000  000  000   000        
+    // 00000000   0000000    000  0000  
+    // 000        000  000   000   000  
+    // 000        000   000   0000000   
+    
+    if ([req isEqualToString:@"pkg"])
+    {
+        NSString* pkg = [NSString stringWithString:path];
+        
+        while ([pkg length] && ![pkg isEqualToString:@"/"])
+        {
+            BOOL isDir, exists;
+            
+            NSString* pkgJson = [pkg stringByAppendingPathComponent:@"package.json"];
+            
+            exists = [[NSFileManager defaultManager] fileExistsAtPath:pkgJson isDirectory:&isDir];
+            if (!isDir && exists)
+            {
+                return pkg;
+            }
+
+            NSString* gitDir = [pkg stringByAppendingPathComponent:@".git"];
+            
+            exists = [[NSFileManager defaultManager] fileExistsAtPath:gitDir isDirectory:&isDir];
+            if (isDir && exists)
+            {
+                return pkg;
+            }
+            
+            pkg = [pkg stringByDeletingLastPathComponent];
+        }
+        NSLog(@"NO pkg for %@!!!", path);
+        return nil;
+    }
+    
     return nil;
 }
 

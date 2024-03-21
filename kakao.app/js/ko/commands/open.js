@@ -7,12 +7,13 @@ let fuzzy = lib_ko.fuzzy
 
 import util from "../../kxk/util.js"
 let uniqBy = util.uniqBy
+let reversed = util.reversed
 
 import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
-import projects from "../tools/projects.js"
+import Projects from "../tools/Projects.js"
 
 import Command from "../commandline/Command.js"
 
@@ -186,11 +187,13 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _173_21_, _174_17_, _185_41_, _187_19_
+        var f, file, iconSpan, item, items, rel, _176_21_, _177_17_, _188_41_, _190_19_
 
+        console.log('Open.listItems history:',this.history)
+        console.log('Open.listItems files:',this.files)
         opt = (opt != null ? opt : {})
-        opt.maxItems = ((_173_21_=opt.maxItems) != null ? _173_21_ : 200)
-        opt.flat = ((_174_17_=opt.flat) != null ? _174_17_ : true)
+        opt.maxItems = ((_176_21_=opt.maxItems) != null ? _176_21_ : 200)
+        opt.flat = ((_177_17_=opt.flat) != null ? _177_17_ : true)
         iconSpan = function (file)
         {
             var className
@@ -218,9 +221,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _201_21_ = 0; _201_21_ < list.length; _201_21_++)
+            for (var _204_21_ = 0; _204_21_ < list.length; _204_21_++)
             {
-                file = list[_201_21_]
+                file = list[_204_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -235,20 +238,23 @@ Open = (function ()
         }
         items = this.weightedItems(items,opt)
         items = uniqBy(items,'text')
-        return items.slice(0,opt.maxItems)
+        items.slice(0,opt.maxItems)
+        console.log('Open.listItems',items)
+        return reversed(items)
     }
 
     Open.prototype["showHistory"] = function ()
     {
         var f, item, items
 
+        console.log('Open.showHistory',this.history)
         if (this.history.length > 1 && this.selected <= 0)
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _229_18_ = 0; _229_18_ < list.length; _229_18_++)
+            for (var _236_18_ = 0; _236_18_ < list.length; _236_18_++)
             {
-                f = list[_229_18_]
+                f = list[_236_18_]
                 item = Object.create(null)
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -267,9 +273,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _245_58_, _245_65_
+        var _252_58_, _252_65_
 
-        if (this.commandList && this.selected === ((_245_58_=this.commandList.meta) != null ? (_245_65_=_245_58_.metas) != null ? _245_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_252_58_=this.commandList.meta) != null ? (_252_65_=_252_58_.metas) != null ? _252_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -282,7 +288,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _260_27_
+        var _267_27_
 
         if (name === this.names[0])
         {
@@ -296,7 +302,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _281_40_, _295_41_
+        var dir, item, _288_40_, _302_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -308,7 +314,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_281_40_=slash.dir(this.file)) != null ? _281_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_288_40_=slash.dir(this.file)) != null ? _288_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -337,7 +343,7 @@ Open = (function ()
             this.file = null
             this.dir = kakao.bundle.app('kode')
         }
-        this.files = projects.files(this.dir)
+        this.files = Projects.files(this.dir)
         this.loadState()
         this.showList()
         this.showItems(this.listItems())
@@ -348,7 +354,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _326_27_
+        var file, path, pos, _333_27_
 
         if (this.selected < 0)
         {
@@ -358,7 +364,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _332_24_ = slash.splitFilePos(command); file = _332_24_[0]; pos = _332_24_[1]
+            var _339_24_ = slash.splitFilePos(command); file = _339_24_[0]; pos = _339_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

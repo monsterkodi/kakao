@@ -6,8 +6,6 @@
 000        000   000   0000000    0000000   00000000   0000000     000     0000000   
 ###
 
-# { post, slash } = require 'kxk'
-
 use ../../kxk/post
 
 files    = {}
@@ -28,9 +26,8 @@ class Projects
         
     @files: (file) ->
         
-        if not file
-            return []
-        
+        return [] if empty file
+            
         if files[file]?
             # log 'local index' file, dir, list
             return files[file]
@@ -43,7 +40,7 @@ class Projects
                 # return files[info.dir]
                 
         for dir,list of files
-            if file.startsWith(dir)
+            if file.startsWith dir
                 log 'fallback index' file, dir, list
                 return list
                 

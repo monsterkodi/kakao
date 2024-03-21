@@ -78,6 +78,7 @@ class FileHandler
             editor.setCurrentFile(file)
             tab.finishActivation()
             editor.restoreScrollCursorsAndSelections()
+            post.emit('fileLoaded',file)
         }
         split.raise('editor')
         if ((filePos != null) && (filePos[0] || filePos[1]))
@@ -125,9 +126,9 @@ class FileHandler
             this.loadFile(file)
         }
         var list = _k_.list(files)
-        for (var _125_17_ = 0; _125_17_ < list.length; _125_17_++)
+        for (var _124_17_ = 0; _124_17_ < list.length; _124_17_++)
         {
-            file = list[_125_17_]
+            file = list[_124_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
@@ -175,7 +176,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _170_29_
+        var tab, _169_29_
 
         if (tab = tabs.activeTab())
         {
@@ -210,9 +211,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _195_16_ = 0; _195_16_ < list.length; _195_16_++)
+        for (var _194_16_ = 0; _194_16_ < list.length; _194_16_++)
         {
-            tab = list[_195_16_]
+            tab = list[_194_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -277,7 +278,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _264_29_
+        var _263_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -293,7 +294,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _280_18_
+        var cb, dir, _279_18_
 
         cb = function (files)
         {
@@ -309,7 +310,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _300_18_
+        var cb, _299_18_
 
         cb = (function (file)
         {

@@ -217,13 +217,15 @@
         {
             // todo: check if application binary actually changed before relaunching the application
         
-            NSWorkspaceOpenConfiguration* cfg = [NSWorkspaceOpenConfiguration configuration];
-            cfg.allowsRunningApplicationSubstitution = NO; // always launch the 
-            cfg.createsNewApplicationInstance = YES;       // new application
-            [[NSWorkspace sharedWorkspace] openApplicationAtURL:[Bundle URL] configuration:cfg completionHandler:^(NSRunningApplication *app, NSError *error) {
-                if (error) [Route emit:@"launchFailed"];
-                else [[NSApplication sharedApplication] terminate:self];
-            }];
+            NSTask *task = [[NSTask alloc] init];
+        
+            [task setLaunchPath:[Bundle appPath:@"Contents/MacOS/kakao"]];
+        
+            // NSMutableArray* arguments = [NSMutableArray array];
+            // [task setArguments:arguments];
+            
+            [task launch];
+            [[NSApplication sharedApplication] terminate:0];            
         }
         else
         {
