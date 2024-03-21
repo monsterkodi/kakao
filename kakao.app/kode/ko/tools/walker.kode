@@ -18,7 +18,6 @@ class Walker
         @cfg.files       = []
         @cfg.maxDepth    ?= 3
         @cfg.dotFiles    ?= false
-        @cfg.includeDirs ?= true
         @cfg.maxFiles    ?= 500
         @cfg.ignore      ?= ['node_modules' 'build' 'Build' 'Library' 'Applications'] #, 'resources' 'ThirdParty' 'Binaries' 'Intermediate' 'Saved' 'Programs' 'Shaders' 'DerivedDataCache' 'Content' 'Samples']
         @cfg.include     ?= ['.konrad.noon' '.gitignore' '.npmignore']
@@ -48,6 +47,8 @@ class Walker
         while valid toWalk
             
             listDir = toWalk.shift()
+            
+            # log 'walk dir' listDir
         
             items = ○ ffs.list listDir
             # log 'Walker items' items
@@ -58,49 +59,44 @@ class Walker
                 ext = slash.ext file
                 p = item.path
                 
-                if @cfg.filter?(p)
-                    return @ignore p
-                else if file in ['.DS_Store' 'Icon\r'] or ext in ['pyc']
-                    return @ignore p
-                else if @cfg.includeDir? and slash.dir(p) == @cfg.includeDir
-                    @cfg.files.push item.path
-                    @ignore p if file in @cfg.ignore
-                    @ignore p if file.startsWith('.') and not @cfg.dotFiles
-                else if file in @cfg.ignore
-                    return @ignore p
-                else if file in @cfg.include
-                    @cfg.files.push item.path
-                else if file.startsWith '.'
-                    if @cfg.dotFiles
+                if 
+                    @cfg.filter?(p) ➜ @ignore p; continue
+                    file in ['.DS_Store' 'Icon\r'] or ext in ['pyc'] ➜ @ignore p; continue
+                    # @cfg.includeDir? and slash.dir(p) == @cfg.includeDir
+                        # @cfg.files.push item.path
+                        # @ignore p if file in @cfg.ignore
+                        # @ignore p if file.startsWith('.') and not @cfg.dotFiles
+                    file in @cfg.ignore ➜ @ignore p; continue
+                    file in @cfg.include ➜ @cfg.files.push item.path
+                    file.startsWith '.'
+                        if @cfg.dotFiles
+                            @cfg.files.push item.path
+                        else
+                            @ignore p; continue
+                    ext in @cfg.ignoreExt ➜ @ignore p; continue
+                    ext in @cfg.includeExt or @cfg.includeExt.indexOf('') >= 0
                         @cfg.files.push item.path
-                    else
-                        return @ignore p 
-                else if ext in @cfg.ignoreExt
-                    return @ignore p
-                else if ext in @cfg.includeExt or @cfg.includeExt.indexOf('') >= 0
-                    @cfg.files.push item.path
-                # else if stat.isDirectory()
-                else if item.type == 'dir'
-                    if p != @cfg.root and @cfg.includeDirs
-                        @cfg.files.push item.path 
                         
                 @cfg.path item.path if @cfg.path is func 
                 
                 if item.type == 'dir'
-                    if @cfg.includeDirs
-                        @cfg.dir? item.path
+                    if @cfg.dir is func
+                        continuer if not @cfg.dir item.path 
+                    toWalk.push item.path
                     # if cfg.skipDir? item.path
                         # @ignore p
                 else
                     if ext in @cfg.includeExt or slash.file(item.path) in @cfg.include or @cfg.includeExt.indexOf('') >= 0
-                        @cfg.file? item.path
-                                                
+                        @cfg.file item.path if @cfg.file is func
+                        
                 if @cfg.files.length > @cfg.maxFiles
                     log 'maxFiles reached'
                     break
-
+                    
         @running = false
         @cfg.done? @
+        log 'Walker done' @cfg
+        @cfg
                 
     stop: ->
         

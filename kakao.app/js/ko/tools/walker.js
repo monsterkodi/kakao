@@ -10,19 +10,18 @@ class Walker
 {
     constructor (cfg)
     {
-        var _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _25_25_, _26_25_
+        var _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _25_25_
 
         this.cfg = cfg
     
         this.cfg.files = []
         this.cfg.maxDepth = ((_19_25_=this.cfg.maxDepth) != null ? _19_25_ : 3)
         this.cfg.dotFiles = ((_20_25_=this.cfg.dotFiles) != null ? _20_25_ : false)
-        this.cfg.includeDirs = ((_21_25_=this.cfg.includeDirs) != null ? _21_25_ : true)
-        this.cfg.maxFiles = ((_22_25_=this.cfg.maxFiles) != null ? _22_25_ : 500)
-        this.cfg.ignore = ((_23_25_=this.cfg.ignore) != null ? _23_25_ : ['node_modules','build','Build','Library','Applications'])
-        this.cfg.include = ((_24_25_=this.cfg.include) != null ? _24_25_ : ['.konrad.noon','.gitignore','.npmignore'])
-        this.cfg.ignoreExt = ((_25_25_=this.cfg.ignoreExt) != null ? _25_25_ : ['asar'])
-        this.cfg.includeExt = ((_26_25_=this.cfg.includeExt) != null ? _26_25_ : File.sourceFileExtensions)
+        this.cfg.maxFiles = ((_21_25_=this.cfg.maxFiles) != null ? _21_25_ : 500)
+        this.cfg.ignore = ((_22_25_=this.cfg.ignore) != null ? _22_25_ : ['node_modules','build','Build','Library','Applications'])
+        this.cfg.include = ((_23_25_=this.cfg.include) != null ? _23_25_ : ['.konrad.noon','.gitignore','.npmignore'])
+        this.cfg.ignoreExt = ((_24_25_=this.cfg.ignoreExt) != null ? _24_25_ : ['asar'])
+        this.cfg.includeExt = ((_25_25_=this.cfg.includeExt) != null ? _25_25_ : File.sourceFileExtensions)
     }
 
     ignore (p)
@@ -33,7 +32,7 @@ class Walker
 
     async start ()
     {
-        var dir, ext, file, item, items, listDir, p, toWalk, _103_17_, _61_30_, _65_39_, _91_32_, _96_33_
+        var dir, ext, file, item, items, listDir, p, toWalk, _63_31_, _97_17_
 
         dir = this.cfg.root
         console.log('Walker.start',dir)
@@ -44,35 +43,26 @@ class Walker
             listDir = toWalk.shift()
             items = await ffs.list(listDir)
             var list = _k_.list(items)
-            for (var _55_21_ = 0; _55_21_ < list.length; _55_21_++)
+            for (var _56_21_ = 0; _56_21_ < list.length; _56_21_++)
             {
-                item = list[_55_21_]
+                item = list[_56_21_]
                 file = item.file
                 ext = slash.ext(file)
                 p = item.path
                 if ((typeof this.cfg.filter === "function" ? this.cfg.filter(p) : undefined))
                 {
-                    return this.ignore(p)
+                    this.ignore(p)
+                    continue
                 }
                 else if (_k_.in(file,['.DS_Store','Icon\r']) || _k_.in(ext,['pyc']))
                 {
-                    return this.ignore(p)
-                }
-                else if ((this.cfg.includeDir != null) && slash.dir(p) === this.cfg.includeDir)
-                {
-                    this.cfg.files.push(item.path)
-                    if (_k_.in(file,this.cfg.ignore))
-                    {
-                        this.ignore(p)
-                    }
-                    if (file.startsWith('.') && !this.cfg.dotFiles)
-                    {
-                        this.ignore(p)
-                    }
+                    this.ignore(p)
+                    continue
                 }
                 else if (_k_.in(file,this.cfg.ignore))
                 {
-                    return this.ignore(p)
+                    this.ignore(p)
+                    continue
                 }
                 else if (_k_.in(file,this.cfg.include))
                 {
@@ -86,23 +76,18 @@ class Walker
                     }
                     else
                     {
-                        return this.ignore(p)
+                        this.ignore(p)
+                        continue
                     }
                 }
                 else if (_k_.in(ext,this.cfg.ignoreExt))
                 {
-                    return this.ignore(p)
+                    this.ignore(p)
+                    continue
                 }
                 else if (_k_.in(ext,this.cfg.includeExt) || this.cfg.includeExt.indexOf('') >= 0)
                 {
                     this.cfg.files.push(item.path)
-                }
-                else if (item.type === 'dir')
-                {
-                    if (p !== this.cfg.root && this.cfg.includeDirs)
-                    {
-                        this.cfg.files.push(item.path)
-                    }
                 }
                 if (_k_.isFunc(this.cfg.path))
                 {
@@ -110,16 +95,23 @@ class Walker
                 }
                 if (item.type === 'dir')
                 {
-                    if (this.cfg.includeDirs)
+                    if (_k_.isFunc(this.cfg.dir))
                     {
-                        ;(typeof this.cfg.dir === "function" ? this.cfg.dir(item.path) : undefined)
+                        if (!this.cfg.dir(item.path))
+                        {
+                            continuer
+                        }
                     }
+                    toWalk.push(item.path)
                 }
                 else
                 {
                     if (_k_.in(ext,this.cfg.includeExt) || _k_.in(slash.file(item.path),this.cfg.include) || this.cfg.includeExt.indexOf('') >= 0)
                     {
-                        ;(typeof this.cfg.file === "function" ? this.cfg.file(item.path) : undefined)
+                        if (_k_.isFunc(this.cfg.file))
+                        {
+                            this.cfg.file(item.path)
+                        }
                     }
                 }
                 if (this.cfg.files.length > this.cfg.maxFiles)
@@ -130,7 +122,9 @@ class Walker
             }
         }
         this.running = false
-        return (typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
+        ;(typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
+        console.log('Walker done',this.cfg)
+        return this.cfg
     }
 
     stop ()

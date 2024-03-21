@@ -81,7 +81,7 @@ Search = (function ()
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
         dir = slash.dir(opt.file)
-        this.walker = new Walker({root:dir,maxDepth:12,maxFiles:5000,includeDirs:false,file:(function (f)
+        this.walker = new Walker({root:dir,maxDepth:12,maxFiles:5000,file:(function (f)
         {
             return this.searchInFile(opt,f)
         }).bind(this)})
@@ -172,7 +172,7 @@ FileSearcher = (function ()
         }
         ffs.read(this.file).then((function (text)
         {
-            var l, lines, rngs, _155_68_
+            var l, lines, rngs, _154_68_
 
             if (_k_.empty(text))
             {
@@ -184,9 +184,9 @@ FileSearcher = (function ()
                 this.syntaxName = Syntax.shebang(lines[0])
             }
             var list = _k_.list(lines)
-            for (var _156_18_ = 0; _156_18_ < list.length; _156_18_++)
+            for (var _155_18_ = 0; _155_18_ < list.length; _155_18_++)
             {
-                l = list[_156_18_]
+                l = list[_155_18_]
                 this.line += 1
                 rngs = matchr.ranges(this.patterns,l,this.flags)
                 if (rngs.length)
@@ -209,7 +209,7 @@ FileSearcher = (function ()
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.appendMeta(meta)
         terminal.appendMeta({clss:'spacer'})
-        for (var _178_18_ = fi = 0, _178_22_ = this.found.length; (_178_18_ <= _178_22_ ? fi < this.found.length : fi > this.found.length); (_178_18_ <= _178_22_ ? ++fi : --fi))
+        for (var _177_18_ = fi = 0, _177_22_ = this.found.length; (_177_18_ <= _177_22_ ? fi < this.found.length : fi > this.found.length); (_177_18_ <= _177_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]
