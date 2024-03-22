@@ -6,13 +6,11 @@
 0000000    0000000  000   000  00000000  000   000  00000000  
 ###
 
-use ../../kxk/dom
+use ../../kxk/dom ▪ $
 use ../../kxk/post
 use ../../kxk/elem
 use ../../kxk/slash
 use ../../kxk/prefs
-
-{ $ } = dom
 
 class Scheme
     

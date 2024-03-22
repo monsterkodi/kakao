@@ -20,15 +20,28 @@ class Projects
     
     @files: (path) =>
         
+        @projects[@dir(path)].files
+        
+        # if prjPath = @allFiles[path]
+            # return @projects[prjPath].files
+        # if @projects[path]
+            # return @projects[path].files
+        # for prjPath,project of @projects
+            # if path.startsWith prjPath
+                # return project.files
+        # []
+        
+    @dir: (path) =>
+        
         if prjPath = @allFiles[path]
-            return @projects[prjPath].files
+            return prjPath
         if @projects[path]
-            return @projects[path].files
+            return @projects[path]
         for prjPath,project of @projects
             if path.startsWith prjPath
-                return project.files
+                return project
         log 'missing prj?' path
-        []
+        null
     
     # 000  000   000  0000000    00000000  000   000  
     # 000  0000  000  000   000  000        000 000   

@@ -18,31 +18,36 @@ class Projects
 
     static files (path)
     {
+        return this.projects[this.dir(path)].files
+    }
+
+    static dir (path)
+    {
         var prjPath, project
 
         if (prjPath = this.allFiles[path])
         {
-            return this.projects[prjPath].files
+            return prjPath
         }
         if (this.projects[path])
         {
-            return this.projects[path].files
+            return this.projects[path]
         }
         for (prjPath in this.projects)
         {
             project = this.projects[prjPath]
             if (path.startsWith(prjPath))
             {
-                return project.files
+                return project
             }
         }
         console.log('missing prj?',path)
-        return []
+        return null
     }
 
     static async indexProject (file)
     {
-        var prjPath, result, walker, _49_19_
+        var prjPath, result, walker, _62_19_
 
         prjPath = await ffs.pkg(file)
         if (this.indexing)
@@ -51,7 +56,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_49_19_=this.queue) != null ? _49_19_ : [])
+            this.queue = ((_62_19_=this.queue) != null ? _62_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -70,9 +75,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _70_21_ = 0; _70_21_ < list.length; _70_21_++)
+            for (var _83_21_ = 0; _83_21_ < list.length; _83_21_++)
             {
-                file = list[_70_21_]
+                file = list[_83_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('projects',this.projects)

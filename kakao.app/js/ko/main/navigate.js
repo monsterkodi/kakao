@@ -140,7 +140,6 @@ class Navigate
         }
         else
         {
-            console.log('Navigate.loadFilePos post.emit loadFile',filePos,opt)
             post.emit('loadFile',`${filePos.file}:${filePos.pos[1] + 1}:${filePos.pos[0]}`)
         }
         return filePos
