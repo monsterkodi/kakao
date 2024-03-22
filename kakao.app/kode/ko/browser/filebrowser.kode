@@ -33,7 +33,7 @@ function FileBrowser extends Browser
         @select = new Select @
         @name   = 'FileBrowser'
         @srcCache = {}
-        log 'FileBrowser post...'
+
         post.on 'file'           @onFile
         post.on 'browse'         @browse
         post.on 'filebrowser'    @onFileBrowser
@@ -116,7 +116,7 @@ function FileBrowser extends Browser
         
     onFile: (file) => 
     
-        log 'onFile' file
+        # log 'onFile' file
         if file and @flex then @navigateToFile file
     
     navigateToFile: (file) =>
@@ -139,7 +139,7 @@ function FileBrowser extends Browser
 
         col = @sharedColumnIndex file
  
-        log 'navigateToFile' file
+        # log 'navigateToFile' file
         
         filelist = slash.pathlist file
         
@@ -155,8 +155,6 @@ function FileBrowser extends Browser
         while @numCols() < paths.length
             @addColumn()
 
-        log 'paths' paths
-            
         for index in 0...paths.length
             
             if index < paths.length-1
@@ -297,7 +295,7 @@ function FileBrowser extends Browser
         while col >= @numCols()
             @addColumn()
 
-        log 'loadFileItem' item
+        # log 'loadFileItem' item
         file = item.path
 
         @columns[col].parent = item
@@ -332,7 +330,7 @@ function FileBrowser extends Browser
         @columns[col].table.appendChild Info.image file
         
     fileInfoColumn: (col, file) ->
-        log 'fileInfoColumn' col, file
+        # log 'fileInfoColumn' col, file
         @columns[col].crumb.hide()
         @columns[col].table.appendChild Info.file file
              

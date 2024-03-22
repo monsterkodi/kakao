@@ -83,7 +83,7 @@ function FileEditor extends TextEditor
 
     setCurrentFile: (file, restoreState) ->
 
-        log 'FileEditor.setCurrentFile' file
+        # log 'FileEditor.setCurrentFile' file
         
         @clear()
         
@@ -91,29 +91,21 @@ function FileEditor extends TextEditor
 
         @setupFileType()
 
-        fileExists = @currentFile? #and slash.fileExists @currentFile
-
         if restoreState
             @setText restoreState.text()
             @state = restoreState
             @dirty = true
-        else if fileExists
+        else if @currentFile
             ffs.read(@currentFile).then @setText
 
-        if fileExists
-            window.tabs.activeTab()?.setFile @currentFile
+        window.tabs.activeTab()?.setFile @currentFile
             
-        # post.emit 'file' @currentFile # browser & shelf
-
-        # @emit 'file' @currentFile # diffbar, invisible, pigments, ...
-
         post.emit 'dirty' @dirty
         
     setText: (text="") =>
     
         super text
         
-        log 'FileEditor.setText emit file' @currentFile
         post.emit 'file' @currentFile # browser & shelf
         @emit 'file' @currentFile # diffbar, invisible, pigments, ...
         @restoreScrollCursorsAndSelections()
@@ -274,14 +266,15 @@ function FileEditor extends TextEditor
             opt.oldFile = @currentFile
             
             opt.file ?= opt.path
-            # log 'jumpToFile navigate.gotoFilePos' opt
+            
+            log 'jumpToFile navigate.gotoFilePos' opt
             
             window.navigate.gotoFilePos opt
         else
             
             file = slash.joinFileLine opt.path, opt.line, opt.col
             
-            # log 'jumpToFile post loadFile' file
+            log 'jumpToFile post loadFile' file
             
             post.emit 'loadFile' file
 

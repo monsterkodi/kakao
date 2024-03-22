@@ -20,7 +20,7 @@ function Browse extends Command
 
         super commandline
 
-        log 'Browse'
+        # log 'Browse'
         
         @cmdID    = 0
         @browser  = new FileBrowser $ 'browser'
@@ -213,7 +213,7 @@ function Browse extends Command
 
     changed: (command) ->
 
-        log 'browse.changed' command
+        # log 'browse.changed' command
         text = @getText().trim()
         if not text.endsWith '/'
             # @walker?.end()

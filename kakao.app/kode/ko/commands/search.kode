@@ -91,7 +91,9 @@ function Search extends Command
         
         @walker.start()
         
-    searchInFile: (opt, file) => new FileSearcher @, opt, file
+    searchInFile: (opt, file) =>
+        # log file, opt.text
+        new FileSearcher @, opt, file
 
     # 00     00  00000000  000000000   0000000    0000000  000      000   0000000  000   000  
     # 000   000  000          000     000   000  000       000      000  000       000  000   
@@ -113,7 +115,8 @@ function Search extends Command
                 command.execute split[2]
         else
             file = href + ':' + window.terminal.posForEvent(event)[0]
-            post.emit 'openFiles' [file], newTab: event.metaKey
+            # post.emit 'openFiles' [file], newTab: event.metaKey
+            post.emit 'loadFile' file
 
         'unhandled'
 

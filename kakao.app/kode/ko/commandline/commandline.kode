@@ -18,7 +18,39 @@ __dirname = slash.dir import.meta.url[7..]
 function CommandLine extends TextEditor
 
     @commandModules: {}
+    
+    ###
+    000  000   000  000  000000000  
+    000  0000  000  000     000     
+    000  000 0 000  000     000     
+    000  000  0000  000     000     
+    000  000   000  000     000     
+    ###
+    
+    @init: ○->
 
+        files =○ ffs.list slash.path __dirname, '../commands'
+        
+        for file in files
+            
+            continue if slash.ext(file.path) not in ['js' 'mjs']
+            try
+                commandModule =○ import(file.path)
+            catch err
+                error "can't import command from file '#{file.path}': #{err}"
+                throw err
+            try
+                CommandLine.commandModules[commandModule.default.name.toLowerCase()] = commandModule.default
+            catch err
+                error "can't create command '#{commandClass}': #{err}"
+                throw err
+                
+    #  0000000   0000000   000   000   0000000  000000000  00000000   000   000   0000000  000000000   0000000   00000000   
+    # 000       000   000  0000  000  000          000     000   000  000   000  000          000     000   000  000   000  
+    # 000       000   000  000 0 000  0000000      000     0000000    000   000  000          000     000   000  0000000    
+    # 000       000   000  000  0000       000     000     000   000  000   000  000          000     000   000  000   000  
+    #  0000000   0000000   000   000  0000000      000     000   000   0000000    0000000     000      0000000   000   000  
+    
     @: (viewElem) ->
 
         super viewElem, features: [], fontSize: 24, syntaxName:'commandline'
@@ -33,13 +65,11 @@ function CommandLine extends TextEditor
         @button.classList.add 'empty'
         @button.addEventListener 'mousedown' @onCmmdClick
 
-        log 'CommandLine.new' CommandLine.commandModules
         @commands = {}
         for name,commandModule of CommandLine.commandModules
             @commands[name] = new commandModule @
             @commands[name].prefsID = name
         @command = null
-        log 'CommandLine.new' CommandLine.commands
 
         post.on 'split'       @onSplit
         post.on 'stashLoaded' @onStashLoaded
@@ -54,21 +84,6 @@ function CommandLine extends TextEditor
 
         @view.onfocus = =>
             @button.className = "commandline-button active #{@command?.prefsID}"
-
-    #  0000000  00000000   0000000   00000000    0000000  000   000  000000000  00000000  000   000  000000000  
-    # 000       000       000   000  000   000  000       000   000     000     000        000 000      000     
-    # 0000000   0000000   000000000  0000000    000       000000000     000     0000000     00000       000     
-    #      000  000       000   000  000   000  000       000   000     000     000        000 000      000     
-    # 0000000   00000000  000   000  000   000   0000000  000   000     000     00000000  000   000     000     
-    
-    onSearchText: (text) =>
-        
-        if window.split.commandlineVisible()
-            if @command?.prefsID not in ['search' 'find']
-                @startCommand 'find' 
-        @commands.find.currentText = text
-        @commands.search.currentText = text
-        @setAndSelectText text
             
     #  0000000  000000000   0000000    0000000  000   000
     # 000          000     000   000  000       000   000
@@ -97,34 +112,21 @@ function CommandLine extends TextEditor
             @button.className = "commandline-button active #{@command.prefsID}"
             @commands[name]?.restoreState? state
 
-    # 000  000   000  000  000000000  
-    # 000  0000  000  000     000     
-    # 000  000 0 000  000     000     
-    # 000  000  0000  000     000     
-    # 000  000   000  000     000     
+    #  0000000  00000000   0000000   00000000    0000000  000   000  000000000  00000000  000   000  000000000  
+    # 000       000       000   000  000   000  000       000   000     000     000        000 000      000     
+    # 0000000   0000000   000000000  0000000    000       000000000     000     0000000     00000       000     
+    #      000  000       000   000  000   000  000       000   000     000     000        000 000      000     
+    # 0000000   00000000  000   000  000   000   0000000  000   000     000     00000000  000   000     000     
     
-    @init: ○->
-
-        log 'CommandLine.init'
+    onSearchText: (text) =>
         
-        files =○ ffs.list slash.path __dirname, '../commands'
-        
-        for file in files
+        if window.split.commandlineVisible()
+            if @command?.prefsID not in ['search' 'find']
+                @startCommand 'find' 
+        @commands.find.currentText = text
+        @commands.search.currentText = text
+        @setAndSelectText text
             
-            continue if slash.ext(file.path) not in ['js' 'mjs']
-            try
-                commandModule =○ import(file.path)
-            catch err
-                error "can't import command from file '#{file.path}': #{err}"
-                throw err
-            try
-                CommandLine.commandModules[commandModule.default.name.toLowerCase()] = commandModule.default
-            catch err
-                error "can't create command '#{commandClass}': #{err}"
-                throw err
-                
-        log 'CommandLine.init' CommandLine.commandModules
-
     setName: (name) ->
 
         @button.innerHTML = name

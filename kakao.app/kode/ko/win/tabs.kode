@@ -222,7 +222,8 @@ class Tabs
         [file, line, col] = slash.splitFileLine file
 
         if tab = @tab file
-            tab.activate()
+            # tab.activate()
+            post.emit 'jumpToFile' path:file, line:line, col:col
         else
             @addTab(file).activate()
 
@@ -335,8 +336,6 @@ class Tabs
 
         @tabs = []
 
-        log 'Tabs.onStashLoaded' files
-        
         while files.length
             @addTab files.shift()
 
