@@ -62,7 +62,7 @@ class kk
         }
         if (args.knrd)
         {
-            await knrd(args.options)
+            await knrd(args.options,args)
         }
         if (args.build)
         {
@@ -92,7 +92,10 @@ class kk
 
     static async build ()
     {
-        console.log('🛠')
+        if (!args.quiet)
+        {
+            console.log('🛠')
+        }
         return build()
     }
 

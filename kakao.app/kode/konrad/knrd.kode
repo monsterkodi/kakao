@@ -8,7 +8,6 @@
     transpiles kode, noon, styl and pug files
 ###
 
-
 use ../kode/kode
 use ../kxk/fs
 use ../kxk/slash ▪ tilde
@@ -24,7 +23,9 @@ knrd = (files = [], opt = {}) ○->
         files = [files]
     
     opt.rerunWhenDirty ?= true
-    opt.logVerbose ?= false
+    opt.verbose ?= false
+    log 'opt' opt if opt.verbose
+    log 'files' files if opt.verbose
     
     ● 🔨
     
@@ -65,7 +66,7 @@ knrd = (files = [], opt = {}) ○->
         list  = list.filter (item) -> item.type == 'file'
         files = list.map (item) -> item.path
         
-    log '🔨 ' files.length
+    log '🔨 ' files.length if not opt.quiet
     
     transpiled = 0
         
@@ -74,7 +75,7 @@ knrd = (files = [], opt = {}) ○->
         skip = false
         for ignore in rules.ignore
             if file.endsWith ignore
-                log w2('✘  '), w3 tilde file
+                log w2('✘  '), w3 tilde file if opt.verbose
                 skip = true
                 break
         if skip ➜ continue
@@ -96,10 +97,10 @@ knrd = (files = [], opt = {}) ○->
                     transpiled++
                     # log m3('▶ '), m4 tilde srcFile
                     ○ fs.write tgtFile, compText
-                    log b5('✔ '), g5 tilde tgtFile
+                    log b5('✔ '), g5 tilde tgtFile if not opt.quiet
                 else 
                     fs.touch tgtFile
-                    if opt.logVerbose
+                    if opt.verbose
                         log g2('✔ '), m3 tilde srcFile
         else
             # if slash.ext(file) not in ['css' 'html' 'json']

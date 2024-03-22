@@ -65,8 +65,6 @@ class FileHandler
     
             tab.finishActivation() # setActive, restore state, update tabs
             
-            editor.restoreScrollCursorsAndSelections()
-            
             post.emit 'fileLoaded' file
                 
         split.raise 'editor'
@@ -221,7 +219,8 @@ class FileHandler
             
             return error 'File.save failed!' if not saved
             
-            # editor.saveScrollCursorsAndSelections()
+            editor.saveScrollCursorsAndSelections()
+            post.emit 'saveStash'
             
             # editor.setCurrentFile   saved
             editor.do.history   = tabState.history
@@ -230,7 +229,7 @@ class FileHandler
             post.emit   'saved'     saved
             post.emit   'dirty'     false
 
-            # editor.restoreScrollCursorsAndSelections()
+            editor.restoreScrollCursorsAndSelections()
             
             # post.emit   'watch'     saved
                   

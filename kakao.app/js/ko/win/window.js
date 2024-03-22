@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
-var addToShelf, changeFontSize, changeZoom, reloadWin, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
+var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
 
 import kakao from "../../kakao.js"
 
@@ -19,15 +19,13 @@ import prefs from "../../kxk/prefs.js"
 
 import FileWatch from "../tools/FileWatch.js"
 
+import Projects from "../tools/Projects.js"
+
 import Indexer from "../tools/Indexer.js"
 
 import fps from "../tools/fps.js"
 
 import scheme from "../tools/scheme.js"
-
-import cwd from "../tools/cwd.js"
-
-import projects from "../tools/projects.js"
 
 import navigate from "../main/navigate.js"
 
@@ -109,7 +107,7 @@ Window = (function ()
         this.commandline = window.commandline = new CommandLine('commandline-editor')
         this.info = window.info = new Info(this.editor)
         this.fps = window.fps = new fps()
-        this.indexer = new Indexer()
+        this.indexer = window.indexer = new Indexer()
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
         post.on('prefsLoaded',(function ()
@@ -284,6 +282,7 @@ Window = (function ()
 
         }
 
+        console.log('onMenuAction unhandled',name,trail)
     }
 
     return Window
@@ -350,15 +349,9 @@ window.editorWithName = function (n)
 
 }
 
-reloadWin = function ()
-{
-    clearListeners()
-    return post.toMain('reloadWin',{winID:window.winID,file:window.editor.currentFile})
-}
-
 window.onresize = function ()
 {
-    var _276_14_
+    var _229_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -369,7 +362,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _282_22_, _283_19_
+    var _235_22_, _236_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -414,7 +407,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _327_32_
+    var _280_32_
 
     if (!(_k_.isNum(s)))
     {
@@ -527,7 +520,8 @@ window.setLastFocus = function (name)
 kakao.preInit = async function ()
 {
     await Syntax.init()
-    return await Editor.init()
+    await Editor.init()
+    return await CommandLine.init()
 }
 kakao.init(function ()
 {

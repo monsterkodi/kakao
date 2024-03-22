@@ -337,7 +337,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _261_33_, _262_50_, _268_52_
+        var e, il, indentLength, line, thisIndent, _259_33_, _260_50_, _266_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -354,9 +354,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _263_26_ = 0; _263_26_ < list.length; _263_26_++)
+                    for (var _261_26_ = 0; _261_26_ < list.length; _261_26_++)
                     {
-                        e = list[_263_26_]
+                        e = list[_261_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength

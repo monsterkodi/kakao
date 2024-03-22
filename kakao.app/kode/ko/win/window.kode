@@ -17,11 +17,10 @@ use ../../kxk/store
 use ../../kxk/prefs
 
 use ../tools/FileWatch
+use ../tools/Projects
 use ../tools/Indexer
 use ../tools/fps
 use ../tools/scheme
-use ../tools/cwd
-use ../tools/projects
 use ../main/navigate
 
 use ./Split
@@ -62,18 +61,9 @@ function Window extends win.Delegate
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         
-    # onWindowAboutToShow: ○=>
-#         
-        # ○ Syntax.init()
-        # ○ Editor.init()
-        
     onWindowCreated: (win) => 
         
-        # kakao 'window.setSize' 750 750
-        # kakao 'window.center'
-        
         @id = win.id
-        # log 'onWindowCreated' win.id
                     
         new FileHandler
         new FileWatch
@@ -85,10 +75,8 @@ function Window extends win.Delegate
         @editor      = window.editor      = new FileEditor 'editor'
         @commandline = window.commandline = new CommandLine 'commandline-editor'
         @info        = window.info        = new Info @editor
-        
         @fps         = window.fps         = new fps()
-        
-        @indexer     = new Indexer()
+        @indexer     = window.indexer     = new Indexer()
         
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
@@ -113,8 +101,6 @@ function Window extends win.Delegate
         if window.stash.get 'centerText'
             @editor.centerText true 0
     
-        # post.emit 'restore'
-        
         window.split.resized()
         window.info.reload()
         
@@ -184,18 +170,8 @@ function Window extends win.Delegate
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
     
-        # log 'onMenuAction unhandled' name, trail
+        log 'onMenuAction unhandled' name, trail
             
-# 00000000   00000000   00000000  00000000   0000000
-# 000   000  000   000  000       000       000
-# 00000000   0000000    0000000   000000    0000000
-# 000        000   000  000       000            000
-# 000        000   000  00000000  000       0000000
-
-# clearStash = ->
-#     post.emit 'saveChanges'
-#     window.stash.clear()
-
 # 00000000    0000000    0000000  000000000
 # 000   000  000   000  000          000
 # 00000000   000   000  0000000      000
@@ -240,30 +216,7 @@ window.editorWithName = (n) ->
         'terminal'    ➜ window.terminal
         'editor'      ➜ window.editor
                       ➜ window.editor
- 
-#  0000000   000   000  000       0000000    0000000   0000000
-# 000   000  0000  000  000      000   000  000   000  000   000
-# 000   000  000 0 000  000      000   000  000000000  000   000
-# 000   000  000  0000  000      000   000  000   000  000   000
-#  0000000   000   000  0000000   0000000   000   000  0000000
- 
-# window.onload = ->
- 
-    # window.split?.resized()
-    # window.info?.reload()
- 
-# 00000000   00000000  000       0000000    0000000   0000000
-# 000   000  000       000      000   000  000   000  000   000
-# 0000000    0000000   000      000   000  000000000  000   000
-# 000   000  000       000      000   000  000   000  000   000
-# 000   000  00000000  0000000   0000000   000   000  0000000
- 
-reloadWin = ->
- 
-    # saveStash()
-    clearListeners()
-    post.toMain 'reloadWin' winID:window.winID, file:window.editor.currentFile
- 
+  
  # 00000000   00000000   0000000  000  0000000  00000000  
  # 000   000  000       000       000     000   000       
  # 0000000    0000000   0000000   000    000    0000000   
@@ -388,37 +341,10 @@ window.onfocus = (event) ->
  
 window.setLastFocus = (name) -> window.lastFocus = name
 
-# 000   000  00000000  000   000
-# 000  000   000        000 000
-# 0000000    0000000     00000
-# 000  000   000          000
-# 000   000  00000000     000
-
-# onCombo = (combo, info) ->
-
-    # return if not combo
-
-    # { mod, key, combo, char, event } = info
-
-    # return stopEvent(event) if 'unhandled' != window.commandline.globalModKeyComboEvent mod, key, combo, event
-    # return stopEvent(event) if 'unhandled' != titlebar.globalModKeyComboEvent mod, key, combo, event
-
-    # for i in [1..9]
-        # if combo == "alt+#{i}"
-            # return stopEvent event, post.toMain 'activateWindow' i
-
-    # switch combo
-        # 'f3'              ➜ return stopEvent event, screenShot()
-        # 'command+shift+=' ➜ return stopEvent event, changeZoom +1
-        # 'command+shift+-' ➜ return stopEvent event, changeZoom -1
-        # 'command+shift+0' ➜ return stopEvent event, resetZoom()
-        # 'command+alt+y'   ➜ return stopEvent event, split.do 'minimize editor'
-
-# post.on 'combo' onCombo
-    
 kakao.preInit = ○->
     
     ○ Syntax.init()
     ○ Editor.init()
+    ○ CommandLine.init()
 
 kakao.init -> new kakao.window new Window

@@ -24,8 +24,6 @@ kakao.init(function ()
     }
     main = $('#main')
     main.classList.add('app-drag-region')
-    console.log('bundlePath',kakao.bundle.path,window.aboutImage)
     window.aboutImage = ((_27_22_=window.aboutImage) != null ? _27_22_ : kakao.bundle.img('about.png'))
-    console.log('window.aboutImage',window.aboutImage)
     return elem('div',{class:'about',id:'about',parent:main,children:[elem('img',{class:'image',src:window.aboutImage}),elem('div',{class:'version',id:'version',text:'0.0.0'})]})
 })

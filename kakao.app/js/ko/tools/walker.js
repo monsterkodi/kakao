@@ -25,17 +25,13 @@ class Walker
     }
 
     ignore (p)
-    {
-        console.log('ignore',p)
-        return true
-    }
+    {}
 
     async start ()
     {
         var dir, ext, file, item, items, listDir, p, toWalk, _63_31_, _97_17_
 
         dir = this.cfg.root
-        console.log('Walker.start',dir)
         this.running = true
         toWalk = [dir]
         while (!_k_.empty(toWalk))
@@ -123,7 +119,6 @@ class Walker
         }
         this.running = false
         ;(typeof this.cfg.done === "function" ? this.cfg.done(this) : undefined)
-        console.log('Walker done',this.cfg)
         return this.cfg
     }
 

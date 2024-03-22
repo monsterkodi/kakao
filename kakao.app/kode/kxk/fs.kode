@@ -46,8 +46,8 @@ class FS
                 
         found
     
-    @list:    (p) ○->○ FS.listdir p, []
-    @dirlist: (p) ○->○ FS.listdir p, []
+    @list:    (p) ○-> ○ FS.listdir p, []
+    @dirlist: (p) ○-> ○ FS.listdir p, []
 
     # 00000000   00000000  00     00   0000000   000   000  00000000  
     # 000   000  000       000   000  000   000  000   000  000       

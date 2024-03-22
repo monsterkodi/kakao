@@ -20,10 +20,12 @@ function Browse extends Command
 
         super commandline
 
+        log 'Browse'
+        
         @cmdID    = 0
         @browser  = new FileBrowser $ 'browser'
         
-        @commands = Object.create null
+        @commands = {}
         @names    = ['browse' 'Browse' 'shelf' 'Small Browser' 'Large Browser'] # only browse is shown in commandline menu (see CommandList.hideCommands)
 
         post.on 'file' @onFile
@@ -91,7 +93,7 @@ function Browse extends Command
 
                 items = matches.map (m) ->
 
-                    item = Object.create null
+                    item = {}
 
                     switch m.type
                         when 'file'
@@ -193,7 +195,7 @@ function Browse extends Command
 
             items = matches.map (m) ->
 
-                item = Object.create null
+                item = {}
 
                 switch m.type
                     when 'file'

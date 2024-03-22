@@ -10,7 +10,7 @@ import ffs from "../../../kxk/ffs.js"
 
 export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at cursor',combo:'alt+enter'}},jumpToFileAtPos:function (p = this.cursorPos())
 {
-    var col, cwd, d, diss, file, line, ranges, rgx, text
+    var col, d, diss, file, line, ranges, rgx, text
 
     text = this.line(p[1])
     rgx = /([\~\/\w\.]+\/[\w\.]+\w[:\d]*)/
@@ -53,8 +53,7 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
             }
             if (!slash.isAbsolute(d.match))
             {
-                cwd = window.cwd.cwd
-                var _52_38_ = slash.splitFileLine(slash.join(cwd,d.match)); file = _52_38_[0]; line = _52_38_[1]; col = _52_38_[2]
+                var _51_38_ = slash.splitFileLine(slash.join(kakao.bundle.path,d.match)); file = _51_38_[0]; line = _51_38_[1]; col = _51_38_[2]
 
                 post.emit('jumpTo',{path:file,line:line,col:col})
                 return true
@@ -67,12 +66,12 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list1 = _k_.list(diss)
-        for (var _71_18_ = 0; _71_18_ < list1.length; _71_18_++)
+        for (var _70_18_ = 0; _70_18_ < list1.length; _70_18_++)
         {
-            d = list1[_71_18_]
+            d = list1[_70_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _73_38_ = slash.splitFileLine(d.match); file = _73_38_[0]; line = _73_38_[1]; col = _73_38_[2]
+                var _72_38_ = slash.splitFileLine(d.match); file = _72_38_[0]; line = _72_38_[1]; col = _72_38_[2]
 
                 if (slash.fileExists(file))
                 {

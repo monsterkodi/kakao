@@ -35,6 +35,7 @@ function Shelf extends Column
         post.on 'addToShelf'             @addPath
         post.on 'navigateHistoryChanged' @onNavigateHistoryChanged
         post.on 'navigateIndexChanged'   @onNavigateIndexChanged
+        post.on 'stashLoaded'            @onStashLoaded
         
         post.on 'file' @onFile
        
@@ -75,6 +76,7 @@ function Shelf extends Column
     onFile: (file) =>
         
         return if empty file
+        
         if @navigatingRows
             delete @navigatingRows
             return
@@ -100,7 +102,10 @@ function Shelf extends Column
     # 000  000  0000  000     000     
     # 000  000   000  000     000     
     
-    browserDidInitColumns: ->
+    onStashLoaded: =>
+    # browserDidInitColumns: ->
+        
+        log 'Stash.onStashLoaded'
         
         @loadShelfItems()
         

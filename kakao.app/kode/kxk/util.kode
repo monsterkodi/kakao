@@ -14,7 +14,7 @@ isEqual = (a,b) ->
             return false if not isEqual a[index], b[index]
         return true
     a == b
-
+    
 export
 
     isEqual: isEqual

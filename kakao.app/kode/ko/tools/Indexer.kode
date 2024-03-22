@@ -6,15 +6,16 @@
 000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-use ../../kxk/util ▪ pickBy
+use ../../kxk/util ▪ pickBy pullIf deleteBy
 
 use ../../kxk/matchr
 use ../../kxk/slash
 use ../../kxk/post
+use ../../kxk/sds
 use ../../kxk/ffs
 
 use ./Walker
-# use ./IndexHpp
+use ./IndexHpp
 
 class Indexer
 
@@ -86,8 +87,6 @@ class Indexer
         # post.on 'sourceInfoForFile' @onSourceInfoForFile
         
         # post.on 'fileSaved'    (file, winID) => @indexFile file, refresh: true
-        # post.on 'dirLoaded'    @indexProject
-        post.on 'fileLoaded' @indexProject
         
         @imageExtensions = ['png' 'jpg' 'gif' 'tiff' 'pxm' 'icns']        
 
@@ -98,7 +97,7 @@ class Indexer
         @words   = {}
         @queue   = []
         
-        @indexedProjects = []
+        @indexedProjects = {}
         
     #  0000000   000   000   0000000   00000000  000000000  
     # 000   000  0000  000  000        000          000     
@@ -122,11 +121,11 @@ class Indexer
                 return @projectInfo filter[0]
         
         value = @[key]
-        if not empty filter
+        if valid filter
             
-            names = _.filter filter, (c) -> not empty c
+            names = filter.filter (c) -> valid c
                         
-            if not empty names
+            if valid names
                 
                 names = names.map (c) -> c?.toLowerCase()
                 
@@ -143,124 +142,6 @@ class Indexer
         if @files[file]?
             post.toWin opt.winID, 'sourceInfoForFile' @files[file], opt
         
-    # 00000000   00000000    0000000         000  00000000   0000000  000000000  
-    # 000   000  000   000  000   000        000  000       000          000     
-    # 00000000   0000000    000   000        000  0000000   000          000     
-    # 000        000   000  000   000  000   000  000       000          000     
-    # 000        000   000   0000000    0000000   00000000   0000000     000     
-    
-    projectInfo: (path) ->
-        
-        for project in @indexedProjects
-            if slash.samePath(project.dir, path) or path.startsWith project.dir + '/'
-                return project
-        {}
-    
-    indexProject: (file) ○=>
-        
-        sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
-        
-        prjPath = ○ ffs.pkg file
-        
-        # log 'Indexer.indexProject' prjPath
-        
-        if @currentlyIndexing
-            return if @currentlyIndexing == prjPath
-            @indexQueue ?= []
-            if prjPath not in @indexQueue
-                @indexQueue.push prjPath
-                log 'Indexer.indexProject -- queue' @indexQueue
-            return
-        
-        # return  if valid @projectInfo file
-              
-        @currentlyIndexing = prjPath
-        
-        walker = new Walker
-            root:        prjPath
-            maxDepth:    12
-            maxFiles:    5000
-            file:        (f) => log 'Indexer.walker.file' f
-                    
-        ○ walker.start()
-        
-        # list = ○ ffs.list prjPath
-        # log 'Indexer.indexProject' prjPath, list
-        
-        # ○ sleep 1000
-        # log 'Indexer.indexProject done' prjPath
-        
-        delete @currentlyIndexing
-        
-        if valid @indexQueue
-            log 'dequeue' @indexQueue[0]
-            await @indexProject @indexQueue.shift()
-        
-        # forkfunc "#{__dirname}/indexprj" file, (err, info) =>
-#             
-            # return kerror 'indexing failed' err if valid err
-#             
-            # delete @currentlyIndexing
-#             
-            # if info
-                # @indexedProjects.push info 
-                # log info.dir
-                # # for file in info.files
-                    # # log r5('▸ '), y5 file
-                # log b5(info.files.length), w5(' files')
-                # post.toWins 'projectIndexed' info
-#             
-            # doShift = empty @queue
-#             
-            # if valid info.files
-                # @queue = @queue.concat info.files
-#                 
-            # if valid @indexQueue
-                # @indexProject @indexQueue.shift()
-#                 
-            # @shiftQueue() if doShift
-                
-    # 000  000   000  0000000    00000000  000   000        0000000    000  00000000
-    # 000  0000  000  000   000  000        000 000         000   000  000  000   000
-    # 000  000 0 000  000   000  0000000     00000          000   000  000  0000000
-    # 000  000  0000  000   000  000        000 000         000   000  000  000   000
-    # 000  000   000  0000000    00000000  000   000        0000000    000  000   000
-
-    # indexDir: (dir) ->
-
-        # return if not dir? or @dirs[dir]?
-#         
-        # @dirs[dir] =
-            # name: slash.file dir
-
-        # wopt =
-            # root:        dir
-            # includeDir:  dir
-            # includeDirs: true
-            # dir:         @onWalkerDir
-            # file:        @onWalkerFile
-            # maxDepth:    12
-            # maxFiles:    100000
-            # done:        (w) => @shiftQueue
-
-        # @walker = new Walker wopt
-        # @walker.cfg.ignore.push 'js' 'mjs' # is this necessary?
-        # @walker.start()
-
-    # onWalkerDir: (p, stat) =>
-#         
-        # if not @dirs[p]?
-            # @dirs[p] =
-                # name: slash.file p
-
-    # onWalkerFile: (p, stat) =>
-#         
-        # if not @files[p]? and @queue.indexOf(p) < 0
-            # if stat.size < 654321 # obviously some arbitrary number :)
-                # @queue.push p
-            # else
-                # log "warning! file #{p} too large? #{stat.size}. skipping indexing!"
-
     #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
     # 000   000  000   000  000   000      000       000   000  0000  000  000       
     # 000000000  000   000  000   000      000000    000   000  000 0 000  000       
@@ -292,7 +173,9 @@ class Indexer
             class: className
             async: async
 
-        _.set @classes, "#{className}.methods.#{funcInfo.name}" funcInfo
+        sds.set @classes, "#{className}.methods.#{funcInfo.name}" funcInfo
+        
+        log 'Index.addMethod' @classes
 
         funcInfo
 
@@ -307,10 +190,10 @@ class Indexer
         return if not @files[file]?
         
         for name,infos of @funcs
-            _.remove infos, (v) -> v.file == file
+            pullIf infos, (v) -> v.file == file
             delete @funcs[name] if not infos.length
                     
-        @classes = _.omitBy @classes, (v) -> v.file == file
+        @classes.deleteBy (k,v) -> v.file == file
         
         delete @files[file]
 
@@ -323,8 +206,6 @@ class Indexer
     indexFile: (file, opt) ->
         
         log 'Indexer.indexFile' file
-        
-        return
         
         @removeFile file if opt?.refresh
 
@@ -340,7 +221,7 @@ class Indexer
         isCpp = fileExt in ['cpp' 'cc' 'mm' 'c' 'frag' 'vert']
         isHpp = fileExt in ['hpp' 'h' ]
 
-        slash.readText file, (text) =>
+        ffs.read(file).then (text) =>
             
             lines = text.split /\r?\n/
             
@@ -361,8 +242,8 @@ class Indexer
                 
                 for clss in parsed.classes
                     
-                    _.set @classes, "#{clss.name}.file" file
-                    _.set @classes, "#{clss.name}.line" clss.line+1
+                    sds.set @classes, "#{clss.name}.file" file
+                    sds.set @classes, "#{clss.name}.line" clss.line+1
                     
                     fileInfo.classes.push 
                         name: clss.name
@@ -442,7 +323,8 @@ class Indexer
                     for word in words
                         
                         if Indexer.testWord word
-                            _.update @words, "#{word}.count", (n) -> (n ? 0) + 1
+                            cnt = @words[word] ? 0
+                            @words[word] = cnt + 1
     
                         switch word
     
@@ -457,8 +339,8 @@ class Indexer
                                 if className = Indexer.classNameInLine line
                                     
                                     currentClass = className
-                                    _.set @classes, "#{className}.file" file
-                                    _.set @classes, "#{className}.line" li+1
+                                    sds.set @classes, "#{className}.file" file
+                                    sds.set @classes, "#{className}.line" li+1
                                     
                                     fileInfo.classes.push 
                                         name: className
@@ -498,14 +380,14 @@ class Indexer
                     fileInfo.funcs.push funcInfo
 
                 if opt?.post != false
-                    post.toWins 'classesCount' _.size @classes
-                    post.toWins 'funcsCount'   _.size @funcs
+                    post.toWins 'classesCount' Object.keys(@classes).length
+                    post.toWins 'funcsCount'   Object.keys(@funcs).length
                     post.toWins 'fileIndexed'  file, fileInfo
 
             @files[file] = fileInfo
             
             if opt?.post != false
-                post.toWins 'filesCount' _.size @files
+                post.toWins 'filesCount' Object.keys(@files).length
 
             @shiftQueue()
         @

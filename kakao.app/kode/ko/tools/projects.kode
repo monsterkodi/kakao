@@ -7,46 +7,82 @@
 ###
 
 use ../../kxk/post
+use ../../kxk/ffs
 
-files    = {}
-numFiles = 0
+use ./Walker
 
 class Projects
     
-    @refresh: -> 
+    @projects: {}
+    @allFiles: {}
+    @indexing: null
+    @queue: []
+    
+    @files: (path) =>
         
-        files = {}
-        
-    @onIndexed: (info) ->
-        
-        if valid info.files
-            log 'project indexed' info
-            files[info.dir] = info.files
-            numFiles += info.files.length
-        
-    @files: (file) ->
-        
-        return [] if empty file
-            
-        if files[file]?
-            # log 'local index' file, dir, list
-            return files[file]
-            
-        # if dir = slash.pkg file
-            # # log 'request main index' file, dir
-            # if info = post.get 'indexer' 'project' dir
-                # Projects.onIndexed info
-                # log 'got main index' info
-                # return files[info.dir]
-                
-        for dir,list of files
-            if file.startsWith dir
-                log 'fallback index' file, dir, list
-                return list
-                
-        log "no project files for file #{file}" Object.keys files
+        if prjPath = @allFiles[path]
+            return @projects[prjPath].files
+        if @projects[path]
+            return @projects[path].files
+        for prjPath,project of @projects
+            if path.startsWith prjPath
+                return project.files
+        log 'missing prj?' path
         []
- 
-post.on 'projectIndexed' Projects.onIndexed
+    
+    # 000  000   000  0000000    00000000  000   000  
+    # 000  0000  000  000   000  000        000 000   
+    # 000  000 0 000  000   000  0000000     00000    
+    # 000  000  0000  000   000  000        000 000   
+    # 000  000   000  0000000    00000000  000   000  
+    
+    @indexProject: (file) ○=>
         
+        # sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
+        
+        prjPath = ○ ffs.pkg file
+        
+        # log 'Projects.indexProject' prjPath, @
+        
+        if @indexing
+            return if @indexing == prjPath
+            @queue ?= []
+            if prjPath not in @queue
+                @queue.push prjPath
+            return
+        
+        if valid @projects[prjPath]
+            # log 'Projects.indexProject already indexed:' @projects[prjPath]
+            return
+              
+        @indexing = prjPath
+        
+        walker = new Walker
+            root:        prjPath
+            maxDepth:    12
+            maxFiles:    5000
+            file:        (f) => #log 'Projects.walker.file' f
+                    
+        result = ○ walker.start()
+        
+        if result
+            @projects[prjPath] = dir:prjPath, files:result.files
+            for file in result.files
+                @allFiles[file] = prjPath
+                
+            log 'projects' @projects
+            log 'allFiles' @allFiles
+        
+        delete @indexing
+        
+        if valid @queue
+            log 'dequeue' @queue[0]
+            ○ @indexProject @queue.shift()
+
+# log 'Projects.startListening'
+            
+post.on 'fileLoaded' (file) -> 
+    # log 'Projects.fileLoaded' file
+    Projects.indexProject file
+
 export Projects

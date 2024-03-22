@@ -77,7 +77,6 @@ class FileHandler
             }
             editor.setCurrentFile(file)
             tab.finishActivation()
-            editor.restoreScrollCursorsAndSelections()
             post.emit('fileLoaded',file)
         }
         split.raise('editor')
@@ -126,9 +125,9 @@ class FileHandler
             this.loadFile(file)
         }
         var list = _k_.list(files)
-        for (var _124_17_ = 0; _124_17_ < list.length; _124_17_++)
+        for (var _122_17_ = 0; _122_17_ < list.length; _122_17_++)
         {
-            file = list[_124_17_]
+            file = list[_122_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
@@ -176,7 +175,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _169_29_
+        var tab, _167_29_
 
         if (tab = tabs.activeTab())
         {
@@ -211,9 +210,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _194_16_ = 0; _194_16_ < list.length; _194_16_++)
+        for (var _192_16_ = 0; _192_16_ < list.length; _192_16_++)
         {
-            tab = list[_194_16_]
+            tab = list[_192_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -249,11 +248,14 @@ class FileHandler
             {
                 return console.error('File.save failed!')
             }
+            editor.saveScrollCursorsAndSelections()
+            post.emit('saveStash')
             editor.do.history = tabState.history
             editor.do.saveIndex = tabState.history.length
             post.toWins('fileSaved',saved,window.winID)
             post.emit('saved',saved)
-            return post.emit('dirty',false)
+            post.emit('dirty',false)
+            return editor.restoreScrollCursorsAndSelections()
         })
     }
 
@@ -278,7 +280,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _263_29_
+        var _262_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -294,7 +296,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _279_18_
+        var cb, dir, _278_18_
 
         cb = function (files)
         {
@@ -310,7 +312,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _299_18_
+        var cb, _298_18_
 
         cb = (function (file)
         {

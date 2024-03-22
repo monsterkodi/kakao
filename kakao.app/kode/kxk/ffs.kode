@@ -8,24 +8,24 @@
 
 class FFS
     
-    @pkg:           (p) ○-> await kakao 'fs.pkg'        p
-    @list:          (p) ○-> await kakao 'fs.list'       p
-    @read:          (p) ○-> await kakao 'fs.read'       p
-    @write:      (p, t) ○-> await kakao 'fs.write'      p, t
-    @exists:        (p) ○-> await kakao 'fs.exists'     p
-    @fileExists:    (p) ○-> await kakao 'fs.fileExists' p
-    @dirExists:     (p) ○-> await kakao 'fs.dirExists'  p
-    @isWritable:    (p) ○-> await kakao 'fs.isWritable' p
-    @isReadable:    (p) ○-> await kakao 'fs.isReadable' p
-    @duplicate:     (p) ○-> await kakao 'fs.duplicate'  p
-    @remove:        (p) ○-> await kakao 'fs.remove'     p
-    @trash:         (p) ○-> await kakao 'fs.trash'      p
-    @move:       (p, d) ○-> await kakao 'fs.move'       p, d
-    @copy:       (p, d) ○-> await kakao 'fs.copy'       p, d
-    @mkdir:         (p) ○-> await kakao 'fs.mkdir'      p
-    @info:          (p) ○-> await kakao 'fs.info'       p
+    @pkg:           (p) ○->○ kakao 'fs.pkg'        p
+    @list:          (p) ○->○ kakao 'fs.list'       p
+    @read:          (p) ○->○ kakao 'fs.read'       p
+    @write:      (p, t) ○->○ kakao 'fs.write'      p, t
+    @exists:        (p) ○->○ kakao 'fs.exists'     p
+    @fileExists:    (p) ○->○ kakao 'fs.fileExists' p
+    @dirExists:     (p) ○->○ kakao 'fs.dirExists'  p
+    @isWritable:    (p) ○->○ kakao 'fs.isWritable' p
+    @isReadable:    (p) ○->○ kakao 'fs.isReadable' p
+    @duplicate:     (p) ○->○ kakao 'fs.duplicate'  p
+    @remove:        (p) ○->○ kakao 'fs.remove'     p
+    @trash:         (p) ○->○ kakao 'fs.trash'      p
+    @move:       (p, d) ○->○ kakao 'fs.move'       p, d
+    @copy:       (p, d) ○->○ kakao 'fs.copy'       p, d
+    @mkdir:         (p) ○->○ kakao 'fs.mkdir'      p
+    @info:          (p) ○->○ kakao 'fs.info'       p
     @type:          (p) ○-> i = await kakao 'fs.info'   p; i.type
-    @isFile:        (p) ○-> await FFS.fileExists        p
-    @isDir:         (p) ○-> await FFS.dirExists         p
+    @isFile:        (p) ○->○ FFS.fileExists        p
+    @isDir:         (p) ○->○ FFS.dirExists         p
         
 export FFS

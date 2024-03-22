@@ -1,5 +1,7 @@
 var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
+import kstr from "../../../kxk/kstr.js"
+
 export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:'command+/',accel:'ctrl+/'},toggleHeader:{name:'Toggle Header',combo:'command+alt+/',accel:'alt+ctrl+/'}},toggleHeader:function ()
 {
     var il, indent, r, rgs

@@ -233,4 +233,4 @@ class IndexHpp
     }
 }
 
-module.exports = IndexHpp
+export default IndexHpp;

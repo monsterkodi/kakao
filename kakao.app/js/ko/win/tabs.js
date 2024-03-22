@@ -488,6 +488,7 @@ class Tabs
             return
         }
         this.tabs = []
+        console.log('Tabs.onStashLoaded',files)
         while (files.length)
         {
             this.addTab(files.shift())
