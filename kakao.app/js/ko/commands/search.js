@@ -16,6 +16,8 @@ import matchr from "../../kxk/matchr.js"
 
 import Walker from "../tools/Walker.js"
 
+import Projects from "../tools/Projects.js"
+
 import Syntax from "../editor/Syntax.js"
 
 import Command from "../commandline/Command.js"
@@ -39,7 +41,7 @@ Search = (function ()
 
     Search.prototype["execute"] = function (command)
     {
-        var file, rngs
+        var dir, file, rngs, _57_33_
 
         if (!command.length)
         {
@@ -68,20 +70,20 @@ Search = (function ()
             return
         }
         window.terminal.clear()
-        this.startSearchInFiles({text:command,name:this.name,file:slash.path(file)})
+        dir = ((_57_33_=Projects.dir(file)) != null ? _57_33_ : slash.dir(slash.path(file)))
+        this.startSearch({dir:dir,text:command,name:this.name})
         return {focus:'terminal',show:'terminal',text:command,select:true}
     }
 
-    Search.prototype["startSearchInFiles"] = function (opt)
+    Search.prototype["startSearch"] = function (opt)
     {
-        var dir, terminal
+        var terminal
 
         terminal = window.terminal
         terminal.appendMeta({clss:'searchHeader',diss:Syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
-        dir = slash.dir(opt.file)
-        this.walker = new Walker({root:dir,maxDepth:12,maxFiles:5000,file:(function (f)
+        this.walker = new Walker({root:opt.dir,maxDepth:12,maxFiles:5000,file:(function (f)
         {
             return this.searchInFile(opt,f)
         }).bind(this)})
@@ -172,7 +174,7 @@ FileSearcher = (function ()
         }
         ffs.read(this.file).then((function (text)
         {
-            var l, lines, rngs, _157_68_
+            var l, lines, rngs, _158_68_
 
             if (_k_.empty(text))
             {
@@ -184,9 +186,9 @@ FileSearcher = (function ()
                 this.syntaxName = Syntax.shebang(lines[0])
             }
             var list = _k_.list(lines)
-            for (var _158_18_ = 0; _158_18_ < list.length; _158_18_++)
+            for (var _159_18_ = 0; _159_18_ < list.length; _159_18_++)
             {
-                l = list[_158_18_]
+                l = list[_159_18_]
                 this.line += 1
                 rngs = matchr.ranges(this.patterns,l,this.flags)
                 if (rngs.length)
@@ -209,7 +211,7 @@ FileSearcher = (function ()
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.appendMeta(meta)
         terminal.appendMeta({clss:'spacer'})
-        for (var _180_18_ = fi = 0, _180_22_ = this.found.length; (_180_18_ <= _180_22_ ? fi < this.found.length : fi > this.found.length); (_180_18_ <= _180_22_ ? ++fi : --fi))
+        for (var _181_18_ = fi = 0, _181_22_ = this.found.length; (_181_18_ <= _181_22_ ? fi < this.found.length : fi > this.found.length); (_181_18_ <= _181_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]

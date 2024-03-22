@@ -14,6 +14,7 @@ use ../../kxk/slash
 use ../../kxk/matchr
 
 use ../tools/Walker
+use ../tools/Projects
 use ../editor/Syntax
 
 use ../commandline/Command
@@ -53,23 +54,25 @@ function Search extends Command
         
         window.terminal.clear()
         
-        @startSearchInFiles 
+        dir = Projects.dir(file) ? slash.dir slash.path file
+        
+        @startSearch 
+            dir:  dir
             text: command
             name: @name
-            file: slash.path file
             
         focus:  'terminal'
         show:   'terminal'
         text:   command
         select: true
       
-    #  0000000  00000000   0000000   00000000    0000000  000   000
-    # 000       000       000   000  000   000  000       000   000
-    # 0000000   0000000   000000000  0000000    000       000000000
-    #      000  000       000   000  000   000  000       000   000
-    # 0000000   00000000  000   000  000   000   0000000  000   000
+    #  0000000  000000000   0000000   00000000   000000000         0000000  00000000   0000000   00000000    0000000  000   000
+    # 000          000     000   000  000   000     000           000       000       000   000  000   000  000       000   000
+    # 0000000      000     000000000  0000000       000           0000000   0000000   000000000  0000000    000       000000000
+    #      000     000     000   000  000   000     000                000  000       000   000  000   000  000       000   000
+    # 0000000      000     000   000  000   000     000           0000000   00000000  000   000  000   000   0000000  000   000
     
-    startSearchInFiles: (opt) ->
+    startSearch: (opt) ->
         
         terminal = window.terminal
 
@@ -77,10 +80,8 @@ function Search extends Command
         terminal.appendMeta clss:'spacer'
         terminal.singleCursorAtPos [0, terminal.numLines()-2]
         
-        dir = slash.dir opt.file
-        
         @walker = new Walker
-            root:        dir
+            root:        opt.dir
             maxDepth:    12
             maxFiles:    5000
             file:        (f) => @searchInFile opt, f
