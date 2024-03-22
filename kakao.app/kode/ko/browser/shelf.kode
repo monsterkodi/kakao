@@ -103,9 +103,6 @@ function Shelf extends Column
     # 000  000   000  000     000     
     
     onStashLoaded: =>
-    # browserDidInitColumns: ->
-        
-        log 'Stash.onStashLoaded'
         
         @loadShelfItems()
         

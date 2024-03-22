@@ -103,7 +103,7 @@ class Navigate
                 
             'addFilePos'
 
-                # log 'addFilePos' opt
+                log 'Navigate.addFilePos' opt
                 
                 return if not opt?.file?.length
 
@@ -138,6 +138,7 @@ class Navigate
             # post.toMain 'newWindowWithFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
             log 'navigate new window with file not implemented!'
         else
+            log 'Navigate.loadFilePos post.emit loadFile' filePos, opt
             post.emit 'loadFile' "#{filePos.file}:#{filePos.pos[1]+1}:#{filePos.pos[0]}"
 
         # post.toWins 'navigateIndexChanged' @currentIndex, @filePositions[@currentIndex]

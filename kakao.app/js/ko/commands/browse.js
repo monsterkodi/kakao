@@ -29,7 +29,6 @@ Browse = (function ()
         this["completeCallback"] = this["completeCallback"].bind(this)
         this["onFile"] = this["onFile"].bind(this)
         Browse.__super__.constructor.call(this,commandline)
-        console.log('Browse')
         this.cmdID = 0
         this.browser = new FileBrowser($('browser'))
         this.commands = {}
@@ -243,7 +242,6 @@ Browse = (function ()
     {
         var text
 
-        console.log('browse.changed',command)
         text = this.getText().trim()
         if (!text.endsWith('/'))
         {

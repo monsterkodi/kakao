@@ -114,26 +114,22 @@ class FileHandler
             }).bind(this)})
             return
         }
-        if (files.length === 0)
+        if (_k_.empty(files))
         {
             return []
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
-        if (!options.newWindow && !options.newTab)
-        {
-            file = slash.path(files.shift())
-            this.loadFile(file)
-        }
         var list = _k_.list(files)
-        for (var _122_17_ = 0; _122_17_ < list.length; _122_17_++)
+        for (var _123_17_ = 0; _123_17_ < list.length; _123_17_++)
         {
-            file = list[_122_17_]
+            file = list[_123_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
             }
             else
             {
+                console.log('FileHandler.openFiles post.emit newTabWithFile',file)
                 post.emit('newTabWithFile',file)
             }
         }
@@ -175,7 +171,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _167_29_
+        var tab, _169_29_
 
         if (tab = tabs.activeTab())
         {
@@ -210,9 +206,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _192_16_ = 0; _192_16_ < list.length; _192_16_++)
+        for (var _194_16_ = 0; _194_16_ < list.length; _194_16_++)
         {
-            tab = list[_192_16_]
+            tab = list[_194_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -280,7 +276,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _262_29_
+        var _264_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -296,7 +292,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _278_18_
+        var cb, dir, _280_18_
 
         cb = function (files)
         {
@@ -312,7 +308,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _298_18_
+        var cb, _300_18_
 
         cb = (function (file)
         {

@@ -115,7 +115,7 @@ Search = (function ()
         else
         {
             file = href + ':' + window.terminal.posForEvent(event)[0]
-            post.emit('openFiles',[file],{newTab:event.metaKey})
+            post.emit('loadFile',file)
         }
         return 'unhandled'
     }
@@ -172,7 +172,7 @@ FileSearcher = (function ()
         }
         ffs.read(this.file).then((function (text)
         {
-            var l, lines, rngs, _154_68_
+            var l, lines, rngs, _157_68_
 
             if (_k_.empty(text))
             {
@@ -184,9 +184,9 @@ FileSearcher = (function ()
                 this.syntaxName = Syntax.shebang(lines[0])
             }
             var list = _k_.list(lines)
-            for (var _155_18_ = 0; _155_18_ < list.length; _155_18_++)
+            for (var _158_18_ = 0; _158_18_ < list.length; _158_18_++)
             {
-                l = list[_155_18_]
+                l = list[_158_18_]
                 this.line += 1
                 rngs = matchr.ranges(this.patterns,l,this.flags)
                 if (rngs.length)
@@ -209,7 +209,7 @@ FileSearcher = (function ()
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.appendMeta(meta)
         terminal.appendMeta({clss:'spacer'})
-        for (var _177_18_ = fi = 0, _177_22_ = this.found.length; (_177_18_ <= _177_22_ ? fi < this.found.length : fi > this.found.length); (_177_18_ <= _177_22_ ? ++fi : --fi))
+        for (var _180_18_ = fi = 0, _180_22_ = this.found.length; (_180_18_ <= _180_22_ ? fi < this.found.length : fi > this.found.length); (_180_18_ <= _180_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]

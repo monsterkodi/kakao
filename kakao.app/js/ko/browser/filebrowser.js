@@ -53,7 +53,6 @@ FileBrowser = (function ()
         this.select = new Select(this)
         this.name = 'FileBrowser'
         this.srcCache = {}
-        console.log('FileBrowser post...')
         post.on('file',this.onFile)
         post.on('browse',this.browse)
         post.on('filebrowser',this.onFileBrowser)
@@ -160,7 +159,6 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["onFile"] = function (file)
     {
-        console.log('onFile',file)
         if (file && this.flex)
         {
             return this.navigateToFile(file)
@@ -178,7 +176,6 @@ FileBrowser = (function ()
             return
         }
         col = this.sharedColumnIndex(file)
-        console.log('navigateToFile',file)
         filelist = slash.pathlist(file)
         if (col >= 0)
         {
@@ -193,8 +190,7 @@ FileBrowser = (function ()
         {
             this.addColumn()
         }
-        console.log('paths',paths)
-        for (var _160_21_ = index = 0, _160_25_ = paths.length; (_160_21_ <= _160_25_ ? index < paths.length : index > paths.length); (_160_21_ <= _160_25_ ? ++index : --index))
+        for (var _158_21_ = index = 0, _158_25_ = paths.length; (_158_21_ <= _158_25_ ? index < paths.length : index > paths.length); (_158_21_ <= _158_25_ ? ++index : --index))
         {
             if (index < paths.length - 1)
             {
@@ -295,10 +291,10 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadItem"] = function (item, opt)
     {
-        var _246_55_
+        var _244_55_
 
         opt = (opt != null ? opt : {active:'..',focus:true})
-        this.clearColumnsFrom(1,{pop:true,clear:((_246_55_=opt.clear) != null ? _246_55_ : 1)})
+        this.clearColumnsFrom(1,{pop:true,clear:((_244_55_=opt.clear) != null ? _244_55_ : 1)})
         switch (item.type)
         {
             case 'dir':
@@ -357,7 +353,6 @@ FileBrowser = (function ()
         {
             this.addColumn()
         }
-        console.log('loadFileItem',item)
         file = item.path
         this.columns[col].parent = item
         if (File.isImage(file))
@@ -413,17 +408,16 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["fileInfoColumn"] = function (col, file)
     {
-        console.log('fileInfoColumn',col,file)
         this.columns[col].crumb.hide()
         return this.columns[col].table.appendChild(Info.file(file))
     }
 
     FileBrowser.prototype["onFileIndexed"] = function (file, info)
     {
-        var _349_36_, _349_44_, _350_73_
+        var _347_36_, _347_44_, _348_73_
 
         this.srcCache[file] = info
-        if (file === ((_349_36_=this.lastUsedColumn()) != null ? (_349_44_=_349_36_.parent) != null ? _349_44_.file : undefined : undefined))
+        if (file === ((_347_36_=this.lastUsedColumn()) != null ? (_347_44_=_347_36_.parent) != null ? _347_44_.file : undefined : undefined))
         {
             return this.loadSourceItem({file:file,type:'file'},(this.lastUsedColumn() != null ? this.lastUsedColumn().index : undefined))
         }
@@ -431,7 +425,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadSourceItem"] = function (item, col)
     {
-        var clss, clsss, func, funcs, info, items, text, _365_29_, _370_27_
+        var clss, clsss, func, funcs, info, items, text, _363_29_, _368_27_
 
         info = this.srcCache[item.path]
         if (_k_.empty(info))
@@ -439,19 +433,19 @@ FileBrowser = (function ()
             return
         }
         items = []
-        clsss = ((_365_29_=info.classes) != null ? _365_29_ : [])
+        clsss = ((_363_29_=info.classes) != null ? _363_29_ : [])
         var list = _k_.list(clsss)
-        for (var _366_17_ = 0; _366_17_ < list.length; _366_17_++)
+        for (var _364_17_ = 0; _364_17_ < list.length; _364_17_++)
         {
-            clss = list[_366_17_]
+            clss = list[_364_17_]
             text = '● ' + clss.name
             items.push({name:clss.name,text:text,type:'class',path:item.path,line:clss.line})
         }
-        funcs = ((_370_27_=info.funcs) != null ? _370_27_ : [])
+        funcs = ((_368_27_=info.funcs) != null ? _368_27_ : [])
         var list1 = _k_.list(funcs)
-        for (var _371_17_ = 0; _371_17_ < list1.length; _371_17_++)
+        for (var _369_17_ = 0; _369_17_ < list1.length; _369_17_++)
         {
-            func = list1[_371_17_]
+            func = list1[_369_17_]
             if (func.test === 'describe')
             {
                 text = '● ' + func.name
@@ -499,9 +493,9 @@ FileBrowser = (function ()
         var column
 
         var list = _k_.list(this.columns)
-        for (var _400_19_ = 0; _400_19_ < list.length; _400_19_++)
+        for (var _398_19_ = 0; _398_19_ < list.length; _398_19_++)
         {
-            column = list[_400_19_]
+            column = list[_398_19_]
             if (column.path() === info.dir)
             {
                 this.loadDirItem({path:info.dir,type:'dir'},column.index,{active:column.activePath(),focus:false})
@@ -541,7 +535,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadDirItems"] = function (item, items, col, opt)
     {
-        var lastColumn, row, _447_52_, _451_85_, _455_14_
+        var lastColumn, row, _445_52_, _449_85_, _453_14_
 
         this.updateColumnScrolls()
         if (this.skipOnDblClick && col > 0)
@@ -670,16 +664,16 @@ FileBrowser = (function ()
     {
         FileBrowser.__super__.updateColumnScrolls.call(this)
     
-        var _520_14_
+        var _518_14_
 
         return (this.shelf != null ? this.shelf.scroll.update() : undefined)
     }
 
     FileBrowser.prototype["getGitStatus"] = function (item, col)
     {
-        var file, _530_25_, _530_38_
+        var file, _528_25_, _528_38_
 
-        file = ((_530_25_=item.path) != null ? _530_25_ : (item.parent != null ? item.parent.path : undefined))
+        file = ((_528_25_=item.path) != null ? _528_25_ : (item.parent != null ? item.parent.path : undefined))
         if (_k_.empty(file))
         {
             return
@@ -715,7 +709,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["toggleShelf"] = function ()
     {
-        var _570_29_
+        var _568_29_
 
         if (this.shelfSize < 1)
         {

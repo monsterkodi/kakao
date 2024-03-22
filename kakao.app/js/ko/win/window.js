@@ -53,6 +53,9 @@ import CommandLine from "../commandline/CommandLine.js"
 Window = (function ()
 {
     _k_.extend(Window, win.Delegate)
+    Window.prototype["onWindowAboutToShow"] = function (win)
+    {}
+
     Window.prototype["onWindowAnimationTick"] = function (win, tickInfo)
     {}
 
@@ -351,7 +354,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _229_14_
+    var _230_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -362,7 +365,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _235_22_, _236_19_
+    var _236_22_, _237_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -407,7 +410,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _280_32_
+    var _281_32_
 
     if (!(_k_.isNum(s)))
     {

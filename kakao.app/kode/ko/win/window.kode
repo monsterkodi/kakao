@@ -43,6 +43,7 @@ use ../commandline/CommandLine
 
 function Window extends win.Delegate
 
+    onWindowAboutToShow:    (win)           -> #log "onWindowAboutToShow #{win.id}"
     onWindowAnimationTick:  (win, tickInfo) -> #log 'onWindowAnimationTick' win.id
     onWindowResize:         (win, event)    -> #log 'onWindowResize'        win.id
     onWindowFocus:          (win)           -> #log 'onWindowFocus'         win.id

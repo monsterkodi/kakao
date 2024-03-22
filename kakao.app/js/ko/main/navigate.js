@@ -98,6 +98,7 @@ class Navigate
                 return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
 
             case 'addFilePos':
+                console.log('Navigate.addFilePos',opt)
                 if (!(opt != null ? (_108_39_=opt.file) != null ? _108_39_.length : undefined : undefined))
                 {
                     return
@@ -139,6 +140,7 @@ class Navigate
         }
         else
         {
+            console.log('Navigate.loadFilePos post.emit loadFile',filePos,opt)
             post.emit('loadFile',`${filePos.file}:${filePos.pos[1] + 1}:${filePos.pos[0]}`)
         }
         return filePos
