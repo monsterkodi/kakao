@@ -187,8 +187,6 @@ function Editor extends Buffer
 
     setText: (text="") =>
         
-        # log 'setText' text
-        
         if @syntax.name == 'txt'
             @syntax.name = Syntax.shebang text.slice 0, text.search /\r?\n/
 

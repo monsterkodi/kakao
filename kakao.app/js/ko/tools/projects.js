@@ -1,53 +1,94 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
-
-var files, numFiles
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import post from "../../kxk/post.js"
 
-files = {}
-numFiles = 0
+import ffs from "../../kxk/ffs.js"
+
+import Walker from "./Walker.js"
+
 class Projects
 {
-    static refresh ()
-    {
-        return files = {}
-    }
+    static projects = {}
 
-    static onIndexed (info)
-    {
-        if (!_k_.empty(info.files))
-        {
-            console.log('project indexed',info)
-            files[info.dir] = info.files
-            return numFiles += info.files.length
-        }
-    }
+    static allFiles = {}
 
-    static files (file)
-    {
-        var dir, list
+    static indexing = null
 
-        if (_k_.empty(file))
+    static queue = []
+
+    static files (path)
+    {
+        var prjPath, project
+
+        if (prjPath = this.allFiles[path])
         {
-            return []
+            return this.projects[prjPath].files
         }
-        if ((files[file] != null))
+        if (this.projects[path])
         {
-            return files[file]
+            return this.projects[path].files
         }
-        for (dir in files)
+        for (prjPath in this.projects)
         {
-            list = files[dir]
-            if (file.startsWith(dir))
+            project = this.projects[prjPath]
+            if (path.startsWith(prjPath))
             {
-                console.log('fallback index',file,dir,list)
-                return list
+                return project.files
             }
         }
-        console.log(`no project files for file ${file}`,Object.keys(files))
+        console.log('missing prj?',path)
         return []
+    }
+
+    static async indexProject (file)
+    {
+        var prjPath, result, walker, _49_19_
+
+        prjPath = await ffs.pkg(file)
+        if (this.indexing)
+        {
+            if (this.indexing === prjPath)
+            {
+                return
+            }
+            this.queue = ((_49_19_=this.queue) != null ? _49_19_ : [])
+            if (!(_k_.in(prjPath,this.queue)))
+            {
+                this.queue.push(prjPath)
+            }
+            return
+        }
+        if (!_k_.empty(this.projects[prjPath]))
+        {
+            return
+        }
+        this.indexing = prjPath
+        walker = new Walker({root:prjPath,maxDepth:12,maxFiles:5000,file:(function (f)
+        {}).bind(this)})
+        result = await walker.start()
+        if (result)
+        {
+            this.projects[prjPath] = {dir:prjPath,files:result.files}
+            var list = _k_.list(result.files)
+            for (var _70_21_ = 0; _70_21_ < list.length; _70_21_++)
+            {
+                file = list[_70_21_]
+                this.allFiles[file] = prjPath
+            }
+            console.log('projects',this.projects)
+            console.log('allFiles',this.allFiles)
+        }
+        delete this.indexing
+        if (!_k_.empty(this.queue))
+        {
+            console.log('dequeue',this.queue[0])
+            return await this.indexProject(this.queue.shift())
+        }
     }
 }
 
-post.on('projectIndexed',Projects.onIndexed)
+post.on('fileLoaded',function (file)
+{
+    return Projects.indexProject(file)
+})
 export default Projects;

@@ -331,7 +331,8 @@ function Column
         
     sort: ->
         
-        sortBy = prefs.get 'browser|sort'
+        return if empty @parent?.path
+        sortBy = prefs.get 'browser|sort' {}
         switch sortBy[@parent.path]
             'type'  ➜ @sortByType()
             'date'  ➜ @sortByDateAdded()
@@ -977,5 +978,5 @@ function Column
             @updateDragIndicator event
                         
 export Column
-
+# hello
 

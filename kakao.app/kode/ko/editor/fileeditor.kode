@@ -83,6 +83,8 @@ function FileEditor extends TextEditor
 
     setCurrentFile: (file, restoreState) ->
 
+        log 'FileEditor.setCurrentFile' file
+        
         @clear()
         
         @currentFile = file
@@ -96,17 +98,25 @@ function FileEditor extends TextEditor
             @state = restoreState
             @dirty = true
         else if fileExists
-            # @setText slash.readText @currentFile
             ffs.read(@currentFile).then @setText
 
         if fileExists
             window.tabs.activeTab()?.setFile @currentFile
             
-        post.emit 'file' @currentFile # browser & shelf
+        # post.emit 'file' @currentFile # browser & shelf
 
-        @emit 'file' @currentFile # diffbar, pigments, ...
+        # @emit 'file' @currentFile # diffbar, invisible, pigments, ...
 
         post.emit 'dirty' @dirty
+        
+    setText: (text="") =>
+    
+        super text
+        
+        log 'FileEditor.setText emit file' @currentFile
+        post.emit 'file' @currentFile # browser & shelf
+        @emit 'file' @currentFile # diffbar, invisible, pigments, ...
+        @restoreScrollCursorsAndSelections()
 
     currentDir: ->
         
@@ -173,10 +183,10 @@ function FileEditor extends TextEditor
 
         s.scroll = @scroll.scroll if @scroll.scroll
 
-        filePositions = window.stash.get 'filePositions' Object.create null
+        filePositions = window.stash.get 'filePositions' {}
         
-        if not filePositions or typeof(filePositions) != 'object'
-            filePositions = Object.create null
+        if not filePositions is obj
+            filePositions = {}
             
         filePositions[@currentFile] = s
             
@@ -204,21 +214,15 @@ function FileEditor extends TextEditor
 
             s = filePositions[@currentFile]
             
-            # log 'restoreScrollCursorsAndSelections' @currentFile, s
-
             cursors = s.cursors ? [[0,0]]
             cursors = cursors.map (c) => [c[0], clamp(0,@numLines()-1,c[1])]
             
-            # log '@numLines' @numLines(), cursors
-
             @setCursors    cursors
             @setSelections s.selections ? []
             @setHighlights s.highlights ? []
             @setMain       s.main ? 0
             @setState      @state
             
-            # log '@state' @state
-
             @scroll.to s.scroll if s.scroll
             @scroll.cursorIntoView()
 

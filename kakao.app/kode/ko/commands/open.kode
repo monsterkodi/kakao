@@ -11,11 +11,9 @@ use ../../kxk/util ▪ uniqBy reversed
 use ../../kxk/post
 use ../../kxk/slash
 
-use ../tools/Projects
-
-use ../commandline/Command
-
 use ../tools/File
+use ../tools/Projects
+use ../commandline/Command
                  
 relative = (rel, to) ->
     
@@ -169,8 +167,8 @@ function Open extends Command
         
     listItems: (opt) ->
         
-        log 'Open.listItems history:' @history
-        log 'Open.listItems files:' @files
+        # log 'Open.listItems history:' @history
+        # log 'Open.listItems files:' @files
         
         opt ?= {}
         opt.maxItems ?= 200
@@ -190,7 +188,7 @@ function Open extends Command
         if @history? and not opt.currentText and @history.length > 1
             
             f = @history[@history.length-2]
-            item = Object.create null
+            item = {}
             item.text = relative f, @dir
             item.line = iconSpan f
             item.file = f
@@ -206,7 +204,7 @@ function Open extends Command
                 rel = relative file, @dir
                             
                 if rel.length
-                    item = Object.create null
+                    item = {}
                     item.line = iconSpan file
                     item.text = rel
                     item.file = file
@@ -217,7 +215,7 @@ function Open extends Command
         items = uniqBy items, 'text'
         
         items.slice 0, opt.maxItems
-        log 'Open.listItems' items
+        # log 'Open.listItems' items
         reversed items
     
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
@@ -228,13 +226,13 @@ function Open extends Command
     
     showHistory: ->
         
-        log 'Open.showHistory' @history
+        # log 'Open.showHistory' @history
 
         if @history.length > 1 and @selected <= 0
             items = []
             # bonus = 1048575
             for f in @history
-                item = Object.create null
+                item = {}
                 item.text = relative f, @dir
                 item.file = f
                 # item.bonus = bonus

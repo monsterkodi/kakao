@@ -19,14 +19,22 @@ __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, ignore, jsDir, kodeDir, list, pugDir, rule, rules, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _26_23_, _27_19_
+    var compText, file, ignore, jsDir, kodeDir, list, pugDir, rule, rules, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _25_23_, _26_16_
 
     if (_k_.isStr(files))
     {
         files = [files]
     }
-    opt.rerunWhenDirty = ((_26_23_=opt.rerunWhenDirty) != null ? _26_23_ : true)
-    opt.logVerbose = ((_27_19_=opt.logVerbose) != null ? _27_19_ : false)
+    opt.rerunWhenDirty = ((_25_23_=opt.rerunWhenDirty) != null ? _25_23_ : true)
+    opt.verbose = ((_26_16_=opt.verbose) != null ? _26_16_ : false)
+    if (opt.verbose)
+    {
+        console.log('opt',opt)
+    }
+    if (opt.verbose)
+    {
+        console.log('files',files)
+    }
     _k_.profile('🔨')
     kodeDir = slash.path(__dirname + '/../../kode')
     pugDir = slash.path(__dirname + '/../../pug')
@@ -60,20 +68,26 @@ knrd = async function (files = [], opt = {})
             return item.path
         })
     }
-    console.log('🔨 ',files.length)
+    if (!opt.quiet)
+    {
+        console.log('🔨 ',files.length)
+    }
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _72_13_ = 0; _72_13_ < list1.length; _72_13_++)
+    for (var _73_13_ = 0; _73_13_ < list1.length; _73_13_++)
     {
-        file = list1[_72_13_]
+        file = list1[_73_13_]
         skip = false
         var list2 = _k_.list(rules.ignore)
-        for (var _75_19_ = 0; _75_19_ < list2.length; _75_19_++)
+        for (var _76_19_ = 0; _76_19_ < list2.length; _76_19_++)
         {
-            ignore = list2[_75_19_]
+            ignore = list2[_76_19_]
             if (file.endsWith(ignore))
             {
-                console.log(_k_.w2('✘  '),_k_.w3(tilde(file)))
+                if (opt.verbose)
+                {
+                    console.log(_k_.w2('✘  '),_k_.w3(tilde(file)))
+                }
                 skip = true
                 break
             }
@@ -99,12 +113,15 @@ knrd = async function (files = [], opt = {})
                 {
                     transpiled++
                     await fs.write(tgtFile,compText)
-                    console.log(_k_.b5('✔ '),_k_.g5(tilde(tgtFile)))
+                    if (!opt.quiet)
+                    {
+                        console.log(_k_.b5('✔ '),_k_.g5(tilde(tgtFile)))
+                    }
                 }
                 else
                 {
                     fs.touch(tgtFile)
-                    if (opt.logVerbose)
+                    if (opt.verbose)
                     {
                         console.log(_k_.g2('✔ '),_k_.m3(tilde(srcFile)))
                     }

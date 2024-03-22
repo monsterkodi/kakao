@@ -124,7 +124,6 @@ function Macro extends Command
             # 000       000        0000000          0000000  00     00  0000000           0000000   000     000
 
             'fps'   ➜ window.fps?.toggle()
-            'cwd'   ➜ window.cwd?.toggle()
             'git'   ➜ gitinfo?.start()
             'err'
                 throw new Error 'err'

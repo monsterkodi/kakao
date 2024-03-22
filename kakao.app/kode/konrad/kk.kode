@@ -59,7 +59,7 @@ class kk
             args.run   = true
         
         if args.info    ➜ ○ kk.info()
-        if args.knrd    ➜ ○ knrd args.options
+        if args.knrd    ➜ ○ knrd args.options, args
         if args.build   ➜ ○ kk.build()
         if args.test    ➜ ○ kk.test args.options[0]
         if args.run     ➜ ○ kk.spawn args.options
@@ -78,7 +78,7 @@ class kk
     
     @build: ○->
         
-        log '🛠'
+        log '🛠' if not args.quiet
         build()
         
     @rebuild: ○->

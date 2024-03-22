@@ -23,9 +23,9 @@ kakao.init ->
     main =$ '#main'
     main.classList.add 'app-drag-region' # make the window draggable anywhere
     
-    log 'bundlePath' kakao.bundle.path, window.aboutImage
+    # log 'bundlePath' kakao.bundle.path, window.aboutImage
     window.aboutImage ?= kakao.bundle.img 'about.png'
-    log 'window.aboutImage' window.aboutImage
+    # log 'window.aboutImage' window.aboutImage
                     
     elem 'div' class:'about' id:'about' parent:main, children:[
         elem 'img' class:'image' src:window.aboutImage

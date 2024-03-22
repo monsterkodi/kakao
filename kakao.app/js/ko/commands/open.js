@@ -13,11 +13,11 @@ import post from "../../kxk/post.js"
 
 import slash from "../../kxk/slash.js"
 
+import File from "../tools/File.js"
+
 import Projects from "../tools/Projects.js"
 
 import Command from "../commandline/Command.js"
-
-import File from "../tools/File.js"
 
 
 relative = function (rel, to)
@@ -77,7 +77,7 @@ Open = (function ()
         var f, file, fuzzied, items, pos
 
         cmmd = cmmd.trim()
-        var _65_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _65_20_[0]; pos = _65_20_[1]
+        var _63_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _63_20_[0]; pos = _63_20_[1]
 
         items = this.listItems({currentText:cmmd,maxItems:10000})
         if (cmmd.length)
@@ -86,7 +86,7 @@ Open = (function ()
             {
                 return o.text
             }})
-            items = (function () { var r_72_38_ = []; var list = _k_.list(fuzzied); for (var _72_38_ = 0; _72_38_ < list.length; _72_38_++)  { f = list[_72_38_];r_72_38_.push(f.original)  } return r_72_38_ }).bind(this)()
+            items = (function () { var r_70_38_ = []; var list = _k_.list(fuzzied); for (var _70_38_ = 0; _70_38_ < list.length; _70_38_++)  { f = list[_70_38_];r_70_38_.push(f.original)  } return r_70_38_ }).bind(this)()
             items.sort(function (a, b)
             {
                 return b.weight - a.weight
@@ -111,7 +111,7 @@ Open = (function ()
 
     Open.prototype["weight"] = function (item, opt)
     {
-        var b, extensionBonus, f, lengthPenalty, localBonus, n, nameBonus, r, relBonus, updirPenalty, _130_26_
+        var b, extensionBonus, f, lengthPenalty, localBonus, n, nameBonus, r, relBonus, updirPenalty, _128_26_
 
         f = item.file
         r = item.text
@@ -187,13 +187,11 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _176_21_, _177_17_, _188_41_, _190_19_
+        var f, file, iconSpan, item, items, rel, _174_21_, _175_17_, _186_41_, _188_19_
 
-        console.log('Open.listItems history:',this.history)
-        console.log('Open.listItems files:',this.files)
         opt = (opt != null ? opt : {})
-        opt.maxItems = ((_176_21_=opt.maxItems) != null ? _176_21_ : 200)
-        opt.flat = ((_177_17_=opt.flat) != null ? _177_17_ : true)
+        opt.maxItems = ((_174_21_=opt.maxItems) != null ? _174_21_ : 200)
+        opt.flat = ((_175_17_=opt.flat) != null ? _175_17_ : true)
         iconSpan = function (file)
         {
             var className
@@ -210,7 +208,7 @@ Open = (function ()
         if ((this.history != null) && !opt.currentText && this.history.length > 1)
         {
             f = this.history[this.history.length - 2]
-            item = Object.create(null)
+            item = {}
             item.text = relative(f,this.dir)
             item.line = iconSpan(f)
             item.file = f
@@ -221,13 +219,13 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _204_21_ = 0; _204_21_ < list.length; _204_21_++)
+            for (var _202_21_ = 0; _202_21_ < list.length; _202_21_++)
             {
-                file = list[_204_21_]
+                file = list[_202_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
-                    item = Object.create(null)
+                    item = {}
                     item.line = iconSpan(file)
                     item.text = rel
                     item.file = file
@@ -239,7 +237,6 @@ Open = (function ()
         items = this.weightedItems(items,opt)
         items = uniqBy(items,'text')
         items.slice(0,opt.maxItems)
-        console.log('Open.listItems',items)
         return reversed(items)
     }
 
@@ -247,15 +244,14 @@ Open = (function ()
     {
         var f, item, items
 
-        console.log('Open.showHistory',this.history)
         if (this.history.length > 1 && this.selected <= 0)
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _236_18_ = 0; _236_18_ < list.length; _236_18_++)
+            for (var _234_18_ = 0; _234_18_ < list.length; _234_18_++)
             {
-                f = list[_236_18_]
-                item = Object.create(null)
+                f = list[_234_18_]
+                item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
                 items.push(item)
@@ -273,9 +269,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _252_58_, _252_65_
+        var _250_58_, _250_65_
 
-        if (this.commandList && this.selected === ((_252_58_=this.commandList.meta) != null ? (_252_65_=_252_58_.metas) != null ? _252_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_250_58_=this.commandList.meta) != null ? (_250_65_=_250_58_.metas) != null ? _250_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -288,7 +284,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _267_27_
+        var _265_27_
 
         if (name === this.names[0])
         {
@@ -302,7 +298,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _288_40_, _302_41_
+        var dir, item, _286_40_, _300_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -314,7 +310,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_288_40_=slash.dir(this.file)) != null ? _288_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_286_40_=slash.dir(this.file)) != null ? _286_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -354,7 +350,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _333_27_
+        var file, path, pos, _331_27_
 
         if (this.selected < 0)
         {
@@ -364,7 +360,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _339_24_ = slash.splitFilePos(command); file = _339_24_[0]; pos = _339_24_[1]
+            var _337_24_ = slash.splitFilePos(command); file = _337_24_[0]; pos = _337_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

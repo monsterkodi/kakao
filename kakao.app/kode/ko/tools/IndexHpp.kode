@@ -228,4 +228,4 @@ class IndexHpp
         @parseLine lineIndex, lineText
         @result
 
-module.exports = IndexHpp
+export IndexHpp

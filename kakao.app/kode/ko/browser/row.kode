@@ -20,7 +20,6 @@ function Row
     
     @: (@column, @item) ->
 
-        # log "new Row" @item
         @browser = @column.browser
         text = @item.text ? @item.file ? @item.name ? slash.file @item.path
         if empty(text) or empty text.trim()
@@ -126,10 +125,6 @@ function Row
             
         if opt?.emit
             @browser.emit 'itemActivated' @item
-            # if @item.type == 'dir'
-                # post.emit 'setCWD' @item.path
-            # else if @item.type == 'file'
-                # post.emit 'setCWD' slash.dir @item.path
         @
                  
     clearActive: ->
