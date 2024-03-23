@@ -37,8 +37,6 @@ function CommandList extends TextEditor
 
     addItems: (items) ->
 
-        log 'CommandList.addItems' items
-        
         @clear()
         index = 0
         

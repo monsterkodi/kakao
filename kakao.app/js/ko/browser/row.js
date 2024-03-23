@@ -25,7 +25,7 @@ Row = (function ()
 {
     function Row (column, item)
     {
-        var html, text, _24_26_, _24_39_, _24_52_, _30_38_
+        var html, text, _25_26_, _25_39_, _25_52_, _31_38_
 
         this.column = column
         this.item = item
@@ -39,7 +39,7 @@ Row = (function ()
         this["onMouseOver"] = this["onMouseOver"].bind(this)
         this["onMouseOut"] = this["onMouseOut"].bind(this)
         this.browser = this.column.browser
-        text = ((_24_26_=this.item.text) != null ? _24_26_ : ((_24_39_=this.item.file) != null ? _24_39_ : ((_24_52_=this.item.name) != null ? _24_52_ : slash.file(this.item.path))))
+        text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.file) != null ? _25_39_ : ((_25_52_=this.item.name) != null ? _25_52_ : slash.file(this.item.path))))
         if (_k_.empty((text)) || _k_.empty(text.trim()))
         {
             html = '<span> </span>'
@@ -49,7 +49,7 @@ Row = (function ()
             html = Syntax.spanForTextAndSyntax(text,'browser')
         }
         this.div = elem({class:'browserRow',html:html})
-        this.div.classList.add(((_30_38_=this.item.type) != null ? _30_38_ : 'file'))
+        this.div.classList.add(((_31_38_=this.item.type) != null ? _31_38_ : 'file'))
         this.column.table.appendChild(this.div)
         if (_k_.in(this.item.type,['file','dir']) || this.item.icon)
         {
@@ -74,21 +74,21 @@ Row = (function ()
 
     Row.prototype["onMouseOut"] = function ()
     {
-        var _39_24_
+        var _40_24_
 
         return (this.div != null ? this.div.classList.remove('hover') : undefined)
     }
 
     Row.prototype["onMouseOver"] = function ()
     {
-        var _40_24_
+        var _41_24_
 
         return (this.div != null ? this.div.classList.add('hover') : undefined)
     }
 
     Row.prototype["path"] = function ()
     {
-        var _43_21_, _45_20_, _45_26_
+        var _44_21_, _46_20_, _46_26_
 
         if ((this.item.path != null) && _k_.isStr(this.item.path))
         {
@@ -102,7 +102,7 @@ Row = (function ()
 
     Row.prototype["setIcon"] = function ()
     {
-        var className, icon, _74_23_
+        var className, icon, _75_23_
 
         if (slash.ext(this.item.path) === 'kode')
         {
@@ -136,7 +136,7 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, _90_19_
+        var col, opt, _91_19_
 
         if (this.column.index < 0)
         {
@@ -154,12 +154,12 @@ Row = (function ()
                 this.browser.select.row(this,false)
                 break
             default:
-                opt.line = this.item.line
-                opt.col = this.item.column
                 this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
                 if (emit)
             {
-                post.emit('jumpToFile',{path:this.item.path})
+                opt = {line:this.item.line,col:this.item.column,path:this.item.path}
+                console.log('Row emit jumpToFile',opt)
+                post.emit('jumpToFile',opt)
             }
         }
 
@@ -173,7 +173,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _119_31_
+        var _122_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -216,7 +216,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _158_24_
+        var _161_24_
 
         if ((this.input != null))
         {
@@ -270,7 +270,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _193_28_, _200_37_
+        var _196_28_, _203_37_
 
         if (!(this.input != null))
         {

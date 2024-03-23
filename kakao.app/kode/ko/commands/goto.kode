@@ -43,7 +43,9 @@ function Goto extends Command
         items = []
         @types = {}
         
-        files = {} # post.get 'indexer' 'files'
+        log 'Goto.listItems' window.indexer
+        
+        files = window.indexer.files # post.get 'indexer' 'files'
         funcs = files[window.editor.currentFile]?.funcs
         funcs ?= []
         
@@ -51,7 +53,7 @@ function Goto extends Command
             items.push text:func.name, line:'▸' clss:'method'
             @types[func.name] = 'func'
             
-        clsss = {} # post.get 'indexer' 'classes'
+        clsss = window.indexer.classes # post.get 'indexer' 'classes'
         for k in Object.keys clsss
             name = k
             items.push text: k, line:'●' clss:'class'
