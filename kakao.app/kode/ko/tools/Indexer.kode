@@ -86,7 +86,8 @@ class Indexer
         # post.onGet 'indexer' @onGet
         # post.on 'sourceInfoForFile' @onSourceInfoForFile
         
-        # post.on 'fileSaved'    (file, winID) => @indexFile file, refresh: true
+        post.on 'index' (file) => @indexFile file
+        post.on 'saved' (file) => @indexFile file, refresh: true
         
         @imageExtensions = ['png' 'jpg' 'gif' 'tiff' 'pxm' 'icns']        
 
@@ -96,8 +97,6 @@ class Indexer
         @funcs   = {}
         @words   = {}
         @queue   = []
-        
-        @indexedProjects = {}
         
     #  0000000   000   000   0000000   00000000  000000000  
     # 000   000  0000  000  000        000          000     
@@ -136,11 +135,11 @@ class Indexer
                             return true
         value
         
-    onSourceInfoForFile: (opt) =>
-        
-        file = opt.item.file
-        if @files[file]?
-            post.toWin opt.winID, 'sourceInfoForFile' @files[file], opt
+    # onSourceInfoForFile: (opt) =>
+#         
+        # file = opt.item.file
+        # if @files[file]?
+            # post.emit 'sourceInfoForFile' @files[file], opt
         
     #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
     # 000   000  000   000  000   000      000       000   000  0000  000  000       
@@ -175,7 +174,7 @@ class Indexer
 
         sds.set @classes, "#{className}.methods.#{funcInfo.name}" funcInfo
         
-        log 'Index.addMethod' @classes
+        # log 'Index.addMethod' @classes
 
         funcInfo
 
@@ -203,9 +202,9 @@ class Indexer
     # 000  000  0000  000   000  000        000 000         000       000  000      000
     # 000  000   000  0000000    00000000  000   000        000       000  0000000  00000000
 
-    indexFile: (file, opt) ->
+    indexFile: (file, opt) =>
         
-        log 'Indexer.indexFile' file
+        # log 'Indexer.indexFile' file, opt
         
         @removeFile file if opt?.refresh
 
@@ -265,7 +264,7 @@ class Indexer
                         while funcStack.length and indent <= last(funcStack)[0]
                             last(funcStack)[1].last = li - 1
                             funcInfo = funcStack.pop()[1]
-                            funcInfo.class ?= slash.base file
+                            funcInfo.class ?= slash.name file
                             fileInfo.funcs.push funcInfo 
     
                         if currentClass? 
@@ -352,23 +351,23 @@ class Indexer
                             # 000   000  000       000 0000   000   000  000  000   000  000
                             # 000   000  00000000   00000 00   0000000   000  000   000  00000000
                             
-                            'require'
-                                
-                                m = line.match Indexer.requireRegExp
-                                if m?[1]? and m[2]?
-                                    r = fileInfo.require ? []
-                                    r.push [m[1], m[2]]
-                                    fileInfo.require = r
-                                    abspath = slash.resolve slash.join slash.dir(file), m[2]
-                                    if slash.ext(abspath) not in ['json']
-                                        for ext in ['kode''coffee']
-                                            required = "#{abspath}.#{ext}"
-                                            # log '???' required
-                                            if (m[2][0] == '.') and (not @files[required]?) and (@queue.indexOf(required) < 0)
-                                                # log required
-                                                if slash.isFile required
-                                                    log '!!!!' required
-                                                    @queue.push required
+                            # 'require'
+#                                 
+                                # m = line.match Indexer.requireRegExp
+                                # if m?[1]? and m[2]?
+                                    # r = fileInfo.require ? []
+                                    # r.push [m[1], m[2]]
+                                    # fileInfo.require = r
+                                    # abspath = slash.path slash.dir(file), m[2]
+                                    # if slash.ext(abspath) not in ['json']
+                                        # for ext in ['kode''coffee']
+                                            # required = "#{abspath}.#{ext}"
+                                            # # log '???' required
+                                            # if (m[2][0] == '.') and (not @files[required]?) and (@queue.indexOf(required) < 0)
+                                                # # log required
+                                                # if slash.isFile required
+                                                    # log '!!!!' required
+                                                    # @queue.push required
                                             
             if funcAdded
 
@@ -380,14 +379,14 @@ class Indexer
                     fileInfo.funcs.push funcInfo
 
                 if opt?.post != false
-                    post.toWins 'classesCount' Object.keys(@classes).length
-                    post.toWins 'funcsCount'   Object.keys(@funcs).length
-                    post.toWins 'fileIndexed'  file, fileInfo
+                    post.emit 'classesCount' Object.keys(@classes).length
+                    post.emit 'funcsCount'   Object.keys(@funcs).length
+                    post.emit 'fileIndexed'  file, fileInfo
 
             @files[file] = fileInfo
             
             if opt?.post != false
-                post.toWins 'filesCount' Object.keys(@files).length
+                post.emit 'filesCount' Object.keys(@files).length
 
             @shiftQueue()
         @

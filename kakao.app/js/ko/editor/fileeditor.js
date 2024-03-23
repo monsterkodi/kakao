@@ -343,7 +343,7 @@ FileEditor = (function ()
         type = (opt != null ? opt.type : undefined)
         if (!type || type === 'class')
         {
-            classes = {}
+            classes = window.indexer.classes
             for (clss in classes)
             {
                 info = classes[clss]
@@ -356,7 +356,7 @@ FileEditor = (function ()
         }
         if (!type || type === 'func')
         {
-            funcs = {}
+            funcs = window.indexer.funcs
             for (func in funcs)
             {
                 infos = funcs[func]
@@ -379,7 +379,7 @@ FileEditor = (function ()
         }
         if (!type || type === 'file')
         {
-            files = {}
+            files = window.indexer.files
             for (file in files)
             {
                 info = files[file]

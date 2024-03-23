@@ -18,7 +18,9 @@ class Projects
 
     static files (path)
     {
-        return this.projects[this.dir(path)].files
+        var _21_59_
+
+        return ((_21_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _21_59_ : [])
     }
 
     static dir (path)
@@ -29,16 +31,16 @@ class Projects
         {
             return prjPath
         }
-        if (this.projects[path])
+        if (Projects.projects[path])
         {
-            return this.projects[path]
+            return this.projects[path].dir
         }
-        for (prjPath in this.projects)
+        for (prjPath in Projects.projects)
         {
-            project = this.projects[prjPath]
+            project = Projects.projects[prjPath]
             if (path.startsWith(prjPath))
             {
-                return project
+                return prjPath
             }
         }
         console.log('missing prj?',path)
@@ -47,7 +49,7 @@ class Projects
 
     static async indexProject (file)
     {
-        var prjPath, result, walker, _62_19_
+        var prjPath, result, walker, _51_19_
 
         prjPath = await ffs.pkg(file)
         if (this.indexing)
@@ -56,7 +58,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_62_19_=this.queue) != null ? _62_19_ : [])
+            this.queue = ((_51_19_=this.queue) != null ? _51_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -69,15 +71,17 @@ class Projects
         }
         this.indexing = prjPath
         walker = new Walker({root:prjPath,maxDepth:12,maxFiles:5000,file:(function (f)
-        {}).bind(this)})
+        {
+            return post.emit('index',f)
+        }).bind(this)})
         result = await walker.start()
         if (result)
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _83_21_ = 0; _83_21_ < list.length; _83_21_++)
+            for (var _72_21_ = 0; _72_21_ < list.length; _72_21_++)
             {
-                file = list[_83_21_]
+                file = list[_72_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('projects',this.projects)

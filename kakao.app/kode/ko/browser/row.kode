@@ -21,6 +21,7 @@ function Row
     @: (@column, @item) ->
 
         @browser = @column.browser
+        
         text = @item.text ? @item.file ? @item.name ? slash.file @item.path
         if empty(text) or empty text.trim()
             html = '<span> </span>'
@@ -101,14 +102,16 @@ function Row
         
                 @browser.select.row @, false
                 
-            else    
-                opt.line = @item.line
-                opt.col  = @item.column
-                    
+            else 
                 @browser.clearColumnsFrom @column.index+1, pop:true
-                
-                # log 'Row emit jumpToFile' path:@item.path
-                if emit then post.emit 'jumpToFile' path:@item.path
+
+                if emit 
+                    opt = 
+                        line: @item.line
+                        col:  @item.column
+                        path: @item.path
+                    log 'Row emit jumpToFile' opt
+                    post.emit 'jumpToFile' opt
         @
     
     isActive: -> @div.classList.contains 'active'

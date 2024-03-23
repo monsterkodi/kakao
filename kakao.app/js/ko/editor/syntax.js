@@ -145,7 +145,7 @@ class Syntax
                 }
                 last = d.start + d.match.length
                 clss = (d.clss != null) && d.clss.length && ` class=\"${d.clss}\"` || ''
-                clrzd = `<span${style}${clss}>${spc}${kstr.encode(d.match)}</span>`
+                clrzd = `<span${style}${clss}>${spc}${d.match}</span>`
                 l += clrzd
             }
         }
@@ -182,9 +182,9 @@ class Syntax
 
         l = ""
         var list = _k_.list(dss)
-        for (var _152_14_ = 0; _152_14_ < list.length; _152_14_++)
+        for (var _153_14_ = 0; _153_14_ < list.length; _153_14_++)
         {
-            d = list[_152_14_]
+            d = list[_153_14_]
             l = _k_.rpad(d.start,l)
             l += d.match
         }
@@ -222,14 +222,14 @@ class Syntax
 
     static async init ()
     {
-        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _194_26_, _194_36_
+        var config, extnames, patterns, syntaxDir, syntaxFile, syntaxFiles, syntaxName, _195_26_, _195_36_
 
         syntaxDir = slash.path(__dirname,'../syntax/')
         syntaxFiles = await ffs.list(syntaxDir)
         var list = _k_.list(syntaxFiles)
-        for (var _185_23_ = 0; _185_23_ < list.length; _185_23_++)
+        for (var _186_23_ = 0; _186_23_ < list.length; _186_23_++)
         {
-            syntaxFile = list[_185_23_]
+            syntaxFile = list[_186_23_]
             syntaxName = slash.name(syntaxFile.path)
             patterns = JSON.parse(await ffs.read(syntaxFile.path))
             patterns['\\w+'] = 'text'
@@ -240,9 +240,9 @@ class Syntax
                 delete patterns.ko
                 config = matchr.config(patterns)
                 var list1 = _k_.list(extnames)
-                for (var _199_31_ = 0; _199_31_ < list1.length; _199_31_++)
+                for (var _200_31_ = 0; _200_31_ < list1.length; _200_31_++)
                 {
-                    syntaxName = list1[_199_31_]
+                    syntaxName = list1[_200_31_]
                     this.syntaxNames.push(syntaxName)
                     this.matchrConfigs[syntaxName] = config
                 }

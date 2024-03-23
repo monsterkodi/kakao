@@ -18,28 +18,17 @@ class Projects
     @indexing: null
     @queue: []
     
-    @files: (path) =>
+    @files: (path) -> Projects.projects[@dir(path)]?.files ? []
         
-        @projects[@dir(path)].files
-        
-        # if prjPath = @allFiles[path]
-            # return @projects[prjPath].files
-        # if @projects[path]
-            # return @projects[path].files
-        # for prjPath,project of @projects
-            # if path.startsWith prjPath
-                # return project.files
-        # []
-        
-    @dir: (path) =>
+    @dir: (path) ->
         
         if prjPath = @allFiles[path]
             return prjPath
-        if @projects[path]
-            return @projects[path]
-        for prjPath,project of @projects
+        if Projects.projects[path]
+            return @projects[path].dir
+        for prjPath,project of Projects.projects
             if path.startsWith prjPath
-                return project
+                return prjPath
         log 'missing prj?' path
         null
     
@@ -74,7 +63,7 @@ class Projects
             root:        prjPath
             maxDepth:    12
             maxFiles:    5000
-            file:        (f) => #log 'Projects.walker.file' f
+            file:        (f) => post.emit 'index' f #log 'Projects.walker.file' f
                     
         result = ○ walker.start()
         

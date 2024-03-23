@@ -128,7 +128,8 @@ class Syntax
                     spc += '&nbsp;'
                 last  = d.start + d.match.length
                 clss  = d.clss? and d.clss.length and " class=\"#{d.clss}\"" or ''
-                clrzd = "<span#{style}#{clss}>#{spc}#{kstr.encode d.match}</span>"
+                # clrzd = "<span#{style}#{clss}>#{spc}#{kstr.encode d.match}</span>"
+                clrzd = "<span#{style}#{clss}>#{spc}#{d.match}</span>"
                 l += clrzd
         l
 
