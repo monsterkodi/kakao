@@ -27,6 +27,9 @@ class FileHandler
         post.on 'loadFile'    @loadFile
         post.on 'openFile'    @openFile
         post.on 'openFiles'   @openFiles
+        post.on 'file'        @onFile
+        
+        @cursorToRestore = {}
         
     # 000       0000000    0000000   0000000          00000000  000  000      00000000  
     # 000      000   000  000   000  000   000        000       000  000      000       
@@ -44,6 +47,8 @@ class FileHandler
     
         if file?
             [file, filePos] = slash.splitFilePos file
+            if filePos? and (filePos[0] or filePos[1])
+                @cursorToRestore[file] = filePos
             if not file.startsWith 'untitled'
                 file = slash.path file
     
@@ -69,9 +74,12 @@ class FileHandler
                 
         split.raise 'editor'
     
-        if filePos? and (filePos[0] or filePos[1])
+    onFile: (file) =>
+        
+        if filePos = @cursorToRestore[file]
             editor.singleCursorAtPos filePos
             editor.scroll.cursorToTop()
+            delete @cursorToRestore[file]
 
     #  0000000   00000000   00000000  000   000        00000000  000  000      00000000   0000000
     # 000   000  000   000  000       0000  000        000       000  000      000       000
@@ -125,7 +133,7 @@ class FileHandler
                 # post.toMain 'newWindowWithFile' file
                 log 'filehandler new window with file not implemented!'
             else
-                log 'FileHandler.openFiles post.emit newTabWithFile' file
+                # log 'FileHandler.openFiles post.emit newTabWithFile' file
                 post.emit 'newTabWithFile' file
     
         true

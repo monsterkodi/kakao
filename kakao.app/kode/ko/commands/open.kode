@@ -216,7 +216,8 @@ function Open extends Command
         
         items.slice 0, opt.maxItems
         # log 'Open.listItems' items
-        reversed items
+        # reversed items
+        items
     
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   

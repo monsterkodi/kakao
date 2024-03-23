@@ -106,9 +106,9 @@ function FileEditor extends TextEditor
     
         super text
         
+        @restoreScrollCursorsAndSelections()
         post.emit 'file' @currentFile # browser & shelf
         @emit 'file' @currentFile # diffbar, invisible, pigments, ...
-        @restoreScrollCursorsAndSelections()
 
     currentDir: ->
         

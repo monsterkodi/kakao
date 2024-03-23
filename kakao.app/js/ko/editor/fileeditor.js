@@ -101,9 +101,9 @@ FileEditor = (function ()
     {
         FileEditor.__super__.setText.call(this,text)
     
+        this.restoreScrollCursorsAndSelections()
         post.emit('file',this.currentFile)
-        this.emit('file',this.currentFile)
-        return this.restoreScrollCursorsAndSelections()
+        return this.emit('file',this.currentFile)
     }
 
     FileEditor.prototype["currentDir"] = function ()

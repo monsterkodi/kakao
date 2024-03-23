@@ -272,7 +272,7 @@ Open = (function ()
         items = this.weightedItems(items,opt)
         items = uniqBy(items,'text')
         items.slice(0,opt.maxItems)
-        return reversed(items)
+        return items
     }
 
     Open.prototype["showHistory"] = function ()
@@ -283,9 +283,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _234_18_ = 0; _234_18_ < list.length; _234_18_++)
+            for (var _235_18_ = 0; _235_18_ < list.length; _235_18_++)
             {
-                f = list[_234_18_]
+                f = list[_235_18_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -304,9 +304,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _250_58_, _250_65_
+        var _251_58_, _251_65_
 
-        if (this.commandList && this.selected === ((_250_58_=this.commandList.meta) != null ? (_250_65_=_250_58_.metas) != null ? _250_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_251_58_=this.commandList.meta) != null ? (_251_65_=_251_58_.metas) != null ? _251_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -319,7 +319,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _265_27_
+        var _266_27_
 
         if (name === this.names[0])
         {
@@ -333,7 +333,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _286_40_, _300_41_
+        var dir, item, _287_40_, _301_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -345,7 +345,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_286_40_=slash.dir(this.file)) != null ? _286_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_287_40_=slash.dir(this.file)) != null ? _287_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -385,7 +385,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _331_27_
+        var file, path, pos, _332_27_
 
         if (this.selected < 0)
         {
@@ -395,7 +395,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _337_24_ = slash.splitFilePos(command); file = _337_24_[0]; pos = _337_24_[1]
+            var _338_24_ = slash.splitFilePos(command); file = _338_24_[0]; pos = _338_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

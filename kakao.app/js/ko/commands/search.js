@@ -117,7 +117,7 @@ Search = (function ()
         else
         {
             file = href + ':' + window.terminal.posForEvent(event)[0]
-            post.emit('loadFile',file)
+            post.emit('loadFile',file,{reload:true})
         }
         return 'unhandled'
     }

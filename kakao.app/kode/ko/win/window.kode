@@ -117,7 +117,7 @@ function Window extends win.Delegate
     
     onMenuAction: (name, trail) =>
         
-        # log 'ko.Window.onMenuAction' name, trail
+        log 'ko.Window.onMenuAction' name, trail
         
         if action = Editor.actionWithName name
             

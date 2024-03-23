@@ -25,6 +25,7 @@ class FileHandler
         this.reloadFile = this.reloadFile.bind(this)
         this.reloadTab = this.reloadTab.bind(this)
         this.openFiles = this.openFiles.bind(this)
+        this.onFile = this.onFile.bind(this)
         this.loadFile = this.loadFile.bind(this)
         post.on('reloadFile',this.reloadFile)
         post.on('removeFile',this.removeFile)
@@ -36,6 +37,8 @@ class FileHandler
         post.on('loadFile',this.loadFile)
         post.on('openFile',this.openFile)
         post.on('openFiles',this.openFiles)
+        post.on('file',this.onFile)
+        this.cursorToRestore = {}
     }
 
     loadFile (file, opt = {})
@@ -49,8 +52,12 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _46_28_ = slash.splitFilePos(file); file = _46_28_[0]; filePos = _46_28_[1]
+            var _49_28_ = slash.splitFilePos(file); file = _49_28_[0]; filePos = _49_28_[1]
 
+            if ((filePos != null) && (filePos[0] || filePos[1]))
+            {
+                this.cursorToRestore[file] = filePos
+            }
             if (!file.startsWith('untitled'))
             {
                 file = slash.path(file)
@@ -79,11 +86,18 @@ class FileHandler
             tab.finishActivation()
             post.emit('fileLoaded',file)
         }
-        split.raise('editor')
-        if ((filePos != null) && (filePos[0] || filePos[1]))
+        return split.raise('editor')
+    }
+
+    onFile (file)
+    {
+        var filePos
+
+        if (filePos = this.cursorToRestore[file])
         {
             editor.singleCursorAtPos(filePos)
-            return editor.scroll.cursorToTop()
+            editor.scroll.cursorToTop()
+            return delete this.cursorToRestore[file]
         }
     }
 
@@ -120,16 +134,15 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _123_17_ = 0; _123_17_ < list.length; _123_17_++)
+        for (var _131_17_ = 0; _131_17_ < list.length; _131_17_++)
         {
-            file = list[_123_17_]
+            file = list[_131_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
             }
             else
             {
-                console.log('FileHandler.openFiles post.emit newTabWithFile',file)
                 post.emit('newTabWithFile',file)
             }
         }
@@ -171,7 +184,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _169_29_
+        var tab, _177_29_
 
         if (tab = tabs.activeTab())
         {
@@ -206,9 +219,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _194_16_ = 0; _194_16_ < list.length; _194_16_++)
+        for (var _202_16_ = 0; _202_16_ < list.length; _202_16_++)
         {
-            tab = list[_194_16_]
+            tab = list[_202_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -276,7 +289,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _264_29_
+        var _272_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -292,7 +305,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _280_18_
+        var cb, dir, _288_18_
 
         cb = function (files)
         {
@@ -308,7 +321,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _300_18_
+        var cb, _308_18_
 
         cb = (function (file)
         {
