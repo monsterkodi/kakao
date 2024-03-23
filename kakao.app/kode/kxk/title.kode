@@ -195,7 +195,7 @@ function Title
         @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
                 
     makeTemplate: (obj) ->
-        
+                
         tmpl = []
         for text,menuOrAccel of obj
             tmpl.push if

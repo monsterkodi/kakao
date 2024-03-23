@@ -116,8 +116,8 @@ function Search extends Command
                 command.execute split[2]
         else
             file = href + ':' + window.terminal.posForEvent(event)[0]
-            # post.emit 'openFiles' [file], newTab: event.metaKey
-            post.emit 'loadFile' file
+            # log 'post.emit loadFile' file
+            post.emit 'loadFile' file, reload:true
 
         'unhandled'
 
