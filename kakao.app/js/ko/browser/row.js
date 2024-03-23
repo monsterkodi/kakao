@@ -158,7 +158,6 @@ Row = (function ()
                 if (emit)
             {
                 opt = {line:this.item.line,col:this.item.column,path:this.item.path}
-                console.log('Row emit jumpToFile',opt)
                 post.emit('jumpToFile',opt)
             }
         }

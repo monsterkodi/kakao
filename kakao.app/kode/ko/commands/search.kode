@@ -48,7 +48,7 @@ function Search extends Command
                     return
                 
         command = super command
-        file = window.editor.currentFile #? first Object.keys(post.get('indexer' 'files'))
+        file = window.editor.currentFile
         
         return if not file?
         

@@ -116,12 +116,13 @@ function Shelf extends Column
 
         @setItems items, save:false
                 
-    addPath: (path, opt) ○=>
+    addPath: (path, opt) =>
         
-        if ○ ffs.isDir(path)
-            @addDir path, opt
-        else
-            @addFile path, opt
+        if ffs.isDir(path).then (isDir) =>
+            if isDir
+                @addDir path, opt
+            else
+                @addFile path, opt
         
     # 000  000000000  00000000  00     00   0000000  
     # 000     000     000       000   000  000       
@@ -301,7 +302,7 @@ function Shelf extends Column
             
     loadHistory: ->
         
-        # @setHistoryItems post.get 'navigate', 'filePositions'
+        @setHistoryItems window.navigate.filePositions
 
     setHistoryItems: (items) ->
     

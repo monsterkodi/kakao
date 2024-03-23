@@ -103,7 +103,7 @@ class Navigate
                 
             'addFilePos'
 
-                log 'Navigate.addFilePos' opt
+                # log 'Navigate.addFilePos' opt
                 
                 return if not opt?.file?.length
 

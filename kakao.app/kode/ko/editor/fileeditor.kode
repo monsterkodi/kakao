@@ -267,20 +267,20 @@ function FileEditor extends TextEditor
             
             opt.file ?= opt.path
             
-            log 'jumpToFile navigate.gotoFilePos' opt
+            # log 'jumpToFile navigate.gotoFilePos' opt
             
             window.navigate.gotoFilePos opt
         else
             
             file = slash.joinFileLine opt.path, opt.line, opt.col
             
-            log 'jumpToFile post loadFile' file
+            # log 'jumpToFile post loadFile' file
             
             post.emit 'loadFile' file
 
     jumpTo: (word, opt) =>
 
-        log 'FileEditor jumpTo' word, opt
+        # log 'FileEditor jumpTo' word, opt
         if typeof(word) == 'object' and not opt?
             opt  = word
             word = opt.word
@@ -301,14 +301,14 @@ function FileEditor extends TextEditor
         type = opt?.type
 
         if not type or type == 'class'
-            classes = window.indexer.classes #post.get 'indexer' 'classes'
+            classes = window.indexer.classes
             for clss, info of classes
                 if clss.toLowerCase() == find
                     @jumpToFile info
                     return true
 
         if not type or type == 'func'
-            funcs = window.indexer.funcs #post.get 'indexer' 'funcs'
+            funcs = window.indexer.funcs
             for func, infos of funcs
                 if func.toLowerCase() == find
                     info = infos[0]
@@ -319,7 +319,7 @@ function FileEditor extends TextEditor
                     return true
 
         if not type or type == 'file'
-            files = window.indexer.files #post.get 'indexer' 'files'
+            files = window.indexer.files
             for file, info of files
                 if slash.name(file).toLowerCase() == find and file != @currentFile
                     @jumpToFile path:file, line:6

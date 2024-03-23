@@ -331,7 +331,7 @@ function CommandLine extends TextEditor
                 return
         else if trail == 'Command'
             cmdName = name.toLowerCase()
-            log 'trail' cmdName
+            # log 'trail' cmdName
             if cmd = @commandForName cmdName
                 @startCommand cmdName
                 return

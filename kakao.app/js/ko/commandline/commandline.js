@@ -428,7 +428,6 @@ CommandLine = (function ()
         else if (trail === 'Command')
         {
             cmdName = name.toLowerCase()
-            console.log('trail',cmdName)
             if (cmd = this.commandForName(cmdName))
             {
                 this.startCommand(cmdName)

@@ -6,15 +6,9 @@
 000       000        0000000 
 ###
 
-# { $, elem, post } = kxk
-
-# now = require('perf_hooks').performance.now
-
-use ../../kxk/dom
+use ../../kxk/dom ▪ $
 use ../../kxk/elem
 use ../../kxk/post
-
-{ $ } = dom
 
 class FPS
 
