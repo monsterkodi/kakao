@@ -87,26 +87,26 @@ function Open extends Command
         
         log 'complete not implemented!'
 
-        # if @commandList? and @commandList.line(@selected).startsWith(slash.file @getText()) and not @getText().trim().endsWith('/')
-            # @setText slash.path(slash.dir(@getText()), @commandList.line(@selected))
-            # if slash.dirExists @getText()
-                # @setText @getText() + '/'
-                # @changed @getText()
-            # true
-        # else if not @getText().trim().endsWith('/') and slash.dirExists @getText()
-            # @setText @getText() + '/'
-            # @changed @getText()
-            # true            
-        # else
-            # projects = post.get 'indexer', 'projects'
-            # for p in Object.keys(projects).sort()
-                # if p.startsWith @getText()
-                    # pdir = projects[p].dir
+        if @commandList? and @commandList.line(@selected).startsWith(slash.file @getText()) and not @getText().trim().endsWith('/')
+            @setText slash.path(slash.dir(@getText()), @commandList.line(@selected))
+            if slash.dirExists @getText()
+                @setText @getText() + '/'
+                @changed @getText()
+            true
+        else if not @getText().trim().endsWith('/') and slash.dirExists @getText()
+            @setText @getText() + '/'
+            @changed @getText()
+            true            
+        else
+            projects = post.get 'indexer', 'projects'
+            for p in Object.keys(projects).sort()
+                if p.startsWith @getText()
+                    pdir = Projects.projects[p].dir
                     # pdir = slash.path(pdir, 'coffee') if slash.dirExists slash.path pdir, 'coffee'
-                    # @setText pdir + '/'
-                    # @changed @getText()
-                    # return true
-            # super()
+                    @setText pdir + '/'
+                    @changed @getText()
+                    return true
+            super()
     
     # 000   000  00000000  000   0000000   000   000  000000000
     # 000 0 000  000       000  000        000   000     000   

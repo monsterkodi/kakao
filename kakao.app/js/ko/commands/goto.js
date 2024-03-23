@@ -34,7 +34,6 @@ Goto = (function ()
 
         items = []
         this.types = {}
-        console.log('Goto.listItems',window.indexer)
         files = window.indexer.files
         funcs = (files[window.editor.currentFile] != null ? files[window.editor.currentFile].funcs : undefined)
         funcs = (funcs != null ? funcs : [])
@@ -54,7 +53,6 @@ Goto = (function ()
             items.push({text:k,line:'●',clss:'class'})
             this.types[name] = 'class'
         }
-        console.log('Goto.listItems',items)
         return items
     }
 

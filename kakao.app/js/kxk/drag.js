@@ -1,20 +1,19 @@
 var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-var $, Drag, stopEvent
-
-import kpos from "./kpos.js"
+var Drag
 
 import dom from "./dom.js"
+let $ = dom.$
+let stopEvent = dom.stopEvent
 
-$ = dom.$
-stopEvent = dom.stopEvent
+import kpos from "./kpos.js"
 
 
 Drag = (function ()
 {
     function Drag (cfg)
     {
-        var t, _19_32_, _24_35_, _25_35_, _33_22_, _39_22_, _41_59_, _42_57_, _43_55_, _48_18_
+        var t, _17_32_, _22_35_, _23_35_, _31_22_, _37_22_, _39_59_, _40_57_, _41_55_, _46_18_
 
         this["deactivate"] = this["deactivate"].bind(this)
         this["activate"] = this["activate"].bind(this)
@@ -24,13 +23,13 @@ Drag = (function ()
         this["dragStart"] = this["dragStart"].bind(this)
         this["eventPos"] = this["eventPos"].bind(this)
         cfg = (cfg != null ? cfg : {})
-        this.target = ((_19_32_=cfg.target) != null ? _19_32_ : 'titlebar')
+        this.target = ((_17_32_=cfg.target) != null ? _17_32_ : 'titlebar')
         this.handle = cfg.handle
         this.onStart = cfg.onStart
         this.onMove = cfg.onMove
         this.onStop = cfg.onStop
-        this.active = ((_24_35_=cfg.active) != null ? _24_35_ : true)
-        this.stopEvent = ((_25_35_=cfg.stopEvent) != null ? _25_35_ : true)
+        this.active = ((_22_35_=cfg.active) != null ? _22_35_ : true)
+        this.stopEvent = ((_23_35_=cfg.stopEvent) != null ? _23_35_ : true)
         if (_k_.isStr(this.target))
         {
             t = $(this.target)
@@ -48,7 +47,7 @@ Drag = (function ()
         {
             this.useScreenPos = true
         }
-        this.useScreenPos = ((_39_22_=this.useScreenPos) != null ? _39_22_ : cfg.useScreenPos)
+        this.useScreenPos = ((_37_22_=this.useScreenPos) != null ? _37_22_ : cfg.useScreenPos)
         if ((this.onStart != null) && !(typeof(this.onStart) === 'function'))
         {
             console.error("Drag -- onStart not a function?")
@@ -67,7 +66,7 @@ Drag = (function ()
         {
             this.handle = $(this.handle)
         }
-        this.handle = ((_48_18_=this.handle) != null ? _48_18_ : this.target)
+        this.handle = ((_46_18_=this.handle) != null ? _46_18_ : this.target)
         if (this.active)
         {
             this.activate()
@@ -76,7 +75,7 @@ Drag = (function ()
 
     Drag.prototype["start"] = function (p, event)
     {
-        var _67_33_
+        var _65_33_
 
         if (!this.dragging && this.listening)
         {
@@ -121,7 +120,7 @@ Drag = (function ()
 
     Drag.prototype["dragMove"] = function (event)
     {
-        var _103_28_, _104_27_, _110_19_
+        var _101_28_, _102_27_, _108_19_
 
         if (this.dragging)
         {
@@ -130,7 +129,7 @@ Drag = (function ()
             this.deltaSum = this.startPos.to(this.pos)
             if ((this.constrainKey != null) && event[this.constrainKey])
             {
-                this.constrain = ((_104_27_=this.constrain) != null ? _104_27_ : Math.abs(this.delta.x) >= Math.abs(this.delta.y) ? kpos(1,0) : kpos(0,1))
+                this.constrain = ((_102_27_=this.constrain) != null ? _102_27_ : Math.abs(this.delta.x) >= Math.abs(this.delta.y) ? kpos(1,0) : kpos(0,1))
                 this.delta.x *= this.constrain.x
                 this.delta.y *= this.constrain.y
             }
@@ -152,7 +151,7 @@ Drag = (function ()
 
     Drag.prototype["dragStop"] = function (event)
     {
-        var _130_39_
+        var _128_39_
 
         if (this.dragging)
         {

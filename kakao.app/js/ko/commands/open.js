@@ -106,7 +106,42 @@ Open = (function ()
 
     Open.prototype["complete"] = function ()
     {
+        var p, pdir, projects, _90_23_
+
         console.log('complete not implemented!')
+        if ((this.commandList != null) && this.commandList.line(this.selected).startsWith(slash.file(this.getText())) && !this.getText().trim().endsWith('/'))
+        {
+            this.setText(slash.path(slash.dir(this.getText()),this.commandList.line(this.selected)))
+            if (slash.dirExists(this.getText()))
+            {
+                this.setText(this.getText() + '/')
+                this.changed(this.getText())
+            }
+            return true
+        }
+        else if (!this.getText().trim().endsWith('/') && slash.dirExists(this.getText()))
+        {
+            this.setText(this.getText() + '/')
+            this.changed(this.getText())
+            return true
+        }
+        else
+        {
+            projects = post.get('indexer','projects')
+            var list = _k_.list(Object.keys(projects).sort())
+            for (var _102_18_ = 0; _102_18_ < list.length; _102_18_++)
+            {
+                p = list[_102_18_]
+                if (p.startsWith(this.getText()))
+                {
+                    pdir = Projects.projects[p].dir
+                    this.setText(pdir + '/')
+                    this.changed(this.getText())
+                    return true
+                }
+            }
+            return Open.__super__.complete.call(this)
+        }
     }
 
     Open.prototype["weight"] = function (item, opt)

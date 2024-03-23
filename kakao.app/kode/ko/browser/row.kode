@@ -110,7 +110,7 @@ function Row
                         line: @item.line
                         col:  @item.column
                         path: @item.path
-                    log 'Row emit jumpToFile' opt
+                    # log 'Row emit jumpToFile' opt
                     post.emit 'jumpToFile' opt
         @
     

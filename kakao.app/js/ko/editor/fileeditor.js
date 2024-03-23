@@ -300,13 +300,11 @@ FileEditor = (function ()
             opt.oldPos = this.cursorPos()
             opt.oldFile = this.currentFile
             opt.file = ((_268_21_=opt.file) != null ? _268_21_ : opt.path)
-            console.log('jumpToFile navigate.gotoFilePos',opt)
             return window.navigate.gotoFilePos(opt)
         }
         else
         {
             file = slash.joinFileLine(opt.path,opt.line,opt.col)
-            console.log('jumpToFile post loadFile',file)
             return post.emit('loadFile',file)
         }
     }
@@ -315,7 +313,6 @@ FileEditor = (function ()
     {
         var classes, clss, file, files, find, func, funcs, i, info, infos, type, _290_19_
 
-        console.log('FileEditor jumpTo',word,opt)
         if (typeof(word) === 'object' && !(opt != null))
         {
             opt = word

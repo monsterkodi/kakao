@@ -48,6 +48,7 @@ Shelf = (function ()
         this["loadGitStatus"] = this["loadGitStatus"].bind(this)
         this["onGitStatus"] = this["onGitStatus"].bind(this)
         this["onDrop"] = this["onDrop"].bind(this)
+        this["addPath"] = this["addPath"].bind(this)
         this["onStashLoaded"] = this["onStashLoaded"].bind(this)
         this["onFile"] = this["onFile"].bind(this)
         this["makeRoot"] = this["makeRoot"].bind(this)
@@ -151,15 +152,20 @@ Shelf = (function ()
         return this.setItems(items,{save:false})
     }
 
-    Shelf.prototype["addPath"] = async function (path, opt)
+    Shelf.prototype["addPath"] = function (path, opt)
     {
-        if (await ffs.isDir(path))
+        if (ffs.isDir(path).then((function (isDir)
+            {
+                if (isDir)
+                {
+                    return this.addDir(path,opt)
+                }
+                else
+                {
+                    return this.addFile(path,opt)
+                }
+            }).bind(this)))
         {
-            return this.addDir(path,opt)
-        }
-        else
-        {
-            return this.addFile(path,opt)
         }
     }
 
@@ -178,12 +184,12 @@ Shelf = (function ()
 
     Shelf.prototype["setItems"] = function (items, opt)
     {
-        var _140_15_
+        var _141_15_
 
         this.items = items
     
         this.clear()
-        this.items = ((_140_15_=this.items) != null ? _140_15_ : [])
+        this.items = ((_141_15_=this.items) != null ? _141_15_ : [])
         this.addItems(this.items)
         if ((opt != null ? opt.save : undefined) !== false)
         {
@@ -201,9 +207,9 @@ Shelf = (function ()
             return
         }
         var list = _k_.list(items)
-        for (var _151_17_ = 0; _151_17_ < list.length; _151_17_++)
+        for (var _152_17_ = 0; _152_17_ < list.length; _152_17_++)
         {
-            item = list[_151_17_]
+            item = list[_152_17_]
             this.rows.push(new Row(this,item))
         }
         this.scroll.update()
@@ -235,9 +241,9 @@ Shelf = (function ()
         var file
 
         var list = _k_.list(files)
-        for (var _177_17_ = 0; _177_17_ < list.length; _177_17_++)
+        for (var _178_17_ = 0; _178_17_ < list.length; _178_17_++)
         {
-            file = list[_177_17_]
+            file = list[_178_17_]
             if (await ffs.isDir(file))
             {
                 this.addDir(file,opt)
@@ -328,7 +334,7 @@ Shelf = (function ()
     {
         var i
 
-        for (var _278_18_ = i = 0, _278_22_ = this.numRows(); (_278_18_ <= _278_22_ ? i < this.numRows() : i > this.numRows()); (_278_18_ <= _278_22_ ? ++i : --i))
+        for (var _279_18_ = i = 0, _279_22_ = this.numRows(); (_279_18_ <= _279_22_ ? i < this.numRows() : i > this.numRows()); (_279_18_ <= _279_22_ ? ++i : --i))
         {
             if (this.row(i).item.type === 'historySeparator')
             {
@@ -359,7 +365,7 @@ Shelf = (function ()
 
     Shelf.prototype["onNavigateIndexChanged"] = function (currentIndex, currentItem)
     {
-        var reverseIndex, _300_30_
+        var reverseIndex, _301_30_
 
         if (this.showHistory)
         {
@@ -370,7 +376,9 @@ Shelf = (function ()
     }
 
     Shelf.prototype["loadHistory"] = function ()
-    {}
+    {
+        return this.setHistoryItems(window.navigate.filePositions)
+    }
 
     Shelf.prototype["setHistoryItems"] = function (items)
     {
@@ -396,16 +404,16 @@ Shelf = (function ()
 
     Shelf.prototype["onMouseOver"] = function (event)
     {
-        var _339_46_, _339_59_
+        var _340_46_, _340_59_
 
-        return ((_339_46_=this.row(event.target)) != null ? typeof (_339_59_=_339_46_.onMouseOver) === "function" ? _339_59_() : undefined : undefined)
+        return ((_340_46_=this.row(event.target)) != null ? typeof (_340_59_=_340_46_.onMouseOver) === "function" ? _340_59_() : undefined : undefined)
     }
 
     Shelf.prototype["onMouseOut"] = function (event)
     {
-        var _340_46_, _340_58_
+        var _341_46_, _341_58_
 
-        return ((_340_46_=this.row(event.target)) != null ? typeof (_340_58_=_340_46_.onMouseOut) === "function" ? _340_58_() : undefined : undefined)
+        return ((_341_46_=this.row(event.target)) != null ? typeof (_341_58_=_341_46_.onMouseOut) === "function" ? _341_58_() : undefined : undefined)
     }
 
     Shelf.prototype["onDblClick"] = function (event)
@@ -415,13 +423,13 @@ Shelf = (function ()
 
     Shelf.prototype["navigateRows"] = function (key)
     {
-        var index, navigate, row, _352_28_, _352_38_, _367_99_
+        var index, navigate, row, _353_28_, _353_38_, _368_99_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_352_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _352_38_ : -1)
+        index = ((_353_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _353_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -492,7 +500,7 @@ Shelf = (function ()
 
     Shelf.prototype["openFileInNewWindow"] = function ()
     {
-        var item, _385_30_
+        var item, _386_30_
 
         if (item = (this.activeRow() != null ? this.activeRow().item : undefined))
         {
@@ -506,9 +514,9 @@ Shelf = (function ()
 
     Shelf.prototype["removeObject"] = function ()
     {
-        var nextOrPrev, row, _392_27_, _402_36_
+        var nextOrPrev, row, _393_27_, _403_36_
 
-        row = ((_392_27_=this.activeRow()) != null ? _392_27_ : this.selectedRow())
+        row = ((_393_27_=this.activeRow()) != null ? _393_27_ : this.selectedRow())
         if (row)
         {
             if (this.showHistory)
@@ -523,7 +531,7 @@ Shelf = (function ()
                     window.navigate.delFilePos(row.item)
                 }
             }
-            nextOrPrev = ((_402_36_=row.next()) != null ? _402_36_ : row.prev())
+            nextOrPrev = ((_403_36_=row.next()) != null ? _403_36_ : row.prev())
             row.div.remove()
             this.items.splice(row.index(),1)
             this.rows.splice(row.index(),1)
