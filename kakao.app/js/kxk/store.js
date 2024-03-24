@@ -70,6 +70,7 @@ Store = (function ()
         this.load().then((function ()
         {
             defaults(this.data,opt.defaults)
+            console.log(`store ${this.name}Loaded`,this.data)
             return post.emit(`${this.name}Loaded`)
         }).bind(this))
     }

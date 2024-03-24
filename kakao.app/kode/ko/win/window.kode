@@ -82,8 +82,6 @@ function Window extends win.Delegate
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
-        post.on 'prefsLoaded' => scheme.set prefs.get 'scheme' 'dark'
-
         @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
             post.toWins 'fileLineChanges' file, [lineChange]
     
@@ -95,12 +93,12 @@ function Window extends win.Delegate
                     window.navigate.delFilePos file: window.editor.currentFile, pos: [0 changeInfo.changes[0].oldIndex]
                 else
                     window.navigate.addFilePos file: window.editor.currentFile, pos: window.editor.cursorPos()
-    
-        s = window.stash.get 'fontSize' prefs.get 'editorFontSize' 19
-        @editor.setFontSize s if s
-    
-        if window.stash.get 'centerText'
-            @editor.centerText true 0
+
+        post.on 'prefsLoaded' => scheme.set prefs.get 'scheme' 'dark'
+        post.on 'stashLoaded' => 
+
+            @editor.setFontSize window.stash.get 'fontSize' 19
+            @editor.centerText  window.stash.get('centerText'), 0
     
         window.split.resized()
         window.info.reload()

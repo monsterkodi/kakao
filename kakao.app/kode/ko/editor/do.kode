@@ -54,8 +54,6 @@ class Do
 
     setTabState: (tabState) ->
 
-        @editor.restoreFromTabState tabState
-
         @groupCount = 0
         @saveIndex  = tabState.saveIndex
         @history    = tabState.history

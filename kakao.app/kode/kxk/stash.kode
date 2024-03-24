@@ -84,6 +84,7 @@ function Stash
         # log 'stash load data' file, data
         if valid data
             @data = data
+            log 'stash.emit stashLoaded'
             post.emit 'stashLoaded'
         @data
             
