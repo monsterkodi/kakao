@@ -97,8 +97,6 @@ Window = (function ()
 
     Window.prototype["onWindowCreated"] = function (win)
     {
-        var s
-
         this.id = win.id
         new FileHandler
         new FileWatch
@@ -113,10 +111,6 @@ Window = (function ()
         this.indexer = window.indexer = new Indexer()
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
-        post.on('prefsLoaded',(function ()
-        {
-            return scheme.set(prefs.get('scheme','dark'))
-        }).bind(this))
         this.terminal.on('fileSearchResultChange',function (file, lineChange)
         {
             return post.toWins('fileLineChanges',file,[lineChange])
@@ -139,15 +133,15 @@ Window = (function ()
                 }
             }
         })
-        s = window.stash.get('fontSize',prefs.get('editorFontSize',19))
-        if (s)
+        post.on('prefsLoaded',(function ()
         {
-            this.editor.setFontSize(s)
-        }
-        if (window.stash.get('centerText'))
+            return scheme.set(prefs.get('scheme','dark'))
+        }).bind(this))
+        post.on('stashLoaded',(function ()
         {
-            this.editor.centerText(true,0)
-        }
+            this.editor.setFontSize(window.stash.get('fontSize',19))
+            return this.editor.centerText(window.stash.get('centerText'),0)
+        }).bind(this))
         window.split.resized()
         window.info.reload()
         return this.editor.focus()
@@ -355,7 +349,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _230_14_
+    var _228_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -366,7 +360,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _236_22_, _237_19_
+    var _234_22_, _235_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -411,7 +405,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _281_32_
+    var _279_32_
 
     if (!(_k_.isNum(s)))
     {

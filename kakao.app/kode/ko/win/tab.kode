@@ -90,12 +90,6 @@ class Tab
         if window.editor.currentFile
             @state = window.editor.do.tabState()
 
-    restoreState: ->
-
-        return error 'no file in state?' @state if not @state?.file?
-        window.editor.do.setTabState @state
-        delete @state
-
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000
@@ -218,7 +212,6 @@ class Tab
 
     activate: ->
 
-        # log 'tab.activate' @file
         post.emit 'jumpToFile' @file
         @
 
@@ -226,8 +219,9 @@ class Tab
 
         @setActive()
 
-        if @state?
-            @restoreState()
+        if valid @state
+            window.editor.do.setTabState @state
+            delete @state
 
         if @foreign?.length
             for changes in @foreign

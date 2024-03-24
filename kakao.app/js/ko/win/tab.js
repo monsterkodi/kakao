@@ -116,21 +116,9 @@ class Tab
         }
     }
 
-    restoreState ()
-    {
-        var _95_61_, _95_67_
-
-        if (!((this.state != null ? this.state.file : undefined) != null))
-        {
-            return console.error('no file in state?',this.state)
-        }
-        window.editor.do.setTabState(this.state)
-        return delete this.state
-    }
-
     update ()
     {
-        var diss, file, html, name, sep, _149_16_
+        var diss, file, html, name, sep, _143_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
@@ -208,14 +196,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _160_27_
+        var _154_27_
 
-        return ((_160_27_=this.next()) != null ? _160_27_ : this.prev())
+        return ((_154_27_=this.next()) != null ? _154_27_ : this.prev())
     }
 
     close ()
     {
-        var _170_16_
+        var _164_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -284,19 +272,20 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _229_17_, _232_19_
+        var changes, _226_19_
 
         this.setActive()
-        if ((this.state != null))
+        if (!_k_.empty(this.state))
         {
-            this.restoreState()
+            window.editor.do.setTabState(this.state)
+            delete this.state
         }
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _233_24_ = 0; _233_24_ < list.length; _233_24_++)
+            for (var _227_24_ = 0; _227_24_ < list.length; _227_24_++)
             {
-                changes = list[_233_24_]
+                changes = list[_227_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign
