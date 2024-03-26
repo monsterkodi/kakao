@@ -231,6 +231,15 @@ class Tabs
                     # break
 
         # log 'Tabs.addTab' file, Projects.dir file
+        
+        prjPath = Projects.dir file
+        if prjTab = @getPrjTab prjPath
+            if valid prjTab.hiddenPrjFiles
+                if file not in prjTab.hiddenPrjFiles
+                    prjTab.hiddenPrjFiles.push file
+                    prjTab.update()
+                return
+        
         newTab = new Tab @, file
         @tabs.push newTab
         
@@ -266,7 +275,6 @@ class Tabs
         [file, line, col] = slash.splitFileLine file
 
         if tab = @tab file
-            # tab.activate()
             post.emit 'jumpToFile' path:file, line:line, col:col
         else
             @addTab(file).activate()
@@ -287,8 +295,8 @@ class Tabs
 
         index = @activeTab().index()
         index += switch key
-            when 'left' then -1
-            when 'right' then +1
+            'left'  ➜ -1
+            'right' ➜ +1
         index = (@numTabs() + index) % @numTabs()
         @tabs[index].activate()
 
@@ -305,8 +313,8 @@ class Tabs
 
         tab = @activeTab()
         switch key
-            when 'left'  then @swap tab, tab.prev()
-            when 'right' then @swap tab, tab.next()
+            'left'  ➜ @swap tab, tab.prev()
+            'right' ➜ @swap tab, tab.next()
             
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000

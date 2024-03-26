@@ -190,40 +190,40 @@ class Renderer
         for k,v of exp
 
             s+= switch k
-                when 'if'        then @if v
-                when 'for'       then @for v
-                when 'while'     then @while v
-                when 'return'    then @return v
-                when 'await'     then @await v
-                when 'class'     then @class v
-                when 'function'  then @function v
-                when 'switch'    then @switch v
-                when 'when'      then @when v
-                when 'use'       then @use v
-                when 'import'    then @import v
-                when 'export'    then @export v
-                when 'assert'    then @assert v
-                when 'qmrkop'    then @qmrkop v
-                when 'stripol'   then @stripol v
-                when 'qmrkcolon' then @qmrkcolon v
-                when 'operation' then @operation v
-                when 'section'   then @section v
-                when 'subsect'   then @subsect v
-                when 'compare'   then @compare v
-                when 'incond'    then @incond v
-                when 'parens'    then @parens v
-                when 'object'    then @object v
-                when 'keyval'    then @keyval v
-                when 'array'     then @array v
-                when 'lcomp'     then @lcomp v
-                when 'index'     then @index v
-                when 'slice'     then @slice v
-                when 'prop'      then @prop v
-                when 'each'      then @each v
-                when 'func'      then @func v
-                when 'call'      then @call v
-                when 'try'       then @try v
-                else
+                'if'        ➜ @if v
+                'for'       ➜ @for v
+                'while'     ➜ @while v
+                'return'    ➜ @return v
+                'await'     ➜ @await v
+                'class'     ➜ @class v
+                'function'  ➜ @function v
+                'switch'    ➜ @switch v
+                'when'      ➜ @when v
+                'use'       ➜ @use v
+                'import'    ➜ @import v
+                'export'    ➜ @export v
+                'assert'    ➜ @assert v
+                'qmrkop'    ➜ @qmrkop v
+                'stripol'   ➜ @stripol v
+                'qmrkcolon' ➜ @qmrkcolon v
+                'operation' ➜ @operation v
+                'section'   ➜ @section v
+                'subsect'   ➜ @subsect v
+                'compare'   ➜ @compare v
+                'incond'    ➜ @incond v
+                'parens'    ➜ @parens v
+                'object'    ➜ @object v
+                'keyval'    ➜ @keyval v
+                'array'     ➜ @array v
+                'lcomp'     ➜ @lcomp v
+                'index'     ➜ @index v
+                'slice'     ➜ @slice v
+                'prop'      ➜ @prop v
+                'each'      ➜ @each v
+                'func'      ➜ @func v
+                'call'      ➜ @call v
+                'try'       ➜ @try v
+                ➜
                     log R4("renderer.node unhandled key #{k} in exp"), exp # if @debug or @verbose
                     ''        
         s
@@ -1017,9 +1017,9 @@ class Renderer
         if not n.then then @verb 'for expected then' n
 
         switch n.inof.text
-            when 'in' then @for_in n
-            when 'of' then @for_of n
-            else error 'for expected in/of'
+            'in' ➜ @for_in n
+            'of' ➜ @for_of n
+                 ➜ error 'for expected in/of'
 
     # 00000000   0000000   00000000           000  000   000  
     # 000       000   000  000   000          000  0000  000  

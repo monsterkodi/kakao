@@ -129,8 +129,8 @@ function Editor extends Buffer
         # _______________________________________________________________ strings
 
         switch @fileType
-            when 'md'   then @stringCharacters['*'] = 'bold'
-            when 'noon' then @stringCharacters['|'] = 'pipe'
+            'md'   ➜ @stringCharacters['*'] = 'bold'
+            'noon' ➜ @stringCharacters['|'] = 'pipe'
 
         # _______________________________________________________________ brackets
 

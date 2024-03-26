@@ -130,12 +130,12 @@ class Autocomplete extends events
         @word = last info.before.split @splitRegExp
         switch info.action
 
-            when 'delete' # ever happening?
+            'delete' # ever happening?
                 error 'delete!!!!'
                 if @wordinfo[@word]?.temp and @wordinfo[@word]?.count <= 0
                     delete @wordinfo[@word]
 
-            when 'insert'
+            'insert'
 
                 if not @word?.length
                     if info.before[-1] == '.'

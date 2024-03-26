@@ -96,10 +96,10 @@ function Browse extends Command
                     item = {}
 
                     switch m.type
-                        when 'file'
+                        'file'
                             item.line = ' '
                             item.clss = 'file'
-                        when 'dir'
+                        'dir'
                             item.line = '▸'
                             item.clss = 'directory'
 
@@ -198,10 +198,10 @@ function Browse extends Command
                 item = {}
 
                 switch m.type
-                    when 'file'
+                    'file'
                         item.line = ' '
                         item.clss = 'file'
-                    when 'dir'
+                    'dir'
                         item.line = '▸'
                         item.clss = 'directory'
 
@@ -232,14 +232,14 @@ function Browse extends Command
     handleModKeyComboEvent: (mod, key, combo, event) ->
 
         switch combo
-            when 'backspace'
+            'backspace'
                 if commandline.mainCursor()[0] == commandline.selection(0)?[1][0] # cursor is at selection start
                     commandline.do.start()         # force simultaneous
                     commandline.deleteSelection()  # deletion of selection
                     commandline.deleteBackward()   # and backspace.
                     commandline.do.end()           # it should feel as if selection wasn't there.
                     return
-            when 'enter'
+            'enter'
                 @execute @getText()
                 focusBrowser = => @browser.focus force:true
                 setTimeout focusBrowser, 100

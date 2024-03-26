@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 import dom from "../../kxk/dom.js"
 let $ = dom.$
@@ -349,8 +349,21 @@ class Tabs
 
     addTab (file)
     {
-        var newTab
+        var newTab, prjPath, prjTab
 
+        prjPath = Projects.dir(file)
+        if (prjTab = this.getPrjTab(prjPath))
+        {
+            if (!_k_.empty(prjTab.hiddenPrjFiles))
+            {
+                if (!(_k_.in(file,prjTab.hiddenPrjFiles)))
+                {
+                    prjTab.hiddenPrjFiles.push(file)
+                    prjTab.update()
+                }
+                return
+            }
+        }
         newTab = new Tab(this,file)
         this.tabs.push(newTab)
         this.addPrjTab(Projects.dir(file))
@@ -362,9 +375,9 @@ class Tabs
         var t
 
         var list = _k_.list(this.tabs)
-        for (var _243_14_ = 0; _243_14_ < list.length; _243_14_++)
+        for (var _252_14_ = 0; _252_14_ < list.length; _252_14_++)
         {
-            t = list[_243_14_]
+            t = list[_252_14_]
             if (t.tmpTab)
             {
                 return t
@@ -404,7 +417,7 @@ class Tabs
     {
         var col, line, tab
 
-        var _266_26_ = slash.splitFileLine(file); file = _266_26_[0]; line = _266_26_[1]; col = _266_26_[2]
+        var _275_26_ = slash.splitFileLine(file); file = _275_26_[0]; line = _275_26_[1]; col = _275_26_[2]
 
         if (tab = this.tab(file))
         {
@@ -451,7 +464,7 @@ class Tabs
         }
         if (ta.index() > tb.index())
         {
-            var _298_17_ = [tb,ta]; ta = _298_17_[0]; tb = _298_17_[1]
+            var _306_17_ = [tb,ta]; ta = _306_17_[0]; tb = _306_17_[1]
 
         }
         this.tabs[ta.index()] = tb
@@ -583,7 +596,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _390_36_
+        var _398_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -594,9 +607,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _402_16_ = 0; _402_16_ < list.length; _402_16_++)
+        for (var _410_16_ = 0; _410_16_ < list.length; _410_16_++)
         {
-            tab = list[_402_16_]
+            tab = list[_410_16_]
             tab.update()
         }
     }
@@ -621,9 +634,9 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _416_16_ = 0; _416_16_ < list.length; _416_16_++)
+        for (var _424_16_ = 0; _424_16_ < list.length; _424_16_++)
         {
-            tab = list[_416_16_]
+            tab = list[_424_16_]
             prjTabs[tab.file] = [tab]
         }
         dangling = []
@@ -647,9 +660,9 @@ class Tabs
         }
         this.tabs = this.tabs.concat(dangling)
         var list1 = _k_.list(this.tabs)
-        for (var _433_16_ = 0; _433_16_ < list1.length; _433_16_++)
+        for (var _441_16_ = 0; _441_16_ < list1.length; _441_16_++)
         {
-            tab = list1[_433_16_]
+            tab = list1[_441_16_]
             this.div.removeChild(tab.div)
             this.div.appendChild(tab.div)
         }
@@ -657,7 +670,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _439_20_
+        var _447_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

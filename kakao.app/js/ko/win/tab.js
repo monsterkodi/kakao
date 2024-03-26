@@ -191,7 +191,7 @@ class Tab
     <circle cx="15" cy="21" r="2" />
 </svg>`
             }
-            this.div.appendChild(elem({class:'tabstate',html:html,click:this.togglePinned}))
+            this.div.appendChild(elem('span',{class:'tabstate',html:html,click:this.togglePinned}))
         }
         if ((this.file != null))
         {
@@ -293,27 +293,28 @@ class Tab
 
     activate ()
     {
-        var file, tab
+        var file, hidden, tab
 
         if (this.isPrj)
         {
             if (this.hiddenPrjFiles)
             {
-                var list = _k_.list(this.hiddenPrjFiles)
-                for (var _227_25_ = 0; _227_25_ < list.length; _227_25_++)
+                hidden = this.hiddenPrjFiles
+                delete this.hiddenPrjFiles
+                var list = _k_.list(hidden)
+                for (var _229_25_ = 0; _229_25_ < list.length; _229_25_++)
                 {
-                    file = list[_227_25_]
+                    file = list[_229_25_]
                     this.tabs.addTab(file)
                 }
-                delete this.hiddenPrjFiles
             }
             else
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _232_24_ = 0; _232_24_ < list1.length; _232_24_++)
+                for (var _233_24_ = 0; _233_24_ < list1.length; _233_24_++)
                 {
-                    tab = list1[_232_24_]
+                    tab = list1[_233_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -329,7 +330,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _248_19_
+        var changes, _249_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -340,9 +341,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _249_24_ = 0; _249_24_ < list.length; _249_24_++)
+            for (var _250_24_ = 0; _250_24_ < list.length; _250_24_++)
             {
-                changes = list[_249_24_]
+                changes = list[_250_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign
