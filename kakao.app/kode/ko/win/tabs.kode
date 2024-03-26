@@ -68,20 +68,22 @@ class Tabs
                     prjChildTabs.push tab
         prjChildTabs
         
-    getPrjTab: (file) =>
+    getPrjTab: (prjPath) =>
         
-        if prjPath = Projects.dir file
-            for tab in @tabs
-                if tab.file == prjPath
-                    return tab
+        for tab in @tabs
+            if tab.isPrj and tab.file == prjPath
+                return tab
         null
         
-    addPrjTab: (file) =>
+    addPrjTab: (prjPath) =>
         
-        if prjPath = Projects.dir file
-            if not @getPrjTab file
-                @tabs.push new Tab @, prjPath, true
-                @sortTabs()
+        return if not prjPath
+        
+        if not @getPrjTab prjPath
+            tab = new Tab @, prjPath, true
+            @tabs.push tab
+            @sortTabs()
+            tab
         
     onSendTabs: (winID) =>
 
@@ -232,7 +234,7 @@ class Tabs
         newTab = new Tab @, file
         @tabs.push newTab
         
-        @addPrjTab file
+        @addPrjTab Projects.dir file
         
         newTab
 
@@ -358,35 +360,30 @@ class Tabs
 
     stash: =>
 
-        tabs   = @fileTabs()
-        files  = ( t.file for t in tabs )
-        pinned = ( t.pinned for t in tabs )
-        files  = files.filter (file) -> not file?.startsWith 'untitled'
-
-        window.stash.set 'tabs',
-            files:  files
-            pinned: pinned
-            active: Math.min @activeTab()?.index(), files.length-1
+        infos = @tabs.map (t) -> t.stashInfo()
+        window.stash.set 'tabs' infos
+        @
 
     onStashLoaded: =>
-
-        active = window.stash.get 'tabs|active' 0
-        files  = window.stash.get 'tabs|files'
-        pinned = window.stash.get 'tabs|pinned'
-        pinned ?= []
-
-        return if empty files # happens when first window opens
-
+        
+        infos = window.stash.get 'tabs'
+        
+        return if empty infos
+        
         @tabs = []
 
-        while files.length
-            @addTab files.shift()
-
-        @tabs[active]?.activate()
-        
-        for pi in 0...pinned.length
-            if pinned[pi]
-                @tabs[pi].togglePinned()
+        while infos.length
+            info = infos.shift()
+            if info.prj
+                tab = @addPrjTab info.prj
+                if info.hidden
+                    tab.hiddenPrjFiles = info.hidden
+                tab.update()
+            else
+                tab = @addTab info.file
+            
+            if info.active ➜ tab.activate()
+            if info.pinned ➜ tab.togglePinned()
 
         @update()
 

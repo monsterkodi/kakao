@@ -102,36 +102,36 @@ class Tabs
         return prjChildTabs
     }
 
-    getPrjTab (file)
+    getPrjTab (prjPath)
     {
-        var prjPath, tab
+        var tab
 
-        if (prjPath = Projects.dir(file))
+        var list = _k_.list(this.tabs)
+        for (var _73_16_ = 0; _73_16_ < list.length; _73_16_++)
         {
-            var list = _k_.list(this.tabs)
-            for (var _74_20_ = 0; _74_20_ < list.length; _74_20_++)
+            tab = list[_73_16_]
+            if (tab.isPrj && tab.file === prjPath)
             {
-                tab = list[_74_20_]
-                if (tab.file === prjPath)
-                {
-                    return tab
-                }
+                return tab
             }
         }
         return null
     }
 
-    addPrjTab (file)
+    addPrjTab (prjPath)
     {
-        var prjPath
+        var tab
 
-        if (prjPath = Projects.dir(file))
+        if (!prjPath)
         {
-            if (!this.getPrjTab(file))
-            {
-                this.tabs.push(new Tab(this,prjPath,true))
-                return this.sortTabs()
-            }
+            return
+        }
+        if (!this.getPrjTab(prjPath))
+        {
+            tab = new Tab(this,prjPath,true)
+            this.tabs.push(tab)
+            this.sortTabs()
+            return tab
         }
     }
 
@@ -141,9 +141,9 @@ class Tabs
 
         t = ''
         var list = _k_.list(this.tabs)
-        for (var _89_16_ = 0; _89_16_ < list.length; _89_16_++)
+        for (var _91_16_ = 0; _91_16_ < list.length; _91_16_++)
         {
-            tab = list[_89_16_]
+            tab = list[_91_16_]
             t += tab.div.innerHTML
         }
         return post.toWins('winTabs',window.winID,t)
@@ -177,14 +177,14 @@ class Tabs
 
     onSaved (file)
     {
-        var _110_18_
+        var _112_18_
 
         return (this.tab(file) != null ? this.tab(file).setDirty(false) : undefined)
     }
 
     onClick (event)
     {
-        var tab, tabElem, _127_52_
+        var tab, tabElem, _129_52_
 
         if (tab = this.tab(event.target))
         {
@@ -339,9 +339,9 @@ class Tabs
             return !t.pinned && t !== this.activeTab()
         }).bind(this))
         var list = _k_.list(tabsToClose)
-        for (var _213_14_ = 0; _213_14_ < list.length; _213_14_++)
+        for (var _215_14_ = 0; _215_14_ < list.length; _215_14_++)
         {
-            t = list[_213_14_]
+            t = list[_215_14_]
             this.closeTab(t)
         }
         return this.update()
@@ -353,7 +353,7 @@ class Tabs
 
         newTab = new Tab(this,file)
         this.tabs.push(newTab)
-        this.addPrjTab(file)
+        this.addPrjTab(Projects.dir(file))
         return newTab
     }
 
@@ -362,9 +362,9 @@ class Tabs
         var t
 
         var list = _k_.list(this.tabs)
-        for (var _241_14_ = 0; _241_14_ < list.length; _241_14_++)
+        for (var _243_14_ = 0; _243_14_ < list.length; _243_14_++)
         {
-            t = list[_241_14_]
+            t = list[_243_14_]
             if (t.tmpTab)
             {
                 return t
@@ -404,7 +404,7 @@ class Tabs
     {
         var col, line, tab
 
-        var _264_26_ = slash.splitFileLine(file); file = _264_26_[0]; line = _264_26_[1]; col = _264_26_[2]
+        var _266_26_ = slash.splitFileLine(file); file = _266_26_[0]; line = _266_26_[1]; col = _266_26_[2]
 
         if (tab = this.tab(file))
         {
@@ -451,7 +451,7 @@ class Tabs
         }
         if (ta.index() > tb.index())
         {
-            var _296_17_ = [tb,ta]; ta = _296_17_[0]; tb = _296_17_[1]
+            var _298_17_ = [tb,ta]; ta = _298_17_[0]; tb = _298_17_[1]
 
         }
         this.tabs[ta.index()] = tb
@@ -533,41 +533,49 @@ class Tabs
 
     stash ()
     {
-        var files, pinned, t, tabs, _369_41_
+        var infos
 
-        tabs = this.fileTabs()
-        files = (function () { var r_362_32_ = []; var list = _k_.list(tabs); for (var _362_32_ = 0; _362_32_ < list.length; _362_32_++)  { t = list[_362_32_];r_362_32_.push(t.file)  } return r_362_32_ }).bind(this)()
-        pinned = (function () { var r_363_34_ = []; var list1 = _k_.list(tabs); for (var _363_34_ = 0; _363_34_ < list1.length; _363_34_++)  { t = list1[_363_34_];r_363_34_.push(t.pinned)  } return r_363_34_ }).bind(this)()
-        files = files.filter(function (file)
+        infos = this.tabs.map(function (t)
         {
-            return !(file != null ? file.startsWith('untitled') : undefined)
+            return t.stashInfo()
         })
-        return window.stash.set('tabs',{files:files,pinned:pinned,active:Math.min((this.activeTab() != null ? this.activeTab().index() : undefined),files.length - 1)})
+        window.stash.set('tabs',infos)
+        return this
     }
 
     onStashLoaded ()
     {
-        var active, files, pi, pinned
+        var info, infos, tab
 
-        active = window.stash.get('tabs|active',0)
-        files = window.stash.get('tabs|files')
-        pinned = window.stash.get('tabs|pinned')
-        pinned = (pinned != null ? pinned : [])
-        if (_k_.empty(files))
+        infos = window.stash.get('tabs')
+        if (_k_.empty(infos))
         {
             return
         }
         this.tabs = []
-        while (files.length)
+        while (infos.length)
         {
-            this.addTab(files.shift())
-        }
-        ;(this.tabs[active] != null ? this.tabs[active].activate() : undefined)
-        for (var _387_18_ = pi = 0, _387_22_ = pinned.length; (_387_18_ <= _387_22_ ? pi < pinned.length : pi > pinned.length); (_387_18_ <= _387_22_ ? ++pi : --pi))
-        {
-            if (pinned[pi])
+            info = infos.shift()
+            if (info.prj)
             {
-                this.tabs[pi].togglePinned()
+                tab = this.addPrjTab(info.prj)
+                if (info.hidden)
+                {
+                    tab.hiddenPrjFiles = info.hidden
+                }
+                tab.update()
+            }
+            else
+            {
+                tab = this.addTab(info.file)
+            }
+            if (info.active)
+            {
+                tab.activate()
+            }
+            if (info.pinned)
+            {
+                tab.togglePinned()
             }
         }
         return this.update()
@@ -575,7 +583,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _393_36_
+        var _390_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -586,9 +594,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _405_16_ = 0; _405_16_ < list.length; _405_16_++)
+        for (var _402_16_ = 0; _402_16_ < list.length; _402_16_++)
         {
-            tab = list[_405_16_]
+            tab = list[_402_16_]
             tab.update()
         }
     }
@@ -613,9 +621,9 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _419_16_ = 0; _419_16_ < list.length; _419_16_++)
+        for (var _416_16_ = 0; _416_16_ < list.length; _416_16_++)
         {
-            tab = list[_419_16_]
+            tab = list[_416_16_]
             prjTabs[tab.file] = [tab]
         }
         dangling = []
@@ -639,9 +647,9 @@ class Tabs
         }
         this.tabs = this.tabs.concat(dangling)
         var list1 = _k_.list(this.tabs)
-        for (var _436_16_ = 0; _436_16_ < list1.length; _436_16_++)
+        for (var _433_16_ = 0; _433_16_ < list1.length; _433_16_++)
         {
-            tab = list1[_436_16_]
+            tab = list1[_433_16_]
             this.div.removeChild(tab.div)
             this.div.appendChild(tab.div)
         }
@@ -649,7 +657,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _442_20_
+        var _439_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

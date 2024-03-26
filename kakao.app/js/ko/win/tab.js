@@ -30,11 +30,39 @@ class Tab
         this.update()
     }
 
+    stashInfo ()
+    {
+        var info
+
+        info = {}
+        if (this.isPrj)
+        {
+            info.prj = this.file
+            if (this.hiddenPrjFiles)
+            {
+                info.hidden = this.hiddenPrjFiles
+            }
+        }
+        else
+        {
+            info.file = this.file
+            if (this.pinned)
+            {
+                info.pinned = true
+            }
+            if (this.isActive())
+            {
+                info.active = true
+            }
+        }
+        return info
+    }
+
     foreignChanges (lineChanges)
     {
-        var _33_17_
+        var _46_17_
 
-        this.foreign = ((_33_17_=this.foreign) != null ? _33_17_ : [])
+        this.foreign = ((_46_17_=this.foreign) != null ? _46_17_ : [])
         this.foreign.push(lineChanges)
         return this.update()
     }
@@ -48,20 +76,20 @@ class Tab
 
     saveChanges ()
     {
-        var change, changes, _53_23_
+        var change, changes, _66_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _54_28_ = 0; _54_28_ < list.length; _54_28_++)
+                for (var _67_28_ = 0; _67_28_ < list.length; _67_28_++)
                 {
-                    changes = list[_54_28_]
+                    changes = list[_67_28_]
                     var list1 = _k_.list(changes)
-                    for (var _55_31_ = 0; _55_31_ < list1.length; _55_31_++)
+                    for (var _68_31_ = 0; _68_31_ < list1.length; _68_31_++)
                     {
-                        change = list1[_55_31_]
+                        change = list1[_68_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -119,7 +147,7 @@ class Tab
 
     update ()
     {
-        var diss, file, html, i, name, sep, _138_16_
+        var diss, file, html, i, name, sep, _151_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
@@ -175,7 +203,7 @@ class Tab
         {
             if (this.hiddenPrjFiles)
             {
-                for (var _145_25_ = i = 0, _145_29_ = this.hiddenPrjFiles.length; (_145_25_ <= _145_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_145_25_ <= _145_29_ ? ++i : --i))
+                for (var _158_25_ = i = 0, _158_29_ = this.hiddenPrjFiles.length; (_158_25_ <= _158_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_158_25_ <= _158_29_ ? ++i : --i))
                 {
                     this.div.appendChild(elem('span',{class:'prjdot',text:'●'}))
                 }
@@ -211,14 +239,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _154_27_
+        var _167_27_
 
-        return ((_154_27_=this.next()) != null ? _154_27_ : this.prev())
+        return ((_167_27_=this.next()) != null ? _167_27_ : this.prev())
     }
 
     close ()
     {
-        var _164_16_
+        var _177_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -272,9 +300,9 @@ class Tab
             if (this.hiddenPrjFiles)
             {
                 var list = _k_.list(this.hiddenPrjFiles)
-                for (var _214_25_ = 0; _214_25_ < list.length; _214_25_++)
+                for (var _227_25_ = 0; _227_25_ < list.length; _227_25_++)
                 {
-                    file = list[_214_25_]
+                    file = list[_227_25_]
                     this.tabs.addTab(file)
                 }
                 delete this.hiddenPrjFiles
@@ -283,9 +311,9 @@ class Tab
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _219_24_ = 0; _219_24_ < list1.length; _219_24_++)
+                for (var _232_24_ = 0; _232_24_ < list1.length; _232_24_++)
                 {
-                    tab = list1[_219_24_]
+                    tab = list1[_232_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -301,7 +329,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _235_19_
+        var changes, _248_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -312,9 +340,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _236_24_ = 0; _236_24_ < list.length; _236_24_++)
+            for (var _249_24_ = 0; _249_24_ < list.length; _249_24_++)
             {
-                changes = list[_236_24_]
+                changes = list[_249_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign
