@@ -245,4 +245,5 @@ export default {isEqual:isEqual,zip:function (...args)
         result.push([key,val])
     }
     return result
-}}
+},test:function ()
+{}}

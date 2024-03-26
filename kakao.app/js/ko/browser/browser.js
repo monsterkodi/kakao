@@ -454,7 +454,7 @@ Browser = (function ()
         {
             return
         }
-        col = this.emptyColumn((opt != null ? opt.column : undefined))
+        col = this.emptyColumn((opt != null ? opt.col : undefined))
         this.clearColumnsFrom(col.index)
         cnt = elem({class:'browserImageContainer',child:elem('img',{class:'browserImage',src:slash.fileUrl(file)})})
         return col.table.appendChild(cnt)

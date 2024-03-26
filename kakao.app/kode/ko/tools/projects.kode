@@ -74,6 +74,7 @@ class Projects
                 
             log 'projects' @projects
             log 'allFiles' @allFiles
+            post.emit 'projectIndexed' prjPath
         
         delete @indexing
         

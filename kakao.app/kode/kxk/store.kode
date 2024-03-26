@@ -79,18 +79,20 @@ function Store extends events
 
         @data ?= {}
         sds.set @data, @keypath(key), value
-        # log @data
-        clearTimeout @timer
-        @timer = setTimeout @save, @timeout
+        @delayedSave()
         post.toWins 'store' @name, 'set' key, value
                     
     del: (key) => 
     
         return if not @data
         sds.del @data, @keypath key
-        clearTimeout @timer
-        @timer = setTimeout @save, @timeout
+        @delayedSave()
         post.toWins 'store' @name, 'del' key
+        
+    delayedSave: =>
+        
+        clearTimeout @timer
+        @timer = setTimeout (=> @save()), @timeout
                 
     clear: =>
         
@@ -123,25 +125,22 @@ function Store extends events
     #      000  000   000     000     000     
     # 0000000   000   000      0      00000000
 
-    save: =>
-        
-        # log "store '#{@name}' save"
+    save: ○=>
         
         return if not @file
         return if empty @data
-
-        @emit 'willSave'
 
         clearTimeout @timer
         @timer = null
 
         try
             text = noon.stringify(@data, {indent: 2, maxalign: 8})+'\n'
-            ffs.write(@file, text).then =>
-                # log "store '#{@name}' saved:\n" text
+            # ●▸ write
+            ○ ffs.write @file, text
+            # ●▪ write
+            # log "store '#{@name}' saved:\n" text
+            # log "store '#{@name}' saved"
         catch err
             error "store.save -- can't save to '#{@file}:" err
-
-        @emit 'didSave'
         
 export Store

@@ -306,7 +306,7 @@ function Browser extends events
         
         return if not row.isActive()
 
-        col = @emptyColumn opt?.column
+        col = @emptyColumn opt?.col
         @clearColumnsFrom col.index
         cnt = elem class:'browserImageContainer' child: 
             elem 'img' class:'browserImage' src:slash.fileUrl file

@@ -156,7 +156,6 @@ Window = (function ()
     {
         var action
 
-        console.log('ko.Window.onMenuAction',name,trail)
         if (action = Editor.actionWithName(name))
         {
             console.log('editor.actionWithName',name)
@@ -280,7 +279,6 @@ Window = (function ()
 
         }
 
-        console.log('onMenuAction unhandled',name,trail)
     }
 
     return Window

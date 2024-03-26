@@ -52,7 +52,7 @@ class Navigate
         {
             this.filePositions.pop()
         }
-        this.filePositions.push({file:file,pos:pos,line:pos[1] + 1,column:pos[0],name:filePos,text:slash.file(filePos)})
+        this.filePositions.push({file:file,pos:pos,line:pos[1] + 1,col:pos[0],name:filePos,text:slash.file(filePos)})
         while (this.filePositions.length > prefs.get('navigateHistoryLength',100))
         {
             this.filePositions.shift()

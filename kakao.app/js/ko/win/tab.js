@@ -16,10 +16,11 @@ import Syntax from "../editor/Syntax.js"
 
 class Tab
 {
-    constructor (tabs, file)
+    constructor (tabs, file, isPrj)
     {
         this.tabs = tabs
         this.file = file
+        this.isPrj = isPrj
     
         this.togglePinned = this.togglePinned.bind(this)
         this.dirty = false
@@ -31,9 +32,9 @@ class Tab
 
     foreignChanges (lineChanges)
     {
-        var _37_17_
+        var _33_17_
 
-        this.foreign = ((_37_17_=this.foreign) != null ? _37_17_ : [])
+        this.foreign = ((_33_17_=this.foreign) != null ? _33_17_ : [])
         this.foreign.push(lineChanges)
         return this.update()
     }
@@ -47,20 +48,20 @@ class Tab
 
     saveChanges ()
     {
-        var change, changes, _57_23_
+        var change, changes, _53_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _58_28_ = 0; _58_28_ < list.length; _58_28_++)
+                for (var _54_28_ = 0; _54_28_ < list.length; _54_28_++)
                 {
-                    changes = list[_58_28_]
+                    changes = list[_54_28_]
                     var list1 = _k_.list(changes)
-                    for (var _59_31_ = 0; _59_31_ < list1.length; _59_31_++)
+                    for (var _55_31_ = 0; _55_31_ < list1.length; _55_31_++)
                     {
-                        change = list1[_59_31_]
+                        change = list1[_55_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -118,19 +119,16 @@ class Tab
 
     update ()
     {
-        var diss, file, html, name, sep, _143_16_
+        var diss, file, html, name, sep, _138_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
         sep = '●'
-        if (window.editor.newlineCharacters === '\r\n')
+        if (this.isPrj)
         {
-            sep = '■'
+            sep = ''
         }
         this.div.appendChild(elem('span',{class:'dot',text:sep}))
-        sep = "<span class='dot'>►</span>"
-        this.pkgDiv = elem('span',{class:'pkg',html:this.pkg && (this.pkg + sep) || ''})
-        this.div.appendChild(this.pkgDiv)
         file = this.file
         diss = Syntax.dissForTextAndSyntax(slash.file(file),'ko')
         if (!prefs.get('tabs|extension'))
@@ -143,23 +141,30 @@ class Tab
         }
         name = elem('span',{class:'name',html:Render.line(diss,{charWidth:0})})
         this.div.appendChild(name)
-        html = ''
-        if (this.pinned)
+        if (this.isPrj)
         {
-            html = `<svg width="100%" height="100%" viewBox="0 0 30 30" fill="transparent">
+            this.div.classList.add('prj')
+        }
+        else
+        {
+            html = ''
+            if (this.pinned)
+            {
+                html = `<svg width="100%" height="100%" viewBox="0 0 30 30" fill="transparent">
     <circle cx="15" cy="12" r="4" />
     <line x1="15" y1="16"  x2="15"  y2="22" stroke-linecap="round"></line>
 </svg>`
-        }
-        else if (this.tmpTab)
-        {
-            html = `<svg width="100%" height="100%" viewBox="0 0 30 30">
+            }
+            else if (this.tmpTab)
+            {
+                html = `<svg width="100%" height="100%" viewBox="0 0 30 30">
     <circle cx="15" cy="9"  r="2" />
     <circle cx="15" cy="15" r="2" />
     <circle cx="15" cy="21" r="2" />
 </svg>`
+            }
+            this.div.appendChild(elem({class:'tabstate',html:html,click:this.togglePinned}))
         }
-        this.div.appendChild(elem({class:'tabstate',html:html,click:this.togglePinned}))
         if ((this.file != null))
         {
             diss = Syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
@@ -196,14 +201,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _154_27_
+        var _149_27_
 
-        return ((_154_27_=this.next()) != null ? _154_27_ : this.prev())
+        return ((_149_27_=this.next()) != null ? _149_27_ : this.prev())
     }
 
     close ()
     {
-        var _164_16_
+        var _159_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -214,22 +219,6 @@ class Tab
         ;(this.tooltip != null ? this.tooltip.del() : undefined)
         post.emit('tabClosed',this.file)
         return this
-    }
-
-    hidePkg ()
-    {
-        if (this.pkgDiv)
-        {
-            return this.pkgDiv.style.display = 'none'
-        }
-    }
-
-    showPkg ()
-    {
-        if (this.pkgDiv)
-        {
-            return this.pkgDiv.style.display = 'initial'
-        }
     }
 
     setDirty (dirty)
@@ -266,13 +255,42 @@ class Tab
 
     activate ()
     {
-        post.emit('jumpToFile',this.file)
+        var file, tab
+
+        if (this.isPrj)
+        {
+            if (this.hiddenPrjFiles)
+            {
+                var list = _k_.list(this.hiddenPrjFiles)
+                for (var _209_25_ = 0; _209_25_ < list.length; _209_25_++)
+                {
+                    file = list[_209_25_]
+                    this.tabs.addTab(file)
+                }
+                delete this.hiddenPrjFiles
+            }
+            else
+            {
+                this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
+                var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
+                for (var _214_24_ = 0; _214_24_ < list1.length; _214_24_++)
+                {
+                    tab = list1[_214_24_]
+                    this.tabs.closeTab(tab)
+                }
+            }
+            this.tabs.update()
+        }
+        else
+        {
+            post.emit('jumpToFile',this.file)
+        }
         return this
     }
 
     finishActivation ()
     {
-        var changes, _226_19_
+        var changes, _229_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -283,9 +301,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _227_24_ = 0; _227_24_ < list.length; _227_24_++)
+            for (var _230_24_ = 0; _230_24_ < list.length; _230_24_++)
             {
-                changes = list[_227_24_]
+                changes = list[_230_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

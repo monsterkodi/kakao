@@ -27,9 +27,9 @@ Store = (function ()
     {
         var _29_22_, _30_22_
 
-        this["save"] = this["save"].bind(this)
         this["reload"] = this["reload"].bind(this)
         this["clear"] = this["clear"].bind(this)
+        this["delayedSave"] = this["delayedSave"].bind(this)
         this["del"] = this["del"].bind(this)
         this["set"] = this["set"].bind(this)
         this["get"] = this["get"].bind(this)
@@ -109,8 +109,7 @@ Store = (function ()
         }
         this.data = ((_80_14_=this.data) != null ? _80_14_ : {})
         sds.set(this.data,this.keypath(key),value)
-        clearTimeout(this.timer)
-        this.timer = setTimeout(this.save,this.timeout)
+        this.delayedSave()
         return post.toWins('store',this.name,'set',key,value)
     }
 
@@ -121,9 +120,17 @@ Store = (function ()
             return
         }
         sds.del(this.data,this.keypath(key))
-        clearTimeout(this.timer)
-        this.timer = setTimeout(this.save,this.timeout)
+        this.delayedSave()
         return post.toWins('store',this.name,'del',key)
+    }
+
+    Store.prototype["delayedSave"] = function ()
+    {
+        clearTimeout(this.timer)
+        return this.timer = setTimeout(((function ()
+        {
+            return this.save()
+        }).bind(this)),this.timeout)
     }
 
     Store.prototype["clear"] = function ()
@@ -157,7 +164,7 @@ Store = (function ()
         }
     }
 
-    Store.prototype["save"] = function ()
+    Store.prototype["save"] = async function ()
     {
         var text
 
@@ -169,20 +176,17 @@ Store = (function ()
         {
             return
         }
-        this.emit('willSave')
         clearTimeout(this.timer)
         this.timer = null
         try
         {
             text = noon.stringify(this.data,{indent:2,maxalign:8}) + '\n'
-            ffs.write(this.file,text).then((function ()
-            {}).bind(this))
+            return await ffs.write(this.file,text)
         }
         catch (err)
         {
             console.error(`store.save -- can't save to '${this.file}:`,err)
         }
-        return this.emit('didSave')
     }
 
     return Store

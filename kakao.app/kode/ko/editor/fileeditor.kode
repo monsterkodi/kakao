@@ -42,6 +42,7 @@ function FileEditor extends TextEditor
         post.on 'commandline'   @onCommandline
         post.on 'jumpTo'        @jumpTo
         post.on 'jumpToFile'    @jumpToFile
+        post.on 'jumpToFilePos' @jumpToFilePos
         post.on 'editor.init'   @onEditorInit
         
         @setText ''
@@ -63,7 +64,7 @@ function FileEditor extends TextEditor
         
         if changeInfo.changes.length
             @dirty = @do.hasChanges()
-            log 'changeInfo' @dirty
+            # log 'changeInfo' @dirty
             post.emit 'dirty' @dirty
 
     # 00000000  000  000      00000000
@@ -232,6 +233,14 @@ function FileEditor extends TextEditor
     #       000  000   000  000000000  00000000
     # 000   000  000   000  000 0 000  000
     #  0000000    0000000   000   000  000
+    
+    jumpToFilePos: (opt) =>
+        
+        if opt.path == @currentFile
+            @singleCursorAtPos [opt.col, opt.line-1]
+            @scroll.cursorToTop()
+        else
+            log 'FileEditor.jumpToFilePos loadFile?' opt
 
     jumpToFile: (opt) =>
 
