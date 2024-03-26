@@ -134,13 +134,7 @@ class Indexer
                         if cn.length>1 and lc.indexOf(cn)>=0 or lc.startsWith(cn)
                             return true
         value
-        
-    # onSourceInfoForFile: (opt) =>
-#         
-        # file = opt.item.file
-        # if @files[file]?
-            # post.emit 'sourceInfoForFile' @files[file], opt
-        
+                
     #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
     # 000   000  000   000  000   000      000       000   000  0000  000  000       
     # 000000000  000   000  000   000      000000    000   000  000 0 000  000       
@@ -204,6 +198,7 @@ class Indexer
 
     indexFile: (file, opt) =>
         
+        # ● indexFile
         # log 'Indexer.indexFile' file, opt
         
         @removeFile file if opt?.refresh

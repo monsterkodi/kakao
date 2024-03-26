@@ -43,7 +43,7 @@
     app.snapshotFolder = @"~/Desktop";
     app.snapshotFile   = @"kakao";
     app.watch = [Watch path:[Bundle path] delegate:app];
-    app.watchHome = [Watch path:[FS homeDir] delegate:app];
+    // app.watchHome = [Watch path:[FS homeDir] delegate:app];
     
     id nsApp = [NSApplication sharedApplication];
     [nsApp setDelegate:app];

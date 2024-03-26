@@ -320,7 +320,7 @@ function FileBrowser extends Browser
                     if not File.isCode item.path
                         @fileInfoColumn col, file
 
-        post.emit 'load' column:col, item:item
+        post.emit 'load' col:col, item:item
                 
         @updateColumnScrolls()
 
@@ -395,6 +395,8 @@ function FileBrowser extends Browser
 
     onDirChanged: (info) =>
  
+        ● onDirChanged
+        
         for column in @columns
             if column.path() == info.dir
                 @loadDirItem {path:info.dir, type:'dir'}, column.index, active:column.activePath(), focus:false
@@ -435,12 +437,12 @@ function FileBrowser extends Browser
         
         @columns[col].loadItems items, item
 
-        post.emit 'load' column:col, item:item
+        post.emit 'load' col:col, item:item
                             
         if opt.activate
             if row = @columns[col].row slash.file opt.activate
                 row.activate()
-                post.emit 'load' column:col+1 item:row.item
+                post.emit 'load' col:col+1 item:row.item
         else if opt.active
             @columns[col].row(slash.file opt.active)?.setActive()
         
@@ -450,7 +452,7 @@ function FileBrowser extends Browser
             if lastColumn = @lastDirColumn()
                 lastColumn.focus()
                 
-        opt.cb? column:col, item:item
+        opt.cb? col:col, item:item
 
         if col >= 2 and @columns[0].width() < 250
             @columns[1].makeRoot()

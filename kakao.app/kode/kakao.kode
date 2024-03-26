@@ -39,7 +39,7 @@ function Kakao
     # receives a message from the application process and posts it in this window
         
     @receive: (msg) ->
-        
+
         if msg is str
             kxk.post.emit msg
         else if msg is obj

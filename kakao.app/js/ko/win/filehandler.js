@@ -45,7 +45,6 @@ class FileHandler
     {
         var activeTab, filePos, restoreState, tab
 
-        console.log('FileHandler.loadFile',file,opt)
         if ((file != null) && file.length <= 0)
         {
             file = null

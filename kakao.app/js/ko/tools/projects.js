@@ -86,6 +86,7 @@ class Projects
             }
             console.log('projects',this.projects)
             console.log('allFiles',this.allFiles)
+            post.emit('projectIndexed',prjPath)
         }
         delete this.indexing
         if (!_k_.empty(this.queue))

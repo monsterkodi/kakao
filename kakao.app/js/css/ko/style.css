@@ -388,9 +388,6 @@ body {
   padding-right: 6px;
   margin-top: -1px;
 }
-.pkg .dot {
-  font-size: 12px;
-}
 .tooltip {
   white-space: nowrap;
   padding: 3px;
@@ -438,6 +435,9 @@ body {
 .tab:not(.active) .name,
 .tab:not(.active) .tabstate {
   opacity: 0.5;
+}
+.tab.prj {
+  flex: 0 0 0;
 }
 .tabstate {
   border-radius: 6px;

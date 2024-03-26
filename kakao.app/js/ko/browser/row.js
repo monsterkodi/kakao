@@ -136,7 +136,7 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, opt, _91_19_
+        var col, _91_19_
 
         if (this.column.index < 0)
         {
@@ -157,8 +157,7 @@ Row = (function ()
                 this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
                 if (emit)
             {
-                opt = {line:this.item.line,col:this.item.column,path:this.item.path}
-                post.emit('jumpToFile',opt)
+                post.emit('jumpToFilePos',this.item)
             }
         }
 
@@ -172,7 +171,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _122_31_
+        var _118_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -215,7 +214,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _161_24_
+        var _157_24_
 
         if ((this.input != null))
         {
@@ -269,7 +268,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _196_28_, _203_37_
+        var _192_28_, _199_37_
 
         if (!(this.input != null))
         {

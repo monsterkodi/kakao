@@ -46,6 +46,7 @@ class FileWatch
         
     onChange: (change, path) =>
         
+        log 'FileWatch.onChange' path, Object.keys(@watchers).length
         for k,v of @watchers
             if k == path
                 # log 'watchers' @watchers

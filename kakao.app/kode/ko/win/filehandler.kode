@@ -39,7 +39,7 @@ class FileHandler
     
     loadFile: (file, opt={}) =>
         
-        log 'FileHandler.loadFile' file, opt
+        # log 'FileHandler.loadFile' file, opt
     
         file = null if file? and file.length <= 0
     

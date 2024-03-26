@@ -13,7 +13,8 @@ use ../../kxk/drag
 use ../../kxk/kpos
 use ../../kxk/slash
 use ../../kxk/popup
-use ./tab ● Tab
+use ../tools/Projects
+use ./Tab
 
 class Tabs
 
@@ -48,6 +49,39 @@ class Tabs
         post.on 'saved'            @onSaved     # saved in this window
         post.on 'editorFocus'      @onEditorFocus
         post.on 'stashLoaded'      @onStashLoaded
+        post.on 'projectIndexed'   @onProjectIndexed
+        
+    onProjectIndexed: (prjPath) => 
+    
+        @addPrjTab prjPath
+                
+    getPrjFiles: (file) ->
+        
+        @getPrjTabs(file).map (t) -> t.file
+        
+    getPrjTabs: (file) ->
+        
+        if prjPath = Projects.dir file
+            prjChildTabs = []
+            for tab in @tabs
+                if Projects.dir(tab.file) == prjPath and tab.file != prjPath
+                    prjChildTabs.push tab
+        prjChildTabs
+        
+    getPrjTab: (file) =>
+        
+        if prjPath = Projects.dir file
+            for tab in @tabs
+                if tab.file == prjPath
+                    return tab
+        null
+        
+    addPrjTab: (file) =>
+        
+        if prjPath = Projects.dir file
+            if not @getPrjTab file
+                @tabs.push new Tab @, prjPath, true
+                @sortTabs()
         
     onSendTabs: (winID) =>
 
@@ -125,6 +159,8 @@ class Tabs
         tab
 
     numTabs:   -> @tabs.length
+    
+    fileTabs: -> @tabs.filter (t) -> not t.isPrj
 
     tabAtX: (x) ->
 
@@ -133,6 +169,7 @@ class Tabs
             br.left <= x <= br.left + br.width
 
     onEditorFocus: (editor) =>
+        
         if editor.name == 'editor'
             if t = @getTmpTab()
                 if t.file == window.textEditor.currentFile
@@ -159,12 +196,12 @@ class Tabs
 
     onCloseTabOrWindow: (tab) =>
 
-        log 'onCloseTabOrWindow' @numTabs()
+        # log 'onCloseTabOrWindow' @numTabs()
         if @numTabs() <= 1
             post.emit 'menuAction' 'close'
         else
             tab ?= @activeTab()
-            log 'activeTab' tab
+            # log 'activeTab' tab
             tab.nextOrPrev().activate()
             @closeTab tab
             @update()
@@ -185,14 +222,19 @@ class Tabs
 
     addTab: (file) ->
 
-        if @tabs.length >= prefs.get 'maximalNumberOfTabs' 8
-            for index in [0...@tabs.length]
-                if not @tabs[index].dirty and not @tabs[index].pinned
-                    @closeTab @tabs[index]
-                    break
+        # if @tabs.length >= prefs.get 'maximalNumberOfTabs' 8
+            # for index in [0...@tabs.length]
+                # if not @tabs[index].dirty and not @tabs[index].pinned
+                    # @closeTab @tabs[index]
+                    # break
 
-        @tabs.push new Tab @, file
-        last @tabs
+        # log 'Tabs.addTab' file, Projects.dir file
+        newTab = new Tab @, file
+        @tabs.push newTab
+        
+        @addPrjTab file
+        
+        newTab
 
     getTmpTab: ->
         
@@ -316,8 +358,9 @@ class Tabs
 
     stash: =>
 
-        files  = ( t.file for t in @tabs )
-        pinned = ( t.pinned for t in @tabs )
+        tabs   = @fileTabs()
+        files  = ( t.file for t in tabs )
+        pinned = ( t.pinned for t in tabs )
         files  = files.filter (file) -> not file?.startsWith 'untitled'
 
         window.stash.set 'tabs',
@@ -364,19 +407,38 @@ class Tabs
 
     update: ->
 
+        log 'Tabs.update'
+        @sortTabs()        
         @stash()
-
-        return if empty @tabs
-
-        pkg = @tabs[0].pkg
-        @tabs[0].showPkg()
-        for tab in @tabs.slice 1
-            if tab.pkg == pkg
-                tab.hidePkg()
+        
+    sortTabs: ->
+        
+        log 'sortTabs'
+        
+        sorted = @tabs.filter (t) -> t.isPrj
+        remain = @tabs.filter (t) -> not t.isPrj
+        
+        prjTabs = {}
+        for tab in sorted
+            prjTabs[tab.file] = [tab]
+           
+        dangling = []
+        while tab = remain.shift()
+            prjPath = Projects.dir tab.file
+            if valid prjTabs[prjPath]
+                prjTabs[prjPath].push tab
             else
-                pkg = tab.pkg
-                tab.showPkg()
-        @
+                dangling.push tab
+            
+        @tabs = []
+        for k,v of prjTabs
+            @tabs = @tabs.concat v
+            
+        @tabs = @tabs.concat dangling
+            
+        for tab in @tabs
+            @div.removeChild tab.div
+            @div.appendChild tab.div
 
     onDirty: (dirty) =>
 

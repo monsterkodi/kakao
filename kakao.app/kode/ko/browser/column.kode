@@ -332,6 +332,7 @@ function Column
     sort: ->
         
         return if empty @parent?.path
+        return if @parent.type == 'file'
         sortBy = prefs.get 'browser|sort' {}
         switch sortBy[@parent.path]
             'type'  ➜ @sortByType()
