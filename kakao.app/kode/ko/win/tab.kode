@@ -27,6 +27,19 @@ class Tab
         @update()
 
         # post.emit 'watch' @file
+        
+    stashInfo: ->
+        
+        info = {}
+        if @isPrj
+            info.prj = @file
+            if @hiddenPrjFiles
+                info.hidden = @hiddenPrjFiles
+        else
+            info.file   = @file
+            info.pinned = true if @pinned
+            info.active = true if @isActive()
+        info
 
     foreignChanges: (lineChanges) ->
 
