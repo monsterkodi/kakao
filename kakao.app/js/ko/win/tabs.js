@@ -359,8 +359,8 @@ class Tabs
                 if (!(_k_.in(file,prjTab.hiddenPrjFiles)))
                 {
                     prjTab.hiddenPrjFiles.push(file)
-                    prjTab.update()
                 }
+                prjTab.update()
                 return
             }
         }
@@ -396,9 +396,9 @@ class Tabs
         else
         {
             tab = this.addTab(file)
-            tab.tmpTab = true
+            if ((tab != null)) { tab.tmpTab = true }
         }
-        tab.update()
+        ;(tab != null ? tab.update() : undefined)
         return tab
     }
 

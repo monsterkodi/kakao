@@ -532,7 +532,7 @@ infoPadding = 6px
     border-top-left-radius  6px
     border-top-right-radius 6px
     font-size           titlebarFontSize
-    padding-left        6px
+    padding-left        4px
     cursor              pointer
     
     box-sizing          border-box
@@ -559,11 +559,12 @@ infoPadding = 6px
     padding-top         5px
 
 .tabstate
-    flex                0 0 titlebarHeight
+    flex                0 1 titlebarHeight
     border-radius       6px
     stroke-width        2
     height              titlebarHeight
-    width               titlebarHeight
+    min-width           15px
+    max-width           titlebarHeight
         
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  

@@ -237,7 +237,7 @@ class Tabs
             if valid prjTab.hiddenPrjFiles
                 if file not in prjTab.hiddenPrjFiles
                     prjTab.hiddenPrjFiles.push file
-                    prjTab.update()
+                prjTab.update()
                 return
         
         newTab = new Tab @, file
@@ -258,8 +258,8 @@ class Tabs
             tab.file = file
         else
             tab = @addTab file
-            tab.tmpTab = true
-        tab.update()
+            tab?.tmpTab = true
+        tab?.update()
         tab
         
     onNewEmptyTab: =>

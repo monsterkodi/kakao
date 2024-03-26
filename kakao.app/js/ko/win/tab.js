@@ -147,7 +147,7 @@ class Tab
 
     update ()
     {
-        var diss, file, html, i, name, sep, _151_16_
+        var diss, dot, file, html, i, name, sep, _151_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
@@ -167,7 +167,7 @@ class Tab
                 diss.pop()
             }
         }
-        name = elem('span',{class:'name',html:Render.line(diss,{charWidth:0})})
+        name = elem('span',{class:'name app-drag-region',html:Render.line(diss,{charWidth:0})})
         this.div.appendChild(name)
         if (this.isPrj)
         {
@@ -191,7 +191,7 @@ class Tab
     <circle cx="15" cy="21" r="2" />
 </svg>`
             }
-            this.div.appendChild(elem('span',{class:'tabstate',html:html,click:this.togglePinned}))
+            this.div.appendChild(elem('span',{class:'tabstate app-drag-region',html:html,click:this.togglePinned}))
         }
         if ((this.file != null))
         {
@@ -205,7 +205,12 @@ class Tab
             {
                 for (var _158_25_ = i = 0, _158_29_ = this.hiddenPrjFiles.length; (_158_25_ <= _158_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_158_25_ <= _158_29_ ? ++i : --i))
                 {
-                    this.div.appendChild(elem('span',{class:'prjdot',text:'●'}))
+                    dot = elem('span',{class:'prjdot',text:'●'})
+                    this.div.appendChild(dot)
+                    if (this.hiddenPrjFiles[i] === window.textEditor.currentFile)
+                    {
+                        dot.classList.add('activeTab')
+                    }
                 }
             }
         }
@@ -239,14 +244,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _167_27_
+        var _170_27_
 
-        return ((_167_27_=this.next()) != null ? _167_27_ : this.prev())
+        return ((_170_27_=this.next()) != null ? _170_27_ : this.prev())
     }
 
     close ()
     {
-        var _177_16_
+        var _180_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -302,19 +307,23 @@ class Tab
                 hidden = this.hiddenPrjFiles
                 delete this.hiddenPrjFiles
                 var list = _k_.list(hidden)
-                for (var _229_25_ = 0; _229_25_ < list.length; _229_25_++)
+                for (var _232_25_ = 0; _232_25_ < list.length; _232_25_++)
                 {
-                    file = list[_229_25_]
-                    this.tabs.addTab(file)
+                    file = list[_232_25_]
+                    tab = this.tabs.addTab(file)
+                    if (window.textEditor.currentFile === file)
+                    {
+                        tab.setActive()
+                    }
                 }
             }
             else
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _233_24_ = 0; _233_24_ < list1.length; _233_24_++)
+                for (var _238_24_ = 0; _238_24_ < list1.length; _238_24_++)
                 {
-                    tab = list1[_233_24_]
+                    tab = list1[_238_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -330,7 +339,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _249_19_
+        var changes, _254_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -341,9 +350,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _250_24_ = 0; _250_24_ < list.length; _250_24_++)
+            for (var _255_24_ = 0; _255_24_ < list.length; _255_24_++)
             {
-                changes = list[_250_24_]
+                changes = list[_255_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

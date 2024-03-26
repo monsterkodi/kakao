@@ -11,6 +11,7 @@ use ../../kxk/prefs
 use ../../kxk/slash
 use ../../kxk/post 
 
+use ../tools/Projects
 use ../tools/File
 
 class FileHandler
@@ -65,12 +66,15 @@ class FileHandler
                     if activeTab.dirty
                         activeTab.storeState()
                         
-            if tab.state
+            if tab?.state
                 restoreState = tab.state.state
                         
             editor.setCurrentFile file, restoreState
     
-            tab.finishActivation() # setActive, restore state, update tabs
+            if tab
+                tab?.finishActivation() # setActive, restore state, update tabs
+            else
+                tabs.getPrjTab(Projects.dir file)?.update()
             
             post.emit 'fileLoaded' file
                 
