@@ -73,13 +73,12 @@ Editor = (function ()
                 }
             }
         }
-        Editor.actions.sort(function (a, b)
+        return Editor.actions.sort(function (a, b)
         {
             var _60_43_
 
             return (a.name != null ? a.name.localeCompare(b.name) : undefined)
         })
-        return post.emit('editor.init')
     }
 
     function Editor (name, config)

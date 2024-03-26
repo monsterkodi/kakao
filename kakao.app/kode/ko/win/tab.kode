@@ -140,7 +140,12 @@ class Tab
             html = Render.line diss, charWidth:0
             @tooltip = new tooltip elem:name, html:html, x:0
 
-        @div.appendChild(elem 'span' class:'dot' text:'●') if @dirty
+        if @isPrj
+            if @hiddenPrjFiles
+                for i in 0...@hiddenPrjFiles.length
+                    @div.appendChild(elem 'span' class:'prjdot' text:'●') 
+        else if @dirty
+            @div.appendChild(elem 'span' class:'dot' text:'●') 
         @
 
     index: -> @tabs.tabs.indexOf @
@@ -213,6 +218,7 @@ class Tab
                 @hiddenPrjFiles = @tabs.getPrjFiles @file
                 for tab in @tabs.getPrjTabs @file
                     @tabs.closeTab tab
+            @update()
             @tabs.update()
         else
             post.emit 'jumpToFile' @file

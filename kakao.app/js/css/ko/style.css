@@ -439,6 +439,9 @@ body {
 .tab.prj {
   flex: 0 0 0;
 }
+.tab.prj .name {
+  padding-right: 6px;
+}
 .tabstate {
   border-radius: 6px;
   stroke-width: 2;

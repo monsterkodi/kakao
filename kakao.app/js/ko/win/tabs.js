@@ -595,7 +595,6 @@ class Tabs
 
     update ()
     {
-        console.log('Tabs.update')
         this.sortTabs()
         return this.stash()
     }
@@ -604,7 +603,6 @@ class Tabs
     {
         var dangling, k, prjPath, prjTabs, remain, sorted, tab, v
 
-        console.log('sortTabs')
         sorted = this.tabs.filter(function (t)
         {
             return t.isPrj
@@ -615,9 +613,9 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _422_16_ = 0; _422_16_ < list.length; _422_16_++)
+        for (var _419_16_ = 0; _419_16_ < list.length; _419_16_++)
         {
-            tab = list[_422_16_]
+            tab = list[_419_16_]
             prjTabs[tab.file] = [tab]
         }
         dangling = []
@@ -641,9 +639,9 @@ class Tabs
         }
         this.tabs = this.tabs.concat(dangling)
         var list1 = _k_.list(this.tabs)
-        for (var _439_16_ = 0; _439_16_ < list1.length; _439_16_++)
+        for (var _436_16_ = 0; _436_16_ < list1.length; _436_16_++)
         {
-            tab = list1[_439_16_]
+            tab = list1[_436_16_]
             this.div.removeChild(tab.div)
             this.div.appendChild(tab.div)
         }
@@ -651,7 +649,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _445_20_
+        var _442_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

@@ -239,7 +239,11 @@ span.macro.macro,
   background: #282828;
 }
 .tab.prj {
-  background: #222;
+  background: #181818;
+}
+.tab.prj .name {
+  color: #aaf;
+  opacity: 1;
 }
 .tab.prj.active {
   background: #444;
