@@ -424,7 +424,7 @@ body {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   font-size: 15px;
-  padding-left: 6px;
+  padding-left: 4px;
   cursor: pointer;
   box-sizing: border-box;
   font-size: 15px;
@@ -451,11 +451,12 @@ body {
   padding-top: 5px;
 }
 .tabstate {
-  flex: 0 0 30px;
+  flex: 0 1 30px;
   border-radius: 6px;
   stroke-width: 2;
   height: 30px;
-  width: 30px;
+  min-width: 15px;
+  max-width: 30px;
 }
 #browser {
   font-family: titlebarFont;

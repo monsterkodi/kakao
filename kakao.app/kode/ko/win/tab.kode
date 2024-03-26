@@ -123,7 +123,7 @@ class Tab
                 diss.pop()
                 diss.pop()
         
-        name = elem 'span' class:'name' html:Render.line diss, charWidth:0
+        name = elem 'span' class:'name app-drag-region' html:Render.line diss, charWidth:0
         @div.appendChild name
         
         if @isPrj
@@ -146,7 +146,7 @@ class Tab
                 </svg>
                 """
             
-            @div.appendChild elem 'span' class:'tabstate' html:html, click:@togglePinned
+            @div.appendChild elem 'span' class:'tabstate app-drag-region' html:html, click:@togglePinned
 
         if @file?
             diss = Syntax.dissForTextAndSyntax slash.tilde(@file), 'ko'
@@ -156,9 +156,12 @@ class Tab
         if @isPrj
             if @hiddenPrjFiles
                 for i in 0...@hiddenPrjFiles.length
-                    @div.appendChild(elem 'span' class:'prjdot' text:'●') 
+                    dot = elem 'span' class:'prjdot' text:'●'
+                    @div.appendChild dot
+                    if @hiddenPrjFiles[i] == window.textEditor.currentFile
+                        dot.classList.add 'activeTab'
         else if @dirty
-            @div.appendChild(elem 'span' class:'dot' text:'●') 
+            @div.appendChild elem 'span' class:'dot' text:'●'
         @
 
     index: -> @tabs.tabs.indexOf @
@@ -227,7 +230,9 @@ class Tab
                 hidden = @hiddenPrjFiles
                 delete @hiddenPrjFiles
                 for file in hidden
-                    @tabs.addTab file
+                    tab = @tabs.addTab file
+                    if window.textEditor.currentFile == file
+                        tab.setActive()
             else
                 @hiddenPrjFiles = @tabs.getPrjFiles @file
                 for tab in @tabs.getPrjTabs @file

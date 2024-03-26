@@ -206,10 +206,12 @@ span.macro.macro,
 #titlebar.focus .tabs {
   color: #3c3;
 }
-.tab .dot {
+.tab .dot,
+.tab .prjdot {
   color: #444;
 }
-.tab .dot.focus {
+.tab .dot.focus,
+.tab .prjdot.focus {
   color: #060;
 }
 .tab.dirty,
@@ -221,6 +223,9 @@ span.macro.macro,
 }
 .dot:hover {
   color: #f80;
+}
+.tab .prjdot.activeTab {
+  color: #fff;
 }
 .tab {
   background: #141414;
