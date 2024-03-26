@@ -381,8 +381,8 @@ function Open extends Command
     handleModKeyComboEvent: (mod, key, combo, event) -> 
         
         switch combo
-            when 'up'   then return @showHistory()
-            when 'down' then return @showFirst()
+            'up'   ➜ return @showHistory()
+            'down' ➜ return @showFirst()
         super mod, key, combo, event
 
 export Open

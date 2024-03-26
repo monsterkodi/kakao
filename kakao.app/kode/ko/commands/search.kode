@@ -40,7 +40,7 @@ function Search extends Command
         return if not command.length
         
         switch @name
-            when '/search/', '/Search/'
+            '/search/' '/Search/'
                 if command in ['^' '$' '.']
                     return 
                 rngs = matchr.ranges command, '  '
