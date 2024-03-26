@@ -59,7 +59,7 @@ function Editor extends Buffer
 
         Editor.actions.sort (a,b) -> a.name?.localeCompare b.name
         # log 'Editor.actions' Editor.actions.map((a) -> a.name ? a.key).join '\n'
-        post.emit 'editor.init'
+        # post.emit 'editor.init'
 
     @: (name, config) ->
 

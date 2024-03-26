@@ -407,13 +407,10 @@ class Tabs
 
     update: ->
 
-        log 'Tabs.update'
         @sortTabs()        
         @stash()
         
     sortTabs: ->
-        
-        log 'sortTabs'
         
         sorted = @tabs.filter (t) -> t.isPrj
         remain = @tabs.filter (t) -> not t.isPrj

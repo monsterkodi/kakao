@@ -26,17 +26,11 @@ Terminal = (function ()
         this["showContextMenu"] = this["showContextMenu"].bind(this)
         this["onContextMenu"] = this["onContextMenu"].bind(this)
         this["dequeueMeta"] = this["dequeueMeta"].bind(this)
-        this["onEditorInit"] = this["onEditorInit"].bind(this)
         Terminal.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Minimap','Meta'],fontSize:15})
         this.view.addEventListener("contextmenu",this.onContextMenu)
-        post.on('editor.init',this.onEditorInit)
         this.metaQueue = []
         this.setLines([''])
-    }
-
-    Terminal.prototype["onEditorInit"] = function ()
-    {
-        return this.initInvisibles()
+        this.initInvisibles()
     }
 
     Terminal.prototype["appendLineDiss"] = function (text, diss = [])

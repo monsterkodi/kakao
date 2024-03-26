@@ -36,7 +36,6 @@ FileEditor = (function ()
         this["jumpToFilePos"] = this["jumpToFilePos"].bind(this)
         this["onCommandline"] = this["onCommandline"].bind(this)
         this["setText"] = this["setText"].bind(this)
-        this["onEditorInit"] = this["onEditorInit"].bind(this)
         FileEditor.__super__.constructor.call(this,viewElem,{features:['Diffbar','Scrollbar','Numbers','Minimap','Meta','Autocomplete','Brackets','Strings','CursorLine'],fontSize:19})
         this.currentFile = null
         this.view.addEventListener('contextmenu',this.onContextMenu)
@@ -44,14 +43,9 @@ FileEditor = (function ()
         post.on('jumpTo',this.jumpTo)
         post.on('jumpToFile',this.jumpToFile)
         post.on('jumpToFilePos',this.jumpToFilePos)
-        post.on('editor.init',this.onEditorInit)
         this.setText('')
-    }
-
-    FileEditor.prototype["onEditorInit"] = function ()
-    {
         this.initInvisibles()
-        return this.initPigments()
+        this.initPigments()
     }
 
     FileEditor.prototype["changed"] = function (changeInfo)
