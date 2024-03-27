@@ -61,8 +61,8 @@ class Tabs
         
     getPrjTabs: (file) ->
         
+        prjChildTabs = []
         if prjPath = Projects.dir file
-            prjChildTabs = []
             for tab in @tabs
                 if Projects.dir(tab.file) == prjPath and tab.file != prjPath
                     prjChildTabs.push tab
@@ -211,7 +211,8 @@ class Tabs
     onCloseOtherTabs: =>
 
         return if not @activeTab() # should not happen
-        tabsToClose = @tabs.filter (t) => not t.pinned and t != @activeTab()
+        tabsToClose = @tabs.filter (t) => 
+            not t.pinned and t != @activeTab() and t != @getPrjTab Projects.dir @activeTab().file
         for t in tabsToClose
             @closeTab t
         @update()
@@ -224,22 +225,31 @@ class Tabs
 
     addTab: (file) ->
 
-        # if @tabs.length >= prefs.get 'maximalNumberOfTabs' 8
+        maxTabs = prefs.get 'maximalNumberOfTabs' 7
+        
+        # if @tabs.length >= maxTabs
             # for index in [0...@tabs.length]
                 # if not @tabs[index].dirty and not @tabs[index].pinned
                     # @closeTab @tabs[index]
                     # break
 
-        # log 'Tabs.addTab' file, Projects.dir file
-        
         prjPath = Projects.dir file
         if prjTab = @getPrjTab prjPath
             if valid prjTab.hiddenPrjFiles
                 if file not in prjTab.hiddenPrjFiles
                     prjTab.hiddenPrjFiles.push file
+                    while prjTab.hiddenPrjFiles.length > maxTabs
+                        prjTab.hiddenPrjFiles.shift() 
                 prjTab.update()
                 return
         
+        prjTabs = @getPrjTabs prjPath
+        if prjTabs.length > maxTabs-1
+            for prjTab in prjTabs
+                if not prjTab.dirty and not prjTab.pinned
+                    @closeTab prjTab
+                    break
+                
         newTab = new Tab @, file
         @tabs.push newTab
         
@@ -383,6 +393,7 @@ class Tabs
         while infos.length
             info = infos.shift()
             if info.prj
+                post.emit 'indexProject' info.prj
                 tab = @addPrjTab info.prj
                 if info.hidden
                     tab.hiddenPrjFiles = info.hidden
