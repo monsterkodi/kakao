@@ -123,7 +123,6 @@ Macro = (function ()
                 break
             case 'help':
                 helpFile = slash.path(kakao.bundle.path,'kode/ko/help.noon')
-                console.log('helpFile',helpFile)
                 ffs.read(helpFile).then(function (text)
                 {
                     var l

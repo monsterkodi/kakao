@@ -1,7 +1,5 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-import os from "./os.js"
-
 class Keyinfo
 {
     static forEvent (event)
@@ -28,9 +26,9 @@ class Keyinfo
         mods = []
         char = null
         var list = _k_.list(combo.split('+'))
-        for (var _34_14_ = 0; _34_14_ < list.length; _34_14_++)
+        for (var _32_14_ = 0; _32_14_ < list.length; _32_14_++)
         {
-            c = list[_34_14_]
+            c = list[_32_14_]
             if (this.isModifier(c))
             {
                 mods.push(c)
@@ -106,22 +104,15 @@ class Keyinfo
         index = combo.indexOf('cmdctrl')
         if (index >= 0)
         {
-            if (os.isMac)
-            {
-                combo = combo.replace('cmdctrl','command')
-                combo = combo.replace('alt+command','command+alt')
-            }
-            else
-            {
-                combo = combo.replace('cmdctrl','ctrl')
-            }
+            combo = combo.replace('cmdctrl','command')
+            combo = combo.replace('alt+command','command+alt')
         }
         return combo
     }
 
     static keynameForEvent (event)
     {
-        var _108_45_, _99_33_
+        var _103_45_, _94_33_
 
         switch (event.code)
         {
@@ -219,7 +210,7 @@ class Keyinfo
 
     static characterForEvent (event)
     {
-        var _113_20_
+        var _108_20_
 
         if ((event.key != null ? event.key.length : undefined) === 1)
         {
@@ -233,15 +224,16 @@ class Keyinfo
 
     static short (combo)
     {
-        var i
+        var i, short
 
-        combo = this.convertCmdCtrl(combo.toLowerCase())
-        for (var _121_18_ = i = 0, _121_22_ = this.iconKeyNames.length; (_121_18_ <= _121_22_ ? i < this.iconKeyNames.length : i > this.iconKeyNames.length); (_121_18_ <= _121_22_ ? ++i : --i))
+        short = this.convertCmdCtrl(combo.toLowerCase())
+        for (var _116_17_ = i = 0, _116_21_ = this.iconKeyNames.length; (_116_17_ <= _116_21_ ? i < this.iconKeyNames.length : i > this.iconKeyNames.length); (_116_17_ <= _116_21_ ? ++i : --i))
         {
-            combo = combo.replace(new RegExp(this.iconKeyNames[i],'gi'),this.iconKeyChars[i])
+            short = short.replace(new RegExp(this.iconKeyNames[i],'gi'),this.iconKeyChars[i])
         }
-        combo = combo.replace(/\+/g,'')
-        return combo.toUpperCase()
+        short = short.replace(/\+/g,'')
+        console.log('keyinfo.short',combo,short.toUpperCase())
+        return short.toUpperCase()
     }
 }
 

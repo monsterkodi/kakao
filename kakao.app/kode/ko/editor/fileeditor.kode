@@ -43,12 +43,9 @@ function FileEditor extends TextEditor
         post.on 'jumpTo'        @jumpTo
         post.on 'jumpToFile'    @jumpToFile
         post.on 'jumpToFilePos' @jumpToFilePos
-        # post.on 'editor.init'   @onEditorInit
         
         @setText ''
         
-    # onEditorInit: =>
-        # log 'onEditorInit'
         @initInvisibles()
         @initPigments()
 
@@ -460,7 +457,6 @@ function FileEditor extends TextEditor
         opt = items: [
             text:   'Browse'
             combo:  'command+.'
-            accel:  'ctrl+.'
             cb:     -> window.commandline.startCommand 'browse'
         ,
             text:   'Back'
@@ -471,7 +467,6 @@ function FileEditor extends TextEditor
         ,
             text:   'Maximize'
             combo:  'command+shift+y'
-            accel:  'ctrl+shift+y'
             cb:     -> window.split.maximizeEditor()
         ,
             text:   ''

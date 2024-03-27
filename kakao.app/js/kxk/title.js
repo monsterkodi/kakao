@@ -247,41 +247,41 @@ Title = (function ()
 
     Title.prototype["makeTemplate"] = function (obj)
     {
-        var menuOrAccel, text, tmpl
+        var menuOrCombo, text, tmpl
 
         tmpl = []
         for (text in obj)
         {
-            menuOrAccel = obj[text]
+            menuOrCombo = obj[text]
             tmpl.push(((function ()
             {
                 var item, _213_33_, _213_57_
 
-                if (_k_.empty(menuOrAccel) && text.startsWith('-'))
+                if (_k_.empty(menuOrCombo) && text.startsWith('-'))
                 {
                     return {text:''}
                 }
-                else if (_k_.isNum(menuOrAccel))
+                else if (_k_.isNum(menuOrCombo))
                 {
-                    return {text:text,accel:kstr(menuOrAccel)}
+                    return {text:text,combo:kstr(menuOrCombo)}
                 }
-                else if (_k_.isStr(menuOrAccel))
+                else if (_k_.isStr(menuOrCombo))
                 {
-                    return {text:text,accel:keyinfo.convertCmdCtrl(menuOrAccel)}
+                    return {text:text,combo:keyinfo.convertCmdCtrl(menuOrCombo)}
                 }
-                else if (_k_.empty(menuOrAccel))
+                else if (_k_.empty(menuOrCombo))
                 {
-                    return {text:text,accel:''}
+                    return {text:text,combo:''}
                 }
-                else if ((menuOrAccel.accel != null) || (menuOrAccel.command != null))
+                else if ((menuOrCombo.combo != null) || (menuOrCombo.command != null))
                 {
-                    item = _k_.clone(menuOrAccel)
+                    item = _k_.clone(menuOrCombo)
                     item.text = text
                     return item
                 }
                 else
                 {
-                    return {text:text,menu:this.makeTemplate(menuOrAccel)}
+                    return {text:text,menu:this.makeTemplate(menuOrCombo)}
                 }
             }).bind(this))())
         }
@@ -354,7 +354,7 @@ Title = (function ()
         {
             return 'unhandled'
         }
-        keypaths = sds.find.key(menu,'accel')
+        keypaths = sds.find.key(menu,'combo')
         var list = _k_.list(keypaths)
         for (var _247_20_ = 0; _247_20_ < list.length; _247_20_++)
         {

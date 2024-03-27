@@ -1,6 +1,6 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-export default {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command+j',accel:'ctrl+j'}},insertThen:function (before, after)
+export default {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command+j'}},insertThen:function (before, after)
 {
     var bw
 
@@ -20,9 +20,9 @@ export default {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command
     this.do.start()
     newCursors = []
     var list = _k_.list(this.do.cursors().reverse())
-    for (var _30_14_ = 0; _30_14_ < list.length; _30_14_++)
+    for (var _29_14_ = 0; _29_14_ < list.length; _29_14_++)
     {
-        c = list[_30_14_]
+        c = list[_29_14_]
         if (!this.isCursorInLastLine(c))
         {
             before = this.do.line(c[1]).trimRight() + " "
@@ -35,15 +35,15 @@ export default {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command
             this.do.delete(c[1] + 1)
             newCursors.push([before.length,c[1]])
             var list1 = _k_.list(positionsAtLineIndexInPositions(c[1] + 1,newCursors))
-            for (var _44_23_ = 0; _44_23_ < list1.length; _44_23_++)
+            for (var _43_23_ = 0; _43_23_ < list1.length; _43_23_++)
             {
-                nc = list1[_44_23_]
+                nc = list1[_43_23_]
                 cursorDelta(nc,before.length,-1)
             }
             var list2 = _k_.list(positionsBelowLineIndexInPositions(c[1],newCursors))
-            for (var _46_23_ = 0; _46_23_ < list2.length; _46_23_++)
+            for (var _45_23_ = 0; _45_23_ < list2.length; _45_23_++)
             {
-                nc = list2[_46_23_]
+                nc = list2[_45_23_]
                 cursorDelta(nc,0,-1)
             }
         }

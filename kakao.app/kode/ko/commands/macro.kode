@@ -137,7 +137,7 @@ function Macro extends Command
             'help'
             
                 helpFile = slash.path kakao.bundle.path, 'kode/ko/help.noon'
-                log 'helpFile' helpFile
+                # log 'helpFile' helpFile
                 ffs.read(helpFile).then (text) ->
                     window.terminal.clear()
                     for l in text.split '\n'

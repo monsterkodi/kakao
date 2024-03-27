@@ -236,9 +236,10 @@ Win = (function ()
 
     Win.prototype["onMenuAction"] = function (action)
     {
-        var _145_27_, _145_47_
+        var _147_27_, _147_47_
 
-        if (((_145_27_=this.delegate) != null ? typeof (_145_47_=_145_27_.onWindowMenuAction) === "function" ? _145_47_(this,action) : undefined : undefined))
+        console.log('onMenuAction',action)
+        if (((_147_27_=this.delegate) != null ? typeof (_147_47_=_147_27_.onWindowMenuAction) === "function" ? _147_47_(this,action) : undefined : undefined))
         {
             return
         }
@@ -302,24 +303,24 @@ Win = (function ()
 
     Win.prototype["onKeyDown"] = function (event)
     {
-        var info, _188_21_, _188_38_
+        var info, _190_21_, _190_38_
 
         info = keyinfo.forEvent(event)
         info.event = event
         stopEvent(event)
         if ('unhandled' === window.titlebar.handleKeyInfo(info))
         {
-            return ((_188_21_=this.delegate) != null ? typeof (_188_38_=_188_21_.onWindowKeyDown) === "function" ? _188_38_(this,info) : undefined : undefined)
+            return ((_190_21_=this.delegate) != null ? typeof (_190_38_=_190_21_.onWindowKeyDown) === "function" ? _190_38_(this,info) : undefined : undefined)
         }
     }
 
     Win.prototype["onKeyUp"] = function (event)
     {
-        var info, _195_17_, _195_32_
+        var info, _197_17_, _197_32_
 
         info = keyinfo.forEvent(event)
         info.event = event
-        return ((_195_17_=this.delegate) != null ? typeof (_195_32_=_195_17_.onWindowKeyUp) === "function" ? _195_32_(this,info) : undefined : undefined)
+        return ((_197_17_=this.delegate) != null ? typeof (_197_32_=_197_17_.onWindowKeyUp) === "function" ? _197_32_(this,info) : undefined : undefined)
     }
 
     return Win

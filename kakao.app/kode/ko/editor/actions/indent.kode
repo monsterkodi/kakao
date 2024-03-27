@@ -12,11 +12,11 @@ export
         
         indent:
             name:  'Indent'
-            accel: 'alt+cmdctrl+shift+left'
+            combo: 'alt+cmdctrl+shift+left'
             
         deIndent:
             name:  'Outdent'
-            accel: 'alt+cmdctrl+shift+right'
+            combo: 'alt+cmdctrl+shift+right'
             
     indent: ->
         @do.start()

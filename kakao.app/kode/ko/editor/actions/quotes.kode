@@ -14,12 +14,10 @@ export
         singleQuotes:
             name:  'Single'
             combo: "alt+command+'"
-            accel: "alt+ctrl+'"
 
         doubleQuotes:
             name:  'Double'
             combo: "alt+command+shift+'"
-            accel: "alt+ctrl+shift+'"
         
     singleQuotes: -> @swapQuotes "'"
     doubleQuotes: -> @swapQuotes '"'

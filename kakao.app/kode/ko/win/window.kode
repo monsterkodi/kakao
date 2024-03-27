@@ -48,7 +48,7 @@ function Window extends win.Delegate
     onWindowResize:         (win, event)    -> #log 'onWindowResize'        win.id
     onWindowFocus:          (win)           -> #log 'onWindowFocus'         win.id
     onWindowBlur:           (win)           -> #log 'onWindowBlur'          win.id
-    onWindowKeyDown:        (win, keyInfo)  -> #log 'onWindowKeyDown'       win.id, keyInfo
+    onWindowKeyDown:        (win, keyInfo)  -> log 'onWindowKeyDown'       win.id, keyInfo
     onWindowKeyUp:          (win, keyInfo)  -> #log 'onWindowKeyUp'         win.id, keyInfo
     onWindowMenuTemplate:   (win, template) -> kakao.menuTemplate = Menu template
     

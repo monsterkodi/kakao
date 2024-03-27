@@ -3,7 +3,7 @@ var _k_ = {clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (
 import util from "../../../kxk/util.js"
 let pullIf = util.pullIf
 
-export default {actions:{menu:'Cursors',moveCursorsAtBoundaryLeft:{name:'Move Cursors to Indent or Start of Line',combo:'command+left',accel:'ctrl+left'},moveCursorsAtBoundaryRight:{name:'Move Cursors to End of Line',combo:'command+right',accel:'ctrl+right'},moveCursorsToWordBoundary:{name:'move cursors to word boundaries',text:'moves cursors to word boundaries. extends selections, if shift is pressed.',combos:['alt+shift+left','alt+shift+right']},moveCursorsToWordBoundaryLeft:{separator:true,name:'Move Cursors to Start of Word',combo:'alt+left'},moveCursorsToWordBoundaryRight:{name:'Move Cursors to End of Word',combo:'alt+right'},moveCursorsToLineBoundary:{name:'move cursors to line boundaries',text:'moves cursors to line boundaries. extends selections, if shift is pressed.',combos:['home','end','command+shift+left','command+shift+right'],accels:['home','end','shift+home','shift+end','ctrl+shift+left','ctrl+shift+right']},moveMainCursor:{name:'move main cursor',text:`move main cursor independently of other cursors.
+export default {actions:{menu:'Cursors',moveCursorsAtBoundaryLeft:{name:'Move Cursors to Indent or Start of Line',combo:'command+left'},moveCursorsAtBoundaryRight:{name:'Move Cursors to End of Line',combo:'command+right'},moveCursorsToWordBoundary:{name:'move cursors to word boundaries',text:'moves cursors to word boundaries. extends selections, if shift is pressed.',combos:['alt+shift+left','alt+shift+right']},moveCursorsToWordBoundaryLeft:{separator:true,name:'Move Cursors to Start of Word',combo:'alt+left'},moveCursorsToWordBoundaryRight:{name:'Move Cursors to End of Word',combo:'alt+right'},moveCursorsToLineBoundary:{name:'move cursors to line boundaries',text:'moves cursors to line boundaries. extends selections, if shift is pressed.',combos:['home','end','command+shift+left','command+shift+right']},moveMainCursor:{name:'move main cursor',text:`move main cursor independently of other cursors.
 keeps current main cursor position in cursors if shift is pressed.`,combos:['ctrl+shift+up','ctrl+shift+down','ctrl+shift+left','ctrl+shift+right','ctrl+up','ctrl+down','ctrl+left','ctrl+right']},moveCursors:{name:'move cursors',combos:['left','right','up','down','shift+down','shift+right','shift+up','shift+left','ctrl+left','ctrl+right']}},moveCursorsAtBoundaryLeft:function ()
 {
     return this.setOrMoveCursorsAtBoundary('left')
@@ -22,13 +22,13 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     }
 },moveMainCursor:function (key, info)
 {
-    var dir, dx, dy, newCursors, newMain, oldMain, opt, _75_18_, _75_29_
+    var dir, dx, dy, newCursors, newMain, oldMain, opt, _72_18_, _72_29_
 
     dir = key
     opt = _k_.clone(info)
-    opt.erase = ((_75_18_=opt.erase) != null ? _75_18_ : (info.mod != null ? info.mod.indexOf('shift') : undefined) < 0)
+    opt.erase = ((_72_18_=opt.erase) != null ? _72_18_ : (info.mod != null ? info.mod.indexOf('shift') : undefined) < 0)
     this.do.start()
-    var _77_17_ = ((function ()
+    var _74_17_ = ((function ()
     {
         switch (dir)
         {
@@ -46,7 +46,7 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
 
         }
 
-    }).bind(this))(); dx = _77_17_[0]; dy = _77_17_[1]
+    }).bind(this))(); dx = _74_17_[0]; dy = _74_17_[1]
 
     newCursors = this.do.cursors()
     oldMain = this.mainCursor()
@@ -73,9 +73,9 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     return this.moveCursorsToWordBoundary('right')
 },moveCursorsToWordBoundary:function (leftOrRight, info = {extend:false})
 {
-    var extend, f, _105_29_
+    var extend, f, _102_29_
 
-    extend = ((_105_29_=info.extend) != null ? _105_29_ : 0 <= info.mod.indexOf('shift'))
+    extend = ((_102_29_=info.extend) != null ? _102_29_ : 0 <= info.mod.indexOf('shift'))
     f = ((function ()
     {
         switch (leftOrRight)
@@ -93,10 +93,10 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     return true
 },moveCursorsToLineBoundary:function (key, info = {extend:false})
 {
-    var extend, func, _121_29_
+    var extend, func, _118_29_
 
     this.do.start()
-    extend = ((_121_29_=info.extend) != null ? _121_29_ : 0 <= info.mod.indexOf('shift'))
+    extend = ((_118_29_=info.extend) != null ? _118_29_ : 0 <= info.mod.indexOf('shift'))
     func = ((function ()
     {
         switch (key)
@@ -134,13 +134,13 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     return this.do.end()
 },moveCursors:function (key, info = {extend:false})
 {
-    var extend, _138_29_
+    var extend, _135_29_
 
     if (this.stickySelection && info.mod === 'ctrl')
     {
         console.log('substract from sticky?',key)
     }
-    extend = ((_138_29_=info.extend) != null ? _138_29_ : 'shift' === info.mod)
+    extend = ((_135_29_=info.extend) != null ? _135_29_ : 'shift' === info.mod)
     switch (key)
     {
         case 'left':
@@ -166,9 +166,9 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     newCursors = []
     main = 'last'
     var list = _k_.list(this.do.selections())
-    for (var _151_14_ = 0; _151_14_ < list.length; _151_14_++)
+    for (var _148_14_ = 0; _148_14_ < list.length; _148_14_++)
     {
-        s = list[_151_14_]
+        s = list[_148_14_]
         p = rangeIndexPos(s,i)
         newCursors.push(p)
         if (this.isCursorInRange(s))
@@ -190,9 +190,9 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
     if (newCursors.length > 1)
     {
         var list = _k_.list(newCursors)
-        for (var _175_18_ = 0; _175_18_ < list.length; _175_18_++)
+        for (var _172_18_ = 0; _172_18_ < list.length; _172_18_++)
         {
-            c = list[_175_18_]
+            c = list[_172_18_]
             newPos = func(c)
             if (newPos[1] === c[1] || !opt.keepLine)
             {
@@ -270,7 +270,7 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
 
     if (e && this.numSelections() === 0)
     {
-        if (0 === _k_.max((function () { var r_211_36_ = []; var list = _k_.list(this.cursors()); for (var _211_36_ = 0; _211_36_ < list.length; _211_36_++)  { c = list[_211_36_];r_211_36_.push(c[0])  } return r_211_36_ }).bind(this)()))
+        if (0 === _k_.max((function () { var r_208_36_ = []; var list = _k_.list(this.cursors()); for (var _208_36_ = 0; _208_36_ < list.length; _208_36_++)  { c = list[_208_36_];r_208_36_.push(c[0])  } return r_208_36_ }).bind(this)()))
         {
             this.do.start()
             this.do.select(this.rangesForCursorLines())

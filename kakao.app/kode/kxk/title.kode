@@ -197,26 +197,26 @@ function Title
     makeTemplate: (obj) ->
                 
         tmpl = []
-        for text,menuOrAccel of obj
+        for text,menuOrCombo of obj
             tmpl.push if
-                empty menuOrAccel and text.startsWith '-'
+                empty menuOrCombo and text.startsWith '-'
                     text: ''
-                menuOrAccel is num
+                menuOrCombo is num
                     text:text
-                    accel:kstr menuOrAccel
-                menuOrAccel is str
+                    combo:kstr menuOrCombo
+                menuOrCombo is str
                     text:text
-                    accel:keyinfo.convertCmdCtrl menuOrAccel
-                empty menuOrAccel
+                    combo:keyinfo.convertCmdCtrl menuOrCombo
+                empty menuOrCombo
                     text:text
-                    accel: ''
-                menuOrAccel.accel? or menuOrAccel.command? # needs better test!
-                    item = clone menuOrAccel
+                    combo: ''
+                menuOrCombo.combo? or menuOrCombo.command? # needs better test!
+                    item = clone menuOrCombo
                     item.text = text
                     item
                 else
                     text:text
-                    menu:@makeTemplate menuOrAccel
+                    menu:@makeTemplate menuOrCombo
         tmpl
         
     menuVisible: => @menu.elem.style.display != 'none'
@@ -242,7 +242,7 @@ function Title
         menu = @templateCache
         
         if empty menu ➜ return 'unhandled'
-        keypaths = sds.find.key menu, 'accel'
+        keypaths = sds.find.key menu, 'combo'
         
         for keypath in keypaths 
             combos = sds.get(menu, keypath).split ' '

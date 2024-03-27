@@ -6,8 +6,6 @@
     000   000  00000000     000     000  000   000  000        0000000   
 ###
 
-use ./os
-
 class Keyinfo
     
     @forEvent: (event) =>
@@ -69,11 +67,8 @@ class Keyinfo
         
         index = combo.indexOf 'cmdctrl'
         if index >= 0
-            if os.isMac
-                combo = combo.replace 'cmdctrl' 'command'
-                combo = combo.replace 'alt+command' 'command+alt'
-            else
-                combo = combo.replace 'cmdctrl' 'ctrl'            
+            combo = combo.replace 'cmdctrl' 'command'
+            combo = combo.replace 'alt+command' 'command+alt'
         combo
                 
     @keynameForEvent: (event) ->
@@ -117,10 +112,11 @@ class Keyinfo
         
     @short: (combo) ->
         
-        combo = @convertCmdCtrl combo.toLowerCase()
-        for i in [0...@iconKeyNames.length]
-            combo = combo.replace new RegExp(@iconKeyNames[i], 'gi'), @iconKeyChars[i]
-        combo = combo.replace /\+/g, ''
-        combo.toUpperCase()
+        short = @convertCmdCtrl combo.toLowerCase()
+        for i in 0...@iconKeyNames.length
+            short = short.replace new RegExp(@iconKeyNames[i], 'gi'), @iconKeyChars[i]
+        short = short.replace /\+/g, ''
+        log 'keyinfo.short' combo, short.toUpperCase()
+        short.toUpperCase()
 
 export Keyinfo

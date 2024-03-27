@@ -15,12 +15,10 @@ export
         moveCursorsAtBoundaryLeft: 
             name: 'Move Cursors to Indent or Start of Line'
             combo: 'command+left'
-            accel: 'ctrl+left'
 
         moveCursorsAtBoundaryRight: 
             name: 'Move Cursors to End of Line'
             combo: 'command+right'
-            accel: 'ctrl+right'
                 
         moveCursorsToWordBoundary:
             name:   'move cursors to word boundaries'
@@ -40,7 +38,6 @@ export
             name:   'move cursors to line boundaries'
             text:   'moves cursors to line boundaries. extends selections, if shift is pressed.'
             combos: ['home' 'end' 'command+shift+left' 'command+shift+right']
-            accels: ['home' 'end' 'shift+home' 'shift+end' 'ctrl+shift+left' 'ctrl+shift+right']
 
         moveMainCursor:
             name:   'move main cursor'

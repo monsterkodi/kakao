@@ -47,29 +47,24 @@ export
                 select brackets or quotes otherwise.
                 """
             combo: 'command+alt+b'
-            accel: 'alt+ctrl+b'
 
         addCursorsUp:
             separator: true
             name: 'Add Cursors Up'
             combo: 'command+up'
-            accel: 'ctrl+up'
 
         addCursorsDown:
             name: 'Add Cursors Down'
             combo: 'command+down'
-            accel: 'ctrl+down'
 
         delCursorsUp:
             separator: true
             name: 'Remove Cursors Up'
             combo: 'command+shift+up'
-            accel: 'ctrl+shift+up'
 
         delCursorsDown:
             name: 'Remove Cursors Down'
             combo: 'command+shift+down'
-            accel: 'ctrl+shift+down'
 
         cursorMoves:
             name:  'Move Cursors To Start'
