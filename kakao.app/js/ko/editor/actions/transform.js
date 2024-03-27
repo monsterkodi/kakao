@@ -300,7 +300,7 @@ class Transform
     }
 }
 
-export default {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggles selected texts between lower- upper- and title-case',combo:'command+alt+ctrl+u',accel:'alt+ctrl+u'},reverseSelection:{name:'Reverse Selection',text:'reverses the order of selected texts',combo:'command+alt+ctrl+r',accel:'alt+ctrl+r'},doTransform:{name:'doTransform'}},toggleCase:function ()
+export default {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggles selected texts between lower- upper- and title-case',combo:'command+alt+ctrl+u'},reverseSelection:{name:'Reverse Selection',text:'reverses the order of selected texts',combo:'command+alt+ctrl+r'},doTransform:{name:'doTransform'}},toggleCase:function ()
 {
     return Transform.do(this,'case')
 },reverseSelection:function ()

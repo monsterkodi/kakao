@@ -2,7 +2,7 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 
 import kstr from "../../../kxk/kstr.js"
 
-export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:'command+/',accel:'ctrl+/'},toggleHeader:{name:'Toggle Header',combo:'command+alt+/',accel:'alt+ctrl+/'}},toggleHeader:function ()
+export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:'command+/'},toggleHeader:{name:'Toggle Header',combo:'command+alt+/'}},toggleHeader:function ()
 {
     var il, indent, r, rgs
 
@@ -15,15 +15,15 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
     {
         return
     }
-    il = _k_.min((function () { var r_37_57_ = []; var list = _k_.list(rgs); for (var _37_57_ = 0; _37_57_ < list.length; _37_57_++)  { r = list[_37_57_];r_37_57_.push(this.indentationAtLineIndex(r[0]))  } return r_37_57_ }).bind(this)())
+    il = _k_.min((function () { var r_35_57_ = []; var list = _k_.list(rgs); for (var _35_57_ = 0; _35_57_ < list.length; _35_57_++)  { r = list[_35_57_];r_35_57_.push(this.indentationAtLineIndex(r[0]))  } return r_35_57_ }).bind(this)())
     indent = _k_.lpad(il)
     this.do.start()
     if (!this.do.line(rgs[0][0]).slice(il).startsWith(this.lineComment))
     {
         var list1 = _k_.list(rgs)
-        for (var _42_18_ = 0; _42_18_ < list1.length; _42_18_++)
+        for (var _40_18_ = 0; _40_18_ < list1.length; _40_18_++)
         {
-            r = list1[_42_18_]
+            r = list1[_40_18_]
             this.do.change(r[0],kstr.splice(this.do.line(r[0]),il,0,this.lineComment + ' '))
         }
         this.do.delete(_k_.first(rgs)[0] - 1)
@@ -34,9 +34,9 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
     else if (this.multiComment)
     {
         var list2 = _k_.list(rgs)
-        for (var _50_18_ = 0; _50_18_ < list2.length; _50_18_++)
+        for (var _48_18_ = 0; _48_18_ < list2.length; _48_18_++)
         {
-            r = list2[_50_18_]
+            r = list2[_48_18_]
             this.do.change(r[0],kstr.splice(this.do.line(r[0]),il,this.lineComment.length + 1))
         }
         this.do.insert(_k_.last(rgs)[0] + 1,indent + this.multiComment.close)
@@ -61,16 +61,16 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
         var c, s
 
         var list = _k_.list(rangesAtLineIndexInRanges(i,newSelections))
-        for (var _73_18_ = 0; _73_18_ < list.length; _73_18_++)
+        for (var _71_18_ = 0; _71_18_ < list.length; _71_18_++)
         {
-            s = list[_73_18_]
+            s = list[_71_18_]
             s[1][0] += d
             s[1][1] += d
         }
         var list1 = _k_.list(positionsAtLineIndexInPositions(i,newCursors))
-        for (var _76_18_ = 0; _76_18_ < list1.length; _76_18_++)
+        for (var _74_18_ = 0; _74_18_ < list1.length; _74_18_++)
         {
-            c = list1[_76_18_]
+            c = list1[_74_18_]
             cursorDelta(c,d)
         }
     }
@@ -78,9 +78,9 @@ export default {actions:{menu:'Line',toggleComment:{name:'Toggle Comment',combo:
     cs = mainCursorLine.indexOf(this.lineComment)
     uncomment = cs >= 0 && mainCursorLine.substr(0,cs).trim().length === 0
     var list = _k_.list(this.selectedAndCursorLineIndices())
-    for (var _83_14_ = 0; _83_14_ < list.length; _83_14_++)
+    for (var _81_14_ = 0; _81_14_ < list.length; _81_14_++)
     {
-        i = list[_83_14_]
+        i = list[_81_14_]
         cs = this.do.line(i).indexOf(this.lineComment)
         if (uncomment)
         {

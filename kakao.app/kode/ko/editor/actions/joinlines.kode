@@ -13,7 +13,6 @@ export
         joinLines:
             name: 'Join Lines'
             combo: 'command+j'
-            accel: 'ctrl+j'
 
     insertThen: (before, after) ->
         if /(when|if)/.test before 

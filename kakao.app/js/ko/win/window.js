@@ -69,7 +69,9 @@ Window = (function ()
     {}
 
     Window.prototype["onWindowKeyDown"] = function (win, keyInfo)
-    {}
+    {
+        console.log('onWindowKeyDown',win.id,keyInfo)
+    }
 
     Window.prototype["onWindowKeyUp"] = function (win, keyInfo)
     {}

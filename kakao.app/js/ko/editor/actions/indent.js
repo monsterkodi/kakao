@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-export default {actions:{menu:'Line',indent:{name:'Indent',accel:'alt+cmdctrl+shift+left'},deIndent:{name:'Outdent',accel:'alt+cmdctrl+shift+right'}},indent:function ()
+export default {actions:{menu:'Line',indent:{name:'Indent',combo:'alt+cmdctrl+shift+left'},deIndent:{name:'Outdent',combo:'alt+cmdctrl+shift+right'}},indent:function ()
 {
     var i, nc, newCursors, newSelections, ns
 

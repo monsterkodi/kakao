@@ -753,18 +753,11 @@ function TextEditor extends Editor
 
         for action in Editor.actions
             
-            # if action.combo == combo or action.accel == combo and os.platform() != 'darwin'
+            # if action.combo == combo
                 # switch combo
                     # 'ctrl+a' 'command+a' then return @selectAll()
                 # return 'unhandled' # action will be triggered via menuAction
-                
-            # if action.accels? and os.platform() != 'darwin'
-                # for actionCombo in action.accels
-                    # if combo == actionCombo
-                        # if action.key? and @[action.key] is func
-                            # @[action.key](key, combo: combo, mod: mod, event: event)
-                            # return
-                            
+                                            
             combos = action.combos ? [action.combo]
                 
             continue if empty combos

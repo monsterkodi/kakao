@@ -41,10 +41,9 @@ Menu = (template) ->
                 for k,v of value
                     if v.name and v.combo
                         # menuAction = (c) -> (i,win) -> post.toWin win.id, 'menuAction' c
-                        combo = v.combo ? v.accel
                         item =
                             text:   v.name
-                            accel:  combo
+                            combo:  v.combo
                         if v.menu?
                             submenu[v.menu] ?= []
                         if v.separator
@@ -57,7 +56,7 @@ Menu = (template) ->
     editMenu = getMenu template, 'Edit'
     editMenu.menu = editMenu.menu.concat EditMenu
 
-    MacroMenu = [ text:'Macro' combo:'command+m' accel:'ctrl+m' command:'macro' ]
+    MacroMenu = [ text:'Macro' combo:'command+m' command:'macro' ]
     for macro in Macro.macroNames
         MacroMenu.push
             text:   macro

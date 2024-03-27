@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u',accel:'ctrl+u'}},toggleGitChange:function (key, info)
+export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u'}},toggleGitChange:function (key, info)
 {
     return this.toggleGitChangesInLines(this.selectedAndCursorLineIndices())
 },toggleGitChangesInLines:function (lineIndices)
@@ -14,13 +14,13 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
     this.do.select([])
     this.do.end()
     var list = _k_.list(lineIndices)
-    for (var _33_15_ = 0; _33_15_ < list.length; _33_15_++)
+    for (var _32_15_ = 0; _32_15_ < list.length; _32_15_++)
     {
-        li = list[_33_15_]
+        li = list[_32_15_]
         var list1 = _k_.list(this.meta.metasAtLineIndex(li))
-        for (var _35_25_ = 0; _35_25_ < list1.length; _35_25_++)
+        for (var _34_25_ = 0; _34_25_ < list1.length; _34_25_++)
         {
-            lineMeta = list1[_35_25_]
+            lineMeta = list1[_34_25_]
             if (lineMeta[2].clss.startsWith('git'))
             {
                 if (!lineMeta[2].toggled)
@@ -32,9 +32,9 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
         }
     }
     var list2 = _k_.list(metas)
-    for (var _44_21_ = 0; _44_21_ < list2.length; _44_21_++)
+    for (var _43_21_ = 0; _43_21_ < list2.length; _43_21_++)
     {
-        lineMeta = list2[_44_21_]
+        lineMeta = list2[_43_21_]
         oi = lineMeta[0]
         if (untoggled)
         {
@@ -65,9 +65,9 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
     }
     cursors = []
     var list3 = _k_.list(metas)
-    for (var _63_21_ = 0; _63_21_ < list3.length; _63_21_++)
+    for (var _62_21_ = 0; _62_21_ < list3.length; _62_21_++)
     {
-        lineMeta = list3[_63_21_]
+        lineMeta = list3[_62_21_]
         cursors.push([0,lineMeta[0]])
         if (!(_k_.in(lineMeta,this.meta.metas)))
         {
@@ -81,7 +81,7 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
     return this.do.end()
 },reverseGitChange:function (lineMeta)
 {
-    var li, line, meta, _88_16_
+    var li, line, meta, _87_16_
 
     meta = lineMeta[2]
     li = lineMeta[0]
@@ -100,9 +100,9 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
             break
         case 'git del':
             var list = _k_.list(reversed(meta.change))
-            for (var _100_25_ = 0; _100_25_ < list.length; _100_25_++)
+            for (var _99_25_ = 0; _99_25_ < list.length; _99_25_++)
             {
-                line = list[_100_25_]
+                line = list[_99_25_]
                 this.do.insert(li,line.old)
             }
             break
@@ -111,7 +111,7 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
     return this.do.end()
 },applyGitChange:function (lineMeta)
 {
-    var li, line, meta, _119_16_
+    var li, line, meta, _118_16_
 
     meta = lineMeta[2]
     li = lineMeta[0]
@@ -130,9 +130,9 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
             break
         case 'git del':
             var list = _k_.list(reversed(meta.change))
-            for (var _133_25_ = 0; _133_25_ < list.length; _133_25_++)
+            for (var _132_25_ = 0; _132_25_ < list.length; _132_25_++)
             {
-                line = list[_133_25_]
+                line = list[_132_25_]
                 this.do.delete(li)
             }
             break

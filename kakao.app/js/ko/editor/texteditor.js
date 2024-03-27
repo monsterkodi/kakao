@@ -896,7 +896,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _739_24_, _768_35_, _774_33_
+        var action, actionCombo, combos, _739_24_, _761_35_, _767_33_
 
         if ((this.autocomplete != null))
         {
@@ -929,15 +929,15 @@ TextEditor = (function ()
         for (var _754_19_ = 0; _754_19_ < list.length; _754_19_++)
         {
             action = list[_754_19_]
-            combos = ((_768_35_=action.combos) != null ? _768_35_ : [action.combo])
+            combos = ((_761_35_=action.combos) != null ? _761_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _772_28_ = 0; _772_28_ < list1.length; _772_28_++)
+            for (var _765_28_ = 0; _765_28_ < list1.length; _765_28_++)
             {
-                actionCombo = list1[_772_28_]
+                actionCombo = list1[_765_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))

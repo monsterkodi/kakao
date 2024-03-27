@@ -113,15 +113,15 @@ Pigments = (function ()
     return Pigments
 })()
 
-export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+shift+p',accel:'alt+ctrl+shift+p'}},initPigments:function ()
+export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+shift+p'}},initPigments:function ()
 {
-    var _117_31_
+    var _116_31_
 
-    this.pigments = ((_117_31_=this.pigments) != null ? _117_31_ : new Pigments(this))
+    this.pigments = ((_116_31_=this.pigments) != null ? _116_31_ : new Pigments(this))
     console.log('initPigments',this.pigments)
 },togglePigments:function ()
 {
-    var _124_21_, _126_21_
+    var _123_21_, _125_21_
 
     console.log('togglePigments',this.pigments)
     if (window.stash.get(`pigments|${this.currentFile}`))

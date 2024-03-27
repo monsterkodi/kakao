@@ -6,7 +6,6 @@
     000         0000000   000         0000000   000      
 ###
 
-use ./os
 use ./dom ▪ elem stopEvent
 use ./post
 use ./slash
@@ -44,8 +43,8 @@ function Popup
 
                 div.addEventListener 'mouseup' @onItemMouseUp
                 
-                if item.combo ? item.accel
-                    text = keyinfo.short os.isMac ? (item.combo ? item.accel) : (item.accel ? item.combo)
+                if item.combo
+                    text = keyinfo.short item.combo
                     div.appendChild elem 'span' class:'popupCombo' text:text
                 else if item.menu 
                     div.appendChild elem 'span' class:'popupCombo' text:'▶'
@@ -276,7 +275,7 @@ function Popup
     
     focus: -> @items?.focus()
     
-    onFocusOut: (event) => 
+    onFocusOut: (event) =>
         
         if not event.relatedTarget?.classList.contains 'popup'
             @close all:true, focus:false

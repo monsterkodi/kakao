@@ -16,13 +16,11 @@ export
             name:  'Select More Lines'
             text:  'selects line at cursor or next line if cursor line is selected already'
             combo: 'command+l'
-            accel: 'ctrl+l'
             
         selectLessLines:
             name: 'Select Less Lines'
             text:  'removes a line from each block of selected lines'
             combo: 'command+shift+l'
-            accel: 'ctrl+shift+l'
 
     selectMoreLines: ->
         
