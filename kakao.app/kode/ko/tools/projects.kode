@@ -82,10 +82,10 @@ class Projects
             log 'dequeue' @queue[0]
             ○ @indexProject @queue.shift()
 
-# log 'Projects.startListening'
-            
 post.on 'fileLoaded' (file) -> 
-    # log 'Projects.fileLoaded' file
     Projects.indexProject file
 
+post.on 'indexProject' (file) -> 
+    Projects.indexProject file
+    
 export Projects

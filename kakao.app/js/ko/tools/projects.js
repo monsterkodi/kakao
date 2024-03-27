@@ -101,4 +101,8 @@ post.on('fileLoaded',function (file)
 {
     return Projects.indexProject(file)
 })
+post.on('indexProject',function (file)
+{
+    return Projects.indexProject(file)
+})
 export default Projects;
