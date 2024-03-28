@@ -144,7 +144,7 @@
 
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
 {
-    // NSLog(@"● change ▸▸▸ %@", folder);
+    NSLog(@"● change ▸▸▸ %@", folder);
     
     if ([folder isEqualToString:[FS homeDir]])
     {
@@ -186,7 +186,7 @@
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
         }
-        // NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+        NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
         
         if ([change.path hasPrefix:@"js/"]) { reloadPage = YES; }
 
