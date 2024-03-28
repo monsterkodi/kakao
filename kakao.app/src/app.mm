@@ -302,6 +302,36 @@
     return exitCode;
 }
 
+- (NSString*) executeShellScript:(NSArray*)args
+{
+    NSTask *task = [[NSTask alloc] init];
+
+    [task setLaunchPath:[args objectAtIndex:0]];
+
+    NSLog(@"execute %@", [args componentsJoinedByString:@" "]);
+    
+    NSRange range; range.location = 1; range.length = [args count]-1;
+    [task setArguments:[args subarrayWithRange:range]];
+    
+    NSPipe *outputPipe = [NSPipe pipe]; 
+    [task setStandardOutput:outputPipe];
+
+    [task launch];
+    [task waitUntilExit];
+    
+    int exitCode = [task terminationStatus];
+    
+    NSFileHandle * readFileHandle = [outputPipe fileHandleForReading];
+    NSData * data = [readFileHandle readDataToEndOfFile];
+    NSString * outString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+    
+    [task autorelease];
+    
+    NSLog(@"script output: '%@'", outString);
+    
+    return outString;
+}
+
 // 000000000  00000000  00000000   00     00  000  000   000   0000000   000000000  00000000  
 //    000     000       000   000  000   000  000  0000  000  000   000     000     000       
 //    000     0000000   0000000    000000000  000  000 0 000  000000000     000     0000000   

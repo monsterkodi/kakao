@@ -116,7 +116,6 @@ class Keyinfo
         for i in 0...@iconKeyNames.length
             short = short.replace new RegExp(@iconKeyNames[i], 'gi'), @iconKeyChars[i]
         short = short.replace /\+/g, ''
-        log 'keyinfo.short' combo, short.toUpperCase()
         short.toUpperCase()
 
 export Keyinfo

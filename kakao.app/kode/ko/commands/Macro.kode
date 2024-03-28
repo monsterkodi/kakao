@@ -210,7 +210,7 @@ function Macro extends Command
                 clss = cmds.length and cmds[0] or last editor.textsInRanges(editor.selections())
                 clss ?= 'Class'
                 dir = editor.currentFile? and slash.dir(editor.currentFile) or kakao.bundle.app('kode')
-                file = slash.join dir, clss.toLowerCase() + '.kode'
+                file = slash.path dir, clss.toLowerCase() + '.kode'
                 # if slash.fileExists file
                     # return text: "file #{file} exists!"
                 text = "###\n"
