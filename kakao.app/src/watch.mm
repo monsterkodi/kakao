@@ -20,7 +20,7 @@
 #import <sys/stat.h>
 #import <Foundation/Foundation.h>
 
-#define INTERVAL 0.1 // minimum time in seconds between change dispatches
+#define INTERVAL 0.2 // minimum time in seconds between change dispatches
                      // increases automatically if folder scanning takes a long time
 
 BOOL shouldIgnorePath(NSString* path)
