@@ -221,9 +221,6 @@
         
             [task setLaunchPath:[Bundle appPath:@"Contents/MacOS/kakao"]];
         
-            // NSMutableArray* arguments = [NSMutableArray array];
-            // [task setArguments:arguments];
-            
             [task launch];
             [[NSApplication sharedApplication] terminate:0];            
         }
@@ -288,10 +285,6 @@
     
     [task setArguments:arguments];
     
-    // hides the output:
-    // NSPipe *outputPipe = [NSPipe pipe]; 
-    // [task setStandardOutput:outputPipe];
-
     [task launch];
     [task waitUntilExit];
     
