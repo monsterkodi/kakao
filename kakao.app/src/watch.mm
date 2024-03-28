@@ -28,7 +28,7 @@ BOOL shouldIgnorePath(NSString* path)
     NSString* dir = [path lastPathComponent];
     
     if ([dir isEqualToString:@"node_modules"]   ||
-        [dir isEqualToString:@".git"]           ||
+        // [dir isEqualToString:@".git"]           ||
         [dir isEqualToString:@".npm"]           ||
         [dir isEqualToString:@".bun"]           ||
         [dir isEqualToString:@".cargo"]         ||
