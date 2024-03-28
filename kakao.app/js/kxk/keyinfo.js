@@ -232,7 +232,6 @@ class Keyinfo
             short = short.replace(new RegExp(this.iconKeyNames[i],'gi'),this.iconKeyChars[i])
         }
         short = short.replace(/\+/g,'')
-        console.log('keyinfo.short',combo,short.toUpperCase())
         return short.toUpperCase()
     }
 }

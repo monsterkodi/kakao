@@ -200,7 +200,7 @@ Macro = (function ()
                 clss = cmds.length && cmds[0] || _k_.last(editor.textsInRanges(editor.selections()))
                 clss = (clss != null ? clss : 'Class')
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || kakao.bundle.app('kode')
-                file = slash.join(dir,clss.toLowerCase() + '.kode')
+                file = slash.path(dir,clss.toLowerCase() + '.kode')
                 text = "###\n"
                 text += (function () { var r_217_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _217_33_ = 0; _217_33_ < list1.length; _217_33_++)  { s = list1[_217_33_];r_217_33_.push(s)  } return r_217_33_ }).bind(this)().join('\n')
                 text += "\n###\n"

@@ -43,7 +43,6 @@ class Projects
                 return prjPath
             }
         }
-        console.log('missing prj?',path)
         return null
     }
 
