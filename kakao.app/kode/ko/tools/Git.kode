@@ -10,11 +10,11 @@ function Git
 
     @diff: (file) ○->
         
-        log 'Git.diff' file
+        # log 'Git.diff' file
         
         diff = ○ kakao 'app.sh' '/usr/bin/git' '--no-pager' 'diff' '--no-color' '-U0' file
         
-        log 'Git.diff' diff
+        # log 'Git.diff' diff
         
         info  = file:file, changes:[]
         lines = diff.split '\n'

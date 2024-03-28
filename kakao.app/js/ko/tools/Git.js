@@ -12,9 +12,7 @@ Git = (function ()
     {
         var after, afterSplit, before, change, diff, i, info, line, lines, newLines, numNew, numOld, oldLines, x, _28_55_, _29_48_
 
-        console.log('Git.diff',file)
         diff = await kakao('app.sh','/usr/bin/git','--no-pager','diff','--no-color','-U0',file)
-        console.log('Git.diff',diff)
         info = {file:file,changes:[]}
         lines = diff.split('\n')
         while (line = lines.shift())
