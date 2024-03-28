@@ -308,7 +308,7 @@
 
     [task setLaunchPath:[args objectAtIndex:0]];
 
-    NSLog(@"execute %@", [args componentsJoinedByString:@" "]);
+    // NSLog(@"execute %@", [args componentsJoinedByString:@" "]);
     
     NSRange range; range.location = 1; range.length = [args count]-1;
     [task setArguments:[args subarrayWithRange:range]];
@@ -327,7 +327,7 @@
     
     [task autorelease];
     
-    NSLog(@"script output: '%@'", outString);
+    // NSLog(@"script output: '%@'", outString);
     
     return outString;
 }
