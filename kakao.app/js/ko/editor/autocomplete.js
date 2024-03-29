@@ -19,7 +19,7 @@ import events from "../../kxk/events.js"
 import req from "../tools/req.js"
 
 jsClass = {RegExp:['test','compile','exec','toString'],String:['endsWith','startsWith','split','slice','substring','padEnd','padStart','indexOf','match','trim','trimEnd','trimStart']}
-class Autocomplete extends events
+class AutoComplete extends events
 {
     constructor (editor)
     {
@@ -45,7 +45,7 @@ class Autocomplete extends events
         this.cloned = []
         this.close()
         specials = "_-@#"
-        this.especial = (function () { var r_37_34_ = []; var list = _k_.list(specials.split('')); for (var _37_34_ = 0; _37_34_ < list.length; _37_34_++)  { c = list[_37_34_];r_37_34_.push("\\" + c)  } return r_37_34_ }).bind(this)().join('')
+        this.especial = (function () { var r_35_34_ = []; var list = _k_.list(specials.split('')); for (var _35_34_ = 0; _35_34_ < list.length; _35_34_++)  { c = list[_35_34_];r_35_34_.push("\\" + c)  } return r_35_34_ }).bind(this)().join('')
         this.headerRegExp = new RegExp(`^[0${this.especial}]+$`)
         this.notSpecialRegExp = new RegExp(`[^${this.especial}]`)
         this.specialWordRegExp = new RegExp(`(\\s+|[\\w${this.especial}]+|[^\\s])`,'g')
@@ -66,7 +66,7 @@ class Autocomplete extends events
 
     parseModule (line)
     {
-        var clss, key, match, _78_30_, _80_40_, _82_49_, _85_40_, _87_49_, _93_41_
+        var clss, key, match, _76_30_, _78_40_, _80_49_, _83_40_, _85_49_, _91_41_
 
         if (this.newRegExp.test(line))
         {
@@ -83,12 +83,12 @@ class Autocomplete extends events
             {
                 if (jsClass[match[2]])
                 {
-                    this.mthdinfo[match[1]] = ((_80_40_=this.mthdinfo[match[1]]) != null ? _80_40_ : {})
+                    this.mthdinfo[match[1]] = ((_78_40_=this.mthdinfo[match[1]]) != null ? _78_40_ : {})
                     var list = _k_.list(jsClass[match[2]])
-                    for (var _81_28_ = 0; _81_28_ < list.length; _81_28_++)
+                    for (var _79_28_ = 0; _79_28_ < list.length; _79_28_++)
                     {
-                        key = list[_81_28_]
-                        this.mthdinfo[match[1]][key] = ((_82_49_=this.mthdinfo[match[1]][key]) != null ? _82_49_ : 1)
+                        key = list[_79_28_]
+                        this.mthdinfo[match[1]][key] = ((_80_49_=this.mthdinfo[match[1]][key]) != null ? _80_49_ : 1)
                     }
                 }
             }
@@ -96,12 +96,12 @@ class Autocomplete extends events
             {
                 if (this.mthdinfo[match[2]])
                 {
-                    this.mthdinfo[match[1]] = ((_85_40_=this.mthdinfo[match[1]]) != null ? _85_40_ : {})
+                    this.mthdinfo[match[1]] = ((_83_40_=this.mthdinfo[match[1]]) != null ? _83_40_ : {})
                     var list1 = _k_.list(Object.keys(this.mthdinfo[match[2]]))
-                    for (var _86_28_ = 0; _86_28_ < list1.length; _86_28_++)
+                    for (var _84_28_ = 0; _84_28_ < list1.length; _84_28_++)
                     {
-                        key = list1[_86_28_]
-                        this.mthdinfo[match[1]][key] = ((_87_49_=this.mthdinfo[match[1]][key]) != null ? _87_49_ : 1)
+                        key = list1[_84_28_]
+                        this.mthdinfo[match[1]][key] = ((_85_49_=this.mthdinfo[match[1]][key]) != null ? _85_49_ : 1)
                     }
                 }
             }
@@ -112,10 +112,10 @@ class Autocomplete extends events
             if (this.mthdinfo[match[1]])
             {
                 var list2 = _k_.list(Object.keys(this.mthdinfo[match[1]]))
-                for (var _92_24_ = 0; _92_24_ < list2.length; _92_24_++)
+                for (var _90_24_ = 0; _90_24_ < list2.length; _90_24_++)
                 {
-                    key = list2[_92_24_]
-                    this.wordinfo[`@${key}`] = ((_93_41_=this.wordinfo[`@${key}`]) != null ? _93_41_ : {count:1})
+                    key = list2[_90_24_]
+                    this.wordinfo[`@${key}`] = ((_91_41_=this.wordinfo[`@${key}`]) != null ? _91_41_ : {count:1})
                 }
             }
         }
@@ -123,14 +123,14 @@ class Autocomplete extends events
 
     parseMethod (line)
     {
-        var i, rgs, _105_40_, _106_56_
+        var i, rgs, _103_40_, _104_56_
 
         if (!_k_.empty((rgs = matchr.ranges([this.methodRegExp,['obj','mth']],line))))
         {
-            for (var _104_21_ = i = 0, _104_25_ = rgs.length - 1; (_104_21_ <= _104_25_ ? i < rgs.length - 1 : i > rgs.length - 1); (_104_21_ <= _104_25_ ? ++i : --i))
+            for (var _102_21_ = i = 0, _102_25_ = rgs.length - 1; (_102_21_ <= _102_25_ ? i < rgs.length - 1 : i > rgs.length - 1); (_102_21_ <= _102_25_ ? ++i : --i))
             {
-                this.mthdinfo[rgs[i].match] = ((_105_40_=this.mthdinfo[rgs[i].match]) != null ? _105_40_ : {})
-                this.mthdinfo[rgs[i].match][rgs[i + 1].match] = ((_106_56_=this.mthdinfo[rgs[i].match][rgs[i + 1].match]) != null ? _106_56_ : 0)
+                this.mthdinfo[rgs[i].match] = ((_103_40_=this.mthdinfo[rgs[i].match]) != null ? _103_40_ : {})
+                this.mthdinfo[rgs[i].match][rgs[i + 1].match] = ((_104_56_=this.mthdinfo[rgs[i].match][rgs[i + 1].match]) != null ? _104_56_ : 0)
                 this.mthdinfo[rgs[i].match][rgs[i + 1].match] += 1
                 i++
             }
@@ -162,7 +162,7 @@ class Autocomplete extends events
 
     onEdit (info)
     {
-        var d, m, matches, w, words, _140_28_, _162_41_
+        var d, m, matches, w, words, _138_28_, _160_41_
 
         this.close()
         this.word = _k_.last(info.before.split(this.splitRegExp))
@@ -195,9 +195,9 @@ class Autocomplete extends events
                     }).bind(this))
                     matches = toPairs(matches)
                     var list = _k_.list(matches)
-                    for (var _148_26_ = 0; _148_26_ < list.length; _148_26_++)
+                    for (var _146_26_ = 0; _146_26_ < list.length; _146_26_++)
                     {
-                        m = list[_148_26_]
+                        m = list[_146_26_]
                         d = this.editor.distanceOfWord(m[0])
                         m[1].distance = 100 - Math.min(d,100)
                     }
@@ -210,9 +210,9 @@ class Autocomplete extends events
                         return m[0]
                     })
                     var list1 = _k_.list(words)
-                    for (var _156_26_ = 0; _156_26_ < list1.length; _156_26_++)
+                    for (var _154_26_ = 0; _154_26_ < list1.length; _154_26_++)
                     {
-                        w = list1[_156_26_]
+                        w = list1[_154_26_]
                         if (!this.firstMatch)
                         {
                             this.firstMatch = w
@@ -241,7 +241,7 @@ class Autocomplete extends events
         cursor = $('.main',this.editor.view)
         if (!(cursor != null))
         {
-            console.error("Autocomplete.open --- no cursor?")
+            console.error("AutoComplete.open --- no cursor?")
             return
         }
         this.span = elem('span',{class:'autocomplete-span'})
@@ -274,15 +274,15 @@ class Autocomplete extends events
         }
         sp.parentElement.appendChild(this.span)
         var list = _k_.list(this.cloned)
-        for (var _214_14_ = 0; _214_14_ < list.length; _214_14_++)
+        for (var _212_14_ = 0; _212_14_ < list.length; _212_14_++)
         {
-            c = list[_214_14_]
+            c = list[_212_14_]
             c.style.display = 'none'
         }
         var list1 = _k_.list(this.clones)
-        for (var _217_14_ = 0; _217_14_ < list1.length; _217_14_++)
+        for (var _215_14_ = 0; _215_14_ < list1.length; _215_14_++)
         {
-            c = list1[_217_14_]
+            c = list1[_215_14_]
             this.span.insertAdjacentElement('afterend',c)
         }
         this.moveClonesBy(this.completion.length)
@@ -293,9 +293,9 @@ class Autocomplete extends events
             this.list.addEventListener('mousedown',this.onMouseDown,{passive:true})
             index = 0
             var list2 = _k_.list(this.matchList)
-            for (var _229_18_ = 0; _229_18_ < list2.length; _229_18_++)
+            for (var _227_18_ = 0; _227_18_ < list2.length; _227_18_++)
             {
-                m = list2[_229_18_]
+                m = list2[_227_18_]
                 item = elem({class:'autocomplete-item',index:index++})
                 item.textContent = m
                 this.list.appendChild(item)
@@ -306,7 +306,7 @@ class Autocomplete extends events
 
     close ()
     {
-        var c, _243_16_, _248_13_
+        var c, _241_16_, _246_13_
 
         if ((this.list != null))
         {
@@ -321,15 +321,15 @@ class Autocomplete extends events
         this.completion = null
         this.firstMatch = null
         var list = _k_.list(this.clones)
-        for (var _255_14_ = 0; _255_14_ < list.length; _255_14_++)
+        for (var _253_14_ = 0; _253_14_ < list.length; _253_14_++)
         {
-            c = list[_255_14_]
+            c = list[_253_14_]
             c.remove()
         }
         var list1 = _k_.list(this.cloned)
-        for (var _258_14_ = 0; _258_14_ < list1.length; _258_14_++)
+        for (var _256_14_ = 0; _256_14_ < list1.length; _256_14_++)
         {
-            c = list1[_258_14_]
+            c = list1[_256_14_]
             c.style.display = 'initial'
         }
         this.clones = []
@@ -429,7 +429,7 @@ class Autocomplete extends events
             return
         }
         beforeLength = this.clones[0].innerHTML.length
-        for (var _327_19_ = ci = 1, _327_23_ = this.clones.length; (_327_19_ <= _327_23_ ? ci < this.clones.length : ci > this.clones.length); (_327_19_ <= _327_23_ ? ++ci : --ci))
+        for (var _325_19_ = ci = 1, _325_23_ = this.clones.length; (_325_19_ <= _325_23_ ? ci < this.clones.length : ci > this.clones.length); (_325_19_ <= _325_23_ ? ++ci : --ci))
         {
             c = this.clones[ci]
             offset = parseFloat(this.cloned[ci - 1].style.transform.split('translateX(')[1])
@@ -464,7 +464,7 @@ class Autocomplete extends events
 
     parseLines (lines, opt)
     {
-        var count, cursorWord, i, info, l, w, words, _357_27_, _382_37_, _383_35_, _384_36_
+        var count, cursorWord, i, info, l, w, words, _355_27_, _380_37_, _381_35_, _382_36_
 
         this.close()
         if (!(lines != null))
@@ -473,12 +473,12 @@ class Autocomplete extends events
         }
         cursorWord = this.cursorWord()
         var list = _k_.list(lines)
-        for (var _356_14_ = 0; _356_14_ < list.length; _356_14_++)
+        for (var _354_14_ = 0; _354_14_ < list.length; _354_14_++)
         {
-            l = list[_356_14_]
+            l = list[_354_14_]
             if (!((l != null ? l.split : undefined) != null))
             {
-                return console.error(`Autocomplete.parseLines -- line has no split? action: ${opt.action} line: ${l}`,lines)
+                return console.error(`AutoComplete.parseLines -- line has no split? action: ${opt.action} line: ${l}`,lines)
             }
             if (l.length > 240)
             {
@@ -504,9 +504,9 @@ class Autocomplete extends events
                 return true
             }).bind(this))
             var list1 = _k_.list(words)
-            for (var _375_18_ = 0; _375_18_ < list1.length; _375_18_++)
+            for (var _373_18_ = 0; _373_18_ < list1.length; _373_18_++)
             {
-                w = list1[_375_18_]
+                w = list1[_373_18_]
                 i = w.search(this.notSpecialRegExp)
                 if (i > 0 && w[0] !== "#")
                 {
@@ -518,12 +518,12 @@ class Autocomplete extends events
                 }
             }
             var list2 = _k_.list(words)
-            for (var _381_18_ = 0; _381_18_ < list2.length; _381_18_++)
+            for (var _379_18_ = 0; _379_18_ < list2.length; _379_18_++)
             {
-                w = list2[_381_18_]
-                info = ((_382_37_=this.wordinfo[w]) != null ? _382_37_ : {})
-                count = ((_383_35_=info.count) != null ? _383_35_ : 0)
-                count += ((_384_36_=(opt != null ? opt.count : undefined)) != null ? _384_36_ : 1)
+                w = list2[_379_18_]
+                info = ((_380_37_=this.wordinfo[w]) != null ? _380_37_ : {})
+                count = ((_381_35_=info.count) != null ? _381_35_ : 0)
+                count += ((_382_36_=(opt != null ? opt.count : undefined)) != null ? _382_36_ : 1)
                 info.count = count
                 if (opt.action === 'change')
                 {
@@ -540,7 +540,7 @@ class Autocomplete extends events
 
         cp = this.editor.cursorPos()
         words = this.editor.wordRangesInLineAtIndex(cp[1],{regExp:this.specialWordRegExp})
-        var _399_30_ = rangesSplitAtPosInRanges(cp,words); befor = _399_30_[0]; cursr = _399_30_[1]; after = _399_30_[2]
+        var _397_30_ = rangesSplitAtPosInRanges(cp,words); befor = _397_30_[0]; cursr = _397_30_[1]; after = _397_30_[2]
 
         return [this.editor.textsInRanges(befor),this.editor.textInRange(cursr),this.editor.textsInRanges(after)]
     }
@@ -580,7 +580,7 @@ class Autocomplete extends events
 
     handleModKeyComboEvent (mod, key, combo, event)
     {
-        var _424_39_, _429_16_
+        var _422_39_, _427_16_
 
         if (!(this.span != null))
         {
@@ -613,4 +613,4 @@ class Autocomplete extends events
     }
 }
 
-export default Autocomplete;
+export default AutoComplete;

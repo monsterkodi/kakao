@@ -116,7 +116,6 @@ function Search extends Command
                 command.execute split[2]
         else
             file = href + ':' + window.terminal.posForEvent(event)[0]
-            # log 'post.emit loadFile' file
             post.emit 'loadFile' file #, reload:true
 
         'unhandled'

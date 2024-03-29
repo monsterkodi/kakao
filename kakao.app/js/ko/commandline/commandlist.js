@@ -16,13 +16,13 @@ CommandList = (function ()
     _k_.extend(CommandList, TextEditor)
     function CommandList (command, viewElem, opt)
     {
-        var _23_41_
+        var _25_41_
 
         this.command = command
     
         this["dequeueMeta"] = this["dequeueMeta"].bind(this)
         this["onMetaClick"] = this["onMetaClick"].bind(this)
-        CommandList.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Meta'],lineHeight:1.4,fontSize:19,scrollOffset:0,syntaxName:((_23_41_=opt.syntaxName) != null ? _23_41_ : 'ko')})
+        CommandList.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Meta'],lineHeight:1.4,fontSize:19,scrollOffset:0,syntaxName:((_25_41_=opt.syntaxName) != null ? _25_41_ : 'ko')})
         this.name = 'commandlist-editor'
         this.items = []
         this.metaQueue = []

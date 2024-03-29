@@ -496,11 +496,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _365_17_, _367_28_, _367_39_
+        var _367_17_, _368_28_, _368_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_365_17_=this.history) != null ? _365_17_ : [])
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_367_39_=1) != null ? _367_39_ : 0)
+        this.history = ((_367_17_=this.history) != null ? _367_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_368_39_=1) != null ? _368_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -545,7 +545,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _395_31_
+        var _400_31_
 
         switch (combo)
         {

@@ -125,8 +125,7 @@ function Macro extends Command
 
             'fps'   ➜ window.fps?.toggle()
             'git'   ➜ gitinfo?.start()
-            'err'
-                throw new Error 'err'
+            'err'   ➜ throw new Error 'err'
 
             # 000   000  00000000  000      00000000
             # 000   000  000       000      000   000
@@ -137,7 +136,7 @@ function Macro extends Command
             'help'
             
                 helpFile = slash.path kakao.bundle.path, 'kode/ko/help.noon'
-                # log 'helpFile' helpFile
+
                 ffs.read(helpFile).then (text) ->
                     window.terminal.clear()
                     for l in text.split '\n'

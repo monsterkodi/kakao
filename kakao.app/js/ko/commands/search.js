@@ -174,7 +174,7 @@ FileSearcher = (function ()
         }
         ffs.read(this.file).then((function (text)
         {
-            var l, lines, rngs, _158_68_
+            var l, lines, rngs, _157_68_
 
             if (_k_.empty(text))
             {
@@ -186,9 +186,9 @@ FileSearcher = (function ()
                 this.syntaxName = Syntax.shebang(lines[0])
             }
             var list = _k_.list(lines)
-            for (var _159_18_ = 0; _159_18_ < list.length; _159_18_++)
+            for (var _158_18_ = 0; _158_18_ < list.length; _158_18_++)
             {
-                l = list[_159_18_]
+                l = list[_158_18_]
                 this.line += 1
                 rngs = matchr.ranges(this.patterns,l,this.flags)
                 if (rngs.length)
@@ -211,7 +211,7 @@ FileSearcher = (function ()
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.appendMeta(meta)
         terminal.appendMeta({clss:'spacer'})
-        for (var _181_18_ = fi = 0, _181_22_ = this.found.length; (_181_18_ <= _181_22_ ? fi < this.found.length : fi > this.found.length); (_181_18_ <= _181_22_ ? ++fi : --fi))
+        for (var _180_18_ = fi = 0, _180_22_ = this.found.length; (_180_18_ <= _180_22_ ? fi < this.found.length : fi > this.found.length); (_180_18_ <= _180_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]

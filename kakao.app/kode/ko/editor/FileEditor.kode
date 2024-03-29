@@ -28,7 +28,7 @@ function FileEditor extends TextEditor
                 'Numbers'
                 'Minimap'
                 'Meta'
-                'Autocomplete'
+                'AutoComplete'
                 'Brackets'
                 'Strings'
                 'CursorLine'

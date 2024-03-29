@@ -36,7 +36,7 @@ FileEditor = (function ()
         this["jumpToFilePos"] = this["jumpToFilePos"].bind(this)
         this["onCommandline"] = this["onCommandline"].bind(this)
         this["setText"] = this["setText"].bind(this)
-        FileEditor.__super__.constructor.call(this,viewElem,{features:['Diffbar','Scrollbar','Numbers','Minimap','Meta','Autocomplete','Brackets','Strings','CursorLine'],fontSize:19})
+        FileEditor.__super__.constructor.call(this,viewElem,{features:['Diffbar','Scrollbar','Numbers','Minimap','Meta','AutoComplete','Brackets','Strings','CursorLine'],fontSize:19})
         this.currentFile = null
         this.view.addEventListener('contextmenu',this.onContextMenu)
         post.on('commandline',this.onCommandline)

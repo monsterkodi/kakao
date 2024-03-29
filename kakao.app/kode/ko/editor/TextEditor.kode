@@ -19,7 +19,7 @@ use ./Render
 
 use ./Do
 use ./Meta
-use ./Autocomplete
+use ./AutoComplete
 use ./Scrollbar
 use ./Brackets
 use ./Numbers

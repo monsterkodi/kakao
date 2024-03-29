@@ -63,7 +63,7 @@ Macro = (function ()
 
     Macro.prototype["execute"] = function (command)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, words, wordsInArgsOrCursorsOrSelection, _126_35_, _212_40_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, words, wordsInArgsOrCursorsOrSelection, _126_35_, _211_40_
 
         if (_k_.empty(command))
         {
@@ -129,9 +129,9 @@ Macro = (function ()
 
                     window.terminal.clear()
                     var list = _k_.list(text.split('\n'))
-                    for (var _143_26_ = 0; _143_26_ < list.length; _143_26_++)
+                    for (var _142_26_ = 0; _142_26_ < list.length; _142_26_++)
                     {
-                        l = list[_143_26_]
+                        l = list[_142_26_]
                         window.terminal.appendLineDiss(l,Syntax.dissForTextAndSyntax(l,'noon'))
                     }
                     window.terminal.scroll.cursorToTop(1)
@@ -148,9 +148,9 @@ Macro = (function ()
                 {
                     editor.do.start()
                     var list = _k_.list(lines)
-                    for (var _162_29_ = 0; _162_29_ < list.length; _162_29_++)
+                    for (var _161_29_ = 0; _161_29_ < list.length; _161_29_++)
                     {
-                        line = list[_162_29_]
+                        line = list[_161_29_]
                         if (line.op === 'insert')
                         {
                             editor.do.insert(line.index,line.text)
@@ -179,7 +179,7 @@ Macro = (function ()
                     cmds.shift()
                 }
                 words = wordsInArgsOrCursorsOrSelection(cmds,{include:"#@.-"})
-                for (var _187_27_ = ti = 0, _187_31_ = words.length - lst; (_187_27_ <= _187_31_ ? ti < words.length - lst : ti > words.length - lst); (_187_27_ <= _187_31_ ? ++ti : --ti))
+                for (var _186_27_ = ti = 0, _186_31_ = words.length - lst; (_186_27_ <= _186_31_ ? ti < words.length - lst : ti > words.length - lst); (_186_27_ <= _186_31_ ? ++ti : --ti))
                 {
                     t = words[ti]
                     insert += `${t}:\#{kstr ${t}} `
@@ -188,7 +188,7 @@ Macro = (function ()
                 insert += '"'
                 if (lst)
                 {
-                    insert += (function () { var r_193_61_ = []; for (var _193_65_ = ti = words.length - lst, _193_86_ = words.length; (_193_65_ <= _193_86_ ? ti < words.length : ti > words.length); (_193_65_ <= _193_86_ ? ++ti : --ti))  { r_193_61_.push(`, kstr(${words[ti]})`)  } return r_193_61_ }).bind(this)().join('')
+                    insert += (function () { var r_192_61_ = []; for (var _192_65_ = ti = words.length - lst, _192_86_ = words.length; (_192_65_ <= _192_86_ ? ti < words.length : ti > words.length); (_192_65_ <= _192_86_ ? ++ti : --ti))  { r_192_61_.push(`, kstr(${words[ti]})`)  } return r_192_61_ }).bind(this)().join('')
                 }
                 editor.do.start()
                 editor.do.insert(li,insert)
@@ -202,7 +202,7 @@ Macro = (function ()
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || kakao.bundle.app('kode')
                 file = slash.path(dir,clss.toLowerCase() + '.kode')
                 text = "###\n"
-                text += (function () { var r_217_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _217_33_ = 0; _217_33_ < list1.length; _217_33_++)  { s = list1[_217_33_];r_217_33_.push(s)  } return r_217_33_ }).bind(this)().join('\n')
+                text += (function () { var r_216_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _216_33_ = 0; _216_33_ < list1.length; _216_33_++)  { s = list1[_216_33_];r_216_33_.push(s)  } return r_216_33_ }).bind(this)().join('\n')
                 text += "\n###\n"
                 text += `
 function ${clss}
@@ -219,7 +219,7 @@ export ${clss}
 
             case 'clean':
                 editor.do.start()
-                for (var _242_27_ = li = 0, _242_31_ = editor.numLines(); (_242_27_ <= _242_31_ ? li < editor.numLines() : li > editor.numLines()); (_242_27_ <= _242_31_ ? ++li : --li))
+                for (var _241_27_ = li = 0, _241_31_ = editor.numLines(); (_241_27_ <= _241_31_ ? li < editor.numLines() : li > editor.numLines()); (_241_27_ <= _241_31_ ? ++li : --li))
                 {
                     line = editor.line(li)
                     cleaned = line.trimRight()

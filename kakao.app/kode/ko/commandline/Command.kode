@@ -357,25 +357,29 @@ function Command
     # 0000000      000     000   000     000     00000000
 
     setPrefsID: (id) ->
+        
         @prefsID = id
         @loadState()
         
     loadState: ->
+        
         @history  = @getState @historyKey(), []
         @history ?= []
-        # log 'loadState' @history
         @selected = @history?.length-1 ? 0
 
     setState: (key, value) ->
+        
         return if not @prefsID
         if @prefsID
             window.stash.set "command|#{@prefsID}|#{key}", value
         
     getState: (key, value) ->
+        
         return value if not @prefsID
         window.stash.get "command|#{@prefsID}|#{key}", value
         
     delState: (key) ->
+        
         return if not @prefsID
         window.stash.del "command|#{@prefsID}|#{key}"
 
@@ -390,6 +394,7 @@ function Command
     globalModKeyComboEvent: (mod, key, combo, event) -> 'unhandled'
         
     handleModKeyComboEvent: (mod, key, combo, event) -> 
+        
         switch combo
             'page up' 'page down'
                 if @commandList?

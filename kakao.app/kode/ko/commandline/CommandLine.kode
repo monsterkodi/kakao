@@ -7,10 +7,12 @@
 ###
 
 use ../../kxk/dom ▪ $ stopEvent
+
 use ../../kxk/ffs
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
+
 use ../editor/TextEditor
 
 __dirname = slash.dir import.meta.url[7..]

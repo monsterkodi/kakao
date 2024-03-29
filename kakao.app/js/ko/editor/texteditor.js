@@ -26,7 +26,7 @@ import Do from "./Do.js"
 
 import Meta from "./Meta.js"
 
-import Autocomplete from "./Autocomplete.js"
+import AutoComplete from "./AutoComplete.js"
 
 import Scrollbar from "./Scrollbar.js"
 
