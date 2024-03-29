@@ -224,6 +224,12 @@ NSString* typeForNSFileType(NSString* fileType)
         }
     }
     
+    // 0000000    000   000  00000000   000      000   0000000   0000000   000000000  00000000  
+    // 000   000  000   000  000   000  000      000  000       000   000     000     000       
+    // 000   000  000   000  00000000   000      000  000       000000000     000     0000000   
+    // 000   000  000   000  000        000      000  000       000   000     000     000       
+    // 0000000     0000000   000        0000000  000   0000000  000   000     000     00000000  
+    
     if ([req isEqualToString:@"duplicate"])
     {
         NSLog(@"duplicate %@ %@", path, args);
@@ -369,6 +375,34 @@ NSString* typeForNSFileType(NSString* fileType)
             pkg = [pkg stringByDeletingLastPathComponent];
         }
         NSLog(@"NO pkg for %@!!!", path);
+        return nil;
+    }
+    
+    //  0000000   000  000000000  
+    // 000        000     000     
+    // 000  0000  000     000     
+    // 000   000  000     000     
+    //  0000000   000     000     
+    
+    if ([req isEqualToString:@"git"])
+    {
+        NSString* git = [NSString stringWithString:path];
+        
+        while ([git length] && ![git isEqualToString:@"/"])
+        {
+            BOOL isDir, exists;
+            
+            NSString* gitDir = [git stringByAppendingPathComponent:@".git"];
+            
+            exists = [[NSFileManager defaultManager] fileExistsAtPath:gitDir isDirectory:&isDir];
+            if (isDir && exists)
+            {
+                return git;
+            }
+            
+            git = [git stringByDeletingLastPathComponent];
+        }
+        NSLog(@"NO git for %@!!!", path);
         return nil;
     }
     

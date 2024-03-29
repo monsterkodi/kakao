@@ -7,10 +7,9 @@
 */
 
 #import "watch.h"
-#import <sys/stat.h>
 #import <Foundation/Foundation.h>
 
-#define INTERVAL 0.2 // time in seconds between change dispatches
+#define INTERVAL 0.5 // time in seconds between change dispatches
 
 BOOL shouldIgnoreChangedPath(NSString* path)
 {

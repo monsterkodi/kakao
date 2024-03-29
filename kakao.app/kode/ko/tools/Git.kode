@@ -6,7 +6,52 @@
  0000000   000     000   
 ###
 
+use ../../kxk/slash
+
 function Git
+
+    @status: (file) ○->
+        
+        gitDir = ○ kakao 'fs.git' file
+        
+        status = ○ kakao 'app.sh' '/usr/bin/git' 'status' '--porcelain' gitDir
+        
+        log 'Git.status' gitDir, status
+        
+        if status.startsWith 'fatal:' then return {}
+        
+        lines = status.split '\n'
+    
+        info = 
+            gitDir:  gitDir
+            changed: []
+            deleted: []
+            added:   []
+            files:   {}
+            
+        dirSet = new Set
+        
+        while line = lines.shift()
+            rel    = line.slice 3
+            file   = slash.path gitDir, line.slice 3
+            while (rel = slash.dir rel) != ''
+                dirSet.add rel
+                
+            header = line.slice 0,2
+            switch header
+                ' D' ➜ info.deleted.push file
+                ' M' ➜ info.changed.push file
+                '??' ➜ info.added  .push file
+                
+        info.dirs = Array.from(dirSet).map (d) -> slash.path gitDir, d
+        
+        for key in ['changed' 'added' 'deleted']
+            for file in info[key]
+                info.files[file] = key
+        
+        log 'Git.status info' info
+        
+        info
 
     @diff: (file) ○->
         

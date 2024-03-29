@@ -15,6 +15,8 @@ use ../../kxk/util
 use ../../kxk/ffs
 
 use ../tools/File
+use ../tools/Git
+
 use ./Select
 use ./Info
 use ./Browser
@@ -530,7 +532,7 @@ function FileBrowser extends Browser
         file = item.path ? item.parent?.path
         return if empty file
 
-        # hub.status file, (status) => @applyGitStatusFiles col, hub.statusFiles status
+        Git.status(file).then (status) => @applyGitStatusFiles col, status.files
 
     applyGitStatusFiles: (col, files) =>
 
@@ -538,9 +540,9 @@ function FileBrowser extends Browser
 
     onGitStatus: (gitDir, status) =>
 
-        # files = hub.statusFiles status
-        # for col in [0..@columns.length]
-            # @applyGitStatusFiles col, files
+        log 'FileBrowser.onGitStatus' gitDir, status
+        for col in 0..@columns.length
+            @applyGitStatusFiles col, status.files
 
     #  0000000  000   000  00000000  000      00000000  
     # 000       000   000  000       000      000       

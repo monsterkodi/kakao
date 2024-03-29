@@ -1187,6 +1187,7 @@ Column = (function ()
                 return
             }
             status = files[row.item.path]
+            console.log('updateGitFiles',row.item.path,files)
             if (icon = $('.browserStatusIcon',row.div))
             {
                 icon.remove()
@@ -1283,7 +1284,7 @@ Column = (function ()
 
     Column.prototype["pastePaths"] = function ()
     {
-        var action, paths, target, text, _911_23_
+        var action, paths, target, text, _912_23_
 
         text = electron.clipboard.readText()
         paths = text.split('\n')
@@ -1305,7 +1306,7 @@ Column = (function ()
 
     Column.prototype["onKey"] = function (event)
     {
-        var char, combo, key, mod, _948_88_
+        var char, combo, key, mod, _949_88_
 
         mod = keyinfo.forEvent(event).mod
         key = keyinfo.forEvent(event).key
