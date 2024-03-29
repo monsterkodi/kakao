@@ -21,7 +21,6 @@ function Git
         
         kakao('fs.git' prjPath).then (gitDir) =>
             if valid gitDir and gitDir not in @gitDirs
-                # log 'Git.onProjectIndexed' prjPath, gitDir
                 @gitDirs.push slash.path gitDir, '.git'
                 
     onFileChanged: (file) =>
@@ -30,7 +29,7 @@ function Git
             if file.startsWith gitDir
                 if slash.dir(file).endsWith 'refs/heads'
                     if slash.name(file) in ['master' 'main']
-                        log 'git ref changed' file
+                        log 'git ref changed:' file
                         return
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  
