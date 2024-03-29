@@ -23,6 +23,8 @@ import Projects from "../tools/Projects.js"
 
 import Indexer from "../tools/Indexer.js"
 
+import Git from "../tools/Git.js"
+
 import fps from "../tools/fps.js"
 
 import scheme from "../tools/scheme.js"
@@ -102,6 +104,7 @@ Window = (function ()
         this.id = win.id
         new FileHandler
         new FileWatch
+        new Git
         this.tabs = window.tabs = new Tabs(window.titlebar.elem)
         this.navigate = window.navigate = new navigate()
         this.split = window.split = new Split()
@@ -349,7 +352,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _228_14_
+    var _230_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -360,7 +363,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _234_22_, _235_19_
+    var _236_22_, _237_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -405,7 +408,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _279_32_
+    var _281_32_
 
     if (!(_k_.isNum(s)))
     {

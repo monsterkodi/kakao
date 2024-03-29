@@ -29,8 +29,8 @@ class FileHandler
         this.openFiles = this.openFiles.bind(this)
         this.onFile = this.onFile.bind(this)
         this.loadFile = this.loadFile.bind(this)
-        post.on('reloadFile',this.reloadFile)
-        post.on('removeFile',this.removeFile)
+        post.on('fileChanged',this.reloadFile)
+        post.on('fileRemoved',this.removeFile)
         post.on('saveFileAs',this.saveFileAs)
         post.on('saveFile',this.saveFile)
         post.on('saveAll',this.saveAll)
@@ -302,7 +302,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _278_29_
+        var _276_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -318,7 +318,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _294_18_
+        var cb, dir, _292_18_
 
         cb = function (files)
         {
@@ -334,7 +334,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _314_18_
+        var cb, _312_18_
 
         cb = (function (file)
         {

@@ -7,14 +7,41 @@
 ###
 
 use ../../kxk/slash
+use ../../kxk/post
 
 function Git
 
+    @: ->
+        @gitDirs = []
+        
+        post.on 'projectIndexed' @onProjectIndexed
+        post.on 'fileChanged'    @onFileChanged
+        
+    onProjectIndexed: (prjPath) =>
+        
+        kakao('fs.git' prjPath).then (gitDir) =>
+            if valid gitDir and gitDir not in @gitDirs
+                # log 'Git.onProjectIndexed' prjPath, gitDir
+                @gitDirs.push slash.path gitDir, '.git'
+                
+    onFileChanged: (file) =>
+        
+        for gitDir in @gitDirs
+            if file.startsWith gitDir
+                log 'git file changed' file
+                return
+        
+    #  0000000  000000000   0000000   000000000  000   000   0000000  
+    # 000          000     000   000     000     000   000  000       
+    # 0000000      000     000000000     000     000   000  0000000   
+    #      000     000     000   000     000     000   000       000  
+    # 0000000      000     000   000     000      0000000   0000000   
+    
     @status: (file) ○->
         
-        gitDir = ○ kakao 'fs.git' file
+        gitDir =○ kakao 'fs.git' file
         
-        status = ○ kakao 'app.sh' '/usr/bin/git' 'status' '--porcelain' gitDir
+        status =○ kakao 'app.sh' '/usr/bin/git' 'status' '--porcelain' gitDir
         
         # log 'Git.status' gitDir, status
         
@@ -53,6 +80,12 @@ function Git
         
         info
 
+    # 0000000    000  00000000  00000000  
+    # 000   000  000  000       000       
+    # 000   000  000  000000    000000    
+    # 000   000  000  000       000       
+    # 0000000    000  000       000       
+    
     @diff: (file) ○->
         
         # log 'Git.diff' file
@@ -104,7 +137,7 @@ function Git
     
                 info.changes.push change
     
-        log 'Git.diff' info
+        # log 'Git.diff' info
         info
 
 export Git

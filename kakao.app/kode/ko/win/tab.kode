@@ -26,8 +26,6 @@ class Tab
 
         @update()
 
-        # post.emit 'watch' @file
-        
     stashInfo: ->
         
         info = {}
@@ -85,7 +83,6 @@ class Tab
         
         if not slash.samePath @file, newFile
             @file = slash.path newFile
-            # post.emit 'watch' @file
             @update()
             
     #  0000000  000000000   0000000   000000000  00000000

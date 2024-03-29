@@ -1,15 +1,15 @@
 ###
-00000000  000  000      00000000  000   000   0000000   000   000  0000000    000      00000000  00000000 
+00000000  000  000      00000000  000   000   0000000   000   000  0000000    000      00000000  00000000
 000       000  000      000       000   000  000   000  0000  000  000   000  000      000       000   000
-000000    000  000      0000000   000000000  000000000  000 0 000  000   000  000      0000000   0000000  
+000000    000  000      0000000   000000000  000000000  000 0 000  000   000  000      0000000   0000000
 000       000  000      000       000   000  000   000  000  0000  000   000  000      000       000   000
 000       000  0000000  00000000  000   000  000   000  000   000  0000000    0000000  00000000  000   000
 ###
 
 use ../../kxk/util ▪ pull reversed
-use ../../kxk/prefs 
+use ../../kxk/prefs
 use ../../kxk/slash
-use ../../kxk/post 
+use ../../kxk/post
 
 use ../tools/Projects
 use ../tools/File
@@ -18,8 +18,8 @@ class FileHandler
 
     @: ->
 
-        post.on 'reloadFile'  @reloadFile
-        post.on 'removeFile'  @removeFile
+        post.on 'fileChanged' @reloadFile
+        post.on 'fileRemoved' @removeFile
         post.on 'saveFileAs'  @saveFileAs
         post.on 'saveFile'    @saveFile
         post.on 'saveAll'     @saveAll
@@ -29,59 +29,59 @@ class FileHandler
         post.on 'openFile'    @openFile
         post.on 'openFiles'   @openFiles
         post.on 'file'        @onFile
-        
+
         @cursorToRestore = {}
-        
-    # 000       0000000    0000000   0000000          00000000  000  000      00000000  
-    # 000      000   000  000   000  000   000        000       000  000      000       
-    # 000      000   000  000000000  000   000        000000    000  000      0000000   
-    # 000      000   000  000   000  000   000        000       000  000      000       
-    # 0000000   0000000   000   000  0000000          000       000  0000000  00000000  
-    
+
+    # 000       0000000    0000000   0000000          00000000  000  000      00000000
+    # 000      000   000  000   000  000   000        000       000  000      000
+    # 000      000   000  000000000  000   000        000000    000  000      0000000
+    # 000      000   000  000   000  000   000        000       000  000      000
+    # 0000000   0000000   000   000  0000000          000       000  0000000  00000000
+
     loadFile: (file, opt={}) =>
-        
+
         # log 'FileHandler.loadFile' file, opt
-    
+
         file = null if file? and file.length <= 0
-    
+
         editor.saveScrollCursorsAndSelections()
-    
+
         if file?
             [file, filePos] = slash.splitFilePos file
             if filePos? and (filePos[0] or filePos[1])
                 @cursorToRestore[file] = filePos
             if not file.startsWith 'untitled'
                 file = slash.path file
-    
+
         if file != editor?.currentFile or valid filePos
             @addToRecent file
-            
+
             tab = tabs.tab file
             if empty tab
                 tab = tabs.addTmpTab file
-            
+
             if activeTab = tabs.activeTab()
                 if tab != activeTab
                     activeTab.clearActive()
                     if activeTab.dirty
                         activeTab.storeState()
-                        
+
             if tab?.state
                 restoreState = tab.state.state
-                        
+
             editor.setCurrentFile file, restoreState
-    
+
             if tab
                 tab?.finishActivation() # setActive, restore state, update tabs
             else
                 tabs.getPrjTab(Projects.dir file)?.update()
-            
+
             post.emit 'fileLoaded' file
-                
+
         split.raise 'editor'
-    
+
     onFile: (file) =>
-        
+
         if filePos = @cursorToRestore[file]
             editor.singleCursorAtPos filePos
             editor.scroll.cursorToTop()
@@ -92,20 +92,20 @@ class FileHandler
     # 000   000  00000000   0000000   000 0 000        000000    000  000      0000000   0000000
     # 000   000  000        000       000  0000        000       000  000      000            000
     #  0000000   000        00000000  000   000        000       000  0000000  00000000  0000000
-    
+
     # opens a list of iles in new tabs
     # called from file dialog, open command and browser
-    
-    openFiles: (files, options) => 
-    
+
+    openFiles: (files, options) =>
+
         log 'FileHandler.openFiles' files
-        
+
         return if empty files
-        
+
         options ?= {}
-        
+
         maxTabs = prefs.get 'maximalNumberOfTabs' 8
-        
+
         if not options.newWindow
             files = files[0...maxTabs]
 
@@ -118,12 +118,12 @@ class FileHandler
                 title:      'A Lot of Files Warning'
                 message:    "You have selected #{files.length} files."
                 detail:     'Are you sure you want to open that many files?'
-                cb: (answer) => 
-                    if answer == 1 
+                cb: (answer) =>
+                    if answer == 1
                         options.skipCheck = true
                         @openFiles ofiles, options
             return
-            
+
         if empty files
             return []
 
@@ -141,30 +141,30 @@ class FileHandler
             else
                 # log 'FileHandler.openFiles post.emit newTabWithFile' file
                 post.emit 'newTabWithFile' file
-    
+
         true
-          
-    # 00000000   00000000  000       0000000    0000000   0000000    
-    # 000   000  000       000      000   000  000   000  000   000  
-    # 0000000    0000000   000      000   000  000000000  000   000  
-    # 000   000  000       000      000   000  000   000  000   000  
-    # 000   000  00000000  0000000   0000000   000   000  0000000    
-    
+
+    # 00000000   00000000  000       0000000    0000000   0000000
+    # 000   000  000       000      000   000  000   000  000   000
+    # 0000000    0000000   000      000   000  000000000  000   000
+    # 000   000  000       000      000   000  000   000  000   000
+    # 000   000  00000000  0000000   0000000   000   000  0000000
+
     reloadTab: (file) =>
-        
+
         if file == editor?.currentFile
             @loadFile editor?.currentFile, reload:true
         else
             post.emit 'revertFile' file
-                
-    # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000  
-    # 000   000  000       000      000   000  000   000  000   000        000       000  000      000       
-    # 0000000    0000000   000      000   000  000000000  000   000        000000    000  000      0000000   
-    # 000   000  000       000      000   000  000   000  000   000        000       000  000      000       
-    # 000   000  00000000  0000000   0000000   000   000  0000000          000       000  0000000  00000000  
-    
+
+    # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
+    # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
+    # 0000000    0000000   000      000   000  000000000  000   000        000000    000  000      0000000
+    # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
+    # 000   000  00000000  0000000   0000000   000   000  0000000          000       000  0000000  00000000
+
     reloadFile: (file) =>
-        
+
         if not file
             @reloadActiveTab()
         else if tab = tabs.tab file
@@ -172,72 +172,72 @@ class FileHandler
                 @reloadActiveTab()
             else
                 tab.reload()
-            
+
     reloadActiveTab: ->
-        
+
         if tab = tabs.activeTab()
             tab.reload()
-        
+
         @loadFile editor.currentFile, reload:true
-    
+
         if editor.currentFile?
             post.toWins 'reloadTab' editor.currentFile
 
-    # 00000000   00000000  00     00   0000000   000   000  00000000        00000000  000  000      00000000  
-    # 000   000  000       000   000  000   000  000   000  000             000       000  000      000       
-    # 0000000    0000000   000000000  000   000   000 000   0000000         000000    000  000      0000000   
-    # 000   000  000       000 0 000  000   000     000     000             000       000  000      000       
-    # 000   000  00000000  000   000   0000000       0      00000000        000       000  0000000  00000000  
-    
+    # 00000000   00000000  00     00   0000000   000   000  00000000        00000000  000  000      00000000
+    # 000   000  000       000   000  000   000  000   000  000             000       000  000      000
+    # 0000000    0000000   000000000  000   000   000 000   0000000         000000    000  000      0000000
+    # 000   000  000       000 0 000  000   000     000     000             000       000  000      000
+    # 000   000  00000000  000   000   0000000       0      00000000        000       000  0000000  00000000
+
     removeFile: (file) =>
-        
+
         if tab = tabs.tab file
             if tab == tabs.activeTab()
                 if neighborTab = tab.nextOrPrev()
                     neighborTab.activate()
             tabs.closeTab tab
-            
-    #  0000000   0000000   000   000  00000000         0000000   000      000      
-    # 000       000   000  000   000  000             000   000  000      000      
-    # 0000000   000000000   000 000   0000000         000000000  000      000      
-    #      000  000   000     000     000             000   000  000      000      
-    # 0000000   000   000      0      00000000        000   000  0000000  0000000  
-    
+
+    #  0000000   0000000   000   000  00000000         0000000   000      000
+    # 000       000   000  000   000  000             000   000  000      000
+    # 0000000   000000000   000 000   0000000         000000000  000      000
+    #      000  000   000     000     000             000   000  000      000
+    # 0000000   000   000      0      00000000        000   000  0000000  0000000
+
     saveAll: =>
-        
+
         for tab in tabs.tabs
-            if tab.dirty 
+            if tab.dirty
                 if tab == tabs.activeTab()
                     @saveFile tab.file
                 else
                     if not tab.file.startsWith 'untitled'
                         tab.saveChanges()
 
-    #  0000000   0000000   000   000  00000000        00000000  000  000      00000000  
-    # 000       000   000  000   000  000             000       000  000      000       
-    # 0000000   000000000   000 000   0000000         000000    000  000      0000000   
-    #      000  000   000     000     000             000       000  000      000       
-    # 0000000   000   000      0      00000000        000       000  0000000  00000000  
-    
+    #  0000000   0000000   000   000  00000000        00000000  000  000      00000000
+    # 000       000   000  000   000  000             000       000  000      000
+    # 0000000   000000000   000 000   0000000         000000    000  000      0000000
+    #      000  000   000     000     000             000       000  000      000
+    # 0000000   000   000      0      00000000        000       000  0000000  00000000
+
     saveFile: (file) =>
-    
+
         file ?= editor.currentFile
-        
+
         if not file? or file.startsWith 'untitled'
             @saveFileAs()
             return
-              
+
         post.emit 'unwatch' file
-        
+
         tabState = editor.do.tabState()
-        
+
         File.save file, editor.text(), (saved) ->
-            
+
             return error 'File.save failed!' if not saved
-            
+
             editor.saveScrollCursorsAndSelections()
             post.emit 'saveStash'
-            
+
             # editor.setCurrentFile   saved
             editor.do.history   = tabState.history
             editor.do.saveIndex = tabState.history.length
@@ -246,75 +246,73 @@ class FileHandler
             post.emit   'dirty'     false
 
             editor.restoreScrollCursorsAndSelections()
-            
-            # post.emit   'watch'     saved
-                  
-    #  0000000   0000000    0000000          00000000   00000000   0000000  00000000  000   000  000000000  
-    # 000   000  000   000  000   000        000   000  000       000       000       0000  000     000     
-    # 000000000  000   000  000   000        0000000    0000000   000       0000000   000 0 000     000     
-    # 000   000  000   000  000   000        000   000  000       000       000       000  0000     000     
-    # 000   000  0000000    0000000          000   000  00000000   0000000  00000000  000   000     000     
-    
+
+    #  0000000   0000000    0000000          00000000   00000000   0000000  00000000  000   000  000000000
+    # 000   000  000   000  000   000        000   000  000       000       000       0000  000     000
+    # 000000000  000   000  000   000        0000000    0000000   000       0000000   000 0 000     000
+    # 000   000  000   000  000   000        000   000  000       000       000       000  0000     000
+    # 000   000  0000000    0000000          000   000  00000000   0000000  00000000  000   000     000
+
     addToRecent: (file) ->
-    
+
         recent = window.stash.get 'recentFiles' []
         return if file == first recent
         pull recent, file
         recent.unshift file
         while recent.length > prefs.get 'recentFilesLength' 15
             recent.pop()
-    
+
         window.stash.set 'recentFiles' recent
         window.commandline.commands.open.setHistory reversed recent
-                
-    #  0000000   0000000   000   000  00000000         0000000  000   000   0000000   000   000   0000000   00000000   0000000  
-    # 000       000   000  000   000  000             000       000   000  000   000  0000  000  000        000       000       
-    # 0000000   000000000   000 000   0000000         000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
-    #      000  000   000     000     000             000       000   000  000   000  000  0000  000   000  000            000  
-    # 0000000   000   000      0      00000000         0000000  000   000  000   000  000   000   0000000   00000000  0000000   
-    
+
+    #  0000000   0000000   000   000  00000000         0000000  000   000   0000000   000   000   0000000   00000000   0000000
+    # 000       000   000  000   000  000             000       000   000  000   000  0000  000  000        000       000
+    # 0000000   000000000   000 000   0000000         000       000000000  000000000  000 0 000  000  0000  0000000   0000000
+    #      000  000   000     000     000             000       000   000  000   000  000  0000  000   000  000            000
+    # 0000000   000   000      0      00000000         0000000  000   000  000   000  000   000   0000000   00000000  0000000
+
     saveChanges: =>
-        
+
         if editor.currentFile? and editor.do.hasChanges()
             File.save editor.currentFile, editor.text(), (file) ->
                 error "FileHandler.saveChanges failed #{err}" if not file
-    
-    #  0000000   00000000   00000000  000   000        00000000  000  000      00000000  
-    # 000   000  000   000  000       0000  000        000       000  000      000       
-    # 000   000  00000000   0000000   000 0 000        000000    000  000      0000000   
-    # 000   000  000        000       000  0000        000       000  000      000       
-    #  0000000   000        00000000  000   000        000       000  0000000  00000000  
-    
+
+    #  0000000   00000000   00000000  000   000        00000000  000  000      00000000
+    # 000   000  000   000  000       0000  000        000       000  000      000
+    # 000   000  00000000   0000000   000 0 000        000000    000  000      0000000
+    # 000   000  000        000       000  0000        000       000  000      000
+    #  0000000   000        00000000  000   000        000       000  0000000  00000000
+
     openFile: (opt) =>
-    
+
         cb = (files) -> post.emit 'openFiles' files, opt
-        
+
         dir = slash.dir editor.currentFile if editor?.currentFile
         dir ?= slash.path '.'
         window.win?.openFileDialog(
             title: 'Open File'
             defaultPath: window.stash.get('openFilePath' dir)
-            properties: ['openFile' 'multiSelections'] 
+            properties: ['openFile' 'multiSelections']
             cb: cb
             )
-                
-    #  0000000   0000000   000   000  00000000        00000000  000  000      00000000          0000000    0000000  
-    # 000       000   000  000   000  000             000       000  000      000              000   000  000       
-    # 0000000   000000000   000 000   0000000         000000    000  000      0000000          000000000  0000000   
-    #      000  000   000     000     000             000       000  000      000              000   000       000  
-    # 0000000   000   000      0      00000000        000       000  0000000  00000000         000   000  0000000   
-    
+
+    #  0000000   0000000   000   000  00000000        00000000  000  000      00000000          0000000    0000000
+    # 000       000   000  000   000  000             000       000  000      000              000   000  000
+    # 0000000   000000000   000 000   0000000         000000    000  000      0000000          000000000  0000000
+    #      000  000   000     000     000             000       000  000      000              000   000       000
+    # 0000000   000   000      0      00000000        000       000  0000000  00000000         000   000  0000000
+
     saveFileAs: =>
-    
+
         cb = (file) =>
             log 'saveFileAs' file
             @addToRecent file
             @saveFile file
-        
+
         window.win?.saveFileDialog(
-            title: 'Save File As' 
+            title: 'Save File As'
             defaultPath: slash.unslash editor?.currentDir()
             cb: cb
             )
-            
+
 export FileHandler

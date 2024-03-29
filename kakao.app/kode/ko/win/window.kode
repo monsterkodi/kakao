@@ -19,6 +19,7 @@ use ../../kxk/prefs
 use ../tools/FileWatch
 use ../tools/Projects
 use ../tools/Indexer
+use ../tools/Git
 use ../tools/fps
 use ../tools/scheme
 use ../main/navigate
@@ -68,6 +69,7 @@ function Window extends win.Delegate
                     
         new FileHandler
         new FileWatch
+        new Git
         
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
         @navigate    = window.navigate    = new navigate()
