@@ -121,9 +121,8 @@ export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pig
     console.log('initPigments',this.pigments)
 },togglePigments:function ()
 {
-    var _123_21_, _125_21_
+    var _121_21_, _123_21_
 
-    console.log('togglePigments',this.pigments)
     if (window.stash.get(`pigments|${this.currentFile}`))
     {
         return (this.pigments != null ? this.pigments.deactivate() : undefined)

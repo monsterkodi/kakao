@@ -22,12 +22,12 @@ use ../tools/Indexer
 use ../tools/Git
 use ../tools/fps
 use ../tools/scheme
-use ../main/navigate
 
 use ./Split
 use ./Info
 use ./Tabs
 use ./Menu
+use ./Navigate
 use ./FileHandler
 use ./Terminal
 
@@ -72,7 +72,7 @@ function Window extends win.Delegate
         new Git
         
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
-        @navigate    = window.navigate    = new navigate()
+        @navigate    = window.navigate    = new Navigate()
         @split       = window.split       = new Split()
         @terminal    = window.terminal    = new Terminal 'terminal'
         @editor      = window.editor      = new FileEditor 'editor'

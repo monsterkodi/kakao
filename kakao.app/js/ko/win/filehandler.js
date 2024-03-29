@@ -118,7 +118,6 @@ class FileHandler
     {
         var file, maxTabs
 
-        console.log('FileHandler.openFiles',files)
         if (_k_.empty(files))
         {
             return

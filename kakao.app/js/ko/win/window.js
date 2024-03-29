@@ -29,8 +29,6 @@ import fps from "../tools/fps.js"
 
 import scheme from "../tools/scheme.js"
 
-import navigate from "../main/navigate.js"
-
 import Split from "./Split.js"
 
 import Info from "./Info.js"
@@ -38,6 +36,8 @@ import Info from "./Info.js"
 import Tabs from "./Tabs.js"
 
 import Menu from "./Menu.js"
+
+import Navigate from "./Navigate.js"
 
 import FileHandler from "./FileHandler.js"
 
@@ -106,7 +106,7 @@ Window = (function ()
         new FileWatch
         new Git
         this.tabs = window.tabs = new Tabs(window.titlebar.elem)
-        this.navigate = window.navigate = new navigate()
+        this.navigate = window.navigate = new Navigate()
         this.split = window.split = new Split()
         this.terminal = window.terminal = new Terminal('terminal')
         this.editor = window.editor = new FileEditor('editor')

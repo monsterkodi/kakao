@@ -117,8 +117,6 @@ export
 
     togglePigments: ->
         
-        log 'togglePigments' @pigments
-
         if window.stash.get "pigments|#{@currentFile}"
             @pigments?.deactivate()
         else
