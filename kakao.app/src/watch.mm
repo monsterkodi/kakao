@@ -505,8 +505,8 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
                                      &context,
                                      (__bridge CFArrayRef)paths,
                                      kFSEventStreamEventIdSinceNow,
-                                     0.05,
-                                     kFSEventStreamCreateFlagUseCFTypes|kFSEventStreamCreateFlagNoDefer);
+                                     0.15,
+                                     kFSEventStreamCreateFlagUseCFTypes|kFSEventStreamCreateFlagNoDefer|kFSEventStreamCreateFlagFileEvents);
     if (!streamRef) 
     {
         NSLog(@"Failed to start monitoring of %@ (FSEventStreamCreate error)", self.path);
@@ -571,8 +571,73 @@ static void FSMonitorEventStreamCallback( ConstFSEventStreamRef streamRef,
                                           const FSEventStreamEventFlags eventFlags[], 
                                           const FSEventStreamEventId eventIds[]) 
 {
+    NSMutableArray* changes = [NSMutableArray array];
+            
     for (size_t i = 0; i < numEvents; i++) 
     {
-        [monitor sendChangeEventWithPath:[eventPaths objectAtIndex:i] flags:eventFlags[i]];
+        // NSLog(@"▸▸          %@ %x event %llu", [eventPaths objectAtIndex:i], eventFlags[i], eventIds[i]);
+        
+        ChangeType changeType = ChangeType::Changed;
+        BOOL isDir = true;
+        
+        FSEventStreamEventFlags flags = eventFlags[i];
+        
+        if (flags & kFSEventStreamEventFlagItemIsFile)
+        {
+            flags &= ~kFSEventStreamEventFlagItemIsFile;
+            // NSLog(@"▸▸ file     %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+            isDir = false;
+        }
+        if (flags & kFSEventStreamEventFlagItemModified)
+        {
+            flags &= ~kFSEventStreamEventFlagItemModified;
+            // NSLog(@"▸▸ modified %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        if (flags & kFSEventStreamEventFlagItemRenamed)
+        {
+            flags &= ~kFSEventStreamEventFlagItemRenamed;
+            // NSLog(@"▸▸ renamed  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        if (flags & kFSEventStreamEventFlagItemChangeOwner)
+        {
+            flags &= ~kFSEventStreamEventFlagItemChangeOwner;
+            // NSLog(@"▸▸ chowner  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        if (flags & kFSEventStreamEventFlagItemInodeMetaMod)
+        {
+            flags &= ~kFSEventStreamEventFlagItemInodeMetaMod;
+            // NSLog(@"▸▸ metamod  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        if (flags & kFSEventStreamEventFlagItemXattrMod)
+        {
+            flags &= ~kFSEventStreamEventFlagItemXattrMod;
+            // NSLog(@"▸▸ metamod  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        if (flags & kFSEventStreamEventFlagItemCloned)
+        {
+            flags &= ~kFSEventStreamEventFlagItemCloned;
+            // NSLog(@"▸▸ metamod  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        if (flags & kFSEventStreamEventFlagItemCreated)
+        {
+            flags &= ~kFSEventStreamEventFlagItemCreated;
+            // NSLog(@"▸▸ created  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+            changeType = ChangeType::Created;
+        }
+        if (flags & kFSEventStreamEventFlagItemRemoved)
+        {
+            flags &= ~kFSEventStreamEventFlagItemRemoved;
+            // NSLog(@"▸▸ removed  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+            changeType = ChangeType::Deleted;
+        }
+        
+        if (flags)
+        {
+            NSLog(@"▸▸ remaining flags  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+        }
+        
+        [changes addObject:[WatchChange withPath:[eventPaths objectAtIndex:i] type:changeType isDir:isDir]];
     }
+    
+    [monitor.delegate onChanges:changes inFolder:monitor.path];
 }

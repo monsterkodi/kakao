@@ -43,7 +43,7 @@
     app.snapshotFolder = @"~/Desktop";
     app.snapshotFile   = @"kakao";
     app.watch = [Watch path:[Bundle path] delegate:app];
-    // app.watchHome = [Watch path:[FS homeDir] delegate:app];
+    app.watchHome = [Watch path:[FS homeDir] delegate:app];
     
     id nsApp = [NSApplication sharedApplication];
     [nsApp setDelegate:app];
@@ -162,7 +162,7 @@
             id msg = [NSMutableDictionary dictionary];
             id args = [NSMutableArray array];
             [args addObject:type];
-            [args addObject:[NSString stringWithFormat:@"%@/%@", folder, change.path]];
+            [args addObject:change.path];
             [msg setObject:@"fs.change" forKey:@"name"];
             [msg setObject:args forKey:@"args"];
             
@@ -186,20 +186,23 @@
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
         }
-        NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
         
-        if ([change.path hasPrefix:@"js/"]) { reloadPage = YES; }
+        NSString* relPath = [change.path substringFromIndex:[folder length]+1];
+        
+        NSLog(@"%@ %@ %@ %@", change.isDir ? @"▸" : @"▪", type, change.path, relPath);
+        
+        if ([relPath hasPrefix:@"js/"]) { reloadPage = YES; }
 
-        if ([change.path hasPrefix:@"Contents/Resources/"]) { reloadPage = YES; }
+        if ([relPath hasPrefix:@"Contents/Resources/"]) { reloadPage = YES; }
 
-        if ([change.path hasPrefix:@"src/"] || [change.path isEqualToString:@"Contents/Info.plist"])
+        if ([relPath hasPrefix:@"src/"] || [relPath isEqualToString:@"Contents/Info.plist"])
         {
             rebuildApp = YES;
         }
         
-        if ([change.path hasPrefix:@"pug/"] || [change.path hasPrefix:@"kode/"])
+        if ([relPath hasPrefix:@"pug/"] || [relPath hasPrefix:@"kode/"])
         {
-            [filesToTranspile addObject:[NSString stringWithFormat:@"%@/%@", folder, change.path]];
+            [filesToTranspile addObject:change.path];
         }
     }
     
