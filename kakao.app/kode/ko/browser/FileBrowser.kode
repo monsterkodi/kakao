@@ -297,7 +297,6 @@ function FileBrowser extends Browser
         while col >= @numCols()
             @addColumn()
 
-        # log 'loadFileItem' item
         file = item.path
 
         @columns[col].parent = item
@@ -305,22 +304,10 @@ function FileBrowser extends Browser
         if File.isImage file
             @imageInfoColumn col, file
         else
-            switch slash.ext file
-                'tiff' 'tif'
-                    if not slash.win()
-                        @convertImage row
-                    else
-                        @fileInfoColumn col, file
-                'pxm'
-                    if not slash.win()
-                        @convertPXM row
-                    else
-                        @fileInfoColumn col, file
-                ➜
-                    if File.isText item.path
-                        @loadSourceItem item, col
-                    if not File.isCode item.path
-                        @fileInfoColumn col, file
+            if File.isText item.path
+                @loadSourceItem item, col
+            if not File.isCode item.path
+                @fileInfoColumn col, file
 
         post.emit 'load' col:col, item:item
                 

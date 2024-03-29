@@ -43,7 +43,6 @@ class FileWatch
     {
         var k, v
 
-        console.log('FileWatch.onChange',path,Object.keys(this.watchers).length)
         for (k in this.watchers)
         {
             v = this.watchers[k]

@@ -16,7 +16,6 @@ Git = (function ()
 
         gitDir = await kakao('fs.git',file)
         status = await kakao('app.sh','/usr/bin/git','status','--porcelain',gitDir)
-        console.log('Git.status',gitDir,status)
         if (status.startsWith('fatal:'))
         {
             return {}
@@ -62,7 +61,6 @@ Git = (function ()
                 info.files[file] = key
             }
         }
-        console.log('Git.status info',info)
         return info
     }
 

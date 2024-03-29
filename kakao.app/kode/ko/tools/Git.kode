@@ -16,7 +16,7 @@ function Git
         
         status = ○ kakao 'app.sh' '/usr/bin/git' 'status' '--porcelain' gitDir
         
-        log 'Git.status' gitDir, status
+        # log 'Git.status' gitDir, status
         
         if status.startsWith 'fatal:' then return {}
         
@@ -49,7 +49,7 @@ function Git
             for file in info[key]
                 info.files[file] = key
         
-        log 'Git.status info' info
+        # log 'Git.status info' info
         
         info
 

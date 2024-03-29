@@ -27,7 +27,7 @@ class DirWatch
     @onChange: (change, path) ->
         
         dir = slash.dir path
-        log 'DirWatch.onChange' dir, Object.keys(DirWatch.watches).length
+        # log 'DirWatch.onChange' dir, Object.keys(DirWatch.watches).length
         
         for k,v of DirWatch.watches
             if k == dir

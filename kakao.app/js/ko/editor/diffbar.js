@@ -202,7 +202,6 @@ class Diffbar
 
     update ()
     {
-        console.log('Diffbar.update',this.editor.currentFile)
         if (this.editor.currentFile)
         {
             return Git.diff(this.editor.currentFile).then((function (changes)

@@ -1187,7 +1187,6 @@ Column = (function ()
                 return
             }
             status = files[row.item.path]
-            console.log('updateGitFiles',row.item.path,files)
             if (icon = $('.browserStatusIcon',row.div))
             {
                 icon.remove()

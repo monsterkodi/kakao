@@ -30,7 +30,6 @@ class DirWatch
         var dir, k, v
 
         dir = slash.dir(path)
-        console.log('DirWatch.onChange',dir,Object.keys(DirWatch.watches).length)
         for (k in DirWatch.watches)
         {
             v = DirWatch.watches[k]

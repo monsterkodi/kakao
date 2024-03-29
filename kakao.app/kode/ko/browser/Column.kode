@@ -759,7 +759,7 @@ function Column
             return if row.item.type not in ['dir' 'file']
             return if not row.div
             status = files[row.item.path]
-            log 'updateGitFiles' row.item.path, files
+            # log 'updateGitFiles' row.item.path, files
 
             if icon =$ '.browserStatusIcon' row.div
                 icon.remove()

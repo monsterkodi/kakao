@@ -189,7 +189,7 @@ class Diffbar
 
     update: =>
 
-        log 'Diffbar.update' @editor.currentFile
+        # log 'Diffbar.update' @editor.currentFile
         
         if @editor.currentFile
 
