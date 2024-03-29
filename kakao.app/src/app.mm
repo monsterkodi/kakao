@@ -156,7 +156,7 @@
                 case 1: type = @"created"; break;
                 case 2: type = @"changed"; break;
             }
-            NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
+            // NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
             
             id msg = [NSMutableDictionary dictionary];
             id args = [NSMutableArray array];
@@ -271,6 +271,12 @@
     return [self executeNodeScript:[Bundle appPath:@"kk"] args:arr];
 }
 
+// 000   000   0000000   0000000    00000000  
+// 0000  000  000   000  000   000  000       
+// 000 0 000  000   000  000   000  0000000   
+// 000  0000  000   000  000   000  000       
+// 000   000   0000000   0000000    00000000  
+
 - (int) executeNodeScript:(NSString*)scriptPath args:(NSArray*)args
 {
     NSTask *task = [[NSTask alloc] init];
@@ -297,9 +303,15 @@
     return exitCode;
 }
 
+//  0000000  000   000  00000000  000      000      
+// 000       000   000  000       000      000      
+// 0000000   000000000  0000000   000      000      
+//      000  000   000  000       000      000      
+// 0000000   000   000  00000000  0000000  0000000  
+
 - (NSString*) executeShellScript:(NSArray*)args
 {
-    NSLog(@"executeShellScript %@", args);
+    // NSLog(@"executeShellScript %@", args);
     
     NSTask *task = [[NSTask alloc] init];
 
@@ -310,7 +322,7 @@
     if ([[args objectAtIndex:1] isKindOfClass:[NSDictionary class]])
     {
         NSDictionary* dict = (NSDictionary*)[args objectAtIndex:1];
-        NSLog(@"dict: %@", dict);
+
         if ([dict objectForKey:@"args"])
         {
             [task setArguments:[dict objectForKey:@"args"]];

@@ -705,9 +705,9 @@ function Column
         newDir = slash.path @path(), 'New folder'
         ffs.mkdir(newDir).then (d) =>
             if d
-                log 'new folder' d
+                # log 'new folder' d
                 row = @insertFile d
-                log 'new row' row
+                # log 'new row' row
                 @browser.select.row row
                 row.editName()
             
@@ -759,7 +759,6 @@ function Column
             return if row.item.type not in ['dir' 'file']
             return if not row.div
             status = files[row.item.path]
-            # log 'updateGitFiles' row.item.path, files
 
             if icon =$ '.browserStatusIcon' row.div
                 icon.remove()
@@ -793,7 +792,7 @@ function Column
                 
         @crumb.setFile @parent.path
     
-    onContextMenu: (event, column) => 
+    onContextMenu: (event, column) =>
         
         stopEvent event
         
