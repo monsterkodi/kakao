@@ -4,12 +4,6 @@
    000000000  000000000     000     000       000000000  
    000   000  000   000     000     000       000   000  
    00     00  000   000     000      0000000  000   000  
-
-   a merged and slightly modified version of:
-   
-   https://github.com/andreyvit/FSMonitoringKit
-   
-   Copyright (c) 2015 Andrey Tarantsov   
 */
 
 #import <Cocoa/Cocoa.h>
@@ -34,13 +28,6 @@ typedef enum
 @property(nonatomic, copy)  NSString*    path;
 @property(nonatomic)        ChangeType   type;
 @property(nonatomic)        BOOL         isDir;
-
-@end
-
-@interface FSChange : NSObject
-
-@property(nonatomic, copy)  NSSet   *changedFiles;
-@property(nonatomic)        BOOL    foldersChanged;
 
 @end
 

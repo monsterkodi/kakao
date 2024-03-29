@@ -4,55 +4,20 @@
    000000000  000000000     000     000       000000000  
    000   000  000   000     000     000       000   000  
    00     00  000   000     000      0000000  000   000  
-
-   a merged and slightly modified version of:
-   
-   https://github.com/andreyvit/FSMonitoringKit
-   
-   Copyright (c) 2015 Andrey Tarantsov
-   
-   the modifications:
-     - removed filter, bugfix and unused methods
-     - main classes renamed and code cleaned up
 */
 
 #import "watch.h"
 #import <sys/stat.h>
 #import <Foundation/Foundation.h>
 
-#define INTERVAL 0.2 // minimum time in seconds between change dispatches
-                     // increases automatically if folder scanning takes a long time
-
-BOOL shouldIgnorePath(NSString* path)
-{
-    NSString* dir = [path lastPathComponent];
-    
-    if ([dir isEqualToString:@"node_modules"]   ||
-        // [dir isEqualToString:@".git"]           ||
-        [dir isEqualToString:@".npm"]           ||
-        [dir isEqualToString:@".bun"]           ||
-        [dir isEqualToString:@".cargo"]         ||
-        [dir isEqualToString:@".cache"]         ||
-        [dir isEqualToString:@".pnpm-state"]    ||
-        [dir isEqualToString:@".pnpm-store"]    ||
-        [dir isEqualToString:@".electron-gyp"]  ||
-        [dir isEqualToString:@"Library"]        ||
-        [dir isEqualToString:@"Pictures"]       ||
-        [dir isEqualToString:@"WebKit"]
-        )
-    {
-        return YES;
-    }
-    
-    return NO;
-}                     
+#define INTERVAL 0.2 // time in seconds between change dispatches
 
 BOOL shouldIgnoreChangedPath(NSString* path)
 {
     if ([path hasPrefix:NSHomeDirectory()])
     {
         NSString* homePath = [path substringFromIndex:[NSHomeDirectory() length]+1];        
-        if ([homePath hasPrefix:@"Library/"] || [homePath hasPrefix:@"Pictures/"])
+        if ([homePath hasPrefix:@"Library/"])
         {
             return YES;
         }
@@ -79,354 +44,6 @@ BOOL shouldIgnoreChangedPath(NSString* path)
 
 @end
 
-@interface FSChange ()
-
-+ (FSChange*) changeWithFiles:(NSSet*)changedFiles foldersChanged:(BOOL)foldersChanged;
-
-@end
-
-@implementation FSChange
-
-+ (FSChange*) changeWithFiles:(NSSet*)changedFiles foldersChanged:(BOOL)foldersChanged 
-{
-    FSChange* change = [[FSChange alloc] init];
-    
-    change.changedFiles = [changedFiles copy];
-    change.foldersChanged = foldersChanged;
-
-    return change;
-}
-
-@end
-
-/*
-000000000  00000000   00000000  00000000  
-   000     000   000  000       000       
-   000     0000000    0000000   0000000   
-   000     000   000  000       000       
-   000     000   000  00000000  00000000  
-*/
-
-// 000  000000000  00000000  00     00  
-// 000     000     000       000   000  
-// 000     000     0000000   000000000  
-// 000     000     000       000 0 000  
-// 000     000     00000000  000   000  
-
-struct FSTreeItem 
-{
-    CFStringRef name;
-    NSInteger   parent;
-    mode_t      st_mode;
-    dev_t       st_dev;
-    ino_t       st_ino;
-    timespec    st_mtimespec;
-    timespec    st_ctimespec;
-    off_t       st_size;
-};
-
-@interface FSTree : NSObject 
-
-@property (nonatomic, readwrite, retain) NSMutableArray*  folders;
-@property (nonatomic, readwrite, retain) NSString*        rootPath;
-@property (nonatomic, readwrite) NSTimeInterval           buildTime;
-@property (nonatomic, readwrite) FSTreeItem*              items;
-@property (nonatomic, readwrite) NSInteger                count;
-
-- (FSTree*) initWithPath:(NSString*) path;
-
-@end
-
-@implementation FSTree
-
-- (FSTree*) initWithPath:(NSString*)path
-{
-    if ((self = [super init])) 
-    {
-        self.rootPath = path;
-        self.folders  = [NSMutableArray new];
-
-        NSInteger maxItems = 1000000;
-            
-        self.items = (FSTreeItem*)calloc(maxItems, sizeof(FSTreeItem));
-
-        NSFileManager *fm = [NSFileManager defaultManager];
-        @autoreleasepool 
-        {
-            NSDate *start = [NSDate date];
-
-            struct stat st;
-            
-            if (0 == lstat([self.rootPath UTF8String], &st)) 
-            {
-                {
-                    FSTreeItem *item = &self.items[self.count++];
-                    item->name = (__bridge CFStringRef)@"";
-                    item->st_mode = st.st_mode & S_IFMT;
-                    item->st_dev = st.st_dev;
-                    item->st_ino = st.st_ino;
-                    item->st_mtimespec = st.st_mtimespec;
-                    item->st_ctimespec = st.st_ctimespec;
-                    item->st_size = st.st_size;
-                }
-
-                for (NSInteger next = 0; next < self.count; ++next) 
-                {
-                    FSTreeItem *item = &self.items[next];
-                    if (item->st_mode == S_IFDIR) 
-                    {
-                        NSString* itemName = (__bridge NSString *)item->name;
-                        
-                        if (shouldIgnorePath(itemName))
-                        {
-                            // NSLog(@"✘ %@", dirName);
-                            continue;
-                        }
-                        
-                        [self.folders addObject:(__bridge NSString *)item->name];
-
-                        NSString *itemPath = [self.rootPath stringByAppendingPathComponent:itemName];
-                        
-                        // NSLog(@"👁  %@", itemName);
-                        
-                        for (NSString *child in [[fm contentsOfDirectoryAtPath:itemPath error:nil] sortedArrayUsingSelector:@selector(compare:)]) 
-                        {
-                            NSString *subpath = [itemPath stringByAppendingPathComponent:child];
-                            
-                            if (0 == lstat([subpath UTF8String], &st)) 
-                            {
-                                NSString *relativeChildPath = (CFStringGetLength(item->name) > 0 ? [itemName stringByAppendingPathComponent:child] : child);
-                                if (self.count == maxItems) 
-                                {
-                                    NSLog(@"Warning: max monitored files reached! %ld", maxItems);
-                                    break;
-                                }
-                                FSTreeItem *subitem = &self.items[self.count++];
-                                subitem->parent = next;
-                                subitem->name = (CFStringRef)CFBridgingRetain(relativeChildPath);                                
-                                subitem->st_mode = st.st_mode & S_IFMT;
-                                subitem->st_dev = st.st_dev;
-                                subitem->st_ino = st.st_ino;
-                                subitem->st_mtimespec = st.st_mtimespec;
-                                subitem->st_ctimespec = st.st_ctimespec;
-                                subitem->st_size = st.st_size;
-                            }
-                        }
-                    }
-                }
-            }
-
-            NSDate *end = [NSDate date];
-            self.buildTime = [end timeIntervalSinceReferenceDate] - [start timeIntervalSinceReferenceDate];
-            if (self.buildTime > 1) 
-            {
-                NSLog(@"%d %ld ms", (int)self.count, (long)(self.buildTime*1000.0));
-            }
-        }
-
-        [self.folders sortUsingSelector:@selector(compare:)];
-    }
-    return self;
-}
-
-- (void) dealloc
-{
-    FSTreeItem *end = self.items + self.count;
-    for (FSTreeItem *cur = self.items; cur < end; ++cur) 
-    {
-        CFRelease(cur->name);
-    }
-    free(self.items);
-    [super dealloc];
-}
-
-//  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
-// 000       000   000  000   000  0000  000  000        000       000       
-// 000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
-// 000       000   000  000   000  000  0000  000   000  000            000  
-//  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
-
-- (NSArray*) changes:(FSTree*)previous 
-{
-    NSMutableArray* changes = [NSMutableArray array];
-
-    FSTreeItem* previtems = previous.items;
-    int prevcount   = previous.count;
-
-    int *corresponding  = (int*)malloc(self.count * sizeof(int));
-    int *rcorresponding = (int*)malloc(prevcount * sizeof(int));
-
-    if (corresponding == NULL || rcorresponding == NULL) 
-    {
-        NSLog(@"Error: malloc failed!");
-        return [NSArray array];
-    }
-
-    memset(corresponding, -1, self.count * sizeof(int));
-    memset(rcorresponding, -1, prevcount * sizeof(int));
-
-    corresponding[0] = 0;
-    rcorresponding[0] = 0;
-    int i = 1, j = 1;
-    
-    while (i < self.count && j < prevcount) 
-    {
-        NSInteger cp = corresponding[self.items[i].parent];
-        if (cp < 0) 
-        {
-            BOOL isDir = self.items[i].st_mode == S_IFDIR;
-            //NSLog(@"%@ created0 %d", self.items[i].name, isDir);
-            [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
-            corresponding[i] = -2;
-            ++i;
-        } 
-        else if (previtems[j].parent < cp) 
-        {
-            BOOL isDir = previtems[j].st_mode == S_IFDIR;
-            //NSLog(@"%@ deleted! %d", previtems[j].name, isDir);
-            [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:isDir]];
-            rcorresponding[j] = -2;
-            ++j;
-        } 
-        else if (previtems[j].parent > cp) 
-        {
-            BOOL isDir = self.items[i].st_mode == S_IFDIR;
-            //NSLog(@"%@ created! %d", self.items[i].name, isDir);
-            [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
-            corresponding[i] = -2;
-            ++i;
-        } 
-        else 
-        {
-            NSComparisonResult r = [(__bridge NSString *)self.items[i].name compare:(__bridge NSString *)previtems[j].name];
-            
-            if (r == 0) // same item, compare mod times
-            { 
-                if (self.items[i].st_mode               != previtems[j].st_mode              || 
-                    self.items[i].st_dev                != previtems[j].st_dev               || 
-                    self.items[i].st_ino                != previtems[j].st_ino               || 
-                    self.items[i].st_mtimespec.tv_sec   != previtems[j].st_mtimespec.tv_sec  || 
-                    self.items[i].st_mtimespec.tv_nsec  != previtems[j].st_mtimespec.tv_nsec || 
-                    self.items[i].st_ctimespec.tv_sec   != previtems[j].st_ctimespec.tv_sec  || 
-                    self.items[i].st_ctimespec.tv_nsec  != previtems[j].st_ctimespec.tv_nsec || 
-                    self.items[i].st_size               != previtems[j].st_size) 
-                {
-                    if (self.items[i].st_mode == S_IFREG || previtems[j].st_mode == S_IFREG) 
-                    {
-                        BOOL isDir = self.items[i].st_mode == S_IFDIR;
-                        [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Changed isDir:isDir]];
-                    }
-                }
-                corresponding[i] = j;
-                rcorresponding[j] = i;
-                ++i;
-                ++j;
-            } 
-            else if (r > 0) // i is after j => we need to advance j => j is deleted
-            {
-                BOOL isDir = previtems[j].st_mode == S_IFDIR;
-                //NSLog(@"%@ deleted2 %d", previtems[j].name, isDir);
-                [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:isDir]];
-                rcorresponding[j] = -3;
-                ++j;
-            } 
-            else // (r < 0) i is before j => we need to advance i => i is new 
-            {   
-                BOOL isDir = self.items[i].st_mode == S_IFDIR;
-                //NSLog(@"%@ created2 %d", self.items[i].name, isDir);
-                [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
-                corresponding[i] = -3;
-                ++i;
-            }
-        }
-    }
-    // for any tail left, we've already filled it in with -1's
-
-    for (i = 0; i < self.count; i++) 
-    {
-        if (corresponding[i] == -1) 
-        {
-            if (self.items[i].st_mode == S_IFREG) 
-            {
-                BOOL isDir = self.items[i].st_mode == S_IFDIR;
-                //NSLog(@"%@ created3 corresponding[%d]: %d isDir: %d", self.items[i].name, i, corresponding[i], isDir);
-                [changes addObject:[WatchChange withPath:(__bridge NSString *)self.items[i].name type:Created isDir:isDir]];
-            }
-        }
-    }
-    for (j = 0; j < prevcount; j++) 
-    {
-        if (rcorresponding[j] == -1)
-        {
-            if (previtems[j].st_mode == S_IFREG) 
-            {
-                BOOL isDir = previtems[j].st_mode == S_IFDIR;
-                //NSLog(@"%@ deleted3 rcorresponding[%d]: %d isDir: %d", previtems[j].name, j, rcorresponding[j], isDir);
-                [changes addObject:[WatchChange withPath:(__bridge NSString *)previtems[j].name type:Deleted isDir:isDir]];
-            }
-        }
-    }
-
-    free(corresponding);
-    free(rcorresponding);
-    
-    [changes filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id wc, NSDictionary *bindings) 
-    {
-        if ([[[wc path] lastPathComponent] isEqualToString:@".DS_Store"])
-        {
-            NSLog(@"filter!");
-            return NO;
-        }
-        return YES;
-    }]];
-    
-    return changes;
-}
-
-@end
-
-// 0000000    000  00000000  00000000  00000000  00000000   
-// 000   000  000  000       000       000       000   000  
-// 000   000  000  000000    000000    0000000   0000000    
-// 000   000  000  000       000       000       000   000  
-// 0000000    000  000       000       00000000  000   000  
-
-@interface FSTreeDiffer : NSObject 
-
-@property(nonatomic, readwrite, retain) NSString* path;
-@property(nonatomic, readwrite, retain) FSTree*   savedTree;
-
-- (id)initWithPath:(NSString*)path;
-
-- (NSArray*)  changesInPaths:(NSSet*)pathSet;
-
-@end
-
-@implementation FSTreeDiffer
-
-- (id)initWithPath:(NSString *)path
-{
-    if ((self = [super init])) 
-    {
-        self.path = path;
-        self.savedTree = [[FSTree alloc] initWithPath:self.path];
-    }
-    return self;
-}
-
-- (NSArray*) changesInPaths:(NSSet*)paths
-{
-    FSTree* currentTree = [[FSTree alloc] initWithPath:self.path];
-
-    NSArray* changes = [currentTree changes:self.savedTree];
-
-    self.savedTree = currentTree;
-
-    return changes;
-}
-
-@end
-
 // 000   000   0000000   000000000   0000000  000   000  
 // 000 0 000  000   000     000     000       000   000  
 // 000000000  000000000     000     000       000000000  
@@ -437,8 +54,6 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 
 @interface Watch ()
 {
-    BOOL _running;
-
     FSEventStreamRef streamRef;
 }
 
@@ -447,12 +62,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 - (void)stop;
 
 @property(nonatomic, assign) id<WatchDelegate>  delegate;
-@property(nonatomic, assign) NSTimeInterval     cacheWaitingTime;
-@property(nonatomic, assign) NSTimeInterval     eventProcessingDelay;
 @property(nonatomic, retain) NSString*          path;
-@property(nonatomic, retain) FSTree*            tree;
-@property(nonatomic, retain) FSTreeDiffer*      differ;
-@property(nonatomic, retain) NSMutableSet*      eventCache;
 
 @end
 
@@ -469,8 +79,6 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 {
     if ((self = [super init])) 
     {
-        self.cacheWaitingTime = INTERVAL;
-        self.eventCache = [[NSMutableSet alloc] init];
         self.path = [path copy];
         [self start];
     }
@@ -479,18 +87,13 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
 
 - (void)dealloc
 {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self.delegate release];
-    if (_running) 
-    {
-        [self stop];
-    }
+    [self stop];
     [super dealloc];
 }
 
 - (void)start 
 {
-    self.differ = [[FSTreeDiffer alloc] initWithPath:self.path];
     NSArray *paths = [NSArray arrayWithObject:self.path];
 
     FSEventStreamContext context;
@@ -505,7 +108,7 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
                                      &context,
                                      (__bridge CFArrayRef)paths,
                                      kFSEventStreamEventIdSinceNow,
-                                     0.15,
+                                     INTERVAL,
                                      kFSEventStreamCreateFlagUseCFTypes|kFSEventStreamCreateFlagNoDefer|kFSEventStreamCreateFlagFileEvents);
     if (!streamRef) 
     {
@@ -516,13 +119,6 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
         NSLog(@"👁  %@", self.path);
     }
     
-    NSArray *actualPaths = (NSArray *) CFBridgingRelease(FSEventStreamCopyPathsBeingWatched(streamRef));
-    NSString *actualPath = [actualPaths firstObject];
-    // NSLog(@"Watch: %@", actualPath);
-
-    //FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-    
-    //dispatch_queue_t q = ;
     FSEventStreamSetDispatchQueue(streamRef, dispatch_get_main_queue());
     
     if (!FSEventStreamStart(streamRef)) 
@@ -537,29 +133,6 @@ static void FSMonitorEventStreamCallback(ConstFSEventStreamRef streamRef, Watch*
     FSEventStreamInvalidate(streamRef);
     FSEventStreamRelease(streamRef);
     streamRef = nil;
-    [self.differ release];
-}
-
-- (void)sendChangeEventsFromCache 
-{
-    NSMutableSet * cachedPaths;
-
-    @synchronized(self)
-    {
-        cachedPaths = [self.eventCache copy];
-        [self.eventCache removeAllObjects];
-        self.cacheWaitingTime = MAX(self.differ.savedTree.buildTime, INTERVAL);
-    }
-    [self.delegate onChanges:[self.differ changesInPaths:cachedPaths] inFolder:self.path];
-}
-
-- (void)sendChangeEventWithPath:(NSString *)path flags:(FSEventStreamEventFlags)flags 
-{    
-    if (flags == kFSEventStreamEventFlagItemCloned) return;
-    if (shouldIgnoreChangedPath(path)) return;
-    [self.eventCache addObject:path];
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    [self performSelector:@selector(sendChangeEventsFromCache) withObject:nil afterDelay:MAX(self.eventProcessingDelay, self.cacheWaitingTime)];
 }
 
 @end
@@ -576,68 +149,40 @@ static void FSMonitorEventStreamCallback( ConstFSEventStreamRef streamRef,
     for (size_t i = 0; i < numEvents; i++) 
     {
         // NSLog(@"▸▸          %@ %x event %llu", [eventPaths objectAtIndex:i], eventFlags[i], eventIds[i]);
-        
-        ChangeType changeType = ChangeType::Changed;
-        BOOL isDir = true;
-        
-        FSEventStreamEventFlags flags = eventFlags[i];
-        
-        if (flags & kFSEventStreamEventFlagItemIsFile)
+        if (shouldIgnoreChangedPath([eventPaths objectAtIndex:i]))
         {
-            flags &= ~kFSEventStreamEventFlagItemIsFile;
-            // NSLog(@"▸▸ file     %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+            continue;
+        }       
+        
+        BOOL isDir; ChangeType changeType;
+        
+        if (eventFlags[i] & kFSEventStreamEventFlagItemIsFile)
+        {
             isDir = false;
         }
-        if (flags & kFSEventStreamEventFlagItemModified)
+        else
         {
-            flags &= ~kFSEventStreamEventFlagItemModified;
-            // NSLog(@"▸▸ modified %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-        }
-        if (flags & kFSEventStreamEventFlagItemRenamed)
-        {
-            flags &= ~kFSEventStreamEventFlagItemRenamed;
-            // NSLog(@"▸▸ renamed  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-        }
-        if (flags & kFSEventStreamEventFlagItemChangeOwner)
-        {
-            flags &= ~kFSEventStreamEventFlagItemChangeOwner;
-            // NSLog(@"▸▸ chowner  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-        }
-        if (flags & kFSEventStreamEventFlagItemInodeMetaMod)
-        {
-            flags &= ~kFSEventStreamEventFlagItemInodeMetaMod;
-            // NSLog(@"▸▸ metamod  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-        }
-        if (flags & kFSEventStreamEventFlagItemXattrMod)
-        {
-            flags &= ~kFSEventStreamEventFlagItemXattrMod;
-            // NSLog(@"▸▸ metamod  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-        }
-        if (flags & kFSEventStreamEventFlagItemCloned)
-        {
-            flags &= ~kFSEventStreamEventFlagItemCloned;
-            // NSLog(@"▸▸ metamod  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-        }
-        if (flags & kFSEventStreamEventFlagItemCreated)
-        {
-            flags &= ~kFSEventStreamEventFlagItemCreated;
-            // NSLog(@"▸▸ created  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-            changeType = ChangeType::Created;
-        }
-        if (flags & kFSEventStreamEventFlagItemRemoved)
-        {
-            flags &= ~kFSEventStreamEventFlagItemRemoved;
-            // NSLog(@"▸▸ removed  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
-            changeType = ChangeType::Deleted;
+            isDir = true;
         }
         
-        if (flags)
+        if (eventFlags[i] & kFSEventStreamEventFlagItemCreated)
         {
-            NSLog(@"▸▸ remaining flags  %@ %x event %llu", [eventPaths objectAtIndex:i], flags, eventIds[i]);
+            changeType = ChangeType::Created;
+        }
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved)
+        {
+            changeType = ChangeType::Deleted;
+        }
+        else
+        {
+            changeType = ChangeType::Changed;
         }
         
         [changes addObject:[WatchChange withPath:[eventPaths objectAtIndex:i] type:changeType isDir:isDir]];
     }
     
-    [monitor.delegate onChanges:changes inFolder:monitor.path];
+    if ([changes count])
+    {
+        [monitor.delegate onChanges:changes inFolder:monitor.path];
+    }
 }

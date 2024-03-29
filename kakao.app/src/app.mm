@@ -143,11 +143,10 @@
 //  0000000   000   000      0000000  000   000  000   000  000   000   0000000   00000000  0000000   
 
 - (void) onChanges:(NSArray*)changes inFolder:(NSString*)folder
-{
-    NSLog(@"● change ▸▸▸ %@", folder);
-    
+{    
     if ([folder isEqualToString:[FS homeDir]])
     {
+        // NSLog(@"● change ▸▸▸ %@", folder);
         for (WatchChange* change in changes)
         {
             id type;
@@ -189,7 +188,7 @@
         
         NSString* relPath = [change.path substringFromIndex:[folder length]+1];
         
-        NSLog(@"%@ %@ %@ %@", change.isDir ? @"▸" : @"▪", type, change.path, relPath);
+        // NSLog(@"%@ %@ %@ %@", change.isDir ? @"▸" : @"▪", type, change.path, relPath);
         
         if ([relPath hasPrefix:@"js/"]) { reloadPage = YES; }
 
