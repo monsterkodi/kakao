@@ -7,7 +7,9 @@
 ###
 
 use ../../kxk/matchr
+
 use ../tools/salt
+
 use ../editor/Syntax
 use ../editor/TextEditor
 

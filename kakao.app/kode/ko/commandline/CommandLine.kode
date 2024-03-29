@@ -6,11 +6,11 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 ###
 
+use ../../kxk/dom ▪ $ stopEvent
 use ../../kxk/ffs
 use ../../kxk/elem
 use ../../kxk/post
 use ../../kxk/slash
-use ../../kxk/dom ▪ $ stopEvent
 use ../editor/TextEditor
 
 __dirname = slash.dir import.meta.url[7..]
