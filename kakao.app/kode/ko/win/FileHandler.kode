@@ -98,7 +98,7 @@ class FileHandler
 
     openFiles: (files, options) =>
 
-        log 'FileHandler.openFiles' files
+        # log 'FileHandler.openFiles' files
 
         return if empty files
 
