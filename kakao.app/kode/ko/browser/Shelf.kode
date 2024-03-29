@@ -234,7 +234,6 @@ function Shelf extends Column
                     row.div.appendChild elem 'span' class:"git-changed-icon browserStatusIcon"
                 else if status.files[row.path()]
                     row.div.appendChild elem 'span', class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
-                return
         
     loadGitStatus: =>
         
