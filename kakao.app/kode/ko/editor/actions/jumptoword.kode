@@ -53,14 +53,6 @@ export
                     post.emit 'jumpTo' path:file, line:line, col:col
                     return true
                     
-                    # if slash.isFile file
-                        # post.emit 'jumpTo' file:file, line:line, col:col
-                        # return true
-                    # else if not empty @currentFile and slash.isFile slash.swapExt file, slash.ext @currentFile
-                        # file = slash.swapExt file, slash.ext @currentFile
-                        # post.emit 'jumpTo' file:file, line:line, col:col
-                        # return true
-                        
         if slash.win()
             
             rgx = /([\~\\\w\.]+\\[\w\.]+\w[:\d]*)/ # look for files in line

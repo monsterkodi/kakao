@@ -109,26 +109,7 @@ export
         sel = @selection 0     
         text = @textInRange sel
         if text.length
-            
-            # if @numHighlights()
-                # if text == @textInRange @highlight 0 # see if we can grow the current selection
-                    # largerRange = [sel[0], [sel[1][0]-1, sel[1][1]]]
-                    # largerText = @textInRange largerRange
-                    # if largerText[0] in "@#$%&*+-!?:.'\"/" or /[A-Za-z]/.test largerText[0]
-                        # if largerText[0] in "'\"" # grow strings in both directions
-                            # nr = [sel[0], [sel[1][0]-1, sel[1][1]+1]] 
-                            # nt = @textInRange nr
-                            # if nt[nt.length-1] == largerText[0]
-                                # largerText = nt
-                                # largerRange = nr
-                        # else if /[A-Za-z]/.test largerText[0] # grow whole words
-                            # while largerRange[1][0] > 0 and /[A-Za-z]/.test @line(largerRange[0])[largerRange[1][0]-1]
-                                # largerRange[1][0] -= 1
-                                # largerText = @textInRange largerRange
-                        # text = largerText              
-                        # if @numSelections() == 1
-                            # @selectSingleRange largerRange 
-            
+                        
             @setHighlights @rangesForText text, max:9999
             
             # this should be done somewhere else (commandline or find/search commands)

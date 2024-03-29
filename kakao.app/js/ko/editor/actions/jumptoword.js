@@ -66,12 +66,12 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
         ranges = matchr.ranges(rgx,text)
         diss = matchr.dissect(ranges,{join:false})
         var list1 = _k_.list(diss)
-        for (var _70_18_ = 0; _70_18_ < list1.length; _70_18_++)
+        for (var _62_18_ = 0; _62_18_ < list1.length; _62_18_++)
         {
-            d = list1[_70_18_]
+            d = list1[_62_18_]
             if ((d.start <= p[0] && p[0] <= d.start + d.match.length))
             {
-                var _72_38_ = slash.splitFileLine(d.match); file = _72_38_[0]; line = _72_38_[1]; col = _72_38_[2]
+                var _64_38_ = slash.splitFileLine(d.match); file = _64_38_[0]; line = _64_38_[1]; col = _64_38_[2]
 
                 if (slash.fileExists(file))
                 {

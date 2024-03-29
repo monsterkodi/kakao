@@ -1,13 +1,13 @@
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
+import util from "../../kxk/util.js"
+let pullAllWith = util.pullAllWith
+
 import slash from "../../kxk/slash.js"
 
 import prefs from "../../kxk/prefs.js"
 
 import post from "../../kxk/post.js"
-
-import util from "../../kxk/util.js"
-let pullAllWith = util.pullAllWith
 
 class Navigate
 {

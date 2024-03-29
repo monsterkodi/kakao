@@ -146,9 +146,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _137_17_ = 0; _137_17_ < list.length; _137_17_++)
+        for (var _132_17_ = 0; _132_17_ < list.length; _132_17_++)
         {
-            file = list[_137_17_]
+            file = list[_132_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
@@ -196,7 +196,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _183_29_
+        var tab, _177_29_
 
         if (tab = tabs.activeTab())
         {
@@ -231,9 +231,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _208_16_ = 0; _208_16_ < list.length; _208_16_++)
+        for (var _202_16_ = 0; _202_16_ < list.length; _202_16_++)
         {
-            tab = list[_208_16_]
+            tab = list[_202_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -301,7 +301,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _276_29_
+        var _270_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -317,7 +317,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _292_18_
+        var cb, dir, _286_18_
 
         cb = function (files)
         {
@@ -333,7 +333,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _312_18_
+        var cb, _306_18_
 
         cb = (function (file)
         {

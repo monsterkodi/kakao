@@ -455,24 +455,35 @@ class Tabs
 
     navigate (key)
     {
-        var index
+        var activeTab, fileTabs, index
 
-        index = this.activeTab().index()
-        index += ((function ()
+        if (activeTab = this.activeTab())
         {
-            switch (key)
+            fileTabs = this.fileTabs()
+            index = fileTabs.indexOf(activeTab)
+            index += ((function ()
             {
-                case 'left':
-                    return -1
+                switch (key)
+                {
+                    case 'left':
+                        return -1
 
-                case 'right':
-                    return 1
+                    case 'right':
+                        return 1
 
+                }
+
+            }).bind(this))()
+            index = (fileTabs.length + index) % fileTabs.length
+            if (fileTabs[index].isPrj)
+            {
+                console.log('prjTab',this.tabs[index])
             }
-
-        }).bind(this))()
-        index = (this.numTabs() + index) % this.numTabs()
-        return this.tabs[index].activate()
+            else
+            {
+                return fileTabs[index].activate()
+            }
+        }
     }
 
     swap (ta, tb)
@@ -483,7 +494,7 @@ class Tabs
         }
         if (ta.index() > tb.index())
         {
-            var _316_17_ = [tb,ta]; ta = _316_17_[0]; tb = _316_17_[1]
+            var _325_17_ = [tb,ta]; ta = _325_17_[0]; tb = _325_17_[1]
 
         }
         this.tabs[ta.index()] = tb
@@ -616,7 +627,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _409_36_
+        var _418_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -627,9 +638,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _421_16_ = 0; _421_16_ < list.length; _421_16_++)
+        for (var _430_16_ = 0; _430_16_ < list.length; _430_16_++)
         {
-            tab = list[_421_16_]
+            tab = list[_430_16_]
             tab.update()
         }
     }
@@ -654,9 +665,9 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _435_16_ = 0; _435_16_ < list.length; _435_16_++)
+        for (var _444_16_ = 0; _444_16_ < list.length; _444_16_++)
         {
-            tab = list[_435_16_]
+            tab = list[_444_16_]
             prjTabs[tab.file] = [tab]
         }
         dangling = []
@@ -680,9 +691,9 @@ class Tabs
         }
         this.tabs = this.tabs.concat(dangling)
         var list1 = _k_.list(this.tabs)
-        for (var _452_16_ = 0; _452_16_ < list1.length; _452_16_++)
+        for (var _461_16_ = 0; _461_16_ < list1.length; _461_16_++)
         {
-            tab = list1[_452_16_]
+            tab = list1[_461_16_]
             this.div.removeChild(tab.div)
             this.div.appendChild(tab.div)
         }
@@ -690,7 +701,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _458_20_
+        var _467_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

@@ -6,10 +6,10 @@
 000   000  000   000      0      000   0000000   000   000     000     00000000
 ###
 
+use ../../kxk/util ▪ pullAllWith
 use ../../kxk/slash
 use ../../kxk/prefs
 use ../../kxk/post
-use ../../kxk/util ▪ pullAllWith
 
 class Navigate
 
@@ -144,7 +144,6 @@ class Navigate
         # post.toWins 'navigateIndexChanged' @currentIndex, @filePositions[@currentIndex]
 
         filePos
-
 
     # 0000000    00000000  000      
     # 000   000  000       000      

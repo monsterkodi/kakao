@@ -302,13 +302,22 @@ class Tabs
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
     navigate: (key) ->
+        
+        if activeTab = @activeTab()
+            
+            fileTabs = @fileTabs()
 
-        index = @activeTab().index()
-        index += switch key
-            'left'  ➜ -1
-            'right' ➜ +1
-        index = (@numTabs() + index) % @numTabs()
-        @tabs[index].activate()
+            index = fileTabs.indexOf activeTab
+            index += switch key
+                'left'  ➜ -1
+                'right' ➜ +1
+            
+            index = (fileTabs.length + index) % fileTabs.length
+            
+            if fileTabs[index].isPrj
+                log 'prjTab' @tabs[index]
+            else
+                fileTabs[index].activate()
 
     swap: (ta, tb) ->
 

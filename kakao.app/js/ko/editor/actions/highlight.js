@@ -84,7 +84,7 @@ export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Hig
     }
 },highlightTextOfSelectionOrWordAtCursor:function ()
 {
-    var sel, srange, text, _135_32_
+    var sel, srange, text, _116_32_
 
     if (this.numSelections() === 0)
     {
