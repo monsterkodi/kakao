@@ -226,11 +226,14 @@ function Shelf extends Column
         log 'Shelf.onGitStatus' gitDir, status
         
         for row in @rows
-            if gitDir.startsWith row.path()
-                if row.item.type == 'dir'
-                    status = 'dirs'
+            if row.path().startsWith gitDir
+                # if row.item.type == 'dir'
+                    # status = 'dirs'
                 $('.browserStatusIcon', row.div)?.remove()
-                row.div.appendChild elem 'span', class:"git-#{status}-icon browserStatusIcon"
+                if row.path() in status.dirs
+                    row.div.appendChild elem 'span' class:"git-changed-icon browserStatusIcon"
+                else if status.files[row.path()]
+                    row.div.appendChild elem 'span', class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
                 return
         
     loadGitStatus: =>
