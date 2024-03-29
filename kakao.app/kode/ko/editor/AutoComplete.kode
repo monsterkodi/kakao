@@ -100,9 +100,10 @@ class AutoComplete extends events
 
         if valid (rgs = matchr.ranges [@methodRegExp, ['obj' 'mth']], line)
             for i in 0...rgs.length-1
-                @mthdinfo[rgs[i].match] ?= {}
-                @mthdinfo[rgs[i].match][rgs[i+1].match] ?= 0
-                @mthdinfo[rgs[i].match][rgs[i+1].match] += 1
+                if rgs[i].match and rgs[i+1].match
+                    @mthdinfo[rgs[i].match] ?= {}
+                    @mthdinfo[rgs[i].match][rgs[i+1].match] ?= 0
+                    @mthdinfo[rgs[i].match][rgs[i+1].match] += 1
                 i++
 
     completeMethod: (info) ->

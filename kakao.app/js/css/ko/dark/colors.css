@@ -193,10 +193,12 @@ span.macro.macro,
 #titlebar.focus .tabs {
   color: #3c3;
 }
-.tab .dot {
+.tab .dot,
+.tab .prjdot {
   color: #444;
 }
-.tab .dot.focus {
+.tab .dot.focus,
+.tab .prjdot.focus {
   color: #060;
 }
 .tab.dirty,
@@ -208,6 +210,9 @@ span.macro.macro,
 }
 .dot:hover {
   color: #f80;
+}
+.tab .prjdot.activeTab {
+  color: #fff;
 }
 .tab {
   background: #111;
@@ -224,6 +229,16 @@ span.macro.macro,
 }
 .tab.active .tabstate:hover {
   background: #282828;
+}
+.tab.prj {
+  background: #181818;
+}
+.tab.prj .name {
+  color: #aaf;
+  opacity: 1;
+}
+.tab.prj.active {
+  background: #444;
 }
 #browser {
   background: #181818;

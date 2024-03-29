@@ -15,6 +15,8 @@ use ../../kxk/ffs
 use ../tools/salt
 use ../tools/req
 
+use ../win/GitInfo
+
 use ../editor/Syntax
 use ../editor/actions/transform
 
@@ -29,7 +31,7 @@ function Macro extends Command
     @: (commandline) ->
 
         super commandline
-
+        
         @macros = Macro.macroNames
         @macros = @macros.concat transform.transformNames
         @names  = ['macro']
@@ -124,7 +126,8 @@ function Macro extends Command
             # 000       000        0000000          0000000  00     00  0000000           0000000   000     000
 
             'fps'   ➜ window.fps?.toggle()
-            'git'   ➜ gitinfo?.start()
+            'ks'   
+            'git'   ➜ GitInfo.start()
             'err'   ➜ throw new Error 'err'
 
             # 000   000  00000000  000      00000000

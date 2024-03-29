@@ -90,13 +90,13 @@ class Scroller
 
         row = this.column.rows[i].div
         newTop = this.target.scrollTop
-        if (newTop < row.offsetTop + this.rowHeight() - this.height())
+        if (newTop < row.offsetTop + 2 * this.rowHeight() - this.height())
         {
-            newTop = row.offsetTop + this.rowHeight() - this.height()
+            newTop = row.offsetTop + 2 * this.rowHeight() - this.height()
         }
-        else if (newTop > row.offsetTop)
+        else if (newTop > row.offsetTop - this.rowHeight())
         {
-            newTop = row.offsetTop
+            newTop = row.offsetTop - this.rowHeight()
         }
         this.target.scrollTop = parseInt(newTop)
         return this.update()

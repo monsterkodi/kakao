@@ -9,7 +9,9 @@
 use ../../kxk/post
 use ../../kxk/slash
 use ../../kxk/ffs
+
 use ../tools/linediff
+use ../tools/Git
 
 use ../editor/Syntax
 
@@ -32,8 +34,7 @@ class GitInfo
         
     logText: (text) ->
         
-        terminal = window.terminal
-        terminal.appendMeta clss:'searchHeader' diss:Syntax.dissForTextAndSyntax text, 'ko'
+        window.terminal.appendMeta clss:'searchHeader' diss:Syntax.dissForTextAndSyntax text, 'ko'
 
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
     # 000       000   000  000   000  0000  000  000        000       000       
@@ -42,8 +43,6 @@ class GitInfo
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
     
     logChanges: (changes) ->
-        
-        terminal = window.terminal
         
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
@@ -68,11 +67,11 @@ class GitInfo
                 for diff in diffs 
                     continue if diff.change == 'delete'
                     lineMeta =
-                        line:       terminal.numLines()
+                        line:       window.terminal.numLines()
                         start:      diff.new
                         end:        diff.new+diff.length
                         clss:       'gitInfoChange'
-                    terminal.meta.add lineMeta
+                    window.terminal.meta.add lineMeta
                 
             meta =
                 diss: dss
@@ -80,7 +79,7 @@ class GitInfo
                 clss: 'searchResult'
                 click: @onMetaClick
                             
-            terminal.appendMeta meta
+            window.terminal.appendMeta meta
             post.emit 'search-result' meta
             index += 1
         index
@@ -91,28 +90,24 @@ class GitInfo
     # 000       000  000      000       
     # 000       000  0000000  00000000  
     
-    logFile: (change, file) ->
+    logFile: (change, file, status) ->
         
         symbol = switch change
 
             'changed' ➜ '●'
             'added'   ➜ '◼'
             'deleted' ➜ '✘'
+
+        path = slash.relative file, status.gitDir
             
-        text = "  #{symbol} "
-            
-        terminal = window.terminal
-        meta = 
-            diss:       Syntax.dissForTextAndSyntax "#{slash.tilde file}", 'ko'
+        window.terminal.appendMeta
+            diss:       Syntax.dissForTextAndSyntax "#{path}", 'ko'
             href:       file
             clss:       'gitInfoFile'
             click:      @onMetaClick
             line:       symbol
             lineClss:   'gitInfoLine '+change
             
-        terminal.appendMeta meta
-        terminal.appendMeta clss: 'spacer'
-    
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -121,58 +116,41 @@ class GitInfo
     
     start: -> 
         
-        dirOrFile = window.cwd.cwd ? window.editor.currentFile
-
         window.split.raise 'terminal'
-        terminal = window.terminal
-        terminal.clear()
+        window.terminal.clear()
         
-        hub.info dirOrFile, (info) =>
+        Git.status(window.editor.currentFile).then (status) =>
 
-            return if empty info
+            return if empty status
+            
+            # log 'GitInfo.start Git.status' status
             
             terminal = window.terminal
-            terminal.appendMeta clss: 'salt' text: slash.tilde info.gitDir
-            terminal.appendMeta clss: 'spacer'
                 
-            for file in info.deleted
+            for file in status.deleted
+                @logFile 'deleted' file, status
                 
-                @logFile 'deleted' file # dont delete this for now :)
+            for file in status.added
+                @logFile 'added' file, status 
+                                
+            for file in status.changed                
+                @logFile 'changed' file, status
                 
-            for file in info.added
-                
-                @logFile 'added' file  # dont delete this for now :)
-                
-                if slash.isText file
-                    data  = ffs.read file # this won't work: read returns promise
-                    lines = data.split /\r?\n/
-                    line  = 1
-                    
-                    line += @logChanges lines:lines, file:file, line:line, change:'new'
-                    
-                terminal.appendMeta clss: 'spacer'
-                
-            for changeInfo in info.changed                
-                
-                @logFile 'changed' changeInfo.file # dont delete this for now :)
-                
-                for change in changeInfo.changes
-                    line = change.line
-                    
-                    if not empty change.mod
-                        lines = change.mod.map (l) -> l.new
-                        line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
+                # for change in changeInfo.changes
+                    # line = change.line
+#                     
+                    # if not empty change.mod
+                        # lines = change.mod.map (l) -> l.new
+                        # line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
+#                         
+                    # if not empty change.add
+                        # lines = change.add.map (l) -> l.new
+                        # line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
+#                         
+                    # if not empty change.del
+                        # lines = change.del.map (l) -> l.old
+                        # line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
                         
-                    if not empty change.add
-                        lines = change.add.map (l) -> l.new
-                        line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
-                        
-                    if not empty change.del
-                        lines = change.del.map (l) -> l.old
-                        line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
-                        
-                    terminal.appendMeta clss: 'spacer'
-
             terminal.scroll.cursorToTop 7
         
-module.exports = new GitInfo
+export new GitInfo

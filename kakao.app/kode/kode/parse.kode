@@ -1,18 +1,18 @@
 ###
-00000000    0000000   00000000    0000000  00000000
-000   000  000   000  000   000  000       000     
-00000000   000000000  0000000    0000000   0000000 
-000        000   000  000   000       000  000     
-000        000   000  000   000  0000000   00000000
+    00000000    0000000   00000000    0000000  00000000
+    000   000  000   000  000   000  000       000     
+    00000000   000000000  0000000    0000000   0000000 
+    000        000   000  000   000       000  000     
+    000        000   000  000   000  0000000   00000000
+    
+    the base class of Parser
 ###
 
-use ./print
+use ./utils ▪ firstLineCol lastLineCol
 use ./parseutils
-use ./utils
+use ./print
 
-{ firstLineCol, lastLineCol } = utils
-
-function Parse extends parseutils # the base class of Parser
+function Parse extends parseutils
 
     @: (@kode) ->
 

@@ -387,7 +387,7 @@ class Tabs
 
     stash: =>
 
-        infos = @tabs.map (t) -> t.stashInfo()
+        infos = @tabs.map (t) -> t.stashInfo?()
         window.stash.set 'tabs' infos
         @
 
@@ -459,8 +459,9 @@ class Tabs
         @tabs = @tabs.concat dangling
             
         for tab in @tabs
-            @div.removeChild tab.div
-            @div.appendChild tab.div
+            if tab.div
+                @div.removeChild tab.div
+                @div.appendChild tab.div
 
     onDirty: (dirty) =>
 

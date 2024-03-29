@@ -153,6 +153,7 @@ class Indexer
         funcInfo.name = funcName
         
         funcInfos = @funcs[funcName] ? []
+        funcInfos = [] if not funcInfos is arr
         funcInfos.push funcInfo
         @funcs[funcName] = funcInfos
         

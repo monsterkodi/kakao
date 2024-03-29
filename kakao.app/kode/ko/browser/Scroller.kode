@@ -84,10 +84,10 @@ class Scroller
         
         row = @column.rows[i].div
         newTop = @target.scrollTop
-        if newTop < row.offsetTop + @rowHeight() - @height()
-            newTop = row.offsetTop + @rowHeight() - @height()
-        else if newTop > row.offsetTop
-            newTop = row.offsetTop
+        if newTop < row.offsetTop + 2*@rowHeight() - @height()
+            newTop = row.offsetTop + 2*@rowHeight() - @height()
+        else if newTop > row.offsetTop - @rowHeight()
+            newTop = row.offsetTop - @rowHeight()
         @target.scrollTop = parseInt newTop
         @update()
 

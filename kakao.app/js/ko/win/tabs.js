@@ -580,7 +580,9 @@ class Tabs
 
         infos = this.tabs.map(function (t)
         {
-            return t.stashInfo()
+            var _390_44_
+
+            return (typeof t.stashInfo === "function" ? t.stashInfo() : undefined)
         })
         window.stash.set('tabs',infos)
         return this
@@ -694,14 +696,17 @@ class Tabs
         for (var _461_16_ = 0; _461_16_ < list1.length; _461_16_++)
         {
             tab = list1[_461_16_]
-            this.div.removeChild(tab.div)
-            this.div.appendChild(tab.div)
+            if (tab.div)
+            {
+                this.div.removeChild(tab.div)
+                this.div.appendChild(tab.div)
+            }
         }
     }
 
     onDirty (dirty)
     {
-        var _467_20_
+        var _468_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }
