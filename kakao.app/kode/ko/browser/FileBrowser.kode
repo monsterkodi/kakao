@@ -216,7 +216,6 @@ function FileBrowser extends Browser
         
     onFileBrowser: (action, item, arg) =>
 
-        # log 'onFileBrowser' action, item, arg
         switch action
             'loadItem'     ➜ @loadItem     item, arg
             'activateItem' ➜ @activateItem item, arg
@@ -238,10 +237,7 @@ function FileBrowser extends Browser
         clears all columns, loads the dir in column 0 and the file in column 1, if any
         ###
         
-        # log 'loadItem' item, opt
-
         opt ?= active:'..' focus:true
-        # item.name ?= slash.file item.path
 
         @clearColumnsFrom 1, pop:true, clear:opt.clear ? 1
 
@@ -265,14 +261,10 @@ function FileBrowser extends Browser
     # 000   000   0000000     000     000      0      000   000     000     00000000
 
     activateItem: (item, col) -> 
-        ###
-        triggered by post('filebrowser' 'activateItem') in row.activate
         
-        loads item in the column to the right of col while keeping the other columns
-        ###
+        # triggered by post('filebrowser' 'activateItem') in row.activate
+        # loads item in the column to the right of col while keeping the other columns
         
-        # log 'activateItem' item
-
         @clearColumnsFrom col+2 pop:true
 
         switch item.type
@@ -338,10 +330,6 @@ function FileBrowser extends Browser
              
     loadSourceItem: (item, col) ->
 
-        # if not @srcCache[item.path]?
-
-            # @srcCache[item.file] = post.get 'indexer' 'file' item.path
-
         info = @srcCache[item.path]
 
         if empty info
@@ -400,7 +388,7 @@ function FileBrowser extends Browser
         
         dir = item.path
         
-        items = ○ ffs.list dir
+        items =○ ffs.list dir
         
         if not prefs.get "browser|showHidden|#{dir}"
             items = items.filter (i) -> i.file[0] != '.'
@@ -459,8 +447,6 @@ function FileBrowser extends Browser
         @view.insertBefore @shelf.div, @view.firstChild
         @view.insertBefore @shelfResize, null
 
-        # @shelf.browserDidInitColumns()
-
         @setShelfSize @shelfSize
 
     columnAtPos: (pos) ->
@@ -517,9 +503,9 @@ function FileBrowser extends Browser
     getGitStatus: (item, col) =>
 
         file = item.path ? item.parent?.path
-        return if empty file
-
-        Git.status(file).then (status) => @applyGitStatusFiles col, status.files
+        if valid file
+            Git.status(file).then (status) => @applyGitStatusFiles col, status.files
+        @
 
     applyGitStatusFiles: (col, files) =>
 
@@ -527,9 +513,9 @@ function FileBrowser extends Browser
 
     onGitStatus: (gitDir, status) =>
 
-        log 'FileBrowser.onGitStatus' gitDir, status
-        for col in 0..@columns.length
+        for col in 0...@columns.length
             @applyGitStatusFiles col, status.files
+        @
 
     #  0000000  000   000  00000000  000      00000000  
     # 000       000   000  000       000      000       

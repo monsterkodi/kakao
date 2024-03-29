@@ -45,21 +45,23 @@ function Git
         
         gitDir =○ kakao 'fs.git' file
         
-        status =○ kakao 'app.sh' '/usr/bin/git' 'status' '--porcelain' gitDir
-        
-        # log 'Git.status' gitDir, status
-        
-        if status.startsWith 'fatal:' then return {}
-        
-        lines = status.split '\n'
-    
-        info = 
+        info =
             gitDir:  gitDir
             changed: []
             deleted: []
             added:   []
             files:   {}
-            
+        
+        return info if empty gitDir
+        
+        status =○ kakao 'app.sh' '/usr/bin/git' arg:'status --porcelain' cwd:gitDir
+        
+        # log 'Git.status' gitDir, status
+        
+        return info if status.startsWith 'fatal:'
+        
+        lines = status.split '\n'
+                
         dirSet = new Set
         
         while line = lines.shift()
@@ -94,7 +96,9 @@ function Git
         
         # log 'Git.diff' file
         
-        diff = ○ kakao 'app.sh' '/usr/bin/git' '--no-pager' 'diff' '--no-color' '-U0' file
+        gitDir =○ kakao 'fs.git' file
+        
+        diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 #{file}" cwd:gitDir 
         
         # log 'Git.diff' diff
         

@@ -299,14 +299,37 @@
 
 - (NSString*) executeShellScript:(NSArray*)args
 {
+    NSLog(@"executeShellScript %@", args);
+    
     NSTask *task = [[NSTask alloc] init];
 
     [task setLaunchPath:[args objectAtIndex:0]];
 
     // NSLog(@"execute %@", [args componentsJoinedByString:@" "]);
     
-    NSRange range; range.location = 1; range.length = [args count]-1;
-    [task setArguments:[args subarrayWithRange:range]];
+    if ([[args objectAtIndex:1] isKindOfClass:[NSDictionary class]])
+    {
+        NSDictionary* dict = (NSDictionary*)[args objectAtIndex:1];
+        NSLog(@"dict: %@", dict);
+        if ([dict objectForKey:@"args"])
+        {
+            [task setArguments:[dict objectForKey:@"args"]];
+        }
+        else if ([dict objectForKey:@"arg"])
+        {
+            [task setArguments:[[dict objectForKey:@"arg"] componentsSeparatedByString:@" "]];
+        }
+        
+        if ([dict objectForKey:@"cwd"])
+        {
+            task.currentDirectoryURL = [NSURL fileURLWithPath:[dict objectForKey:@"cwd"]];
+        }
+    }
+    else
+    {
+        NSRange range; range.location = 1; range.length = [args count]-1;
+        [task setArguments:[args subarrayWithRange:range]];
+    }
     
     NSPipe *outputPipe = [NSPipe pipe]; 
     [task setStandardOutput:outputPipe];

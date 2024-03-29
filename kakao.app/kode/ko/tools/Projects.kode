@@ -21,14 +21,15 @@ class Projects
     @files: (path) -> Projects.projects[@dir(path)]?.files ? []
         
     @dir: (path) ->
-        
-        if prjPath = @allFiles[path]
-            return prjPath
-        if Projects.projects[path]
-            return @projects[path].dir
-        for prjPath,project of Projects.projects
-            if path.startsWith prjPath
+
+        if valid path
+            if prjPath = @allFiles[path]
                 return prjPath
+            if Projects.projects[path]
+                return @projects[path].dir
+            for prjPath,project of Projects.projects
+                if path.startsWith prjPath
+                    return prjPath
         # log 'missing prj?' path
         null
     

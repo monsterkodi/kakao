@@ -231,19 +231,20 @@ function Shelf extends Column
                 if row.path() in status.dirs
                     row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
                 else if status.files[row.path()]
-                    row.div.appendChild elem 'span', class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
+                    row.div.appendChild elem 'span' class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
+        @
         
     loadGitStatus: =>
         
         for row in @rows
             Git.status(row.path()).then ((row) -> (status) -> 
-                # log 'Shelf.row status' row.path(), status
                 $('.browserStatusIcon', row.div)?.remove()
                 if row.path() in status.dirs
                     row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
                 else if status.files[row.path()]
-                    row.div.appendChild elem 'span', class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
-                ) row
+                    row.div.appendChild elem 'span' class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
+                )(row)
+        @
 
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   

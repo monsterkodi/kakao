@@ -980,5 +980,4 @@ function Column
             @updateDragIndicator event
                         
 export Column
-# hello
 

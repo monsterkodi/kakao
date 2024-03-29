@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import post from "../../kxk/post.js"
 
@@ -27,20 +27,23 @@ class Projects
     {
         var prjPath, project
 
-        if (prjPath = this.allFiles[path])
+        if (!_k_.empty(path))
         {
-            return prjPath
-        }
-        if (Projects.projects[path])
-        {
-            return this.projects[path].dir
-        }
-        for (prjPath in Projects.projects)
-        {
-            project = Projects.projects[prjPath]
-            if (path.startsWith(prjPath))
+            if (prjPath = this.allFiles[path])
             {
                 return prjPath
+            }
+            if (Projects.projects[path])
+            {
+                return this.projects[path].dir
+            }
+            for (prjPath in Projects.projects)
+            {
+                project = Projects.projects[prjPath]
+                if (path.startsWith(prjPath))
+                {
+                    return prjPath
+                }
             }
         }
         return null
@@ -48,7 +51,7 @@ class Projects
 
     static async indexProject (file)
     {
-        var prjPath, result, walker, _51_19_
+        var prjPath, result, walker, _52_19_
 
         prjPath = await ffs.pkg(file)
         if (this.indexing)
@@ -57,7 +60,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_51_19_=this.queue) != null ? _51_19_ : [])
+            this.queue = ((_52_19_=this.queue) != null ? _52_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -78,9 +81,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _72_21_ = 0; _72_21_ < list.length; _72_21_++)
+            for (var _73_21_ = 0; _73_21_ < list.length; _73_21_++)
             {
-                file = list[_72_21_]
+                file = list[_73_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('projects',this.projects)
