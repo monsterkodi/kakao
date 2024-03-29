@@ -31,8 +31,8 @@ function Git
                     if slash.name(file) in ['master' 'main']
                         # log 'git ref changed:' file
                         Git.status(gitDir).then (status) ->
-                            log 'emit gitStatus' gitDir, status
-                            post.emit 'gitStatus' gitDir, status
+                            log 'emit gitStatus' slash.dir(gitDir), status
+                            post.emit 'gitStatus' slash.dir(gitDir), status
                         return
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  

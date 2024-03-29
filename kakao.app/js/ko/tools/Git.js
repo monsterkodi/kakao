@@ -45,8 +45,8 @@ Git = (function ()
                     {
                         Git.status(gitDir).then(function (status)
                         {
-                            console.log('emit gitStatus',gitDir,status)
-                            return post.emit('gitStatus',gitDir,status)
+                            console.log('emit gitStatus',slash.dir(gitDir),status)
+                            return post.emit('gitStatus',slash.dir(gitDir),status)
                         })
                         return
                     }
