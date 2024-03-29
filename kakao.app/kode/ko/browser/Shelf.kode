@@ -227,11 +227,9 @@ function Shelf extends Column
         
         for row in @rows
             if row.path().startsWith gitDir
-                # if row.item.type == 'dir'
-                    # status = 'dirs'
                 $('.browserStatusIcon', row.div)?.remove()
                 if row.path() in status.dirs
-                    row.div.appendChild elem 'span' class:"git-changed-icon browserStatusIcon"
+                    row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
                 else if status.files[row.path()]
                     row.div.appendChild elem 'span', class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
         
@@ -242,7 +240,7 @@ function Shelf extends Column
                 # log 'Shelf.row status' row.path(), status
                 $('.browserStatusIcon', row.div)?.remove()
                 if row.path() in status.dirs
-                    row.div.appendChild elem 'span' class:"git-changed-icon browserStatusIcon"
+                    row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
                 else if status.files[row.path()]
                     row.div.appendChild elem 'span', class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
                 ) row

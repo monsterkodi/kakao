@@ -278,16 +278,6 @@ function Browser extends events
     # 000  000 0 000  000   000  000   000  000       
     # 000  000   000  000   000   0000000   00000000  
     
-    # convertImage: (row) ->
-#         
-        # item   = row.item
-        # file   = item.file
-        # tmpImg = slash.join os.tmpdir(), "ko-#{slash.name file}.png"
-#         
-        # childp.exec "/usr/bin/sips -s format png \"#{file}\" --out \"#{tmpImg}\"", (err) =>
-            # return error "can't convert image #{file}: #{err}" if err?
-            # @loadImage row, tmpImg
-
     loadImage: (row, file) ->
         
         return if not row.isActive()
