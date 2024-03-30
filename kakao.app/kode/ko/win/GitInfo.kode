@@ -41,9 +41,12 @@ class GitInfo
     commit: (msg) ○->
 
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
+            
+            m = msg.join ' '
+            m = 'misc' if empty m
 
             ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"add ."                   
-            ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:['commit' '-m' msg.join ' '] 
+            ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:['commit' '-m' m] 
             ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"push -q" 
 
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
@@ -204,8 +207,6 @@ class GitInfo
                         if not empty change.del
                             lines = change.del.map (l) -> l.old
                             logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
-
-                        # window.terminal.appendMeta clss: 'spacer'
 
             window.terminal.appendMeta clss: 'spacer'
             window.terminal.scroll.cursorToTop 7

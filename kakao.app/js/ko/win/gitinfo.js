@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import post from "../../kxk/post.js"
 
@@ -35,12 +35,17 @@ class GitInfo
 
     async commit (msg)
     {
-        var gitDir
+        var gitDir, m
 
         if (gitDir = await kakao('fs.git',window.textEditor.currentFile))
         {
+            m = msg.join(' ')
+            if (_k_.empty(m))
+            {
+                m = 'misc'
+            }
             await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"add ."})
-            await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:['commit','-m',msg.join(' ')]})
+            await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:['commit','-m',m]})
             return await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"push -q"})
         }
     }
@@ -66,9 +71,9 @@ class GitInfo
         linesAdded = 0
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _69_17_ = 0; _69_17_ < list.length; _69_17_++)
+        for (var _72_17_ = 0; _72_17_ < list.length; _72_17_++)
         {
-            text = list[_69_17_]
+            text = list[_72_17_]
             isBoring = false
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
@@ -92,9 +97,9 @@ class GitInfo
                 {
                     diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
                     var list1 = _k_.list(diffs)
-                    for (var _101_29_ = 0; _101_29_ < list1.length; _101_29_++)
+                    for (var _104_29_ = 0; _104_29_ < list1.length; _104_29_++)
                     {
-                        diff = list1[_101_29_]
+                        diff = list1[_104_29_]
                         if (diff.change === 'delete')
                         {
                             continue
@@ -174,18 +179,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _170_21_ = 0; _170_21_ < list.length; _170_21_++)
+            for (var _173_21_ = 0; _173_21_ < list.length; _173_21_++)
             {
-                file = list[_170_21_]
+                file = list[_173_21_]
                 if (_k_.in(slash.ext(file),['kode','styl','pug']))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _175_21_ = 0; _175_21_ < list1.length; _175_21_++)
+            for (var _178_21_ = 0; _178_21_ < list1.length; _178_21_++)
             {
-                file = list1[_175_21_]
+                file = list1[_178_21_]
                 if (_k_.in(slash.ext(file),['kode','styl','pug']))
                 {
                     logFile('added',file,status,diff)
@@ -199,9 +204,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _184_21_ = 0; _184_21_ < list2.length; _184_21_++)
+            for (var _187_21_ = 0; _187_21_ < list2.length; _187_21_++)
             {
-                file = list2[_184_21_]
+                file = list2[_187_21_]
                 if (_k_.in(slash.ext(file),['kode','styl','pug']))
                 {
                     logFile('changed',file,status,diff)
@@ -211,9 +216,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _192_31_ = 0; _192_31_ < list3.length; _192_31_++)
+                    for (var _195_31_ = 0; _195_31_ < list3.length; _195_31_++)
                     {
-                        change = list3[_192_31_]
+                        change = list3[_195_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
