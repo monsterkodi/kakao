@@ -48,7 +48,7 @@ class GitInfo
                 m = msg[0]
             }
             await kakao('app.sh','/usr/bin/git',{arg:"add .",cwd:gitDir})
-            await kakao('app.sh','/usr/bin/git',{arg:`commit -m ${m}`,cwd:gitDir})
+            await kakao('app.sh','/usr/bin/git',{args:['commit','-m',m],cwd:gitDir})
             return await kakao('app.sh','/usr/bin/git',{arg:"push -q",cwd:gitDir})
         }
     }

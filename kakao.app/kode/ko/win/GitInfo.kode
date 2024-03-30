@@ -46,7 +46,7 @@ class GitInfo
             else
                 m = msg[0]
             ○ kakao 'app.sh' '/usr/bin/git' arg:"add ." cwd:gitDir
-            ○ kakao 'app.sh' '/usr/bin/git' arg:"commit -m #{m}" cwd:gitDir
+            ○ kakao 'app.sh' '/usr/bin/git' args:['commit' '-m' m] cwd:gitDir
             ○ kakao 'app.sh' '/usr/bin/git' arg:"push -q" cwd:gitDir
 
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
