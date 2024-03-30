@@ -45,9 +45,13 @@ class GitInfo
             m = msg.join ' '
             m = 'misc' if empty m
 
-            ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"add ."                   
-            ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:['commit' '-m' m] 
-            ○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"push -q" 
+            out = ''
+            
+            out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"add ."                   
+            out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:['commit' '-m' m] 
+            out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"push -q" 
+            
+            log 'out:' out
 
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
     # 000       000   000  000   000  0000  000  000        000       000
