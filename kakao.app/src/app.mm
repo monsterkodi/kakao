@@ -327,9 +327,16 @@
         {
             [task setArguments:[dict objectForKey:@"args"]];
         }
-        else if ([dict objectForKey:@"arg"])
+        else if ([dict objectForKey:@"arg"])        
         {
-            [task setArguments:[[dict objectForKey:@"arg"] componentsSeparatedByString:@" "]];
+            if ([[dict objectForKey:@"arg"] isKindOfClass:[NSArray class]])
+            {
+                [task setArguments:[dict objectForKey:@"arg"]];
+            }
+            else
+            {
+                [task setArguments:[[dict objectForKey:@"arg"] componentsSeparatedByString:@" "]];
+            }
         }
         
         if ([dict objectForKey:@"cwd"])

@@ -35,14 +35,13 @@ class GitInfo
 
     async commit (msg)
     {
-        var gitDir, m
+        var gitDir
 
         if (gitDir = await kakao('fs.git',window.textEditor.currentFile))
         {
-            m = msg.join(' ')
-            await kakao('app.sh','/usr/bin/git',{arg:"add .",cwd:gitDir})
-            await kakao('app.sh','/usr/bin/git',{args:['commit','-m',m],cwd:gitDir})
-            return await kakao('app.sh','/usr/bin/git',{arg:"push -q",cwd:gitDir})
+            await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"add ."})
+            await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:['commit','-m',msg.join(' ')]})
+            return await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"push -q"})
         }
     }
 
