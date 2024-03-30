@@ -144,6 +144,10 @@ Row = (function ()
             return
         }
         ;($('.hover') != null ? $('.hover').classList.remove('hover') : undefined)
+        while ($('.selected',this.column.div))
+        {
+            $('.selected',this.column.div).classList.remove('selected')
+        }
         if (this.item.file === '..')
         {
             if (emit)
@@ -185,7 +189,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _125_31_
+        var _127_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -228,7 +232,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _164_24_
+        var _166_24_
 
         if ((this.input != null))
         {
@@ -282,7 +286,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _199_28_, _206_37_
+        var _201_28_, _208_37_
 
         if (!(this.input != null))
         {

@@ -87,6 +87,9 @@ function Row
             return
 
         $('.hover')?.classList.remove 'hover'
+        
+        while $ '.selected' @column.div
+            $('.selected' @column.div).classList.remove 'selected'
 
         if @item.file == '..'
             if emit
@@ -103,18 +106,17 @@ function Row
 
             when 'dir' 'file'
 
-                # log 'Row.activate emit filebrowser activateItem' @item
                 post.emit 'filebrowser' 'activateItem' @item, @column.index
 
                 col = @column.index
 
                 @browser.select.row @, false
 
-            else
+            else # if @item.type == 'func'
+                
                 @browser.clearColumnsFrom @column.index+1, pop:true
 
-                if emit
-                    post.emit 'jumpToFilePos' @item
+                post.emit 'jumpToFilePos' @item if emit
         @
 
     isActive: -> @div.classList.contains 'active'

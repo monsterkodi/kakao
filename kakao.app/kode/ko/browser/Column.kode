@@ -475,6 +475,10 @@ function Column
             editor.focus() # test if editor.currentFile == item.path ?
 
     extendSelection: (key) ->
+        
+        if @parent.type == 'file'
+            @navigateRows key
+            return
 
         return error "no rows in column #{@index}?" if not @numRows()
         index = @activeRow()?.index() ? -1
@@ -574,7 +578,8 @@ function Column
         activeIndex  = 0 if activeIndex >= @numRows()
 
         for rows in [@rows.slice(activeIndex), @rows.slice(0,activeIndex+1)]
-            fuzzied = fuzzy.filter @search, rows, extract: (r) -> r.item.name
+            
+            fuzzied = fuzzy.filter @search, rows, extract: (r) -> r.item.file
 
             if fuzzied.length
                 row = fuzzied[0].original
