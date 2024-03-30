@@ -38,6 +38,7 @@ class GitInfo
         var gitDir, line, m, out
 
         window.split.raise('terminal')
+        window.terminal.clear()
         if (gitDir = await kakao('fs.git',window.textEditor.currentFile))
         {
             m = msg.join(' ')

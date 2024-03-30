@@ -41,7 +41,7 @@ class GitInfo
     commit: (msg) ○->
         
         window.split.raise 'terminal'
-        # window.terminal.clear()
+        window.terminal.clear()
 
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
             
