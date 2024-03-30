@@ -52,7 +52,7 @@ class GitInfo
             for (var _55_21_ = 0; _55_21_ < list.length; _55_21_++)
             {
                 line = list[_55_21_]
-                window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'ko'),clss:'gitInfoFile'})
+                window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode'),clss:'gitInfoFile'})
             }
         }
     }
