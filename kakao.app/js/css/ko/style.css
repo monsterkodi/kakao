@@ -578,7 +578,9 @@ body {
   border-top-right-radius: 0.15em;
   border-bottom-right-radius: 0.15em;
 }
-.meta.gitInfoChange {
+.meta.gitInfoChange,
+.meta.gitInfoDelete,
+.meta.gitInfoAdded {
   border-radius: 0.15em;
 }
 .meta.gitInfoFile,

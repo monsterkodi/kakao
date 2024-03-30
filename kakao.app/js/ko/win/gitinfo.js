@@ -33,9 +33,17 @@ class GitInfo
         return 'unhandled'
     }
 
-    logText (text)
+    async commit (msg)
     {
-        return window.terminal.appendMeta({clss:'searchHeader',diss:Syntax.dissForTextAndSyntax(text,'ko')})
+        var gitDir, m
+
+        if (gitDir = await kakao('fs.git',window.textEditor.currentFile))
+        {
+            m = msg.join(' ')
+            await kakao('app.sh','/usr/bin/git',{arg:"add .",cwd:gitDir})
+            await kakao('app.sh','/usr/bin/git',{arg:`commit -m \"${m}\"`,cwd:gitDir})
+            return await kakao('app.sh','/usr/bin/git',{arg:"push -q",cwd:gitDir})
+        }
     }
 
     logChanges (changes)
@@ -55,11 +63,12 @@ class GitInfo
         {
             return changes.lines[i]
         })
+        sytx.setLines(changes.lines)
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _56_17_ = 0; _56_17_ < list.length; _56_17_++)
+        for (var _62_17_ = 0; _62_17_ < list.length; _62_17_++)
         {
-            text = list[_56_17_]
+            text = list[_62_17_]
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
             {
@@ -67,14 +76,21 @@ class GitInfo
                 {
                     return ds.clss += ' ' + 'git-deleted'
                 })
+                lineMeta = {line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoDelete'}
+                window.terminal.meta.add(lineMeta)
+            }
+            else if (changes.change === 'added')
+            {
+                lineMeta = {line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoAdded'}
+                window.terminal.meta.add(lineMeta)
             }
             else if (changes.change === 'changed')
             {
                 diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
                 var list1 = _k_.list(diffs)
-                for (var _67_25_ = 0; _67_25_ < list1.length; _67_25_++)
+                for (var _89_25_ = 0; _89_25_ < list1.length; _89_25_++)
                 {
-                    diff = list1[_67_25_]
+                    diff = list1[_89_25_]
                     if (diff.change === 'delete')
                     {
                         continue
@@ -106,7 +122,7 @@ class GitInfo
         logChanges = this.logChanges
         return Git.status(window.editor.currentFile).then(async function (status)
         {
-            var change, changeInfo, file, line, lines, logFile, terminal
+            var change, changeInfo, file, line, lines, logFile, text
 
             if (_k_.empty(status))
             {
@@ -116,6 +132,10 @@ class GitInfo
             {
                 var path, symbol
 
+                if (_k_.in(slash.ext(file),['js','css']))
+                {
+                    return
+                }
                 symbol = ((function ()
                 {
                     switch (change)
@@ -133,35 +153,45 @@ class GitInfo
 
                 }).bind(this))()
                 path = slash.relative(file,status.gitDir)
-                return window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(`${path}`,'ko'),href:file,clss:'gitInfoFile',click:onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change})
+                window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(`${path}`,'ko'),href:file,clss:'gitInfoFile',click:onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change})
+                return window.terminal.appendMeta({clss:'spacer'})
             }
-            terminal = window.terminal
             var list = _k_.list(status.deleted)
-            for (var _129_21_ = 0; _129_21_ < list.length; _129_21_++)
+            for (var _153_21_ = 0; _153_21_ < list.length; _153_21_++)
             {
-                file = list[_129_21_]
-                logFile('deleted',file,status)
+                file = list[_153_21_]
+                if (_k_.in(slash.ext(file),['kode','styl','pug']))
+                {
+                    logFile('deleted',file,status)
+                }
             }
             var list1 = _k_.list(status.added)
-            for (var _132_21_ = 0; _132_21_ < list1.length; _132_21_++)
+            for (var _158_21_ = 0; _158_21_ < list1.length; _158_21_++)
             {
-                file = list1[_132_21_]
-                logFile('added',file,status)
+                file = list1[_158_21_]
+                if (_k_.in(slash.ext(file),['kode','styl','pug']))
+                {
+                    logFile('added',file,status)
+                    if (diff)
+                    {
+                        text = await ffs.read(file)
+                        lines = text.split('\n')
+                        logChanges({lines:lines,line:1,file:file,change:'added'})
+                    }
+                }
             }
             var list2 = _k_.list(status.changed)
-            for (var _135_21_ = 0; _135_21_ < list2.length; _135_21_++)
+            for (var _167_21_ = 0; _167_21_ < list2.length; _167_21_++)
             {
-                file = list2[_135_21_]
-                logFile('changed',file,status)
-                if (diff && _k_.in(slash.ext(file),['kode']))
+                file = list2[_167_21_]
+                if (diff && _k_.in(slash.ext(file),['kode','styl','pug']))
                 {
+                    logFile('changed',file,status)
                     changeInfo = await Git.diff(file)
-                    console.log(changeInfo.changes)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _141_31_ = 0; _141_31_ < list3.length; _141_31_++)
+                    for (var _173_31_ = 0; _173_31_ < list3.length; _173_31_++)
                     {
-                        change = list3[_141_31_]
-                        console.log('change',change)
+                        change = list3[_173_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
@@ -187,6 +217,7 @@ class GitInfo
                             })
                             logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'deleted'})
                         }
+                        window.terminal.appendMeta({clss:'spacer'})
                     }
                 }
             }

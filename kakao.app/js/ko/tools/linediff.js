@@ -34,7 +34,15 @@ lineDiff = function (oldLine, newLine)
                 deletes = oldLine.slice(oi).indexOf(nc)
                 if (inserts > 0 && (deletes <= 0 || inserts < deletes))
                 {
-                    changes.push({change:'insert',old:oi,new:ni,length:inserts})
+                    lst = _k_.last(changes)
+                    if ((lst != null ? lst.change : undefined) === 'change' && lst.old + lst.length === oi)
+                    {
+                        lst.change = 'insert'
+                    }
+                    else
+                    {
+                        changes.push({change:'insert',old:oi,new:ni,length:inserts})
+                    }
                     ni += inserts
                     nc = newLine[ni]
                 }
@@ -82,9 +90,9 @@ lineDiff.isBoring = function (oldLine, newLine)
     inserts = ''
     deletes = ''
     var list = _k_.list(changes)
-    for (var _81_10_ = 0; _81_10_ < list.length; _81_10_++)
+    for (var _85_10_ = 0; _85_10_ < list.length; _85_10_++)
     {
-        c = list[_81_10_]
+        c = list[_85_10_]
         switch (c.change)
         {
             case 'change':

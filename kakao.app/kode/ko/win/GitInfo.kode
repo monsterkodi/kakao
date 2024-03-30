@@ -31,11 +31,15 @@ class GitInfo
             href += ':' + window.terminal.posForEvent(event)[0]
             post.emit 'openFiles' [href], newTab: event.metaKey
         'unhandled' # otherwise cursor doesn't get set
-        
-    logText: (text) ->
-        
-        window.terminal.appendMeta clss:'searchHeader' diss:Syntax.dissForTextAndSyntax text, 'ko'
 
+    commit: (msg) ○->
+        
+        if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
+            m = msg.join ' '
+            ○ kakao 'app.sh' '/usr/bin/git' arg:"add ." cwd:gitDir
+            ○ kakao 'app.sh' '/usr/bin/git' arg:"commit -m \"#{m}\"" cwd:gitDir
+            ○ kakao 'app.sh' '/usr/bin/git' arg:"push -q" cwd:gitDir
+        
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
     # 000       000   000  000   000  0000  000  000        000       000       
     # 000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
@@ -52,6 +56,8 @@ class GitInfo
         
         sytx = new Syntax syntaxName, (i) -> changes.lines[i]
         
+        sytx.setLines changes.lines
+        
         index = 0
         for text in changes.lines
             
@@ -60,6 +66,22 @@ class GitInfo
             if changes.change == 'deleted'
                 
                 dss.map (ds) -> ds.clss += ' ' + 'git-deleted'
+                
+                lineMeta =
+                    line:       window.terminal.numLines()
+                    start:      0
+                    end:        text.length
+                    clss:       'gitInfoDelete'
+                window.terminal.meta.add lineMeta
+                
+            else if changes.change == 'added'
+                
+                lineMeta =
+                    line:       window.terminal.numLines()
+                    start:      0
+                    end:        text.length
+                    clss:       'gitInfoAdded'
+                window.terminal.meta.add lineMeta
                 
             else if changes.change == 'changed'
                 
@@ -106,6 +128,8 @@ class GitInfo
             
             logFile = (change, file, status) ->
                 
+                return if slash.ext(file) in ['js' 'css']
+                
                 symbol = switch change
         
                     'changed' ➜ '●'
@@ -121,26 +145,33 @@ class GitInfo
                     click:      onMetaClick
                     line:       symbol
                     lineClss:   'gitInfoLine '+change
+                    
+                window.terminal.appendMeta clss: 'spacer'
             
             # log 'GitInfo.start Git.status' status
             
-            terminal = window.terminal
-                
             for file in status.deleted
-                logFile 'deleted' file, status
+                
+                if slash.ext(file) in ['kode' 'styl' 'pug']
+                    logFile 'deleted' file, status
                 
             for file in status.added
-                logFile 'added' file, status 
+                
+                if slash.ext(file) in ['kode' 'styl' 'pug']
+                    logFile 'added' file, status 
+                    if diff
+                        text =○ ffs.read file
+                        lines = text.split '\n'
+                        logChanges lines:lines, line:1, file:file, change:'added'
                                 
             for file in status.changed                
-                logFile 'changed' file, status
                 
-                if diff and slash.ext(file) in ['kode']
+                if diff and slash.ext(file) in ['kode' 'styl' 'pug']
+                    logFile 'changed' file, status
                     changeInfo =○ Git.diff file
-                    log changeInfo.changes
+
                     for change in changeInfo.changes
                         
-                        log 'change' change
                         line = change.line
                          
                         if not empty change.mod
@@ -154,8 +185,10 @@ class GitInfo
                         if not empty change.del
                             lines = change.del.map (l) -> l.old
                             logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
+                            
+                        window.terminal.appendMeta clss: 'spacer'
                 
-            window.terminal.appendMeta clss: 'spacer'                        
+            window.terminal.appendMeta clss: 'spacer'
             window.terminal.scroll.cursorToTop 7
         
 export new GitInfo

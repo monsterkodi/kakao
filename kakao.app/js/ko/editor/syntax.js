@@ -254,6 +254,7 @@ class Syntax
             }
         }
         this.syntaxNames = this.syntaxNames.concat(kolor.exts)
+        console.log('Syntax.init',this.syntaxNames)
         return this.syntaxNames
     }
 }

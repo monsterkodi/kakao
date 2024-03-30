@@ -6,6 +6,7 @@
    000     00000000  0000000      000   
 ###
 
+use ./test_linediff
 use ./test_slash
 use ./test_util
 use ./test_fs
@@ -29,5 +30,6 @@ if 1
 tester.test test_slash
 tester.test test_util
 tester.test test_fs
+tester.test test_linediff
         
 tester.summarize()

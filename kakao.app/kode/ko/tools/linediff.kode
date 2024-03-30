@@ -38,7 +38,11 @@ lineDiff = (oldLine, newLine) ->
                 
                 if inserts > 0 and (deletes <= 0 or inserts < deletes)
                     
-                    changes.push change:'insert' old: oi, new: ni, length: inserts
+                    lst = last changes
+                    if lst?.change == 'change' and lst.old + lst.length == oi
+                        lst.change = 'insert'
+                    else                    
+                        changes.push change:'insert' old: oi, new: ni, length: inserts
                     ni += inserts
                     nc = newLine[ni]
                     
@@ -62,7 +66,7 @@ lineDiff = (oldLine, newLine) ->
                         
         if ni < newLine.length # mark remaing characters in new line as inserted
             
-            changes.push change: 'insert' old: oi, new: ni, length: newLine.length - ni
+            changes.push change:'insert' old: oi, new: ni, length: newLine.length - ni
     
     changes
 

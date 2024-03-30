@@ -1,0 +1,19 @@
+###
+000000000  00000000   0000000  000000000          000      000  000   000  00000000  0000000    000  00000000  00000000  
+   000     000       000          000             000      000  0000  000  000       000   000  000  000       000       
+   000     0000000   0000000      000             000      000  000 0 000  0000000   000   000  000  000000    000000    
+   000     000            000     000             000      000  000  0000  000       000   000  000  000       000       
+   000     00000000  0000000      000     000000  0000000  000  000   000  00000000  0000000    000  000       000       
+###
+
+use ../ko/tools/linediff
+
+▸ linediff
+    
+    linediff 'ABC' 'AbC' ▸ [{change:'change' old:1 new:1 length:1}]
+    linediff 'ABC' 'A' ▸ [{change:'delete' old:1 new:1 length:2}]
+    linediff 'C D E' 'CxDyE' ▸ [{change:'change' old:1 new:1 length:1}, {change:'change' old:3 new:3 length:1}]
+    linediff 'xyz' ' x y z ' ▸ [{change:'insert' old:0 new:0 length:1}, {change:'insert' old:1 new:2 length:1}, {change:'insert' old:2 new:4 length:1}, {change:'insert' old:3 new:6 length:1}]
+    linediff 'C' 'ABBB' ▸ [{change:'change' old:0 new:0 length:1}, {change:'insert' old:1 new:1 length:3}]
+    linediff 't = w' 't  =  w' ▸ [{change:'insert' old:2 new:2 length:1}, {change:'insert' old:4 new:5 length:1}]
+        
