@@ -6,6 +6,56 @@
 0000000  000  000   000  00000000  0000000    000  000       000       
 ###
 
+simplify = (oldLine, newLine, changes) ->
+    
+    return if changes.length < 2
+    
+    # log 'changes' changes
+    
+    for ci in 0...changes.length-1
+ 
+        c0 = changes[ci]
+        c1 = changes[ci+1]
+        
+        if c0.change == 'change' and c1.change == 'delete' #and (c1.old <  c0.length + c0.old)
+            
+            changes.splice ci, 1
+            c1.change = 'change'
+            c1.length += c0.length
+            c1.old = c0.old
+            c1.new = c0.new
+            
+            return simplify oldLine, newLine, changes
+        
+        if c0.change == 'insert' and c1.change == 'delete' and (c1.old <  c0.length + c0.old)
+            
+            changes.splice ci, 1
+            c1.change = 'change'
+            c1.length -= c0.length + (c1.old-c0.old) + (c1.new - (c0.new+c0.length))
+            c1.old = c0.old
+            c1.new = c0.new
+            
+            return simplify oldLine, newLine, changes
+    
+        if c0.change == 'delete' and c1.change == 'insert' and (c0.new + c0.length == c1.new)
+
+            changes.splice ci, 1
+            c1.old = c0.old
+            c1.new = c0.new
+            c1.length -= c0.length
+            
+            return simplify oldLine, newLine, changes
+            
+        if c0.change == 'insert' and c1.change == 'insert' and (c0.length > 1 or c1.length > 1)
+            
+            changes.splice ci, 1
+            c1.change = 'change'
+            c1.length = Math.max c1.length + c0.length, c1.new - c0.new #+ (c1.new - (c0.new+c0.length))
+            c1.old = c0.old
+            c1.new = c0.new
+            
+            return simplify oldLine, newLine, changes
+
 lineDiff = (oldLine, newLine) ->
     
     changes = []
@@ -39,6 +89,7 @@ lineDiff = (oldLine, newLine) ->
                 if inserts > 0 and (deletes <= 0 or inserts < deletes)
                     
                     lst = last changes
+                    
                     if lst?.change == 'change' and lst.old + lst.length == oi
                         lst.change = 'insert'
                     else                    
@@ -67,6 +118,8 @@ lineDiff = (oldLine, newLine) ->
         if ni < newLine.length # mark remaing characters in new line as inserted
             
             changes.push change:'insert' old: oi, new: ni, length: newLine.length - ni
+            
+    simplify oldLine, newLine, changes
     
     changes
 
@@ -84,9 +137,9 @@ lineDiff.isBoring = (oldLine, newLine) ->
     deletes = ''
     for c in changes
         switch c.change
-            when 'change' then return false
-            when 'delete' then deletes += oldLine.substr(c.old, c.length).trim()
-            when 'insert' then inserts += newLine.substr(c.new, c.length).trim()
+            'change' ➜ return false
+            'delete' ➜ deletes += oldLine.substr(c.old, c.length).trim()
+            'insert' ➜ inserts += newLine.substr(c.new, c.length).trim()
     inserts == deletes
     
 export lineDiff

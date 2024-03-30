@@ -1,9 +1,9 @@
 ###
- 0000000   000  000000000  000  000   000  00000000   0000000 
+ 0000000   000  000000000  000  000   000  00000000   0000000
 000        000     000     000  0000  000  000       000   000
 000  0000  000     000     000  000 0 000  000000    000   000
 000   000  000     000     000  000  0000  000       000   000
- 0000000   000     000     000  000   000  000        0000000 
+ 0000000   000     000     000  000   000  000        0000000
 ###
 
 use ../../kxk/post
@@ -16,128 +16,142 @@ use ../tools/Git
 use ../editor/Syntax
 
 class GitInfo
-    
+
     @: ->
-        
-    #  0000000  000      000   0000000  000   000  
-    # 000       000      000  000       000  000   
-    # 000       000      000  000       0000000    
-    # 000       000      000  000       000  000   
-    #  0000000  0000000  000   0000000  000   000  
-    
+
+    #  0000000  000      000   0000000  000   000
+    # 000       000      000  000       000  000
+    # 000       000      000  000       0000000
+    # 000       000      000  000       000  000
+    #  0000000  0000000  000   0000000  000   000
+
     onMetaClick: (meta, event) =>
-        
+
         if href = meta[2].href
             href += ':' + window.terminal.posForEvent(event)[0]
             post.emit 'openFiles' [href], newTab: event.metaKey
         'unhandled' # otherwise cursor doesn't get set
 
     commit: (msg) ○->
-        
+
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
             m = msg.join ' '
+            log "commit -m \"#{m}\""
             ○ kakao 'app.sh' '/usr/bin/git' arg:"add ." cwd:gitDir
             ○ kakao 'app.sh' '/usr/bin/git' arg:"commit -m \"#{m}\"" cwd:gitDir
             ○ kakao 'app.sh' '/usr/bin/git' arg:"push -q" cwd:gitDir
-        
-    #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
-    # 000       000   000  000   000  0000  000  000        000       000       
-    # 000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
-    # 000       000   000  000   000  000  0000  000   000  000            000  
-    #  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
-    
+
+    #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
+    # 000       000   000  000   000  0000  000  000        000       000
+    # 000       000000000  000000000  000 0 000  000  0000  0000000   0000000
+    # 000       000   000  000   000  000  0000  000   000  000            000
+    #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
+
     logChanges: (changes) =>
-        
+
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
             syntaxName = extn
         else
             syntaxName = 'txt'
-        
+
         sytx = new Syntax syntaxName, (i) -> changes.lines[i]
-        
+
         sytx.setLines changes.lines
-        
+
+        linesAdded = 0
         index = 0
         for text in changes.lines
             
+            isBoring = false
+
             dss = sytx.getDiss index
-            
+
             if changes.change == 'deleted'
-                
+
                 dss.map (ds) -> ds.clss += ' ' + 'git-deleted'
-                
+
                 lineMeta =
                     line:       window.terminal.numLines()
                     start:      0
                     end:        text.length
                     clss:       'gitInfoDelete'
                 window.terminal.meta.add lineMeta
-                
+
             else if changes.change == 'added'
-                
+
                 lineMeta =
                     line:       window.terminal.numLines()
                     start:      0
                     end:        text.length
                     clss:       'gitInfoAdded'
                 window.terminal.meta.add lineMeta
-                
+
             else if changes.change == 'changed'
+
+                isBoring = linediff.isBoring changes.info.mod[index].old, changes.info.mod[index].new
                 
-                diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
-                for diff in diffs 
-                    continue if diff.change == 'delete'
-                    lineMeta =
-                        line:       window.terminal.numLines()
-                        start:      diff.new
-                        end:        diff.new+diff.length
-                        clss:       'gitInfoChange'
-                    window.terminal.meta.add lineMeta
+                if not isBoring
+                    diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
+                    for diff in diffs
+                        continue if diff.change == 'delete'
+                        lineMeta =
+                            line:       window.terminal.numLines()
+                            start:      diff.new
+                            end:        diff.new+diff.length
+                            clss:       'gitInfoChange'
+                        window.terminal.meta.add lineMeta
+
+            if not isBoring
+                meta =
+                    diss: dss
+                    href: "#{changes.file}:#{changes.line+index}"
+                    clss: 'searchResult'
+                    click: @onMetaClick
+    
+                window.terminal.appendMeta meta
+                post.emit 'search-result' meta
+                linesAdded++
                 
-            meta =
-                diss: dss
-                href: "#{changes.file}:#{changes.line+index}"
-                clss: 'searchResult'
-                click: @onMetaClick
-                            
-            window.terminal.appendMeta meta
-            post.emit 'search-result' meta
             index += 1
+            
+        if linesAdded ➜ window.terminal.appendMeta clss: 'spacer'
         index
-        
-    #  0000000  000000000   0000000   000000000  000   000   0000000  
-    # 000          000     000   000     000     000   000  000       
-    # 0000000      000     000000000     000     000   000  0000000   
-    #      000     000     000   000     000     000   000       000  
-    # 0000000      000     000   000     000      0000000   0000000   
-    
+
+    #  0000000  000000000   0000000   000000000  000   000   0000000
+    # 000          000     000   000     000     000   000  000
+    # 0000000      000     000000000     000     000   000  0000000
+    #      000     000     000   000     000     000   000       000
+    # 0000000      000     000   000     000      0000000   0000000
+
     diff: => @status true
-    
-    status: (diff) -> 
-        
+
+    status: (diff) ->
+
         window.split.raise 'terminal'
         window.terminal.clear()
-        
+
         onMetaClick = @onMetaClick
         logChanges  = @logChanges
         
-        Git.status(window.editor.currentFile).then (status) ○=>
+        Git.status(window.editor.currentFile).then (status) ○->
+
+            log 'status' status
             
             return if empty status
-            
-            logFile = (change, file, status) ->
-                
+
+            logFile = (change, file, status, spacer) ->
+
                 return if slash.ext(file) in ['js' 'css']
-                
+
                 symbol = switch change
-        
+
                     'changed' ➜ '●'
                     'added'   ➜ '◼'
                     'deleted' ➜ '✘'
-        
+
                 path = slash.relative file, status.gitDir
-                    
+
                 window.terminal.appendMeta
                     diss:       Syntax.dissForTextAndSyntax "#{path}", 'ko'
                     href:       file
@@ -145,50 +159,50 @@ class GitInfo
                     click:      onMetaClick
                     line:       symbol
                     lineClss:   'gitInfoLine '+change
-                    
-                window.terminal.appendMeta clss: 'spacer'
-            
-            # log 'GitInfo.start Git.status' status
-            
+                
+                if spacer ➜ window.terminal.appendMeta clss:'spacer'
+
             for file in status.deleted
-                
+
                 if slash.ext(file) in ['kode' 'styl' 'pug']
-                    logFile 'deleted' file, status
-                
+                    logFile 'deleted' file, status, diff
+
             for file in status.added
+
+                if slash.ext(file) in ['kode' 'styl' 'pug']
+                    logFile 'added' file, status, diff
+                    continue if not diff
+                    text =○ ffs.read file
+                    lines = text.split '\n'
+                    logChanges lines:lines, line:1, file:file, change:'added'
+
+            for file in status.changed
                 
                 if slash.ext(file) in ['kode' 'styl' 'pug']
-                    logFile 'added' file, status 
-                    if diff
-                        text =○ ffs.read file
-                        lines = text.split '\n'
-                        logChanges lines:lines, line:1, file:file, change:'added'
-                                
-            for file in status.changed                
-                
-                if diff and slash.ext(file) in ['kode' 'styl' 'pug']
-                    logFile 'changed' file, status
+                    logFile 'changed' file, status, diff
+                    continue if not diff 
+                    
                     changeInfo =○ Git.diff file
 
                     for change in changeInfo.changes
-                        
+
                         line = change.line
-                         
+
                         if not empty change.mod
                             lines = change.mod.map (l) -> l.new
                             logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
-                             
+
                         if not empty change.add
                             lines = change.add.map (l) -> l.new
                             logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
-                             
+
                         if not empty change.del
                             lines = change.del.map (l) -> l.old
                             logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
-                            
-                        window.terminal.appendMeta clss: 'spacer'
-                
+
+                        # window.terminal.appendMeta clss: 'spacer'
+
             window.terminal.appendMeta clss: 'spacer'
             window.terminal.scroll.cursorToTop 7
-        
+
 export new GitInfo

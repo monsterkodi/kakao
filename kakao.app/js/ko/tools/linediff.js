@@ -1,7 +1,57 @@
 var _k_ = {last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var lineDiff
+var lineDiff, simplify
 
+
+simplify = function (oldLine, newLine, changes)
+{
+    var c0, c1, ci
+
+    if (changes.length < 2)
+    {
+        return
+    }
+    for (var _15_14_ = ci = 0, _15_18_ = changes.length - 1; (_15_14_ <= _15_18_ ? ci < changes.length - 1 : ci > changes.length - 1); (_15_14_ <= _15_18_ ? ++ci : --ci))
+    {
+        c0 = changes[ci]
+        c1 = changes[ci + 1]
+        if (c0.change === 'change' && c1.change === 'delete')
+        {
+            changes.splice(ci,1)
+            c1.change = 'change'
+            c1.length += c0.length
+            c1.old = c0.old
+            c1.new = c0.new
+            return simplify(oldLine,newLine,changes)
+        }
+        if (c0.change === 'insert' && c1.change === 'delete' && (c1.old < c0.length + c0.old))
+        {
+            changes.splice(ci,1)
+            c1.change = 'change'
+            c1.length -= c0.length + (c1.old - c0.old) + (c1.new - (c0.new + c0.length))
+            c1.old = c0.old
+            c1.new = c0.new
+            return simplify(oldLine,newLine,changes)
+        }
+        if (c0.change === 'delete' && c1.change === 'insert' && (c0.new + c0.length === c1.new))
+        {
+            changes.splice(ci,1)
+            c1.old = c0.old
+            c1.new = c0.new
+            c1.length -= c0.length
+            return simplify(oldLine,newLine,changes)
+        }
+        if (c0.change === 'insert' && c1.change === 'insert' && (c0.length > 1 || c1.length > 1))
+        {
+            changes.splice(ci,1)
+            c1.change = 'change'
+            c1.length = Math.max(c1.length + c0.length,c1.new - c0.new)
+            c1.old = c0.old
+            c1.new = c0.new
+            return simplify(oldLine,newLine,changes)
+        }
+    }
+}
 
 lineDiff = function (oldLine, newLine)
 {
@@ -75,6 +125,7 @@ lineDiff = function (oldLine, newLine)
             changes.push({change:'insert',old:oi,new:ni,length:newLine.length - ni})
         }
     }
+    simplify(oldLine,newLine,changes)
     return changes
 }
 
@@ -90,9 +141,9 @@ lineDiff.isBoring = function (oldLine, newLine)
     inserts = ''
     deletes = ''
     var list = _k_.list(changes)
-    for (var _85_10_ = 0; _85_10_ < list.length; _85_10_++)
+    for (var _138_10_ = 0; _138_10_ < list.length; _138_10_++)
     {
-        c = list[_85_10_]
+        c = list[_138_10_]
         switch (c.change)
         {
             case 'change':

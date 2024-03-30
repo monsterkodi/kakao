@@ -56,7 +56,7 @@ function Git
         
         status =○ kakao 'app.sh' '/usr/bin/git' arg:'status --porcelain' cwd:gitDir
         
-        # log 'Git.status' gitDir, status
+        log 'Git.status' gitDir, status
         
         return info if status.startsWith 'fatal:'
         
@@ -73,6 +73,7 @@ function Git
             header = line.slice 0,2
             switch header
                 ' D' ➜ info.deleted.push file
+                'MM'
                 ' M' ➜ info.changed.push file
                 '??' ➜ info.added  .push file
                 
@@ -98,7 +99,7 @@ function Git
         
         gitDir =○ kakao 'fs.git' file
         
-        diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 #{file}" cwd:gitDir 
+        diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 --ignore-blank-lines --ignore-all-space #{file}" cwd:gitDir 
         
         # log 'Git.diff' diff
         

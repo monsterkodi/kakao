@@ -66,6 +66,7 @@ Git = (function ()
             return info
         }
         status = await kakao('app.sh','/usr/bin/git',{arg:'status --porcelain',cwd:gitDir})
+        console.log('Git.status',gitDir,status)
         if (status.startsWith('fatal:'))
         {
             return info
@@ -86,6 +87,7 @@ Git = (function ()
                 case ' D':
                     info.deleted.push(file)
                     break
+                case 'MM':
                 case ' M':
                     info.changed.push(file)
                     break
@@ -100,13 +102,13 @@ Git = (function ()
             return slash.path(gitDir,d)
         })
         var list = ['changed','added','deleted']
-        for (var _81_16_ = 0; _81_16_ < list.length; _81_16_++)
+        for (var _82_16_ = 0; _82_16_ < list.length; _82_16_++)
         {
-            key = list[_81_16_]
+            key = list[_82_16_]
             var list1 = _k_.list(info[key])
-            for (var _82_21_ = 0; _82_21_ < list1.length; _82_21_++)
+            for (var _83_21_ = 0; _83_21_ < list1.length; _83_21_++)
             {
-                file = list1[_82_21_]
+                file = list1[_83_21_]
                 info.files[file] = key
             }
         }
@@ -115,24 +117,24 @@ Git = (function ()
 
     Git["diff"] = async function (file)
     {
-        var after, afterSplit, before, change, diff, gitDir, i, info, line, lines, newLines, numNew, numOld, oldLines, x, _114_55_, _115_48_
+        var after, afterSplit, before, change, diff, gitDir, i, info, line, lines, newLines, numNew, numOld, oldLines, x, _115_55_, _116_48_
 
         gitDir = await kakao('fs.git',file)
-        diff = await kakao('app.sh','/usr/bin/git',{arg:`--no-pager diff --no-color -U0 ${file}`,cwd:gitDir})
+        diff = await kakao('app.sh','/usr/bin/git',{arg:`--no-pager diff --no-color -U0 --ignore-blank-lines --ignore-all-space ${file}`,cwd:gitDir})
         info = {file:file,changes:[]}
         lines = diff.split('\n')
         while (line = lines.shift())
         {
             if (line.startsWith('@@'))
             {
-                var _111_35_ = line.split(' '); x = _111_35_[0]; before = _111_35_[1]; after = _111_35_[2]
+                var _112_35_ = line.split(' '); x = _112_35_[0]; before = _112_35_[1]; after = _112_35_[2]
 
                 afterSplit = after.split(',')
-                numOld = parseInt(((_114_55_=before.split(',')[1]) != null ? _114_55_ : 1))
-                numNew = parseInt(((_115_48_=afterSplit[1]) != null ? _115_48_ : 1))
+                numOld = parseInt(((_115_55_=before.split(',')[1]) != null ? _115_55_ : 1))
+                numNew = parseInt(((_116_48_=afterSplit[1]) != null ? _116_48_ : 1))
                 change = {line:parseInt(afterSplit[0])}
                 oldLines = []
-                for (var _119_26_ = i = 0, _119_30_ = numOld; (_119_26_ <= _119_30_ ? i < numOld : i > numOld); (_119_26_ <= _119_30_ ? ++i : --i))
+                for (var _120_26_ = i = 0, _120_30_ = numOld; (_120_26_ <= _120_30_ ? i < numOld : i > numOld); (_120_26_ <= _120_30_ ? ++i : --i))
                 {
                     oldLines.push(lines.shift().slice(1))
                 }
@@ -141,7 +143,7 @@ Git = (function ()
                     lines.shift()
                 }
                 newLines = []
-                for (var _124_26_ = i = 0, _124_30_ = numNew; (_124_26_ <= _124_30_ ? i < numNew : i > numNew); (_124_26_ <= _124_30_ ? ++i : --i))
+                for (var _125_26_ = i = 0, _125_30_ = numNew; (_125_26_ <= _125_30_ ? i < numNew : i > numNew); (_125_26_ <= _125_30_ ? ++i : --i))
                 {
                     newLines.push(lines.shift().slice(1))
                 }
@@ -160,7 +162,7 @@ Git = (function ()
                 if (numOld && numNew)
                 {
                     change.mod = []
-                    for (var _133_30_ = i = 0, _133_34_ = Math.min(numOld,numNew); (_133_30_ <= _133_34_ ? i < Math.min(numOld,numNew) : i > Math.min(numOld,numNew)); (_133_30_ <= _133_34_ ? ++i : --i))
+                    for (var _134_30_ = i = 0, _134_34_ = Math.min(numOld,numNew); (_134_30_ <= _134_34_ ? i < Math.min(numOld,numNew) : i > Math.min(numOld,numNew)); (_134_30_ <= _134_34_ ? ++i : --i))
                     {
                         change.mod.push({old:change.old[i],new:change.new[i]})
                     }
@@ -168,7 +170,7 @@ Git = (function ()
                 if (numOld > numNew)
                 {
                     change.del = []
-                    for (var _138_30_ = i = numNew, _138_39_ = numOld; (_138_30_ <= _138_39_ ? i < numOld : i > numOld); (_138_30_ <= _138_39_ ? ++i : --i))
+                    for (var _139_30_ = i = numNew, _139_39_ = numOld; (_139_30_ <= _139_39_ ? i < numOld : i > numOld); (_139_30_ <= _139_39_ ? ++i : --i))
                     {
                         change.del.push({old:change.old[i]})
                     }
@@ -176,7 +178,7 @@ Git = (function ()
                 else if (numNew > numOld)
                 {
                     change.add = []
-                    for (var _143_30_ = i = numOld, _143_39_ = numNew; (_143_30_ <= _143_39_ ? i < numNew : i > numNew); (_143_30_ <= _143_39_ ? ++i : --i))
+                    for (var _144_30_ = i = numOld, _144_39_ = numNew; (_144_30_ <= _144_39_ ? i < numNew : i > numNew); (_144_30_ <= _144_39_ ? ++i : --i))
                     {
                         change.add.push({new:change.new[i]})
                     }
