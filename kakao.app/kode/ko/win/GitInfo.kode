@@ -39,6 +39,9 @@ class GitInfo
     #  0000000   0000000   000   000  000   000  000     000     
     
     commit: (msg) ○->
+        
+        window.split.raise 'terminal'
+        # window.terminal.clear()
 
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
             

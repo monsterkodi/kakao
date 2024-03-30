@@ -37,6 +37,7 @@ class GitInfo
     {
         var gitDir, line, m, out
 
+        window.split.raise('terminal')
         if (gitDir = await kakao('fs.git',window.textEditor.currentFile))
         {
             m = msg.join(' ')
@@ -49,9 +50,9 @@ class GitInfo
             out += await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:['commit','-m',m]})
             out += await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"push -q"})
             var list = _k_.list(out.split('\n'))
-            for (var _55_21_ = 0; _55_21_ < list.length; _55_21_++)
+            for (var _58_21_ = 0; _58_21_ < list.length; _58_21_++)
             {
-                line = list[_55_21_]
+                line = list[_58_21_]
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode'),clss:'gitInfoFile'})
             }
         }
@@ -78,9 +79,9 @@ class GitInfo
         linesAdded = 0
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _80_17_ = 0; _80_17_ < list.length; _80_17_++)
+        for (var _83_17_ = 0; _83_17_ < list.length; _83_17_++)
         {
-            text = list[_80_17_]
+            text = list[_83_17_]
             isBoring = false
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
@@ -104,9 +105,9 @@ class GitInfo
                 {
                     diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
                     var list1 = _k_.list(diffs)
-                    for (var _112_29_ = 0; _112_29_ < list1.length; _112_29_++)
+                    for (var _115_29_ = 0; _115_29_ < list1.length; _115_29_++)
                     {
-                        diff = list1[_112_29_]
+                        diff = list1[_115_29_]
                         if (diff.change === 'delete')
                         {
                             continue
@@ -186,18 +187,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _181_21_ = 0; _181_21_ < list.length; _181_21_++)
+            for (var _184_21_ = 0; _184_21_ < list.length; _184_21_++)
             {
-                file = list[_181_21_]
+                file = list[_184_21_]
                 if (_k_.in(slash.ext(file),['kode','styl','pug']))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _186_21_ = 0; _186_21_ < list1.length; _186_21_++)
+            for (var _189_21_ = 0; _189_21_ < list1.length; _189_21_++)
             {
-                file = list1[_186_21_]
+                file = list1[_189_21_]
                 if (_k_.in(slash.ext(file),['kode','styl','pug']))
                 {
                     logFile('added',file,status,diff)
@@ -211,9 +212,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _195_21_ = 0; _195_21_ < list2.length; _195_21_++)
+            for (var _198_21_ = 0; _198_21_ < list2.length; _198_21_++)
             {
-                file = list2[_195_21_]
+                file = list2[_198_21_]
                 if (_k_.in(slash.ext(file),['kode','styl','pug']))
                 {
                     logFile('changed',file,status,diff)
@@ -223,9 +224,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _203_31_ = 0; _203_31_ < list3.length; _203_31_++)
+                    for (var _206_31_ = 0; _206_31_ < list3.length; _206_31_++)
                     {
-                        change = list3[_203_31_]
+                        change = list3[_206_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
