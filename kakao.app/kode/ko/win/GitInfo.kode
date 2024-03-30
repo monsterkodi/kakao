@@ -41,7 +41,10 @@ class GitInfo
     commit: (msg) ○->
 
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
-            m = msg.join ' '
+            if msg.length > 1
+                m = '"' + msg.join(' ') + '"'
+            else
+                m = msg[0]
             ○ kakao 'app.sh' '/usr/bin/git' arg:"add ." cwd:gitDir
             ○ kakao 'app.sh' '/usr/bin/git' arg:"commit -m #{m}" cwd:gitDir
             ○ kakao 'app.sh' '/usr/bin/git' arg:"push -q" cwd:gitDir
