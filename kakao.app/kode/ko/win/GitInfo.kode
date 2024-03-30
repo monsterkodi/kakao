@@ -51,8 +51,12 @@ class GitInfo
             out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:['commit' '-m' m] 
             out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"push -q" 
             
-            log 'out:' out
-
+            # log 'out:' out
+            for line in out.split '\n'
+                window.terminal.appendMeta 
+                    diss: Syntax.dissForTextAndSyntax line, 'ko'
+                    clss: 'gitInfoFile'
+                    
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
     # 000       000   000  000   000  0000  000  000        000       000
     # 000       000000000  000000000  000 0 000  000  0000  0000000   0000000
