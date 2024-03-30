@@ -17,7 +17,7 @@ class FPS
         @elem = elem class: 'fps'
         @elem.style.display = 'none'
 
-        @canvas = elem 'canvas', class: "fpsCanvas", width: 130*2, height: 30*2
+        @canvas = elem 'canvas' class:'fpsCanvas' width:130*2 height: 30*2
         @elem.appendChild @canvas
 
         y = parseInt  -30/2
@@ -45,8 +45,8 @@ class FPS
         @history.shift() while @history.length > 260
         @canvas.height = @canvas.height
         ctx = @canvas.getContext '2d'        
-        for i in [0...@history.length]  
-            ms    = Math.max 0, @history[i]-17
+        for i in 0...@history.length
+            ms    = Math.max 0, @history[i]-34
             red   = parseInt 32 + 223 * clamp 0,1, (ms-16)/16
             green = parseInt 32 + 223 * clamp 0,1, (ms-32)/32
             ctx.fillStyle = "rgb(#{red}, #{green}, 32)"

@@ -18,7 +18,7 @@ class FPS
         this.draw = this.draw.bind(this)
         this.elem = elem({class:'fps'})
         this.elem.style.display = 'none'
-        this.canvas = elem('canvas',{class:"fpsCanvas",width:130 * 2,height:30 * 2})
+        this.canvas = elem('canvas',{class:'fpsCanvas',width:130 * 2,height:30 * 2})
         this.elem.appendChild(this.canvas)
         y = parseInt(-30 / 2)
         x = parseInt(-130 / 2)
@@ -42,9 +42,9 @@ class FPS
         }
         this.canvas.height = this.canvas.height
         ctx = this.canvas.getContext('2d')
-        for (var _48_18_ = i = 0, _48_22_ = this.history.length; (_48_18_ <= _48_22_ ? i < this.history.length : i > this.history.length); (_48_18_ <= _48_22_ ? ++i : --i))
+        for (var _48_17_ = i = 0, _48_21_ = this.history.length; (_48_17_ <= _48_21_ ? i < this.history.length : i > this.history.length); (_48_17_ <= _48_21_ ? ++i : --i))
         {
-            ms = Math.max(0,this.history[i] - 17)
+            ms = Math.max(0,this.history[i] - 34)
             red = parseInt(32 + 223 * _k_.clamp(0,1,(ms - 16) / 16))
             green = parseInt(32 + 223 * _k_.clamp(0,1,(ms - 32) / 32))
             ctx.fillStyle = `rgb(${red}, ${green}, 32)`

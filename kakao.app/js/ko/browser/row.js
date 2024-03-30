@@ -148,13 +148,11 @@ Row = (function ()
         {
             if (emit)
             {
-                console.log('make updir root')
                 post.emit('filebrowser','loadItem',this.item)
                 return
             }
             else
             {
-                console.log('just select updir')
                 this.setActive()
                 this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
                 return
@@ -187,7 +185,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _127_31_
+        var _125_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -230,7 +228,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _166_24_
+        var _164_24_
 
         if ((this.input != null))
         {
@@ -284,7 +282,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _201_28_, _208_37_
+        var _199_28_, _206_37_
 
         if (!(this.input != null))
         {

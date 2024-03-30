@@ -90,11 +90,9 @@ function Row
 
         if @item.file == '..'
             if emit
-                log 'make updir root'
                 post.emit 'filebrowser' 'loadItem' @item
                 return
             else
-                log 'just select updir'
                 @setActive()
                 @browser.clearColumnsFrom @column.index+1, pop:true
                 return

@@ -135,23 +135,25 @@ class GitInfo
             for file in status.changed                
                 logFile 'changed' file, status
                 
-                if diff
+                if diff and slash.ext(file) in ['kode']
                     changeInfo =○ Git.diff file
                     log changeInfo.changes
                     for change in changeInfo.changes
+                        
+                        log 'change' change
                         line = change.line
                          
                         if not empty change.mod
                             lines = change.mod.map (l) -> l.new
-                            line += logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
+                            logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
                              
                         if not empty change.add
                             lines = change.add.map (l) -> l.new
-                            line += logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
+                            logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
                              
                         if not empty change.del
                             lines = change.del.map (l) -> l.old
-                            line += logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
+                            logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
                 
             window.terminal.appendMeta clss: 'spacer'                        
             window.terminal.scroll.cursorToTop 7

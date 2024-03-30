@@ -153,7 +153,7 @@ class GitInfo
             {
                 file = list2[_135_21_]
                 logFile('changed',file,status)
-                if (diff)
+                if (diff && _k_.in(slash.ext(file),['kode']))
                 {
                     changeInfo = await Git.diff(file)
                     console.log(changeInfo.changes)
@@ -161,6 +161,7 @@ class GitInfo
                     for (var _141_31_ = 0; _141_31_ < list3.length; _141_31_++)
                     {
                         change = list3[_141_31_]
+                        console.log('change',change)
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
@@ -168,7 +169,7 @@ class GitInfo
                             {
                                 return l.new
                             })
-                            line += logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'changed'})
+                            logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'changed'})
                         }
                         if (!_k_.empty(change.add))
                         {
@@ -176,7 +177,7 @@ class GitInfo
                             {
                                 return l.new
                             })
-                            line += logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'added'})
+                            logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'added'})
                         }
                         if (!_k_.empty(change.del))
                         {
@@ -184,7 +185,7 @@ class GitInfo
                             {
                                 return l.old
                             })
-                            line += logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'deleted'})
+                            logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'deleted'})
                         }
                     }
                 }
