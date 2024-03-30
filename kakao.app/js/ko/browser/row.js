@@ -136,7 +136,7 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, _91_19_
+        var col, _89_19_
 
         if (this.column.index < 0)
         {
@@ -144,6 +144,22 @@ Row = (function ()
             return
         }
         ;($('.hover') != null ? $('.hover').classList.remove('hover') : undefined)
+        if (this.item.file === '..')
+        {
+            if (emit)
+            {
+                console.log('make updir root')
+                post.emit('filebrowser','loadItem',this.item)
+                return
+            }
+            else
+            {
+                console.log('just select updir')
+                this.setActive()
+                this.browser.clearColumnsFrom(this.column.index + 1,{pop:true})
+                return
+            }
+        }
         this.setActive({emit:emit})
         switch (this.item.type)
         {
@@ -171,7 +187,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _118_31_
+        var _127_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -214,7 +230,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _157_24_
+        var _166_24_
 
         if ((this.input != null))
         {
@@ -268,7 +284,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _192_28_, _199_37_
+        var _201_28_, _208_37_
 
         if (!(this.input != null))
         {

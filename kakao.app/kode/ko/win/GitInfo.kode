@@ -42,7 +42,7 @@ class GitInfo
     # 000       000   000  000   000  000  0000  000   000  000            000  
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
     
-    logChanges: (changes) ->
+    logChanges: (changes) =>
         
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
@@ -84,73 +84,76 @@ class GitInfo
             index += 1
         index
         
-    # 00000000  000  000      00000000  
-    # 000       000  000      000       
-    # 000000    000  000      0000000   
-    # 000       000  000      000       
-    # 000       000  0000000  00000000  
+    #  0000000  000000000   0000000   000000000  000   000   0000000  
+    # 000          000     000   000     000     000   000  000       
+    # 0000000      000     000000000     000     000   000  0000000   
+    #      000     000     000   000     000     000   000       000  
+    # 0000000      000     000   000     000      0000000   0000000   
     
-    logFile: (change, file, status) ->
-        
-        symbol = switch change
-
-            'changed' ➜ '●'
-            'added'   ➜ '◼'
-            'deleted' ➜ '✘'
-
-        path = slash.relative file, status.gitDir
-            
-        window.terminal.appendMeta
-            diss:       Syntax.dissForTextAndSyntax "#{path}", 'ko'
-            href:       file
-            clss:       'gitInfoFile'
-            click:      @onMetaClick
-            line:       symbol
-            lineClss:   'gitInfoLine '+change
-            
-    #  0000000  000000000   0000000   00000000   000000000  
-    # 000          000     000   000  000   000     000     
-    # 0000000      000     000000000  0000000       000     
-    #      000     000     000   000  000   000     000     
-    # 0000000      000     000   000  000   000     000     
+    diff: => @status true
     
-    start: -> 
+    status: (diff) -> 
         
         window.split.raise 'terminal'
         window.terminal.clear()
         
-        Git.status(window.editor.currentFile).then (status) =>
-
+        onMetaClick = @onMetaClick
+        logChanges  = @logChanges
+        
+        Git.status(window.editor.currentFile).then (status) ○=>
+            
             return if empty status
+            
+            logFile = (change, file, status) ->
+                
+                symbol = switch change
+        
+                    'changed' ➜ '●'
+                    'added'   ➜ '◼'
+                    'deleted' ➜ '✘'
+        
+                path = slash.relative file, status.gitDir
+                    
+                window.terminal.appendMeta
+                    diss:       Syntax.dissForTextAndSyntax "#{path}", 'ko'
+                    href:       file
+                    clss:       'gitInfoFile'
+                    click:      onMetaClick
+                    line:       symbol
+                    lineClss:   'gitInfoLine '+change
             
             # log 'GitInfo.start Git.status' status
             
             terminal = window.terminal
                 
             for file in status.deleted
-                @logFile 'deleted' file, status
+                logFile 'deleted' file, status
                 
             for file in status.added
-                @logFile 'added' file, status 
+                logFile 'added' file, status 
                                 
             for file in status.changed                
-                @logFile 'changed' file, status
+                logFile 'changed' file, status
                 
-                # for change in changeInfo.changes
-                    # line = change.line
-#                     
-                    # if not empty change.mod
-                        # lines = change.mod.map (l) -> l.new
-                        # line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
-#                         
-                    # if not empty change.add
-                        # lines = change.add.map (l) -> l.new
-                        # line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
-#                         
-                    # if not empty change.del
-                        # lines = change.del.map (l) -> l.old
-                        # line += @logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
-                        
-            terminal.scroll.cursorToTop 7
+                if diff
+                    changeInfo =○ Git.diff file
+                    log changeInfo.changes
+                    for change in changeInfo.changes
+                        line = change.line
+                         
+                        if not empty change.mod
+                            lines = change.mod.map (l) -> l.new
+                            line += logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
+                             
+                        if not empty change.add
+                            lines = change.add.map (l) -> l.new
+                            line += logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
+                             
+                        if not empty change.del
+                            lines = change.del.map (l) -> l.old
+                            line += logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
+                
+            window.terminal.appendMeta clss: 'spacer'                        
+            window.terminal.scroll.cursorToTop 7
         
 export new GitInfo

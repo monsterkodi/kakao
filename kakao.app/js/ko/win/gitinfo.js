@@ -16,6 +16,8 @@ class GitInfo
 {
     constructor ()
     {
+        this.diff = this.diff.bind(this)
+        this.logChanges = this.logChanges.bind(this)
         this.onMetaClick = this.onMetaClick.bind(this)
     }
 
@@ -89,63 +91,107 @@ class GitInfo
         return index
     }
 
-    logFile (change, file, status)
+    diff ()
     {
-        var path, symbol
-
-        symbol = ((function ()
-        {
-            switch (change)
-            {
-                case 'changed':
-                    return '●'
-
-                case 'added':
-                    return '◼'
-
-                case 'deleted':
-                    return '✘'
-
-            }
-
-        }).bind(this))()
-        path = slash.relative(file,status.gitDir)
-        return window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(`${path}`,'ko'),href:file,clss:'gitInfoFile',click:this.onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change})
+        return this.status(true)
     }
 
-    start ()
+    status (diff)
     {
+        var logChanges, onMetaClick
+
         window.split.raise('terminal')
         window.terminal.clear()
-        return Git.status(window.editor.currentFile).then((function (status)
+        onMetaClick = this.onMetaClick
+        logChanges = this.logChanges
+        return Git.status(window.editor.currentFile).then(async function (status)
         {
-            var file, terminal
+            var change, changeInfo, file, line, lines, logFile, terminal
 
             if (_k_.empty(status))
             {
                 return
             }
+            logFile = function (change, file, status)
+            {
+                var path, symbol
+
+                symbol = ((function ()
+                {
+                    switch (change)
+                    {
+                        case 'changed':
+                            return '●'
+
+                        case 'added':
+                            return '◼'
+
+                        case 'deleted':
+                            return '✘'
+
+                    }
+
+                }).bind(this))()
+                path = slash.relative(file,status.gitDir)
+                return window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(`${path}`,'ko'),href:file,clss:'gitInfoFile',click:onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change})
+            }
             terminal = window.terminal
             var list = _k_.list(status.deleted)
-            for (var _130_21_ = 0; _130_21_ < list.length; _130_21_++)
+            for (var _129_21_ = 0; _129_21_ < list.length; _129_21_++)
             {
-                file = list[_130_21_]
-                this.logFile('deleted',file,status)
+                file = list[_129_21_]
+                logFile('deleted',file,status)
             }
             var list1 = _k_.list(status.added)
-            for (var _133_21_ = 0; _133_21_ < list1.length; _133_21_++)
+            for (var _132_21_ = 0; _132_21_ < list1.length; _132_21_++)
             {
-                file = list1[_133_21_]
-                this.logFile('added',file,status)
+                file = list1[_132_21_]
+                logFile('added',file,status)
             }
             var list2 = _k_.list(status.changed)
-            for (var _136_21_ = 0; _136_21_ < list2.length; _136_21_++)
+            for (var _135_21_ = 0; _135_21_ < list2.length; _135_21_++)
             {
-                file = list2[_136_21_]
-                this.logFile('changed',file,status)
+                file = list2[_135_21_]
+                logFile('changed',file,status)
+                if (diff)
+                {
+                    changeInfo = await Git.diff(file)
+                    console.log(changeInfo.changes)
+                    var list3 = _k_.list(changeInfo.changes)
+                    for (var _141_31_ = 0; _141_31_ < list3.length; _141_31_++)
+                    {
+                        change = list3[_141_31_]
+                        line = change.line
+                        if (!_k_.empty(change.mod))
+                        {
+                            lines = change.mod.map(function (l)
+                            {
+                                return l.new
+                            })
+                            line += logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'changed'})
+                        }
+                        if (!_k_.empty(change.add))
+                        {
+                            lines = change.add.map(function (l)
+                            {
+                                return l.new
+                            })
+                            line += logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'added'})
+                        }
+                        if (!_k_.empty(change.del))
+                        {
+                            lines = change.del.map(function (l)
+                            {
+                                return l.old
+                            })
+                            line += logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'deleted'})
+                        }
+                    }
+                }
             }
-            return terminal.scroll.cursorToTop(7)
-        }).bind(this))
+            window.terminal.appendMeta({clss:'spacer'})
+            return window.terminal.scroll.cursorToTop(7)
+        })
     }
 }
 

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+(b*f)+' '+u); } f*=1000; }}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var FileBrowser
 
@@ -468,11 +468,10 @@ FileBrowser = (function ()
     {
         var column
 
-        _k_.profile('onDirChanged')
         var list = _k_.list(this.columns)
-        for (var _377_19_ = 0; _377_19_ < list.length; _377_19_++)
+        for (var _375_19_ = 0; _375_19_ < list.length; _375_19_++)
         {
-            column = list[_377_19_]
+            column = list[_375_19_]
             if (column.path() === info.dir)
             {
                 this.loadDirItem({path:info.dir,type:'dir'},column.index,{active:column.activePath(),focus:false})
@@ -482,7 +481,6 @@ FileBrowser = (function ()
                 column.clear()
             }
         }
-        _k_.profilend('onDirChanged')
     }
 
     FileBrowser.prototype["loadDirItem"] = async function (item, col = 0, opt = {})
@@ -513,7 +511,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadDirItems"] = function (item, items, col, opt)
     {
-        var lastColumn, row, _424_52_, _428_85_, _432_14_
+        var lastColumn, row, _420_52_, _424_85_, _428_14_
 
         this.updateColumnScrolls()
         if (this.skipOnDblClick && col > 0)
@@ -642,16 +640,16 @@ FileBrowser = (function ()
     {
         FileBrowser.__super__.updateColumnScrolls.call(this)
     
-        var _495_14_
+        var _491_14_
 
         return (this.shelf != null ? this.shelf.scroll.update() : undefined)
     }
 
     FileBrowser.prototype["getGitStatus"] = function (item, col)
     {
-        var file, _505_25_, _505_38_
+        var file, _501_25_, _501_38_
 
-        file = ((_505_25_=item.path) != null ? _505_25_ : (item.parent != null ? item.parent.path : undefined))
+        file = ((_501_25_=item.path) != null ? _501_25_ : (item.parent != null ? item.parent.path : undefined))
         if (!_k_.empty(file))
         {
             Git.status(file).then((function (status)
@@ -671,7 +669,7 @@ FileBrowser = (function ()
     {
         var col
 
-        for (var _516_19_ = col = 0, _516_23_ = this.columns.length; (_516_19_ <= _516_23_ ? col < this.columns.length : col > this.columns.length); (_516_19_ <= _516_23_ ? ++col : --col))
+        for (var _512_19_ = col = 0, _512_23_ = this.columns.length; (_512_19_ <= _512_23_ ? col < this.columns.length : col > this.columns.length); (_512_19_ <= _512_23_ ? ++col : --col))
         {
             this.applyGitStatusFiles(col,status.files)
         }
@@ -699,7 +697,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["toggleShelf"] = function ()
     {
-        var _545_29_
+        var _541_29_
 
         if (this.shelfSize < 1)
         {

@@ -372,8 +372,6 @@ function FileBrowser extends Browser
 
     onDirChanged: (info) =>
  
-        ● onDirChanged
-        
         for column in @columns
             if column.path() == info.dir
                 @loadDirItem {path:info.dir, type:'dir'}, column.index, active:column.activePath(), focus:false
@@ -384,8 +382,6 @@ function FileBrowser extends Browser
 
         return if col > 0 and item.name == '/'
 
-        # log 'loadDirItem' item
-        
         dir = item.path
         
         items =○ ffs.list dir
