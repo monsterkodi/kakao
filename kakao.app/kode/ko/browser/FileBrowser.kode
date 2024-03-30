@@ -20,7 +20,7 @@ use ../tools/Git
 use ./Select
 use ./Info
 use ./Browser
-use ./Shelf       
+use ./Shelf
 
 function FileBrowser extends Browser
 
@@ -43,7 +43,7 @@ function FileBrowser extends Browser
         post.on 'gitStatus'      @onGitStatus
         post.on 'fileIndexed'    @onFileIndexed
         post.on 'dirChanged'     @onDirChanged
-        
+
         @shelfResize = elem 'div' class: 'shelfResize'
         @shelfResize.style.position = 'absolute'
         @shelfResize.style.top      = '0px'
@@ -59,123 +59,123 @@ function FileBrowser extends Browser
         @shelfSize = window.stash.get 'shelf|size' 200
 
         @initColumns()
-        
-    # 0000000    00000000    0000000   00000000    0000000    0000000  000000000  000   0000000   000   000  
-    # 000   000  000   000  000   000  000   000  000   000  000          000     000  000   000  0000  000  
-    # 000   000  0000000    000   000  00000000   000000000  000          000     000  000   000  000 0 000  
-    # 000   000  000   000  000   000  000        000   000  000          000     000  000   000  000  0000  
-    # 0000000    000   000   0000000   000        000   000   0000000     000     000   0000000   000   000  
-    
+
+    # 0000000    00000000    0000000   00000000    0000000    0000000  000000000  000   0000000   000   000
+    # 000   000  000   000  000   000  000   000  000   000  000          000     000  000   000  0000  000
+    # 000   000  0000000    000   000  00000000   000000000  000          000     000  000   000  000 0 000
+    # 000   000  000   000  000   000  000        000   000  000          000     000  000   000  000  0000
+    # 0000000    000   000   0000000   000        000   000   0000000     000     000   0000000   000   000
+
     dropAction: (action, sources, target) ->
-        
+
         if slash.isFile target
-            
+
             target = slash.dir target
-        
+
         for source in sources
-        
-            if action == 'move' 
+
+            if action == 'move'
                 if source == target or slash.dir(source) == target
                     log 'noop' source, target
                     return
-                        
+
         for source in sources
-            
+
             switch action
                 'move' ➜ File.rename source, target
                 'copy' ➜ File.copy source, target
-                    
+
     columnForFile: (file) ->
-        
+
         for column in @columns
             if column.parent?.path == slash.dir file
                 return column
-        
+
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
     # 0000  000  000   000  000   000  000  000        000   000     000     000
     # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000
     # 000  0000  000   000     000     000  000   000  000   000     000     000
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
-    sharedColumnIndex: (file) -> 
-        
+    sharedColumnIndex: (file) ->
+
         col = 0
-        
+
         for column in @columns
             if column.isDir() and file.startsWith column.path()
                 col += 1
             else
                 break
-                
+
         if col == 1 and slash.dir(file) != @columns[0]?.path()
             return 0
         Math.max -1, col-2
 
-    browse: (file, opt) => 
+    browse: (file, opt) =>
 
         # log 'browse' file, opt
         if file then @loadItem @pathItem(file), opt
-        
-    onFile: (file) => 
-    
+
+    onFile: (file) =>
+
         # log 'onFile' file
         if file and @flex then @navigateToFile file
-    
+
     navigateToFile: (file) =>
 
         ###
-        triggered by 
+        triggered by
             browse.start
-            'file' posted from 
-                fileeditor.setCurrentFile 
-                
+            'file' posted from
+                fileeditor.setCurrentFile
+
         reuses shared columns of current and new path
         ###
-        
+
         lastPath = @lastDirColumn()?.path()
-        
+
         file = slash.path file
 
         if file == lastPath or file == @lastColumnPath() or slash.isRelative file
             return
 
         col = @sharedColumnIndex file
- 
+
         # log 'navigateToFile' file
-        
+
         filelist = slash.pathlist file
-        
+
         # log 'navigateToFile' filelist
-        
+
         if col >= 0
             paths = filelist.slice filelist.indexOf(@columns[col].path())+1
         else
             paths = filelist.slice filelist.length-2
-            
+
         @clearColumnsFrom col+1, pop:true clear:col+paths.length
-        
+
         while @numCols() < paths.length
             @addColumn()
 
         for index in 0...paths.length
-            
+
             if index < paths.length-1
                 item = @dirItem paths[index]
             else # todo: need to check if last component is actually a file?
-                item = @fileItem paths[index] 
-            
+                item = @fileItem paths[index]
+
             switch item.type
-                
+
                 'file' ➜ @loadFileItem item, col+1+index
-                    
+
                 'dir'
                     opt = {}
                     if index < paths.length-1
                         opt.active = paths[index+1]
                     @loadDirItem item, col+1+index, opt
-                    
+
         if col = @lastDirColumn()
-            
+
             if row = col.row slash.file file
                 row.setActive()
 
@@ -186,13 +186,13 @@ function FileBrowser extends Browser
 
         if @lastUsedColumn()
             @navigateToFile @lastUsedColumn().path()
-                
-    # 000  000000000  00000000  00     00  
-    # 000     000     000       000   000  
-    # 000     000     0000000   000000000  
-    # 000     000     000       000 0 000  
-    # 000     000     00000000  000   000  
-    
+
+    # 000  000000000  00000000  00     00
+    # 000     000     000       000   000
+    # 000     000     0000000   000000000
+    # 000     000     000       000 0 000
+    # 000     000     00000000  000   000
+
     pathItem: (path) ->
 
         p = slash.path path
@@ -200,50 +200,50 @@ function FileBrowser extends Browser
         item.type = undefined
         ffs.type(p).then ((i) -> (t) -> i.type = t)(item)
         item
-    
+
     fileItem: (path) ->
-        
+
         p = slash.path path
         item = slash.parse p
         item.type = 'file'
         item
-        
+
     dirItem: (path) ->
-        
+
         item = slash.parse path
         item.type = 'dir'
         item
-        
+
     onFileBrowser: (action, item, arg) =>
 
         switch action
             'loadItem'     ➜ @loadItem     item, arg
             'activateItem' ➜ @activateItem item, arg
-    
+
     loadDir: (path) -> @loadItem type:'dir' path:path
-    
-    loadItem: (item, opt) -> 
-    
+
+    loadItem: (item, opt) ->
+
         ###
-        triggered by 
+        triggered by
             @loadDir
-            @browse 
+            @browse
             @navigate (defined in browser)
-            'filebrowser' 'loadItem' posted from 
+            'filebrowser' 'loadItem' posted from
                 shelf.activateRow
                 shelf.navigatingRows
                 browse.start
-                
+
         clears all columns, loads the dir in column 0 and the file in column 1, if any
         ###
-        
+
         opt ?= active:'..' focus:true
 
         @clearColumnsFrom 1, pop:true, clear:opt.clear ? 1
 
         switch item.type
             'dir'  ➜ @loadDirItem item, 0, opt
-            'file' 
+            'file'
                 opt.activate = item.path
                 while @numCols() < 2 then @addColumn()
                 @loadDirItem @fileItem(slash.dir(item.path)), 0, opt
@@ -253,18 +253,18 @@ function FileBrowser extends Browser
 
         if opt.focus
             @columns[0]?.focus()
-            
+
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000
     # 000   000  000          000     000  000   000  000   000     000     000
     # 000000000  000          000     000   000 000   000000000     000     0000000
     # 000   000  000          000     000     000     000   000     000     000
     # 000   000   0000000     000     000      0      000   000     000     00000000
 
-    activateItem: (item, col) -> 
-        
+    activateItem: (item, col) ->
+
         # triggered by post('filebrowser' 'activateItem') in row.activate
         # loads item in the column to the right of col while keeping the other columns
-        
+
         @clearColumnsFrom col+2 pop:true
 
         switch item.type
@@ -292,7 +292,7 @@ function FileBrowser extends Browser
         file = item.path
 
         @columns[col].parent = item
-        
+
         if File.isImage file
             @imageInfoColumn col, file
         else
@@ -302,19 +302,19 @@ function FileBrowser extends Browser
                 @fileInfoColumn col, file
 
         post.emit 'load' col:col, item:item
-                
+
         @updateColumnScrolls()
 
     imageInfoColumn: (col, file) ->
-        
+
         @columns[col].crumb.hide()
         @columns[col].table.appendChild Info.image file
-        
+
     fileInfoColumn: (col, file) ->
         # log 'fileInfoColumn' col, file
         @columns[col].crumb.hide()
         @columns[col].table.appendChild Info.file file
-             
+
     #  0000000   0000000   000   000  00000000    0000000  00000000  000  000000000  00000000  00     00
     # 000       000   000  000   000  000   000  000       000       000     000     000       000   000
     # 0000000   000   000  000   000  0000000    000       0000000   000     000     0000000   000000000
@@ -322,12 +322,12 @@ function FileBrowser extends Browser
     # 0000000    0000000    0000000   000   000   0000000  00000000  000     000     00000000  000   000
 
     onFileIndexed: (file, info) =>
- 
+
         @srcCache[file] = info
- 
+
         if file == @lastUsedColumn()?.parent?.file
             @loadSourceItem { file:file, type:'file' }, @lastUsedColumn()?.index
-             
+
     loadSourceItem: (item, col) ->
 
         info = @srcCache[item.path]
@@ -363,7 +363,7 @@ function FileBrowser extends Browser
         if valid items
             items.sort (a,b) -> a.line - b.line
             @columns[col].loadItems items, item
-             
+
     # 0000000    000  00000000   000  000000000  00000000  00     00
     # 000   000  000  000   000  000     000     000       000   000
     # 000   000  000  0000000    000     000     0000000   000000000
@@ -371,65 +371,65 @@ function FileBrowser extends Browser
     # 0000000    000  000   000  000     000     00000000  000   000
 
     onDirChanged: (info) =>
- 
+
         for column in @columns
             if column.path() == info.dir
                 @loadDirItem {path:info.dir, type:'dir'}, column.index, active:column.activePath(), focus:false
             if column.path() == info.path and info.change == 'remove'
                 column.clear()
-    
+
     loadDirItem: (item, col=0, opt={}) ○->
 
         return if col > 0 and item.name == '/'
 
         dir = item.path
-        
+
         items =○ ffs.list dir
-        
+
         if not prefs.get "browser|showHidden|#{dir}"
             items = items.filter (i) -> i.file[0] != '.'
-        
+
         items = util.sortBy items, (i) -> i.type + ((i.file[0].toUpperCase()==i.file[0]) ? '-' : '+') + i.file
 
         @loadDirItems item, items, col, opt
         post.emit 'dir' dir
         true
-                
+
     loadDirItems: (item, items, col, opt) =>
-        
+
         # log 'loadDirItems' item, items, col, opt
-                    
+
         @updateColumnScrolls()
-                            
+
         if @skipOnDblClick and col > 0
             delete @skipOnDblClick
             return
-        
+
         while col >= @numCols()
             @addColumn()
-        
+
         @columns[col].loadItems items, item
 
         post.emit 'load' col:col, item:item
-                            
+
         if opt.activate
             if row = @columns[col].row slash.file opt.activate
                 row.activate()
                 post.emit 'load' col:col+1 item:row.item
         else if opt.active
             @columns[col].row(slash.file opt.active)?.setActive()
-        
+
         @getGitStatus item, col
-        
+
         if opt.focus != false and empty(document.activeElement) and empty($('.popup')?.outerHTML)
             if lastColumn = @lastDirColumn()
                 lastColumn.focus()
-                
+
         opt.cb? col:col, item:item
 
         if col >= 2 and @columns[0].width() < 250
             @columns[1].makeRoot()
-        
+
     #  0000000   0000000   000      000   000  00     00  000   000   0000000
     # 000       000   000  000      000   000  000   000  0000  000  000
     # 000       000   000  000      000   000  000000000  000 0 000  0000000
@@ -452,7 +452,7 @@ function FileBrowser extends Browser
 
         if elem.containsPos @shelf.div, pos
             return @shelf
-            
+
     lastColumnPath: ->
 
         if lastColumn = @lastUsedColumn()
@@ -473,18 +473,18 @@ function FileBrowser extends Browser
                 return lastColumn
             else
                 return lastColumn.prevColumn()
-                
+
     onBackspaceInColumn: (column) ->
 
         column.backspaceSearch()
-        
-    onDeleteInColumn: (column) -> 
-    
+
+    onDeleteInColumn: (column) ->
+
         if column.searchDiv
             column.clearSearch()
         else
             column.moveToTrash()
-        
+
     updateColumnScrolls: =>
 
         super()
@@ -513,11 +513,11 @@ function FileBrowser extends Browser
             @applyGitStatusFiles col, status.files
         @
 
-    #  0000000  000   000  00000000  000      00000000  
-    # 000       000   000  000       000      000       
-    # 0000000   000000000  0000000   000      000000    
-    #      000  000   000  000       000      000       
-    # 0000000   000   000  00000000  0000000  000       
+    #  0000000  000   000  00000000  000      00000000
+    # 000       000   000  000       000      000
+    # 0000000   000000000  0000000   000      000000
+    #      000  000   000  000       000      000
+    # 0000000   000   000  00000000  0000000  000
 
     onShelfDrag: (drag, event) =>
 
@@ -531,16 +531,16 @@ function FileBrowser extends Browser
         @shelf.div.style.width = "#{@shelfSize}px"
         @cols.style.left = "#{@shelfSize}px"
         @updateColumnScrolls()
-    
+
     toggleShelf: ->
-        
+
         if @shelfSize < 1
             @setShelfSize 200
         else
             # log 'toggleShelf lastUsedColumn.focus'
             @lastUsedColumn()?.focus()
             @setShelfSize 0
-            
+
         @updateColumnScrolls()
-        
+
 export FileBrowser

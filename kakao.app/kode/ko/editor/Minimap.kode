@@ -15,7 +15,7 @@ use ./MapScroll
 class Minimap
 
     @: (@editor) ->
-        
+
         # add highlights and cursors at right border
 
         minimapWidth = parseInt getStyle '.minimap' 'width'
@@ -168,8 +168,8 @@ class Minimap
 
     exposeLine:   (li) =>
         @drawLines li, li
-        
-    onExposeLines: (e) => 
+
+    onExposeLines: (e) =>
         @drawLines @scroll.exposeTop, @scroll.exposeBot
 
     onVanishLines: (e) =>
@@ -196,7 +196,7 @@ class Minimap
 
         @drawSelections() if changeInfo.selects
         @drawCursors()    if changeInfo.cursors
-            
+
         for change in changeInfo.changes
             li = change.oldIndex ? change.doIndex
             @drawLines li, li
@@ -227,13 +227,13 @@ class Minimap
 
             if not event.metaKey
                 @editor.singleCursorAtPos [0, li+5], extend:event.shiftKey
-    
+
             @editor.focus()
             @onEditorScroll()
 
         clearTimeout @jumpToTimer
         @jumpToTimer = setTimeout jumpTo
-            
+
     lineIndexForEvent: (event) ->
         st = @elem.scrollTop
         br = @elem.getBoundingClientRect()

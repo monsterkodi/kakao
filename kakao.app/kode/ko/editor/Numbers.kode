@@ -15,11 +15,11 @@ class Numbers extends events
     @: (@editor) ->
 
         super()
-        
+
         @lineDivs = {}
 
         @elem =$ '.numbers' @editor.view
-        
+
         @editor.on 'clearLines'       @onClearLines
 
         @editor.on 'linesShown'       @onLinesShown
@@ -29,7 +29,7 @@ class Numbers extends events
         @editor.on 'highlight'        @updateColors
         @editor.on 'changed'          @updateColors
         @editor.on 'linesSet'         @updateColors
-        
+
         @onFontSizeChange()
 
     #  0000000  000   000   0000000   000   000  000   000
@@ -53,7 +53,7 @@ class Numbers extends events
                 lineIndex:  li
 
             @updateColor li
-    
+
         @updateLinePositions()
 
     #  0000000  000   000  000  00000000  000000000  00000000  0000000

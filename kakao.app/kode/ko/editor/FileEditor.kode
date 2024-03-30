@@ -43,9 +43,9 @@ function FileEditor extends TextEditor
         post.on 'jumpTo'        @jumpTo
         post.on 'jumpToFile'    @jumpToFile
         post.on 'jumpToFilePos' @jumpToFilePos
-        
+
         @setText ''
-        
+
         @initInvisibles()
         @initPigments()
 
@@ -58,7 +58,7 @@ function FileEditor extends TextEditor
     changed: (changeInfo) ->
 
         super changeInfo
-        
+
         if changeInfo.changes.length
             @dirty = @do.hasChanges()
             # log 'changeInfo' @dirty
@@ -82,9 +82,9 @@ function FileEditor extends TextEditor
     setCurrentFile: (file, restoreState) ->
 
         # log 'FileEditor.setCurrentFile' file, restoreState
-        
+
         @clear()
-        
+
         @currentFile = file
 
         @setupFileType()
@@ -97,11 +97,11 @@ function FileEditor extends TextEditor
             ffs.read(@currentFile).then @setText
 
         window.tabs.activeTab()?.setFile @currentFile
-            
+
         post.emit 'dirty' @dirty
-        
+
     setText: (text="") =>
-    
+
         super text
         # log 'FileEditor.setText' text
         @restoreScrollCursorsAndSelections()
@@ -109,12 +109,12 @@ function FileEditor extends TextEditor
         @emit 'file' @currentFile # diffbar, invisible, pigments, ...
 
     currentDir: ->
-        
+
         if @currentFile? #and slash.fileExists @currentFile
             slash.dir @currentFile
         else
             slash.path kakao.bundle.path
-        
+
     # 000000000  000   000  00000000   00000000
     #    000      000 000   000   000  000
     #    000       00000    00000000   0000000
@@ -158,7 +158,7 @@ function FileEditor extends TextEditor
     saveScrollCursorsAndSelections: (opt) ->
 
         return if not @currentFile
-        
+
         s = {}
 
         s.main       = @state.main()
@@ -169,16 +169,16 @@ function FileEditor extends TextEditor
         s.scroll = @scroll.scroll if @scroll.scroll
 
         filePositions = window.stash.get 'filePositions' {}
-        
+
         if not filePositions is obj
             filePositions = {}
-            
+
         filePositions[@currentFile] = s
-            
+
         deleteBy filePositions, (f,fp) -> fp.main == 0 and empty fp.cursors and empty fp.selections and empty fp.highlights
-        
+
         # log 'stash filePositions' filePositions
-        
+
         window.stash.set 'filePositions' filePositions
 
     # 00000000   00000000   0000000  000000000   0000000   00000000   00000000
@@ -188,26 +188,26 @@ function FileEditor extends TextEditor
     # 000   000  00000000  0000000      000      0000000   000   000  00000000
 
     restoreScrollCursorsAndSelections: ->
-        
+
         # log 'restoreScrollCursorsAndSelections' @currentFile
 
         return if not @currentFile
-        
+
         filePositions = window.stash.get 'filePositions' {}
 
         if filePositions[@currentFile]?
 
             s = filePositions[@currentFile]
-            
+
             cursors = s.cursors ? [[0,0]]
             cursors = cursors.map (c) => [c[0], clamp(0,@numLines()-1,c[1])]
-            
+
             @setCursors    cursors
             @setSelections s.selections ? []
             @setHighlights s.highlights ? []
             @setMain       s.main ? 0
             @setState      @state
-            
+
             @scroll.to s.scroll if s.scroll
             @scroll.cursorIntoView()
 
@@ -230,9 +230,9 @@ function FileEditor extends TextEditor
     #       000  000   000  000000000  00000000
     # 000   000  000   000  000 0 000  000
     #  0000000    0000000   000   000  000
-    
+
     jumpToFilePos: (opt) =>
-        
+
         if opt.path == @currentFile
             @singleCursorAtPos [opt.col, opt.line-1]
             @scroll.cursorToTop()
@@ -242,21 +242,21 @@ function FileEditor extends TextEditor
     jumpToFile: (opt) =>
 
         # log 'jumpToFile' opt, window.lastFocus
-        
+
         if opt is str ➜ opt = path:opt
-        
+
         if opt.newTab
 
             file = opt.path
             file += ':' + opt.line if opt.line
             file += ':' + opt.col if opt.col
-            
+
             # log 'jumpToFile post newTabWithFile' file
-            
+
             post.emit 'newTabWithFile' file
 
         else if window.lastFocus == 'editor'
-            
+
             [file, fpos] = slash.splitFilePos opt.path
             opt.pos = fpos
             opt.pos[0] = opt.col if opt.col
@@ -265,18 +265,18 @@ function FileEditor extends TextEditor
 
             opt.oldPos = @cursorPos()
             opt.oldFile = @currentFile
-            
+
             opt.file ?= opt.path
-            
+
             # log 'jumpToFile navigate.gotoFilePos' opt
-            
+
             window.navigate.gotoFilePos opt
         else
-            
+
             file = slash.joinFileLine opt.path, opt.line, opt.col
-            
+
             # log 'jumpToFile post loadFile' file
-            
+
             post.emit 'loadFile' file
 
     jumpTo: (word, opt) =>
@@ -352,13 +352,13 @@ function FileEditor extends TextEditor
                     # [file,line,col] = srcmap.toCoffee @currentFile, cp[1]+1, cp[0]
 
         # log 'counterpart' @currentFile, file, line, col
-                
+
         # if valid(file) and not slash.samePath(@currentFile, file) #and slash.fileExists file
             # post.emit 'loadFile' slash.joinFileLine file,line,col
             # return true
 
         # TODO: move this stuff to a config.noon file
-        
+
         counterparts =
             mm:      ['h']
             cpp:     ['hpp' 'h']
@@ -386,17 +386,17 @@ function FileEditor extends TextEditor
             if ○ ffs.fileExists counter
                 post.emit 'loadFile' counter
                 return true
-                
+
         log 'cant find counterpart' @currentFile
         true
 
     swapLastDir: (path, from, to) ->
-        
+
         lastIndex = path.lastIndexOf "/#{from}/"
         if lastIndex >= 0
             path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
         path
-        
+
     #  0000000  00000000  000   000  000000000  00000000  00000000
     # 000       000       0000  000     000     000       000   000
     # 000       0000000   000 0 000     000     0000000   0000000
@@ -476,13 +476,13 @@ function FileEditor extends TextEditor
         ]
 
         RecentMenu = []
-        
+
         fileSpan = (f) ->
             if f?
                 span  = Syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
                 span += Syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
             return span
-        
+
         # recent = window.stash.get 'recentFiles' []
         # recent ?= []
         # for f in recent
@@ -491,18 +491,18 @@ function FileEditor extends TextEditor
                     # html: fileSpan f
                     # arg: f
                     # cb: (arg) -> post.emit 'newTabWithFile' arg
-        
+
         getMenu = (template, name) ->
             for item in template
                 if item.text == name
                     return item
-                                
+
         if RecentMenu.length
             RecentMenu.push text: ''
             RecentMenu.push text: 'Clear List'
             fileMenu = getMenu opt.items, 'File'
             fileMenu.menu = [{text:'Recent' menu:RecentMenu}, {text:''}].concat fileMenu.menu
-        
+
         opt.x = absPos.x
         opt.y = absPos.y
         popup.menu opt

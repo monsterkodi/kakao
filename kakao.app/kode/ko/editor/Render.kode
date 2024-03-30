@@ -32,10 +32,10 @@ class Render
 
         div = elem class: 'linespans'
         if diss.length > 500
-            log 'line too long!' 
+            log 'line too long!'
             span = elem 'span'
             span.className = 'line_to_long'
-            span.textContent = '*** line too long! ***' 
+            span.textContent = '*** line too long! ***'
             div.appendChild span
             return div
         for d in diss ? []

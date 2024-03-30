@@ -1,9 +1,9 @@
 ###
  0000000  000   000  00000000  000      00000000
-000       000   000  000       000      000     
-0000000   000000000  0000000   000      000000  
-     000  000   000  000       000      000     
-0000000   000   000  00000000  0000000  000     
+000       000   000  000       000      000
+0000000   000000000  0000000   000      000000
+     000  000   000  000       000      000
+0000000   000   000  00000000  0000000  000
 ###
 
 use ../../kxk/dom  ▪ $ stopEvent
@@ -26,11 +26,11 @@ function Shelf extends Column
     @: (browser) ->
 
         super browser
-        
+
         @items  = []
         @index  = -1
         @div.id = 'shelf'
-        
+
         @showHistory = window.stash.get 'shelf|history' false
 
         post.on 'gitStatus'              @onGitStatus
@@ -38,56 +38,56 @@ function Shelf extends Column
         post.on 'navigateHistoryChanged' @onNavigateHistoryChanged
         post.on 'navigateIndexChanged'   @onNavigateIndexChanged
         post.on 'stashLoaded'            @onStashLoaded
-        
+
         post.on 'file' @onFile
-       
+
     makeRoot: => @toggleHistory()
-        
-    #  0000000    0000000  000000000  000  000   000   0000000   000000000  0000000     00000000    0000000   000   000  
-    # 000   000  000          000     000  000   000  000   000     000     000         000   000  000   000  000 0 000  
-    # 000000000  000          000     000   000 000   000000000     000     0000000     0000000    000   000  000000000  
-    # 000   000  000          000     000     000     000   000     000     000         000   000  000   000  000   000  
-    # 000   000   0000000     000     000      0      000   000     000     0000000     000   000   0000000   00     00  
-   
-    activateRow: (row) -> 
-        
+
+    #  0000000    0000000  000000000  000  000   000   0000000   000000000  0000000     00000000    0000000   000   000
+    # 000   000  000          000     000  000   000  000   000     000     000         000   000  000   000  000 0 000
+    # 000000000  000          000     000   000 000   000000000     000     0000000     0000000    000   000  000000000
+    # 000   000  000          000     000     000     000   000     000     000         000   000  000   000  000   000
+    # 000   000   0000000     000     000      0      000   000     000     0000000     000   000   0000000   00     00
+
+    activateRow: (row) ->
+
         $('.hover')?.classList.remove 'hover'
-        
+
         item = row.item
-         
+
         if item.type == 'historySeparator'
             row.setActive emit:false
             return
-        
+
         row.setActive emit:true
-        
+
         # log 'activateRow' row
-        
+
         if item.type == 'file'
             # log 'Shelf emit jumpToFile' item
             post.emit 'jumpToFile' item
         else
             post.emit 'filebrowser' 'loadItem' item
-                
-    #  0000000   000   000      00000000  000  000      00000000  
-    # 000   000  0000  000      000       000  000      000       
-    # 000   000  000 0 000      000000    000  000      0000000   
-    # 000   000  000  0000      000       000  000      000       
-    #  0000000   000   000      000       000  0000000  00000000  
+
+    #  0000000   000   000      00000000  000  000      00000000
+    # 000   000  0000  000      000       000  000      000
+    # 000   000  000 0 000      000000    000  000      0000000
+    # 000   000  000  0000      000       000  000      000
+    #  0000000   000   000      000       000  0000000  00000000
 
     onFile: (file) =>
-        
+
         return if empty file
-        
+
         if @navigatingRows
             delete @navigatingRows
             return
-        
+
         for index in [0...@items.length]
             if @items[index].path == file
                 @rows[index].setActive()
                 return
-        
+
         matches = []
         for index,item of @items
             if file?.startsWith item.path
@@ -98,133 +98,133 @@ function Shelf extends Column
             [index, item] = first matches
             @rows[index].setActive()
 
-    # 000  000   000  000  000000000  
-    # 000  0000  000  000     000     
-    # 000  000 0 000  000     000     
-    # 000  000  0000  000     000     
-    # 000  000   000  000     000     
-    
+    # 000  000   000  000  000000000
+    # 000  0000  000  000     000
+    # 000  000 0 000  000     000
+    # 000  000  0000  000     000
+    # 000  000   000  000     000
+
     onStashLoaded: =>
-        
+
         @loadShelfItems()
-        
+
         @loadHistory() if @showHistory
-        
+
         setTimeout @loadGitStatus, 100
-                
+
     loadShelfItems: ->
-        
+
         items = window.prefs.get "shelf|items"
 
         @setItems items, save:false
-                
+
     addPath: (path, opt) =>
-        
+
         if ffs.isDir(path).then (isDir) =>
             if isDir
                 @addDir path, opt
             else
                 @addFile path, opt
-        
-    # 000  000000000  00000000  00     00   0000000  
-    # 000     000     000       000   000  000       
-    # 000     000     0000000   000000000  0000000   
-    # 000     000     000       000 0 000       000  
-    # 000     000     00000000  000   000  0000000   
+
+    # 000  000000000  00000000  00     00   0000000
+    # 000     000     000       000   000  000
+    # 000     000     0000000   000000000  0000000
+    # 000     000     000       000 0 000       000
+    # 000     000     00000000  000   000  0000000
 
     itemPaths: -> @rows.map (r) -> r.path()
-    
+
     savePrefs: -> prefs.set "shelf|items" @items
-    
+
     setItems: (@items, opt) ->
-        
+
         @clear()
-        
+
         @items ?= []
         @addItems @items
-        
+
         if opt?.save != false
-            @savePrefs()            
+            @savePrefs()
         @
-        
+
     addItems: (items, opt) ->
-        
+
         return if empty items
-        
+
         for item in items
             @rows.push new Row @, item
-            
+
         @scroll.update()
         @
-        
+
     addDir: (dir, opt) ->
-        
-        item = 
+
+        item =
             name: slash.file slash.tilde dir
             type: 'dir'
             path: slash.path dir
-        
+
         @addItem item, opt
 
     addFile: (file, opt) ->
-        
-        item = 
+
+        item =
             name: slash.file file
             path: slash.path file
             type: 'file'
         item.textFile = true if File.isText file
         @addItem item, opt
-        
+
     addFiles: (files, opt) ○->
-        
+
         for file in files
             if ○ ffs.isDir file
                 @addDir file, opt
             else
                 @addFile file, opt
-        
+
     addItem:  (item, opt) ->
-        
+
         pullAllWith @items, [item] # remove item if on shelf already
-        
+
         if opt?.pos
             index = @rowIndexAtPos opt.pos
             @items.splice Math.min(index, @items.length), 0, item
         else
             @items.push item
-            
+
         @setItems @items
-                        
-    onDrop: (event) => 
-    
+
+    onDrop: (event) =>
+
         action = event.getModifierState('Shift') and 'copy' or 'move'
         source = event.dataTransfer.getData 'text/plain'
-        
+
         item = @browser.pathItem source
         @addItem item, pos:kpos event
-    
+
     isEmpty: -> empty @rows
-    
+
     clear: ->
-        
+
         @clearSearch()
         @div.scrollTop = 0
         @table.innerHTML = ''
         @rows = []
         @scroll.update()
-                                   
+
     name: -> 'shelf'
 
-    #  0000000   000  000000000  
-    # 000        000     000     
-    # 000  0000  000     000     
-    # 000   000  000     000     
-    #  0000000   000     000     
+    #  0000000   000  000000000
+    # 000        000     000
+    # 000  0000  000     000
+    # 000   000  000     000
+    #  0000000   000     000
 
     onGitStatus: (gitDir, status) =>
-        
+
         log 'Shelf.onGitStatus' gitDir, status
-        
+
         for row in @rows
             if row.path().startsWith gitDir
                 $('.browserStatusIcon', row.div)?.remove()
@@ -233,11 +233,11 @@ function Shelf extends Column
                 else if status.files[row.path()]
                     row.div.appendChild elem 'span' class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
         @
-        
+
     loadGitStatus: =>
-        
+
         for row in @rows
-            Git.status(row.path()).then ((row) -> (status) -> 
+            Git.status(row.path()).then ((row) -> (status) ->
                 $('.browserStatusIcon', row.div)?.remove()
                 if row.path() in status.dirs
                     row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
@@ -246,45 +246,45 @@ function Shelf extends Column
                 )(row)
         @
 
-    # 000   000  000   0000000  000000000   0000000   00000000   000   000  
-    # 000   000  000  000          000     000   000  000   000   000 000   
-    # 000000000  000  0000000      000     000   000  0000000      00000    
-    # 000   000  000       000     000     000   000  000   000     000     
-    # 000   000  000  0000000      000      0000000   000   000     000     
-    
+    # 000   000  000   0000000  000000000   0000000   00000000   000   000
+    # 000   000  000  000          000     000   000  000   000   000 000
+    # 000000000  000  0000000      000     000   000  0000000      00000
+    # 000   000  000       000     000     000   000  000   000     000
+    # 000   000  000  0000000      000      0000000   000   000     000
+
     toggleHistory: =>
-        
+
         @showHistory = not @showHistory
         if @showHistory
             @loadHistory()
         else
             @removeHistory()
         window.stash.set 'shelf|history' @showHistory
-        
+
     clearHistory: =>
-        
+
         window.navigate.clear()
         if @showHistory then @setHistoryItems [
             file:   window.editor.currentFile
             pos:    window.editor.mainCursor()
             text:   slash.file window.editor.currentFile
         ]
-        
+
     historySeparatorIndex: ->
-        
+
         for i in [0...@numRows()]
             if @row(i).item.type == 'historySeparator'
                 return i
         return @numRows()
-        
+
     removeHistory: ->
-        
+
         separatorIndex = @historySeparatorIndex()
         while @numRows() and @numRows() > separatorIndex
             @removeRow @row(@numRows()-1)
 
     onNavigateHistoryChanged: (filePositions, currentIndex) =>
-        
+
         if @showHistory
             @setHistoryItems filePositions
 
@@ -295,60 +295,60 @@ function Shelf extends Column
             reverseIndex = @numRows() - currentIndex - 1
             # if currentItem.file != @activeRow()?.item.file
             @row(reverseIndex)?.setActive()
-            
+
     loadHistory: ->
-        
+
         @setHistoryItems window.navigate.filePositions
 
     setHistoryItems: (items) ->
-    
+
         @removeHistory()
-        
-        items.map (h) -> 
+
+        items.map (h) ->
             h.type = 'file'
             h.text = slash.removeColumn h.text
         items.reverse()
-        
+
         items.unshift
             type: 'historySeparator'
             icon: 'history-icon'
-        
+
         @addItems items
-                
-    # 00000000   0000000    0000000  000   000   0000000  
-    # 000       000   000  000       000   000  000       
-    # 000000    000   000  000       000   000  0000000   
-    # 000       000   000  000       000   000       000  
-    # 000        0000000    0000000   0000000   0000000   
-    
-    onFocus: => 
+
+    # 00000000   0000000    0000000  000   000   0000000
+    # 000       000   000  000       000   000  000
+    # 000000    000   000  000       000   000  0000000
+    # 000       000   000  000       000   000       000
+    # 000        0000000    0000000   0000000   0000000
+
+    onFocus: =>
 
         @div.classList.add 'focus'
         if @browser.shelfSize < 200
             @browser.setShelfSize 200
-            
-    # 00     00   0000000   000   000   0000000  00000000  
-    # 000   000  000   000  000   000  000       000       
-    # 000000000  000   000  000   000  0000000   0000000   
-    # 000 0 000  000   000  000   000       000  000       
-    # 000   000   0000000    0000000   0000000   00000000  
-    
+
+    # 00     00   0000000   000   000   0000000  00000000
+    # 000   000  000   000  000   000  000       000
+    # 000000000  000   000  000   000  0000000   0000000
+    # 000 0 000  000   000  000   000       000  000
+    # 000   000   0000000    0000000   0000000   00000000
+
     onMouseOver: (event) => @row(event.target)?.onMouseOver?()
     onMouseOut:  (event) => @row(event.target)?.onMouseOut?()
     onDblClick:  (event) => @navigateCols 'enter'
 
-    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
-    # 0000  000  000   000  000   000  000  000        000   000     000     000       
-    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
-    # 000  0000  000   000     000     000  000   000  000   000     000     000       
-    # 000   000  000   000      0      000   0000000   000   000     000     00000000  
+    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
+    # 0000  000  000   000  000   000  000  000        000   000     000     000
+    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000
+    # 000  0000  000   000     000     000  000   000  000   000     000     000
+    # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
     navigateRows: (key) ->
 
         return error "no rows in column #{@index}?" if not @numRows()
         index = @activeRow()?.index() ? -1
         error "no index from activeRow? #{index}?", @activeRow() if not index? or Number.isNaN index
-        
+
         index = switch key
             'up'        ➜ index-1
             'down'      ➜ index+1
@@ -357,16 +357,16 @@ function Shelf extends Column
             'page up'   ➜ index-@numVisible()
             'page down' ➜ clamp 0, @items.length, index+@numVisible()
                         ➜ index
-            
-        error "no index #{index}? #{@numVisible()}" if not index? or Number.isNaN index        
+
+        error "no index #{index}? #{@numVisible()}" if not index? or Number.isNaN index
         index = clamp 0, @numRows()-1, index
-        
+
         error "no row at index #{index}/#{@numRows()-1}?", @numRows() if not @rows[index]?.activate?
 
         navigate = (action) =>
             @navigatingRows = true
             post.emit 'menuAction' action
-        
+
         if      key == 'up'   and index > @items.length     then navigate 'Navigate Forward'
         else if key == 'down' and index > @items.length + 1 then navigate 'Navigate Backward'
         else
@@ -376,18 +376,18 @@ function Shelf extends Column
                 post.emit 'jumpToFile' row.path
             else
                 post.emit 'filebrowser' 'loadItem' row.path, focus:false
-    
-    openFileInNewWindow: ->  
-        
+
+    openFileInNewWindow: ->
+
         if item = @activeRow()?.item
             if item.type == 'file' and item.textFile
                 window.openFiles [item.path], newWindow: true
         @
-    
+
     removeObject: =>
-        
+
         row = @activeRow() ? @selectedRow()
-        
+
         if row
             if @showHistory
                 if row.item.type == 'historySeparator'
@@ -395,7 +395,7 @@ function Shelf extends Column
                     return
                 if row.index() > @historySeparatorIndex()
                     window.navigate.delFilePos row.item
-                
+
             nextOrPrev = row.next() ? row.prev()
             row.div.remove()
             @items.splice row.index(), 1
@@ -404,63 +404,63 @@ function Shelf extends Column
             @savePrefs()
         @
 
-    # 00000000    0000000   00000000   000   000  00000000   
-    # 000   000  000   000  000   000  000   000  000   000  
-    # 00000000   000   000  00000000   000   000  00000000   
-    # 000        000   000  000        000   000  000        
-    # 000         0000000   000         0000000   000        
-    
+    # 00000000    0000000   00000000   000   000  00000000
+    # 000   000  000   000  000   000  000   000  000   000
+    # 00000000   000   000  00000000   000   000  00000000
+    # 000        000   000  000        000   000  000
+    # 000         0000000   000         0000000   000
+
     showContextMenu: (absPos) =>
-        
+
         if not absPos?
             absPos = pos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top
-        
-        opt = items: [ 
+
+        opt = items: [
             text:   'Toggle History'
-            combo:  'alt+h' 
+            combo:  'alt+h'
             cb:     @toggleHistory
         ,
             text:   'Toggle Extensions'
-            combo:  'ctrl+e' 
+            combo:  'ctrl+e'
             cb:     @toggleExtensions
         ,
             text:   'Remove'
-            combo:  'backspace' 
+            combo:  'backspace'
             cb:     @removeObject
         ,
             text:   'Clear History'
             cb:     @clearHistory
         ]
-        
+
         opt.x = absPos.x
         opt.y = absPos.y
         popup.menu opt
-        
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
+
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000
+    # 0000000    0000000     00000
+    # 000  000   000          000
+    # 000   000  00000000     000
+
     onKey: (event) =>
-        
+
         { mod, key, combo, char } = keyinfo.forEvent event
-        
+
         switch combo
-            'command+enter' 
+            'command+enter'
             'ctrl+enter'    ➜ return @openFileInNewWindow()
             'enter'         ➜ return stopEvent event, @navigateCols key
-            'backspace' 
+            'backspace'
             'delete'        ➜ return stopEvent event, @clearSearch().removeObject()
-            'command+k' 
+            'command+k'
             'ctrl+k'        ➜ return stopEvent event if @browser.cleanUp()
             'ctrl+e'        ➜ @toggleExtensions()
-            'up' 'down' 
-            'page up' 
-            'page down' 
+            'up' 'down'
+            'page up'
+            'page down'
             'home' 'end'    ➜ return stopEvent event, @navigateRows key
-            'right' 
-            'alt+right' 
+            'right'
+            'alt+right'
             'enter'         ➜ return stopEvent event, @focusBrowser()
             'tab'           ➜ if @search.length ➜ @doSearch ''; return stopEvent event
             'esc'
@@ -470,15 +470,15 @@ function Shelf extends Column
                     delete @dragDiv
                 if @search.length ➜ @clearSearch()
                 return stopEvent event
-                
+
         if mod in ['shift' ''] and char then @doSearch char
-        
+
         if @dragDiv
             @updateDragIndicator event
-            
+
     onKeyUp: (event) =>
-        
+
         if @dragDiv
             @updateDragIndicator event
-        
+
 export Shelf

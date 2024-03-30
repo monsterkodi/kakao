@@ -31,7 +31,7 @@ function Macro extends Command
     @: (commandline) ->
 
         super commandline
-        
+
         @macros = Macro.macroNames
         @macros = @macros.concat transform.transformNames
         @names  = ['macro']
@@ -119,26 +119,26 @@ function Macro extends Command
 
             'color' 'colors' ➜ editor.togglePigments()
 
-            # 00000000  00000000    0000000 
-            # 000       000   000  000      
-            # 000000    00000000   0000000  
-            # 000       000             000 
-            # 000       000        0000000  
+            # 00000000  00000000    0000000
+            # 000       000   000  000
+            # 000000    00000000   0000000
+            # 000       000             000
+            # 000       000        0000000
 
             'fps'   ➜ window.fps?.toggle()
-            
-            #  0000000   000  000000000  
-            # 000        000     000     
-            # 000  0000  000     000     
-            # 000   000  000     000     
-            #  0000000   000     000 
-            
-            'ks'   
+
+            #  0000000   000  000000000
+            # 000        000     000
+            # 000  0000  000     000
+            # 000   000  000     000
+            #  0000000   000     000
+
+            'ks'
             'git'   ➜ GitInfo.status()
 
-            'kd'   
+            'kd'
             'diff'  ➜ GitInfo.diff()
-            
+
             'err'   ➜ throw new Error 'err'
 
             # 000   000  00000000  000      00000000
@@ -148,14 +148,14 @@ function Macro extends Command
             # 000   000  00000000  0000000  000
 
             'help'
-            
+
                 helpFile = slash.path kakao.bundle.path, 'kode/ko/help.noon'
 
                 ffs.read(helpFile).then (text) ->
                     window.terminal.clear()
                     for l in text.split '\n'
                         window.terminal.appendLineDiss l, Syntax.dissForTextAndSyntax l, 'noon'
-        
+
                     window.terminal.scroll.cursorToTop 1
                     window.split.do 'show terminal'
 
@@ -240,7 +240,7 @@ function Macro extends Command
                 """
                 ffs.write(file, text).then (file) ->
                     post.emit 'newTabWithFile' file
-                    
+
                 return focus: editor.name
 
             #  0000000  000      00000000   0000000   000   000

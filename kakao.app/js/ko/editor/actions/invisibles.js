@@ -59,12 +59,11 @@ class Invisibles
         {
             return m[2].clss.startsWith('invisible')
         })
-        if (!metas.length)
+        if (metas.length)
         {
-            return console.error(`no invisible meta at line ${li}?`)
+            this.editor.meta.delMeta(metas[0])
+            return this.onLineInserted(li)
         }
-        this.editor.meta.delMeta(metas[0])
-        return this.onLineInserted(li)
     }
 
     activate ()

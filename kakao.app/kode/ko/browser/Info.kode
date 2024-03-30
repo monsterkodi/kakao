@@ -1,9 +1,9 @@
 ###
-000  000   000  00000000   0000000     
-000  0000  000  000       000   000    
-000  000 0 000  000000    000   000    
-000  000  0000  000       000   000    
-000  000   000  000        0000000     
+000  000   000  00000000   0000000
+000  0000  000  000       000   000
+000  000 0 000  000000    000   000
+000  000  0000  000       000   000
+000  000   000  000        0000000
 ###
 
 use ../../../lib/lib_ko ▪ moment pbytes
@@ -14,23 +14,23 @@ use ../../kxk/elem
 use ../../kxk/slash
 
 use ../tools/File
-    
-# 000  00     00   0000000    0000000   00000000  
-# 000  000   000  000   000  000        000       
-# 000  000000000  000000000  000  0000  0000000   
-# 000  000 0 000  000   000  000   000  000       
-# 000  000   000  000   000   0000000   00000000  
+
+# 000  00     00   0000000    0000000   00000000
+# 000  000   000  000   000  000        000
+# 000  000000000  000000000  000  0000  0000000
+# 000  000 0 000  000   000  000   000  000
+# 000  000   000  000   000   0000000   00000000
 
 image = (file) ->
-    
+
     img = elem 'img' class:'browserImage' src:slash.fileUrl file
     cnt = elem class:'browserImageContainer' child:img
     cnt.addEventListener 'dblclick' -> open file
-           
+
     table = elem 'table' class:"fileInfoData"
-    
+
     img.onload = ○->
-        
+
         img =$ '.browserImage'
         br = img.getBoundingClientRect()
         x = img.clientX
@@ -39,7 +39,7 @@ image = (file) ->
 
         img.style.opacity   = '1'
         img.style.maxWidth  = '100%'
-        
+
         info =○ ffs.info file
         size = pbytes(info.size).split ' '
 
@@ -50,7 +50,7 @@ image = (file) ->
         html  = "<tr><th colspan=2>#{width}<span class='punct'>x</span>#{height}</th></tr>"
         html += "<tr><th>#{size[0]}</th><td>#{size[1]}</td></tr>"
         html += "<tr><th>#{num}</th><td>#{range}</td></tr>"
-        
+
         table.innerHTML = html
 
     info = elem class:'browserFileInfo' children: [
@@ -59,24 +59,24 @@ image = (file) ->
     ]
     # cnt =$ '.browserImageContainer'
     cnt.appendChild info
-    
+
     cnt
 
 # 00000000  000  000      00000000
-# 000       000  000      000     
-# 000000    000  000      0000000 
-# 000       000  000      000     
+# 000       000  000      000
+# 000000    000  000      0000000
+# 000       000  000      000
 # 000       000  0000000  00000000
-    
+
 file = (file) ->
-    
+
     table = elem 'table' class:"fileInfoData"
 
     ffs.fileExists(file).then (stat) ○->
-         
+
         if not stat
             return error "file #{file} doesn't exist?"
-         
+
         info =○ ffs.info file
         size = pbytes(info.size).split ' '
 
@@ -87,18 +87,17 @@ file = (file) ->
         if range == 'few'
             num = moment().diff t, 'seconds'
             range = 'seconds'
-            
+
         table.innerHTML = "<tr><th>#{size[0]}</th><td>#{size[1]}</td></tr><tr><th>#{num}</th><td>#{range}</td></tr>"
-    
+
     info = elem class:'browserFileInfo' children: [
         elem 'div' class:"fileInfoIcon #{slash.ext file} #{File.iconClassName file}"
         elem 'div' class:"fileInfoFile #{slash.ext file}" html:File.span file
         table
     ]
-            
+
     info
-    
-export 
+
+export
     file:   file
     image:  image
-    

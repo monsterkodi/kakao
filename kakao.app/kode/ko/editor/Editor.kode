@@ -21,7 +21,7 @@ function Editor extends Buffer
 
     @actions: []
     @actionModules: []
-    
+
     # 000  000   000  000  000000000
     # 000  0000  000  000     000
     # 000  000 0 000  000     000
@@ -29,7 +29,7 @@ function Editor extends Buffer
     # 000  000   000  000     000
 
     @init: ○->
-        
+
         filelist =○ ffs.list slash.path __dirname, 'actions'
         # log 'Editor.init' filelist
         for item in filelist
@@ -47,7 +47,7 @@ function Editor extends Buffer
             moduleName = slash.name actionFile
             Editor.actionModules[moduleName] = actions.default
             # log "Editor.actionModules.#{moduleName}" actions.default
-            
+
             for key,value of actions.default
                 if value is func
                     @prototype[key] = value
@@ -74,7 +74,7 @@ function Editor extends Buffer
                 '(': ')'
             close:   {}
             regexps: []
-        
+
         super()
 
         @name   = name
@@ -83,15 +83,15 @@ function Editor extends Buffer
 
         @indentString    = lpad 4 ""
         @stickySelection = false
-        
+
         @syntax = new Syntax @config.syntaxName, @line, @lines
-        
+
         @do = new Do @
-        
+
         @setupFileType()
-        
+
     del: -> @do.del()
-        
+
     #  0000000    0000000  000000000  000   0000000   000   000   0000000
     # 000   000  000          000     000  000   000  0000  000  000
     # 000000000  000          000     000  000   000  000 0 000  0000000
@@ -161,21 +161,21 @@ function Editor extends Buffer
                     lineRegExp:   /^(\s+when|\s*if|\s*else\s+if\s+)(?!.*\sthen\s)|(^|\s)(else\s*$|switch\s|for\s|while\s|class\s)/
 
         # _______________________________________________________________ comment
-        
+
         # TODO: move this stuff tp a config.noon file
-        
+
         @multiComment = switch @fileType
             'coffee' 'kode'                              ➜ open:'###'  close:'###'
             'html' 'md'                                  ➜ open:'<!--' close:'-->'
-            'styl' 'cpp' 'mm' 'c' 'h' 'hpp' 'cxx' 'cs' 
+            'styl' 'cpp' 'mm' 'c' 'h' 'hpp' 'cxx' 'cs'
             'js' 'mjs' 'scss' 'ts' 'swift' 'frag' 'vert' ➜ open:'/*'   close:'*/'
-        
+
         @lineComment = switch @fileType
              'coffee' 'kode' 'sh' 'bat' 'noon' 'ko' 'txt' 'fish'    ➜ '#'
-             'styl' 'cpp' 'mm' 'c' 'h' 'hpp' 'cxx' 'cs' 
+             'styl' 'cpp' 'mm' 'c' 'h' 'hpp' 'cxx' 'cs'
              'js' 'mjs' 'scss' 'ts' 'swift' 'frag' 'vert'           ➜ '//'
              'iss' 'ini'                                            ➜ ';'
-             
+
         if @lineComment
             @headerRegExp = new RegExp("^(\\s*#{kstr.escapeRegexp @lineComment}\\s*)?(\\s*0[0\\s]+)$")
 
@@ -186,7 +186,7 @@ function Editor extends Buffer
     # 0000000   00000000     000            0000000  000  000   000  00000000  0000000
 
     setText: (text="") =>
-        
+
         if @syntax.name == 'txt'
             @syntax.name = Syntax.shebang text.slice 0, text.search /\r?\n/
 

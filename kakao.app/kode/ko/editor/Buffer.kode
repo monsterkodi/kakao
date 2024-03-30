@@ -20,7 +20,7 @@ endOf   = (r) -> r[0] + Math.max 1, r[1]-r[0]
 function Buffer extends events
 
     @: ->
-        
+
         super()
         @newlineCharacters = '\n'
         @wordRegExp = new RegExp "(\\s+|\\w+|[^\\s])", 'g'
@@ -28,7 +28,7 @@ function Buffer extends events
         @setState new state()
 
     setLines: (lines) ->
-        
+
         @emit 'numLines' 0 # give listeners a chance to clear their stuff
         @state = new state lines:lines
         if @name == 'editor'

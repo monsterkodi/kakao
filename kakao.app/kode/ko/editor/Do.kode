@@ -10,7 +10,7 @@ use ./state
 use ../tools/ranges
 use ../../kxk/post
 
-class Do 
+class Do
 
     @: (@editor) ->
 
@@ -77,9 +77,9 @@ class Do
     hasChanges: ->
 
         if @history.length > @saveIndex and @history[@saveIndex]?.text() == @editor.text()
-            return false 
+            return false
         return true
-        
+
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000
     # 0000000      000     000000000  0000000       000
@@ -194,7 +194,7 @@ class Do
     setCursors: (newCursors, opt) ->
 
         # log 'do.setCursors' newCursors
-        
+
         if not newCursors? or newCursors.length < 1
             return error "Do.setCursors -- empty cursors?"
 
@@ -215,7 +215,7 @@ class Do
 
         @state = @state.setCursors newCursors
         @state = @state.setMain mainIndex
-        
+
         # log 'setCursors' @editor.mainCursor()[1] if @editor.name == 'editor'
         # @state
 
@@ -260,7 +260,7 @@ class Do
                 else
 
                     if nl == oldLines[oi+1] and ol == newLines[ni+1]
-                        
+
                         changes.push change: 'changed' oldIndex: oi, newIndex: ni, doIndex: oi+dd, after: nl
                         oi += 1
                         ni += 1
@@ -269,7 +269,7 @@ class Do
                         ni += 1
                         ol = oldLines[oi]
                         nl = newLines[ni]
-                        
+
                     else if nl == oldLines[oi+1] and oldLines[oi+1] != newLines[ni+1]
 
                         changes.push change: 'deleted' oldIndex: oi, doIndex: oi+dd
@@ -281,19 +281,19 @@ class Do
                     else if ol == newLines[ni+1] and oldLines[oi+1] != newLines[ni+1]
 
                         changes.push change: 'inserted' newIndex: ni, doIndex: oi+dd, after: nl
-                        ni += 1 
-                        dd += 1 
+                        ni += 1
+                        dd += 1
                         insertions += 1
                         nl = newLines[ni]
 
                     else # change
-                        
+
                         changes.push change: 'changed' oldIndex: oi, newIndex: ni, doIndex: oi+dd, after: nl
                         oi += 1
                         ol = oldLines[oi]
                         ni += 1
                         nl = newLines[ni]
-                        
+
             while ni < newLines.length # mark remaining lines in newState as inserted
 
                 insertions += 1

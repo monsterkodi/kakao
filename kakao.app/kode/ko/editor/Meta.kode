@@ -46,7 +46,7 @@ class Meta
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
     onChanged: (changeInfo) =>
-        
+
         for change in changeInfo.changes
             li = change.oldIndex
             continue if change.change == 'deleted'
@@ -75,13 +75,13 @@ class Meta
     saveFileLineMetas: (file, lineMetas) ->
 
         fs.readFile file, encoding:'utf8' (err, data) ->
-            
+
             if err? then return error "Meta.saveFileLineMetas -- readFile err:#{err}"
             lines = data.split /\r?\n/
             for lineMeta in lineMetas
                 lines[lineMeta[0]] = lineMeta[1]
             data = lines.join '\n'
-            
+
             File.save file, data, (file) ->
                 return error "Meta.saveFileLineMetas -- writeFile err:#{err}" if not file
                 for lineMeta in lineMetas
@@ -91,12 +91,12 @@ class Meta
                 post.emit 'search-saved' file
 
     saveLine: (li) ->
-        
+
         for meta in @metasAtLineIndex li
             if meta[2].state == 'unsaved'
                 [file, line] = slash.splitFileLine meta[2].href
                 break
-                
+
         if file
             fileLineMetas = {}
             for meta in @metas
@@ -105,7 +105,7 @@ class Meta
                     if mfile == file
                         fileLineMetas[mfile] ?= []
                         fileLineMetas[mfile].push [line-1, @editor.line(meta[0]), meta]
-               
+
             for file, lineMetas of fileLineMetas
                 @saveFileLineMetas file, lineMetas
 
@@ -166,12 +166,12 @@ class Meta
                 meta[2].div.style.transform = "translate(#{tx}px,#{ty}px)"
 
     updatePos: (meta) ->
-        
+
         size = @editor.size
         tx = size.charWidth *  meta[1][0] + size.offsetX + (meta[2].xOffset ? 0)
         ty = size.lineHeight * (meta[0] - @editor.scroll.top) + (meta[2].yOffset ? 0)
         @setMetaPos meta, tx, ty
-            
+
     #  0000000   0000000    0000000          0000000    000  000   000
     # 000   000  000   000  000   000        000   000  000  000   000
     # 000000000  000   000  000   000        000   000  000   000 000
@@ -191,7 +191,7 @@ class Meta
         div.meta = meta
 
         div.classList.add 'toggled' if meta[2].toggled # git change toggled
-        
+
         if not meta[2].no_h
             div.style.height = "#{lh}px"
 
@@ -257,7 +257,7 @@ class Meta
     #  0000000  0000000  000   0000000  000   000
 
     onMouseDown: (event) ->
-        
+
         if event.target.meta?[2].click?
             result = event.target.meta?[2].click event.target.meta, event
             stopEvent event if result != 'unhandled'
@@ -269,14 +269,14 @@ class Meta
     # 000   000  000        000        00000000  000   000  0000000
 
     append: (meta) ->
-        
+
         lineMeta = @addLineMeta [@editor.numLines(), [0, 0], meta]
         lineMeta
 
     addLineMeta: (lineMeta) ->
-        
+
         return error 'invalid line meta?', lineMeta if not lineMeta?[2]?
-        
+
         @lineMetas[lineMeta[0]] ?= []
         @lineMetas[lineMeta[0]].push lineMeta
         @metas.push lineMeta
@@ -285,21 +285,21 @@ class Meta
     moveLineMeta: (lineMeta, d) ->
 
         return error 'invalid move?' lineMeta, d if not lineMeta? or d == 0
-        
+
         pull @lineMetas[lineMeta[0]], lineMeta
         delete @lineMetas[lineMeta[0]] if empty @lineMetas[lineMeta[0]]
         lineMeta[0] += d
         @lineMetas[lineMeta[0]] ?= []
         @lineMetas[lineMeta[0]].push lineMeta
         @updatePos lineMeta
-        
+
     onLineAppended: (e) =>
 
         for meta in @metasAtLineIndex e.lineIndex
             meta[1][1] = e.text.length if meta[1][1] == 0
 
     metasAtLineIndex: (li) -> @lineMetas[li] ? []
-        
+
     hrefAtLineIndex:  (li) ->
 
         for meta in @metasAtLineIndex li
@@ -312,7 +312,7 @@ class Meta
     # 0000000   000   000   0000000   00     00  000   000
 
     onLinesShown: (top, bot, num) =>
-        
+
         for meta in @metas
             @delDiv meta
             if top <= meta[0] <= bot
@@ -355,12 +355,12 @@ class Meta
 
         @updatePositionsBelowLineIndex li
 
-    # 0000000    00000000  000      00000000  000000000  00000000  0000000    
-    # 000   000  000       000      000          000     000       000   000  
-    # 000   000  0000000   000      0000000      000     0000000   000   000  
-    # 000   000  000       000      000          000     000       000   000  
-    # 0000000    00000000  0000000  00000000     000     00000000  0000000    
-    
+    # 0000000    00000000  000      00000000  000000000  00000000  0000000
+    # 000   000  000       000      000          000     000       000   000
+    # 000   000  0000000   000      0000000      000     0000000   000   000
+    # 000   000  000       000      000          000     000       000   000
+    # 0000000    00000000  0000000  00000000     000     00000000  0000000
+
     onLineDeleted: (li) =>
 
         while meta = last @metasAtLineIndex li
