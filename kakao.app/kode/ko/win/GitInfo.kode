@@ -15,6 +15,9 @@ use ../tools/Git
 
 use ../editor/Syntax
 
+SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp']
+IGNORE_FILE_EXTS = ['js' 'css']
+
 class GitInfo
 
     @: ->
@@ -160,7 +163,7 @@ class GitInfo
 
             logFile = (change, file, status, spacer) ->
 
-                return if slash.ext(file) in ['js' 'css']
+                return if slash.ext(file) in IGNORE_FILE_EXTS
 
                 symbol = switch change
 
@@ -171,7 +174,7 @@ class GitInfo
                 path = slash.relative file, status.gitDir
 
                 window.terminal.appendMeta
-                    diss:       Syntax.dissForTextAndSyntax "#{path}", 'ko'
+                    diss:       Syntax.dissForTextAndSyntax "#{path}" 'ko'
                     href:       file
                     clss:       'gitInfoFile'
                     click:      onMetaClick
@@ -182,12 +185,12 @@ class GitInfo
 
             for file in status.deleted
 
-                if slash.ext(file) in ['kode' 'styl' 'pug']
+                if slash.ext(file) in SOURCE_FILE_EXTS
                     logFile 'deleted' file, status, diff
 
             for file in status.added
 
-                if slash.ext(file) in ['kode' 'styl' 'pug']
+                if slash.ext(file) in SOURCE_FILE_EXTS
                     logFile 'added' file, status, diff
                     continue if not diff
                     text =○ ffs.read file
@@ -196,7 +199,7 @@ class GitInfo
 
             for file in status.changed
                 
-                if slash.ext(file) in ['kode' 'styl' 'pug']
+                if slash.ext(file) in SOURCE_FILE_EXTS
                     logFile 'changed' file, status, diff
                     continue if not diff 
                     

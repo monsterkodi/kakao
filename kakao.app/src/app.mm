@@ -190,7 +190,7 @@
         
         // NSLog(@"%@ %@ %@ %@", change.isDir ? @"▸" : @"▪", type, change.path, relPath);
         
-        if ([relPath hasPrefix:@"js/"]) { reloadPage = YES; }
+        if ([relPath hasPrefix:@"js/"]) { reloadPage = ![relPath hasPrefix:@"js/test"]; }
 
         if ([relPath hasPrefix:@"Contents/Resources/"]) { reloadPage = YES; }
 
@@ -246,11 +246,15 @@
         // NSLog(@"transpile %@", [changes componentsJoinedByString:@" "]);
         
         filesToTranspile = nil;
-        [self reload];
+        if (reloadPage)
+        {
+            NSLog(@"reload after transpile %@", [changes componentsJoinedByString:@" "]);
+            [self reload];
+        }
     }
     else if (reloadPage)
     {
-        // NSLog(@"reload %@", [changes componentsJoinedByString:@" "]);
+        NSLog(@"reload %@", [changes componentsJoinedByString:@" "]);
         [self reload];
     }
 }
