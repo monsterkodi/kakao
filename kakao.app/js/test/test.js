@@ -8,6 +8,8 @@ import test_slash from "./test_slash.js"
 
 import test_util from "./test_util.js"
 
+import test_kstr from "./test_kstr.js"
+
 import test_fs from "./test_fs.js"
 
 import fs from "../kxk/fs.js"
@@ -29,9 +31,9 @@ if (1)
 {
     files = await fs.list(slash.path(import.meta.dirname,'../kode/test'))
     var list = _k_.list(files)
-    for (var _26_13_ = 0; _26_13_ < list.length; _26_13_++)
+    for (var _27_13_ = 0; _27_13_ < list.length; _27_13_++)
     {
-        file = list[_26_13_]
+        file = list[_27_13_]
         test = await import(file.path)
         tester.test(test.default)
     }
@@ -40,4 +42,5 @@ tester.test(test_slash)
 tester.test(test_util)
 tester.test(test_fs)
 tester.test(test_linediff)
+tester.test(test_kstr)
 tester.summarize()

@@ -42,6 +42,7 @@ class GitInfo
         
         window.split.raise 'terminal'
         window.terminal.clear()
+        window.terminal.appendMeta diss: Syntax.dissForTextAndSyntax "commit #{msg}", 'kode'
 
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
             
@@ -53,12 +54,10 @@ class GitInfo
             out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"add ."                   
             out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:['commit' '-m' m] 
             out +=○ kakao 'app.sh' '/usr/bin/git' cwd:gitDir, arg:"push -q" 
-            
-            # log 'out:' out
+
+            window.terminal.clear()
             for line in out.split '\n'
-                window.terminal.appendMeta 
-                    diss: Syntax.dissForTextAndSyntax line, 'kode'
-                    clss: 'gitInfoFile'
+                window.terminal.appendMeta diss: Syntax.dissForTextAndSyntax line, 'kode'
                     
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
     # 000       000   000  000   000  0000  000  000        000       000
@@ -116,8 +115,8 @@ class GitInfo
                         continue if diff.change == 'delete'
                         lineMeta =
                             line:       window.terminal.numLines()
-                            start:      diff.new
-                            end:        diff.new+diff.length
+                            start:      diff.index
+                            end:        diff.index+diff.length
                             clss:       'gitInfoChange'
                         window.terminal.meta.add lineMeta
 

@@ -6,10 +6,6 @@
 000   000  000   000     000      0000000  000   000  000   000
 ###
 
-# kxk = require './kxk'
-
-# { last } = kxk
-
 #  0000000   0000000   000   000  00000000  000   0000000 
 # 000       000   000  0000  000  000       000  000      
 # 000       000   000  000 0 000  000000    000  000  0000
@@ -28,26 +24,29 @@ sortRanges = (rgs) ->
         else
             a.start - b.start
 
-# 00000000    0000000   000   000   0000000   00000000   0000000
-# 000   000  000   000  0000  000  000        000       000     
-# 0000000    000000000  000 0 000  000  0000  0000000   0000000 
-# 000   000  000   000  000  0000  000   000  000            000
-# 000   000  000   000  000   000   0000000   00000000  0000000 
+###
+    00000000    0000000   000   000   0000000   00000000   0000000
+    000   000  000   000  0000  000  000        000       000     
+    0000000    000000000  000 0 000  000  0000  0000000   0000000 
+    000   000  000   000  000  0000  000   000  000            000
+    000   000  000   000  000   000   0000000   00000000  0000000 
 
-# accepts a list of [regexp, value(s)] pairs and a string
-# returns a list of objects with information about the matches:
-  
-#     match: the matched substring
-#     start: position of match in str
-#     clss:  the value for the match
-#     index: index of the regexp
+    accepts a list of [regexp, value(s)] pairs and a string
     
-#     the objects are sorted by start and index
+    returns a list of objects with information about the matches:
+        
+        match: the matched substring
+        start: position of match in str
+        clss:  the value for the match
+        index: index of the regexp
       
-#     if the regexp has capture groups then 
-#         the value for the match of the nth group is
-#             the nth item of values(s) if value(s) is an array
-#             the nth [key, value] pair if value(s) is an object
+        the objects are sorted by start and index
+        
+        if the regexp has capture groups then 
+            the value for the match of the nth group is
+                the nth item of values(s) if value(s) is an array
+                the nth [key, value] pair if value(s) is an object
+###
 
 ranges = (regexes, text, flags) ->
     
@@ -116,27 +115,26 @@ ranges = (regexes, text, flags) ->
 
     sortRanges rgs        
 
-# 0000000    000   0000000   0000000  00000000   0000000  000000000
-# 000   000  000  000       000       000       000          000   
-# 000   000  000  0000000   0000000   0000000   000          000   
-# 000   000  000       000       000  000       000          000   
-# 0000000    000  0000000   0000000   00000000   0000000     000   
+###
+    0000000    000   0000000   0000000  00000000   0000000  000000000
+    000   000  000  000       000       000       000          000   
+    000   000  000  0000000   0000000   0000000   000          000   
+    000   000  000       000       000  000       000          000   
+    0000000    000  0000000   0000000   00000000   0000000     000   
  
-# accepts a list of ranges
-# returns a list of objects:
- 
-#     match: the matched substring
-#     start: position of match in str
-#     clss:  string of classnames joined with a space
-     
-#     with none of the [start, start+match.length] ranges overlapping
+    accepts a list of ranges
+    returns a list of objects:
+    
+        match: the matched substring
+        start: position of match in str
+        clss:  string of classnames joined with a space
+       
+        with none of the [start, start+match.length] ranges overlapping
+###
 
 dissect = (ranges, opt = join:false) -> 
     
-    # log = opt?.log ? ->
-        
     return [] if not ranges.length
-    # console.log "dissect -- #{JSON.stringify ranges}"
     
     di = [] # collect a list of positions where a match starts or ends
     for rg in ranges
@@ -198,13 +196,15 @@ dissect = (ranges, opt = join:false) ->
                     d.splice i+1, 1
     d
 
-# 00     00  00000000  00000000    0000000   00000000  
-# 000   000  000       000   000  000        000       
-# 000000000  0000000   0000000    000  0000  0000000   
-# 000 0 000  000       000   000  000   000  000       
-# 000   000  00000000  000   000   0000000   00000000  
+###
+    00     00  00000000  00000000    0000000   00000000  
+    000   000  000       000   000  000        000       
+    000000000  0000000   0000000    000  0000  0000000   
+    000 0 000  000       000   000  000   000  000       
+    000   000  00000000  000   000   0000000   00000000  
  
-# merges two sorted lists of dissections
+    merges two sorted lists of dissections
+###
     
 merge = (dssA, dssB) ->
     

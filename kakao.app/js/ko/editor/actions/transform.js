@@ -152,17 +152,14 @@ class Transform
 
     title ()
     {
-        var pattern
-
-        pattern = /\w+/
         this.apply(function (t)
         {
             var r
 
             var list = _k_.list(matchr.ranges(/\w+/,t))
-            for (var _141_18_ = 0; _141_18_ < list.length; _141_18_++)
+            for (var _140_18_ = 0; _140_18_ < list.length; _140_18_++)
             {
-                r = list[_141_18_]
+                r = list[_140_18_]
                 t = t.splice(r.start,r.match.length,r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase())
             }
             return t
@@ -235,7 +232,7 @@ class Transform
 
     tfunc (opt)
     {
-        var selections, tl, _233_42_, _234_42_
+        var selections, tl, _232_42_, _233_42_
 
         if (!this.editor.numSelections())
         {
@@ -293,9 +290,9 @@ class Transform
 
     static do (editor, transName, ...opts)
     {
-        var t, _273_29_
+        var t, _272_29_
 
-        t = ((_273_29_=editor.transform) != null ? _273_29_ : new Transform(editor))
+        t = ((_272_29_=editor.transform) != null ? _272_29_ : new Transform(editor))
         return t.do.apply(t,[transName].concat(opts))
     }
 }

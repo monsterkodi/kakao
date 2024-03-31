@@ -18,6 +18,39 @@ str = (o) ->
             "\n" + noon o
     else
         String o
+    
+# 00000000  000  000      000      00000000  000000000   0000000  
+# 000       000  000      000      000          000     000       
+# 000000    000  000      000      0000000      000     0000000   
+# 000       000  000      000      000          000          000  
+# 000       000  0000000  0000000  00000000     000     0000000   
+
+str.fillet = (s) ->
+    
+    fillets = []
+    
+    return fillets if not s is str
+    
+    for ci in 0...s.length
+        
+        ch = s[ci]
+        
+        if ch in ' \t\n\r'
+            fillets.push fillet if valid fillet
+            fillet = null
+            continue
+
+        isWord = /\w/.test ch
+        
+        if fillet?.word == isWord
+            fillet.match += ch
+            fillet.length++
+        else
+            fillets.push fillet if valid fillet
+            fillet = match:ch, index:ci, length:1 word:isWord
+            
+    fillets.push fillet if valid fillet
+    fillets
 
 #  0000000  00000000   000      000   0000000  00000000
 # 000       000   000  000      000  000       000

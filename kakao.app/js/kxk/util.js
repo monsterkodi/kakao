@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
 var isEqual
 
@@ -13,7 +13,7 @@ isEqual = function (a, b)
         {
             return false
         }
-        for (var _13_21_ = index = 0, _13_25_ = a.length; (_13_21_ <= _13_25_ ? index < a.length : index > a.length); (_13_21_ <= _13_25_ ? ++index : --index))
+        for (var _15_21_ = index = 0, _15_25_ = a.length; (_15_21_ <= _15_25_ ? index < a.length : index > a.length); (_15_21_ <= _15_25_ ? ++index : --index))
         {
             if (!isEqual(a[index],b[index]))
             {
@@ -21,6 +21,10 @@ isEqual = function (a, b)
             }
         }
         return true
+    }
+    if (_k_.isObj(a) && _k_.isObj(b))
+    {
+        return isEqual(Object.keys(a),Object.keys(b)) && isEqual(Object.values(a),Object.values(b))
     }
     return a === b
 }
@@ -33,7 +37,7 @@ export default {isEqual:isEqual,zip:function (...args)
     {
         return a.length
     }))
-    for (var _32_17_ = i = 0, _32_21_ = maxLen; (_32_17_ <= _32_21_ ? i < maxLen : i > maxLen); (_32_17_ <= _32_21_ ? ++i : --i))
+    for (var _40_17_ = i = 0, _40_21_ = maxLen; (_40_17_ <= _40_21_ ? i < maxLen : i > maxLen); (_40_17_ <= _40_21_ ? ++i : --i))
     {
         result.push(args.map(function (a)
         {
@@ -67,7 +71,7 @@ export default {isEqual:isEqual,zip:function (...args)
 {
     var index
 
-    for (var _51_21_ = index = arr.length - 1, _51_35_ = 0; (_51_21_ <= _51_35_ ? index <= 0 : index >= 0); (_51_21_ <= _51_35_ ? ++index : --index))
+    for (var _59_21_ = index = arr.length - 1, _59_35_ = 0; (_59_21_ <= _59_35_ ? index <= 0 : index >= 0); (_59_21_ <= _59_35_ ? ++index : --index))
     {
         if (pred(arr[index]))
         {
@@ -82,10 +86,10 @@ export default {isEqual:isEqual,zip:function (...args)
     if (!_k_.empty(arr) && _k_.isArr(arr))
     {
         var list = _k_.list(items)
-        for (var _60_21_ = 0; _60_21_ < list.length; _60_21_++)
+        for (var _68_21_ = 0; _68_21_ < list.length; _68_21_++)
         {
-            item = list[_60_21_]
-            for (var _61_29_ = index = arr.length - 1, _61_43_ = 0; (_61_29_ <= _61_43_ ? index <= 0 : index >= 0); (_61_29_ <= _61_43_ ? ++index : --index))
+            item = list[_68_21_]
+            for (var _69_29_ = index = arr.length - 1, _69_43_ = 0; (_69_29_ <= _69_43_ ? index <= 0 : index >= 0); (_69_29_ <= _69_43_ ? ++index : --index))
             {
                 if (cmp(arr[index],item))
                 {
@@ -101,9 +105,9 @@ export default {isEqual:isEqual,zip:function (...args)
 
     result = []
     var list = _k_.list(arr)
-    for (var _69_17_ = 0; _69_17_ < list.length; _69_17_++)
+    for (var _77_17_ = 0; _77_17_ < list.length; _77_17_++)
     {
-        item = list[_69_17_]
+        item = list[_77_17_]
         if (!(_k_.in(item,result)))
         {
             result.push(item)
@@ -116,14 +120,14 @@ export default {isEqual:isEqual,zip:function (...args)
 
     result = []
     var list = _k_.list(arr)
-    for (var _77_17_ = 0; _77_17_ < list.length; _77_17_++)
+    for (var _85_17_ = 0; _85_17_ < list.length; _85_17_++)
     {
-        item = list[_77_17_]
+        item = list[_85_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _79_22_ = 0; _79_22_ < list1.length; _79_22_++)
+        for (var _87_22_ = 0; _87_22_ < list1.length; _87_22_++)
         {
-            ritem = list1[_79_22_]
+            ritem = list1[_87_22_]
             if (isEqual(item,ritem))
             {
                 add = false
@@ -150,14 +154,14 @@ export default {isEqual:isEqual,zip:function (...args)
     }
     result = []
     var list = _k_.list(arr)
-    for (var _93_17_ = 0; _93_17_ < list.length; _93_17_++)
+    for (var _101_17_ = 0; _101_17_ < list.length; _101_17_++)
     {
-        item = list[_93_17_]
+        item = list[_101_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _95_22_ = 0; _95_22_ < list1.length; _95_22_++)
+        for (var _103_22_ = 0; _103_22_ < list1.length; _103_22_++)
         {
-            ritem = list1[_95_22_]
+            ritem = list1[_103_22_]
             if (prop(item) === prop(ritem))
             {
                 add = false
@@ -199,12 +203,12 @@ export default {isEqual:isEqual,zip:function (...args)
     })
 },defaults:function (obj, def)
 {
-    var key, val, _125_21_
+    var key, val, _133_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_125_21_=obj[key]) != null ? _125_21_ : val)
+        obj[key] = ((_133_21_=obj[key]) != null ? _133_21_ : val)
     }
     return obj
 },pickBy:function (obj, pred)
@@ -245,5 +249,4 @@ export default {isEqual:isEqual,zip:function (...args)
         result.push([key,val])
     }
     return result
-},test:function ()
-{}}
+}}

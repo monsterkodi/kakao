@@ -136,7 +136,6 @@ class Transform
 
     title: ->
 
-        pattern = /\w+/
         @apply (t) ->
             for r in matchr.ranges /\w+/, t
                 t = t.splice r.start, r.match.length, r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase()

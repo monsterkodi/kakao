@@ -7,6 +7,13 @@ import util from "../kxk/util.js"
 
 toExport["util"] = function ()
 {
+    section("isEqual", function ()
+    {
+        compare(util.isEqual([1,2],[1,2]),true)
+        compare(util.isEqual([1,2],[1,3]),false)
+        compare(util.isEqual({a:1},{a:1}),true)
+        compare(util.isEqual({a:1},{a:2}),false)
+    })
     section("zip", function ()
     {
         a = [1,2,4]

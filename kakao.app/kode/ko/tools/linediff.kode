@@ -6,121 +6,77 @@
 0000000  000  000   000  00000000  0000000    000  000       000       
 ###
 
-simplify = (oldLine, newLine, changes) ->
-    
-    return if changes.length < 2
-    
-    # log 'changes' changes
-    
-    for ci in 0...changes.length-1
- 
-        c0 = changes[ci]
-        c1 = changes[ci+1]
-        
-        if c0.change == 'change' and c1.change == 'delete' #and (c1.old <  c0.length + c0.old)
-            
-            changes.splice ci, 1
-            c1.change = 'change'
-            c1.length += c0.length
-            c1.old = c0.old
-            c1.new = c0.new
-            
-            return simplify oldLine, newLine, changes
-        
-        if c0.change == 'insert' and c1.change == 'delete' and (c1.old <  c0.length + c0.old)
-            
-            changes.splice ci, 1
-            c1.change = 'change'
-            c1.length -= c0.length + (c1.old-c0.old) + (c1.new - (c0.new+c0.length))
-            c1.old = c0.old
-            c1.new = c0.new
-            
-            return simplify oldLine, newLine, changes
-    
-        if c0.change == 'delete' and c1.change == 'insert' and (c0.new + c0.length == c1.new)
-
-            changes.splice ci, 1
-            c1.old = c0.old
-            c1.new = c0.new
-            c1.length -= c0.length
-            
-            return simplify oldLine, newLine, changes
-            
-        if c0.change == 'insert' and c1.change == 'insert' and (c0.length > 1 or c1.length > 1)
-            
-            changes.splice ci, 1
-            c1.change = 'change'
-            c1.length = Math.max c1.length + c0.length, c1.new - c0.new #+ (c1.new - (c0.new+c0.length))
-            c1.old = c0.old
-            c1.new = c0.new
-            
-            return simplify oldLine, newLine, changes
+use ../../kxk/kstr
+use ../../kxk/util ▪ isEqual
 
 lineDiff = (oldLine, newLine) ->
     
     changes = []
     
-    oi = 0 # index in oldLine
-    ni = 0 # index in newLine
-
     if oldLine != newLine
-    
-        oc = oldLine[oi]
-        nc = newLine[ni]
         
-        while oi < oldLine.length
+        oldFillet = kstr.fillet oldLine
+        newFillet = kstr.fillet newLine
+        
+        log 'oldFillet' oldLine, oldFillet
+        log 'newFillet' newLine, newFillet
+
+        while newFillet.length
             
-            if not nc? # new line has not enough characters, mark remaining characters in old line as deleted
-                changes.push change:'delete' old: oi, new: ni, length: oldLine.length-oi
-                break
+            if oldFillet.length and newFillet.length and oldFillet[0].match == newFillet[0].match
+                oldFillet.shift()
+                newFillet.shift()
+            else
+                fillet = newFillet.shift()
+                changes.push index:fillet.index, length:fillet.length
                 
-            else if oc == nc # same character in old and new
+                # while oldFillet.length and newFillet.length and oldFillet[0].match != newFillet[0].match
+                    # oldFillet.shift()
+                
+        return changes
+        
+        ni = 0 # index in newLine
+        oi = 0 # index in oldLine
+        
+        log 'old' oldLine
+        for r in oldFillet
+            log r
+            
+        log 'new' newLine
+        for r in newFillet
+            log r
+    
+        while ni < newLine.length
+            
+            if oldLine[oi] == newLine[ni] # same character in old and new
                 
                 oi += 1
-                oc = oldLine[oi]
                 ni += 1
-                nc = newLine[ni]
                 
-            else 
-                
-                inserts = newLine.slice(ni).indexOf oc # insertion
-                deletes = oldLine.slice(oi).indexOf nc # deletion
-                
-                if inserts > 0 and (deletes <= 0 or inserts < deletes)
-                    
+                continue
+                                
+            inserts = newLine.slice(ni).indexOf oldLine[oi] # index of old character in rest of newLine
+            
+            if inserts < 0
+                deletes = oldLine.slice(oi).indexOf newLine[ni] # index of new character rest of oldLine
+                if deletes < 0
                     lst = last changes
-                    
-                    if lst?.change == 'change' and lst.old + lst.length == oi
-                        lst.change = 'insert'
-                    else                    
-                        changes.push change:'insert' old: oi, new: ni, length: inserts
-                    ni += inserts
-                    nc = newLine[ni]
-                    
-                else if deletes > 0 and (inserts <= 0 or deletes < inserts)                                    
-                    
-                    changes.push change:'delete' old: oi, new: ni, length: deletes
-                    oi += deletes
-                    oc = oldLine[oi]
-                
-                else # change
-                    
-                    lst = last changes 
-                    if lst?.change == 'change' and lst.old + lst.length == oi
+                    if lst? and lst.index + lst.length == ni
                         lst.length += 1
                     else
-                        changes.push change:'change' old: oi, new: ni, length: 1
+                        changes.push index:ni, length:1
                     oi += 1
-                    oc = oldLine[oi]
                     ni += 1
-                    nc = newLine[ni]
+                else
+                    oi += deletes
+            else
+                changes.push index:ni, length:inserts
+                ni += inserts
                         
-        if ni < newLine.length # mark remaing characters in new line as inserted
+        if ni < newLine.length # add remaing characters in new line
+            log 'rest' newLine.length - ni
+            changes.push index: ni, length: newLine.length - ni
             
-            changes.push change:'insert' old: oi, new: ni, length: newLine.length - ni
-            
-    simplify oldLine, newLine, changes
-    
     changes
 
 # 0000000     0000000   00000000   000  000   000   0000000   
@@ -131,15 +87,13 @@ lineDiff = (oldLine, newLine) ->
 
 lineDiff.isBoring = (oldLine, newLine) ->
     
-    changes = lineDiff oldLine, newLine
-    return true if empty changes
-    inserts = ''
-    deletes = ''
-    for c in changes
-        switch c.change
-            'change' ➜ return false
-            'delete' ➜ deletes += oldLine.substr(c.old, c.length).trim()
-            'insert' ➜ inserts += newLine.substr(c.new, c.length).trim()
-    inserts == deletes
+    # changes = lineDiff oldLine, newLine
+    # return true if empty changes
+    return false
+    # inserts = ''
+    # for c in changes
+        # switch c.change
+            # 'change' ➜ return false
+            # 'insert' ➜ inserts += newLine.substr(c.index, c.length).trim()
     
 export lineDiff

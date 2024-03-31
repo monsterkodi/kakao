@@ -9,10 +9,18 @@
 isEqual = (a,b) ->
     
     if a is arr and b is arr
+        
         return false if a.length != b.length
+        
         for index in 0...a.length
             return false if not isEqual a[index], b[index]
+            
         return true
+        
+    if a is obj and b is obj
+        
+        return isEqual(Object.keys(a), Object.keys(b)) and isEqual(Object.values(a), Object.values(b))
+        
     a == b
     
 export
@@ -146,13 +154,3 @@ export
         for key,val of obj
             result.push [key, val]
         result
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    test: ->
