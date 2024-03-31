@@ -30,7 +30,7 @@ str = function (o)
     }
 }
 
-str.fillet = function (s)
+str.fillet = function (s, wordCharacterSet = '')
 {
     var ch, ci, fillet, fillets, isWord
 
@@ -51,7 +51,7 @@ str.fillet = function (s)
             fillet = null
             continue
         }
-        isWord = /\w/.test(ch)
+        isWord = /\w/.test(ch) || _k_.in(ch,wordCharacterSet)
         if ((fillet != null ? fillet.word : undefined) === isWord)
         {
             fillet.match += ch

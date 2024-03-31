@@ -5,7 +5,7 @@
     000   000  000   000  000   000  000   000     000
     000   000  0000000     0000000    0000000      000
   
-    simple about window  
+    simple about window
 ###
 
 use ../kxk/dom ▪ $ elem

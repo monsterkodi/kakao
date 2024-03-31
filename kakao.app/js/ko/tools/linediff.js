@@ -17,8 +17,6 @@ lineDiff = function (oldLine, newLine)
     {
         oldFillet = kstr.fillet(oldLine)
         newFillet = kstr.fillet(newLine)
-        console.log('oldFillet',oldLine,oldFillet)
-        console.log('newFillet',newLine,newFillet)
         while (fillet = newFillet.shift())
         {
             if (oldFillet.length && oldFillet[0].match === fillet.match)

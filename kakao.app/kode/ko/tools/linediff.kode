@@ -18,8 +18,8 @@ lineDiff = (oldLine, newLine) ->
         oldFillet = kstr.fillet oldLine
         newFillet = kstr.fillet newLine
         
-        log 'oldFillet' oldLine, oldFillet
-        log 'newFillet' newLine, newFillet
+        # log 'oldFillet' oldLine, oldFillet
+        # log 'newFillet' newLine, newFillet
 
         while fillet = newFillet.shift()
             

@@ -25,7 +25,7 @@ str = (o) ->
 # 000       000  000      000      000          000          000  
 # 000       000  0000000  0000000  00000000     000     0000000   
 
-str.fillet = (s) ->
+str.fillet = (s, wordCharacterSet='') ->
     
     fillets = []
     
@@ -40,7 +40,7 @@ str.fillet = (s) ->
             fillet = null
             continue
 
-        isWord = /\w/.test ch
+        isWord = /\w/.test(ch) or ch in wordCharacterSet
         
         if fillet?.word == isWord
             fillet.match += ch

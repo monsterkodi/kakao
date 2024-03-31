@@ -1,0 +1,141 @@
+###
+    00000000   000   000   0000000 
+    000   000  000   000  000      
+    00000000   000   000  000  0000
+    000        000   000  000   000
+    000         0000000    0000000 
+    
+    poor man's pug :)
+###
+
+use ./kstr
+
+# 00000000   00000000  000   000  0000000    00000000  00000000   
+# 000   000  000       0000  000  000   000  000       000   000  
+# 0000000    0000000   000 0 000  000   000  0000000   0000000    
+# 000   000  000       000  0000  000   000  000       000   000  
+# 000   000  00000000  000   000  0000000    00000000  000   000  
+
+render = (block, text) ->
+    
+    idt = rpad block.indent
+    
+    args = ''
+    
+    fromIndex = 1
+    if block.fillet[0].match == '#' ➜ fromIndex = 2
+    if block.fillet[fromIndex]?.match == '#'
+        args += " id=\"#{block.fillet[fromIndex+1].match}\"" 
+        fromIndex += 2
+    if block.fillet.length > fromIndex        
+        args += ' ' + unfillet block.fillet[fromIndex..]
+    
+    t = switch block.fillet[0].match
+        'doctype' ➜ "<!DOCTYPE #{block.fillet[1].match}>"
+        'title' ➜ "<#{block.fillet[0].match}>#{block.fillet[1].match}</#{block.fillet[0].match}>"
+        'meta'
+        'link'
+        'script'
+        'head'
+        'body'
+        'span'
+        'html' ➜ "<#{block.fillet[0].match}#{args}>"
+        '#'    ➜ "<div id=\"#{block.fillet[1].match}\"#{args}>"
+    
+    text += idt + t + '\n' if valid t
+    
+    if valid block.blocks
+        for b in block.blocks
+            text += render b, ''
+    
+    p = switch block.fillet[0].match
+        'script'
+        'head'
+        'body'
+        'span'
+        'html' ➜ "</#{block.fillet[0].match}>"
+        '#'    ➜ "</div>"
+        
+    text += idt + p + '\n' if valid p
+    text
+
+# 000   000  000   000  00000000  000  000      000      00000000  000000000  
+# 000   000  0000  000  000       000  000      000      000          000     
+# 000   000  000 0 000  000000    000  000      000      0000000      000     
+# 000   000  000  0000  000       000  000      000      000          000     
+#  0000000   000   000  000       000  0000000  0000000  00000000     000     
+
+unfillet = (fillets) ->
+    
+    s = ''
+    for fillet in fillets
+        s = rpad fillet.index, s
+        s += fillet.match
+    trim s
+    
+# 0000000    000       0000000    0000000  000   000  
+# 000   000  000      000   000  000       000  000   
+# 0000000    000      000   000  000       0000000    
+# 000   000  000      000   000  000       000  000   
+# 0000000    0000000   0000000    0000000  000   000  
+
+blockFillets = (lineFillets) ->
+    
+    blocks = []
+    stack  = []
+    
+    for fillet,lineIndex in lineFillets
+        
+        continue if empty fillet
+        
+        indent = fillet[0]?.index
+        
+        block = 
+            line:   lineIndex
+            indent: indent
+            fillet: fillet
+            blocks: []
+            
+        if stackTop = last stack
+            if indent > stackTop.indent
+                stackTop.blocks.push block
+            else if indent == stackTop.indent
+                stack.pop()
+                if stackTop = last stack
+                    stackTop.blocks.push block
+                else
+                    blocks.push block
+            else # if indent < stackTop.indent
+                while valid(stack) and indent <= last(stack).indent
+                    stack.pop()
+                    
+                if stackTop = last stack
+                    stackTop.blocks.push block
+                else
+                    blocks.push block
+        else
+            blocks.push block
+            stack.pop()
+            
+        stack.push block
+        
+    blocks
+    
+# 00000000   000   000   0000000   
+# 000   000  000   000  000        
+# 00000000   000   000  000  0000  
+# 000        000   000  000   000  
+# 000         0000000    0000000   
+
+pug = (srcText) ->
+    
+    tgtText = ''
+    lines   = srcText.split '\n'
+    blocks  = blockFillets lines.map (line) -> kstr.fillet line, '-'
+    
+    for block in blocks
+        tgtText = render block, tgtText
+
+    tgtText
+
+export pug

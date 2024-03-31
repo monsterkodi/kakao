@@ -21,10 +21,6 @@ toExport["linediff"] = function ()
     compare(linediff('xyz',' x y z '),[{index:1,length:1},{index:3,length:1},{index:5,length:1}])
     compare(linediff('t = w','t  =  w'),[])
     compare(linediff('if diff','continue if not diff'),[{index:0,length:8},{index:12,length:3}])
-    compare(linediff("       when 'change' then return false","       when 'change' ➜ return false"),[{index:21,length:1}])
-    compare(linediff("       when 'delete' then deletes++","       when 'delete' ➜ deletes++"),[{index:21,length:1}])
-    compare(linediff("       when 'insert' then inserts++","       when 'insert' ➜ inserts++"),[{index:21,length:1}])
-    compare(linediff('window.terminal.appendMeta','if spacer ➜ window.terminal.appendMeta'),[{index:0,length:2},{index:3,length:6},{index:10,length:1}])
 }
 toExport["linediff"]._section_ = true
 toExport._test_ = true

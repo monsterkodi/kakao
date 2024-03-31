@@ -10,6 +10,7 @@ use ./test_linediff
 use ./test_slash
 use ./test_util
 use ./test_kstr
+use ./test_pug
 use ./test_fs
 use ../kxk/fs
 use ../kxk/slash
@@ -33,5 +34,6 @@ tester.test test_util
 tester.test test_fs
 tester.test test_linediff
 tester.test test_kstr
+tester.test test_pug
         
 tester.summarize()
