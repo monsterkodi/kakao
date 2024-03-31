@@ -52,6 +52,68 @@ str.fillet = (s, wordCharacterSet='') ->
     fillets.push fillet if valid fillet
     fillets
 
+# 000   000  000   000  00000000  000  000      000      00000000  000000000  
+# 000   000  0000  000  000       000  000      000      000          000     
+# 000   000  000 0 000  000000    000  000      000      0000000      000     
+# 000   000  000  0000  000       000  000      000      000          000     
+#  0000000   000   000  000       000  0000000  0000000  00000000     000     
+
+str.unfillet = (fillets) ->
+    
+    s = ''
+    for fillet in fillets
+        s = rpad fillet.index, s
+        s += fillet.match
+    trim s
+    
+# 0000000    000       0000000    0000000  000   000        00000000  000  000      000      00000000  000000000   0000000  
+# 000   000  000      000   000  000       000  000         000       000  000      000      000          000     000       
+# 0000000    000      000   000  000       0000000          000000    000  000      000      0000000      000     0000000   
+# 000   000  000      000   000  000       000  000         000       000  000      000      000          000          000  
+# 0000000    0000000   0000000    0000000  000   000        000       000  0000000  0000000  00000000     000     0000000   
+
+str.blockFillets = (lineFillets) ->
+    
+    blocks = []
+    stack  = []
+    
+    for fillet,lineIndex in lineFillets
+        
+        continue if empty fillet
+        
+        indent = fillet[0]?.index
+        
+        block = 
+            line:   lineIndex
+            indent: indent
+            fillet: fillet
+            blocks: []
+            
+        if stackTop = last stack
+            if indent > stackTop.indent
+                stackTop.blocks.push block
+            else if indent == stackTop.indent
+                stack.pop()
+                if stackTop = last stack
+                    stackTop.blocks.push block
+                else
+                    blocks.push block
+            else # if indent < stackTop.indent
+                while valid(stack) and indent <= last(stack).indent
+                    stack.pop()
+                    
+                if stackTop = last stack
+                    stackTop.blocks.push block
+                else
+                    blocks.push block
+        else
+            blocks.push block
+            stack.pop()
+            
+        stack.push block
+        
+    blocks
+    
 #  0000000  00000000   000      000   0000000  00000000
 # 000       000   000  000      000  000       000
 # 0000000   00000000   000      000  000       0000000

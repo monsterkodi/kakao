@@ -1,0 +1,75 @@
+###
+     0000000  000000000  000   000  000    
+    000          000      000 000   000    
+    0000000      000       00000    000    
+         000     000        000     000    
+    0000000      000        000     0000000
+    
+    poor man's stylus :)
+###
+
+use ./kstr ▪ unfillet blockFillets
+
+# 00000000   00000000  000   000  0000000    00000000  00000000   
+# 000   000  000       0000  000  000   000  000       000   000  
+# 0000000    0000000   000 0 000  000   000  0000000   0000000    
+# 000   000  000       000  0000  000   000  000       000   000  
+# 000   000  00000000  000   000  0000000    00000000  000   000  
+
+variables = {}
+
+subvars = (fillets) ->
+    
+    for fillet in fillets
+        if value = variables[fillet.match]
+            # log 'found value!' fillet, value
+            fillet.match = value
+        
+    fillets
+
+render = (block, text) ->
+    
+    if block.fillet[0]?.match == '//'
+        return text
+        
+    if block.fillet[1]?.match == '='
+        varName = block.fillet[0]?.match
+        varValue = block.fillet[2]?.match
+        variables[varName] = varValue
+        return text
+        
+    idt = rpad block.indent
+        
+    if valid block.blocks
+        text += '\n' + idt + unfillet block.fillet
+        text += '\n' + idt + '{'
+        for b in block.blocks
+            text += render b, ''
+        text += '\n' + idt + '}\n'
+    else
+        text += '\n'
+        text += idt + block.fillet[0].match + ': ' + unfillet subvars block.fillet[1..]
+        text += ';'
+    
+    text
+    
+#  0000000  000000000  000   000  000      
+# 000          000      000 000   000      
+# 0000000      000       00000    000      
+#      000     000        000     000      
+# 0000000      000        000     0000000  
+
+styl = (srcText) ->
+    
+    variables = {}
+    
+    tgtText = ''
+    lines   = srcText.split '\n'
+    blocks  = blockFillets lines.map (line) -> kstr.fillet line, '-'
+    
+    for block in blocks
+        tgtText = render block, tgtText
+
+    tgtText
+
+export styl
