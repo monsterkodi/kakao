@@ -792,33 +792,6 @@ body {
 .list-item::-webkit-scrollbar {
   height: 1px;
 }
-.winlist {
-  font-family: titlebarFont;
-  position: absolute;
-  right: 4px;
-  top: 30px;
-  min-width: 100px;
-  max-width: 800px;
-  z-index: 99;
-  overflow-x: auto;
-  border-bottom-left-radius: 6px;
-}
-.winlist::-webkit-scrollbar {
-  height: 0px;
-}
-.winlist .dot {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.winlist-item {
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-right: 13px;
-  cursor: pointer;
-  font-size: 16px;
-  height: 22px;
-  white-space: nowrap;
-}
 .autocomplete-span {
   opacity: 1;
 }

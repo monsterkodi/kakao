@@ -222,17 +222,23 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _175_21_, _176_17_, _187_41_, _189_19_
+        var f, file, iconSpan, item, items, rel, _175_21_, _176_17_, _193_41_, _195_19_
 
         opt = (opt != null ? opt : {})
         opt.maxItems = ((_175_21_=opt.maxItems) != null ? _175_21_ : 200)
         opt.flat = ((_176_17_=opt.flat) != null ? _176_17_ : true)
         iconSpan = function (file)
         {
-            var className
-
-            className = File.iconClassName(file)
-            return `<span class='${className} openFileIcon'/>`
+            if (slash.ext(file) === 'kode')
+            {
+                return `<span class='kodeIcon openFileIcon'>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M5.75 7.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zm5.25.75a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z"></path><path fill-rule="evenodd" d="M6.25 0a.75.75 0 000 1.5H7.5v2H3.75A2.25 2.25 0 001.5 5.75V8H.75a.75.75 0 000 1.5h.75v2.75a2.25 2.25 0 002.25 2.25h8.5a2.25 2.25 0 002.25-2.25V9.5h.75a.75.75 0 000-1.5h-.75V5.75a2.25 2.25 0 00-2.25-2.25H9V.75A.75.75 0 008.25 0h-2zM3 5.75A.75.75 0 013.75 5h8.5a.75.75 0 01.75.75v6.5a.75.75 0 01-.75.75h-8.5a.75.75 0 01-.75-.75v-6.5z"></path></svg>
+                </span>`
+            }
+            else
+            {
+                return `<span class='${File.iconClassName(file)} openFileIcon'/>`
+            }
         }
         items = []
         this.lastFileIndex = 0
@@ -254,9 +260,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _203_21_ = 0; _203_21_ < list.length; _203_21_++)
+            for (var _209_21_ = 0; _209_21_ < list.length; _209_21_++)
             {
-                file = list[_203_21_]
+                file = list[_209_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -283,9 +289,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _236_18_ = 0; _236_18_ < list.length; _236_18_++)
+            for (var _242_18_ = 0; _242_18_ < list.length; _242_18_++)
             {
-                f = list[_236_18_]
+                f = list[_242_18_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -304,9 +310,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _252_58_, _252_65_
+        var _258_58_, _258_65_
 
-        if (this.commandList && this.selected === ((_252_58_=this.commandList.meta) != null ? (_252_65_=_252_58_.metas) != null ? _252_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_258_58_=this.commandList.meta) != null ? (_258_65_=_258_58_.metas) != null ? _258_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -319,7 +325,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _267_27_
+        var _273_27_
 
         if (name === this.names[0])
         {
@@ -333,7 +339,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _288_40_, _302_41_
+        var dir, item, _294_40_, _308_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -345,7 +351,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_288_40_=slash.dir(this.file)) != null ? _288_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_294_40_=slash.dir(this.file)) != null ? _294_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -385,7 +391,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _333_27_
+        var file, path, pos, _339_27_
 
         if (this.selected < 0)
         {
@@ -395,7 +401,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _339_24_ = slash.splitFilePos(command); file = _339_24_[0]; pos = _339_24_[1]
+            var _345_24_ = slash.splitFilePos(command); file = _345_24_[0]; pos = _345_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

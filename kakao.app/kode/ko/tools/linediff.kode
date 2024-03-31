@@ -21,18 +21,15 @@ lineDiff = (oldLine, newLine) ->
         log 'oldFillet' oldLine, oldFillet
         log 'newFillet' newLine, newFillet
 
-        while newFillet.length
+        while fillet = newFillet.shift()
             
-            if oldFillet.length and newFillet.length and oldFillet[0].match == newFillet[0].match
+            if oldFillet.length and oldFillet[0].match == fillet.match
                 oldFillet.shift()
-                newFillet.shift()
             else
-                fillet = newFillet.shift()
                 changes.push index:fillet.index, length:fillet.length
-                
-                # while oldFillet.length and newFillet.length and oldFillet[0].match != newFillet[0].match
+                # while oldFillet.length and newFillet.length and oldFillet[0].match != newFillet[0]?.match
                     # oldFillet.shift()
-                
+                                
         return changes
         
         ni = 0 # index in newLine

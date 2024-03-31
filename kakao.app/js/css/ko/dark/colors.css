@@ -68,8 +68,8 @@ body {
 .commandlist {
   background: #0a0a0a;
 }
-.commandlist.open .linenumber.selected span {
-  color: #aaf;
+.commandlist .selection {
+  background: #222;
 }
 .commandlist.goto .linenumber.selected span {
   color: #66f;
@@ -312,9 +312,6 @@ span.macro.macro,
 .numbers {
   background: rgba(15,15,15,0.5);
 }
-.commandlist .layers .numbers {
-  background: rgba(0,0,0,0.1);
-}
 .linenumber {
   border-right-color: #111;
 }
@@ -341,6 +338,21 @@ span.macro.macro,
 }
 .linenumber.cursored.main.selected span {
   color: #ff0;
+}
+.commandlist.open .linenumber {
+  padding-top: 4px;
+}
+.commandlist.open .linenumber.selected span {
+  color: #ff0;
+}
+.commandlist.open .linenumber span svg {
+  fill: #a60;
+}
+.commandlist.open .linenumber.selected span svg {
+  fill: #ff0;
+}
+.commandlist.open .linenumber span {
+  color: #444;
 }
 .meta.href {
   background-color: #222;
@@ -426,24 +438,6 @@ span.macro.macro,
 .selection {
   color: #444;
   background: #111;
-}
-.winlist,
-.list {
-  background: #111;
-}
-.winlist-item.selected,
-.list-item.selected {
-  background: #222;
-}
-.winlist-item:hover,
-.list-item:hover {
-  background: #222;
-}
-.winlist .dot {
-  color: #060;
-}
-.winlist .winid {
-  color: #080;
 }
 .autocomplete-span {
   background: #22a;

@@ -19,16 +19,14 @@ lineDiff = function (oldLine, newLine)
         newFillet = kstr.fillet(newLine)
         console.log('oldFillet',oldLine,oldFillet)
         console.log('newFillet',newLine,newFillet)
-        while (newFillet.length)
+        while (fillet = newFillet.shift())
         {
-            if (oldFillet.length && newFillet.length && oldFillet[0].match === newFillet[0].match)
+            if (oldFillet.length && oldFillet[0].match === fillet.match)
             {
                 oldFillet.shift()
-                newFillet.shift()
             }
             else
             {
-                fillet = newFillet.shift()
                 changes.push({index:fillet.index,length:fillet.length})
             }
         }
@@ -37,16 +35,16 @@ lineDiff = function (oldLine, newLine)
         oi = 0
         console.log('old',oldLine)
         var list = _k_.list(oldFillet)
-        for (var _42_14_ = 0; _42_14_ < list.length; _42_14_++)
+        for (var _39_14_ = 0; _39_14_ < list.length; _39_14_++)
         {
-            r = list[_42_14_]
+            r = list[_39_14_]
             console.log(r)
         }
         console.log('new',newLine)
         var list1 = _k_.list(newFillet)
-        for (var _46_14_ = 0; _46_14_ < list1.length; _46_14_++)
+        for (var _43_14_ = 0; _43_14_ < list1.length; _43_14_++)
         {
-            r = list1[_46_14_]
+            r = list1[_43_14_]
             console.log(r)
         }
         while (ni < newLine.length)

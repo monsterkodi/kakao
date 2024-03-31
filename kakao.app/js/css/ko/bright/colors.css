@@ -326,7 +326,7 @@ span.macro.macro,
   background: rgba(0,0,0,0.1);
 }
 .commandlist .layers .numbers {
-  background: rgba(0,0,0,0.1);
+  background: #ff0;
 }
 .linenumber {
   border-right-color: #111;
@@ -437,24 +437,6 @@ span.macro.macro,
 .selection {
   color: #444;
   background: #181818;
-}
-.winlist,
-.list {
-  background: #181818;
-}
-.winlist-item.selected,
-.list-item.selected {
-  background: #222;
-}
-.winlist-item:hover,
-.list-item:hover {
-  background: #222;
-}
-.winlist .dot {
-  color: #060;
-}
-.winlist .winid {
-  color: #080;
 }
 .autocomplete-span {
   background: #22a;

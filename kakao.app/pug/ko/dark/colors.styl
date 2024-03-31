@@ -115,9 +115,9 @@ body
 
 .commandlist
     background          darkColor
+    & .selection
+        background      #222
 
-.commandlist.open .linenumber.selected span
-    color                   #aaf
 .commandlist.goto .linenumber.selected span
     color                   #66f
 .commandlist.term .linenumber.selected span
@@ -380,8 +380,8 @@ span.macro
 .numbers
     background          rgba(15, 15, 15, 0.5) // this darkens selection
 
-.commandlist .layers .numbers
-    background          rgba(0, 0, 0, 0.1) // this darkens selection
+// .commandlist .layers .numbers
+    // background          rgba(0, 0, 0, 0.1) // this darkens selection
 
 .linenumber
     border-right-color  frameColor
@@ -403,6 +403,20 @@ span.macro
     &.cursored.main.selected span
         color           #ff0
 
+.commandlist.open .linenumber
+    padding-top   4px
+
+.commandlist.open .linenumber.selected span
+    color               #ff0
+
+.commandlist.open .linenumber span svg
+    fill                #a60
+.commandlist.open .linenumber.selected span svg
+    fill                #ff0
+
+.commandlist.open .linenumber span
+    color               #444   
+        
 // 00     00  00000000  000000000   0000000
 // 000   000  000          000     000   000
 // 000000000  0000000      000     000000000
@@ -508,31 +522,6 @@ span.macro
 .selection
     color                   #444 // used by minimap
     background              #111 // no focus
-
-// 000      000   0000000  000000000
-// 000      000  000          000
-// 000      000  0000000      000
-// 000      000       000     000
-// 0000000  000  0000000      000
-
-.winlist
-.list
-    background              frameColor
-
-.winlist-item.selected
-.list-item.selected
-    background              titleColor
-
-.winlist-item
-.list-item
-    &:hover
-        background          titleColor
-
-.winlist
-    & .dot
-        color               #060
-    & .winid
-        color               #080
 
 //  0000000   000   000  000000000   0000000    0000000   0000000   00     00  00000000   000      00000000  000000000  00000000
 // 000   000  000   000     000     000   000  000       000   000  000   000  000   000  000      000          000     000

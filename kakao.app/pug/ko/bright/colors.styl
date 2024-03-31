@@ -154,6 +154,7 @@ body
 
 .commandlist.open .linenumber.selected span
     color                   #aaf
+    
 .commandlist.goto .linenumber.selected span
     color                   #66f
 .commandlist.term .linenumber.selected span
@@ -165,7 +166,7 @@ body
     &:hover  
         border-top-right-radius      4px
         border-bottom-right-radius   4px
-        background          #111
+        background                  #111
 
 // 0000000    000   000  000000000  000000000   0000000   000   000
 // 000   000  000   000     000        000     000   000  0000  000
@@ -416,7 +417,8 @@ span.macro
     background          numbersColor // this darkens selection
 
 .commandlist .layers .numbers
-    background          rgba(0, 0, 0, 0.1) // this darkens selection
+    // background          rgba(0, 0, 0, 0.5) // this darkens selection
+    background          #ff0 // this darkens selection
 
 .linenumber
     border-right-color  frameColor
@@ -541,31 +543,6 @@ span.macro
 .selection
     color                   #444 // used by minimap
     background              #181818 // no focus
-
-// 000      000   0000000  000000000
-// 000      000  000          000
-// 000      000  0000000      000
-// 000      000       000     000
-// 0000000  000  0000000      000
-
-.winlist
-.list
-    background              shelfColor
-
-.winlist-item.selected
-.list-item.selected
-    background              titleColor
-
-.winlist-item
-.list-item
-    &:hover
-        background          titleColor
-
-.winlist
-    & .dot
-        color               #060
-    & .winid
-        color               #080
 
 //  0000000   000   000  000000000   0000000    0000000   0000000   00     00  00000000   000      00000000  000000000  00000000
 // 000   000  000   000     000     000   000  000       000   000  000   000  000   000  000      000          000     000
