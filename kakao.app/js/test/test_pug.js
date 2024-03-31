@@ -11,10 +11,8 @@ html
     head
     body`),`<!DOCTYPE html>
 <html>
-    <head>
-    </head>
-    <body>
-    </body>
+    <head></head>
+    <body></body>
 </html>
 `)
     compare(pug(`doctype html
@@ -38,13 +36,10 @@ html lang="en"
         <link rel="stylesheet" href="./css/dark.css"  type="text/css">
     </head>
     <body>
-        <div id="titlebar">
-        </div>
-        <div id="main" tabindex=0>
-        </div>
+        <div id="titlebar"></div>
+        <div id="main" tabindex=0></div>
     </body>
-    <script type="module" src="./main.js">
-    </script>
+    <script type="module" src="./main.js"></script>
 </html>
 `)
     compare(pug(`doctype html
@@ -88,31 +83,23 @@ html lang="en"
         <link rel="stylesheet" href="./css/ko/icons.css"       type="text/css">
     </head>
     <body id="ko">
-        <div id="titlebar">
-        </div>
+        <div id="titlebar"></div>
         <div id="main">
             <div id="split">
-                <div id="browser" tabindex="3">
-                </div>
-                <div id="terminal" tabindex="2">
-                </div>
+                <div id="browser" tabindex="3"></div>
+                <div id="terminal" tabindex="2"></div>
                 <div id="commandline">
-                    <span id="commandline-button">
-                    </span>
+                    <span id="commandline-button"></span>
                     <span id="commandline-span">
-                        <div id="commandline-editor" tabindex="1">
-                        </div>
-                        <div id="info">
-                        </div>
+                        <div id="commandline-editor" tabindex="1"></div>
+                        <div id="info"></div>
                     </span>
                 </div>
-                <div id="editor" tabindex="0">
-                </div>
+                <div id="editor" tabindex="0"></div>
             </div>
         </div>
     </body>
-    <script type="module" src="./ko/win/window.js">
-    </script>
+    <script type="module" src="./ko/win/window.js"></script>
 </html>
 `)
 }

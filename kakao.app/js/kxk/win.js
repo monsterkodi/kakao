@@ -108,7 +108,7 @@ Win = (function ()
         window.prefs = prefs
         window.prefs.init()
         this.saveStashOnClose = true
-        this.delegate = ((_46_18_=this.delegate) != null ? _46_18_ : new WinDelegate)
+        this.delegate = ((_46_18_=this.delegate) != null ? _46_18_ : new Delegate)
         post.on('window.blur',this.onWindowBlur)
         post.on('window.focus',this.onWindowFocus)
         post.on('window.close',this.onWindowClose)

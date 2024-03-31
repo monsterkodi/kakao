@@ -30,10 +30,10 @@ render = function (block, text)
         switch (block.fillet[0].match)
         {
             case 'doctype':
-                return `<!DOCTYPE ${block.fillet[1].match}>`
+                return `<!DOCTYPE ${block.fillet[1].match}>\n`
 
             case 'title':
-                return `<${block.fillet[0].match}>${block.fillet[1].match}</${block.fillet[0].match}>`
+                return `<${block.fillet[0].match}>${block.fillet[1].match}</${block.fillet[0].match}>\n`
 
             case 'meta':
             case 'link':
@@ -52,37 +52,43 @@ render = function (block, text)
     }).bind(this))()
     if (!_k_.empty(t))
     {
-        text += idt + t + '\n'
+        text += idt + t
     }
     if (!_k_.empty(block.blocks))
     {
+        text += '\n'
         var list = _k_.list(block.blocks)
-        for (var _48_14_ = 0; _48_14_ < list.length; _48_14_++)
+        for (var _49_14_ = 0; _49_14_ < list.length; _49_14_++)
         {
-            b = list[_48_14_]
+            b = list[_49_14_]
             text += render(b,'')
         }
+        text += idt
     }
     p = ((function ()
     {
         switch (block.fillet[0].match)
         {
+            case 'link':
+            case 'meta':
+                return '\n'
+
             case 'script':
             case 'head':
             case 'body':
             case 'span':
             case 'html':
-                return `</${block.fillet[0].match}>`
+                return `</${block.fillet[0].match}>\n`
 
             case '#':
-                return "</div>"
+                return "</div>\n"
 
         }
 
     }).bind(this))()
     if (!_k_.empty(p))
     {
-        text += idt + p + '\n'
+        text += p
     }
     return text
 }
@@ -93,9 +99,9 @@ unfillet = function (fillets)
 
     s = ''
     var list = _k_.list(fillets)
-    for (var _71_15_ = 0; _71_15_ < list.length; _71_15_++)
+    for (var _75_15_ = 0; _75_15_ < list.length; _75_15_++)
     {
-        fillet = list[_71_15_]
+        fillet = list[_75_15_]
         s = _k_.rpad(fillet.index,s)
         s += fillet.match
     }
@@ -173,9 +179,9 @@ pug = function (srcText)
         return kstr.fillet(line,'-')
     }))
     var list = _k_.list(blocks)
-    for (var _136_14_ = 0; _136_14_ < list.length; _136_14_++)
+    for (var _140_14_ = 0; _140_14_ < list.length; _140_14_++)
     {
-        block = list[_136_14_]
+        block = list[_140_14_]
         tgtText = render(block,tgtText)
     }
     return tgtText

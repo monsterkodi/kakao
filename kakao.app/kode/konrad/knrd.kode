@@ -12,8 +12,9 @@ use ../kode/kode
 use ../kxk/fs
 use ../kxk/slash ▪ tilde
 use ../kxk/noon
+use ../kxk/pug
 
-use ../../lib/lib_kakao ▪ pug stylus
+use ../../lib/lib_kakao ▪ stylus
 
 __dirname = import.meta.dirname
 

@@ -43,7 +43,7 @@ function Win
         window.prefs.init()
         
         @saveStashOnClose = true
-        @delegate ?= new WinDelegate
+        @delegate ?= new Delegate
         
         post.on 'window.blur'  @onWindowBlur
         post.on 'window.focus' @onWindowFocus
