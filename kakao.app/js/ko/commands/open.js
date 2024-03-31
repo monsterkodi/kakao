@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var Open, relative
 
@@ -146,18 +146,19 @@ Open = (function ()
 
     Open.prototype["weight"] = function (item, opt)
     {
-        var b, extensionBonus, f, lengthPenalty, localBonus, n, nameBonus, r, relBonus, updirPenalty, _129_26_
+        var b, contBonus, extensionBonus, f, lengthPenalty, lf, localBonus, n, nameBonus, r, updirPenalty
 
         f = item.file
         r = item.text
         b = slash.file(f)
-        n = slash.name(f)
-        relBonus = 0
+        n = slash.name(f).toLowerCase()
+        contBonus = 0
         nameBonus = 0
-        if ((opt.currentText != null ? opt.currentText.length : undefined))
+        if (_k_.isStr(opt.currentText))
         {
-            relBonus = r.startsWith(opt.currentText) && 65535 * (opt.currentText.length / r.length) || 0
-            nameBonus = n.startsWith(opt.currentText) && 2184 * (opt.currentText.length / n.length) || 0
+            lf = 1 + opt.currentText.length / n.length
+            contBonus = n.indexOf(opt.currentText.toLowerCase()) >= 0 && 10000 * lf || 0
+            nameBonus = n.startsWith(opt.currentText.toLowerCase()) && 50000 * lf || 0
         }
         extensionBonus = ((function ()
         {
@@ -196,7 +197,7 @@ Open = (function ()
         }).bind(this))()
         if (this.file && slash.ext(this.file) === slash.ext(b))
         {
-            extensionBonus += 1000
+            extensionBonus += 10000
         }
         lengthPenalty = slash.dir(f).length
         updirPenalty = r.split('../').length * 819
@@ -208,7 +209,7 @@ Open = (function ()
         {
             localBonus = Math.max(0,(5 - r.split('../').length) * 819)
         }
-        return item.weight = localBonus + relBonus + nameBonus + extensionBonus - lengthPenalty - updirPenalty
+        return item.weight = localBonus + contBonus + nameBonus + extensionBonus - lengthPenalty - updirPenalty
     }
 
     Open.prototype["weightedItems"] = function (items, opt)
@@ -289,9 +290,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _242_18_ = 0; _242_18_ < list.length; _242_18_++)
+            for (var _240_18_ = 0; _240_18_ < list.length; _240_18_++)
             {
-                f = list[_242_18_]
+                f = list[_240_18_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -310,9 +311,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _258_58_, _258_65_
+        var _256_58_, _256_65_
 
-        if (this.commandList && this.selected === ((_258_58_=this.commandList.meta) != null ? (_258_65_=_258_58_.metas) != null ? _258_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_256_58_=this.commandList.meta) != null ? (_256_65_=_256_58_.metas) != null ? _256_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -325,7 +326,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _273_27_
+        var _271_27_
 
         if (name === this.names[0])
         {
@@ -339,7 +340,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _294_40_, _308_41_
+        var dir, item, _292_40_, _306_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -351,7 +352,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_294_40_=slash.dir(this.file)) != null ? _294_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_292_40_=slash.dir(this.file)) != null ? _292_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -391,7 +392,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _339_27_
+        var file, path, pos, _337_27_
 
         if (this.selected < 0)
         {
@@ -401,7 +402,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _345_24_ = slash.splitFilePos(command); file = _345_24_[0]; pos = _345_24_[1]
+            var _343_24_ = slash.splitFilePos(command); file = _343_24_[0]; pos = _343_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

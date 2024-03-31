@@ -151,10 +151,11 @@ body
 
 .commandlist
     background          shelfColor
+    & .selection
+        background      #222
 
 .commandlist.open .linenumber.selected span
     color                   #aaf
-    
 .commandlist.goto .linenumber.selected span
     color                   #66f
 .commandlist.term .linenumber.selected span
@@ -416,10 +417,6 @@ span.macro
 .numbers
     background          numbersColor // this darkens selection
 
-.commandlist .layers .numbers
-    // background          rgba(0, 0, 0, 0.5) // this darkens selection
-    background          #ff0 // this darkens selection
-
 .linenumber
     border-right-color  frameColor
     & span
@@ -440,6 +437,20 @@ span.macro
     &.cursored.main.selected span
         color           #ff0
 
+.commandlist.open .linenumber
+    padding-top   4px
+
+.commandlist.open .linenumber.selected span
+    color               #ff0
+
+.commandlist.open .linenumber span svg
+    fill                #a60
+.commandlist.open .linenumber.selected span svg
+    fill                #ff0
+
+.commandlist.open .linenumber span
+    color               #444   
+        
 // 00     00  00000000  000000000   0000000
 // 000   000  000          000     000   000
 // 000000000  0000000      000     000000000

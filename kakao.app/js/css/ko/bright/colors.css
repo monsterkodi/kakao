@@ -81,6 +81,9 @@ body {
 .commandlist {
   background: #181818;
 }
+.commandlist .selection {
+  background: #222;
+}
 .commandlist.open .linenumber.selected span {
   color: #aaf;
 }
@@ -325,9 +328,6 @@ span.macro.macro,
 .numbers {
   background: rgba(0,0,0,0.1);
 }
-.commandlist .layers .numbers {
-  background: #ff0;
-}
 .linenumber {
   border-right-color: #111;
 }
@@ -354,6 +354,21 @@ span.macro.macro,
 }
 .linenumber.cursored.main.selected span {
   color: #ff0;
+}
+.commandlist.open .linenumber {
+  padding-top: 4px;
+}
+.commandlist.open .linenumber.selected span {
+  color: #ff0;
+}
+.commandlist.open .linenumber span svg {
+  fill: #a60;
+}
+.commandlist.open .linenumber.selected span svg {
+  fill: #ff0;
+}
+.commandlist.open .linenumber span {
+  color: #444;
 }
 .meta.href {
   background-color: #222;
