@@ -4,3 +4,6 @@ lib/bin*.mjs
 lib/package.json
 .stash
 .konrad.json
+test.*
+js/kode0
+js/kode1

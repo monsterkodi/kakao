@@ -6,6 +6,7 @@
 000   000   0000000   0000000    00000000
 ###
 
+# use ◆ lexer print parser scoper stripol returner operator renderer
 use ./lexer
 use ./print
 use ./parser
@@ -14,7 +15,9 @@ use ./stripol
 use ./returner
 use ./operator
 use ./renderer
+use ../kxk/fs
 use ../kxk/slash
+use ../kxk/karg
 use vm
 
 class Kode
@@ -80,20 +83,63 @@ class Kode
         
     ast: (text) ->
 
-        # print.code 'kode' text, 'coffee' if @args.verbose or @args.debug or @args.kode
-
-        # ●▸ token
         tokens = @lexer.tokenize text
-        # ●▪ token
-
-        # if @args.raw    then print.noon 'raw tokens' tokens
-        # if @args.tokens then print.tokens 'tokens'   tokens
-
         block = @lexer.blockify tokens
 
-        # if @args.raw   then print.noon 'raw block' block
-        # if @args.block then print.block 'tl block' block
-
         @operator.collect @returner.collect @scoper.collect @stripol.collect @parser.parse block
+        
+    #  0000000  000      000
+    # 000       000      000
+    # 000       000      000
+    # 000       000      000
+    #  0000000  0000000  000
 
+    cli: ○->
+
+        if @args.compile
+            log @compile @args.compile
+            return
+            
+        if @args.eval
+            log @eval @args.eval, 'eval', global
+            return
+            
+        for file in @args.files
+
+            file = slash.path file
+            log gray file if @args.verbose
+
+            text =○ fs.read file
+
+            if empty text then error Y4 r2 "can't read #{R3 y5 file}"; continue
+
+            if
+                @args.outdir
+                                js  = @compile text, file
+                                out = slash.swapExt slash.path(@args.outdir, slash.file file), 'js'
+                                log out
+                                if not ○ fs.write out, js then error R2 y3 "can't write #{R3 y6 out}"
+                @args.js    ➜   log @compile text, file
+                @args.run   ➜   log @eval text, file, global
+                            ➜   log @compile text
+                
 export Kode
+
+if globalThis.process?.argv? and import.meta.filename == process.argv[1]
+    
+    args = karg """
+        kode
+            files       **
+            eval        evaluate a string and print the result
+            compile     transpile a string and print the result
+            outdir      transpile files into output directory
+            run         execute files                               = true
+            js          print transpiled js code                    = false
+            header      prepend output with version header          = false -H
+            verbose     log everything                              = false
+        """
+        
+    log 'args' args if args.verbose
+    kode = new Kode args
+    kode.cli()
+    

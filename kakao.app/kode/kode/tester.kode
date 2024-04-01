@@ -9,6 +9,7 @@
 use ../kxk/kstr
 use ../kxk/slash
 use ../kxk/klor
+use ../kxk/fs
 use ./print
 
 klor.globalize()
@@ -119,6 +120,7 @@ class Tester
     test: (testModule) =>
         
         # return if not /\n\s*▸\s\w+/gm.test text
+        return if testModule?._test_ != true
         
         comps = 0
         succs = 0
@@ -127,8 +129,6 @@ class Tester
                 
         global.compare = @compare
         global.section = @section
-        
-        return if testModule?._test_ != true
         
         logModules = @logModules
             
@@ -144,7 +144,7 @@ class Tester
         allsuccs += succs
         allfails = allfails.concat fails
         
-        true
+        empty fails
         
     #  0000000  000   000  00     00  00     00   0000000   00000000   000  0000000  00000000  
     # 000       000   000  000   000  000   000  000   000  000   000  000     000   000       
@@ -207,3 +207,16 @@ class Tester
         ss
         
 export new Tester
+
+if globalThis.process?.argv? and import.meta.filename == process.argv[1]
+    
+    files =○ fs.list slash.path import.meta.dirname, 'test'
+    fail = false
+    for file in files
+        continue if slash.name(file.path) == 'utils'
+        test =○ import(file.path)
+        tester = new Tester
+        fail = fail or not tester.test test.default
+    if fail
+        process.exit 1
+    

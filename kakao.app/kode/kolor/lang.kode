@@ -12,8 +12,7 @@
         node js/kolor/lang.js
 ###
 
-use ../kxk/noon
-use ../kxk/slash
+use ../kxk ▪ noon slash
 use ../kxk/fs
 
 __dirname = import.meta.dirname

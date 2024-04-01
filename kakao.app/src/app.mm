@@ -235,7 +235,7 @@
     {
         static BOOL isTranspiling = NO;
         
-        if (isTranspiling) { return; }
+        if (isTranspiling) return;
         
         isTranspiling = YES;
         
@@ -246,6 +246,7 @@
         // NSLog(@"transpile %@", [changes componentsJoinedByString:@" "]);
         
         filesToTranspile = nil;
+        
         if (reloadPage)
         {
             NSLog(@"reload after transpile %@", [changes componentsJoinedByString:@" "]);
