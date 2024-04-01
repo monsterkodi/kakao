@@ -106,7 +106,6 @@ knrd = (files = [], opt = {}) ○->
                     if opt.verbose
                         log g2('✔ '), m3 tilde srcFile
         else
-            # if slash.ext(file) not in ['css' 'html' 'json']
             error 'unknown file type' file
             
         null

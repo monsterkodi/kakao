@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var calculus, funcs, render, styl, subvars, vars
 
@@ -9,14 +9,94 @@ let blockFillets = kstr.blockFillets
 vars = {}
 funcs = {}
 
+render = function (block, text, amps = [])
+{
+    var amp, b, cb, childBlocks, funcName, funcValue, idt, varName, varValue
+
+    if ((block.fillet[0] != null ? block.fillet[0].match : undefined) === '//')
+    {
+        return text
+    }
+    if ((block.fillet[1] != null ? block.fillet[1].match : undefined) === '=')
+    {
+        varName = (block.fillet[0] != null ? block.fillet[0].match : undefined)
+        varValue = unfillet(calculus(subvars(block.fillet.slice(2))))
+        vars[varName] = varValue
+        return text
+    }
+    if ((block.fillet[1] != null ? block.fillet[1].match : undefined) === '()')
+    {
+        funcName = (block.fillet[0] != null ? block.fillet[0].match : undefined)
+        if (funcs[funcName])
+        {
+            text += funcs[funcName]
+            return text
+        }
+        funcValue = ''
+        var list = _k_.list(block.blocks)
+        for (var _41_15_ = 0; _41_15_ < list.length; _41_15_++)
+        {
+            cb = list[_41_15_]
+            funcValue = render(cb,funcValue,amps)
+        }
+        funcs[funcName] = funcValue
+        return text
+    }
+    idt = _k_.rpad(block.indent)
+    if (!_k_.empty(block.blocks))
+    {
+        childBlocks = block.blocks.filter(function (cb)
+        {
+            if ((cb.fillet[0] != null ? cb.fillet[0].match[0] : undefined) === '&')
+            {
+                cb.fillet[0].match = cb.fillet[0].match.slice(1)
+                cb.fillet = block.fillet.concat(cb.fillet)
+                amps.push(cb)
+                return false
+            }
+            else
+            {
+                return true
+            }
+        })
+        text += '\n' + idt + unfillet(block.fillet)
+        text += '\n' + idt + '{'
+        var list1 = _k_.list(childBlocks)
+        for (var _61_14_ = 0; _61_14_ < list1.length; _61_14_++)
+        {
+            b = list1[_61_14_]
+            text += render(b,'')
+        }
+        text += '\n' + idt + '}\n'
+    }
+    else
+    {
+        text += '\n'
+        text += idt + block.fillet[0].match + ': ' + unfillet(calculus(subvars(block.fillet.slice(1))))
+        text += ';'
+    }
+    while (amp = amps.shift())
+    {
+        amp.indent = 0
+        var list2 = _k_.list(amp.blocks)
+        for (var _73_18_ = 0; _73_18_ < list2.length; _73_18_++)
+        {
+            block = list2[_73_18_]
+            block.indent = 4
+        }
+        text += render(amp,'')
+    }
+    return text
+}
+
 subvars = function (fillets)
 {
     var fillet, value
 
     var list = _k_.list(fillets)
-    for (var _24_15_ = 0; _24_15_ < list.length; _24_15_++)
+    for (var _88_15_ = 0; _88_15_ < list.length; _88_15_++)
     {
-        fillet = list[_24_15_]
+        fillet = list[_88_15_]
         if (value = vars[fillet.match])
         {
             fillet.match = value
@@ -70,86 +150,6 @@ calculus = function (fillets)
     return fillets
 }
 
-render = function (block, text, amps = [])
-{
-    var amp, b, cb, childBlocks, funcName, funcValue, idt, varName, varValue
-
-    if ((block.fillet[0] != null ? block.fillet[0].match : undefined) === '//')
-    {
-        return text
-    }
-    if ((block.fillet[1] != null ? block.fillet[1].match : undefined) === '=')
-    {
-        varName = (block.fillet[0] != null ? block.fillet[0].match : undefined)
-        varValue = unfillet(calculus(subvars(block.fillet.slice(2))))
-        vars[varName] = varValue
-        return text
-    }
-    if ((block.fillet[1] != null ? block.fillet[1].match : undefined) === '()')
-    {
-        funcName = (block.fillet[0] != null ? block.fillet[0].match : undefined)
-        if (funcs[funcName])
-        {
-            text += funcs[funcName]
-            return text
-        }
-        funcValue = ''
-        var list = _k_.list(block.blocks)
-        for (var _76_15_ = 0; _76_15_ < list.length; _76_15_++)
-        {
-            cb = list[_76_15_]
-            funcValue = render(cb,funcValue,amps)
-        }
-        funcs[funcName] = funcValue
-        return text
-    }
-    idt = _k_.rpad(block.indent)
-    if (!_k_.empty(block.blocks))
-    {
-        childBlocks = block.blocks.filter(function (cb)
-        {
-            if ((cb.fillet[0] != null ? cb.fillet[0].match[0] : undefined) === '&')
-            {
-                cb.fillet[0].match = cb.fillet[0].match.slice(1)
-                cb.fillet = block.fillet.concat(cb.fillet)
-                amps.push(cb)
-                return false
-            }
-            else
-            {
-                return true
-            }
-        })
-        text += '\n' + idt + unfillet(block.fillet)
-        text += '\n' + idt + '{'
-        var list1 = _k_.list(childBlocks)
-        for (var _96_14_ = 0; _96_14_ < list1.length; _96_14_++)
-        {
-            b = list1[_96_14_]
-            text += render(b,'')
-        }
-        text += '\n' + idt + '}\n'
-    }
-    else
-    {
-        text += '\n'
-        text += idt + block.fillet[0].match + ': ' + unfillet(calculus(subvars(block.fillet.slice(1))))
-        text += ';'
-    }
-    while (amp = amps.shift())
-    {
-        amp.indent = 0
-        var list2 = _k_.list(amp.blocks)
-        for (var _108_18_ = 0; _108_18_ < list2.length; _108_18_++)
-        {
-            block = list2[_108_18_]
-            block.indent = 4
-        }
-        text += render(amp,'')
-    }
-    return text
-}
-
 styl = function (srcText)
 {
     var block, blocks, lines, tgtText
@@ -163,9 +163,9 @@ styl = function (srcText)
         return kstr.fillet(line,'-')
     }))
     var list = _k_.list(blocks)
-    for (var _130_14_ = 0; _130_14_ < list.length; _130_14_++)
+    for (var _142_14_ = 0; _142_14_ < list.length; _142_14_++)
     {
-        block = list[_130_14_]
+        block = list[_142_14_]
         tgtText = render(block,tgtText)
     }
     return tgtText
