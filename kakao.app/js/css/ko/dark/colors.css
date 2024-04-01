@@ -1,479 +1,773 @@
-/*
- 0000000   0000000   000       0000000   00000000    0000000    
-000       000   000  000      000   000  000   000  000         
-000       000   000  000      000   000  0000000    0000000     
-000       000   000  000      000   000  000   000       000    
- 0000000   0000000   0000000   0000000   000   000  0000000     
-*/
-body {
-  background: #000;
-  color: #fff;
+
+body
+{
+    background: #000000;
+    color: #fff;
 }
-.split-handle {
-  background: #111;
+
+.split-handle
+{
+    background: #111111;
 }
-.browser {
-  background: #000;
-  color: #fff;
+
+.browser
+{
+    background: #000000;
+    color: #fff;
 }
-.browserRow.hover {
-  background: #111;
+
+.browserRow
+{
 }
-.browserRow.active {
-  background: #111;
+
+.browserRow.hover
+{
+    background: #111;
 }
-.browserRow.active.dir {
-  color: #ff8;
+
+.browserRow.active
+{
+    background: #111111;
 }
-.browserRow.selected {
-  background: #116;
+
+.browserRow.active.dir
+{
+    color: #ff8;
 }
-.rowNameInput {
-  color: #ff0;
-  background-color: #111;
+
+.browserRow.selected
+{
+    background: #116;
 }
-.browserColumn.focus .browserRow.active {
-  background: #22a;
+
+.rowNameInput
+{
+    color: #ff0;
+    background-color: #111111;
 }
-.browserImage {
-  border: 1px solid #111;
-  background-image: linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%);
+
+.browserColumn.focus .browserRow.active
+{
+    background: #22a;
 }
-.browserRow.historySeparator * {
-  color: #555;
+
+.browserImage
+{
+    border: 1px solid #111111;
+    background-image: linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%);
 }
-.browserRow.historySeparator.active * {
-  color: #888;
+
+.browserRow.historySeparator *
+{
+    color: #555;
 }
-#shelf .browserRow.active {
-  background: #000;
+
+.browserRow.historySeparator.active *
+{
+    color: #888;
 }
-#shelf {
-  background: #0a0a0a;
+
+#shelf .browserRow.active
+{
+    background: #000000;
 }
-#shelf.focus {
-  background: #111;
+
+#shelf
+{
+    background: #0a0a0a;
 }
-.fileInfoData {
-  margin-top: 20px;
-  color: #444;
+
+#shelf.focus
+{
+    background: #111111;
 }
-.fileInfoData .punct {
-  color: #222;
+
+.fileInfoData
+{
+    margin-top: 20px;
+    color: #444;
 }
-#commandline-editor {
-  color: #fff;
-  background: #000;
+
+.fileInfoData .punct
+{
+    color: #222;
 }
-.commandlist {
-  background: #0a0a0a;
+
+#commandline-editor
+{
+    color: #fff;
+    background: #000000;
 }
-.commandlist .selection {
-  background: #222;
+
+.commandlist
+{
+    background: #0a0a0a;
 }
-.commandlist.goto .linenumber.selected span {
-  color: #66f;
+
+.commandlist .selection
+{
+    background: #222;
 }
-.commandlist.term .linenumber.selected span {
-  color: #f80;
+
+.commandlist.goto .linenumber.selected span
+{
+    color: #66f;
 }
-.commandlistItem {
-  cursor: pointer;
-  padding-right: 4px;
+
+.commandlist.term .linenumber.selected span
+{
+    color: #f80;
 }
-.commandlistItem:hover {
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-  background: #111;
+
+.commandlistItem
+{
+    cursor: pointer;
+    padding-right: 4px;
 }
-#commandline-button {
-  color: #aaa;
-  background: #111;
+
+.commandlistItem:hover
+{
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background: #111;
 }
-#commandline-button.empty {
-  background: #000;
-  border-right-color: #111;
+
+#commandline-button
+{
+    color: #aaa;
+    background: #111111;
 }
-#commandline-button.active {
-  background: #222;
+
+#commandline-button.empty
+{
+    background: #000000;
+    border-right-color: #111111;
 }
+
+#commandline-button.active
+{
+    background: #222;
+}
+
+
+
+span.ko,
+span.macro,
+#commandline-button.active
+{
+}
+
 span.ko.open,
 span.macro.open,
-#commandline-button.active.open {
-  color: #0f0;
+#commandline-button.active.open
+{
+    color: #0f0;
 }
+
 span.ko.goto,
 span.macro.goto,
-#commandline-button.active.goto {
-  color: #66f;
+#commandline-button.active.goto
+{
+    color: #66f;
 }
+
 span.ko.browse,
 span.macro.browse,
-#commandline-button.active.browse {
-  color: #ff0;
+#commandline-button.active.browse
+{
+    color: #ff0;
 }
+
 span.ko.find,
 span.macro.find,
-#commandline-button.active.find {
-  color: #f5f;
+#commandline-button.active.find
+{
+    color: #f5f;
 }
+
 span.ko.search,
 span.macro.search,
-#commandline-button.active.search {
-  color: #0a0;
+#commandline-button.active.search
+{
+    color: #0a0;
 }
+
 span.ko.build,
 span.macro.build,
-#commandline-button.active.build {
-  color: #aaa;
+#commandline-button.active.build
+{
+    color: #aaa;
 }
+
 span.ko.macro,
 span.macro.macro,
-#commandline-button.active.macro {
-  color: #888;
+#commandline-button.active.macro
+{
+    color: #888;
 }
-#commandline-button.macro {
-  color: #aaa;
+
+#commandline-button.macro
+{
+    color: #aaa;
 }
-.ctrl {
-  color: #888;
+
+.ctrl
+{
+    color: #888;
 }
-.ctrl:hover {
-  color: #fff;
+
+.ctrl:hover
+{
+    color: #fff;
 }
-.ctrl:active {
-  color: #ff0;
+
+.ctrl:active
+{
+    color: #ff0;
 }
-#info {
-  background: #000;
-  border-left-color: #111;
+
+#info
+{
+    background: #000000;
+    border-left-color: #111111;
 }
+
+
 .info-cursor-line,
-.info-cursor-column {
-  color: #bbb;
+.info-cursor-column
+{
+    color: #bbb;
 }
+
 .info-cursor-line.virtual,
-.info-cursor-column.virtual {
-  color: #08f;
+.info-cursor-column.virtual
+{
+    color: #08f;
 }
-.info-lines {
-  color: #555;
+
+.info-lines
+{
+    color: #555;
 }
-.info-words {
-  color: #0a0;
+
+.info-words
+{
+    color: #0a0;
 }
-.info-classes {
-  color: #ff8;
+
+.info-classes
+{
+    color: #ff8;
 }
-.info-funcs {
-  color: #f80;
+
+.info-funcs
+{
+    color: #f80;
 }
-.info-files {
-  color: #44f;
+
+.info-files
+{
+    color: #44f;
 }
-.info-cursors {
-  color: #f80;
+
+.info-cursors
+{
+    color: #f80;
 }
-.info-sticky {
-  color: #88f;
+
+.info-sticky
+{
+    color: #88f;
 }
-.info-selections {
-  color: #888;
+
+.info-selections
+{
+    color: #888;
 }
-.info-highlights {
-  color: #6767ab;
+
+.info-highlights
+{
+    color: rgb(103,103,171);
 }
-.tooltip {
-  background: #111;
+
+.tooltip
+{
+    background: #111111;
 }
-.tabs {
-  background: #111;
-  color: #aaa;
+
+.tabs
+{
+    background: #111111;
+    color: #aaa;
 }
-#titlebar.focus .tabs {
-  color: #3c3;
+
+#titlebar.focus .tabs
+{
+    color: #3c3;
 }
+
+
 .tab .dot,
-.tab .prjdot {
-  color: #444;
+.tab .prjdot
+{
+    color: #444;
 }
+
 .tab .dot.focus,
-.tab .prjdot.focus {
-  color: #060;
+.tab .prjdot.focus
+{
+    color: #060;
 }
+
+
 .tab.dirty,
-.tab.dirty .dot {
-  color: #aaf;
+.tab.dirty .dot
+{
+    color: #aaf;
 }
-.tab:hover {
-  opacity: 1;
+
+.tab:hover
+{
+    opacity: 1;
 }
-.dot:hover {
-  color: #f80;
+
+.dot:hover
+{
+    color: #f80;
 }
-.tab .prjdot.activeTab {
-  color: #fff;
+
+.tab .prjdot.activeTab
+{
+    color: #fff;
 }
-.tab {
-  background: #111;
+
+.tab
+{
+    background: #111111;
 }
-.tab.active {
-  background: #222;
+
+.tab.active
+{
+    background: #222;
 }
-.tabstate {
-  stroke: #444;
-  fill: #444;
+
+.tabstate
+{
+    stroke: #444;
+    fill: #444;
 }
-.tabstate:hover {
-  background: #181818;
+
+.tabstate:hover
+{
+    background: #181818;
 }
-.tab.active .tabstate:hover {
-  background: #282828;
+
+.tab.active .tabstate:hover
+{
+    background: #282828;
 }
-.tab.prj {
-  background: #181818;
+
+.tab.prj
+{
+    background: #181818;
 }
-.tab.prj .name {
-  color: #aaf;
-  opacity: 1;
+
+.tab.prj .name
+{
+    color: #aaf;
+    opacity: 1;
 }
-.tab.prj.active {
-  background: #444;
+
+.tab.prj.active
+{
+    background: #444;
 }
-#browser {
-  background: #181818;
-  border-color: #111;
+
+#browser
+{
+    background: #181818;
+    border-color: #111111;
 }
-.browserColumn {
-  border-top-color: #111;
+
+.browserColumn
+{
+    border-top-color: #111111;
 }
-.crumb {
-  background: rgba(0,0,0,0);
+
+.crumb
+{
+    background: rgba(0,0,0,0);
 }
-.crumb:hover {
-  background: #0e0e0e;
+
+.crumb:hover
+{
+    background: #0e0e0e;
 }
-.crumb .path:hover {
-  color: #aaf;
+
+.crumb .path:hover
+{
+    color: #aaf;
 }
+
+
 .crumb,
-.dir {
-  color: #aaf;
+.dir
+{
+    color: #aaf;
 }
-.crumb .inline:hover {
-  color: #fff;
-  opacity: 1;
+
+.crumb .inline:hover
+{
+    color: white;
+    opacity: 1;
 }
+
+
 #terminal,
-#editor {
-  color: #ddd;
-  background: #000;
-  border-color: #111;
-}
-#split {
-  border-color: #111;
-}
-*:focus .cursor {
-  background: #f80;
-}
-*:focus .cursor.virtual {
-  background: #008;
-}
-*:focus .cursor.main {
-  background: #ff0;
-}
-*:focus .cursor.blink {
-  background: #f80;
-}
-*:focus .cursor.blink.off {
-  background: transparent;
-}
-.cursors.salterMode .cursor {
-  background: #050;
-}
-.cursors.salterMode .cursor.main {
-  background: #080;
-}
-.cursor {
-  background: #444;
-}
-.cursor.main {
-  background: #666;
-}
-.cursor.virtual {
-  background: #111;
-}
-.cursor-line {
-  background: #080808;
-}
-.commandlist .cursor {
-  background: transparent;
-}
-.numbers {
-  background: rgba(15,15,15,0.5);
-}
-.linenumber {
-  border-right-color: #111;
-}
-.linenumber span {
-  color: #111;
-}
-.linenumber.highligd span {
-  color: rgba(155,155,255,0.6);
-}
-.linenumber.selected span {
-  color: #555;
-}
-.linenumber.highligd.selected:not(.cursored) span {
-  color: #bbf;
-}
-.linenumber.cursored span {
-  color: #f00;
-}
-.linenumber.cursored.selected span {
-  color: #f80;
-}
-.linenumber.cursored.main span {
-  color: #fd0;
-}
-.linenumber.cursored.main.selected span {
-  color: #ff0;
-}
-.commandlist.open .linenumber {
-  padding-top: 4px;
-}
-.commandlist.open .linenumber.selected span {
-  color: #ff0;
-}
-.commandlist.open .linenumber span svg {
-  fill: #a60;
-}
-.commandlist.open .linenumber.selected span svg {
-  fill: #ff0;
-}
-.commandlist.open .linenumber span {
-  color: #444;
-}
-.meta.href {
-  background-color: #222;
-}
-.meta.gitInfoFile {
-  background: #222;
-  opacity: 0.5;
-  padding-right: 10px;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
-.meta.gitInfoChange {
-  background: #060;
-}
-.meta.gitInfoDelete {
-  background: #400;
-}
-.meta.git {
-  opacity: 0.4;
-  background: #0f0;
-}
-.meta.git.del {
-  background: #f00;
-}
-.meta.git.mod {
-  background: #0f0;
-}
-.meta.git.add {
-  background: #88f;
-}
-.meta.git.boring {
-  background: #666;
-}
-.meta.dbg {
-  opacity: 0.8;
-  background: #f00;
-}
-.meta.dbg.pointer {
-  opacity: 1;
-  border-left-color: #ff0;
-}
-.meta.pigment {
-  opacity: 1;
-}
-.linenumber span .saveButton {
-  background: #f80;
-}
-.linenumber span.gitInfoLine {
-  transform: translateY(-4px);
-}
-.linenumber span.gitInfoLine.changed {
-  color: #080;
-}
-.linenumber span.gitInfoLine.deleted {
-  color: #f00;
-}
-.linenumber span.gitInfoLine.added {
-  color: #ff0;
-}
-.linenumber.gitInfoLine {
-  background: #111;
-}
-.minimap {
-  background: #000;
-  border-left-color: #111;
-}
-.topbot {
-  background-color: #111;
-}
-.highlight {
-  color: rgba(255,100,255,0.7);
-  background: rgba(100,50,255,0.2);
-}
-.bracketmatch {
-  background: rgba(255,255,255,0.2);
-}
-.stringmatch {
-  background: rgba(0,255,0,0.3);
-}
-*:focus .selection {
-  background: #222;
-}
-.selection {
-  color: #444;
-  background: #111;
-}
-.autocomplete-span {
-  background: #22a;
-  color: #ff0;
-}
-.autocomplete-span.selected {
-  color: #fff;
-}
-.autocomplete-list {
-  background: #111;
-}
-.autocomplete-list::-webkit-scrollbar {
-  background-color: #222;
-}
-.autocomplete-list::-webkit-scrollbar-thumb {
-  background-color: #44f;
-}
-.autocomplete-item {
-  color: #ccc;
-}
-.autocomplete-item.selected {
-  background: #44f;
-  color: #ff0;
-}
-.scroller.long {
-  color: #111;
-}
-.scrollbar.long {
-  color: #181818;
-}
-.scroller.short {
-  color: #7f7fff;
-}
-.scrollbar.short {
-  color: #a0a0ff;
-}
-.scrollhandle {
-  background: #88f;
+#editor
+{
+    color: #ddd;
+    background: #000000;
+    border-color: #111111;
+}
+
+#split
+{
+    border-color: #111111;
+}
+
+*:focus .cursor
+{
+    background: #f80;
+}
+
+*:focus .cursor.virtual
+{
+    background: #008;
+}
+
+*:focus .cursor.main
+{
+    background: #ff0;
+}
+
+*:focus .cursor.blink
+{
+    background: #f80;
+}
+
+*:focus .cursor.blink.off
+{
+    background: transparent;
+}
+
+.cursors.salterMode .cursor
+{
+    background: #050;
+}
+
+.cursors.salterMode .cursor.main
+{
+    background: #080;
+}
+
+.cursor
+{
+    background: #444;
+}
+
+.cursor.main
+{
+    background: #666;
+}
+
+.cursor.virtual
+{
+    background: #111;
+}
+
+.cursor-line
+{
+    background: #080808;
+}
+
+.commandlist .cursor
+{
+    background: transparent;
+}
+
+.numbers
+{
+    background: rgba(15, 15, 15, 0.5);
+}
+
+.linenumber
+{
+    border-right-color: #111111;
+}
+
+.linenumber span
+{
+    color: #111111;
+}
+
+.linenumber.highligd span
+{
+    color: rgba(155,155,255, 0.6);
+}
+
+.linenumber.selected span
+{
+    color: #555;
+}
+
+.linenumber.highligd.selected:not(.cursored) span
+{
+    color: #bbf;
+}
+
+.linenumber.cursored span
+{
+    color: #f00;
+}
+
+.linenumber.cursored.selected span
+{
+    color: #f80;
+}
+
+.linenumber.cursored.main span
+{
+    color: #fd0;
+}
+
+.linenumber.cursored.main.selected span
+{
+    color: #ff0;
+}
+
+.commandlist.open .linenumber
+{
+    padding-top: 4px;
+}
+
+.commandlist.open .linenumber.selected span
+{
+    color: #ff0;
+}
+
+.commandlist.open .linenumber span svg
+{
+    fill: #a60;
+}
+
+.commandlist.open .linenumber.selected span svg
+{
+    fill: #ff0;
+}
+
+.commandlist.open .linenumber span
+{
+    color: #444;
+}
+
+.meta
+{
+}
+
+.meta.href
+{
+    background-color: #222;
+}
+
+.meta.gitInfoFile
+{
+    background: #222;
+    opacity: 0.5;
+    padding-right: 10px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.meta.gitInfoChange
+{
+    background: #060;
+}
+
+.meta.gitInfoDelete
+{
+    background: #400;
+}
+
+.meta.git
+{
+    opacity: 0.4;
+    background: #0f0;
+}
+
+.meta.git.del
+{
+    background: #f00;
+}
+
+.meta.git.mod
+{
+    background: #0f0;
+}
+
+.meta.git.add
+{
+    background: #88f;
+}
+
+.meta.git.boring
+{
+    background: #666;
+}
+
+.meta.dbg
+{
+    opacity: 0.8;
+    background: #f00;
+}
+
+.meta.dbg.pointer
+{
+    opacity: 1;
+    border-left-color: #ff0;
+}
+
+.meta.pigment
+{
+    opacity: 1;
+}
+
+.linenumber span .saveButton
+{
+    background: #f80;
+}
+
+.linenumber span.gitInfoLine
+{
+    transform: translateY(-4px);
+}
+
+.linenumber span.gitInfoLine.changed
+{
+    color: #080;
+}
+
+.linenumber span.gitInfoLine.deleted
+{
+    color: #f00;
+}
+
+.linenumber span.gitInfoLine.added
+{
+    color: #ff0;
+}
+
+.linenumber.gitInfoLine
+{
+    background: #111111;
+}
+
+.minimap
+{
+    background: #000000;
+    border-left-color: #111111;
+}
+
+.topbot
+{
+    background-color: #111111;
+}
+
+.highlight
+{
+    color: rgba(255, 100, 255, 0.7);
+    background: rgba(100, 50, 255, 0.2);
+}
+
+.bracketmatch
+{
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.stringmatch
+{
+    background: rgba(0,255,0, 0.3);
+}
+
+*:focus .selection
+{
+        background: #222;
+}
+
+.selection
+{
+    color: #444;
+    background: #111;
+}
+
+.autocomplete-span
+{
+    background: #22a;
+    color: #ff0;
+}
+
+.autocomplete-span.selected
+{
+    color: #fff;
+}
+
+.autocomplete-list
+{
+    background: #111111;
+}
+
+.autocomplete-list::-webkit-scrollbar
+{
+    background-color: #222;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb
+{
+    background-color: #44f;
+}
+
+.autocomplete-item
+{
+    color: #ccc;
+}
+
+.autocomplete-item.selected
+{
+    background: #44f;
+    color: #ff0;
+}
+
+.scroller.long
+{
+    color: #111111;
+}
+
+.scrollbar.long
+{
+    color: #181818;
+}
+
+.scroller.short
+{
+    color: rgb(127,127,255);
+}
+
+.scrollbar.short
+{
+    color: rgb(160,160,255);
+}
+
+.scrollhandle
+{
+    background: #88f;
 }

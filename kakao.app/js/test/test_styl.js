@@ -221,6 +221,118 @@ awesome(char)
     content: '\\f011';
 }
 `)
+    compare(styl(`frameWidth = 10px
+#titlebar .winbutton
+    padding-right   frameWidth * 0.5`),`
+#titlebar .winbutton
+{
+    padding-right: 5px;
+}
+`)
+    compare(styl(`.minimapSelections
+.minimapCursors
+    background-color    transparent`),`
+
+.minimapSelections,
+.minimapCursors
+{
+    background-color: transparent;
+}
+`)
+    compare(styl(`.numbers
+    background          rgba(15, 15, 15, 0.5)`),`
+.numbers
+{
+    background: rgba(15, 15, 15, 0.5);
+}
+`)
+    compare(styl(`span.ko
+span.macro
+    &.open
+        color           #0f0
+    &.close
+        color           #ff0`),`
+
+span.ko,
+span.macro
+{
+}
+
+span.ko.open,
+span.macro.open
+{
+    color: #0f0;
+}
+
+span.ko.close,
+span.macro.close
+{
+    color: #ff0;
+}
+`)
+    compare(styl(`.commandlist.goto .linenumber.selected span
+    color                   #66f`),`
+.commandlist.goto .linenumber.selected span
+{
+    color: #66f;
+}
+`)
+    compare(styl(`.linenumber
+    border-right-color  red
+    & span
+        color           green
+
+    &.highligd span
+        color           rgba(155,155,255, 0.6)
+    &.highligd.selected:not(.cursored) span
+        color           #bbf`),`
+.linenumber
+{
+    border-right-color: red;
+}
+
+.linenumber span
+{
+    color: green;
+}
+
+.linenumber.highligd span
+{
+    color: rgba(155,155,255, 0.6);
+}
+
+.linenumber.highligd.selected:not(.cursored) span
+{
+    color: #bbf;
+}
+`)
+    compare(styl(`.icon.binary:before       { font-family: octicons; content: "\\f094"; }`),`.icon.binary:before       { font-family: octicons; content: "\\f094"; }
+`)
+    compare(styl(`.icon.binary:before       { font-family: octicons; content: "\\f094"; }
+.icon.book:before         { font-family: octicons; content: "\\f007"; }`),`.icon.binary:before       { font-family: octicons; content: "\\f094"; }
+.icon.book:before         { font-family: octicons; content: "\\f007"; }
+`)
+    compare(styl(`octicon(char)
+    font-family         octicons
+    content             char
+
+.file-icon:before
+    octicon('\\f011')
+    
+.folder-icon:before
+    octicon('\\f016')`),`
+.file-icon:before
+{
+    font-family: octicons;
+    content: '\\f011';
+}
+
+.folder-icon:before
+{
+    font-family: octicons;
+    content: '\\f016';
+}
+`)
 }
 toExport["styl"]._section_ = true
 toExport._test_ = true

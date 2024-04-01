@@ -1,10 +1,9 @@
-/*
- 0000000   0000000   000       0000000   00000000    0000000    
-000       000   000  000      000   000  000   000  000         
-000       000   000  000      000   000  0000000    0000000     
-000       000   000  000      000   000  000   000       000    
- 0000000   0000000   0000000   0000000   000   000  0000000     
-*/
+//  0000000   0000000   000       0000000   00000000    0000000    
+// 000       000   000  000      000   000  000   000  000         
+// 000       000   000  000      000   000  0000000    0000000     
+// 000       000   000  000      000   000  000   000       000    
+//  0000000   0000000   0000000   0000000   000   000  0000000     
+
 // 0000000     0000000   00000000   000   000
 // 000   000  000   000  000   000  000  000
 // 000   000  000000000  0000000    0000000
@@ -342,7 +341,7 @@ span.macro
 // 000       000   000  000   000       000  000   000  000   000
 //  0000000   0000000   000   000  0000000    0000000   000   000
 
-*:focus .cursor         // focus colors
+*:focus .cursor
     background          #f80
     &.virtual
         background      #008
@@ -358,7 +357,7 @@ span.macro
     &.main
         background      #080
 
-.cursor                 // blur colors
+.cursor
     background          #444
     &.main
         background      #666
@@ -378,7 +377,7 @@ span.macro
 // 000   000   0000000   000   000  0000000    00000000  000   000  0000000
 
 .numbers
-    background          rgba(15, 15, 15, 0.5) // this darkens selection
+    background          rgba(15, 15, 15, 0.5)
 
 .linenumber
     border-right-color  frameColor
@@ -486,10 +485,7 @@ span.macro
     border-left-color       frameColor
 
 .topbot
-    background-color        frameColor // bgColor
-
-// .minimapTopBot
-    // background-color        frameColor // backColor
+    background-color        frameColor
 
 // 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000
 // 000   000  000  000        000   000  000      000  000        000   000     000
@@ -498,7 +494,7 @@ span.macro
 // 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000
 
 .highlight
-    color                   rgba(255, 100, 255, 0.7) // used by minimap
+    color                   rgba(255, 100, 255, 0.7)
     background              rgba(100, 50, 255, 0.2)
 
 .bracketmatch
@@ -514,11 +510,11 @@ span.macro
 // 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 *:focus .selection
-        background          #222 // focus
+        background          #222
 
 .selection
-    color                   #444 // used by minimap
-    background              #111 // no focus
+    color                   #444
+    background              #111
 
 //  0000000   000   000  000000000   0000000    0000000   0000000   00     00  00000000   000      00000000  000000000  00000000
 // 000   000  000   000     000     000   000  000       000   000  000   000  000   000  000      000          000     000

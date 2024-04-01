@@ -1,10 +1,9 @@
-/*
- 0000000   0000000   000       0000000   00000000    0000000    
-000       000   000  000      000   000  000   000  000         
-000       000   000  000      000   000  0000000    0000000     
-000       000   000  000      000   000  000   000       000    
- 0000000   0000000   0000000   0000000   000   000  0000000     
-*/
+//  0000000   0000000   000       0000000   00000000    0000000    
+// 000       000   000  000      000   000  000   000  000         
+// 000       000   000  000      000   000  0000000    0000000     
+// 000       000   000  000      000   000  000   000       000    
+//  0000000   0000000   0000000   0000000   000   000  0000000     
+
 // 0000000    00000000   000   0000000   000   000  000000000    
 // 000   000  000   000  000  000        000   000     000       
 // 0000000    0000000    000  000  0000  000000000     000       
@@ -95,17 +94,8 @@ body
 
 .popupItem
     color               textPopupColor
-    //&:not(:last-child)
-    //    border-bottom   1px solid frameColor
-    //&.selected
-    //    color           textFocusColor
-    //    & .popupCombo
-    //        color       textBlurColor
     &.separator
         border-top      1px solid separatorColor
-    //&:not(:last-child)
-    //    border-bottom   1px solid frameColor
-    
     
 //  0000000  000   000  00000000  000      00000000    
 // 000       000   000  000       000      000         
@@ -395,7 +385,7 @@ span.macro
     &.main
         background      #080
 
-.cursor                 // blur colors
+.cursor                 
     background          #444
     &.main
         background      #666
@@ -415,7 +405,7 @@ span.macro
 // 000   000   0000000   000   000  0000000    00000000  000   000  0000000
 
 .numbers
-    background          numbersColor // this darkens selection
+    background          numbersColor
 
 .linenumber
     border-right-color  frameColor
@@ -523,9 +513,6 @@ span.macro
 .topbot
     background-color        backColor
 
-// .minimapTopBot
-    // background-color        frameColor // backColor
-
 // 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000
 // 000   000  000  000        000   000  000      000  000        000   000     000
 // 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000
@@ -533,7 +520,7 @@ span.macro
 // 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000
 
 .highlight
-    color                   rgba(255, 100, 255, 0.7) // used by minimap
+    color                   rgba(255, 100, 255, 0.7)
     background              rgba(100, 50, 255, 0.2)
 
 .bracketmatch
@@ -549,11 +536,11 @@ span.macro
 // 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 *:focus .selection
-        background          #444 // focus
+        background          #444
 
 .selection
-    color                   #444 // used by minimap
-    background              #181818 // no focus
+    color                   #444
+    background              #181818
 
 //  0000000   000   000  000000000   0000000    0000000   0000000   00     00  00000000   000      00000000  000000000  00000000
 // 000   000  000   000     000     000   000  000       000   000  000   000  000   000  000      000          000     000

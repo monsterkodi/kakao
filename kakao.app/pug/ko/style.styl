@@ -1,10 +1,8 @@
-/*
- 0000000  000000000  000   000  000
-000          000      000 000   000
-0000000      000       00000    000
-     000     000        000     000
-0000000      000        000     0000000
-*/
+//  0000000  000000000  000   000  000
+// 000          000      000 000   000
+// 0000000      000       00000    000
+//      000     000        000     000
+// 0000000      000        000     0000000
 
 selectionRadius       = 0.3em
 selectionRadiusCursor = 0.15em
@@ -265,7 +263,7 @@ unicode(char)
 .file-icon:before
     octicon('\f011')
     
-.folder-icon:before 
+.folder-icon:before
     octicon('\f016')
     
 //  0000000  00000000   000   000  00     00  0000000    
@@ -363,7 +361,7 @@ unicode(char)
     font-size           11px
     font-weight         bold
     font-family         fontMono
-    right               (minimapWidth + 12)
+    right               minimapWidth + 12
     top                 0
     height              commandlineHeight
     
@@ -396,7 +394,7 @@ unicode(char)
     padding-left        9px
     padding-right       9px
     cursor              pointer
-    min-width           (numbersWidth + 1px)
+    min-width           numbersWidth + 1px
     box-sizing          border-box
     white-space         nowrap
     &.empty
@@ -411,7 +409,7 @@ unicode(char)
 .fps
     pointer-events  none
     position        absolute
-    right           (minimapWidth + 1)
+    right           minimapWidth + 1
     top             0
     width           minimapWidth
     height          commandlineHeight
@@ -600,7 +598,6 @@ infoPadding = 6px
 #editor
     position            relative
     overflow            hidden
-    // font-family         fontMono
 
 // 000       0000000   000   000  00000000  00000000
 // 000      000   000   000 000   000       000   000
@@ -692,7 +689,7 @@ infoPadding = 6px
 
     & span
         display         inline-block
-        width           (numbersWidth - 8px)
+        width           numbersWidth - 8px
         text-align      right
         padding-top     2px
 
