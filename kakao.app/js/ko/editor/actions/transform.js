@@ -1,5 +1,8 @@
 var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isFunc: function (o) {return typeof o === 'function'}}
 
+import util from "../../../kxk/util.js"
+let reversed = util.reversed
+
 import kstr from "../../../kxk/kstr.js"
 
 import slash from "../../../kxk/slash.js"
@@ -46,7 +49,7 @@ class Transform
         }
 
         pad = Number(step * (cs.length - 1) + offset).toString(base).length
-        numbers = (function () { var r_62_77_ = []; for (var _62_81_ = i = 0, _62_85_ = cs.length; (_62_81_ <= _62_85_ ? i < cs.length : i > cs.length); (_62_81_ <= _62_85_ ? ++i : --i))  { r_62_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_62_77_ }).bind(this)()
+        numbers = (function () { var r_63_77_ = []; for (var _63_81_ = i = 0, _63_85_ = cs.length; (_63_81_ <= _63_85_ ? i < cs.length : i > cs.length); (_63_81_ <= _63_85_ ? ++i : --i))  { r_63_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_63_77_ }).bind(this)()
         this.editor.replaceSelectedText(numbers)
         this.editor.do.end()
         return 'count'
@@ -74,7 +77,7 @@ class Transform
     {
         this.trans(function (l)
         {
-            return l.reversed()
+            return reversed(l)
         })
         return 'reverse'
     }
@@ -117,9 +120,9 @@ class Transform
             v = []
             r = []
             var list = _k_.list(l)
-            for (var _114_18_ = 0; _114_18_ < list.length; _114_18_++)
+            for (var _115_18_ = 0; _115_18_ < list.length; _115_18_++)
             {
-                a = list[_114_18_]
+                a = list[_115_18_]
                 _k_.in(a,v) ? r.push('') : v.push(a)
             }
             return r
@@ -157,9 +160,9 @@ class Transform
             var r
 
             var list = _k_.list(matchr.ranges(/\w+/,t))
-            for (var _140_18_ = 0; _140_18_ < list.length; _140_18_++)
+            for (var _141_18_ = 0; _141_18_ < list.length; _141_18_++)
             {
-                r = list[_140_18_]
+                r = list[_141_18_]
                 t = t.splice(r.start,r.match.length,r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase())
             }
             return t
@@ -232,7 +235,7 @@ class Transform
 
     tfunc (opt)
     {
-        var selections, tl, _232_42_, _233_42_
+        var selections, tl, _233_42_, _234_42_
 
         if (!this.editor.numSelections())
         {
@@ -290,9 +293,9 @@ class Transform
 
     static do (editor, transName, ...opts)
     {
-        var t, _272_29_
+        var t, _273_29_
 
-        t = ((_272_29_=editor.transform) != null ? _272_29_ : new Transform(editor))
+        t = ((_273_29_=editor.transform) != null ? _273_29_ : new Transform(editor))
         return t.do.apply(t,[transName].concat(opts))
     }
 }
