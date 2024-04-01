@@ -4,47 +4,32 @@ var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSiz
 
 import kakao from "../../kakao.js"
 
-import dom from "../../kxk/dom.js"
-let stopEvent = dom.stopEvent
-
 import kxk from "../../kxk.js"
 let stash = kxk.stash
 let post = kxk.post
 let prefs = kxk.prefs
 let store = kxk.store
+let stopEvent = kxk.stopEvent
 
 import win from "../../kxk/win.js"
 
-import FileWatch from "../tools/FileWatch.js"
-
-import Projects from "../tools/Projects.js"
-
-import Indexer from "../tools/Indexer.js"
-
-import Git from "../tools/Git.js"
-
-import fps from "../tools/fps.js"
-
-import scheme from "../tools/scheme.js"
-
 import Split from "./Split.js"
-
 import Info from "./Info.js"
-
 import Tabs from "./Tabs.js"
-
 import Menu from "./Menu.js"
-
 import Navigate from "./Navigate.js"
-
 import FileHandler from "./FileHandler.js"
-
 import Terminal from "./Terminal.js"
 
+import FileWatch from "../tools/FileWatch.js"
+import Projects from "../tools/Projects.js"
+import Indexer from "../tools/Indexer.js"
+import Git from "../tools/Git.js"
+import fps from "../tools/fps.js"
+import scheme from "../tools/scheme.js"
+
 import Editor from "../editor/Editor.js"
-
 import Syntax from "../editor/Syntax.js"
-
 import FileEditor from "../editor/FileEditor.js"
 
 import CommandLine from "../commandline/CommandLine.js"
@@ -348,7 +333,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _227_14_
+    var _210_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -359,7 +344,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _233_22_, _234_19_
+    var _216_22_, _217_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -404,7 +389,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _278_32_
+    var _261_32_
 
     if (!(_k_.isNum(s)))
     {

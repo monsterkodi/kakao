@@ -46,6 +46,19 @@ let pbytes = lib_ko.pbytes
         compare(kc('use ./file ● File'),`import File from "./file.js"
 `)
     })
+    section("folder", function ()
+    {
+        compare(kc('use ◆ A B c'),`import A from "./A.js"
+import B from "./B.js"
+import c from "./c.js"
+`)
+        compare(kc('use ../sibling ◆ Sister Brother'),`import Sister from "../sibling/Sister.js"
+import Brother from "../sibling/Brother.js"
+`)
+        compare(kc('use ../../Parents ◆ mom dad'),`import mom from "../../Parents/mom.js"
+import dad from "../../Parents/dad.js"
+`)
+    })
 }
 toExport["use"]._section_ = true
 toExport._test_ = true

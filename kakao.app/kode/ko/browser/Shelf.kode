@@ -6,15 +6,9 @@
 0000000   000   000  00000000  0000000  000
 ###
 
-use ../../kxk/dom  ▪ $ stopEvent
-use ../../kxk/util ▪ pullAllWith
-use ../../kxk ▪ ffs elem post slash keyinfo popup
-
-use ../tools/File
-use ../tools/Git
-
-use ./Column
-use ./Row
+use ../../kxk ▪ pullAllWith ffs elem post slash keyinfo popup stopEvent $
+use ../tools  ◆ File Git
+use           ◆ Row Column
 
 function Shelf extends Column
 

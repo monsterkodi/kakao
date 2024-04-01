@@ -2,9 +2,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
-
-import util from "../../../kxk/util.js"
-let reversed = util.reversed
+let reversed = kxk.reversed
 
 export default {insertCharacter:function (ch)
 {
@@ -34,9 +32,9 @@ export default {insertCharacter:function (ch)
     this.deleteSelection()
     newCursors = this.do.cursors()
     var list = _k_.list(newCursors)
-    for (var _32_15_ = 0; _32_15_ < list.length; _32_15_++)
+    for (var _31_15_ = 0; _31_15_ < list.length; _31_15_++)
     {
-        cc = list[_32_15_]
+        cc = list[_31_15_]
         cline = this.do.line(cc[1])
         sline = this.twiggleSubstitute(cline,cc,ch)
         if (sline)
@@ -47,9 +45,9 @@ export default {insertCharacter:function (ch)
         {
             this.do.change(cc[1],kstr.splice(cline,cc[0],0,ch))
             var list1 = _k_.list(positionsAtLineIndexInPositions(cc[1],newCursors))
-            for (var _39_23_ = 0; _39_23_ < list1.length; _39_23_++)
+            for (var _38_23_ = 0; _38_23_ < list1.length; _38_23_++)
             {
-                nc = list1[_39_23_]
+                nc = list1[_38_23_]
                 if (nc[0] >= cc[0])
                 {
                     nc[0] += 1
@@ -132,9 +130,9 @@ export default {insertCharacter:function (ch)
 
     this.do.start()
     var list = _k_.list(reversed(this.do.cursors()))
-    for (var _80_14_ = 0; _80_14_ < list.length; _80_14_++)
+    for (var _79_14_ = 0; _79_14_ < list.length; _79_14_++)
     {
-        c = list[_80_14_]
+        c = list[_79_14_]
         if (c[0] > this.do.line(c[1]).length)
         {
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))

@@ -8,7 +8,6 @@ let matchr = kxk.matchr
 import salt from "../tools/salt.js"
 
 import Syntax from "../editor/Syntax.js"
-
 import TextEditor from "../editor/TextEditor.js"
 
 
@@ -17,13 +16,13 @@ CommandList = (function ()
     _k_.extend(CommandList, TextEditor)
     function CommandList (command, viewElem, opt)
     {
-        var _25_41_
+        var _22_41_
 
         this.command = command
     
         this["dequeueMeta"] = this["dequeueMeta"].bind(this)
         this["onMetaClick"] = this["onMetaClick"].bind(this)
-        CommandList.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Meta'],lineHeight:1.4,fontSize:19,scrollOffset:0,syntaxName:((_25_41_=opt.syntaxName) != null ? _25_41_ : 'ko')})
+        CommandList.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Meta'],lineHeight:1.4,fontSize:19,scrollOffset:0,syntaxName:((_22_41_=opt.syntaxName) != null ? _22_41_ : 'ko')})
         this.name = 'commandlist-editor'
         this.items = []
         this.metaQueue = []
@@ -32,7 +31,7 @@ CommandList = (function ()
 
     CommandList.prototype["addItems"] = function (items)
     {
-        var index, item, rngs, text, viewHeight, _50_30_, _50_42_, _55_29_, _57_24_, _65_32_, _68_32_
+        var index, item, rngs, text, viewHeight, _47_30_, _47_42_, _52_29_, _54_24_, _62_32_, _65_32_
 
         this.clear()
         index = 0
@@ -43,25 +42,25 @@ CommandList = (function ()
             this.resized()
         }
         var list = _k_.list(items)
-        for (var _48_17_ = 0; _48_17_ < list.length; _48_17_++)
+        for (var _45_17_ = 0; _45_17_ < list.length; _45_17_++)
         {
-            item = list[_48_17_]
+            item = list[_45_17_]
             if (!(item != null))
             {
                 continue
             }
-            text = (typeof (((_50_30_=item.text) != null ? _50_30_ : item)).trim === "function" ? (((_50_30_=item.text) != null ? _50_30_ : item)).trim() : undefined)
+            text = (typeof (((_47_30_=item.text) != null ? _47_30_ : item)).trim === "function" ? (((_47_30_=item.text) != null ? _47_30_ : item)).trim() : undefined)
             if (!(text != null ? text.length : undefined))
             {
                 continue
             }
             this.items.push(item)
-            rngs = ((_55_29_=item.rngs) != null ? _55_29_ : [])
+            rngs = ((_52_29_=item.rngs) != null ? _52_29_ : [])
             if ((item.clss != null))
             {
                 rngs.push({match:text,start:0,clss:item.clss,index:0})
             }
-            this.appendMeta({line:((_65_32_=item.line) != null ? _65_32_ : ' '),text:text,rngs:rngs,type:((_68_32_=item.type) != null ? _68_32_ : this.config.syntaxName),clss:'commandlistItem',index:index,click:this.onMetaClick})
+            this.appendMeta({line:((_62_32_=item.line) != null ? _62_32_ : ' '),text:text,rngs:rngs,type:((_65_32_=item.type) != null ? _65_32_ : this.config.syntaxName),clss:'commandlistItem',index:index,click:this.onMetaClick})
             index += 1
         }
     }
@@ -82,7 +81,7 @@ CommandList = (function ()
 
     CommandList.prototype["appendMeta"] = function (meta)
     {
-        var diss, r, rngs, text, _103_20_, _105_25_, _106_29_
+        var diss, r, rngs, text, _100_20_, _102_25_, _103_29_
 
         if (!(meta != null))
         {
@@ -95,7 +94,7 @@ CommandList = (function ()
         }
         else if ((meta.text != null) && meta.text.trim().length)
         {
-            r = ((_106_29_=meta.rngs) != null ? _106_29_ : [])
+            r = ((_103_29_=meta.rngs) != null ? _103_29_ : [])
             text = meta.text.trim()
             rngs = r.concat(Syntax.rangesForTextAndSyntax(text,meta.type || 'ko'))
             matchr.sortRanges(rngs)
@@ -134,7 +133,7 @@ CommandList = (function ()
 
     CommandList.prototype["clear"] = function ()
     {
-        var _132_13_
+        var _129_13_
 
         this.items = []
         ;(this.meta != null ? this.meta.clear() : undefined)

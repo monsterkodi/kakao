@@ -6,44 +6,39 @@
     000   000  000   000  000   000
 ###
 
-use ./kxk/dom
-use ./kxk/elem
-use ./kxk/post
-use ./kxk/drag
-use ./kxk/slash
-use ./kxk/stash
-use ./kxk/store
-use ./kxk/prefs
-use ./kxk/matchr
-use ./kxk/keyinfo
-use ./kxk/tooltip
-use ./kxk/events
-use ./kxk/popup
-use ./kxk/kstr
-use ./kxk/kpos
-use ./kxk/util
-use ./kxk/noon
-use ./kxk/sds
-use ./kxk/ffs
+use ./kxk ◆ dom elem post drag slash stash store prefs matchr keyinfo tooltip events popup kstr kpos util sds ffs noon
 
-export 
-    dom:        dom
-    elem:       elem
-    post:       post
+toExport =
+    
     drag:       drag
+    elem:       elem
+    events:     events
+    ffs:        ffs
+    keyinfo:    keyinfo
+    kpos:       kpos
+    kstr:       kstr
+    matchr:     matchr
+    noon:       noon
+    popup:      popup
+    post:       post
     prefs:      prefs
+    sds:        sds
     slash:      slash
     stash:      stash
     store:      store
-    matchr:     matchr
-    keyinfo:    keyinfo
     tooltip:    tooltip
-    events:     events
-    popup:      popup
-    kstr:       kstr
-    kpos:       kpos
     util:       util
-    noon:       noon
-    sds:        sds
-    ffs:        ffs
+    
+    dom:        dom
+    $:          dom.$
+    setStyle:   dom.setStyle
+    getStyle:   dom.getStyle
+    stopEvent:  dom.stopEvent
+    
+    isElement:  elem.isElement
+    
+for k,v of util
+    toExport[k] = v
+    
+export toExport
     

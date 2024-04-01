@@ -38,7 +38,9 @@ coffee kode js ts
         console
         document
         drag
+        dom
         elem
+        events
         exports
         ffs
         fs
@@ -54,7 +56,10 @@ coffee kode js ts
         prefs
         process
         setStyle
+        sds
         slash
+        stash
+        store
         stopEvent
         tooltip
         util

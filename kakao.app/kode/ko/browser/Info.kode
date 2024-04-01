@@ -7,12 +7,7 @@
 ###
 
 use ../../../lib/lib_ko ▪ moment pbytes
-
-use ../../kxk/dom ▪ $
-use ../../kxk/ffs
-use ../../kxk/elem
-use ../../kxk/slash
-
+use ../../kxk ▪ ffs elem slash $
 use ../tools/File
 
 # 000  00     00   0000000    0000000   00000000

@@ -6,8 +6,7 @@
 000   000   0000000   00     00
 ###
 
-use ../../kxk/dom ▪ $ stopEvent
-use ../../kxk ▪ kstr elem post slash keyinfo
+use ../../kxk ▪ kstr elem post slash keyinfo stopEvent $
 
 use ../editor/Syntax
 use ../tools/File

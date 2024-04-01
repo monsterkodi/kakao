@@ -1,7 +1,7 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
-import util from "../../../kxk/util.js"
-let reversed = util.reversed
+import kxk from "../../../kxk.js"
+let reversed = kxk.reversed
 
 export default {actions:{menu:'Select',selectMoreLines:{name:'Select More Lines',text:'selects line at cursor or next line if cursor line is selected already',combo:'command+l'},selectLessLines:{name:'Select Less Lines',text:'removes a line from each block of selected lines',combo:'command+shift+l'}},selectMoreLines:function ()
 {

@@ -8,8 +8,7 @@
     simple about window
 ###
 
-use ../kxk/dom ▪ $ elem
-use ../kxk/post
+use ../kxk ▪ post elem $
 use ../kakao
 
 kakao.init ->

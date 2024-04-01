@@ -2,13 +2,11 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Terminal
 
-import dom from "../../kxk/dom.js"
-let stopEvent = dom.stopEvent
-
 import kxk from "../../kxk.js"
 let post = kxk.post
 let kpos = kxk.kpos
 let popup = kxk.popup
+let stopEvent = kxk.stopEvent
 
 import salt from "../tools/salt.js"
 
@@ -56,7 +54,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, _65_21_, _80_21_
+        var l, _64_21_, _79_21_
 
         if (!(meta != null))
         {
@@ -71,9 +69,9 @@ Terminal = (function ()
         {
             this.appendMeta({clss:'spacer'})
             var list = _k_.list(salt(meta.text).split('\n'))
-            for (var _72_22_ = 0; _72_22_ < list.length; _72_22_++)
+            for (var _71_22_ = 0; _71_22_ < list.length; _71_22_++)
             {
-                l = list[_72_22_]
+                l = list[_71_22_]
                 this.appendMeta({clss:'spacer',text:'# ' + l})
             }
             return this.appendMeta({clss:'spacer'})

@@ -5,11 +5,9 @@ var Command
 import lib_ko from "../../../lib/lib_ko.js"
 let fuzzy = lib_ko.fuzzy
 
-import util from "../../kxk/util.js"
-let pull = util.pull
-let reversed = util.reversed
-
 import kxk from "../../kxk.js"
+let pull = kxk.pull
+let reversed = kxk.reversed
 let elem = kxk.elem
 
 import CommandList from "./CommandList.js"
@@ -61,7 +59,7 @@ Command = (function ()
 
     Command.prototype["execute"] = function (command)
     {
-        var _65_23_
+        var _64_23_
 
         if (_k_.empty(command))
         {
@@ -82,7 +80,7 @@ Command = (function ()
 
     Command.prototype["changed"] = function (command)
     {
-        var f, fuzzied, items, _82_34_
+        var f, fuzzied, items, _81_34_
 
         if (!(this.commandList != null))
         {
@@ -109,10 +107,10 @@ Command = (function ()
                     }
                     return ''
                 }})
-                items = (function () { var r_94_42_ = []; var list = _k_.list(fuzzied.sort(function (a, b)
+                items = (function () { var r_93_42_ = []; var list = _k_.list(fuzzied.sort(function (a, b)
                 {
                     return a.index - b.index
-                })); for (var _94_42_ = 0; _94_42_ < list.length; _94_42_++)  { f = list[_94_42_];r_94_42_.push(f.original)  } return r_94_42_ }).bind(this)()
+                })); for (var _93_42_ = 0; _93_42_ < list.length; _93_42_++)  { f = list[_93_42_];r_93_42_.push(f.original)  } return r_93_42_ }).bind(this)()
             }
             this.showItems(this.weightedItems(items,{currentText:command}))
             this.select(0)
@@ -158,7 +156,7 @@ Command = (function ()
 
     Command.prototype["showList"] = function ()
     {
-        var listView, _134_27_
+        var listView, _133_27_
 
         if (!(this.commandList != null))
         {
@@ -176,7 +174,7 @@ Command = (function ()
 
     Command.prototype["showItems"] = function (items)
     {
-        var _145_34_, _147_39_
+        var _144_34_, _146_39_
 
         if (!(this.commandList != null) && !items.length)
         {
@@ -207,7 +205,7 @@ Command = (function ()
 
     Command.prototype["positionList"] = function ()
     {
-        var flex, listHeight, listTop, spaceBelow, _160_34_
+        var flex, listHeight, listTop, spaceBelow, _159_34_
 
         if (!(this.commandList != null))
         {
@@ -239,7 +237,7 @@ Command = (function ()
 
     Command.prototype["select"] = function (i)
     {
-        var _183_34_
+        var _182_34_
 
         if (!(this.commandList != null))
         {
@@ -273,7 +271,7 @@ Command = (function ()
 
     Command.prototype["prev"] = function ()
     {
-        var _204_23_
+        var _203_23_
 
         if ((this.commandList != null))
         {
@@ -304,7 +302,7 @@ Command = (function ()
 
     Command.prototype["next"] = function ()
     {
-        var _225_27_, _228_23_
+        var _224_27_, _227_23_
 
         if (!(this.commandList != null) && this.listItems().length)
         {
@@ -342,7 +340,7 @@ Command = (function ()
 
     Command.prototype["hideList"] = function ()
     {
-        var _258_20_, _259_20_, _259_26_
+        var _257_20_, _258_20_, _258_26_
 
         if (!this)
         {
@@ -351,7 +349,7 @@ Command = (function ()
         }
         this.selected = -1
         ;(this.commandList != null ? this.commandList.del() : undefined)
-        ;((_259_20_=this.commandList) != null ? (_259_26_=_259_20_.view) != null ? _259_26_.remove() : undefined : undefined)
+        ;((_258_20_=this.commandList) != null ? (_258_26_=_258_20_.view) != null ? _258_26_.remove() : undefined : undefined)
         return this.commandList = null
     }
 
@@ -381,7 +379,7 @@ Command = (function ()
 
     Command.prototype["setCurrent"] = function (command)
     {
-        var _284_36_
+        var _283_36_
 
         if (!(this.history != null))
         {
@@ -407,14 +405,14 @@ Command = (function ()
 
     Command.prototype["current"] = function ()
     {
-        var _295_36_
+        var _294_36_
 
-        return ((_295_36_=this.history[this.selected]) != null ? _295_36_ : '')
+        return ((_294_36_=this.history[this.selected]) != null ? _294_36_ : '')
     }
 
     Command.prototype["last"] = function ()
     {
-        var _298_23_
+        var _297_23_
 
         if ((this.commandList != null))
         {
@@ -457,7 +455,7 @@ Command = (function ()
 
     Command.prototype["complete"] = function ()
     {
-        var _327_34_
+        var _326_34_
 
         if (!(this.commandList != null))
         {
@@ -497,11 +495,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _367_17_, _368_28_, _368_39_
+        var _366_17_, _367_28_, _367_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_367_17_=this.history) != null ? _367_17_ : [])
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_368_39_=1) != null ? _368_39_ : 0)
+        this.history = ((_366_17_=this.history) != null ? _366_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_367_39_=1) != null ? _367_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -546,7 +544,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _400_31_
+        var _399_31_
 
         switch (combo)
         {

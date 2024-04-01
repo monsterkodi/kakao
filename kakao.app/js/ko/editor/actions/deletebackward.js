@@ -2,9 +2,7 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 
 import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
-
-import util from "../../../kxk/util.js"
-let reversed = util.reversed
+let reversed = kxk.reversed
 
 export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',text:'delete character to the left',combo:'backspace'},deleteBackwardIgnoreLineBoundary:{name:'Delete Backward Over Line Boundaries',combo:'command+backspace'},deleteBackwardSwallowWhitespace:{name:'Delete Backward Over Whitespace',combo:'alt+backspace'}},deleteBackwardIgnoreLineBoundary:function ()
 {
@@ -69,9 +67,9 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',te
         }).bind(this))))
     }
     var list = _k_.list(reversed(newCursors))
-    for (var _63_14_ = 0; _63_14_ < list.length; _63_14_++)
+    for (var _62_14_ = 0; _62_14_ < list.length; _62_14_++)
     {
-        c = list[_63_14_]
+        c = list[_62_14_]
         if (c[0] === 0)
         {
             if ((opt != null ? opt.ignoreLineBoundary : undefined) || this.do.numCursors() === 1)
@@ -82,15 +80,15 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',te
                     this.do.change(c[1] - 1,this.do.line(c[1] - 1) + this.do.line(c[1]))
                     this.do.delete(c[1])
                     var list1 = _k_.list(positionsAtLineIndexInPositions(c[1],newCursors))
-                    for (var _71_31_ = 0; _71_31_ < list1.length; _71_31_++)
+                    for (var _70_31_ = 0; _70_31_ < list1.length; _70_31_++)
                     {
-                        nc = list1[_71_31_]
+                        nc = list1[_70_31_]
                         cursorDelta(nc,ll,-1)
                     }
                     var list2 = _k_.list(positionsBelowLineIndexInPositions(c[1],newCursors))
-                    for (var _74_31_ = 0; _74_31_ < list2.length; _74_31_++)
+                    for (var _73_31_ = 0; _73_31_ < list2.length; _73_31_++)
                     {
-                        nc = list2[_74_31_]
+                        nc = list2[_73_31_]
                         cursorDelta(nc,0,-1)
                     }
                 }
@@ -114,9 +112,9 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',te
             }
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - n,n))
             var list3 = _k_.list(positionsAtLineIndexInPositions(c[1],newCursors))
-            for (var _85_23_ = 0; _85_23_ < list3.length; _85_23_++)
+            for (var _84_23_ = 0; _84_23_ < list3.length; _84_23_++)
             {
-                nc = list3[_85_23_]
+                nc = list3[_84_23_]
                 if (nc[0] >= c[0])
                 {
                     cursorDelta(nc,-n)

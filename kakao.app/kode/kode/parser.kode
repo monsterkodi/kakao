@@ -19,9 +19,7 @@
 
 use ./print
 use ./parse
-use ./utils
-
-{ firstLineCol, lastLineCol } = utils
+use ./utils ▪ firstLineCol lastLineCol
 
 function Parser extends parse
 
@@ -400,6 +398,11 @@ function Parser extends parse
             
             module = token.text
             
+            if module == '◆'
+                module = '.'
+                tokens.unshift token
+                break
+            
             while tokens.length and tokens[0].type != 'nl' and tokens[0].col == token.col + token.text.length
                 token = tokens.shift()
                 module += token.text
@@ -408,7 +411,7 @@ function Parser extends parse
                 type: 'var'
                 text:  module
                 
-            break if tokens.length and (tokens[0].type == 'nl' or tokens[0].text in '▪●')
+            break if tokens.length and (tokens[0].type == 'nl' or tokens[0].text in '▪●◆')
             
             token = tokens.shift()
             
@@ -433,6 +436,29 @@ function Parser extends parse
                 
                 token = tokens.shift()
 
+        if tokens.length and tokens[0].text == '◆'
+            
+            toUse = []
+            
+            tokens.shift()
+            token = tokens.shift()
+
+            while token
+                
+                item = module + '/' + token.text
+                
+                while tokens.length and tokens[0].type != 'nl' and tokens[0].col == token.col + token.text.length
+                    token = tokens.shift()
+                    item += token.text
+                
+                toUse.push
+                    type: 'var'
+                    text:  item
+                    
+                break if tokens.length and tokens[0].type == 'nl'
+                
+                token = tokens.shift()
+                
         if tokens.length and tokens[0].text == '●'
             
             tokens.shift()

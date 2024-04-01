@@ -3,10 +3,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var font, salt
 
 import kxk from "../../kxk.js"
+let zip = kxk.zip
 let noon = kxk.noon
-
-import util from "../../kxk/util.js"
-let zip = util.zip
 
 font = noon.parse(`0   
     | 000000 |
@@ -400,9 +398,9 @@ salt = function (text)
     s = text.toLowerCase().trim()
     cs = []
     var list = _k_.list(s)
-    for (var _404_10_ = 0; _404_10_ < list.length; _404_10_++)
+    for (var _403_10_ = 0; _403_10_ < list.length; _403_10_++)
     {
-        c = list[_404_10_]
+        c = list[_403_10_]
         if ((font[c] != null))
         {
             cs.push(font[c])

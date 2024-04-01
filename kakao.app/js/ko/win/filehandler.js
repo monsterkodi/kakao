@@ -1,10 +1,8 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
-import util from "../../kxk/util.js"
-let pull = util.pull
-let reversed = util.reversed
-
 import kxk from "../../kxk.js"
+let pull = kxk.pull
+let reversed = kxk.reversed
 let prefs = kxk.prefs
 let slash = kxk.slash
 let post = kxk.post
@@ -44,7 +42,7 @@ class FileHandler
 
     loadFile (file, opt = {})
     {
-        var activeTab, filePos, restoreState, tab, _75_49_
+        var activeTab, filePos, restoreState, tab, _74_49_
 
         if ((file != null) && file.length <= 0)
         {
@@ -53,7 +51,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _48_28_ = slash.splitFilePos(file); file = _48_28_[0]; filePos = _48_28_[1]
+            var _47_28_ = slash.splitFilePos(file); file = _47_28_[0]; filePos = _47_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -145,9 +143,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _130_17_ = 0; _130_17_ < list.length; _130_17_++)
+        for (var _129_17_ = 0; _129_17_ < list.length; _129_17_++)
         {
-            file = list[_130_17_]
+            file = list[_129_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
@@ -195,7 +193,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _175_29_
+        var tab, _174_29_
 
         if (tab = tabs.activeTab())
         {
@@ -230,9 +228,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _200_16_ = 0; _200_16_ < list.length; _200_16_++)
+        for (var _199_16_ = 0; _199_16_ < list.length; _199_16_++)
         {
-            tab = list[_200_16_]
+            tab = list[_199_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -300,7 +298,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _268_29_
+        var _267_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -316,7 +314,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _284_18_
+        var cb, dir, _283_18_
 
         cb = function (files)
         {
@@ -332,7 +330,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _304_18_
+        var cb, _303_18_
 
         cb = (function (file)
         {

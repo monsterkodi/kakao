@@ -9,7 +9,7 @@
 use ./Pane
 use ./Handle
 
-use ../../../kxk/util ▪ defaults
+use ../../../kxk ▪ defaults
 
 class Flex 
     

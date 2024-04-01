@@ -6,16 +6,10 @@
 000       000  0000000  00000000        0000000    000   000   0000000   00     00  0000000   00000000  000   000
 ###
 
-use ../../kxk/dom ▪ $
-use ../../kxk ▪ slash elem drag post util ffs
+use ../../kxk ▪ slash elem drag post util ffs $
 
-use ../tools/File
-use ../tools/Git
-
-use ./Select
-use ./Info
-use ./Browser
-use ./Shelf
+use ../tools ◆ File Git
+use          ◆ Select Info Browser Shelf
 
 function FileBrowser extends Browser
 

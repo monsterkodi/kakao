@@ -4,8 +4,8 @@ import Pane from "./Pane.js"
 
 import Handle from "./Handle.js"
 
-import util from "../../../kxk/util.js"
-let defaults = util.defaults
+import kxk from "../../../kxk.js"
+let defaults = kxk.defaults
 
 class Flex
 {

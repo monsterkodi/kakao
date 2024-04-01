@@ -6,8 +6,7 @@
    000     000   000  0000000    0000000
 ###
 
-use ../../kxk/dom ▪ $ stopEvent
-use ../../kxk ▪ post elem kpos slash drag popup
+use ../../kxk ▪ post elem kpos slash drag popup stopEvent $ 
 use ../tools/Projects
 use ./Tab
 

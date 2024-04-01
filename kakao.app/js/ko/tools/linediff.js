@@ -3,10 +3,8 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 var lineDiff
 
 import kxk from "../../kxk.js"
+let isEqual = kxk.isEqual
 let kstr = kxk.kstr
-
-import util from "../../kxk/util.js"
-let isEqual = util.isEqual
 
 
 lineDiff = function (oldLine, newLine)
@@ -55,7 +53,7 @@ lineDiff = function (oldLine, newLine)
         }
         if (changes.length > 1)
         {
-            for (var _39_21_ = i = changes.length - 1, _39_39_ = 1; (_39_21_ <= _39_39_ ? i <= 1 : i >= 1); (_39_21_ <= _39_39_ ? ++i : --i))
+            for (var _38_21_ = i = changes.length - 1, _38_39_ = 1; (_38_21_ <= _38_39_ ? i <= 1 : i >= 1); (_38_21_ <= _38_39_ ? ++i : --i))
             {
                 if (changes[i - 1].index + changes[i - 1].length === changes[i].index)
                 {

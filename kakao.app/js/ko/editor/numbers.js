@@ -3,10 +3,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 import kxk from "../../kxk.js"
 let elem = kxk.elem
 let events = kxk.events
-
-import dom from "../../kxk/dom.js"
-let $ = dom.$
-let setStyle = dom.setStyle
+let setStyle = kxk.setStyle
+let $ = kxk.$
 
 class Numbers extends events
 {
@@ -40,7 +38,7 @@ class Numbers extends events
 
         this.elem.innerHTML = ''
         this.lineDivs = {}
-        for (var _45_19_ = li = top, _45_24_ = bot; (_45_19_ <= _45_24_ ? li <= bot : li >= bot); (_45_19_ <= _45_24_ ? ++li : --li))
+        for (var _44_19_ = li = top, _44_24_ = bot; (_44_19_ <= _44_24_ ? li <= bot : li >= bot); (_44_19_ <= _44_24_ ? ++li : --li))
         {
             div = this.addLine(li)
             this.emit('numberAdded',{numberDiv:div,numberSpan:div.firstChild,lineIndex:li})
@@ -127,7 +125,7 @@ class Numbers extends events
 
     onFontSizeChange ()
     {
-        var fsz, _140_13_
+        var fsz, _139_13_
 
         fsz = Math.min(22,this.editor.size.fontSize - 4)
         if ((this.elem != null)) { this.elem.style.fontSize = `${fsz}px` }
@@ -140,7 +138,7 @@ class Numbers extends events
 
         if (this.editor.scroll.bot > this.editor.scroll.top)
         {
-            for (var _152_23_ = li = this.editor.scroll.top, _152_43_ = this.editor.scroll.bot; (_152_23_ <= _152_43_ ? li <= this.editor.scroll.bot : li >= this.editor.scroll.bot); (_152_23_ <= _152_43_ ? ++li : --li))
+            for (var _151_23_ = li = this.editor.scroll.top, _151_43_ = this.editor.scroll.bot; (_151_23_ <= _151_43_ ? li <= this.editor.scroll.bot : li >= this.editor.scroll.bot); (_151_23_ <= _151_43_ ? ++li : --li))
             {
                 this.updateColor(li)
             }
@@ -149,7 +147,7 @@ class Numbers extends events
 
     updateColor (li)
     {
-        var ci, cls, hi, s, si, _158_35_
+        var ci, cls, hi, s, si, _157_35_
 
         if (!(this.lineDivs[li] != null))
         {
@@ -159,9 +157,9 @@ class Numbers extends events
         {
             return
         }
-        si = (function () { var r_161_25_ = []; var list = _k_.list(rangesFromTopToBotInRanges(li,li,this.editor.selections())); for (var _161_25_ = 0; _161_25_ < list.length; _161_25_++)  { s = list[_161_25_];r_161_25_.push(s[0])  } return r_161_25_ }).bind(this)()
-        hi = (function () { var r_162_25_ = []; var list1 = _k_.list(rangesFromTopToBotInRanges(li,li,this.editor.highlights())); for (var _162_25_ = 0; _162_25_ < list1.length; _162_25_++)  { s = list1[_162_25_];r_162_25_.push(s[0])  } return r_162_25_ }).bind(this)()
-        ci = (function () { var r_163_25_ = []; var list2 = _k_.list(rangesFromTopToBotInRanges(li,li,rangesFromPositions(this.editor.cursors()))); for (var _163_25_ = 0; _163_25_ < list2.length; _163_25_++)  { s = list2[_163_25_];r_163_25_.push(s[0])  } return r_163_25_ }).bind(this)()
+        si = (function () { var r_160_25_ = []; var list = _k_.list(rangesFromTopToBotInRanges(li,li,this.editor.selections())); for (var _160_25_ = 0; _160_25_ < list.length; _160_25_++)  { s = list[_160_25_];r_160_25_.push(s[0])  } return r_160_25_ }).bind(this)()
+        hi = (function () { var r_161_25_ = []; var list1 = _k_.list(rangesFromTopToBotInRanges(li,li,this.editor.highlights())); for (var _161_25_ = 0; _161_25_ < list1.length; _161_25_++)  { s = list1[_161_25_];r_161_25_.push(s[0])  } return r_161_25_ }).bind(this)()
+        ci = (function () { var r_162_25_ = []; var list2 = _k_.list(rangesFromTopToBotInRanges(li,li,rangesFromPositions(this.editor.cursors()))); for (var _162_25_ = 0; _162_25_ < list2.length; _162_25_++)  { s = list2[_162_25_];r_162_25_.push(s[0])  } return r_162_25_ }).bind(this)()
         cls = ''
         if (_k_.in(li,ci))
         {

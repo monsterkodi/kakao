@@ -1,7 +1,7 @@
 var _k_
 
-import dom from "../../../kxk/dom.js"
-let getStyle = dom.getStyle
+import kxk from "../../../kxk.js"
+let getStyle = kxk.getStyle
 
 class Pane
 {

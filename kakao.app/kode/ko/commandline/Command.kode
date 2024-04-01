@@ -7,8 +7,7 @@
 ###
 
 use ../../../lib/lib_ko ▪ fuzzy
-use ../../kxk/util ▪ pull reversed
-use ../../kxk ▪ elem
+use ../../kxk ▪ pull reversed elem 
 
 use ./CommandList
 

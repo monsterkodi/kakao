@@ -1,7 +1,7 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-import util from "../../../kxk/util.js"
-let reversed = util.reversed
+import kxk from "../../../kxk.js"
+let reversed = kxk.reversed
 
 export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u'}},toggleGitChange:function (key, info)
 {

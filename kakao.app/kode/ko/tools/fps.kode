@@ -6,8 +6,7 @@
 000       000        0000000 
 ###
 
-use ../../kxk/dom ▪ $
-use ../../kxk ▪ elem post
+use ../../kxk ▪ elem post $
 
 class FPS
 

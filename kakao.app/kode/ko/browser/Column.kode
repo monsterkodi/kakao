@@ -8,15 +8,9 @@
 
 use ../../../lib/lib_ko ▪ fuzzy
 
-use ../../kxk/dom ▪ $ setStyle stopEvent
-use ../../kxk ▪ ffs kpos elem drag post prefs slash popup keyinfo
-
-use ../tools/DirWatch
-use ../tools/File
-
-use ./Crumb
-use ./Scroller
-use ./Row
+use ../../kxk ▪ ffs kpos elem drag post prefs slash popup keyinfo setStyle stopEvent $
+use ../tools  ◆ DirWatch File
+use           ◆ Crumb Scroller Row
 
 function Column
 

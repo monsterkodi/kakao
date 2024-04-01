@@ -1,9 +1,7 @@
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-import util from "../../kxk/util.js"
-let pullAllWith = util.pullAllWith
-
 import kxk from "../../kxk.js"
+let pullAllWith = kxk.pullAllWith
 let slash = kxk.slash
 let prefs = kxk.prefs
 let post = kxk.post
@@ -32,7 +30,7 @@ class Navigate
         pos = (pos != null ? pos : [0,0])
         if (!pos[0] && !pos[1] && this.filePositions.length)
         {
-            for (var _37_22_ = i = this.filePositions.length - 1, _37_47_ = 0; (_37_22_ <= _37_47_ ? i <= 0 : i >= 0); (_37_22_ <= _37_47_ ? ++i : --i))
+            for (var _36_22_ = i = this.filePositions.length - 1, _36_47_ = 0; (_36_22_ <= _36_47_ ? i <= 0 : i >= 0); (_36_22_ <= _36_47_ ? ++i : --i))
             {
                 fp = this.filePositions[i]
                 if (slash.samePath(fp.file,file))
@@ -61,7 +59,7 @@ class Navigate
 
     navigate (opt)
     {
-        var hasFile, _106_39_, _96_30_, _96_45_
+        var hasFile, _105_39_, _95_30_, _95_45_
 
         switch (opt.action)
         {
@@ -88,7 +86,7 @@ class Navigate
                 return this.loadFilePos(this.filePositions[this.currentIndex],opt)
 
             case 'delFilePos':
-                opt.item.line = ((_96_30_=opt.item.line) != null ? _96_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
+                opt.item.line = ((_95_30_=opt.item.line) != null ? _95_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
                 this.filePositions = this.filePositions.filter(function (f)
                 {
                     return f.file !== opt.item.file || f.line !== opt.item.line
@@ -97,7 +95,7 @@ class Navigate
                 return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
 
             case 'addFilePos':
-                if (!(opt != null ? (_106_39_=opt.file) != null ? _106_39_.length : undefined : undefined))
+                if (!(opt != null ? (_105_39_=opt.file) != null ? _105_39_.length : undefined : undefined))
                 {
                     return
                 }

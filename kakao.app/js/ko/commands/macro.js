@@ -2,15 +2,13 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Macro, __dirname
 
-import util from "../../kxk/util.js"
-let uniq = util.uniq
-let reversed = util.reversed
-
 import kxk from "../../kxk.js"
 let slash = kxk.slash
 let prefs = kxk.prefs
 let post = kxk.post
 let ffs = kxk.ffs
+let reversed = kxk.reversed
+let uniq = kxk.uniq
 
 import salt from "../tools/salt.js"
 
@@ -58,12 +56,12 @@ Macro = (function ()
         var i, items
 
         items = uniq(reversed(this.history).concat(this.macros))
-        return (function () { var r_60_74_ = []; var list = _k_.list(items); for (var _60_74_ = 0; _60_74_ < list.length; _60_74_++)  { i = list[_60_74_];r_60_74_.push({text:i,line:_k_.in(i,this.macros) && '◼' || '◆',type:'macro'})  } return r_60_74_ }).bind(this)()
+        return (function () { var r_59_74_ = []; var list = _k_.list(items); for (var _59_74_ = 0; _59_74_ < list.length; _59_74_++)  { i = list[_59_74_];r_59_74_.push({text:i,line:_k_.in(i,this.macros) && '◼' || '◆',type:'macro'})  } return r_59_74_ }).bind(this)()
     }
 
     Macro.prototype["execute"] = function (command)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, words, wordsInArgsOrCursorsOrSelection, _125_35_, _227_40_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, words, wordsInArgsOrCursorsOrSelection, _124_35_, _226_40_
 
         if (_k_.empty(command))
         {
@@ -140,9 +138,9 @@ Macro = (function ()
 
                     window.terminal.clear()
                     var list = _k_.list(text.split('\n'))
-                    for (var _158_26_ = 0; _158_26_ < list.length; _158_26_++)
+                    for (var _157_26_ = 0; _157_26_ < list.length; _157_26_++)
                     {
-                        l = list[_158_26_]
+                        l = list[_157_26_]
                         window.terminal.appendLineDiss(l,Syntax.dissForTextAndSyntax(l,'noon'))
                     }
                     window.terminal.scroll.cursorToTop(1)
@@ -159,9 +157,9 @@ Macro = (function ()
                 {
                     editor.do.start()
                     var list = _k_.list(lines)
-                    for (var _177_29_ = 0; _177_29_ < list.length; _177_29_++)
+                    for (var _176_29_ = 0; _176_29_ < list.length; _176_29_++)
                     {
-                        line = list[_177_29_]
+                        line = list[_176_29_]
                         if (line.op === 'insert')
                         {
                             editor.do.insert(line.index,line.text)
@@ -190,7 +188,7 @@ Macro = (function ()
                     cmds.shift()
                 }
                 words = wordsInArgsOrCursorsOrSelection(cmds,{include:"#@.-"})
-                for (var _202_27_ = ti = 0, _202_31_ = words.length - lst; (_202_27_ <= _202_31_ ? ti < words.length - lst : ti > words.length - lst); (_202_27_ <= _202_31_ ? ++ti : --ti))
+                for (var _201_27_ = ti = 0, _201_31_ = words.length - lst; (_201_27_ <= _201_31_ ? ti < words.length - lst : ti > words.length - lst); (_201_27_ <= _201_31_ ? ++ti : --ti))
                 {
                     t = words[ti]
                     insert += `${t}:\#{kstr ${t}} `
@@ -199,7 +197,7 @@ Macro = (function ()
                 insert += '"'
                 if (lst)
                 {
-                    insert += (function () { var r_208_61_ = []; for (var _208_65_ = ti = words.length - lst, _208_86_ = words.length; (_208_65_ <= _208_86_ ? ti < words.length : ti > words.length); (_208_65_ <= _208_86_ ? ++ti : --ti))  { r_208_61_.push(`, kstr(${words[ti]})`)  } return r_208_61_ }).bind(this)().join('')
+                    insert += (function () { var r_207_61_ = []; for (var _207_65_ = ti = words.length - lst, _207_86_ = words.length; (_207_65_ <= _207_86_ ? ti < words.length : ti > words.length); (_207_65_ <= _207_86_ ? ++ti : --ti))  { r_207_61_.push(`, kstr(${words[ti]})`)  } return r_207_61_ }).bind(this)().join('')
                 }
                 editor.do.start()
                 editor.do.insert(li,insert)
@@ -213,7 +211,7 @@ Macro = (function ()
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || kakao.bundle.app('kode')
                 file = slash.path(dir,clss.toLowerCase() + '.kode')
                 text = "###\n"
-                text += (function () { var r_230_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _230_33_ = 0; _230_33_ < list1.length; _230_33_++)  { s = list1[_230_33_];r_230_33_.push(s)  } return r_230_33_ }).bind(this)().join('\n')
+                text += (function () { var r_229_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _229_33_ = 0; _229_33_ < list1.length; _229_33_++)  { s = list1[_229_33_];r_229_33_.push(s)  } return r_229_33_ }).bind(this)().join('\n')
                 text += "\n###\n"
                 text += `
 function ${clss}
@@ -230,7 +228,7 @@ export ${clss}
 
             case 'clean':
                 editor.do.start()
-                for (var _255_27_ = li = 0, _255_31_ = editor.numLines(); (_255_27_ <= _255_31_ ? li < editor.numLines() : li > editor.numLines()); (_255_27_ <= _255_31_ ? ++li : --li))
+                for (var _254_27_ = li = 0, _254_31_ = editor.numLines(); (_254_27_ <= _254_31_ ? li < editor.numLines() : li > editor.numLines()); (_254_27_ <= _254_31_ ? ++li : --li))
                 {
                     line = editor.line(li)
                     cleaned = line.trimRight()

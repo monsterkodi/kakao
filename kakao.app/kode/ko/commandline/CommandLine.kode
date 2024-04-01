@@ -6,10 +6,8 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 ###
 
-use ../../kxk/dom ▪ $ stopEvent
-use ../../kxk ▪ ffs elem post slash
-
-use ../editor/TextEditor
+use ../../kxk ▪ ffs elem post slash stopEvent $
+use ../editor ◆ TextEditor
 
 __dirname = slash.dir import.meta.url[7..]
 

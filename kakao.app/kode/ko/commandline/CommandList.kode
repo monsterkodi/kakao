@@ -7,11 +7,8 @@
 ###
 
 use ../../kxk ▪ matchr
-
-use ../tools/salt
-
-use ../editor/Syntax
-use ../editor/TextEditor
+use ../tools  ◆ salt
+use ../editor ◆ Syntax TextEditor
 
 function CommandList extends TextEditor
 

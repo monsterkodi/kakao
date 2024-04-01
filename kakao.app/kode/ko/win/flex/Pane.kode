@@ -6,7 +6,7 @@
 000        000   000  000   000  00000000
 ###
 
-use ../../../kxk/dom ▪ getStyle
+use ../../../kxk ▪ getStyle
 
 class Pane
     

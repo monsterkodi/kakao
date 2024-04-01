@@ -8,29 +8,12 @@
 
 use ../../kakao
 
-use ../../kxk/dom ▪ stopEvent
-
-use ../../kxk ▪ stash post prefs store
+use ../../kxk ▪ stash post prefs store stopEvent
 use ../../kxk/win
 
-use ../tools/FileWatch
-use ../tools/Projects
-use ../tools/Indexer
-use ../tools/Git
-use ../tools/fps
-use ../tools/scheme
-
-use ./Split
-use ./Info
-use ./Tabs
-use ./Menu
-use ./Navigate
-use ./FileHandler
-use ./Terminal
-
-use ../editor/Editor
-use ../editor/Syntax
-use ../editor/FileEditor
+use           ◆ Split Info Tabs Menu Navigate FileHandler Terminal
+use ../tools  ◆ FileWatch Projects Indexer Git fps scheme
+use ../editor ◆ Editor Syntax FileEditor
 use ../commandline/CommandLine
 
 # 000   000  000  000   000  0000000     0000000   000   000  

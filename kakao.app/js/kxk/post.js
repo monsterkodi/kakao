@@ -11,7 +11,6 @@ class Poster extends EventTarget
     
         this.dispose = this.dispose.bind(this)
         this.addEventListener(POST,this.onPostEvent)
-        window.addEventListener('beforeunload',this.dispose)
     }
 
     onPostEvent (event)
@@ -25,8 +24,7 @@ class Poster extends EventTarget
 
     dispose ()
     {
-        this.removeEventListener(POST,this.onPostEvent)
-        return window.removeEventListener('beforeunload',this.dispose)
+        return this.removeEventListener(POST,this.onPostEvent)
     }
 
     post (event, args)

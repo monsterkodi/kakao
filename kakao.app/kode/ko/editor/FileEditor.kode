@@ -6,9 +6,7 @@
 000       000  0000000  00000000        00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk/dom ▪ stopEvent setStyle
-use ../../kxk/util ▪ deleteBy
-use ../../kxk ▪ ffs kpos post popup slash
+use ../../kxk ▪ ffs kpos post popup slash stopEvent setStyle deleteBy
 
 use ./Syntax
 use ./TextEditor

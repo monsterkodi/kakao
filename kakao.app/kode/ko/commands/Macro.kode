@@ -6,8 +6,7 @@
 000   000  000   000   0000000  000   000   0000000
 ###
 
-use ../../kxk/util ▪ uniq reversed
-use ../../kxk ▪ slash prefs post ffs
+use ../../kxk ▪ slash prefs post ffs reversed uniq
 
 use ../tools/salt
 use ../tools/req

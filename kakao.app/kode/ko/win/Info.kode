@@ -6,8 +6,7 @@
 000  000   000  000        0000000 
 ###
 
-use ../../kxk/dom ▪ $
-use ../../kxk ▪ post elem tooltip
+use ../../kxk ▪ post elem tooltip $
 
 shortCount = (v) ->
     

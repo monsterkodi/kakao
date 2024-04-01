@@ -6,9 +6,7 @@
 000   000  00000000     000     000   000
 ###
 
-use ../../kxk/dom ▪ $ stopEvent
-use ../../kxk/util ▪ pull
-use ../../kxk ▪ elem post slash
+use ../../kxk ▪ elem post slash stopEvent pull $
 
 use ../tools/ranges
 use ../tools/File

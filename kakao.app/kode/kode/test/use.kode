@@ -68,4 +68,25 @@ __filename = import.meta.filename
             
             """
             
+    ▸ folder
+    
+        kc 'use ◆ A B c' ▸ """
+            import A from "./A.js"
+            import B from "./B.js"
+            import c from "./c.js"
+            
+            """
+
+        kc 'use ../sibling ◆ Sister Brother' ▸ """
+            import Sister from "../sibling/Sister.js"
+            import Brother from "../sibling/Brother.js"
+            
+            """
+
+        kc 'use ../../Parents ◆ mom dad' ▸ """
+            import mom from "../../Parents/mom.js"
+            import dad from "../../Parents/dad.js"
+            
+            """
+            
         

@@ -3,11 +3,9 @@ var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isObj: functio
 var mathRegExp, moduleKeys, req, requireRegExp
 
 import kxk from "../../kxk.js"
+let uniq = kxk.uniq
 let slash = kxk.slash
 let kstr = kxk.kstr
-
-import util from "../../kxk/util.js"
-let uniq = util.uniq
 
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/
 mathRegExp = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
@@ -59,9 +57,9 @@ moduleKeys = function (moduleName, file)
         if (slash.ext(file) === 'kode')
         {
             var list = ['valid','empty','clamp']
-            for (var _46_19_ = 0; _46_19_ < list.length; _46_19_++)
+            for (var _45_19_ = 0; _45_19_ < list.length; _45_19_++)
             {
-                kw = list[_46_19_]
+                kw = list[_45_19_]
                 index = keys.indexOf(kw)
                 if (index >= 0)
                 {
@@ -75,7 +73,7 @@ moduleKeys = function (moduleName, file)
 
 req = function (file, lines, editor)
 {
-    var ci, diss, exports, firstIndex, indent, k, keys, li, m, mod, moduleName, name, newKeys, operations, regexes, requires, reqValues, text, values, _108_31_, _113_27_, _91_43_
+    var ci, diss, exports, firstIndex, indent, k, keys, li, m, mod, moduleName, name, newKeys, operations, regexes, requires, reqValues, text, values, _107_31_, _112_27_, _90_43_
 
     requires = {}
     exports = {}
@@ -83,7 +81,7 @@ req = function (file, lines, editor)
     regexes = {'$':/\$[\s\(]/}
     firstIndex = null
     keys = {Math:['E','LN2','LN10','LOG2E','LOG10E','PI','SQRT1_2','SQRT2','abs','acos','acosh','asin','asinh','atan','atanh','atan2','cbrt','ceil','clz32','cos','cosh','exp','expm1','floor','fround','hypot','imul','log1p','log10','log2','max','min','pow','random','round','sign','sin','sinh','sqrt','tan','tanh','trunc']}
-    for (var _67_15_ = li = 0, _67_19_ = lines.length; (_67_15_ <= _67_19_ ? li < lines.length : li > lines.length); (_67_15_ <= _67_19_ ? ++li : --li))
+    for (var _66_15_ = li = 0, _66_19_ = lines.length; (_66_15_ <= _66_19_ ? li < lines.length : li > lines.length); (_66_15_ <= _66_19_ ? ++li : --li))
     {
         m = lines[li].match(requireRegExp)
         if (!((m != null ? m[1] : undefined) != null))
@@ -112,10 +110,10 @@ req = function (file, lines, editor)
                             newKeys = moduleKeys(moduleName,file)
                             keys[m[2]] = newKeys
                             var list = _k_.list(newKeys)
-                            for (var _90_34_ = 0; _90_34_ < list.length; _90_34_++)
+                            for (var _89_34_ = 0; _89_34_ < list.length; _89_34_++)
                             {
-                                k = list[_90_34_]
-                                regexes[k] = ((_91_43_=regexes[k]) != null ? _91_43_ : new RegExp(`(^|[\\:\\(\\{]|\\s+)${k}(\\s+[^:]|\\s*$|[\\.\\,\\(])`))
+                                k = list[_89_34_]
+                                regexes[k] = ((_90_43_=regexes[k]) != null ? _90_43_ : new RegExp(`(^|[\\:\\(\\{]|\\s+)${k}(\\s+[^:]|\\s*$|[\\.\\,\\(])`))
                             }
                         }
                         catch (err)
@@ -140,15 +138,15 @@ req = function (file, lines, editor)
         {
             values = keys[mod]
             var list1 = _k_.list(values)
-            for (var _106_18_ = 0; _106_18_ < list1.length; _106_18_++)
+            for (var _105_18_ = 0; _105_18_ < list1.length; _105_18_++)
             {
-                k = list1[_106_18_]
-                reqValues[mod] = ((_108_31_=reqValues[mod]) != null ? _108_31_ : [])
+                k = list1[_105_18_]
+                reqValues[mod] = ((_107_31_=reqValues[mod]) != null ? _107_31_ : [])
                 if (_k_.in(k,reqValues[mod]))
                 {
                     continue
                 }
-                regexes[k] = ((_113_27_=regexes[k]) != null ? _113_27_ : new RegExp(`(^|[\\,\\:\\(\\[\\{]|\\s+)${k}(\\s+[^:]|\\s*$|[\\.\\,\\(])`))
+                regexes[k] = ((_112_27_=regexes[k]) != null ? _112_27_ : new RegExp(`(^|[\\,\\:\\(\\[\\{]|\\s+)${k}(\\s+[^:]|\\s*$|[\\.\\,\\(])`))
                 if (regexes[k].test(lines[li]))
                 {
                     diss = editor.syntax.getDiss(li)

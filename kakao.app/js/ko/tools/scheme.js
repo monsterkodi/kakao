@@ -1,13 +1,11 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-import dom from "../../kxk/dom.js"
-let $ = dom.$
-
 import kxk from "../../kxk.js"
 let post = kxk.post
 let elem = kxk.elem
 let slash = kxk.slash
 let prefs = kxk.prefs
+let $ = kxk.$
 
 class Scheme
 {
@@ -30,9 +28,9 @@ class Scheme
 
         this.colors = {}
         var list = _k_.list(document.querySelectorAll('.scheme-link'))
-        for (var _30_17_ = 0; _30_17_ < list.length; _30_17_++)
+        for (var _29_17_ = 0; _29_17_ < list.length; _29_17_++)
         {
-            link = list[_30_17_]
+            link = list[_29_17_]
             css = slash.file(link.href)
             newlink = elem('link',{href:`css/ko/${scheme}/${css}`,rel:'stylesheet',type:'text/css',class:'scheme-link'})
             link.parentNode.replaceChild(newlink,link)

@@ -6,8 +6,7 @@
 000   000  000  000   000  000  000   000  000   000  000
 ###
 
-use ../../kxk/dom ▪ getStyle
-use ../../kxk ▪ elem drag
+use ../../kxk ▪ elem drag getStyle
 
 use ./MapScroll
 

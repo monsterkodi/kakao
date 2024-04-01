@@ -1,11 +1,9 @@
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-import dom from "../../kxk/dom.js"
-let $ = dom.$
-
 import kxk from "../../kxk.js"
 let elem = kxk.elem
 let post = kxk.post
+let $ = kxk.$
 
 class FPS
 {
@@ -42,7 +40,7 @@ class FPS
         }
         this.canvas.height = this.canvas.height
         ctx = this.canvas.getContext('2d')
-        for (var _47_17_ = i = 0, _47_21_ = this.history.length; (_47_17_ <= _47_21_ ? i < this.history.length : i > this.history.length); (_47_17_ <= _47_21_ ? ++i : --i))
+        for (var _46_17_ = i = 0, _46_21_ = this.history.length; (_46_17_ <= _46_21_ ? i < this.history.length : i > this.history.length); (_46_17_ <= _46_21_ ? ++i : --i))
         {
             ms = Math.max(0,this.history[i] - 34)
             red = parseInt(32 + 223 * _k_.clamp(0,1,(ms - 16) / 16))

@@ -13,7 +13,7 @@ class Poster extends EventTarget
     @: ->
         super()
         @addEventListener POST, @onPostEvent
-        window.addEventListener 'beforeunload' @dispose
+        # window.addEventListener 'beforeunload' @dispose
 
     onPostEvent: (event) ->
         
@@ -24,7 +24,7 @@ class Poster extends EventTarget
     dispose: =>
         
         @removeEventListener POST, @onPostEvent
-        window.removeEventListener 'beforeunload' @dispose
+        # window.removeEventListener 'beforeunload' @dispose
 
     post: (event, args) -> 
     

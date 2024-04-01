@@ -6,8 +6,7 @@
 0000000    0000000  000   000  00000000  000   000  00000000  
 ###
 
-use ../../kxk/dom ▪ $
-use ../../kxk ▪ post elem slash prefs
+use ../../kxk ▪ post elem slash prefs $
 
 class Scheme
     
