@@ -2,16 +2,11 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Store
 
-import events from "./events.js"
-
-import slash from "./slash.js"
-
 import noon from "./noon.js"
-
+import events from "./events.js"
+import slash from "./slash.js"
 import post from "./post.js"
-
 import ffs from "./ffs.js"
-
 import sds from "./sds.js"
 
 import util from "./util.js"
@@ -25,7 +20,7 @@ Store = (function ()
     Store["stores"] = {}
     function Store (name, opt = {})
     {
-        var _29_22_, _30_22_
+        var _24_22_, _25_22_
 
         this["reload"] = this["reload"].bind(this)
         this["clear"] = this["clear"].bind(this)
@@ -36,8 +31,8 @@ Store = (function ()
         this["keypath"] = this["keypath"].bind(this)
         Store.__super__.constructor.call(this)
         this.name = name
-        opt.separator = ((_29_22_=opt.separator) != null ? _29_22_ : '|')
-        opt.timeout = ((_30_22_=opt.timeout) != null ? _30_22_ : 4000)
+        opt.separator = ((_24_22_=opt.separator) != null ? _24_22_ : '|')
+        opt.timeout = ((_25_22_=opt.timeout) != null ? _25_22_ : 4000)
         if (!this.name)
         {
             return console.error('no name for store?')
@@ -82,7 +77,7 @@ Store = (function ()
 
     Store.prototype["get"] = function (key, value)
     {
-        var _63_45_
+        var _58_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -93,7 +88,7 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _80_14_
+        var _75_14_
 
         if (!(_k_.isStr(key)))
         {
@@ -107,7 +102,7 @@ Store = (function ()
         {
             return
         }
-        this.data = ((_80_14_=this.data) != null ? _80_14_ : {})
+        this.data = ((_75_14_=this.data) != null ? _75_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         this.delayedSave()
         return post.toWins('store',this.name,'set',key,value)

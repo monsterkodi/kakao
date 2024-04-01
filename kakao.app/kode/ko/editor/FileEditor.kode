@@ -8,8 +8,7 @@
 
 use ../../kxk ▪ ffs kpos post popup slash stopEvent setStyle deleteBy
 
-use ./Syntax
-use ./TextEditor
+use ◆ Syntax TextEditor
 
 function FileEditor extends TextEditor
 

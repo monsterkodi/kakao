@@ -12,7 +12,6 @@ let slash = kxk.slash
 let matchr = kxk.matchr
 
 import Walker from "../tools/Walker.js"
-
 import Projects from "../tools/Projects.js"
 
 import Syntax from "../editor/Syntax.js"
@@ -38,7 +37,7 @@ Search = (function ()
 
     Search.prototype["execute"] = function (command)
     {
-        var dir, file, rngs, _53_33_
+        var dir, file, rngs, _50_33_
 
         if (!command.length)
         {
@@ -67,7 +66,7 @@ Search = (function ()
             return
         }
         window.terminal.clear()
-        dir = ((_53_33_=Projects.dir(file)) != null ? _53_33_ : slash.dir(slash.path(file)))
+        dir = ((_50_33_=Projects.dir(file)) != null ? _50_33_ : slash.dir(slash.path(file)))
         this.startSearch({dir:dir,text:command,name:this.name})
         return {focus:'terminal',show:'terminal',text:command,select:true}
     }
@@ -171,7 +170,7 @@ FileSearcher = (function ()
         }
         ffs.read(this.file).then((function (text)
         {
-            var l, lines, rngs, _153_68_
+            var l, lines, rngs, _150_68_
 
             if (_k_.empty(text))
             {
@@ -183,9 +182,9 @@ FileSearcher = (function ()
                 this.syntaxName = Syntax.shebang(lines[0])
             }
             var list = _k_.list(lines)
-            for (var _154_18_ = 0; _154_18_ < list.length; _154_18_++)
+            for (var _151_18_ = 0; _151_18_ < list.length; _151_18_++)
             {
-                l = list[_154_18_]
+                l = list[_151_18_]
                 this.line += 1
                 rngs = matchr.ranges(this.patterns,l,this.flags)
                 if (rngs.length)
@@ -208,7 +207,7 @@ FileSearcher = (function ()
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.appendMeta(meta)
         terminal.appendMeta({clss:'spacer'})
-        for (var _176_18_ = fi = 0, _176_22_ = this.found.length; (_176_18_ <= _176_22_ ? fi < this.found.length : fi > this.found.length); (_176_18_ <= _176_22_ ? ++fi : --fi))
+        for (var _173_18_ = fi = 0, _173_22_ = this.found.length; (_173_18_ <= _173_22_ ? fi < this.found.length : fi > this.found.length); (_173_18_ <= _173_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]

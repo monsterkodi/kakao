@@ -2,16 +2,11 @@ var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof Str
 
 var Stash
 
-import post from "./post.js"
-
-import slash from "./slash.js"
-
 import noon from "./noon.js"
-
+import post from "./post.js"
+import slash from "./slash.js"
 import sds from "./sds.js"
-
 import kstr from "./kstr.js"
-
 import ffs from "./ffs.js"
 
 import util from "./util.js"
@@ -22,7 +17,7 @@ Stash = (function ()
 {
     function Stash (name, opt)
     {
-        var _27_30_, _30_32_, _34_61_
+        var _22_30_, _25_32_, _29_61_
 
         this.name = name
     
@@ -31,10 +26,10 @@ Stash = (function ()
         {
             return console.error('stash.constructor -- no name?')
         }
-        this.sep = ((_27_30_=(opt != null ? opt.separator : undefined)) != null ? _27_30_ : '|')
+        this.sep = ((_22_30_=(opt != null ? opt.separator : undefined)) != null ? _22_30_ : '|')
         this.timer = null
         this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
-        this.timeout = ((_30_32_=(opt != null ? opt.timeout : undefined)) != null ? _30_32_ : 4000)
+        this.timeout = ((_25_32_=(opt != null ? opt.timeout : undefined)) != null ? _25_32_ : 4000)
         this.changes = []
         this.data = {}
         if (((opt != null ? opt.defaults : undefined) != null))

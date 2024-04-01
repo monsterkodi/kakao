@@ -11,14 +11,7 @@
 ###
 
 use ./dom ▪ $ stopEvent
-use ./ffs
-use ./elem
-use ./post
-use ./title
-use ./prefs
-use ./slash
-use ./stash
-use ./keyinfo
+use ◆ ffs elem post prefs slash stash keyinfo title
 
 function Delegate
     

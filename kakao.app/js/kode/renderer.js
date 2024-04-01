@@ -9,7 +9,6 @@ import slash from "../kxk/slash.js"
 import fs from "../kxk/fs.js"
 
 import print from "./print.js"
-
 import utils from "./utils.js"
 
 firstLineCol = utils.firstLineCol

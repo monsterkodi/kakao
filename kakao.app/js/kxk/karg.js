@@ -3,9 +3,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var error, expand, parse
 
 import kstr from "./kstr.js"
-
 import klor from "./klor.js"
-
 import noon from "./noon.js"
 
 klor.globalize()
@@ -15,9 +13,9 @@ expand = function (l)
     var a, match
 
     var list = _k_.list(l)
-    for (var _25_10_ = 0; _25_10_ < list.length; _25_10_++)
+    for (var _23_10_ = 0; _23_10_ < list.length; _23_10_++)
     {
-        a = list[_25_10_]
+        a = list[_23_10_]
         if (match = /^\-(\w\w+)$/.exec(a))
         {
             a = match[1].split('').map(function (i)
@@ -43,7 +41,7 @@ error = function (msg)
 
 parse = function (config, options = {})
 {
-    var addIgnored, addParam, addParamOrIgnore, arg, argv, cfg, df, expandedArgs, help, helpText, k, lng, lngHelp, long, long2key, maxHelp, maxLong, name, optionsText, org, param, paramList, result, short, short2key, sht, shtHelp, v, version, _210_19_, _211_21_, _213_21_, _216_28_, _217_23_, _236_23_
+    var addIgnored, addParam, addParamOrIgnore, arg, argv, cfg, df, expandedArgs, help, helpText, k, lng, lngHelp, long, long2key, maxHelp, maxLong, name, optionsText, org, param, paramList, result, short, short2key, sht, shtHelp, v, version, _208_19_, _209_21_, _211_21_, _214_28_, _215_23_, _234_23_
 
     if (typeof(config) === 'string')
     {
@@ -331,14 +329,14 @@ broken key: ${bold(_k_.y5(k))}`)
         helpText += optionsText
         helpText += '\n\n'
     }
-    short2key['h'] = ((_210_19_=short2key['h']) != null ? _210_19_ : 'help')
-    long2key['help'] = ((_211_21_=long2key['help']) != null ? _211_21_ : 'help')
+    short2key['h'] = ((_208_19_=short2key['h']) != null ? _208_19_ : 'help')
+    long2key['help'] = ((_209_21_=long2key['help']) != null ? _209_21_ : 'help')
     if ((config.version != null))
     {
         version = config.version
         delete config.version
-        long2key['version'] = ((_216_28_=long2key['version']) != null ? _216_28_ : 'version')
-        short2key['V'] = ((_217_23_=short2key['V']) != null ? _217_23_ : 'version')
+        long2key['version'] = ((_214_28_=long2key['version']) != null ? _214_28_ : 'version')
+        short2key['V'] = ((_215_23_=short2key['V']) != null ? _215_23_ : 'version')
     }
     delete config[name]
     if (Object.keys(config).length)
@@ -346,7 +344,7 @@ broken key: ${bold(_k_.y5(k))}`)
         helpText += noon.stringify(config,{maxalign:16,colors:{key:gray,string:white}})
         helpText += '\n'
     }
-    options.ignoreArgs = ((_236_23_=options.ignoreArgs) != null ? _236_23_ : 2)
+    options.ignoreArgs = ((_234_23_=options.ignoreArgs) != null ? _234_23_ : 2)
     if (options.argv)
     {
         argv = options.argv

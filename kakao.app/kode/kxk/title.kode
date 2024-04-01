@@ -12,12 +12,7 @@
 ###
 
 use ./dom ▪ $ stopEvent elem
-use ./sds
-use ./menu
-use ./keyinfo
-use ./slash
-use ./post
-use ./noon
+use ./sds ./menu ./keyinfo ./slash ./post ./noon
                                 
 function Title
     

@@ -1,12 +1,11 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-import linediff from "../tools/linediff.js"
-
-import Git from "../tools/Git.js"
-
 import kxk from "../../kxk.js"
 let elem = kxk.elem
 let post = kxk.post
+
+import linediff from "../tools/linediff.js"
+import Git from "../tools/Git.js"
 
 class Diffbar
 {
@@ -101,25 +100,25 @@ class Diffbar
 
     updateMetas ()
     {
-        var add, boring, change, li, meta, mod, mods, _101_25_, _118_25_, _120_33_, _136_30_, _138_33_, _95_30_, _95_39_
+        var add, boring, change, li, meta, mod, mods, _116_25_, _118_33_, _134_30_, _136_33_, _93_30_, _93_39_, _99_25_
 
         this.clearMetas()
-        if (!((_95_30_=this.changes) != null ? (_95_39_=_95_30_.changes) != null ? _95_39_.length : undefined : undefined))
+        if (!((_93_30_=this.changes) != null ? (_93_39_=_93_30_.changes) != null ? _93_39_.length : undefined : undefined))
         {
             return
         }
         var list = _k_.list(this.changes.changes)
-        for (var _97_19_ = 0; _97_19_ < list.length; _97_19_++)
+        for (var _95_19_ = 0; _95_19_ < list.length; _95_19_++)
         {
-            change = list[_97_19_]
+            change = list[_95_19_]
             boring = this.isBoring(change)
             if ((change.mod != null))
             {
                 li = change.line - 1
                 var list1 = _k_.list(change.mod)
-                for (var _105_24_ = 0; _105_24_ < list1.length; _105_24_++)
+                for (var _103_24_ = 0; _103_24_ < list1.length; _103_24_++)
                 {
-                    mod = list1[_105_24_]
+                    mod = list1[_103_24_]
                     meta = {line:li,clss:'git mod' + (boring && ' boring' || ''),git:'mod',change:mod,boring:boring,length:change.mod.length,click:this.onMetaClick}
                     this.editor.meta.addDiffMeta(meta)
                     li++
@@ -130,9 +129,9 @@ class Diffbar
                 mods = (change.mod != null) && change.mod.length || 0
                 li = change.line - 1 + mods
                 var list2 = _k_.list(change.add)
-                for (var _123_24_ = 0; _123_24_ < list2.length; _123_24_++)
+                for (var _121_24_ = 0; _121_24_ < list2.length; _121_24_++)
                 {
-                    add = list2[_123_24_]
+                    add = list2[_121_24_]
                     meta = {line:li,clss:'git add' + (boring && ' boring' || ''),git:'add',change:add,length:change.add.length,boring:boring,click:this.onMetaClick}
                     this.editor.meta.addDiffMeta(meta)
                     li++
@@ -150,14 +149,14 @@ class Diffbar
 
     isBoring (change)
     {
-        var c, _160_21_, _164_21_, _168_21_
+        var c, _158_21_, _162_21_, _166_21_
 
         if ((change.mod != null))
         {
             var list = _k_.list(change.mod)
-            for (var _161_18_ = 0; _161_18_ < list.length; _161_18_++)
+            for (var _159_18_ = 0; _159_18_ < list.length; _159_18_++)
             {
-                c = list[_161_18_]
+                c = list[_159_18_]
                 if (!linediff.isBoring(c.old,c.new))
                 {
                     return false
@@ -167,9 +166,9 @@ class Diffbar
         if ((change.add != null))
         {
             var list1 = _k_.list(change.add)
-            for (var _165_18_ = 0; _165_18_ < list1.length; _165_18_++)
+            for (var _163_18_ = 0; _163_18_ < list1.length; _163_18_++)
             {
-                c = list1[_165_18_]
+                c = list1[_163_18_]
                 if (!_k_.empty(c.new.trim()))
                 {
                     return false
@@ -179,9 +178,9 @@ class Diffbar
         if ((change.del != null))
         {
             var list2 = _k_.list(change.del)
-            for (var _169_18_ = 0; _169_18_ < list2.length; _169_18_++)
+            for (var _167_18_ = 0; _167_18_ < list2.length; _167_18_++)
             {
-                c = list2[_169_18_]
+                c = list2[_167_18_]
                 if (!_k_.empty(c.old.trim()))
                 {
                     return false
@@ -218,7 +217,7 @@ class Diffbar
 
     updateScroll ()
     {
-        var alpha, boring, ctx, h, length, lh, li, meta, w, _228_45_
+        var alpha, boring, ctx, h, length, lh, li, meta, w, _226_45_
 
         w = 2
         h = this.editor.scroll.viewHeight
@@ -233,9 +232,9 @@ class Diffbar
         if (this.changes)
         {
             var list = _k_.list(this.editor.meta.metas)
-            for (var _226_21_ = 0; _226_21_ < list.length; _226_21_++)
+            for (var _224_21_ = 0; _224_21_ < list.length; _224_21_++)
             {
-                meta = list[_226_21_]
+                meta = list[_224_21_]
                 if (!((meta != null ? meta[2] != null ? meta[2].git : undefined : undefined) != null))
                 {
                     continue

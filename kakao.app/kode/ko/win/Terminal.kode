@@ -9,8 +9,7 @@
 use ../../kxk ▪ post kpos popup stopEvent
 
 use ../tools/salt
-use ../editor/Syntax
-use ../editor/TextEditor
+use ../editor ◆ Syntax TextEditor
 
 function Terminal extends TextEditor
 

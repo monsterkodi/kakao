@@ -9,8 +9,8 @@
 use ../kxk/kstr
 use ../kxk/slash
 use ../kxk/fs
-use ./print
-use ./utils
+
+use ./print ./utils
 
 { firstLineCol, lastLineCol } = utils
 

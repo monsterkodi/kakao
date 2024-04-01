@@ -10,12 +10,7 @@
 # stores state in separate files per window 
 # does not sync between windows
  
-use ./post
-use ./slash
-use ./noon
-use ./sds
-use ./kstr
-use ./ffs
+use ◆ noon post slash sds kstr ffs
 use ./util ▪ defaults
 
 function Stash

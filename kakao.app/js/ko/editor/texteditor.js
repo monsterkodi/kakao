@@ -11,29 +11,18 @@ let elem = kxk.elem
 let stopEvent = kxk.stopEvent
 let $ = kxk.$
 
-import EditorScroll from "./EditorScroll.js"
-
-import Editor from "./Editor.js"
-
-import Render from "./Render.js"
-
 import Do from "./Do.js"
-
 import Meta from "./Meta.js"
-
 import AutoComplete from "./AutoComplete.js"
-
 import Scrollbar from "./Scrollbar.js"
-
 import Brackets from "./Brackets.js"
-
 import Numbers from "./Numbers.js"
-
 import Diffbar from "./Diffbar.js"
-
 import Minimap from "./Minimap.js"
-
 import Strings from "./Strings.js"
+import Render from "./Render.js"
+import EditorScroll from "./EditorScroll.js"
+import Editor from "./Editor.js"
 
 
 TextEditor = (function ()
@@ -41,7 +30,7 @@ TextEditor = (function ()
     _k_.extend(TextEditor, Editor)
     function TextEditor (viewElem, config)
     {
-        var layer, name, _54_27_, _56_68_
+        var layer, name, _42_27_, _44_68_
 
         this["onKeyDown"] = this["onKeyDown"].bind(this)
         this["onClickTimeout"] = this["onClickTimeout"].bind(this)
@@ -83,8 +72,8 @@ TextEditor = (function ()
         this.elem = this.layerDict.lines
         this.spanCache = []
         this.lineDivs = {}
-        this.config.lineHeight = ((_54_27_=this.config.lineHeight) != null ? _54_27_ : 1.2)
-        this.setFontSize(prefs.get(`${this.name}FontSize`,((_56_68_=this.config.fontSize) != null ? _56_68_ : 19)))
+        this.config.lineHeight = ((_42_27_=this.config.lineHeight) != null ? _42_27_ : 1.2)
+        this.setFontSize(prefs.get(`${this.name}FontSize`,((_44_68_=this.config.fontSize) != null ? _44_68_ : 19)))
         this.scroll = new EditorScroll(this)
         this.scroll.on('shiftLines',this.shiftLines)
         this.scroll.on('showLines',this.showLines)
@@ -102,9 +91,9 @@ TextEditor = (function ()
         var feature, featureClss, featureName
 
         var list = _k_.list(this.config.features)
-        for (var _83_20_ = 0; _83_20_ < list.length; _83_20_++)
+        for (var _71_20_ = 0; _71_20_ < list.length; _71_20_++)
         {
-            feature = list[_83_20_]
+            feature = list[_71_20_]
             if (feature === 'CursorLine')
             {
                 this.cursorLine = elem('div',{class:'cursor-line'})
@@ -120,7 +109,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["del"] = function ()
     {
-        var _102_18_
+        var _90_18_
 
         post.removeListener('schemeChanged',this.onSchemeChanged)
         ;(this.scrollbar != null ? this.scrollbar.del() : undefined)
@@ -146,14 +135,14 @@ TextEditor = (function ()
 
     TextEditor.prototype["onSchemeChanged"] = function ()
     {
-        var updateMinimap, _130_15_
+        var updateMinimap, _118_15_
 
         ;(this.syntax != null ? this.syntax.schemeChanged() : undefined)
         if (this.minimap)
         {
             updateMinimap = (function ()
             {
-                var _132_39_
+                var _120_39_
 
                 return (this.minimap != null ? this.minimap.drawLines() : undefined)
             }).bind(this)
@@ -167,9 +156,9 @@ TextEditor = (function ()
 
         this.layerDict = {}
         var list = _k_.list(layerClasses)
-        for (var _144_16_ = 0; _144_16_ < list.length; _144_16_++)
+        for (var _132_16_ = 0; _132_16_ < list.length; _132_16_++)
         {
-            cls = list[_144_16_]
+            cls = list[_132_16_]
             this.layerDict[cls] = this.addLayer(cls)
         }
     }
@@ -220,9 +209,9 @@ TextEditor = (function ()
         appended = []
         ls = (text != null ? text.split(/\n/) : undefined)
         var list = _k_.list(ls)
-        for (var _203_14_ = 0; _203_14_ < list.length; _203_14_++)
+        for (var _191_14_ = 0; _191_14_ < list.length; _191_14_++)
         {
-            l = list[_203_14_]
+            l = list[_191_14_]
             this.state = this.state.appendLine(l)
             appended.push(this.numLines() - 1)
         }
@@ -233,9 +222,9 @@ TextEditor = (function ()
         showLines = (this.scroll.bot < this.scroll.top) || (this.scroll.bot < this.scroll.viewLines)
         this.scroll.setNumLines(this.numLines(),{showLines:showLines})
         var list1 = _k_.list(appended)
-        for (var _214_15_ = 0; _214_15_ < list1.length; _214_15_++)
+        for (var _202_15_ = 0; _202_15_ < list1.length; _202_15_++)
         {
-            li = list1[_214_15_]
+            li = list1[_202_15_]
             this.emit('lineAppended',{lineIndex:li,text:this.line(li)})
         }
         this.emit('linesAppended',ls)
@@ -244,7 +233,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["setFontSize"] = function (fontSize)
     {
-        var _240_15_
+        var _228_15_
 
         this.layers.style.fontSize = `${fontSize}px`
         this.size.numbersWidth = _k_.in('Numbers',this.config.features) && 50 || 0
@@ -267,10 +256,10 @@ TextEditor = (function ()
 
         this.syntax.changed(changeInfo)
         var list = _k_.list(changeInfo.changes)
-        for (var _254_19_ = 0; _254_19_ < list.length; _254_19_++)
+        for (var _242_19_ = 0; _242_19_ < list.length; _242_19_++)
         {
-            change = list[_254_19_]
-            var _255_23_ = [change.doIndex,change.newIndex,change.change]; di = _255_23_[0]; li = _255_23_[1]; ch = _255_23_[2]
+            change = list[_242_19_]
+            var _243_23_ = [change.doIndex,change.newIndex,change.change]; di = _243_23_[0]; li = _243_23_[1]; ch = _243_23_[2]
 
             switch (ch)
             {
@@ -352,7 +341,7 @@ TextEditor = (function ()
     {
         var li
 
-        for (var _318_19_ = li = top, _318_24_ = bot; (_318_19_ <= _318_24_ ? li <= bot : li >= bot); (_318_19_ <= _318_24_ ? ++li : --li))
+        for (var _306_19_ = li = top, _306_24_ = bot; (_306_19_ <= _306_24_ ? li <= bot : li >= bot); (_306_19_ <= _306_24_ ? ++li : --li))
         {
             this.syntax.getDiss(li,true)
             this.updateLine(li)
@@ -365,7 +354,7 @@ TextEditor = (function ()
 
         this.lineDivs = {}
         this.elem.innerHTML = ''
-        for (var _333_19_ = li = top, _333_24_ = bot; (_333_19_ <= _333_24_ ? li <= bot : li >= bot); (_333_19_ <= _333_24_ ? ++li : --li))
+        for (var _321_19_ = li = top, _321_24_ = bot; (_321_19_ <= _321_24_ ? li <= bot : li >= bot); (_321_19_ <= _321_24_ ? ++li : --li))
         {
             this.appendLine(li)
         }
@@ -437,7 +426,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["updateLinePositions"] = function (animate = 0)
     {
-        var div, li, resetTrans, y, _402_25_
+        var div, li, resetTrans, y, _390_25_
 
         for (li in this.lineDivs)
         {
@@ -460,9 +449,9 @@ TextEditor = (function ()
                 var c
 
                 var list = _k_.list(this.elem.children)
-                for (var _410_22_ = 0; _410_22_ < list.length; _410_22_++)
+                for (var _398_22_ = 0; _398_22_ < list.length; _398_22_++)
                 {
-                    c = list[_410_22_]
+                    c = list[_398_22_]
                     c.style.transition = 'initial'
                 }
             }).bind(this)
@@ -474,7 +463,7 @@ TextEditor = (function ()
     {
         var li
 
-        for (var _416_19_ = li = this.scroll.top, _416_32_ = this.scroll.bot; (_416_19_ <= _416_32_ ? li <= this.scroll.bot : li >= this.scroll.bot); (_416_19_ <= _416_32_ ? ++li : --li))
+        for (var _404_19_ = li = this.scroll.top, _404_32_ = this.scroll.bot; (_404_19_ <= _404_32_ ? li <= this.scroll.bot : li >= this.scroll.bot); (_404_19_ <= _404_32_ ? ++li : --li))
         {
             this.updateLine(li)
         }
@@ -504,9 +493,9 @@ TextEditor = (function ()
 
         cs = []
         var list = _k_.list(this.cursors())
-        for (var _442_14_ = 0; _442_14_ < list.length; _442_14_++)
+        for (var _430_14_ = 0; _430_14_ < list.length; _430_14_++)
         {
-            c = list[_442_14_]
+            c = list[_430_14_]
             if (c[1] >= this.scroll.top && c[1] <= this.scroll.bot)
             {
                 cs.push([c[0],c[1] - this.scroll.top])
@@ -546,9 +535,9 @@ TextEditor = (function ()
         {
             vc = []
             var list1 = _k_.list(cs)
-            for (var _469_18_ = 0; _469_18_ < list1.length; _469_18_++)
+            for (var _457_18_ = 0; _457_18_ < list1.length; _457_18_++)
             {
-                c = list1[_469_18_]
+                c = list1[_457_18_]
                 if (isSamePos(this.mainCursor(),[c[0],c[1] + this.scroll.top]))
                 {
                     c[2] = 'main'
@@ -604,7 +593,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["suspendBlink"] = function ()
     {
-        var blinkDelay, _514_20_
+        var blinkDelay, _502_20_
 
         if (!this.blinkTimer)
         {
@@ -642,7 +631,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["doBlink"] = function ()
     {
-        var blinkDelay, _538_20_, _539_16_
+        var blinkDelay, _526_20_, _527_16_
 
         this.blink = !this.blink
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',this.blink) : undefined)
@@ -662,7 +651,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["stopBlink"] = function ()
     {
-        var _552_20_
+        var _540_20_
 
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',false) : undefined)
         clearTimeout(this.blinkTimer)
@@ -723,9 +712,9 @@ TextEditor = (function ()
         {
             lr = lineElem.getBoundingClientRect()
             var list = _k_.list(lineElem.firstChild.children)
-            for (var _605_18_ = 0; _605_18_ < list.length; _605_18_++)
+            for (var _593_18_ = 0; _593_18_ < list.length; _593_18_++)
             {
-                e = list[_605_18_]
+                e = list[_593_18_]
                 br = e.getBoundingClientRect()
                 if ((br.left <= x && x <= br.left + br.width))
                 {
@@ -744,7 +733,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["viewHeight"] = function ()
     {
-        var _616_18_, _617_13_
+        var _604_18_, _605_13_
 
         if ((this.scroll != null ? this.scroll.viewHeight : undefined) >= 0)
         {
@@ -892,7 +881,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _736_24_, _758_35_, _764_33_
+        var action, actionCombo, combos, _724_24_, _746_35_, _752_33_
 
         if ((this.autocomplete != null))
         {
@@ -922,18 +911,18 @@ TextEditor = (function ()
         }
 
         var list = _k_.list(Editor.actions)
-        for (var _751_19_ = 0; _751_19_ < list.length; _751_19_++)
+        for (var _739_19_ = 0; _739_19_ < list.length; _739_19_++)
         {
-            action = list[_751_19_]
-            combos = ((_758_35_=action.combos) != null ? _758_35_ : [action.combo])
+            action = list[_739_19_]
+            combos = ((_746_35_=action.combos) != null ? _746_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _762_28_ = 0; _762_28_ < list1.length; _762_28_++)
+            for (var _750_28_ = 0; _750_28_ < list1.length; _750_28_++)
             {
-                actionCombo = list1[_762_28_]
+                actionCombo = list1[_750_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))

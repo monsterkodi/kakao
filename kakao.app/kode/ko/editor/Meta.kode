@@ -6,10 +6,8 @@
 000   000  00000000     000     000   000
 ###
 
-use ../../kxk ▪ elem post slash stopEvent pull $
-
-use ../tools/ranges
-use ../tools/File
+use ../../kxk ▪ pull elem post slash stopEvent $
+use ../tools  ◆ ranges File
 
 class Meta
 

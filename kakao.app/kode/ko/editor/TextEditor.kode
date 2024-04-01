@@ -8,19 +8,7 @@
 
 use ../../kxk ▪ keyinfo prefs post drag elem stopEvent $
 
-use ./EditorScroll
-use ./Editor
-use ./Render
-
-use ./Do
-use ./Meta
-use ./AutoComplete
-use ./Scrollbar
-use ./Brackets
-use ./Numbers
-use ./Diffbar
-use ./Minimap
-use ./Strings
+use ◆ Do Meta AutoComplete Scrollbar Brackets Numbers Diffbar Minimap Strings Render EditorScroll Editor
 
 function TextEditor extends Editor
 

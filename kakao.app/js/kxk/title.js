@@ -8,15 +8,10 @@ let stopEvent = dom.stopEvent
 let elem = dom.elem
 
 import sds from "./sds.js"
-
 import menu from "./menu.js"
-
 import keyinfo from "./keyinfo.js"
-
 import slash from "./slash.js"
-
 import post from "./post.js"
-
 import noon from "./noon.js"
 
 
@@ -24,7 +19,7 @@ Title = (function ()
 {
     function Title (opt)
     {
-        var pkg, _26_13_, _30_27_
+        var pkg, _21_13_, _25_27_
 
         this.opt = opt
     
@@ -37,9 +32,9 @@ Title = (function ()
         this["onTitlebar"] = this["onTitlebar"].bind(this)
         this["onWindowBlur"] = this["onWindowBlur"].bind(this)
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
-        this.opt = ((_26_13_=this.opt) != null ? _26_13_ : {})
+        this.opt = ((_21_13_=this.opt) != null ? _21_13_ : {})
         pkg = this.opt.pkg
-        this.elem = $(((_30_27_=this.opt.elem) != null ? _30_27_ : "#titlebar"))
+        this.elem = $(((_25_27_=this.opt.elem) != null ? _25_27_ : "#titlebar"))
         this.elem.classList.add('focus')
         if (!this.elem)
         {
@@ -140,10 +135,10 @@ Title = (function ()
 
     Title.prototype["setTitle"] = function (opt)
     {
-        var html, parts, _130_26_
+        var html, parts, _125_26_
 
         html = ""
-        parts = ((_130_26_=opt.title) != null ? _130_26_ : [])
+        parts = ((_125_26_=opt.title) != null ? _125_26_ : [])
         if (opt.pkg)
         {
             if (opt.pkg.name && _k_.in('name',parts))
@@ -255,7 +250,7 @@ Title = (function ()
             menuOrCombo = obj[text]
             tmpl.push(((function ()
             {
-                var item, _213_33_, _213_57_
+                var item, _208_33_, _208_57_
 
                 if (_k_.empty(menuOrCombo) && text.startsWith('-'))
                 {
@@ -295,16 +290,16 @@ Title = (function ()
 
     Title.prototype["showMenu"] = function ()
     {
-        var _223_68_, _223_75_
+        var _218_68_, _218_75_
 
         this.menu.elem.style.display = 'inline-block'
-        ;((_223_68_=this.menu) != null ? typeof (_223_75_=_223_68_.focus) === "function" ? _223_75_() : undefined : undefined)
+        ;((_218_68_=this.menu) != null ? typeof (_218_75_=_218_68_.focus) === "function" ? _218_75_() : undefined : undefined)
         return prefs.set('menu',true)
     }
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _224_25_
+        var _219_25_
 
         ;(this.menu != null ? this.menu.close() : undefined)
         this.menu.elem.style.display = 'none'
@@ -338,7 +333,7 @@ Title = (function ()
 
     Title.prototype["handleKeyInfo"] = function (modKeyComboEvent)
     {
-        var action, combo, combos, event, item, key, keypath, keypaths, menu, mod, trail, _253_37_
+        var action, combo, combos, event, item, key, keypath, keypaths, menu, mod, trail, _248_37_
 
         mod = modKeyComboEvent.mod
         key = modKeyComboEvent.key
@@ -356,9 +351,9 @@ Title = (function ()
         }
         keypaths = sds.find.key(menu,'combo')
         var list = _k_.list(keypaths)
-        for (var _247_20_ = 0; _247_20_ < list.length; _247_20_++)
+        for (var _242_20_ = 0; _242_20_ < list.length; _242_20_++)
         {
-            keypath = list[_247_20_]
+            keypath = list[_242_20_]
             combos = sds.get(menu,keypath).split(' ')
             combos = combos.map(function (c)
             {
@@ -368,7 +363,7 @@ Title = (function ()
             {
                 keypath.pop()
                 item = sds.get(menu,keypath)
-                action = ((_253_37_=item.action) != null ? _253_37_ : item.text)
+                action = ((_248_37_=item.action) != null ? _248_37_ : item.text)
                 trail = []
                 while (keypath.length > 1)
                 {

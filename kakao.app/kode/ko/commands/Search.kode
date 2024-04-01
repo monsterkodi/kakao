@@ -7,13 +7,10 @@
 ###
 
 use ../../kolor/kolor
-use ../../kxk ▪ ffs kstr post slash matchr
-
-use ../tools/Walker
-use ../tools/Projects
-use ../editor/Syntax
-
-use ../commandline/Command
+use ../../kxk       ▪ ffs kstr post slash matchr
+use ../tools        ◆ Walker Projects
+use ../editor       ◆ Syntax
+use ../commandline  ◆ Command
 
 function Search extends Command
 

@@ -9,12 +9,7 @@
     syncs changes between windows
 ###
 
-use ./events
-use ./slash
-use ./noon
-use ./post
-use ./ffs
-use ./sds
+use ◆ noon events slash post ffs sds
 use ./util ▪ isEqual defaults
 
 function Store extends events

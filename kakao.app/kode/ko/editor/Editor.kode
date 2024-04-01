@@ -7,10 +7,7 @@
 ###
 
 use ../../kxk ▪ ffs kstr post slash
-
-use ./Do
-use ./Buffer
-use ./Syntax
+use ◆ Do Syntax Buffer
 
 __dirname = slash.dir import.meta.url[7..]
 
