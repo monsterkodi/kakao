@@ -32,7 +32,7 @@ File
     ---
     Revert                  cmdctrl+r
     ----
-    Close Other Tabs        cmdctrl+shift+w
+    Close Other Tabs        cmdctrl+shift+w alt+cmdctrl+w
     Close Other Windows     cmdctrl+alt+shift+w
     Close Tab or Window     cmdctrl+w
     Close                   alt+w
@@ -113,7 +113,7 @@ Command
 #     0      000  00000000  00     00
 
 View
-    Maximize Editor         cmdctrl+shift+y
+    Maximize Editor         cmdctrl+y cmdctrl+shift+y
     Toggle Center Text      cmdctrl+\
     -
     Toggle Tab Pinned       alt+cmdctrl+p

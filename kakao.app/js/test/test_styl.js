@@ -76,6 +76,51 @@ titlebarHeight      = 30px
     background-color: transparent;
 }
 `)
+    compare(styl(`@keyframes fadeIn
+    0%
+        opacity         0
+    100%  
+        opacity         1`),`
+@keyframes fadeIn
+{
+    0%
+    {
+        opacity: 0;
+    }
+
+    100%
+    {
+        opacity: 1;
+    }
+
+}
+`)
+    compare(styl(`frameWidth = 6px
+.popupCombo
+    right               2 * frameWidth`),`
+.popupCombo
+{
+    right: 12px;
+}
+`)
+    compare(styl(`frameWidth = 6px
+.popupCombo
+    padding-right       2 * frameWidth + 70px`),`
+.popupCombo
+{
+    padding-right: 82px;
+}
+`)
+    compare(styl(`frameRadius         = 10px
+contentRadius       = frameRadius - 2px
+
+.test
+    margin       contentRadius`),`
+.test
+{
+    margin: 8px;
+}
+`)
 }
 toExport["styl"]._section_ = true
 toExport._test_ = true
