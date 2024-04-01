@@ -13,6 +13,7 @@ use ../kxk/fs
 use ../kxk/slash ▪ tilde
 use ../kxk/noon
 use ../kxk/pug
+use ../kxk/styl
 
 use ../../lib/lib_kakao ▪ stylus
 
@@ -45,6 +46,7 @@ knrd = (files = [], opt = {}) ○->
             srcDir:  pugDir
             tgtDir:  jsDir + '/css'
             compile: (srcText, srcFile) -> stylus srcText
+            # compile: (srcText, srcFile) -> styl srcText
         pug:
             tgtExt:  'html'
             srcDir:  pugDir

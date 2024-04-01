@@ -18,6 +18,7 @@ use ./kstr ▪ unfillet blockFillets
 
 vars = {}
 funcs = {}
+ampersands = []
 
 subvars = (fillets) ->
     
@@ -30,6 +31,7 @@ subvars = (fillets) ->
 calculus = (fillets) ->
     
     for fillet,index in fillets
+        continue if index < 1
         if fillet.match in '*+-/'
             lhs  = parseFloat fillets[index-1].match
             rhs  = parseFloat fillets[index+1].match
@@ -69,6 +71,10 @@ render = (block, text) ->
         funcs[funcName] = funcValue
         return text
         
+    if block.fillet[0]?.match[0] == '&'
+        ampersands.push block
+        return text
+        
     idt = rpad block.indent
         
     if valid block.blocks
@@ -82,6 +88,24 @@ render = (block, text) ->
         text += idt + block.fillet[0].match + ': ' + unfillet calculus subvars block.fillet[1..]
         text += ';'
     
+    if valid ampersands
+        
+        prefix = unfillet block.fillet
+        
+        amps = ampersands
+        ampersands = []
+
+        while ampersand = amps.shift()
+
+            text += prefix + unfillet(ampersand.fillet)[1..]
+
+            if valid ampersand.blocks
+                text += '\n' + '{'
+                for b in ampersand.blocks
+                    text += render b, ''
+                text += '\n' + '}\n'
+                    
+            text += '\n'
     text
     
 #  0000000  000000000  000   000  000      

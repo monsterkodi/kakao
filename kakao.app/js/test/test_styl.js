@@ -138,6 +138,31 @@ body
     top: 0;
 }
 `)
+    compare(styl(`#titlebar .winbutton
+    flex                0 1 10px
+    display             inline-block
+    text-align          center
+    &.minimize
+        padding-top     3px
+    &.maximize
+        padding-right   1px`),`
+#titlebar .winbutton
+{
+    flex: 0 1 10px;
+    display: inline-block;
+    text-align: center;
+}
+#titlebar .winbutton.minimize
+{
+        padding-top: 3px;
+}
+
+#titlebar .winbutton.maximize
+{
+        padding-right: 1px;
+}
+
+`)
 }
 toExport["styl"]._section_ = true
 toExport._test_ = true
