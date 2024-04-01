@@ -9,13 +9,11 @@
 ###
 
 use ../kode/kode
-use ../kxk/fs
 use ../kxk/slash ▪ tilde
-use ../kxk/noon
+use ../kxk/fs
 use ../kxk/pug
 use ../kxk/styl
-
-use ../../lib/lib_kakao ▪ stylus
+use ../kxk/noon
 
 __dirname = import.meta.dirname
 
@@ -45,7 +43,6 @@ knrd = (files = [], opt = {}) ○->
             tgtExt:  'css'
             srcDir:  pugDir
             tgtDir:  jsDir + '/css'
-            # compile: (srcText, srcFile) -> stylus srcText
             compile: (srcText, srcFile) -> styl srcText
         pug:
             tgtExt:  'html'
@@ -98,7 +95,6 @@ knrd = (files = [], opt = {}) ○->
             else
                 if tgtText != compText
                     transpiled++
-                    # log m3('▶ '), m4 tilde srcFile
                     ○ fs.write tgtFile, compText
                     log b5('✔ '), g5 tilde tgtFile if not opt.quiet
                 else 

@@ -4,32 +4,29 @@ var knrd, __dirname
 
 import kode from "../kode/kode.js"
 
-import fs from "../kxk/fs.js"
-
 import slash from "../kxk/slash.js"
 let tilde = slash.tilde
 
-import noon from "../kxk/noon.js"
+import fs from "../kxk/fs.js"
 
 import pug from "../kxk/pug.js"
 
 import styl from "../kxk/styl.js"
 
-import lib_kakao from "../../lib/lib_kakao.js"
-let stylus = lib_kakao.stylus
+import noon from "../kxk/noon.js"
 
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, ignore, jsDir, kodeDir, list, pugDir, rule, rules, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _27_23_, _28_16_
+    var compText, file, ignore, jsDir, kodeDir, list, pugDir, rule, rules, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _25_23_, _26_16_
 
     if (_k_.isStr(files))
     {
         files = [files]
     }
-    opt.rerunWhenDirty = ((_27_23_=opt.rerunWhenDirty) != null ? _27_23_ : true)
-    opt.verbose = ((_28_16_=opt.verbose) != null ? _28_16_ : false)
+    opt.rerunWhenDirty = ((_25_23_=opt.rerunWhenDirty) != null ? _25_23_ : true)
+    opt.verbose = ((_26_16_=opt.verbose) != null ? _26_16_ : false)
     if (opt.verbose)
     {
         console.log('opt',opt)
@@ -77,14 +74,14 @@ knrd = async function (files = [], opt = {})
     }
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _76_13_ = 0; _76_13_ < list1.length; _76_13_++)
+    for (var _73_13_ = 0; _73_13_ < list1.length; _73_13_++)
     {
-        file = list1[_76_13_]
+        file = list1[_73_13_]
         skip = false
         var list2 = _k_.list(rules.ignore)
-        for (var _79_19_ = 0; _79_19_ < list2.length; _79_19_++)
+        for (var _76_19_ = 0; _76_19_ < list2.length; _76_19_++)
         {
-            ignore = list2[_79_19_]
+            ignore = list2[_76_19_]
             if (file.endsWith(ignore))
             {
                 if (opt.verbose)
