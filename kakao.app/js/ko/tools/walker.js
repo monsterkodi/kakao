@@ -1,8 +1,8 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
-import slash from "../../kxk/slash.js"
-
-import ffs from "../../kxk/ffs.js"
+import kxk from "../../kxk.js"
+let slash = kxk.slash
+let ffs = kxk.ffs
 
 import File from "./File.js"
 
@@ -10,18 +10,18 @@ class Walker
 {
     constructor (cfg)
     {
-        var _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _25_25_
+        var _18_25_, _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_
 
         this.cfg = cfg
     
         this.cfg.files = []
-        this.cfg.maxDepth = ((_19_25_=this.cfg.maxDepth) != null ? _19_25_ : 3)
-        this.cfg.dotFiles = ((_20_25_=this.cfg.dotFiles) != null ? _20_25_ : false)
-        this.cfg.maxFiles = ((_21_25_=this.cfg.maxFiles) != null ? _21_25_ : 500)
-        this.cfg.ignore = ((_22_25_=this.cfg.ignore) != null ? _22_25_ : ['node_modules','build','Build','Library','Applications'])
-        this.cfg.include = ((_23_25_=this.cfg.include) != null ? _23_25_ : ['.konrad.noon','.gitignore','.npmignore'])
-        this.cfg.ignoreExt = ((_24_25_=this.cfg.ignoreExt) != null ? _24_25_ : ['asar'])
-        this.cfg.includeExt = ((_25_25_=this.cfg.includeExt) != null ? _25_25_ : File.sourceFileExtensions)
+        this.cfg.maxDepth = ((_18_25_=this.cfg.maxDepth) != null ? _18_25_ : 3)
+        this.cfg.dotFiles = ((_19_25_=this.cfg.dotFiles) != null ? _19_25_ : false)
+        this.cfg.maxFiles = ((_20_25_=this.cfg.maxFiles) != null ? _20_25_ : 500)
+        this.cfg.ignore = ((_21_25_=this.cfg.ignore) != null ? _21_25_ : ['node_modules','build','Build','Library','Applications'])
+        this.cfg.include = ((_22_25_=this.cfg.include) != null ? _22_25_ : ['.konrad.noon','.gitignore','.npmignore'])
+        this.cfg.ignoreExt = ((_23_25_=this.cfg.ignoreExt) != null ? _23_25_ : ['asar'])
+        this.cfg.includeExt = ((_24_25_=this.cfg.includeExt) != null ? _24_25_ : File.sourceFileExtensions)
     }
 
     ignore (p)
@@ -29,7 +29,7 @@ class Walker
 
     async start ()
     {
-        var dir, ext, file, item, items, listDir, p, toWalk, _63_31_, _97_17_
+        var dir, ext, file, item, items, listDir, p, toWalk, _62_31_, _96_17_
 
         dir = this.cfg.root
         this.running = true
@@ -39,9 +39,9 @@ class Walker
             listDir = toWalk.shift()
             items = await ffs.list(listDir)
             var list = _k_.list(items)
-            for (var _56_21_ = 0; _56_21_ < list.length; _56_21_++)
+            for (var _55_21_ = 0; _55_21_ < list.length; _55_21_++)
             {
-                item = list[_56_21_]
+                item = list[_55_21_]
                 file = item.file
                 ext = slash.ext(file)
                 p = item.path

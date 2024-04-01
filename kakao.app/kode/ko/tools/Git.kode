@@ -6,8 +6,7 @@
  0000000   000     000   
 ###
 
-use ../../kxk/slash
-use ../../kxk/post
+use ../../kxk ▪ slash post
 
 function Git
 

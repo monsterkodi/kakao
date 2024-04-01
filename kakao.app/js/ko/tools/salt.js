@@ -2,7 +2,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var font, salt
 
-import noon from "../../kxk/noon.js"
+import kxk from "../../kxk.js"
+let noon = kxk.noon
 
 import util from "../../kxk/util.js"
 let zip = util.zip

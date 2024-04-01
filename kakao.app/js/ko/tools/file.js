@@ -2,9 +2,9 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 var icons, __dirname
 
-import slash from "../../kxk/slash.js"
-
-import ffs from "../../kxk/ffs.js"
+import kxk from "../../kxk.js"
+let slash = kxk.slash
+let ffs = kxk.ffs
 
 icons = {}
 __dirname = slash.dir(import.meta.url.slice(7))
@@ -33,7 +33,7 @@ class File
 
     static async rename (from, to)
     {
-        var _39_35_
+        var _38_35_
 
         await ffs.mkdir(slash.dir(to))
         if (await ffs.isDir(to))
@@ -134,7 +134,7 @@ class File
             root = '/'
         }
         split = slash.split(file)
-        for (var _101_18_ = i = 0, _101_22_ = split.length - 1; (_101_18_ <= _101_22_ ? i < split.length - 1 : i > split.length - 1); (_101_18_ <= _101_22_ ? ++i : --i))
+        for (var _100_18_ = i = 0, _100_22_ = split.length - 1; (_100_18_ <= _100_22_ ? i < split.length - 1 : i > split.length - 1); (_100_18_ <= _100_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${root}${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)

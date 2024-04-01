@@ -4,7 +4,7 @@ var k, kakao, Kakao, v
 
 import bundle from "./bundle.js"
 
-import kxk from "./kxk/kxk.js"
+import kxk from "./kxk.js"
 
 
 Kakao = (function ()
@@ -45,7 +45,6 @@ Kakao = (function ()
     }
 
     Kakao["bundle"] = bundle
-    Kakao["window"] = kxk.win
     Kakao["ffs"] = kxk.ffs
     return Kakao
 })()

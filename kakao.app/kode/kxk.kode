@@ -1,0 +1,37 @@
+###
+    000   000  000   000  000   000
+    000  000    000 000   000  000 
+    0000000      00000    0000000  
+    000  000    000 000   000  000 
+    000   000  000   000  000   000
+###
+
+use ./kxk/dom
+use ./kxk/elem
+use ./kxk/post
+use ./kxk/slash
+use ./kxk/prefs
+use ./kxk/matchr
+use ./kxk/keyinfo
+use ./kxk/kstr
+use ./kxk/kpos
+use ./kxk/util
+use ./kxk/noon
+use ./kxk/sds
+use ./kxk/ffs
+
+export 
+    dom:        dom
+    elem:       elem
+    post:       post
+    prefs:      prefs
+    slash:      slash
+    matchr:     matchr
+    keyinfo:    keyinfo
+    kstr:       kstr
+    kpos:       kpos
+    util:       util
+    noon:       noon
+    sds:        sds
+    ffs:        ffs
+    

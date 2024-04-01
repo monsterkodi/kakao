@@ -238,7 +238,6 @@ Win = (function ()
     {
         var _147_27_, _147_47_
 
-        console.log('onMenuAction',action)
         if (((_147_27_=this.delegate) != null ? typeof (_147_47_=_147_27_.onWindowMenuAction) === "function" ? _147_47_(this,action) : undefined : undefined))
         {
             return

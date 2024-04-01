@@ -1,6 +1,7 @@
 var _k_
 
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
 
 class FileWatch
 {

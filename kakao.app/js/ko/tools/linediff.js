@@ -2,7 +2,8 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 
 var lineDiff
 
-import kstr from "../../kxk/kstr.js"
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
 
 import util from "../../kxk/util.js"
 let isEqual = util.isEqual

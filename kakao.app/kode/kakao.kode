@@ -12,7 +12,7 @@
 ###
 
 use ./bundle
-use ./kxk/kxk
+use ./kxk
 
 function Kakao
 
@@ -48,7 +48,6 @@ function Kakao
     # some redirections to make working with kakao modules a little simpler ...
             
     @bundle: bundle      # provides paths and urls relative to the application folder
-    @window: kxk.win     # base class for kakao windows
     @ffs:    kxk.ffs     # fake fs
 
 # this is slightly evil: instead of exporting Kakao we just export it's request function

@@ -1,8 +1,8 @@
 var _k_
 
-import slash from "../../kxk/slash.js"
-
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let slash = kxk.slash
+let post = kxk.post
 
 class DirWatch
 {
@@ -10,9 +10,9 @@ class DirWatch
 
     static watch (dir)
     {
-        var _18_30_
+        var _17_30_
 
-        DirWatch.watches[dir] = ((_18_30_=DirWatch.watches[dir]) != null ? _18_30_ : 0)
+        DirWatch.watches[dir] = ((_17_30_=DirWatch.watches[dir]) != null ? _17_30_ : 0)
         return DirWatch.watches[dir]++
     }
 

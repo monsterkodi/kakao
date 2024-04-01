@@ -13,5 +13,6 @@
 ###
 
 use ./kakao
+use ./kxk/win
     
-kakao.init -> new kakao.window
+kakao.init -> new win

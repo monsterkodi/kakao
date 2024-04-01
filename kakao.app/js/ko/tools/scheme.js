@@ -3,13 +3,11 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 
-import post from "../../kxk/post.js"
-
-import elem from "../../kxk/elem.js"
-
-import slash from "../../kxk/slash.js"
-
-import prefs from "../../kxk/prefs.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
+let elem = kxk.elem
+let slash = kxk.slash
+let prefs = kxk.prefs
 
 class Scheme
 {
@@ -32,9 +30,9 @@ class Scheme
 
         this.colors = {}
         var list = _k_.list(document.querySelectorAll('.scheme-link'))
-        for (var _33_17_ = 0; _33_17_ < list.length; _33_17_++)
+        for (var _30_17_ = 0; _30_17_ < list.length; _30_17_++)
         {
-            link = list[_33_17_]
+            link = list[_30_17_]
             css = slash.file(link.href)
             newlink = elem('link',{href:`css/ko/${scheme}/${css}`,rel:'stylesheet',type:'text/css',class:'scheme-link'})
             link.parentNode.replaceChild(newlink,link)

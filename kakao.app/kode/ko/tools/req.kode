@@ -6,8 +6,7 @@
 000   000  00000000   00000 00
 ###
 
-use ../../kxk/slash
-use ../../kxk/kstr
+use ../../kxk ▪ slash kstr
 use ../../kxk/util ▪ uniq
         
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/

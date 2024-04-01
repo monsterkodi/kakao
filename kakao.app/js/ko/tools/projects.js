@@ -1,8 +1,8 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-import post from "../../kxk/post.js"
-
-import ffs from "../../kxk/ffs.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
+let ffs = kxk.ffs
 
 import Walker from "./Walker.js"
 
@@ -18,9 +18,9 @@ class Projects
 
     static files (path)
     {
-        var _21_59_
+        var _20_59_
 
-        return ((_21_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _21_59_ : [])
+        return ((_20_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _20_59_ : [])
     }
 
     static dir (path)
@@ -51,7 +51,7 @@ class Projects
 
     static async indexProject (file)
     {
-        var prjPath, result, walker, _52_19_
+        var prjPath, result, walker, _51_19_
 
         prjPath = await ffs.pkg(file)
         if (this.indexing)
@@ -60,7 +60,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_52_19_=this.queue) != null ? _52_19_ : [])
+            this.queue = ((_51_19_=this.queue) != null ? _51_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -81,9 +81,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _73_21_ = 0; _73_21_ < list.length; _73_21_++)
+            for (var _72_21_ = 0; _72_21_ < list.length; _72_21_++)
             {
-                file = list[_73_21_]
+                file = list[_72_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('projects',this.projects)

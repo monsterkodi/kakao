@@ -142,7 +142,7 @@ function Win
     
     onMenuAction: (action) =>
         
-        log 'onMenuAction' action
+        # log 'onMenuAction' action
         
         return if @delegate?.onWindowMenuAction? @, action
             

@@ -3,9 +3,9 @@ var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h);
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 
-import elem from "../../kxk/elem.js"
-
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let elem = kxk.elem
+let post = kxk.post
 
 class FPS
 {
@@ -42,7 +42,7 @@ class FPS
         }
         this.canvas.height = this.canvas.height
         ctx = this.canvas.getContext('2d')
-        for (var _48_17_ = i = 0, _48_21_ = this.history.length; (_48_17_ <= _48_21_ ? i < this.history.length : i > this.history.length); (_48_17_ <= _48_21_ ? ++i : --i))
+        for (var _47_17_ = i = 0, _47_21_ = this.history.length; (_47_17_ <= _47_21_ ? i < this.history.length : i > this.history.length); (_47_17_ <= _47_21_ ? ++i : --i))
         {
             ms = Math.max(0,this.history[i] - 34)
             red = parseInt(32 + 223 * _k_.clamp(0,1,(ms - 16) / 16))

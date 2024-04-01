@@ -7,8 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $
-use ../../kxk/elem
-use ../../kxk/post
+use ../../kxk ▪ elem post
 
 class FPS
 

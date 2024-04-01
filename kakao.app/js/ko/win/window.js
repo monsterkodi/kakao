@@ -71,9 +71,7 @@ Window = (function ()
     {}
 
     Window.prototype["onWindowKeyDown"] = function (win, keyInfo)
-    {
-        console.log('onWindowKeyDown',win.id,keyInfo)
-    }
+    {}
 
     Window.prototype["onWindowKeyUp"] = function (win, keyInfo)
     {}
@@ -526,5 +524,5 @@ kakao.preInit = async function ()
 }
 kakao.init(function ()
 {
-    return new kakao.window(new Window)
+    return new win(new Window)
 })

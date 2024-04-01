@@ -7,12 +7,7 @@
 ###
 
 use ../../kxk/util ▪ pickBy pullIf deleteBy
-
-use ../../kxk/matchr
-use ../../kxk/slash
-use ../../kxk/post
-use ../../kxk/sds
-use ../../kxk/ffs
+use ../../kxk ▪ sds matchr slash post ffs 
 
 use ./Walker
 use ./IndexHpp
