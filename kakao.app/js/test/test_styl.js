@@ -196,6 +196,31 @@ body
     margin-right: -666px;
 }
 `)
+    compare(styl(`octicon(char)
+    font-family         octicons
+    content             char
+
+awesome(char)
+    font-family         FontAwesome
+    content             char
+    
+.git-added-icon:before
+    awesome('\\f067')
+    
+.file-icon:before
+    octicon('\\f011')`),`
+.git-added-icon:before
+{
+    font-family: FontAwesome;
+    content: '\\f067';
+}
+
+.file-icon:before
+{
+    font-family: octicons;
+    content: '\\f011';
+}
+`)
 }
 toExport["styl"]._section_ = true
 toExport._test_ = true

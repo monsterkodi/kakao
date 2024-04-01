@@ -12,6 +12,7 @@ use ./kstr ▪ unfillet blockFillets
 
 vars = {}
 funcs = {}
+funcVar = {}
 
 # 00000000   00000000  000   000  0000000    00000000  00000000   
 # 000   000  000       0000  000  000   000  000       000   000  
@@ -41,6 +42,18 @@ render = (block, text, amps=[]) ->
         for cb in block.blocks
             funcValue = render cb, funcValue, amps
         funcs[funcName] = funcValue
+        return text
+
+    if block.fillet[1]?.match[0] == '('
+        funcName = block.fillet[0]?.match
+        if funcVar[funcName]
+            varValue = kstr.strip unfillet(block.fillet[1..]), '()' 
+            vars[funcVar[funcName].var] = varValue
+            for cb in funcVar[funcName].blocks
+                text += render cb, ''
+            delete vars[funcVar[funcName].var]
+            return text
+        funcVar[funcName] = blocks:block.blocks, var:block.fillet[2].match
         return text
         
     idt = rpad block.indent
@@ -134,6 +147,7 @@ styl = (srcText) ->
     
     vars = {}
     funcs = {}
+    funcVar = {}
     
     tgtText = ''
     lines   = srcText.split '\n'
