@@ -4,8 +4,6 @@ var getMenu, Menu
 
 import slash from "../../kxk/slash.js"
 
-import transform from "../editor/actions/transform.js"
-
 import Editor from "../editor/Editor.js"
 
 import Macro from "../commands/Macro.js"
@@ -16,9 +14,9 @@ getMenu = function (template, name)
     var item
 
     var list = _k_.list(template)
-    for (var _17_13_ = 0; _17_13_ < list.length; _17_13_++)
+    for (var _16_13_ = 0; _16_13_ < list.length; _16_13_++)
     {
-        item = list[_17_13_]
+        item = list[_16_13_]
         if (item.text === name)
         {
             return item
@@ -28,7 +26,7 @@ getMenu = function (template, name)
 
 Menu = function (template)
 {
-    var actions, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menu, menuName, modName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, v, value, _40_38_, _47_33_, _48_44_, _50_43_, _51_39_, _68_27_
+    var actions, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menu, menuName, modName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, transformText, v, value, _39_38_, _45_33_, _46_44_, _48_43_, _49_39_, _67_27_
 
     if (_k_.isArr(template))
     {
@@ -53,7 +51,7 @@ Menu = function (template)
                 if ((value['menu'] != null))
                 {
                     menuName = value['menu']
-                    submenu[menuName] = ((_40_38_=submenu[menuName]) != null ? _40_38_ : [])
+                    submenu[menuName] = ((_39_38_=submenu[menuName]) != null ? _39_38_ : [])
                 }
                 for (k in value)
                 {
@@ -63,13 +61,13 @@ Menu = function (template)
                         item = {text:v.name,combo:v.combo}
                         if ((v.menu != null))
                         {
-                            submenu[v.menu] = ((_48_44_=submenu[v.menu]) != null ? _48_44_ : [])
+                            submenu[v.menu] = ((_46_44_=submenu[v.menu]) != null ? _46_44_ : [])
                         }
                         if (v.separator)
                         {
-                            submenu[((_50_43_=v.menu) != null ? _50_43_ : menuName)].push({text:''})
+                            submenu[((_48_43_=v.menu) != null ? _48_43_ : menuName)].push({text:''})
                         }
-                        submenu[((_51_39_=v.menu) != null ? _51_39_ : menuName)].push(item)
+                        submenu[((_49_39_=v.menu) != null ? _49_39_ : menuName)].push(item)
                     }
                 }
             }
@@ -84,13 +82,14 @@ Menu = function (template)
     editMenu.menu = editMenu.menu.concat(EditMenu)
     MacroMenu = [{text:'Macro',combo:'command+m',command:'macro'}]
     var list = _k_.list(Macro.macroNames)
-    for (var _60_14_ = 0; _60_14_ < list.length; _60_14_++)
+    for (var _58_14_ = 0; _58_14_ < list.length; _58_14_++)
     {
-        macro = list[_60_14_]
+        macro = list[_58_14_]
         MacroMenu.push({text:macro,action:'doMacro'})
     }
     commandMenu = getMenu(template,'Command')
     commandMenu.menu = commandMenu.menu.concat({text:'Macro',menu:MacroMenu})
+    transform = Editor.actionModules.transform
     if (((transform != null ? transform.Transform : undefined) != null))
     {
         TransformMenu = []
@@ -99,10 +98,10 @@ Menu = function (template)
             transformList = transform.Transform.transformMenus[transformMenu]
             transformSubmenu = []
             var list1 = _k_.list(transformList)
-            for (var _72_26_ = 0; _72_26_ < list1.length; _72_26_++)
+            for (var _71_30_ = 0; _71_30_ < list1.length; _71_30_++)
             {
-                transform = list1[_72_26_]
-                transformSubmenu.push({text:transform,action:'doTransform'})
+                transformText = list1[_71_30_]
+                transformSubmenu.push({text:transformText,action:'doTransform'})
             }
             TransformMenu.push({text:transformMenu,menu:transformSubmenu})
         }

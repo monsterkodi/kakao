@@ -11,18 +11,16 @@ import matchr from "../../../kxk/matchr.js"
 
 class Transform
 {
-    static transformNames = ['upper','lower','title','case','count','add','sub','up','down','sort','uniq','reverse','resolve','unresolve','dir','base','file','ext']
+    static transformNames = ['upper','lower','title','case','count','add','sub','up','down','sort','uniq','reverse','dir','base','file','ext']
 
-    static transformMenus = {Case:['upper','lower','title','case'],Calc:['count','add','sub'],Sort:['up','down','sort','uniq','reverse'],Path:['resolve','unresolve','dir','base','file','ext']}
+    static transformMenus = {Case:['upper','lower','title','case'],Calc:['count','add','sub'],Sort:['up','down','sort','uniq','reverse'],Path:['dir','base','file','ext']}
 
     constructor (editor)
     {
         this.editor = editor
     
-        this.editor.transform = this
         this.last = null
         this.caseFuncs = ['upper','lower','title']
-        this.resolveFuncs = ['resolve','unresolve']
         this.sortFuncs = ['up','down']
     }
 
@@ -49,7 +47,7 @@ class Transform
         }
 
         pad = Number(step * (cs.length - 1) + offset).toString(base).length
-        numbers = (function () { var r_63_77_ = []; for (var _63_81_ = i = 0, _63_85_ = cs.length; (_63_81_ <= _63_85_ ? i < cs.length : i > cs.length); (_63_81_ <= _63_85_ ? ++i : --i))  { r_63_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_63_77_ }).bind(this)()
+        numbers = (function () { var r_60_77_ = []; for (var _60_81_ = i = 0, _60_85_ = cs.length; (_60_81_ <= _60_85_ ? i < cs.length : i > cs.length); (_60_81_ <= _60_85_ ? ++i : --i))  { r_60_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_60_77_ }).bind(this)()
         this.editor.replaceSelectedText(numbers)
         this.editor.do.end()
         return 'count'
@@ -120,9 +118,9 @@ class Transform
             v = []
             r = []
             var list = _k_.list(l)
-            for (var _115_18_ = 0; _115_18_ < list.length; _115_18_++)
+            for (var _112_18_ = 0; _112_18_ < list.length; _112_18_++)
             {
-                a = list[_115_18_]
+                a = list[_112_18_]
                 _k_.in(a,v) ? r.push('') : v.push(a)
             }
             return r
@@ -160,31 +158,14 @@ class Transform
             var r
 
             var list = _k_.list(matchr.ranges(/\w+/,t))
-            for (var _141_18_ = 0; _141_18_ < list.length; _141_18_++)
+            for (var _138_18_ = 0; _138_18_ < list.length; _138_18_++)
             {
-                r = list[_141_18_]
-                t = t.splice(r.start,r.match.length,r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase())
+                r = list[_138_18_]
+                t = kstr.splice(t,r.start,r.match.length,r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase())
             }
             return t
         })
         return 'title'
-    }
-
-    toggleResolve ()
-    {
-        return this.toggle(this.resolveFuncs)
-    }
-
-    resolve ()
-    {
-        console.log('transform.resolve not implemented!')
-        return 'resolve'
-    }
-
-    unresolve ()
-    {
-        console.log('transform.unresolve not implemented!')
-        return 'unresolve'
     }
 
     base ()
@@ -235,7 +216,7 @@ class Transform
 
     tfunc (opt)
     {
-        var selections, tl, _233_42_, _234_42_
+        var selections, tl, _203_42_, _204_42_
 
         if (!this.editor.numSelections())
         {
@@ -279,6 +260,7 @@ class Transform
     {
         var f
 
+        console.log('do transform',transName)
         f = this[transName]
         if (_k_.isFunc(f))
         {
@@ -293,10 +275,11 @@ class Transform
 
     static do (editor, transName, ...opts)
     {
-        var t, _273_29_
+        var _248_25_
 
-        t = ((_273_29_=editor.transform) != null ? _273_29_ : new Transform(editor))
-        return t.do.apply(t,[transName].concat(opts))
+        console.log('static Transform.do',editor.name,transName)
+        editor.transform = ((_248_25_=editor.transform) != null ? _248_25_ : new Transform(editor))
+        return editor.transform.do.apply(editor.transform,[transName].concat(opts))
     }
 }
 

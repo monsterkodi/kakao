@@ -273,7 +273,7 @@ class FS
         }
         else
         {
-            return fs.unlinkSync(p)
+            return fs.rmSync(p,{force:true,recursive:true})
         }
     }
 

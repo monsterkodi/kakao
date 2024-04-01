@@ -17,7 +17,6 @@ class Transform
         'count' 'add' 'sub'
         'up' 'down' 'sort' 'uniq'
         'reverse'
-        'resolve' 'unresolve'
         'dir' 'base'
         'file' 'ext'
     ]
@@ -25,14 +24,12 @@ class Transform
         Case: ['upper' 'lower' 'title' 'case']
         Calc: ['count' 'add' 'sub']
         Sort: ['up' 'down' 'sort' 'uniq' 'reverse']
-        Path: [ 'resolve' 'unresolve' 'dir' 'base' 'file' 'ext' ]
+        Path: ['dir' 'base' 'file' 'ext' ]
 
     @: (@editor) ->
-
-        @editor.transform = @
+        
         @last         = null
         @caseFuncs    = ['upper' 'lower' 'title']
-        @resolveFuncs = ['resolve' 'unresolve']
         @sortFuncs    = ['up' 'down']
 
     #  0000000   0000000   000   000  000   000  000000000
@@ -139,36 +136,9 @@ class Transform
 
         @apply (t) ->
             for r in matchr.ranges /\w+/, t
-                t = t.splice r.start, r.match.length, r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase()
+                t = kstr.splice t, r.start, r.match.length, r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase()
             t
         'title'
-
-    # 00000000   00000000   0000000   0000000   000      000   000  00000000
-    # 000   000  000       000       000   000  000      000   000  000
-    # 0000000    0000000   0000000   000   000  000       000 000   0000000
-    # 000   000  000            000  000   000  000         000     000
-    # 000   000  00000000  0000000    0000000   0000000      0      00000000
-
-    toggleResolve: -> @toggle @resolveFuncs
-
-    resolve: ->
-        
-        log 'transform.resolve not implemented!'
-
-        # cwd = process.cwd()
-        # if @editor.currentFile?
-            # process.chdir slash.dir @editor.currentFile
-        # @apply (t) -> slash.path t
-        # process.chdir cwd
-        
-        'resolve'
-
-    unresolve: ->
-        
-        log 'transform.unresolve not implemented!'
-
-        # @apply (t) -> slash.unresolve t
-        'unresolve'
 
     # 00000000    0000000   000000000  000   000
     # 000   000  000   000     000     000   000
@@ -259,6 +229,8 @@ class Transform
 
     do: (transName, opts...) ->
 
+        log 'do transform' transName
+        
         f = @[transName]
 
         if f is func
@@ -270,8 +242,11 @@ class Transform
 
     @do: (editor, transName, opts...) ->
 
-        t = editor.transform ? new Transform editor
-        t.do.apply t, [transName].concat opts
+        # t = editor.transform ? new Transform editor
+        # t.do.apply t, [transName].concat opts
+        log 'static Transform.do' editor.name, transName
+        editor.transform ?= new Transform editor
+        editor.transform.do.apply editor.transform, [transName].concat opts
 
 export
 

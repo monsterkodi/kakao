@@ -70,6 +70,8 @@ function TextEditor extends Editor
         @initDrag()        
 
         @installFeatures()
+        
+        @transform = new Editor.actionModules.transform.Transform @
 
         post.on 'schemeChanged' @onSchemeChanged
 

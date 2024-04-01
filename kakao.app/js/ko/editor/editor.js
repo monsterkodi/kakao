@@ -44,7 +44,7 @@ Editor = (function ()
             }
             catch (err)
             {
-                console.log(`import of ${moduleJS} failed`,err)
+                console.error(`import of ${moduleJS} failed`,err)
                 continue
             }
             moduleName = slash.name(actionFile)

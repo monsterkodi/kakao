@@ -244,7 +244,7 @@ class Indexer
                 delete this.funcs[name]
             }
         }
-        this.classes.deleteBy(function (k, v)
+        deleteBy(this.classes,function (k, v)
         {
             return v.file === file
         })

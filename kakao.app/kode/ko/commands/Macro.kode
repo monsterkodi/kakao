@@ -229,8 +229,6 @@ function Macro extends Command
                 clss ?= 'Class'
                 dir = editor.currentFile? and slash.dir(editor.currentFile) or kakao.bundle.app('kode')
                 file = slash.path dir, clss.toLowerCase() + '.kode'
-                # if slash.fileExists file
-                    # return text: "file #{file} exists!"
                 text = "###\n"
                 text += (s for s in salt(clss).split '\n').join '\n'
                 text += "\n###\n"
@@ -300,7 +298,7 @@ function Macro extends Command
                 #    000     000   000  000   000  000   000  0000000   000        0000000   000   000  000   000
 
                 if transform.transformNames and cmmd in transform.transformNames
-                    window.textEditor.transform.do.apply null, [window.textEditor, cmmd].concat cmds
+                    window.textEditor.transform.do.apply window.textEditor.transform, [cmmd].concat cmds
                 else
                     error 'unhandled macro', cmmd, transform.transformNames
                     if last(@history) == command.trim()

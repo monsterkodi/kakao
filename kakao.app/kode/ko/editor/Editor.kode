@@ -42,7 +42,7 @@ function Editor extends Buffer
                 # log 'moduleJS' moduleJS
                 actions =○ import(moduleJS)
             catch err
-                log "import of #{moduleJS} failed" err
+                error "import of #{moduleJS} failed" err
                 continue
             moduleName = slash.name actionFile
             Editor.actionModules[moduleName] = actions.default

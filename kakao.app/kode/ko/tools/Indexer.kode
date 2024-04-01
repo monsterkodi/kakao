@@ -187,7 +187,7 @@ class Indexer
             pullIf infos, (v) -> v.file == file
             delete @funcs[name] if not infos.length
                     
-        @classes.deleteBy (k,v) -> v.file == file
+        deleteBy @classes, (k,v) -> v.file == file
         
         delete @files[file]
 

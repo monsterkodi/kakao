@@ -10,10 +10,10 @@ use ../kxk/kstr
 
 ▸ kstr
 
-    # ▸ encode
-#     
-        # kstr.encode(" hello / world !?")    ▸ '&nbsp;hello&nbsp;/&nbsp;world&nbsp;!?'
-        # kstr.encode("</>")                  ▸ '&lt;/&gt;'
+    ▸ encode
+     
+        kstr.encode(" hello / world !?")    ▸ '%20hello%20/%20world%20!?'
+        kstr.encode("</>")                  ▸ '%3C/%3E'
 
     ▸ escapeRegexp
         
@@ -140,33 +140,33 @@ use ../kxk/kstr
     # 000   000  000  0000       000  000  
     # 000   000  000   000  0000000   000  
     
-    # ▸ ansi2html
-#         
-        # a2h = (s,r) -> kstr.ansi2html(s) ▸ r
-#         
-        # a2h 'hello', 'hello'
-        # a2h k.r5('red'), '<span style="color:#ff0000;">red</span>'
-        # a2h """
-            # #{k.r5('red')}
-            # #{k.g5('green')}
-            # """ """
-            # <span style="color:#ff0000;">red</span>
-            # <span style="color:#00ff00;">green</span>
-            # """
-        # a2h "#{k.r5('red')}#{k.g5('green')}", '<span style="color:#ff0000;">red</span><span style="color:#00ff00;">green</span>'
+    ▸ ansi2html
+         
+        a2h = (s,r) -> kstr.ansi2html(s) ▸ r
+
+        a2h 'hello', 'hello'
+        a2h r5('red'), '<span style="color:#ff0000;">red</span>'
+        a2h """
+            #{r5('red')}
+            #{g5('green')}
+            """ """
+            <span style="color:#ff0000;">red</span>
+            <span style="color:#00ff00;">green</span>
+            """
+        a2h "#{r5('red')}#{g5('green')}", '<span style="color:#ff0000;">red</span><span style="color:#00ff00;">green</span>'
         
-    # ▸ stripAnsi
-#         
-        # (kstr.stripAnsi k.g5('green')) ▸ 'green'
-#         
-    # ▸ dissect
-#         
-        # ansi= new kstr.ansi
-        # diss = ansi.dissect '[48;5;0m..[48;5;15m  [0m'
-        # diss[0] ▸ '..  '
-        # diss[1].length ▸ 2
-        # diss[1][1].match ▸ '  '
-        # diss[1][1].start ▸ 2
+    ▸ stripAnsi
+         
+        (kstr.stripAnsi g5('green')) ▸ 'green'
+         
+    ▸ dissect
+         
+        ansi= new kstr.ansi
+        diss = ansi.dissect '[48;5;0m..[48;5;15m  [0m'
+        diss[0] ▸ '..  '
+        diss[1].length ▸ 2
+        diss[1][1].match ▸ '  '
+        diss[1][1].start ▸ 2
         
     # 000000000   0000000   0000000    
     #    000     000   000  000   000  

@@ -187,10 +187,10 @@ class FS
     # 000   000  000       000 0 000  000   000     000     000       
     # 000   000  00000000  000   000   0000000       0      00000000  
     
-    @remove: (p, cb) -> 
+    @remove: (p, cb) ->
         
         if cb is func then fs.remove p, cb
-        else fs.unlinkSync p
+        else fs.rmSync p, force:true, recursive:true
             
     # 000000000   0000000   000   000   0000000  000   000  
     #    000     000   000  000   000  000       000   000  

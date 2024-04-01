@@ -77,22 +77,27 @@ __dirname  = import.meta.dirname
     # 000   000  000   000  000     000     000          000     000        000 000      000     
     # 00     00  000   000  000     000     00000000     000     00000000  000   000     000     
     
-    # ▸ write
-#         
-        # f2 = slash.path __dirname, 'test.txt'
-#         
-        # fs.write(f2, "hello world").then (p) ->
-#             
-            # p ▸ f2
-#             
-            # fs.read(p).then (r) -> 
-#                 
-                # r ▸ 'hello world'
-                # fs.remove p
-#             
-        # fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
-#             
-            # p ▸ ''
+    ▸ write
+         
+        f2 = slash.path __dirname, 'test.txt'
+         
+        fs.write(f2, "hello world").then (p) ->
+             
+            p ▸ f2
+             
+            fs.read(p).then (r) -> 
+                 
+                r ▸ 'hello world'
+                fs.remove p
+             
+        fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
+             
+            p ▸ slash.path __dirname, 'some.dir.that.doesn/t.exist'
+            
+            fs.read(p).then (r) -> 
+                 
+                r ▸ 'blurk'
+                fs.remove slash.path __dirname, 'some.dir.that.doesn'
 
     # 0000000    000  00000000   000      000   0000000  000000000  
     # 000   000  000  000   000  000      000  000          000     

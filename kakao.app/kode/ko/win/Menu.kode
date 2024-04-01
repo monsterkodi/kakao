@@ -8,7 +8,6 @@
 
 use ../../kxk/slash
 
-use ../editor/actions/transform
 use ../editor/Editor
 use ../commands/Macro
 
@@ -40,7 +39,6 @@ Menu = (template) ->
                     submenu[menuName] ?= []
                 for k,v of value
                     if v.name and v.combo
-                        # menuAction = (c) -> (i,win) -> post.toWin win.id, 'menuAction' c
                         item =
                             text:   v.name
                             combo:  v.combo
@@ -65,13 +63,14 @@ Menu = (template) ->
     commandMenu = getMenu template, 'Command'
     commandMenu.menu = commandMenu.menu.concat text:'Macro' menu:MacroMenu
 
+    transform = Editor.actionModules.transform
     if transform?.Transform?
         TransformMenu = []
         for transformMenu, transformList of transform.Transform.transformMenus
             transformSubmenu = []
-            for transform in transformList
+            for transformText in transformList
                 transformSubmenu.push
-                    text:   transform
+                    text:   transformText
                     action: 'doTransform'
     
             TransformMenu.push
