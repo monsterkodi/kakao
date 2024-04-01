@@ -6,10 +6,7 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk/ffs
-use ../../kxk/kstr
-use ../../kxk/post
-use ../../kxk/slash
+use ../../kxk ▪ ffs kstr post slash
 
 use ./Do
 use ./Buffer

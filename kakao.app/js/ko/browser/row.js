@@ -6,15 +6,12 @@ import dom from "../../kxk/dom.js"
 let $ = dom.$
 let stopEvent = dom.stopEvent
 
-import kstr from "../../kxk/kstr.js"
-
-import elem from "../../kxk/elem.js"
-
-import post from "../../kxk/post.js"
-
-import slash from "../../kxk/slash.js"
-
-import keyinfo from "../../kxk/keyinfo.js"
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
+let elem = kxk.elem
+let post = kxk.post
+let slash = kxk.slash
+let keyinfo = kxk.keyinfo
 
 import Syntax from "../editor/Syntax.js"
 
@@ -25,7 +22,7 @@ Row = (function ()
 {
     function Row (column, item)
     {
-        var html, text, _25_26_, _25_39_, _25_52_, _31_38_
+        var html, text, _21_26_, _21_39_, _21_52_, _27_38_
 
         this.column = column
         this.item = item
@@ -39,7 +36,7 @@ Row = (function ()
         this["onMouseOver"] = this["onMouseOver"].bind(this)
         this["onMouseOut"] = this["onMouseOut"].bind(this)
         this.browser = this.column.browser
-        text = ((_25_26_=this.item.text) != null ? _25_26_ : ((_25_39_=this.item.file) != null ? _25_39_ : ((_25_52_=this.item.name) != null ? _25_52_ : slash.file(this.item.path))))
+        text = ((_21_26_=this.item.text) != null ? _21_26_ : ((_21_39_=this.item.file) != null ? _21_39_ : ((_21_52_=this.item.name) != null ? _21_52_ : slash.file(this.item.path))))
         if (_k_.empty((text)) || _k_.empty(text.trim()))
         {
             html = '<span> </span>'
@@ -49,7 +46,7 @@ Row = (function ()
             html = Syntax.spanForTextAndSyntax(text,'browser')
         }
         this.div = elem({class:'browserRow',html:html})
-        this.div.classList.add(((_31_38_=this.item.type) != null ? _31_38_ : 'file'))
+        this.div.classList.add(((_27_38_=this.item.type) != null ? _27_38_ : 'file'))
         this.column.table.appendChild(this.div)
         if (_k_.in(this.item.type,['file','dir']) || this.item.icon)
         {
@@ -74,21 +71,21 @@ Row = (function ()
 
     Row.prototype["onMouseOut"] = function ()
     {
-        var _40_24_
+        var _36_24_
 
         return (this.div != null ? this.div.classList.remove('hover') : undefined)
     }
 
     Row.prototype["onMouseOver"] = function ()
     {
-        var _41_24_
+        var _37_24_
 
         return (this.div != null ? this.div.classList.add('hover') : undefined)
     }
 
     Row.prototype["path"] = function ()
     {
-        var _44_21_, _46_20_, _46_26_
+        var _40_21_, _42_20_, _42_26_
 
         if ((this.item.path != null) && _k_.isStr(this.item.path))
         {
@@ -102,7 +99,7 @@ Row = (function ()
 
     Row.prototype["setIcon"] = function ()
     {
-        var className, icon, _75_23_
+        var className, icon, _71_23_
 
         if (slash.ext(this.item.path) === 'kode')
         {
@@ -136,7 +133,7 @@ Row = (function ()
 
     Row.prototype["activate"] = function (event, emit = true)
     {
-        var col, _89_19_
+        var col, _85_19_
 
         if (this.column.index < 0)
         {
@@ -189,7 +186,7 @@ Row = (function ()
 
     Row.prototype["setActive"] = function (opt = {})
     {
-        var _127_31_
+        var _123_31_
 
         if (this.column.activeRow() !== this)
         {
@@ -232,7 +229,7 @@ Row = (function ()
 
     Row.prototype["editName"] = function ()
     {
-        var _166_24_
+        var _162_24_
 
         if ((this.input != null))
         {
@@ -286,7 +283,7 @@ Row = (function ()
 
     Row.prototype["removeInput"] = function ()
     {
-        var _201_28_, _208_37_
+        var _197_28_, _204_37_
 
         if (!(this.input != null))
         {

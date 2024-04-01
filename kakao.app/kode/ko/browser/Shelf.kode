@@ -8,12 +8,7 @@
 
 use ../../kxk/dom  ▪ $ stopEvent
 use ../../kxk/util ▪ pullAllWith
-use ../../kxk/ffs
-use ../../kxk/elem
-use ../../kxk/post
-use ../../kxk/slash
-use ../../kxk/keyinfo
-use ../../kxk/popup
+use ../../kxk ▪ ffs elem post slash keyinfo popup
 
 use ../tools/File
 use ../tools/Git

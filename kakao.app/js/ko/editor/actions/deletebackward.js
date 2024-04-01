@@ -1,6 +1,7 @@
 var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-import kstr from "../../../kxk/kstr.js"
+import kxk from "../../../kxk.js"
+let kstr = kxk.kstr
 
 import util from "../../../kxk/util.js"
 let reversed = util.reversed

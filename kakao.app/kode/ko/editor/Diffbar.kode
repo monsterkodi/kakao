@@ -9,8 +9,7 @@
 use ../tools/linediff
 use ../tools/Git
 
-use ../../kxk/elem
-use ../../kxk/post
+use ../../kxk ▪ elem post
 
 class Diffbar
 

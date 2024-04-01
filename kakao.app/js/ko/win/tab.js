@@ -1,12 +1,10 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-import elem from "../../kxk/elem.js"
-
-import post from "../../kxk/post.js"
-
-import slash from "../../kxk/slash.js"
-
-import tooltip from "../../kxk/tooltip.js"
+import kxk from "../../kxk.js"
+let elem = kxk.elem
+let post = kxk.post
+let slash = kxk.slash
+let tooltip = kxk.tooltip
 
 import File from "../tools/File.js"
 
@@ -60,9 +58,9 @@ class Tab
 
     foreignChanges (lineChanges)
     {
-        var _44_17_
+        var _41_17_
 
-        this.foreign = ((_44_17_=this.foreign) != null ? _44_17_ : [])
+        this.foreign = ((_41_17_=this.foreign) != null ? _41_17_ : [])
         this.foreign.push(lineChanges)
         return this.update()
     }
@@ -76,20 +74,20 @@ class Tab
 
     saveChanges ()
     {
-        var change, changes, _64_23_
+        var change, changes, _61_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _65_28_ = 0; _65_28_ < list.length; _65_28_++)
+                for (var _62_28_ = 0; _62_28_ < list.length; _62_28_++)
                 {
-                    changes = list[_65_28_]
+                    changes = list[_62_28_]
                     var list1 = _k_.list(changes)
-                    for (var _66_31_ = 0; _66_31_ < list1.length; _66_31_++)
+                    for (var _63_31_ = 0; _63_31_ < list1.length; _63_31_++)
                     {
-                        change = list1[_66_31_]
+                        change = list1[_63_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -147,7 +145,7 @@ class Tab
 
     update ()
     {
-        var diss, dot, file, html, i, name, sep, _148_16_
+        var diss, dot, file, html, i, name, sep, _145_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
@@ -203,7 +201,7 @@ class Tab
         {
             if (this.hiddenPrjFiles)
             {
-                for (var _155_25_ = i = 0, _155_29_ = this.hiddenPrjFiles.length; (_155_25_ <= _155_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_155_25_ <= _155_29_ ? ++i : --i))
+                for (var _152_25_ = i = 0, _152_29_ = this.hiddenPrjFiles.length; (_152_25_ <= _152_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_152_25_ <= _152_29_ ? ++i : --i))
                 {
                     dot = elem('span',{class:'prjdot',text:'●'})
                     this.div.appendChild(dot)
@@ -244,14 +242,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _167_27_
+        var _164_27_
 
-        return ((_167_27_=this.next()) != null ? _167_27_ : this.prev())
+        return ((_164_27_=this.next()) != null ? _164_27_ : this.prev())
     }
 
     close ()
     {
-        var _177_16_
+        var _174_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -307,9 +305,9 @@ class Tab
                 hidden = this.hiddenPrjFiles
                 delete this.hiddenPrjFiles
                 var list = _k_.list(hidden)
-                for (var _229_25_ = 0; _229_25_ < list.length; _229_25_++)
+                for (var _226_25_ = 0; _226_25_ < list.length; _226_25_++)
                 {
-                    file = list[_229_25_]
+                    file = list[_226_25_]
                     tab = this.tabs.addTab(file)
                     if (window.textEditor.currentFile === file)
                     {
@@ -321,9 +319,9 @@ class Tab
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _235_24_ = 0; _235_24_ < list1.length; _235_24_++)
+                for (var _232_24_ = 0; _232_24_ < list1.length; _232_24_++)
                 {
-                    tab = list1[_235_24_]
+                    tab = list1[_232_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -339,7 +337,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _251_19_
+        var changes, _248_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -350,9 +348,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _252_24_ = 0; _252_24_ < list.length; _252_24_++)
+            for (var _249_24_ = 0; _249_24_ < list.length; _249_24_++)
             {
-                changes = list[_252_24_]
+                changes = list[_249_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

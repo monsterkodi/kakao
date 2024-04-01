@@ -6,9 +6,9 @@
 000       000  000   000  0000000
 ###
 
-use ../commandline/command
+use ../commandline/Command
 
-function Find extends command
+function Find extends Command
 
     @: (commandline) ->
 

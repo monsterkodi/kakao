@@ -7,10 +7,7 @@
 ###
 
 use ../../kxk/util ▪ uniq reversed
-use ../../kxk/slash
-use ../../kxk/prefs
-use ../../kxk/post
-use ../../kxk/ffs
+use ../../kxk ▪ slash prefs post ffs
 
 use ../tools/salt
 use ../tools/req

@@ -7,8 +7,7 @@
 ###
 
 use ../tools/scheme
-use ../../kxk/elem
-use ../../kxk/drag
+use ../../kxk ▪ elem drag
 
 class Scrollbar
 

@@ -6,7 +6,7 @@ export default {actions:{menu:'Line',newline:{name:'Insert Newline',combos:['ent
     return this.newline({indent:true})
 },newline:function (key, info)
 {
-    var after, before, bl, c, doIndent, indent, nc, newCursors, _40_32_, _82_51_
+    var after, before, bl, c, doIndent, indent, nc, newCursors, _38_32_, _80_51_
 
     if (!(info != null) && _k_.isObj(key))
     {
@@ -19,7 +19,7 @@ export default {actions:{menu:'Line',newline:{name:'Insert Newline',combos:['ent
         this.newlineAtEnd()
         return
     }
-    doIndent = ((_40_32_=(info != null ? info.indent : undefined)) != null ? _40_32_ : !this.isCursorInIndent())
+    doIndent = ((_38_32_=(info != null ? info.indent : undefined)) != null ? _38_32_ : !this.isCursorInIndent())
     this.surroundStack = []
     this.deleteSelection()
     this.do.start()
@@ -33,10 +33,10 @@ export default {actions:{menu:'Line',newline:{name:'Insert Newline',combos:['ent
         newCursors = this.do.cursors()
     }
     var list = _k_.list(this.do.cursors().reverse())
-    for (var _52_14_ = 0; _52_14_ < list.length; _52_14_++)
+    for (var _50_14_ = 0; _50_14_ < list.length; _50_14_++)
     {
-        c = list[_52_14_]
-        var _54_28_ = this.splitStateLineAtPos(this.do,c); before = _54_28_[0]; after = _54_28_[1]
+        c = list[_50_14_]
+        var _52_28_ = this.splitStateLineAtPos(this.do,c); before = _52_28_[0]; after = _52_28_[1]
 
         if (doIndent)
         {
@@ -90,9 +90,9 @@ export default {actions:{menu:'Line',newline:{name:'Insert Newline',combos:['ent
             this.do.change(c[1],before)
         }
         var list1 = _k_.list(positionsFromPosInPositions(c,newCursors))
-        for (var _90_19_ = 0; _90_19_ < list1.length; _90_19_++)
+        for (var _88_19_ = 0; _88_19_ < list1.length; _88_19_++)
         {
-            nc = list1[_90_19_]
+            nc = list1[_88_19_]
             cursorDelta(nc,nc[1] === c[1] && indent.length - bl || 0,1)
         }
     }

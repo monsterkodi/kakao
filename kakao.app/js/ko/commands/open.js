@@ -9,9 +9,9 @@ import util from "../../kxk/util.js"
 let uniqBy = util.uniqBy
 let reversed = util.reversed
 
-import post from "../../kxk/post.js"
-
-import slash from "../../kxk/slash.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
+let slash = kxk.slash
 
 import File from "../tools/File.js"
 
@@ -77,7 +77,7 @@ Open = (function ()
         var f, file, fuzzied, items, pos
 
         cmmd = cmmd.trim()
-        var _64_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _64_20_[0]; pos = _64_20_[1]
+        var _63_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _63_20_[0]; pos = _63_20_[1]
 
         items = this.listItems({currentText:cmmd,maxItems:10000})
         if (cmmd.length)
@@ -86,7 +86,7 @@ Open = (function ()
             {
                 return o.text
             }})
-            items = (function () { var r_71_38_ = []; var list = _k_.list(fuzzied); for (var _71_38_ = 0; _71_38_ < list.length; _71_38_++)  { f = list[_71_38_];r_71_38_.push(f.original)  } return r_71_38_ }).bind(this)()
+            items = (function () { var r_70_38_ = []; var list = _k_.list(fuzzied); for (var _70_38_ = 0; _70_38_ < list.length; _70_38_++)  { f = list[_70_38_];r_70_38_.push(f.original)  } return r_70_38_ }).bind(this)()
             items.sort(function (a, b)
             {
                 return b.weight - a.weight
@@ -106,7 +106,7 @@ Open = (function ()
 
     Open.prototype["complete"] = function ()
     {
-        var p, pdir, projects, _91_23_
+        var p, pdir, projects, _90_23_
 
         console.log('complete not implemented!')
         if ((this.commandList != null) && this.commandList.line(this.selected).startsWith(slash.file(this.getText())) && !this.getText().trim().endsWith('/'))
@@ -129,9 +129,9 @@ Open = (function ()
         {
             projects = post.get('indexer','projects')
             var list = _k_.list(Object.keys(projects).sort())
-            for (var _103_18_ = 0; _103_18_ < list.length; _103_18_++)
+            for (var _102_18_ = 0; _102_18_ < list.length; _102_18_++)
             {
-                p = list[_103_18_]
+                p = list[_102_18_]
                 if (p.startsWith(this.getText()))
                 {
                     pdir = Projects.projects[p].dir
@@ -223,11 +223,11 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _175_21_, _176_17_, _193_41_, _195_19_
+        var f, file, iconSpan, item, items, rel, _174_21_, _175_17_, _192_41_, _194_19_
 
         opt = (opt != null ? opt : {})
-        opt.maxItems = ((_175_21_=opt.maxItems) != null ? _175_21_ : 200)
-        opt.flat = ((_176_17_=opt.flat) != null ? _176_17_ : true)
+        opt.maxItems = ((_174_21_=opt.maxItems) != null ? _174_21_ : 200)
+        opt.flat = ((_175_17_=opt.flat) != null ? _175_17_ : true)
         iconSpan = function (file)
         {
             if (slash.ext(file) === 'kode')
@@ -261,9 +261,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _209_21_ = 0; _209_21_ < list.length; _209_21_++)
+            for (var _208_21_ = 0; _208_21_ < list.length; _208_21_++)
             {
-                file = list[_209_21_]
+                file = list[_208_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -290,9 +290,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _240_18_ = 0; _240_18_ < list.length; _240_18_++)
+            for (var _239_18_ = 0; _239_18_ < list.length; _239_18_++)
             {
-                f = list[_240_18_]
+                f = list[_239_18_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -311,9 +311,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _256_58_, _256_65_
+        var _255_58_, _255_65_
 
-        if (this.commandList && this.selected === ((_256_58_=this.commandList.meta) != null ? (_256_65_=_256_58_.metas) != null ? _256_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_255_58_=this.commandList.meta) != null ? (_255_65_=_255_58_.metas) != null ? _255_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -326,7 +326,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _271_27_
+        var _270_27_
 
         if (name === this.names[0])
         {
@@ -340,7 +340,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _292_40_, _306_41_
+        var dir, item, _291_40_, _305_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -352,7 +352,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_292_40_=slash.dir(this.file)) != null ? _292_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_291_40_=slash.dir(this.file)) != null ? _291_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -392,7 +392,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _337_27_
+        var file, path, pos, _336_27_
 
         if (this.selected < 0)
         {
@@ -402,7 +402,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _343_24_ = slash.splitFilePos(command); file = _343_24_[0]; pos = _343_24_[1]
+            var _342_24_ = slash.splitFilePos(command); file = _342_24_[0]; pos = _342_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

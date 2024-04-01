@@ -2,7 +2,8 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var CommandList
 
-import matchr from "../../kxk/matchr.js"
+import kxk from "../../kxk.js"
+let matchr = kxk.matchr
 
 import salt from "../tools/salt.js"
 

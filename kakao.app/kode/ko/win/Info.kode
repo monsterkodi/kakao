@@ -7,9 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $
-use ../../kxk/post
-use ../../kxk/elem
-use ../../kxk/tooltip
+use ../../kxk ▪ post elem tooltip
 
 shortCount = (v) ->
     

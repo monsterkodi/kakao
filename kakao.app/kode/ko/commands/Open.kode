@@ -9,8 +9,7 @@
 use ../../../lib/lib_ko ▪ fuzzy
 
 use ../../kxk/util ▪ uniqBy reversed
-use ../../kxk/post
-use ../../kxk/slash
+use ../../kxk ▪ post slash
 
 use ../tools/File
 use ../tools/Projects

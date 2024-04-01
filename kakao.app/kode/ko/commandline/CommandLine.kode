@@ -7,11 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $ stopEvent
-
-use ../../kxk/ffs
-use ../../kxk/elem
-use ../../kxk/post
-use ../../kxk/slash
+use ../../kxk ▪ ffs elem post slash
 
 use ../editor/TextEditor
 

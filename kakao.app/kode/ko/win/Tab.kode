@@ -6,10 +6,7 @@
    000     000   000  0000000
 ###
 
-use ../../kxk/elem
-use ../../kxk/post
-use ../../kxk/slash
-use ../../kxk/tooltip
+use ../../kxk ▪ elem post slash tooltip
 
 use ../tools/File
 use ../editor/Render

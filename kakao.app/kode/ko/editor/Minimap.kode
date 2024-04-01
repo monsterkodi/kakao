@@ -7,8 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ getStyle
-use ../../kxk/elem
-use ../../kxk/drag
+use ../../kxk ▪ elem drag
 
 use ./MapScroll
 

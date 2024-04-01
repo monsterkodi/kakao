@@ -8,9 +8,7 @@
 
 use ../../kxk/util ▪ pickBy toPairs
 use ../../kxk/dom  ▪ $ stopEvent
-use ../../kxk/elem
-use ../../kxk/matchr
-use ../../kxk/events
+use ../../kxk ▪ elem matchr events
 use ../tools/req
 
 jsClass =

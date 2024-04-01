@@ -1,6 +1,7 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
-import kstr from "../../../kxk/kstr.js"
+import kxk from "../../../kxk.js"
+let kstr = kxk.kstr
 
 import util from "../../../kxk/util.js"
 let pull = util.pull

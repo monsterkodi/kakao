@@ -2,12 +2,12 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Find
 
-import command from "../commandline/command.js"
+import Command from "../commandline/Command.js"
 
 
 Find = (function ()
 {
-    _k_.extend(Find, command)
+    _k_.extend(Find, Command)
     function Find (commandline)
     {
         Find.__super__.constructor.call(this,commandline)

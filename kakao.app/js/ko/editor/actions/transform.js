@@ -3,11 +3,10 @@ var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} 
 import util from "../../../kxk/util.js"
 let reversed = util.reversed
 
-import kstr from "../../../kxk/kstr.js"
-
-import slash from "../../../kxk/slash.js"
-
-import matchr from "../../../kxk/matchr.js"
+import kxk from "../../../kxk.js"
+let kstr = kxk.kstr
+let slash = kxk.slash
+let matchr = kxk.matchr
 
 class Transform
 {
@@ -47,7 +46,7 @@ class Transform
         }
 
         pad = Number(step * (cs.length - 1) + offset).toString(base).length
-        numbers = (function () { var r_60_77_ = []; for (var _60_81_ = i = 0, _60_85_ = cs.length; (_60_81_ <= _60_85_ ? i < cs.length : i > cs.length); (_60_81_ <= _60_85_ ? ++i : --i))  { r_60_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_60_77_ }).bind(this)()
+        numbers = (function () { var r_58_77_ = []; for (var _58_81_ = i = 0, _58_85_ = cs.length; (_58_81_ <= _58_85_ ? i < cs.length : i > cs.length); (_58_81_ <= _58_85_ ? ++i : --i))  { r_58_77_.push(_k_.lpad(pad,Number(step * i + offset).toString(base),'0'))  } return r_58_77_ }).bind(this)()
         this.editor.replaceSelectedText(numbers)
         this.editor.do.end()
         return 'count'
@@ -118,9 +117,9 @@ class Transform
             v = []
             r = []
             var list = _k_.list(l)
-            for (var _112_18_ = 0; _112_18_ < list.length; _112_18_++)
+            for (var _110_18_ = 0; _110_18_ < list.length; _110_18_++)
             {
-                a = list[_112_18_]
+                a = list[_110_18_]
                 _k_.in(a,v) ? r.push('') : v.push(a)
             }
             return r
@@ -158,9 +157,9 @@ class Transform
             var r
 
             var list = _k_.list(matchr.ranges(/\w+/,t))
-            for (var _138_18_ = 0; _138_18_ < list.length; _138_18_++)
+            for (var _136_18_ = 0; _136_18_ < list.length; _136_18_++)
             {
-                r = list[_138_18_]
+                r = list[_136_18_]
                 t = kstr.splice(t,r.start,r.match.length,r.match.substr(0,1).toUpperCase() + r.match.slice(1).toLowerCase())
             }
             return t
@@ -216,7 +215,7 @@ class Transform
 
     tfunc (opt)
     {
-        var selections, tl, _203_42_, _204_42_
+        var selections, tl, _201_42_, _202_42_
 
         if (!this.editor.numSelections())
         {
@@ -275,10 +274,10 @@ class Transform
 
     static do (editor, transName, ...opts)
     {
-        var _248_25_
+        var _246_25_
 
         console.log('static Transform.do',editor.name,transName)
-        editor.transform = ((_248_25_=editor.transform) != null ? _248_25_ : new Transform(editor))
+        editor.transform = ((_246_25_=editor.transform) != null ? _246_25_ : new Transform(editor))
         return editor.transform.do.apply(editor.transform,[transName].concat(opts))
     }
 }

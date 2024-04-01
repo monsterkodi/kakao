@@ -6,8 +6,7 @@
 000   000  000   000  000   000  0000000    0000000  00000000
 ###
 
-use ../../../kxk/elem
-use ../../../kxk/drag
+use ../../../kxk ▪ elem drag
 
 class Handle
     

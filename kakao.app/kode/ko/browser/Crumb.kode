@@ -6,9 +6,7 @@
  0000000  000   000   0000000   000   000  0000000
 ###
 
-use ../../kxk/kpos
-use ../../kxk/elem
-use ../../kxk/slash
+use ../../kxk ▪ kpos elem slash
 use ../tools/File
 
 class Crumb

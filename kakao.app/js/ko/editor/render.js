@@ -1,19 +1,19 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-import elem from "../../kxk/elem.js"
-
-import kstr from "../../kxk/kstr.js"
+import kxk from "../../kxk.js"
+let elem = kxk.elem
+let kstr = kxk.kstr
 
 class Render
 {
     static line (diss, size = {charWidth:0})
     {
-        var clrzd, clss, d, di, l, tx, _1_7_, _26_29_
+        var clrzd, clss, d, di, l, tx, _1_7_, _25_29_
 
         l = ""
         if ((diss != null ? diss.length : undefined))
         {
-            for (var _23_23_ = di = diss.length - 1, _23_38_ = 0; (_23_23_ <= _23_38_ ? di <= 0 : di >= 0); (_23_23_ <= _23_38_ ? ++di : --di))
+            for (var _22_23_ = di = diss.length - 1, _22_38_ = 0; (_22_23_ <= _22_38_ ? di <= 0 : di >= 0); (_22_23_ <= _22_38_ ? ++di : --di))
             {
                 d = diss[di]
                 tx = d.start * size.charWidth
@@ -27,7 +27,7 @@ class Render
 
     static lineSpan (diss, size)
     {
-        var d, div, span, ss, st, _44_45_, _46_21_
+        var d, div, span, ss, st, _43_45_, _45_21_
 
         div = elem({class:'linespans'})
         if (diss.length > 500)
@@ -40,9 +40,9 @@ class Render
             return div
         }
         var list = (diss != null ? diss : [])
-        for (var _41_14_ = 0; _41_14_ < list.length; _41_14_++)
+        for (var _40_14_ = 0; _40_14_ < list.length; _40_14_++)
         {
-            d = list[_41_14_]
+            d = list[_40_14_]
             span = elem('span')
             span.style.transform = `translatex(${d.start * size.charWidth}px)`
             if ((d.clss != null))
@@ -53,9 +53,9 @@ class Render
             if ((d.styl != null))
             {
                 var list1 = _k_.list(d.styl.split(';'))
-                for (var _47_23_ = 0; _47_23_ < list1.length; _47_23_++)
+                for (var _46_23_ = 0; _46_23_ < list1.length; _46_23_++)
                 {
-                    st = list1[_47_23_]
+                    st = list1[_46_23_]
                     ss = st.split(':')
                     span.style[ss[0]] = ss[1]
                 }
@@ -74,9 +74,9 @@ class Render
         cw = size.charWidth
         lh = size.lineHeight
         var list = _k_.list(cs)
-        for (var _65_14_ = 0; _65_14_ < list.length; _65_14_++)
+        for (var _64_14_ = 0; _64_14_ < list.length; _64_14_++)
         {
-            c = list[_65_14_]
+            c = list[_64_14_]
             tx = c[0] * cw + size.offsetX
             ty = c[1] * lh
             cls = ""
@@ -93,17 +93,17 @@ class Render
 
     static selection (ss, size, clss = 'selection')
     {
-        var b, h, n, p, s, si, _90_58_, _90_65_
+        var b, h, n, p, s, si, _89_58_, _89_65_
 
         h = ""
         p = null
         n = null
-        for (var _86_19_ = si = 0, _86_23_ = ss.length; (_86_19_ <= _86_23_ ? si < ss.length : si > ss.length); (_86_19_ <= _86_23_ ? ++si : --si))
+        for (var _85_19_ = si = 0, _85_23_ = ss.length; (_85_19_ <= _85_23_ ? si < ss.length : si > ss.length); (_85_19_ <= _85_23_ ? ++si : --si))
         {
             s = ss[si]
             n = (si < ss.length - 1) && (ss[si + 1][0] === s[0] + 1) && ss[si + 1] || null
             b = (p != null ? p[0] : undefined) === s[0] - 1 && p || null
-            h += this.selectionSpan(b,s,n,size,((_90_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _90_58_ : ((_90_65_=s[2]) != null ? _90_65_ : clss)))
+            h += this.selectionSpan(b,s,n,size,((_89_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _89_58_ : ((_89_65_=s[2]) != null ? _89_65_ : clss)))
             p = s
         }
         return h

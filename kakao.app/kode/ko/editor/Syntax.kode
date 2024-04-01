@@ -7,11 +7,7 @@
 ###
 
 use ../../kolor/kolor
-use ../../kxk/slash
-use ../../kxk/matchr
-use ../../kxk/elem
-use ../../kxk/kstr
-use ../../kxk/ffs
+use ../../kxk ▪ slash matchr elem kstr ffs
 
 __dirname = slash.dir import.meta.url[7..]
 

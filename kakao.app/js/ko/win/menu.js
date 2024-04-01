@@ -2,7 +2,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var getMenu, Menu
 
-import slash from "../../kxk/slash.js"
+import kxk from "../../kxk.js"
+let slash = kxk.slash
 
 import Editor from "../editor/Editor.js"
 

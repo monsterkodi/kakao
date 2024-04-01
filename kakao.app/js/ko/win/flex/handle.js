@@ -1,8 +1,8 @@
 var _k_
 
-import elem from "../../../kxk/elem.js"
-
-import drag from "../../../kxk/drag.js"
+import kxk from "../../../kxk.js"
+let elem = kxk.elem
+let drag = kxk.drag
 
 class Handle
 {
@@ -28,7 +28,7 @@ class Handle
 
     del ()
     {
-        var _33_22_
+        var _32_22_
 
         ;(this.div != null ? this.div.remove() : undefined)
         return delete this.div

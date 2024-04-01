@@ -9,15 +9,7 @@
 use ../../../lib/lib_ko ▪ fuzzy
 
 use ../../kxk/dom ▪ $ setStyle stopEvent
-use ../../kxk/ffs
-use ../../kxk/kpos
-use ../../kxk/elem
-use ../../kxk/drag
-use ../../kxk/post
-use ../../kxk/prefs
-use ../../kxk/slash
-use ../../kxk/popup
-use ../../kxk/keyinfo
+use ../../kxk ▪ ffs kpos elem drag post prefs slash popup keyinfo
 
 use ../tools/DirWatch
 use ../tools/File

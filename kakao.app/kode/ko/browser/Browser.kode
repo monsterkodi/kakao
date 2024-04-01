@@ -7,10 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ setStyle
-use ../../kxk/kpos
-use ../../kxk/elem
-use ../../kxk/slash
-use ../../kxk/events
+use ../../kxk ▪ kpos elem slash events
 
 use ../win/flex/Flex
 use ./Column

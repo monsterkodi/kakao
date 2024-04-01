@@ -1,10 +1,9 @@
 var _k_
 
-import kpos from "../../kxk/kpos.js"
-
-import elem from "../../kxk/elem.js"
-
-import slash from "../../kxk/slash.js"
+import kxk from "../../kxk.js"
+let kpos = kxk.kpos
+let elem = kxk.elem
+let slash = kxk.slash
 
 import File from "../tools/File.js"
 
@@ -35,14 +34,14 @@ class Crumb
 
     onMouseDown (event)
     {
-        var _29_34_
+        var _27_34_
 
         return this.downPos = kpos((window.win != null ? window.win.getBounds() : undefined))
     }
 
     onMouseUp (event)
     {
-        var br, root, upPos, _35_31_
+        var br, root, upPos, _33_31_
 
         if (!this.downPos)
         {

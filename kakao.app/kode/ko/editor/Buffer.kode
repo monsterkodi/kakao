@@ -9,9 +9,7 @@
 use ../../../lib/lib_ko ▪ fuzzy
 
 use ./state
-use ../../kxk/kstr
-use ../../kxk/matchr
-use ../../kxk/events
+use ../../kxk ▪ kstr matchr events
 use ../../kxk/util ▪ uniq
 
 startOf = (r) -> r[0]

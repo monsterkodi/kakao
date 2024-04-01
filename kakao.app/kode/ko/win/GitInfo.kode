@@ -6,9 +6,7 @@
  0000000   000     000     000  000   000  000        0000000
 ###
 
-use ../../kxk/post
-use ../../kxk/slash
-use ../../kxk/ffs
+use ../../kxk ▪ post slash ffs
 
 use ../tools/linediff
 use ../tools/Git

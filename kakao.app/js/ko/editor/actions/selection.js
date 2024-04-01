@@ -1,6 +1,7 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
-import post from "../../../kxk/post.js"
+import kxk from "../../../kxk.js"
+let post = kxk.post
 
 export default {actions:{menu:'Select',selectAll:{name:'Select All',combo:'command+a'},selectNone:{name:'Deselect',combo:'command+shift+a'},selectInverted:{name:'Invert Selection',text:'selects all lines that have no cursors and no selections',combo:'command+i'},selectNextHighlight:{separator:true,name:'Select Next Highlight',combo:'command+g'},selectPrevHighlight:{name:'Select Previous Highlight',combo:'command+shift+g'},selectTextBetweenCursorsOrSurround:{name:'Select Between Cursors, Brackets or Quotes',text:`select text between even cursors, if at least two cursors exist. 
 select text between highlighted brackets or quotes otherwise.`,combo:'alt+b'},toggleStickySelection:{separator:true,name:'Toggle Sticky Selection',text:'current selection is not removed when adding new selections',combo:"ctrl+'"}},selectSingleRange:function (r, opt)

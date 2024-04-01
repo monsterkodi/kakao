@@ -5,7 +5,8 @@ let isEqual = util.isEqual
 let uniqEqual = util.uniqEqual
 let reversed = util.reversed
 
-import kstr from "../../../kxk/kstr.js"
+import kxk from "../../../kxk.js"
+let kstr = kxk.kstr
 
 export default {initSurround:function ()
 {

@@ -33,24 +33,32 @@ coffee kode js ts
         Infinity
         
     module
-        childp
-        matchr
-        prefs
-        slash
         args
-        post
-        elem
-        module
+        childp
         console
-        process
-        global
-        exports
-        window
         document
-        kstr
-        kpos
+        drag
+        elem
+        exports
+        ffs
         fs
+        global
+        keyinfo
+        kpos
+        kstr
+        matchr
+        module
         os
+        popup
+        post
+        prefs
+        process
+        setStyle
+        slash
+        stopEvent
+        tooltip
+        util
+        window
 
     function call
         err

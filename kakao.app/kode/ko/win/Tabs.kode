@@ -7,12 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $ stopEvent
-use ../../kxk/post
-use ../../kxk/elem
-use ../../kxk/drag
-use ../../kxk/kpos
-use ../../kxk/slash
-use ../../kxk/popup
+use ../../kxk ▪ post elem kpos slash drag popup
 use ../tools/Projects
 use ./Tab
 

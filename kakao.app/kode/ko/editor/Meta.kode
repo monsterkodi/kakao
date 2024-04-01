@@ -8,9 +8,7 @@
 
 use ../../kxk/dom ▪ $ stopEvent
 use ../../kxk/util ▪ pull
-use ../../kxk/elem
-use ../../kxk/post
-use ../../kxk/slash
+use ../../kxk ▪ elem post slash
 
 use ../tools/ranges
 use ../tools/File

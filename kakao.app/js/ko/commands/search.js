@@ -4,15 +4,12 @@ var FileSearcher, Search
 
 import kolor from "../../kolor/kolor.js"
 
-import ffs from "../../kxk/ffs.js"
-
-import kstr from "../../kxk/kstr.js"
-
-import post from "../../kxk/post.js"
-
-import slash from "../../kxk/slash.js"
-
-import matchr from "../../kxk/matchr.js"
+import kxk from "../../kxk.js"
+let ffs = kxk.ffs
+let kstr = kxk.kstr
+let post = kxk.post
+let slash = kxk.slash
+let matchr = kxk.matchr
 
 import Walker from "../tools/Walker.js"
 
@@ -41,7 +38,7 @@ Search = (function ()
 
     Search.prototype["execute"] = function (command)
     {
-        var dir, file, rngs, _57_33_
+        var dir, file, rngs, _53_33_
 
         if (!command.length)
         {
@@ -70,7 +67,7 @@ Search = (function ()
             return
         }
         window.terminal.clear()
-        dir = ((_57_33_=Projects.dir(file)) != null ? _57_33_ : slash.dir(slash.path(file)))
+        dir = ((_53_33_=Projects.dir(file)) != null ? _53_33_ : slash.dir(slash.path(file)))
         this.startSearch({dir:dir,text:command,name:this.name})
         return {focus:'terminal',show:'terminal',text:command,select:true}
     }
@@ -174,7 +171,7 @@ FileSearcher = (function ()
         }
         ffs.read(this.file).then((function (text)
         {
-            var l, lines, rngs, _157_68_
+            var l, lines, rngs, _153_68_
 
             if (_k_.empty(text))
             {
@@ -186,9 +183,9 @@ FileSearcher = (function ()
                 this.syntaxName = Syntax.shebang(lines[0])
             }
             var list = _k_.list(lines)
-            for (var _158_18_ = 0; _158_18_ < list.length; _158_18_++)
+            for (var _154_18_ = 0; _154_18_ < list.length; _154_18_++)
             {
-                l = list[_158_18_]
+                l = list[_154_18_]
                 this.line += 1
                 rngs = matchr.ranges(this.patterns,l,this.flags)
                 if (rngs.length)
@@ -211,7 +208,7 @@ FileSearcher = (function ()
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.appendMeta(meta)
         terminal.appendMeta({clss:'spacer'})
-        for (var _180_18_ = fi = 0, _180_22_ = this.found.length; (_180_18_ <= _180_22_ ? fi < this.found.length : fi > this.found.length); (_180_18_ <= _180_22_ ? ++fi : --fi))
+        for (var _176_18_ = fi = 0, _176_22_ = this.found.length; (_176_18_ <= _176_22_ ? fi < this.found.length : fi > this.found.length); (_176_18_ <= _176_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]

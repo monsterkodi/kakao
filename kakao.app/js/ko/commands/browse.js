@@ -5,11 +5,10 @@ var Browse
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 
-import ffs from "../../kxk/ffs.js"
-
-import post from "../../kxk/post.js"
-
-import slash from "../../kxk/slash.js"
+import kxk from "../../kxk.js"
+let ffs = kxk.ffs
+let post = kxk.post
+let slash = kxk.slash
 
 import kakao from "../../kakao.js"
 
@@ -57,7 +56,7 @@ Browse = (function ()
 
     Browse.prototype["start"] = function (action)
     {
-        var name, _60_40_
+        var name, _57_40_
 
         this.browser.start()
         if (action !== 'shelf')
@@ -147,7 +146,7 @@ Browse = (function ()
         var i, prefix
 
         prefix = ''
-        for (var _150_18_ = i = 0, _150_22_ = Math.min(strA.length,strB.length); (_150_18_ <= _150_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_150_18_ <= _150_22_ ? ++i : --i))
+        for (var _147_18_ = i = 0, _147_22_ = Math.min(strA.length,strB.length); (_147_18_ <= _147_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_147_18_ <= _147_22_ ? ++i : --i))
         {
             if (strA[i] !== strB[i])
             {
@@ -165,9 +164,9 @@ Browse = (function ()
         brokenPath = slash.path(this.getText())
         longestMatch = ''
         var list = _k_.list(files)
-        for (var _160_17_ = 0; _160_17_ < list.length; _160_17_++)
+        for (var _157_17_ = 0; _157_17_ < list.length; _157_17_++)
         {
-            file = list[_160_17_]
+            file = list[_157_17_]
             file = file.file
             prefix = this.commonPrefix(file,brokenPath)
             if (prefix.length > longestMatch.length)
@@ -255,7 +254,7 @@ Browse = (function ()
 
     Browse.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var focusBrowser, _238_74_
+        var focusBrowser, _235_74_
 
         switch (combo)
         {
@@ -299,7 +298,7 @@ Browse = (function ()
 
     Browse.prototype["select"] = function (i)
     {
-        var l, s, text, _273_42_, _279_20_, _280_20_
+        var l, s, text, _270_42_, _276_20_, _277_20_
 
         this.selected = _k_.clamp(-1,(this.commandList != null ? this.commandList.numLines() : undefined) - 1,i)
         if (this.selected < 0)
@@ -318,7 +317,7 @@ Browse = (function ()
 
     Browse.prototype["selectListItem"] = function (dir)
     {
-        var _290_34_
+        var _287_34_
 
         if (!(this.commandList != null))
         {
@@ -379,11 +378,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _342_32_, _342_56_, _349_64_, _349_72_, _351_61_, _351_69_
+        var pth, _339_32_, _339_56_, _346_64_, _346_72_, _348_61_, _348_69_
 
         if (!this.isActive())
         {
-            ;((_342_32_=this.commandline.command) != null ? typeof (_342_56_=_342_32_.onBrowserItemActivated) === "function" ? _342_56_(item) : undefined : undefined)
+            ;((_339_32_=this.commandline.command) != null ? typeof (_339_56_=_339_32_.onBrowserItemActivated) === "function" ? _339_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -392,9 +391,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_349_64_=this.browser.activeColumn()) != null ? (_349_72_=_349_64_.parent) != null ? _349_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_346_64_=this.browser.activeColumn()) != null ? (_346_72_=_346_64_.parent) != null ? _346_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_351_61_=this.browser.activeColumn()) != null ? (_351_69_=_351_61_.parent) != null ? _351_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_348_61_=this.browser.activeColumn()) != null ? (_348_69_=_348_61_.parent) != null ? _348_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)

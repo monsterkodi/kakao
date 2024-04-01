@@ -5,11 +5,10 @@ var shortCount
 import dom from "../../kxk/dom.js"
 let $ = dom.$
 
-import post from "../../kxk/post.js"
-
-import elem from "../../kxk/elem.js"
-
-import tooltip from "../../kxk/tooltip.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
+let elem = kxk.elem
+let tooltip = kxk.tooltip
 
 
 shortCount = function (v)
@@ -100,7 +99,7 @@ class Info
 
     setEditor (editor)
     {
-        var _98_18_
+        var _96_18_
 
         if (editor === this.editor)
         {

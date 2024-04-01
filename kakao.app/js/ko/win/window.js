@@ -7,15 +7,13 @@ import kakao from "../../kakao.js"
 import dom from "../../kxk/dom.js"
 let stopEvent = dom.stopEvent
 
+import kxk from "../../kxk.js"
+let stash = kxk.stash
+let post = kxk.post
+let prefs = kxk.prefs
+let store = kxk.store
+
 import win from "../../kxk/win.js"
-
-import post from "../../kxk/post.js"
-
-import stash from "../../kxk/stash.js"
-
-import store from "../../kxk/store.js"
-
-import prefs from "../../kxk/prefs.js"
 
 import FileWatch from "../tools/FileWatch.js"
 
@@ -350,7 +348,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _230_14_
+    var _227_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -361,7 +359,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _236_22_, _237_19_
+    var _233_22_, _234_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -406,7 +404,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _281_32_
+    var _278_32_
 
     if (!(_k_.isNum(s)))
     {

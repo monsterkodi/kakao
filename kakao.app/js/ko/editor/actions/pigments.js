@@ -2,7 +2,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var Pigments
 
-import matchr from "../../../kxk/matchr.js"
+import kxk from "../../../kxk.js"
+let matchr = kxk.matchr
 
 
 Pigments = (function ()

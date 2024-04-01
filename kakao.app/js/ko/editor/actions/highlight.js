@@ -1,6 +1,7 @@
 var _k_ = {first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-import post from "../../../kxk/post.js"
+import kxk from "../../../kxk.js"
+let post = kxk.post
 
 export default {actions:{menu:'Select',highlightWordAndAddToSelection:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects the first|next highlight.',combo:'command+d'},selectAllWords:{name:'Select All Words',combo:'command+alt+d'},removeSelectedHighlight:{name:'Remove Highlighted Word from Selection',text:"does the inverse of 'highlight and select' word",combo:'command+shift+d'},highlightTextOfSelectionOrWordAtCursor:{name:'Highlight and Select Word',text:'highlights all occurrences of text in selection or word at cursor and selects it.',combo:'command+e'}},highlightText:function (text, opt)
 {

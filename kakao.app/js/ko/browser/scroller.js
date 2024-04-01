@@ -2,9 +2,9 @@ var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h);
 
 import scheme from "../tools/scheme.js"
 
-import elem from "../../kxk/elem.js"
-
-import drag from "../../kxk/drag.js"
+import kxk from "../../kxk.js"
+let elem = kxk.elem
+let drag = kxk.drag
 
 class Scroller
 {

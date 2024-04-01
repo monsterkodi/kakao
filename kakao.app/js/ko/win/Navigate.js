@@ -3,11 +3,10 @@ var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h);
 import util from "../../kxk/util.js"
 let pullAllWith = util.pullAllWith
 
-import slash from "../../kxk/slash.js"
-
-import prefs from "../../kxk/prefs.js"
-
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let slash = kxk.slash
+let prefs = kxk.prefs
+let post = kxk.post
 
 class Navigate
 {
@@ -33,7 +32,7 @@ class Navigate
         pos = (pos != null ? pos : [0,0])
         if (!pos[0] && !pos[1] && this.filePositions.length)
         {
-            for (var _39_22_ = i = this.filePositions.length - 1, _39_47_ = 0; (_39_22_ <= _39_47_ ? i <= 0 : i >= 0); (_39_22_ <= _39_47_ ? ++i : --i))
+            for (var _37_22_ = i = this.filePositions.length - 1, _37_47_ = 0; (_37_22_ <= _37_47_ ? i <= 0 : i >= 0); (_37_22_ <= _37_47_ ? ++i : --i))
             {
                 fp = this.filePositions[i]
                 if (slash.samePath(fp.file,file))
@@ -62,7 +61,7 @@ class Navigate
 
     navigate (opt)
     {
-        var hasFile, _108_39_, _98_30_, _98_45_
+        var hasFile, _106_39_, _96_30_, _96_45_
 
         switch (opt.action)
         {
@@ -89,7 +88,7 @@ class Navigate
                 return this.loadFilePos(this.filePositions[this.currentIndex],opt)
 
             case 'delFilePos':
-                opt.item.line = ((_98_30_=opt.item.line) != null ? _98_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
+                opt.item.line = ((_96_30_=opt.item.line) != null ? _96_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
                 this.filePositions = this.filePositions.filter(function (f)
                 {
                     return f.file !== opt.item.file || f.line !== opt.item.line
@@ -98,7 +97,7 @@ class Navigate
                 return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
 
             case 'addFilePos':
-                if (!(opt != null ? (_108_39_=opt.file) != null ? _108_39_.length : undefined : undefined))
+                if (!(opt != null ? (_106_39_=opt.file) != null ? _106_39_.length : undefined : undefined))
                 {
                     return
                 }

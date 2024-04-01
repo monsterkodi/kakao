@@ -7,11 +7,7 @@
 ###
 
 use ../../kolor/kolor
-use ../../kxk/ffs
-use ../../kxk/kstr
-use ../../kxk/post
-use ../../kxk/slash
-use ../../kxk/matchr
+use ../../kxk ▪ ffs kstr post slash matchr
 
 use ../tools/Walker
 use ../tools/Projects

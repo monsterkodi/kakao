@@ -6,7 +6,7 @@
 000   000  00000000  000   000   0000000
 ###
 
-use ../../kxk/slash
+use ../../kxk ▪ slash
 
 use ../editor/Editor
 use ../commands/Macro

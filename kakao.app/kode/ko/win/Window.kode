@@ -10,11 +10,8 @@ use ../../kakao
 
 use ../../kxk/dom ▪ stopEvent
 
+use ../../kxk ▪ stash post prefs store
 use ../../kxk/win
-use ../../kxk/post
-use ../../kxk/stash
-use ../../kxk/store
-use ../../kxk/prefs
 
 use ../tools/FileWatch
 use ../tools/Projects

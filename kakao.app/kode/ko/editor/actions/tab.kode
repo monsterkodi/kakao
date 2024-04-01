@@ -6,7 +6,7 @@
 #    000     000   000  0000000    
 
 use ../../../kxk/dom ▪ stopEvent
-use ../../../kxk/kstr
+use ../../../kxk ▪ kstr
 
 export
     

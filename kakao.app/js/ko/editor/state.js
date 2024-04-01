@@ -1,6 +1,7 @@
 var _k_
 
-import kstr from "../../kxk/kstr.js"
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
 
 import lib_ko from "../../../lib/lib_ko.js"
 let immutable = lib_ko.immutable

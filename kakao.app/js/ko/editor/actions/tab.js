@@ -3,7 +3,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 import dom from "../../../kxk/dom.js"
 let stopEvent = dom.stopEvent
 
-import kstr from "../../../kxk/kstr.js"
+import kxk from "../../../kxk.js"
+let kstr = kxk.kstr
 
 export default {actions:{insertOrDeleteTab:{combos:['tab','shift+tab']}},insertOrDeleteTab:function (key, info)
 {

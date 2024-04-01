@@ -9,7 +9,8 @@ import util from "../../kxk/util.js"
 let pull = util.pull
 let reversed = util.reversed
 
-import elem from "../../kxk/elem.js"
+import kxk from "../../kxk.js"
+let elem = kxk.elem
 
 import CommandList from "./CommandList.js"
 

@@ -7,12 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $
-use ../../kxk/slash
-use ../../kxk/elem
-use ../../kxk/drag
-use ../../kxk/post
-use ../../kxk/util
-use ../../kxk/ffs
+use ../../kxk ▪ slash elem drag post util ffs
 
 use ../tools/File
 use ../tools/Git

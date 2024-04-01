@@ -4,7 +4,8 @@ import state from "./state.js"
 
 import ranges from "../tools/ranges.js"
 
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
 
 class Do
 {

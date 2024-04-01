@@ -7,11 +7,7 @@
 ###
 
 use ../../kxk/dom ▪ $ stopEvent
-use ../../kxk/kstr
-use ../../kxk/elem
-use ../../kxk/post
-use ../../kxk/slash
-use ../../kxk/keyinfo
+use ../../kxk ▪ kstr elem post slash keyinfo
 
 use ../editor/Syntax
 use ../tools/File

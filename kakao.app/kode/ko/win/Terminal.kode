@@ -7,9 +7,8 @@
 ###
 
 use ../../kxk/dom ▪ stopEvent
-use ../../kxk/post
-use ../../kxk/kpos
-use ../../kxk/popup
+use ../../kxk ▪ post kpos popup
+
 use ../tools/salt
 use ../editor/Syntax
 use ../editor/TextEditor

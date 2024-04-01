@@ -8,11 +8,7 @@
 
 use ../../kxk/dom ▪ stopEvent setStyle
 use ../../kxk/util ▪ deleteBy
-use ../../kxk/ffs
-use ../../kxk/kpos
-use ../../kxk/post
-use ../../kxk/popup
-use ../../kxk/slash
+use ../../kxk ▪ ffs kpos post popup slash
 
 use ./Syntax
 use ./TextEditor
