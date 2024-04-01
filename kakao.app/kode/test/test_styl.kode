@@ -160,4 +160,28 @@ use ../kxk/styl
         }
         
         """
+
+    styl """
+        fill-abs()
+            position            absolute
+            bottom              0
+            right               0
+            left                0
+            top                 0
+        body
+            fill-abs()
+        """ ▸ """
+        
+        body
+        {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            top: 0;
+        }
+        
+        """
+        
+    
         

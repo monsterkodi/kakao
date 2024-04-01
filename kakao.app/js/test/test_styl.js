@@ -121,6 +121,23 @@ contentRadius       = frameRadius - 2px
     margin: 8px;
 }
 `)
+    compare(styl(`fill-abs()
+    position            absolute
+    bottom              0
+    right               0
+    left                0
+    top                 0
+body
+    fill-abs()`),`
+body
+{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+}
+`)
 }
 toExport["styl"]._section_ = true
 toExport._test_ = true

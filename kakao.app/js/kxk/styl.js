@@ -1,22 +1,23 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
-var calculus, render, styl, subvars, variables
+var calculus, funcs, render, styl, subvars, vars
 
 import kstr from "./kstr.js"
 let unfillet = kstr.unfillet
 let blockFillets = kstr.blockFillets
 
-variables = {}
+vars = {}
+funcs = {}
 
 subvars = function (fillets)
 {
     var fillet, value
 
     var list = _k_.list(fillets)
-    for (var _23_15_ = 0; _23_15_ < list.length; _23_15_++)
+    for (var _24_15_ = 0; _24_15_ < list.length; _24_15_++)
     {
-        fillet = list[_23_15_]
-        if (value = variables[fillet.match])
+        fillet = list[_24_15_]
+        if (value = vars[fillet.match])
         {
             fillet.match = value
         }
@@ -53,7 +54,7 @@ calculus = function (fillets)
 
 render = function (block, text)
 {
-    var b, idt, varName, varValue
+    var b, cb, funcName, funcValue, idt, varName, varValue
 
     if ((block.fillet[0] != null ? block.fillet[0].match : undefined) === '//')
     {
@@ -63,7 +64,25 @@ render = function (block, text)
     {
         varName = (block.fillet[0] != null ? block.fillet[0].match : undefined)
         varValue = unfillet(calculus(subvars(block.fillet.slice(2))))
-        variables[varName] = varValue
+        vars[varName] = varValue
+        return text
+    }
+    if ((block.fillet[1] != null ? block.fillet[1].match : undefined) === '()')
+    {
+        funcName = (block.fillet[0] != null ? block.fillet[0].match : undefined)
+        if (funcs[funcName])
+        {
+            text += funcs[funcName]
+            return text
+        }
+        funcValue = ''
+        var list = _k_.list(block.blocks)
+        for (var _67_15_ = 0; _67_15_ < list.length; _67_15_++)
+        {
+            cb = list[_67_15_]
+            funcValue = render(cb,funcValue)
+        }
+        funcs[funcName] = funcValue
         return text
     }
     idt = _k_.rpad(block.indent)
@@ -71,10 +90,10 @@ render = function (block, text)
     {
         text += '\n' + idt + unfillet(block.fillet)
         text += '\n' + idt + '{'
-        var list = _k_.list(block.blocks)
-        for (var _63_14_ = 0; _63_14_ < list.length; _63_14_++)
+        var list1 = _k_.list(block.blocks)
+        for (var _77_14_ = 0; _77_14_ < list1.length; _77_14_++)
         {
-            b = list[_63_14_]
+            b = list1[_77_14_]
             text += render(b,'')
         }
         text += '\n' + idt + '}\n'
@@ -92,7 +111,8 @@ styl = function (srcText)
 {
     var block, blocks, lines, tgtText
 
-    variables = {}
+    vars = {}
+    funcs = {}
     tgtText = ''
     lines = srcText.split('\n')
     blocks = blockFillets(lines.map(function (line)
@@ -100,9 +120,9 @@ styl = function (srcText)
         return kstr.fillet(line,'-')
     }))
     var list = _k_.list(blocks)
-    for (var _87_14_ = 0; _87_14_ < list.length; _87_14_++)
+    for (var _102_14_ = 0; _102_14_ < list.length; _102_14_++)
     {
-        block = list[_87_14_]
+        block = list[_102_14_]
         tgtText = render(block,tgtText)
     }
     return tgtText

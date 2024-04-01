@@ -16,12 +16,13 @@ use ./kstr ▪ unfillet blockFillets
 # 000   000  000       000  0000  000   000  000       000   000  
 # 000   000  00000000  000   000  0000000    00000000  000   000  
 
-variables = {}
+vars = {}
+funcs = {}
 
 subvars = (fillets) ->
     
     for fillet in fillets
-        if value = variables[fillet.match]
+        if value = vars[fillet.match]
             fillet.match = value
         
     fillets
@@ -52,7 +53,20 @@ render = (block, text) ->
     if block.fillet[1]?.match == '='
         varName = block.fillet[0]?.match
         varValue = unfillet calculus subvars block.fillet[2..]
-        variables[varName] = varValue
+        vars[varName] = varValue
+        return text
+        
+    if block.fillet[1]?.match == '()'
+        funcName = block.fillet[0]?.match
+        
+        if funcs[funcName]
+            text += funcs[funcName]
+            return text
+        
+        funcValue = ''
+        for cb in block.blocks
+            funcValue = render cb, funcValue
+        funcs[funcName] = funcValue
         return text
         
     idt = rpad block.indent
@@ -78,7 +92,8 @@ render = (block, text) ->
 
 styl = (srcText) ->
     
-    variables = {}
+    vars = {}
+    funcs = {}
     
     tgtText = ''
     lines   = srcText.split '\n'
