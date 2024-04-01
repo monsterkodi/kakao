@@ -180,6 +180,22 @@ body
     color: #f00;
 }
 `)
+    compare(styl(`selectionRadiusCursor = 6px
+.highlight
+    margin-right        - selectionRadiusCursor`),`
+.highlight
+{
+    margin-right: -6px;
+}
+`)
+    compare(styl(`radius = 666px
+.highlight
+    margin-right        -radius`),`
+.highlight
+{
+    margin-right: -666px;
+}
+`)
 }
 toExport["styl"]._section_ = true
 toExport._test_ = true

@@ -11,7 +11,7 @@ selectionRadiusCursor = 0.15em
 metaRadius            = 0.15em
 
 minimapWidth          = 130px
-scrollbarWidth        = 12px // transparent scroll area
+scrollbarWidth        = 12px
 numbersWidth          = 50px
 editorPadding         = (8px + numbersWidth)
 bottomCornerRadius    = 4px
@@ -28,13 +28,13 @@ crumbHeight           = 25px
     font-family     titlebarFont
     font-weight     normal
     font-style      normal
-    src             url(../../../Contents/Resources/font/Bahnschrift.woff)
+    src             url("../../../Contents/Resources/font/Bahnschrift.woff")
 
 @font-face 
     font-family     fontMono
     font-weight     normal
     font-style      normal
-    src             url(../../../Contents/Resources/font/Meslo.woff)
+    src             url("../../../Contents/Resources/font/Meslo.woff")
 
 fill-abs()
     position            absolute
@@ -855,7 +855,7 @@ infoPadding = 6px
     position            absolute
     pointer-events      none
 
-    & .empty // used in selections of empty lines
+    & .empty
         width            1px
         margin-right    -1px
 
@@ -1041,7 +1041,6 @@ infoPadding = 6px
 .scrollhandle
     
     position            absolute
-    width               scrollhandleWidth
     top                 0
     &.left
         left            0

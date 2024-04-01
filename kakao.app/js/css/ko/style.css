@@ -872,7 +872,6 @@ body {
 }
 .scrollhandle {
   position: absolute;
-  width: scrollhandleWidth;
   top: 0;
 }
 .scrollhandle.left {

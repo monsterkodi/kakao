@@ -234,6 +234,30 @@ use ../kxk/styl
         }
         
         """
+
+    styl """
+        selectionRadiusCursor = 6px
+        .highlight
+            margin-right        - selectionRadiusCursor
+        """ ▸ """
         
-    
+        .highlight
+        {
+            margin-right: -6px;
+        }
+        
+        """
+
+    styl """
+        radius = 666px
+        .highlight
+            margin-right        -radius
+        """ ▸ """
+        
+        .highlight
+        {
+            margin-right: -666px;
+        }
+        
+        """
         

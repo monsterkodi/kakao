@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var calculus, funcs, render, styl, subvars, vars
 
@@ -33,9 +33,23 @@ calculus = function (fillets)
     for (index = 0; index < list.length; index++)
     {
         fillet = list[index]
-        if (index < 1)
+        if (index === 0)
         {
-            continue
+            if (_k_.in(fillet.match,'+-'))
+            {
+                rhs = parseFloat(fillets[index + 1].match)
+                rhu = _k_.trim(fillets[index + 1].match.slice((`${rhs}`).length))
+                fillets.splice(index,2,{match:fillet.match + rhs + rhu})
+                return calculus(fillets)
+            }
+            if (fillet.match[0] === '-')
+            {
+                if (vars[fillet.match.slice(1)])
+                {
+                    fillets.splice(index,1,{match:'-' + vars[fillet.match.slice(1)]})
+                    return calculus(fillets)
+                }
+            }
         }
         if (_k_.in(fillet.match,'*+-/'))
         {
@@ -81,9 +95,9 @@ render = function (block, text, amps = [])
         }
         funcValue = ''
         var list = _k_.list(block.blocks)
-        for (var _67_15_ = 0; _67_15_ < list.length; _67_15_++)
+        for (var _76_15_ = 0; _76_15_ < list.length; _76_15_++)
         {
-            cb = list[_67_15_]
+            cb = list[_76_15_]
             funcValue = render(cb,funcValue,amps)
         }
         funcs[funcName] = funcValue
@@ -109,9 +123,9 @@ render = function (block, text, amps = [])
         text += '\n' + idt + unfillet(block.fillet)
         text += '\n' + idt + '{'
         var list1 = _k_.list(childBlocks)
-        for (var _87_14_ = 0; _87_14_ < list1.length; _87_14_++)
+        for (var _96_14_ = 0; _96_14_ < list1.length; _96_14_++)
         {
-            b = list1[_87_14_]
+            b = list1[_96_14_]
             text += render(b,'')
         }
         text += '\n' + idt + '}\n'
@@ -126,9 +140,9 @@ render = function (block, text, amps = [])
     {
         amp.indent = 0
         var list2 = _k_.list(amp.blocks)
-        for (var _99_18_ = 0; _99_18_ < list2.length; _99_18_++)
+        for (var _108_18_ = 0; _108_18_ < list2.length; _108_18_++)
         {
-            block = list2[_99_18_]
+            block = list2[_108_18_]
             block.indent = 4
         }
         text += render(amp,'')
@@ -149,9 +163,9 @@ styl = function (srcText)
         return kstr.fillet(line,'-')
     }))
     var list = _k_.list(blocks)
-    for (var _121_14_ = 0; _121_14_ < list.length; _121_14_++)
+    for (var _130_14_ = 0; _130_14_ < list.length; _130_14_++)
     {
-        block = list[_121_14_]
+        block = list[_130_14_]
         tgtText = render(block,tgtText)
     }
     return tgtText
