@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var IGNORE_FILE_EXTS, SOURCE_FILE_EXTS
 
@@ -67,7 +67,7 @@ class GitInfo
 
     logChanges (changes)
     {
-        var diff, diffs, dss, extn, index, isBoring, lineMeta, linesAdded, meta, syntaxName, sytx, text
+        var diff, diffs, dss, extn, index, linesAdded, meta, syntaxName, sytx, text
 
         extn = slash.ext(changes.file)
         if (_k_.in(extn,Syntax.syntaxNames))
@@ -89,7 +89,6 @@ class GitInfo
         for (var _85_17_ = 0; _85_17_ < list.length; _85_17_++)
         {
             text = list[_85_17_]
-            isBoring = false
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
             {
@@ -97,40 +96,43 @@ class GitInfo
                 {
                     return ds.clss += ' ' + 'git-deleted'
                 })
-                lineMeta = {line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoDelete'}
-                window.terminal.meta.add(lineMeta)
+                window.terminal.meta.add({line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoDelete'})
             }
             else if (changes.change === 'added')
             {
-                lineMeta = {line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoAdded'}
-                window.terminal.meta.add(lineMeta)
+                window.terminal.meta.add({line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoAdded'})
             }
             else if (changes.change === 'changed')
             {
-                isBoring = linediff.isBoring(changes.info.mod[index].old,changes.info.mod[index].new)
-                if (!isBoring)
+                diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
+                if (_k_.empty(diffs) && !_k_.trim(changes.info.mod[index].old).startsWith("#"))
                 {
-                    diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
-                    var list1 = _k_.list(diffs)
-                    for (var _117_29_ = 0; _117_29_ < list1.length; _117_29_++)
+                    diffs = linediff(changes.info.mod[index].new,changes.info.mod[index].old)
+                    if (!_k_.empty(diffs))
                     {
-                        diff = list1[_117_29_]
-                        if (diff.change === 'delete')
+                        var list1 = _k_.list(diffs)
+                        for (var _114_33_ = 0; _114_33_ < list1.length; _114_33_++)
                         {
-                            continue
+                            diff = list1[_114_33_]
+                            window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoDelete'})
                         }
-                        lineMeta = {line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'}
-                        window.terminal.meta.add(lineMeta)
+                        dss = Syntax.dissForTextAndSyntax(changes.info.mod[index].old,syntaxName)
+                    }
+                }
+                else
+                {
+                    var list2 = _k_.list(diffs)
+                    for (var _124_29_ = 0; _124_29_ < list2.length; _124_29_++)
+                    {
+                        diff = list2[_124_29_]
+                        window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                     }
                 }
             }
-            if (!isBoring)
-            {
-                meta = {diss:dss,href:`${changes.file}:${changes.line + index}`,clss:'searchResult',click:this.onMetaClick}
-                window.terminal.appendMeta(meta)
-                post.emit('search-result',meta)
-                linesAdded++
-            }
+            meta = {diss:dss,href:`${changes.file}:${changes.line + index}`,clss:'searchResult',click:this.onMetaClick}
+            window.terminal.appendMeta(meta)
+            post.emit('search-result',meta)
+            linesAdded++
             index += 1
         }
         if (linesAdded)
@@ -157,7 +159,6 @@ class GitInfo
         {
             var change, changeInfo, file, line, lines, logFile, text
 
-            console.log('status',status)
             if (_k_.empty(status))
             {
                 return
@@ -194,18 +195,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _186_21_ = 0; _186_21_ < list.length; _186_21_++)
+            for (var _191_21_ = 0; _191_21_ < list.length; _191_21_++)
             {
-                file = list[_186_21_]
+                file = list[_191_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _191_21_ = 0; _191_21_ < list1.length; _191_21_++)
+            for (var _196_21_ = 0; _196_21_ < list1.length; _196_21_++)
             {
-                file = list1[_191_21_]
+                file = list1[_196_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,diff)
@@ -219,9 +220,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _200_21_ = 0; _200_21_ < list2.length; _200_21_++)
+            for (var _205_21_ = 0; _205_21_ < list2.length; _205_21_++)
             {
-                file = list2[_200_21_]
+                file = list2[_205_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('changed',file,status,diff)
@@ -231,9 +232,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _208_31_ = 0; _208_31_ < list3.length; _208_31_++)
+                    for (var _213_31_ = 0; _213_31_ < list3.length; _213_31_++)
                     {
-                        change = list3[_208_31_]
+                        change = list3[_213_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {

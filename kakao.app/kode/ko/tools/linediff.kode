@@ -18,62 +18,29 @@ lineDiff = (oldLine, newLine) ->
         oldFillet = kstr.fillet oldLine
         newFillet = kstr.fillet newLine
         
-        # log 'oldFillet' oldLine, oldFillet
-        # log 'newFillet' newLine, newFillet
-
         while fillet = newFillet.shift()
             
             if oldFillet.length and oldFillet[0].match == fillet.match
                 oldFillet.shift()
             else
+                oldMatches = oldFillet.map (f) -> f.match
+                if fillet.match in oldMatches
+                    while oldMatch = oldMatches.shift()
+                        oldFillet.shift()
+                        if oldMatch == fillet.match
+                            break
+                    continue
                 changes.push index:fillet.index, length:fillet.length
-                # while oldFillet.length and newFillet.length and oldFillet[0].match != newFillet[0]?.match
-                    # oldFillet.shift()
+                newMatches = newFillet.map (f) -> f.match
+                while oldFillet.length and oldFillet[0].match not in newMatches
+                    oldFillet.shift()
+
+        if changes.length > 1
+            for i in changes.length-1..1
+                if changes[i-1].index + changes[i-1].length == changes[i].index
+                    changes[i-1].length += changes[i].length
+                    changes.pop()
                                 
-        return changes
-        
-        ni = 0 # index in newLine
-        oi = 0 # index in oldLine
-        
-        log 'old' oldLine
-        for r in oldFillet
-            log r
-            
-        log 'new' newLine
-        for r in newFillet
-            log r
-    
-        while ni < newLine.length
-            
-            if oldLine[oi] == newLine[ni] # same character in old and new
-                
-                oi += 1
-                ni += 1
-                
-                continue
-                                
-            inserts = newLine.slice(ni).indexOf oldLine[oi] # index of old character in rest of newLine
-            
-            if inserts < 0
-                deletes = oldLine.slice(oi).indexOf newLine[ni] # index of new character rest of oldLine
-                if deletes < 0
-                    lst = last changes
-                    if lst? and lst.index + lst.length == ni
-                        lst.length += 1
-                    else
-                        changes.push index:ni, length:1
-                    oi += 1
-                    ni += 1
-                else
-                    oi += deletes
-            else
-                changes.push index:ni, length:inserts
-                ni += inserts
-                        
-        if ni < newLine.length # add remaing characters in new line
-            log 'rest' newLine.length - ni
-            changes.push index: ni, length: newLine.length - ni
-            
     changes
 
 # 0000000     0000000   00000000   000  000   000   0000000   
@@ -84,13 +51,8 @@ lineDiff = (oldLine, newLine) ->
 
 lineDiff.isBoring = (oldLine, newLine) ->
     
-    # changes = lineDiff oldLine, newLine
-    # return true if empty changes
+    changes = lineDiff oldLine, newLine
+    return true if empty changes
     return false
-    # inserts = ''
-    # for c in changes
-        # switch c.change
-            # 'change' ➜ return false
-            # 'insert' ➜ inserts += newLine.substr(c.index, c.length).trim()
     
 export lineDiff

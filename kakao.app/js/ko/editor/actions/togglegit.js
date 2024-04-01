@@ -103,9 +103,9 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
             break
         case 'git del':
             var list = _k_.list(reversed(meta.change))
-            for (var _99_25_ = 0; _99_25_ < list.length; _99_25_++)
+            for (var _95_25_ = 0; _95_25_ < list.length; _95_25_++)
             {
-                line = list[_99_25_]
+                line = list[_95_25_]
                 this.do.insert(li,line.old)
             }
             break
@@ -114,7 +114,7 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
     return this.do.end()
 },applyGitChange:function (lineMeta)
 {
-    var li, line, meta, _118_16_
+    var li, line, meta, _114_16_
 
     meta = lineMeta[2]
     li = lineMeta[0]
@@ -133,9 +133,9 @@ export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',c
             break
         case 'git del':
             var list = _k_.list(reversed(meta.change))
-            for (var _132_25_ = 0; _132_25_ < list.length; _132_25_++)
+            for (var _122_25_ = 0; _122_25_ < list.length; _122_25_++)
             {
-                line = list[_132_25_]
+                line = list[_122_25_]
                 this.do.delete(li)
             }
             break

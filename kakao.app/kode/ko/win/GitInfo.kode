@@ -84,55 +84,60 @@ class GitInfo
         index = 0
         for text in changes.lines
             
-            isBoring = false
-
             dss = sytx.getDiss index
 
             if changes.change == 'deleted'
 
                 dss.map (ds) -> ds.clss += ' ' + 'git-deleted'
 
-                lineMeta =
+                window.terminal.meta.add 
                     line:       window.terminal.numLines()
                     start:      0
                     end:        text.length
                     clss:       'gitInfoDelete'
-                window.terminal.meta.add lineMeta
 
             else if changes.change == 'added'
 
-                lineMeta =
+                window.terminal.meta.add 
                     line:       window.terminal.numLines()
                     start:      0
                     end:        text.length
                     clss:       'gitInfoAdded'
-                window.terminal.meta.add lineMeta
 
             else if changes.change == 'changed'
 
-                isBoring = linediff.isBoring changes.info.mod[index].old, changes.info.mod[index].new
-                
-                if not isBoring
-                    diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
+                diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
+                if empty diffs and not trim(changes.info.mod[index].old).startsWith "#"
+                    diffs = linediff changes.info.mod[index].new, changes.info.mod[index].old
+                    if valid diffs
+
+                        for diff in diffs
+        
+                            window.terminal.meta.add 
+                                line:       window.terminal.numLines()
+                                start:      diff.index
+                                end:        diff.index+diff.length
+                                clss:       'gitInfoDelete'
+                                                            
+                        dss = Syntax.dissForTextAndSyntax changes.info.mod[index].old, syntaxName
+                else
                     for diff in diffs
-                        continue if diff.change == 'delete'
-                        lineMeta =
+    
+                        window.terminal.meta.add 
                             line:       window.terminal.numLines()
                             start:      diff.index
                             end:        diff.index+diff.length
                             clss:       'gitInfoChange'
-                        window.terminal.meta.add lineMeta
+                            
+            meta =
+                diss: dss
+                href: "#{changes.file}:#{changes.line+index}"
+                clss: 'searchResult'
+                click: @onMetaClick
 
-            if not isBoring
-                meta =
-                    diss: dss
-                    href: "#{changes.file}:#{changes.line+index}"
-                    clss: 'searchResult'
-                    click: @onMetaClick
-    
-                window.terminal.appendMeta meta
-                post.emit 'search-result' meta
-                linesAdded++
+            window.terminal.appendMeta meta
+            post.emit 'search-result' meta
+            linesAdded++
                 
             index += 1
             
@@ -157,7 +162,7 @@ class GitInfo
         
         Git.status(window.editor.currentFile).then (status) ○->
 
-            log 'status' status
+            # log 'status' status
             
             return if empty status
 

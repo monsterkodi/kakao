@@ -88,13 +88,9 @@ export
 
         switch meta.clss
 
-            when 'git mod', 'git mod boring'
-                @do.change li, meta.change.old
-
-            when 'git add', 'git add boring'                
-                @do.delete li
-
-            when 'git del'
+            'git mod' 'git mod boring' ➜ @do.change li, meta.change.old
+            'git add' 'git add boring' ➜ @do.delete li
+            'git del'
 
                 for line in reversed meta.change
                     @do.insert li, line.old
@@ -119,15 +115,9 @@ export
 
         switch meta.clss
 
-            when 'git mod', 'git mod boring'
-
-                @do.change li, meta.change.new
-
-            when 'git add', 'git add boring'
-
-                @do.insert li, meta.change.new
-                
-            when 'git del'
+            'git mod' 'git mod boring' ➜ @do.change li, meta.change.new
+            'git add' 'git add boring' ➜ @do.insert li, meta.change.new
+            'git del'
 
                 for line in reversed meta.change
                     @do.delete li

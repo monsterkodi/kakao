@@ -56,8 +56,6 @@ function Git
         
         status =○ kakao 'app.sh' '/usr/bin/git' arg:'status --porcelain' cwd:gitDir
         
-        log 'Git.status' gitDir, status
-        
         return info if status.startsWith 'fatal:'
         
         lines = status.split '\n'
@@ -83,8 +81,6 @@ function Git
             for file in info[key]
                 info.files[file] = key
         
-        # log 'Git.status info' info
-        
         info
 
     # 0000000    000  00000000  00000000  
@@ -95,13 +91,9 @@ function Git
     
     @diff: (file) ○->
         
-        # log 'Git.diff' file
-        
         gitDir =○ kakao 'fs.git' file
         
-        diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 --ignore-blank-lines --ignore-all-space #{file}" cwd:gitDir 
-        
-        # log 'Git.diff' diff
+        diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 --ignore-blank-lines #{file}" cwd:gitDir 
         
         info  = file:file, changes:[]
         lines = diff.split '\n'
@@ -146,7 +138,6 @@ function Git
     
                 info.changes.push change
     
-        # log 'Git.diff' info
         info
 
 export Git

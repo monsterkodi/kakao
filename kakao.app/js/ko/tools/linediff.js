@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var lineDiff
 
@@ -10,7 +10,7 @@ let isEqual = util.isEqual
 
 lineDiff = function (oldLine, newLine)
 {
-    var changes, deletes, fillet, inserts, lst, newFillet, ni, oi, oldFillet, r
+    var changes, fillet, i, newFillet, newMatches, oldFillet, oldMatch, oldMatches
 
     changes = []
     if (oldLine !== newLine)
@@ -25,67 +25,43 @@ lineDiff = function (oldLine, newLine)
             }
             else
             {
+                oldMatches = oldFillet.map(function (f)
+                {
+                    return f.match
+                })
+                if (_k_.in(fillet.match,oldMatches))
+                {
+                    while (oldMatch = oldMatches.shift())
+                    {
+                        oldFillet.shift()
+                        if (oldMatch === fillet.match)
+                        {
+                            break
+                        }
+                    }
+                    continue
+                }
                 changes.push({index:fillet.index,length:fillet.length})
-            }
-        }
-        return changes
-        ni = 0
-        oi = 0
-        console.log('old',oldLine)
-        var list = _k_.list(oldFillet)
-        for (var _39_14_ = 0; _39_14_ < list.length; _39_14_++)
-        {
-            r = list[_39_14_]
-            console.log(r)
-        }
-        console.log('new',newLine)
-        var list1 = _k_.list(newFillet)
-        for (var _43_14_ = 0; _43_14_ < list1.length; _43_14_++)
-        {
-            r = list1[_43_14_]
-            console.log(r)
-        }
-        while (ni < newLine.length)
-        {
-            if (oldLine[oi] === newLine[ni])
-            {
-                oi += 1
-                ni += 1
-                continue
-            }
-            inserts = newLine.slice(ni).indexOf(oldLine[oi])
-            if (inserts < 0)
-            {
-                deletes = oldLine.slice(oi).indexOf(newLine[ni])
-                if (deletes < 0)
+                newMatches = newFillet.map(function (f)
                 {
-                    lst = _k_.last(changes)
-                    if ((lst != null) && lst.index + lst.length === ni)
-                    {
-                        lst.length += 1
-                    }
-                    else
-                    {
-                        changes.push({index:ni,length:1})
-                    }
-                    oi += 1
-                    ni += 1
-                }
-                else
+                    return f.match
+                })
+                while (oldFillet.length && !(_k_.in(oldFillet[0].match,newMatches)))
                 {
-                    oi += deletes
+                    oldFillet.shift()
                 }
             }
-            else
-            {
-                changes.push({index:ni,length:inserts})
-                ni += inserts
-            }
         }
-        if (ni < newLine.length)
+        if (changes.length > 1)
         {
-            console.log('rest',newLine.length - ni)
-            changes.push({index:ni,length:newLine.length - ni})
+            for (var _39_21_ = i = changes.length - 1, _39_39_ = 1; (_39_21_ <= _39_39_ ? i <= 1 : i >= 1); (_39_21_ <= _39_39_ ? ++i : --i))
+            {
+                if (changes[i - 1].index + changes[i - 1].length === changes[i].index)
+                {
+                    changes[i - 1].length += changes[i].length
+                    changes.pop()
+                }
+            }
         }
     }
     return changes
@@ -93,6 +69,13 @@ lineDiff = function (oldLine, newLine)
 
 lineDiff.isBoring = function (oldLine, newLine)
 {
+    var changes
+
+    changes = lineDiff(oldLine,newLine)
+    if (_k_.empty(changes))
+    {
+        return true
+    }
     return false
 }
 export default lineDiff;
