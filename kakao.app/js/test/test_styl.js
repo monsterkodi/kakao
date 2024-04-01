@@ -151,12 +151,12 @@ body
 
 #titlebar .winbutton.minimize
 {
-        padding-top: 3px;
+    padding-top: 3px;
 }
 
 #titlebar .winbutton.maximize
 {
-        padding-right: 1px;
+    padding-right: 1px;
 }
 `)
     compare(styl(`#titlebar .winbutton

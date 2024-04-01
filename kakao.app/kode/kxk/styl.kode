@@ -69,18 +69,23 @@ render = (block, text, amps=[]) ->
         funcs[funcName] = funcValue
         return text
         
-    if block.fillet[0]?.match[0] == '&'
-        block.fillet[0].match = block.fillet[0].match[1..]
-        amps.push block
-        return text
-        
     idt = rpad block.indent
         
     if valid block.blocks
+        
+        childBlocks = block.blocks.filter (cb) ->
+            if cb.fillet[0]?.match[0] == '&'
+                cb.fillet[0].match = cb.fillet[0].match[1..]
+                cb.fillet = block.fillet.concat cb.fillet
+                amps.push cb
+                false
+            else
+                true
+        
         text += '\n' + idt + unfillet block.fillet
         text += '\n' + idt + '{'
-        for b in block.blocks
-            text += render b, '', amps
+        for b in childBlocks
+            text += render b, ''
         text += '\n' + idt + '}\n'
     else
         text += '\n'
@@ -89,7 +94,6 @@ render = (block, text, amps=[]) ->
     
     while amp = amps.shift()
         
-        amp.fillet = block.fillet.concat amp.fillet
         amp.indent = 0
         
         for block in amp.blocks
