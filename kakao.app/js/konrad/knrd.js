@@ -50,7 +50,7 @@ knrd = async function (files = [], opt = {})
         return k0de.compile(srcText,srcFile)
     }},styl:{tgtExt:'css',srcDir:pugDir,tgtDir:jsDir + '/css',compile:function (srcText, srcFile)
     {
-        return stylus(srcText)
+        return styl(srcText)
     }},pug:{tgtExt:'html',srcDir:pugDir,tgtDir:jsDir,compile:function (srcText, srcFile)
     {
         return pug(srcText)

@@ -45,8 +45,8 @@ knrd = (files = [], opt = {}) ○->
             tgtExt:  'css'
             srcDir:  pugDir
             tgtDir:  jsDir + '/css'
-            compile: (srcText, srcFile) -> stylus srcText
-            # compile: (srcText, srcFile) -> styl srcText
+            # compile: (srcText, srcFile) -> stylus srcText
+            compile: (srcText, srcFile) -> styl srcText
         pug:
             tgtExt:  'html'
             srcDir:  pugDir
