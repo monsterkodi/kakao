@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
-var ampersands, calculus, funcs, render, styl, subvars, vars
+var calculus, funcs, render, styl, subvars, vars
 
 import kstr from "./kstr.js"
 let unfillet = kstr.unfillet
@@ -8,16 +8,15 @@ let blockFillets = kstr.blockFillets
 
 vars = {}
 funcs = {}
-ampersands = []
 
 subvars = function (fillets)
 {
     var fillet, value
 
     var list = _k_.list(fillets)
-    for (var _25_15_ = 0; _25_15_ < list.length; _25_15_++)
+    for (var _24_15_ = 0; _24_15_ < list.length; _24_15_++)
     {
-        fillet = list[_25_15_]
+        fillet = list[_24_15_]
         if (value = vars[fillet.match])
         {
             fillet.match = value
@@ -57,9 +56,9 @@ calculus = function (fillets)
     return fillets
 }
 
-render = function (block, text)
+render = function (block, text, amps = [])
 {
-    var ampersand, amps, b, cb, funcName, funcValue, idt, prefix, varName, varValue
+    var amp, b, cb, funcName, funcValue, idt, varName, varValue
 
     if ((block.fillet[0] != null ? block.fillet[0].match : undefined) === '//')
     {
@@ -82,17 +81,18 @@ render = function (block, text)
         }
         funcValue = ''
         var list = _k_.list(block.blocks)
-        for (var _69_15_ = 0; _69_15_ < list.length; _69_15_++)
+        for (var _67_15_ = 0; _67_15_ < list.length; _67_15_++)
         {
-            cb = list[_69_15_]
-            funcValue = render(cb,funcValue)
+            cb = list[_67_15_]
+            funcValue = render(cb,funcValue,amps)
         }
         funcs[funcName] = funcValue
         return text
     }
     if ((block.fillet[0] != null ? block.fillet[0].match[0] : undefined) === '&')
     {
-        ampersands.push(block)
+        block.fillet[0].match = block.fillet[0].match.slice(1)
+        amps.push(block)
         return text
     }
     idt = _k_.rpad(block.indent)
@@ -101,10 +101,10 @@ render = function (block, text)
         text += '\n' + idt + unfillet(block.fillet)
         text += '\n' + idt + '{'
         var list1 = _k_.list(block.blocks)
-        for (var _83_14_ = 0; _83_14_ < list1.length; _83_14_++)
+        for (var _82_14_ = 0; _82_14_ < list1.length; _82_14_++)
         {
-            b = list1[_83_14_]
-            text += render(b,'')
+            b = list1[_82_14_]
+            text += render(b,'',amps)
         }
         text += '\n' + idt + '}\n'
     }
@@ -114,27 +114,17 @@ render = function (block, text)
         text += idt + block.fillet[0].match + ': ' + unfillet(calculus(subvars(block.fillet.slice(1))))
         text += ';'
     }
-    if (!_k_.empty(ampersands))
+    while (amp = amps.shift())
     {
-        prefix = unfillet(block.fillet)
-        amps = ampersands
-        ampersands = []
-        while (ampersand = amps.shift())
+        amp.fillet = block.fillet.concat(amp.fillet)
+        amp.indent = 0
+        var list2 = _k_.list(amp.blocks)
+        for (var _95_18_ = 0; _95_18_ < list2.length; _95_18_++)
         {
-            text += prefix + unfillet(ampersand.fillet).slice(1)
-            if (!_k_.empty(ampersand.blocks))
-            {
-                text += '\n' + '{'
-                var list2 = _k_.list(ampersand.blocks)
-                for (var _104_22_ = 0; _104_22_ < list2.length; _104_22_++)
-                {
-                    b = list2[_104_22_]
-                    text += render(b,'')
-                }
-                text += '\n' + '}\n'
-            }
-            text += '\n'
+            block = list2[_95_18_]
+            block.indent = 4
         }
+        text += render(amp,'')
     }
     return text
 }
@@ -152,9 +142,9 @@ styl = function (srcText)
         return kstr.fillet(line,'-')
     }))
     var list = _k_.list(blocks)
-    for (var _126_14_ = 0; _126_14_ < list.length; _126_14_++)
+    for (var _117_14_ = 0; _117_14_ < list.length; _117_14_++)
     {
-        block = list[_126_14_]
+        block = list[_117_14_]
         tgtText = render(block,tgtText)
     }
     return tgtText

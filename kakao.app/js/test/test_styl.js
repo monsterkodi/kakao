@@ -139,8 +139,6 @@ body
 }
 `)
     compare(styl(`#titlebar .winbutton
-    flex                0 1 10px
-    display             inline-block
     text-align          center
     &.minimize
         padding-top     3px
@@ -148,10 +146,9 @@ body
         padding-right   1px`),`
 #titlebar .winbutton
 {
-    flex: 0 1 10px;
-    display: inline-block;
     text-align: center;
 }
+
 #titlebar .winbutton.minimize
 {
         padding-top: 3px;
@@ -161,7 +158,27 @@ body
 {
         padding-right: 1px;
 }
+`)
+    compare(styl(`#titlebar .winbutton
+    color #00f
+    &:active
+        color #ff0
+        &.gray
+            color #f00`),`
+#titlebar .winbutton
+{
+    color: #00f;
+}
 
+#titlebar .winbutton:active
+{
+    color: #ff0;
+}
+
+#titlebar .winbutton:active.gray
+{
+    color: #f00;
+}
 `)
 }
 toExport["styl"]._section_ = true

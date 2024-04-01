@@ -185,8 +185,6 @@ use ../kxk/styl
 
     styl """
         #titlebar .winbutton
-            flex                0 1 10px
-            display             inline-block
             text-align          center
             &.minimize
                 padding-top     3px
@@ -196,10 +194,9 @@ use ../kxk/styl
         
         #titlebar .winbutton
         {
-            flex: 0 1 10px;
-            display: inline-block;
             text-align: center;
         }
+        
         #titlebar .winbutton.minimize
         {
                 padding-top: 3px;
@@ -210,6 +207,33 @@ use ../kxk/styl
                 padding-right: 1px;
         }
         
+        """
+
+    styl """
+        #titlebar .winbutton
+            color #00f
+            &:active
+                color #ff0
+                &.gray
+                    color #f00
+        """ ▸ """
+        
+        #titlebar .winbutton
+        {
+            color: #00f;
+        }
+        
+        #titlebar .winbutton:active
+        {
+            color: #ff0;
+        }
+        
+        #titlebar .winbutton:active.gray
+        {
+            color: #f00;
+        }
         
         """
+        
+    
         
