@@ -11,7 +11,6 @@ import Git from "../tools/Git.js"
 import Projects from "../tools/Projects.js"
 
 import Render from "../editor/Render.js"
-
 import Syntax from "../editor/Syntax.js"
 
 class Tab
@@ -23,12 +22,18 @@ class Tab
         this.isPrj = isPrj
     
         this.togglePinned = this.togglePinned.bind(this)
+        this.onGitStatus = this.onGitStatus.bind(this)
         this.tooltipHtml = this.tooltipHtml.bind(this)
         this.dirty = false
         this.pinned = false
         this.div = elem({class:'tab app-drag-region',text:''})
         this.tabs.div.appendChild(this.div)
         this.update()
+        if (this.isPrj)
+        {
+            post.on('gitStatus',this.onGitStatus)
+            Git.status(this.file)
+        }
     }
 
     stashInfo ()
@@ -61,9 +66,9 @@ class Tab
 
     foreignChanges (lineChanges)
     {
-        var _41_17_
+        var _43_17_
 
-        this.foreign = ((_41_17_=this.foreign) != null ? _41_17_ : [])
+        this.foreign = ((_43_17_=this.foreign) != null ? _43_17_ : [])
         this.foreign.push(lineChanges)
         return this.update()
     }
@@ -77,20 +82,20 @@ class Tab
 
     saveChanges ()
     {
-        var change, changes, _61_23_
+        var change, changes, _63_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _62_28_ = 0; _62_28_ < list.length; _62_28_++)
+                for (var _64_28_ = 0; _64_28_ < list.length; _64_28_++)
                 {
-                    changes = list[_62_28_]
+                    changes = list[_64_28_]
                     var list1 = _k_.list(changes)
-                    for (var _63_31_ = 0; _63_31_ < list1.length; _63_31_++)
+                    for (var _65_31_ = 0; _65_31_ < list1.length; _65_31_++)
                     {
-                        change = list1[_63_31_]
+                        change = list1[_65_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -148,7 +153,7 @@ class Tab
 
     update ()
     {
-        var diss, dot, file, html, i, name, sep, _145_16_
+        var diss, dot, file, html, i, name, sep, _148_16_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
@@ -157,7 +162,8 @@ class Tab
         {
             sep = ''
         }
-        this.div.appendChild(elem('span',{class:'dot',text:sep}))
+        this.dot = elem('span',{class:'dot',text:sep})
+        this.div.appendChild(this.dot)
         file = this.file
         diss = Syntax.dissForTextAndSyntax(slash.file(file),'ko')
         if (!prefs.get('tabs|extension'))
@@ -196,13 +202,13 @@ class Tab
         }
         if ((this.file != null))
         {
-            this.tooltip = new tooltip({elem:name,html:this.tooltipHtml,x:(this.isPrj ? -18 : -6)})
+            this.tooltip = new tooltip({elem:name,bound:this.div,html:this.tooltipHtml,x:-2})
         }
         if (this.isPrj)
         {
             if (this.hiddenPrjFiles)
             {
-                for (var _151_25_ = i = 0, _151_29_ = this.hiddenPrjFiles.length; (_151_25_ <= _151_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_151_25_ <= _151_29_ ? ++i : --i))
+                for (var _154_25_ = i = 0, _154_29_ = this.hiddenPrjFiles.length; (_154_25_ <= _154_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_154_25_ <= _154_29_ ? ++i : --i))
                 {
                     dot = elem('span',{class:'prjdot',text:'●'})
                     this.div.appendChild(dot)
@@ -222,40 +228,58 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _170_16_
+        var diss, html, numFiles, _165_16_
 
-        if (this.isPrj)
-        {
-            Git.status(this.file).then((function (status)
-            {
-                var text
-
-                text = ''
-                if (status.deleted.length)
-                {
-                    text += `${status.deleted.length} deleted\n`
-                }
-                if (status.added.length)
-                {
-                    text += `${status.added.length} additions\n`
-                }
-                if (status.changed.length)
-                {
-                    text += `${status.changed.length} changes`
-                }
-                return this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(text,'terminal'),{wrapSpan:'tooltip-line'})
-            }).bind(this))
-        }
         if ((this.file != null))
         {
             diss = Syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
             html = Render.line(diss,{wrapSpan:'tooltip-path'})
             if (this.isPrj && (numFiles = Projects.files(this.file).length))
             {
-                html += Render.line(Syntax.dissForTextAndSyntax(`${numFiles} files`,'terminal'),{wrapSpan:'tooltip-line'})
+                html += Render.line(Syntax.dissForTextAndSyntax(`${numFiles} files`,'git'),{wrapSpan:'tooltip-line'})
+                Git.status(this.file)
             }
         }
         return html
+    }
+
+    onGitStatus (status)
+    {
+        var t, _186_19_, _186_24_
+
+        if (status.gitDir !== this.file)
+        {
+            return
+        }
+        if (((this.tooltip != null ? this.tooltip.div : undefined) != null))
+        {
+            if (status.deleted.length)
+            {
+                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`▴ ${status.deleted.length} deleted`,'git'),{wrapSpan:'tooltip-line'})
+            }
+            if (status.added.length)
+            {
+                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`▪ ${status.added.length} added`,'git'),{wrapSpan:'tooltip-line'})
+            }
+            if (status.changed.length)
+            {
+                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`● ${status.changed.length} changed`,'git'),{wrapSpan:'tooltip-line'})
+            }
+        }
+        t = ''
+        if (status.deleted.length)
+        {
+            t += '<div class="git-status-icon git-deleted deleted-triangle">▴</div>'
+        }
+        if (status.added.length)
+        {
+            t += '<div class="git-status-icon git-added       added-square">▪</div>'
+        }
+        if (status.changed.length)
+        {
+            t += '<div class="git-status-icon git-changed   changed-circle">●</div>'
+        }
+        return this.dot.innerHTML = t
     }
 
     index ()
@@ -281,14 +305,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _183_27_
+        var _200_27_
 
-        return ((_183_27_=this.next()) != null ? _183_27_ : this.prev())
+        return ((_200_27_=this.next()) != null ? _200_27_ : this.prev())
     }
 
     close ()
     {
-        var _193_16_
+        var _210_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -344,9 +368,9 @@ class Tab
                 hidden = this.hiddenPrjFiles
                 delete this.hiddenPrjFiles
                 var list = _k_.list(hidden)
-                for (var _245_25_ = 0; _245_25_ < list.length; _245_25_++)
+                for (var _262_25_ = 0; _262_25_ < list.length; _262_25_++)
                 {
-                    file = list[_245_25_]
+                    file = list[_262_25_]
                     tab = this.tabs.addTab(file)
                     if (window.textEditor.currentFile === file)
                     {
@@ -358,9 +382,9 @@ class Tab
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _251_24_ = 0; _251_24_ < list1.length; _251_24_++)
+                for (var _268_24_ = 0; _268_24_ < list1.length; _268_24_++)
                 {
-                    tab = list1[_251_24_]
+                    tab = list1[_268_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -376,7 +400,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _267_19_
+        var changes, _284_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -387,9 +411,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _268_24_ = 0; _268_24_ < list.length; _268_24_++)
+            for (var _285_24_ = 0; _285_24_ < list.length; _285_24_++)
             {
-                changes = list[_268_24_]
+                changes = list[_285_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

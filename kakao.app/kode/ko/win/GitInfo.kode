@@ -86,8 +86,6 @@ class GitInfo
 
             if changes.change == 'deleted'
 
-                dss.map (ds) -> ds.clss += ' ' + 'git-deleted'
-
                 window.terminal.meta.add 
                     line:       window.terminal.numLines()
                     start:      0

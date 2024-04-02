@@ -42,7 +42,7 @@ class Projects
         
         # sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
         
-        prjPath = ○ ffs.pkg file
+        prjPath = ○ ffs.git file
         
         # log 'Projects.indexProject' prjPath, @
         

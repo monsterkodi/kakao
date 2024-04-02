@@ -29,9 +29,7 @@ function Git
                 if slash.dir(file).endsWith '.git/refs/heads'
                     if slash.name(file) in ['master' 'main']
                         # log 'git ref changed:' file
-                        Git.status(gitDir).then (status) ->
-                            log 'emit gitStatus' slash.dir(gitDir), status
-                            post.emit 'gitStatus' slash.dir(gitDir), status
+                        Git.status(gitDir).then (status) -> log 'got gitStatus after ref update'
                         return
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  
@@ -44,20 +42,20 @@ function Git
         
         gitDir =○ kakao 'fs.git' file
         
-        info =
+        status =
             gitDir:  gitDir
             changed: []
             deleted: []
             added:   []
             files:   {}
         
-        return info if empty gitDir
+        return status if empty gitDir
         
-        status =○ kakao 'app.sh' '/usr/bin/git' arg:'status --porcelain' cwd:gitDir
+        gitStatus =○ kakao 'app.sh' '/usr/bin/git' arg:'status --porcelain' cwd:gitDir
         
-        return info if status.startsWith 'fatal:'
+        return status if gitStatus.startsWith 'fatal:'
         
-        lines = status.split '\n'
+        lines = gitStatus.split '\n'
                 
         dirSet = new Set
         
@@ -69,18 +67,21 @@ function Git
                 
             header = line.slice 0,2
             switch header
-                ' D' ➜ info.deleted.push file
+                ' D' ➜ status.deleted.push file
                 'MM'
-                ' M' ➜ info.changed.push file
-                '??' ➜ info.added  .push file
+                ' M' ➜ status.changed.push file
+                '??' ➜ status.added  .push file
                 
-        info.dirs = Array.from(dirSet).map (d) -> slash.path gitDir, d
+        status.dirs = Array.from(dirSet).map (d) -> slash.path gitDir, d
         
         for key in ['changed' 'added' 'deleted']
-            for file in info[key]
-                info.files[file] = key
+            for file in status[key]
+                status.files[file] = key
         
-        info
+        log 'emit gitStatus'  status.gitDir
+        post.emit 'gitStatus' status
+                
+        status
 
     # 0000000    000  00000000  00000000  
     # 000   000  000  000       000       
@@ -94,7 +95,7 @@ function Git
         
         diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 --ignore-blank-lines #{file}" cwd:gitDir 
         
-        info  = file:file, changes:[]
+        status = file:file, changes:[]
         lines = diff.split '\n'
     
         while line = lines.shift()
@@ -135,8 +136,8 @@ function Git
                     for i in [numOld...numNew]
                         change.add.push new:change.new[i]
     
-                info.changes.push change
+                status.changes.push change
     
-        info
+        status
 
 export Git

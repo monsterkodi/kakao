@@ -571,6 +571,17 @@ body
     display: grid;
 }
 
+.tooltip-path
+{
+    margin: 4px;
+}
+
+.tooltip-line
+{
+    margin-top: 2px;
+    margin-left: 4px;
+}
+
 .tooltip-line *
 {
     margin-right: 6px;
@@ -610,7 +621,7 @@ body
 
 
 
-.tab:not(.active) .dot,
+.tab:not(.active):not(.prj) .dot,
 .tab:not(.active) .name,
 .tab:not(.active) .tabstate
 {

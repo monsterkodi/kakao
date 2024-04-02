@@ -293,16 +293,15 @@ Shelf = (function ()
         return 'shelf'
     }
 
-    Shelf.prototype["onGitStatus"] = function (gitDir, status)
+    Shelf.prototype["onGitStatus"] = function (status)
     {
         var row, _219_48_
 
-        console.log('Shelf.onGitStatus',gitDir,status)
         var list = _k_.list(this.rows)
         for (var _217_16_ = 0; _217_16_ < list.length; _217_16_++)
         {
             row = list[_217_16_]
-            if (row.path().startsWith(gitDir))
+            if (row.path().startsWith(status.gitDir))
             {
                 ;($('.browserStatusIcon',row.div) != null ? $('.browserStatusIcon',row.div).remove() : undefined)
                 if (_k_.in(row.path(),status.dirs))

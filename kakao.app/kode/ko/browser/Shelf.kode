@@ -210,12 +210,12 @@ function Shelf extends Column
     # 000   000  000     000
     #  0000000   000     000
 
-    onGitStatus: (gitDir, status) =>
+    onGitStatus: (status) =>
 
-        log 'Shelf.onGitStatus' gitDir, status
+        # log 'Shelf.onGitStatus' status
 
         for row in @rows
-            if row.path().startsWith gitDir
+            if row.path().startsWith status.gitDir
                 $('.browserStatusIcon', row.div)?.remove()
                 if row.path() in status.dirs
                     row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"

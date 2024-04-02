@@ -1,6 +1,0 @@
-
-use ./test
-
-log 'file' ◆file
-log 'dir' ◆dir
-log 'test:' test

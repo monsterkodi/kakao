@@ -7,6 +7,11 @@ class FFS
         return await kakao('fs.pkg',p)
     }
 
+    static async git (p)
+    {
+        return await kakao('fs.git',p)
+    }
+
     static async list (p)
     {
         return await kakao('fs.list',p)

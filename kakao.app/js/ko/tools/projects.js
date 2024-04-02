@@ -53,7 +53,7 @@ class Projects
     {
         var prjPath, result, walker, _51_19_
 
-        prjPath = await ffs.pkg(file)
+        prjPath = await ffs.git(file)
         if (this.indexing)
         {
             if (this.indexing === prjPath)

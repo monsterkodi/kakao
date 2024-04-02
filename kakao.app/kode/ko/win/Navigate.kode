@@ -14,7 +14,7 @@ class Navigate
         
         post.on 'navigate' @navigate
         @filePositions = prefs.get 'filePositions' []
-        # log 'navigate filePositions' @filePositions
+        #  log 'navigate filePositions' @filePositions
         @currentIndex = -1
         @navigating = false
 

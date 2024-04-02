@@ -655,7 +655,7 @@ FileBrowser = (function ()
         return (this.columns[col] != null ? this.columns[col].updateGitFiles(files) : undefined)
     }
 
-    FileBrowser.prototype["onGitStatus"] = function (gitDir, status)
+    FileBrowser.prototype["onGitStatus"] = function (status)
     {
         var col
 

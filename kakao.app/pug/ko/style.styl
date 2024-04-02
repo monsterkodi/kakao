@@ -502,8 +502,13 @@ infoPadding = 6px
     overflow            hidden
     display             grid
     
-.tooltip-line *    
-    margin-right        6px
+.tooltip-path
+    margin              4px
+.tooltip-line    
+    margin-top          2px
+    margin-left         4px
+    & *    
+        margin-right    6px
     
 // 000000000   0000000   0000000     0000000
 //    000     000   000  000   000  000
@@ -545,7 +550,7 @@ infoPadding = 6px
     font-size           titlebarFontSize
     font-family         titlebarFont
     
-    &:not(.active) .dot
+    &:not(.active):not(.prj) .dot
     &:not(.active) .name
     &:not(.active) .tabstate
         opacity         0.5

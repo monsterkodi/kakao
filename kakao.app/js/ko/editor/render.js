@@ -8,7 +8,7 @@ class Render
 {
     static line (diss, opt = {charWidth:0,wrapSpan:false,spanClass:null})
     {
-        var clrzd, clss, d, di, l, spanClass, tx, _1_7_, _24_45_, _25_35_
+        var clrzd, clss, d, di, l, spanClass, transform, tx, _1_7_, _24_45_, _26_35_
 
         l = ""
         if ((diss != null ? diss.length : undefined))
@@ -17,9 +17,10 @@ class Render
             {
                 d = diss[di]
                 tx = d.start * ((_24_45_=opt.charWidth) != null ? _24_45_ : 0)
-                spanClass = ((_25_35_=d.clss) != null ? _25_35_ : opt.spanClass)
+                transform = (tx ? `transform:translatex(${tx}px);` : '')
+                spanClass = ((_26_35_=d.clss) != null ? _26_35_ : opt.spanClass)
                 clss = spanClass && ` class=\"${spanClass}\"` || ''
-                clrzd = `<span style=\"transform:translatex(${tx}px);${((_1_7_=d.styl) != null ? _1_7_ : '')}\"${clss}>${d.match}</span>`
+                clrzd = `<span style=\"${transform}${((_1_7_=d.styl) != null ? _1_7_ : '')}\"${clss}>${d.match}</span>`
                 l = clrzd + l
             }
         }

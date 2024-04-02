@@ -119,6 +119,7 @@ Macro = (function ()
             case 'kd':
             case 'diff':
                 GitInfo.diff()
+                window.split.do('minimize editor')
                 break
             case 'kc':
             case 'commit':

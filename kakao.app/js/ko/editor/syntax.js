@@ -155,7 +155,7 @@ class Syntax
     {
         var result
 
-        if (!(_k_.in(n,['browser','ko','commandline','macro','term','test'])))
+        if (!(_k_.in(n,['browser','ko','commandline','macro','term','test','git'])))
         {
             result = kolor.ranges(text,n)
         }

@@ -22,10 +22,10 @@ class Render
             for di in diss.length-1..0
                 d = diss[di]
                 tx = d.start * opt.charWidth ? 0
+                transform = tx ? "transform:translatex(#{tx}px);" : ''
                 spanClass = d.clss ? opt.spanClass
                 clss = spanClass and " class=\"#{spanClass}\"" or ''
-                # clrzd = "<span style=\"transform:translatex(#{tx}px);#{d.styl ? ''}\"#{clss}>#{kstr.encode d.match}</span>"
-                clrzd = "<span style=\"transform:translatex(#{tx}px);#{d.styl ? ''}\"#{clss}>#{d.match}</span>"
+                clrzd = "<span style=\"#{transform}#{d.styl ? ''}\"#{clss}>#{d.match}</span>" # use kstr.encode on d.match?
                 l = clrzd + l
         l = "<span class='#{opt.wrapSpan}'>#{l}</span>" if opt.wrapSpan
         l

@@ -1,0 +1,21 @@
+{
+  "(\\d+)\\s+(\\w+)": [
+    "number",
+    "punct"
+  ],
+  "(▴)\\s+(\\d+)\\s+(\\w+)": [
+    "git-deleted.deleted-triangle",
+    "git-deleted",
+    "git-deleted"
+  ],
+  "(▪)\\s+(\\d+)\\s+(\\w+)": [
+    "git-added.added-square",
+    "git-added",
+    "git-added"
+  ],
+  "(●)\\s+(\\d+)\\s+(\\w+)": [
+    "git-changed",
+    "git-changed",
+    "git-changed"
+  ]
+}

@@ -63,17 +63,15 @@ function Tooltip
         return if not @elem?
         return if @div?
         
-        if @opt.html is func
-            html = @opt.html()
-        else
-            html = @opt.html
+        html = @opt.html is func ? @opt.html() : @opt.html
         
         @div = elem id:'tooltip' class:'tooltip' html:html
         if @opt.parent
             @opt.parent.appendChild @div
         else
             document.body.appendChild @div
-        br = @elem.getBoundingClientRect()
+        bound = @opt.bound ? @elem
+        br = bound.getBoundingClientRect()
         @div.style.transform = "scaleY(1)"
         @div.style.opacity = '1'
         @div.style.fontSize = "#{@opt.textSize}px" if @opt.textSize?

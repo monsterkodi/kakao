@@ -97,7 +97,7 @@ Tooltip = (function ()
 
     Tooltip.prototype["popup"] = function (event)
     {
-        var br, html, _63_27_, _64_22_, _79_67_, _80_59_, _81_60_
+        var bound, br, html, _63_27_, _64_22_, _73_27_, _77_67_, _78_59_, _79_60_
 
         if (!(this.elem != null))
         {
@@ -107,14 +107,7 @@ Tooltip = (function ()
         {
             return
         }
-        if (_k_.isFunc(this.opt.html))
-        {
-            html = this.opt.html()
-        }
-        else
-        {
-            html = this.opt.html
-        }
+        html = (_k_.isFunc(this.opt.html) ? this.opt.html() : this.opt.html)
         this.div = elem({id:'tooltip',class:'tooltip',html:html})
         if (this.opt.parent)
         {
@@ -124,7 +117,8 @@ Tooltip = (function ()
         {
             document.body.appendChild(this.div)
         }
-        br = this.elem.getBoundingClientRect()
+        bound = ((_73_27_=this.opt.bound) != null ? _73_27_ : this.elem)
+        br = bound.getBoundingClientRect()
         this.div.style.transform = "scaleY(1)"
         this.div.style.opacity = '1'
         if ((this.opt.textSize != null))
@@ -143,7 +137,7 @@ Tooltip = (function ()
 
     Tooltip.prototype["onLeave"] = function (event, e)
     {
-        var _85_16_, _91_12_
+        var _83_16_, _89_12_
 
         if ((this.elem != null))
         {
