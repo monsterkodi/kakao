@@ -788,20 +788,6 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
         inc rgs, 0 "use"    ▸ 'method'
         inc rgs, 3 ":"      ▸ 'punct method'
         
-        # ▸ meta if then
-#             
-            # lang 'coffee'
-#             
-            # rgs = ranges "▸if ▸then ▸elif ▸else"
-            # inc rgs, 0  "▸"     ▸ 'punct meta'
-            # inc rgs, 1  "if"    ▸ 'meta'
-            # inc rgs, 4  "▸"     ▸ 'punct meta'
-            # inc rgs, 5  "then"  ▸ 'meta'
-            # inc rgs, 10 "▸"     ▸ 'punct meta'
-            # inc rgs, 11 "elif"  ▸ 'meta'
-            # inc rgs, 16 "▸"     ▸ 'punct meta'
-            # inc rgs, 17 "else"  ▸ 'meta'
-
         ▸ no comma
             
             lang 'kode'

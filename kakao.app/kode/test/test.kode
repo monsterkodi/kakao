@@ -6,7 +6,6 @@
    000     00000000  0000000      000   
 ###
 
-use ◆ test_linediff test_slash test_util test_kstr test_styl test_pug test_fs 
 use ../kxk ◆ fs slash
 use ../kode/tester
 
@@ -18,17 +17,24 @@ if process.argv[-1] == 'silent'
     tester.logModules = false
 
 if 1
+    log 'kode'
     files =○ fs.list slash.path ◆dir, '../kode/test'
     for file in files
         test =○ import(file.path)
         tester.test test.default
 
-tester.test test_slash
-tester.test test_util
-tester.test test_fs
-tester.test test_linediff
-tester.test test_kstr
-tester.test test_pug
-tester.test test_styl
+if 1
+    log 'kakao'
+    files =○ fs.list ◆dir
+    for file in files
+        continue if file.path == ◆file
+        test =○ import(file.path)
+        tester.test test.default
         
+if 1
+    log 'kolor'
+    file = slash.path ◆dir, '../kolor/test.js'
+    test =○ import(file)
+    tester.test test.default
+                
 tester.summarize()

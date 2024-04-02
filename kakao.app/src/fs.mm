@@ -137,7 +137,7 @@ NSString* typeForNSFileType(NSString* fileType)
         NSString* text = [args objectAtIndex:1];
         NSData* data = [text dataUsingEncoding:NSUTF8StringEncoding];
         id error;
-        if ([data writeToFile:path options:0 error:&error])
+        if ([data writeToFile:path options:NSDataWritingAtomic error:&error])
         {
             return path;
         }
