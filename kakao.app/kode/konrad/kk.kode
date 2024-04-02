@@ -152,8 +152,8 @@ class kk
     
     @clean: ○->
         
-        jsDir  = slash.path import.meta.dirname, '../../js'
-        appExe = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
+        jsDir  = slash.path ◆dir, '../../js'
+        appExe = slash.path ◆dir, '../../Contents/MacOS/kakao'
         ○ fs.rm jsDir, recursive:true, force:true 
         ○ fs.unlink appExe
 
@@ -166,12 +166,12 @@ class kk
     @spawn: (args=[]) ->
         
         log '🚀'
-        cmd = slash.path import.meta.dirname, '../../Contents/MacOS/kakao'
+        cmd = slash.path ◆dir, '../../Contents/MacOS/kakao'
         opt = shell:true detached:true
         
         child_process.spawn cmd, args, opt
                     
-    @appPath: -> slash.path import.meta.dirname, '../../'
+    @appPath: -> slash.path ◆dir, '../../'
         
     @appName: -> slash.name kk.appPath()
                                 

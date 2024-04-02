@@ -9,8 +9,6 @@
 use ../../kxk ▪ ffs elem post slash stopEvent $
 use ../editor ◆ TextEditor
 
-__dirname = slash.dir import.meta.url[7..]
-
 function CommandLine extends TextEditor
 
     @commandModules: {}
@@ -25,7 +23,7 @@ function CommandLine extends TextEditor
     
     @init: ○->
 
-        files =○ ffs.list slash.path __dirname, '../commands'
+        files =○ ffs.list slash.path ◆dir, '../commands'
         
         for file in files
             

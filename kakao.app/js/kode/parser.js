@@ -388,6 +388,11 @@ Parser = (function ()
         return {export:{args:toExport}}
     }
 
+    Parser.prototype["dirFile"] = function (tok, tokens)
+    {
+        return {dirFile:tokens.shift().text}
+    }
+
     Parser.prototype["class"] = function (tok, tokens, type = 'class')
     {
         var e, name

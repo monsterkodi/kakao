@@ -1,12 +1,10 @@
 var toExport = {}
-var _k_
+var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }}
 
-var home, user, __dirname, __filename
+var home, user
 
 import slash from "../kxk/slash.js"
 
-__filename = import.meta.filename
-__dirname = import.meta.dirname
 toExport["kslash"] = function ()
 {
     section("normalize", function ()
@@ -289,7 +287,7 @@ toExport["kslash"] = function ()
     })
     section("isRelative", function ()
     {
-        compare(slash.isRelative(__dirname),false)
+        compare(slash.isRelative(_k_.dir()),false)
         compare(slash.isRelative('.'),true)
         compare(slash.isRelative('..'),true)
         compare(slash.isRelative('.././bla../../fark'),true)

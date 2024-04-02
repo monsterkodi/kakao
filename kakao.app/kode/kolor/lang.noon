@@ -30,6 +30,8 @@ coffee kode js ts
         instanceof
         __dirname
         __filename
+        ◆dir
+        ◆file
         Infinity
         
     module

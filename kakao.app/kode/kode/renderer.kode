@@ -107,6 +107,8 @@ class Renderer
             trim:       "function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}"
             rtrim:      "function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}"
             ltrim:      "function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}"
+            dir:        "function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }"
+            file:       "function () { return import.meta.url.substring(7); }"
                         
         if @hint._k_.eql    ➜ @hint._k_.isStr = true; @hint._k_.list    = true; @hint._k_.empty = true;
         if @hint._k_.noon   ➜ @hint._k_.in    = true; @hint._k_.list    = true;
@@ -201,6 +203,7 @@ class Renderer
                 'assert'    ➜ @assert v
                 'qmrkop'    ➜ @qmrkop v
                 'stripol'   ➜ @stripol v
+                'dirFile'   ➜ @dirFile v
                 'qmrkcolon' ➜ @qmrkcolon v
                 'operation' ➜ @operation v
                 'section'   ➜ @section v
@@ -443,6 +446,17 @@ class Renderer
         else 
             s += 'default ' + @node n.args
             s += ';'
+        s
+        
+    dirFile: (n) ->
+        
+        s = ''
+        if n == 'dir'
+            @hint._k_.dir = true
+            s = "_k_.dir()"
+        if n == 'file'
+            @hint._k_.file = true
+            s = "_k_.file()"
         s
         
     #  0000000  000       0000000    0000000   0000000

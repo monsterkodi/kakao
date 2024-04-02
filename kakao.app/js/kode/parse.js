@@ -270,7 +270,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, tok, _281_34_, _343_33_
+        var block, e, numTokens, tok, _285_34_, _347_33_
 
         if (_k_.empty(tokens))
         {
@@ -384,7 +384,7 @@ Parse = (function ()
 
         }
 
-        this.sheapPush('exp',((_281_34_=tok.text) != null ? _281_34_ : tok.type))
+        this.sheapPush('exp',((_285_34_=tok.text) != null ? _285_34_ : tok.type))
         e = tok
         while (tokens.length)
         {
@@ -465,13 +465,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_343_33_=tok.text) != null ? _343_33_ : tok.type))
+        this.sheapPop('exp',((_347_33_=tok.text) != null ? _347_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _404_22_
+        var llc, numTokens, nxt, spaced, unspaced, _408_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])
@@ -668,6 +668,11 @@ Parse = (function ()
             if (e.text === '@' && unspaced && _k_.in(tokens[0].type,['var','keyword','op']))
             {
                 e = this.this(e,tokens)
+                break
+            }
+            if (e.text === '◆' && _k_.in(nxt.text,['file','dir']))
+            {
+                e = this.dirFile(e,tokens)
                 break
             }
             if (nxt.text === '.')

@@ -9,8 +9,6 @@
 use ../../kolor/kolor
 use ../../kxk ▪ slash matchr elem kstr ffs
 
-__dirname = slash.dir import.meta.url[7..]
-
 class Syntax
     
     @: (@name, @getLine, @getLines) ->
@@ -176,7 +174,7 @@ class Syntax
 
     @init: ○->
 
-        syntaxDir = slash.path __dirname, '../syntax/'
+        syntaxDir = slash.path ◆dir, '../syntax/'
 
         syntaxFiles = ○ ffs.list syntaxDir
         for syntaxFile in syntaxFiles

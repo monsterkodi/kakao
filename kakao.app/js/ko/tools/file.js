@@ -1,14 +1,13 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var icons, __dirname
+var icons
 
 import kxk from "../../kxk.js"
 let slash = kxk.slash
 let ffs = kxk.ffs
 
 icons = {}
-__dirname = slash.dir(import.meta.url.slice(7))
-ffs.read(slash.path(__dirname,'icons.json')).then(function (t)
+ffs.read(slash.path(_k_.dir(),'icons.json')).then(function (t)
 {
     return icons = JSON.parse(t)
 })

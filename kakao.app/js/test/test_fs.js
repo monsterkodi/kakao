@@ -1,43 +1,41 @@
 var toExport = {}
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, file: function () { return import.meta.url.substring(7); }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var f2, t, __dirname, __filename, _133_21_, _134_21_, _135_21_, _24_29_, _25_30_, _26_38_, _33_34_, _34_33_, _38_32_, _39_33_, _49_26_, _50_27_, _54_27_, _55_25_
+var f2, t, _130_21_, _131_21_, _132_21_, _21_24_, _22_25_, _23_44_, _30_29_, _31_28_, _35_27_, _36_28_, _46_21_, _47_22_, _51_27_, _52_25_
 
 import fs from "../kxk/fs.js"
 import slash from "../kxk/slash.js"
 
-__filename = import.meta.filename
-__dirname = import.meta.dirname
 toExport["fs"] = function ()
 {
     section("exists", function ()
     {
-        compare(((fs.exists(__dirname) != null)),true)
-        compare(((fs.exists(__filename) != null)),true)
-        compare(((fs.exists(__filename + 'foo') != null)),false)
-        fs.exists(__filename,function (stat)
+        compare(((fs.exists(_k_.dir()) != null)),true)
+        compare(((fs.exists(_k_.file()) != null)),true)
+        compare(((fs.exists(slash.path(_k_.file(),'foo')) != null)),false)
+        fs.exists(_k_.file(),function (stat)
         {
             return compare(((stat != null)),true)
         })
-        fs.exists(__filename + 'foo',function (stat)
+        fs.exists(slash.path(_k_.file(),'foo'),function (stat)
         {
             return compare(((stat != null)),false)
         })
     })
     section("fileExists", function ()
     {
-        compare(((fs.fileExists(__filename) != null)),true)
-        compare(((fs.fileExists(__dirname) != null)),false)
+        compare(((fs.fileExists(_k_.file()) != null)),true)
+        compare(((fs.fileExists(_k_.dir()) != null)),false)
     })
     section("dirExists", function ()
     {
-        compare(((fs.dirExists(__dirname) != null)),true)
-        compare(((fs.dirExists(__filename) != null)),false)
+        compare(((fs.dirExists(_k_.dir()) != null)),true)
+        compare(((fs.dirExists(_k_.file()) != null)),false)
     })
     section("pkg", function ()
     {
-        compare(((fs.pkg(__dirname) != null)),true)
-        compare(((fs.pkg(__filename) != null)),true)
+        compare(((fs.pkg(_k_.dir()) != null)),true)
+        compare(((fs.pkg(_k_.file()) != null)),true)
         if (slash.win())
         {
             compare(((fs.pkg('C:\\') != null)),false)
@@ -46,21 +44,21 @@ toExport["fs"] = function ()
     })
     section("read", function ()
     {
-        fs.read(__dirname + '/../../package.noon',function (text)
+        fs.read(_k_.dir() + '/../../package.noon',function (text)
         {
             return compare(text,function (a)
             {
                 return a.startsWith('name')
             })
         })
-        fs.read(__dirname + '/dir/filedoesntexist',function (text)
+        fs.read(_k_.dir() + '/dir/filedoesntexist',function (text)
         {
             return compare(text,'')
         })
     })
     section("write", function ()
     {
-        f2 = slash.path(__dirname,'test.txt')
+        f2 = slash.path(_k_.dir(),'test.txt')
         fs.write(f2,"hello world").then(function (p)
         {
             compare(p,f2)
@@ -70,27 +68,27 @@ toExport["fs"] = function ()
                 return fs.remove(p)
             })
         })
-        fs.write(slash.path(__dirname,'some.dir.that.doesn/t.exist'),'blurk').then(function (p)
+        fs.write(slash.path(_k_.dir(),'some.dir.that.doesn/t.exist'),'blurk').then(function (p)
         {
-            compare(p,slash.path(__dirname,'some.dir.that.doesn/t.exist'))
+            compare(p,slash.path(_k_.dir(),'some.dir.that.doesn/t.exist'))
             return fs.read(p).then(function (r)
             {
                 compare(r,'blurk')
-                return fs.remove(slash.path(__dirname,'some.dir.that.doesn'))
+                return fs.remove(slash.path(_k_.dir(),'some.dir.that.doesn'))
             })
         })
     })
     section("dirlist", function ()
     {
-        process.chdir(__dirname)
-        fs.list(__dirname).then(function (items)
+        process.chdir(_k_.dir())
+        fs.list(_k_.dir()).then(function (items)
         {
             return compare(items.map(function (i)
             {
                 return i.path
             }),function (a)
             {
-                return _k_.in(slash.path(__filename),a)
+                return _k_.in(slash.path(_k_.file()),a)
             })
         })
     })

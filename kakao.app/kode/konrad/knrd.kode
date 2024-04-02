@@ -12,8 +12,6 @@ use ../kode/kode
 use ../kxk/slash ▪ tilde
 use ../kxk ◆ fs pug styl noon
 
-__dirname = import.meta.dirname
-
 knrd = (files = [], opt = {}) ○->
        
     if files is str
@@ -26,9 +24,9 @@ knrd = (files = [], opt = {}) ○->
     
     ● 🔨
     
-    kodeDir = slash.path __dirname + '/../../kode'
-    pugDir  = slash.path __dirname + '/../../pug'
-    jsDir   = slash.path __dirname + '/../../js'
+    kodeDir = slash.path ◆dir, '/../../kode'
+    pugDir  = slash.path ◆dir, '/../../pug'
+    jsDir   = slash.path ◆dir, '/../../js'
     
     rules =
         kode: 

@@ -9,8 +9,8 @@
 use ../../kxk ▪ slash ffs
 
 icons = {}
-__dirname = slash.dir import.meta.url[7..]
-ffs.read(slash.path __dirname, 'icons.json').then (t) -> 
+
+ffs.read(slash.path ◆dir, 'icons.json').then (t) -> 
     icons = JSON.parse t
 
 class File

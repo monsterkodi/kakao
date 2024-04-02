@@ -8,15 +8,13 @@
 
 use ./utils ▪ kc ke
 
-__filename = import.meta.filename
-
 ▸ use
 
     kc 'use blark'                              ▸ 'import blark from "blark"\n'
-    kc 'use flubb' __filename                   ▸ 'import flubb from "flubb"\n'
-    kc 'use ./loops' __filename                 ▸ 'import loops from "./loops.js"\n'
-    kc 'use ../returner' __filename             ▸ 'import returner from "../returner.js"\n'
-    kc 'use ./kode/kode' __filename             ▸ 'import kode from "./kode/kode.js"\n'
+    kc 'use flubb' ◆file                        ▸ 'import flubb from "flubb"\n'
+    kc 'use ./loops' ◆file                      ▸ 'import loops from "./loops.js"\n'
+    kc 'use ../returner' ◆file                  ▸ 'import returner from "../returner.js"\n'
+    kc 'use ./kode/kode' ◆file                  ▸ 'import kode from "./kode/kode.js"\n'
 
     kc 'use ./loops'                            ▸ 'import loops from "./loops.js"\n'
     kc 'use ../returner'                        ▸ 'import returner from "../returner.js"\n'
@@ -28,7 +26,7 @@ __filename = import.meta.filename
         import mod1 from "mod1"
         import mod2 from "mod2"\n
         """
-    kc 'use mod3 mod4' __filename               ▸ """
+    kc 'use mod3 mod4' ◆file                    ▸ """
         import mod3 from "mod3"
         import mod4 from "mod4"\n
         """

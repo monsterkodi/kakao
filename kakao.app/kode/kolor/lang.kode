@@ -15,10 +15,8 @@
 use ../kxk ▪ noon slash
 use ../kxk/fs
 
-__dirname = import.meta.dirname
-
-noonFile    = slash.path __dirname, '..' '..' 'kode' 'kolor' 'lang.noon'
-extlangFile = slash.path __dirname, 'extlang.js'
+noonFile    = slash.path ◆dir, '..' '..' 'kode' 'kolor' 'lang.noon'
+extlangFile = slash.path ◆dir, 'extlang.js'
 
 log Gg3(' input:  '), g3 noonFile
 log Gg2(' output: '), g2 extlangFile

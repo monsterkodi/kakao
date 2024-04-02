@@ -5,8 +5,15 @@ import utils from "./utils.js"
 let kc = utils.kc
 let ke = utils.ke
 
+import slash from "../../kxk/slash.js"
+
 toExport["misc"] = function ()
 {
+    section("dir", function ()
+    {
+        compare(kc('◆dir',import.meta.url.slice(7)),'_k_.dir()')
+        compare(kc('◆file',import.meta.url.slice(7)),'_k_.file()')
+    })
     section("this", function ()
     {
         compare(kc('@'),'this')

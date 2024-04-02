@@ -7,7 +7,7 @@
 ###
 
 use ◆ test_linediff test_slash test_util test_kstr test_styl test_pug test_fs 
-use ../kxk ▪ fs slash
+use ../kxk ◆ fs slash
 use ../kode/tester
 
 if process.argv[-1] == 'brief'
@@ -18,9 +18,9 @@ if process.argv[-1] == 'silent'
     tester.logModules = false
 
 if 1
-    files = await fs.list slash.path import.meta.dirname, '../kode/test'
+    files =○ fs.list slash.path ◆dir, '../kode/test'
     for file in files
-        test = await import(file.path)
+        test =○ import(file.path)
         tester.test test.default
 
 tester.test test_slash

@@ -207,7 +207,7 @@ export new Tester
 
 if globalThis.process?.argv? and import.meta.filename == process.argv[1]
     
-    files =○ fs.list slash.path import.meta.dirname, 'test'
+    files =○ fs.list slash.path ◆dir, 'test'
     fail = false
     for file in files
         continue if slash.name(file.path) == 'utils'

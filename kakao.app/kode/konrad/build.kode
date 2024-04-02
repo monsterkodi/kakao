@@ -20,7 +20,7 @@ use ../kxk ◆ slash fs
 
 export ○->
     
-    srcDir = slash.path import.meta.dirname, '../../src'
+    srcDir = slash.path ◆dir, '../../src'
     
     srcFiles =○ fs.list srcDir
     srcFiles = srcFiles.filter (f) -> slash.ext(f.path) in ['cpp''mm']

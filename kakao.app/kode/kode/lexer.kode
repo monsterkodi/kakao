@@ -24,7 +24,7 @@ class Lexer
         @verbose  = @kode.args.verbose
         @raw      = @kode.args.raw
 
-        @patterns = JSON.parse fs.readFileSync slash.path(import.meta.dirname, './lexer.json'), 'utf8'
+        @patterns = JSON.parse fs.readFileSync slash.path(◆dir, './lexer.json'), 'utf8'
 
         @regs = []
         

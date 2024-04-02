@@ -9,8 +9,6 @@
 use ../../kxk ▪ ffs kstr post slash
 use ◆ Do Syntax Buffer
 
-__dirname = slash.dir import.meta.url[7..]
-
 function Editor extends Buffer
 
     @actions: []
@@ -24,7 +22,7 @@ function Editor extends Buffer
 
     @init: ○->
 
-        filelist =○ ffs.list slash.path __dirname, 'actions'
+        filelist =○ ffs.list slash.path ◆dir, 'actions'
         # log 'Editor.init' filelist
         for item in filelist
             # TODO: move this stuff to a config.noon file
@@ -32,7 +30,7 @@ function Editor extends Buffer
             continue if slash.ext(actionFile) not in ['js' 'mjs' 'kode']
             # log 'action' actionFile
             try
-                moduleJS = './' + slash.relative actionFile, __dirname
+                moduleJS = './' + slash.relative actionFile, ◆dir
                 # log 'moduleJS' moduleJS
                 actions =○ import(moduleJS)
             catch err

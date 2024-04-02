@@ -86,6 +86,10 @@ function Parse extends parseutils
 
             if b then @verb "exps break for #{tok.text} and stack top" @stack ; break 
                 
+            # if tok.text == '◆' and tokens[1]?.text in ['dir' 'file'] 
+                # es.push @dirFile tokens.shift(), tokens
+                # continue
+                
             if stop and tok.text == stop and tok.type != 'var'
                 @verb "exps break for #{tok.text} and stop" stop 
                 break 
@@ -486,6 +490,10 @@ function Parse extends parseutils
             
             if e.text == '@' and unspaced and tokens[0].type in ['var''keyword''op']
                 e = @this e, tokens
+                break
+                
+            if e.text == '◆' and nxt.text in ['file' 'dir'] 
+                e = @dirFile e, tokens
                 break
                 
             # if e.text == 'import'

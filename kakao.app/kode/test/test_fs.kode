@@ -8,9 +8,6 @@
 
 use ../kxk ◆ fs slash
 
-__filename = import.meta.filename
-__dirname  = import.meta.dirname
-
 ▸ fs
     
     # 00000000  000   000  000   0000000  000000000   0000000  
@@ -21,22 +18,22 @@ __dirname  = import.meta.dirname
     
     ▸ exists
 
-        (fs.exists(__dirname)?)          ▸ true
-        (fs.exists(__filename)?)         ▸ true
-        (fs.exists(__filename + 'foo')?) ▸ false
+        (fs.exists(◆dir)?)          ▸ true
+        (fs.exists(◆file)?)         ▸ true
+        (fs.exists(slash.path(◆file, 'foo'))?) ▸ false
         
-        fs.exists __filename, (stat) -> (stat?) ▸ true
-        fs.exists __filename + 'foo' (stat) -> (stat?) ▸ false
+        fs.exists ◆file, (stat) -> (stat?) ▸ true
+        fs.exists slash.path(◆file, 'foo'), (stat) -> (stat?) ▸ false
             
     ▸ fileExists
 
-        (fs.fileExists(__filename)?) ▸ true
-        (fs.fileExists(__dirname)?)  ▸ false
+        (fs.fileExists(◆file)?) ▸ true
+        (fs.fileExists(◆dir)?)  ▸ false
         
     ▸ dirExists
         
-        (fs.dirExists(__dirname)?)  ▸ true
-        (fs.dirExists(__filename)?) ▸ false
+        (fs.dirExists(◆dir)?)  ▸ true
+        (fs.dirExists(◆file)?) ▸ false
 
     # 00000000   000   000   0000000   
     # 000   000  000  000   000        
@@ -46,8 +43,8 @@ __dirname  = import.meta.dirname
     
     ▸ pkg
         
-        (fs.pkg(__dirname)?)  ▸ true
-        (fs.pkg(__filename)?) ▸ true
+        (fs.pkg(◆dir)?)  ▸ true
+        (fs.pkg(◆file)?) ▸ true
 
         if slash.win()
             
@@ -62,11 +59,11 @@ __dirname  = import.meta.dirname
     
     ▸ read
          
-        fs.read __dirname + '/../../package.noon' (text) ->
+        fs.read ◆dir + '/../../package.noon' (text) ->
              
             text ▸ (a) -> a.startsWith 'name'
      
-        fs.read __dirname + '/dir/filedoesntexist' (text) ->
+        fs.read ◆dir + '/dir/filedoesntexist' (text) ->
               
             text ▸ ''
 
@@ -78,7 +75,7 @@ __dirname  = import.meta.dirname
     
     ▸ write
          
-        f2 = slash.path __dirname, 'test.txt'
+        f2 = slash.path ◆dir, 'test.txt'
          
         fs.write(f2, "hello world").then (p) ->
              
@@ -89,14 +86,14 @@ __dirname  = import.meta.dirname
                 r ▸ 'hello world'
                 fs.remove p
              
-        fs.write(slash.path(__dirname, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
+        fs.write(slash.path(◆dir, 'some.dir.that.doesn/t.exist'), 'blurk').then (p) ->
              
-            p ▸ slash.path __dirname, 'some.dir.that.doesn/t.exist'
+            p ▸ slash.path ◆dir, 'some.dir.that.doesn/t.exist'
             
             fs.read(p).then (r) -> 
                  
                 r ▸ 'blurk'
-                fs.remove slash.path __dirname, 'some.dir.that.doesn'
+                fs.remove slash.path ◆dir, 'some.dir.that.doesn'
 
     # 0000000    000  00000000   000      000   0000000  000000000  
     # 000   000  000  000   000  000      000  000          000     
@@ -106,9 +103,9 @@ __dirname  = import.meta.dirname
 
     ▸ dirlist
          
-        process.chdir __dirname
-        fs.list(__dirname).then (items) ->
-            items.map((i) -> i.path) ▸ (a) -> slash.path(__filename) in a
+        process.chdir ◆dir
+        fs.list(◆dir).then (items) ->
+            items.map((i) -> i.path) ▸ (a) -> slash.path(◆file) in a
         
     # 000000000  00     00  00000000   00000000  000  000      00000000  
     #    000     000   000  000   000  000       000  000      000       

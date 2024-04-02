@@ -17,8 +17,6 @@ use ../editor/actions/transform
 
 use ../commandline/Command
 
-__dirname = slash.dir import.meta.url[7..]
-
 function Macro extends Command
 
     @macroNames: ['clean' 'help' 'dbg' 'class' 'req' 'inv' 'blink' 'color' 'fps' 'cwd' 'git' 'unix']
