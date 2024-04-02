@@ -1,11 +1,11 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-import state from "./state.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
 
 import ranges from "../tools/ranges.js"
 
-import kxk from "../../kxk.js"
-let post = kxk.post
+import state from "./state.js"
 
 class Do
 {
@@ -135,7 +135,7 @@ class Do
 
     end (opt)
     {
-        var changes, _129_27_
+        var changes, _127_27_
 
         this.redos = []
         this.groupCount -= 1
@@ -151,7 +151,7 @@ class Do
 
     undo ()
     {
-        var changes, _149_27_
+        var changes, _147_27_
 
         if (this.history.length)
         {
@@ -169,7 +169,7 @@ class Do
 
     redo ()
     {
-        var changes, _171_27_
+        var changes, _168_27_
 
         if (this.redos.length)
         {
@@ -348,7 +348,7 @@ class Do
                 c = this.history[this.history.length - 3]
                 if ((a.numLines() === b.numLines() && b.numLines() === c.numLines()))
                 {
-                    for (var _333_31_ = li = 0, _333_35_ = a.numLines(); (_333_31_ <= _333_35_ ? li < a.numLines() : li > a.numLines()); (_333_31_ <= _333_35_ ? ++li : --li))
+                    for (var _329_31_ = li = 0, _329_35_ = a.numLines(); (_329_31_ <= _329_35_ ? li < a.numLines() : li > a.numLines()); (_329_31_ <= _329_35_ ? ++li : --li))
                     {
                         la = a.s.lines[li]
                         lb = b.s.lines[li]
@@ -377,16 +377,16 @@ class Do
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _351_14_ = 0; _351_14_ < list.length; _351_14_++)
+        for (var _347_14_ = 0; _347_14_ < list.length; _347_14_++)
         {
-            p = list[_351_14_]
+            p = list[_347_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _358_23_ = ci = cs.length - 1, _358_37_ = 0; (_358_23_ <= _358_37_ ? ci < 0 : ci > 0); (_358_23_ <= _358_37_ ? ++ci : --ci))
+            for (var _354_22_ = ci = cs.length - 1, _354_36_ = 0; (_354_22_ <= _354_36_ ? ci < 0 : ci > 0); (_354_22_ <= _354_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -466,7 +466,7 @@ class Do
 
     textInRange (r)
     {
-        var _387_41_
+        var _383_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }
