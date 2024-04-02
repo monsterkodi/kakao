@@ -127,7 +127,12 @@ function Macro extends Command
             'git'   ➜ GitInfo.status()
 
             'kd'
-            'diff'  ➜ GitInfo.diff(); window.split.do 'minimize editor'
+            'diff'
+                
+                GitInfo.diff()
+                window.split.do 'minimize editor' 
+                window.commandline.setText 'commit '
+                return select:false
 
             'kc'
             'commit'
