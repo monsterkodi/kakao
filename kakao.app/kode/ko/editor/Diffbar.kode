@@ -13,7 +13,7 @@ class Diffbar
 
     @: (@editor) ->
 
-        @elem = elem 'canvas', class: 'diffbar'
+        @elem = elem 'canvas' class:'diffbar'
         @elem.style.position = 'absolute'
         @elem.style.left = '0'
         @elem.style.top  = '0'
