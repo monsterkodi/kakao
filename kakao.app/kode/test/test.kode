@@ -6,15 +6,8 @@
    000     00000000  0000000      000   
 ###
 
-use ./test_linediff
-use ./test_slash
-use ./test_util
-use ./test_kstr
-use ./test_styl
-use ./test_pug
-use ./test_fs
-use ../kxk/fs
-use ../kxk/slash
+use ◆ test_linediff test_slash test_util test_kstr test_styl test_pug test_fs 
+use ../kxk ▪ fs slash
 use ../kode/tester
 
 if process.argv[-1] == 'brief'

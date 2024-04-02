@@ -3,7 +3,6 @@ var _k_ = {clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (
 var Prefs
 
 import slash from "./slash.js"
-
 import store from "./store.js"
 
 
@@ -15,7 +14,7 @@ Prefs = (function ()
     Prefs["store"] = null
     Prefs["init"] = function ()
     {
-        var _20_64_
+        var _19_64_
 
         if ((this.store != null))
         {
@@ -38,21 +37,21 @@ Prefs = (function ()
 
     Prefs["set"] = function (key, value)
     {
-        var _24_33_
+        var _23_33_
 
         return (this.store != null ? this.store.set(key,value) : undefined)
     }
 
     Prefs["del"] = function (key, value)
     {
-        var _25_33_
+        var _24_33_
 
         return (this.store != null ? this.store.del(key) : undefined)
     }
 
     Prefs["save"] = function ()
     {
-        var _26_33_
+        var _25_33_
 
         return (this.store != null ? this.store.save() : undefined)
     }

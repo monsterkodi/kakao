@@ -10,10 +10,7 @@
 
 use ../kode/kode
 use ../kxk/slash ▪ tilde
-use ../kxk/fs
-use ../kxk/pug
-use ../kxk/styl
-use ../kxk/noon
+use ../kxk ◆ fs pug styl noon
 
 __dirname = import.meta.dirname
 

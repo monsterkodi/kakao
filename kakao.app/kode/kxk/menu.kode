@@ -7,9 +7,7 @@
 ###
 
 use ./dom ▪ elem stopEvent
-use ./post
-use ./keyinfo
-use ./popup
+use ◆ post keyinfo popup
 
 function Menu
     

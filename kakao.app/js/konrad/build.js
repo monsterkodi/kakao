@@ -9,7 +9,6 @@ FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 import child_process from "child_process"
 
 import slash from "../kxk/slash.js"
-
 import fs from "../kxk/fs.js"
 
 export default async function ()

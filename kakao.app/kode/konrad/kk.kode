@@ -8,12 +8,8 @@
     commandline tool that builds the application
 ###
 
-use ../kxk/os
-use ../kxk/karg
-use ../kxk/slash
-use ../kxk/watch
-use ./knrd
-use ./build
+use ../kxk ◆ os karg slash watch
+use ◆ knrd build
 
 use child_process
 

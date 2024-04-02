@@ -8,8 +8,7 @@
     stores application wide preferences in .app/.stash/prefs.noon
 ###
 
-use ./slash
-use ./store
+use ◆ slash store
 
 function Prefs
     

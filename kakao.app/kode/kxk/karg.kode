@@ -6,7 +6,7 @@
 000   000  000   000  000   000   0000000 
 ###
 
-use ./kstr ./klor ./noon
+use ◆ kstr klor noon
 
 klor.globalize()
 

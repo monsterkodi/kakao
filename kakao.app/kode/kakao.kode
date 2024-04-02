@@ -11,8 +11,7 @@
     sets itself in the global window scope
 ###
 
-use ./bundle
-use ./kxk
+use ◆ bundle kxk
 
 function Kakao
 

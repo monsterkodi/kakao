@@ -20,7 +20,7 @@ class GitInfo
     constructor ()
     {
         this.diff = this.diff.bind(this)
-        this.logChanges = this.logChanges.bind(this)
+        this.logDiff = this.logDiff.bind(this)
         this.onMetaClick = this.onMetaClick.bind(this)
     }
 
@@ -64,7 +64,7 @@ class GitInfo
         }
     }
 
-    logChanges (changes)
+    logDiff (changes)
     {
         var diff, diffs, dss, extn, index, linesAdded, meta, syntaxName, sytx, text
 
@@ -148,12 +148,12 @@ class GitInfo
 
     status (diff)
     {
-        var logChanges, onMetaClick
+        var logDiff, onMetaClick
 
         window.split.raise('terminal')
         window.terminal.clear()
         onMetaClick = this.onMetaClick
-        logChanges = this.logChanges
+        logDiff = this.logDiff
         return Git.status(window.editor.currentFile).then(async function (status)
         {
             var change, changeInfo, file, line, lines, logFile, text
@@ -215,7 +215,7 @@ class GitInfo
                     }
                     text = await ffs.read(file)
                     lines = text.split('\n')
-                    logChanges({lines:lines,line:1,file:file,change:'added'})
+                    logDiff({lines:lines,line:1,file:file,change:'added'})
                 }
             }
             var list2 = _k_.list(status.changed)
@@ -241,7 +241,7 @@ class GitInfo
                             {
                                 return l.new
                             })
-                            logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'changed'})
+                            logDiff({lines:lines,file:changeInfo.file,line:line,info:change,change:'changed'})
                         }
                         if (!_k_.empty(change.add))
                         {
@@ -249,7 +249,7 @@ class GitInfo
                             {
                                 return l.new
                             })
-                            logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'added'})
+                            logDiff({lines:lines,file:changeInfo.file,line:line,info:change,change:'added'})
                         }
                         if (!_k_.empty(change.del))
                         {
@@ -257,7 +257,7 @@ class GitInfo
                             {
                                 return l.old
                             })
-                            logChanges({lines:lines,file:changeInfo.file,line:line,info:change,change:'deleted'})
+                            logDiff({lines:lines,file:changeInfo.file,line:line,info:change,change:'deleted'})
                         }
                     }
                 }

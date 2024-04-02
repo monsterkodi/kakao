@@ -16,8 +16,7 @@ LIB = "-framework WebKit -framework Cocoa -framework JavaScriptCore"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness"
 
 use child_process
-use ../kxk/slash
-use ../kxk/fs
+use ../kxk ◆ slash fs
 
 export ○->
     

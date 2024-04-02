@@ -8,8 +8,7 @@
 
 use ../../kxk ▪ pickBy pullIf deleteBy sds matchr slash post ffs 
 
-use ./Walker
-use ./IndexHpp
+use ◆ Walker IndexHpp
 
 class Indexer
 

@@ -8,25 +8,22 @@ import slash from "../kxk/slash.js"
 let tilde = slash.tilde
 
 import fs from "../kxk/fs.js"
-
 import pug from "../kxk/pug.js"
-
 import styl from "../kxk/styl.js"
-
 import noon from "../kxk/noon.js"
 
 __dirname = import.meta.dirname
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, ignore, jsDir, kodeDir, list, pugDir, rule, rules, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _25_23_, _26_16_
+    var compText, file, ignore, jsDir, kodeDir, list, pugDir, rule, rules, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _22_23_, _23_16_
 
     if (_k_.isStr(files))
     {
         files = [files]
     }
-    opt.rerunWhenDirty = ((_25_23_=opt.rerunWhenDirty) != null ? _25_23_ : true)
-    opt.verbose = ((_26_16_=opt.verbose) != null ? _26_16_ : false)
+    opt.rerunWhenDirty = ((_22_23_=opt.rerunWhenDirty) != null ? _22_23_ : true)
+    opt.verbose = ((_23_16_=opt.verbose) != null ? _23_16_ : false)
     if (opt.verbose)
     {
         console.log('opt',opt)
@@ -74,14 +71,14 @@ knrd = async function (files = [], opt = {})
     }
     transpiled = 0
     var list1 = _k_.list(files)
-    for (var _73_13_ = 0; _73_13_ < list1.length; _73_13_++)
+    for (var _70_13_ = 0; _70_13_ < list1.length; _70_13_++)
     {
-        file = list1[_73_13_]
+        file = list1[_70_13_]
         skip = false
         var list2 = _k_.list(rules.ignore)
-        for (var _76_19_ = 0; _76_19_ < list2.length; _76_19_++)
+        for (var _73_19_ = 0; _73_19_ < list2.length; _73_19_++)
         {
-            ignore = list2[_76_19_]
+            ignore = list2[_73_19_]
             if (file.endsWith(ignore))
             {
                 if (opt.verbose)

@@ -3,7 +3,6 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 var Parser
 
 import print from "./print.js"
-
 import parse from "./parse.js"
 
 import utils from "./utils.js"
@@ -26,7 +25,7 @@ Parser = (function ()
 
     Parser.prototype["if"] = function (tok, tokens)
     {
-        var cond, e, thn, _64_23_
+        var cond, e, thn, _63_23_
 
         if (tokens[0].type === 'block')
         {
@@ -49,7 +48,7 @@ Parser = (function ()
         {
             tokens.shift()
             tokens.shift()
-            e.if.elifs = ((_64_23_=e.if.elifs) != null ? _64_23_ : [])
+            e.if.elifs = ((_63_23_=e.if.elifs) != null ? _63_23_ : [])
             cond = this.exp(tokens)
             thn = this.then('elif',tokens)
             this.shiftNewlineTok('if after elif then',tokens,tok,(tokens[1] != null ? tokens[1].text : undefined) === 'else')
@@ -66,7 +65,7 @@ Parser = (function ()
 
     Parser.prototype["ifBlock"] = function (tok, tokens, e)
     {
-        var cond, subbs, thn, _114_23_
+        var cond, subbs, thn, _113_23_
 
         this.push('if')
         subbs = this.subBlocks(tokens.shift().tokens)
@@ -86,7 +85,7 @@ Parser = (function ()
             }
             cond = this.exp(tokens)
             thn = this.then('elif',tokens)
-            e.if.elifs = ((_114_23_=e.if.elifs) != null ? _114_23_ : [])
+            e.if.elifs = ((_113_23_=e.if.elifs) != null ? _113_23_ : [])
             e.if.elifs.push({elif:{cond:cond,then:thn}})
         }
         this.pop('if')

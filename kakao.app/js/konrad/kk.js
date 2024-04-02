@@ -3,15 +3,11 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 var args
 
 import os from "../kxk/os.js"
-
 import karg from "../kxk/karg.js"
-
 import slash from "../kxk/slash.js"
-
 import watch from "../kxk/watch.js"
 
 import knrd from "./knrd.js"
-
 import build from "./build.js"
 
 import child_process from "child_process"

@@ -3,22 +3,16 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var file, files, test
 
 import test_linediff from "./test_linediff.js"
-
 import test_slash from "./test_slash.js"
-
 import test_util from "./test_util.js"
-
 import test_kstr from "./test_kstr.js"
-
 import test_styl from "./test_styl.js"
-
 import test_pug from "./test_pug.js"
-
 import test_fs from "./test_fs.js"
 
-import fs from "../kxk/fs.js"
-
-import slash from "../kxk/slash.js"
+import kxk from "../kxk.js"
+let fs = kxk.fs
+let slash = kxk.slash
 
 import tester from "../kode/tester.js"
 
@@ -35,9 +29,9 @@ if (1)
 {
     files = await fs.list(slash.path(import.meta.dirname,'../kode/test'))
     var list = _k_.list(files)
-    for (var _29_13_ = 0; _29_13_ < list.length; _29_13_++)
+    for (var _22_13_ = 0; _22_13_ < list.length; _22_13_++)
     {
-        file = list[_29_13_]
+        file = list[_22_13_]
         test = await import(file.path)
         tester.test(test.default)
     }

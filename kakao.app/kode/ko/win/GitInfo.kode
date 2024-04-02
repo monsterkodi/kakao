@@ -60,13 +60,13 @@ class GitInfo
             for line in out.split '\n'
                 window.terminal.appendMeta diss: Syntax.dissForTextAndSyntax line, 'kode'
                     
-    #  0000000  000   000   0000000   000   000   0000000   00000000   0000000
-    # 000       000   000  000   000  0000  000  000        000       000
-    # 000       000000000  000000000  000 0 000  000  0000  0000000   0000000
-    # 000       000   000  000   000  000  0000  000   000  000            000
-    #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
-
-    logChanges: (changes) =>
+    # 0000000    000  00000000  00000000  
+    # 000   000  000  000       000       
+    # 000   000  000  000000    000000    
+    # 000   000  000  000       000       
+    # 0000000    000  000       000       
+    
+    logDiff: (changes) =>
 
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
@@ -156,7 +156,7 @@ class GitInfo
         window.terminal.clear()
 
         onMetaClick = @onMetaClick
-        logChanges  = @logChanges
+        logDiff  = @logDiff
         
         Git.status(window.editor.currentFile).then (status) ○->
 
@@ -198,7 +198,7 @@ class GitInfo
                     continue if not diff
                     text =○ ffs.read file
                     lines = text.split '\n'
-                    logChanges lines:lines, line:1, file:file, change:'added'
+                    logDiff lines:lines, line:1, file:file, change:'added'
 
             for file in status.changed
                 
@@ -214,15 +214,15 @@ class GitInfo
 
                         if not empty change.mod
                             lines = change.mod.map (l) -> l.new
-                            logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
+                            logDiff lines:lines, file:changeInfo.file, line:line, info:change, change:'changed'
 
                         if not empty change.add
                             lines = change.add.map (l) -> l.new
-                            logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
+                            logDiff lines:lines, file:changeInfo.file, line:line, info:change, change:'added'
 
                         if not empty change.del
                             lines = change.del.map (l) -> l.old
-                            logChanges lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
+                            logDiff lines:lines, file:changeInfo.file, line:line, info:change, change:'deleted'
 
             window.terminal.appendMeta clss: 'spacer'
             window.terminal.scroll.cursorToTop 7

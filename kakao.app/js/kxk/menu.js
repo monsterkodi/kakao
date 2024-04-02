@@ -7,9 +7,7 @@ let elem = dom.elem
 let stopEvent = dom.stopEvent
 
 import post from "./post.js"
-
 import keyinfo from "./keyinfo.js"
-
 import popup from "./popup.js"
 
 
@@ -17,7 +15,7 @@ Menu = (function ()
 {
     function Menu (opt)
     {
-        var combo, div, item, _25_25_
+        var combo, div, item, _23_25_
 
         this["onMouseDown"] = this["onMouseDown"].bind(this)
         this["onKeyDown"] = this["onKeyDown"].bind(this)
@@ -28,9 +26,9 @@ Menu = (function ()
         this["focus"] = this["focus"].bind(this)
         this.elem = elem({class:'menu',tabindex:0})
         var list = _k_.list(opt.items)
-        for (var _20_17_ = 0; _20_17_ < list.length; _20_17_++)
+        for (var _18_17_ = 0; _18_17_ < list.length; _18_17_++)
         {
-            item = list[_20_17_]
+            item = list[_18_17_]
             if (item.hide)
             {
                 continue
@@ -55,7 +53,7 @@ Menu = (function ()
 
     Menu.prototype["focus"] = function ()
     {
-        var _54_13_
+        var _52_13_
 
         this.focusElem = document.activeElement
         return (this.elem != null ? this.elem.focus() : undefined)
@@ -73,7 +71,7 @@ Menu = (function ()
 
     Menu.prototype["onFocusOut"] = function (event)
     {
-        var _62_45_
+        var _60_45_
 
         if (this.popup && !(event.relatedTarget != null ? event.relatedTarget.classList.contains('popup') : undefined))
         {
@@ -89,7 +87,7 @@ Menu = (function ()
 
     Menu.prototype["close"] = function (opt = {})
     {
-        var _82_17_
+        var _80_17_
 
         if ((this.popup != null))
         {
@@ -128,7 +126,7 @@ Menu = (function ()
 
     Menu.prototype["select"] = function (item, opt = {})
     {
-        var hadPopup, _111_17_, _115_17_
+        var hadPopup, _109_17_, _113_17_
 
         if (!(item != null))
         {
@@ -156,9 +154,9 @@ Menu = (function ()
 
     Menu.prototype["activate"] = function (item, opt = {})
     {
-        var br, items, pr, _135_29_
+        var br, items, pr, _133_29_
 
-        if (items = (item != null ? (_135_29_=item.item) != null ? _135_29_.menu : undefined : undefined))
+        if (items = (item != null ? (_133_29_=item.item) != null ? _133_29_.menu : undefined : undefined))
         {
             if (this.popup)
             {
@@ -214,14 +212,14 @@ Menu = (function ()
 
     Menu.prototype["navigateLeft"] = function ()
     {
-        var _172_39_
+        var _170_39_
 
         return this.select((this.selected != null ? this.selected.previousSibling : undefined),{activate:true,selectFirstItem:false})
     }
 
     Menu.prototype["navigateRight"] = function ()
     {
-        var _173_39_
+        var _171_39_
 
         return this.select((this.selected != null ? this.selected.nextSibling : undefined),{activate:true,selectFirstItem:false})
     }
