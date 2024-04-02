@@ -61,6 +61,7 @@ class GitInfo
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode')})
             }
             window.split.do('maximize editor')
+            console.log('GitInfo.commit Git.status',gitDir)
             return Git.status(gitDir)
         }
     }
@@ -86,9 +87,9 @@ class GitInfo
         linesAdded = 0
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _83_17_ = 0; _83_17_ < list.length; _83_17_++)
+        for (var _84_17_ = 0; _84_17_ < list.length; _84_17_++)
         {
-            text = list[_83_17_]
+            text = list[_84_17_]
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
             {
@@ -107,9 +108,9 @@ class GitInfo
                     if (!_k_.empty(diffs))
                     {
                         var list1 = _k_.list(diffs)
-                        for (var _110_33_ = 0; _110_33_ < list1.length; _110_33_++)
+                        for (var _111_33_ = 0; _111_33_ < list1.length; _111_33_++)
                         {
-                            diff = list1[_110_33_]
+                            diff = list1[_111_33_]
                             window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoDelete'})
                         }
                         dss = Syntax.dissForTextAndSyntax(changes.info.mod[index].old,syntaxName)
@@ -118,9 +119,9 @@ class GitInfo
                 else
                 {
                     var list2 = _k_.list(diffs)
-                    for (var _120_29_ = 0; _120_29_ < list2.length; _120_29_++)
+                    for (var _121_29_ = 0; _121_29_ < list2.length; _121_29_++)
                     {
-                        diff = list2[_120_29_]
+                        diff = list2[_121_29_]
                         window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                     }
                 }
@@ -191,18 +192,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _187_21_ = 0; _187_21_ < list.length; _187_21_++)
+            for (var _188_21_ = 0; _188_21_ < list.length; _188_21_++)
             {
-                file = list[_187_21_]
+                file = list[_188_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _192_21_ = 0; _192_21_ < list1.length; _192_21_++)
+            for (var _193_21_ = 0; _193_21_ < list1.length; _193_21_++)
             {
-                file = list1[_192_21_]
+                file = list1[_193_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,diff)
@@ -216,9 +217,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _201_21_ = 0; _201_21_ < list2.length; _201_21_++)
+            for (var _202_21_ = 0; _202_21_ < list2.length; _202_21_++)
             {
-                file = list2[_201_21_]
+                file = list2[_202_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('changed',file,status,diff)
@@ -228,9 +229,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _209_31_ = 0; _209_31_ < list3.length; _209_31_++)
+                    for (var _210_31_ = 0; _210_31_ < list3.length; _210_31_++)
                     {
-                        change = list3[_209_31_]
+                        change = list3[_210_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
