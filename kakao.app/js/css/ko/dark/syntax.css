@@ -447,7 +447,12 @@
 
 .require.string
 {
-    color: #0f0;
+    color: #0a0;
+}
+
+.require.string.module
+{
+    color: #ff0;
 }
 
 .require.module

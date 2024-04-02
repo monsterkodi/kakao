@@ -8,7 +8,6 @@ let slash = kxk.slash
 let post = kxk.post
 
 import Projects from "../tools/Projects.js"
-
 import File from "../tools/File.js"
 
 class FileHandler
@@ -42,7 +41,7 @@ class FileHandler
 
     loadFile (file, opt = {})
     {
-        var activeTab, filePos, restoreState, tab, _74_49_
+        var activeTab, filePos, restoreState, tab, _72_49_
 
         if ((file != null) && file.length <= 0)
         {
@@ -51,7 +50,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _47_28_ = slash.splitFilePos(file); file = _47_28_[0]; filePos = _47_28_[1]
+            var _45_28_ = slash.splitFilePos(file); file = _45_28_[0]; filePos = _45_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -143,9 +142,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _129_17_ = 0; _129_17_ < list.length; _129_17_++)
+        for (var _127_17_ = 0; _127_17_ < list.length; _127_17_++)
         {
-            file = list[_129_17_]
+            file = list[_127_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
@@ -193,7 +192,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _174_29_
+        var tab, _172_29_
 
         if (tab = tabs.activeTab())
         {
@@ -228,9 +227,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _199_16_ = 0; _199_16_ < list.length; _199_16_++)
+        for (var _197_16_ = 0; _197_16_ < list.length; _197_16_++)
         {
-            tab = list[_199_16_]
+            tab = list[_197_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -298,7 +297,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _267_29_
+        var _265_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -314,7 +313,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _283_18_
+        var cb, dir, _281_18_
 
         cb = function (files)
         {
@@ -330,7 +329,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _303_18_
+        var cb, _301_18_
 
         cb = (function (file)
         {

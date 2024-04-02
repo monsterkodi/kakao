@@ -2,9 +2,9 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 
 var allfails, allsuccs, comps, fail, fails, file, files, stack, succs, test, tester, _208_21_, _208_27_
 
+import klor from "../kxk/klor.js"
 import kstr from "../kxk/kstr.js"
 import slash from "../kxk/slash.js"
-import klor from "../kxk/klor.js"
 import fs from "../kxk/fs.js"
 
 import print from "./print.js"

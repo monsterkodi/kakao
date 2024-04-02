@@ -6,7 +6,7 @@
 000   000  00000000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-use ../kxk ◆ kstr slash fs
+use ../kxk  ◆ kstr slash fs
 use ./utils ▪ firstLineCol lastLineCol
 use ◆ print 
 

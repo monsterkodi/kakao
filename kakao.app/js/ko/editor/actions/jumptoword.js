@@ -51,7 +51,7 @@ export default {actions:{jumpToWord:{name:'Jump to Word',text:'jump to word at c
             }
             if (!slash.isAbsolute(d.match))
             {
-                var _48_38_ = slash.splitFileLine(slash.join(kakao.bundle.path,d.match)); file = _48_38_[0]; line = _48_38_[1]; col = _48_38_[2]
+                var _48_38_ = slash.splitFileLine(slash.path(kakao.bundle.path,d.match)); file = _48_38_[0]; line = _48_38_[1]; col = _48_38_[2]
 
                 post.emit('jumpTo',{path:file,line:line,col:col})
                 return true

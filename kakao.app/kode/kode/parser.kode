@@ -17,7 +17,7 @@
     and corner cases are handled in the base class 'parse'.
 ###
 
-use ◆ print parse
+use         ◆ print parse
 use ./utils ▪ firstLineCol lastLineCol
 
 function Parser extends parse

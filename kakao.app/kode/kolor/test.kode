@@ -765,28 +765,37 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
         rgs = ranges "a is elem"
         inc rgs, 5 "elem"   ▸ 'keyword'
         
-        rgs = ranges "use fs"
-        inc rgs, 0 "use"    ▸ 'keyword require'
-        inc rgs, 4 "fs"     ▸ 'require'
-
-        rgs = ranges "use ../mod"
-        inc rgs, 0 "use"    ▸ 'keyword require'
-        inc rgs, 4 "."      ▸ 'punct require'
-        inc rgs, 5 "."      ▸ 'punct require'
-        inc rgs, 6 "/"      ▸ 'punct require'
-        inc rgs, 7 "mod"    ▸ 'text require string'
-
-        rgs = ranges "use ./dir/mod"
-        inc rgs, 0 "use"    ▸ 'keyword require'
-        inc rgs, 4 "."      ▸ 'punct require'
-        inc rgs, 5 "/"      ▸ 'punct require'
-        inc rgs, 6 "dir"    ▸ 'text require'
-        inc rgs, 9 "/"      ▸ 'punct require'
-        inc rgs, 10 "mod"   ▸ 'text require string'
+        ▸ use
         
-        rgs = ranges "use: (n) ->"
-        inc rgs, 0 "use"    ▸ 'method'
-        inc rgs, 3 ":"      ▸ 'punct method'
+            rgs = ranges "use fs"
+            inc rgs, 0 "use"    ▸ 'keyword require'
+            inc rgs, 4 "fs"     ▸ 'require'
+    
+            rgs = ranges "use ../mod"
+            inc rgs, 0 "use"    ▸ 'keyword require'
+            inc rgs, 4 "."      ▸ 'punct require'
+            inc rgs, 5 "."      ▸ 'punct require'
+            inc rgs, 6 "/"      ▸ 'punct require'
+            inc rgs, 7 "mod"    ▸ 'text require string'
+    
+            rgs = ranges "use ./dir/mod"
+            inc rgs, 0 "use"    ▸ 'keyword require'
+            inc rgs, 4 "."      ▸ 'punct require'
+            inc rgs, 5 "/"      ▸ 'punct require'
+            inc rgs, 6 "dir"    ▸ 'text require'
+            inc rgs, 9 "/"      ▸ 'punct require'
+            inc rgs, 10 "mod"   ▸ 'text require string'
+            
+            rgs = ranges "use: (n) ->"
+            inc rgs, 0 "use"    ▸ 'method'
+            inc rgs, 3 ":"      ▸ 'punct method'
+            
+            rgs = ranges "use ◆ A bC d"
+            inc rgs, 0 "use"    ▸ 'keyword require'
+            inc rgs, 4 "◆"      ▸ 'punct require'
+            inc rgs, 6 "A"      ▸ 'text require string'
+            inc rgs, 8 "bC"     ▸ 'text require string'
+            inc rgs, 11 "d"     ▸ 'text require string'
         
         ▸ no comma
             

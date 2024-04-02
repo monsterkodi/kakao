@@ -45,7 +45,7 @@ export
                         
                 if not slash.isAbsolute d.match
                     
-                    [file, line, col] = slash.splitFileLine slash.join kakao.bundle.path, d.match
+                    [file, line, col] = slash.splitFileLine slash.path kakao.bundle.path, d.match
                     
                     post.emit 'jumpTo' path:file, line:line, col:col
                     return true

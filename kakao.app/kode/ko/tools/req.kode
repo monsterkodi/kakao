@@ -15,7 +15,7 @@ moduleKeys = (moduleName, file) ->
     
     # log 'file' file
     # if moduleName.startsWith '.'
-        # moduleName = slash.resolve(slash.join slash.dir(file), moduleName).replace '/coffee/' '/js/'
+        # moduleName = slash.path slash.dir(file), moduleName).replace '/coffee/' '/js/'
 
     try
         if moduleName.endsWith 'kxk'

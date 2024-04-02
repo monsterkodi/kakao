@@ -392,13 +392,19 @@ kodeWord = ->
             addValue -1 'this'
             addValue  0 'this'
             return 1
-
-        if prev.clss.endsWith('require')
+            
+        if prev.clss.endsWith 'require'
             addValue 0 'require'
-            if chunkIndex == line.chunks.length-1
+            if prev.clss.endsWith('punct require') and prev.match in '▪◆●'
+                addValue 0 'string'
+            else if chunkIndex == line.chunks.length-1
                 addValue 0 'string'
             return 1
-            
+
+        if prev.clss.endsWith 'require string'
+            addValue 0 'require string'
+            return 1
+                                    
         if (prev.clss.startsWith('text') or prev.clss == 'property') and prev.start+prev.length < chunk.start # spaced
             return thisCall()
             
