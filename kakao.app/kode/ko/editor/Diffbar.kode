@@ -193,6 +193,7 @@ class Diffbar
                 @updateMetas()
                 @updateScroll()
         else
+            log 'clear changes'
             @changes = null
             @updateMetas()
             @updateScroll()
