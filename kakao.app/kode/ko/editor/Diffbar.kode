@@ -21,12 +21,12 @@ class Diffbar
         @editor.view.appendChild @elem
 
         @editor.on 'file'       @onEditorFile
-        @editor.on 'undone'     @update
-        @editor.on 'redone'     @update
         @editor.on 'linesShown' @updateScroll
+        post.on 'gitStatus'     @onGitStatus
 
-        post.on 'gitStatus'     @update
-        post.on 'gitDiff'       @update
+        # @editor.on 'undone'     @update
+        # @editor.on 'redone'     @update
+        # post.on 'gitDiff'       @update
 
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000
@@ -175,33 +175,47 @@ class Diffbar
     # 000       000  000      000
     # 000       000  0000000  00000000
 
-    onEditorFile: => @update()
-
-    # 000   000  00000000   0000000     0000000   000000000  00000000
-    # 000   000  000   000  000   000  000   000     000     000
-    # 000   000  00000000   000   000  000000000     000     0000000
-    # 000   000  000        000   000  000   000     000     000
-    #  0000000   000        0000000    000   000     000     00000000
-
-    update: =>
-
-        log 'Diffbar.update' @editor.currentFile
-
+    onEditorFile: => 
+        
         if @editor.currentFile
-
+            log 'Diffbar.onEditorFile' @editor.currentFile
+            Git.status @editor.currentFile
+    
+    #  0000000   000  000000000   0000000  000000000   0000000   000000000  000   000   0000000  
+    # 000        000     000     000          000     000   000     000     000   000  000       
+    # 000  0000  000     000     0000000      000     000000000     000     000   000  0000000   
+    # 000   000  000     000          000     000     000   000     000     000   000       000  
+    #  0000000   000     000     0000000      000     000   000     000      0000000   0000000   
+    
+    onGitStatus: (status) =>
+        
+        if status.files[@editor.currentFile] == 'changed'
+            log 'Diffbar.onGitStatus' @editor.currentFile, status.files[@editor.currentFile]
             Git.diff(@editor.currentFile).then (changes) =>
-                
-                log 'Diffbar.update changes' @editor.currentFile, changes
-
+                log 'Diffbar.onGitStatus changes' @editor.currentFile, changes
                 @changes = changes
                 @updateMetas()
                 @updateScroll()
 
-        else
-            @changes = null
-            @updateMetas()
-            @updateScroll()
-            @editor.emit 'diffbarUpdated' @changes # only used in tests
+    # update: =>
+
+        # log 'Diffbar.update' @editor.currentFile
+
+        # if @editor.currentFile
+
+            # Git.diff(@editor.currentFile).then (changes) =>
+#                 
+                # log 'Diffbar.update changes' @editor.currentFile, changes
+
+                # @changes = changes
+                # @updateMetas()
+                # @updateScroll()
+
+        # else
+            # @changes = null
+            # @updateMetas()
+            # @updateScroll()
+            # @editor.emit 'diffbarUpdated' @changes # only used in tests
 
     #  0000000   0000000  00000000    0000000   000      000
     # 000       000       000   000  000   000  000      000

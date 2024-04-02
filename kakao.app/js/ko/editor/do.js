@@ -163,8 +163,7 @@ class Do
             this.redos.unshift(this.state)
             changes = this.calculateChanges(this.editor.state,this.state)
             this.editor.setState(this.state)
-            ;(typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
-            return this.editor.emit('undone')
+            return (typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
         }
     }
 
@@ -185,8 +184,7 @@ class Do
             }
             changes = this.calculateChanges(this.editor.state,this.state)
             this.editor.setState(this.state)
-            ;(typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
-            return this.editor.emit('redone')
+            return (typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
         }
     }
 

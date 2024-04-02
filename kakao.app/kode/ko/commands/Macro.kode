@@ -135,7 +135,7 @@ function Macro extends Command
 
             'kc'
             'commit'
-            'ci'    ➜ GitInfo.commit(cmds)
+            'ci'    ➜ GitInfo.commit cmds
             
             'err'   ➜ throw new Error 'err'
 

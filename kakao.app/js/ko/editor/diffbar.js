@@ -14,7 +14,7 @@ class Diffbar
         this.editor = editor
     
         this.updateScroll = this.updateScroll.bind(this)
-        this.update = this.update.bind(this)
+        this.onGitStatus = this.onGitStatus.bind(this)
         this.onEditorFile = this.onEditorFile.bind(this)
         this.onMetaClick = this.onMetaClick.bind(this)
         this.elem = elem('canvas',{class:'diffbar'})
@@ -23,11 +23,8 @@ class Diffbar
         this.elem.style.top = '0'
         this.editor.view.appendChild(this.elem)
         this.editor.on('file',this.onEditorFile)
-        this.editor.on('undone',this.update)
-        this.editor.on('redone',this.update)
         this.editor.on('linesShown',this.updateScroll)
-        post.on('gitStatus',this.update)
-        post.on('gitDiff',this.update)
+        post.on('gitStatus',this.onGitStatus)
     }
 
     onMetaClick (meta, event)
@@ -192,34 +189,31 @@ class Diffbar
 
     onEditorFile ()
     {
-        return this.update()
-    }
-
-    update ()
-    {
-        console.log('Diffbar.update',this.editor.currentFile)
         if (this.editor.currentFile)
         {
+            console.log('Diffbar.onEditorFile',this.editor.currentFile)
+            return Git.status(this.editor.currentFile)
+        }
+    }
+
+    onGitStatus (status)
+    {
+        if (status.files[this.editor.currentFile] === 'changed')
+        {
+            console.log('Diffbar.onGitStatus',this.editor.currentFile,status.files[this.editor.currentFile])
             return Git.diff(this.editor.currentFile).then((function (changes)
             {
-                console.log('Diffbar.update changes',this.editor.currentFile,changes)
+                console.log('Diffbar.onGitStatus changes',this.editor.currentFile,changes)
                 this.changes = changes
                 this.updateMetas()
                 return this.updateScroll()
             }).bind(this))
         }
-        else
-        {
-            this.changes = null
-            this.updateMetas()
-            this.updateScroll()
-            return this.editor.emit('diffbarUpdated',this.changes)
-        }
     }
 
     updateScroll ()
     {
-        var alpha, boring, ctx, h, length, lh, li, meta, w, _228_45_
+        var alpha, boring, ctx, h, length, lh, li, meta, w, _242_45_
 
         w = 2
         h = this.editor.scroll.viewHeight
@@ -234,9 +228,9 @@ class Diffbar
         if (this.changes)
         {
             var list = _k_.list(this.editor.meta.metas)
-            for (var _226_21_ = 0; _226_21_ < list.length; _226_21_++)
+            for (var _240_21_ = 0; _240_21_ < list.length; _240_21_++)
             {
-                meta = list[_226_21_]
+                meta = list[_240_21_]
                 if (!((meta != null ? meta[2] != null ? meta[2].git : undefined : undefined) != null))
                 {
                     continue
