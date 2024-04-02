@@ -6,39 +6,16 @@
     000   000  000   000  000   000
 ###
 
-use ./kxk ◆ dom elem post drag slash stash store prefs matchr keyinfo tooltip events popup kstr kpos util sds ffs noon
+kxk = {}
 
-toExport =
+use ./kxk ◆ dom elem post drag slash stash store prefs matchr keyinfo tooltip events popup kstr kpos util sds ffs noon
+for exp in "dom elem post drag slash stash store prefs matchr keyinfo tooltip events popup kstr kpos util sds ffs noon".split(' ') ➜ kxk[exp] = eval exp
     
-    drag:       drag
-    elem:       elem
-    events:     events
-    ffs:        ffs
-    keyinfo:    keyinfo
-    kpos:       kpos
-    kstr:       kstr
-    matchr:     matchr
-    noon:       noon
-    popup:      popup
-    post:       post
-    prefs:      prefs
-    sds:        sds
-    slash:      slash
-    stash:      stash
-    store:      store
-    tooltip:    tooltip
-    util:       util
+for exp in "$ setStyle getStyle stopEvent".split(' ') ➜ kxk[exp] = eval "dom.#{exp}" # export some dom functions
     
-    dom:        dom
-    $:          dom.$
-    setStyle:   dom.setStyle
-    getStyle:   dom.getStyle
-    stopEvent:  dom.stopEvent
+for exp,utl of util ➜ kxk[exp] = utl # export all utility functions
     
-    isElement:  elem.isElement
+kxk.isElement = elem.isElement
     
-for k,v of util
-    toExport[k] = v
-    
-export toExport
+export kxk
     

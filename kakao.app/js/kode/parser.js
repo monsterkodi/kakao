@@ -676,8 +676,8 @@ Parser = (function ()
         close = this.shiftClose('curly','}',tokens)
         if (!close)
         {
-            _k_.dbg("kode/kode/parser.kode", 851, 12, "exps", exps)
-            _k_.dbg("kode/kode/parser.kode", 852, 12, "tokens", tokens)
+            _k_.dbg("../../../../../kode/kode/parser.kode", 851, 12, "exps", exps)
+            _k_.dbg("../../../../../kode/kode/parser.kode", 852, 12, "tokens", tokens)
         }
         this.pop('{')
         return {object:{open:open,keyvals:exps,close:close}}

@@ -190,7 +190,7 @@
         
         // NSLog(@"%@ %@ %@ %@", change.isDir ? @"▸" : @"▪", type, change.path, relPath);
         
-        if ([relPath hasPrefix:@"js/"]) { reloadPage = ![relPath hasPrefix:@"js/test"]; }
+        if ([relPath hasPrefix:@"js/"]) { reloadPage = ![relPath hasPrefix:@"js/test"] && ![relPath hasPrefix:@"js/kode"]; }
 
         if ([relPath hasPrefix:@"Contents/Resources/"]) { reloadPage = YES; }
 
@@ -199,7 +199,7 @@
             rebuildApp = YES;
         }
         
-        if ([relPath hasPrefix:@"pug/"] || [relPath hasPrefix:@"kode/"])
+        if ([relPath hasPrefix:@"pug/"] || ([relPath hasPrefix:@"kode/"] && ![relPath hasPrefix:@"kode/kode/"]))
         {
             [filesToTranspile addObject:change.path];
         }

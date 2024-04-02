@@ -1,7 +1,8 @@
-var _k_
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var k, toExport, v
+var exp, kxk, utl
 
+kxk = {}
 import dom from "./kxk/dom.js"
 import elem from "./kxk/elem.js"
 import post from "./kxk/post.js"
@@ -22,10 +23,22 @@ import sds from "./kxk/sds.js"
 import ffs from "./kxk/ffs.js"
 import noon from "./kxk/noon.js"
 
-toExport = {drag:drag,elem:elem,events:events,ffs:ffs,keyinfo:keyinfo,kpos:kpos,kstr:kstr,matchr:matchr,noon:noon,popup:popup,post:post,prefs:prefs,sds:sds,slash:slash,stash:stash,store:store,tooltip:tooltip,util:util,dom:dom,$:dom.$,setStyle:dom.setStyle,getStyle:dom.getStyle,stopEvent:dom.stopEvent,isElement:elem.isElement}
-for (k in util)
+var list = _k_.list("dom elem post drag slash stash store prefs matchr keyinfo tooltip events popup kstr kpos util sds ffs noon".split(' '))
+for (var _12_8_ = 0; _12_8_ < list.length; _12_8_++)
 {
-    v = util[k]
-    toExport[k] = v
+    exp = list[_12_8_]
+    kxk[exp] = eval(exp)
 }
-export default toExport;
+var list1 = _k_.list("$ setStyle getStyle stopEvent".split(' '))
+for (var _14_8_ = 0; _14_8_ < list1.length; _14_8_++)
+{
+    exp = list1[_14_8_]
+    kxk[exp] = eval(`dom.${exp}`)
+}
+for (exp in util)
+{
+    utl = util[exp]
+    kxk[exp] = utl
+}
+kxk.isElement = elem.isElement
+export default kxk;

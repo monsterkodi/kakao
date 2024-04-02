@@ -177,10 +177,6 @@ if (((globalThis.process != null ? globalThis.process.argv : undefined) != null)
     js          print transpiled js code                    = false
     header      prepend output with version header          = false -H
     verbose     log everything                              = false`)
-    if (args.verbose)
-    {
-        console.log('args',args)
-    }
     kode = new Kode(args)
     kode.cli()
 }

@@ -6,7 +6,7 @@ scripts
               modules   pnpm install
               bundle    bun build idx_ko.js --target=browser --outfile=lib_ko.mjs
               minify    uglifyjs lib_ko.mjs -o lib_ko.js
-              post      rm -rf lib_*.mjs
+              post      touch lib_*.mjs
               make      pnpm run clean && pnpm run modules && pnpm run bundle && pnpm run minify && pnpm run post
 dependencies
               uglify-js       ^3.17.4

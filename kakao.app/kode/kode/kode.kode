@@ -139,7 +139,7 @@ if globalThis.process?.argv? and import.meta.filename == process.argv[1]
             verbose     log everything                              = false
         """
         
-    log 'args' args if args.verbose
+    # log 'args' args if args.verbose
     kode = new Kode args
     kode.cli()
     

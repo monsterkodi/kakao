@@ -7,7 +7,6 @@
 ###
 
 use ../../kxk ▪ kpos elem slash events setStyle
-
 use ../win/flex/Flex
 use ./Column
 
