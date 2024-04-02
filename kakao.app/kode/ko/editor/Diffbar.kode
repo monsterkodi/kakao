@@ -187,10 +187,12 @@ class Diffbar
         
         if status.files[@editor.currentFile] == 'changed'
             Git.diff(@editor.currentFile).then (changes) =>
+                log 'got changes'
                 @changes = changes
                 @updateMetas()
                 @updateScroll()
         else
+            log 'clear changes'
             @changes = null
             @updateMetas()
             @updateScroll()
