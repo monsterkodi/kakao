@@ -60,7 +60,8 @@ class GitInfo
                 line = list[_57_21_]
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode')})
             }
-            return window.split.do('maximize editor')
+            window.split.do('maximize editor')
+            return Git.status(gitDir)
         }
     }
 
@@ -85,9 +86,9 @@ class GitInfo
         linesAdded = 0
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _82_17_ = 0; _82_17_ < list.length; _82_17_++)
+        for (var _83_17_ = 0; _83_17_ < list.length; _83_17_++)
         {
-            text = list[_82_17_]
+            text = list[_83_17_]
             dss = sytx.getDiss(index)
             if (changes.change === 'deleted')
             {
@@ -106,9 +107,9 @@ class GitInfo
                     if (!_k_.empty(diffs))
                     {
                         var list1 = _k_.list(diffs)
-                        for (var _109_33_ = 0; _109_33_ < list1.length; _109_33_++)
+                        for (var _110_33_ = 0; _110_33_ < list1.length; _110_33_++)
                         {
-                            diff = list1[_109_33_]
+                            diff = list1[_110_33_]
                             window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoDelete'})
                         }
                         dss = Syntax.dissForTextAndSyntax(changes.info.mod[index].old,syntaxName)
@@ -117,9 +118,9 @@ class GitInfo
                 else
                 {
                     var list2 = _k_.list(diffs)
-                    for (var _119_29_ = 0; _119_29_ < list2.length; _119_29_++)
+                    for (var _120_29_ = 0; _120_29_ < list2.length; _120_29_++)
                     {
-                        diff = list2[_119_29_]
+                        diff = list2[_120_29_]
                         window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                     }
                 }
@@ -190,18 +191,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _186_21_ = 0; _186_21_ < list.length; _186_21_++)
+            for (var _187_21_ = 0; _187_21_ < list.length; _187_21_++)
             {
-                file = list[_186_21_]
+                file = list[_187_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _191_21_ = 0; _191_21_ < list1.length; _191_21_++)
+            for (var _192_21_ = 0; _192_21_ < list1.length; _192_21_++)
             {
-                file = list1[_191_21_]
+                file = list1[_192_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,diff)
@@ -215,9 +216,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _200_21_ = 0; _200_21_ < list2.length; _200_21_++)
+            for (var _201_21_ = 0; _201_21_ < list2.length; _201_21_++)
             {
-                file = list2[_200_21_]
+                file = list2[_201_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('changed',file,status,diff)
@@ -227,9 +228,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _208_31_ = 0; _208_31_ < list3.length; _208_31_++)
+                    for (var _209_31_ = 0; _209_31_ < list3.length; _209_31_++)
                     {
-                        change = list3[_208_31_]
+                        change = list3[_209_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
