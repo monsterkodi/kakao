@@ -186,9 +186,7 @@ class Diffbar
     onGitStatus: (status) =>
         
         if status.files[@editor.currentFile] == 'changed'
-            # log 'Diffbar.onGitStatus' @editor.currentFile, status.files[@editor.currentFile]
             Git.diff(@editor.currentFile).then (changes) =>
-                log 'Diffbar.onGitStatus changes' @editor.currentFile, changes
                 @changes = changes
                 @updateMetas()
                 @updateScroll()
