@@ -16,7 +16,7 @@ class Kode
         
         @args ?= {}
         @args.header ?= true
-        @version  = '0.1.0'
+        @version  = '0.2.0'
 
         @literals = ['bool''num''regex''single''double''triple']
         @atoms    = @literals.concat ['var']

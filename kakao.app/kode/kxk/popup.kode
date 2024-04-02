@@ -7,7 +7,7 @@
 ###
 
 use ./dom ▪ elem stopEvent
-use ./post ./slash ./keyinfo
+use ◆ post slash keyinfo
 
 function Popup
     

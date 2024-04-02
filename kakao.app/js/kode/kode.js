@@ -27,7 +27,7 @@ class Kode
     
         this.args = ((_17_14_=this.args) != null ? _17_14_ : {})
         this.args.header = ((_18_21_=this.args.header) != null ? _18_21_ : true)
-        this.version = '0.1.0'
+        this.version = '0.2.0'
         this.literals = ['bool','num','regex','single','double','triple']
         this.atoms = this.literals.concat(['var'])
         this.lexer = new lexer(this)

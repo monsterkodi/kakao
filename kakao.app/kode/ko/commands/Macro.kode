@@ -8,8 +8,7 @@
 
 use ../../kxk ▪ slash prefs post ffs reversed uniq
 
-use ../tools/salt
-use ../tools/req
+use ../tools ◆ salt req
 
 use ../win/GitInfo
 
