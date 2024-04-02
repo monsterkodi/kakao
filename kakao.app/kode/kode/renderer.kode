@@ -6,13 +6,9 @@
 000   000  00000000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-use ../kxk/kstr
-use ../kxk/slash
-use ../kxk/fs
-
-use ./print ./utils
-
-{ firstLineCol, lastLineCol } = utils
+use ../kxk ◆ kstr slash fs
+use ./utils ▪ firstLineCol lastLineCol
+use ◆ print 
 
 kolorNames = ['r' 'g' 'b' 'c' 'm' 'y' 'w']
 
@@ -1735,7 +1731,7 @@ class Renderer
 
     makeVar: (tok) -> "_#{tok.line}_#{tok.col}_"
         
-    verb: -> if @verbose then console.log.apply console.log, arguments
+    verb: -> if @debug then console.log.apply console.log, arguments
     
     ind: ->
 

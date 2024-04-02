@@ -378,7 +378,7 @@ ParseUtils = (function ()
 
     ParseUtils.prototype["verb"] = function ()
     {
-        if (this.verbose)
+        if (this.debug)
         {
             return console.log.apply(console.log,arguments)
         }

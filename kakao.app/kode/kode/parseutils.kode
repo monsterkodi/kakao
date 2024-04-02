@@ -334,6 +334,6 @@ function ParseUtils
         if @debug
             print.stack @stack, p, (s) -> W1 w1 s
 
-    verb: -> if @verbose then console.log.apply console.log, arguments 
+    verb: -> if @debug then console.log.apply console.log, arguments 
 
 export ParseUtils

@@ -6,9 +6,8 @@ import utils from "./utils.js"
 let firstLineCol = utils.firstLineCol
 let lastLineCol = utils.lastLineCol
 
-import parseutils from "./parseutils.js"
-
 import print from "./print.js"
+import parseutils from "./parseutils.js"
 
 
 Parse = (function ()
@@ -271,7 +270,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, tok, _282_34_, _344_33_
+        var block, e, numTokens, tok, _281_34_, _343_33_
 
         if (_k_.empty(tokens))
         {
@@ -385,18 +384,18 @@ Parse = (function ()
 
         }
 
-        this.sheapPush('exp',((_282_34_=tok.text) != null ? _282_34_ : tok.type))
+        this.sheapPush('exp',((_281_34_=tok.text) != null ? _281_34_ : tok.type))
         e = tok
         while (tokens.length)
         {
             numTokens = tokens.length
             e = this.rhs(e,tokens)
-            if (this.verbose)
+            if (this.debug)
             {
                 print.ast("rhs",e)
             }
             e = this.lhs(e,tokens)
-            if (this.verbose)
+            if (this.debug)
             {
                 print.ast("lhs",e)
             }
@@ -457,7 +456,7 @@ Parse = (function ()
                 break
             }
         }
-        if (this.verbose)
+        if (this.debug)
         {
             print.ast(`exp ${_k_.empty((this.stack)) ? 'DONE' : ''}`,e)
         }
@@ -466,13 +465,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_344_33_=tok.text) != null ? _344_33_ : tok.type))
+        this.sheapPop('exp',((_343_33_=tok.text) != null ? _343_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _405_22_
+        var llc, numTokens, nxt, spaced, unspaced, _404_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])
@@ -512,7 +511,7 @@ Parse = (function ()
                 if (this.stack.slice(-1)[0] !== '{')
                 {
                     this.verb('rhs is first key of implicit object',e)
-                    if (this.verbose)
+                    if (this.debug)
                     {
                         print.tokens('rhs is first key of implicit object ...',tokens.slice(0, 21))
                     }
@@ -584,7 +583,7 @@ Parse = (function ()
                 }
                 else
                 {
-                    if (this.verbose)
+                    if (this.debug)
                     {
                         print.tokens(`rhs no nxt match? break! stack:${this.stack} nxt:`,[nxt])
                     }
@@ -615,7 +614,7 @@ Parse = (function ()
                 }
                 else
                 {
-                    if (this.verbose)
+                    if (this.debug)
                     {
                         print.ast(`rhs no nxt match?? stack:${this.stack} e:`,e)
                         print.tokens("rhs no nxt match?? nxt:",nxt)
@@ -765,11 +764,11 @@ Parse = (function ()
             }
             else
             {
-                if (this.verbose)
+                if (this.debug)
                 {
                     print.tokens(`lhs no nxt match? break! stack:${this.stack} nxt:`,[nxt])
                 }
-                if (this.verbose)
+                if (this.debug)
                 {
                     print.ast(`lhs no nxt match? break! stack:${this.stack}`,e)
                 }

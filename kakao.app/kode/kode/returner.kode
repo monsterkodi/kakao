@@ -168,6 +168,6 @@ class Returner
                             else
                                 @exp v for k,v of val
         
-    verb: -> if @verbose then console.log.apply console.log, arguments 
+    verb: -> if @debug then console.log.apply console.log, arguments 
 
 export Returner

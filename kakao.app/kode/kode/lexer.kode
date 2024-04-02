@@ -6,9 +6,7 @@
 0000000  00000000  000   000  00000000  000   000
 ###
 
-use ../kxk/noon
-use ../kxk/kstr
-use ../kxk/slash
+use ../kxk ◆ noon kstr slash
 use fs
 
 pull = (arr, pred) ->

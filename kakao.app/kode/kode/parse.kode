@@ -9,8 +9,7 @@
 ###
 
 use ./utils ▪ firstLineCol lastLineCol
-use ./parseutils
-use ./print
+use ◆ print parseutils 
 
 function Parse extends parseutils
 
@@ -288,11 +287,11 @@ function Parse extends parseutils
 
             e = @rhs e, tokens               # first, try to eat as many tokens as possible to the right
             
-            print.ast "rhs" e if @verbose    
+            print.ast "rhs" e if @debug
 
             e = @lhs e, tokens               # see if we can use the result as the left hand side of something
             
-            print.ast "lhs" e if @verbose
+            print.ast "lhs" e if @debug
 
             if tokens[0]?.text in ';'
                 @verb 'exp break on ;' tokens[0]?.text
@@ -335,7 +334,7 @@ function Parse extends parseutils
                 @verb 'exp no token consumed: break!' @stack[-1]
                 break # bail out because no token was consumed to prevent endless recursion
             
-        print.ast "exp #{if empty(@stack) then 'DONE' else ''}" e if @verbose
+        print.ast "exp #{if empty(@stack) then 'DONE' else ''}" e if @debug
         
         if @stack[-1]?.startsWith 'propchain'
             @verb "exp cleanup #{@stack[-1]}"
@@ -391,7 +390,7 @@ function Parse extends parseutils
                     
                     if @stack[-1] != '{'
                         @verb 'rhs is first key of implicit object' e
-                        print.tokens 'rhs is first key of implicit object ...' tokens[..20] if @verbose
+                        print.tokens 'rhs is first key of implicit object ...' tokens[..20] if @debug
                         e = @object e, tokens
                     else
                         @verb 'rhs is key of (implicit) object' e
@@ -428,7 +427,7 @@ function Parse extends parseutils
                                 return error 'wrong rhs increment'
                             e = @operation e, tokens.shift()
                         ➜
-                            print.tokens "rhs no nxt match? break! stack:#{@stack} nxt:" [nxt] if @verbose
+                            print.tokens "rhs no nxt match? break! stack:#{@stack} nxt:" [nxt] if @debug
                             break                    
                     
                 ➜ # e is not a token anymore
@@ -439,7 +438,7 @@ function Parse extends parseutils
                         @stack[-1] == '{'       and nxt.text == '}' ➜ @verb 'rhs curly end';            break                    
                         @stack[-1] == '['       and nxt.text == ']' ➜ @verb 'rhs array end';            break
                         ➜
-                            if @verbose
+                            if @debug
                                 print.ast "rhs no nxt match?? stack:#{@stack} e:" e
                                 print.tokens "rhs no nxt match?? nxt:" nxt
                             break
@@ -588,8 +587,8 @@ function Parse extends parseutils
                     e = @operation e, tokens.shift(), tokens
                                 
                 ➜                
-                    print.tokens "lhs no nxt match? break! stack:#{@stack} nxt:" [nxt] if @verbose
-                    print.ast "lhs no nxt match? break! stack:#{@stack}" e if @verbose
+                    print.tokens "lhs no nxt match? break! stack:#{@stack} nxt:" [nxt] if @debug
+                    print.ast "lhs no nxt match? break! stack:#{@stack}" e if @debug
                     if nxt.type == 'block' 
                         if  @isSuitableForImplicitCall(e) and 
                             @stackAllowsBlockArg() and

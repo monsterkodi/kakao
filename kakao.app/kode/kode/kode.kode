@@ -6,18 +6,8 @@
 000   000   0000000   0000000    00000000
 ###
 
-# use ◆ lexer print parser scoper stripol returner operator renderer
-use ./lexer
-use ./print
-use ./parser
-use ./scoper
-use ./stripol
-use ./returner
-use ./operator
-use ./renderer
-use ../kxk/fs
-use ../kxk/slash
-use ../kxk/karg
+use ../kxk ◆ fs slash karg
+use ◆ lexer print parser scoper stripol returner operator renderer
 use vm
 
 class Kode
@@ -101,7 +91,7 @@ class Kode
             return
             
         if @args.eval
-            log @eval @args.eval, 'eval', global
+            log @eval @args.eval, 'eval' global
             return
             
         for file in @args.files
@@ -117,11 +107,11 @@ class Kode
                 @args.outdir
                                 js  = @compile text, file
                                 out = slash.swapExt slash.path(@args.outdir, slash.file file), 'js'
-                                log out
+                                log out if @args.verbose
                                 if not ○ fs.write out, js then error R2 y3 "can't write #{R3 y6 out}"
                 @args.js    ➜   log @compile text, file
                 @args.run   ➜   log @eval text, file, global
-                            ➜   log @compile text
+                            ➜   log @compile text, file
                 
 export Kode
 
@@ -136,7 +126,8 @@ if globalThis.process?.argv? and import.meta.filename == process.argv[1]
             run         execute files                               = true
             js          print transpiled js code                    = false
             header      prepend output with version header          = false -H
-            verbose     log everything                              = false
+            verbose     log more                                    = false
+            debug       debug output                                = false
         """
         
     # log 'args' args if args.verbose

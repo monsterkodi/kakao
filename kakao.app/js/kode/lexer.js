@@ -3,9 +3,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var pull
 
 import noon from "../kxk/noon.js"
-
 import kstr from "../kxk/kstr.js"
-
 import slash from "../kxk/slash.js"
 
 import fs from "fs"
@@ -15,7 +13,7 @@ pull = function (arr, pred)
 {
     var index
 
-    for (var _16_17_ = index = arr.length - 1, _16_31_ = 0; (_16_17_ <= _16_31_ ? index <= 0 : index >= 0); (_16_17_ <= _16_31_ ? ++index : --index))
+    for (var _14_17_ = index = arr.length - 1, _14_31_ = 0; (_14_17_ <= _14_31_ ? index <= 0 : index >= 0); (_14_17_ <= _14_31_ ? ++index : --index))
     {
         if (pred(arr[index]))
         {
@@ -68,10 +66,10 @@ class Lexer
         {
             before = text.length
             var list = _k_.list(this.regs)
-            for (var _69_26_ = 0; _69_26_ < list.length; _69_26_++)
+            for (var _67_26_ = 0; _67_26_ < list.length; _67_26_++)
             {
-                key = list[_69_26_][0]
-                reg = list[_69_26_][1]
+                key = list[_67_26_][0]
+                reg = list[_67_26_][1]
                 match = text.match(reg)
                 if ((match != null ? match.index : undefined) === 0)
                 {
@@ -183,9 +181,9 @@ class Lexer
         var minind, splt, tok
 
         var list = _k_.list(tokens)
-        for (var _148_16_ = 0; _148_16_ < list.length; _148_16_++)
+        for (var _146_16_ = 0; _146_16_ < list.length; _146_16_++)
         {
-            tok = list[_148_16_]
+            tok = list[_146_16_]
             if (tok.type === 'triple')
             {
                 splt = tok.text.slice(3, -3).split('\n')
@@ -337,7 +335,7 @@ class Lexer
                 block = blocks.slice(-1)[0]
             }
         }
-        for (var _280_19_ = idx = 0, _280_23_ = tokens.length; (_280_19_ <= _280_23_ ? idx < tokens.length : idx > tokens.length); (_280_19_ <= _280_23_ ? ++idx : --idx))
+        for (var _278_19_ = idx = 0, _278_23_ = tokens.length; (_278_19_ <= _278_23_ ? idx < tokens.length : idx > tokens.length); (_278_19_ <= _278_23_ ? ++idx : --idx))
         {
             tok = tokens[idx]
             if (tok.type === 'nl')

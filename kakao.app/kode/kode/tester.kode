@@ -6,10 +6,7 @@
    000     00000000  0000000      000     00000000  000   000
 ###
 
-use ../kxk/kstr
-use ../kxk/slash
-use ../kxk/klor
-use ../kxk/fs
+use ../kxk ◆ kstr slash klor fs
 use ./print
 
 klor.globalize()

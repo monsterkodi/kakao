@@ -203,7 +203,7 @@ class Stripol
 
     verb ()
     {
-        if (this.verbose)
+        if (this.debug)
         {
             return console.log.apply(console.log,arguments)
         }

@@ -6,9 +6,7 @@
 000        000   000  000  000   000     000
 ###
 
-use ../kxk/kstr
-use ../kxk/slash
-use ../kxk/noon
+use ../kxk ◆ kstr slash noon
 
 class Print
 

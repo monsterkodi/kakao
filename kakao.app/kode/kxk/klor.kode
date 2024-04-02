@@ -80,6 +80,13 @@ for fg in FG_COLORS
 
 exports.globalize = (enabled=true) ->
     
+    if globalThis.global
+        glob = globalThis.global
+    else if globalThis.window
+        glob = globalThis.window
+    else
+        return
+    
     if not enabled
         exp = (n) -> noop
     else
@@ -89,11 +96,11 @@ exports.globalize = (enabled=true) ->
         
         for i in [1..8]
             bg = fg.toUpperCase()
-            global[fg+i] = exp fg+i
-            global[bg+i] = exp bg+i
+            glob[fg+i] = exp fg+i
+            glob[bg+i] = exp bg+i
             
         for n in ['underline''bold''dim''italic''inverse''reset''strip' 'black''red''green''yellow''blue''magenta''cyan''white''gray']
-            global[n] = exp n
+            glob[n] = exp n
         
 #  0000000  000000000  00000000   000  00000000   
 # 000          000     000   000  000  000   000  

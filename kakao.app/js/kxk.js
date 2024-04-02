@@ -12,6 +12,7 @@ import stash from "./kxk/stash.js"
 import store from "./kxk/store.js"
 import prefs from "./kxk/prefs.js"
 import matchr from "./kxk/matchr.js"
+import karg from "./kxk/karg.js"
 import keyinfo from "./kxk/keyinfo.js"
 import tooltip from "./kxk/tooltip.js"
 import events from "./kxk/events.js"
@@ -23,7 +24,7 @@ import sds from "./kxk/sds.js"
 import ffs from "./kxk/ffs.js"
 import noon from "./kxk/noon.js"
 
-var list = _k_.list("dom elem post drag slash stash store prefs matchr keyinfo tooltip events popup kstr kpos util sds ffs noon".split(' '))
+var list = _k_.list("dom elem post drag slash stash store prefs matchr karg keyinfo tooltip events popup kstr kpos util sds ffs noon".split(' '))
 for (var _12_8_ = 0; _12_8_ < list.length; _12_8_++)
 {
     exp = list[_12_8_]

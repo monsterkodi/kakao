@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var b, B, B256, bg, BG_COLORS, bold, c, C, exports, f, F, F256, fg, FG_COLORS, g, G, i, init, m, M, noop, r, R, reset, s, STRIPANSI, w, W, wrap, y, Y, _113_21_, _113_27_
+var b, B, B256, bg, BG_COLORS, bold, c, C, exports, f, F, F256, fg, FG_COLORS, g, G, i, init, m, M, noop, r, R, reset, s, STRIPANSI, w, W, wrap, y, Y, _120_21_, _120_27_
 
 
 f = function (r, g, b)
@@ -158,8 +158,20 @@ for (var _69_7_ = 0; _69_7_ < list1.length; _69_7_++)
 
 exports.globalize = function (enabled = true)
 {
-    var exp, n
+    var exp, glob, n
 
+    if (globalThis.global)
+    {
+        glob = globalThis.global
+    }
+    else if (globalThis.window)
+    {
+        glob = globalThis.window
+    }
+    else
+    {
+        return
+    }
     if (!enabled)
     {
         exp = function (n)
@@ -175,20 +187,20 @@ exports.globalize = function (enabled = true)
         }
     }
     var list2 = _k_.list(FG_COLORS)
-    for (var _88_11_ = 0; _88_11_ < list2.length; _88_11_++)
+    for (var _95_11_ = 0; _95_11_ < list2.length; _95_11_++)
     {
-        fg = list2[_88_11_]
+        fg = list2[_95_11_]
         for (i = 1; i <= 8; i++)
         {
             bg = fg.toUpperCase()
-            global[fg + i] = exp(fg + i)
-            global[bg + i] = exp(bg + i)
+            glob[fg + i] = exp(fg + i)
+            glob[bg + i] = exp(bg + i)
         }
         var list3 = ['underline','bold','dim','italic','inverse','reset','strip','black','red','green','yellow','blue','magenta','cyan','white','gray']
-        for (var _95_14_ = 0; _95_14_ < list3.length; _95_14_++)
+        for (var _102_14_ = 0; _102_14_ < list3.length; _102_14_++)
         {
-            n = list3[_95_14_]
-            global[n] = exp(n)
+            n = list3[_102_14_]
+            glob[n] = exp(n)
         }
     }
 }
@@ -203,18 +215,18 @@ if (((globalThis.process != null ? globalThis.process.argv : undefined) != null)
     reset = '\x1b[0m'
     bold = '\x1b[1m'
     var list2 = _k_.list(BG_COLORS)
-    for (var _122_11_ = 0; _122_11_ < list2.length; _122_11_++)
+    for (var _129_11_ = 0; _129_11_ < list2.length; _129_11_++)
     {
-        bg = list2[_122_11_]
+        bg = list2[_129_11_]
         for (i = 1; i <= 8; i++)
         {
             s = reset
             fg = bg.toLowerCase()
             s += exports[fg + i](`${fg + i} ${bg + i} `)
             var list3 = _k_.list(FG_COLORS)
-            for (var _127_19_ = 0; _127_19_ < list3.length; _127_19_++)
+            for (var _134_19_ = 0; _134_19_ < list3.length; _134_19_++)
             {
-                fg = list3[_127_19_]
+                fg = list3[_134_19_]
                 s += exports[bg + i](exports[fg + (9 - i)](' ' + fg + ' '))
             }
             console.log(s + reset)

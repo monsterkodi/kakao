@@ -400,6 +400,7 @@ function Parser extends parse
             
             if module == '◆'
                 module = '.'
+                # log 'unshift diamond'
                 tokens.unshift token
                 break
             
@@ -438,6 +439,7 @@ function Parser extends parse
 
         if tokens.length and tokens[0].text == '◆'
             
+            # log 'use diamond'
             toUse = []
             
             tokens.shift()
@@ -848,8 +850,8 @@ function Parser extends parse
 
         close = @shiftClose 'curly' '}' tokens
         if not close 
-            dbg exps
-            dbg tokens
+            warn 'no close?' exps
+            warn 'no close?' tokens
 
         @pop '{'
 
