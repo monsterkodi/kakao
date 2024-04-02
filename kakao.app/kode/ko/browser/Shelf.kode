@@ -212,8 +212,6 @@ function Shelf extends Column
 
     onGitStatus: (status) =>
 
-        # log 'Shelf.onGitStatus' status
-
         for row in @rows
             if row.path().startsWith status.gitDir
                 $('.browserStatusIcon', row.div)?.remove()
@@ -224,17 +222,11 @@ function Shelf extends Column
         @
 
     loadGitStatus: =>
-
+        
         for row in @rows
-            Git.status(row.path()).then ((row) -> (status) ->
-                $('.browserStatusIcon', row.div)?.remove()
-                if row.path() in status.dirs
-                    row.div.appendChild elem 'span' class:"git-dirs-icon browserStatusIcon"
-                else if status.files[row.path()]
-                    row.div.appendChild elem 'span' class:"git-#{status.files[row.path()]}-icon browserStatusIcon"
-                )(row)
+            Git.status row.path()
         @
-
+        
     # 000   000  000   0000000  000000000   0000000   00000000   000   000
     # 000   000  000  000          000     000   000  000   000   000 000
     # 000000000  000  0000000      000     000   000  0000000      00000

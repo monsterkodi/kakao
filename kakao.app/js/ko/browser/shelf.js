@@ -295,12 +295,12 @@ Shelf = (function ()
 
     Shelf.prototype["onGitStatus"] = function (status)
     {
-        var row, _219_48_
+        var row, _217_48_
 
         var list = _k_.list(this.rows)
-        for (var _217_16_ = 0; _217_16_ < list.length; _217_16_++)
+        for (var _215_16_ = 0; _215_16_ < list.length; _215_16_++)
         {
-            row = list[_217_16_]
+            row = list[_215_16_]
             if (row.path().startsWith(status.gitDir))
             {
                 ;($('.browserStatusIcon',row.div) != null ? $('.browserStatusIcon',row.div).remove() : undefined)
@@ -322,26 +322,10 @@ Shelf = (function ()
         var row
 
         var list = _k_.list(this.rows)
-        for (var _228_16_ = 0; _228_16_ < list.length; _228_16_++)
+        for (var _226_16_ = 0; _226_16_ < list.length; _226_16_++)
         {
-            row = list[_228_16_]
-            Git.status(row.path()).then((function (row)
-            {
-                return function (status)
-                {
-                    var _230_48_
-
-                    ;($('.browserStatusIcon',row.div) != null ? $('.browserStatusIcon',row.div).remove() : undefined)
-                    if (_k_.in(row.path(),status.dirs))
-                    {
-                        return row.div.appendChild(elem('span',{class:"git-dirs-icon browserStatusIcon"}))
-                    }
-                    else if (status.files[row.path()])
-                    {
-                        return row.div.appendChild(elem('span',{class:`git-${status.files[row.path()]}-icon browserStatusIcon`}))
-                    }
-                }
-            })(row))
+            row = list[_226_16_]
+            Git.status(row.path())
         }
         return this
     }
@@ -373,7 +357,7 @@ Shelf = (function ()
     {
         var i
 
-        for (var _264_18_ = i = 0, _264_22_ = this.numRows(); (_264_18_ <= _264_22_ ? i < this.numRows() : i > this.numRows()); (_264_18_ <= _264_22_ ? ++i : --i))
+        for (var _256_18_ = i = 0, _256_22_ = this.numRows(); (_256_18_ <= _256_22_ ? i < this.numRows() : i > this.numRows()); (_256_18_ <= _256_22_ ? ++i : --i))
         {
             if (this.row(i).item.type === 'historySeparator')
             {
@@ -404,7 +388,7 @@ Shelf = (function ()
 
     Shelf.prototype["onNavigateIndexChanged"] = function (currentIndex, currentItem)
     {
-        var reverseIndex, _286_30_
+        var reverseIndex, _278_30_
 
         if (this.showHistory)
         {
@@ -443,16 +427,16 @@ Shelf = (function ()
 
     Shelf.prototype["onMouseOver"] = function (event)
     {
-        var _325_46_, _325_59_
+        var _317_46_, _317_59_
 
-        return ((_325_46_=this.row(event.target)) != null ? typeof (_325_59_=_325_46_.onMouseOver) === "function" ? _325_59_() : undefined : undefined)
+        return ((_317_46_=this.row(event.target)) != null ? typeof (_317_59_=_317_46_.onMouseOver) === "function" ? _317_59_() : undefined : undefined)
     }
 
     Shelf.prototype["onMouseOut"] = function (event)
     {
-        var _326_46_, _326_58_
+        var _318_46_, _318_58_
 
-        return ((_326_46_=this.row(event.target)) != null ? typeof (_326_58_=_326_46_.onMouseOut) === "function" ? _326_58_() : undefined : undefined)
+        return ((_318_46_=this.row(event.target)) != null ? typeof (_318_58_=_318_46_.onMouseOut) === "function" ? _318_58_() : undefined : undefined)
     }
 
     Shelf.prototype["onDblClick"] = function (event)
@@ -462,13 +446,13 @@ Shelf = (function ()
 
     Shelf.prototype["navigateRows"] = function (key)
     {
-        var index, navigate, row, _338_28_, _338_38_, _353_99_
+        var index, navigate, row, _330_28_, _330_38_, _345_99_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_338_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _338_38_ : -1)
+        index = ((_330_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _330_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -539,7 +523,7 @@ Shelf = (function ()
 
     Shelf.prototype["openFileInNewWindow"] = function ()
     {
-        var item, _371_30_
+        var item, _363_30_
 
         if (item = (this.activeRow() != null ? this.activeRow().item : undefined))
         {
@@ -553,9 +537,9 @@ Shelf = (function ()
 
     Shelf.prototype["removeObject"] = function ()
     {
-        var nextOrPrev, row, _378_27_, _388_36_
+        var nextOrPrev, row, _370_27_, _380_36_
 
-        row = ((_378_27_=this.activeRow()) != null ? _378_27_ : this.selectedRow())
+        row = ((_370_27_=this.activeRow()) != null ? _370_27_ : this.selectedRow())
         if (row)
         {
             if (this.showHistory)
@@ -570,7 +554,7 @@ Shelf = (function ()
                     window.navigate.delFilePos(row.item)
                 }
             }
-            nextOrPrev = ((_388_36_=row.next()) != null ? _388_36_ : row.prev())
+            nextOrPrev = ((_380_36_=row.next()) != null ? _380_36_ : row.prev())
             row.div.remove()
             this.items.splice(row.index(),1)
             this.rows.splice(row.index(),1)

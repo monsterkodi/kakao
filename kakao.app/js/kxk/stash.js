@@ -93,7 +93,6 @@ Stash = (function ()
         if (!_k_.empty(data))
         {
             this.data = data
-            console.log('stash.emit stashLoaded')
             post.emit('stashLoaded')
         }
         return this.data

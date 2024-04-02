@@ -10,6 +10,8 @@ use ../../kxk ▪ slash post
 
 function Git
 
+    @statusRequests: {}
+
     @: ->
         @gitDirs = []
         
@@ -29,7 +31,7 @@ function Git
                 if slash.dir(file).endsWith '.git/refs/heads'
                     if slash.name(file) in ['master' 'main']
                         # log 'git ref changed:' file
-                        Git.status(gitDir).then (status) -> log 'got gitStatus after ref update'
+                        Git.status gitDir
                         return
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  
@@ -49,9 +51,13 @@ function Git
             added:   []
             files:   {}
         
-        return status if empty gitDir
+        return status if empty gitDir or @statusRequests[gitDir]
+        
+        @statusRequests[gitDir] = true
         
         gitStatus =○ kakao 'app.sh' '/usr/bin/git' arg:'status --porcelain' cwd:gitDir
+        
+        delete @statusRequests[gitDir]
         
         return status if gitStatus.startsWith 'fatal:'
         

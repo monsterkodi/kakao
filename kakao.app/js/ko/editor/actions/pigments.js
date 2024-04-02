@@ -118,8 +118,7 @@ export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pig
 {
     var _116_31_
 
-    this.pigments = ((_116_31_=this.pigments) != null ? _116_31_ : new Pigments(this))
-    console.log('initPigments',this.pigments)
+    return this.pigments = ((_116_31_=this.pigments) != null ? _116_31_ : new Pigments(this))
 },togglePigments:function ()
 {
     var _121_21_, _123_21_

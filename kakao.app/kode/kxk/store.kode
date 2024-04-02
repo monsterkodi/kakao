@@ -42,7 +42,7 @@ function Store extends events
         
             defaults @data, opt.defaults
             
-            log "store #{@name}Loaded" @data
+            # log "store #{@name}Loaded" @data
             post.emit "#{@name}Loaded"
         
     keypath: (key) => key.split @sep

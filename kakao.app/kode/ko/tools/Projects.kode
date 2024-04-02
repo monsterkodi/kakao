@@ -44,8 +44,6 @@ class Projects
         
         prjPath = ○ ffs.git file
         
-        # log 'Projects.indexProject' prjPath, @
-        
         if @indexing
             return if @indexing == prjPath
             @queue ?= []
@@ -54,7 +52,6 @@ class Projects
             return
         
         if valid @projects[prjPath]
-            # log 'Projects.indexProject already indexed:' @projects[prjPath]
             return
               
         @indexing = prjPath
@@ -63,7 +60,7 @@ class Projects
             root:        prjPath
             maxDepth:    12
             maxFiles:    5000
-            file:        (f) => post.emit 'index' f #log 'Projects.walker.file' f
+            file:        (f) => post.emit 'index' f
                     
         result = ○ walker.start()
         
@@ -72,8 +69,8 @@ class Projects
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            log 'projects' @projects
-            log 'allFiles' @allFiles
+            log 'Projects.indexProject' prjPath, @projects
+
             post.emit 'projectIndexed' prjPath
         
         delete @indexing

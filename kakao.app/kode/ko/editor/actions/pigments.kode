@@ -113,7 +113,7 @@ export
             text:  'toggle pigments for current file'
             combo: 'command+alt+shift+p'
 
-    initPigments: -> @pigments ?= new Pigments @; log 'initPigments' @pigments
+    initPigments: -> @pigments ?= new Pigments @ #; log 'initPigments' @pigments
 
     togglePigments: ->
         

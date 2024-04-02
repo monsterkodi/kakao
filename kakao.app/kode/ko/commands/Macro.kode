@@ -6,7 +6,7 @@
 000   000  000   000   0000000  000   000   0000000
 ###
 
-use ../../kxk      ▪ reversed slash prefs post ffs uniq
+use ../../kxk      ▪ reversed uniq slash prefs post ffs
 use ../tools       ◆ salt req
 use ../win         ◆ GitInfo
 use ../editor      ◆ Syntax Editor
@@ -22,7 +22,6 @@ function Macro extends Command
 
         @macros = Macro.macroNames
         @macros = @macros.concat Editor.actionModules.transform.Transform.transformNames
-        log '@macros' @macros
         @names  = ['macro']
 
     #  0000000  000000000   0000000   00000000   000000000
