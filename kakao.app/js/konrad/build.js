@@ -5,7 +5,7 @@ var CMD, FLG, LIB, OUT
 CMD = "zig c++"
 OUT = "../Contents/MacOS/kakao"
 LIB = "-framework WebKit -framework Cocoa -framework JavaScriptCore"
-FLG = "-arch arm64 -Os -Wno-nullability-completeness"
+FLG = "-arch arm64 -Os -Wno-nullability-completeness -Wno-objc-method-access"
 import child_process from "child_process"
 
 import slash from "../kxk/slash.js"

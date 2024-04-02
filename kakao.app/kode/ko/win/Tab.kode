@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ elem post slash tooltip
 
-use ../tools/File
+use ../tools ◆ File Git Projects
 use ../editor/Render
 use ../editor/Syntax
 
@@ -143,9 +143,8 @@ class Tab
             @div.appendChild elem 'span' class:'tabstate app-drag-region' html:html, click:@togglePinned
 
         if @file?
-            diss = Syntax.dissForTextAndSyntax slash.tilde(@file), 'ko'
-            html = Render.line diss, charWidth:0
-            @tooltip = new tooltip elem:name, html:html, x:0
+                        
+            @tooltip = new tooltip elem:name, html:@tooltipHtml, x:@isPrj ? -18 : -6
 
         if @isPrj
             if @hiddenPrjFiles
@@ -157,6 +156,26 @@ class Tab
         else if @dirty
             @div.appendChild elem 'span' class:'dot' text:'●'
         @
+        
+    tooltipHtml: => 
+        
+        if @isPrj
+            Git.status(@file).then (status) =>
+                text = ''
+                text += "#{status.deleted.length} deleted\n" if status.deleted.length
+                text += "#{status.added.length} additions\n" if status.added.length
+                text += "#{status.changed.length} changes"   if status.changed.length
+                @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax(text, 'terminal'), wrapSpan:'tooltip-line'
+        
+        if @file?
+            
+            diss = Syntax.dissForTextAndSyntax slash.tilde(@file), 'ko'
+            html = Render.line diss, wrapSpan:'tooltip-path'
+            
+            if @isPrj and numFiles = Projects.files(@file).length
+                html += Render.line Syntax.dissForTextAndSyntax("#{numFiles} files" 'terminal'), wrapSpan:'tooltip-line'
+                
+        html
 
     index: -> @tabs.tabs.indexOf @
     prev:  -> @tabs.tab @index()-1 if @index() > 0

@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 var Tooltip
 
@@ -97,7 +97,7 @@ Tooltip = (function ()
 
     Tooltip.prototype["popup"] = function (event)
     {
-        var br, _63_27_, _64_22_, _73_67_, _74_59_, _75_60_
+        var br, html, _63_27_, _64_22_, _79_67_, _80_59_, _81_60_
 
         if (!(this.elem != null))
         {
@@ -107,7 +107,15 @@ Tooltip = (function ()
         {
             return
         }
-        this.div = elem({id:'tooltip',class:'tooltip',html:this.opt.html})
+        if (_k_.isFunc(this.opt.html))
+        {
+            html = this.opt.html()
+        }
+        else
+        {
+            html = this.opt.html
+        }
+        this.div = elem({id:'tooltip',class:'tooltip',html:html})
         if (this.opt.parent)
         {
             this.opt.parent.appendChild(this.div)
@@ -135,7 +143,7 @@ Tooltip = (function ()
 
     Tooltip.prototype["onLeave"] = function (event, e)
     {
-        var _79_16_, _85_12_
+        var _85_16_, _91_12_
 
         if ((this.elem != null))
         {

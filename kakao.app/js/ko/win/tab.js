@@ -7,6 +7,8 @@ let slash = kxk.slash
 let tooltip = kxk.tooltip
 
 import File from "../tools/File.js"
+import Git from "../tools/Git.js"
+import Projects from "../tools/Projects.js"
 
 import Render from "../editor/Render.js"
 
@@ -21,6 +23,7 @@ class Tab
         this.isPrj = isPrj
     
         this.togglePinned = this.togglePinned.bind(this)
+        this.tooltipHtml = this.tooltipHtml.bind(this)
         this.dirty = false
         this.pinned = false
         this.div = elem({class:'tab app-drag-region',text:''})
@@ -193,15 +196,13 @@ class Tab
         }
         if ((this.file != null))
         {
-            diss = Syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
-            html = Render.line(diss,{charWidth:0})
-            this.tooltip = new tooltip({elem:name,html:html,x:0})
+            this.tooltip = new tooltip({elem:name,html:this.tooltipHtml,x:(this.isPrj ? -18 : -6)})
         }
         if (this.isPrj)
         {
             if (this.hiddenPrjFiles)
             {
-                for (var _152_25_ = i = 0, _152_29_ = this.hiddenPrjFiles.length; (_152_25_ <= _152_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_152_25_ <= _152_29_ ? ++i : --i))
+                for (var _151_25_ = i = 0, _151_29_ = this.hiddenPrjFiles.length; (_151_25_ <= _151_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_151_25_ <= _151_29_ ? ++i : --i))
                 {
                     dot = elem('span',{class:'prjdot',text:'●'})
                     this.div.appendChild(dot)
@@ -217,6 +218,44 @@ class Tab
             this.div.appendChild(elem('span',{class:'dot',text:'●'}))
         }
         return this
+    }
+
+    tooltipHtml ()
+    {
+        var diss, html, numFiles, _170_16_
+
+        if (this.isPrj)
+        {
+            Git.status(this.file).then((function (status)
+            {
+                var text
+
+                text = ''
+                if (status.deleted.length)
+                {
+                    text += `${status.deleted.length} deleted\n`
+                }
+                if (status.added.length)
+                {
+                    text += `${status.added.length} additions\n`
+                }
+                if (status.changed.length)
+                {
+                    text += `${status.changed.length} changes`
+                }
+                return this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(text,'terminal'),{wrapSpan:'tooltip-line'})
+            }).bind(this))
+        }
+        if ((this.file != null))
+        {
+            diss = Syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
+            html = Render.line(diss,{wrapSpan:'tooltip-path'})
+            if (this.isPrj && (numFiles = Projects.files(this.file).length))
+            {
+                html += Render.line(Syntax.dissForTextAndSyntax(`${numFiles} files`,'terminal'),{wrapSpan:'tooltip-line'})
+            }
+        }
+        return html
     }
 
     index ()
@@ -242,14 +281,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _164_27_
+        var _183_27_
 
-        return ((_164_27_=this.next()) != null ? _164_27_ : this.prev())
+        return ((_183_27_=this.next()) != null ? _183_27_ : this.prev())
     }
 
     close ()
     {
-        var _174_16_
+        var _193_16_
 
         post.emit('unwatch',this.file)
         if (this.dirty)
@@ -305,9 +344,9 @@ class Tab
                 hidden = this.hiddenPrjFiles
                 delete this.hiddenPrjFiles
                 var list = _k_.list(hidden)
-                for (var _226_25_ = 0; _226_25_ < list.length; _226_25_++)
+                for (var _245_25_ = 0; _245_25_ < list.length; _245_25_++)
                 {
-                    file = list[_226_25_]
+                    file = list[_245_25_]
                     tab = this.tabs.addTab(file)
                     if (window.textEditor.currentFile === file)
                     {
@@ -319,9 +358,9 @@ class Tab
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _232_24_ = 0; _232_24_ < list1.length; _232_24_++)
+                for (var _251_24_ = 0; _251_24_ < list1.length; _251_24_++)
                 {
-                    tab = list1[_232_24_]
+                    tab = list1[_251_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -337,7 +376,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _248_19_
+        var changes, _267_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -348,9 +387,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _249_24_ = 0; _249_24_ < list.length; _249_24_++)
+            for (var _268_24_ = 0; _268_24_ < list.length; _268_24_++)
             {
-                changes = list[_249_24_]
+                changes = list[_268_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

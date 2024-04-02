@@ -13,7 +13,7 @@ CMD = "zig c++" # is awesome!
 OUT = "../Contents/MacOS/kakao"
 
 LIB = "-framework WebKit -framework Cocoa -framework JavaScriptCore"
-FLG = "-arch arm64 -Os -Wno-nullability-completeness"
+FLG = "-arch arm64 -Os -Wno-nullability-completeness -Wno-objc-method-access"
 
 use child_process
 use ../kxk ◆ slash fs

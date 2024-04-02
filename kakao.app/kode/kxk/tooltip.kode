@@ -62,7 +62,13 @@ function Tooltip
         
         return if not @elem?
         return if @div?
-        @div = elem id:'tooltip' class:'tooltip' html: @opt.html
+        
+        if @opt.html is func
+            html = @opt.html()
+        else
+            html = @opt.html
+        
+        @div = elem id:'tooltip' class:'tooltip' html:html
         if @opt.parent
             @opt.parent.appendChild @div
         else
