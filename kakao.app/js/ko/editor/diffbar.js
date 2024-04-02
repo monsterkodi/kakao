@@ -197,10 +197,12 @@ class Diffbar
 
     update ()
     {
+        console.log('Diffbar.update',this.editor.currentFile)
         if (this.editor.currentFile)
         {
             return Git.diff(this.editor.currentFile).then((function (changes)
             {
+                console.log('Diffbar.update changes',this.editor.currentFile,changes)
                 this.changes = changes
                 this.updateMetas()
                 return this.updateScroll()
@@ -217,7 +219,7 @@ class Diffbar
 
     updateScroll ()
     {
-        var alpha, boring, ctx, h, length, lh, li, meta, w, _226_45_
+        var alpha, boring, ctx, h, length, lh, li, meta, w, _228_45_
 
         w = 2
         h = this.editor.scroll.viewHeight
@@ -232,9 +234,9 @@ class Diffbar
         if (this.changes)
         {
             var list = _k_.list(this.editor.meta.metas)
-            for (var _224_21_ = 0; _224_21_ < list.length; _224_21_++)
+            for (var _226_21_ = 0; _226_21_ < list.length; _226_21_++)
             {
-                meta = list[_224_21_]
+                meta = list[_226_21_]
                 if (!((meta != null ? meta[2] != null ? meta[2].git : undefined : undefined) != null))
                 {
                     continue
