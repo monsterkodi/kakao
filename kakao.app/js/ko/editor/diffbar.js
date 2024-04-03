@@ -213,7 +213,7 @@ class Diffbar
             console.log('clear changes')
             this.changes = null
             this.updateScroll()
-            return this.clear()
+            return this.editor.meta.clear()
         }
     }
 
