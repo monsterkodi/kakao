@@ -676,13 +676,12 @@ body
 {
     padding-right: .35em;
     padding-left: .1em;
-    overflow: :           hidden;
+    overflow: hidden;
 }
 
 .kodeIcon svg
 {
-    fill: :           #0a0;
-    transform: :      translateY(2px);
+    transform: translateY(2px);
 }
 
 
