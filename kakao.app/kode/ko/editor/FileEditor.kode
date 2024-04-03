@@ -73,8 +73,6 @@ function FileEditor extends TextEditor
 
     setCurrentFile: (file, restoreState) ->
 
-        # log 'FileEditor.setCurrentFile' file, restoreState
-
         @clear()
 
         @currentFile = file
@@ -95,14 +93,14 @@ function FileEditor extends TextEditor
     setText: (text="") =>
 
         super text
-        # log 'FileEditor.setText' text
+
         @restoreScrollCursorsAndSelections()
         post.emit 'file' @currentFile # browser & shelf
         @emit 'file' @currentFile # diffbar, invisible, pigments, ...
 
     currentDir: ->
 
-        if @currentFile? #and slash.fileExists @currentFile
+        if @currentFile?
             slash.dir @currentFile
         else
             slash.path kakao.bundle.path
