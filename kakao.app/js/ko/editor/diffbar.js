@@ -212,8 +212,8 @@ class Diffbar
         {
             console.log('clear changes')
             this.changes = null
-            this.updateMetas()
-            return this.updateScroll()
+            this.updateScroll()
+            return this.clear()
         }
     }
 
