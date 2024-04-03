@@ -211,15 +211,12 @@ function Browse extends Command
 
     changed: (command) ->
 
-        # log 'browse.changed' command
-        text = @getText().trim()
-        if not text.endsWith '/'
-            # @walker?.end()
-            # @walker = slash.list slash.resolve(slash.dir(text)), @changedCallback
-            # @walker = null
-            true
-        else
-            @hideList()
+        log 'browse.changed' command
+        # text = @getText().trim()
+        # if not text.endsWith '/'
+            # true
+        # else
+            # @hideList()
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000

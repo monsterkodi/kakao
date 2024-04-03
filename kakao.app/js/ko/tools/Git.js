@@ -110,7 +110,6 @@ Git = (function ()
                 status.files[file] = key
             }
         }
-        console.log('emit gitStatus',status.gitDir)
         post.emit('gitStatus',status)
         return status
     }

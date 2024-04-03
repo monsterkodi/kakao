@@ -84,7 +84,7 @@ function Git
             for file in status[key]
                 status.files[file] = key
         
-        log 'emit gitStatus'  status.gitDir
+        # log 'emit gitStatus'  status.gitDir
         post.emit 'gitStatus' status
                 
         status

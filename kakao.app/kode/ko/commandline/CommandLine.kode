@@ -265,9 +265,8 @@ function CommandLine extends TextEditor
             for ci in 0...cmmd.names.length
                 cname = cmmd.names[ci]
                 continue if cname in @hideCommands
-                div = elem class: "list-item"
-                namespan = "<span class=\"ko command #{cmmd.prefsID}\" style=\"position:absolute; left: #{ci > 0 and 80 or 12}px\">#{cname}</span>"
-                div.innerHTML = namespan
+                div = elem class: 'list-item'
+                div.innerHTML = "<span class=\"ko command #{cmmd.prefsID}\" style=\"position:absolute; left: #{ci > 0 and 80 or 12}px\">#{cname}</span>"
                 start = (name) => (event) =>
                     @hideList()
                     @startCommand name
@@ -277,6 +276,7 @@ function CommandLine extends TextEditor
 
     hideList: ->
 
+        log 'CommandLine.hideList'
         @list?.remove()
         @list = null
 

@@ -320,7 +320,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["listCommands"] = function ()
     {
-        var ci, cmmd, cname, div, name, namespan, start
+        var ci, cmmd, cname, div, name, start
 
         this.list.innerHTML = ""
         this.list.style.display = 'unset'
@@ -340,9 +340,8 @@ CommandLine = (function ()
                 {
                     continue
                 }
-                div = elem({class:"list-item"})
-                namespan = `<span class=\"ko command ${cmmd.prefsID}\" style=\"position:absolute; left: ${ci > 0 && 80 || 12}px\">${cname}</span>`
-                div.innerHTML = namespan
+                div = elem({class:'list-item'})
+                div.innerHTML = `<span class=\"ko command ${cmmd.prefsID}\" style=\"position:absolute; left: ${ci > 0 && 80 || 12}px\">${cname}</span>`
                 start = (function (name)
                 {
                     return (function (event)
@@ -362,6 +361,7 @@ CommandLine = (function ()
     {
         var _280_13_
 
+        console.log('CommandLine.hideList')
         ;(this.list != null ? this.list.remove() : undefined)
         return this.list = null
     }

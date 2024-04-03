@@ -237,22 +237,12 @@ Browse = (function ()
 
     Browse.prototype["changed"] = function (command)
     {
-        var text
-
-        text = this.getText().trim()
-        if (!text.endsWith('/'))
-        {
-            return true
-        }
-        else
-        {
-            return this.hideList()
-        }
+        console.log('browse.changed',command)
     }
 
     Browse.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var focusBrowser, _234_74_
+        var focusBrowser, _231_74_
 
         switch (combo)
         {
@@ -296,7 +286,7 @@ Browse = (function ()
 
     Browse.prototype["select"] = function (i)
     {
-        var l, s, text, _269_42_, _275_20_, _276_20_
+        var l, s, text, _266_42_, _272_20_, _273_20_
 
         this.selected = _k_.clamp(-1,(this.commandList != null ? this.commandList.numLines() : undefined) - 1,i)
         if (this.selected < 0)
@@ -315,7 +305,7 @@ Browse = (function ()
 
     Browse.prototype["selectListItem"] = function (dir)
     {
-        var _286_34_
+        var _283_34_
 
         if (!(this.commandList != null))
         {
@@ -376,11 +366,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _338_32_, _338_56_, _345_64_, _345_72_, _347_61_, _347_69_
+        var pth, _335_32_, _335_56_, _342_64_, _342_72_, _344_61_, _344_69_
 
         if (!this.isActive())
         {
-            ;((_338_32_=this.commandline.command) != null ? typeof (_338_56_=_338_32_.onBrowserItemActivated) === "function" ? _338_56_(item) : undefined : undefined)
+            ;((_335_32_=this.commandline.command) != null ? typeof (_335_56_=_335_32_.onBrowserItemActivated) === "function" ? _335_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -389,9 +379,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_345_64_=this.browser.activeColumn()) != null ? (_345_72_=_345_64_.parent) != null ? _345_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_342_64_=this.browser.activeColumn()) != null ? (_342_72_=_342_64_.parent) != null ? _342_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_347_61_=this.browser.activeColumn()) != null ? (_347_69_=_347_61_.parent) != null ? _347_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_344_61_=this.browser.activeColumn()) != null ? (_344_69_=_344_61_.parent) != null ? _344_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)
