@@ -23,22 +23,19 @@ function Editor extends Buffer
     @init: ○->
 
         filelist =○ ffs.list slash.path ◆dir, 'actions'
-        # log 'Editor.init' filelist
+
         for item in filelist
-            # TODO: move this stuff to a config.noon file
             actionFile = item.path
-            continue if slash.ext(actionFile) not in ['js' 'mjs' 'kode']
-            # log 'action' actionFile
+            continue if slash.ext(actionFile) != 'js'
+
             try
                 moduleJS = './' + slash.relative actionFile, ◆dir
-                # log 'moduleJS' moduleJS
                 actions =○ import(moduleJS)
             catch err
                 error "import of #{moduleJS} failed" err
                 continue
             moduleName = slash.name actionFile
             Editor.actionModules[moduleName] = actions.default
-            # log "Editor.actionModules.#{moduleName}" actions.default
 
             for key,value of actions.default
                 if value is func

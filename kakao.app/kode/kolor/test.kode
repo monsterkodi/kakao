@@ -765,6 +765,26 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
         rgs = ranges "a is elem"
         inc rgs, 5 "elem"   ▸ 'keyword'
         
+        ▸ dir
+        
+            rgs = ranges "◆dir"
+            inc rgs, 0 "◆"    ▸ 'punct keyword'
+            inc rgs, 1 "dir"  ▸ 'keyword'
+
+            rgs = ranges "◆Dir"
+            inc rgs, 0 "◆"     ▸ 'punct'
+            inc rgs, 1 "Dir"   ▸ 'text'
+            
+        ▸ file
+            
+            rgs = ranges "◆file"
+            inc rgs, 0 "◆"     ▸ 'punct keyword'
+            inc rgs, 1 "file"  ▸ 'keyword'
+
+            rgs = ranges "◆files"
+            inc rgs, 0 "◆"     ▸ 'punct'
+            inc rgs, 1 "files"  ▸ 'text'
+            
         ▸ use
         
             rgs = ranges "use fs"

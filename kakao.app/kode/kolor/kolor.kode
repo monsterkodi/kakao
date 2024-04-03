@@ -326,6 +326,13 @@ kodePunct = ->
 
     if chunk.match in '▸➜'
         return addValue 0 'keyword'
+        
+    if chunk.match in '◆'
+        next = getChunk 1
+        if next.match in ['dir''file']
+            addValue 0 'keyword'
+            setValue 1 'keyword'
+            return 2
 
     if prev = getChunk -1
         
