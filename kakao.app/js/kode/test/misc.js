@@ -12,7 +12,20 @@ toExport["misc"] = function ()
     section("dir", function ()
     {
         compare(kc('◆dir',import.meta.url.slice(7)),'_k_.dir()')
+    })
+    section("file", function ()
+    {
         compare(kc('◆file',import.meta.url.slice(7)),'_k_.file()')
+    })
+    section("main", function ()
+    {
+        compare(kc(`◆main
+    log 'hello'
+    log 'main'`),`if (((globalThis.process != null ? globalThis.process.argv : undefined) != null) && import.meta.filename === process.argv[1])
+{
+    console.log('hello')
+    console.log('main')
+}`)
     })
     section("this", function ()
     {

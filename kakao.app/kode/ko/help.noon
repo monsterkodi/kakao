@@ -1,30 +1,37 @@
 
+essential shortcuts
+
+    %.          open and focus file browser above editor
+    %y          maximize editor
+    %1          go to previous edit location
+    %2          go to next edit location
+
 selection
-    ⌘E          highlight occurences of selected word
+    ⌘E          highlight occurences of current word
     ⌘G          select next highlight
     ⌘D          add next highlighted word to selection
-    ⌥⌘D         select all highlighted words 
+    ⌥⌘D         select all occurences of current word
     ⌘⇧D         deselects last selected word
     ⌘L          select more lines 
     ⌘⇧L         select less lines
+    ⌥⌘B         select string, square- or curly-block boundary
     ⌥B          select string, square- or curly-block content
-    ⌥⌘B         select block boundary
     ⌘I          invert selection
-    ^'          toggle sticky selection
-    ^left|right remove from selection in sticky mode
     
-cursors
-    ^cursor     move and add main cursor independently
-    ^⌥cursor    move and erase main cursor independently
-    ^⇧cursor    align cursors
-    ⌘up|down    extend all cursors vertically
-    ^⇧up|down   extend only main cursor vertically
-    ⌘right      move cursors to end of lines
-    ⌘left       move cursors to first-non-space|start of line
-    ⌥-          page up
-    ⌥=          page down
+navigation    
     ⌥[          home
     ⌥]          end
+    ⌥-          page up
+    ⌥=          page down
+    ⌘right      move cursor to end of line
+    ⌘left       move cursor to first-non-space|start of line
+    
+multi-cursors
+    ⌘up|down     extend cursors vertically
+    ⌘left|right  move cursors to start|end of line
+    ⌘⇧up         shrink cursor columns at bottom
+    ⌘⇧down       shrink cursor columns at top
+    ⌥left-click  add cursor at mouse position
     
 editing
     ⌘/          toggle comment
@@ -36,11 +43,10 @@ editing
     ⌘3          ascii header mode
     
 display
-    ⌘-          decrease font size
-    ⌘=          increase font size
-    ⌘0          reset font size
+    ⌘-          decrease editor font size
+    ⌘=          increase editor font size
+    ⌘0          reset editor font size
     ⌘\          toggle centered layout
-    ⌘⇧Y         maximize editor (close terminal and commandline)
     
 misc
     ⌘R          discard changes and reload current file
@@ -73,3 +79,7 @@ macro
     sub num                             subtract from selected numbers
 
     
+advanced shortcuts
+
+    ^'              toggle sticky selection
+    ^left|right     remove from selection in sticky mode

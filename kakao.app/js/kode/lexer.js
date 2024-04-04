@@ -1,27 +1,14 @@
 var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
-var pull
-
 import noon from "../kxk/noon.js"
 import kstr from "../kxk/kstr.js"
 import slash from "../kxk/slash.js"
 
+import util from "../kxk/util.js"
+let pullIf = util.pullIf
+
 import fs from "fs"
 
-
-pull = function (arr, pred)
-{
-    var index
-
-    for (var _14_17_ = index = arr.length - 1, _14_31_ = 0; (_14_17_ <= _14_31_ ? index <= 0 : index >= 0); (_14_17_ <= _14_31_ ? ++index : --index))
-    {
-        if (pred(arr[index]))
-        {
-            arr.splice(index,1)
-        }
-    }
-    return arr
-}
 class Lexer
 {
     constructor (kode)
@@ -66,10 +53,10 @@ class Lexer
         {
             before = text.length
             var list = _k_.list(this.regs)
-            for (var _67_26_ = 0; _67_26_ < list.length; _67_26_++)
+            for (var _60_26_ = 0; _60_26_ < list.length; _60_26_++)
             {
-                key = list[_67_26_][0]
-                reg = list[_67_26_][1]
+                key = list[_60_26_][0]
+                reg = list[_60_26_][1]
                 match = text.match(reg)
                 if ((match != null ? match.index : undefined) === 0)
                 {
@@ -128,7 +115,7 @@ class Lexer
                             tokens.slice(-1)[0].text = _k_.trim(tokens.slice(-1)[0].text,' \n')
                         }
                     }
-                    else if (key.startsWith('prof') && _k_.empty(pull(linetokens,function (t)
+                    else if (key.startsWith('prof') && _k_.empty(pullIf(linetokens,function (t)
                         {
                             return t.text !== 'use'
                         })))
@@ -181,9 +168,9 @@ class Lexer
         var minind, splt, tok
 
         var list = _k_.list(tokens)
-        for (var _146_16_ = 0; _146_16_ < list.length; _146_16_++)
+        for (var _139_16_ = 0; _139_16_ < list.length; _139_16_++)
         {
-            tok = list[_146_16_]
+            tok = list[_139_16_]
             if (tok.type === 'triple')
             {
                 splt = tok.text.slice(3, -3).split('\n')
@@ -335,7 +322,7 @@ class Lexer
                 block = blocks.slice(-1)[0]
             }
         }
-        for (var _278_19_ = idx = 0, _278_23_ = tokens.length; (_278_19_ <= _278_23_ ? idx < tokens.length : idx > tokens.length); (_278_19_ <= _278_23_ ? ++idx : --idx))
+        for (var _271_19_ = idx = 0, _271_23_ = tokens.length; (_271_19_ <= _271_23_ ? idx < tokens.length : idx > tokens.length); (_271_19_ <= _271_23_ ? ++idx : --idx))
         {
             tok = tokens[idx]
             if (tok.type === 'nl')

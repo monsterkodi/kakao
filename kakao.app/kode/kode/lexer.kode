@@ -7,15 +7,9 @@
 ###
 
 use ../kxk ◆ noon kstr slash
+use ../kxk/util ▪ pullIf 
 use fs
-
-pull = (arr, pred) ->
-    
-    for index in arr.length-1..0
-        if pred arr[index]
-            arr.splice index, 1
-    arr
-
+        
 class Lexer
 
     @: (@kode) ->
@@ -32,7 +26,6 @@ class Lexer
             
             if 
                 pat is 'string'
-                    # log 'pat' pat
                     @regs.push [key, new RegExp pat]
                     
                 pat is Array
@@ -105,7 +98,7 @@ class Lexer
                                 tokens[-1].type = 'op'
                                 tokens[-1].text = trim tokens[-1].text, ' \n'
                                 
-                        key.startsWith('prof') and empty pull linetokens, (t) -> t.text != 'use'
+                        key.startsWith('prof') and empty pullIf linetokens, (t) -> t.text != 'use'
                         
                             ni  = text.indexOf '\n'
                             si  = text.indexOf ';'

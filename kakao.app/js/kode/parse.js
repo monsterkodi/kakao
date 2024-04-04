@@ -19,23 +19,14 @@ Parse = (function ()
     
         this.debug = this.kode.args.debug
         this.verbose = this.kode.args.verbose
-        this.raw = this.kode.args.raw
         return Parse.__super__.constructor.apply(this, arguments)
     }
 
     Parse.prototype["parse"] = function (block)
     {
-        var ast
-
         this.stack = []
         this.sheap = []
-        ast = []
-        ast = ast.concat(this.exps('tl',block.tokens))
-        if (this.raw)
-        {
-            print.noon('raw ast',ast)
-        }
-        return {vars:[],exps:ast}
+        return {vars:[],exps:this.exps('tl',block.tokens)}
     }
 
     Parse.prototype["exps"] = function (rule, tokens, stop)
@@ -270,7 +261,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, tok, _285_34_, _347_33_
+        var block, e, numTokens, tok, _274_34_, _336_33_
 
         if (_k_.empty(tokens))
         {
@@ -384,7 +375,7 @@ Parse = (function ()
 
         }
 
-        this.sheapPush('exp',((_285_34_=tok.text) != null ? _285_34_ : tok.type))
+        this.sheapPush('exp',((_274_34_=tok.text) != null ? _274_34_ : tok.type))
         e = tok
         while (tokens.length)
         {
@@ -465,13 +456,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_347_33_=tok.text) != null ? _347_33_ : tok.type))
+        this.sheapPop('exp',((_336_33_=tok.text) != null ? _336_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _408_22_
+        var llc, numTokens, nxt, spaced, unspaced, _397_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])
@@ -673,6 +664,11 @@ Parse = (function ()
             if (e.text === '◆' && _k_.in(nxt.text,['file','dir']))
             {
                 e = this.dirFile(e,tokens)
+                break
+            }
+            if (e.text === '◆' && nxt.text === 'main')
+            {
+                e = this.main(e,tokens)
                 break
             }
             if (nxt.text === '.')

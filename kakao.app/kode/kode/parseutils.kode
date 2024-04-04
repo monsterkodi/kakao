@@ -223,7 +223,7 @@ function ParseUtils
                     subbs[-1].push t
                 else    
                     subbs.push []                       # yes: start another subblock
-                    if tokens[0]?.text == 'then'        # undisguis else
+                    if tokens[0]?.text == 'then'        # undisguise else
                         tokens[0].text = 'else'             
             else
                 subbs[-1].push t

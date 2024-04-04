@@ -55,11 +55,15 @@ class Kode
             error err
             throw err
         
-    #  0000000   0000000   00     00  00000000   000  000      00000000
-    # 000       000   000  000   000  000   000  000  000      000
-    # 000       000   000  000000000  00000000   000  000      0000000
-    # 000       000   000  000 0 000  000        000  000      000
-    #  0000000   0000000   000   000  000        000  0000000  00000000
+    ###
+     0000000   0000000   00     00  00000000   000  000      00000000
+    000       000   000  000   000  000   000  000  000      000
+    000       000   000  000000000  00000000   000  000      0000000
+    000       000   000  000 0 000  000        000  000      000
+     0000000   0000000   000   000  000        000  0000000  00000000
+     
+    converts a string of kode into a string of javascript
+    ###
 
     @compile: (text, opt={}) -> (new Kode opt).compile text
     
@@ -68,16 +72,28 @@ class Kode
         return '' if empty trim text
 
         @renderer.render @ast(text), file
+        
+    #  0000000    0000000  000000000  
+    # 000   000  000          000     
+    # 000000000  0000000      000     
+    # 000   000       000     000     
+    # 000   000  0000000      000     
+    
+    # converts a string of kode into an abstract syntax tree
+    
+    ast: (text) ->
+        
+        tokens = @lexer.tokenize text
+        blocks = @lexer.blockify tokens
+
+        ast = @parser.parse  blocks # convert blocked token tree to abstract syntax tree
+        ast = @stripol.collect  ast # handle string interpolation content
+        ast = @scoper.collect   ast # collect variables in scopes
+        ast = @returner.collect ast # insert return statements for last expressions in blocks
+        ast = @operator.collect ast # sort operation chains by precedence
 
     astr: (text, scopes) -> print.astr @ast(text), scopes
-        
-    ast: (text) ->
-
-        tokens = @lexer.tokenize text
-        block = @lexer.blockify tokens
-
-        @operator.collect @returner.collect @scoper.collect @stripol.collect @parser.parse block
-        
+    
     #  0000000  000      000
     # 000       000      000
     # 000       000      000

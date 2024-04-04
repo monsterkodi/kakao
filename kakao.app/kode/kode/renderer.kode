@@ -204,6 +204,7 @@ class Renderer
                 'qmrkop'    ➜ @qmrkop v
                 'stripol'   ➜ @stripol v
                 'dirFile'   ➜ @dirFile v
+                'main'      ➜ @main v
                 'qmrkcolon' ➜ @qmrkcolon v
                 'operation' ➜ @operation v
                 'section'   ➜ @section v
@@ -457,6 +458,15 @@ class Renderer
         if n == 'file'
             @hint._k_.file = true
             s = "_k_.file()"
+        s
+        
+    main: (n) ->
+        
+        idt = rpad 4
+        s = 'if (((globalThis.process != null ? globalThis.process.argv : undefined) != null) && import.meta.filename === process.argv[1])'
+        s += '\n{\n'
+        s += idt + @nodes n, '\n' + idt
+        s += '\n}'
         s
         
     #  0000000  000       0000000    0000000   0000000

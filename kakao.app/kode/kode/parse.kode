@@ -9,7 +9,7 @@
 ###
 
 use ./utils ▪ firstLineCol lastLineCol
-use         ◆ print parseutils 
+use         ◆ print parseutils
 
 function Parse extends parseutils
 
@@ -17,7 +17,6 @@ function Parse extends parseutils
 
         @debug    = @kode.args.debug
         @verbose  = @kode.args.verbose
-        @raw      = @kode.args.raw
 
     # 00000000    0000000   00000000    0000000  00000000
     # 000   000  000   000  000   000  000       000
@@ -30,14 +29,8 @@ function Parse extends parseutils
         @stack = []
         @sheap = []
 
-        ast = []
-
-        ast = ast.concat @exps 'tl' block.tokens
-
-        if @raw then print.noon 'raw ast' ast
-
-        vars:[] 
-        exps:ast
+        vars: [] 
+        exps: @exps 'tl' block.tokens
 
     # 00000000  000   000  00000000    0000000
     # 000        000 000   000   000  000
@@ -48,7 +41,7 @@ function Parse extends parseutils
     # consumes tokens and returns a list of expressions
     #
     # the entry point for ...
-    #   - the tl scope
+    #   - the top level scope
     #   - class and function bodies
     #   - argument lists
     #   - arrays and objects
@@ -85,10 +78,6 @@ function Parse extends parseutils
                             ➜ false
 
             if b then @verb "exps break for #{tok.text} and stack top" @stack ; break 
-                
-            # if tok.text == '◆' and tokens[1]?.text in ['dir' 'file'] 
-                # es.push @dirFile tokens.shift(), tokens
-                # continue
                 
             if stop and tok.text == stop and tok.type != 'var'
                 @verb "exps break for #{tok.text} and stop" stop 
@@ -250,9 +239,9 @@ function Parse extends parseutils
             ';'         ➜   print.tokens 'ERROR: exp unexpected ;'     [tok].concat tokens; return error "INTERNAL ERROR: unexpected ; token in exp!"
             'section'   ➜   return @section tok, tokens                
             'keyword'       # dispatch to block rules identified by keyword
-                            if tokens[0]?.text not in ':' # allow keywords as keys
+                            if tokens[0]?.text not in ':' # allow keywords as dictionary keys
                                 
-                                if tok.text == 'import' 
+                                if tok.text == 'import'
                                     if tokens[0].text == '(' # this is really ugly! implement dynamic inline use
                                         tok.type = 'call'
                                         return @call tok, tokens
@@ -494,6 +483,10 @@ function Parse extends parseutils
                 
             if e.text == '◆' and nxt.text in ['file' 'dir'] 
                 e = @dirFile e, tokens
+                break
+
+            if e.text == '◆' and nxt.text == 'main'
+                e = @main e, tokens
                 break
                 
             # if e.text == 'import'

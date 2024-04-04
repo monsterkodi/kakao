@@ -25,7 +25,7 @@ Parser = (function ()
 
     Parser.prototype["if"] = function (tok, tokens)
     {
-        var cond, e, thn, _63_23_
+        var cond, e, thn, _65_23_
 
         if (tokens[0].type === 'block')
         {
@@ -48,7 +48,7 @@ Parser = (function ()
         {
             tokens.shift()
             tokens.shift()
-            e.if.elifs = ((_63_23_=e.if.elifs) != null ? _63_23_ : [])
+            e.if.elifs = ((_65_23_=e.if.elifs) != null ? _65_23_ : [])
             cond = this.exp(tokens)
             thn = this.then('elif',tokens)
             this.shiftNewlineTok('if after elif then',tokens,tok,(tokens[1] != null ? tokens[1].text : undefined) === 'else')
@@ -65,7 +65,7 @@ Parser = (function ()
 
     Parser.prototype["ifBlock"] = function (tok, tokens, e)
     {
-        var cond, subbs, thn, _113_23_
+        var cond, subbs, thn, _115_23_
 
         this.push('if')
         subbs = this.subBlocks(tokens.shift().tokens)
@@ -85,7 +85,7 @@ Parser = (function ()
             }
             cond = this.exp(tokens)
             thn = this.then('elif',tokens)
-            e.if.elifs = ((_113_23_=e.if.elifs) != null ? _113_23_ : [])
+            e.if.elifs = ((_115_23_=e.if.elifs) != null ? _115_23_ : [])
             e.if.elifs.push({elif:{cond:cond,then:thn}})
         }
         this.pop('if')
@@ -391,6 +391,12 @@ Parser = (function ()
     Parser.prototype["dirFile"] = function (tok, tokens)
     {
         return {dirFile:tokens.shift().text}
+    }
+
+    Parser.prototype["main"] = function (tok, tokens)
+    {
+        tokens.shift()
+        return {main:this.block('main',tokens)}
     }
 
     Parser.prototype["class"] = function (tok, tokens, type = 'class')
