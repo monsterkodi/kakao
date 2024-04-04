@@ -52,6 +52,9 @@ lineDiff.isBoring = (oldLine, newLine) ->
     
     changes = lineDiff oldLine, newLine
     return true if empty changes
-    return false
+    for change in changes
+        if valid trim newLine.slice change.index, change.index+change.length
+            return false
+    true
     
 export lineDiff

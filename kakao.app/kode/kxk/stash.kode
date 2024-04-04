@@ -11,7 +11,7 @@
 # does not sync between windows
  
 use ◆ noon post slash sds kstr ffs
-use ./util ▪ defaults
+use ./util ▪ defaults isEqual
 
 function Stash
     
@@ -52,10 +52,13 @@ function Stash
     set: (key, value) ->
         
         return error 'stash.set -- invalid key', key if not key is str
-        sds.set @data, @keypath(key), value
         
-        clearTimeout @timer if @timer
-        @timer = setTimeout @save, @timeout
+        if not isEqual value, sds.get @data, @keypath(key)
+            log 'stash.set' key, value
+            sds.set @data, @keypath(key), value
+        
+            clearTimeout @timer if @timer
+            @timer = setTimeout @save, @timeout
                     
     del: (key) -> @set key
     
@@ -91,16 +94,17 @@ function Stash
 
     save: =>
         
-        return if not @file
-        
         clearTimeout @timer
         @timer = null
+        
+        return if not @file
+        
         try
             # log 'stash.save data' @data
             text = noon.stringify @data
             # log 'stash.save text' text
             ffs.write(@file, text).then (file) ->
-                # log 'stash.saved' file
+                log 'stash.saved' file
         catch err
             error "stash.save -- can't save to '#{@file}': #{err}"
         true

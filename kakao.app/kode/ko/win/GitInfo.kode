@@ -84,7 +84,9 @@ class GitInfo
         for text in changes.lines
             
             dss = sytx.getDiss index
-
+            
+            continue if empty dss
+            
             if changes.change == 'deleted'
 
                 window.terminal.meta.add 
@@ -102,6 +104,10 @@ class GitInfo
                     clss:       'gitInfoAdded'
 
             else if changes.change == 'changed'
+                
+                if linediff.isBoring changes.info.mod[index].old, changes.info.mod[index].new
+                    index += 1
+                    continue
 
                 diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
                 if empty diffs and not trim(changes.info.mod[index].old).startsWith "#"

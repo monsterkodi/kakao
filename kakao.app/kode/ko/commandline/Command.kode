@@ -26,6 +26,7 @@ function Command
     # 0000000      000     000   000     000     00000000  
     
     state: ->
+        
         text:  @getText()
         name:  @name
         
@@ -42,7 +43,7 @@ function Command
     # 0000000      000     000   000  000   000     000   
     
     start: (name) ->
-        
+
         @setName name
         @loadState()
         text = @getText()
@@ -96,6 +97,7 @@ function Command
             @positionList()
 
     weight: (item, opt) ->
+        
         w = 0
         w += item.text.startsWith(opt.currentText) and 65535 * (opt.currentText.length/item.text.length) or 0 
         w
@@ -109,7 +111,6 @@ function Command
     #  0000000  000   000  000   000   0000000  00000000  0000000
     
     cancel: ->
-        
         log 'Command.cancel'
         @hideList()        
         text: ''
@@ -117,6 +118,7 @@ function Command
         show: 'editor'
         
     clear: ->
+        
         if window.terminal.numLines() > 0
             window.terminal.clear()
             {}

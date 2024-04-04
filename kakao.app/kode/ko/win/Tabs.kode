@@ -419,7 +419,7 @@ class Tabs
         
     sortTabs: ->
         
-        log 'Tabs.sortTabs'
+        # log 'Tabs.sortTabs'
         
         sorted = @tabs.filter (t) -> t.isPrj
         remain = @tabs.filter (t) -> not t.isPrj
@@ -434,21 +434,23 @@ class Tabs
             if valid prjTabs[prjPath]
                 prjTabs[prjPath].push tab
             else
-                log 'dangling tab' tab.file
+                # log 'dangling tab' tab.file
                 dangling.push tab
             
         @tabs = []
         for k,v of prjTabs
-            if v.length == 1
-                log 'no prjTabs?' k
-            @tabs = @tabs.concat v
+            if v.length > 1
+                @tabs = @tabs.concat v
+            # else
+                # log 'no prjTabs?' k
             
         @tabs = @tabs.concat dangling
         
+        @div.innerHTML = ''
         for tab in @tabs
-            log 'tab' tab.file
+            # log 'tab' tab.file
             if tab.div
-                @div.removeChild tab.div
+                # @div.removeChild tab.div
                 @div.appendChild tab.div
 
     onDirty: (dirty) =>

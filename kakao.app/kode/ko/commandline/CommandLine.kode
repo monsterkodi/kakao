@@ -169,7 +169,7 @@ function CommandLine extends TextEditor
     # 0000000      000     000   000  000   000     000
 
     startCommand: (name) ->
-
+        
         r = @command?.cancel name
 
         if r?.status == 'ok'
@@ -276,7 +276,7 @@ function CommandLine extends TextEditor
 
     hideList: ->
 
-        log 'CommandLine.hideList'
+        # log 'CommandLine.hideList'
         @list?.remove()
         @list = null
 
@@ -319,7 +319,10 @@ function CommandLine extends TextEditor
     handleMenuAction: (name, trail) ->
 
         if trail?.startsWith 'Command▸'
-            cmdName = trail.split('▸')[1].toLowerCase()
+            cmdName = trail.split('▸')[1]
+            if name != 'Case Sensitive'
+                cmdName = cmdName.toLowerCase()
+            # log 'commandLine.handleMenuAction' name, trail, cmdName
             if cmd = @commandForName cmdName
                 @startCommand cmdName
                 return

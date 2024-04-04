@@ -91,6 +91,10 @@ class GitInfo
         {
             text = list[_84_17_]
             dss = sytx.getDiss(index)
+            if (_k_.empty(dss))
+            {
+                continue
+            }
             if (changes.change === 'deleted')
             {
                 window.terminal.meta.add({line:window.terminal.numLines(),start:0,end:text.length,clss:'gitInfoDelete'})
@@ -101,6 +105,11 @@ class GitInfo
             }
             else if (changes.change === 'changed')
             {
+                if (linediff.isBoring(changes.info.mod[index].old,changes.info.mod[index].new))
+                {
+                    index += 1
+                    continue
+                }
                 diffs = linediff(changes.info.mod[index].old,changes.info.mod[index].new)
                 if (_k_.empty(diffs) && !_k_.trim(changes.info.mod[index].old).startsWith("#"))
                 {
@@ -108,9 +117,9 @@ class GitInfo
                     if (!_k_.empty(diffs))
                     {
                         var list1 = _k_.list(diffs)
-                        for (var _111_33_ = 0; _111_33_ < list1.length; _111_33_++)
+                        for (var _117_33_ = 0; _117_33_ < list1.length; _117_33_++)
                         {
-                            diff = list1[_111_33_]
+                            diff = list1[_117_33_]
                             window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoDelete'})
                         }
                         dss = Syntax.dissForTextAndSyntax(changes.info.mod[index].old,syntaxName)
@@ -119,9 +128,9 @@ class GitInfo
                 else
                 {
                     var list2 = _k_.list(diffs)
-                    for (var _121_29_ = 0; _121_29_ < list2.length; _121_29_++)
+                    for (var _127_29_ = 0; _127_29_ < list2.length; _127_29_++)
                     {
-                        diff = list2[_121_29_]
+                        diff = list2[_127_29_]
                         window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                     }
                 }
@@ -192,18 +201,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _188_21_ = 0; _188_21_ < list.length; _188_21_++)
+            for (var _194_21_ = 0; _194_21_ < list.length; _194_21_++)
             {
-                file = list[_188_21_]
+                file = list[_194_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _193_21_ = 0; _193_21_ < list1.length; _193_21_++)
+            for (var _199_21_ = 0; _199_21_ < list1.length; _199_21_++)
             {
-                file = list1[_193_21_]
+                file = list1[_199_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,diff)
@@ -217,9 +226,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _202_21_ = 0; _202_21_ < list2.length; _202_21_++)
+            for (var _208_21_ = 0; _208_21_ < list2.length; _208_21_++)
             {
-                file = list2[_202_21_]
+                file = list2[_208_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('changed',file,status,diff)
@@ -229,9 +238,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _210_31_ = 0; _210_31_ < list3.length; _210_31_++)
+                    for (var _216_31_ = 0; _216_31_ < list3.length; _216_31_++)
                     {
-                        change = list3[_210_31_]
+                        change = list3[_216_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {

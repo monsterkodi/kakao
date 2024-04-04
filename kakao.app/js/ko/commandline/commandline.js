@@ -361,7 +361,6 @@ CommandLine = (function ()
     {
         var _280_13_
 
-        console.log('CommandLine.hideList')
         ;(this.list != null ? this.list.remove() : undefined)
         return this.list = null
     }
@@ -413,7 +412,11 @@ CommandLine = (function ()
 
         if ((trail != null ? trail.startsWith('Command▸') : undefined))
         {
-            cmdName = trail.split('▸')[1].toLowerCase()
+            cmdName = trail.split('▸')[1]
+            if (name !== 'Case Sensitive')
+            {
+                cmdName = cmdName.toLowerCase()
+            }
             if (cmd = this.commandForName(cmdName))
             {
                 this.startCommand(cmdName)
@@ -434,7 +437,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _341_19_
+        var _344_19_
 
         if (combo === 'esc')
         {
@@ -453,7 +456,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _349_19_, _357_55_, _358_55_, _368_58_
+        var split, _1_8_, _352_19_, _360_55_, _361_55_, _371_58_
 
         if ((this.command != null))
         {

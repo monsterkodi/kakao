@@ -664,7 +664,6 @@ class Tabs
     {
         var dangling, k, prjPath, prjTabs, remain, sorted, tab, v
 
-        console.log('Tabs.sortTabs')
         sorted = this.tabs.filter(function (t)
         {
             return t.isPrj
@@ -690,7 +689,6 @@ class Tabs
             }
             else
             {
-                console.log('dangling tab',tab.file)
                 dangling.push(tab)
             }
         }
@@ -698,21 +696,19 @@ class Tabs
         for (k in prjTabs)
         {
             v = prjTabs[k]
-            if (v.length === 1)
+            if (v.length > 1)
             {
-                console.log('no prjTabs?',k)
+                this.tabs = this.tabs.concat(v)
             }
-            this.tabs = this.tabs.concat(v)
         }
         this.tabs = this.tabs.concat(dangling)
+        this.div.innerHTML = ''
         var list1 = _k_.list(this.tabs)
-        for (var _448_16_ = 0; _448_16_ < list1.length; _448_16_++)
+        for (var _450_16_ = 0; _450_16_ < list1.length; _450_16_++)
         {
-            tab = list1[_448_16_]
-            console.log('tab',tab.file)
+            tab = list1[_450_16_]
             if (tab.div)
             {
-                this.div.removeChild(tab.div)
                 this.div.appendChild(tab.div)
             }
         }
@@ -720,7 +716,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _456_20_
+        var _458_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var lineDiff
 
@@ -68,13 +68,22 @@ lineDiff = function (oldLine, newLine)
 
 lineDiff.isBoring = function (oldLine, newLine)
 {
-    var changes
+    var change, changes
 
     changes = lineDiff(oldLine,newLine)
     if (_k_.empty(changes))
     {
         return true
     }
-    return false
+    var list = _k_.list(changes)
+    for (var _55_15_ = 0; _55_15_ < list.length; _55_15_++)
+    {
+        change = list[_55_15_]
+        if (!_k_.empty(_k_.trim(newLine.slice(change.index,change.index + change.length))))
+        {
+            return false
+        }
+    }
+    return true
 }
 export default lineDiff;

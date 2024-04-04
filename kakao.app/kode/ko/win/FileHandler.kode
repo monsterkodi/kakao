@@ -12,7 +12,7 @@ use ../tools  ◆ Projects File
 class FileHandler
 
     @: ->
-
+        
         post.on 'fileChanged' @reloadFile
         post.on 'fileRemoved' @removeFile
         post.on 'saveFileAs'  @saveFileAs
@@ -20,6 +20,7 @@ class FileHandler
         post.on 'saveAll'     @saveAll
         post.on 'saveChanges' @saveChanges
         post.on 'reloadTab'   @reloadTab
+        post.on 'reloadFile'  @reloadActiveTab
         post.on 'loadFile'    @loadFile
         post.on 'openFile'    @openFile
         post.on 'openFiles'   @openFiles
@@ -48,7 +49,8 @@ class FileHandler
             if not file.startsWith 'untitled'
                 file = slash.path file
 
-        if file != editor?.currentFile or valid filePos
+        if file != editor?.currentFile or valid filePos or opt.reload
+            
             @addToRecent file
 
             tab = tabs.tab file
@@ -64,6 +66,8 @@ class FileHandler
             if tab?.state
                 restoreState = tab.state.state
 
+            # log 'editor.setCurrentFile file' file, restoreState
+            
             editor.setCurrentFile file, restoreState
 
             if tab
@@ -71,7 +75,9 @@ class FileHandler
             else
                 tabs.getPrjTab(Projects.dir file)?.update()
 
-            post.emit 'fileLoaded' file
+            # post.emit 'fileLoaded' file
+            
+            editor.restoreScrollCursorsAndSelections()
 
         split.raise 'editor'
 
@@ -162,7 +168,7 @@ class FileHandler
             else
                 tab.reload()
 
-    reloadActiveTab: ->
+    reloadActiveTab: =>
 
         if tab = tabs.activeTab()
             tab.reload()

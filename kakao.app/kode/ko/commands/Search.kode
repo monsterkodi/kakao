@@ -31,6 +31,8 @@ function Search extends Command
     execute: (command) ->
 
         return if not command.length
+        
+        log 'Search.execute command' command
 
         switch @name
             '/search/' '/Search/'

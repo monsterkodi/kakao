@@ -142,6 +142,7 @@ Window = (function ()
     {
         var action
 
+        console.log('ko.Window.onMenuAction',name,trail)
         if (action = Editor.actionWithName(name))
         {
             console.log('editor.actionWithName',name)
@@ -333,7 +334,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _210_14_
+    var _211_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -344,7 +345,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _216_22_, _217_19_
+    var _217_22_, _218_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -389,7 +390,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _261_32_
+    var _262_32_
 
     if (!(_k_.isNum(s)))
     {

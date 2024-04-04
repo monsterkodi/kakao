@@ -11,6 +11,7 @@ import ffs from "./ffs.js"
 
 import util from "./util.js"
 let defaults = util.defaults
+let isEqual = util.isEqual
 
 
 Stash = (function ()
@@ -63,12 +64,16 @@ Stash = (function ()
         {
             return console.error('stash.set -- invalid key',key)
         }
-        sds.set(this.data,this.keypath(key),value)
-        if (this.timer)
+        if (!isEqual(value,sds.get(this.data,this.keypath(key))))
         {
-            clearTimeout(this.timer)
+            console.log('stash.set',key,value)
+            sds.set(this.data,this.keypath(key),value)
+            if (this.timer)
+            {
+                clearTimeout(this.timer)
+            }
+            return this.timer = setTimeout(this.save,this.timeout)
         }
-        return this.timer = setTimeout(this.save,this.timeout)
     }
 
     Stash.prototype["del"] = function (key)
@@ -102,17 +107,19 @@ Stash = (function ()
     {
         var text
 
+        clearTimeout(this.timer)
+        this.timer = null
         if (!this.file)
         {
             return
         }
-        clearTimeout(this.timer)
-        this.timer = null
         try
         {
             text = noon.stringify(this.data)
             ffs.write(this.file,text).then(function (file)
-            {})
+            {
+                console.log('stash.saved',file)
+            })
         }
         catch (err)
         {

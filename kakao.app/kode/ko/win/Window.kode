@@ -97,7 +97,7 @@ function Window extends win.Delegate
     
     onMenuAction: (name, trail) =>
         
-        # log 'ko.Window.onMenuAction' name, trail
+        log 'ko.Window.onMenuAction' name, trail
         
         if action = Editor.actionWithName name
             
@@ -152,6 +152,7 @@ function Window extends win.Delegate
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
     
         # log 'onMenuAction unhandled' name, trail
+        
             
 # 00000000    0000000    0000000  000000000
 # 000   000  000   000  000          000
