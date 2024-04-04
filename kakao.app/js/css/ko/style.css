@@ -565,8 +565,8 @@ body
     font-family: titlebarFont;
     opacity: 0;
     transform: scaleY(0);
-    transition: transform 0.2s ease-in, opacity 0.2s ease-in;
     transform-origin: top left;
+    transition: transform 0.2s ease-in, opacity 0.2s ease-in;
     overflow: hidden;
 }
 
@@ -605,7 +605,7 @@ body
 
 .tab
 {
-    flex: 1 1 0;
+    flex: .1 .1 0;
     display: flex;
     position: relative;
     border-top-left-radius: 6px;

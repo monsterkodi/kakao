@@ -14,21 +14,27 @@ export
 
         deleteBackward:
             name:  'Delete Backward'
-            text:  'delete character to the left'
             combo: 'backspace'
 
-        deleteBackwardIgnoreLineBoundary:
-            name:   'Delete Backward Over Line Boundaries'
+        deleteBackwardWord:
+            name:   'Delete Backward Word'
             combo:  'command+backspace'
 
         deleteBackwardSwallowWhitespace:
             name:   'Delete Backward Over Whitespace'
             combo:  'alt+backspace'
 
+        deleteBackwardIgnoreLineBoundary:
+            name:   'Delete Backward Over Line Boundaries'
+            combo:  'command+alt+backspace'
+            
     deleteBackwardIgnoreLineBoundary: -> @deleteBackward ignoreLineBoundary:true 
     deleteBackwardSwallowWhitespace:  -> @deleteBackward ignoreTabBoundary:true 
+    deleteBackwardWord:               -> @deleteBackward swallowWord:true 
             
     deleteBackward: (opt) ->
+        
+        log 'deleteBackward' opt
 
         @do.start()
         if @do.numSelections()
@@ -40,7 +46,7 @@ export
         @do.end()
 
     deleteCharacterBackward: (opt) ->
-
+        
         newCursors = @do.cursors()
 
         if
@@ -52,7 +58,21 @@ export
                     n = t.length - t.trimRight().length
                     n += c[0] - @do.line(c[1]).length if @isCursorVirtual c
                     Math.max 1, n
-            else # delete spaces to previous tab column
+            opt?.swallowWord 
+                removeNum = Math.max 1, min newCursors.map (c) =>
+                    t = @do.textInRange [c[1], [0, c[0]]]
+                    if t.endsWith ' '
+                        n = t.length - t.trimRight().length
+                    else
+                        n = 1
+                        if t[-1] not in '.,:;|/+\'"[]{}()'
+                            while n < t.length and t[t.length-n-1] not in ' .,:;|/+\'"[]{}()'
+                                n++
+
+                    n += c[0] - @do.line(c[1]).length if @isCursorVirtual c
+                    Math.max 1, n
+            ➜ # delete spaces to previous tab column
+                log 'delete to previous tab column' @indentString.length
                 removeNum = Math.max 1, min newCursors.map (c) =>
                     n = (c[0] % @indentString.length) or @indentString.length
                     t = @do.textInRange [c[1], [Math.max(0, c[0]-n), c[0]]]

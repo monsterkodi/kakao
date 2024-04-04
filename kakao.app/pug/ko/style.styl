@@ -497,8 +497,8 @@ infoPadding = 6px
     font-family         titlebarFont    
     opacity             0
     transform           scaleY(0)
-    transition          transform 0.2s ease-in, opacity 0.2s ease-in
     transform-origin    top left
+    transition          transform 0.2s ease-in, opacity 0.2s ease-in
     overflow            hidden
     // display             grid
     
@@ -537,7 +537,7 @@ infoPadding = 6px
 //    000     000   000  0000000
 
 .tab
-    flex                1 1 0
+    flex                .1 .1 0
     display             flex
     position            relative
     border-top-left-radius  6px
@@ -554,7 +554,7 @@ infoPadding = 6px
     &:not(.active) .name
     &:not(.active) .tabstate
         opacity         0.5
-
+        
 .tab.prj
     flex 0 0 0
     padding-right       12px
@@ -1055,5 +1055,4 @@ infoPadding = 6px
 .commandlist::-webkit-scrollbar
 .commandlist .layerScroll::-webkit-scrollbar
         height          8px
-    
     

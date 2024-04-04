@@ -700,13 +700,21 @@ class Tabs
             {
                 this.tabs = this.tabs.concat(v)
             }
+            else if (v.length === 1 && !_k_.empty(v[0].hiddenPrjFiles))
+            {
+                this.tabs.push(v[0])
+            }
+            else
+            {
+                console.log('no prjTabs?',k)
+            }
         }
         this.tabs = this.tabs.concat(dangling)
         this.div.innerHTML = ''
         var list1 = _k_.list(this.tabs)
-        for (var _450_16_ = 0; _450_16_ < list1.length; _450_16_++)
+        for (var _452_16_ = 0; _452_16_ < list1.length; _452_16_++)
         {
-            tab = list1[_450_16_]
+            tab = list1[_452_16_]
             if (tab.div)
             {
                 this.div.appendChild(tab.div)
@@ -716,7 +724,7 @@ class Tabs
 
     onDirty (dirty)
     {
-        var _458_20_
+        var _460_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

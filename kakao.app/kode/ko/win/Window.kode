@@ -97,15 +97,15 @@ function Window extends win.Delegate
     
     onMenuAction: (name, trail) =>
         
-        log 'ko.Window.onMenuAction' name, trail
+        # log 'ko.Window.onMenuAction' name, trail
         
         if action = Editor.actionWithName name
             
-            log 'editor.actionWithName' name
+            # log 'editor.actionWithName' name, action
             
-            # if action.key? and window.focusEditor[action.key] is func
-                # window.focusEditor[action.key] trail
-                # return 
+            if action.key? and window.focusEditor[action.key] is func
+                window.focusEditor[action.key] name:name, trail:trail
+                return 
     
         if 'unhandled' != window.commandline.handleMenuAction name, trail
             return 
@@ -151,7 +151,7 @@ function Window extends win.Delegate
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
     
-        # log 'onMenuAction unhandled' name, trail
+        log 'onMenuAction unhandled' name, trail
         
             
 # 00000000    0000000    0000000  000000000

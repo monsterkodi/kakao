@@ -881,7 +881,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _724_24_, _746_35_, _752_33_
+        var action, actionCombo, combos, _726_24_, _743_35_, _749_33_
 
         if ((this.autocomplete != null))
         {
@@ -892,6 +892,9 @@ TextEditor = (function ()
         }
         switch (combo)
         {
+            case 'backspace':
+                return 'unhandled'
+
             case 'esc':
                 this.setSalterMode(false)
                 this.clearHighlights()
@@ -911,18 +914,18 @@ TextEditor = (function ()
         }
 
         var list = _k_.list(Editor.actions)
-        for (var _739_19_ = 0; _739_19_ < list.length; _739_19_++)
+        for (var _741_19_ = 0; _741_19_ < list.length; _741_19_++)
         {
-            action = list[_739_19_]
-            combos = ((_746_35_=action.combos) != null ? _746_35_ : [action.combo])
+            action = list[_741_19_]
+            combos = ((_743_35_=action.combos) != null ? _743_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _750_28_ = 0; _750_28_ < list1.length; _750_28_++)
+            for (var _747_28_ = 0; _747_28_ < list1.length; _747_28_++)
             {
-                actionCombo = list1[_750_28_]
+                actionCombo = list1[_747_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))

@@ -157,6 +157,11 @@ body
     right: 135px;
 }
 
+#titlebar //.menu
+{
+    animation: 14s ease scaleIn;
+}
+
 .menu
 {
     height: 30px;
@@ -259,6 +264,20 @@ body
     100%
     {
         opacity: 1;
+    }
+
+}
+
+@keyframes scaleIn
+{
+    from
+    {
+        transform: translate(-200px, 0) scale(0, 1);
+    }
+
+    to
+    {
+        transform: translate(0, 0) scale(1, 1);
     }
 
 }

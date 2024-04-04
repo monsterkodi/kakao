@@ -125,7 +125,9 @@ class Info
     # 000   000  000  0000        000  000  000
     #  0000000   000   000        000  000  000
     
-    onNumLines: (lc) => 
+    onNumLines: (lc) =>
+        
+        # log 'info onNumLines' lc
         
         @lines.textContent = shortCount lc ? 0
             

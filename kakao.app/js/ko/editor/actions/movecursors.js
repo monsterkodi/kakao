@@ -138,7 +138,7 @@ keeps current main cursor position in cursors if shift is pressed.`,combos:['ctr
 
     if (this.stickySelection && info.mod === 'ctrl')
     {
-        console.log('substract from sticky?',key)
+        console.log('substract  sticky?',key)
     }
     extend = ((_135_29_=info.extend) != null ? _135_29_ : 'shift' === info.mod)
     switch (key)

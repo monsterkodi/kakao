@@ -26,18 +26,18 @@
     "⌘left": "move cursor to first-non-space|start of line"
   },
   "multi-cursors": {
-    "⌘up|down": "extend cursors vertically",
-    "⌘left|right": "move cursors to start|end of line",
-    "⌘⇧up": "shrink cursor columns at bottom",
-    "⌘⇧down": "shrink cursor columns at top",
+    "⌘▴ ⌘▾": "extend cursors vertically",
+    "⌘◂ ⌘▸": "move cursors to start|end of line",
+    "⌘⇧▴": "shrink cursor columns at bottom",
+    "⌘⇧▾": "shrink cursor columns at top",
     "⌥left-click": "add cursor at mouse position"
   },
   "editing": {
     "⌘/": "toggle comment",
     "⌘j": "join lines",
-    "⌥up|down": "move lines up|down",
-    "⌥⇧up|down": "duplicate lines above|below",
-    "^⌥⇧right": "align text after cursors",
+    "⌥▴ ⌥▾": "move lines up|down",
+    "⌥⇧▴ ⌥⇧▾": "duplicate lines above|below",
+    "⌥⇧a": "align text after cursors",
     "⌘return": "insert line below cursor",
     "⌘3": "ascii header mode"
   },
@@ -48,7 +48,7 @@
     "⌘\\": "toggle centered layout"
   },
   "misc": {
-    "⌘R": "discard changes and reload current file",
+    "⌘r": "discard changes and reload current file",
     "⌥o": "jump to counterpart file",
     "⌘1|2": "jump to previous|next editing location"
   },
@@ -56,17 +56,17 @@
     "inv": "toggle display of invisibles",
     "fps": "toggle fps display",
     "blink": "toggle cursor blinking",
-    "color": "^⌥⌘p     toggle pigments",
+    "color": "^⌥⌘p   toggle pigments",
     "class": "create a new file with class template",
     "clean": "remove trailing spaces",
     "upper": "uppercase selected texts",
     "lower": "lowercase selected texts",
     "title": "titlecase selected texts",
-    "case": "⌘⌥^U    toggle between upper, lower and title",
+    "case": "^⌥⌘u   toggle between upper, lower and title",
     "up": "sort selected texts ascending",
     "down": "sort selected texts descending",
     "sort": "toggle between up and down",
-    "reverse": "⌘⌥^R   reverse selected texts",
+    "reverse": "^⌥⌘r   reverse selected texts",
     "col num delta": "duplicate main cursor horizontally",
     "line num delta": "duplicate main cursor vertically",
     "count dec|hex|bin offset delta": "insert numbers at cursors",
@@ -75,6 +75,6 @@
   },
   "advanced shortcuts": {
     "^'": "toggle sticky selection",
-    "^left|right": "remove from selection in sticky mode"
+    "^◂ ^▸": "remove from selection in sticky mode"
   }
 }

@@ -149,7 +149,11 @@ body
 // 000000000  0000000   000 0 000  000   000  
 // 000 0 000  000       000  0000  000   000  
 // 000   000  00000000  000   000   0000000   
-            
+
+
+#titlebar //.menu
+    animation           14s ease scaleIn
+
 .menu
     height              titlebarHeight
     flex                0 1 0
@@ -233,4 +237,11 @@ body
         opacity         0
     100%  
         opacity         1
+        
+@keyframes scaleIn
+    from
+        transform translate(-200px, 0) scale(0, 1)
+    to
+        transform translate(0, 0) scale(1, 1)
+    
     

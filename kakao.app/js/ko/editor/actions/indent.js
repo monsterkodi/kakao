@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-export default {actions:{menu:'Line',indent:{name:'Indent',combo:'alt+cmdctrl+shift+left'},deIndent:{name:'Outdent',combo:'alt+cmdctrl+shift+right'}},indent:function ()
+export default {actions:{menu:'Line',indent:{name:'Indent',combo:'alt+cmdctrl+shift+left'},deIndent:{name:'Outdent',combo:'alt+cmdctrl+shift+right'}},deIndent:function ()
 {
     var i, nc, newCursors, newSelections, ns
 
@@ -29,7 +29,7 @@ export default {actions:{menu:'Line',indent:{name:'Indent',combo:'alt+cmdctrl+sh
     this.do.select(newSelections)
     this.do.setCursors(newCursors)
     return this.do.end()
-},deIndent:function ()
+},indent:function ()
 {
     var i, lineCursors, nc, newCursors, newSelections, ns
 

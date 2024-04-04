@@ -101,8 +101,8 @@ export
     moveCursorsToWordBoundary: (leftOrRight, info = extend:false) ->
         extend = info.extend ? 0 <= info.mod.indexOf 'shift'
         f = switch leftOrRight
-            when 'right' then @endOfWordAtPos
-            when 'left'  then @startOfWordAtPos
+            'right' ➜ @endOfWordAtPos
+            'left'  ➜ @startOfWordAtPos
         @moveAllCursors f, extend:extend, keepLine:true
         true
 
@@ -130,14 +130,14 @@ export
     moveCursors: (key, info = extend:false) ->
  
         if @stickySelection and info.mod == 'ctrl'
-            log 'substract from sticky?' key
+            log 'substract  sticky?' key
         
         extend = info.extend ? 'shift' == info.mod
         switch key
-            when 'left'  then @moveCursorsLeft  extend
-            when 'right' then @moveCursorsRight extend
-            when 'up'    then @moveCursorsUp    extend
-            when 'down'  then @moveCursorsDown  extend
+            'left'  ➜ @moveCursorsLeft  extend
+            'right' ➜ @moveCursorsRight extend
+            'up'    ➜ @moveCursorsUp    extend
+            'down'  ➜ @moveCursorsDown  extend
         
     setCursorsAtSelectionBoundary: (leftOrRight='right') ->
         
@@ -179,10 +179,10 @@ export
             mainLine = newCursors[0][1]
             
         main = switch opt.main
-            when 'top'   then 'first'
-            when 'bot'   then 'last'
-            when 'left'  then 'closest'
-            when 'right' then 'closest'
+            'top'   ➜ 'first'
+            'bot'   ➜ 'last'
+            'left'  ➜ 'closest'
+            'right' ➜ 'closest'
             
         @do.setCursors newCursors, main:main
         @endSelection opt

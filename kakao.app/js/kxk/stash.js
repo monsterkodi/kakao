@@ -66,7 +66,6 @@ Stash = (function ()
         }
         if (!isEqual(value,sds.get(this.data,this.keypath(key))))
         {
-            console.log('stash.set',key,value)
             sds.set(this.data,this.keypath(key),value)
             if (this.timer)
             {

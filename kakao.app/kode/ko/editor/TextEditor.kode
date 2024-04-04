@@ -721,11 +721,13 @@ function TextEditor extends Editor
 
     handleModKeyComboCharEvent: (mod, key, combo, char, event) ->
         
+        # log 'TextEditor.handleModKeyComboCharEvent' combo
+        
         if @autocomplete?
             return if 'unhandled' != @autocomplete.handleModKeyComboEvent mod, key, combo, event
 
         switch combo
-            # 'backspace' ➜ return 'unhandled' # has char set on windows?
+            'backspace' ➜ return 'unhandled' # handled via menu action
             'esc'
                 @setSalterMode false
                 @clearHighlights()
@@ -738,11 +740,6 @@ function TextEditor extends Editor
 
         for action in Editor.actions
             
-            # if action.combo == combo
-                # switch combo
-                    # 'ctrl+a' 'command+a' then return @selectAll()
-                # return 'unhandled' # action will be triggered via menuAction
-                                            
             combos = action.combos ? [action.combo]
                 
             continue if empty combos

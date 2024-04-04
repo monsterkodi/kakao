@@ -54,7 +54,7 @@ function Stash
         return error 'stash.set -- invalid key', key if not key is str
         
         if not isEqual value, sds.get @data, @keypath(key)
-            log 'stash.set' key, value
+            # log 'stash.set' key, value
             sds.set @data, @keypath(key), value
         
             clearTimeout @timer if @timer

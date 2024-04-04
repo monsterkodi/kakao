@@ -441,8 +441,10 @@ class Tabs
         for k,v of prjTabs
             if v.length > 1
                 @tabs = @tabs.concat v
-            # else
-                # log 'no prjTabs?' k
+            else if v.length == 1 and valid v[0].hiddenPrjFiles
+                @tabs.push v[0]
+            else
+                log 'no prjTabs?' k
             
         @tabs = @tabs.concat dangling
         
