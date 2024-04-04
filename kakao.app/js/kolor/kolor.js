@@ -410,7 +410,7 @@ kodePunct = function ()
     if (_k_.in(chunk.match,'◆'))
     {
         next = getChunk(1)
-        if (_k_.in(next.match,['dir','file']))
+        if (_k_.in(next.match,['dir','file','main']))
         {
             addValue(0,'keyword')
             setValue(1,'keyword')

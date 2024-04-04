@@ -329,7 +329,7 @@ kodePunct = ->
         
     if chunk.match in '◆'
         next = getChunk 1
-        if next.match in ['dir''file']
+        if next.match in ['dir''file''main']
             addValue 0 'keyword'
             setValue 1 'keyword'
             return 2
