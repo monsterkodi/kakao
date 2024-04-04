@@ -205,7 +205,7 @@ class Tester
         
 export new Tester
 
-if globalThis.process?.argv? and import.meta.filename == process.argv[1]
+◆main
     
     files =○ fs.list slash.path ◆dir, 'test'
     fail = false

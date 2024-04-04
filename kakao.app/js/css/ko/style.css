@@ -568,7 +568,6 @@ body
     transition: transform 0.2s ease-in, opacity 0.2s ease-in;
     transform-origin: top left;
     overflow: hidden;
-    display: grid;
 }
 
 .tooltip-path

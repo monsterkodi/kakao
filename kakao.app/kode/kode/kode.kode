@@ -131,8 +131,7 @@ class Kode
                 
 export Kode
 
-if globalThis.process?.argv? and import.meta.filename == process.argv[1]
-    
+◆main    
     args = karg """
         kode
             files       **

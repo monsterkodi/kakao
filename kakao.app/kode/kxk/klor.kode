@@ -117,7 +117,7 @@ exports.strip = (s) -> String(s).replace STRIPANSI, ''
 # 000 0 000  000   000  000  000  0000  
 # 000   000  000   000  000  000   000  
 
-if globalThis.process?.argv? and import.meta.filename == process.argv[1]
+◆main
     
     # print a color table to the console
     # if file is executed directly: 
