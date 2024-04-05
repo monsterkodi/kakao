@@ -9,6 +9,7 @@ let ffs = kxk.ffs
 
 import linediff from "../tools/linediff.js"
 import Git from "../tools/Git.js"
+import Projects from "../tools/Projects.js"
 
 import Syntax from "../editor/Syntax.js"
 
@@ -272,6 +273,23 @@ class GitInfo
             window.terminal.appendMeta({clss:'spacer'})
             return window.terminal.scroll.cursorToTop(7)
         })
+    }
+
+    async history (path)
+    {
+        var history
+
+        window.split.raise('terminal')
+        window.terminal.clear()
+        path = (path != null ? path : window.editor.currentFile)
+        if (!path)
+        {
+            return
+        }
+        console.log('Git.history -- ',path)
+        history = await Git.history(path)
+        console.log('GitInfo.history ▸',history)
+        return history
     }
 }
 

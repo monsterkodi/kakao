@@ -96,8 +96,8 @@ knrd = (files = [], opt = {}) ○->
                     fs.touch tgtFile
                     if opt.verbose
                         log g2('✔ '), m3 tilde srcFile
-        else
-            error 'unknown file type' file
+        # else
+            # error 'unknown file type' file
             
         null
             

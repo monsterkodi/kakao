@@ -5,6 +5,7 @@ var Git
 import kxk from "../../kxk.js"
 let slash = kxk.slash
 let post = kxk.post
+let kermit = kxk.kermit
 
 
 Git = (function ()
@@ -186,6 +187,21 @@ Git = (function ()
             }
         }
         return status
+    }
+
+    Git["history"] = async function (path)
+    {
+        var args, history
+
+        args = ["--no-pager","log","--name-status","--no-color",path]
+        history = await kakao('app.sh','/usr/bin/git',{args:args,cwd:slash.dir(path)})
+        console.log('git history',history)
+        return kermit(`commit  ●commit
+Author: ●author
+Date:   ●date
+●msg
+■files
+    ●type ●path`,history)
     }
 
     return Git

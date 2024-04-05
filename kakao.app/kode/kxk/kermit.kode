@@ -1,0 +1,62 @@
+###
+000   000  00000000  00000000   00     00  000  000000000
+000  000   000       000   000  000   000  000     000   
+0000000    0000000   0000000    000000000  000     000   
+000  000   000       000   000  000 0 000  000     000   
+000   000  00000000  000   000  000   000  000     000   
+###
+
+use ◆ kstr
+
+pattern = (kmt) ->
+    
+    p = []
+    lines = kmt.split '\n'
+    while line = lines.shift()
+        lpt = trim(line).split /\s+/
+        if lpt[0][0] == '■'
+            while child = lines.shift()
+                cpt = child.split /\s+/
+                if empty cpt[0]
+                    p.push [cpt[1..], lpt[0]]
+                else
+                    lines.unshift child
+                    break
+        else
+            p.push [lpt, null]
+    p
+    
+traverse = (lines, ctx) ->
+    
+    while line = lines.shift()
+        splt = trim(line).split /\s+/
+        cptn = ctx.ptn[ctx.pind]
+        if cptn[0][0].length == splt.length
+            if empty cptn[1]
+                # log 'advance pind' ctx.pind
+                ctx.pind += 1
+                ctx.result.push line
+        else
+            
+            if cptn[0][0] == splt[0]
+                # log 'start matches' 
+                if empty cptn[1]
+                    ctx.pind += 1
+                    return line
+            else
+                log 'length missmatch' cptn[0], splt
+                
+        log 'cptn????' cptn, splt
+        'missmatch'
+    
+kermit = (kmt, str) ->
+
+    lines = str.split '\n'
+    lines = lines.filter (l) -> valid trim l
+
+    ctx = result:[], pind:0, ptn:pattern kmt
+    traverse lines, ctx
+    log 'result' ctx.result
+    ctx.result
+
+export kermit

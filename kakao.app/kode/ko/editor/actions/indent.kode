@@ -12,13 +12,13 @@ export
         
         indent:
             name:  'Indent'
-            combo: 'alt+cmdctrl+shift+left'
+            combo: 'alt+cmdctrl+shift+right'
             
         deIndent:
             name:  'Outdent'
-            combo: 'alt+cmdctrl+shift+right'
+            combo: 'alt+cmdctrl+shift+left'
             
-    deIndent: ->
+    indent: ->
         @do.start()
         newSelections = @do.selections()
         newCursors    = @do.cursors()
@@ -33,7 +33,7 @@ export
         @do.setCursors newCursors
         @do.end()
 
-    indent: -> 
+    deIndent: -> 
         @do.start()
         newSelections = @do.selections()
         newCursors    = @do.cursors()

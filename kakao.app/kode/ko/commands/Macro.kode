@@ -132,6 +132,13 @@ function Macro extends Command
                 window.split.do 'minimize editor' 
                 window.commandline.setText 'commit '
                 return select:false
+                
+            'log'
+            'h'
+            'history'
+            
+                GitInfo.history()
+                window.split.do 'minimize editor' 
 
             'kc'
             'commit'

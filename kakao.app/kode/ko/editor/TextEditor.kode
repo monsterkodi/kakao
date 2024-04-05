@@ -727,7 +727,6 @@ function TextEditor extends Editor
             return if 'unhandled' != @autocomplete.handleModKeyComboEvent mod, key, combo, event
 
         switch combo
-            'backspace' ➜ return 'unhandled' # handled via menu action
             'esc'
                 @setSalterMode false
                 @clearHighlights()

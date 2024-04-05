@@ -18,13 +18,14 @@ import tooltip from "./kxk/tooltip.js"
 import events from "./kxk/events.js"
 import popup from "./kxk/popup.js"
 import kstr from "./kxk/kstr.js"
+import kermit from "./kxk/kermit.js"
 import kpos from "./kxk/kpos.js"
 import util from "./kxk/util.js"
 import sds from "./kxk/sds.js"
 import ffs from "./kxk/ffs.js"
 import noon from "./kxk/noon.js"
 
-var list = _k_.list("dom elem post drag slash stash store prefs matchr karg keyinfo tooltip events popup kstr kpos util sds ffs noon".split(' '))
+var list = _k_.list("dom elem post drag slash stash store prefs matchr karg keyinfo tooltip events popup kstr kermit kpos util sds ffs noon".split(' '))
 for (var _12_8_ = 0; _12_8_ < list.length; _12_8_++)
 {
     exp = list[_12_8_]

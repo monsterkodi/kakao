@@ -6,7 +6,7 @@
  0000000   000     000   
 ###
 
-use ../../kxk ▪ slash post
+use ../../kxk ▪ slash post kermit
 
 function Git
 
@@ -146,4 +146,25 @@ function Git
     
         status
 
+    # 000   000  000   0000000  000000000   0000000   00000000   000   000  
+    # 000   000  000  000          000     000   000  000   000   000 000   
+    # 000000000  000  0000000      000     000   000  0000000      00000    
+    # 000   000  000       000     000     000   000  000   000     000     
+    # 000   000  000  0000000      000      0000000   000   000     000     
+    
+    @history: (path) ○->
+        
+        args = ["--no-pager" "log" "--name-status" "--no-color" path]
+        
+        history =○ kakao 'app.sh' '/usr/bin/git' args:args, cwd:slash.dir path
+        log 'git history' history
+        kermit """
+            commit  ●commit
+            Author: ●author
+            Date:   ●date
+            ●msg
+            ■files
+                ●type ●path
+            """ history
+        
 export Git

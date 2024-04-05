@@ -124,10 +124,6 @@ knrd = async function (files = [], opt = {})
                 }
             }
         }
-        else
-        {
-            console.error('unknown file type',file)
-        }
         null
     }
     if (opt.rerunWhenDirty && transpiled)

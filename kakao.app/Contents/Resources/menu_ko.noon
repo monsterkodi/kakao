@@ -113,7 +113,7 @@ Command
 #     0      000  00000000  00     00
 
 View
-    Maximize Editor         cmdctrl+y cmdctrl+shift+y
+    Maximize Editor         cmdctrl+y cmdctrl+shift+y cmdctrl+,
     Toggle Center Text      cmdctrl+\
     -
     Toggle Tab Pinned       alt+cmdctrl+p
