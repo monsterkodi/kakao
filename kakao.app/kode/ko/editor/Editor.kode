@@ -146,7 +146,7 @@ function Editor extends Buffer
         switch @fileType
             when 'coffee' 'kode'
                 @indentNewLineMore =
-                    lineEndsWith: ['->', '=>', ':', '=']
+                    lineEndsWith: ['->' '=>' ':' '=']
                     lineRegExp:   /^(\s+when|\s*if|\s*else\s+if\s+)(?!.*\sthen\s)|(^|\s)(else\s*$|switch\s|for\s|while\s|class\s)/
 
         # _______________________________________________________________ comment

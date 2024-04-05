@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ post elem kpos slash drag popup stopEvent $ 
-use ../tools/Projects
+use ../tools  ◆ Projects
 use ./Tab
 
 class Tabs
@@ -39,8 +39,8 @@ class Tabs
         post.on 'revertFile'       @revertFile
         post.on 'sendTabs'         @onSendTabs
         post.on 'fileLineChanges'  @onFileLineChanges
-        post.on 'fileSaved'        @onFileSaved # saved in another window
-        post.on 'saved'            @onSaved     # saved in this window
+        # post.on 'fileSaved'        @onFileSaved # saved in another window
+        # post.on 'saved'            @onSaved     # saved in this window
         post.on 'editorFocus'      @onEditorFocus
         post.on 'stashLoaded'      @onStashLoaded
         post.on 'projectIndexed'   @onProjectIndexed
@@ -92,18 +92,18 @@ class Tabs
         if tab? and tab != @activeTab()
             tab.foreignChanges lineChanges
 
-    onFileSaved: (file, winID) =>
+    # onFileSaved: (file, winID) =>
 
-        if winID == window.winID
-            return error "fileSaved from this window? #{file} #{winID}"
-            
-        tab = @tab file
-        if tab? and tab != @activeTab()
-            tab.revert()
+        # if winID == window.winID
+            # return error "fileSaved from this window? #{file} #{winID}"
+#             
+        # tab = @tab file
+        # if tab? and tab != @activeTab()
+            # tab.revert()
 
-    onSaved: (file) =>
+    # onSaved: (file) =>
 
-        @tab(file)?.setDirty false
+        # @tab(file)?.setDirty false
             
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000
@@ -120,7 +120,7 @@ class Tabs
                 # log 'activate tab!' tab
                 tab.activate()
         else
-            log 'no tab?' event.target, event.target?.parentNode, @tabs
+            # log 'no tab?' event.target, event.target?.parentNode, @tabs
             if tabElem = elem.upElem event.target, class:'tab'
                 log 'remove tab elem' tabElem
                 tabElem.remove()

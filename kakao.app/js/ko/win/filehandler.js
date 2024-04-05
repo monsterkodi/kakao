@@ -268,14 +268,9 @@ class FileHandler
             {
                 return console.error('File.save failed!')
             }
-            editor.saveScrollCursorsAndSelections()
-            post.emit('saveStash')
             editor.do.history = tabState.history
             editor.do.saveIndex = tabState.history.length
-            post.toWins('fileSaved',saved,window.winID)
-            post.emit('saved',saved)
-            post.emit('dirty',false)
-            return editor.restoreScrollCursorsAndSelections()
+            return post.emit('dirty',false)
         })
     }
 

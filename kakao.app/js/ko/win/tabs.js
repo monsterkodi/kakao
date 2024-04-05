@@ -33,8 +33,6 @@ class Tabs
         this.onCloseTabOrWindow = this.onCloseTabOrWindow.bind(this)
         this.onEditorFocus = this.onEditorFocus.bind(this)
         this.onClick = this.onClick.bind(this)
-        this.onSaved = this.onSaved.bind(this)
-        this.onFileSaved = this.onFileSaved.bind(this)
         this.onFileLineChanges = this.onFileLineChanges.bind(this)
         this.onSendTabs = this.onSendTabs.bind(this)
         this.addPrjTab = this.addPrjTab.bind(this)
@@ -56,8 +54,6 @@ class Tabs
         post.on('revertFile',this.revertFile)
         post.on('sendTabs',this.onSendTabs)
         post.on('fileLineChanges',this.onFileLineChanges)
-        post.on('fileSaved',this.onFileSaved)
-        post.on('saved',this.onSaved)
         post.on('editorFocus',this.onEditorFocus)
         post.on('stashLoaded',this.onStashLoaded)
         post.on('projectIndexed',this.onProjectIndexed)
@@ -154,31 +150,9 @@ class Tabs
         }
     }
 
-    onFileSaved (file, winID)
-    {
-        var tab
-
-        if (winID === window.winID)
-        {
-            return console.error(`fileSaved from this window? ${file} ${winID}`)
-        }
-        tab = this.tab(file)
-        if ((tab != null) && tab !== this.activeTab())
-        {
-            return tab.revert()
-        }
-    }
-
-    onSaved (file)
-    {
-        var _106_18_
-
-        return (this.tab(file) != null ? this.tab(file).setDirty(false) : undefined)
-    }
-
     onClick (event)
     {
-        var tab, tabElem, _123_52_
+        var tab, tabElem
 
         if (tab = this.tab(event.target))
         {
@@ -193,7 +167,6 @@ class Tabs
         }
         else
         {
-            console.log('no tab?',event.target,(event.target != null ? event.target.parentNode : undefined),this.tabs)
             if (tabElem = elem.upElem(event.target,{class:'tab'}))
             {
                 console.log('remove tab elem',tabElem)

@@ -5,13 +5,12 @@ var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSiz
 import kakao from "../../kakao.js"
 
 import kxk from "../../kxk.js"
+let win = kxk.win
 let stash = kxk.stash
 let post = kxk.post
 let prefs = kxk.prefs
 let store = kxk.store
 let stopEvent = kxk.stopEvent
-
-import win from "../../kxk/win.js"
 
 import Split from "./Split.js"
 import Info from "./Info.js"
@@ -140,7 +139,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _106_25_
+        var action, _103_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -338,7 +337,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _211_14_
+    var _208_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -349,7 +348,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _217_22_, _218_19_
+    var _214_22_, _215_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -394,7 +393,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _262_32_
+    var _259_32_
 
     if (!(_k_.isNum(s)))
     {

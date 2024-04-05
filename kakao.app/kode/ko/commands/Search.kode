@@ -133,7 +133,7 @@ function FileSearcher
             '/search/' ➜ @flags='i'; @opt.text
             '/Search/' ➜ @opt.text
             ➜
-                error "commands/search FileSearcher -- unhandled '#{@opt.name}' command:", @command.name, 'opt:', @opt, 'file:', @file
+                error "commands/search FileSearcher -- unhandled '#{@opt.name}' command:" @command.name, 'opt:' @opt, 'file:' @file
                 [[new RegExp(kstr.escapeRegExp(@opt.text), 'i'), 'found']]
 
         @found = []

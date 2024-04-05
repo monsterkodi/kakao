@@ -873,6 +873,7 @@ mm
         defaultManager
         
     property
+        __block
         nonatomic
         readwrite
         assign

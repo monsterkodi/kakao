@@ -127,8 +127,6 @@ class Info
     
     onNumLines: (lc) =>
         
-        # log 'info onNumLines' lc
-        
         @lines.textContent = shortCount lc ? 0
             
     onCursor: => 

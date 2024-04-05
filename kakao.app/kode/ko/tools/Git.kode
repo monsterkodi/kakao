@@ -30,7 +30,6 @@ function Git
             if file.startsWith gitDir
                 if slash.dir(file).endsWith '.git/refs/heads'
                     if slash.name(file) in ['master' 'main']
-                        # log 'git ref changed:' file
                         Git.status gitDir
                         return
         
@@ -84,7 +83,6 @@ function Git
             for file in status[key]
                 status.files[file] = key
         
-        # log 'emit gitStatus'  status.gitDir
         post.emit 'gitStatus' status
                 
         status
@@ -102,7 +100,7 @@ function Git
         diff   =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff --no-color -U0 --ignore-blank-lines #{file}" cwd:gitDir 
         
         status = file:file, changes:[]
-        lines = diff.split '\n'
+        lines  = diff.split '\n'
     
         while line = lines.shift()
     

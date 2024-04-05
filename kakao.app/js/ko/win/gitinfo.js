@@ -62,7 +62,6 @@ class GitInfo
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode')})
             }
             window.split.do('maximize editor')
-            console.log('GitInfo.commit Git.status',gitDir)
             return Git.status(gitDir)
         }
     }

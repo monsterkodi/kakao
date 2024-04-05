@@ -9,26 +9,14 @@
 use ../../kxk ▪ uniq slash kstr
         
 requireRegExp = /^(\s*\{.+\})\s*=\s*require\s+([\'\"][\.\/\w]+[\'\"])/
-mathRegExp  = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
+mathRegExp    = /^(\s*\{.+\})\s*=\s*(Math)\s*$/
 
-moduleKeys = (moduleName, file) ->
-    
-    # log 'file' file
-    # if moduleName.startsWith '.'
-        # moduleName = slash.path slash.dir(file), moduleName).replace '/coffee/' '/js/'
+moduleKeys = (moduleName, file) ○->
 
-    try
-        if moduleName.endsWith 'kxk'
-            required = kxk
-        else if moduleName == 'electron'
-            required = require 'electron'
-        else
-            log 'require' moduleName
-            required = require moduleName
+    log 'moduleKeys' moduleName, file
         
-    catch err
-        error "can't require #{moduleName}" err
-        return []
+    required =○ import(file)
+    required = required.default
     
     keys = []
     if required
@@ -45,9 +33,12 @@ moduleKeys = (moduleName, file) ->
             for kw in [ 'valid' 'empty' 'clamp' ]
                 index = keys.indexOf kw
                 if index >= 0 ➜ keys.splice index, 1
+                    
+    log 'moduleKeys' keys
+    
     keys
     
-req = (file, lines, editor) ->
+req = (file, lines, editor) ○->
 
     requires  = {}
     exports   = {}
@@ -84,7 +75,7 @@ req = (file, lines, editor) ->
                     if not keys[m[2]]
                         try
                             moduleName = kstr.strip m[2], '"\''
-                            newKeys = moduleKeys moduleName, file
+                            newKeys =○ moduleKeys moduleName, file
                             keys[m[2]] = newKeys
                             for k in newKeys
                                 regexes[k] ?= new RegExp "(^|[\\:\\(\\{]|\\s+)#{k}(\\s+[^:]|\\s*$|[\\.\\,\\(])"

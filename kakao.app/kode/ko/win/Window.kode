@@ -7,14 +7,11 @@
 ###
 
 use ../../kakao
-
-use ../../kxk ▪ stash post prefs store stopEvent
-use ../../kxk/win
-
-use           ◆ Split Info Tabs Menu Navigate FileHandler Terminal
-use ../tools  ◆ FileWatch Projects Indexer Git fps scheme
-use ../editor ◆ Editor Syntax FileEditor
-use ../commandline/CommandLine
+use ../../kxk      ▪ win stash post prefs store stopEvent
+use                ◆ Split Info Tabs Menu Navigate FileHandler Terminal
+use ../tools       ◆ FileWatch Projects Indexer Git fps scheme
+use ../editor      ◆ Editor Syntax FileEditor
+use ../commandline ◆ CommandLine
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
@@ -328,5 +325,5 @@ kakao.preInit = ○->
     ○ Syntax.init()
     ○ Editor.init()
     ○ CommandLine.init()
-
+    
 kakao.init -> new win new Window

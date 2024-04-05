@@ -8,8 +8,8 @@
     this is the entry point of the javascript
     which runs in the web view of the window.
     
-    loaded in ../js/index.html
-    which is transpiled from ../pug/index.pug
+    loaded in ../js/index.html which is 
+    transpiled from ../pug/index.pug
 ###
 
 use ./kakao

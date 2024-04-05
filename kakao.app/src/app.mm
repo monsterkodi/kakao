@@ -191,18 +191,23 @@
 
         // NSLog(@"%@ %@ %@ %@", change.isDir ? @"▸" : @"▪", type, change.path, relPath);
 
-        // if ([relPath hasPrefix:@"js/"]) { reloadPage = ![relPath hasPrefix:@"js/test"] && ![relPath hasPrefix:@"js/kode"]; }
-
         if ([relPath hasPrefix:@"Contents/Resources/"]) { reloadPage = YES; }
 
-        if ([relPath hasPrefix:@"src/"]) //|| [relPath isEqualToString:@"Contents/Info.plist"])
+        if ([relPath hasPrefix:@"src/"])
         {
             rebuildApp = YES;
         }
 
         if ([relPath hasPrefix:@"pug/"] || ([relPath hasPrefix:@"kode/"] && ![relPath hasPrefix:@"kode/kode/"]))
         {
-            [filesToTranspile addObject:change.path];
+            NSString* ext = [change.path pathExtension];
+            
+            if ([ext isEqualToString:@"kode"] ||
+                [ext isEqualToString:@"styl"] ||
+                [ext isEqualToString:@"pug"])
+            {
+                [filesToTranspile addObject:change.path];
+            }
         }
     }
 
@@ -213,18 +218,11 @@
     else if ([filesToTranspile count])
     {
         [self transpile:filesToTranspile];
-
-        // if (reloadPage)
-        // {
-            // NSLog(@"reload after transpile %@", [changes componentsJoinedByString:@" "]);
-            // [self reload];
-        // }
     }
-    // else if (reloadPage)
-    // {
-        // NSLog(@"reload %@", [changes componentsJoinedByString:@" "]);
-        // [self reload];
-    // }
+    else if (reloadPage)
+    {
+        [self reload];
+    }
 }
 
 //  0000000   0000000   00     00  00000000   000  000      00000000        0000000   00000000   00000000
@@ -235,8 +233,7 @@
 
 - (NSString*) outputOfPipe:(NSPipe*)pipe
 {
-    NSFileHandle * readFileHandle = [pipe fileHandleForReading];
-    NSData * data = [readFileHandle readDataToEndOfFile];
+    NSData * data = [[pipe fileHandleForReading] readDataToEndOfFile];
     return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 }
 
@@ -300,19 +297,48 @@
     }];
 }
 
+// 000000000  00000000    0000000   000   000   0000000  00000000   000  000      00000000  
+//    000     000   000  000   000  0000  000  000       000   000  000  000      000       
+//    000     0000000    000000000  000 0 000  0000000   00000000   000  000      0000000   
+//    000     000   000  000   000  000  0000       000  000        000  000      000       
+//    000     000   000  000   000  000   000  0000000   000        000  0000000  00000000  
+
 - (void) transpile:(NSArray*)filesToTranspile
 {
     static BOOL isTranspiling = NO;
 
     if (isTranspiling) return;
 
-    isTranspiling = YES;
-
-    [self kk:@"-k" args:filesToTranspile];
-
-    isTranspiling = NO;
-
-    // NSLog(@"transpile %@", [changes componentsJoinedByString:@" "]);
+    isTranspiling = YES;    
+ 
+    NSArray* files = [[NSSet setWithArray:filesToTranspile] allObjects];
+    
+    NSMutableDictionary* md5dct = [NSMutableDictionary dictionary];
+    NSMutableDictionary* md6dct = [NSMutableDictionary dictionary];
+    
+    // NSLog(@"transpile %@", files);
+    
+    __block int transpiled = 0;
+    __block BOOL reload = NO;
+    
+    for (NSString* file in files)
+    {
+        NSTask* task = [self taskForNodeScript:[Bundle appPath:@"kk"] args:[NSArray arrayWithObjects:@"-qk", file, nil]];
+        [self launchTask:task output:^(NSString* kkkout)
+        {
+            transpiled++;
+            if ([kkkout containsString:@"✔"]) reload = YES;
+            if (transpiled == [files count])
+            {
+                isTranspiling = NO;
+                if (reload) 
+                {
+                    NSLog(@"reload");
+                    [self reload];
+                }
+            }
+        }];
+    }
 }
 
 // 00000000  000   000  00000000   0000000  000   000  000000000  00000000

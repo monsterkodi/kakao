@@ -230,17 +230,17 @@ class FileHandler
 
             return error 'File.save failed!' if not saved
 
-            editor.saveScrollCursorsAndSelections()
-            post.emit 'saveStash'
+            # editor.saveScrollCursorsAndSelections()
+            # post.emit 'saveStash'
 
             # editor.setCurrentFile   saved
             editor.do.history   = tabState.history
             editor.do.saveIndex = tabState.history.length
-            post.toWins 'fileSaved' saved, window.winID
-            post.emit   'saved'     saved
+            # post.toWins 'fileSaved' saved, window.winID
+            # post.emit   'saved'     saved
             post.emit   'dirty'     false
 
-            editor.restoreScrollCursorsAndSelections()
+            # editor.restoreScrollCursorsAndSelections()
 
     #  0000000   0000000    0000000          00000000   00000000   0000000  00000000  000   000  000000000
     # 000   000  000   000  000   000        000   000  000       000       000       0000  000     000

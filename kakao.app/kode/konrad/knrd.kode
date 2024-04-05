@@ -22,7 +22,7 @@ knrd = (files = [], opt = {}) ○->
     log 'opt' opt if opt.verbose
     log 'files' files if opt.verbose
     
-    ● 🔨
+    # ● 🔨
     
     kodeDir = slash.path ◆dir, '/../../kode'
     pugDir  = slash.path ◆dir, '/../../pug'
@@ -82,8 +82,10 @@ knrd = (files = [], opt = {}) ○->
             
             srcText =○ fs.read srcFile
             tgtText =○ fs.read tgtFile
-            
             compText = rule.compile srcText, srcFile
+            
+            # log 'tgtText'  tgtFile, tgtText
+            # log 'compText' compText
                 
             if empty compText
                 log y5('✘ '), r5(tilde srcFile), r4('transpiles to empty!')
@@ -91,14 +93,10 @@ knrd = (files = [], opt = {}) ○->
                 if tgtText != compText
                     transpiled++
                     ○ fs.write tgtFile, compText
-                    log b5('✔ '), g5 tilde tgtFile if not opt.quiet
+                    log b5('✔ '), g5 tilde tgtFile
                 else 
-                    fs.touch tgtFile
                     if opt.verbose
-                        log g2('✔ '), m3 tilde srcFile
-        # else
-            # error 'unknown file type' file
-            
+                        log g2('▪ '), m3 tilde srcFile
         null
             
     if opt.rerunWhenDirty and transpiled
