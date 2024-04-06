@@ -17,7 +17,7 @@ class DirWatch
         DirWatch.watches[dir] ?= 0
         DirWatch.watches[dir]++
                 
-    @unwatch: (dir) -> 
+    @unwatch: (dir) ->
         
         DirWatch.watches[dir]--
         if DirWatch.watches[dir] <= 0

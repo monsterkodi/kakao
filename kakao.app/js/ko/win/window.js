@@ -81,7 +81,10 @@ Window = (function ()
 
     Window.prototype["onWindowCreated"] = function (win)
     {
+        var a
+
         this.id = win.id
+        a = 1 + 2
         new FileHandler
         new FileWatch
         new Git
@@ -139,7 +142,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _103_25_
+        var action, _104_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -337,7 +340,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _208_14_
+    var _209_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -348,7 +351,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _214_22_, _215_19_
+    var _215_22_, _216_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -393,7 +396,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _259_32_
+    var _260_32_
 
     if (!(_k_.isNum(s)))
     {

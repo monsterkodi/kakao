@@ -43,6 +43,7 @@ function Window extends win.Delegate
     onWindowCreated: (win) => 
         
         @id = win.id
+        a = 1+2
                     
         new FileHandler
         new FileWatch

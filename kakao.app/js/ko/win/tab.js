@@ -312,9 +312,8 @@ class Tab
 
     close ()
     {
-        var _210_16_
+        var _208_16_
 
-        post.emit('unwatch',this.file)
         if (this.dirty)
         {
             this.saveChanges()
@@ -368,9 +367,9 @@ class Tab
                 hidden = this.hiddenPrjFiles
                 delete this.hiddenPrjFiles
                 var list = _k_.list(hidden)
-                for (var _262_25_ = 0; _262_25_ < list.length; _262_25_++)
+                for (var _260_25_ = 0; _260_25_ < list.length; _260_25_++)
                 {
-                    file = list[_262_25_]
+                    file = list[_260_25_]
                     tab = this.tabs.addTab(file)
                     if (window.textEditor.currentFile === file)
                     {
@@ -382,9 +381,9 @@ class Tab
             {
                 this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
                 var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _268_24_ = 0; _268_24_ < list1.length; _268_24_++)
+                for (var _266_24_ = 0; _266_24_ < list1.length; _266_24_++)
                 {
-                    tab = list1[_268_24_]
+                    tab = list1[_266_24_]
                     this.tabs.closeTab(tab)
                 }
             }
@@ -400,7 +399,7 @@ class Tab
 
     finishActivation ()
     {
-        var changes, _284_19_
+        var changes, _282_19_
 
         this.setActive()
         if (!_k_.empty(this.state))
@@ -411,9 +410,9 @@ class Tab
         if ((this.foreign != null ? this.foreign.length : undefined))
         {
             var list = _k_.list(this.foreign)
-            for (var _285_24_ = 0; _285_24_ < list.length; _285_24_++)
+            for (var _283_24_ = 0; _283_24_ < list.length; _283_24_++)
             {
-                changes = list[_285_24_]
+                changes = list[_283_24_]
                 window.editor.do.foreignChanges(changes)
             }
             delete this.foreign

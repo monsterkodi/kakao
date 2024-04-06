@@ -116,9 +116,7 @@ Stash = (function ()
         {
             text = noon.stringify(this.data)
             ffs.write(this.file,text).then(function (file)
-            {
-                console.log('stash.saved',file)
-            })
+            {})
         }
         catch (err)
         {

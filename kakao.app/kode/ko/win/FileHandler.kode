@@ -36,8 +36,6 @@ class FileHandler
 
     loadFile: (file, opt={}) =>
 
-        # log 'FileHandler.loadFile' file, opt
-
         file = null if file? and file.length <= 0
 
         editor.saveScrollCursorsAndSelections()
@@ -159,13 +157,15 @@ class FileHandler
     # 000   000  00000000  0000000   0000000   000   000  0000000          000       000  0000000  00000000
 
     reloadFile: (file) =>
-
+        
         if not file
             @reloadActiveTab()
         else if tab = tabs.tab file
             if tab == tabs.activeTab()
+                log 'FileHandler.reloadFile reloadActiveTab' file
                 @reloadActiveTab()
             else
+                log 'FileHandler.reloadFile reload inactive tab' file
                 tab.reload()
 
     reloadActiveTab: =>
@@ -217,31 +217,24 @@ class FileHandler
     saveFile: (file) =>
 
         file ?= editor.currentFile
-
+        
         if not file? or file.startsWith 'untitled'
             @saveFileAs()
             return
 
-        post.emit 'unwatch' file
-
+        editor.saveScrollCursorsAndSelections()
+            
         tabState = editor.do.tabState()
 
         File.save file, editor.text(), (saved) ->
 
             return error 'File.save failed!' if not saved
+            
+            if saved != editor.currentFile
+                
+                post.emit 'loadFile' saved
 
-            # editor.saveScrollCursorsAndSelections()
-            # post.emit 'saveStash'
-
-            # editor.setCurrentFile   saved
-            editor.do.history   = tabState.history
-            editor.do.saveIndex = tabState.history.length
-            # post.toWins 'fileSaved' saved, window.winID
-            # post.emit   'saved'     saved
-            post.emit   'dirty'     false
-
-            # editor.restoreScrollCursorsAndSelections()
-
+    
     #  0000000   0000000    0000000          00000000   00000000   0000000  00000000  000   000  000000000
     # 000   000  000   000  000   000        000   000  000       000       000       0000  000     000
     # 000000000  000   000  000   000        0000000    0000000   000       0000000   000 0 000     000

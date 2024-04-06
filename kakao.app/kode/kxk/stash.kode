@@ -104,7 +104,7 @@ function Stash
             text = noon.stringify @data
             # log 'stash.save text' text
             ffs.write(@file, text).then (file) ->
-                log 'stash.saved' file
+                # log 'stash.saved' file
         catch err
             error "stash.save -- can't save to '#{@file}': #{err}"
         true

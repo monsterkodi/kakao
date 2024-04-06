@@ -43,7 +43,7 @@ class FileHandler
 
     loadFile (file, opt = {})
     {
-        var activeTab, filePos, restoreState, tab, _76_49_
+        var activeTab, filePos, restoreState, tab, _74_49_
 
         if ((file != null) && file.length <= 0)
         {
@@ -52,7 +52,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _46_28_ = slash.splitFilePos(file); file = _46_28_[0]; filePos = _46_28_[1]
+            var _44_28_ = slash.splitFilePos(file); file = _44_28_[0]; filePos = _44_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -145,9 +145,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _133_17_ = 0; _133_17_ < list.length; _133_17_++)
+        for (var _131_17_ = 0; _131_17_ < list.length; _131_17_++)
         {
-            file = list[_133_17_]
+            file = list[_131_17_]
             if (options.newWindow)
             {
                 console.log('filehandler new window with file not implemented!')
@@ -184,10 +184,12 @@ class FileHandler
         {
             if (tab === tabs.activeTab())
             {
+                console.log('FileHandler.reloadFile reloadActiveTab',file)
                 return this.reloadActiveTab()
             }
             else
             {
+                console.log('FileHandler.reloadFile reload inactive tab',file)
                 return tab.reload()
             }
         }
@@ -260,7 +262,7 @@ class FileHandler
             this.saveFileAs()
             return
         }
-        post.emit('unwatch',file)
+        editor.saveScrollCursorsAndSelections()
         tabState = editor.do.tabState()
         return File.save(file,editor.text(),function (saved)
         {
@@ -268,9 +270,10 @@ class FileHandler
             {
                 return console.error('File.save failed!')
             }
-            editor.do.history = tabState.history
-            editor.do.saveIndex = tabState.history.length
-            return post.emit('dirty',false)
+            if (saved !== editor.currentFile)
+            {
+                return post.emit('loadFile',saved)
+            }
         })
     }
 
@@ -295,7 +298,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _271_29_
+        var _264_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -311,7 +314,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _287_18_
+        var cb, dir, _280_18_
 
         cb = function (files)
         {
@@ -327,7 +330,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _307_18_
+        var cb, _300_18_
 
         cb = (function (file)
         {

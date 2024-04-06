@@ -201,8 +201,6 @@ class Tab
 
     close: ->
 
-        post.emit 'unwatch' @file
-
         if @dirty
             @saveChanges()
 
