@@ -35,6 +35,16 @@ stackTopOrLast = (ctx) ->
         lr = last lr
     lr
     
+strongMatchAhead = (lr, cp, ci, cpt, splt, ctx) ->
+    
+    # log 'strongMatchAhead?' lr, cp, ci, cpt, splt, ctx.ptn[ctx.pind+1]
+    # log 'strongMatchAhead?' splt, ctx.ptn[(ctx.pind+1) % ctx.ptn.length]
+    if splt[0] == ctx.ptn[(ctx.pind+1) % ctx.ptn.length][0][0]
+        log 'strongMatchAhead!'
+        return true
+    log 'no strong match' splt[0], ctx.ptn[(ctx.pind+1) % ctx.ptn.length][0][0]
+    false
+    
 addMatch = (cpt, splt, ctx) ->
     
     log 'addMatch' cpt, splt, ctx.pind, ctx.result
@@ -43,10 +53,19 @@ addMatch = (cpt, splt, ctx) ->
     for cp,ci in cpt
         if cp?[0] in '●'
             log 'var match' ci, cpt[ci+1..], splt[ci+1..]
-            lr[cp[1..]] = splt[ci]
-            if empty cpt[ci+1..] and valid splt[ci+1..]
-                log 'add remaining' splt[ci+1..].join ' '
-                lr[cp[1..]] += ' ' + splt[ci+1..].join ' '
+            if strongMatchAhead lr, cp, ci, cpt, splt, ctx
+                log 'strong match ahead!' kstr ctx
+                ctx.pind += 1
+                ctx.stack = []
+                cptn = ctx.ptn[ctx.pind]
+                log 'recurse' cpt[0], splt, ctx
+                addMatch cpt[0], splt, ctx
+                return true
+            else
+                lr[cp[1..]] = splt[ci]
+                if empty cpt[ci+1..] and valid splt[ci+1..]
+                    # log 'add remaining' splt[ci+1..].join ' '
+                    lr[cp[1..]] += ' ' + splt[ci+1..].join ' '
         else if cp == splt[ci]
             log 'strong match' ci, cp, 'next' cpt[ci+1..], splt[ci+1..]
         else
@@ -63,7 +82,7 @@ traverse = (lines, ctx) ->
         splt = trim(line).split /\s+/
         cptn = ctx.ptn[ctx.pind]
         
-        log m2('▸'), m5(line), ctx.pind, g5(cptn)
+        log y2('▸'), y5(line), ctx.pind, m5(cptn)
     
         if empty cptn
             log 'empty pattern at index' ctx.pind
@@ -72,14 +91,14 @@ traverse = (lines, ctx) ->
             cptn = ctx.ptn[ctx.pind]
             
         if cptn[1]
-            log 'cptn[1] ------' cptn[1], ctx
+            # log 'cptn[1] ------' cptn[1], ctx
             if last ctx.stack == cptn[1]
                 log 'cont stack'
             else
                 lr = stackTopOrLast ctx
                 ctx.stack.push cptn[1]
                 lr[cptn[1][1..]] = []
-                log 'push' ctx.stack, lr
+                log 'push stack' ctx.stack, lr
         else if valid ctx.stack
             log 'clear stack'
             ctx.pind += 1
@@ -94,7 +113,7 @@ kermit = (kmt, str) ->
     lines = str.split '\n'
     lines = lines.filter (l) -> valid trim l
 
-    ctx = result:[{}], stack:[], pind:0, ptn:pattern kmt
+    ctx = result:[{}], stack:[], pind:0 ptn:pattern kmt
     traverse lines, ctx
     log 'result' ctx.result
     ctx.result

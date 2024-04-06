@@ -13,9 +13,24 @@ toExport["kermit"] = function ()
 
 M   modified/file
 C   changed/file
-`),[{commit:'id',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
+
+commit other
+
+M   modified/other
+C   changed/other
+`),[{commit:'id',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]},{commit:'other',files:[{type:'M',path:'modified/other'},{type:'C',path:'changed/other'}]}])
     })
     return
+    section("array", function ()
+    {
+        compare(kermit(`commit  ●commit
+■files
+    ●type ●path`,`commit id
+
+M   modified/file
+C   changed/file
+`),[{commit:'id',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
+    })
     section("simple", function ()
     {
         compare(kermit(`commit  ●commit

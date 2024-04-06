@@ -6,28 +6,27 @@
     "%2": "go to next edit location"
   },
   "selection": {
-    "⌘E": "highlight occurences of current word",
-    "⌘G": "select next highlight",
-    "⌘D": "add next highlighted word to selection",
-    "⌥⌘D": "select all occurences of current word",
-    "⌘⇧D": "deselects last selected word",
-    "⌘L": "select more lines",
-    "⌘⇧L": "select less lines",
-    "⌥⌘B": "select string, square- or curly-block boundary",
-    "⌥B": "select string, square- or curly-block content",
-    "⌘I": "invert selection"
+    "⌘e": "highlight occurences of current word",
+    "⌘g": "select next highlight",
+    "⌘d": "add next highlighted word to selection",
+    "⌥⌘d": "select all occurences of current word",
+    "⌘⇧d": "deselects last selected word",
+    "⌘l": "select more lines",
+    "⌘⇧l": "select less lines",
+    "⌥⌘b": "select string, square- or curly-block boundary",
+    "⌥b": "select string, square- or curly-block content",
+    "⌘i": "invert selection"
   },
   "navigation": {
     "⌥[": "home",
     "⌥]": "end",
     "⌥-": "page up",
     "⌥=": "page down",
-    "⌘right": "move cursor to end of line",
-    "⌘left": "move cursor to first-non-space|start of line"
+    "⌘▸": "move cursor(s) to end of line",
+    "⌘◂": "move cursor(s) to first-non-space|start of line"
   },
   "multi-cursors": {
-    "⌘▴ ⌘▾": "extend cursors vertically",
-    "⌘◂ ⌘▸": "move cursors to start|end of line",
+    "⌘▴ ⌘▾": "extend cursors vertically at top|bottom",
     "⌘⇧▴": "shrink cursor columns at bottom",
     "⌘⇧▾": "shrink cursor columns at top",
     "⌥left-click": "add cursor at mouse position"
