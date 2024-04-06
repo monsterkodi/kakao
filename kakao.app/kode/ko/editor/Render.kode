@@ -33,7 +33,7 @@ class Render
     @lineSpan: (diss, size) ->
 
         div = elem class: 'linespans'
-        if diss.length > 500
+        if diss.length > 4000
             log 'line too long!'
             span = elem 'span'
             span.className = 'line_to_long'

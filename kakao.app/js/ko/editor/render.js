@@ -36,7 +36,7 @@ class Render
         var d, div, span, ss, st, _46_45_, _48_21_
 
         div = elem({class:'linespans'})
-        if (diss.length > 500)
+        if (diss.length > 4000)
         {
             console.log('line too long!')
             span = elem('span')

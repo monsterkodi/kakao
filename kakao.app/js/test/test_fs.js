@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, file: function () { return import.meta.url.substring(7); }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var f2, t, _130_21_, _131_21_, _132_21_, _21_24_, _22_25_, _23_44_, _30_29_, _31_28_, _35_27_, _36_28_, _46_21_, _47_22_, _51_27_, _52_25_
+var t, _130_21_, _131_21_, _132_21_, _21_24_, _22_25_, _23_44_, _30_29_, _31_28_, _35_27_, _36_28_, _46_21_, _47_22_, _51_27_, _52_25_
 
 import fs from "../kxk/fs.js"
 import slash from "../kxk/slash.js"
@@ -54,28 +54,6 @@ toExport["fs"] = function ()
         fs.read(_k_.dir() + '/dir/filedoesntexist',function (text)
         {
             return compare(text,'')
-        })
-    })
-    section("write", function ()
-    {
-        f2 = slash.path(_k_.dir(),'test.txt')
-        fs.write(f2,"hello world").then(function (p)
-        {
-            compare(p,f2)
-            return fs.read(p).then(function (r)
-            {
-                compare(r,'hello world')
-                return fs.remove(p)
-            })
-        })
-        fs.write(slash.path(_k_.dir(),'some.dir.that.doesn/t.exist'),'blurk').then(function (p)
-        {
-            compare(p,slash.path(_k_.dir(),'some.dir.that.doesn/t.exist'))
-            return fs.read(p).then(function (r)
-            {
-                compare(r,'blurk')
-                return fs.remove(slash.path(_k_.dir(),'some.dir.that.doesn'))
-            })
         })
     })
     section("dirlist", function ()

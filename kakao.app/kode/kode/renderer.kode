@@ -187,45 +187,10 @@ class Renderer
 
         for k,v of exp
 
-            s+= switch k
-                'if'        ➜ @if v
-                'for'       ➜ @for v
-                'while'     ➜ @while v
-                'return'    ➜ @return v
-                'await'     ➜ @await v
-                'class'     ➜ @class v
-                'function'  ➜ @function v
-                'switch'    ➜ @switch v
-                'when'      ➜ @when v
-                'use'       ➜ @use v
-                'import'    ➜ @import v
-                'export'    ➜ @export v
-                'assert'    ➜ @assert v
-                'qmrkop'    ➜ @qmrkop v
-                'stripol'   ➜ @stripol v
-                'dirFile'   ➜ @dirFile v
-                'main'      ➜ @main v
-                'qmrkcolon' ➜ @qmrkcolon v
-                'operation' ➜ @operation v
-                'section'   ➜ @section v
-                'subsect'   ➜ @subsect v
-                'compare'   ➜ @compare v
-                'incond'    ➜ @incond v
-                'parens'    ➜ @parens v
-                'object'    ➜ @object v
-                'keyval'    ➜ @keyval v
-                'array'     ➜ @array v
-                'lcomp'     ➜ @lcomp v
-                'index'     ➜ @index v
-                'slice'     ➜ @slice v
-                'prop'      ➜ @prop v
-                'each'      ➜ @each v
-                'func'      ➜ @func v
-                'call'      ➜ @call v
-                'try'       ➜ @try v
-                ➜
-                    log R4("renderer.node unhandled key #{k} in exp"), exp # if @debug or @verbose
-                    ''        
+            if @[k] is func
+                s += @[k] v
+            else
+                log R4("renderer.node unhandled key #{k} in exp"), exp # if @debug or @verbose
         s
 
     #  0000000   000000000   0000000   00     00
