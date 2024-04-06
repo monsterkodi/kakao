@@ -5,6 +5,17 @@ import kermit from "../kxk/kermit.js"
 
 toExport["kermit"] = function ()
 {
+    section("array", function ()
+    {
+        compare(kermit(`commit  ●commit
+■files
+    ●type ●path`,`commit id
+
+M   modified/file
+C   changed/file
+`),[{commit:'id',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
+    })
+    return
     section("simple", function ()
     {
         compare(kermit(`commit  ●commit
@@ -41,8 +52,9 @@ Date:   Wed Apr 3 01:10:28 2024 +0200
 
     git status
 
-M   kakao.app/kode/ko/tools/Git.kode
-`),[{commit:'5255e93531d91abee2583fded9c13559f2445489',author:'monsterkodi <monsterkodi@gmx.net>',date:'Thu Apr 4 00:15:12 2024 +0200',msg:'misc',files:[{type:'M',path:'kakao.app/kode/ko/tools/Git.kode'}]},{commit:'85cfa741ce4e17f142c06d02a857b6646a26d34a',author:'monsterkodi <monsterkodi@gmx.net>',date:'Wed Apr 3 01:10:28 2024 +0200',msg:'git status',files:[{type:'M',path:'kakao.app/kode/ko/tools/Git.kode'}]}])
+M   modified/file
+C   changed/file
+`),[{commit:'5255e93531d91abee2583fded9c13559f2445489',author:'monsterkodi <monsterkodi@gmx.net>',date:'Thu Apr 4 00:15:12 2024 +0200',msg:'misc',files:[{type:'M',path:'kakao.app/kode/ko/tools/Git.kode'}]},{commit:'85cfa741ce4e17f142c06d02a857b6646a26d34a',author:'monsterkodi <monsterkodi@gmx.net>',date:'Wed Apr 3 01:10:28 2024 +0200',msg:'git status',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
     })
 }
 toExport["kermit"]._section_ = true

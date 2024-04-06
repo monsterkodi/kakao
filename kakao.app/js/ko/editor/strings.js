@@ -50,7 +50,7 @@ class Strings
 
     highlightInside (pos)
     {
-        var cp, i, li, line, pair, pairs, rngs, stack, ths, _50_26_, _54_26_
+        var cp, i, li, line, lst, pair, pairs, rngs, stack, ths
 
         stack = []
         pairs = []
@@ -73,22 +73,25 @@ class Strings
                     continue
                 }
             }
-            if (((_k_.last(stack) != null ? _k_.last(stack).match : undefined) === "'" && "'" === ths.match) && _k_.last(stack).start === ths.start - 1)
+            if (lst = _k_.last(stack))
             {
-                stack.pop()
-                continue
-            }
-            if ((_k_.last(stack) != null ? _k_.last(stack).match : undefined) === ths.match)
-            {
-                pairs.push([stack.pop(),ths])
-                if (!(pair != null))
+                if ((lst.match === "'" && "'" === ths.match) && lst.start === ths.start - 1)
                 {
-                    if ((_k_.last(pairs)[0].start <= cp && cp <= ths.start + 1))
-                    {
-                        pair = _k_.last(pairs)
-                    }
+                    stack.pop()
+                    continue
                 }
-                continue
+                if (lst.match === ths.match)
+                {
+                    pairs.push([stack.pop(),ths])
+                    if (!(pair != null))
+                    {
+                        if ((_k_.last(pairs)[0].start <= cp && cp <= ths.start + 1))
+                        {
+                            pair = _k_.last(pairs)
+                        }
+                    }
+                    continue
+                }
             }
             if (stack.length > 1 && stack[stack.length - 2].match === ths.match)
             {
@@ -117,7 +120,7 @@ class Strings
         var cls, opn
 
         this.clear()
-        var _77_18_ = pair; opn = _77_18_[0]; cls = _77_18_[1]
+        var _78_18_ = pair; opn = _78_18_[0]; cls = _78_18_[1]
 
         pair[0].clss = `stringmatch ${this.editor.stringCharacters[opn.match]}`
         pair[1].clss = `stringmatch ${this.editor.stringCharacters[cls.match]}`
@@ -130,9 +133,9 @@ class Strings
     {
         return this.editor.setHighlights(this.editor.highlights().filter(function (h)
         {
-            var _85_79_
+            var _86_79_
 
-            return !(h[2] != null ? (_85_79_=h[2].clss) != null ? _85_79_.startsWith('stringmatch') : undefined : undefined)
+            return !(h[2] != null ? (_86_79_=h[2].clss) != null ? _86_79_.startsWith('stringmatch') : undefined : undefined)
         }))
     }
 }

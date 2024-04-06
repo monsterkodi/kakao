@@ -47,16 +47,17 @@ class Strings
                 if ths.start-1 <= 0 or line[ths.start-2] != '\\'
                     continue # ignore escaped
                 
-            if last(stack)?.match == "'" == ths.match and last(stack).start == ths.start-1
-                stack.pop() # remove ''
-                continue
-                
-            if last(stack)?.match == ths.match
-                pairs.push [stack.pop(), ths]
-                if not pair? 
-                    if last(pairs)[0].start <= cp <= ths.start+1
-                        pair = last pairs
-                continue
+            if lst = last stack
+                if lst.match == "'" == ths.match and lst.start == ths.start-1
+                    stack.pop() # remove ''
+                    continue
+
+                if lst.match == ths.match
+                    pairs.push [stack.pop(), ths]
+                    if not pair? 
+                        if last(pairs)[0].start <= cp <= ths.start+1
+                            pair = last pairs
+                    continue
 
             if stack.length > 1 and stack[stack.length-2].match == ths.match
                 stack.pop()

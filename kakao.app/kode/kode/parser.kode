@@ -652,23 +652,6 @@ function Parser extends parse
         
         args[0] = @prepareCallAssign args[0] if valid args
                 
-        # if args[0]?.if
-            # if @ifSuitableForInline args[0]
-                # args[0].if.inline = true    
-            # else
-                # args[0] =
-                    # call:
-                        # callee:
-                            # parens:
-                                # exps:   [
-                                            # func:
-                                                # arrow:
-                                                    # text: '=>'
-                                                # body:
-                                                    # vars: []
-                                                    # exps: [args[0]]
-                                        # ]
-        
         e = call: callee: tok
         e.call.open  = open  if open
         e.call.qmrk  = qmrk  if qmrk

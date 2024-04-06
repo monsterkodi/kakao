@@ -170,8 +170,8 @@ export
                 break if newCursors.length >= 999
         sortPositions newCursors
         main = switch dir
-            when 'up'    then 'first'
-            when 'down'  then 'last'
+            'up'   ➜ 'first'
+            'down' ➜ 'last'
         @do.setCursors newCursors, main:main
         @do.end()
 

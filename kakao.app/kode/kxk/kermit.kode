@@ -26,23 +26,35 @@ pattern = (kmt) ->
             p.push [lpt, null]
     p
     
+stackTopOrLast = (ctx) ->
+    
+    lr = last ctx.result
+    if valid ctx.stack
+        lr = lr[last(ctx.stack)[1..]]
+        lr.push {}
+        lr = last lr
+    lr
+    
 addMatch = (cpt, splt, ctx) ->
     
     log 'addMatch' cpt, splt, ctx.pind, ctx.result
 
+    lr = stackTopOrLast ctx
     for cp,ci in cpt
         if cp?[0] in '●'
-            lr = last ctx.result
             log 'var match' ci, cpt[ci+1..], splt[ci+1..]
             lr[cp[1..]] = splt[ci]
             if empty cpt[ci+1..] and valid splt[ci+1..]
                 log 'add remaining' splt[ci+1..].join ' '
                 lr[cp[1..]] += ' ' + splt[ci+1..].join ' '
         else if cp == splt[ci]
-            log 'strong match' ci, cpt[ci+1..], splt[ci+1..]
+            log 'strong match' ci, cp, 'next' cpt[ci+1..], splt[ci+1..]
         else
             log 'missmatch' ci, cp, splt[ci]
-    ctx.pind += 1
+            return false
+    if empty ctx.stack
+        ctx.pind += 1
+    true
     
 traverse = (lines, ctx) ->
     
@@ -58,6 +70,20 @@ traverse = (lines, ctx) ->
             ctx.pind = 0
             ctx.result.push {}
             cptn = ctx.ptn[ctx.pind]
+            
+        if cptn[1]
+            log 'cptn[1] ------' cptn[1], ctx
+            if last ctx.stack == cptn[1]
+                log 'cont stack'
+            else
+                lr = stackTopOrLast ctx
+                ctx.stack.push cptn[1]
+                lr[cptn[1][1..]] = []
+                log 'push' ctx.stack, lr
+        else if valid ctx.stack
+            log 'clear stack'
+            ctx.pind += 1
+            ctx.stack = []
         
         if addMatch cptn[0], splt, ctx
         else
@@ -68,7 +94,7 @@ kermit = (kmt, str) ->
     lines = str.split '\n'
     lines = lines.filter (l) -> valid trim l
 
-    ctx = result:[{}], pind:0, ptn:pattern kmt
+    ctx = result:[{}], stack:[], pind:0, ptn:pattern kmt
     traverse lines, ctx
     log 'result' ctx.result
     ctx.result

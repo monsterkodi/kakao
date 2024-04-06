@@ -94,6 +94,10 @@ knrd = async function (files = [], opt = {})
         if (rule = rules[slash.ext(file)])
         {
             srcFile = file
+            if (slash.isRelative(srcFile))
+            {
+                srcFile = slash.path(process.cwd(),srcFile)
+            }
             tgtFile = slash.swapExt(srcFile.replace(rule.srcDir,rule.tgtDir),rule.tgtExt)
             srcText = await fs.read(srcFile)
             tgtText = await fs.read(tgtFile)

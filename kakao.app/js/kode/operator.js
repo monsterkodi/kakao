@@ -19,6 +19,8 @@ precedence = function (o)
         case 'new':
             return -1
 
+        case 'last':
+        case 'first':
         case 'is':
         case 'equals':
         case 'noon':
@@ -116,14 +118,14 @@ class Operator
 
     collect (tl)
     {
-        var e, _70_19_
+        var e, _71_19_
 
-        if ((tl != null ? (_70_19_=tl.exps) != null ? _70_19_.length : undefined : undefined))
+        if ((tl != null ? (_71_19_=tl.exps) != null ? _71_19_.length : undefined : undefined))
         {
             var list = _k_.list(tl.exps)
-            for (var _71_25_ = 0; _71_25_ < list.length; _71_25_++)
+            for (var _72_25_ = 0; _72_25_ < list.length; _72_25_++)
             {
-                e = list[_71_25_]
+                e = list[_72_25_]
                 this.exp(e)
             }
         }
@@ -132,7 +134,7 @@ class Operator
 
     exp (e)
     {
-        var key, v, val, _88_30_
+        var key, v, val, _89_30_
 
         if (!e)
         {
@@ -147,9 +149,9 @@ class Operator
             if (e.length)
             {
                 var list = _k_.list(e)
-                for (var _85_42_ = 0; _85_42_ < list.length; _85_42_++)
+                for (var _86_42_ = 0; _86_42_ < list.length; _86_42_++)
                 {
-                    v = list[_85_42_]
+                    v = list[_86_42_]
                     this.exp(v)
                 }
             }
@@ -189,7 +191,7 @@ class Operator
 
     op (e)
     {
-        var c, chain, i, p, _110_19_, _110_39_, _112_40_
+        var c, chain, i, p, _111_19_, _111_39_, _113_40_
 
         chain = [e]
         c = e.operation
@@ -208,7 +210,7 @@ class Operator
             {
                 this.logChain(chain,p)
             }
-            for (var _120_21_ = i = 1, _120_25_ = p.length; (_120_21_ <= _120_25_ ? i < p.length : i > p.length); (_120_21_ <= _120_25_ ? ++i : --i))
+            for (var _121_21_ = i = 1, _121_25_ = p.length; (_121_21_ <= _121_25_ ? i < p.length : i > p.length); (_121_21_ <= _121_25_ ? ++i : --i))
             {
                 if (p[i] > p[i - 1])
                 {
@@ -225,12 +227,12 @@ class Operator
 
     fixPrec (e)
     {
-        var newlhs, newop, op, _141_23_, _141_41_, _141_52_, _141_62_, _145_37_, _145_48_, _181_54_, _181_84_, _187_32_, _187_53_
+        var newlhs, newop, op, _142_23_, _142_41_, _142_52_, _142_62_, _146_37_, _146_48_, _182_54_, _182_84_, _188_32_, _188_53_
 
         op = e.operation || e.qmrkcolon
         if (precedence(e) < precedence(op.rhs))
         {
-            if (op.operator.text === 'not' && _k_.in(((op.rhs != null ? op.rhs.incond : undefined) || ((_141_41_=op.rhs) != null ? (_141_52_=_141_41_.operation) != null ? (_141_62_=_141_52_.operator) != null ? _141_62_.text : undefined : undefined : undefined)),assign))
+            if (op.operator.text === 'not' && _k_.in(((op.rhs != null ? op.rhs.incond : undefined) || ((_142_41_=op.rhs) != null ? (_142_52_=_142_41_.operation) != null ? (_142_62_=_142_52_.operator) != null ? _142_62_.text : undefined : undefined : undefined)),assign))
             {
                 return
             }
@@ -238,7 +240,7 @@ class Operator
             {
                 return
             }
-            if (_k_.in(((_145_37_=e.operation.rhs) != null ? (_145_48_=_145_37_.operation) != null ? _145_48_.operator.text : undefined : undefined),assign))
+            if (_k_.in(((_146_37_=e.operation.rhs) != null ? (_146_48_=_146_37_.operation) != null ? _146_48_.operator.text : undefined : undefined),assign))
             {
                 return
             }
@@ -284,7 +286,7 @@ class Operator
 
     logChain (chain, p)
     {
-        var rndr, s, _205_43_, _205_50_
+        var rndr, s, _206_43_, _206_50_
 
         s = ''
         rndr = (function (n)
@@ -309,7 +311,7 @@ class Operator
                 return (rndr(i.qmrkcolon.lhs)) + ' ? ' + (rndr(i.qmrkcolon.mid)) + ' '
             }
         }).bind(this)).join(' ')
-        s += ' ' + ((_205_50_=rndr((chain.slice(-1)[0].operation != null ? chain.slice(-1)[0].operation.rhs : undefined))) != null ? _205_50_ : '...')
+        s += ' ' + ((_206_50_=rndr((chain.slice(-1)[0].operation != null ? chain.slice(-1)[0].operation.rhs : undefined))) != null ? _206_50_ : '...')
         console.log(_k_.w4('▪'),s,_k_.g3(p))
     }
 

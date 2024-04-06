@@ -25,6 +25,7 @@ precedence = (o) ->
     switch t
     
         'new'                                     ➜ -1
+        'last' 'first'
         'is' 'equals' 'noon'                      ➜  0
         'copy' 'clone' 
         'not' 'delete' 'empty' 'valid' '~'        ➜  1

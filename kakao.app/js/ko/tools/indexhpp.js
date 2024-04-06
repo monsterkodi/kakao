@@ -14,22 +14,25 @@ class IndexHpp
 
     parseLine (lineIndex, lineText)
     {
-        var advance, ch, key, match, p, poppedRegion, region, rest, topRegion, topToken, _181_37_, _181_44_, _181_71_, _39_28_, _67_41_, _72_82_, _72_89_
+        var advance, ch, key, lst, match, p, poppedRegion, region, rest, topRegion, topToken, _182_37_, _182_44_, _182_71_, _68_41_, _73_82_, _73_89_
 
         if (!_k_.empty(this.currentWord))
         {
             this.lastWord = this.currentWord
         }
         this.currentWord = ''
-        if ((_k_.last(this.tokenStack) != null ? _k_.last(this.tokenStack).classType : undefined) && !_k_.last(this.tokenStack).name)
+        if (lst = _k_.last(this.tokenStack))
         {
-            if (this.lastWord.startsWith('>'))
+            if (lst.classType && !lst.name)
             {
-                this.tokenStack.pop()
-            }
-            else
-            {
-                _k_.last(this.tokenStack).name = this.lastWord
+                if (this.lastWord.startsWith('>'))
+                {
+                    this.tokenStack.pop()
+                }
+                else
+                {
+                    lst.name = this.lastWord
+                }
             }
         }
         p = -1
@@ -185,7 +188,7 @@ class IndexHpp
                             this.result.funcs.push(topToken)
                         }
                     }
-                    if (((topToken != null ? (_181_37_=topToken.args) != null ? _181_37_.start : undefined : undefined) != null) && !(topToken.args.end != null) && key === 'bracketArgs' && this.regionStack.length === (topToken != null ? topToken.depth : undefined))
+                    if (((topToken != null ? (_182_37_=topToken.args) != null ? _182_37_.start : undefined : undefined) != null) && !(topToken.args.end != null) && key === 'bracketArgs' && this.regionStack.length === (topToken != null ? topToken.depth : undefined))
                     {
                         topToken.args.end = {line:lineIndex,col:p}
                     }

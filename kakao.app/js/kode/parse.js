@@ -541,6 +541,10 @@ Parse = (function ()
                 {
                     e = this.operation(null,e,tokens)
                 }
+                else if (_k_.in(e.text,['first','last']) && (!(_k_.in(nxt.type,['op','nl'])) && !(_k_.in(nxt.text[0],',.}])'))))
+                {
+                    e = this.operation(null,e,tokens)
+                }
                 else if (_k_.in(e.text,['++','--']) && unspaced)
                 {
                     this.verb('rhs increment')

@@ -265,7 +265,7 @@ class Lexer
         while (idx < tokens.length)
         {
             tok = tokens[idx]
-            if (tok.type === 'op' && !(_k_.in(tok.text,['--','++','=','clone','copy','delete','new','is','instanceof','noon'])))
+            if (tok.type === 'op' && !(_k_.in(tok.text,['--','++','=','clone','copy','delete','new','is','instanceof','noon','last','first'])))
             {
                 newTokens.push(tok)
                 idx += 1

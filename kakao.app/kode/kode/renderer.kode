@@ -808,7 +808,7 @@ class Renderer
                     else msg = 'null'
                     "_k_.dbg(#{'\"' + (@source or '???') + '\"'}, #{p.callee.line}, #{p.callee.col}, #{msg}, #{@nodes p.args, ','})"
                     
-                'clamp' 'first' 'last' 'min' 'max' 'lpad' 'rpad' 'trim' 'ltrim' 'rtrim'
+                'clamp' 'min' 'max' 'lpad' 'rpad' 'trim' 'ltrim' 'rtrim' # 'first' 'last' ???
                     @hint._k_[callee] = true
                     "_k_.#{callee}(#{@nodes p.args, ','})"
                     
@@ -1390,6 +1390,15 @@ class Renderer
                 @hint._k_.valid = true if op.operator.text == 'valid'
                 open = '('
                 close = ')'
+
+            op.operator.text in ['first' 'last']
+                @hint._k_[op.operator.text] = true
+                rhs = @node op.rhs
+                if rhs[0] not in '.-+'
+                    if rhs[0] == '('
+                        return "_k_.#{op.operator.text}#{@node op.rhs}"
+                    else
+                        return "_k_.#{op.operator.text}(#{@node op.rhs})"
                 
             op.operator.text == 'eql'
                 @hint._k_[op.operator.text] = true

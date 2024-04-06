@@ -10,6 +10,31 @@ use ../kxk ◆ kermit
 
 ▸ kermit
 
+    ▸ array
+    
+        kermit """
+            commit  ●commit
+            ■files
+                ●type ●path
+            """ """
+            commit id
+            
+            M   modified/file
+            C   changed/file
+            
+            """ ▸ [
+                commit: 'id'
+                files: [
+                    type: 'M'
+                    path: 'modified/file'
+                ,
+                    type: 'C'
+                    path: 'changed/file'
+                ]
+            ]
+            
+    return
+
     ▸ simple
     
         kermit """
@@ -61,7 +86,8 @@ use ../kxk ◆ kermit
             
                 git status
             
-            M   kakao.app/kode/ko/tools/Git.kode
+            M   modified/file
+            C   changed/file
             
             """ ▸ [
                 commit: '5255e93531d91abee2583fded9c13559f2445489'
@@ -79,7 +105,10 @@ use ../kxk ◆ kermit
                 msg:    'git status'
                 files: [
                     type: 'M'
-                    path: 'kakao.app/kode/ko/tools/Git.kode'
+                    path: 'modified/file'
+                ,
+                    type: 'C'
+                    path: 'changed/file'
                 ]
             ]
             

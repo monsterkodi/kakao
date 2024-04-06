@@ -36,11 +36,12 @@ class IndexHpp
         @lastWord = @currentWord if not empty @currentWord
         @currentWord = ''
 
-        if last(@tokenStack)?.classType and not last(@tokenStack).name
-            if @lastWord.startsWith '>'
-                @tokenStack.pop()
-            else
-                last(@tokenStack).name = @lastWord
+        if lst = last @tokenStack
+            if lst.classType and not lst.name
+                if @lastWord.startsWith '>'
+                    @tokenStack.pop()
+                else
+                    lst.name = @lastWord
 
         p    = -1
         rest = lineText
