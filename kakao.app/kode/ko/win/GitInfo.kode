@@ -69,7 +69,7 @@ class GitInfo
     
     logDiff: (changes) =>
         
-        log 'logDiff' changes
+        # log 'logDiff' changes
 
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
@@ -89,43 +89,45 @@ class GitInfo
             
             continue if empty dss
             
-            if changes.change == 'deleted'
-
-                window.terminal.meta.add 
-                    line:       window.terminal.numLines()
-                    start:      0
-                    end:        text.length
-                    clss:       'gitInfoDelete'
-
-            else if changes.change == 'added'
-
-                window.terminal.meta.add 
-                    line:       window.terminal.numLines()
-                    start:      0
-                    end:        text.length
-                    clss:       'gitInfoAdded'
-
-            else if changes.change == 'changed'
+            switch changes.change
                 
-                if linediff.isBoring changes.info.mod[index].old, changes.info.mod[index].new
-                    index += 1
-                    continue
+                'deleted'
 
-                diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
-                if empty diffs and not trim(changes.info.mod[index].old).startsWith "#"
-                    diffs = linediff changes.info.mod[index].new, changes.info.mod[index].old
-                    if valid diffs
+                    window.terminal.meta.add 
+                        line:       window.terminal.numLines()
+                        start:      0
+                        end:        text.length
+                        clss:       'gitInfoDelete'
 
-                        for diff in diffs
-        
-                            window.terminal.meta.add 
-                                line:       window.terminal.numLines()
-                                start:      diff.index
-                                end:        diff.index+diff.length
-                                clss:       'gitInfoDelete'
-                                                            
-                        dss = Syntax.dissForTextAndSyntax changes.info.mod[index].old, syntaxName
-                else
+                'added'
+
+                    window.terminal.meta.add 
+                        line:       window.terminal.numLines()
+                        start:      0
+                        end:        text.length
+                        clss:       'gitInfoAdded'
+
+                'changed'
+                    
+                    if linediff.isBoring changes.info.mod[index].old, changes.info.mod[index].new
+                        index += 1
+                        continue
+    
+                    diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
+                    if empty diffs and not trim(changes.info.mod[index].old).startsWith "#"
+                        diffs = linediff changes.info.mod[index].new, changes.info.mod[index].old
+                        if valid diffs
+    
+                            for diff in diffs
+            
+                                window.terminal.meta.add 
+                                    line:       window.terminal.numLines()
+                                    start:      diff.index
+                                    end:        diff.index+diff.length
+                                    clss:       'gitInfoDelete'
+                                                                
+                            dss = Syntax.dissForTextAndSyntax changes.info.mod[index].old, syntaxName
+                ➜
                     for diff in diffs
     
                         window.terminal.meta.add 
