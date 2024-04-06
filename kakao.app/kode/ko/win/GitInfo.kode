@@ -10,8 +10,8 @@ use ../../kxk ▪ post slash ffs
 use ../tools  ◆ linediff Git Projects
 use ../editor ◆ Syntax
 
-SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp']
-IGNORE_FILE_EXTS = ['js' 'css']
+SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp' 'noon']
+IGNORE_FILE_EXTS = ['js' 'css' 'json']
 
 class GitInfo
 
@@ -68,6 +68,8 @@ class GitInfo
     # 0000000    000  000       000       
     
     logDiff: (changes) =>
+        
+        log 'logDiff' changes
 
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames

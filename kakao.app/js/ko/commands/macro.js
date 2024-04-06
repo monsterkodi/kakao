@@ -58,7 +58,7 @@ Macro = (function ()
 
     Macro.prototype["execute"] = function (command)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, words, wordsInArgsOrCursorsOrSelection, _116_35_, _230_40_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, transform, words, wordsInArgsOrCursorsOrSelection, _116_35_, _230_40_
 
         if (_k_.empty(command))
         {
@@ -263,6 +263,7 @@ export ${clss}
                 editor.cursorLines(num,step)
                 break
             default:
+                transform = Editor.actionModules.transform.Transform
                 if (transform.transformNames && _k_.in(cmmd,transform.transformNames))
             {
                 window.textEditor.transform.do.apply(window.textEditor.transform,[cmmd].concat(cmds))
