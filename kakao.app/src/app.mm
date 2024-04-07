@@ -450,31 +450,40 @@
     return task;
 }
 
-- (NSString*) executeShellScript:(NSArray*)args
+- (NSString*) executeShellScript:(NSArray*)args callback:(Callback)callback
 {
     NSRange range; range.location = 1; range.length = [args count]-1;
     NSTask* task = [self taskForCommand:[args objectAtIndex:0] args:[args subarrayWithRange:range]];
 
-    // NSMutableDictionary* environment = [NSMutableDictionary dictionary];
-    // [environment setObject:@"false" forKey:@"GIT_TERMINAL_PROMPT"];
-    // NSLog(@"executeShellScript environment %@", environment);
-    // [task setEnvironment:environment];
-
     NSPipe *pipe = [NSPipe pipe];
+    __block NSFileHandle* fileHandle = [pipe fileHandleForReading];
+    [fileHandle readToEndOfFileInBackgroundAndNotify];
     [task setStandardOutput:pipe];
-
+    
+    __block id observer = [[NSNotificationCenter defaultCenter] 
+        addObserverForName:NSFileHandleReadToEndOfFileCompletionNotification 
+        object:fileHandle 
+        queue:nil
+        usingBlock:^(NSNotification *notification) 
+        {
+            NSData* readData = [[notification userInfo] objectForKey:NSFileHandleNotificationDataItem];
+            NSString* outString = [[[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding] autorelease];
+            callback(outString, nil);
+            [[NSNotificationCenter defaultCenter] removeObserver:observer];
+        }
+    ];
+    
+    [task setTerminationHandler:^(NSTask* task)
+    {
+        if ([task terminationStatus] != OK)
+        {
+            NSLog(@"task FAIL!");
+        }        
+        [task autorelease];
+    }];
+    
     [task launch];
-    [task waitUntilExit];
-
-    int exitCode = [task terminationStatus];
-
-    NSString* outString = [self outputOfPipe:pipe];
-
-    [task autorelease];
-
-    //NSLog(@"executeShellScript: '%@'", outString);
-
-    return outString;
+    return @"launched";
 }
 
 // 000000000  00000000  00000000   00     00  000  000   000   0000000   000000000  00000000

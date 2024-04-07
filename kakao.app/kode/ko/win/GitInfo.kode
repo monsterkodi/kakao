@@ -6,7 +6,7 @@
  0000000   000     000     000  000   000  000        0000000
 ###
 
-use ../../kxk ▪ post slash ffs
+use ../../kxk ▪ post slash ffs kstr
 use ../tools  ◆ linediff Git Projects
 use ../editor ◆ Syntax
 
@@ -16,6 +16,45 @@ IGNORE_FILE_EXTS = ['js' 'css' 'json']
 class GitInfo
 
     @: ->
+        
+    # 000   000  000   0000000  000000000   0000000   00000000   000   000  
+    # 000   000  000  000          000     000   000  000   000   000 000   
+    # 000000000  000  0000000      000     000   000  0000000      00000    
+    # 000   000  000       000     000     000   000  000   000     000     
+    # 000   000  000  0000000      000      0000000   000   000     000     
+    
+    history: (path) ○->
+
+        path ?= window.editor.currentFile
+        return if not path
+        
+        window.split.raise 'terminal'
+        window.terminal.clear()
+        window.terminal.singleCursorAtPos [0 0]
+
+        gitDir  =○ kakao 'fs.git' path
+        history =○ Git.history()
+            
+        for commit in history
+                        
+            window.terminal.queueMeta
+                diss: Syntax.dissForTextAndSyntax commit.msg, 'git'
+                text: commit.msg
+                clss: 'searchResult'
+
+            for file in commit.files
+                
+                continue if slash.ext(file.path) in ['js''css''html''json']
+
+                text = "    #{file.type} #{file.path}"
+                window.terminal.queueMeta
+                    diss: Syntax.dissForTextAndSyntax text, 'term'
+                    text: text
+                    clss: 'searchResult'
+                    href: "#{gitDir}/#{file.path}"
+                    click: @onMetaClick
+                    
+        window.terminal.singleCursorAtPos [0 0]
 
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000
@@ -169,8 +208,6 @@ class GitInfo
         
         Git.status(window.editor.currentFile).then (status) ○->
 
-            # log 'status' status
-            
             return if empty status
 
             logFile = (change, file, status, spacer) ->
@@ -235,27 +272,5 @@ class GitInfo
 
             window.terminal.appendMeta clss: 'spacer'
             window.terminal.scroll.cursorToTop 7
-            
-    # 000   000  000   0000000  000000000   0000000   00000000   000   000  
-    # 000   000  000  000          000     000   000  000   000   000 000   
-    # 000000000  000  0000000      000     000   000  0000000      00000    
-    # 000   000  000       000     000     000   000  000   000     000     
-    # 000   000  000  0000000      000      0000000   000   000     000     
-    
-    history: (path) ○->
-
-        window.split.raise 'terminal'
-        window.terminal.clear()
-
-        path ?= window.editor.currentFile
-        
-        return if not path
-        
-        log 'Git.history -- ' path
-        history =○ Git.history path
-            
-        log 'GitInfo.history ▸' history
-        
-        history
-
+                    
 export new GitInfo

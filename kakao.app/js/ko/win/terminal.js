@@ -31,19 +31,11 @@ Terminal = (function ()
 
     Terminal.prototype["appendLineDiss"] = function (text, diss = [])
     {
-        var tail
-
         if ((diss != null ? diss.length : undefined))
         {
             this.syntax.setDiss(this.numLines(),diss)
         }
-        tail = this.cursorPos()[1] === this.numLines() - 1 && this.numCursors() === 1
-        this.appendText(text)
-        if (tail)
-        {
-            this.singleCursorAtPos([0,this.numLines() - 1])
-            return this.scroll.to(this.scroll.fullHeight)
-        }
+        return this.appendText(text)
     }
 
     Terminal.prototype["appendDiss"] = function (diss)
@@ -53,7 +45,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, _59_21_, _74_21_
+        var l, text, _55_21_, _57_33_, _72_21_
 
         if (!(meta != null))
         {
@@ -62,15 +54,16 @@ Terminal = (function ()
         this.meta.append(meta)
         if ((meta.diss != null))
         {
-            return this.appendLineDiss(Syntax.lineForDiss(meta.diss),meta.diss)
+            text = ((_57_33_=meta.text) != null ? _57_33_ : Syntax.lineForDiss(meta.diss))
+            return this.appendLineDiss(text,meta.diss)
         }
         else if (meta.clss === 'salt')
         {
             this.appendMeta({clss:'spacer'})
             var list = _k_.list(salt(meta.text).split('\n'))
-            for (var _66_22_ = 0; _66_22_ < list.length; _66_22_++)
+            for (var _64_22_ = 0; _64_22_ < list.length; _64_22_++)
             {
-                l = list[_66_22_]
+                l = list[_64_22_]
                 this.appendMeta({clss:'spacer',text:'# ' + l})
             }
             return this.appendMeta({clss:'spacer'})
@@ -115,6 +108,17 @@ Terminal = (function ()
         {
             return this.metaTimer = setTimeout(this.dequeueMeta,0)
         }
+    }
+
+    Terminal.prototype["isCursorAtEnd"] = function ()
+    {
+        return this.cursorPos()[1] === this.numLines() - 1 && this.numCursors() === 1
+    }
+
+    Terminal.prototype["singleCursorInLastLineAndScrollToBottom"] = function ()
+    {
+        this.singleCursorAtPos([0,this.numLines() - 1])
+        return this.scroll.to(this.scroll.fullHeight)
     }
 
     Terminal.prototype["clear"] = function ()

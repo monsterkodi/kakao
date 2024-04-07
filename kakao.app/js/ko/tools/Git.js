@@ -191,11 +191,19 @@ Git = (function ()
 
     Git["history"] = async function (path)
     {
-        var args, history
+        var args, gitDir, history
 
-        args = ["--no-pager","log","--name-status","--no-color",path]
-        history = await kakao('app.sh','/usr/bin/git',{args:args,cwd:slash.dir(path)})
-        console.log('git history',history)
+        if (path)
+        {
+            args = ["--no-pager","log","--name-status","--no-color",path]
+            history = await kakao('app.sh','/usr/bin/git',{args:args,cwd:slash.dir(path)})
+        }
+        else
+        {
+            gitDir = await kakao('fs.git',editor.currentFile)
+            args = ["--no-pager","log","--name-status","--no-color",'.']
+            history = await kakao('app.sh','/usr/bin/git',{args:args,cwd:kakao.bundle.path})
+        }
         return kermit(`commit  ●commit
 Author: ●author
 Date:   ●date

@@ -34,7 +34,7 @@
     else if ([route hasPrefix:@"window."    ]) { reply = [Route window:     [route substringFromIndex:7]    args:args win:win]; }
     else if ([route hasPrefix:@"clipboard." ]) { reply = [Route clipboard:  [route substringFromIndex:10]   args:args win:win]; }
     else if ([route hasPrefix:@"win."       ]) { reply = [Route window:     [route substringFromIndex:4]    args:args win:win]; }
-    else if ([route hasPrefix:@"app."       ]) { reply = [Route app:        [route substringFromIndex:4]    args:args win:win]; }
+    else if ([route hasPrefix:@"app."       ]) {         [Route app:        [route substringFromIndex:4]    args:args win:win callback:callback]; return; }
     else if ([route hasPrefix:@"fs."        ]) { reply = [FS    fs:         [route substringFromIndex:3]    args:args win:win]; }
     else if ([route hasPrefix:@"js."        ]) { reply = [JS    js:         [route substringFromIndex:3]    args:args        ]; }
     else if ([route hasPrefix:@"test."      ]) { reply = [Route test:       [route substringFromIndex:5]    args:args        ]; }
@@ -141,7 +141,7 @@
 // 000   000  000        000        
 // 000   000  000        000        
 
-+ (id) app:(NSString*)req args:(NSArray*)args win:(Win*)win
++ (id) app:(NSString*)req args:(NSArray*)args win:(Win*)win callback:(Callback)callback
 {
     // NSLog(@"%d ▸ %@", (long)win.windowNumber, req);
     id app = [NSApplication sharedApplication];
@@ -155,7 +155,7 @@
     }
     else if ([req isEqualToString:@"sh"])
     {
-        return [[App get] executeShellScript:args];
+        [[App get] executeShellScript:args callback:callback];
     }
     return nil;
 }

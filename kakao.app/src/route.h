@@ -11,8 +11,6 @@
 #import "view.h"
 #import "win.h"
 
-typedef void (^Callback)(id, NSString*);
-
 @interface Route : NSObject
 {
 }

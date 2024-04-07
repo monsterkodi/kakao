@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "view.h"
 
+typedef void (^Callback)(id, NSString*);
+
 @interface Win : NSWindow <WKNavigationDelegate>
 
 @property (assign) View*     view;

@@ -34,12 +34,8 @@ function Terminal extends TextEditor
     appendLineDiss: (text, diss=[]) ->
         
         @syntax.setDiss @numLines(), diss if diss?.length
-        tail = @cursorPos()[1] == @numLines()-1 and @numCursors() == 1
         @appendText text
-        if tail
-            @singleCursorAtPos [0, @numLines()-1] 
-            @scroll.to @scroll.fullHeight
-            
+              
     appendDiss: (diss) -> @appendLineDiss Syntax.lineForDiss(diss), diss        
     
     # 00     00  00000000  000000000   0000000 
@@ -58,7 +54,9 @@ function Terminal extends TextEditor
         if 
             meta.diss?
             
-                @appendLineDiss Syntax.lineForDiss(meta.diss), meta.diss 
+                text = meta.text ? Syntax.lineForDiss meta.diss
+            
+                @appendLineDiss text, meta.diss 
                         
             meta.clss == 'salt'
             
@@ -94,6 +92,12 @@ function Terminal extends TextEditor
             break if count > 20
         clearTimeout @metaTimer
         @metaTimer = setTimeout @dequeueMeta, 0 if @metaQueue.length
+        
+    isCursorAtEnd: -> @cursorPos()[1] == @numLines()-1 and @numCursors() == 1
+    singleCursorInLastLineAndScrollToBottom: ->
+        
+        @singleCursorAtPos [0, @numLines()-1] 
+        @scroll.to @scroll.fullHeight
            
     #  0000000  000      00000000   0000000   00000000   
     # 000       000      000       000   000  000   000  
