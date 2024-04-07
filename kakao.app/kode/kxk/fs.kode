@@ -74,7 +74,7 @@ class FS
             tmpfile = slash.tmpfile()
 
             try
-                stat = ○ fsp.stat p
+                stat =○ fsp.stat p
                 mode = stat.mode
                 ○ fsp.access p, (fs.R_OK | fs.F_OK)
             catch err
@@ -88,6 +88,19 @@ class FS
         catch err
             FS.error "fs.write -- " + String(err)
             ''
+    # 000  000   000  00000000   0000000   
+    # 000  0000  000  000       000   000  
+    # 000  000 0 000  000000    000   000  
+    # 000  000  0000  000       000   000  
+    # 000  000   000  000        0000000   
+    
+    @info: (p) ○->
+        
+        try
+            stat =○ fsp.stat p
+            return stat
+        catch err
+            FS.error "fs.info -- " + String(err)
       
     # 00000000   000   000   0000000       000   0000000   000  000000000  
     # 000   000  000  000   000           000   000        000     000     

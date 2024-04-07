@@ -12,6 +12,79 @@ use ../kode/kode
 use ../kxk/slash ▪ tilde
 use ../kxk ◆ fs pug styl noon
 
+kodeDir = slash.path ◆dir, '/../../kode'
+pugDir  = slash.path ◆dir, '/../../pug'
+jsDir   = slash.path ◆dir, '/../../js'
+
+# 00000000   000   000  000      00000000   0000000  
+# 000   000  000   000  000      000       000       
+# 0000000    000   000  000      0000000   0000000   
+# 000   000  000   000  000      000            000  
+# 000   000   0000000   0000000  00000000  0000000   
+
+rules =
+    kode: 
+        tgtExt:  'js'
+        srcDir:  kodeDir
+        tgtDir:  jsDir
+        compile: (srcText, srcFile) -> k0de = new kode header:false; k0de.compile srcText, srcFile
+    styl:
+        tgtExt:  'css'
+        srcDir:  pugDir
+        tgtDir:  jsDir + '/css'
+        compile: (srcText, srcFile) -> styl srcText
+    pug:
+        tgtExt:  'html'
+        srcDir:  pugDir
+        tgtDir:  jsDir
+        compile: (srcText, srcFile) -> pug srcText
+    noon:
+        tgtExt:  'json'
+        srcDir:  kodeDir
+        tgtDir:  jsDir
+        compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, '  '
+        
+    ignore: [
+        'kolor/lang.noon'
+        'ko/help.noon'
+    ]
+    
+#  0000000    0000000   000000000  000   000  00000000  00000000   
+# 000        000   000     000     000   000  000       000   000  
+# 000  0000  000000000     000     000000000  0000000   0000000    
+# 000   000  000   000     000     000   000  000       000   000  
+#  0000000   000   000     000     000   000  00000000  000   000  
+
+gatherFiles = ○->
+    
+    list  =○ fs.list kodeDir
+    list  = list.concat ○ fs.list pugDir
+    list  = list.filter (item) -> item.type == 'file'
+    
+    files = list.map (item) -> item.path
+    files = files.filter (file) -> 
+        for ignore in rules.ignore
+            if file.endsWith ignore
+                return false
+        true
+        
+srcForFile = (file) ->
+    
+    srcFile = file
+    if slash.isRelative srcFile
+        srcFile = slash.path process.cwd(), srcFile
+    srcFile
+    
+tgtForSrc = (srcFile, rule) ->
+    
+    slash.swapExt srcFile.replace(rule.srcDir, rule.tgtDir), rule.tgtExt
+    
+# 000   000  000   000  00000000   0000000    
+# 000  000   0000  000  000   000  000   000  
+# 0000000    000 0 000  0000000    000   000  
+# 000  000   000  0000  000   000  000   000  
+# 000   000  000   000  000   000  0000000    
+
 knrd = (files = [], opt = {}) ○->
        
     if files is str
@@ -23,43 +96,10 @@ knrd = (files = [], opt = {}) ○->
     log 'files' files if opt.verbose
     
     # ● 🔨
-    
-    kodeDir = slash.path ◆dir, '/../../kode'
-    pugDir  = slash.path ◆dir, '/../../pug'
-    jsDir   = slash.path ◆dir, '/../../js'
-    
-    rules =
-        kode: 
-            tgtExt:  'js'
-            srcDir:  kodeDir
-            tgtDir:  jsDir
-            compile: (srcText, srcFile) -> k0de = new kode header:false; k0de.compile srcText, srcFile
-        styl:
-            tgtExt:  'css'
-            srcDir:  pugDir
-            tgtDir:  jsDir + '/css'
-            compile: (srcText, srcFile) -> styl srcText
-        pug:
-            tgtExt:  'html'
-            srcDir:  pugDir
-            tgtDir:  jsDir
-            compile: (srcText, srcFile) -> pug srcText
-        noon:
-            tgtExt:  'json'
-            srcDir:  kodeDir
-            tgtDir:  jsDir
-            compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, '  '
             
-        ignore: [
-            'kolor/lang.noon'
-            ]
-    
     if empty files
         
-        list  =○ fs.list kodeDir
-        list  = list.concat ○ fs.list pugDir
-        list  = list.filter (item) -> item.type == 'file'
-        files = list.map (item) -> item.path
+        files =○ gatherFiles()
         
     log '🔨 ' files.length if not opt.quiet
     
@@ -77,12 +117,8 @@ knrd = (files = [], opt = {}) ○->
         
         if rule = rules[slash.ext file]
             
-            srcFile = file
-            
-            if slash.isRelative srcFile
-                srcFile = slash.path process.cwd(), srcFile
-            
-            tgtFile = slash.swapExt srcFile.replace(rule.srcDir, rule.tgtDir), rule.tgtExt
+            srcFile = srcForFile file
+            tgtFile = tgtForSrc  srcFile, rule
             
             srcText =○ fs.read srcFile
             tgtText =○ fs.read tgtFile
@@ -107,4 +143,26 @@ knrd = (files = [], opt = {}) ○->
         
         knrd files, rerunWhenDirty:false
         
+# 000  000   000  00000000   0000000   
+# 000  0000  000  000       000   000  
+# 000  000 0 000  000000    000   000  
+# 000  000  0000  000       000   000  
+# 000  000   000  000        0000000   
+
+knrd.info = ○->
+    
+    files =○ gatherFiles()
+    for file in files
+        if rule = rules[slash.ext file]
+            
+            srcFile = srcForFile file
+            tgtFile = tgtForSrc  srcFile, rule
+            
+            srcInfo =○ fs.info srcFile
+            tgtInfo =○ fs.info tgtFile
+            
+            log y5 srcFile, srcInfo 
+            log m4 tgtFile, tgtInfo
+    []
+    
 export knrd

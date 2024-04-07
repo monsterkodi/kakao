@@ -85,9 +85,24 @@ class FS
         }
     }
 
+    static async info (p)
+    {
+        var stat
+
+        try
+        {
+            stat = await fsp.stat(p)
+            return stat
+        }
+        catch (err)
+        {
+            return FS.error("fs.info -- " + String(err))
+        }
+    }
+
     static pkg (p)
     {
-        var _100_20_
+        var _113_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -105,7 +120,7 @@ class FS
 
     static git (p, cb)
     {
-        var _112_20_
+        var _125_20_
 
         if (((p != null ? p.length : undefined) != null))
         {

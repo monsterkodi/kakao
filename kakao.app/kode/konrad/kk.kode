@@ -91,7 +91,9 @@ class kk
     
     @info: ○->
         
-        log w4 '○● info' #kk.appPath()
+        log w4 '○● info' 
+        info =○ knrd.info()
+        log info
         
     # 000   000   0000000   000000000   0000000  000   000  
     # 000 0 000  000   000     000     000       000   000  

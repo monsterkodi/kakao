@@ -104,7 +104,11 @@ class kk
 
     static async info ()
     {
+        var info
+
         console.log(_k_.w4('○● info'))
+        info = await knrd.info()
+        console.log(info)
     }
 
     static async watch ()
