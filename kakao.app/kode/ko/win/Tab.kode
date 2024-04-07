@@ -184,13 +184,13 @@ class Tab
         return if status.gitDir != @file
         
         if @tooltip?.div?
-            if status.deleted.length ➜ @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax("▴ #{status.deleted.length} deleted" 'git'), wrapSpan:'tooltip-line' 
-            if status.added.length   ➜ @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax("▪ #{status.added.length} added"     'git'), wrapSpan:'tooltip-line' 
+            if status.deleted.length ➜ @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax("▲ #{status.deleted.length} deleted" 'git'), wrapSpan:'tooltip-line' 
+            if status.added.length   ➜ @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax("■ #{status.added.length} added"     'git'), wrapSpan:'tooltip-line' 
             if status.changed.length ➜ @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax("● #{status.changed.length} changed" 'git'), wrapSpan:'tooltip-line' 
         
         t = ''
-        if status.deleted.length ➜ t += '<div class="git-status-icon git-deleted deleted-triangle">▴</div>'
-        if status.added.length   ➜ t += '<div class="git-status-icon git-added       added-square">▪</div>'
+        if status.deleted.length ➜ t += '<div class="git-status-icon git-deleted deleted-triangle">▲</div>'
+        if status.added.length   ➜ t += '<div class="git-status-icon git-added       added-square">■</div>'
         if status.changed.length ➜ t += '<div class="git-status-icon git-changed   changed-circle">●</div>'
         @dot.innerHTML = t
         

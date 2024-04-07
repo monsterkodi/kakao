@@ -47,16 +47,22 @@ export
         
         if cursor[0] and line[cursor[0]-1] == '~'
             substitute = switch char
-                when '>' then '▸'
-                when '<' then '◂'
-                when '^' then '▴'
-                when 'v' then '▾'
-                when 'd' then '◆'
-                when 'c' then '●'
-                when 'o' then '○'
-                when 's' then '▪'
-                when 'S' then '■'
-                when 't' then '➜'
+                '>' ➜ '▸'
+                '.' ➜ '▶'
+                '<' ➜ '◂'
+                ',' ➜ '◀'
+                'v' ➜ '▾'
+                'V' ➜ '▼'
+                '^' ➜ '▴'
+                '6' ➜ '▲'
+                'd' ➜ '◆'
+                'c' ➜ '●'
+                'o' ➜ '○'
+                's' ➜ '▪'
+                'S' ➜ '■'
+                't' ➜ '➜'
+                'X' ➜ '✘'
+                'O' ➜ '✔'
             if substitute
                 return kstr.splice line, cursor[0]-1, 1, substitute
     

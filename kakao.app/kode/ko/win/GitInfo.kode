@@ -37,18 +37,25 @@ class GitInfo
             
         for commit in history
                         
+            text = "◆ #{commit.msg}"
             window.terminal.queueMeta
-                diss: Syntax.dissForTextAndSyntax commit.msg, 'git'
-                text: commit.msg
+                diss: Syntax.dissForTextAndSyntax text, 'git'
+                text: text
                 clss: 'searchResult'
 
             for file in commit.files
                 
                 continue if slash.ext(file.path) in ['js''css''html''json']
 
-                text = "    #{file.type} #{file.path}"
+                symb = switch file.type
+                    'M' ➜ '●'
+                    'A' ➜ '■'
+                    'D' ➜ '✘'
+                        ➜ '▶'
+                        
+                text = "    #{symb} #{file.path}"
                 window.terminal.queueMeta
-                    diss: Syntax.dissForTextAndSyntax text, 'term'
+                    diss: Syntax.dissForTextAndSyntax text, 'git'
                     text: text
                     clss: 'searchResult'
                     href: "#{gitDir}/#{file.path}"

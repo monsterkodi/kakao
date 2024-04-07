@@ -255,11 +255,11 @@ class Tab
         {
             if (status.deleted.length)
             {
-                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`▴ ${status.deleted.length} deleted`,'git'),{wrapSpan:'tooltip-line'})
+                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`▲ ${status.deleted.length} deleted`,'git'),{wrapSpan:'tooltip-line'})
             }
             if (status.added.length)
             {
-                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`▪ ${status.added.length} added`,'git'),{wrapSpan:'tooltip-line'})
+                this.tooltip.div.innerHTML += Render.line(Syntax.dissForTextAndSyntax(`■ ${status.added.length} added`,'git'),{wrapSpan:'tooltip-line'})
             }
             if (status.changed.length)
             {
@@ -269,11 +269,11 @@ class Tab
         t = ''
         if (status.deleted.length)
         {
-            t += '<div class="git-status-icon git-deleted deleted-triangle">▴</div>'
+            t += '<div class="git-status-icon git-deleted deleted-triangle">▲</div>'
         }
         if (status.added.length)
         {
-            t += '<div class="git-status-icon git-added       added-square">▪</div>'
+            t += '<div class="git-status-icon git-added       added-square">■</div>'
         }
         if (status.changed.length)
         {

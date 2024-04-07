@@ -152,13 +152,15 @@ function Git
     
     @history: (path) ○->
         
+        args = ["--no-pager" "log" "--name-status" "--no-color" '.']
+        
         if path
-            args = ["--no-pager" "log" "--name-status" "--no-color" path]
-            history =○ kakao 'app.sh' '/usr/bin/git' args:args, cwd:slash.dir path
+            args.push path
+            cwd = slash.dir path
         else
-            gitDir =○ kakao 'fs.git' editor.currentFile
-            args = ["--no-pager" "log" "--name-status" "--no-color" '.']
-            history =○ kakao 'app.sh' '/usr/bin/git' args:args, cwd:kakao.bundle.path
+            cwd =○ kakao 'fs.git' editor.currentFile
+            
+        history =○ kakao 'app.sh' '/usr/bin/git' args:args, cwd:cwd
 
         kermit """
             commit  ●commit
