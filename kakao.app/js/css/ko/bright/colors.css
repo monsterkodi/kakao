@@ -684,9 +684,17 @@ span.macro.macro,
 
 .linenumber span.gitInfoLine.added
 {
+    color: #0f0;
+}
+
+.linenumber span.gitCommitLine
+{
+    transform: translateY(-4px);
     color: #ff0;
 }
 
+
+.linenumber.gitCommitLine,
 .linenumber.gitInfoLine
 {
     background: #111111;
