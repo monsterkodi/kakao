@@ -130,7 +130,7 @@ class Info
         @lines.textContent = shortCount lc ? 0
             
     onCursor: => 
-        
+
         @cursorLine.textContent   = @editor.mainCursor()[1]+1
         @cursorColumn.textContent = (@editor.mainCursor()[0] > 0) ? @editor.mainCursor()[0] : ''
         @cursors.textContent      = @editor.numCursors()

@@ -219,10 +219,16 @@ class EditorScroll extends events
 
     cursorIntoView: ->
 
+        # ●▸ cursorIntoView
         if delta = @deltaToEnsureMainCursorIsVisible()
+            # ●▸ by
             @by delta * @lineHeight - @offsetSmooth
+            # ●▪ by
 
+        # ●▸ updateCursorOffset
         @updateCursorOffset()
+        # ●▪ updateCursorOffset
+        # ●▪ cursorIntoView
 
     deltaToEnsureMainCursorIsVisible: ->
 
@@ -239,7 +245,7 @@ class EditorScroll extends events
         maindelta
 
     updateCursorOffset: ->
-
+        
         offsetX     = @editor.size.offsetX
         charWidth   = @editor.size.charWidth
         layersWidth = @editor.layersWidth

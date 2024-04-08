@@ -243,15 +243,15 @@ function TextEditor extends Editor
             [di,li,ch] = [change.doIndex, change.newIndex, change.change]
             switch ch
                 
-                when 'changed'
+                'changed'
                     @updateLine li, di
                     @emit 'lineChanged' li
                     
-                when 'deleted'
+                'deleted'
                     @spanCache = @spanCache.slice 0, di
                     @emit 'lineDeleted' di
                     
-                when 'inserted'
+                'inserted'
                     @spanCache = @spanCache.slice 0, di
                     @emit 'lineInserted' li, di
 

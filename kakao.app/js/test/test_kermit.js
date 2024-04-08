@@ -5,6 +5,21 @@ import kermit from "../kxk/kermit.js"
 
 toExport["kermit"] = function ()
 {
+    section("pattern", function ()
+    {
+        console.log(kermit.pattern(`header ●header
+■level1
+    sub ●sub`))
+        compare(kermit.pattern(`header ●header
+■level1
+    sub ●sub`),[[['header','●header'],[]],[['sub','●sub'],['■level1']]])
+        return
+        compare(kermit.pattern(`header ●header
+■level1
+    sub ●sub
+    ■level2
+        ●prefix ●suffix`),[[['header','●header'],[]],[['sub','●sub'],['■level1']],[['●prefix','●suffix'],['■level1','■level2']]])
+    })
     section("simple", function ()
     {
         compare(kermit(`commit  ●commit
@@ -18,6 +33,11 @@ commit      another     commit
 
 Author: another         author
 another msg`),[{commit:'some commit',author:'some author',msg:'some msg'},{commit:'another commit',author:'another author',msg:'another msg'}])
+    })
+    section("inline", function ()
+    {
+        compare(kermit("@@ ●lineinfo @@ ●context",`@@ -111 +222 @@ one two ...
+@@ -333 +444 @@ three four`),[{lineinfo:'-111 +222',context:'one two ...'},{lineinfo:'-333 +444',context:'three four'}])
     })
     section("array1", function ()
     {
@@ -58,6 +78,40 @@ Date:   Wed Apr 3 01:10:28 2024 +0200
 M   modified/file
 C   changed/file
 `),[{commit:'5255e93531d91abee2583fded9c13559f2445489',author:'monsterkodi <monsterkodi@gmx.net>',date:'Thu Apr 4 00:15:12 2024 +0200',msg:'misc',files:[{type:'M',path:'kakao.app/kode/ko/tools/Git.kode'}]},{commit:'85cfa741ce4e17f142c06d02a857b6646a26d34a',author:'monsterkodi <monsterkodi@gmx.net>',date:'Wed Apr 3 01:10:28 2024 +0200',msg:'git status',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
+    })
+    section("nested array", function ()
+    {
+        return
+        compare(kermit(`header ●header
+■level1
+    sub ●sub
+    ■level2
+        ●prefix ●suffix`,`header h1
+    sub s1
+        1p1 1s1
+        1p2 1s2
+    sub s2
+        2p1 2s1
+        2p2 2s2
+        2p3 2s3`),[{header:'h1',level1:[{sub:'s1',level2:[{prefix:'1p1',suffix:'1s1'},{prefix:'1p2',suffix:'1s2'}]},{sub:'s2',level2:[{prefix:'2p1',suffix:'2s1'},{prefix:'2p2',suffix:'2s2'}]}]}])
+    })
+    section("patch", function ()
+    {
+        return
+        compare(kermit(`diff --git ●path
+index ●refs
+--- ●srcfile
++++ ●tgtfile
+■changes
+    @@ ●lineinfo @@ ●context
+    ■changedlines
+        ●type ●line`,`diff --git a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js
+index a6bb5d7..10b7d0a 100644
+--- a/kakao.app/js/ko/commands/macro.js
++++ b/kakao.app/js/ko/commands/macro.js
+@@ -122 +122 @@ Macro = (function ()
+-                GitInfo.diff()
++                GitInfo.diff(cmds)`),[{path:'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js',index:'a6bb5d7..10b7d0a 100644',srcfile:'a/kakao.app/js/ko/commands/macro.js',tgtfile:'b/kakao.app/js/ko/commands/macro.js',changes:[{lineinfo:'-122 +122',context:'Macro = (function ()',changedlines:[{type:'-',line:'               GitInfo.diff()'},{type:'+',line:'               GitInfo.diff(cmds)'}]}]}])
     })
 }
 toExport["kermit"]._section_ = true

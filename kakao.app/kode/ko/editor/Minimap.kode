@@ -265,6 +265,7 @@ class Minimap
 
     onEditorScroll: =>
 
+        ●▸ minimap.onEditorScroll
         if @scroll.fullHeight > @scroll.viewHeight
             pc = @editor.scroll.scroll / @editor.scroll.scrollMax
             tp = parseInt pc * @scroll.scrollMax

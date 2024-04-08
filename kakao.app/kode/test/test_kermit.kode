@@ -10,17 +10,38 @@ use ../kxk ◆ kermit
 
 ▸ kermit
 
-    # kermit """
-        # ■diffs
-            # diff --git ●path
-            # index ●refs
-            # --- ●srcfile
-            # +++ ●tgtfile
-            # ■changes
-                # @@ ●lineinfo @@
-                # ■changedlines
-                    # ●type ●line
-        # """ patch
+    ▸ pattern
+    
+        log kermit.pattern """
+            header ●header
+            ■level1
+                sub ●sub
+            """
+    
+        # return
+
+        kermit.pattern """
+            header ●header
+            ■level1
+                sub ●sub
+            """ ▸ [
+                [['header' '●header'], []]
+                [['sub' '●sub'], ['■level1']]
+            ]
+            
+        return
+    
+        kermit.pattern """
+            header ●header
+            ■level1
+                sub ●sub
+                ■level2
+                    ●prefix ●suffix
+            """ ▸ [
+                [['header' '●header'], []]
+                [['sub' '●sub'], ['■level1']]
+                [['●prefix' '●suffix'], ['■level1' '■level2']]
+            ]
 
     ▸ simple
     
@@ -47,8 +68,23 @@ use ../kxk ◆ kermit
                 author: 'another author'
                 msg:    'another msg'
             ]
+            
+    ▸ inline
+    
+        kermit "@@ ●lineinfo @@ ●context" """
+            @@ -111 +222 @@ one two ...
+            @@ -333 +444 @@ three four
+            """ ▸ [
+                lineinfo: '-111 +222'
+                context: 'one two ...'
+            ,
+                lineinfo: '-333 +444'
+                context: 'three four'
+            ]
         
     ▸ array1
+    
+        # return
     
         kermit """
             commit  ●commit
@@ -86,6 +122,8 @@ use ../kxk ◆ kermit
             ]
                                     
     ▸ array2
+    
+        # return
     
         kermit """
             commit  ●commit
@@ -135,3 +173,85 @@ use ../kxk ◆ kermit
                 ]
             ]
             
+    ▸ nested array
+    
+        return
+    
+        kermit """
+            header ●header
+            ■level1
+                sub ●sub
+                ■level2
+                    ●prefix ●suffix
+            """ """
+            header h1
+                sub s1
+                    1p1 1s1
+                    1p2 1s2
+                sub s2
+                    2p1 2s1
+                    2p2 2s2
+                    2p3 2s3
+            """ ▸ [
+                header: 'h1'
+                level1: [
+                    sub: 's1'
+                    level2: [
+                        prefix: '1p1'
+                        suffix: '1s1'
+                    ,
+                        prefix: '1p2'
+                        suffix: '1s2'
+                    ]
+                ,
+                    sub: 's2'
+                    level2: [
+                        prefix: '2p1'
+                        suffix: '2s1'
+                    ,
+                        prefix: '2p2'
+                        suffix: '2s2'
+                    ]
+                ]
+            ]
+            
+    ▸ patch
+    
+        return
+    
+        kermit """
+            diff --git ●path
+            index ●refs
+            --- ●srcfile
+            +++ ●tgtfile
+            ■changes
+                @@ ●lineinfo @@ ●context
+                ■changedlines
+                    ●type ●line
+            """ """
+            diff --git a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js
+            index a6bb5d7..10b7d0a 100644
+            --- a/kakao.app/js/ko/commands/macro.js
+            +++ b/kakao.app/js/ko/commands/macro.js
+            @@ -122 +122 @@ Macro = (function ()
+            -                GitInfo.diff()
+            +                GitInfo.diff(cmds)
+            """ ▸ [
+                path: 'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js'
+                index: 'a6bb5d7..10b7d0a 100644'
+                srcfile: 'a/kakao.app/js/ko/commands/macro.js'
+                tgtfile: 'b/kakao.app/js/ko/commands/macro.js'
+                changes: [
+                    lineinfo: '-122 +122'
+                    context: 'Macro = (function ()'
+                    changedlines: [
+                        type: '-'
+                        line: '               GitInfo.diff()'
+                    ,
+                        type: '+'
+                        line: '               GitInfo.diff(cmds)'
+                    ]
+                ]
+            ]
+            
+    

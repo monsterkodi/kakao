@@ -29,7 +29,7 @@ class Brackets
     #  0000000   000   000       0000000   0000000   000   000  0000000    0000000   000   000
 
     onCursor: =>
-
+        
         if @editor.numHighlights() # don't highlight brackets when other highlights exist
             for h in @editor.highlights()
                 return if not h[2]?
@@ -46,6 +46,8 @@ class Brackets
 
         @clear()
         @editor.renderHighlights()
+        
+        @
 
     # 000  000   000   0000000  000  0000000    00000000
     # 000  0000  000  000       000  000   000  000
@@ -54,6 +56,8 @@ class Brackets
     # 000  000   000  0000000   000  0000000    00000000
 
     highlightInside: (pos) ->
+        
+        maxLookBeforeAndAhead = 50 # careful, increasing this drops performance significantly!
 
         stack = []
         pp    = pos
@@ -76,7 +80,7 @@ class Brackets
 
             break if lastOpen?
             return if pp[1] < 1
-            return if cnt++ > 1000 # maximum number of lines exceeded
+            return if cnt++ > maxLookBeforeAndAhead # maximum number of lines exceeded
             pp = [@editor.line(pp[1]-1).length, pp[1]-1]
 
         return if not lastOpen?
@@ -101,7 +105,7 @@ class Brackets
 
             break if firstClose?
             return if pp[1] >= @editor.numLines()-1
-            return if cnt++ > 1000 # maximum number of lines exceeded
+            return if cnt++ > maxLookBeforeAndAhead # maximum number of lines exceeded
             pp = [0, pp[1]+1]
 
         return if not firstClose?

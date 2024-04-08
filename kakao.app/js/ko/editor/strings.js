@@ -120,7 +120,7 @@ class Strings
         var cls, opn
 
         this.clear()
-        var _78_18_ = pair; opn = _78_18_[0]; cls = _78_18_[1]
+        var _79_18_ = pair; opn = _79_18_[0]; cls = _79_18_[1]
 
         pair[0].clss = `stringmatch ${this.editor.stringCharacters[opn.match]}`
         pair[1].clss = `stringmatch ${this.editor.stringCharacters[cls.match]}`
@@ -133,9 +133,9 @@ class Strings
     {
         return this.editor.setHighlights(this.editor.highlights().filter(function (h)
         {
-            var _86_79_
+            var _87_79_
 
-            return !(h[2] != null ? (_86_79_=h[2].clss) != null ? _86_79_.startsWith('stringmatch') : undefined : undefined)
+            return !(h[2] != null ? (_87_79_=h[2].clss) != null ? _87_79_.startsWith('stringmatch') : undefined : undefined)
         }))
     }
 }

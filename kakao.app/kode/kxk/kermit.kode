@@ -7,24 +7,6 @@
 ###
 
 use ◆ kstr
-
-pattern = (kmt) ->
-    
-    p = []
-    lines = kmt.split '\n'
-    while line = lines.shift()
-        lpt = trim(line).split /\s+/
-        if lpt[0][0] == '■'
-            while child = lines.shift()
-                cpt = child.split /\s+/
-                if empty cpt[0]
-                    p.push [cpt[1..], lpt[0]]
-                else
-                    lines.unshift child
-                    break
-        else
-            p.push [lpt, null]
-    p
     
 stackTopOrLast = (ctx) ->
     
@@ -43,15 +25,36 @@ strongMatchAhead = (lr, cp, ci, cpt, splt, ctx) ->
         return true
     false
     
+#  0000000   0000000    0000000    00     00   0000000   000000000   0000000  000   000  
+# 000   000  000   000  000   000  000   000  000   000     000     000       000   000  
+# 000000000  000   000  000   000  000000000  000000000     000     000       000000000  
+# 000   000  000   000  000   000  000 0 000  000   000     000     000       000   000  
+# 000   000  0000000    0000000    000   000  000   000     000      0000000  000   000  
+
 addMatch = (cpt, splt, ctx) ->
     
     strongMatch = false
     varMatch = false
+    varName = null
     
     lr = stackTopOrLast ctx
+    ci = 0
+    si = 0
     
-    for cp,ci in cpt
+    while ci < cpt.length
+        
+        cp = cpt[ci]
+        
+        if cp == splt[si]
+            log 'sm' cp
+            strongMatch = true
+            varName = null
+            si++
+            ci++
+            continue
+            
         if cp?[0] in '●'
+            
             if ci == 0 and strongMatchAhead lr, cp, ci, cpt, splt, ctx
                 ctx.pind = wrapIndex ctx, 1
                 if valid ctx.stack
@@ -60,23 +63,40 @@ addMatch = (cpt, splt, ctx) ->
                 cptn = ctx.ptn[ctx.pind]
                 ctx.result.push {}
                 return addMatch cptn[0], splt, ctx
-            else
-                varMatch = true
-                lr[cp[1..]] = splt[ci]
-                if empty cpt[ci+1..] and valid splt[ci+1..]
-                    lr[cp[1..]] += ' ' + splt[ci+1..].join ' '
-        else if cp == splt[ci]
-            strongMatch = true
+
+            varMatch = true
+            varName = cp[1..]
+            lr[varName] = splt[si]
+            si++
+            ci++
+            continue
+            
+        else if varMatch and varName and valid splt[si+1]
+            
+            log 'swallow'
+            lr[varName] += ' ' + splt[si]
+            si++
             continue
         else
-            log 'bail?'
+            log 'bail?' cp, splt[si]
             return false
+            
+    if ci == cpt.length and varName and si < splt.length
+        lr[varName] += ' ' + splt[si..].join ' '
+        log 'add rest' varName, lr[varName]
+            
     if empty ctx.stack and (strongMatch or varMatch)
         ctx.pind = wrapIndex ctx, 1
         if ctx.pind == 0 ➜ ctx.result.push {}
         # log 'wrapIndex' strongMatch, varMatch, ctx.pind
     true
     
+# 000000000  00000000    0000000   000   000  00000000  00000000    0000000  00000000  
+#    000     000   000  000   000  000   000  000       000   000  000       000       
+#    000     0000000    000000000   000 000   0000000   0000000    0000000   0000000   
+#    000     000   000  000   000     000     000       000   000       000  000       
+#    000     000   000  000   000      0      00000000  000   000  0000000   00000000  
+
 traverse = (lines, ctx) ->
     
     while line = lines.shift()
@@ -92,13 +112,14 @@ traverse = (lines, ctx) ->
             ctx.result.push {}
             cptn = ctx.ptn[ctx.pind]
             
-        if cptn[1]
-            if last ctx.stack == cptn[1]
+        if valid cptn[1] # ■
+            if last ctx.stack == last cptn[1]
+                log 'one???'
                 1
             else
                 lr = stackTopOrLast ctx
-                ctx.stack.push cptn[1]
-                lr[cptn[1][1..]] = []
+                ctx.stack.push cptn[1][0]
+                lr[cptn[1][0][1..]] = []
         else if valid ctx.stack
             ctx.pind = wrapIndex ctx, 1
             ctx.stack = []
@@ -108,7 +129,37 @@ traverse = (lines, ctx) ->
             log b4('no match'), cptn[0], splt
             
     if empty last ctx.result ➜ ctx.result.pop()
-                
+             
+# 00000000    0000000   000000000  000000000  00000000  00000000   000   000  
+# 000   000  000   000     000        000     000       000   000  0000  000  
+# 00000000   000000000     000        000     0000000   0000000    000 0 000  
+# 000        000   000     000        000     000       000   000  000  0000  
+# 000        000   000     000        000     00000000  000   000  000   000  
+
+pattern = (kmt) ->
+    
+    p = []
+    lines = kmt.split '\n'
+    while line = lines.shift()
+        lpt = trim(line).split /\s+/
+        if lpt[0][0] == '■'
+            while child = lines.shift()
+                cpt = child.split /\s+/
+                if empty cpt[0]
+                    p.push [cpt[1..], [lpt[0]]]
+                else
+                    lines.unshift child
+                    break
+        else
+            p.push [lpt, []]
+    p
+        
+# 000   000  00000000  00000000   00     00  000  000000000  
+# 000  000   000       000   000  000   000  000     000     
+# 0000000    0000000   0000000    000000000  000     000     
+# 000  000   000       000   000  000 0 000  000     000     
+# 000   000  00000000  000   000  000   000  000     000     
+
 kermit = (kmt, str) ->
 
     lines = str.split '\n'
@@ -117,5 +168,7 @@ kermit = (kmt, str) ->
     ctx = result:[{}], stack:[], pind:0 ptn:pattern kmt
     traverse lines, ctx
     ctx.result
+    
+kermit.pattern = pattern
 
 export kermit
