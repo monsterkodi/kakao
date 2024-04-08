@@ -130,7 +130,7 @@ function Macro extends Command
             'kd'
             'diff'
                 
-                GitInfo.diff()
+                GitInfo.diff cmds
                 window.split.do 'minimize editor' 
                 window.commandline.setText 'commit '
                 return select:false

@@ -189,6 +189,26 @@ Git = (function ()
         return status
     }
 
+    Git["patch"] = async function (rev)
+    {
+        var gitDir, patch
+
+        gitDir = await kakao('fs.git',editor.currentFile)
+        console.log(`git --no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`)
+        patch = await kakao('app.sh','/usr/bin/git',{arg:`--no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`,cwd:gitDir})
+        console.log('▸▸▸ patch',patch)
+        kermit(`■diffs
+    diff --git ●path
+    index ●refs
+    --- ●srcfile
+    +++ ●tgtfile
+    ■changes
+        @@ ●lineinfo @@
+        ■changedlines
+            ●type ●line`,patch)
+        return []
+    }
+
     Git["history"] = async function (path)
     {
         var args, cwd, history

@@ -76,6 +76,8 @@ function Terminal extends TextEditor
             else
                 
                 @appendLineDiss ''
+                
+        meta
         
     queueMeta: (meta) ->
         

@@ -37,6 +37,7 @@ editing
     ⌘j          join lines
     ⌥▴ ⌥▾       move lines up|down
     ⌥⇧▴ ⌥⇧▾     duplicate lines above|below
+    ⌥⌘⇧◂ ⌥⌘⇧▸   outdent|indent cursor lines
     ⌥⇧a         align text after cursors
     ⌘return     insert line below cursor
     ⌘3          ascii header mode

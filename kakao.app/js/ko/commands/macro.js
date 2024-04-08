@@ -119,7 +119,7 @@ Macro = (function ()
             case 'd':
             case 'kd':
             case 'diff':
-                GitInfo.diff()
+                GitInfo.diff(cmds)
                 window.split.do('minimize editor')
                 window.commandline.setText('commit ')
                 return {select:false}

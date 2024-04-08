@@ -68,8 +68,10 @@ strongMatchAhead = function (lr, cp, ci, cpt, splt, ctx)
 
 addMatch = function (cpt, splt, ctx)
 {
-    var ci, cp, cptn, lr
+    var ci, cp, cptn, lr, strongMatch, varMatch
 
+    strongMatch = false
+    varMatch = false
     lr = stackTopOrLast(ctx)
     var list = _k_.list(cpt)
     for (ci = 0; ci < list.length; ci++)
@@ -77,7 +79,7 @@ addMatch = function (cpt, splt, ctx)
         cp = list[ci]
         if (_k_.in((cp != null ? cp[0] : undefined),'●'))
         {
-            if (strongMatchAhead(lr,cp,ci,cpt,splt,ctx))
+            if (ci === 0 && strongMatchAhead(lr,cp,ci,cpt,splt,ctx))
             {
                 ctx.pind = wrapIndex(ctx,1)
                 if (!_k_.empty(ctx.stack))
@@ -87,11 +89,11 @@ addMatch = function (cpt, splt, ctx)
                 ctx.stack = []
                 cptn = ctx.ptn[ctx.pind]
                 ctx.result.push({})
-                addMatch(cptn[0],splt,ctx)
-                return true
+                return addMatch(cptn[0],splt,ctx)
             }
             else
             {
+                varMatch = true
                 lr[cp.slice(1)] = splt[ci]
                 if (_k_.empty(cpt.slice(ci + 1)) && !_k_.empty(splt.slice(ci + 1)))
                 {
@@ -101,16 +103,22 @@ addMatch = function (cpt, splt, ctx)
         }
         else if (cp === splt[ci])
         {
-            1
+            strongMatch = true
+            continue
         }
         else
         {
+            console.log('bail?')
             return false
         }
     }
-    if (_k_.empty(ctx.stack))
+    if (_k_.empty(ctx.stack) && (strongMatch || varMatch))
     {
-        ctx.pind += 1
+        ctx.pind = wrapIndex(ctx,1)
+        if (ctx.pind === 0)
+        {
+            ctx.result.push({})
+        }
     }
     return true
 }
@@ -145,7 +153,7 @@ traverse = function (lines, ctx)
         }
         else if (!_k_.empty(ctx.stack))
         {
-            ctx.pind += 1
+            ctx.pind = wrapIndex(ctx,1)
             ctx.stack = []
         }
         if (addMatch(cptn[0],splt,ctx))
@@ -155,6 +163,10 @@ traverse = function (lines, ctx)
         {
             console.log(_k_.b4('no match'),cptn[0],splt)
         }
+    }
+    if (_k_.empty(_k_.last(ctx.result)))
+    {
+        return ctx.result.pop()
     }
 }
 

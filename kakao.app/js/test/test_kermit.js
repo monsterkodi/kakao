@@ -5,7 +5,21 @@ import kermit from "../kxk/kermit.js"
 
 toExport["kermit"] = function ()
 {
-    section("array", function ()
+    section("simple", function ()
+    {
+        compare(kermit(`commit  ●commit
+Author: ●author
+●msg`,`commit  some commit
+Author: some author
+
+    some msg
+
+commit      another     commit
+
+Author: another         author
+another msg`),[{commit:'some commit',author:'some author',msg:'some msg'},{commit:'another commit',author:'another author',msg:'another msg'}])
+    })
+    section("array1", function ()
     {
         compare(kermit(`commit  ●commit
 ■files
@@ -20,33 +34,7 @@ M   modified/other
 C   changed/other
 `),[{commit:'id',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]},{commit:'other',files:[{type:'M',path:'modified/other'},{type:'C',path:'changed/other'}]}])
     })
-    return
-    section("array", function ()
-    {
-        compare(kermit(`commit  ●commit
-■files
-    ●type ●path`,`commit id
-
-M   modified/file
-C   changed/file
-`),[{commit:'id',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
-    })
-    section("simple", function ()
-    {
-        compare(kermit(`commit  ●commit
-Author: ●author
-●msg`,`commit  some commit
-Author: some author
-
-    some msg
-
-commit      another     commit
-
-Author: another         author
-another msg
-`),[{commit:'some commit',author:'some author',msg:'some msg'},{commit:'another commit',author:'another author',msg:'another msg'}])
-    })
-    section("array", function ()
+    section("array2", function ()
     {
         compare(kermit(`commit  ●commit
 Author: ●author

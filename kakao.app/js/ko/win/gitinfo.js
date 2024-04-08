@@ -43,12 +43,12 @@ class GitInfo
         for (var _38_19_ = 0; _38_19_ < list.length; _38_19_++)
         {
             commit = list[_38_19_]
-            text = `${commit.msg}`
-            window.terminal.queueMeta({diss:Syntax.dissForTextAndSyntax(text,'git'),text:text,clss:'gitInfoFile',line:'●',lineClss:'gitInfoLine changed'})
+            text = `${commit.msg} ${commit.commit}`
+            window.terminal.queueMeta({diss:Syntax.dissForTextAndSyntax(text,'git'),text:text,clss:'gitInfoFile',href:`macro: kd ${commit.commit}`,click:this.onMetaClick,line:'●',lineClss:'gitInfoLine changed'})
             var list1 = _k_.list(commit.files)
-            for (var _48_21_ = 0; _48_21_ < list1.length; _48_21_++)
+            for (var _50_21_ = 0; _50_21_ < list1.length; _50_21_++)
             {
-                file = list1[_48_21_]
+                file = list1[_50_21_]
                 if (_k_.in(slash.ext(file.path),['js','css','html','json']))
                 {
                     continue
@@ -102,8 +102,15 @@ class GitInfo
 
         if (href = meta[2].href)
         {
-            href += ':' + window.terminal.posForEvent(event)[0]
-            post.emit('openFiles',[href],{newTab:event.metaKey})
+            if (href.startsWith('macro:'))
+            {
+                console.log('macro:',href)
+            }
+            else
+            {
+                href += ':' + window.terminal.posForEvent(event)[0]
+                post.emit('openFiles',[href],{newTab:event.metaKey})
+            }
         }
         return 'unhandled'
     }
@@ -128,9 +135,9 @@ class GitInfo
             out += await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"push -q"})
             window.terminal.clear()
             var list = _k_.list(out.split('\n'))
-            for (var _114_21_ = 0; _114_21_ < list.length; _114_21_++)
+            for (var _118_21_ = 0; _118_21_ < list.length; _118_21_++)
             {
-                line = list[_114_21_]
+                line = list[_118_21_]
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode')})
             }
             window.split.do('maximize editor')
@@ -140,7 +147,7 @@ class GitInfo
 
     logDiff (changes)
     {
-        var diff, diffs, dss, extn, index, linesAdded, meta, syntaxName, sytx, text
+        var diff, diffs, dss, extn, index, linesAdded, meta, syntaxName, text
 
         extn = slash.ext(changes.file)
         if (_k_.in(extn,Syntax.syntaxNames))
@@ -151,18 +158,14 @@ class GitInfo
         {
             syntaxName = 'txt'
         }
-        sytx = new Syntax(syntaxName,function (i)
-        {
-            return changes.lines[i]
-        })
-        sytx.setLines(changes.lines)
         linesAdded = 0
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _143_17_ = 0; _143_17_ < list.length; _143_17_++)
+        for (var _147_17_ = 0; _147_17_ < list.length; _147_17_++)
         {
-            text = list[_143_17_]
-            dss = sytx.getDiss(index)
+            text = list[_147_17_]
+            dss = Syntax.dissForTextAndSyntax(text,syntaxName)
+            console.log(syntaxName,dss,text)
             if (_k_.empty(dss))
             {
                 continue
@@ -188,9 +191,9 @@ class GitInfo
                         if (!_k_.empty(diffs))
                         {
                             var list1 = _k_.list(diffs)
-                            for (var _178_37_ = 0; _178_37_ < list1.length; _178_37_++)
+                            for (var _184_37_ = 0; _184_37_ < list1.length; _184_37_++)
                             {
-                                diff = list1[_178_37_]
+                                diff = list1[_184_37_]
                                 window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoDelete'})
                             }
                             dss = Syntax.dissForTextAndSyntax(changes.info.mod[index].old,syntaxName)
@@ -199,15 +202,14 @@ class GitInfo
                     break
                 default:
                     var list2 = _k_.list(diffs)
-                for (var _188_29_ = 0; _188_29_ < list2.length; _188_29_++)
+                for (var _194_29_ = 0; _194_29_ < list2.length; _194_29_++)
                 {
-                    diff = list2[_188_29_]
+                    diff = list2[_194_29_]
                     window.terminal.meta.add({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                 }
             }
 
-            meta = {diss:dss,href:`${changes.file}:${changes.line + index}`,clss:'searchResult',click:this.onMetaClick}
-            window.terminal.appendMeta(meta)
+            meta = window.terminal.appendMeta({diss:dss,href:`${changes.file}:${changes.line + index}`,clss:'searchResult',click:this.onMetaClick})
             post.emit('search-result',meta)
             linesAdded++
             index += 1
@@ -219,9 +221,21 @@ class GitInfo
         return index
     }
 
-    diff ()
+    diff (revs)
     {
-        return this.status(true)
+        if (_k_.empty(revs))
+        {
+            return this.status(true)
+        }
+        else
+        {
+            window.split.raise('terminal')
+            window.terminal.clear()
+            return Git.patch(revs[0]).then(async function (patch)
+            {
+                console.log('patch',patch)
+            })
+        }
     }
 
     status (diff)
@@ -240,6 +254,7 @@ class GitInfo
             {
                 return
             }
+            console.log('status',status)
             logFile = function (change, file, status, spacer)
             {
                 var path, symbol
@@ -272,18 +287,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _253_21_ = 0; _253_21_ < list.length; _253_21_++)
+            for (var _268_21_ = 0; _268_21_ < list.length; _268_21_++)
             {
-                file = list[_253_21_]
+                file = list[_268_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _258_21_ = 0; _258_21_ < list1.length; _258_21_++)
+            for (var _273_21_ = 0; _273_21_ < list1.length; _273_21_++)
             {
-                file = list1[_258_21_]
+                file = list1[_273_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,diff)
@@ -297,9 +312,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _267_21_ = 0; _267_21_ < list2.length; _267_21_++)
+            for (var _282_21_ = 0; _282_21_ < list2.length; _282_21_++)
             {
-                file = list2[_267_21_]
+                file = list2[_282_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('changed',file,status,diff)
@@ -309,9 +324,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _275_31_ = 0; _275_31_ < list3.length; _275_31_++)
+                    for (var _290_31_ = 0; _290_31_ < list3.length; _290_31_++)
                     {
-                        change = list3[_275_31_]
+                        change = list3[_290_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {

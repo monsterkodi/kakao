@@ -55,7 +55,7 @@ Terminal = (function ()
         if ((meta.diss != null))
         {
             text = ((_57_33_=meta.text) != null ? _57_33_ : Syntax.lineForDiss(meta.diss))
-            return this.appendLineDiss(text,meta.diss)
+            this.appendLineDiss(text,meta.diss)
         }
         else if (meta.clss === 'salt')
         {
@@ -66,20 +66,21 @@ Terminal = (function ()
                 l = list[_64_22_]
                 this.appendMeta({clss:'spacer',text:'# ' + l})
             }
-            return this.appendMeta({clss:'spacer'})
+            this.appendMeta({clss:'spacer'})
         }
         else if (meta.clss === 'termCommand')
         {
-            return this.appendLineDiss(meta.command,Syntax.dissForTextAndSyntax(meta.command,'term'))
+            this.appendLineDiss(meta.command,Syntax.dissForTextAndSyntax(meta.command,'term'))
         }
         else if ((meta.text != null))
         {
-            return this.appendLineDiss(meta.text)
+            this.appendLineDiss(meta.text)
         }
         else
         {
-            return this.appendLineDiss('')
+            this.appendLineDiss('')
         }
+        return meta
     }
 
     Terminal.prototype["queueMeta"] = function (meta)

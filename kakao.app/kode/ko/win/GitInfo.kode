@@ -37,11 +37,13 @@ class GitInfo
             
         for commit in history
                         
-            text = "#{commit.msg}"
+            text = "#{commit.msg} #{commit.commit}"
             window.terminal.queueMeta
-                diss: Syntax.dissForTextAndSyntax text, 'git'
-                text: text
-                clss: 'gitInfoFile'
+                diss:       Syntax.dissForTextAndSyntax text, 'git'
+                text:       text
+                clss:       'gitInfoFile'
+                href:       "macro: kd #{commit.commit}"
+                click:      @onMetaClick
                 line:       '●'
                 lineClss:   'gitInfoLine changed'
 
@@ -50,7 +52,6 @@ class GitInfo
                 continue if slash.ext(file.path) in ['js''css''html''json']
 
                 symbol = switch file.type
-                    # 'M' ➜ '●'
                     'M' ➜ ' '
                     'A' ➜ '■'
                     'D' ➜ '✘'
@@ -83,8 +84,11 @@ class GitInfo
     onMetaClick: (meta, event) =>
 
         if href = meta[2].href
-            href += ':' + window.terminal.posForEvent(event)[0]
-            post.emit 'openFiles' [href], newTab: event.metaKey
+            if href.startsWith 'macro:'
+                log 'macro:' href
+            else
+                href += ':' + window.terminal.posForEvent(event)[0]
+                post.emit 'openFiles' [href], newTab: event.metaKey
         'unhandled' # otherwise cursor doesn't get set
 
     #  0000000   0000000   00     00  00     00  000  000000000  
@@ -134,15 +138,17 @@ class GitInfo
         else
             syntaxName = 'txt'
 
-        sytx = new Syntax syntaxName, (i) -> changes.lines[i]
+        # sytx = new Syntax syntaxName#, (i) -> changes.lines[i]
 
-        sytx.setLines changes.lines
+        # sytx.setLines changes.lines
 
         linesAdded = 0
         index = 0
         for text in changes.lines
             
-            dss = sytx.getDiss index
+            # dss = sytx.getDiss index
+            dss = Syntax.dissForTextAndSyntax text, syntaxName
+            log syntaxName, dss, text
             
             continue if empty dss
             
@@ -193,13 +199,12 @@ class GitInfo
                             end:        diff.index+diff.length
                             clss:       'gitInfoChange'
                             
-            meta =
+            meta = window.terminal.appendMeta
                 diss: dss
                 href: "#{changes.file}:#{changes.line+index}"
                 clss: 'searchResult'
                 click: @onMetaClick
-
-            window.terminal.appendMeta meta
+                
             post.emit 'search-result' meta
             linesAdded++
                 
@@ -214,8 +219,16 @@ class GitInfo
     #      000     000     000   000     000     000   000       000
     # 0000000      000     000   000     000      0000000   0000000
 
-    diff: => @status true
-
+    diff: (revs) => 
+    
+        if empty revs
+            @status true
+        else
+            window.split.raise 'terminal'
+            window.terminal.clear()
+            
+            Git.patch(revs[0]).then (patch) ○-> log 'patch' patch
+    
     status: (diff) ->
 
         window.split.raise 'terminal'
@@ -227,6 +240,8 @@ class GitInfo
         Git.status(window.editor.currentFile).then (status) ○->
 
             return if empty status
+            
+            log 'status' status
 
             logFile = (change, file, status, spacer) ->
 

@@ -10,7 +10,45 @@ use ../kxk ◆ kermit
 
 ▸ kermit
 
-    ▸ array
+    # kermit """
+        # ■diffs
+            # diff --git ●path
+            # index ●refs
+            # --- ●srcfile
+            # +++ ●tgtfile
+            # ■changes
+                # @@ ●lineinfo @@
+                # ■changedlines
+                    # ●type ●line
+        # """ patch
+
+    ▸ simple
+    
+        kermit """
+            commit  ●commit
+            Author: ●author
+            ●msg
+            """ """
+            commit  some commit
+            Author: some author
+            
+                some msg
+            
+            commit      another     commit
+            
+            Author: another         author
+            another msg
+            """ ▸ [
+                commit: 'some commit'
+                author: 'some author'
+                msg:    'some msg'
+            ,
+                commit: 'another commit'
+                author: 'another author'
+                msg:    'another msg'
+            ]
+        
+    ▸ array1
     
         kermit """
             commit  ●commit
@@ -46,60 +84,8 @@ use ../kxk ◆ kermit
                     path: 'changed/other'
                 ]
             ]
-            
-    return
-
-    ▸ array
-    
-        kermit """
-            commit  ●commit
-            ■files
-                ●type ●path
-            """ """
-            commit id
-            
-            M   modified/file
-            C   changed/file
-            
-            """ ▸ [
-                commit: 'id'
-                files: [
-                    type: 'M'
-                    path: 'modified/file'
-                ,
-                    type: 'C'
-                    path: 'changed/file'
-                ]
-            ]
-            
-    ▸ simple
-    
-        kermit """
-            commit  ●commit
-            Author: ●author
-            ●msg
-            """ """
-            commit  some commit
-            Author: some author
-            
-                some msg
-            
-            commit      another     commit
-            
-            Author: another         author
-            another msg
-            
-            """ ▸ [
-                commit: 'some commit'
-                author: 'some author'
-                msg:    'some msg'
-            ,
-                commit: 'another commit'
-                author: 'another author'
-                msg:    'another msg'
-            ]
-            
-    ▸ array
+                                    
+    ▸ array2
     
         kermit """
             commit  ●commit
