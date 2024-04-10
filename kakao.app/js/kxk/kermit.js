@@ -1,54 +1,37 @@
-var _k_ = {last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}};_k_.b4=_k_.k.F256(_k_.k.b(4))
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}};_k_.g4=_k_.k.F256(_k_.k.g(4));_k_.y5=_k_.k.F256(_k_.k.y(5))
 
-var addMatch, kermit, pattern, stackTopOrLast, strongMatchAhead, traverse, wrapIndex
+var addMatch, collect, kermit, pattern, strongMatchAhead, traverse, wrapIndex
 
 import kstr from "./kstr.js"
+import gonzo from "./gonzo.js"
 
-
-stackTopOrLast = function (ctx)
-{
-    var lr
-
-    lr = _k_.last(ctx.result)
-    if (!_k_.empty(ctx.stack))
-    {
-        lr = lr[_k_.last(ctx.stack).slice(1)]
-        lr.push({})
-        lr = _k_.last(lr)
-    }
-    return lr
-}
 
 wrapIndex = function (ctx, offset)
 {
     return (ctx.pind + offset) % ctx.ptn.length
 }
 
-strongMatchAhead = function (lr, cp, ci, cpt, splt, ctx)
+strongMatchAhead = function (splt, ctx)
 {
-    if (splt[0] === ctx.ptn[wrapIndex(ctx,1)][0][0])
-    {
-        return true
-    }
-    return false
+    return splt[0] === ctx.ptn[wrapIndex(ctx,1)][0][0]
 }
 
-addMatch = function (cpt, splt, ctx)
+addMatch = function (splt, ctx)
 {
-    var ci, cp, cptn, lr, si, strongMatch, varMatch, varName
+    var ci, cp, cpt, rslt, si, strongMatch, type, varName, weakMatch
 
+    cpt = ctx.ptn[ctx.pind][0]
     strongMatch = false
-    varMatch = false
+    weakMatch = false
     varName = null
-    lr = stackTopOrLast(ctx)
     ci = 0
     si = 0
+    rslt = {}
     while (ci < cpt.length)
     {
         cp = cpt[ci]
         if (cp === splt[si])
         {
-            console.log('sm',cp)
             strongMatch = true
             varName = null
             si++
@@ -57,132 +40,146 @@ addMatch = function (cpt, splt, ctx)
         }
         if (_k_.in((cp != null ? cp[0] : undefined),'●'))
         {
-            if (ci === 0 && strongMatchAhead(lr,cp,ci,cpt,splt,ctx))
-            {
-                ctx.pind = wrapIndex(ctx,1)
-                if (!_k_.empty(ctx.stack))
-                {
-                    _k_.last(ctx.result)[_k_.last(ctx.stack).slice(1)].pop()
-                }
-                ctx.stack = []
-                cptn = ctx.ptn[ctx.pind]
-                ctx.result.push({})
-                return addMatch(cptn[0],splt,ctx)
-            }
-            varMatch = true
+            weakMatch = true
             varName = cp.slice(1)
-            lr[varName] = splt[si]
+            rslt[varName] = splt[si]
             si++
             ci++
             continue
         }
-        else if (varMatch && varName && !_k_.empty(splt[si + 1]))
+        else if (weakMatch && varName && !_k_.empty(splt[si + 1]))
         {
-            console.log('swallow')
-            lr[varName] += ' ' + splt[si]
+            rslt[varName] += ' ' + splt[si]
             si++
             continue
         }
         else
         {
-            console.log('bail?',cp,splt[si])
-            return false
+            console.log('bail?',cp,splt[si],_k_.g4(kstr(ctx)))
+            ci++
+            continue
         }
     }
     if (ci === cpt.length && varName && si < splt.length)
     {
-        lr[varName] += ' ' + splt.slice(si).join(' ')
-        console.log('add rest',varName,lr[varName])
+        rslt[varName] += ' ' + splt.slice(si).join(' ')
     }
-    if (_k_.empty(ctx.stack) && (strongMatch || varMatch))
+    if (!strongMatch && strongMatchAhead(splt,ctx))
     {
         ctx.pind = wrapIndex(ctx,1)
-        if (ctx.pind === 0)
+        return addMatch(splt,ctx)
+    }
+    if (strongMatch || weakMatch)
+    {
+        type = (strongMatch ? 'strong' : 'weak')
+        ctx.matches.push({type:type,rslt:rslt,pind:ctx.pind,arr:_k_.clone(ctx.ptn[ctx.pind][1])})
+        if (strongMatch)
         {
-            ctx.result.push({})
+            return ctx.pind = wrapIndex(ctx,1)
         }
     }
-    return true
 }
 
 traverse = function (lines, ctx)
 {
-    var cptn, line, lr, splt
+    var line, splt
 
+    ctx.matches = []
     while (line = lines.shift())
     {
         splt = _k_.trim(line).split(/\s+/)
-        cptn = ctx.ptn[ctx.pind]
-        if (_k_.empty(cptn))
-        {
-            console.log('empty pattern at index',ctx.pind)
-            ctx.pind = 0
-            ctx.result.push({})
-            cptn = ctx.ptn[ctx.pind]
-        }
-        if (!_k_.empty(cptn[1]))
-        {
-            if (_k_.last(ctx.stack) === _k_.last(cptn[1]))
-            {
-                console.log('one???')
-                1
-            }
-            else
-            {
-                lr = stackTopOrLast(ctx)
-                ctx.stack.push(cptn[1][0])
-                lr[cptn[1][0].slice(1)] = []
-            }
-        }
-        else if (!_k_.empty(ctx.stack))
-        {
-            ctx.pind = wrapIndex(ctx,1)
-            ctx.stack = []
-        }
-        if (addMatch(cptn[0],splt,ctx))
-        {
-        }
-        else
-        {
-            console.log(_k_.b4('no match'),cptn[0],splt)
-        }
+        addMatch(splt,ctx)
     }
-    if (_k_.empty(_k_.last(ctx.result)))
+    console.log('matches:',_k_.y5(kstr(ctx.matches)))
+    collect(ctx)
+    return ctx
+}
+
+collect = function (ctx)
+{
+    var ai, k, lm, lo, ma, match, pa, v
+
+    ctx.result = []
+    lm = {pind:Infinity}
+    pa = []
+    var list = _k_.list(ctx.matches)
+    for (var _112_14_ = 0; _112_14_ < list.length; _112_14_++)
     {
-        return ctx.result.pop()
+        match = list[_112_14_]
+        if (match.pind < lm.pind)
+        {
+            ctx.result.push({})
+        }
+        if (match.pind === lm.pind)
+        {
+            ctx.result.push({})
+        }
+        ma = ctx.ptn[match.pind][1]
+        lo = _k_.last(ctx.result)
+        if (lo)
+        {
+            if (!_k_.empty(ma))
+            {
+                var list1 = _k_.list(ma)
+                for (var _125_23_ = 0; _125_23_ < list1.length; _125_23_++)
+                {
+                    ai = list1[_125_23_]
+                    if (!(lo[ai] != null))
+                    {
+                        lo[ai] = [{}]
+                    }
+                    lo = _k_.last(lo[ai])
+                }
+            }
+            for (k in match.rslt)
+            {
+                v = match.rslt[k]
+                lo[k] = v
+            }
+        }
+        lm = match
+        pa = ma
     }
+    ctx.result = ctx.result.filter(function (o)
+    {
+        return !_k_.empty(o)
+    })
+    return ctx.result
 }
 
 pattern = function (kmt)
 {
-    var child, cpt, line, lines, lpt, p
+    var ars, gzo, p, parseGonzo
 
     p = []
-    lines = kmt.split('\n')
-    while (line = lines.shift())
+    ars = []
+    parseGonzo = function (gzo)
     {
-        lpt = _k_.trim(line).split(/\s+/)
-        if (lpt[0][0] === '■')
+        var gz, lpt
+
+        var list = _k_.list(gzo)
+        for (var _150_15_ = 0; _150_15_ < list.length; _150_15_++)
         {
-            while (child = lines.shift())
+            gz = list[_150_15_]
+            lpt = _k_.trim(gz.line).split(/\s+/)
+            if (lpt[0][0] === '■')
             {
-                cpt = child.split(/\s+/)
-                if (_k_.empty(cpt[0]))
-                {
-                    p.push([cpt.slice(1),[lpt[0]]])
-                }
-                else
-                {
-                    lines.unshift(child)
-                    break
-                }
+                ars.push(lpt[0].slice(1))
+                parseGonzo(gz.blck,ars)
+                ars.pop()
+            }
+            else
+            {
+                p.push([lpt,_k_.clone(ars)])
             }
         }
-        else
-        {
-            p.push([lpt,[]])
-        }
     }
+    gzo = gonzo(kmt)
+    if (_k_.empty(gzo))
+    {
+        return p
+    }
+    parseGonzo(gzo)
     return p
 }
 
@@ -195,8 +192,7 @@ kermit = function (kmt, str)
     {
         return !_k_.empty(_k_.trim(l))
     })
-    ctx = {result:[{}],stack:[],pind:0,ptn:pattern(kmt)}
-    traverse(lines,ctx)
+    ctx = traverse(lines,{pind:0,ptn:pattern(kmt)})
     return ctx.result
 }
 kermit.pattern = pattern

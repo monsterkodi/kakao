@@ -182,13 +182,13 @@ class Tester
         if (allsuccs || fails.length)
         {
             summary = _k_.w2(kstr.now() + ' ')
-            if (allsuccs)
-            {
-                summary += _k_.g3(" ✔ ") + _k_.g1(allsuccs) + ' '
-            }
             if (!_k_.empty(allfails))
             {
-                summary += _k_.R2(_k_.y2(' ❌ ') + _k_.y6(allfails.length) + _k_.y3(' failures '))
+                summary += _k_.R2(_k_.y2(' ✘ ') + _k_.y6(allfails.length) + _k_.y3(' failure' + ((allfails.length > 1 ? 's ' : ' '))))
+            }
+            else if (allsuccs)
+            {
+                summary += _k_.g3(" ✔ ") + _k_.g1(allsuccs) + ' '
             }
             console.log(summary)
         }
@@ -207,7 +207,7 @@ class Tester
         split = ('' + s).split('\n')
         l = 0
         split = (function (o) {
-            var r_190_22_ = _k_.each_r(o)
+            var r_192_22_ = _k_.each_r(o)
             for (var k in o)
             {   
                 var m = (function (v)
@@ -219,10 +219,10 @@ class Tester
             })(o[k])
                 if (m != null)
                 {
-                    r_190_22_[k] = m
+                    r_192_22_[k] = m
                 }
             }
-            return typeof o == 'string' ? r_190_22_.join('') : r_190_22_
+            return typeof o == 'string' ? r_192_22_.join('') : r_192_22_
         })(split)
         split = split.filter(function (s)
         {
@@ -239,9 +239,9 @@ if (((globalThis.process != null ? globalThis.process.argv : undefined) != null)
     files = await fs.list(slash.path(_k_.dir(),'test'))
     fail = false
     var list = _k_.list(files)
-for (var _209_13_ = 0; _209_13_ < list.length; _209_13_++)
+for (var _211_13_ = 0; _211_13_ < list.length; _211_13_++)
 {
-    file = list[_209_13_]
+    file = list[_211_13_]
     if (slash.name(file.path) === 'utils')
     {
         continue

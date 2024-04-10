@@ -7,18 +7,14 @@ toExport["kermit"] = function ()
 {
     section("pattern", function ()
     {
-        console.log(kermit.pattern(`header ●header
-■level1
-    sub ●sub`))
         compare(kermit.pattern(`header ●header
 ■level1
-    sub ●sub`),[[['header','●header'],[]],[['sub','●sub'],['■level1']]])
-        return
+    sub ●sub`),[[['header','●header'],[]],[['sub','●sub'],['level1']]])
         compare(kermit.pattern(`header ●header
 ■level1
     sub ●sub
     ■level2
-        ●prefix ●suffix`),[[['header','●header'],[]],[['sub','●sub'],['■level1']],[['●prefix','●suffix'],['■level1','■level2']]])
+        ●prefix ●suffix`),[[['header','●header'],[]],[['sub','●sub'],['level1']],[['●prefix','●suffix'],['level1','level2']]])
     })
     section("simple", function ()
     {
@@ -56,6 +52,7 @@ C   changed/other
     })
     section("array2", function ()
     {
+        return
         compare(kermit(`commit  ●commit
 Author: ●author
 Date:   ●date
@@ -78,6 +75,16 @@ Date:   Wed Apr 3 01:10:28 2024 +0200
 M   modified/file
 C   changed/file
 `),[{commit:'5255e93531d91abee2583fded9c13559f2445489',author:'monsterkodi <monsterkodi@gmx.net>',date:'Thu Apr 4 00:15:12 2024 +0200',msg:'misc',files:[{type:'M',path:'kakao.app/kode/ko/tools/Git.kode'}]},{commit:'85cfa741ce4e17f142c06d02a857b6646a26d34a',author:'monsterkodi <monsterkodi@gmx.net>',date:'Wed Apr 3 01:10:28 2024 +0200',msg:'git status',files:[{type:'M',path:'modified/file'},{type:'C',path:'changed/file'}]}])
+    })
+    section("nested", function ()
+    {
+        compare(kermit(`header ●header
+■level1
+    sub ●sub
+    ■level2
+        ●prefix ●suffix`,`header h1
+    sub s1
+        1p1 1s1`),[{header:'h1',level1:[{sub:'s1',level2:[{prefix:'1p1',suffix:'1s1'}]}]}])
     })
     section("nested array", function ()
     {

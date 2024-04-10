@@ -1,0 +1,52 @@
+###
+ 0000000    0000000   000   000  0000000   0000000 
+000        000   000  0000  000     000   000   000
+000  0000  000   000  000 0 000    000    000   000
+000   000  000   000  000  0000   000     000   000
+ 0000000    0000000   000   000  0000000   0000000 
+###
+
+use ◆ kstr
+
+gonzo = (str) ->
+    
+    lines = str.split '\n'
+    
+    stack = [indent:-1 blck:[]]
+    
+    while line = lines.shift()
+        
+        top    = last stack 
+        indent = 0
+        
+        while line[indent] == ' ' ➜ indent++
+        line = line[indent..]
+        
+        # log 'line' b2(indent), y5(line), g4 kstr stack
+
+        if lst = last top.blck
+            if indent > lst.indent
+                lst.blck ?= []
+                lst.blck.push line:line, indent:indent
+                stack.push lst
+                continue
+
+        if indent > top.indent
+            top.blck ?= []
+            top.blck.push line:line, indent:indent
+            continue
+
+        while indent <= top.indent and stack.length > 1
+            stack.pop()
+            top = last stack
+
+        # if indent == top.indent and stack.length > 1
+            # log b3(indent), y5(line)
+            # for si,idx in stack
+                # log g1(idx), g3(kstr si)
+            
+        top.blck.push line:line, indent:indent
+            
+    stack[0].blck
+
+export gonzo
