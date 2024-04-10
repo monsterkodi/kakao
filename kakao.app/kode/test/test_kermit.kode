@@ -139,7 +139,7 @@ use ../kxk ◆ kermit
     
     ▸ array2
     
-        return
+        # return
     
         kermit """
             commit  ●commit
@@ -222,7 +222,7 @@ use ../kxk ◆ kermit
     
     ▸ nested array
     
-        return
+        # return
     
         kermit """
             header ●header
@@ -258,6 +258,9 @@ use ../kxk ◆ kermit
                     ,
                         prefix: '2p2'
                         suffix: '2s2'
+                    ,
+                        prefix: '2p3'
+                        suffix: '2s3'
                     ]
                 ]
             ]
@@ -268,9 +271,27 @@ use ../kxk ◆ kermit
     # 000        000   000     000     000       000   000  
     # 000        000   000     000      0000000  000   000  
     
+    ▸ pre
+    
+        kermit """
+            ○line
+            """ "               GitInfo.diff()" ▸ [
+            line: '               GitInfo.diff()'
+            ]
+
+        kermit """
+            ●type ○line
+            """ "+               GitInfo.diff()\n-               more stuff" ▸ [
+                type: '+'
+                line: '               GitInfo.diff()'
+            ,
+                type: '-'
+                line: '               more stuff'
+            ]
+            
     ▸ patch
     
-        return
+        # return
     
         kermit """
             diff --git ●path
@@ -280,7 +301,7 @@ use ../kxk ◆ kermit
             ■changes
                 @@ ●lineinfo @@ ●context
                 ■changedlines
-                    ●type ●line
+                    ●type ○line
             """ """
             diff --git a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js
             index a6bb5d7..10b7d0a 100644
@@ -291,7 +312,7 @@ use ../kxk ◆ kermit
             +                GitInfo.diff(cmds)
             """ ▸ [
                 path: 'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js'
-                index: 'a6bb5d7..10b7d0a 100644'
+                refs: 'a6bb5d7..10b7d0a 100644'
                 srcfile: 'a/kakao.app/js/ko/commands/macro.js'
                 tgtfile: 'b/kakao.app/js/ko/commands/macro.js'
                 changes: [
@@ -299,10 +320,10 @@ use ../kxk ◆ kermit
                     context: 'Macro = (function ()'
                     changedlines: [
                         type: '-'
-                        line: '               GitInfo.diff()'
+                        line: '                GitInfo.diff()'
                     ,
                         type: '+'
-                        line: '               GitInfo.diff(cmds)'
+                        line: '                GitInfo.diff(cmds)'
                     ]
                 ]
             ]

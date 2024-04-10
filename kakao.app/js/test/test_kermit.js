@@ -52,7 +52,6 @@ C   changed/other
     })
     section("array2", function ()
     {
-        return
         compare(kermit(`commit  ●commit
 Author: ●author
 Date:   ●date
@@ -88,7 +87,6 @@ C   changed/file
     })
     section("nested array", function ()
     {
-        return
         compare(kermit(`header ●header
 ■level1
     sub ●sub
@@ -100,11 +98,15 @@ C   changed/file
     sub s2
         2p1 2s1
         2p2 2s2
-        2p3 2s3`),[{header:'h1',level1:[{sub:'s1',level2:[{prefix:'1p1',suffix:'1s1'},{prefix:'1p2',suffix:'1s2'}]},{sub:'s2',level2:[{prefix:'2p1',suffix:'2s1'},{prefix:'2p2',suffix:'2s2'}]}]}])
+        2p3 2s3`),[{header:'h1',level1:[{sub:'s1',level2:[{prefix:'1p1',suffix:'1s1'},{prefix:'1p2',suffix:'1s2'}]},{sub:'s2',level2:[{prefix:'2p1',suffix:'2s1'},{prefix:'2p2',suffix:'2s2'},{prefix:'2p3',suffix:'2s3'}]}]}])
+    })
+    section("pre", function ()
+    {
+        compare(kermit(`○line`,"               GitInfo.diff()"),[{line:'               GitInfo.diff()'}])
+        compare(kermit(`●type ○line`,"+               GitInfo.diff()\n-               more stuff"),[{type:'+',line:'               GitInfo.diff()'},{type:'-',line:'               more stuff'}])
     })
     section("patch", function ()
     {
-        return
         compare(kermit(`diff --git ●path
 index ●refs
 --- ●srcfile
@@ -112,13 +114,13 @@ index ●refs
 ■changes
     @@ ●lineinfo @@ ●context
     ■changedlines
-        ●type ●line`,`diff --git a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js
+        ●type ○line`,`diff --git a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js
 index a6bb5d7..10b7d0a 100644
 --- a/kakao.app/js/ko/commands/macro.js
 +++ b/kakao.app/js/ko/commands/macro.js
 @@ -122 +122 @@ Macro = (function ()
 -                GitInfo.diff()
-+                GitInfo.diff(cmds)`),[{path:'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js',index:'a6bb5d7..10b7d0a 100644',srcfile:'a/kakao.app/js/ko/commands/macro.js',tgtfile:'b/kakao.app/js/ko/commands/macro.js',changes:[{lineinfo:'-122 +122',context:'Macro = (function ()',changedlines:[{type:'-',line:'               GitInfo.diff()'},{type:'+',line:'               GitInfo.diff(cmds)'}]}]}])
++                GitInfo.diff(cmds)`),[{path:'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js',refs:'a6bb5d7..10b7d0a 100644',srcfile:'a/kakao.app/js/ko/commands/macro.js',tgtfile:'b/kakao.app/js/ko/commands/macro.js',changes:[{lineinfo:'-122 +122',context:'Macro = (function ()',changedlines:[{type:'-',line:'                GitInfo.diff()'},{type:'+',line:'                GitInfo.diff(cmds)'}]}]}])
     })
 }
 toExport["kermit"]._section_ = true

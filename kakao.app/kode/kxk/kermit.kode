@@ -10,7 +10,7 @@ use ◆ kstr gonzo
     
 wrapIndex = (ctx,offset) -> (ctx.pind+offset) % ctx.ptn.length
     
-strongMatchAhead = (splt, ctx) -> splt[0] == ctx.ptn[wrapIndex(ctx,1)][0][0]
+hasStrongMatch = (splt, ctx, d) -> splt[0] == ctx.ptn[wrapIndex(ctx,d)][0][0]
     
 #  0000000   0000000    0000000    00     00   0000000   000000000   0000000  000   000  
 # 000   000  000   000  000   000  000   000  000   000     000     000       000   000  
@@ -18,10 +18,10 @@ strongMatchAhead = (splt, ctx) -> splt[0] == ctx.ptn[wrapIndex(ctx,1)][0][0]
 # 000   000  000   000  000   000  000 0 000  000   000     000     000       000   000  
 # 000   000  0000000    0000000    000   000  000   000     000      0000000  000   000  
 
-addMatch = (splt, ctx) ->
-            
+addMatch = (line, ctx) ->
+        
+    splt = trim(line).split /\s+/
     cpt = ctx.ptn[ctx.pind][0]
-    # log r2('▸▸▸▸▸▸▸'), y5(splt), b5(cpt), g3 kstr ctx
             
     strongMatch = false
     weakMatch = false
@@ -36,26 +36,28 @@ addMatch = (splt, ctx) ->
         cp = cpt[ci]
         
         if cp == splt[si]
-            # log 'strmatch' cp
             strongMatch = true
             varName = null
             si++
             ci++
             continue
             
-        if cp?[0] in '●'
+        if cp?[0] in '●○'
             
             weakMatch = true
             varName = cp[1..]
-            rslt[varName] = splt[si]
+            switch cp[0]
+                '●' ➜ rslt[varName] = splt[si]
+                '○' 
+                    rslt[varName] = line[(splt[0...si].join(' ').length)..]
+                    varName = null
+                    break
             si++
             ci++
-            # log 'add var' varName, rslt
             continue
             
         else if weakMatch and varName and valid splt[si+1]
             
-            # log 'swallow'
             rslt[varName] += ' ' + splt[si]
             si++
             continue
@@ -66,18 +68,17 @@ addMatch = (splt, ctx) ->
     
     if ci == cpt.length and varName and si < splt.length
         rslt[varName] += ' ' + splt[si..].join ' '
-        # log 'add rest' varName, rslt[varName]
 
-    # log r2('add -----------'), r5(kstr rslt)
-    
-    if not strongMatch and strongMatchAhead splt, ctx
-        ctx.pind = wrapIndex ctx, 1
-        return addMatch splt, ctx
+    if not strongMatch 
+        for d in [1 -1]
+            if hasStrongMatch splt, ctx, d
+                ctx.pind = wrapIndex ctx, d
+                return addMatch line, ctx
     
     if strongMatch or weakMatch
         type = strongMatch ? 'strong' : 'weak'
         ctx.matches.push type:type, rslt:rslt, pind:ctx.pind, arr:clone ctx.ptn[ctx.pind][1]
-        if strongMatch ➜ ctx.pind = wrapIndex ctx, 1
+        if strongMatch or empty ctx.ptn[ctx.pind][1] ➜ ctx.pind = wrapIndex ctx, 1
     
 # 000000000  00000000    0000000   000   000  00000000  00000000    0000000  00000000  
 #    000     000   000  000   000  000   000  000       000   000  000       000       
@@ -89,12 +90,9 @@ traverse = (lines, ctx) ->
     
     ctx.matches = []
     while line = lines.shift()
-        splt = trim(line).split /\s+/
-        addMatch splt, ctx
+        addMatch line, ctx
 
-    log 'matches:' y5 kstr ctx.matches
     collect ctx
-    ctx
     
 #  0000000   0000000   000      000      00000000   0000000  000000000  
 # 000       000   000  000      000      000       000          000     
@@ -107,33 +105,57 @@ collect = (ctx) ->
     ctx.result = []
     
     lm = pind:Infinity
-    pa = []
+    la = []
+    
+    stack = [last ctx.result]
     
     for match in ctx.matches
-        
-        if match.pind < lm.pind
-            ctx.result.push {}
-            
-        if match.pind == lm.pind
-            ctx.result.push {}
-            
+          
         ma = ctx.ptn[match.pind][1]
+
+        lo = last stack
+        
+        if ma.length > la.length
+            lo[last ma] = [{}]
+            stack.push last lo[last ma]
+        else if ma.length < la.length
+            for i in 0...la.length-ma.length
+                stack.pop()
+        else # ma.length == la.length
+        
+            if ma.length
+                po = stack[-2]
+                if po[last ma] is arr
+                    lo = po
+                    stack.pop()
+                    lo[last ma].push {}
+                    stack.push last lo[last ma]
+                else
+                    log r5('cant push into lo array?'), ma, po
             
-        lo = last ctx.result
-        if lo
-            if valid ma
-                for ai in ma
-                    if not lo[ai]?
-                        lo[ai] = [{}]
-                    lo = last lo[ai]
+        if match.pind <= lm.pind 
+            if empty ma
+                ctx.result.push {}
+                stack = [last ctx.result]
+            else if ma.length < la.length
+                lo = last stack
+                po = stack[-2]
+                if po[last ma] is arr
+                    lo = po
+                    stack.pop()
+                    lo[last ma].push {}
+                    stack.push last lo[last ma]
+                 
+        lo = last stack
+
+        for k,v of match.rslt
+            lo[k] = v
             
-            for k,v of match.rslt
-                lo[k] = v
         lm = match 
-        pa = ma
+        la = ma
     
     ctx.result = ctx.result.filter (o) -> valid o
-    ctx.result
+    ctx
              
 # 00000000    0000000   000000000  000000000  00000000  00000000   000   000  
 # 000   000  000   000     000        000     000       000   000  0000  000  
