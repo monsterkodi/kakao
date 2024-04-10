@@ -68,7 +68,7 @@ chunked = (lines, ext) ->
             number: lineno
             ext:    ext
 
-        return line if not text instanceof String
+        return line if not text is str
         
         chunks = replaceTabs(text).split SPACE
 
@@ -1377,6 +1377,9 @@ blocked = (lines) ->
     lines
     
 replaceTabs = (s) ->
+    
+    return s if not s is str
+    
     i = 0
     while i < s.length
         if s[i] == '\t'

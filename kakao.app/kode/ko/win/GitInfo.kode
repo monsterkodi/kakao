@@ -11,7 +11,9 @@ use ../tools  ◆ linediff Git Projects
 use ../editor ◆ Syntax
 
 SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp' 'noon']
-IGNORE_FILE_EXTS = ['js' 'css' 'json']
+IGNORE_FILE_EXTS = ['js' 'css' 'json' 'html']
+
+spacer = -> window.terminal.appendMeta clss: 'spacer'
 
 class GitInfo
 
@@ -37,15 +39,16 @@ class GitInfo
             
         for commit in history
                         
-            text = "#{commit.msg} #{commit.commit}"
+            # text = "#{commit.msg} #{commit.commit}"
+            text = "#{commit.msg}"
             window.terminal.queueMeta
                 diss:       Syntax.dissForTextAndSyntax text, 'git'
                 text:       text
                 clss:       'gitInfoFile'
-                href:       "macro: kd #{commit.commit}"
+                href:       "macro kd #{commit.commit}"
                 click:      @onMetaClick
-                line:       '●'
-                lineClss:   'gitInfoLine changed'
+                # line:       '●'
+                # lineClss:   'gitInfoLine changed'
 
             for file in commit.files
                 
@@ -84,8 +87,10 @@ class GitInfo
     onMetaClick: (meta, event) =>
 
         if href = meta[2].href
-            if href.startsWith 'macro:'
-                log 'macro:' href
+            if href.startsWith 'macro '
+                window.commandline.startCommand 'macro'
+                window.commandline.setText href[6..]
+                window.commandline.command.execute href[6..]
             else
                 href += ':' + window.terminal.posForEvent(event)[0]
                 post.emit 'openFiles' [href], newTab: event.metaKey
@@ -128,6 +133,73 @@ class GitInfo
     # 000   000  000  000       000       
     # 0000000    000  000       000       
     
+    diff: (revs) ○-> 
+    
+        if empty revs
+            @status true
+        else
+            window.split.raise 'terminal'
+            window.terminal.clear()
+            
+            gitDir =○ kakao 'fs.git' editor.currentFile
+            patch =○ Git.patch revs[0]
+            
+            log 'patch' patch
+            
+            for p in patch
+                
+                path = slash.path gitDir, p.srcfile[2..]
+                
+                continue if slash.ext(path) in IGNORE_FILE_EXTS
+                
+                window.terminal.appendMeta
+                    diss:       Syntax.dissForTextAndSyntax "#{path}" 'ko'
+                    href:       path
+                    clss:       'gitInfoFile'
+                    click:      @onMetaClick
+                    line:       '●'
+                    lineClss:   'gitInfoLine changed'
+                    
+                if p.changes is arr
+                    
+                    @logChanges gitDir, path, p.changes
+                    spacer()
+    
+    #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
+    # 000       000   000  000   000  0000  000  000        000       000       
+    # 000       000000000  000000000  000 0 000  000  0000  0000000   0000000   
+    # 000       000   000  000   000  000  0000  000   000  000            000  
+    #  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
+    
+    logChanges: (gitDir, path, changes) =>
+        
+        for change in changes
+            
+            spacer()
+                
+            for line in change.changedlines
+                
+                switch line.type
+                    '-'
+                        window.terminal.appendMeta
+                            diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
+                            href:       path
+                            clss:       'gitInfoDelete'
+                            click:      @onMetaClick
+    
+                    '+'
+                        window.terminal.appendMeta
+                            diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
+                            href:       path
+                            clss:       'gitInfoAdded'
+                            click:      @onMetaClick
+                    
+    # 000       0000000    0000000   0000000    000  00000000  00000000  
+    # 000      000   000  000        000   000  000  000       000       
+    # 000      000   000  000  0000  000   000  000  000000    000000    
+    # 000      000   000  000   000  000   000  000  000       000       
+    # 0000000   0000000    0000000   0000000    000  000       000       
+    
     logDiff: (changes) =>
         
         # log 'logDiff' changes
@@ -148,7 +220,7 @@ class GitInfo
             
             # dss = sytx.getDiss index
             dss = Syntax.dissForTextAndSyntax text, syntaxName
-            log syntaxName, dss, text
+            # log syntaxName, dss, text
             
             continue if empty dss
             
@@ -218,17 +290,7 @@ class GitInfo
     # 0000000      000     000000000     000     000   000  0000000
     #      000     000     000   000     000     000   000       000
     # 0000000      000     000   000     000      0000000   0000000
-
-    diff: (revs) => 
-    
-        if empty revs
-            @status true
-        else
-            window.split.raise 'terminal'
-            window.terminal.clear()
-            
-            Git.patch(revs[0]).then (patch) ○-> log 'patch' patch
-    
+                            
     status: (diff) ->
 
         window.split.raise 'terminal'
