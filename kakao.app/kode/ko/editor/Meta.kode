@@ -134,16 +134,16 @@ class Meta
             e.numberSpan.className = ''
             e.numberSpan.parentNode.className = 'linenumber'
             switch meta[2].clss
-                when 'searchResult' 'termCommand' 'termResult' 'coffeeCommand' 'coffeeResult' 'commandlistItem' 'gitInfoFile'
-                    num = meta[2].state == 'unsaved' and @saveButton(meta[0])
-                    num = meta[2].line? and meta[2].line if not num
-                    num = slash.splitFileLine(meta[2].href)[1] if not num
-                    num = '?' if not num
-                    e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss if meta[2].lineClss?
-                    e.numberSpan.className = meta[2].lineClss if meta[2].lineClss?
-                    e.numberSpan.innerHTML = num
-                when 'spacer'
+                'spacer'
                     e.numberSpan.innerHTML = '&nbsp;'
+                ➜
+                    num  = @saveButton(meta[0]) if meta[2].state == 'unsaved'
+                    num ?= meta[2].line
+                    num ?= slash.splitFileLine(meta[2].href)[1]
+                    if valid num
+                        e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss if meta[2].lineClss?
+                        e.numberSpan.className = meta[2].lineClss if meta[2].lineClss?
+                        e.numberSpan.innerHTML = num
 
     #  0000000  00000000  000000000        00000000    0000000    0000000
     # 000       000          000           000   000  000   000  000

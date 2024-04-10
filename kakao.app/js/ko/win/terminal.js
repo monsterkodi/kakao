@@ -83,6 +83,13 @@ Terminal = (function ()
         return meta
     }
 
+    Terminal.prototype["clearQueue"] = function ()
+    {
+        clearTimeout(this.metaTimer)
+        this.metaTimer = null
+        return this.metaQueue = []
+    }
+
     Terminal.prototype["queueMeta"] = function (meta)
     {
         this.metaQueue.push(meta)
@@ -124,6 +131,7 @@ Terminal = (function ()
 
     Terminal.prototype["clear"] = function ()
     {
+        this.clearQueue()
         this.meta.clear()
         this.singleCursorAtPos([0,0])
         return Terminal.__super__.clear.call(this)

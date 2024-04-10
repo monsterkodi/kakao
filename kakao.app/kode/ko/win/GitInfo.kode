@@ -92,7 +92,8 @@ class GitInfo
                 window.commandline.setText href[6..]
                 window.commandline.command.execute href[6..]
             else
-                href += ':' + window.terminal.posForEvent(event)[0]
+                if href.indexOf(':') > 0
+                    href += ':' + window.terminal.posForEvent(event)[0]
                 post.emit 'openFiles' [href], newTab: event.metaKey
         'unhandled' # otherwise cursor doesn't get set
 
@@ -144,8 +145,6 @@ class GitInfo
             gitDir =○ kakao 'fs.git' editor.currentFile
             patch =○ Git.patch revs[0]
             
-            log 'patch' patch
-            
             for p in patch
                 
                 path = slash.path gitDir, p.srcfile[2..]
@@ -176,23 +175,36 @@ class GitInfo
         for change in changes
             
             spacer()
+            
+            linfo = change.lineinfo.split ' '
+            if linfo[0][0] == '-' and linfo[1][0] == '+'
+                [dline, dn] = linfo[0][1..].split(',').map (i) -> parseInt i
+                [aline, an] = linfo[1][1..].split(',').map (i) -> parseInt i
+                dn = 1 if not dn is num
+                an = 1 if not an is num
                 
             for line in change.changedlines
+                
+                # log dn, an
                 
                 switch line.type
                     '-'
                         window.terminal.appendMeta
+                            line:       dline
                             diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
-                            href:       path
+                            href:       path + ':' + dline-1
                             clss:       'gitInfoDelete'
                             click:      @onMetaClick
+                        dline++
     
                     '+'
                         window.terminal.appendMeta
+                            line:       aline
                             diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
-                            href:       path
+                            href:       path + ':' + aline-1
                             clss:       'gitInfoAdded'
                             click:      @onMetaClick
+                        aline++
                     
     # 000       0000000    0000000   0000000    000  00000000  00000000  
     # 000      000   000  000        000   000  000  000       000       
@@ -202,25 +214,17 @@ class GitInfo
     
     logDiff: (changes) =>
         
-        # log 'logDiff' changes
-
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
             syntaxName = extn
         else
             syntaxName = 'txt'
 
-        # sytx = new Syntax syntaxName#, (i) -> changes.lines[i]
-
-        # sytx.setLines changes.lines
-
         linesAdded = 0
         index = 0
         for text in changes.lines
             
-            # dss = sytx.getDiss index
             dss = Syntax.dissForTextAndSyntax text, syntaxName
-            # log syntaxName, dss, text
             
             continue if empty dss
             

@@ -208,7 +208,7 @@ class Meta
 
     onNumber (e)
     {
-        var meta, metas, num, _139_38_, _142_108_, _143_81_
+        var meta, metas, num, _144_112_, _145_85_
 
         metas = this.metasAtLineIndex(e.lineIndex)
         var list = _k_.list(metas)
@@ -220,26 +220,18 @@ class Meta
             e.numberSpan.parentNode.className = 'linenumber'
             switch (meta[2].clss)
             {
-                case 'searchResult':
-                case 'termCommand':
-                case 'termResult':
-                case 'coffeeCommand':
-                case 'coffeeResult':
-                case 'commandlistItem':
-                case 'gitInfoFile':
-                    num = meta[2].state === 'unsaved' && this.saveButton(meta[0])
-                    if (!num)
-                    {
-                        num = (meta[2].line != null) && meta[2].line
-                    }
-                    if (!num)
-                    {
-                        num = slash.splitFileLine(meta[2].href)[1]
-                    }
-                    if (!num)
-                    {
-                        num = '?'
-                    }
+                case 'spacer':
+                    e.numberSpan.innerHTML = '&nbsp;'
+                    break
+                default:
+                    if (meta[2].state === 'unsaved')
+                {
+                    num = this.saveButton(meta[0])
+                }
+                    num = (num != null ? num : meta[2].line)
+                    num = (num != null ? num : slash.splitFileLine(meta[2].href)[1])
+                    if (!_k_.empty(num))
+                {
                     if ((meta[2].lineClss != null))
                     {
                         e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss
@@ -249,10 +241,7 @@ class Meta
                         e.numberSpan.className = meta[2].lineClss
                     }
                     e.numberSpan.innerHTML = num
-                    break
-                case 'spacer':
-                    e.numberSpan.innerHTML = '&nbsp;'
-                    break
+                }
             }
 
         }
