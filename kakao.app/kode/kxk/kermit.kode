@@ -110,12 +110,13 @@ collect = (ctx) ->
     stack = [last ctx.result]
     
     for match in ctx.matches
-          
+
         ma = ctx.ptn[match.pind][1]
 
         lo = last stack
-        
+
         if ma.length > la.length
+            lo ?= {}
             lo[last ma] = [{}]
             stack.push last lo[last ma]
         else if ma.length < la.length
@@ -125,7 +126,7 @@ collect = (ctx) ->
         
             if ma.length
                 po = stack[-2]
-                if po[last ma] is arr
+                if po and po[last ma] is arr
                     lo = po
                     stack.pop()
                     lo[last ma].push {}
@@ -133,14 +134,13 @@ collect = (ctx) ->
                 else
                     log r5('cant push into lo array?'), ma, po
             
-        if match.pind <= lm.pind 
+        if match.pind <= lm.pind
             if empty ma
                 ctx.result.push {}
                 stack = [last ctx.result]
             else if ma.length < la.length
-                lo = last stack
                 po = stack[-2]
-                if po[last ma] is arr
+                if po and po[last ma] is arr
                     lo = po
                     stack.pop()
                     lo[last ma].push {}

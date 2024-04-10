@@ -108,6 +108,7 @@ C   changed/file
     section("patch", function ()
     {
         compare(kermit(`diff --git ●path
+deleted ●deleted
 index ●refs
 --- ●srcfile
 +++ ●tgtfile
@@ -121,6 +122,27 @@ index a6bb5d7..10b7d0a 100644
 @@ -122 +122 @@ Macro = (function ()
 -                GitInfo.diff()
 +                GitInfo.diff(cmds)`),[{path:'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js',refs:'a6bb5d7..10b7d0a 100644',srcfile:'a/kakao.app/js/ko/commands/macro.js',tgtfile:'b/kakao.app/js/ko/commands/macro.js',changes:[{lineinfo:'-122 +122',context:'Macro = (function ()',changedlines:[{type:'-',line:'                GitInfo.diff()'},{type:'+',line:'                GitInfo.diff(cmds)'}]}]}])
+    })
+    section("patch deleted", function ()
+    {
+        compare(kermit(`diff --git ●path
+deleted ●deleted
+index ●refs
+--- ●srcfile
++++ ●tgtfile
+■changes
+    @@ ●lineinfo @@ ●context
+    ■changedlines
+        ●type ○line`,`diff --git a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js
+index a6bb5d7..10b7d0a 100644
+--- a/kakao.app/js/ko/commands/macro.js
++++ b/kakao.app/js/ko/commands/macro.js
+@@ -122 +122 @@ Macro = (function ()
+-                GitInfo.diff()
++                GitInfo.diff(cmds)
+diff --git a/kakao.app/deleted.js b/kakao.app/deleted.js
+deleted file mode 100644
+index a6bb5d7..00000000`),[{path:'a/kakao.app/js/ko/commands/macro.js b/kakao.app/js/ko/commands/macro.js',refs:'a6bb5d7..10b7d0a 100644',srcfile:'a/kakao.app/js/ko/commands/macro.js',tgtfile:'b/kakao.app/js/ko/commands/macro.js',changes:[{lineinfo:'-122 +122',context:'Macro = (function ()',changedlines:[{type:'-',line:'                GitInfo.diff()'},{type:'+',line:'                GitInfo.diff(cmds)'}]}]},{path:'a/kakao.app/deleted.js b/kakao.app/deleted.js',deleted:'file mode 100644',refs:'a6bb5d7..00000000'}])
     })
 }
 toExport["kermit"]._section_ = true

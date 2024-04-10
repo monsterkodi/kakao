@@ -128,12 +128,13 @@ collect = function (ctx)
         lo = _k_.last(stack)
         if (ma.length > la.length)
         {
+            lo = (lo != null ? lo : {})
             lo[_k_.last(ma)] = [{}]
             stack.push(_k_.last(lo[_k_.last(ma)]))
         }
         else if (ma.length < la.length)
         {
-            for (var _122_21_ = i = 0, _122_25_ = la.length - ma.length; (_122_21_ <= _122_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_122_21_ <= _122_25_ ? ++i : --i))
+            for (var _123_21_ = i = 0, _123_25_ = la.length - ma.length; (_123_21_ <= _123_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_123_21_ <= _123_25_ ? ++i : --i))
             {
                 stack.pop()
             }
@@ -143,7 +144,7 @@ collect = function (ctx)
             if (ma.length)
             {
                 po = stack.slice(-2,-1)[0]
-                if (_k_.isArr(po[_k_.last(ma)]))
+                if (po && _k_.isArr(po[_k_.last(ma)]))
                 {
                     lo = po
                     stack.pop()
@@ -165,9 +166,8 @@ collect = function (ctx)
             }
             else if (ma.length < la.length)
             {
-                lo = _k_.last(stack)
                 po = stack.slice(-2,-1)[0]
-                if (_k_.isArr(po[_k_.last(ma)]))
+                if (po && _k_.isArr(po[_k_.last(ma)]))
                 {
                     lo = po
                     stack.pop()

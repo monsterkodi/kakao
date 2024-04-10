@@ -161,18 +161,16 @@ function Git
         log '▸▸▸ patch' patch
         
         kermit """
-            ■diffs
-                diff --git ●path
-                index ●refs
-                --- ●srcfile
-                +++ ●tgtfile
-                ■changes
-                    @@ ●lineinfo @@
-                    ■changedlines
-                        ●type ●line
+            diff --git ●path
+            deleted ●deleted
+            index ●refs
+            --- ●srcfile
+            +++ ●tgtfile
+            ■changes
+                @@ ●lineinfo @@
+                ■changedlines
+                    ●type ●line
             """ patch
-        []
-        
 
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   
