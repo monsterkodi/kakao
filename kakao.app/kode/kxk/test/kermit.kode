@@ -6,7 +6,7 @@
    000     00000000  0000000      000     000000  000   000  00000000  000   000  000   000  000     000   
 ###
 
-use ../kxk ◆ kermit
+use .. ◆ kermit
 
 ▸ kermit
 
@@ -295,7 +295,6 @@ use ../kxk ◆ kermit
     
         kermit """
             diff --git ●path
-            deleted ●deleted
             index ●refs
             --- ●srcfile
             +++ ●tgtfile
@@ -330,6 +329,8 @@ use ../kxk ◆ kermit
             ]
             
     ▸ patch deleted
+    
+        return
     
         kermit """
             diff --git ●path

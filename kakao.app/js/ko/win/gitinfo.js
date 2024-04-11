@@ -3,12 +3,12 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var IGNORE_FILE_EXTS, SOURCE_FILE_EXTS, spacer
 
 import kxk from "../../kxk.js"
+let linediff = kxk.linediff
 let post = kxk.post
 let slash = kxk.slash
 let ffs = kxk.ffs
 let kstr = kxk.kstr
 
-import linediff from "../tools/linediff.js"
 import Git from "../tools/Git.js"
 import Projects from "../tools/Projects.js"
 

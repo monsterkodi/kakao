@@ -3,7 +3,7 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 
 var a2h, ansi, diss, n, s
 
-import kstr from "../kxk/kstr.js"
+import kstr from "../kstr.js"
 
 toExport["kstr"] = function ()
 {

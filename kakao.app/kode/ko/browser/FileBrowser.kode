@@ -57,9 +57,8 @@ function FileBrowser extends Browser
 
     dropAction: (action, sources, target) ->
 
-        if slash.isFile target
-
-            target = slash.dir target
+        # if slash.isFile target
+            # target = slash.dir target
 
         for source in sources
 

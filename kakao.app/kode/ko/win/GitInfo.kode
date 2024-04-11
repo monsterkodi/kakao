@@ -6,8 +6,8 @@
  0000000   000     000     000  000   000  000        0000000
 ###
 
-use ../../kxk ▪ post slash ffs kstr
-use ../tools  ◆ linediff Git Projects
+use ../../kxk ▪ linediff post slash ffs kstr
+use ../tools  ◆ Git Projects
 use ../editor ◆ Syntax
 
 SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp' 'noon']

@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-import styl from "../kxk/styl.js"
+import styl from "../styl.js"
 
 toExport["styl"] = function ()
 {

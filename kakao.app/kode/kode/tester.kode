@@ -35,7 +35,16 @@ class Tester
         depth = stack.length
         if @logSections != false
             log W1 lpad(depth*3-1) + ' ' + global["g#{max 1, 8-2*depth}"] rpad(34-depth*3 t) + ' '
-        f()
+        try
+            f()
+        catch err
+            log err
+            fails.push
+                stack: stack.concat [comps]
+                comps: comps
+                lhs:   "#{err}"
+                rhs:   ''
+            
         stack.pop()
         
     #  0000000   0000000   00     00  00000000    0000000   00000000   00000000  
@@ -132,7 +141,15 @@ class Tester
                 stack.push k
                 if logModules != false
                     log G1 y8 ' ' + rpad(33 k) + ' '
-                v()
+                try
+                    v()
+                catch err
+                    log err
+                    fails.push
+                        # stack: stack.concat [comps]
+                        comps: comps
+                        lhs:   "#{err}"
+                        rhs:   ''
                 stack.pop()
                                         
         allsuccs += succs

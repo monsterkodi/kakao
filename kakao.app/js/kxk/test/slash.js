@@ -3,7 +3,7 @@ var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = u
 
 var home, user
 
-import slash from "../kxk/slash.js"
+import slash from "../slash.js"
 
 toExport["kslash"] = function ()
 {

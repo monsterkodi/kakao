@@ -8,7 +8,8 @@
     commandline tool that builds the application
 ###
 
-use ../kxk ▪ sleep karg watch slash os 
+use ../kxk ▪ sleep karg slash os
+use ../kxk ◆ watch
 use        ◆ knrd build
 
 use child_process
@@ -127,11 +128,11 @@ class kk
     
     @test: (mode) ○->
                 
-        cmd = "node js/test/test.js"
+        cmd = "node js/test.js"
         cmd += ' ' + mode if mode
         opt = shell:true cwd:kk.appPath() # run tests inside the .app folder
         
-        log w4 '○● test'
+        # log w4 '○● test'
         
         new Promise (resolve, reject) ->
         

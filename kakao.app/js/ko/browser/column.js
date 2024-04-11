@@ -1262,6 +1262,8 @@ Column = (function ()
     {
         var paths
 
+        console.log('copyPaths not implemented!')
+        return ''
         paths = this.browser.select.files().join('\n')
         electron.clipboard.writeText(paths)
         return paths
@@ -1274,8 +1276,10 @@ Column = (function ()
 
     Column.prototype["pastePaths"] = function ()
     {
-        var action, paths, target, text, _903_23_
+        var action, paths, target, text, _911_23_
 
+        console.log('pastePaths not implemented!')
+        return
         text = electron.clipboard.readText()
         paths = text.split('\n')
         if (text === this.browser.cutPaths)
@@ -1296,7 +1300,7 @@ Column = (function ()
 
     Column.prototype["onKey"] = function (event)
     {
-        var char, combo, key, mod, _940_88_
+        var char, combo, key, mod, _948_88_
 
         mod = keyinfo.forEvent(event).mod
         key = keyinfo.forEvent(event).key

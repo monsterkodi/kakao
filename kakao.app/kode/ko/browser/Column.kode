@@ -882,6 +882,10 @@ function Column
     #  0000000   0000000   000           000
 
     copyPaths: ->
+        
+        log 'copyPaths not implemented!'
+        return ''
+        
         paths = @browser.select.files().join '\n'
         electron.clipboard.writeText paths
         paths
@@ -891,6 +895,10 @@ function Column
         @browser.cutPaths = @copyPaths()
 
     pastePaths: ->
+        
+        log 'pastePaths not implemented!'
+        
+        return
 
         text = electron.clipboard.readText()
         paths = text.split '\n'

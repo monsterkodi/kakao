@@ -3,7 +3,7 @@ var _k_
 
 var a, arr, b, def, obj
 
-import util from "../kxk/util.js"
+import util from "../util.js"
 
 toExport["util"] = function ()
 {

@@ -1,10 +1,10 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import kxk from "../../kxk.js"
+let linediff = kxk.linediff
 let elem = kxk.elem
 let post = kxk.post
 
-import linediff from "../tools/linediff.js"
 import Git from "../tools/Git.js"
 
 class Diffbar

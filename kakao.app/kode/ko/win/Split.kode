@@ -86,6 +86,7 @@ class Split
         sentence = sentence.trim()
         return if not sentence.length
         words  = sentence.split /\s+/
+        log 'Split do' words
         action = words[0]
         what   = words[1]
         switch action

@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-import gonzo from "../kxk/gonzo.js"
+import gonzo from "../gonzo.js"
 
 toExport["gonzo"] = function ()
 {

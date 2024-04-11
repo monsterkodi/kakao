@@ -5,9 +5,10 @@ var args
 import kxk from "../kxk.js"
 let sleep = kxk.sleep
 let karg = kxk.karg
-let watch = kxk.watch
 let slash = kxk.slash
 let os = kxk.os
+
+import watch from "../kxk/watch.js"
 
 import knrd from "./knrd.js"
 import build from "./build.js"
@@ -137,13 +138,12 @@ class kk
     {
         var cmd, opt
 
-        cmd = "node js/test/test.js"
+        cmd = "node js/test.js"
         if (mode)
         {
             cmd += ' ' + mode
         }
         opt = {shell:true,cwd:kk.appPath()}
-        console.log(_k_.w4('○● test'))
         return new Promise(function (resolve, reject)
         {
             return child_process.exec(cmd,opt,function (err, stdout, stderr)

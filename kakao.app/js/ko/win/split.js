@@ -79,6 +79,7 @@ class Split
             return
         }
         words = sentence.split(/\s+/)
+        console.log('Split do',words)
         action = words[0]
         what = words[1]
         switch (action)
@@ -287,7 +288,7 @@ class Split
 
     focus (n)
     {
-        var e, _224_31_, _228_22_
+        var e, _225_31_, _229_22_
 
         if (n === 'commandline')
         {

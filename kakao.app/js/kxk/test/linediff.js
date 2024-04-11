@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-import linediff from "../ko/tools/linediff.js"
+import linediff from "../linediff.js"
 
 toExport["linediff"] = function ()
 {

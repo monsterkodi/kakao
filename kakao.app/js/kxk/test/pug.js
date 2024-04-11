@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-import pug from "../kxk/pug.js"
+import pug from "../pug.js"
 
 toExport["pug"] = function ()
 {

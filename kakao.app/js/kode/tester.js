@@ -36,7 +36,15 @@ class Tester
         {
             console.log(_k_.W1(_k_.lpad(depth * 3 - 1) + ' ' + global[`g${_k_.max(1,8 - 2 * depth)}`](_k_.rpad(34 - depth * 3,t) + ' ')))
         }
-        f()
+        try
+        {
+            f()
+        }
+        catch (err)
+        {
+            console.log(err)
+            fails.push({stack:stack.concat([comps]),comps:comps,lhs:`${err}`,rhs:''})
+        }
         return stack.pop()
     }
 
@@ -58,7 +66,7 @@ class Tester
             {
                 return false
             }
-            for (var _62_25_ = i = 0, _62_29_ = a.length; (_62_25_ <= _62_29_ ? i < a.length : i > a.length); (_62_25_ <= _62_29_ ? ++i : --i))
+            for (var _71_25_ = i = 0, _71_29_ = a.length; (_71_25_ <= _71_29_ ? i < a.length : i > a.length); (_71_25_ <= _71_29_ ? ++i : --i))
             {
                 if (!this.sameObjects(a[i],b[i]))
                 {
@@ -138,7 +146,15 @@ class Tester
                     {
                         console.log(_k_.G1(_k_.y8(' ' + _k_.rpad(33,k) + ' ')))
                     }
-                    v()
+                    try
+                    {
+                        v()
+                    }
+                    catch (err)
+                    {
+                        console.log(err)
+                        fails.push({comps:comps,lhs:`${err}`,rhs:''})
+                    }
                     return stack.pop()
                 }
             })(k, o[k])
@@ -171,9 +187,9 @@ class Tester
         var fail, summary
 
         var list = _k_.list(allfails)
-        for (var _157_17_ = 0; _157_17_ < list.length; _157_17_++)
+        for (var _174_17_ = 0; _174_17_ < list.length; _174_17_++)
         {
-            fail = list[_157_17_]
+            fail = list[_174_17_]
             console.log(_k_.R2(_k_.y5(' ' + fail.stack[0] + ' ')) + _k_.R1(_k_.y5(' ' + fail.stack.slice(1).join(_k_.r3(' ▸ ')) + ' ')))
             console.log(_k_.r5(this.showSpace(fail.lhs)))
             console.log(_k_.R1(_k_.r3(' ▸ ')))
@@ -207,7 +223,7 @@ class Tester
         split = ('' + s).split('\n')
         l = 0
         split = (function (o) {
-            var r_192_22_ = _k_.each_r(o)
+            var r_209_22_ = _k_.each_r(o)
             for (var k in o)
             {   
                 var m = (function (v)
@@ -219,10 +235,10 @@ class Tester
             })(o[k])
                 if (m != null)
                 {
-                    r_192_22_[k] = m
+                    r_209_22_[k] = m
                 }
             }
-            return typeof o == 'string' ? r_192_22_.join('') : r_192_22_
+            return typeof o == 'string' ? r_209_22_.join('') : r_209_22_
         })(split)
         split = split.filter(function (s)
         {
@@ -239,9 +255,9 @@ if (((globalThis.process != null ? globalThis.process.argv : undefined) != null)
     files = await fs.list(slash.path(_k_.dir(),'test'))
     fail = false
     var list = _k_.list(files)
-for (var _211_13_ = 0; _211_13_ < list.length; _211_13_++)
+for (var _228_13_ = 0; _228_13_ < list.length; _228_13_++)
 {
-    file = list[_211_13_]
+    file = list[_228_13_]
     if (slash.name(file.path) === 'utils')
     {
         continue
