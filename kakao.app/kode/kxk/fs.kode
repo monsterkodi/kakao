@@ -101,7 +101,22 @@ class FS
             return stat
         catch err
             FS.error "fs.info -- " + String(err)
-      
+            
+    # 00     00  000   000  0000000    000  00000000   
+    # 000   000  000  000   000   000  000  000   000  
+    # 000000000  0000000    000   000  000  0000000    
+    # 000 0 000  000  000   000   000  000  000   000  
+    # 000   000  000   000  0000000    000  000   000  
+    
+    @mkdir: (p) ○->
+        
+        try
+            ○ fsp.mkdir p, recursive:true
+        catch err
+            if err.code != 'EEXIST'
+                FS.error "fs.mkdir -- " + String(err)
+        p
+            
     # 00000000   000   000   0000000       000   0000000   000  000000000  
     # 000   000  000  000   000           000   000        000     000     
     # 00000000   0000000    000  0000    000    000  0000  000     000     
@@ -226,7 +241,7 @@ class FS
         catch err
             FS.error "fs.touch -- " + String(err)
             false
-                
+                            
     # 000   0000000                 
     # 000  000                      
     # 000  0000000                  

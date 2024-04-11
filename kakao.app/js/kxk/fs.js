@@ -100,9 +100,25 @@ class FS
         }
     }
 
+    static async mkdir (p)
+    {
+        try
+        {
+            await fsp.mkdir(p,{recursive:true})
+        }
+        catch (err)
+        {
+            if (err.code !== 'EEXIST')
+            {
+                FS.error("fs.mkdir -- " + String(err))
+            }
+        }
+        return p
+    }
+
     static pkg (p)
     {
-        var _113_20_
+        var _128_20_
 
         if (((p != null ? p.length : undefined) != null))
         {
@@ -120,7 +136,7 @@ class FS
 
     static git (p, cb)
     {
-        var _125_20_
+        var _140_20_
 
         if (((p != null ? p.length : undefined) != null))
         {

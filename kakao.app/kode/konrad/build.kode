@@ -10,7 +10,7 @@
 
 CMD = "zig c++" # is awesome!
 
-OUT = "../Contents/MacOS/kakao"
+OUT = "../../Contents/MacOS/kakao"
 
 LIB = "-framework WebKit -framework Cocoa -framework JavaScriptCore"
 FLG = "-arch arm64 -Os -Wno-nullability-completeness -Wno-objc-method-access"
@@ -22,15 +22,17 @@ export ○->
     
     srcDir = slash.path ◆dir, '../../src'
     
+    ○ fs.mkdir slash.dir slash.path ◆dir, OUT
+    
     srcFiles =○ fs.list srcDir
     srcFiles = srcFiles.filter (f) -> slash.ext(f.path) in ['cpp''mm']
     
     SRC = srcFiles.map((f)->f.file).join ' '
-    
+
     # the actual build command. 
     # could be a one-liner in a shell script but that would be too simple :)
         
-    cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT}"
+    cmd = "#{CMD} -I . #{SRC} #{LIB} #{FLG} -o #{OUT[3..]}"
     
     # log cmd
     
