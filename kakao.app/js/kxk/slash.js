@@ -246,11 +246,16 @@ class Slash
         return [d + split[0],Math.max(l,1),Math.max(c,0)]
     }
 
+    static removeFilePos (p)
+    {
+        return Slash.splitFilePos(p)[0]
+    }
+
     static splitFilePos (p)
     {
         var c, f, l
 
-        var _187_16_ = Slash.splitFileLine(p); f = _187_16_[0]; l = _187_16_[1]; c = _187_16_[2]
+        var _188_16_ = Slash.splitFileLine(p); f = _188_16_[0]; l = _188_16_[1]; c = _188_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -264,7 +269,7 @@ class Slash
     {
         var f, l
 
-        var _192_14_ = Slash.splitFileLine(p); f = _192_14_[0]; l = _192_14_[1]
+        var _193_14_ = Slash.splitFileLine(p); f = _193_14_[0]; l = _193_14_[1]
 
         if (l > 1)
         {
@@ -421,23 +426,23 @@ class Slash
 
     static home ()
     {
-        var _311_35_
+        var _312_35_
 
-        return ((_311_35_=globalThis.homeDir) != null ? _311_35_ : process.env.HOME)
+        return ((_312_35_=globalThis.homeDir) != null ? _312_35_ : process.env.HOME)
     }
 
     static user ()
     {
-        var _312_35_
+        var _313_35_
 
-        return ((_312_35_=globalThis.useName) != null ? _312_35_ : process.env.USER)
+        return ((_313_35_=globalThis.useName) != null ? _313_35_ : process.env.USER)
     }
 
     static tmpdir ()
     {
-        var _313_35_
+        var _314_35_
 
-        return ((_313_35_=globalThis.tmpDir) != null ? _313_35_ : process.env.TMPDIR)
+        return ((_314_35_=globalThis.tmpDir) != null ? _314_35_ : process.env.TMPDIR)
     }
 
     static tmpfile (ext)

@@ -6,6 +6,7 @@ let reversed = kxk.reversed
 let prefs = kxk.prefs
 let slash = kxk.slash
 let post = kxk.post
+let ffs = kxk.ffs
 
 import Projects from "../tools/Projects.js"
 import File from "../tools/File.js"
@@ -117,6 +118,7 @@ class FileHandler
     {
         var file, maxTabs
 
+        console.log('FileHandler.openFiles',files)
         if (_k_.empty(files))
         {
             return
@@ -148,14 +150,18 @@ class FileHandler
         for (var _131_17_ = 0; _131_17_ < list.length; _131_17_++)
         {
             file = list[_131_17_]
-            if (options.newWindow)
+            ffs.fileExists(slash.removeFilePos(file)).then(function (exists)
             {
-                console.log('filehandler new window with file not implemented!')
-            }
-            else
-            {
-                post.emit('newTabWithFile',file)
-            }
+                if (!exists)
+                {
+                    return
+                }
+                if (options.newWindow)
+                {
+                    console.log('FileHandler new window with file not implemented!')
+                }
+                return post.emit('newTabWithFile',file)
+            })
         }
         return true
     }
@@ -197,7 +203,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _178_29_
+        var tab, _180_29_
 
         if (tab = tabs.activeTab())
         {
@@ -232,9 +238,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _203_16_ = 0; _203_16_ < list.length; _203_16_++)
+        for (var _205_16_ = 0; _205_16_ < list.length; _205_16_++)
         {
-            tab = list[_203_16_]
+            tab = list[_205_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -298,7 +304,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _264_29_
+        var _266_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -314,7 +320,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _280_18_
+        var cb, dir, _282_18_
 
         cb = function (files)
         {
@@ -330,7 +336,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _300_18_
+        var cb, _302_18_
 
         cb = (function (file)
         {

@@ -6,7 +6,7 @@
 000       000  0000000  00000000  000   000  000   000  000   000  0000000    0000000  00000000  000   000
 ###
 
-use ../../kxk ▪ pull reversed prefs slash post
+use ../../kxk ▪ pull reversed prefs slash post ffs
 use ../tools  ◆ Projects File
 
 class FileHandler
@@ -97,7 +97,7 @@ class FileHandler
 
     openFiles: (files, options) =>
 
-        # log 'FileHandler.openFiles' files
+        log 'FileHandler.openFiles' files
 
         return if empty files
 
@@ -129,12 +129,14 @@ class FileHandler
         window.stash.set 'openFilePath' slash.dir files[0]
 
         for file in files
-            if options.newWindow
-                # post.toMain 'newWindowWithFile' file
-                log 'filehandler new window with file not implemented!'
-            else
+            ffs.fileExists(slash.removeFilePos file).then (exists) ->
+                # log "FileHandler.openFiles #{file} doesn't exist!"
+                return if not exists
+                if options.newWindow
+                    # post.toMain 'newWindowWithFile' file
+                    log 'FileHandler new window with file not implemented!'
                 post.emit 'newTabWithFile' file
-
+            
         true
 
     # 00000000   00000000  000       0000000    0000000   0000000

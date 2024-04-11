@@ -33,7 +33,7 @@ NSString* typeForNSFileType(NSString* fileType)
     }
     else
     {
-        NSLog(@"fallback to bundle path! %@", args);
+        NSLog(@"fallback to bundle path! req:%@ args:%@", req, args);
     }
           
     // 000  000   000  00000000   0000000   
