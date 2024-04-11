@@ -158,18 +158,29 @@ function Git
         
         patch  =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines" cwd:gitDir 
         
-        log '▸▸▸ patch' patch
+        # log '▸▸▸ patch' patch
         
-        kermit """
-            diff --git ●path
-            index ●refs
-            --- ●srcfile
-            +++ ●tgtfile
-            ■changes
-                @@ ●lineinfo @@
-                ■changedlines
-                    ●type ○line
-            """ patch
+        patches = []
+        for diffgit in patch.split 'diff --git '
+            continue if empty diffgit
+            # log 'diffgit' diffgit
+            try
+                r = kermit """
+                    diff --git ●path
+                    index ●refs
+                    --- ●srcfile
+                    +++ ●tgtfile
+                    ■changes
+                        @@ ●lineinfo @@
+                        ■changedlines
+                            ●type ○line
+                    """ 'diff --git ' + diffgit
+                patches = patches.concat r
+            catch err
+                error err
+
+        # log '◂◂◂ patches' patches               
+        patches
 
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   

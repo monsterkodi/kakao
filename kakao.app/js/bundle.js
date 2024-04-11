@@ -2,6 +2,7 @@ var _k_
 
 var Bundle
 
+console.log('window.bundlePath',window.bundlePath)
 
 Bundle = (function ()
 {

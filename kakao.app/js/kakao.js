@@ -2,8 +2,12 @@ var _k_ = {isFunc: function (o) {return typeof o === 'function'}, isStr: functio
 
 var k, kakao, Kakao, v
 
-import bundle from "./bundle.js"
 import kxk from "./kxk.js"
+let sleep = kxk.sleep
+let post = kxk.post
+let ffs = kxk.ffs
+
+import bundle from "./bundle.js"
 
 
 Kakao = (function ()
@@ -13,6 +17,12 @@ Kakao = (function ()
 
     Kakao["init"] = async function (cb)
     {
+        while (!window.bundlePath)
+        {
+            console.log('no bundle path!')
+            await sleep(100)
+        }
+        bundle.path = window.bundlePath
         if (_k_.isFunc(window.kakao.preInit))
         {
             await window.kakao.preInit()
@@ -34,16 +44,16 @@ Kakao = (function ()
     {
         if (_k_.isStr(msg))
         {
-            return kxk.post.emit(msg)
+            return post.emit(msg)
         }
         else if (_k_.isObj(msg))
         {
-            return kxk.post.emit.apply(null,[msg.name].concat(msg.args))
+            return post.emit.apply(null,[msg.name].concat(msg.args))
         }
     }
 
     Kakao["bundle"] = bundle
-    Kakao["ffs"] = kxk.ffs
+    Kakao["ffs"] = ffs
     return Kakao
 })()
 

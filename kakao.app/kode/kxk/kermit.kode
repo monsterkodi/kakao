@@ -63,6 +63,7 @@ addMatch = (line, ctx) ->
             continue
         else
             log 'bail?' cp, splt[si], g4 kstr ctx
+            throw new Error 'kermit parse fail!' line
             ci++
             continue
     

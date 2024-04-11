@@ -1,0 +1,229 @@
+[Log] ▸▸▸ patch (Git.js, line 199)
+"diff --git a/kakao.app/Contents/MacOS/kakao b/kakao.app/Contents/MacOS/kakao
+index f8b2c3b..15cda21 100755
+Binary files a/kakao.app/Contents/MacOS/kakao and b/kakao.app/Contents/MacOS/kakao differ
+diff --git a/kakao.app/js/bundle.js b/kakao.app/js/bundle.js
+index d2caa90..20b2629 100644
+--- a/kakao.app/js/bundle.js
++++ b/kakao.app/js/bundle.js
+@@ -11 +11 @@ Bundle = (function ()
+-    Bundle[\"path\"] = '?'
++    Bundle[\"path\"] = window.bundlePath
+diff --git a/kakao.app/js/kakao.js b/kakao.app/js/kakao.js
+index a210f6f..c8520c7 100644
+--- a/kakao.app/js/kakao.js
++++ b/kakao.app/js/kakao.js
+@@ -16 +15,0 @@ Kakao = (function ()
+-        bundle.path = window.bundlePath
+diff --git a/kakao.app/js/ko/editor/meta.js b/kakao.app/js/ko/editor/meta.js
+index 862630d..071d83f 100644
+--- a/kakao.app/js/ko/editor/meta.js
++++ b/kakao.app/js/ko/editor/meta.js
+@@ -211 +211 @@ class Meta
+-        var meta, metas, num, _144_112_, _145_85_
++        var meta, metas, num
+@@ -235 +235 @@ class Meta
+-                    if ((meta[2].lineClss != null))
++                    if (meta[2].lineClss)
+@@ -238,3 +237,0 @@ class Meta
+-                    }
+-                    if ((meta[2].lineClss != null))
+-                    {
+@@ -475 +472 @@ class Meta
+-            for (var _327_21_ = 0; _327_21_ < list1.length; _327_21_++)
++            for (var _325_21_ = 0; _325_21_ < list1.length; _325_21_++)
+@@ -477 +474 @@ class Meta
+-                meta = list1[_327_21_]
++                meta = list1[_325_21_]
+@@ -484 +481 @@ class Meta
+-            for (var _331_21_ = 0; _331_21_ < list2.length; _331_21_++)
++            for (var _327_21_ = 0; _327_21_ < list2.length; _327_21_++)
+@@ -486 +483 @@ class Meta
+-                meta = list2[_331_21_]
++                meta = list2[_327_21_]
+@@ -490 +487 @@ class Meta
+-            for (var _334_21_ = 0; _334_21_ < list3.length; _334_21_++)
++            for (var _328_21_ = 0; _328_21_ < list3.length; _328_21_++)
+@@ -492 +489 @@ class Meta
+-                meta = list3[_334_21_]
++                meta = list3[_328_21_]
+@@ -505 +502 @@ class Meta
+-        for (var _342_17_ = 0; _342_17_ < list.length; _342_17_++)
++        for (var _335_17_ = 0; _335_17_ < list.length; _335_17_++)
+@@ -507 +504 @@ class Meta
+-            meta = list[_342_17_]
++            meta = list[_335_17_]
+@@ -517 +514 @@ class Meta
+-        for (var _347_17_ = 0; _347_17_ < list.length; _347_17_++)
++        for (var _340_17_ = 0; _340_17_ < list.length; _340_17_++)
+@@ -519 +516 @@ class Meta
+-            meta = list[_347_17_]
++            meta = list[_340_17_]
+@@ -534 +531 @@ class Meta
+-        for (var _363_17_ = 0; _363_17_ < list.length; _363_17_++)
++        for (var _356_17_ = 0; _356_17_ < list.length; _356_17_++)
+@@ -536 +533 @@ class Meta
+-            meta = list[_363_17_]
++            meta = list[_356_17_]
+@@ -547 +544 @@ class Meta
+-        for (var _376_17_ = 0; _376_17_ < list.length; _376_17_++)
++        for (var _369_17_ = 0; _369_17_ < list.length; _369_17_++)
+@@ -549 +546 @@ class Meta
+-            meta = list[_376_17_]
++            meta = list[_369_17_]
+@@ -577 +574 @@ class Meta
+-        var clsss, meta, _398_34_
++        var clsss, meta, _391_34_
+@@ -580 +577 @@ class Meta
+-        for (var _397_17_ = 0; _397_17_ < list.length; _397_17_++)
++        for (var _390_17_ = 0; _390_17_ < list.length; _390_17_++)
+@@ -582,2 +579,2 @@ class Meta
+-            meta = list[_397_17_]
+-            clsss = (meta != null ? meta[2] != null ? (_398_34_=meta[2].clss) != null ? _398_34_.split(' ') : undefined : undefined : undefined)
++            meta = list[_390_17_]
++            clsss = (meta != null ? meta[2] != null ? (_391_34_=meta[2].clss) != null ? _391_34_.split(' ') : undefined : undefined : undefined)
+diff --git a/kakao.app/js/ko/win/gitinfo.js b/kakao.app/js/ko/win/gitinfo.js
+index 602805b..019887d 100644
+--- a/kakao.app/js/ko/win/gitinfo.js
++++ b/kakao.app/js/ko/win/gitinfo.js
+@@ -229 +229 @@ class GitInfo
+-                        window.terminal.appendMeta({line:dline,diss:Syntax.dissForTextAndSyntax(line.line,slash.ext(path)),href:path + ':' + dline - 1,clss:'gitInfoDelete',click:this.onMetaClick})
++                        window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line.line,slash.ext(path)),href:path + ':' + dline,clss:'gitInfoDelete',click:this.onMetaClick})
+@@ -233 +233 @@ class GitInfo
+-                        window.terminal.appendMeta({line:aline,diss:Syntax.dissForTextAndSyntax(line.line,slash.ext(path)),href:path + ':' + aline - 1,clss:'gitInfoAdded',click:this.onMetaClick})
++                        window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line.line,slash.ext(path)),href:path + ':' + aline,clss:'gitInfoAdded',click:this.onMetaClick})
+@@ -258 +258 @@ class GitInfo
+-        for (var _225_17_ = 0; _225_17_ < list.length; _225_17_++)
++        for (var _223_17_ = 0; _223_17_ < list.length; _223_17_++)
+@@ -260 +260 @@ class GitInfo
+-            text = list[_225_17_]
++            text = list[_223_17_]
+@@ -287 +287 @@ class GitInfo
+-                            for (var _260_37_ = 0; _260_37_ < list1.length; _260_37_++)
++                            for (var _258_37_ = 0; _258_37_ < list1.length; _258_37_++)
+@@ -289 +289 @@ class GitInfo
+-                                diff = list1[_260_37_]
++                                diff = list1[_258_37_]
+@@ -298 +298 @@ class GitInfo
+-                for (var _270_29_ = 0; _270_29_ < list2.length; _270_29_++)
++                for (var _268_29_ = 0; _268_29_ < list2.length; _268_29_++)
+@@ -300 +300 @@ class GitInfo
+-                    diff = list2[_270_29_]
++                    diff = list2[_268_29_]
+@@ -366 +366 @@ class GitInfo
+-            for (var _334_21_ = 0; _334_21_ < list.length; _334_21_++)
++            for (var _332_21_ = 0; _332_21_ < list.length; _332_21_++)
+@@ -368 +368 @@ class GitInfo
+-                file = list[_334_21_]
++                file = list[_332_21_]
+@@ -375 +375 @@ class GitInfo
+-            for (var _339_21_ = 0; _339_21_ < list1.length; _339_21_++)
++            for (var _337_21_ = 0; _337_21_ < list1.length; _337_21_++)
+@@ -377 +377 @@ class GitInfo
+-                file = list1[_339_21_]
++                file = list1[_337_21_]
+@@ -391 +391 @@ class GitInfo
+-            for (var _348_21_ = 0; _348_21_ < list2.length; _348_21_++)
++            for (var _346_21_ = 0; _346_21_ < list2.length; _346_21_++)
+@@ -393 +393 @@ class GitInfo
+-                file = list2[_348_21_]
++                file = list2[_346_21_]
+@@ -403 +403 @@ class GitInfo
+-                    for (var _356_31_ = 0; _356_31_ < list3.length; _356_31_++)
++                    for (var _354_31_ = 0; _354_31_ < list3.length; _354_31_++)
+@@ -405 +405 @@ class GitInfo
+-                        change = list3[_356_31_]
++                        change = list3[_354_31_]
+diff --git a/kakao.app/js/kxk/store.js b/kakao.app/js/kxk/store.js
+index 5622905..8975959 100644
+--- a/kakao.app/js/kxk/store.js
++++ b/kakao.app/js/kxk/store.js
+@@ -41,0 +42 @@ Store = (function ()
++        console.log('Store.file',this.file)
+@@ -79 +80 @@ Store = (function ()
+-        var _58_45_
++        var _60_45_
+@@ -90 +91 @@ Store = (function ()
+-        var _75_14_
++        var _77_14_
+@@ -104 +105 @@ Store = (function ()
+-        this.data = ((_75_14_=this.data) != null ? _75_14_ : {})
++        this.data = ((_77_14_=this.data) != null ? _77_14_ : {})
+diff --git a/kakao.app/kode/bundle.kode b/kakao.app/kode/bundle.kode
+index e38f8d9..89e398e 100644
+--- a/kakao.app/kode/bundle.kode
++++ b/kakao.app/kode/bundle.kode
+@@ -13 +13 @@ function Bundle
+-    @path: '?' # this is set by kakao.init
++    @path: window.bundlePath # this is set in win.mm
+diff --git a/kakao.app/kode/kakao.kode b/kakao.app/kode/kakao.kode
+index 69db679..64915b3 100644
+--- a/kakao.app/kode/kakao.kode
++++ b/kakao.app/kode/kakao.kode
+@@ -22 +21,0 @@ function Kakao
+-        bundle.path = window.bundlePath
+diff --git a/kakao.app/kode/ko/editor/Meta.kode b/kakao.app/kode/ko/editor/Meta.kode
+index 0050717..6e0b87d 100644
+--- a/kakao.app/kode/ko/editor/Meta.kode
++++ b/kakao.app/kode/ko/editor/Meta.kode
+@@ -137,2 +137 @@ class Meta
+-                'spacer'
+-                    e.numberSpan.innerHTML = '&nbsp;'
++                'spacer' ➜ e.numberSpan.innerHTML = '&nbsp;'
+@@ -144,2 +143,3 @@ class Meta
+-                        e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss if meta[2].lineClss?
+-                        e.numberSpan.className = meta[2].lineClss if meta[2].lineClss?
++                        if meta[2].lineClss
++                            e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss 
++                            e.numberSpan.className = meta[2].lineClss
+@@ -324,5 +324,2 @@ class Meta
+-            for meta in rangesFromTopToBotInRanges top-num, top-1, @metas
+-                @delDiv meta
+-
+-            for meta in rangesFromTopToBotInRanges bot-num+1, bot, @metas
+-                @addDiv meta
++            for meta in rangesFromTopToBotInRanges top-num, top-1, @metas ➜ @delDiv meta
++            for meta in rangesFromTopToBotInRanges bot-num+1, bot, @metas ➜ @addDiv meta
+@@ -330,6 +327,2 @@ class Meta
+-
+-            for meta in rangesFromTopToBotInRanges bot+1, bot-num, @metas
+-                @delDiv meta
+-
+-            for meta in rangesFromTopToBotInRanges top, top-num-1, @metas
+-                @addDiv meta
++            for meta in rangesFromTopToBotInRanges bot+1, bot-num, @metas ➜ @delDiv meta
++            for meta in rangesFromTopToBotInRanges top, top-num-1, @metas ➜ @addDiv meta
+diff --git a/kakao.app/kode/ko/win/GitInfo.kode b/kakao.app/kode/ko/win/GitInfo.kode
+index f93dc17..0c9ee82 100644
+--- a/kakao.app/kode/ko/win/GitInfo.kode
++++ b/kakao.app/kode/ko/win/GitInfo.kode
+@@ -193 +192,0 @@ class GitInfo
+-                            line:       dline
+@@ -195 +194 @@ class GitInfo
+-                            href:       path + ':' + dline-1
++                            href:       path + ':' + dline
+@@ -202 +200,0 @@ class GitInfo
+-                            line:       aline
+@@ -204 +202 @@ class GitInfo
+-                            href:       path + ':' + aline-1
++                            href:       path + ':' + aline
+diff --git a/kakao.app/kode/kxk/store.kode b/kakao.app/kode/kxk/store.kode
+index 42a4439..2a47692 100644
+--- a/kakao.app/kode/kxk/store.kode
++++ b/kakao.app/kode/kxk/store.kode
+@@ -32,0 +33,2 @@ function Store extends events
++        log 'Store.file' @file
++        
+diff --git a/kakao.app/src/win.mm b/kakao.app/src/win.mm
+index 1343ea4..f815bec 100644
+--- a/kakao.app/src/win.mm
++++ b/kakao.app/src/win.mm
+@@ -172 +171,0 @@ - (Win*) initWithURL:(NSURL*)url script:(NSString*)script
+-    // [self setContentMinSize:CGSizeMake(200, 200)];
+@@ -180,0 +180,5 @@ - (Win*) initWithURL:(NSURL*)url script:(NSString*)script
++    id winscript = [NSString stringWithFormat:@\"window.winID = %ld;window.userName = \\\"%@\\\";window.homeDir = \\\"%@\\\";window.tmpDir = \\\"%@\\\";window.bundlePath = \\\"%@\\\";\\n\", 
++        (long)self.windowNumber, [FS userName], [FS homeDir], [FS tmpDir], [Bundle path]
++    ]; 
++    [self.view evaluateJavaScript:winscript completionHandler:nil];
++    
+"

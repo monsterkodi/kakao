@@ -2,10 +2,12 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 
 var args
 
-import os from "../kxk/os.js"
-import karg from "../kxk/karg.js"
-import slash from "../kxk/slash.js"
-import watch from "../kxk/watch.js"
+import kxk from "../kxk.js"
+let sleep = kxk.sleep
+let karg = kxk.karg
+let watch = kxk.watch
+let slash = kxk.slash
+let os = kxk.os
 
 import knrd from "./knrd.js"
 import build from "./build.js"
@@ -30,16 +32,6 @@ class kk
 {
     static async run ()
     {
-        var sleep
-
-        sleep = async function (ms)
-        {
-            await new Promise((function (r)
-            {
-                return setTimeout(r,ms)
-            }).bind(this))
-            return true
-        }
         while (!os.loaded)
         {
             await sleep(150)

@@ -249,4 +249,11 @@ export default {isEqual:isEqual,zip:function (...args)
         result.push([key,val])
     }
     return result
+},sleep:async function (ms)
+{
+    await new Promise((function (r)
+    {
+        return setTimeout(r,ms)
+    }).bind(this))
+    return true
 }}

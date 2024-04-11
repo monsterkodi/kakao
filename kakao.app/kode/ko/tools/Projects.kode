@@ -40,8 +40,6 @@ class Projects
     
     @indexProject: (file) ○=>
         
-        # sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
-        
         prjPath = ○ ffs.git file
         
         # log 'Projects.indexProject ▸' prjPath

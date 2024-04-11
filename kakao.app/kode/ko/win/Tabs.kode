@@ -419,8 +419,6 @@ class Tabs
         
     sortTabs: ->
         
-        # log 'Tabs.sortTabs'
-        
         sorted = @tabs.filter (t) -> t.isPrj
         remain = @tabs.filter (t) -> not t.isPrj
         
@@ -443,8 +441,8 @@ class Tabs
                 @tabs = @tabs.concat v
             else if v.length == 1 and valid v[0].hiddenPrjFiles
                 @tabs.push v[0]
-            else
-                log 'no prjTabs?' k
+            # else
+                # log 'no prjTabs?' k
             
         @tabs = @tabs.concat dangling
         

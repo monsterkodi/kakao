@@ -68,6 +68,7 @@ addMatch = function (line, ctx)
         else
         {
             console.log('bail?',cp,splt[si],_k_.g4(kstr(ctx)))
+            throw new Error('kermit parse fail!',line)
             ci++
             continue
         }
@@ -79,9 +80,9 @@ addMatch = function (line, ctx)
     if (!strongMatch)
     {
         var list = [1,-1]
-        for (var _73_14_ = 0; _73_14_ < list.length; _73_14_++)
+        for (var _74_14_ = 0; _74_14_ < list.length; _74_14_++)
         {
-            d = list[_73_14_]
+            d = list[_74_14_]
             if (hasStrongMatch(splt,ctx,d))
             {
                 ctx.pind = wrapIndex(ctx,d)
@@ -121,9 +122,9 @@ collect = function (ctx)
     la = []
     stack = [_k_.last(ctx.result)]
     var list = _k_.list(ctx.matches)
-    for (var _112_14_ = 0; _112_14_ < list.length; _112_14_++)
+    for (var _113_14_ = 0; _113_14_ < list.length; _113_14_++)
     {
-        match = list[_112_14_]
+        match = list[_113_14_]
         ma = ctx.ptn[match.pind][1]
         lo = _k_.last(stack)
         if (ma.length > la.length)
@@ -134,7 +135,7 @@ collect = function (ctx)
         }
         else if (ma.length < la.length)
         {
-            for (var _123_21_ = i = 0, _123_25_ = la.length - ma.length; (_123_21_ <= _123_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_123_21_ <= _123_25_ ? ++i : --i))
+            for (var _124_21_ = i = 0, _124_25_ = la.length - ma.length; (_124_21_ <= _124_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_124_21_ <= _124_25_ ? ++i : --i))
             {
                 stack.pop()
             }
@@ -203,9 +204,9 @@ pattern = function (kmt)
         var gz, lpt
 
         var list = _k_.list(gzo)
-        for (var _172_15_ = 0; _172_15_ < list.length; _172_15_++)
+        for (var _173_15_ = 0; _173_15_ < list.length; _173_15_++)
         {
-            gz = list[_172_15_]
+            gz = list[_173_15_]
             lpt = _k_.trim(gz.line).split(/\s+/)
             if (lpt[0][0] === '■')
             {

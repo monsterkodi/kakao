@@ -8,7 +8,7 @@
     commandline tool that builds the application
 ###
 
-use ../kxk ◆ os karg slash watch
+use ../kxk ▪ sleep karg watch slash os 
 use        ◆ knrd build
 
 use child_process
@@ -41,10 +41,8 @@ class kk
     
     @run: ○->
         
-        sleep = (ms) ○->○ new Promise((r) => setTimeout(r, ms)); true
-        
         while not os.loaded # todo: move this check somewhere else!
-            await sleep 150
+            ○ sleep 150
             
         if not (args.info or args.test or args.knrd or args.build or args.run or args.clean or args.rebuild or args.watch)
             # no command given? assume all of them for now :)

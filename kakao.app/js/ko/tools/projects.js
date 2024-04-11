@@ -51,7 +51,7 @@ class Projects
 
     static async indexProject (file)
     {
-        var prjPath, result, walker, _51_19_
+        var prjPath, result, walker, _49_19_
 
         prjPath = await ffs.git(file)
         if (this.indexing)
@@ -60,7 +60,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_51_19_=this.queue) != null ? _51_19_ : [])
+            this.queue = ((_49_19_=this.queue) != null ? _49_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -81,9 +81,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _71_21_ = 0; _71_21_ < list.length; _71_21_++)
+            for (var _69_21_ = 0; _69_21_ < list.length; _69_21_++)
             {
-                file = list[_71_21_]
+                file = list[_69_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('Projects project indexed',prjPath,this.projects)

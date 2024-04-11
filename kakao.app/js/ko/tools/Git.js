@@ -191,20 +191,38 @@ Git = (function ()
 
     Git["patch"] = async function (rev)
     {
-        var gitDir, patch
+        var diffgit, gitDir, patch, patches, r
 
         gitDir = await kakao('fs.git',editor.currentFile)
         console.log(`git --no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`)
         patch = await kakao('app.sh','/usr/bin/git',{arg:`--no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`,cwd:gitDir})
-        console.log('▸▸▸ patch',patch)
-        return kermit(`diff --git ●path
+        patches = []
+        var list = _k_.list(patch.split('diff --git '))
+        for (var _164_20_ = 0; _164_20_ < list.length; _164_20_++)
+        {
+            diffgit = list[_164_20_]
+            if (_k_.empty(diffgit))
+            {
+                continue
+            }
+            try
+            {
+                r = kermit(`diff --git ●path
 index ●refs
 --- ●srcfile
 +++ ●tgtfile
 ■changes
     @@ ●lineinfo @@
     ■changedlines
-        ●type ○line`,patch)
+        ●type ○line`,'diff --git ' + diffgit)
+                patches = patches.concat(r)
+            }
+            catch (err)
+            {
+                console.error(err)
+            }
+        }
+        return patches
     }
 
     Git["history"] = async function (path)
