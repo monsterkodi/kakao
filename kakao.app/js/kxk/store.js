@@ -39,6 +39,7 @@ Store = (function ()
         }
         this.sep = opt.separator
         this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
+        console.log('Store.file',this.file)
         post.on('store',(function (name, action, ...argl)
         {
             if (this.name !== name)
@@ -76,7 +77,7 @@ Store = (function ()
 
     Store.prototype["get"] = function (key, value)
     {
-        var _58_45_
+        var _60_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -87,7 +88,7 @@ Store = (function ()
 
     Store.prototype["set"] = function (key, value)
     {
-        var _75_14_
+        var _77_14_
 
         if (!(_k_.isStr(key)))
         {
@@ -101,7 +102,7 @@ Store = (function ()
         {
             return
         }
-        this.data = ((_75_14_=this.data) != null ? _75_14_ : {})
+        this.data = ((_77_14_=this.data) != null ? _77_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         this.delayedSave()
         return post.toWins('store',this.name,'set',key,value)

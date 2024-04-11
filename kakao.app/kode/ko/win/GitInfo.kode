@@ -190,18 +190,16 @@ class GitInfo
                 switch line.type
                     '-'
                         window.terminal.appendMeta
-                            line:       dline
                             diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
-                            href:       path + ':' + dline-1
+                            href:       path + ':' + dline
                             clss:       'gitInfoDelete'
                             click:      @onMetaClick
                         dline++
     
                     '+'
                         window.terminal.appendMeta
-                            line:       aline
                             diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
-                            href:       path + ':' + aline-1
+                            href:       path + ':' + aline
                             clss:       'gitInfoAdded'
                             click:      @onMetaClick
                         aline++

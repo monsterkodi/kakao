@@ -10,7 +10,7 @@
 
 function Bundle
 
-    @path: '?' # this is set by kakao.init
+    @path: window.bundlePath # this is set in win.mm
         
     @app: (p) -> Bundle.path + '/'                        + p # absolute path of the .app folder
     @js:  (p) -> Bundle.path + '/js/'                     + p # contains js, css and html files

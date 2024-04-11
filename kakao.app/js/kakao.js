@@ -13,7 +13,6 @@ Kakao = (function ()
 
     Kakao["init"] = async function (cb)
     {
-        bundle.path = window.bundlePath
         if (_k_.isFunc(window.kakao.preInit))
         {
             await window.kakao.preInit()

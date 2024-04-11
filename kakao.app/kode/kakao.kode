@@ -19,7 +19,6 @@ function Kakao
 
     @init: (cb) ○->
         
-        bundle.path = window.bundlePath
         ○ window.kakao.preInit() if window.kakao.preInit is func # preload modules if necessary
         cb bundle.path # ... the application is ready to run
         

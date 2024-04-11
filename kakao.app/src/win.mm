@@ -169,7 +169,6 @@ NSDictionary* dictForRect(NSRect rect)
         [self standardWindowButton:NSWindowZoomButton       ].hidden = YES;
     }
     
-    // [self setContentMinSize:CGSizeMake(200, 200)];
     [self setFrame:CGRectMake(0, 0, 400, 400) display:YES animate:NO];
     [self center];
     
@@ -177,6 +176,11 @@ NSDictionary* dictForRect(NSRect rect)
     [self makeKeyAndOrderFront:nil];
     
     [self navigateToURL:url];
+    
+    id winscript = [NSString stringWithFormat:@"window.winID = %ld;window.userName = \"%@\";window.homeDir = \"%@\";window.tmpDir = \"%@\";window.bundlePath = \"%@\";\n", 
+        (long)self.windowNumber, [FS userName], [FS homeDir], [FS tmpDir], [Bundle path]
+    ]; 
+    [self.view evaluateJavaScript:winscript completionHandler:nil];
     
 	return self;
 }

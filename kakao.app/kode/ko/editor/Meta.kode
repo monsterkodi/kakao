@@ -134,15 +134,15 @@ class Meta
             e.numberSpan.className = ''
             e.numberSpan.parentNode.className = 'linenumber'
             switch meta[2].clss
-                'spacer'
-                    e.numberSpan.innerHTML = '&nbsp;'
+                'spacer' ➜ e.numberSpan.innerHTML = '&nbsp;'
                 ➜
                     num  = @saveButton(meta[0]) if meta[2].state == 'unsaved'
                     num ?= meta[2].line
                     num ?= slash.splitFileLine(meta[2].href)[1]
                     if valid num
-                        e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss if meta[2].lineClss?
-                        e.numberSpan.className = meta[2].lineClss if meta[2].lineClss?
+                        if meta[2].lineClss
+                            e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss 
+                            e.numberSpan.className = meta[2].lineClss
                         e.numberSpan.innerHTML = num
 
     #  0000000  00000000  000000000        00000000    0000000    0000000
@@ -321,18 +321,11 @@ class Meta
     onLinesShifted: (top, bot, num) =>
 
         if num > 0
-            for meta in rangesFromTopToBotInRanges top-num, top-1, @metas
-                @delDiv meta
-
-            for meta in rangesFromTopToBotInRanges bot-num+1, bot, @metas
-                @addDiv meta
+            for meta in rangesFromTopToBotInRanges top-num, top-1, @metas ➜ @delDiv meta
+            for meta in rangesFromTopToBotInRanges bot-num+1, bot, @metas ➜ @addDiv meta
         else
-
-            for meta in rangesFromTopToBotInRanges bot+1, bot-num, @metas
-                @delDiv meta
-
-            for meta in rangesFromTopToBotInRanges top, top-num-1, @metas
-                @addDiv meta
+            for meta in rangesFromTopToBotInRanges bot+1, bot-num, @metas ➜ @delDiv meta
+            for meta in rangesFromTopToBotInRanges top, top-num-1, @metas ➜ @addDiv meta
 
         @updatePositionsBelowLineIndex top
 

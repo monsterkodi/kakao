@@ -8,7 +8,7 @@ Bundle = (function ()
     function Bundle ()
     {}
 
-    Bundle["path"] = '?'
+    Bundle["path"] = window.bundlePath
     Bundle["app"] = function (p)
     {
         return Bundle.path + '/' + p
