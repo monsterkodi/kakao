@@ -156,12 +156,13 @@ function Git
         
         log "git --no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines"
         
-        patch  =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines" cwd:gitDir 
+        patch =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines" cwd:gitDir 
+        patch = '\n' + patch
         
         # log '▸▸▸ patch' patch
         
         patches = []
-        for diffgit in patch.split 'diff --git '
+        for diffgit in patch.split '\ndiff --git '
             continue if empty diffgit
             # log 'diffgit' diffgit
             try

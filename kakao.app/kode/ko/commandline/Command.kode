@@ -111,7 +111,7 @@ function Command
     #  0000000  000   000  000   000   0000000  00000000  0000000
     
     cancel: ->
-        log 'Command.cancel'
+        # log 'Command.cancel'
         @hideList()        
         text: ''
         focus: @receiver

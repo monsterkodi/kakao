@@ -137,7 +137,6 @@ Command = (function ()
 
     Command.prototype["cancel"] = function ()
     {
-        console.log('Command.cancel')
         this.hideList()
         return {text:'',focus:this.receiver,show:'editor'}
     }

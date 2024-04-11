@@ -15,7 +15,6 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',co
     return this.deleteBackward({swallowWord:true})
 },deleteBackward:function (opt)
 {
-    console.log('deleteBackward',opt)
     this.do.start()
     if (this.do.numSelections())
     {
@@ -89,7 +88,6 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',co
     }
     else
     {
-        console.log('delete to previous tab column',this.indentString.length)
         removeNum = Math.max(1,_k_.min(newCursors.map((function (c)
         {
             var n, t

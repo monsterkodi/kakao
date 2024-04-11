@@ -34,7 +34,7 @@ export
             
     deleteBackward: (opt) ->
         
-        log 'deleteBackward' opt
+        # log 'deleteBackward' opt
 
         @do.start()
         if @do.numSelections()
@@ -72,7 +72,7 @@ export
                     n += c[0] - @do.line(c[1]).length if @isCursorVirtual c
                     Math.max 1, n
             ➜ # delete spaces to previous tab column
-                log 'delete to previous tab column' @indentString.length
+                # log 'delete to previous tab column' @indentString.length
                 removeNum = Math.max 1, min newCursors.map (c) =>
                     n = (c[0] % @indentString.length) or @indentString.length
                     t = @do.textInRange [c[1], [Math.max(0, c[0]-n), c[0]]]

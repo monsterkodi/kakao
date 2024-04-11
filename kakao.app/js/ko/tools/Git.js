@@ -196,11 +196,12 @@ Git = (function ()
         gitDir = await kakao('fs.git',editor.currentFile)
         console.log(`git --no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`)
         patch = await kakao('app.sh','/usr/bin/git',{arg:`--no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`,cwd:gitDir})
+        patch = '\n' + patch
         patches = []
-        var list = _k_.list(patch.split('diff --git '))
-        for (var _164_20_ = 0; _164_20_ < list.length; _164_20_++)
+        var list = _k_.list(patch.split('\ndiff --git '))
+        for (var _165_20_ = 0; _165_20_ < list.length; _165_20_++)
         {
-            diffgit = list[_164_20_]
+            diffgit = list[_165_20_]
             if (_k_.empty(diffgit))
             {
                 continue

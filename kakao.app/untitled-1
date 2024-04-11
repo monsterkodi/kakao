@@ -1,0 +1,1 @@
+ git --no-pager diff 41f52f069284e1fb1a4d62a718b9399094721de1^..41f52f069284e1fb1a4d62a718b9399094721de1 --no-color -U0 --ignore-blank-lines
