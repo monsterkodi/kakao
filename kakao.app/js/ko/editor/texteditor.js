@@ -30,7 +30,7 @@ TextEditor = (function ()
     _k_.extend(TextEditor, Editor)
     function TextEditor (viewElem, config)
     {
-        var layer, name, _42_27_, _44_68_
+        var layer, name, _42_27_, _44_67_
 
         this["onKeyDown"] = this["onKeyDown"].bind(this)
         this["onClickTimeout"] = this["onClickTimeout"].bind(this)
@@ -73,7 +73,7 @@ TextEditor = (function ()
         this.spanCache = []
         this.lineDivs = {}
         this.config.lineHeight = ((_42_27_=this.config.lineHeight) != null ? _42_27_ : 1.2)
-        this.setFontSize(prefs.get(`${this.name}FontSize`,((_44_68_=this.config.fontSize) != null ? _44_68_ : 19)))
+        this.setFontSize(prefs.get(`${this.name}FontSize`,((_44_67_=this.config.fontSize) != null ? _44_67_ : 19)))
         this.scroll = new EditorScroll(this)
         this.scroll.on('shiftLines',this.shiftLines)
         this.scroll.on('showLines',this.showLines)

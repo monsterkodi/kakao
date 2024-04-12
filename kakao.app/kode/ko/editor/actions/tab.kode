@@ -11,7 +11,7 @@ export
     
     actions:
         insertOrDeleteTab:
-            combos: ['tab', 'shift+tab']
+            combos: ['tab' 'shift+tab']
         
     insertOrDeleteTab: (key, info) ->
         

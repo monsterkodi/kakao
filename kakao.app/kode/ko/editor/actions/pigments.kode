@@ -19,7 +19,7 @@ function Pigments
 
         @regexps = [[trio, 'trio'], [hexa, 'hexa'], [rgb, 'rgb'], [rgba, 'rgbaa']]
 
-        @editor.on 'file', @onFile
+        @editor.on 'file' @onFile
 
     del: -> @editor.removeListener 'file' @onFile
 

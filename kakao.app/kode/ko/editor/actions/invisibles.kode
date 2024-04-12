@@ -7,9 +7,9 @@
 
 class Invisibles
 
-    @: (@editor) -> @editor.on 'file', @onFile
+    @: (@editor) -> @editor.on 'file' @onFile
 
-    del: -> @editor.removeListener 'file', @onFile
+    del: -> @editor.removeListener 'file' @onFile
 
     onFile: (file) =>
 

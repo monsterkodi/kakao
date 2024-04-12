@@ -94,9 +94,9 @@ export
                 nextChar = rest[index]
 
                 type = switch nextChar 
-                    when '.'      then 'class' 
-                    when '('      then 'func'
-                    when ':', '=' then 'word'
+                    '.'     ➜ 'class' 
+                    '('     ➜ 'func'
+                    ':' '=' ➜ 'word'
                 opt.type = type if type?
                 
         post.emit 'jumpTo', word, opt
