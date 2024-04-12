@@ -1208,7 +1208,7 @@ Column = (function ()
             return
         }
         this.browser.shiftColumnsTo(this.index)
-        if (this.browser.columns[0].items[0].file !== '..')
+        if (this.browser.columns[0].items[0].path !== '..')
         {
             this.unshiftItem({file:'..',type:'dir',path:slash.dir(this.parent.path)})
         }

@@ -775,7 +775,7 @@ function Column
 
         @browser.shiftColumnsTo @index
 
-        if @browser.columns[0].items[0].file != '..'
+        if @browser.columns[0].items[0].path != '..'
 
             @unshiftItem
                 file: '..'
