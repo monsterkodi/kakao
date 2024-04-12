@@ -4,26 +4,43 @@
     0000000    0000000      000     0000000
     000  000        000     000     000   000
     000   000  0000000      000     000   000
+    
+    a collection of string related functions
 ###
 
 use ./ansi
 
-str = (o) ->
+str = (o) -> # converts anything into a string. in noon syntax for objects.
 
     return 'null' if not o?
-    if typeof(o) == 'object'
+    if o is obj
         if o._str?
             o._str()
         else
             "\n" + noon o
     else
         String o
+        
+# the function above is exported as the default
+# all the functions below are attached to it
     
 # 00000000  000  000      000      00000000  000000000   0000000  
 # 000       000  000      000      000          000     000       
 # 000000    000  000      000      0000000      000     0000000   
 # 000       000  000      000      000          000          000  
 # 000       000  0000000  0000000  00000000     000     0000000   
+
+###
+    converts a string into an array of objects 
+    the objects represent words or chunks of punctuation
+
+    "hello world!" ▸
+    [
+        match: 'hello' length:5 index:0  word:true
+        match: 'world' length:5 index:6  word:true 
+        match: '!'     length:1 index:11 word:false 
+    ]
+###
 
 str.fillet = (s, wordCharacterSet='') ->
     
@@ -58,7 +75,7 @@ str.fillet = (s, wordCharacterSet='') ->
 # 000   000  000  0000  000       000  000      000      000          000     
 #  0000000   000   000  000       000  0000000  0000000  00000000     000     
 
-str.unfillet = (fillets) ->
+str.unfillet = (fillets) -> # converts an array of fillet objects into a string
     
     s = ''
     for fillet in fillets
@@ -72,7 +89,7 @@ str.unfillet = (fillets) ->
 # 000   000  000      000   000  000       000  000         000       000  000      000      000          000          000  
 # 0000000    0000000   0000000    0000000  000   000        000       000  0000000  0000000  00000000     000     0000000   
 
-str.blockFillets = (lineFillets) ->
+str.blockFillets = (lineFillets) -> # converts an array of fillet objects into a tree of block objects
     
     blocks = []
     stack  = []
@@ -119,6 +136,8 @@ str.blockFillets = (lineFillets) ->
 # 0000000   00000000   000      000  000       0000000
 #      000  000        000      000  000       000
 # 0000000   000        0000000  000   0000000  00000000
+
+# like array splice, but not in place
 
 str.splice = (s, i, c, r='') -> s.slice(0, i) + r + s.slice(i + Math.abs(c))
 
