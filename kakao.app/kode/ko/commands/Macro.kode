@@ -7,8 +7,7 @@
 ###
 
 use ../../kxk      ▪ reversed uniq slash prefs post ffs
-use ../tools       ◆ salt req
-use ../win         ◆ GitInfo
+use ../tools       ◆ salt req GitInfo
 use ../editor      ◆ Syntax Editor
 use ../commandline ◆ Command
 

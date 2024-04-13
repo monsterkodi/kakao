@@ -67,7 +67,7 @@ Search = (function ()
             return
         }
         window.terminal.clear()
-        dir = ((_52_33_=Projects.dir(file)) != null ? _52_33_ : slash.dir(slash.path(file)))
+        dir = ((_52_33_=Projects.dir(file)) != null ? _52_33_ : slash.dir(file))
         this.startSearch({dir:dir,text:command,name:this.name})
         return {focus:'terminal',show:'terminal',text:command,select:true}
     }

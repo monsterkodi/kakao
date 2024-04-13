@@ -10,7 +10,7 @@
 
 use ./ansi
 
-str = (o) -> # converts anything into a string. in noon syntax for objects.
+str = (o) -> # converts anything into a string, in noon syntax for objects.
 
     return 'null' if not o?
     if o is obj
@@ -31,8 +31,8 @@ str = (o) -> # converts anything into a string. in noon syntax for objects.
 # 000       000  0000000  0000000  00000000     000     0000000   
 
 ###
-    converts a string into an array of objects 
-    the objects represent words or chunks of punctuation
+    converts a string into an array of objects.
+    the objects represent words or chunks of punctuation:
 
     "hello world!" ▸
     [

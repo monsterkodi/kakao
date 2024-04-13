@@ -18,7 +18,7 @@ Stash = (function ()
 {
     function Stash (name, opt)
     {
-        var _22_30_, _25_32_, _29_61_
+        var _22_34_, _25_32_, _29_61_
 
         this.name = name
     
@@ -27,7 +27,7 @@ Stash = (function ()
         {
             return console.error('stash.constructor -- no name?')
         }
-        this.sep = ((_22_30_=(opt != null ? opt.separator : undefined)) != null ? _22_30_ : '|')
+        this.sep = ((_22_34_=(opt != null ? opt.separator : undefined)) != null ? _22_34_ : '|')
         this.timer = null
         this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
         this.timeout = ((_25_32_=(opt != null ? opt.timeout : undefined)) != null ? _25_32_ : 4000)

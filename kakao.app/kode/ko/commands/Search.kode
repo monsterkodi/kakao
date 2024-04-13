@@ -49,7 +49,7 @@ function Search extends Command
 
         window.terminal.clear()
 
-        dir = Projects.dir(file) ? slash.dir slash.path file
+        dir = Projects.dir(file) ? slash.dir file
 
         @startSearch
             dir:  dir

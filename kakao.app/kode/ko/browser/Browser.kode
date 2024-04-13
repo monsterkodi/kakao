@@ -6,7 +6,7 @@
 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 ###
 
-use ../../kxk ▪ kpos elem slash events setStyle
+use ../../kxk ▪ kpos elem slash events setStyle post
 use ../win/flex/Flex
 use ./Column
 
@@ -16,7 +16,12 @@ function Browser extends events
 
         @columns = []
 
-        setStyle '.browserRow .ext' 'display' window.stash.get('browser|hideExtensions') and 'none' or 'initial'
+        post.on 'stashLoaded' @onStashLoaded
+        
+    onStashLoaded: =>
+        
+        hideExtensions = window.stash.get 'browser|hideExtensions' false
+        setStyle '.browserRow .ext' 'display' hideExtensions and 'none' or 'initial'
 
     # 000  000   000  000  000000000       0000000   0000000   000      000   000  00     00  000   000   0000000
     # 000  0000  000  000     000         000       000   000  000      000   000  000   000  0000  000  000
