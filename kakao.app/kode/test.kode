@@ -1,0 +1,42 @@
+###
+000000000  00000000   0000000  000000000
+   000     000       000          000   
+   000     0000000   0000000      000   
+   000     000            000     000   
+   000     00000000  0000000      000   
+###
+
+use ./kxk ◆ fs slash
+use ./kode/tester
+
+if process.argv[-1] == 'brief'
+    tester.logSections = false
+
+if process.argv[-1] == 'silent'
+    tester.logSections = false
+    tester.logModules = false
+    
+hdr = (h) -> log G2 y8 ' ' + rpad(33 h) + ' '
+
+if 1
+    hdr 'kxk'
+    files =○ fs.list slash.path ◆dir, 'kxk/test'
+    for file in files
+        continue if file.path == ◆file
+        test =○ import(file.path)
+        tester.test test.default
+
+if 1
+    hdr 'kode'
+    files =○ fs.list slash.path ◆dir, 'kode/test'
+    for file in files
+        test =○ import(file.path)
+        tester.test test.default
+        
+if 1
+    hdr 'kolor'
+    file = slash.path ◆dir, 'kolor/test.js'
+    test =○ import(file)
+    tester.test test.default
+                
+tester.summarize()
