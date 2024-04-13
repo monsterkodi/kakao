@@ -33,15 +33,15 @@ class File
 
         if ○ ffs.move from, to
                 
-            if editor.currentFile == from
+            if editor.currentFile == from # this is not right! use kore!
                 editor.currentFile = to
-                if tabs.activeTab()?.file == from
-                    tabs.activeTab().setFile to
-                if commandline.command.name == 'browse'
-                    if commandline.text() == slash.tilde from
-                        commandline.setText slash.tilde to
-                if not tabs.tab to
-                    log 'recreate tab!' tabs.activeTab().file, to
+                # if tabs.activeTab()?.file == from
+                    # tabs.activeTab().setFile to
+                # if commandline.command.name == 'browse'
+                    # if commandline.text() == slash.tilde from
+                        # commandline.setText slash.tilde to
+                # if not tabs.tab to
+                    # log 'recreate tab!' tabs.activeTab().file, to
             
             [from, to]
         else 

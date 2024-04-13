@@ -32,8 +32,6 @@ class File
 
     static async rename (from, to)
     {
-        var _38_35_
-
         await ffs.mkdir(slash.dir(to))
         if (await ffs.isDir(to))
         {
@@ -44,21 +42,6 @@ class File
             if (editor.currentFile === from)
             {
                 editor.currentFile = to
-                if ((tabs.activeTab() != null ? tabs.activeTab().file : undefined) === from)
-                {
-                    tabs.activeTab().setFile(to)
-                }
-                if (commandline.command.name === 'browse')
-                {
-                    if (commandline.text() === slash.tilde(from))
-                    {
-                        commandline.setText(slash.tilde(to))
-                    }
-                }
-                if (!tabs.tab(to))
-                {
-                    console.log('recreate tab!',tabs.activeTab().file,to)
-                }
             }
             return [from,to]
         }

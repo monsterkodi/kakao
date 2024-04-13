@@ -26,8 +26,10 @@ Kore = (function ()
 
     Kore.prototype["get"] = function (key, def)
     {
-        console.log('kore.get',key,def)
-        return stash.get(`kore|${key}`,def)
+        var r
+
+        r = stash.get(`kore|${key}`,def)
+        return r
     }
 
     return Kore

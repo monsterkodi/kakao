@@ -16,11 +16,9 @@ use ◆ bundle
 
 function Kakao
 
-    # initialization of the application
-
     @init: (cb) ○->
-        while not window.bundlePath
-            log 'no bundle path!'
+        
+        while not window.bundlePath # wait for valid bundle path
             ○ sleep 100
         bundle.path = window.bundlePath
         ○ window.kakao.preInit() if window.kakao.preInit is func # preload modules if necessary

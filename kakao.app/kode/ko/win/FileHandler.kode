@@ -13,14 +13,10 @@ class FileHandler
 
     @: ->
         
-        post.on 'fileChanged' @reloadFile
-        post.on 'fileRemoved' @removeFile
         post.on 'saveFileAs'  @saveFileAs
         post.on 'saveFile'    @saveFile
         post.on 'saveAll'     @saveAll
         post.on 'saveChanges' @saveChanges
-        post.on 'reloadTab'   @reloadTab
-        post.on 'reloadFile'  @reloadActiveTab
         post.on 'loadFile'    @loadFile
         post.on 'openFile'    @openFile
         post.on 'openFiles'   @openFiles
@@ -51,29 +47,16 @@ class FileHandler
             
             @addToRecent file
 
-            tab = tabs.tab file
-            if empty tab
-                tab = tabs.addTmpTab file
-
-            if activeTab = tabs.activeTab()
-                if tab != activeTab
-                    activeTab.clearActive()
-                    if activeTab.dirty
-                        activeTab.storeState()
-
-            if tab?.state
-                restoreState = tab.state.state
-
             # log 'editor.setCurrentFile file' file, restoreState
+                        
+            editor.setCurrentFile file
             
             kore.set 'editor|file' file
             
-            editor.setCurrentFile file, restoreState
-
-            if tab
-                tab?.finishActivation() # setActive, restore state, update tabs
-            else
-                tabs.getPrjTab(Projects.dir file)?.update()
+            # if tab
+                # tab?.finishActivation() # setActive, restore state, update tabs
+            # else
+                # tabs.getPrjTab(Projects.dir file)?.update()
 
             # post.emit 'fileLoaded' file # used by Projects to indexProject
             
@@ -153,48 +136,6 @@ class FileHandler
             @loadFile editor?.currentFile, reload:true
         else
             post.emit 'revertFile' file
-
-    # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
-    # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
-    # 0000000    0000000   000      000   000  000000000  000   000        000000    000  000      0000000
-    # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
-    # 000   000  00000000  0000000   0000000   000   000  0000000          000       000  0000000  00000000
-
-    reloadFile: (file) =>
-        
-        if not file
-            @reloadActiveTab()
-        else if tab = tabs.tab file
-            if tab == tabs.activeTab()
-                log 'FileHandler.reloadFile reloadActiveTab' file
-                @reloadActiveTab()
-            else
-                log 'FileHandler.reloadFile reload inactive tab' file
-                tab.reload()
-
-    reloadActiveTab: =>
-
-        if tab = tabs.activeTab()
-            tab.reload()
-
-        @loadFile editor.currentFile, reload:true
-
-        if editor.currentFile?
-            post.toWins 'reloadTab' editor.currentFile
-
-    # 00000000   00000000  00     00   0000000   000   000  00000000        00000000  000  000      00000000
-    # 000   000  000       000   000  000   000  000   000  000             000       000  000      000
-    # 0000000    0000000   000000000  000   000   000 000   0000000         000000    000  000      0000000
-    # 000   000  000       000 0 000  000   000     000     000             000       000  000      000
-    # 000   000  00000000  000   000   0000000       0      00000000        000       000  0000000  00000000
-
-    removeFile: (file) =>
-
-        if tab = tabs.tab file
-            if tab == tabs.activeTab()
-                if neighborTab = tab.nextOrPrev()
-                    neighborTab.activate()
-            tabs.closeTab tab
 
     #  0000000   0000000   000   000  00000000         0000000   000      000
     # 000       000   000  000   000  000             000   000  000      000

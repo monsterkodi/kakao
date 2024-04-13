@@ -252,8 +252,8 @@ Window = (function ()
             case 'Revert':
                 return post.emit('reloadFile')
 
-            case 'Close Tab or Window':
-                return post.emit('closeTabOrWindow')
+            case 'Close Tab':
+                return post.emit('closeTab')
 
             case 'Close Other Tabs':
                 return post.emit('closeOtherTabs')

@@ -61,7 +61,8 @@ function Kore extends events
         
     get: (key, def) =>
         
-        log 'kore.get' key, def
-        stash.get "kore|#{key}" def
+        r = stash.get "kore|#{key}" def
+        # log 'kore.get' key, noon r
+        r
                 
 export window.kore = new Kore

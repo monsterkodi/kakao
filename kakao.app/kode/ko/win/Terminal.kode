@@ -73,8 +73,7 @@ function Terminal extends TextEditor
             
                 @appendLineDiss meta.text
             
-            else
-                
+            ➜
                 @appendLineDiss ''
                 
         meta

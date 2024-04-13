@@ -142,7 +142,7 @@ function Window extends win.Delegate
             'Save All'              ➜ return post.emit 'saveAll'
             'Save As ...'           ➜ return post.emit 'saveFileAs'
             'Revert'                ➜ return post.emit 'reloadFile'
-            'Close Tab or Window'   ➜ return post.emit 'closeTabOrWindow'
+            'Close Tab'             ➜ return post.emit 'closeTab'
             'Close Other Tabs'      ➜ return post.emit 'closeOtherTabs'
             'Close Other Windows'   ➜ return post.toWins 'closeWindow'
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'

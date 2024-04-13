@@ -111,14 +111,12 @@ function FileBrowser extends Browser
 
     navigateToFile: (file) =>
 
-        ###
-        triggered by
-            browse.start
-            'file' posted from
-                fileeditor.setCurrentFile
-
-        reuses shared columns of current and new path
-        ###
+        # triggered by
+        #     browse.start
+        #     'file' posted from
+        #         fileeditor.setCurrentFile
+        # 
+        # reuses shared columns of current and new path
 
         lastPath = @lastDirColumn()?.path()
 

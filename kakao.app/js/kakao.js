@@ -19,7 +19,6 @@ Kakao = (function ()
     {
         while (!window.bundlePath)
         {
-            console.log('no bundle path!')
             await sleep(100)
         }
         bundle.path = window.bundlePath

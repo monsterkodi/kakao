@@ -71,7 +71,7 @@ function FileEditor extends TextEditor
         @setLines ['']
         @do.reset()
 
-    setCurrentFile: (file, restoreState) ->
+    setCurrentFile: (file) ->
 
         @clear()
 
@@ -79,16 +79,12 @@ function FileEditor extends TextEditor
 
         @setupFileType()
 
-        if restoreState
-            @setText restoreState.text()
-            @state = restoreState
-            @dirty = true
-        else if @currentFile
+        if @currentFile
             ffs.read(@currentFile).then @setText
 
-        window.tabs.activeTab()?.setFile @currentFile
+        # window.tabs.activeTab()?.setFile @currentFile
 
-        post.emit 'dirty' @dirty
+        # post.emit 'dirty' @dirty
 
     setText: (text="") =>
 
@@ -228,6 +224,7 @@ function FileEditor extends TextEditor
 
         # log 'jumpToFile' opt, window.lastFocus
 
+        opt ?= {}
         if opt is str ➜ opt = path:opt
 
         if opt.newTab

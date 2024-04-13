@@ -12,28 +12,30 @@ use ../editor ◆ Render Syntax
 
 class Tab
 
-    @: (@tabs, @file, @isPrj) ->
+    @: (@tabs, koreTab) ->
 
-        @dirty  = false
-        @pinned = false
-        @div    = elem class: 'tab app-drag-region' text: ''
+        for k,v of koreTab
+            @[k] = v
+        log 'Tab@' koreTab
+        @div = elem class: 'tab app-drag-region' text:@path
         @tabs.div.appendChild @div
         
         @update()
         
         if @isPrj
             post.on 'gitStatus' @onGitStatus
-            Git.status @file
+            Git.status @path
         
     stashInfo: ->
         
         info = {}
         if @isPrj
-            info.prj = @file
-            if @hiddenPrjFiles
-                info.hidden = @hiddenPrjFiles
+            info.prj = @path
+            info.collapsed = @collapsed
+            # if @hiddenPrjFiles
+                # info.hidden = @hiddenPrjFiles
         else
-            info.file   = @file
+            info.path   = @path
             info.pinned = true if @pinned
             info.active = true if @isActive()
         info
@@ -80,8 +82,8 @@ class Tab
 
     setFile: (newFile) ->
         
-        if not slash.samePath @file, newFile
-            @file = slash.path newFile
+        if not slash.samePath @path, newFile
+            @path = slash.path newFile
             @update()
             
     #  0000000  000000000   0000000   000000000  00000000
@@ -104,19 +106,18 @@ class Tab
     update: ->
 
         @div.innerHTML = ''
-        @div.classList.toggle 'dirty' @dirty
-
+        @div.classList.toggle 'dirty'  @dirty
+        @div.classList.toggle 'active' @active
+        
         sep = '●'
         sep = '' if @isPrj
         @dot = elem 'span' class:'dot' text:sep
         @div.appendChild @dot
 
-        file = @file
-
-        diss = Syntax.dissForTextAndSyntax slash.file(file), 'ko'
+        diss = Syntax.dissForTextAndSyntax slash.file(@path), 'ko'
         
         if not prefs.get 'tabs|extension'
-            if valid slash.ext file
+            if valid slash.ext @path
                 diss.pop()
                 diss.pop()
         
@@ -145,31 +146,30 @@ class Tab
             
             @div.appendChild elem 'span' class:'tabstate app-drag-region' html:html, click:@togglePinned
 
-        if @file?
-                        
-            @tooltip = new tooltip elem:name, bound:@div, html:@tooltipHtml, x:-2
+        @tooltip = new tooltip elem:name, bound:@div, html:@tooltipHtml, x:-2
 
         if @isPrj
-            if @hiddenPrjFiles
-                for i in 0...@hiddenPrjFiles.length
-                    dot = elem 'span' class:'prjdot' text:'●'
-                    @div.appendChild dot
-                    if @hiddenPrjFiles[i] == window.textEditor.currentFile
-                        dot.classList.add 'activeTab'
+            if @collapsed
+                log 'collapsed prj' @path, @tabs.prjTabs 
+                # for i in 0...@hiddenPrjFiles.length
+                    # dot = elem 'span' class:'prjdot' text:'●'
+                    # @div.appendChild dot
+                    # if @hiddenPrjFiles[i] == window.textEditor.currentFile
+                        # dot.classList.add 'activeTab'
         else if @dirty
             @div.appendChild elem 'span' class:'dot' text:'●'
         @
         
     tooltipHtml: => 
                 
-        if @file?
+        if @path?
             
-            diss = Syntax.dissForTextAndSyntax slash.tilde(@file), 'ko'
+            diss = Syntax.dissForTextAndSyntax slash.tilde(@path), 'ko'
             html = Render.line diss, wrapSpan:'tooltip-path'
             
-            if @isPrj and numFiles = Projects.files(@file).length
+            if @isPrj and numFiles = Projects.files(@path).length
                 html += Render.line Syntax.dissForTextAndSyntax("#{numFiles} files" 'git'), wrapSpan:'tooltip-line'
-                Git.status @file
+                Git.status @path
                 
         html
 
@@ -181,7 +181,7 @@ class Tab
     
     onGitStatus: (status) => 
         
-        return if status.gitDir != @file
+        return if status.gitDir != @path
         
         if @tooltip?.div?
             if status.deleted.length ➜ @tooltip.div.innerHTML += Render.line Syntax.dissForTextAndSyntax("▲ #{status.deleted.length} deleted" 'git'), wrapSpan:'tooltip-line' 
@@ -206,7 +206,7 @@ class Tab
 
         @div.remove()
         @tooltip?.del()
-        post.emit 'tabClosed' @file
+        post.emit 'tabClosed' @path
         @
 
     # 0000000    000  00000000   000000000  000   000
@@ -251,41 +251,31 @@ class Tab
     # 000   000  000          000     000     000     000   000     000     000
     # 000   000   0000000     000     000      0      000   000     000     00000000
 
-    activate: ->
-        
-        if @isPrj
-            if @hiddenPrjFiles
-                hidden = @hiddenPrjFiles
-                delete @hiddenPrjFiles
-                for file in hidden
-                    tab = @tabs.addTab file
-                    if window.textEditor.currentFile == file
-                        tab.setActive()
-            else
-                @hiddenPrjFiles = @tabs.getPrjFiles @file
-                for tab in @tabs.getPrjTabs @file
-                    @tabs.closeTab tab
-            @update()
-            @tabs.update()
-        else
-            post.emit 'jumpToFile' @file
-        @
+    # activate: ->
+#         
+        # if @isPrj
+            # @collapsed = not @collapsed
+            # @update()
+            # @tabs.update()
+        # else
+            # post.emit 'jumpToFile' @path
+        # @
 
-    finishActivation: ->
+    # finishActivation: ->
 
-        @setActive()
+        # @setActive()
 
-        if valid @state
-            window.editor.do.setTabState @state
-            delete @state
+        # if valid @state
+            # window.editor.do.setTabState @state
+            # delete @state
 
-        if @foreign?.length
-            for changes in @foreign
-                window.editor.do.foreignChanges changes
-            delete @foreign
+        # if @foreign?.length
+            # for changes in @foreign
+                # window.editor.do.foreignChanges changes
+            # delete @foreign
 
-        @tabs.update()
-        @
+        # @tabs.update()
+        # @
 
     #  0000000    0000000  000000000  000  000   000  00000000
     # 000   000  000          000     000  000   000  000
@@ -293,17 +283,17 @@ class Tab
     # 000   000  000          000     000     000     000
     # 000   000   0000000     000     000      0      00000000
 
-    isActive: -> @div.classList.contains 'active'
+    # isActive: -> @div.classList.contains 'active'
 
-    setActive: ->
+    # setActive: ->
 
-        if not @isActive()
-            @div.classList.add 'active'
-        @
+        # if not @isActive()
+            # @div.classList.add 'active'
+        # @
 
-    clearActive: ->
+    # clearActive: ->
 
-        @div.classList.remove 'active'
-        @
+        # @div.classList.remove 'active'
+        # @
 
 export Tab

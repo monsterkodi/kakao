@@ -15,24 +15,28 @@ import Syntax from "../editor/Syntax.js"
 
 class Tab
 {
-    constructor (tabs, file, isPrj)
+    constructor (tabs, koreTab)
     {
+        var k, v
+
         this.tabs = tabs
-        this.file = file
-        this.isPrj = isPrj
     
         this.togglePinned = this.togglePinned.bind(this)
         this.onGitStatus = this.onGitStatus.bind(this)
         this.tooltipHtml = this.tooltipHtml.bind(this)
-        this.dirty = false
-        this.pinned = false
-        this.div = elem({class:'tab app-drag-region',text:''})
+        for (k in koreTab)
+        {
+            v = koreTab[k]
+            this[k] = v
+        }
+        console.log('Tab@',koreTab)
+        this.div = elem({class:'tab app-drag-region',text:this.path})
         this.tabs.div.appendChild(this.div)
         this.update()
         if (this.isPrj)
         {
             post.on('gitStatus',this.onGitStatus)
-            Git.status(this.file)
+            Git.status(this.path)
         }
     }
 
@@ -43,15 +47,12 @@ class Tab
         info = {}
         if (this.isPrj)
         {
-            info.prj = this.file
-            if (this.hiddenPrjFiles)
-            {
-                info.hidden = this.hiddenPrjFiles
-            }
+            info.prj = this.path
+            info.collapsed = this.collapsed
         }
         else
         {
-            info.file = this.file
+            info.path = this.path
             if (this.pinned)
             {
                 info.pinned = true
@@ -66,9 +67,9 @@ class Tab
 
     foreignChanges (lineChanges)
     {
-        var _43_17_
+        var _45_17_
 
-        this.foreign = ((_43_17_=this.foreign) != null ? _43_17_ : [])
+        this.foreign = ((_45_17_=this.foreign) != null ? _45_17_ : [])
         this.foreign.push(lineChanges)
         return this.update()
     }
@@ -82,20 +83,20 @@ class Tab
 
     saveChanges ()
     {
-        var change, changes, _63_23_
+        var change, changes, _65_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _64_28_ = 0; _64_28_ < list.length; _64_28_++)
+                for (var _66_28_ = 0; _66_28_ < list.length; _66_28_++)
                 {
-                    changes = list[_64_28_]
+                    changes = list[_66_28_]
                     var list1 = _k_.list(changes)
-                    for (var _65_31_ = 0; _65_31_ < list1.length; _65_31_++)
+                    for (var _67_31_ = 0; _67_31_ < list1.length; _67_31_++)
                     {
-                        change = list1[_65_31_]
+                        change = list1[_67_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -136,9 +137,9 @@ class Tab
 
     setFile (newFile)
     {
-        if (!slash.samePath(this.file,newFile))
+        if (!slash.samePath(this.path,newFile))
         {
-            this.file = slash.path(newFile)
+            this.path = slash.path(newFile)
             return this.update()
         }
     }
@@ -153,10 +154,11 @@ class Tab
 
     update ()
     {
-        var diss, dot, file, html, i, name, sep, _148_16_
+        var diss, html, name, sep
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',this.dirty)
+        this.div.classList.toggle('active',this.active)
         sep = '●'
         if (this.isPrj)
         {
@@ -164,11 +166,10 @@ class Tab
         }
         this.dot = elem('span',{class:'dot',text:sep})
         this.div.appendChild(this.dot)
-        file = this.file
-        diss = Syntax.dissForTextAndSyntax(slash.file(file),'ko')
+        diss = Syntax.dissForTextAndSyntax(slash.file(this.path),'ko')
         if (!prefs.get('tabs|extension'))
         {
-            if (!_k_.empty(slash.ext(file)))
+            if (!_k_.empty(slash.ext(this.path)))
             {
                 diss.pop()
                 diss.pop()
@@ -200,23 +201,12 @@ class Tab
             }
             this.div.appendChild(elem('span',{class:'tabstate app-drag-region',html:html,click:this.togglePinned}))
         }
-        if ((this.file != null))
-        {
-            this.tooltip = new tooltip({elem:name,bound:this.div,html:this.tooltipHtml,x:-2})
-        }
+        this.tooltip = new tooltip({elem:name,bound:this.div,html:this.tooltipHtml,x:-2})
         if (this.isPrj)
         {
-            if (this.hiddenPrjFiles)
+            if (this.collapsed)
             {
-                for (var _154_25_ = i = 0, _154_29_ = this.hiddenPrjFiles.length; (_154_25_ <= _154_29_ ? i < this.hiddenPrjFiles.length : i > this.hiddenPrjFiles.length); (_154_25_ <= _154_29_ ? ++i : --i))
-                {
-                    dot = elem('span',{class:'prjdot',text:'●'})
-                    this.div.appendChild(dot)
-                    if (this.hiddenPrjFiles[i] === window.textEditor.currentFile)
-                    {
-                        dot.classList.add('activeTab')
-                    }
-                }
+                console.log('collapsed prj',this.path,this.tabs.prjTabs)
             }
         }
         else if (this.dirty)
@@ -230,14 +220,14 @@ class Tab
     {
         var diss, html, numFiles, _165_16_
 
-        if ((this.file != null))
+        if ((this.path != null))
         {
-            diss = Syntax.dissForTextAndSyntax(slash.tilde(this.file),'ko')
+            diss = Syntax.dissForTextAndSyntax(slash.tilde(this.path),'ko')
             html = Render.line(diss,{wrapSpan:'tooltip-path'})
-            if (this.isPrj && (numFiles = Projects.files(this.file).length))
+            if (this.isPrj && (numFiles = Projects.files(this.path).length))
             {
                 html += Render.line(Syntax.dissForTextAndSyntax(`${numFiles} files`,'git'),{wrapSpan:'tooltip-line'})
-                Git.status(this.file)
+                Git.status(this.path)
             }
         }
         return html
@@ -247,7 +237,7 @@ class Tab
     {
         var t, _186_19_, _186_24_
 
-        if (status.gitDir !== this.file)
+        if (status.gitDir !== this.path)
         {
             return
         }
@@ -320,7 +310,7 @@ class Tab
         }
         this.div.remove()
         ;(this.tooltip != null ? this.tooltip.del() : undefined)
-        post.emit('tabClosed',this.file)
+        post.emit('tabClosed',this.path)
         return this
     }
 
@@ -353,91 +343,6 @@ class Tab
         this.dirty = false
         this.update()
         this.tabs.update()
-        return this
-    }
-
-    activate ()
-    {
-        var file, hidden, tab
-
-        if (this.isPrj)
-        {
-            if (this.hiddenPrjFiles)
-            {
-                hidden = this.hiddenPrjFiles
-                delete this.hiddenPrjFiles
-                var list = _k_.list(hidden)
-                for (var _260_25_ = 0; _260_25_ < list.length; _260_25_++)
-                {
-                    file = list[_260_25_]
-                    tab = this.tabs.addTab(file)
-                    if (window.textEditor.currentFile === file)
-                    {
-                        tab.setActive()
-                    }
-                }
-            }
-            else
-            {
-                this.hiddenPrjFiles = this.tabs.getPrjFiles(this.file)
-                var list1 = _k_.list(this.tabs.getPrjTabs(this.file))
-                for (var _266_24_ = 0; _266_24_ < list1.length; _266_24_++)
-                {
-                    tab = list1[_266_24_]
-                    this.tabs.closeTab(tab)
-                }
-            }
-            this.update()
-            this.tabs.update()
-        }
-        else
-        {
-            post.emit('jumpToFile',this.file)
-        }
-        return this
-    }
-
-    finishActivation ()
-    {
-        var changes, _282_19_
-
-        this.setActive()
-        if (!_k_.empty(this.state))
-        {
-            window.editor.do.setTabState(this.state)
-            delete this.state
-        }
-        if ((this.foreign != null ? this.foreign.length : undefined))
-        {
-            var list = _k_.list(this.foreign)
-            for (var _283_24_ = 0; _283_24_ < list.length; _283_24_++)
-            {
-                changes = list[_283_24_]
-                window.editor.do.foreignChanges(changes)
-            }
-            delete this.foreign
-        }
-        this.tabs.update()
-        return this
-    }
-
-    isActive ()
-    {
-        return this.div.classList.contains('active')
-    }
-
-    setActive ()
-    {
-        if (!this.isActive())
-        {
-            this.div.classList.add('active')
-        }
-        return this
-    }
-
-    clearActive ()
-    {
-        this.div.classList.remove('active')
         return this
     }
 }
