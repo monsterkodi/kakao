@@ -417,6 +417,12 @@ class Tabs
         @sortTabs()        
         @stash()
         
+    #  0000000   0000000   00000000   000000000  000000000   0000000   0000000     0000000  
+    # 000       000   000  000   000     000        000     000   000  000   000  000       
+    # 0000000   000   000  0000000       000        000     000000000  0000000    0000000   
+    #      000  000   000  000   000     000        000     000   000  000   000       000  
+    # 0000000    0000000   000   000     000        000     000   000  0000000    0000000   
+    
     sortTabs: ->
         
         sorted = @tabs.filter (t) -> t.isPrj
@@ -452,6 +458,15 @@ class Tabs
             if tab.div
                 # @div.removeChild tab.div
                 @div.appendChild tab.div
+                
+        kore.set 'tabs' @tabs.map (t) -> 
+            i = 
+                type: t.isPrj ? 'prj' : 'file'
+                path: t.file
+            i.tmp       = true if t.tmpTab
+            i.pinned    = true if t.pinned
+            i.collapsed = true if t.hiddenPrjFiles
+            i
 
     onDirty: (dirty) =>
 

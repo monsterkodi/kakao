@@ -559,8 +559,6 @@ FileEditor = (function ()
         }
         if (RecentMenu.length)
         {
-            RecentMenu.push({text:''})
-            RecentMenu.push({text:'Clear List'})
             if (fileMenu = getMenu(opt.items,'File'))
             {
                 fileMenu.menu = [{text:'Recent',menu:RecentMenu},{text:''}].concat(fileMenu.menu)

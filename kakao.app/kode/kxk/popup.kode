@@ -71,8 +71,6 @@ function Popup
         if opt.selectFirstItem != false
             @select @items.firstChild, selectFirstItem:false
             
-        # post.emit 'popup' 'opened'
-        
     #  0000000  000       0000000    0000000  00000000  
     # 000       000      000   000  000       000       
     # 000       000      000   000  0000000   0000000   
@@ -84,7 +82,6 @@ function Popup
         if empty(@parent) or @parentMenu()?.elem?.classList.contains 'menu'
             if 'skip' == @onClose?()
                 return
-            # post.emit 'popup' 'closed'
         
         @popup?.close focus:false
         delete @popup
@@ -149,7 +146,9 @@ function Popup
                 @closePopup()
             else
                 br = item.getBoundingClientRect()
-                @popup = new Popup items:items, parent:@, trail:@trail+'▸'+item.item.text, x:br.left+br.width, y:br.top, selectFirstItem:opt?.selectFirstItem
+                x = br.left + br.width - 2
+                y = br.top - 6
+                @popup = new Popup items:items, parent:@, trail:@trail+'▸'+item.item.text, x:x, y:y, selectFirstItem:opt?.selectFirstItem
 
     closePopup: ->
         

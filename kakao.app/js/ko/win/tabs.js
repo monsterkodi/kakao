@@ -647,9 +647,9 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _426_16_ = 0; _426_16_ < list.length; _426_16_++)
+        for (var _432_16_ = 0; _432_16_ < list.length; _432_16_++)
         {
-            tab = list[_426_16_]
+            tab = list[_432_16_]
             prjTabs[tab.file] = [tab]
         }
         dangling = []
@@ -681,19 +681,38 @@ class Tabs
         this.tabs = this.tabs.concat(dangling)
         this.div.innerHTML = ''
         var list1 = _k_.list(this.tabs)
-        for (var _450_16_ = 0; _450_16_ < list1.length; _450_16_++)
+        for (var _456_16_ = 0; _456_16_ < list1.length; _456_16_++)
         {
-            tab = list1[_450_16_]
+            tab = list1[_456_16_]
             if (tab.div)
             {
                 this.div.appendChild(tab.div)
             }
         }
+        return kore.set('tabs',this.tabs.map(function (t)
+        {
+            var i
+
+            i = {type:(t.isPrj ? 'prj' : 'file'),path:t.file}
+            if (t.tmpTab)
+            {
+                i.tmp = true
+            }
+            if (t.pinned)
+            {
+                i.pinned = true
+            }
+            if (t.hiddenPrjFiles)
+            {
+                i.collapsed = true
+            }
+            return i
+        }))
     }
 
     onDirty (dirty)
     {
-        var _458_20_
+        var _473_20_
 
         return (this.activeTab() != null ? this.activeTab().setDirty(dirty) : undefined)
     }

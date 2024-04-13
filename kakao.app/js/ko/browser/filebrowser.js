@@ -139,6 +139,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["browse"] = function (file, opt)
     {
+        console.log('FileBrowser.browse',file,opt)
         if (file)
         {
             return this.loadItem(this.pathItem(file),opt)
@@ -491,7 +492,6 @@ FileBrowser = (function ()
             return i.type + (((i.file[0].toUpperCase() === i.file[0]) ? '-' : '+')) + i.file
         })
         this.loadDirItems(item,items,col,opt)
-        post.emit('dir',dir)
         return true
     }
 
@@ -534,8 +534,12 @@ FileBrowser = (function ()
         ;(typeof opt.cb === "function" ? opt.cb({col:col,item:item}) : undefined)
         if (col >= 2 && this.columns[0].width() < 250)
         {
-            return this.columns[1].makeRoot()
+            this.columns[1].makeRoot()
         }
+        return kore.set('browser|columns',this.columns.map(function (c)
+        {
+            return {path:c.parent.path,type:c.parent.type}
+        }))
     }
 
     FileBrowser.prototype["initColumns"] = function ()
@@ -626,16 +630,16 @@ FileBrowser = (function ()
     {
         FileBrowser.__super__.updateColumnScrolls.call(this)
     
-        var _479_14_
+        var _481_14_
 
         return (this.shelf != null ? this.shelf.scroll.update() : undefined)
     }
 
     FileBrowser.prototype["getGitStatus"] = function (item, col)
     {
-        var file, _489_25_, _489_38_
+        var file, _491_25_, _491_38_
 
-        file = ((_489_25_=item.path) != null ? _489_25_ : (item.parent != null ? item.parent.path : undefined))
+        file = ((_491_25_=item.path) != null ? _491_25_ : (item.parent != null ? item.parent.path : undefined))
         if (!_k_.empty(file))
         {
             Git.status(file).then((function (status)
@@ -655,7 +659,7 @@ FileBrowser = (function ()
     {
         var col
 
-        for (var _500_19_ = col = 0, _500_23_ = this.columns.length; (_500_19_ <= _500_23_ ? col < this.columns.length : col > this.columns.length); (_500_19_ <= _500_23_ ? ++col : --col))
+        for (var _502_19_ = col = 0, _502_23_ = this.columns.length; (_502_19_ <= _502_23_ ? col < this.columns.length : col > this.columns.length); (_502_19_ <= _502_23_ ? ++col : --col))
         {
             this.applyGitStatusFiles(col,status.files)
         }
@@ -683,7 +687,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["toggleShelf"] = function ()
     {
-        var _529_29_
+        var _531_29_
 
         if (this.shelfSize < 1)
         {

@@ -14,7 +14,6 @@ class Navigate
         
         post.on 'navigate' @navigate
         @filePositions = prefs.get 'navigatePositions' []
-        #  log 'navigate filePositions' @filePositions
         @currentIndex = -1
         @navigating = false
 
@@ -39,8 +38,6 @@ class Navigate
                     pos = fp.pos
                     break
 
-        # log 'prepull' @filePositions
-                    
         pullAllWith @filePositions, [file:file, pos:pos], (a,b) -> 
             slash.samePath(a.file, b.file) and (a.pos[1] == b.pos[1] or a.pos[1] <= 1)
 
@@ -60,8 +57,6 @@ class Navigate
         while @filePositions.length > prefs.get 'navigateHistoryLength' 100
             @filePositions.shift()
             
-        # log 'setFilePositions' @filePositions    
-        
         prefs.set 'filePositions' @filePositions
 
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
@@ -100,8 +95,6 @@ class Navigate
                 
             'addFilePos'
 
-                # log 'Navigate.addFilePos' opt
-                
                 return if not opt?.file?.length
 
                 @addToHistory opt.oldFile, opt.oldPos
