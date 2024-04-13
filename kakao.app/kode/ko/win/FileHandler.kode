@@ -66,6 +66,8 @@ class FileHandler
 
             # log 'editor.setCurrentFile file' file, restoreState
             
+            kore.set 'editor|file' file
+            
             editor.setCurrentFile file, restoreState
 
             if tab

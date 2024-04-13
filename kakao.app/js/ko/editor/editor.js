@@ -5,7 +5,6 @@ var Editor
 import kxk from "../../kxk.js"
 let ffs = kxk.ffs
 let kstr = kxk.kstr
-let post = kxk.post
 let slash = kxk.slash
 
 import Do from "./Do.js"
@@ -78,7 +77,7 @@ Editor = (function ()
 
     function Editor (name, config)
     {
-        var _71_27_
+        var _70_27_
 
         this["setText"] = this["setText"].bind(this)
         this.stringCharacters = {"'":'single','"':'double'}
@@ -86,7 +85,7 @@ Editor = (function ()
         Editor.__super__.constructor.call(this)
         this.name = name
         this.config = (config != null ? config : {})
-        this.config.syntaxName = ((_71_27_=this.config.syntaxName) != null ? _71_27_ : 'txt')
+        this.config.syntaxName = ((_70_27_=this.config.syntaxName) != null ? _70_27_ : 'txt')
         this.indentString = _k_.lpad(4,"")
         this.stickySelection = false
         this.syntax = new Syntax(this.config.syntaxName,this.line,this.lines)
@@ -104,9 +103,9 @@ Editor = (function ()
         var action
 
         var list = _k_.list(Editor.actions)
-        for (var _92_19_ = 0; _92_19_ < list.length; _92_19_++)
+        for (var _91_19_ = 0; _91_19_ < list.length; _91_19_++)
         {
-            action = list[_92_19_]
+            action = list[_91_19_]
             if (action.name === name)
             {
                 return action
@@ -117,9 +116,9 @@ Editor = (function ()
 
     Editor.prototype["shebangFileType"] = function ()
     {
-        var _103_31_, _103_44_
+        var _102_31_, _102_44_
 
-        return ((_103_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _103_44_ : 'txt')
+        return ((_102_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _102_44_ : 'txt')
     }
 
     Editor.prototype["setupFileType"] = function ()
@@ -141,7 +140,7 @@ Editor = (function ()
 
     Editor.prototype["setFileType"] = function (fileType)
     {
-        var cstr, k, key, reg, v, _138_21_
+        var cstr, k, key, reg, v, _137_21_
 
         this.fileType = fileType
     
@@ -169,9 +168,9 @@ Editor = (function ()
         }
         this.bracketCharacters.regexp = []
         var list = ['open','close']
-        for (var _133_16_ = 0; _133_16_ < list.length; _133_16_++)
+        for (var _132_16_ = 0; _132_16_ < list.length; _132_16_++)
         {
-            key = list[_133_16_]
+            key = list[_132_16_]
             cstr = Object.keys(this.bracketCharacters[key]).join('')
             reg = new RegExp(`[${kstr.escapeRegexp(cstr)}]`)
             this.bracketCharacters.regexps.push([reg,key])
@@ -331,7 +330,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _248_33_, _249_50_, _255_52_
+        var e, il, indentLength, line, thisIndent, _247_33_, _248_50_, _254_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -348,9 +347,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _250_26_ = 0; _250_26_ < list.length; _250_26_++)
+                    for (var _249_26_ = 0; _249_26_ < list.length; _249_26_++)
                     {
-                        e = list[_250_26_]
+                        e = list[_249_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength

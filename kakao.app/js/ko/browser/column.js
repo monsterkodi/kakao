@@ -892,7 +892,7 @@ Column = (function ()
         this.search = search
     
         clearTimeout(this.searchTimer)
-        this.searchTimer = setTimeout(this.clearSearch,2000)
+        this.searchTimer = setTimeout(this.clearSearch,700)
         this.searchDiv.textContent = this.search
         activeIndex = ((_562_45_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _562_45_ : 0)
         if ((this.search.length === 1))
@@ -909,7 +909,9 @@ Column = (function ()
             rows = list[_566_17_]
             fuzzied = fuzzy.filter(this.search,rows,{extract:function (r)
             {
-                return r.item.file
+                var _568_78_
+
+                return ((_568_78_=r.item.file) != null ? _568_78_ : r.item.name)
             }})
             if (fuzzied.length)
             {

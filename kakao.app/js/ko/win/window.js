@@ -12,6 +12,7 @@ let prefs = kxk.prefs
 let store = kxk.store
 let stopEvent = kxk.stopEvent
 
+import Kore from "./Kore.js"
 import Split from "./Split.js"
 import Info from "./Info.js"
 import Tabs from "./Tabs.js"

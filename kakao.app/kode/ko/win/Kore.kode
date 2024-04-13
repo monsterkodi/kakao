@@ -5,30 +5,55 @@
     000  000   000   000  000   000  000     
     000   000   0000000   000   000  00000000
 
-
-    keeps track of overall editor state (per window) including:
+    single source of truth for editor state per window
         
         editor
-            current file
-                class▸function | test▸tree▸item▸ ... at main cursor
-            navigation history
+            file
+            class▸function | test▸tree▸item▸ ... at main cursor
+        project
+            current
+        navigation
+            index
+            history
+                file
+                line
+                col
         commandline
             command
             text
-        file browser
+        browser
+            root
             columns
+                path
             shelf
-        tab groups
-            tabs
-            collapsed state
+                items
+                    path
+        tab
+            groups
+                collapsed
+                tabs
+                    pinned
+                    temp
+                    state (modified)?
+        split?
+        
+    ■
+        kore.set 'editor|file' 'some/path'
+        kore.on  'editor|file' @editorFile
 ###
 
-function Kore
+use ../../kxk ▪ events
+
+function Kore extends events
 
     @: ->
         
+        super()
         log 'K@re'
         
+    set: (key, value) =>
         
-
-export Kore
+        log 'kore.set' key, value
+        @emit key, value
+                
+export window.kore = new Kore

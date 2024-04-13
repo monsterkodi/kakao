@@ -553,9 +553,9 @@ function Column
             @setSearch @search[0...@search.length-1]
 
     setSearch: (@search) ->
-
+        
         clearTimeout @searchTimer
-        @searchTimer = setTimeout @clearSearch, 2000
+        @searchTimer = setTimeout @clearSearch, 700 # should this be a preference?
 
         @searchDiv.textContent = @search
 
@@ -565,7 +565,7 @@ function Column
 
         for rows in [@rows.slice(activeIndex), @rows.slice(0,activeIndex+1)]
             
-            fuzzied = fuzzy.filter @search, rows, extract: (r) -> r.item.file
+            fuzzied = fuzzy.filter @search, rows, extract: (r) -> r.item.file ? r.item.name
 
             if fuzzied.length
                 row = fuzzied[0].original

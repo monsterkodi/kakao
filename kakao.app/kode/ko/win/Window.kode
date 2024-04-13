@@ -8,7 +8,7 @@
 
 use ../../kakao
 use ../../kxk      ▪ win stash post prefs store stopEvent
-use                ◆ Split Info Tabs Menu Navigate FileHandler Terminal
+use                ◆ Kore Split Info Tabs Menu Navigate FileHandler Terminal
 use ../tools       ◆ FileWatch Projects Indexer Git fps scheme
 use ../editor      ◆ Editor Syntax FileEditor
 use ../commandline ◆ CommandLine

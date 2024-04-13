@@ -44,7 +44,7 @@ class FileHandler
 
     loadFile (file, opt = {})
     {
-        var activeTab, filePos, restoreState, tab, _74_49_
+        var activeTab, filePos, restoreState, tab, _76_49_
 
         if ((file != null) && file.length <= 0)
         {
@@ -87,6 +87,7 @@ class FileHandler
             {
                 restoreState = tab.state.state
             }
+            kore.set('editor|file',file)
             editor.setCurrentFile(file,restoreState)
             if (tab)
             {
@@ -147,9 +148,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _131_17_ = 0; _131_17_ < list.length; _131_17_++)
+        for (var _133_17_ = 0; _133_17_ < list.length; _133_17_++)
         {
-            file = list[_131_17_]
+            file = list[_133_17_]
             ffs.fileExists(slash.removeFilePos(file)).then(function (exists)
             {
                 if (!exists)
@@ -203,7 +204,7 @@ class FileHandler
 
     reloadActiveTab ()
     {
-        var tab, _180_29_
+        var tab, _182_29_
 
         if (tab = tabs.activeTab())
         {
@@ -238,9 +239,9 @@ class FileHandler
         var tab
 
         var list = _k_.list(tabs.tabs)
-        for (var _205_16_ = 0; _205_16_ < list.length; _205_16_++)
+        for (var _207_16_ = 0; _207_16_ < list.length; _207_16_++)
         {
-            tab = list[_205_16_]
+            tab = list[_207_16_]
             if (tab.dirty)
             {
                 if (tab === tabs.activeTab())
@@ -304,7 +305,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _266_29_
+        var _268_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -320,7 +321,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _282_18_
+        var cb, dir, _284_18_
 
         cb = function (files)
         {
@@ -336,7 +337,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _302_18_
+        var cb, _304_18_
 
         cb = (function (file)
         {
