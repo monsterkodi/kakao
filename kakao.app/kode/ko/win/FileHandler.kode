@@ -75,7 +75,7 @@ class FileHandler
             else
                 tabs.getPrjTab(Projects.dir file)?.update()
 
-            post.emit 'fileLoaded' file # used by Projects to indexProject
+            # post.emit 'fileLoaded' file # used by Projects to indexProject
             
             editor.restoreScrollCursorsAndSelections()
 

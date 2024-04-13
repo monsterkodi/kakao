@@ -10,6 +10,11 @@ use .. ◆ kstr
 
 ▸ kstr
 
+    ▸ str
+    
+        kstr a:1 b:2 ▸ """\na   1\nb   2"""
+        kstr [1 2 3] ▸ """\n1\n2\n3"""
+
     ▸ encode
      
         kstr.encode(" hello / world !?")    ▸ '%20hello%20/%20world%20!?'

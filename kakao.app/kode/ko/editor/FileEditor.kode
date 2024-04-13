@@ -6,7 +6,7 @@
 000       000  0000000  00000000        00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk ▪ ffs kpos post popup slash stopEvent setStyle deleteBy
+use ../../kxk ▪ deleteBy ffs kpos post popup slash stopEvent setStyle kstr
 
 use ◆ Syntax TextEditor
 
@@ -451,15 +451,20 @@ function FileEditor extends TextEditor
             text:   ''
         ,
             text:   'Maximize'
-            combo:  'command+shift+y'
+            combo:  'command+shift+y command+,'
             cb:     -> window.split.maximizeEditor()
         ,
             text:   ''
         ,
             text:   'DevTools'
             combo:  'alt+cmdctrl+i'
+        ,
+            text:   ''
         ]
 
+        template = clone kakao.menuTemplate
+        opt.items = opt.items.concat template
+        
         RecentMenu = []
 
         fileSpan = (f) ->
@@ -468,14 +473,13 @@ function FileEditor extends TextEditor
                 span += Syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
             return span
 
-        # recent = window.stash.get 'recentFiles' []
-        # recent ?= []
-        # for f in recent
-            # if ffs.exists f
-                # RecentMenu.unshift
-                    # html: fileSpan f
-                    # arg: f
-                    # cb: (arg) -> post.emit 'newTabWithFile' arg
+        recent = window.stash.get 'recentFiles' []
+        recent ?= []
+        for f in recent
+            RecentMenu.unshift
+                html: fileSpan f
+                arg: f
+                cb: (arg) -> post.emit 'newTabWithFile' arg
 
         getMenu = (template, name) ->
             for item in template
@@ -485,11 +489,12 @@ function FileEditor extends TextEditor
         if RecentMenu.length
             RecentMenu.push text: ''
             RecentMenu.push text: 'Clear List'
-            fileMenu = getMenu opt.items, 'File'
-            fileMenu.menu = [{text:'Recent' menu:RecentMenu}, {text:''}].concat fileMenu.menu
+            if fileMenu = getMenu opt.items, 'File'
+                fileMenu.menu = [{text:'Recent' menu:RecentMenu}, {text:''}].concat fileMenu.menu
 
         opt.x = absPos.x
         opt.y = absPos.y
+        
         popup.menu opt
 
     #  0000000  000      000   0000000  000   000

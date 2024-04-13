@@ -1,8 +1,9 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }}
 
 var FileEditor
 
 import kxk from "../../kxk.js"
+let deleteBy = kxk.deleteBy
 let ffs = kxk.ffs
 let kpos = kxk.kpos
 let post = kxk.post
@@ -10,7 +11,7 @@ let popup = kxk.popup
 let slash = kxk.slash
 let stopEvent = kxk.stopEvent
 let setStyle = kxk.setStyle
-let deleteBy = kxk.deleteBy
+let kstr = kxk.kstr
 
 import Syntax from "./Syntax.js"
 import TextEditor from "./TextEditor.js"
@@ -501,7 +502,7 @@ FileEditor = (function ()
 
     FileEditor.prototype["showContextMenu"] = function (absPos)
     {
-        var fileMenu, fileSpan, getMenu, opt, RecentMenu
+        var f, fileMenu, fileSpan, getMenu, opt, recent, RecentMenu, template
 
         if (!(absPos != null))
         {
@@ -513,10 +514,12 @@ FileEditor = (function ()
         }},{text:'Back',combo:'command+1',cb:function ()
         {
             return post.emit('menuAction','Navigate Backward')
-        }},{text:''},{text:'Maximize',combo:'command+shift+y',cb:function ()
+        }},{text:''},{text:'Maximize',combo:'command+shift+y command+,',cb:function ()
         {
             return window.split.maximizeEditor()
-        }},{text:''},{text:'DevTools',combo:'alt+cmdctrl+i'}]}
+        }},{text:''},{text:'DevTools',combo:'alt+cmdctrl+i'},{text:''}]}
+        template = _k_.clone(kakao.menuTemplate)
+        opt.items = opt.items.concat(template)
         RecentMenu = []
         fileSpan = function (f)
         {
@@ -529,14 +532,25 @@ FileEditor = (function ()
             }
             return span
         }
+        recent = window.stash.get('recentFiles',[])
+        recent = (recent != null ? recent : [])
+        var list = _k_.list(recent)
+        for (var _478_14_ = 0; _478_14_ < list.length; _478_14_++)
+        {
+            f = list[_478_14_]
+            RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
+            {
+                return post.emit('newTabWithFile',arg)
+            }})
+        }
         getMenu = function (template, name)
         {
             var item
 
-            var list = _k_.list(template)
-            for (var _481_21_ = 0; _481_21_ < list.length; _481_21_++)
+            var list1 = _k_.list(template)
+            for (var _485_21_ = 0; _485_21_ < list1.length; _485_21_++)
             {
-                item = list[_481_21_]
+                item = list1[_485_21_]
                 if (item.text === name)
                 {
                     return item
@@ -547,8 +561,10 @@ FileEditor = (function ()
         {
             RecentMenu.push({text:''})
             RecentMenu.push({text:'Clear List'})
-            fileMenu = getMenu(opt.items,'File')
-            fileMenu.menu = [{text:'Recent',menu:RecentMenu},{text:''}].concat(fileMenu.menu)
+            if (fileMenu = getMenu(opt.items,'File'))
+            {
+                fileMenu.menu = [{text:'Recent',menu:RecentMenu},{text:''}].concat(fileMenu.menu)
+            }
         }
         opt.x = absPos.x
         opt.y = absPos.y

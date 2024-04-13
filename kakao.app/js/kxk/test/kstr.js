@@ -7,6 +7,11 @@ import kstr from "../kstr.js"
 
 toExport["kstr"] = function ()
 {
+    section("str", function ()
+    {
+        compare(kstr({a:1,b:2}),`\na   1\nb   2`)
+        compare(kstr([1,2,3]),`\n1\n2\n3`)
+    })
     section("encode", function ()
     {
         compare(kstr.encode(" hello / world !?"),'%20hello%20/%20world%20!?')

@@ -79,8 +79,10 @@ class Projects
             log 'dequeue' @queue[0]
             ○ @indexProject @queue.shift()
 
-post.on 'fileLoaded' (file) -> 
-    Projects.indexProject file
+# post.on 'fileLoaded' (file) ->
+    # Projects.indexProject file
+    
+kore.on 'editor|file' (file) -> Projects.indexProject file
 
 post.on 'indexProject' (file) -> 
     Projects.indexProject file

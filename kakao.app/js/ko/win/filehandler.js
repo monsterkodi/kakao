@@ -97,7 +97,6 @@ class FileHandler
             {
                 ;(tabs.getPrjTab(Projects.dir(file)) != null ? tabs.getPrjTab(Projects.dir(file)).update() : undefined)
             }
-            post.emit('fileLoaded',file)
             editor.restoreScrollCursorsAndSelections()
         }
         return split.raise('editor')

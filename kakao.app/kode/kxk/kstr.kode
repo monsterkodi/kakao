@@ -17,7 +17,9 @@ str = (o) -> # converts anything into a string, in noon syntax for objects.
         if o._str?
             o._str()
         else
-            "\n" + noon o
+            '\n' + noon o
+    else if o is arr
+        '\n' + noon o
     else
         String o
         

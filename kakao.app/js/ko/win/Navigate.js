@@ -14,7 +14,7 @@ class Navigate
     
         this.navigate = this.navigate.bind(this)
         post.on('navigate',this.navigate)
-        this.filePositions = prefs.get('filePositions',[])
+        this.filePositions = prefs.get('navigatePositions',[])
         this.currentIndex = -1
         this.navigating = false
     }

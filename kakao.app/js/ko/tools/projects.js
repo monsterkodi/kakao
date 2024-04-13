@@ -98,7 +98,7 @@ class Projects
     }
 }
 
-post.on('fileLoaded',function (file)
+kore.on('editor|file',function (file)
 {
     return Projects.indexProject(file)
 })
