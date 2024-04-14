@@ -55,7 +55,7 @@ function Kore extends events
         
     set: (key, value) =>
         
-        log 'kore.set' key, noon value
+        # log 'kore.set' key, noon value
         stash.set "kore|#{key}" value
         @emit key, value
         

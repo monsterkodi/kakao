@@ -27,6 +27,7 @@ scrollHoverColor    = #b00
 crumbHoverColor     = #0e0e0e
 titleRedColor       = #f00
 titleColor          = #222
+activeTabColor      = #333
 scrollColor         = #444
 textBlurColor       = #444
 textActiveColor     = #999
@@ -248,6 +249,9 @@ span.macro
 
 #titlebar.focus .tabs
     color               #3c3
+    
+.titlebar-title::-webkit-scrollbar-thumb
+    background-color    activeTabColor
 
 // 000000000   0000000   0000000
 //    000     000   000  000   000
@@ -277,7 +281,7 @@ span.macro
 .tab
     background          frameColor
     &.active
-        background      titleColor
+        background      activeTabColor
         
 .tabstate
     stroke              #444

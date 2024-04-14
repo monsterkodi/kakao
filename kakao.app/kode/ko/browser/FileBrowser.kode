@@ -415,7 +415,10 @@ function FileBrowser extends Browser
 
         if col >= 2 and @columns[0].width() < 250
             @columns[1].makeRoot()
-            
+
+        for col in @columns
+            if not col.parent
+                log 'broken column parent' col
         kore.set 'browser|columns' @columns.map (c) -> path:c.parent.path, type:c.parent.type
 
     #  0000000   0000000   000      000   000  00     00  000   000   0000000

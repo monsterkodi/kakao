@@ -8,11 +8,9 @@
     provides paths inside the application bundle (.app folder)
 ###
 
-log 'window.bundlePath' window.bundlePath
-
 function Bundle
 
-    @path: window.bundlePath # this is set in win.mm
+    @path: window.bundlePath # this is set in win.mm and kakao.init
         
     @app: (p) -> Bundle.path + '/'                        + p # absolute path of the .app folder
     @js:  (p) -> Bundle.path + '/js/'                     + p # contains js, css and html files

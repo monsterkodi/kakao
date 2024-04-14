@@ -42,10 +42,6 @@ class Tabs
         post.on 'stash'            @stash
         post.on 'dirty'            @onDirty
         post.on 'revertFile'       @revertFile
-        post.on 'sendTabs'         @onSendTabs
-        post.on 'fileLineChanges'  @onFileLineChanges
-        # post.on 'fileSaved'        @onFileSaved # saved in another window
-        # post.on 'saved'            @onSaved     # saved in this window
         post.on 'editorFocus'      @onEditorFocus
         post.on 'stashLoaded'      @onStashLoaded
         post.on 'projectIndexed'   @onProjectIndexed
@@ -61,7 +57,7 @@ class Tabs
     
     onKoreTabs: (tabs) =>
         
-        log 'onKoreTabs' tabs
+        # log 'onKoreTabs' tabs
         
         @div.innerHTML = ''
         @tabs = []
@@ -98,7 +94,7 @@ class Tabs
             if tab = @koreTabForPath window.textEditor.currentFile
                 if tab.tmp
                     delete tab.tmp
-                log 'editorFocus' @koreTabs()
+                # log 'editorFocus' @koreTabs()
                 @setActive tab.path
                 @update()
 
@@ -115,6 +111,7 @@ class Tabs
             @koreTabs().push type:'file' path:path
             @setActive path
             @cleanTabs()
+            @tab(path).div.scrollIntoViewIfNeeded()
             return
 
         @setActive path
@@ -167,9 +164,9 @@ class Tabs
                     tabs[index+1].active = true
                 else if index-1 >= 0
                     tabs[index-1].active = true
-            log 'Tabs.delTab' index, tabs
+            # log 'Tabs.delTab' index, tabs
             tabs.splice index, 1
-            log 'Tabs.delTab' tabs
+            # log 'Tabs.delTab' tabs
             kore.set 'tabs' tabs
             
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
@@ -183,9 +180,9 @@ class Tabs
         log 'Tabs.activate' path
         if tab = @koreTabForPath path
             @setActive path
-            log 'Tabs.activate' tab
+            # log 'Tabs.activate' tab
             if tab.type == 'file'
-                log 'Tabs.activate jumpToFile' path
+                # log 'Tabs.activate jumpToFile' path
                 post.emit 'jumpToFile' path
             else
                 tab.collapsed = not tab.collapsed
@@ -197,7 +194,8 @@ class Tabs
             delete tab.active
             if slash.samePath tab.path, path
                 tab.active = true
-            log 'setActive' tab
+                @tab(path)?.div?.scrollIntoViewIfNeeded()
+            # log 'setActive' tab
             
     activeKoreTab: =>
         
@@ -366,24 +364,14 @@ class Tabs
 
     navigate: (key) ->
         
-        log 'navigate' key
-        return
-        
-        # if activeTab = @activeTab()
-#             
-            # fileTabs = @fileTabs()
-
-            # index = fileTabs.indexOf activeTab
-            # index += switch key
-                # 'left'  ➜ -1
-                # 'right' ➜ +1
-#             
-            # index = (fileTabs.length + index) % fileTabs.length
-#             
-            # if fileTabs[index].isPrj
-                # log 'prjTab' @tabs[index]
-            # else
-                # fileTabs[index].activate()
+        if tab = @activeKoreTab()
+            tabs = @koreTabs()
+            index = tabs.indexOf tab
+            index += switch key
+                'left'  ➜ -1
+                'right' ➜ +1
+            if 0 <= index < tabs.length
+                @activate tabs[index].path
 
     swap: (ta, tb) ->
 

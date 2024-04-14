@@ -314,6 +314,11 @@ span.macro.macro,
     color: #3c3;
 }
 
+.titlebar-title::-webkit-scrollbar-thumb
+{
+    background-color: #333;
+}
+
 
 .tab .dot,
 .tab .prjdot
@@ -356,7 +361,7 @@ span.macro.macro,
 
 .tab.active
 {
-    background: #222;
+    background: #333;
 }
 
 .tabstate
