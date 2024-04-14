@@ -67,6 +67,10 @@ Stash = (function ()
         if (!isEqual(value,sds.get(this.data,this.keypath(key))))
         {
             sds.set(this.data,this.keypath(key),value)
+            if (!isEqual(value,sds.get(this.data,this.keypath(key))))
+            {
+                warning('sds.set fail?',key,value,this.data)
+            }
             if (this.timer)
             {
                 clearTimeout(this.timer)

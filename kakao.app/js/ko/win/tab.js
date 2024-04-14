@@ -71,29 +71,29 @@ class Tab
 
     foreignChanges (lineChanges)
     {
-        var _47_17_
+        var _45_17_
 
-        this.foreign = ((_47_17_=this.foreign) != null ? _47_17_ : [])
+        this.foreign = ((_45_17_=this.foreign) != null ? _45_17_ : [])
         this.foreign.push(lineChanges)
         return this.update()
     }
 
     saveChanges ()
     {
-        var change, changes, _67_23_
+        var change, changes, _65_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _68_28_ = 0; _68_28_ < list.length; _68_28_++)
+                for (var _66_28_ = 0; _66_28_ < list.length; _66_28_++)
                 {
-                    changes = list[_68_28_]
+                    changes = list[_66_28_]
                     var list1 = _k_.list(changes)
-                    for (var _69_31_ = 0; _69_31_ < list1.length; _69_31_++)
+                    for (var _67_31_ = 0; _67_31_ < list1.length; _67_31_++)
                     {
-                        change = list1[_69_31_]
+                        change = list1[_67_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -151,7 +151,7 @@ class Tab
 
     update ()
     {
-        var diss, html, name, sep, _111_45_, _112_46_, _161_22_
+        var diss, html, name, sep, _109_45_, _110_46_, _159_22_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -203,7 +203,7 @@ class Tab
         {
             if (this.collapsed)
             {
-                console.log('collapsed prj',this.path,this.tabs.prjTabs)
+                console.log('collapsed prj',this.path)
             }
         }
         else if ((this.dirty != null))
@@ -215,7 +215,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _167_16_
+        var diss, html, numFiles, _165_16_
 
         if ((this.path != null))
         {
@@ -232,7 +232,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _188_19_, _188_24_
+        var t, _186_19_, _186_24_
 
         if (status.gitDir !== this.path)
         {
@@ -274,32 +274,9 @@ class Tab
         return this.tabs.tabs.indexOf(this)
     }
 
-    prev ()
-    {
-        if (this.index() > 0)
-        {
-            return this.tabs.tab(this.index() - 1)
-        }
-    }
-
-    next ()
-    {
-        if (this.index() < this.tabs.numTabs() - 1)
-        {
-            return this.tabs.tab(this.index() + 1)
-        }
-    }
-
-    nextOrPrev ()
-    {
-        var _202_27_
-
-        return ((_202_27_=this.next()) != null ? _202_27_ : this.prev())
-    }
-
     close ()
     {
-        var _210_16_
+        var _205_16_
 
         if (this.dirty)
         {

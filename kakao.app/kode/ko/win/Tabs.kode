@@ -34,8 +34,6 @@ class Tabs
 
         post.on 'fileRemoved'      @delTab
         post.on 'fileChanged'      @reloadFile
-        # post.on 'reloadTab'   @reloadTab
-        # post.on 'reloadFile'  @reloadActiveTab
         
         post.on 'closeTab'         @onCloseTab
         post.on 'closeOtherTabs'   @onCloseOtherTabs
@@ -56,8 +54,6 @@ class Tabs
     # 000   000   0000000   000   000  00000000  
     
     onKoreTabs: (tabs) =>
-        
-        # log 'onKoreTabs' tabs
         
         @div.innerHTML = ''
         @tabs = []
@@ -94,7 +90,6 @@ class Tabs
             if tab = @koreTabForPath window.textEditor.currentFile
                 if tab.tmp
                     delete tab.tmp
-                # log 'editorFocus' @koreTabs()
                 @setActive tab.path
                 @update()
 
@@ -145,7 +140,7 @@ class Tabs
             log 'dangling' dangling 
             tabs = tabs.concat dangling
                 
-        log 'cleanTabs' tabs
+        # log 'cleanTabs' tabs
         kore.set 'tabs' tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
@@ -164,9 +159,7 @@ class Tabs
                     tabs[index+1].active = true
                 else if index-1 >= 0
                     tabs[index-1].active = true
-            # log 'Tabs.delTab' index, tabs
             tabs.splice index, 1
-            # log 'Tabs.delTab' tabs
             kore.set 'tabs' tabs
             
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
@@ -177,12 +170,9 @@ class Tabs
     
     activate: (path) =>
         
-        log 'Tabs.activate' path
         if tab = @koreTabForPath path
             @setActive path
-            # log 'Tabs.activate' tab
             if tab.type == 'file'
-                # log 'Tabs.activate jumpToFile' path
                 post.emit 'jumpToFile' path
             else
                 tab.collapsed = not tab.collapsed
@@ -195,7 +185,6 @@ class Tabs
             if slash.samePath tab.path, path
                 tab.active = true
                 @tab(path)?.div?.scrollIntoViewIfNeeded()
-            # log 'setActive' tab
             
     activeKoreTab: =>
         
@@ -216,10 +205,10 @@ class Tabs
 
     reloadFile: (file) =>
         
-        log 'Tabs.reloadFile' file
+        # log 'Tabs.reloadFile' file
         
         if tab = @koreTabForPath file
-            tab.dirty = false
+            delete tab.dirty
             @update()
         
     # 00000000   00000000    0000000         000  00000000   0000000  000000000  
@@ -242,16 +231,12 @@ class Tabs
     onClick: (event) =>
         
         if tab = @tab event.target
-            log 'Tabs.onClick path' tab.path
             if event.target.classList.contains 'dot'
-                log 'deltab' tab.path
                 @delTab tab.path
             else
-                log 'activate tab!' tab
-                # tab.activate()
                 @activate tab.path
-        else
-            error 'no tab?' event.target, event.target?.parentNode, @tabs
+        # else
+            # error 'no tab?' event.target, event.target?.parentNode
             # if tabElem = elem.upElem event.target, class:'tab'
                 # log 'remove tab elem' tabElem
                 # tabElem.remove()
@@ -268,23 +253,16 @@ class Tabs
         if id is num ➜ return @tabs[id]
         if elem.isElement id
             tabDiv = elem.upElem id, class:'tab'
-            log 'tabDiv' tabDiv
             t = @tabs.find (t) -> t.div == tabDiv
-            log 't' t
             if not t
                 log @tabs
                 log @tabs.map (t) -> t.div
             return t
         if id is str ➜ return @tabs.find (t) -> t.path == id
 
-    # activeTab: -> @tabs.find (t) -> t.isActive()
-            
-    numTabs:     -> @tabs.length
     numFileTabs: -> @fileTabs().length
-    numPrjTabs:  -> @prjTabs().length
     
-    fileTabs: -> @tabs.filter (t) -> not t.isPrj
-    prjTabs:  -> @tabs.filter (t) ->     t.isPrj
+    fileTabs: -> @koreTabs().filter (t) -> t.type == 'file'
 
     tabAtX: (x) ->
 
@@ -300,8 +278,6 @@ class Tabs
 
     onCloseTab: =>
         
-        log 'closeTab' @numFileTabs()
-
         if @numFileTabs() <= 1
             post.emit 'menuAction' 'close'
         else
@@ -458,7 +434,6 @@ class Tabs
         window.stash.set 'tabs' infos
         @
 
-    # onStashLoaded: => @onKoreTabs kore.get 'tabs' []
     onStashLoaded: => @update()
         
     revertFile: (file) => @tab(file)?.revert()

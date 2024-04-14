@@ -156,14 +156,11 @@ get = (object, keypath, defaultValue) ->
 
 set = (object, keypath, value) ->
     
-    keypath = keypath.split '.' if typeof(keypath) == 'string'
-    throw "invalid keypath: #{JSON.stringify keypath}" if not (keypath instanceof Array)
+    keypath = keypath.split '.' if keypath is str
+    throw "invalid keypath: #{JSON.stringify keypath}" if not keypath is arr
     
-    kp = [].concat keypath
-    
-    if '__proto__' in keypath # let's try to make those security bots happy ...
-        throw "__proto__ in keypath: #{JSON.stringify keypath}"
-    
+    kp = clone keypath
+        
     o = object
         
     while kp.length > 1
@@ -183,6 +180,8 @@ set = (object, keypath, value) ->
             o[kp[0]] = value
             if o[kp[0]] != value
                 throw "couldn't set value #{JSON.stringify value} for keypath #{keypath.join '.'} in #{JSON.stringify object}"
+    else
+        log 'no keypath?' kp, keypath
     object
 
 ###

@@ -56,7 +56,14 @@ function Stash
         if not isEqual value, sds.get @data, @keypath(key)
             # log 'stash.set' key, value
             sds.set @data, @keypath(key), value
-        
+            # log @data
+            if not isEqual value, sds.get @data, @keypath(key)
+                warning 'sds.set fail?' key, value, @data
+            # else 
+                # log key, @keypath(key), sds.get @data, @keypath(key)
+                # log @data
+                # log noon.stringify @data
+                
             clearTimeout @timer if @timer
             @timer = setTimeout @save, @timeout
                     

@@ -16,8 +16,8 @@ class Tab
 
         for k,v of koreTab
             @[k] = v
-        # log '@Tab' slash.file @path
-        @div = elem class: 'tab app-drag-region' #text:@path
+
+        @div = elem class: 'tab app-drag-region'
         @tabs.div.appendChild @div
         
         @update()
@@ -34,8 +34,6 @@ class Tab
         if @isPrj()
             info.prj = @path
             info.collapsed = @collapsed
-            # if @hiddenPrjFiles
-                # info.hidden = @hiddenPrjFiles
         else
             info.path   = @path
             info.pinned = true if @pinned
@@ -152,7 +150,7 @@ class Tab
 
         if @isPrj()
             if @collapsed
-                log 'collapsed prj' @path, @tabs.prjTabs 
+                log 'collapsed prj' @path
                 # for i in 0...@hiddenPrjFiles.length
                     # dot = elem 'span' class:'prjdot' text:'●'
                     # @div.appendChild dot
@@ -197,9 +195,6 @@ class Tab
         @dot.innerHTML = t
         
     index: -> @tabs.tabs.indexOf @
-    prev:  -> @tabs.tab @index()-1 if @index() > 0
-    next:  -> @tabs.tab @index()+1 if @index() < @tabs.numTabs()-1
-    nextOrPrev: -> @next() ? @prev()
 
     close: ->
 

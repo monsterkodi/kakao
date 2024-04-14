@@ -129,7 +129,8 @@ Window = (function ()
         post.on('stashLoaded',(function ()
         {
             this.editor.setFontSize(window.stash.get('fontSize',19))
-            return this.editor.centerText(window.stash.get('centerText'),0)
+            this.editor.centerText(window.stash.get('centerText'),0)
+            return post.emit('loadFile',kore.get('editor|file'))
         }).bind(this))
         window.split.resized()
         window.info.reload()
@@ -143,7 +144,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _104_25_
+        var action, _106_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -341,7 +342,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _209_14_
+    var _211_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -352,7 +353,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _215_22_, _216_19_
+    var _217_22_, _218_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -392,7 +393,7 @@ toggleTabPinned = function ()
 
 setFontSize = function (s)
 {
-    var _262_32_
+    var _264_32_
 
     if (!(_k_.isNum(s)))
     {

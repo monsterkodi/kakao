@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isArr: function (o) {return Array.isArray(o)}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }}
 
 var collect, del, find, get, regexp, set
 
@@ -205,19 +205,15 @@ set = function (object, keypath, value)
 {
     var k, kp, o
 
-    if (typeof(keypath) === 'string')
+    if (_k_.isStr(keypath))
     {
         keypath = keypath.split('.')
     }
-    if (!(keypath instanceof Array))
+    if (!(_k_.isArr(keypath)))
     {
         throw `invalid keypath: ${JSON.stringify(keypath)}`
     }
-    kp = [].concat(keypath)
-    if (_k_.in('__proto__',keypath))
-    {
-        throw `__proto__ in keypath: ${JSON.stringify(keypath)}`
-    }
+    kp = _k_.clone(keypath)
     o = object
     while (kp.length > 1)
     {
@@ -252,6 +248,10 @@ set = function (object, keypath, value)
                 throw `couldn't set value ${JSON.stringify(value)} for keypath ${keypath.join('.')} in ${JSON.stringify(object)}`
             }
         }
+    }
+    else
+    {
+        console.log('no keypath?',kp,keypath)
     }
     return object
 }

@@ -54,8 +54,7 @@ function FileEditor extends TextEditor
 
         if changeInfo.changes.length
             @dirty = @do.hasChanges()
-            if @dirty
-                post.emit 'dirty' @dirty
+            post.emit 'dirty' @dirty
 
     # 00000000  000  000      00000000
     # 000       000  000      000
@@ -82,10 +81,6 @@ function FileEditor extends TextEditor
 
         if @currentFile
             ffs.read(@currentFile).then @setText
-
-        # window.tabs.activeTab()?.setFile @currentFile
-
-        # post.emit 'dirty' @dirty
 
     setText: (text="") =>
 

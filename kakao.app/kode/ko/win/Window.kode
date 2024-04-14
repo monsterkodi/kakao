@@ -79,6 +79,8 @@ function Window extends win.Delegate
 
             @editor.setFontSize window.stash.get 'fontSize' 19
             @editor.centerText  window.stash.get('centerText'), 0
+            
+            post.emit 'loadFile' kore.get 'editor|file'
     
         window.split.resized()
         window.info.reload()

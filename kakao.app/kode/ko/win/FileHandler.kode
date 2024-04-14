@@ -47,7 +47,7 @@ class FileHandler
             
             @addToRecent file
 
-            # log 'editor.setCurrentFile file' file, restoreState
+            # log 'editor.setCurrentFile file' file
                         
             editor.setCurrentFile file
             
