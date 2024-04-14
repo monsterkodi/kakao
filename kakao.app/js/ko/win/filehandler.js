@@ -15,6 +15,7 @@ class FileHandler
 {
     constructor ()
     {
+        this.onSaveDialog = this.onSaveDialog.bind(this)
         this.saveFileAs = this.saveFileAs.bind(this)
         this.saveChanges = this.saveChanges.bind(this)
         this.saveFile = this.saveFile.bind(this)
@@ -29,8 +30,9 @@ class FileHandler
         post.on('openFile',this.openFile)
         post.on('openFiles',this.openFiles)
         post.on('file',this.onFile)
-        post.on('openDialog',this.onOpenDialog)
         post.on('reloadFile',this.reloadFile)
+        post.on('openDialog',this.onOpenDialog)
+        post.on('saveDialog',this.onSaveDialog)
         this.cursorToRestore = {}
     }
 
@@ -45,7 +47,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _41_28_ = slash.splitFilePos(file); file = _41_28_[0]; filePos = _41_28_[1]
+            var _42_28_ = slash.splitFilePos(file); file = _42_28_[0]; filePos = _42_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -88,13 +90,13 @@ class FileHandler
 
     onOpenDialog (files)
     {
-        var file, maxTabs, options, _89_33_
+        var file, maxTabs, options, _90_33_
 
         if (_k_.empty(files))
         {
             return
         }
-        options = ((_89_33_=this.openDialogOpt) != null ? _89_33_ : {})
+        options = ((_90_33_=this.openDialogOpt) != null ? _90_33_ : {})
         console.log('FileHandler.onOpenDialog',files,options)
         maxTabs = prefs.get('maximalNumberOfTabs',8)
         if (!options.newWindow)
@@ -111,9 +113,9 @@ class FileHandler
             return []
         }
         var list = _k_.list(files)
-        for (var _118_17_ = 0; _118_17_ < list.length; _118_17_++)
+        for (var _119_17_ = 0; _119_17_ < list.length; _119_17_++)
         {
-            file = list[_118_17_]
+            file = list[_119_17_]
             if (options.newWindow)
             {
                 console.log('FileHandler new window with file not implemented!')
@@ -184,7 +186,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _192_29_
+        var _193_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -200,15 +202,14 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _209_18_
+        return kakao('fs.saveDialog',slash.dir(kore.get('editor|file')))
+    }
 
-        cb = (function (file)
-        {
-            console.log('saveFileAs',file)
-            this.addToRecent(file)
-            return this.saveFile(file)
-        }).bind(this)
-        return (window.win != null ? window.win.saveFileDialog({title:'Save File As',defaultPath:slash.unslash((editor != null ? editor.currentDir() : undefined)),cb:cb}) : undefined)
+    onSaveDialog (file)
+    {
+        console.log('onSaveDialog',file)
+        this.addToRecent(file)
+        return this.saveFile(file)
     }
 }
 

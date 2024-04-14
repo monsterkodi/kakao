@@ -37,20 +37,23 @@ NSString* typeForNSFileType(NSString* fileType)
         NSLog(@"fallback to bundle path! req:%@ args:%@", req, args);
     }
     
+    //  0000000   00000000   00000000  000   000  0000000    000   0000000   000       0000000    0000000   
+    // 000   000  000   000  000       0000  000  000   000  000  000   000  000      000   000  000        
+    // 000   000  00000000   0000000   000 0 000  000   000  000  000000000  000      000   000  000  0000  
+    // 000   000  000        000       000  0000  000   000  000  000   000  000      000   000  000   000  
+    //  0000000   000        00000000  000   000  0000000    000  000   000  0000000   0000000    0000000   
+    
     if ([req isEqualToString:@"openDialog"])
     {
-        NSLog(@"openDialog %@", path);
-
         NSOpenPanel* openPanel = [NSOpenPanel openPanel];
 
-        openPanel.title = @"Open File";
         openPanel.showsResizeIndicator      = YES;
         openPanel.showsHiddenFiles          = YES;
         openPanel.canChooseDirectories      = NO;
         openPanel.canCreateDirectories      = YES;
         openPanel.allowsMultipleSelection   = YES;
 
-        // openPanel.allowedFileTypes = @[@"ped"];
+        // openPanel.allowedFileTypes = @[@"txt"];
         
         openPanel.directoryURL = [NSURL fileURLWithPath:path];
 
@@ -63,7 +66,7 @@ NSString* typeForNSFileType(NSString* fileType)
                 {
                     [files addObject:[url path]];
                 }
-                NSLog(@"OpenDialog %@", files);
+                // NSLog(@"OpenDialog %@", files);
                 
                 id msg = [NSMutableDictionary dictionary];
                 [msg setObject:@"openDialog" forKey:@"name"];
@@ -73,7 +76,36 @@ NSString* typeForNSFileType(NSString* fileType)
             }
         }];
     }
-          
+
+    //  0000000   0000000   000   000  00000000  0000000    000   0000000   000       0000000    0000000   
+    // 000       000   000  000   000  000       000   000  000  000   000  000      000   000  000        
+    // 0000000   000000000   000 000   0000000   000   000  000  000000000  000      000   000  000  0000  
+    //      000  000   000     000     000       000   000  000  000   000  000      000   000  000   000  
+    // 0000000   000   000      0      00000000  0000000    000  000   000  0000000   0000000    0000000   
+    
+    if ([req isEqualToString:@"saveDialog"])
+    {
+        NSSavePanel* panel = [NSSavePanel savePanel];
+
+        panel.showsResizeIndicator      = YES;
+        panel.showsHiddenFiles          = YES;
+        panel.canCreateDirectories      = YES;
+
+        panel.directoryURL = [NSURL fileURLWithPath:path];
+
+        [panel beginSheetModalForWindow:win completionHandler:^(NSInteger result) 
+        {
+            if (result == NSModalResponseOK) 
+            {                
+                id msg = [NSMutableDictionary dictionary];
+                [msg setObject:@"saveDialog" forKey:@"name"];
+                [msg setObject:[panel.URL path] forKey:@"args"];
+                
+                [Route send:msg win:win];
+            }
+        }];
+    }
+    
     // 000  000   000  00000000   0000000   
     // 000  0000  000  000       000   000  
     // 000  000 0 000  000000    000   000  

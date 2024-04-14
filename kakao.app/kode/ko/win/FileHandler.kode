@@ -20,8 +20,9 @@ class FileHandler
         post.on 'openFile'    @openFile
         post.on 'openFiles'   @openFiles
         post.on 'file'        @onFile
-        post.on 'openDialog'  @onOpenDialog
         post.on 'reloadFile'  @reloadFile
+        post.on 'openDialog'  @onOpenDialog
+        post.on 'saveDialog'  @onSaveDialog
 
         @cursorToRestore = {}
 
@@ -193,23 +194,18 @@ class FileHandler
             File.save editor.currentFile, editor.text(), (file) ->
                 error "FileHandler.saveChanges failed #{err}" if not file
 
-    #  0000000   0000000   000   000  00000000        00000000  000  000      00000000          0000000    0000000
-    # 000       000   000  000   000  000             000       000  000      000              000   000  000
-    # 0000000   000000000   000 000   0000000         000000    000  000      0000000          000000000  0000000
-    #      000  000   000     000     000             000       000  000      000              000   000       000
-    # 0000000   000   000      0      00000000        000       000  0000000  00000000         000   000  0000000
-
-    saveFileAs: =>
-
-        cb = (file) =>
-            log 'saveFileAs' file
-            @addToRecent file
-            @saveFile file
-
-        window.win?.saveFileDialog(
-            title: 'Save File As'
-            defaultPath: slash.unslash editor?.currentDir()
-            cb: cb
-            )
+    #  0000000   0000000   000   000  00000000        00000000  000  000      00000000         0000000    0000000  
+    # 000       000   000  000   000  000             000       000  000      000             000   000  000       
+    # 0000000   000000000   000 000   0000000         000000    000  000      0000000         000000000  0000000   
+    #      000  000   000     000     000             000       000  000      000             000   000       000  
+    # 0000000   000   000      0      00000000        000       000  0000000  00000000        000   000  0000000   
+    
+    saveFileAs: => kakao 'fs.saveDialog' slash.dir kore.get 'editor|file'
+        
+    onSaveDialog: (file) =>
+        
+        log 'onSaveDialog' file
+        @addToRecent file
+        @saveFile file
 
 export FileHandler
