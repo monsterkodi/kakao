@@ -373,23 +373,20 @@ class Tabs
             if 0 <= index < tabs.length
                 @activate tabs[index].path
 
-    swap: (ta, tb) ->
-
-        return if not ta? or not tb?
-        [ta, tb] = [tb, ta] if ta.index() > tb.index()
-        @tabs[ta.index()]   = tb
-        @tabs[tb.index()+1] = ta
-        @div.insertBefore tb.div, ta.div
-        @update()
-
     move: (key) ->
         
-        log 'Tabs.move' key
-
-        # tab = @activeTab()
-        # switch key
-            # 'left'  ➜ @swap tab, tab.prev()
-            # 'right' ➜ @swap tab, tab.next()
+        if tab = @activeKoreTab()
+            switch key
+                'left'  ➜ @shiftTab tab, -1
+                'right' ➜ @shiftTab tab, +1
+                
+    shiftTab: (tab, delta) ->
+        
+        tabs = @koreTabs()
+        index = tabs.indexOf tab
+        tabs.splice(index, 1)
+        tabs.splice(index+delta, 0, tab)
+        @cleanTabs()
             
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000
@@ -409,6 +406,7 @@ class Tabs
         return 'skip' if empty @dragTab
         return 'skip' if event.button != 0
 
+        @dragIndex = @dragTab.index()
         @dragDiv = @dragTab.div.cloneNode true
         @dragTab.div.style.opacity = '0'
         br = @dragTab.div.getBoundingClientRect()
@@ -423,15 +421,30 @@ class Tabs
 
     onDragMove: (d,e) =>
 
+        swap = (ta, tb) =>
+            if ta? and tb?
+                [ta, tb] = [tb, ta] if ta.index() > tb.index()
+                @tabs[ta.index()]   = tb
+                @tabs[tb.index()+1] = ta
+                @div.insertBefore tb.div, ta.div
+        
         @dragDiv.style.transform = "translateX(#{d.deltaSum.x}px)"
         if tab = @tabAtX d.pos.x
-            if tab.index() != @dragTab.index()
-                @swap tab, @dragTab
-
+            dragIndex = @dragTab.index()
+            hovrIndex = tab.index()
+            if dragIndex > hovrIndex
+                swap @tabs[hovrIndex], @tabs[dragIndex]
+            else if dragIndex < hovrIndex
+                swap @tabs[dragIndex], @tabs[hovrIndex]
+                
     onDragStop: (d,e) =>
 
+        index = @dragTab.index()
         @dragTab.div.style.opacity = ''
         @dragDiv.remove()
+        if index != @dragIndex
+            log 'shift' index-@dragIndex
+            @shiftTab @koreTabs()[@dragIndex], index-@dragIndex
 
     #  0000000  000000000   0000000    0000000  000   000  
     # 000          000     000   000  000       000   000  

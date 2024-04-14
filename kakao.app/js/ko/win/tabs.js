@@ -520,26 +520,34 @@ class Tabs
         }
     }
 
-    swap (ta, tb)
-    {
-        if (!(ta != null) || !(tb != null))
-        {
-            return
-        }
-        if (ta.index() > tb.index())
-        {
-            var _379_17_ = [tb,ta]; ta = _379_17_[0]; tb = _379_17_[1]
-
-        }
-        this.tabs[ta.index()] = tb
-        this.tabs[tb.index() + 1] = ta
-        this.div.insertBefore(tb.div,ta.div)
-        return this.update()
-    }
-
     move (key)
     {
-        console.log('Tabs.move',key)
+        var tab
+
+        if (tab = this.activeKoreTab())
+        {
+            switch (key)
+            {
+                case 'left':
+                    return this.shiftTab(tab,-1)
+
+                case 'right':
+                    return this.shiftTab(tab,1)
+
+            }
+
+        }
+    }
+
+    shiftTab (tab, delta)
+    {
+        var index, tabs
+
+        tabs = this.koreTabs()
+        index = tabs.indexOf(tab)
+        tabs.splice(index,1)
+        tabs.splice(index + delta,0,tab)
+        return this.cleanTabs()
     }
 
     onDragStart (d, event)
@@ -563,6 +571,7 @@ class Tabs
         {
             return 'skip'
         }
+        this.dragIndex = this.dragTab.index()
         this.dragDiv = this.dragTab.div.cloneNode(true)
         this.dragTab.div.style.opacity = '0'
         br = this.dragTab.div.getBoundingClientRect()
@@ -578,22 +587,50 @@ class Tabs
 
     onDragMove (d, e)
     {
-        var tab
+        var dragIndex, hovrIndex, swap, tab
 
+        swap = (function (ta, tb)
+        {
+            if ((ta != null) && (tb != null))
+            {
+                if (ta.index() > tb.index())
+                {
+                    var _426_25_ = [tb,ta]; ta = _426_25_[0]; tb = _426_25_[1]
+
+                }
+                this.tabs[ta.index()] = tb
+                this.tabs[tb.index() + 1] = ta
+                return this.div.insertBefore(tb.div,ta.div)
+            }
+        }).bind(this)
         this.dragDiv.style.transform = `translateX(${d.deltaSum.x}px)`
         if (tab = this.tabAtX(d.pos.x))
         {
-            if (tab.index() !== this.dragTab.index())
+            dragIndex = this.dragTab.index()
+            hovrIndex = tab.index()
+            if (dragIndex > hovrIndex)
             {
-                return this.swap(tab,this.dragTab)
+                return swap(this.tabs[hovrIndex],this.tabs[dragIndex])
+            }
+            else if (dragIndex < hovrIndex)
+            {
+                return swap(this.tabs[dragIndex],this.tabs[hovrIndex])
             }
         }
     }
 
     onDragStop (d, e)
     {
+        var index
+
+        index = this.dragTab.index()
         this.dragTab.div.style.opacity = ''
-        return this.dragDiv.remove()
+        this.dragDiv.remove()
+        if (index !== this.dragIndex)
+        {
+            console.log('shift',index - this.dragIndex)
+            return this.shiftTab(this.koreTabs()[this.dragIndex],index - this.dragIndex)
+        }
     }
 
     stash ()
@@ -602,7 +639,7 @@ class Tabs
 
         infos = this.tabs.map(function (t)
         {
-            var _444_44_
+            var _457_44_
 
             return (typeof t.stashInfo === "function" ? t.stashInfo() : undefined)
         })
@@ -617,7 +654,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _451_36_
+        var _464_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -628,9 +665,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _463_16_ = 0; _463_16_ < list.length; _463_16_++)
+        for (var _476_16_ = 0; _476_16_ < list.length; _476_16_++)
         {
-            tab = list[_463_16_]
+            tab = list[_476_16_]
             tab.update()
         }
     }
@@ -650,9 +687,9 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _480_16_ = 0; _480_16_ < list.length; _480_16_++)
+        for (var _493_16_ = 0; _493_16_ < list.length; _493_16_++)
         {
-            tab = list[_480_16_]
+            tab = list[_493_16_]
             prjTabs[tab.file] = [tab]
         }
         dangling = []
@@ -684,9 +721,9 @@ class Tabs
         this.tabs = this.tabs.concat(dangling)
         this.div.innerHTML = ''
         var list1 = _k_.list(this.tabs)
-        for (var _504_16_ = 0; _504_16_ < list1.length; _504_16_++)
+        for (var _517_16_ = 0; _517_16_ < list1.length; _517_16_++)
         {
-            tab = list1[_504_16_]
+            tab = list1[_517_16_]
             if (tab.div)
             {
                 this.div.appendChild(tab.div)

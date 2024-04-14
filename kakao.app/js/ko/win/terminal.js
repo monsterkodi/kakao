@@ -150,7 +150,10 @@ Terminal = (function ()
         {
             absPos = kpos(this.view.getBoundingClientRect().left,this.view.getBoundingClientRect().top)
         }
-        opt = {items:[{text:'Clear',combo:'alt+k',cb:this.clear},{text:'Close',combo:'alt+ctrl+k',cb:window.split.hideTerminal}]}
+        opt = {items:[{text:'Browse',combo:'command+.',cb:function ()
+        {
+            return window.commandline.startCommand('browse')
+        }},{text:'Clear',combo:'alt+k',cb:this.clear},{text:'Close',combo:'alt+ctrl+k',cb:window.split.hideTerminal},{text:''},{text:'DevTools',combo:'alt+cmdctrl+i'}]}
         opt.x = absPos.x
         opt.y = absPos.y
         return popup.menu(opt)
