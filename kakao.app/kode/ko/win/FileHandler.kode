@@ -20,6 +20,8 @@ class FileHandler
         post.on 'openFile'    @openFile
         post.on 'openFiles'   @openFiles
         post.on 'file'        @onFile
+        post.on 'openDialog'  @onOpenDialog
+        post.on 'reloadFile'  @reloadFile
 
         @cursorToRestore = {}
 
@@ -63,58 +65,64 @@ class FileHandler
             editor.scroll.cursorToTop()
             delete @cursorToRestore[file]
 
-    #  0000000   00000000   00000000  000   000        00000000  000  000      00000000   0000000
-    # 000   000  000   000  000       0000  000        000       000  000      000       000
-    # 000   000  00000000   0000000   000 0 000        000000    000  000      0000000   0000000
-    # 000   000  000        000       000  0000        000       000  000      000            000
-    #  0000000   000        00000000  000   000        000       000  0000000  00000000  0000000
-
-    # opens a list of iles in new tabs
-    # called from file dialog, open command and browser
-
-    openFiles: (files, options) =>
-
-        log 'FileHandler.openFiles' files
+    #  0000000   00000000   00000000  000   000     00000000  000  000      00000000  
+    # 000   000  000   000  000       0000  000     000       000  000      000       
+    # 000   000  00000000   0000000   000 0 000     000000    000  000      0000000   
+    # 000   000  000        000       000  0000     000       000  000      000       
+    #  0000000   000        00000000  000   000     000       000  0000000  00000000  
+       
+    openFile: (@openDialogOpt) => kakao 'fs.openDialog'
+        
+    #  0000000   000   000       0000000   00000000   00000000  000   000  
+    # 000   000  0000  000      000   000  000   000  000       0000  000  
+    # 000   000  000 0 000      000   000  00000000   0000000   000 0 000  
+    # 000   000  000  0000      000   000  000        000       000  0000  
+    #  0000000   000   000       0000000   000        00000000  000   000  
+    
+    # opens a list of files in new tabs
+    # called from open file dialog
+    
+    onOpenDialog: (files) -> 
 
         return if empty files
 
-        options ?= {}
+        options = @openDialogOpt ? {}
 
+        log 'FileHandler.onOpenDialog' files, options
+        
         maxTabs = prefs.get 'maximalNumberOfTabs' 8
 
         if not options.newWindow
             files = files[0...maxTabs]
 
-        if files.length >= Math.max(11, maxTabs) and not options.skipCheck
-            window.win.messageBox
-                type:       'warning'
-                buttons:    ['Cancel' 'Open All']
-                defaultId:  1
-                cancelId:   0
-                title:      'A Lot of Files Warning'
-                message:    "You have selected #{files.length} files."
-                detail:     'Are you sure you want to open that many files?'
-                cb: (answer) =>
-                    if answer == 1
-                        options.skipCheck = true
-                        @openFiles ofiles, options
+        if files.length > maxTabs and not options.skipCheck
+            log 'messageBox for too may files not implemented!'
             return
+            # window.win.messageBox
+                # type:       'warning'
+                # buttons:    ['Cancel' 'Open All']
+                # defaultId:  1
+                # cancelId:   0
+                # title:      'A Lot of Files Warning'
+                # message:    "You have selected #{files.length} files."
+                # detail:     'Are you sure you want to open that many files?'
+                # cb: (answer) =>
+                    # if answer == 1
+                        # options.skipCheck = true
+                        # @openFiles ofiles, options
+            # return
 
         if empty files
             return []
-
-        window.stash.set 'openFilePath' slash.dir files[0]
-
-        for file in files
-            ffs.fileExists(slash.removeFilePos file).then (exists) ->
-                # log "FileHandler.openFiles #{file} doesn't exist!"
-                return if not exists
-                if options.newWindow
-                    # post.toMain 'newWindowWithFile' file
-                    log 'FileHandler new window with file not implemented!'
-                # post.emit 'newTabWithFile' file
-                post.emit 'loadFile' file
             
+        for file in files
+            if options.newWindow
+                # post.toMain 'newWindowWithFile' file
+                log 'FileHandler new window with file not implemented!'
+            # log 'post newTabWithFile' file
+            post.emit 'newTabWithFile' file
+            
+        post.emit 'loadFile' last files
         true
 
     # 00000000   00000000  000       0000000    0000000   0000000
@@ -129,24 +137,6 @@ class FileHandler
             @loadFile file, reload:true
         else
             post.emit 'revertFile' file
-
-    #  0000000   0000000   000   000  00000000         0000000   000      000
-    # 000       000   000  000   000  000             000   000  000      000
-    # 0000000   000000000   000 000   0000000         000000000  000      000
-    #      000  000   000     000     000             000   000  000      000
-    # 0000000   000   000      0      00000000        000   000  0000000  0000000
-
-    saveAll: =>
-        
-        log 'FileHandler.saveAll not implemented!'
-
-        # for tab in tabs.tabs
-            # if tab.dirty
-                # if tab == tabs.activeTab()
-                    # @saveFile tab.file
-                # else
-                    # if not tab.file.startsWith 'untitled'
-                        # tab.saveChanges()
 
     #  0000000   0000000   000   000  00000000        00000000  000  000      00000000
     # 000       000   000  000   000  000             000       000  000      000
@@ -202,25 +192,6 @@ class FileHandler
         if editor.currentFile? and editor.do.hasChanges()
             File.save editor.currentFile, editor.text(), (file) ->
                 error "FileHandler.saveChanges failed #{err}" if not file
-
-    #  0000000   00000000   00000000  000   000        00000000  000  000      00000000
-    # 000   000  000   000  000       0000  000        000       000  000      000
-    # 000   000  00000000   0000000   000 0 000        000000    000  000      0000000
-    # 000   000  000        000       000  0000        000       000  000      000
-    #  0000000   000        00000000  000   000        000       000  0000000  00000000
-
-    openFile: (opt) =>
-
-        cb = (files) -> post.emit 'openFiles' files, opt
-
-        dir = slash.dir editor.currentFile if editor?.currentFile
-        dir ?= slash.path '.'
-        window.win?.openFileDialog(
-            title: 'Open File'
-            defaultPath: window.stash.get('openFilePath' dir)
-            properties: ['openFile' 'multiSelections']
-            cb: cb
-            )
 
     #  0000000   0000000   000   000  00000000        00000000  000  000      00000000          0000000    0000000
     # 000       000   000  000   000  000             000       000  000      000              000   000  000

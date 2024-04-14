@@ -233,17 +233,18 @@ function FileEditor extends TextEditor
         opt ?= {}
         if opt is str ➜ opt = path:opt
 
-        if opt.newTab
+        # if opt.newTab
 
-            file = opt.path
-            file += ':' + opt.line if opt.line
-            file += ':' + opt.col if opt.col
+            # file = opt.path
+            # file += ':' + opt.line if opt.line
+            # file += ':' + opt.col if opt.col
 
-            # log 'jumpToFile post newTabWithFile' file
+            # # log 'jumpToFile post newTabWithFile' file
 
-            post.emit 'newTabWithFile' file
+            # post.emit 'newTabWithFile' file
 
-        else if window.lastFocus == 'editor'
+        # else 
+        if window.lastFocus == 'editor'
 
             [file, fpos] = slash.splitFilePos opt.path
             opt.pos = fpos
@@ -259,6 +260,7 @@ function FileEditor extends TextEditor
             # log 'jumpToFile navigate.gotoFilePos' opt
 
             window.navigate.gotoFilePos opt
+            
         else
 
             file = slash.joinFileLine opt.path, opt.line, opt.col

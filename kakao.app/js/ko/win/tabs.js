@@ -509,22 +509,21 @@ class Tabs
 
     onNewTabWithFile (file)
     {
-        var col, line, tab
+        var col, line, path, prjPath
 
-        var _344_26_ = slash.splitFileLine(file); file = _344_26_[0]; line = _344_26_[1]; col = _344_26_[2]
+        var _344_26_ = slash.splitFileLine(file); path = _344_26_[0]; line = _344_26_[1]; col = _344_26_[2]
 
-        if (tab = this.tab(file))
+        if (!this.koreTabForPath(path))
         {
-            post.emit('jumpToFile',{path:file,line:line,col:col})
-        }
-        else
-        {
-            this.addTab(file).activate()
-        }
-        this.update()
-        if (line || col)
-        {
-            return post.emit('singleCursorAtPos',[col,line - 1])
+            if (prjPath = Projects.dir(path))
+            {
+                if (!this.koreTabForPath(prjPath))
+                {
+                    this.koreTabs().push({type:'prj',path:prjPath})
+                }
+            }
+            this.koreTabs().push({type:'file',path:path})
+            return this.cleanTabs()
         }
     }
 
@@ -631,7 +630,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _424_25_ = [tb,ta]; ta = _424_25_[0]; tb = _424_25_[1]
+                    var _421_25_ = [tb,ta]; ta = _421_25_[0]; tb = _421_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -674,9 +673,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _456_16_ = 0; _456_16_ < list.length; _456_16_++)
+        for (var _453_16_ = 0; _453_16_ < list.length; _453_16_++)
         {
-            tab = list[_456_16_]
+            tab = list[_453_16_]
             tab.update()
         }
     }
@@ -730,9 +729,9 @@ class Tabs
 
         console.log('onSaveAll')
         var list = _k_.list(this.koreTabs())
-        for (var _508_16_ = 0; _508_16_ < list.length; _508_16_++)
+        for (var _505_16_ = 0; _505_16_ < list.length; _505_16_++)
         {
-            tab = list[_508_16_]
+            tab = list[_505_16_]
             if (tab.dirty)
             {
                 console.log('Tabs.onSaveAll dirty tab',tab)

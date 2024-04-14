@@ -138,7 +138,6 @@ function Window extends win.Delegate
             'Move Tab Left'         ➜ return window.tabs.move 'left'
             'Move Tab Right'        ➜ return window.tabs.move 'right'
             'Open...'               ➜ return post.emit 'openFile'
-            'Open In New Tab...'    ➜ return post.emit 'openFile' newTab: true
             'Open In New Window...' ➜ return post.emit 'openFile' newWindow: true
             'Save'                  ➜ return post.emit 'saveFile'
             'Save All'              ➜ return post.emit 'saveAll'

@@ -244,7 +244,7 @@ function Macro extends Command
 
                 """
                 ffs.write(file, text).then (file) ->
-                    post.emit 'newTabWithFile' file
+                    post.emit 'loadFile' file
 
                 return focus: editor.name
 

@@ -230,7 +230,7 @@ export ${clss}
 `
                 ffs.write(file,text).then(function (file)
                 {
-                    return post.emit('newTabWithFile',file)
+                    return post.emit('loadFile',file)
                 })
                 return {focus:editor.name}
 

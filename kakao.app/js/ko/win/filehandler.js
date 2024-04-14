@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}}
 
 import kxk from "../../kxk.js"
 let pull = kxk.pull
@@ -16,12 +16,10 @@ class FileHandler
     constructor ()
     {
         this.saveFileAs = this.saveFileAs.bind(this)
-        this.openFile = this.openFile.bind(this)
         this.saveChanges = this.saveChanges.bind(this)
         this.saveFile = this.saveFile.bind(this)
-        this.saveAll = this.saveAll.bind(this)
         this.reloadFile = this.reloadFile.bind(this)
-        this.openFiles = this.openFiles.bind(this)
+        this.openFile = this.openFile.bind(this)
         this.onFile = this.onFile.bind(this)
         this.loadFile = this.loadFile.bind(this)
         post.on('saveFileAs',this.saveFileAs)
@@ -31,6 +29,8 @@ class FileHandler
         post.on('openFile',this.openFile)
         post.on('openFiles',this.openFiles)
         post.on('file',this.onFile)
+        post.on('openDialog',this.onOpenDialog)
+        post.on('reloadFile',this.reloadFile)
         this.cursorToRestore = {}
     }
 
@@ -45,7 +45,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _39_28_ = slash.splitFilePos(file); file = _39_28_[0]; filePos = _39_28_[1]
+            var _41_28_ = slash.splitFilePos(file); file = _41_28_[0]; filePos = _41_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -79,55 +79,48 @@ class FileHandler
         }
     }
 
-    openFiles (files, options)
+    openFile (openDialogOpt)
     {
-        var file, maxTabs
+        this.openDialogOpt = openDialogOpt
+    
+        return kakao('fs.openDialog')
+    }
 
-        console.log('FileHandler.openFiles',files)
+    onOpenDialog (files)
+    {
+        var file, maxTabs, options, _89_33_
+
         if (_k_.empty(files))
         {
             return
         }
-        options = (options != null ? options : {})
+        options = ((_89_33_=this.openDialogOpt) != null ? _89_33_ : {})
+        console.log('FileHandler.onOpenDialog',files,options)
         maxTabs = prefs.get('maximalNumberOfTabs',8)
         if (!options.newWindow)
         {
             files = files.slice(0, typeof maxTabs === 'number' ? maxTabs : -1)
         }
-        if (files.length >= Math.max(11,maxTabs) && !options.skipCheck)
+        if (files.length > maxTabs && !options.skipCheck)
         {
-            window.win.messageBox({type:'warning',buttons:['Cancel','Open All'],defaultId:1,cancelId:0,title:'A Lot of Files Warning',message:`You have selected ${files.length} files.`,detail:'Are you sure you want to open that many files?',cb:(function (answer)
-            {
-                if (answer === 1)
-                {
-                    options.skipCheck = true
-                    return this.openFiles(ofiles,options)
-                }
-            }).bind(this)})
+            console.log('messageBox for too may files not implemented!')
             return
         }
         if (_k_.empty(files))
         {
             return []
         }
-        window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _108_17_ = 0; _108_17_ < list.length; _108_17_++)
+        for (var _118_17_ = 0; _118_17_ < list.length; _118_17_++)
         {
-            file = list[_108_17_]
-            ffs.fileExists(slash.removeFilePos(file)).then(function (exists)
+            file = list[_118_17_]
+            if (options.newWindow)
             {
-                if (!exists)
-                {
-                    return
-                }
-                if (options.newWindow)
-                {
-                    console.log('FileHandler new window with file not implemented!')
-                }
-                return post.emit('loadFile',file)
-            })
+                console.log('FileHandler new window with file not implemented!')
+            }
+            post.emit('newTabWithFile',file)
         }
+        post.emit('loadFile',_k_.last(files))
         return true
     }
 
@@ -141,11 +134,6 @@ class FileHandler
         {
             return post.emit('revertFile',file)
         }
-    }
-
-    saveAll ()
-    {
-        console.log('FileHandler.saveAll not implemented!')
     }
 
     saveFile (file)
@@ -196,7 +184,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _202_29_
+        var _192_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -210,25 +198,9 @@ class FileHandler
         }
     }
 
-    openFile (opt)
-    {
-        var cb, dir, _218_18_
-
-        cb = function (files)
-        {
-            return post.emit('openFiles',files,opt)
-        }
-        if ((editor != null ? editor.currentFile : undefined))
-        {
-            dir = slash.dir(editor.currentFile)
-        }
-        dir = (dir != null ? dir : slash.path('.'))
-        return (window.win != null ? window.win.openFileDialog({title:'Open File',defaultPath:window.stash.get('openFilePath',dir),properties:['openFile','multiSelections'],cb:cb}) : undefined)
-    }
-
     saveFileAs ()
     {
-        var cb, _238_18_
+        var cb, _209_18_
 
         cb = (function (file)
         {

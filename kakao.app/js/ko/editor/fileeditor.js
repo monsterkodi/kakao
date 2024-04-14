@@ -251,29 +251,16 @@ FileEditor = (function ()
 
     FileEditor.prototype["jumpToFile"] = function (opt)
     {
-        var file, fpos, _257_21_
+        var file, fpos, _258_21_
 
         opt = (opt != null ? opt : {})
         if (_k_.isStr(opt))
         {
             opt = {path:opt}
         }
-        if (opt.newTab)
+        if (window.lastFocus === 'editor')
         {
-            file = opt.path
-            if (opt.line)
-            {
-                file += ':' + opt.line
-            }
-            if (opt.col)
-            {
-                file += ':' + opt.col
-            }
-            return post.emit('newTabWithFile',file)
-        }
-        else if (window.lastFocus === 'editor')
-        {
-            var _248_25_ = slash.splitFilePos(opt.path); file = _248_25_[0]; fpos = _248_25_[1]
+            var _249_25_ = slash.splitFilePos(opt.path); file = _249_25_[0]; fpos = _249_25_[1]
 
             opt.pos = fpos
             if (opt.col)
@@ -287,7 +274,7 @@ FileEditor = (function ()
             opt.winID = window.winID
             opt.oldPos = this.cursorPos()
             opt.oldFile = this.currentFile
-            opt.file = ((_257_21_=opt.file) != null ? _257_21_ : opt.path)
+            opt.file = ((_258_21_=opt.file) != null ? _258_21_ : opt.path)
             return window.navigate.gotoFilePos(opt)
         }
         else
@@ -299,7 +286,7 @@ FileEditor = (function ()
 
     FileEditor.prototype["jumpTo"] = function (word, opt)
     {
-        var classes, clss, file, files, find, func, funcs, i, info, infos, type, _279_19_
+        var classes, clss, file, files, find, func, funcs, i, info, infos, type, _281_19_
 
         if (typeof(word) === 'object' && !(opt != null))
         {
@@ -349,9 +336,9 @@ FileEditor = (function ()
                 {
                     info = infos[0]
                     var list = _k_.list(infos)
-                    for (var _304_26_ = 0; _304_26_ < list.length; _304_26_++)
+                    for (var _306_26_ = 0; _306_26_ < list.length; _306_26_++)
                     {
-                        i = list[_304_26_]
+                        i = list[_306_26_]
                         if (i.file === this.currentFile)
                         {
                             info = i
@@ -382,25 +369,25 @@ FileEditor = (function ()
 
     FileEditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, counterparts, cp, currext, ext, _365_41_, _370_41_
+        var counter, counterparts, cp, currext, ext, _367_41_, _372_41_
 
         cp = this.cursorPos()
         currext = slash.ext(this.currentFile)
         counterparts = {mm:['h'],cpp:['hpp','h'],cc:['hpp','h'],h:['cpp','c','mm'],hpp:['cpp','c'],coffee:['js','mjs'],kode:['js','mjs'],js:['coffee','kode'],mjs:['coffee','kode'],pug:['html'],html:['pug'],css:['styl'],styl:['css']}
-        var list = ((_365_41_=counterparts[currext]) != null ? _365_41_ : [])
-        for (var _365_16_ = 0; _365_16_ < list.length; _365_16_++)
+        var list = ((_367_41_=counterparts[currext]) != null ? _367_41_ : [])
+        for (var _367_16_ = 0; _367_16_ < list.length; _367_16_++)
         {
-            ext = list[_365_16_]
+            ext = list[_367_16_]
             if (await ffs.fileExists(slash.swapExt(this.currentFile,ext)))
             {
                 post.emit('loadFile',slash.swapExt(this.currentFile,ext))
                 return true
             }
         }
-        var list1 = ((_370_41_=counterparts[currext]) != null ? _370_41_ : [])
-        for (var _370_16_ = 0; _370_16_ < list1.length; _370_16_++)
+        var list1 = ((_372_41_=counterparts[currext]) != null ? _372_41_ : [])
+        for (var _372_16_ = 0; _372_16_ < list1.length; _372_16_++)
         {
-            ext = list1[_370_16_]
+            ext = list1[_372_16_]
             counter = slash.swapExt(this.currentFile,ext)
             counter = this.swapLastDir(counter,currext,ext)
             if (await ffs.fileExists(counter))
@@ -454,15 +441,15 @@ FileEditor = (function ()
                 var l, t
 
                 var list = _k_.list(layers)
-                for (var _415_81_ = 0; _415_81_ < list.length; _415_81_++)
+                for (var _417_81_ = 0; _417_81_ < list.length; _417_81_++)
                 {
-                    l = list[_415_81_]
+                    l = list[_417_81_]
                     setStyle('.editor .layers ' + l,'transform',"translateX(0)")
                 }
                 var list1 = _k_.list(transi)
-                for (var _416_76_ = 0; _416_76_ < list1.length; _416_76_++)
+                for (var _418_76_ = 0; _418_76_ < list1.length; _418_76_++)
                 {
-                    t = list1[_416_76_]
+                    t = list1[_418_76_]
                     setStyle('.editor .layers ' + t,'transition',"initial")
                 }
                 return this.updateLayers()
@@ -478,15 +465,15 @@ FileEditor = (function ()
                 offsetX *= -1
             }
             var list = _k_.list(layers)
-            for (var _426_88_ = 0; _426_88_ < list.length; _426_88_++)
+            for (var _428_88_ = 0; _428_88_ < list.length; _428_88_++)
             {
-                l = list[_426_88_]
+                l = list[_428_88_]
                 setStyle('.editor .layers ' + l,'transform',`translateX(${offsetX}px)`)
             }
             var list1 = _k_.list(transi)
-            for (var _427_85_ = 0; _427_85_ < list1.length; _427_85_++)
+            for (var _429_85_ = 0; _429_85_ < list1.length; _429_85_++)
             {
-                t = list1[_427_85_]
+                t = list1[_429_85_]
                 setStyle('.editor .layers ' + t,'transition',`all ${animate / 1000}s`)
             }
             return setTimeout(resetTrans,animate)
@@ -537,9 +524,9 @@ FileEditor = (function ()
         recent = window.stash.get('recentFiles',[])
         recent = (recent != null ? recent : [])
         var list = _k_.list(recent)
-        for (var _481_14_ = 0; _481_14_ < list.length; _481_14_++)
+        for (var _483_14_ = 0; _483_14_ < list.length; _483_14_++)
         {
-            f = list[_481_14_]
+            f = list[_483_14_]
             RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
             {
                 return post.emit('loadFile',arg)
@@ -550,9 +537,9 @@ FileEditor = (function ()
             var item
 
             var list1 = _k_.list(template)
-            for (var _489_21_ = 0; _489_21_ < list1.length; _489_21_++)
+            for (var _491_21_ = 0; _491_21_ < list1.length; _491_21_++)
             {
-                item = list1[_489_21_]
+                item = list1[_491_21_]
                 if (item.text === name)
                 {
                     return item

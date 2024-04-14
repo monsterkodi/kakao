@@ -5,7 +5,7 @@
     000   000  000  000  0000
     00     00  000  000   000
     
-    handles window event from the main process
+    handles window events from the main process
     handles the titlebar and its menu
     calls methods on its delegate
 ###

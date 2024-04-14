@@ -7,6 +7,7 @@
 */
 
 #import "fs.h"
+#import "route.h"
 #import "bundle.h"
 
 NSString* typeForNSFileType(NSString* fileType)
@@ -34,6 +35,43 @@ NSString* typeForNSFileType(NSString* fileType)
     else
     {
         NSLog(@"fallback to bundle path! req:%@ args:%@", req, args);
+    }
+    
+    if ([req isEqualToString:@"openDialog"])
+    {
+        NSLog(@"openDialog %@", path);
+
+        NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+
+        openPanel.title = @"Open File";
+        openPanel.showsResizeIndicator      = YES;
+        openPanel.showsHiddenFiles          = YES;
+        openPanel.canChooseDirectories      = NO;
+        openPanel.canCreateDirectories      = YES;
+        openPanel.allowsMultipleSelection   = YES;
+
+        // openPanel.allowedFileTypes = @[@"ped"];
+        
+        openPanel.directoryURL = [NSURL fileURLWithPath:path];
+
+        [openPanel beginSheetModalForWindow:win completionHandler:^(NSInteger result) 
+        {
+            if (result == NSModalResponseOK) 
+            {
+                NSMutableArray* files = [NSMutableArray array];
+                for (NSURL* url in openPanel.URLs)
+                {
+                    [files addObject:[url path]];
+                }
+                NSLog(@"OpenDialog %@", files);
+                
+                id msg = [NSMutableDictionary dictionary];
+                [msg setObject:@"openDialog" forKey:@"name"];
+                [msg setObject:[NSArray arrayWithObject:files] forKey:@"args"];
+                
+                [Route send:msg win:win];
+            }
+        }];
     }
           
     // 000  000   000  00000000   0000000   

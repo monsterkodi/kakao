@@ -23,8 +23,7 @@ File
     New Window              cmdctrl+shift+n
     -
     Open...                 cmdctrl+o
-    Open In New Tab...      cmdctrl+shift+o
-    Open In New Window...   alt+shift+o
+    Open In New Window...   cmdctrl+shift+o
     --
     Save                    cmdctrl+s
     Save As ...             cmdctrl+shift+s
