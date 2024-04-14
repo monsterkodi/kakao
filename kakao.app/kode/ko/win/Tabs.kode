@@ -76,7 +76,24 @@ class Tabs
     fileTabsForPath: (path) -> @fileTabs().filter (t) -> t.path.startsWith path
     
     fileTabs: -> @koreTabs().filter (t) -> t.type == 'file'
+    prjTabs:  -> @koreTabs().filter (t) -> t.type == 'prj'
     numFileTabs: -> @fileTabs().length
+    
+    prjTabForPath: (path) ->
+        
+        for tab in @prjTabs()
+            return tab if path.startsWith tab.path
+    
+    activeKoreTab: =>
+        
+        for tab in @koreTabs()
+            return tab if tab.active
+
+    activeKorePrj: =>
+        
+        if fileTab = @activeKoreTab()
+            for tab in @koreTabs()
+                return tab if tab.type == 'prj' and fileTab.path.startsWith tab.path 
                 
     # 00000000  0000000    000  000000000   0000000   00000000   00000000   0000000    0000000  000   000   0000000  
     # 000       000   000  000     000     000   000  000   000  000       000   000  000       000   000  000       
@@ -207,18 +224,7 @@ class Tabs
             if slash.samePath tab.path, path
                 tab.active = true
                 @tab(path)?.div?.scrollIntoViewIfNeeded()
-            
-    activeKoreTab: =>
-        
-        for tab in @koreTabs()
-            return tab if tab.active
-
-    activeKorePrj: =>
-        
-        if fileTab = @activeKoreTab()
-            for tab in @koreTabs()
-                return tab if tab.type == 'prj' and fileTab.path.startsWith tab.path 
-            
+                        
     # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
     # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
     # 0000000    0000000   000      000   000  000000000  000   000        000000    000  000      0000000

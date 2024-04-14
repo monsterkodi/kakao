@@ -78,6 +78,7 @@ class Tab
         if @isPrj()
             if Git.statusCache[@path]
                 @onGitStatus Git.statusCache[@path]
+
             if @collapsed
                 tabs = @tabs.fileTabsForPath @path
                 for tab in tabs
@@ -85,8 +86,14 @@ class Tab
                     @div.appendChild dot
                     if tab.active
                         dot.classList.add 'activeTab'
-        else if @dirty?
-            @div.appendChild elem 'span' class:'dot' text:'●'
+                    
+        else 
+            if @dirty?
+                @div.appendChild elem 'span' class:'dot' text:'●'
+                
+            prj = @tabs.prjTabForPath @path
+            if prj.collapsed
+                @div.style.display = 'none'
         @
         
     # 000000000   0000000    0000000   000      000000000  000  00000000   

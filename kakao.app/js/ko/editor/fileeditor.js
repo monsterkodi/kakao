@@ -187,7 +187,6 @@ FileEditor = (function ()
 
     FileEditor.prototype["restoreTab"] = function (tab, state)
     {
-        console.log('FileEditor.restoreTab',this.currentFile,tab,state)
         post.emit('storeState',kore.get('editor|file'))
         this.currentFile = tab.path
         this.do.setTabState(state)

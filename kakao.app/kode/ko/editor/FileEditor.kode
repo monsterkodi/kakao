@@ -169,7 +169,7 @@ function FileEditor extends TextEditor
 
     restoreTab: (tab, state) =>
         
-        log 'FileEditor.restoreTab' @currentFile, tab, state
+        # log 'FileEditor.restoreTab' @currentFile, tab, state
         post.emit 'storeState' kore.get 'editor|file'
         @currentFile = tab.path
         @do.setTabState state
