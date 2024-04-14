@@ -358,6 +358,7 @@ class GitInfo
     onMetaClick: (meta, event) =>
 
         if href = meta[2].href
+            
             if href.startsWith 'macro '
                 window.commandline.startCommand 'macro'
                 window.commandline.setText href[6..]
@@ -366,6 +367,7 @@ class GitInfo
                 if href.indexOf(':') > 0
                     href += ':' + window.terminal.posForEvent(event)[0]
                 post.emit 'loadFile' href
+                
         'unhandled' # otherwise cursor doesn't get set
                     
 export new GitInfo

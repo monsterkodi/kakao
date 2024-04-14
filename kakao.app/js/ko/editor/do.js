@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let post = kxk.post
@@ -13,7 +13,6 @@ class Do
     {
         this.editor = editor
     
-        this.onFileLineChanges = this.onFileLineChanges.bind(this)
         this.reset()
         post.on('fileLineChanges',this.onFileLineChanges)
     }
@@ -21,47 +20,6 @@ class Do
     del ()
     {
         return post.removeListener('fileLineChanges',this.onFileLineChanges)
-    }
-
-    onFileLineChanges (file, lineChanges)
-    {
-        if (file === this.editor.currentFile)
-        {
-            return this.foreignChanges(lineChanges)
-        }
-    }
-
-    foreignChanges (lineChanges)
-    {
-        var change, _30_62_
-
-        this.start()
-        var list = _k_.list(lineChanges)
-        for (var _29_19_ = 0; _29_19_ < list.length; _29_19_++)
-        {
-            change = list[_29_19_]
-            if (change.change !== 'deleted' && !(change.after != null))
-            {
-                console.error(`Do.foreignChanges -- no after? ${change}`)
-                continue
-            }
-            switch (change.change)
-            {
-                case 'changed':
-                    this.change(change.doIndex,change.after)
-                    break
-                case 'inserted':
-                    this.insert(change.doIndex,change.after)
-                    break
-                case 'deleted':
-                    this.delete(change.doIndex)
-                    break
-                default:
-                    console.error(`Do.foreignChanges -- unknown change ${change.change}`)
-            }
-
-        }
-        return this.end({foreign:true})
     }
 
     tabState ()

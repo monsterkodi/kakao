@@ -46,9 +46,9 @@ class FileHandler
         if file != editor?.currentFile or valid filePos or opt.reload
             
             @addToRecent file
+            
+            post.emit 'storeState' kore.get 'editor|file'
 
-            # log 'editor.setCurrentFile file' file
-                        
             editor.setCurrentFile file
             
             kore.set 'editor|file' file
@@ -157,7 +157,7 @@ class FileHandler
 
     saveFile: (file) =>
 
-        file ?= editor.currentFile
+        file ?= kore.get 'editor|file'
         
         if not file? or file.startsWith 'untitled'
             @saveFileAs()
@@ -165,16 +165,15 @@ class FileHandler
 
         editor.saveScrollCursorsAndSelections()
             
-        tabState = editor.do.tabState()
-
         File.save file, editor.text(), (saved) ->
 
             return error 'File.save failed!' if not saved
             
-            if saved != editor.currentFile
+            if saved != kore.get 'editor|file'
                 
                 post.emit 'loadFile' saved
-
+            else
+                post.emit 'reloadFile'
     
     #  0000000   0000000    0000000          00000000   00000000   0000000  00000000  000   000  000000000
     # 000   000  000   000  000   000        000   000  000       000       000       0000  000     000

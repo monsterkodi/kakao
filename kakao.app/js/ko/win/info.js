@@ -92,7 +92,6 @@ class Info
         this.botline.appendChild(this.lines)
         ttip(this.lines,'lines')
         this.elem.appendChild(this.botline)
-        this.setEditor(editor)
     }
 
     setEditor (editor)

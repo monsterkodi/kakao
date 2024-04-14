@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 import kxk from "../../kxk.js"
 let elem = kxk.elem
@@ -44,81 +44,19 @@ class Tab
         return this.type === 'prj'
     }
 
-    stashInfo ()
-    {
-        var info
-
-        info = {}
-        if (this.isPrj())
-        {
-            info.prj = this.path
-            info.collapsed = this.collapsed
-        }
-        else
-        {
-            info.path = this.path
-            if (this.pinned)
-            {
-                info.pinned = true
-            }
-            if (this.isActive())
-            {
-                info.active = true
-            }
-        }
-        return info
-    }
-
-    foreignChanges (lineChanges)
-    {
-        var _45_17_
-
-        this.foreign = ((_45_17_=this.foreign) != null ? _45_17_ : [])
-        this.foreign.push(lineChanges)
-        return this.update()
-    }
-
     saveChanges ()
     {
-        var change, changes, _65_23_
-
         if (this.state)
         {
-            if ((this.foreign != null ? this.foreign.length : undefined))
-            {
-                var list = _k_.list(this.foreign)
-                for (var _66_28_ = 0; _66_28_ < list.length; _66_28_++)
-                {
-                    changes = list[_66_28_]
-                    var list1 = _k_.list(changes)
-                    for (var _67_31_ = 0; _67_31_ < list1.length; _67_31_++)
-                    {
-                        change = list1[_67_31_]
-                        switch (change.change)
-                        {
-                            case 'changed':
-                                this.state.state = this.state.state.changeLine(change.doIndex,change.after)
-                                break
-                            case 'inserted':
-                                this.state.state = this.state.state.insertLine(change.doIndex,change.after)
-                                break
-                            case 'deleted':
-                                this.state.state = this.state.state.deleteLine(change.doIndex)
-                                break
-                        }
-
-                    }
-                }
-            }
+            console.log('Tab.saveChanges',this.state)
             if (this.state.state)
             {
                 return File.save(this.state.file,this.state.state.text(),(function (file)
                 {
                     if (!file)
                     {
-                        return console.error(`tab.saveChanges failed ${err}`)
+                        console.error("tab.saveChanges failed")
                     }
-                    return this.revert()
                 }).bind(this))
             }
             else
@@ -126,32 +64,11 @@ class Tab
                 console.error('tab.saveChanges -- nothing to save?')
             }
         }
-        else
-        {
-            return post.emit('saveChanges')
-        }
-    }
-
-    setFile (newFile)
-    {
-        if (!slash.samePath(this.path,newFile))
-        {
-            this.path = slash.path(newFile)
-            return this.update()
-        }
-    }
-
-    storeState ()
-    {
-        if (window.editor.currentFile)
-        {
-            return this.state = window.editor.do.tabState()
-        }
     }
 
     update ()
     {
-        var diss, html, name, sep, _109_45_, _110_46_, _161_22_
+        var diss, html, name, sep, _128_22_, _76_45_, _77_46_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -219,7 +136,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _167_16_
+        var diss, html, numFiles, _134_16_
 
         if ((this.path != null))
         {
@@ -236,7 +153,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _188_19_, _188_24_
+        var t, _155_19_, _155_24_
 
         if (status.gitDir !== this.path)
         {
@@ -280,8 +197,9 @@ class Tab
 
     close ()
     {
-        var _207_16_
+        var _176_16_
 
+        console.log('Tab.close',this.dirty)
         if (this.dirty)
         {
             this.saveChanges()
@@ -320,10 +238,8 @@ class Tab
 
     revert ()
     {
-        delete this.foreign
         delete this.state
-        this.dirty = false
-        this.update()
+        delete this.dirty
         this.tabs.update()
         return this
     }

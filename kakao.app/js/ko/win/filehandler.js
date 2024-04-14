@@ -60,6 +60,7 @@ class FileHandler
         if (file !== (editor != null ? editor.currentFile : undefined) || !_k_.empty(filePos) || opt.reload)
         {
             this.addToRecent(file)
+            post.emit('storeState',kore.get('editor|file'))
             editor.setCurrentFile(file)
             kore.set('editor|file',file)
             editor.restoreScrollCursorsAndSelections()
@@ -150,25 +151,26 @@ class FileHandler
 
     saveFile (file)
     {
-        var tabState
-
-        file = (file != null ? file : editor.currentFile)
+        file = (file != null ? file : kore.get('editor|file'))
         if (!(file != null) || file.startsWith('untitled'))
         {
             this.saveFileAs()
             return
         }
         editor.saveScrollCursorsAndSelections()
-        tabState = editor.do.tabState()
         return File.save(file,editor.text(),function (saved)
         {
             if (!saved)
             {
                 return console.error('File.save failed!')
             }
-            if (saved !== editor.currentFile)
+            if (saved !== kore.get('editor|file'))
             {
                 return post.emit('loadFile',saved)
+            }
+            else
+            {
+                return post.emit('reloadFile')
             }
         })
     }
@@ -194,7 +196,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _205_29_
+        var _204_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -210,7 +212,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _221_18_
+        var cb, dir, _220_18_
 
         cb = function (files)
         {
@@ -226,7 +228,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _241_18_
+        var cb, _240_18_
 
         cb = (function (file)
         {

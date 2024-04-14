@@ -99,19 +99,20 @@ function Search extends Command
 
     onMetaClick: (meta, event) =>
 
-        href = meta[2].href
-
-        if href.startsWith '>'
-
-            split = href.split '>'
-            if window.commandline.commands[split[1]]?
-                command = window.commandline.commands[split[1]]
-                window.commandline.startCommand split[1]
-                window.commandline.setText split[2]
-                command.execute split[2]
-        else
-            file = href + ':' + window.terminal.posForEvent(event)[0]
-            post.emit 'loadFile' file #, reload:true
+        if href = meta[2].href
+    
+            # if href.startsWith '>'
+#     
+                # split = href.split '>'
+                # if window.commandline.commands[split[1]]?
+                    # command = window.commandline.commands[split[1]]
+                    # window.commandline.startCommand split[1]
+                    # window.commandline.setText split[2]
+                    # command.execute split[2]
+            # else
+                if href.indexOf(':') > 0
+                    href += ':' + window.terminal.posForEvent(event)[0]
+                post.emit 'loadFile' href
 
         'unhandled'
 

@@ -28,28 +28,10 @@ class Tab
         
     isPrj: -> @type == 'prj'
             
-    stashInfo: ->
-        
-        info = {}
-        if @isPrj()
-            info.prj = @path
-            info.collapsed = @collapsed
-        else
-            info.path   = @path
-            info.pinned = true if @pinned
-            info.active = true if @isActive()
-        info
+    # foreignChanges: (lineChanges) ->
 
-    foreignChanges: (lineChanges) ->
-
-        @foreign ?= []
-        @foreign.push lineChanges
-        @update()
-
-    # reload: ->
-
-        # delete @state
-        # @dirty = false
+        # @foreign ?= []
+        # @foreign.push lineChanges
         # @update()
 
     #  0000000   0000000   000   000  00000000
@@ -62,40 +44,25 @@ class Tab
 
         if @state
 
-            if @foreign?.length
-                for changes in @foreign
-                    for change in changes
-                        switch change.change
-                            'changed'  ➜ @state.state = @state.state.changeLine change.doIndex, change.after
-                            'inserted' ➜ @state.state = @state.state.insertLine change.doIndex, change.after
-                            'deleted'  ➜ @state.state = @state.state.deleteLine change.doIndex
+            log 'Tab.saveChanges' @state
+            
+            # if @foreign?.length
+                # for changes in @foreign
+                    # for change in changes
+                        # switch change.change
+                            # 'changed'  ➜ @state.state = @state.state.changeLine change.doIndex, change.after
+                            # 'inserted' ➜ @state.state = @state.state.insertLine change.doIndex, change.after
+                            # 'deleted'  ➜ @state.state = @state.state.deleteLine change.doIndex
 
             if @state.state
                 
                 File.save @state.file, @state.state.text(), (file) =>
-                    return error "tab.saveChanges failed #{err}" if not file
-                    @revert()
+                    error "tab.saveChanges failed" if not file
+                    # @revert()
             else
                 error 'tab.saveChanges -- nothing to save?'
-        else
-            post.emit 'saveChanges'
-
-    setFile: (newFile) ->
-        
-        if not slash.samePath @path, newFile
-            @path = slash.path newFile
-            @update()
-            
-    #  0000000  000000000   0000000   000000000  00000000
-    # 000          000     000   000     000     000
-    # 0000000      000     000000000     000     0000000
-    #      000     000     000   000     000     000
-    # 0000000      000     000   000     000     00000000
-
-    storeState: ->
-
-        if window.editor.currentFile
-            @state = window.editor.do.tabState()
+        # else
+            # post.emit 'saveChanges'
 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
@@ -200,6 +167,8 @@ class Tab
 
     close: ->
 
+        log 'Tab.close' @dirty
+        
         if @dirty
             @saveChanges()
 
@@ -229,10 +198,10 @@ class Tab
 
     revert: ->
 
-        delete @foreign
+        # delete @foreign
         delete @state
-        @dirty = false
-        @update()
+        delete @dirty
+        # @update()
         @tabs.update()
         @
 

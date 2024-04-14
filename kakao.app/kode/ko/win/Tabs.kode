@@ -14,6 +14,7 @@ class Tabs
 
     @: (titlebar) ->
 
+        @tabState = {}
         @emptyid = 0
         @tabs = []
         
@@ -37,11 +38,11 @@ class Tabs
         
         post.on 'closeTab'         @onCloseTab
         post.on 'closeOtherTabs'   @onCloseOtherTabs
-        post.on 'stash'            @stash
         post.on 'dirty'            @onDirty
+        post.on 'storeState'       @onStoreState
         post.on 'revertFile'       @revertFile
         post.on 'editorFocus'      @onEditorFocus
-        post.on 'stashLoaded'      @onStashLoaded
+        post.on 'stashLoaded'      @update
         post.on 'projectIndexed'   @onProjectIndexed
         
         kore.on 'tabs'        @onKoreTabs
@@ -55,7 +56,7 @@ class Tabs
     
     koreTabs: -> kore.get 'tabs'
     
-    update: (tabs) -> kore.set 'tabs' tabs ? @koreTabs()
+    update: (tabs) => kore.set 'tabs' tabs ? @koreTabs()
     
     onKoreTabs: (tabs) =>
         
@@ -167,6 +168,8 @@ class Tabs
                     tabs[index+1].active = true
                 else if index-1 >= 0
                     tabs[index-1].active = true
+            tabs = @koreTabs()
+            index = tabs.indexOf tab
             tabs.splice index, 1
             @update tabs
             @activate @activeKoreTab().path
@@ -182,10 +185,15 @@ class Tabs
         if tab = @koreTabForPath path
             @setActive path
             if tab.type == 'file'
+                if tab.dirty and @tabState[tab.path]
+                    log 'restoreTab' tab, @tabState[tab.path]
+                    post.emit 'restoreTab' tab, @tabState[tab.path]
+                    delete @tabState[tab.path]
+                    return 
                 post.emit 'jumpToFile' path
             else
                 tab.collapsed = not tab.collapsed
-            @update()
+                @update()
             
     setActive: (path) =>
         
@@ -421,20 +429,6 @@ class Tabs
             log 'shift' index-@dragIndex
             @shiftTab @koreTabs()[@dragIndex], index-@dragIndex
 
-    #  0000000  000000000   0000000    0000000  000   000  
-    # 000          000     000   000  000       000   000  
-    # 0000000      000     000000000  0000000   000000000  
-    #      000     000     000   000       000  000   000  
-    # 0000000      000     000   000  0000000   000   000  
-    
-    stash: =>
-
-        infos = @tabs.map (t) -> t.stashInfo?()
-        window.stash.set 'tabs' infos
-        @
-
-    onStashLoaded: => @update()
-        
     revertFile: (file) => @tab(file)?.revert()
     
     # 00000000  000   000  000000000  00000000  000   000   0000000  000   0000000   000   000  
@@ -464,6 +458,13 @@ class Tabs
             else
                 delete tab.dirty
             @update()
+            
+    onStoreState: (path) =>
+        
+        if tab = @koreTabForPath path
+            if tab.dirty and tab.active
+                @tabState[tab.path] = window.editor.do.tabState()
+                log 'storeState' tab.path, @tabState[tab.path]
 
     #  0000000   0000000   000   000  000000000  00000000  000   000  000000000
     # 000       000   000  0000  000     000     000        000 000      000
