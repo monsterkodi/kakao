@@ -139,25 +139,20 @@ function FileEditor extends TextEditor
     # 0000000   000   000      0      00000000
 
     saveScrollCursorsAndSelections: (opt) ->
-
-        return if not @currentFile
-
-        s = {}
         
-        s.main       = @state.main()
-        s.cursors    = @state.cursors()    if @numCursors() #or @cursorPos()[0] or @cursorPos()[1]
-        s.selections = @state.selections() if @numSelections() and @numSelections() < 10
-        s.highlights = @state.highlights() if @numHighlights() and @numHighlights() < 10
-        s.scroll     = @scroll.scroll      if @scroll.scroll
-
+        return if not @currentFile
+        
         filePositions = window.stash.get 'filePositions' {}
 
-        if not filePositions is obj
-            filePositions = {}
+        if not filePositions is obj ➜ filePositions = {}
 
-        filePositions[@currentFile] = s
+        cursor = @mainCursor()
+        if cursor[0] or cursor[1]
+            filePositions[@currentFile] = "#{cursor[0]} #{cursor[1]}"
+        else
+            delete filePositions[@currentFile]
 
-        deleteBy filePositions, (f,fp) -> fp.main == 0 and empty fp.cursors and empty fp.selections and empty fp.highlights
+        deleteBy filePositions, (f,fp) -> fp == '0 0'
 
         window.stash.set 'filePositions' filePositions
 
@@ -182,20 +177,9 @@ function FileEditor extends TextEditor
 
         filePositions = window.stash.get 'filePositions' {}
         
-        if filePositions[@currentFile]?
+        if cursor = filePositions[@currentFile]
 
-            s = filePositions[@currentFile]
-            
-            cursors = s.cursors ? [[0,0]]
-            # cursors = cursors.map (c) => [c[0], clamp(0,@numLines()-1,c[1])]
-
-            @setCursors    cursors
-            @setSelections s.selections ? []
-            @setHighlights s.highlights ? []
-            @setMain       s.main ? 0
-            @setState      @state
-
-            @scroll.to s.scroll if s.scroll
+            @singleCursorAtPos cursor.split(' ').map (c) -> parseInt c
             @scroll.cursorIntoView()
 
         else
@@ -233,17 +217,6 @@ function FileEditor extends TextEditor
         opt ?= {}
         if opt is str ➜ opt = path:opt
 
-        # if opt.newTab
-
-            # file = opt.path
-            # file += ':' + opt.line if opt.line
-            # file += ':' + opt.col if opt.col
-
-            # # log 'jumpToFile post newTabWithFile' file
-
-            # post.emit 'newTabWithFile' file
-
-        # else 
         if window.lastFocus == 'editor'
 
             [file, fpos] = slash.splitFilePos opt.path
