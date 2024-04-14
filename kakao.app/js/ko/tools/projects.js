@@ -3,6 +3,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 import kxk from "../../kxk.js"
 let post = kxk.post
 let ffs = kxk.ffs
+let slash = kxk.slash
 
 import Walker from "./Walker.js"
 
@@ -51,16 +52,18 @@ class Projects
 
     static async indexProject (file)
     {
-        var prjPath, result, walker, _49_19_
+        var prjPath, result, walker, _51_19_
 
         prjPath = await ffs.git(file)
+        prjPath = (prjPath != null ? prjPath : slash.dir(file))
+        console.log('Projects.indexProject ▸',prjPath)
         if (this.indexing)
         {
             if (this.indexing === prjPath)
             {
                 return
             }
-            this.queue = ((_49_19_=this.queue) != null ? _49_19_ : [])
+            this.queue = ((_51_19_=this.queue) != null ? _51_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -81,9 +84,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _69_21_ = 0; _69_21_ < list.length; _69_21_++)
+            for (var _71_21_ = 0; _71_21_ < list.length; _71_21_++)
             {
-                file = list[_69_21_]
+                file = list[_71_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('Projects project indexed',prjPath,this.projects)
