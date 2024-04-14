@@ -6,8 +6,8 @@
    000     000   000  0000000
 ###
 
-use ../../kxk ▪ elem post slash tooltip
-use ../tools  ◆ File Git Projects
+use ../../kxk ▪ elem slash tooltip
+use ../tools  ◆ Git Projects
 use ../editor ◆ Render Syntax
 
 class Tab
@@ -22,12 +22,8 @@ class Tab
         
         @update()
         
-        if @isPrj()
-            post.on 'gitStatus' @onGitStatus
-            Git.status @path
-        
-    isPrj: -> @type == 'prj'
-            
+        if @isPrj() ➜ Git.status @path 
+                    
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000
@@ -83,16 +79,22 @@ class Tab
             if Git.statusCache[@path]
                 @onGitStatus Git.statusCache[@path]
             if @collapsed
-                log 'collapsed prj' @path
-                # for i in 0...@hiddenPrjFiles.length
-                    # dot = elem 'span' class:'prjdot' text:'●'
-                    # @div.appendChild dot
-                    # if @hiddenPrjFiles[i] == window.textEditor.currentFile
-                        # dot.classList.add 'activeTab'
+                tabs = @tabs.fileTabsForPath @path
+                for tab in tabs
+                    dot = elem 'span' class:'prjdot' text:'●'
+                    @div.appendChild dot
+                    if tab.active
+                        dot.classList.add 'activeTab'
         else if @dirty?
             @div.appendChild elem 'span' class:'dot' text:'●'
         @
         
+    # 000000000   0000000    0000000   000      000000000  000  00000000   
+    #    000     000   000  000   000  000         000     000  000   000  
+    #    000     000   000  000   000  000         000     000  00000000   
+    #    000     000   000  000   000  000         000     000  000        
+    #    000      0000000    0000000   0000000     000     000  000        
+    
     tooltipHtml: => 
                 
         if @path?
@@ -126,9 +128,13 @@ class Tab
         if status.added.length   ➜ t += '<div class="git-status-icon git-added       added-square">■</div>'
         if status.changed.length ➜ t += '<div class="git-status-icon git-changed   changed-circle">●</div>'
         @dot.innerHTML = t
-        
-    index: -> @tabs.tabs.indexOf @
 
+    # 00000000   000  000   000  000   000  00000000  0000000    
+    # 000   000  000  0000  000  0000  000  000       000   000  
+    # 00000000   000  000 0 000  000 0 000  0000000   000   000  
+    # 000        000  000  0000  000  0000  000       000   000  
+    # 000        000  000   000  000   000  00000000  0000000    
+    
     togglePinned: =>
         
         if tab = @tabs.koreTabForPath @path
@@ -141,5 +147,8 @@ class Tab
                     tab.pinned = true
             @tabs.update()
         @
+        
+    isPrj: -> @type == 'prj'
+    index: -> @tabs.tabs.indexOf @
 
 export Tab

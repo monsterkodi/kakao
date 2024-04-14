@@ -1,12 +1,10 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import kxk from "../../kxk.js"
 let elem = kxk.elem
-let post = kxk.post
 let slash = kxk.slash
 let tooltip = kxk.tooltip
 
-import File from "../tools/File.js"
 import Git from "../tools/Git.js"
 import Projects from "../tools/Projects.js"
 
@@ -34,19 +32,13 @@ class Tab
         this.update()
         if (this.isPrj())
         {
-            post.on('gitStatus',this.onGitStatus)
             Git.status(this.path)
         }
     }
 
-    isPrj ()
-    {
-        return this.type === 'prj'
-    }
-
     update ()
     {
-        var diss, html, name, sep, _40_45_, _41_46_, _92_22_
+        var diss, dot, html, name, sep, tab, tabs, _36_45_, _37_46_, _88_22_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -102,7 +94,18 @@ class Tab
             }
             if (this.collapsed)
             {
-                console.log('collapsed prj',this.path)
+                tabs = this.tabs.fileTabsForPath(this.path)
+                var list = _k_.list(tabs)
+                for (var _83_24_ = 0; _83_24_ < list.length; _83_24_++)
+                {
+                    tab = list[_83_24_]
+                    dot = elem('span',{class:'prjdot',text:'●'})
+                    this.div.appendChild(dot)
+                    if (tab.active)
+                    {
+                        dot.classList.add('activeTab')
+                    }
+                }
             }
         }
         else if ((this.dirty != null))
@@ -114,7 +117,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _98_16_
+        var diss, html, numFiles, _100_16_
 
         if ((this.path != null))
         {
@@ -131,7 +134,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _119_19_, _119_24_
+        var t, _121_19_, _121_24_
 
         if (status.gitDir !== this.path)
         {
@@ -168,11 +171,6 @@ class Tab
         return this.dot.innerHTML = t
     }
 
-    index ()
-    {
-        return this.tabs.tabs.indexOf(this)
-    }
-
     togglePinned ()
     {
         var tab
@@ -197,6 +195,16 @@ class Tab
             this.tabs.update()
         }
         return this
+    }
+
+    isPrj ()
+    {
+        return this.type === 'prj'
+    }
+
+    index ()
+    {
+        return this.tabs.tabs.indexOf(this)
     }
 }
 
