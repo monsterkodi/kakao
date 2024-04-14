@@ -213,9 +213,6 @@ Window = (function ()
             case 'Add to Shelf':
                 return addToShelf()
 
-            case 'Toggle History':
-                return window.filebrowser.shelf.toggleHistory()
-
             case 'Activate Next Tab':
                 return window.tabs.navigate('right')
 
@@ -335,7 +332,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _209_14_
+    var _208_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -346,7 +343,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _215_22_, _216_19_
+    var _214_22_, _215_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -381,7 +378,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _255_32_
+    var _254_32_
 
     if (!(_k_.isNum(s)))
     {

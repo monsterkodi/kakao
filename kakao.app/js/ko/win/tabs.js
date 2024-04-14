@@ -718,7 +718,7 @@ class Tabs
         delete this.tabState[path]
         if (tab = this.koreTabForPath(path))
         {
-            tab.dirty = false
+            delete tab.dirty
         }
         return this.update()
     }
@@ -727,14 +727,12 @@ class Tabs
     {
         var state, tab
 
-        console.log('onSaveAll')
         var list = _k_.list(this.koreTabs())
         for (var _505_16_ = 0; _505_16_ < list.length; _505_16_++)
         {
             tab = list[_505_16_]
             if (tab.dirty)
             {
-                console.log('Tabs.onSaveAll dirty tab',tab)
                 if (tab.active)
                 {
                     post.emit('saveFile')
@@ -747,7 +745,6 @@ class Tabs
                     }
                     if (state = this.tabState[tab.path])
                     {
-                        tab.dirty = false
                         File.save(state.file,state.state.text(),function (file)
                         {
                             if (!file)
@@ -757,6 +754,7 @@ class Tabs
                         })
                     }
                 }
+                delete tab.dirty
             }
         }
         return this.update()

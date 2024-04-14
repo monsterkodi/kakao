@@ -20,17 +20,10 @@ function Shelf extends Column
         @index  = -1
         @div.id = 'shelf'
 
-        @showHistory = window.stash.get 'shelf|history' false
-
         post.on 'gitStatus'              @onGitStatus
         post.on 'addToShelf'             @addPath
-        post.on 'navigateHistoryChanged' @onNavigateHistoryChanged
-        post.on 'navigateIndexChanged'   @onNavigateIndexChanged
         post.on 'stashLoaded'            @onStashLoaded
-
         post.on 'file' @onFile
-
-    makeRoot: => @toggleHistory()
 
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  0000000     00000000    0000000   000   000
     # 000   000  000          000     000  000   000  000   000     000     000         000   000  000   000  000 0 000
@@ -44,16 +37,9 @@ function Shelf extends Column
 
         item = row.item
 
-        if item.type == 'historySeparator'
-            row.setActive emit:false
-            return
-
         row.setActive emit:true
 
-        # log 'activateRow' row
-
         if item.type == 'file'
-            # log 'Shelf emit jumpToFile' item
             post.emit 'jumpToFile' item
         else
             post.emit 'filebrowser' 'loadItem' item
@@ -96,8 +82,6 @@ function Shelf extends Column
     onStashLoaded: =>
 
         @loadShelfItems()
-
-        @loadHistory() if @showHistory
 
         setTimeout @loadGitStatus, 100
 
@@ -227,75 +211,6 @@ function Shelf extends Column
             Git.status row.path()
         @
         
-    # 000   000  000   0000000  000000000   0000000   00000000   000   000
-    # 000   000  000  000          000     000   000  000   000   000 000
-    # 000000000  000  0000000      000     000   000  0000000      00000
-    # 000   000  000       000     000     000   000  000   000     000
-    # 000   000  000  0000000      000      0000000   000   000     000
-
-    toggleHistory: =>
-
-        @showHistory = not @showHistory
-        if @showHistory
-            @loadHistory()
-        else
-            @removeHistory()
-        window.stash.set 'shelf|history' @showHistory
-
-    clearHistory: =>
-
-        window.navigate.clear()
-        if @showHistory then @setHistoryItems [
-            file:   window.editor.currentFile
-            pos:    window.editor.mainCursor()
-            text:   slash.file window.editor.currentFile
-        ]
-
-    historySeparatorIndex: ->
-
-        for i in [0...@numRows()]
-            if @row(i).item.type == 'historySeparator'
-                return i
-        return @numRows()
-
-    removeHistory: ->
-
-        separatorIndex = @historySeparatorIndex()
-        while @numRows() and @numRows() > separatorIndex
-            @removeRow @row(@numRows()-1)
-
-    onNavigateHistoryChanged: (filePositions, currentIndex) =>
-
-        if @showHistory
-            @setHistoryItems filePositions
-
-    onNavigateIndexChanged: (currentIndex, currentItem) =>
-
-        if @showHistory
-            log 'onNavigateIndexChanged' currentIndex, currentItem
-            reverseIndex = @numRows() - currentIndex - 1
-            # if currentItem.file != @activeRow()?.item.file
-            @row(reverseIndex)?.setActive()
-
-    loadHistory: ->
-
-        @setHistoryItems window.navigate.filePositions
-
-    setHistoryItems: (items) ->
-
-        @removeHistory()
-
-        items.map (h) ->
-            h.type = 'file'
-            h.text = slash.removeColumn h.text
-        items.reverse()
-
-        items.unshift
-            type: 'historySeparator'
-            icon: 'history-icon'
-
-        @addItems items
-
     # 00000000   0000000    0000000  000   000   0000000
     # 000       000   000  000       000   000  000
     # 000000    000   000  000       000   000  0000000
@@ -370,13 +285,6 @@ function Shelf extends Column
         row = @activeRow() ? @selectedRow()
 
         if row
-            if @showHistory
-                if row.item.type == 'historySeparator'
-                    @toggleHistory()
-                    return
-                if row.index() > @historySeparatorIndex()
-                    window.navigate.delFilePos row.item
-
             nextOrPrev = row.next() ? row.prev()
             row.div.remove()
             @items.splice row.index(), 1
@@ -397,10 +305,6 @@ function Shelf extends Column
             absPos = pos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top
 
         opt = items: [
-            text:   'Toggle History'
-            combo:  'alt+h'
-            cb:     @toggleHistory
-        ,
             text:   'Toggle Extensions'
             combo:  'ctrl+e'
             cb:     @toggleExtensions
@@ -408,9 +312,6 @@ function Shelf extends Column
             text:   'Remove'
             combo:  'backspace'
             cb:     @removeObject
-        ,
-            text:   'Clear History'
-            cb:     @clearHistory
         ]
 
         opt.x = absPos.x

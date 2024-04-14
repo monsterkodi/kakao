@@ -490,7 +490,7 @@ class Tabs
         
         delete @tabState[path]
         if tab = @koreTabForPath path
-            tab.dirty = false
+            delete tab.dirty
         @update()
         
         
@@ -501,18 +501,17 @@ class Tabs
     # 0000000   000   000      0      00000000        000   000  0000000  0000000
 
     onSaveAll: =>
-        log 'onSaveAll'
+
         for tab in @koreTabs()
             if tab.dirty
-                log 'Tabs.onSaveAll dirty tab' tab
                 if tab.active
                     post.emit 'saveFile'
                 else
                     continue if tab.path.startsWith 'untitled'
                     if state = @tabState[tab.path]
-                        tab.dirty = false
                         File.save state.file, state.state.text(), (file) ->
                             error "Tabs.onSaveAll failed to save #{state.file}" if not file
+                delete tab.dirty
         @update()
 
     #  0000000   0000000   000   000  000000000  00000000  000   000  000000000
