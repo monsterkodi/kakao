@@ -63,7 +63,6 @@ export default {actions:{cutCopyPaste:{combos:['command+x','ctrl+x','command+c',
 {
     var after, before, c, ci, cp, indt, insert, li, line, lines, newCursors, removeLastLine
 
-    console.log(`pasteText '${text}'`)
     lines = text.split('\n')
     if (lines.length === this.numSelections())
     {

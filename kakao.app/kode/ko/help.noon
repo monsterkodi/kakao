@@ -2,7 +2,7 @@
 essential shortcuts
 
     %.          open and focus file browser above editor
-    %y          maximize editor
+    %,          maximize editor
     %1          go to previous edit location
     %2          go to next edit location
 
@@ -51,9 +51,11 @@ display
 misc
     ⌘r          discard changes and reload current file
     ⌥o          jump to counterpart file
-    ⌘1|2        jump to previous|next editing location
             
-macro
+macro 
+    
+    ⌘m              invoke macro command and focus commandline
+    
     inv             toggle display of invisibles
     fps             toggle fps display
     blink           toggle cursor blinking

@@ -20,13 +20,12 @@ class FileHandler
         this.saveChanges = this.saveChanges.bind(this)
         this.saveFile = this.saveFile.bind(this)
         this.saveAll = this.saveAll.bind(this)
-        this.reloadTab = this.reloadTab.bind(this)
+        this.reloadFile = this.reloadFile.bind(this)
         this.openFiles = this.openFiles.bind(this)
         this.onFile = this.onFile.bind(this)
         this.loadFile = this.loadFile.bind(this)
         post.on('saveFileAs',this.saveFileAs)
         post.on('saveFile',this.saveFile)
-        post.on('saveAll',this.saveAll)
         post.on('saveChanges',this.saveChanges)
         post.on('loadFile',this.loadFile)
         post.on('openFile',this.openFile)
@@ -46,7 +45,7 @@ class FileHandler
         editor.saveScrollCursorsAndSelections()
         if ((file != null))
         {
-            var _40_28_ = slash.splitFilePos(file); file = _40_28_[0]; filePos = _40_28_[1]
+            var _39_28_ = slash.splitFilePos(file); file = _39_28_[0]; filePos = _39_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -113,9 +112,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _109_17_ = 0; _109_17_ < list.length; _109_17_++)
+        for (var _108_17_ = 0; _108_17_ < list.length; _108_17_++)
         {
-            file = list[_109_17_]
+            file = list[_108_17_]
             ffs.fileExists(slash.removeFilePos(file)).then(function (exists)
             {
                 if (!exists)
@@ -132,11 +131,11 @@ class FileHandler
         return true
     }
 
-    reloadTab (file)
+    reloadFile (file)
     {
-        if (file === (editor != null ? editor.currentFile : undefined))
+        if (file === kore.get('editor|file'))
         {
-            return this.loadFile((editor != null ? editor.currentFile : undefined),{reload:true})
+            return this.loadFile(file,{reload:true})
         }
         else
         {
@@ -164,13 +163,14 @@ class FileHandler
             {
                 return console.error('File.save failed!')
             }
+            console.log('file saved!!',saved)
             if (saved !== kore.get('editor|file'))
             {
                 return post.emit('loadFile',saved)
             }
             else
             {
-                return post.emit('reloadFile')
+                return post.emit('reloadFile',saved)
             }
         })
     }
@@ -196,7 +196,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _204_29_
+        var _202_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -212,7 +212,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _220_18_
+        var cb, dir, _218_18_
 
         cb = function (files)
         {
@@ -228,7 +228,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _240_18_
+        var cb, _238_18_
 
         cb = (function (file)
         {

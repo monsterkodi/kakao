@@ -15,7 +15,6 @@ class FileHandler
         
         post.on 'saveFileAs'  @saveFileAs
         post.on 'saveFile'    @saveFile
-        post.on 'saveAll'     @saveAll
         post.on 'saveChanges' @saveChanges
         post.on 'loadFile'    @loadFile
         post.on 'openFile'    @openFile
@@ -124,10 +123,10 @@ class FileHandler
     # 000   000  000       000      000   000  000   000  000   000
     # 000   000  00000000  0000000   0000000   000   000  0000000
 
-    reloadTab: (file) =>
+    reloadFile: (file) =>
 
-        if file == editor?.currentFile
-            @loadFile editor?.currentFile, reload:true
+        if file == kore.get 'editor|file'
+            @loadFile file, reload:true
         else
             post.emit 'revertFile' file
 
@@ -168,12 +167,11 @@ class FileHandler
         File.save file, editor.text(), (saved) ->
 
             return error 'File.save failed!' if not saved
-            
+            log 'file saved!!' saved
             if saved != kore.get 'editor|file'
-                
                 post.emit 'loadFile' saved
             else
-                post.emit 'reloadFile'
+                post.emit 'reloadFile' saved
     
     #  0000000   0000000    0000000          00000000   00000000   0000000  00000000  000   000  000000000
     # 000   000  000   000  000   000        000   000  000       000       000       0000  000     000

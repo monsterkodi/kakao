@@ -22,7 +22,7 @@ function Stash
         @sep     = opt?.separator ? '|'
         @timer   = null
         @file    = slash.path kakao.bundle.path, "/.stash/#{@name}.noon"
-        @timeout = opt?.timeout ? 4000
+        @timeout = opt?.timeout ? 500
         @changes = []
         
         @data = {}
@@ -54,15 +54,11 @@ function Stash
         return error 'stash.set -- invalid key', key if not key is str
         
         if not isEqual value, sds.get @data, @keypath(key)
-            # log 'stash.set' key, value
+
             sds.set @data, @keypath(key), value
-            # log @data
+
             if not isEqual value, sds.get @data, @keypath(key)
                 warning 'sds.set fail?' key, value, @data
-            # else 
-                # log key, @keypath(key), sds.get @data, @keypath(key)
-                # log @data
-                # log noon.stringify @data
                 
             clearTimeout @timer if @timer
             @timer = setTimeout @save, @timeout
@@ -86,10 +82,9 @@ function Stash
         
         file ?= @file
         data =○ noon.load file
-        # log 'stash load data' file, data
+
         if valid data
             @data = data
-            # log 'stash.emit stashLoaded'
             post.emit 'stashLoaded'
         @data
             
@@ -107,11 +102,9 @@ function Stash
         return if not @file
         
         try
-            # log 'stash.save data' @data
             text = noon.stringify @data
-            # log 'stash.save text' text
             ffs.write(@file, text).then (file) ->
-                # log 'stash.saved' file
+
         catch err
             error "stash.save -- can't save to '#{@file}': #{err}"
         true

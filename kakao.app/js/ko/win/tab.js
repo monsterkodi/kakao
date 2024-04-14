@@ -44,31 +44,9 @@ class Tab
         return this.type === 'prj'
     }
 
-    saveChanges ()
-    {
-        if (this.state)
-        {
-            console.log('Tab.saveChanges',this.state)
-            if (this.state.state)
-            {
-                return File.save(this.state.file,this.state.state.text(),(function (file)
-                {
-                    if (!file)
-                    {
-                        console.error("tab.saveChanges failed")
-                    }
-                }).bind(this))
-            }
-            else
-            {
-                console.error('tab.saveChanges -- nothing to save?')
-            }
-        }
-    }
-
     update ()
     {
-        var diss, html, name, sep, _128_22_, _76_45_, _77_46_
+        var diss, html, name, sep, _40_45_, _41_46_, _92_22_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -136,7 +114,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _134_16_
+        var diss, html, numFiles, _98_16_
 
         if ((this.path != null))
         {
@@ -153,7 +131,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _155_19_, _155_24_
+        var t, _119_19_, _119_24_
 
         if (status.gitDir !== this.path)
         {
@@ -195,21 +173,6 @@ class Tab
         return this.tabs.tabs.indexOf(this)
     }
 
-    close ()
-    {
-        var _176_16_
-
-        console.log('Tab.close',this.dirty)
-        if (this.dirty)
-        {
-            this.saveChanges()
-        }
-        this.div.remove()
-        ;(this.tooltip != null ? this.tooltip.del() : undefined)
-        post.emit('tabClosed',this.path)
-        return this
-    }
-
     togglePinned ()
     {
         var tab
@@ -233,14 +196,6 @@ class Tab
             }
             this.tabs.update()
         }
-        return this
-    }
-
-    revert ()
-    {
-        delete this.state
-        delete this.dirty
-        this.tabs.update()
         return this
     }
 }

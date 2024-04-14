@@ -67,7 +67,7 @@ export
 
     pasteText: (text) ->
         
-        log "pasteText '#{text}'"
+        # log "pasteText '#{text}'"
 
         lines = text.split '\n'
 

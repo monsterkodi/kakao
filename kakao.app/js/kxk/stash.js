@@ -30,7 +30,7 @@ Stash = (function ()
         this.sep = ((_22_34_=(opt != null ? opt.separator : undefined)) != null ? _22_34_ : '|')
         this.timer = null
         this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
-        this.timeout = ((_25_32_=(opt != null ? opt.timeout : undefined)) != null ? _25_32_ : 4000)
+        this.timeout = ((_25_32_=(opt != null ? opt.timeout : undefined)) != null ? _25_32_ : 500)
         this.changes = []
         this.data = {}
         if (((opt != null ? opt.defaults : undefined) != null))

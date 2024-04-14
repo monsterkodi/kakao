@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
-var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSize, toggleCenterText, toggleTabPinned, Window
+var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSize, toggleCenterText, Window
 
 import kakao from "../../kakao.js"
 
@@ -100,10 +100,6 @@ Window = (function ()
         this.indexer = window.indexer = new Indexer()
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
-        this.terminal.on('fileSearchResultChange',function (file, lineChange)
-        {
-            return post.toWins('fileLineChanges',file,[lineChange])
-        })
         this.editor.on('changed',function (changeInfo)
         {
             if (changeInfo.foreign)
@@ -251,7 +247,7 @@ Window = (function ()
                 return post.emit('saveFileAs')
 
             case 'Revert':
-                return post.emit('reloadFile')
+                return post.emit('reloadFile',kore.get('editor|file'))
 
             case 'Close Tab':
                 return post.emit('closeTab')
@@ -342,7 +338,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _211_14_
+    var _210_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -353,7 +349,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _217_22_, _218_19_
+    var _216_22_, _217_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -386,14 +382,9 @@ toggleCenterText = function ()
     }
 }
 
-toggleTabPinned = function ()
-{
-    console.log('Window.toggleTabPinned not implemented!')
-}
-
 setFontSize = function (s)
 {
-    var _264_32_
+    var _256_32_
 
     if (!(_k_.isNum(s)))
     {

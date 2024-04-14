@@ -28,42 +28,6 @@ class Tab
         
     isPrj: -> @type == 'prj'
             
-    # foreignChanges: (lineChanges) ->
-
-        # @foreign ?= []
-        # @foreign.push lineChanges
-        # @update()
-
-    #  0000000   0000000   000   000  00000000
-    # 000       000   000  000   000  000
-    # 0000000   000000000   000 000   0000000
-    #      000  000   000     000     000
-    # 0000000   000   000      0      00000000
-
-    saveChanges: ->
-
-        if @state
-
-            log 'Tab.saveChanges' @state
-            
-            # if @foreign?.length
-                # for changes in @foreign
-                    # for change in changes
-                        # switch change.change
-                            # 'changed'  ➜ @state.state = @state.state.changeLine change.doIndex, change.after
-                            # 'inserted' ➜ @state.state = @state.state.insertLine change.doIndex, change.after
-                            # 'deleted'  ➜ @state.state = @state.state.deleteLine change.doIndex
-
-            if @state.state
-                
-                File.save @state.file, @state.state.text(), (file) =>
-                    error "tab.saveChanges failed" if not file
-                    # @revert()
-            else
-                error 'tab.saveChanges -- nothing to save?'
-        # else
-            # post.emit 'saveChanges'
-
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000
@@ -165,18 +129,6 @@ class Tab
         
     index: -> @tabs.tabs.indexOf @
 
-    close: ->
-
-        log 'Tab.close' @dirty
-        
-        if @dirty
-            @saveChanges()
-
-        @div.remove()
-        @tooltip?.del()
-        post.emit 'tabClosed' @path
-        @
-
     togglePinned: =>
         
         if tab = @tabs.koreTabForPath @path
@@ -188,21 +140,6 @@ class Tab
                 else
                     tab.pinned = true
             @tabs.update()
-        @
-
-    # 00000000   00000000  000   000  00000000  00000000   000000000
-    # 000   000  000       000   000  000       000   000     000
-    # 0000000    0000000    000 000   0000000   0000000       000
-    # 000   000  000          000     000       000   000     000
-    # 000   000  00000000      0      00000000  000   000     000
-
-    revert: ->
-
-        # delete @foreign
-        delete @state
-        delete @dirty
-        # @update()
-        @tabs.update()
         @
 
 export Tab

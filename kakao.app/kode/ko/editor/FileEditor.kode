@@ -170,9 +170,10 @@ function FileEditor extends TextEditor
     restoreTab: (tab, state) =>
         
         log 'FileEditor.restoreTab' @currentFile, tab, state
+        post.emit 'storeState' kore.get 'editor|file'
         @currentFile = tab.path
         @do.setTabState state
-        @setText @do.text()
+        @setText @state.text()
         kore.set 'editor|file' @currentFile
     
     restoreScrollCursorsAndSelections: ->

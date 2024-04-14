@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ post elem kpos slash drag popup stopEvent $ 
-use ../tools  ◆ Projects
+use ../tools  ◆ Projects File
 use ./Tab
 
 class Tabs
@@ -35,7 +35,8 @@ class Tabs
 
         post.on 'fileRemoved'      @delTab
         post.on 'fileChanged'      @reloadFile
-        
+        post.on 'reloadFile'       @reloadFile
+        post.on 'saveAll'          @onSaveAll
         post.on 'closeTab'         @onCloseTab
         post.on 'closeOtherTabs'   @onCloseOtherTabs
         post.on 'dirty'            @onDirty
@@ -149,7 +150,6 @@ class Tabs
             log 'dangling' dangling 
             tabs = tabs.concat dangling
                 
-        # log 'cleanTabs' tabs
         @update tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
@@ -186,7 +186,6 @@ class Tabs
             @setActive path
             if tab.type == 'file'
                 if tab.dirty and @tabState[tab.path]
-                    log 'restoreTab' tab, @tabState[tab.path]
                     post.emit 'restoreTab' tab, @tabState[tab.path]
                     delete @tabState[tab.path]
                     return 
@@ -222,6 +221,7 @@ class Tabs
 
     reloadFile: (file) =>
         
+        file ?= kore.get 'editor|file'
         if tab = @koreTabForPath file
             delete tab.dirty
             @update()
@@ -250,11 +250,6 @@ class Tabs
                 @delTab tab.path
             else
                 @activate tab.path
-        # else
-            # error 'no tab?' event.target, event.target?.parentNode
-            # if tabElem = elem.upElem event.target, class:'tab'
-                # log 'remove tab elem' tabElem
-                # tabElem.remove()
         true
 
     # 000000000   0000000   0000000
@@ -426,10 +421,8 @@ class Tabs
         @dragTab.div.style.opacity = ''
         @dragDiv.remove()
         if index != @dragIndex
-            log 'shift' index-@dragIndex
+            # log 'shift' index-@dragIndex
             @shiftTab @koreTabs()[@dragIndex], index-@dragIndex
-
-    revertFile: (file) => @tab(file)?.revert()
     
     # 00000000  000   000  000000000  00000000  000   000   0000000  000   0000000   000   000  
     # 000        000 000      000     000       0000  000  000       000  000   000  0000  000  
@@ -459,12 +452,53 @@ class Tabs
                 delete tab.dirty
             @update()
             
+    #  0000000  000000000   0000000   00000000   00000000   0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000  000   000  000       000          000     000   000     000     000       
+    # 0000000      000     000   000  0000000    0000000   0000000      000     000000000     000     0000000   
+    #      000     000     000   000  000   000  000            000     000     000   000     000     000       
+    # 0000000      000      0000000   000   000  00000000  0000000      000     000   000     000     00000000  
+    
     onStoreState: (path) =>
-        
+
         if tab = @koreTabForPath path
-            if tab.dirty and tab.active
+            if tab.dirty
                 @tabState[tab.path] = window.editor.do.tabState()
-                log 'storeState' tab.path, @tabState[tab.path]
+                # log 'storeState' tab.path, @tabState[tab.path]
+                
+    # 00000000   00000000  000   000  00000000  00000000   000000000  00000000  000  000      00000000  
+    # 000   000  000       000   000  000       000   000     000     000       000  000      000       
+    # 0000000    0000000    000 000   0000000   0000000       000     000000    000  000      0000000   
+    # 000   000  000          000     000       000   000     000     000       000  000      000       
+    # 000   000  00000000      0      00000000  000   000     000     000       000  0000000  00000000  
+
+    revertFile: (path) =>
+        
+        delete @tabState[path]
+        if tab = @koreTabForPath path
+            tab.dirty = false
+        @update()
+        
+        
+    #  0000000   0000000   000   000  00000000         0000000   000      000
+    # 000       000   000  000   000  000             000   000  000      000
+    # 0000000   000000000   000 000   0000000         000000000  000      000
+    #      000  000   000     000     000             000   000  000      000
+    # 0000000   000   000      0      00000000        000   000  0000000  0000000
+
+    onSaveAll: =>
+        log 'onSaveAll'
+        for tab in @koreTabs()
+            if tab.dirty
+                log 'Tabs.onSaveAll dirty tab' tab
+                if tab.active
+                    post.emit 'saveFile'
+                else
+                    continue if tab.path.startsWith 'untitled'
+                    if state = @tabState[tab.path]
+                        tab.dirty = false
+                        File.save state.file, state.state.text(), (file) ->
+                            error "Tabs.onSaveAll failed to save #{state.file}" if not file
+        @update()
 
     #  0000000   0000000   000   000  000000000  00000000  000   000  000000000
     # 000       000   000  0000  000     000     000        000 000      000

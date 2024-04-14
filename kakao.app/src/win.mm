@@ -41,7 +41,7 @@ NSDictionary* dictForRect(NSRect rect)
 - (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
 - (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
 - (void) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
-- (BOOL) windowShouldClose:(NSWindow*)window 
+- (BOOL) windowShouldClose:  (NSWindow*)window 
 { 
     if ([[App wins] count] == 1) // make sure the application closes if the last kakao window closes.
         [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.

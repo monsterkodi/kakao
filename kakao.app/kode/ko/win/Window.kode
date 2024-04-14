@@ -62,8 +62,8 @@ function Window extends win.Delegate
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
-        @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
-            post.toWins 'fileLineChanges' file, [lineChange]
+        # @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
+            # post.toWins 'fileLineChanges' file, [lineChange]
     
         @editor.on 'changed' (changeInfo) ->
             return if changeInfo.foreign
@@ -143,7 +143,7 @@ function Window extends win.Delegate
             'Save'                  ➜ return post.emit 'saveFile'
             'Save All'              ➜ return post.emit 'saveAll'
             'Save As ...'           ➜ return post.emit 'saveFileAs'
-            'Revert'                ➜ return post.emit 'reloadFile'
+            'Revert'                ➜ return post.emit 'reloadFile' kore.get 'editor|file'
             'Close Tab'             ➜ return post.emit 'closeTab'
             'Close Other Tabs'      ➜ return post.emit 'closeOtherTabs'
             'Close Other Windows'   ➜ return post.toWins 'closeWindow'
@@ -152,7 +152,6 @@ function Window extends win.Delegate
             'Preferences'           ➜ return post.emit 'loadFile' prefs.store.file
     
         log 'onMenuAction unhandled' name, trail
-        
             
 # 00000000    0000000    0000000  000000000
 # 000   000  000   000  000          000
@@ -240,13 +239,6 @@ toggleCenterText = ->
 
     if restoreInvisibles
         window.editor.toggleInvisibles()
-        
-toggleTabPinned = ->
-    
-    log 'Window.toggleTabPinned not implemented!'
-    
-    # if t = window.tabs.activeTab()
-        # t.togglePinned()
         
 # 00000000   0000000   000   000  000000000      0000000  000  0000000  00000000
 # 000       000   000  0000  000     000        000       000     000   000
