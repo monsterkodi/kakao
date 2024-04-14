@@ -103,7 +103,10 @@ class Tabs
         
         if not @koreTabForPath path
         
-            @koreTabs().push type:'file' path:path
+            if prjPath = Projects.dir path
+                if not @koreTabForPath prjPath
+                    @koreTabs().push type:'prj' path:prjPath
+            @koreTabs().push type:'file' path:path, tmp:true
             @setActive path
             @cleanTabs()
             @tab(path).div.scrollIntoViewIfNeeded()
@@ -113,6 +116,12 @@ class Tabs
         @update()
         @
         
+    #  0000000  000      00000000   0000000   000   000        000000000   0000000   0000000     0000000  
+    # 000       000      000       000   000  0000  000           000     000   000  000   000  000       
+    # 000       000      0000000   000000000  000 0 000           000     000000000  0000000    0000000   
+    # 000       000      000       000   000  000  0000           000     000   000  000   000       000  
+    #  0000000  0000000  00000000  000   000  000   000           000     000   000  0000000    0000000   
+    
     cleanTabs: ->
         
         tabs = @koreTabs()
@@ -126,14 +135,21 @@ class Tabs
            
         dangling = []
         while tab = remain.shift()
-            prjPath = Projects.dir tab.path
-            if valid prjTabs[prjPath]
+            if prjPath = Projects.dir tab.path
+                prjTabs[prjPath] ?= [type:prj, path:prjPath]
                 prjTabs[prjPath].push tab
             else
                 dangling.push tab
              
+        for k,v of prjTabs
+            if v.length <= 1
+                delete prjTabs[k]
+                
         tabs = []
         for k,v of prjTabs
+            if v[-1].tmp
+                for i in v.length-2..0
+                    if v[i].tmp ➜ v.splice i, 1
             tabs = tabs.concat v
             
         if valid dangling
@@ -288,7 +304,15 @@ class Tabs
 
     onCloseOtherTabs: =>
 
-        kore.set 'tabs' [@activeKorePrj(), @activeKoreTab()]
+        # kore.set 'tabs' [@activeKorePrj(), @activeKoreTab()]
+        active = @activeKoreTab()
+        tabs = @koreTabs()
+        for index in tabs.length-1..0
+            tab = tabs[index]
+            continue if tab == active
+            if not tab.pinned and tab.type == 'file'
+                tabs.splice index, 1
+        @cleanTabs()
         
     # 000000000  00     00  00000000   
     #    000     000   000  000   000  
@@ -296,21 +320,6 @@ class Tabs
     #    000     000 0 000  000        
     #    000     000   000  000        
     
-    getTmpTab: ->
-        
-        for t in @tabs
-            return t if t.tmpTab
-        
-    addTmpTab: (file) ->
-        
-        if tab = @getTmpTab()
-            tab.path = file
-        else
-            tab = @addTab file
-            tab?.tmpTab = true
-        tab?.update()
-        tab
-        
     onNewEmptyTab: =>
 
         log 'onNewEmptyTab'
@@ -341,7 +350,7 @@ class Tabs
     navigate: (key) ->
         
         if tab = @activeKoreTab()
-            tabs = @koreTabs()
+            tabs = @koreTabs().filter (t) -> t.type == 'file'
             index = tabs.indexOf tab
             index += switch key
                 'left'  ➜ -1
@@ -451,59 +460,12 @@ class Tabs
         for tab in @tabs
             tab.update()
                 
-    #  0000000   0000000   00000000   000000000  000000000   0000000   0000000     0000000  
-    # 000       000   000  000   000     000        000     000   000  000   000  000       
-    # 0000000   000   000  0000000       000        000     000000000  0000000    0000000   
-    #      000  000   000  000   000     000        000     000   000  000   000       000  
-    # 0000000    0000000   000   000     000        000     000   000  0000000    0000000   
+    # 0000000    000  00000000   000000000  000   000  
+    # 000   000  000  000   000     000      000 000   
+    # 000   000  000  0000000       000       00000    
+    # 000   000  000  000   000     000        000     
+    # 0000000    000  000   000     000        000     
     
-    sortTabs: ->
-        
-        log 'sortTabs'
-        
-        sorted = @tabs.filter (t) -> t.isPrj
-        remain = @tabs.filter (t) -> not t.isPrj
-        
-        prjTabs = {}
-        for tab in sorted
-            prjTabs[tab.file] = [tab]
-           
-        dangling = []
-        while tab = remain.shift()
-            prjPath = Projects.dir tab.file
-            if valid prjTabs[prjPath]
-                prjTabs[prjPath].push tab
-            else
-                # log 'dangling tab' tab.file
-                dangling.push tab
-            
-        @tabs = []
-        for k,v of prjTabs
-            if v.length > 1
-                @tabs = @tabs.concat v
-            else if v.length == 1 and valid v[0].hiddenPrjFiles
-                @tabs.push v[0]
-            # else
-                # log 'no prjTabs?' k
-            
-        @tabs = @tabs.concat dangling
-        
-        @div.innerHTML = ''
-        for tab in @tabs
-            # log 'tab' tab.file
-            if tab.div
-                # @div.removeChild tab.div
-                @div.appendChild tab.div
-                
-        kore.set 'tabs' @tabs.map (t) -> 
-            i = 
-                type: t.isPrj ? 'prj' : 'file'
-                path: t.file
-            i.tmp       = true if t.tmpTab
-            i.pinned    = true if t.pinned
-            i.collapsed = true if t.collapsed
-            i
-
     onDirty: (dirty) =>
         
         if tab = @activeKoreTab()
@@ -535,7 +497,7 @@ class Tabs
 
         opt = items: [
             text:   'Close Other Tabs'
-            combo:  'ctrl+shift+w'
+            combo:  'alt+cmdctrl+w'
         ,
             text:   'New Window'
             combo:  'ctrl+shift+n'

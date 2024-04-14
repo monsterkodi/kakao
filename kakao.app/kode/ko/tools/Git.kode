@@ -11,6 +11,7 @@ use ../../kxk ▪ slash post kermit
 function Git
 
     @statusRequests: {}
+    @statusCache: {}
 
     @: ->
         @gitDirs = []
@@ -84,6 +85,7 @@ function Git
                 status.files[file] = key
         
         post.emit 'gitStatus' status
+        @statusCache[gitDir] = status
                 
         status
 

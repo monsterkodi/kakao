@@ -129,9 +129,18 @@ class Tabs
 
     addTab (path)
     {
+        var prjPath
+
         if (!this.koreTabForPath(path))
         {
-            this.koreTabs().push({type:'file',path:path})
+            if (prjPath = Projects.dir(path))
+            {
+                if (!this.koreTabForPath(prjPath))
+                {
+                    this.koreTabs().push({type:'prj',path:prjPath})
+                }
+            }
+            this.koreTabs().push({type:'file',path:path,tmp:true})
             this.setActive(path)
             this.cleanTabs()
             this.tab(path).div.scrollIntoViewIfNeeded()
@@ -144,7 +153,7 @@ class Tabs
 
     cleanTabs ()
     {
-        var dangling, k, prjPath, prjTabs, remain, sorted, tab, tabs, v
+        var dangling, i, k, prjPath, prjTabs, remain, sorted, tab, tabs, v, _139_33_
 
         tabs = this.koreTabs()
         sorted = tabs.filter(function (t)
@@ -157,17 +166,17 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _124_16_ = 0; _124_16_ < list.length; _124_16_++)
+        for (var _133_16_ = 0; _133_16_ < list.length; _133_16_++)
         {
-            tab = list[_124_16_]
+            tab = list[_133_16_]
             prjTabs[tab.path] = [tab]
         }
         dangling = []
         while (tab = remain.shift())
         {
-            prjPath = Projects.dir(tab.path)
-            if (!_k_.empty(prjTabs[prjPath]))
+            if (prjPath = Projects.dir(tab.path))
             {
+                prjTabs[prjPath] = ((_139_33_=prjTabs[prjPath]) != null ? _139_33_ : [{type:prj,path:prjPath}])
                 prjTabs[prjPath].push(tab)
             }
             else
@@ -175,10 +184,28 @@ class Tabs
                 dangling.push(tab)
             }
         }
+        for (k in prjTabs)
+        {
+            v = prjTabs[k]
+            if (v.length <= 1)
+            {
+                delete prjTabs[k]
+            }
+        }
         tabs = []
         for (k in prjTabs)
         {
             v = prjTabs[k]
+            if (v.slice(-1)[0].tmp)
+            {
+                for (var _151_25_ = i = v.length - 2, _151_37_ = 0; (_151_25_ <= _151_37_ ? i <= 0 : i >= 0); (_151_25_ <= _151_37_ ? ++i : --i))
+                {
+                    if (v[i].tmp)
+                    {
+                        v.splice(i,1)
+                    }
+                }
+            }
             tabs = tabs.concat(v)
         }
         if (!_k_.empty(dangling))
@@ -234,17 +261,17 @@ class Tabs
 
     setActive (path)
     {
-        var tab, _187_26_, _187_31_
+        var tab, _203_26_, _203_31_
 
         var list = _k_.list(this.koreTabs())
-        for (var _183_16_ = 0; _183_16_ < list.length; _183_16_++)
+        for (var _199_16_ = 0; _199_16_ < list.length; _199_16_++)
         {
-            tab = list[_183_16_]
+            tab = list[_199_16_]
             delete tab.active
             if (slash.samePath(tab.path,path))
             {
                 tab.active = true
-                ;((_187_26_=this.tab(path)) != null ? (_187_31_=_187_26_.div) != null ? _187_31_.scrollIntoViewIfNeeded() : undefined : undefined)
+                ;((_203_26_=this.tab(path)) != null ? (_203_31_=_203_26_.div) != null ? _203_31_.scrollIntoViewIfNeeded() : undefined : undefined)
             }
         }
     }
@@ -254,9 +281,9 @@ class Tabs
         var tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _191_16_ = 0; _191_16_ < list.length; _191_16_++)
+        for (var _207_16_ = 0; _207_16_ < list.length; _207_16_++)
         {
-            tab = list[_191_16_]
+            tab = list[_207_16_]
             if (tab.active)
             {
                 return tab
@@ -271,9 +298,9 @@ class Tabs
         if (fileTab = this.activeKoreTab())
         {
             var list = _k_.list(this.koreTabs())
-            for (var _197_20_ = 0; _197_20_ < list.length; _197_20_++)
+            for (var _213_20_ = 0; _213_20_ < list.length; _213_20_++)
             {
-                tab = list[_197_20_]
+                tab = list[_213_20_]
                 if (tab.type === 'prj' && fileTab.path.startsWith(tab.path))
                 {
                     return tab
@@ -398,39 +425,23 @@ class Tabs
 
     onCloseOtherTabs ()
     {
-        return kore.set('tabs',[this.activeKorePrj(),this.activeKoreTab()])
-    }
+        var active, index, tab, tabs
 
-    getTmpTab ()
-    {
-        var t
-
-        var list = _k_.list(this.tabs)
-        for (var _301_14_ = 0; _301_14_ < list.length; _301_14_++)
+        active = this.activeKoreTab()
+        tabs = this.koreTabs()
+        for (var _310_21_ = index = tabs.length - 1, _310_36_ = 0; (_310_21_ <= _310_36_ ? index <= 0 : index >= 0); (_310_21_ <= _310_36_ ? ++index : --index))
         {
-            t = list[_301_14_]
-            if (t.tmpTab)
+            tab = tabs[index]
+            if (tab === active)
             {
-                return t
+                continue
+            }
+            if (!tab.pinned && tab.type === 'file')
+            {
+                tabs.splice(index,1)
             }
         }
-    }
-
-    addTmpTab (file)
-    {
-        var tab
-
-        if (tab = this.getTmpTab())
-        {
-            tab.path = file
-        }
-        else
-        {
-            tab = this.addTab(file)
-            if ((tab != null)) { tab.tmpTab = true }
-        }
-        ;(tab != null ? tab.update() : undefined)
-        return tab
+        return this.cleanTabs()
     }
 
     onNewEmptyTab ()
@@ -444,7 +455,7 @@ class Tabs
     {
         var col, line, tab
 
-        var _322_26_ = slash.splitFileLine(file); file = _322_26_[0]; line = _322_26_[1]; col = _322_26_[2]
+        var _331_26_ = slash.splitFileLine(file); file = _331_26_[0]; line = _331_26_[1]; col = _331_26_[2]
 
         if (tab = this.tab(file))
         {
@@ -467,7 +478,10 @@ class Tabs
 
         if (tab = this.activeKoreTab())
         {
-            tabs = this.koreTabs()
+            tabs = this.koreTabs().filter(function (t)
+            {
+                return t.type === 'file'
+            })
             index = tabs.indexOf(tab)
             index += ((function ()
             {
@@ -564,7 +578,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _402_25_ = [tb,ta]; ta = _402_25_[0]; tb = _402_25_[1]
+                    var _411_25_ = [tb,ta]; ta = _411_25_[0]; tb = _411_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -608,7 +622,7 @@ class Tabs
 
         infos = this.tabs.map(function (t)
         {
-            var _433_44_
+            var _442_44_
 
             return (typeof t.stashInfo === "function" ? t.stashInfo() : undefined)
         })
@@ -623,7 +637,7 @@ class Tabs
 
     revertFile (file)
     {
-        var _439_36_
+        var _448_36_
 
         return (this.tab(file) != null ? this.tab(file).revert() : undefined)
     }
@@ -634,89 +648,11 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _451_16_ = 0; _451_16_ < list.length; _451_16_++)
+        for (var _460_16_ = 0; _460_16_ < list.length; _460_16_++)
         {
-            tab = list[_451_16_]
+            tab = list[_460_16_]
             tab.update()
         }
-    }
-
-    sortTabs ()
-    {
-        var dangling, k, prjPath, prjTabs, remain, sorted, tab, v
-
-        console.log('sortTabs')
-        sorted = this.tabs.filter(function (t)
-        {
-            return t.isPrj
-        })
-        remain = this.tabs.filter(function (t)
-        {
-            return !t.isPrj
-        })
-        prjTabs = {}
-        var list = _k_.list(sorted)
-        for (var _468_16_ = 0; _468_16_ < list.length; _468_16_++)
-        {
-            tab = list[_468_16_]
-            prjTabs[tab.file] = [tab]
-        }
-        dangling = []
-        while (tab = remain.shift())
-        {
-            prjPath = Projects.dir(tab.file)
-            if (!_k_.empty(prjTabs[prjPath]))
-            {
-                prjTabs[prjPath].push(tab)
-            }
-            else
-            {
-                dangling.push(tab)
-            }
-        }
-        this.tabs = []
-        for (k in prjTabs)
-        {
-            v = prjTabs[k]
-            if (v.length > 1)
-            {
-                this.tabs = this.tabs.concat(v)
-            }
-            else if (v.length === 1 && !_k_.empty(v[0].hiddenPrjFiles))
-            {
-                this.tabs.push(v[0])
-            }
-        }
-        this.tabs = this.tabs.concat(dangling)
-        this.div.innerHTML = ''
-        var list1 = _k_.list(this.tabs)
-        for (var _492_16_ = 0; _492_16_ < list1.length; _492_16_++)
-        {
-            tab = list1[_492_16_]
-            if (tab.div)
-            {
-                this.div.appendChild(tab.div)
-            }
-        }
-        return kore.set('tabs',this.tabs.map(function (t)
-        {
-            var i
-
-            i = {type:(t.isPrj ? 'prj' : 'file'),path:t.file}
-            if (t.tmpTab)
-            {
-                i.tmp = true
-            }
-            if (t.pinned)
-            {
-                i.pinned = true
-            }
-            if (t.collapsed)
-            {
-                i.collapsed = true
-            }
-            return i
-        }))
     }
 
     onDirty (dirty)
@@ -757,7 +693,7 @@ class Tabs
         {
             absPos = kpos(this.view.getBoundingClientRect().left,this.view.getBoundingClientRect().top)
         }
-        opt = {items:[{text:'Close Other Tabs',combo:'ctrl+shift+w'},{text:'New Window',combo:'ctrl+shift+n'},{text:'Toggle Tab Extensions',combo:'alt+cmdctrl+t'}]}
+        opt = {items:[{text:'Close Other Tabs',combo:'alt+cmdctrl+w'},{text:'New Window',combo:'ctrl+shift+n'},{text:'Toggle Tab Extensions',combo:'alt+cmdctrl+t'}]}
         opt.x = absPos.x
         opt.y = absPos.y
         return popup.menu(opt)

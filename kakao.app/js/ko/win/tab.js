@@ -151,7 +151,7 @@ class Tab
 
     update ()
     {
-        var diss, html, name, sep, _109_45_, _110_46_, _159_22_
+        var diss, html, name, sep, _109_45_, _110_46_, _161_22_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -188,7 +188,7 @@ class Tab
     <line x1="15" y1="16"  x2="15"  y2="22" stroke-linecap="round"></line>
 </svg>`
             }
-            else if (this.tmpTab)
+            else if (this.tmp)
             {
                 html = `<svg width="100%" height="100%" viewBox="0 0 30 30">
     <circle cx="15" cy="9"  r="2" />
@@ -201,6 +201,10 @@ class Tab
         this.tooltip = new tooltip({elem:name,bound:this.div,html:this.tooltipHtml,x:-2})
         if (this.isPrj())
         {
+            if (Git.statusCache[this.path])
+            {
+                this.onGitStatus(Git.statusCache[this.path])
+            }
             if (this.collapsed)
             {
                 console.log('collapsed prj',this.path)
@@ -215,7 +219,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _165_16_
+        var diss, html, numFiles, _167_16_
 
         if ((this.path != null))
         {
@@ -232,7 +236,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _186_19_, _186_24_
+        var t, _188_19_, _188_24_
 
         if (status.gitDir !== this.path)
         {
@@ -276,7 +280,7 @@ class Tab
 
     close ()
     {
-        var _205_16_
+        var _207_16_
 
         if (this.dirty)
         {
@@ -290,9 +294,27 @@ class Tab
 
     togglePinned ()
     {
-        this.pinned = !this.pinned
-        delete this.tmpTab
-        this.update()
+        var tab
+
+        if (tab = this.tabs.koreTabForPath(this.path))
+        {
+            if (tab.tmp)
+            {
+                delete tab.tmp
+            }
+            else
+            {
+                if (tab.pinned)
+                {
+                    delete tab.pinned
+                }
+                else
+                {
+                    tab.pinned = true
+                }
+            }
+            this.tabs.update()
+        }
         return this
     }
 
