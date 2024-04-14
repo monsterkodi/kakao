@@ -54,7 +54,8 @@ function FileEditor extends TextEditor
 
         if changeInfo.changes.length
             @dirty = @do.hasChanges()
-            post.emit 'dirty' @dirty
+            if @dirty
+                post.emit 'dirty' @dirty
 
     # 00000000  000  000      00000000
     # 000       000  000      000

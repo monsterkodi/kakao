@@ -48,7 +48,7 @@ class Tabs
         # post.on 'saved'            @onSaved     # saved in this window
         post.on 'editorFocus'      @onEditorFocus
         post.on 'stashLoaded'      @onStashLoaded
-        # post.on 'projectIndexed'   @onProjectIndexed
+        post.on 'projectIndexed'   @onProjectIndexed
         
         kore.on 'tabs'        @onKoreTabs
         kore.on 'editor|file' @onEditorFile
@@ -72,9 +72,6 @@ class Tabs
     
     update: -> kore.set 'tabs' @koreTabs()
 
-        # @sortTabs()        
-        # @stash()
-                
     koreTabForPath: (path) ->
         
         for tab in @koreTabs()
@@ -87,28 +84,7 @@ class Tabs
     # 000       000   000  000     000     000   000  000   000  000       000  000      000       
     # 00000000  0000000    000     000      0000000   000   000  000       000  0000000  00000000  
     
-    onEditorFile: (path) =>
-        
-        log 'Tabs.onEditorFile' path
-        
-        @addTab path
-        
-        # tab = @tab path
-        # if empty tab
-            # tab = @addTmpTab file
-
-        # if activeTab = @activeTab()
-            # if tab != activeTab
-                # activeTab.clearActive()
-                # if activeTab.dirty
-                    # activeTab.storeState()
-
-        # if tab?.state
-            # restoreState = tab.state.state
-            # log 'restoreState' restoreState
-            # @setText restoreState.text()
-            # @state = restoreState
-            # @dirty = true
+    onEditorFile: (path) => @addTab path
         
     # 00000000  0000000    000  000000000   0000000   00000000   00000000   0000000    0000000  000   000   0000000  
     # 000       000   000  000     000     000   000  000   000  000       000   000  000       000   000  000       
@@ -125,12 +101,7 @@ class Tabs
                 log 'editorFocus' @koreTabs()
                 @setActive tab.path
                 @update()
-            # if t = @getTmpTab()
-                # if t.path == window.textEditor.currentFile
-                    # delete t.tmpTab
-                    # t.update()
-                    # @update()
-            
+
     #  0000000   0000000    0000000          000000000   0000000   0000000
     # 000   000  000   000  000   000           000     000   000  000   000
     # 000000000  000   000  000   000           000     000000000  0000000
@@ -142,10 +113,43 @@ class Tabs
         if not @koreTabForPath path
         
             @koreTabs().push type:'file' path:path
+            @setActive path
+            @cleanTabs()
+            return
 
         @setActive path
         @update()
         @
+        
+    cleanTabs: ->
+        
+        tabs = @koreTabs()
+
+        sorted = tabs.filter (t) -> t.type == 'prj'
+        remain = tabs.filter (t) -> t.type != 'prj'
+        
+        prjTabs = {}
+        for tab in sorted
+            prjTabs[tab.path] = [tab]
+           
+        dangling = []
+        while tab = remain.shift()
+            prjPath = Projects.dir tab.path
+            if valid prjTabs[prjPath]
+                prjTabs[prjPath].push tab
+            else
+                dangling.push tab
+             
+        tabs = []
+        for k,v of prjTabs
+            tabs = tabs.concat v
+            
+        if valid dangling
+            log 'dangling' dangling 
+            tabs = tabs.concat dangling
+                
+        log 'cleanTabs' tabs
+        kore.set 'tabs' tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
     # 000   000  000       000                000     000   000  000   000  
@@ -190,12 +194,21 @@ class Tabs
     setActive: (path) =>
         
         for tab in @koreTabs()
-            tab.active = slash.samePath tab.path, path
+            delete tab.active
+            if slash.samePath tab.path, path
+                tab.active = true
+            log 'setActive' tab
             
     activeKoreTab: =>
         
         for tab in @koreTabs()
             return tab if tab.active
+
+    activeKorePrj: =>
+        
+        if fileTab = @activeKoreTab()
+            for tab in @koreTabs()
+                return tab if tab.type == 'prj' and fileTab.path.startsWith tab.path 
             
     # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
     # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
@@ -207,96 +220,21 @@ class Tabs
         
         log 'Tabs.reloadFile' file
         
-        # if not file
-            # @reloadActiveTab()
-        # else if tab = tabs.tab file
-            # if tab == tabs.activeTab()
-                # log 'FileHandler.reloadFile reloadActiveTab' file
-                # @reloadActiveTab()
-            # else
-                # log 'FileHandler.reloadFile reload inactive tab' file
-                # tab.reload()
-                
-    # reloadActiveTab: =>
-
-        # log 'Tabs.reloadActiveTab'
-#         
-        # if tab = tabs.activeTab()
-            # tab.reload()
-
-        # @loadFile editor.currentFile, reload:true
-
-        # if editor.currentFile?
-            # post.toWins 'reloadTab' editor.currentFile
-
+        if tab = @koreTabForPath file
+            tab.dirty = false
+            @update()
+        
     # 00000000   00000000    0000000         000  00000000   0000000  000000000  
     # 000   000  000   000  000   000        000  000       000          000     
     # 00000000   0000000    000   000        000  0000000   000          000     
     # 000        000   000  000   000  000   000  000       000          000     
     # 000        000   000   0000000    0000000   00000000   0000000     000     
     
-    onProjectIndexed: (prjPath) => 
+    onProjectIndexed: (path) => 
     
-        @addPrjTab prjPath
-                
-    getPrjFiles: (file) ->
-        
-        @getPrjTabs(file).map (t) -> t.path
-        
-    getPrjTabs: (file) ->
-        
-        prjChildTabs = []
-        if prjPath = Projects.dir file
-            for tab in @tabs
-                if Projects.dir(tab.path) == prjPath and tab.path != prjPath
-                    prjChildTabs.push tab
-        prjChildTabs
-        
-    getPrjTab: (prjPath) =>
-        
-        for tab in @tabs
-            if tab.isPrj and tab.path == prjPath
-                return tab
-        null
-        
-    addPrjTab: (prjPath) =>
-        
-        log 'addPrjTab' prjPath
-        
-        # return if not prjPath
-#         
-        # if not @getPrjTab prjPath
-            # tab = new Tab @, prjPath, true
-            # @tabs.push tab
-            # @sortTabs()
-            # tab
-        
-    onSendTabs: (winID) =>
-
-        t = ''
-        for tab in @tabs
-            t += tab.div.innerHTML
-        post.toWins 'winTabs' window.winID, t
-
-    onFileLineChanges: (file, lineChanges) =>
-
-        # tab = @tab file
-        # if tab? and tab != @activeTab()
-            # tab.foreignChanges lineChanges
-
-    # onFileSaved: (file, winID) =>
-
-        # if winID == window.winID
-            # return error "fileSaved from this window? #{file} #{winID}"
-#             
-        # tab = @tab file
-        # if tab? and tab != @activeTab()
-            # tab.revert()
-
-    # onSaved: (file) =>
-
-        # @tab(file)?.setDirty false
-            
+        @koreTabs().push type:'prj' path:path
+        @cleanTabs()
+    
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000
     # 000       000      000  000       0000000
@@ -305,8 +243,6 @@ class Tabs
 
     onClick: (event) =>
         
-        log 'Tabs.onClick' event.target
-
         if tab = @tab event.target
             log 'Tabs.onClick path' tab.path
             if event.target.classList.contains 'dot'
@@ -316,8 +252,8 @@ class Tabs
                 log 'activate tab!' tab
                 # tab.activate()
                 @activate tab.path
-        # else
-            # log 'no tab?' event.target, event.target?.parentNode, @tabs
+        else
+            error 'no tab?' event.target, event.target?.parentNode, @tabs
             # if tabElem = elem.upElem event.target, class:'tab'
                 # log 'remove tab elem' tabElem
                 # tabElem.remove()
@@ -343,7 +279,7 @@ class Tabs
             return t
         if id is str ➜ return @tabs.find (t) -> t.path == id
 
-    activeTab: -> @tabs.find (t) -> t.isActive()
+    # activeTab: -> @tabs.find (t) -> t.isActive()
             
     numTabs:     -> @tabs.length
     numFileTabs: -> @fileTabs().length
@@ -378,7 +314,7 @@ class Tabs
 
     onCloseOtherTabs: =>
 
-        kore.set 'tabs' [@activeKoreTab()]
+        kore.set 'tabs' [@activeKorePrj(), @activeKoreTab()]
         
     # 000000000  00     00  00000000   
     #    000     000   000  000   000  
@@ -430,21 +366,24 @@ class Tabs
 
     navigate: (key) ->
         
-        if activeTab = @activeTab()
-            
-            fileTabs = @fileTabs()
+        log 'navigate' key
+        return
+        
+        # if activeTab = @activeTab()
+#             
+            # fileTabs = @fileTabs()
 
-            index = fileTabs.indexOf activeTab
-            index += switch key
-                'left'  ➜ -1
-                'right' ➜ +1
-            
-            index = (fileTabs.length + index) % fileTabs.length
-            
-            if fileTabs[index].isPrj
-                log 'prjTab' @tabs[index]
-            else
-                fileTabs[index].activate()
+            # index = fileTabs.indexOf activeTab
+            # index += switch key
+                # 'left'  ➜ -1
+                # 'right' ➜ +1
+#             
+            # index = (fileTabs.length + index) % fileTabs.length
+#             
+            # if fileTabs[index].isPrj
+                # log 'prjTab' @tabs[index]
+            # else
+                # fileTabs[index].activate()
 
     swap: (ta, tb) ->
 
@@ -456,11 +395,13 @@ class Tabs
         @update()
 
     move: (key) ->
+        
+        log 'Tabs.move' key
 
-        tab = @activeTab()
-        switch key
-            'left'  ➜ @swap tab, tab.prev()
-            'right' ➜ @swap tab, tab.next()
+        # tab = @activeTab()
+        # switch key
+            # 'left'  ➜ @swap tab, tab.prev()
+            # 'right' ➜ @swap tab, tab.next()
             
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000
@@ -588,8 +529,15 @@ class Tabs
             i
 
     onDirty: (dirty) =>
+        
+        if tab = @activeKoreTab()
+            if dirty
+                tab.dirty = true
+            else
+                delete tab.dirty
+            @update()
 
-        @activeTab()?.setDirty dirty
+        # @activeTab()?.setDirty dirty
 
     #  0000000   0000000   000   000  000000000  00000000  000   000  000000000
     # 000       000   000  0000  000     000     000        000 000      000
@@ -597,12 +545,14 @@ class Tabs
     # 000       000   000  000  0000     000     000        000 000      000
     #  0000000   0000000   000   000     000     00000000  000   000     000
 
-    onContextMenu: (event) => stopEvent event, @showContextMenu kpos event
-
-    showContextMenu: (absPos) =>
+    onContextMenu: (event) => 
 
         if tab = @tab event.target
-            tab.activate()
+            @activate tab.path
+        stopEvent event
+        @showContextMenu kpos event
+
+    showContextMenu: (absPos) =>
 
         if not absPos?
             absPos = kpos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top

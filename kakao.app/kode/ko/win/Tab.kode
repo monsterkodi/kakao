@@ -16,20 +16,22 @@ class Tab
 
         for k,v of koreTab
             @[k] = v
-        log 'Tab@' koreTab
-        @div = elem class: 'tab app-drag-region' text:@path
+        # log '@Tab' slash.file @path
+        @div = elem class: 'tab app-drag-region' #text:@path
         @tabs.div.appendChild @div
         
         @update()
         
-        if @isPrj
+        if @isPrj()
             post.on 'gitStatus' @onGitStatus
             Git.status @path
         
+    isPrj: -> @type == 'prj'
+            
     stashInfo: ->
         
         info = {}
-        if @isPrj
+        if @isPrj()
             info.prj = @path
             info.collapsed = @collapsed
             # if @hiddenPrjFiles
@@ -46,11 +48,11 @@ class Tab
         @foreign.push lineChanges
         @update()
 
-    reload: ->
+    # reload: ->
 
-        delete @state
-        @dirty = false
-        @update()
+        # delete @state
+        # @dirty = false
+        # @update()
 
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000
@@ -106,11 +108,11 @@ class Tab
     update: ->
 
         @div.innerHTML = ''
-        @div.classList.toggle 'dirty'  @dirty
-        @div.classList.toggle 'active' @active
+        @div.classList.toggle 'dirty'  @dirty?
+        @div.classList.toggle 'active' @active?
         
         sep = '●'
-        sep = '' if @isPrj
+        sep = '' if @isPrj()
         @dot = elem 'span' class:'dot' text:sep
         @div.appendChild @dot
 
@@ -124,7 +126,7 @@ class Tab
         name = elem 'span' class:'name app-drag-region' html:Render.line diss, charWidth:0
         @div.appendChild name
         
-        if @isPrj
+        if @isPrj()
             @div.classList.add 'prj'
         else
             html = ''
@@ -148,7 +150,7 @@ class Tab
 
         @tooltip = new tooltip elem:name, bound:@div, html:@tooltipHtml, x:-2
 
-        if @isPrj
+        if @isPrj()
             if @collapsed
                 log 'collapsed prj' @path, @tabs.prjTabs 
                 # for i in 0...@hiddenPrjFiles.length
@@ -156,7 +158,7 @@ class Tab
                     # @div.appendChild dot
                     # if @hiddenPrjFiles[i] == window.textEditor.currentFile
                         # dot.classList.add 'activeTab'
-        else if @dirty
+        else if @dirty?
             @div.appendChild elem 'span' class:'dot' text:'●'
         @
         
@@ -167,7 +169,7 @@ class Tab
             diss = Syntax.dissForTextAndSyntax slash.tilde(@path), 'ko'
             html = Render.line diss, wrapSpan:'tooltip-path'
             
-            if @isPrj and numFiles = Projects.files(@path).length
+            if @isPrj() and numFiles = Projects.files(@path).length
                 html += Render.line Syntax.dissForTextAndSyntax("#{numFiles} files" 'git'), wrapSpan:'tooltip-line'
                 Git.status @path
                 
@@ -209,20 +211,6 @@ class Tab
         post.emit 'tabClosed' @path
         @
 
-    # 0000000    000  00000000   000000000  000   000
-    # 000   000  000  000   000     000      000 000
-    # 000   000  000  0000000       000       00000
-    # 000   000  000  000   000     000        000
-    # 0000000    000  000   000     000        000
-
-    setDirty: (dirty) ->
-
-        if @dirty != dirty
-            @dirty = dirty
-            if @dirty then delete @tmpTab
-            @update()
-        @
-        
     togglePinned: =>
         
         @pinned = not @pinned
@@ -244,56 +232,5 @@ class Tab
         @update()
         @tabs.update()
         @
-
-    #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000
-    # 000   000  000          000     000  000   000  000   000     000     000
-    # 000000000  000          000     000   000 000   000000000     000     0000000
-    # 000   000  000          000     000     000     000   000     000     000
-    # 000   000   0000000     000     000      0      000   000     000     00000000
-
-    # activate: ->
-#         
-        # if @isPrj
-            # @collapsed = not @collapsed
-            # @update()
-            # @tabs.update()
-        # else
-            # post.emit 'jumpToFile' @path
-        # @
-
-    # finishActivation: ->
-
-        # @setActive()
-
-        # if valid @state
-            # window.editor.do.setTabState @state
-            # delete @state
-
-        # if @foreign?.length
-            # for changes in @foreign
-                # window.editor.do.foreignChanges changes
-            # delete @foreign
-
-        # @tabs.update()
-        # @
-
-    #  0000000    0000000  000000000  000  000   000  00000000
-    # 000   000  000          000     000  000   000  000
-    # 000000000  000          000     000   000 000   0000000
-    # 000   000  000          000     000     000     000
-    # 000   000   0000000     000     000      0      00000000
-
-    # isActive: -> @div.classList.contains 'active'
-
-    # setActive: ->
-
-        # if not @isActive()
-            # @div.classList.add 'active'
-        # @
-
-    # clearActive: ->
-
-        # @div.classList.remove 'active'
-        # @
 
 export Tab

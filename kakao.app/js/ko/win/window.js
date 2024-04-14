@@ -387,17 +387,12 @@ toggleCenterText = function ()
 
 toggleTabPinned = function ()
 {
-    var t
-
-    if (t = window.tabs.activeTab())
-    {
-        return t.togglePinned()
-    }
+    console.log('Window.toggleTabPinned not implemented!')
 }
 
 setFontSize = function (s)
 {
-    var _260_32_
+    var _262_32_
 
     if (!(_k_.isNum(s)))
     {

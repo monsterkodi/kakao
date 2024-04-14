@@ -53,13 +53,6 @@ class FileHandler
             
             kore.set 'editor|file' file
             
-            # if tab
-                # tab?.finishActivation() # setActive, restore state, update tabs
-            # else
-                # tabs.getPrjTab(Projects.dir file)?.update()
-
-            # post.emit 'fileLoaded' file # used by Projects to indexProject
-            
             editor.restoreScrollCursorsAndSelections()
 
         split.raise 'editor'
@@ -144,14 +137,16 @@ class FileHandler
     # 0000000   000   000      0      00000000        000   000  0000000  0000000
 
     saveAll: =>
+        
+        log 'FileHandler.saveAll not implemented!'
 
-        for tab in tabs.tabs
-            if tab.dirty
-                if tab == tabs.activeTab()
-                    @saveFile tab.file
-                else
-                    if not tab.file.startsWith 'untitled'
-                        tab.saveChanges()
+        # for tab in tabs.tabs
+            # if tab.dirty
+                # if tab == tabs.activeTab()
+                    # @saveFile tab.file
+                # else
+                    # if not tab.file.startsWith 'untitled'
+                        # tab.saveChanges()
 
     #  0000000   0000000   000   000  00000000        00000000  000  000      00000000
     # 000       000   000  000   000  000             000       000  000      000

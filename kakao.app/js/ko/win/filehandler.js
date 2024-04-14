@@ -112,9 +112,9 @@ class FileHandler
         }
         window.stash.set('openFilePath',slash.dir(files[0]))
         var list = _k_.list(files)
-        for (var _116_17_ = 0; _116_17_ < list.length; _116_17_++)
+        for (var _109_17_ = 0; _109_17_ < list.length; _109_17_++)
         {
-            file = list[_116_17_]
+            file = list[_109_17_]
             ffs.fileExists(slash.removeFilePos(file)).then(function (exists)
             {
                 if (!exists)
@@ -145,27 +145,7 @@ class FileHandler
 
     saveAll ()
     {
-        var tab
-
-        var list = _k_.list(tabs.tabs)
-        for (var _148_16_ = 0; _148_16_ < list.length; _148_16_++)
-        {
-            tab = list[_148_16_]
-            if (tab.dirty)
-            {
-                if (tab === tabs.activeTab())
-                {
-                    this.saveFile(tab.file)
-                }
-                else
-                {
-                    if (!tab.file.startsWith('untitled'))
-                    {
-                        tab.saveChanges()
-                    }
-                }
-            }
-        }
+        console.log('FileHandler.saveAll not implemented!')
     }
 
     saveFile (file)
@@ -214,7 +194,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _209_29_
+        var _204_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -230,7 +210,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _225_18_
+        var cb, dir, _220_18_
 
         cb = function (files)
         {
@@ -246,7 +226,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _245_18_
+        var cb, _240_18_
 
         cb = (function (file)
         {

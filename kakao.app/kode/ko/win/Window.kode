@@ -241,8 +241,10 @@ toggleCenterText = ->
         
 toggleTabPinned = ->
     
-    if t = window.tabs.activeTab()
-        t.togglePinned()
+    log 'Window.toggleTabPinned not implemented!'
+    
+    # if t = window.tabs.activeTab()
+        # t.togglePinned()
         
 # 00000000   0000000   000   000  000000000      0000000  000  0000000  00000000
 # 000       000   000  0000  000     000        000       000     000   000

@@ -29,15 +29,19 @@ class Tab
             v = koreTab[k]
             this[k] = v
         }
-        console.log('Tab@',koreTab)
-        this.div = elem({class:'tab app-drag-region',text:this.path})
+        this.div = elem({class:'tab app-drag-region'})
         this.tabs.div.appendChild(this.div)
         this.update()
-        if (this.isPrj)
+        if (this.isPrj())
         {
             post.on('gitStatus',this.onGitStatus)
             Git.status(this.path)
         }
+    }
+
+    isPrj ()
+    {
+        return this.type === 'prj'
     }
 
     stashInfo ()
@@ -45,7 +49,7 @@ class Tab
         var info
 
         info = {}
-        if (this.isPrj)
+        if (this.isPrj())
         {
             info.prj = this.path
             info.collapsed = this.collapsed
@@ -67,36 +71,29 @@ class Tab
 
     foreignChanges (lineChanges)
     {
-        var _45_17_
+        var _47_17_
 
-        this.foreign = ((_45_17_=this.foreign) != null ? _45_17_ : [])
+        this.foreign = ((_47_17_=this.foreign) != null ? _47_17_ : [])
         this.foreign.push(lineChanges)
-        return this.update()
-    }
-
-    reload ()
-    {
-        delete this.state
-        this.dirty = false
         return this.update()
     }
 
     saveChanges ()
     {
-        var change, changes, _65_23_
+        var change, changes, _67_23_
 
         if (this.state)
         {
             if ((this.foreign != null ? this.foreign.length : undefined))
             {
                 var list = _k_.list(this.foreign)
-                for (var _66_28_ = 0; _66_28_ < list.length; _66_28_++)
+                for (var _68_28_ = 0; _68_28_ < list.length; _68_28_++)
                 {
-                    changes = list[_66_28_]
+                    changes = list[_68_28_]
                     var list1 = _k_.list(changes)
-                    for (var _67_31_ = 0; _67_31_ < list1.length; _67_31_++)
+                    for (var _69_31_ = 0; _69_31_ < list1.length; _69_31_++)
                     {
-                        change = list1[_67_31_]
+                        change = list1[_69_31_]
                         switch (change.change)
                         {
                             case 'changed':
@@ -154,13 +151,13 @@ class Tab
 
     update ()
     {
-        var diss, html, name, sep
+        var diss, html, name, sep, _111_45_, _112_46_, _161_22_
 
         this.div.innerHTML = ''
-        this.div.classList.toggle('dirty',this.dirty)
-        this.div.classList.toggle('active',this.active)
+        this.div.classList.toggle('dirty',(this.dirty != null))
+        this.div.classList.toggle('active',(this.active != null))
         sep = '●'
-        if (this.isPrj)
+        if (this.isPrj())
         {
             sep = ''
         }
@@ -177,7 +174,7 @@ class Tab
         }
         name = elem('span',{class:'name app-drag-region',html:Render.line(diss,{charWidth:0})})
         this.div.appendChild(name)
-        if (this.isPrj)
+        if (this.isPrj())
         {
             this.div.classList.add('prj')
         }
@@ -202,14 +199,14 @@ class Tab
             this.div.appendChild(elem('span',{class:'tabstate app-drag-region',html:html,click:this.togglePinned}))
         }
         this.tooltip = new tooltip({elem:name,bound:this.div,html:this.tooltipHtml,x:-2})
-        if (this.isPrj)
+        if (this.isPrj())
         {
             if (this.collapsed)
             {
                 console.log('collapsed prj',this.path,this.tabs.prjTabs)
             }
         }
-        else if (this.dirty)
+        else if ((this.dirty != null))
         {
             this.div.appendChild(elem('span',{class:'dot',text:'●'}))
         }
@@ -218,13 +215,13 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _165_16_
+        var diss, html, numFiles, _167_16_
 
         if ((this.path != null))
         {
             diss = Syntax.dissForTextAndSyntax(slash.tilde(this.path),'ko')
             html = Render.line(diss,{wrapSpan:'tooltip-path'})
-            if (this.isPrj && (numFiles = Projects.files(this.path).length))
+            if (this.isPrj() && (numFiles = Projects.files(this.path).length))
             {
                 html += Render.line(Syntax.dissForTextAndSyntax(`${numFiles} files`,'git'),{wrapSpan:'tooltip-line'})
                 Git.status(this.path)
@@ -235,7 +232,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _186_19_, _186_24_
+        var t, _188_19_, _188_24_
 
         if (status.gitDir !== this.path)
         {
@@ -295,14 +292,14 @@ class Tab
 
     nextOrPrev ()
     {
-        var _200_27_
+        var _202_27_
 
-        return ((_200_27_=this.next()) != null ? _200_27_ : this.prev())
+        return ((_202_27_=this.next()) != null ? _202_27_ : this.prev())
     }
 
     close ()
     {
-        var _208_16_
+        var _210_16_
 
         if (this.dirty)
         {
@@ -311,20 +308,6 @@ class Tab
         this.div.remove()
         ;(this.tooltip != null ? this.tooltip.del() : undefined)
         post.emit('tabClosed',this.path)
-        return this
-    }
-
-    setDirty (dirty)
-    {
-        if (this.dirty !== dirty)
-        {
-            this.dirty = dirty
-            if (this.dirty)
-            {
-                delete this.tmpTab
-            }
-            this.update()
-        }
         return this
     }
 
