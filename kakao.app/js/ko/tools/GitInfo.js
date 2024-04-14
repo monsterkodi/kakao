@@ -430,7 +430,7 @@ class GitInfo
                 {
                     href += ':' + window.terminal.posForEvent(event)[0]
                 }
-                post.emit('openFiles',[href],{newWindow:event.metaKey && event.altKey})
+                post.emit('loadFile',href)
             }
         }
         return 'unhandled'

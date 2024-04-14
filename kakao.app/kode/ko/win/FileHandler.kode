@@ -113,7 +113,8 @@ class FileHandler
                 if options.newWindow
                     # post.toMain 'newWindowWithFile' file
                     log 'FileHandler new window with file not implemented!'
-                post.emit 'newTabWithFile' file
+                # post.emit 'newTabWithFile' file
+                post.emit 'loadFile' file
             
         true
 

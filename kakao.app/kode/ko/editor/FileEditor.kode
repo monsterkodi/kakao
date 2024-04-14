@@ -472,7 +472,8 @@ function FileEditor extends TextEditor
             RecentMenu.unshift
                 html: fileSpan f
                 arg: f
-                cb: (arg) -> post.emit 'newTabWithFile' arg
+                # cb: (arg) -> post.emit 'newTabWithFile' arg
+                cb: (arg) -> post.emit 'loadFile' arg
 
         getMenu = (template, name) ->
             for item in template

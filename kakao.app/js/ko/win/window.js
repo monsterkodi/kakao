@@ -269,7 +269,7 @@ Window = (function ()
                 return window.commandline.startCommand('Browse')
 
             case 'Preferences':
-                return post.emit('openFiles',[prefs.store.file],{newTab:true})
+                return post.emit('loadFile',prefs.store.file)
 
         }
 

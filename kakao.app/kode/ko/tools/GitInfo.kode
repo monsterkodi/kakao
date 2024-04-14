@@ -365,8 +365,7 @@ class GitInfo
             else
                 if href.indexOf(':') > 0
                     href += ':' + window.terminal.posForEvent(event)[0]
-                # log 'GitInfo.onMetaClick href' href
-                post.emit 'openFiles' [href], newWindow:event.metaKey and event.altKey
+                post.emit 'loadFile' href
         'unhandled' # otherwise cursor doesn't get set
                     
 export new GitInfo

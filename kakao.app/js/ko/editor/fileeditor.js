@@ -531,7 +531,7 @@ FileEditor = (function ()
             f = list[_471_14_]
             RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
             {
-                return post.emit('newTabWithFile',arg)
+                return post.emit('loadFile',arg)
             }})
         }
         getMenu = function (template, name)
@@ -539,9 +539,9 @@ FileEditor = (function ()
             var item
 
             var list1 = _k_.list(template)
-            for (var _478_21_ = 0; _478_21_ < list1.length; _478_21_++)
+            for (var _479_21_ = 0; _479_21_ < list1.length; _479_21_++)
             {
-                item = list1[_478_21_]
+                item = list1[_479_21_]
                 if (item.text === name)
                 {
                     return item

@@ -125,7 +125,7 @@ class FileHandler
                 {
                     console.log('FileHandler new window with file not implemented!')
                 }
-                return post.emit('newTabWithFile',file)
+                return post.emit('loadFile',file)
             })
         }
         return true
@@ -194,7 +194,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _204_29_
+        var _205_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -210,7 +210,7 @@ class FileHandler
 
     openFile (opt)
     {
-        var cb, dir, _220_18_
+        var cb, dir, _221_18_
 
         cb = function (files)
         {
@@ -226,7 +226,7 @@ class FileHandler
 
     saveFileAs ()
     {
-        var cb, _240_18_
+        var cb, _241_18_
 
         cb = (function (file)
         {

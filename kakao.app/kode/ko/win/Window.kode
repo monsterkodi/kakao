@@ -149,7 +149,7 @@ function Window extends win.Delegate
             'Close Other Windows'   ➜ return post.toWins 'closeWindow'
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
-            'Preferences'           ➜ return post.emit 'openFiles' [prefs.store.file], newTab:true
+            'Preferences'           ➜ return post.emit 'loadFile' prefs.store.file
     
         log 'onMenuAction unhandled' name, trail
         
