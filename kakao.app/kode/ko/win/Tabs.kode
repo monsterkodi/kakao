@@ -136,7 +136,7 @@ class Tabs
             return
 
         @setActive path
-        @update()
+        @cleanTabs()
         @
         
     #  0000000  000      00000000   0000000   000   000        000000000   0000000   0000000     0000000  
@@ -156,13 +156,12 @@ class Tabs
         for tab in sorted
             prjTabs[tab.path] = [tab]
            
-        dangling = []
         while tab = remain.shift()
-            if prjPath = Projects.dir tab.path
-                prjTabs[prjPath] ?= [type:prj, path:prjPath]
-                prjTabs[prjPath].push tab
-            else
-                dangling.push tab
+            
+            prjPath = Projects.dir tab.path
+            prjPath ?= slash.dir tab.path
+            prjTabs[prjPath] ?= [type:'prj', path:prjPath]
+            prjTabs[prjPath].push tab
              
         for k,v of prjTabs
             if v.length <= 1
@@ -175,10 +174,6 @@ class Tabs
                     if v[i].tmp ➜ v.splice i, 1
             tabs = tabs.concat v
             
-        if valid dangling
-            log 'dangling' dangling 
-            tabs = tabs.concat dangling
-                
         @update tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
@@ -249,17 +244,17 @@ class Tabs
             
     renameFile: (file, src) =>
         
-        log 'Tabs.renameFile' file, src
+        # log 'Tabs.renameFile' file, src
         
         if src
             if tab = @koreTabForPath src
-                log 'Tabs.fileRenamed' src, file
+                # log 'Tabs.fileRenamed' src, file
                 post.emit 'loadFile' file
                 @delTab src
                 return
 
         if file == kore.get('editor|file') and tab = @koreTabForPath file
-            log 'Tabs.fileRenamed ▸ loadFile' file
+            # log 'Tabs.fileRenamed ▸ loadFile' file
             post.emit 'loadFile' file
         
     #  0000000   000  000000000   0000000  000000000   0000000   000000000  000   000   0000000  

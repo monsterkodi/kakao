@@ -17,7 +17,6 @@ class FileWatch
         {
             return
         }
-        console.log('FileWatch',change,path,info)
         switch (change)
         {
             case 'created':

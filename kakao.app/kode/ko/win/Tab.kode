@@ -82,7 +82,8 @@ class Tab
             if @collapsed
                 tabs = @tabs.fileTabsForPath @path
                 for tab in tabs
-                    dot = elem 'span' class:'prjdot' text:'●'
+                    # dot = elem 'span' class:'prjdot' text:'●'
+                    dot = elem 'span' class:'prjdot' text:'■'
                     @div.appendChild dot
                     if tab.active
                         dot.classList.add 'activeTab'
