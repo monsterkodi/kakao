@@ -34,6 +34,7 @@ class Tabs
         post.on 'newEmptyTab'       @onNewEmptyTab
 
         post.on 'fileRemoved'       @delTab
+        post.on 'fileRenamed'       @renameFile
         post.on 'fileChanged'       @reloadFile
         post.on 'reloadFile'        @reloadFile
         post.on 'saveAll'           @onSaveAll
@@ -56,7 +57,7 @@ class Tabs
     # 000  000   000   000  000   000  000       
     # 000   000   0000000   000   000  00000000  
     
-    koreTabs: -> kore.get 'tabs'
+    koreTabs: -> kore.get 'tabs' []
     
     update: (tabs) => kore.set 'tabs' tabs ? @koreTabs()
         
@@ -118,14 +119,14 @@ class Tabs
 
     addTab: (path) =>
         
-        log 'addTab' path
         return if empty path
         
         if not @koreTabForPath path
         
-            if prjPath = Projects.dir path
-                if not @koreTabForPath prjPath
-                    @koreTabs().push type:'prj' path:prjPath
+            prjPath = Projects.dir path
+            prjPath ?= slash.dir path
+            if not @koreTabForPath prjPath
+                @koreTabs().push type:'prj' path:prjPath
             @koreTabs().push type:'file' path:path, tmp:not path.startsWith 'untitled-'
             @setActive path
             @cleanTabs()
@@ -185,6 +186,8 @@ class Tabs
     # 0000000    00000000  0000000            000     000   000  0000000    
     
     delTab: (path) =>
+        
+        log 'delTab' path
 
         if tab = @koreTabForPath path
             tabs = @fileTabs()
@@ -197,7 +200,7 @@ class Tabs
             tabs = @koreTabs()
             index = tabs.indexOf tab
             tabs.splice index, 1
-            @update tabs
+            @cleanTabs()
             @activate @activeKoreTab().path
             
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
@@ -241,6 +244,20 @@ class Tabs
         if tab = @koreTabForPath file
             delete tab.dirty
             @update()
+            
+    renameFile: (file, src) =>
+        
+        log 'Tabs.renameFile' file, src
+        
+        if src
+            if tab = @koreTabForPath src
+                log 'Tabs.fileRenamed' src, file
+                post.emit 'loadFile' file
+                @delTab src
+        else
+            if file == kore.get('editor|file') and tab = @koreTabForPath file
+                log 'Tabs.fileRenamed ▸ loadFile' file
+                post.emit 'loadFile' file
             
     #  0000000   000  000000000   0000000  000000000   0000000   000000000  000   000   0000000  
     # 000        000     000     000          000     000   000     000     000   000  000       
@@ -315,8 +332,8 @@ class Tabs
         if @numFileTabs() <= 1
             post.emit 'menuAction' 'close'
         else
-            if @koreTabForPath editor.currentFile
-                @delTab editor.currentFile
+            if @koreTabForPath kore.get 'editor|file'
+                @delTab kore.get 'editor|file'
             else if tab = @activeKoreTab()
                 @delTab tab.path
 

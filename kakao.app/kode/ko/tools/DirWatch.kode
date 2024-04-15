@@ -23,10 +23,14 @@ class DirWatch
         if DirWatch.watches[dir] <= 0
             delete DirWatch.watches[dir]
         
-    @onChange: (change, path) ->
+    @onChange: (change, path, isDir) ->
         
-        dir = slash.dir path
-        # log 'DirWatch.onChange' dir, Object.keys(DirWatch.watches).length
+        if isDir
+            dir = path
+        else
+            dir = slash.dir path
+        
+        # log 'DirWatch.onChange' change, path, dir
         
         for k,v of DirWatch.watches
             if k == dir

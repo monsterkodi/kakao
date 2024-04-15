@@ -17,7 +17,7 @@ class Walker
         this.cfg.files = []
         this.cfg.maxDepth = ((_18_25_=this.cfg.maxDepth) != null ? _18_25_ : 3)
         this.cfg.dotFiles = ((_19_25_=this.cfg.dotFiles) != null ? _19_25_ : false)
-        this.cfg.maxFiles = ((_20_25_=this.cfg.maxFiles) != null ? _20_25_ : 500)
+        this.cfg.maxFiles = ((_20_25_=this.cfg.maxFiles) != null ? _20_25_ : 15000)
         this.cfg.ignore = ((_21_25_=this.cfg.ignore) != null ? _21_25_ : ['node_modules','build','Build','Library','Applications'])
         this.cfg.include = ((_22_25_=this.cfg.include) != null ? _22_25_ : ['.konrad.noon','.gitignore','.npmignore'])
         this.cfg.ignoreExt = ((_23_25_=this.cfg.ignoreExt) != null ? _23_25_ : ['asar'])

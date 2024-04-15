@@ -211,6 +211,8 @@ class Indexer
 
         ffs.read(file).then (text) =>
             
+            return if empty text
+            
             lines = text.split /\r?\n/
             
             fileInfo =

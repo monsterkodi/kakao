@@ -13,6 +13,10 @@
 
 BOOL shouldIgnoreChangedPath(NSString* path)
 {
+    if ([path hasSuffix:@".git/index.lock"])
+    {
+        return YES;
+    }
     if ([path hasPrefix:NSHomeDirectory()])
     {
         NSString* homePath = [path substringFromIndex:[NSHomeDirectory() length]+1];        
@@ -32,12 +36,13 @@ BOOL shouldIgnoreChangedPath(NSString* path)
 
 @implementation WatchChange
 
-+ (WatchChange*) withPath:(NSString*)path type:(ChangeType)type isDir:(BOOL)isDir
++ (WatchChange*) withPath:(NSString*)path type:(ChangeType)type isDir:(BOOL)isDir inode:(NSNumber*)inode
 {
     WatchChange* change = [[WatchChange alloc] init];
     change.path  = path;
     change.type  = type;
     change.isDir = isDir;
+    change.inode = inode;
     return change;
 }
 
@@ -143,7 +148,10 @@ static void FSMonitorEventStreamCallback( ConstFSEventStreamRef streamRef,
                                           const FSEventStreamEventFlags eventFlags[], 
                                           const FSEventStreamEventId eventIds[]) 
 {
+    NSString* deletedPath = nil;
     NSMutableArray* changes = [NSMutableArray array];
+    
+    // NSLog(@"▸▸     numEvents     %zu", numEvents);
             
     for (size_t i = 0; i < numEvents; i++) 
     {
@@ -163,22 +171,65 @@ static void FSMonitorEventStreamCallback( ConstFSEventStreamRef streamRef,
         {
             isDir = true;
         }
-        
-        if (eventFlags[i] & kFSEventStreamEventFlagItemCreated)
+
+        if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved)
+        {
+            changeType = ChangeType::Deleted;
+        }
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemCreated)
         {
             changeType = ChangeType::Created;
         }
-        else if (eventFlags[i] & kFSEventStreamEventFlagItemRemoved)
-        {
-            changeType = ChangeType::Deleted;
+        else if (eventFlags[i] & kFSEventStreamEventFlagItemRenamed)
+        {       
+            changeType = ChangeType::Renamed;
         }
         else
         {
             changeType = ChangeType::Changed;
         }
         
-        [changes addObject:[WatchChange withPath:[eventPaths objectAtIndex:i] type:changeType isDir:isDir]];
+        id attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[eventPaths objectAtIndex:i] error:nil];
+        id inode = [attr objectForKey:NSFileSystemFileNumber];
+        if (!inode) 
+        { 
+            if (changeType != ChangeType::Created)
+            {
+                // NSLog(@"no inode change event type to deleted %d %@", changeType, [eventPaths objectAtIndex:i]);
+                changeType = ChangeType::Deleted;
+                deletedPath = [eventPaths objectAtIndex:i];
+            }
+            inode = [NSNumber numberWithInt:0];
+        }
+        
+        [changes addObject:[WatchChange withPath:[eventPaths objectAtIndex:i] type:changeType isDir:isDir inode:inode]];
     }
+    
+    // NSLog(@"changes num %lu", [changes count]);
+    
+    int ci = 0;
+    while (ci < ((int)[changes count])-1)
+    {
+        // NSLog(@"check %d", ci);
+        
+        WatchChange* first  = (WatchChange*)[changes objectAtIndex:ci];
+        WatchChange* second = (WatchChange*)[changes objectAtIndex:ci+1];
+     
+        if (first.type == ChangeType::Created && [first.inode intValue] == 0 && second.type == ChangeType::Renamed)
+        {
+            second.type = ChangeType::Created;
+            [changes removeObjectAtIndex:ci];
+            // NSLog(@"changed add+mv to add %@ %@", second.path, changes);
+        }
+        else if (first.type == ChangeType::Deleted && second.type == ChangeType::Renamed)
+        {
+            second.src = deletedPath;
+            [changes removeObjectAtIndex:ci];
+            // NSLog(@"changed del+mv to renamed with src %@", changes);
+        }
+        
+        ci++;
+    }    
     
     if ([changes count])
     {

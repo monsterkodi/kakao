@@ -149,14 +149,20 @@ class FileHandler
         editor.saveFilePosition()
         return File.save(file,editor.text(),function (saved)
         {
+            var close
+
             if (!saved)
             {
                 return console.error('File.save failed!')
             }
-            console.log('file saved!!',saved)
             if (saved !== kore.get('editor|file'))
             {
-                return post.emit('loadFile',saved)
+                close = kore.get('editor|file')
+                post.emit('loadFile',saved)
+                if (close.startsWith('untitled-'))
+                {
+                    return post.emit('delTab',close)
+                }
             }
             else
             {
@@ -186,7 +192,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _193_29_
+        var _194_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {
@@ -207,7 +213,6 @@ class FileHandler
 
     onSaveDialog (file)
     {
-        console.log('onSaveDialog',file)
         this.addToRecent(file)
         return this.saveFile(file)
     }

@@ -17,7 +17,7 @@ class Walker
         @cfg.files       = []
         @cfg.maxDepth    ?= 3
         @cfg.dotFiles    ?= false
-        @cfg.maxFiles    ?= 500
+        @cfg.maxFiles    ?= 15000
         @cfg.ignore      ?= ['node_modules' 'build' 'Build' 'Library' 'Applications'] #, 'resources' 'ThirdParty' 'Binaries' 'Intermediate' 'Saved' 'Programs' 'Shaders' 'DerivedDataCache' 'Content' 'Samples']
         @cfg.include     ?= ['.konrad.noon' '.gitignore' '.npmignore']
         @cfg.ignoreExt   ?= ['asar']

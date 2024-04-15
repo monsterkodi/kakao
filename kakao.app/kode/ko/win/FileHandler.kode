@@ -158,9 +158,10 @@ class FileHandler
         File.save file, editor.text(), (saved) ->
 
             return error 'File.save failed!' if not saved
-            log 'file saved!!' saved
             if saved != kore.get 'editor|file'
+                close = kore.get 'editor|file'
                 post.emit 'loadFile' saved
+                post.emit 'delTab'   close if close.startsWith 'untitled-'
             else
                 post.emit 'reloadFile' saved
     
@@ -204,7 +205,6 @@ class FileHandler
         
     onSaveDialog: (file) =>
         
-        log 'onSaveDialog' file
         @addToRecent file
         @saveFile file
 

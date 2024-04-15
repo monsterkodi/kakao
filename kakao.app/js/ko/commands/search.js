@@ -80,7 +80,7 @@ Search = (function ()
         terminal.appendMeta({clss:'searchHeader',diss:Syntax.dissForTextAndSyntax(`▸ Search for '${opt.text}':`,'ko')})
         terminal.appendMeta({clss:'spacer'})
         terminal.singleCursorAtPos([0,terminal.numLines() - 2])
-        this.walker = new Walker({root:opt.dir,maxDepth:12,maxFiles:5000,file:(function (f)
+        this.walker = new Walker({root:opt.dir,maxDepth:12,maxFiles:10000,file:(function (f)
         {
             return this.searchInFile(opt,f)
         }).bind(this)})

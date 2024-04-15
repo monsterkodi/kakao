@@ -20,12 +20,15 @@ typedef enum
     Deleted,
     Created,
     Changed,
+    Renamed
     
 } ChangeType;
 
 @interface WatchChange : NSObject
 
 @property(nonatomic, copy)  NSString*    path;
+@property(nonatomic, copy)  NSString*    src;
+@property(nonatomic, copy)  NSNumber*    inode;
 @property(nonatomic)        ChangeType   type;
 @property(nonatomic)        BOOL         isDir;
 

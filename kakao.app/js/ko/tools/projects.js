@@ -80,7 +80,7 @@ class Projects
             return
         }
         this.indexing = prjPath
-        walker = new Walker({root:prjPath,maxDepth:12,maxFiles:5000,file:(function (f)
+        walker = new Walker({root:prjPath,maxDepth:12,maxFiles:10000,file:(function (f)
         {
             return post.emit('index',f)
         }).bind(this)})

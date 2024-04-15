@@ -129,6 +129,8 @@ NSString* typeForNSFileType(NSString* fileType)
         [info setObject:[attr objectForKey:@"NSFileOwnerAccountName"      ] forKey:@"owner"];
         [info setObject:[attr objectForKey:@"NSFileModificationDate"      ] forKey:@"modified"];
         [info setObject:[attr objectForKey:@"NSFilePosixPermissions"      ] forKey:@"permission"];
+        [info setObject:[attr objectForKey:@"NSFileSystemFileNumber"      ] forKey:@"inode"];
+        
         [info setObject:typeForNSFileType([attr objectForKey:@"NSFileType"]) forKey:@"type"];
         return info;
     }
@@ -267,7 +269,7 @@ NSString* typeForNSFileType(NSString* fileType)
     
     if ([req isEqualToString:@"move"])
     {
-        NSLog(@"move %@ %@", path, args);
+        // NSLog(@"move %@ %@", path, args);
         
         id dest;
         if ([args count] > 1 && [[args objectAtIndex:1] isKindOfClass:[NSString class]]) 
@@ -472,7 +474,7 @@ NSString* typeForNSFileType(NSString* fileType)
             
             git = [git stringByDeletingLastPathComponent];
         }
-        NSLog(@"NO git for %@!!!", path);
+        // NSLog(@"NO git for %@!!!", path);
         return nil;
     }
     

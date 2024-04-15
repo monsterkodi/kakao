@@ -25,11 +25,18 @@ class DirWatch
         }
     }
 
-    static onChange (change, path)
+    static onChange (change, path, isDir)
     {
         var dir, k, v
 
-        dir = slash.dir(path)
+        if (isDir)
+        {
+            dir = path
+        }
+        else
+        {
+            dir = slash.dir(path)
+        }
         for (k in DirWatch.watches)
         {
             v = DirWatch.watches[k]

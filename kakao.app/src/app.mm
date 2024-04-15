@@ -159,6 +159,8 @@
                 case 0: type = @"deleted"; break;
                 case 1: type = @"created"; break;
                 case 2: type = @"changed"; break;
+                case 3: type = @"renamed"; break;
+                default: type = @"?"; break;
             }
             // NSLog(@"%@ %@ %@ ", change.isDir ? @"▸" : @"▪", type, change.path);
 
@@ -166,6 +168,18 @@
             id args = [NSMutableArray array];
             [args addObject:type];
             [args addObject:change.path];
+            
+            NSMutableDictionary* info = [NSMutableDictionary dictionary];
+            
+                              [info addObject:change.inode forKey:@"inode"];
+            if (change.isDir) [info addObject:@"dir"       forKey:@"type"];
+            else              [info addObject:@"file"      forKey:@"type"];
+            if (change.src)   [info addObject:change.src   forKey:@"src"];
+            
+            [args addObject:info];
+            
+            NSLog(@"%@ %@", type, change.path);
+            
             [msg setObject:@"fs.change" forKey:@"name"];
             [msg setObject:args forKey:@"args"];
 
@@ -188,6 +202,8 @@
             case 0: type = @"deleted"; break;
             case 1: type = @"created"; break;
             case 2: type = @"changed"; break;
+            case 3: type = @"renamed"; break;
+            default: type = @"?"; break;
         }
 
         NSString* relPath = [change.path substringFromIndex:[folder length]+1];

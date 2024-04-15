@@ -78,7 +78,7 @@ function Search extends Command
         @walker = new Walker
             root:        opt.dir
             maxDepth:    12
-            maxFiles:    5000
+            maxFiles:    10000
             file:        (f) => @searchInFile opt, f
 
         @walker.cfg.ignore.push 'js'  # these directories are not included in search results

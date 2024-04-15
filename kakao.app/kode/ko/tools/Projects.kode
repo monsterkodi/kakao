@@ -65,7 +65,7 @@ class Projects
         walker = new Walker
             root:        prjPath
             maxDepth:    12
-            maxFiles:    5000
+            maxFiles:    10000
             file:        (f) => post.emit 'index' f
                     
         result = ○ walker.start()

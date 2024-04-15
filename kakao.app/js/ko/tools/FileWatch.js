@@ -11,8 +11,13 @@ class FileWatch
         post.on('fs.change',this.onChange)
     }
 
-    onChange (change, path)
+    onChange (change, path, info)
     {
+        if (info.type === 'dir')
+        {
+            return
+        }
+        console.log('FileWatch',change,path,info)
         switch (change)
         {
             case 'created':
@@ -23,6 +28,9 @@ class FileWatch
 
             case 'changed':
                 return post.emit('fileChanged',path)
+
+            case 'renamed':
+                return post.emit('fileRenamed',path,info.src)
 
         }
 
