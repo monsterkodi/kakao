@@ -118,12 +118,15 @@ class Tabs
 
     addTab: (path) =>
         
+        log 'addTab' path
+        return if empty path
+        
         if not @koreTabForPath path
         
             if prjPath = Projects.dir path
                 if not @koreTabForPath prjPath
                     @koreTabs().push type:'prj' path:prjPath
-            @koreTabs().push type:'file' path:path, tmp:true
+            @koreTabs().push type:'file' path:path, tmp:not path.startsWith 'untitled-'
             @setActive path
             @cleanTabs()
             @tab(path).div.scrollIntoViewIfNeeded()
@@ -209,6 +212,7 @@ class Tabs
             if tab.type == 'file'
                 @setActive path
                 if tab.dirty and @tabState[tab.path]
+                    log 'restoreTab' tab.path, @tabState[tab.path]
                     post.emit 'restoreTab' tab, @tabState[tab.path]
                     delete @tabState[tab.path]
                     return 
@@ -338,6 +342,7 @@ class Tabs
         log 'onNewEmptyTab'
         @emptyid += 1
         @addTab "untitled-#{@emptyid}"
+        @activate "untitled-#{@emptyid}"
 
     onNewTabWithFile: (file) =>
 
@@ -479,6 +484,8 @@ class Tabs
         if tab = @koreTabForPath path
             if tab.dirty
                 @tabState[tab.path] = window.editor.do.tabState()
+                log 'store tab state' tab.path
+                log '      tab  text' @tabState[tab.path].state.s.lines.join '\n'
                 
     # 00000000   00000000  000   000  00000000  00000000   000000000  00000000  000  000      00000000  
     # 000   000  000       000   000  000       000   000     000     000       000  000      000       

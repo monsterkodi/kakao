@@ -36,7 +36,7 @@ function Window extends win.Delegate
         @menuNoon = kakao.bundle.res 'menu_ko.noon'
         
         post.on 'menuAction' @onMenuAction
-        post.on 'stash' -> window.editor.saveScrollCursorsAndSelections()
+        post.on 'stash' -> window.editor.saveFilePosition()
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
         

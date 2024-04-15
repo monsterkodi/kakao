@@ -40,7 +40,11 @@ class Projects
     
     @indexProject: (file) ○=>
         
-        prjPath = ○ ffs.git file
+        exists =○ ffs.exists file
+        
+        return if not exists
+        
+        prjPath =○ ffs.git file
         
         prjPath ?= slash.dir file
         

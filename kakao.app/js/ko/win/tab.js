@@ -114,10 +114,12 @@ class Tab
             {
                 this.div.appendChild(elem('span',{class:'dot',text:'●'}))
             }
-            prj = this.tabs.prjTabForPath(this.path)
-            if (prj.collapsed)
+            if (prj = this.tabs.prjTabForPath(this.path))
             {
-                this.div.style.display = 'none'
+                if (prj.collapsed)
+                {
+                    this.div.style.display = 'none'
+                }
             }
         }
         return this

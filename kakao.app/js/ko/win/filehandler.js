@@ -44,7 +44,7 @@ class FileHandler
         {
             file = null
         }
-        editor.saveScrollCursorsAndSelections()
+        editor.saveFilePosition()
         if ((file != null))
         {
             var _42_28_ = slash.splitFilePos(file); file = _42_28_[0]; filePos = _42_28_[1]
@@ -64,7 +64,7 @@ class FileHandler
             post.emit('storeState',kore.get('editor|file'))
             editor.setCurrentFile(file)
             kore.set('editor|file',file)
-            editor.restoreScrollCursorsAndSelections()
+            editor.restoreFilePosition()
         }
         return split.raise('editor')
     }
@@ -146,7 +146,7 @@ class FileHandler
             this.saveFileAs()
             return
         }
-        editor.saveScrollCursorsAndSelections()
+        editor.saveFilePosition()
         return File.save(file,editor.text(),function (saved)
         {
             if (!saved)

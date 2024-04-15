@@ -36,7 +36,7 @@ class FileHandler
 
         file = null if file? and file.length <= 0
 
-        editor.saveScrollCursorsAndSelections()
+        editor.saveFilePosition()
 
         if file?
             [file, filePos] = slash.splitFilePos file
@@ -55,7 +55,7 @@ class FileHandler
             
             kore.set 'editor|file' file
             
-            editor.restoreScrollCursorsAndSelections()
+            editor.restoreFilePosition()
 
         split.raise 'editor'
 
@@ -153,7 +153,7 @@ class FileHandler
             @saveFileAs()
             return
 
-        editor.saveScrollCursorsAndSelections()
+        editor.saveFilePosition()
             
         File.save file, editor.text(), (saved) ->
 

@@ -91,9 +91,9 @@ class Tab
             if @dirty?
                 @div.appendChild elem 'span' class:'dot' text:'●'
                 
-            prj = @tabs.prjTabForPath @path
-            if prj.collapsed
-                @div.style.display = 'none'
+            if prj = @tabs.prjTabForPath @path
+                if prj.collapsed
+                    @div.style.display = 'none'
         @
         
     # 000000000   0000000    0000000   000      000000000  000  00000000   

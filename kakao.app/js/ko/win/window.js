@@ -74,7 +74,7 @@ Window = (function ()
         post.on('menuAction',this.onMenuAction)
         post.on('stash',function ()
         {
-            return window.editor.saveScrollCursorsAndSelections()
+            return window.editor.saveFilePosition()
         })
         window.aboutImage = kakao.bundle.img('about_ko.png')
         return Window.__super__.constructor.apply(this, arguments)
