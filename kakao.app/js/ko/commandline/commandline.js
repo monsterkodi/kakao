@@ -173,7 +173,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["changed"] = function (changeInfo)
     {
-        var _1_8_, _158_20_
+        var _1_8_, _157_20_
 
         this.hideList()
         CommandLine.__super__.changed.call(this,changeInfo)
@@ -186,15 +186,15 @@ CommandLine = (function ()
 
     CommandLine.prototype["onSplit"] = function (s)
     {
-        var _162_16_, _162_23_
+        var _161_16_, _161_23_
 
-        ;((_162_16_=this.command) != null ? typeof (_162_23_=_162_16_.onBot) === "function" ? _162_23_(s[1]) : undefined : undefined)
+        ;((_161_16_=this.command) != null ? typeof (_161_23_=_161_16_.onBot) === "function" ? _161_23_(s[1]) : undefined : undefined)
         return this.positionList()
     }
 
     CommandLine.prototype["startCommand"] = function (name)
     {
-        var activeID, r, _173_20_
+        var activeID, r, _172_20_
 
         r = (this.command != null ? this.command.cancel(name) : undefined)
         if ((r != null ? r.status : undefined) === 'ok')
@@ -247,14 +247,14 @@ CommandLine = (function ()
 
     CommandLine.prototype["execute"] = function ()
     {
-        var _213_33_
+        var _212_33_
 
         return this.results((this.command != null ? this.command.execute(this.line(0)) : undefined))
     }
 
     CommandLine.prototype["results"] = function (r)
     {
-        var _223_34_, _224_34_, _226_47_, _227_48_, _228_45_
+        var _222_34_, _223_34_, _225_47_, _226_48_, _227_45_
 
         if (((r != null ? r.name : undefined) != null))
         {
@@ -282,14 +282,14 @@ CommandLine = (function ()
 
     CommandLine.prototype["cancel"] = function ()
     {
-        var _231_32_
+        var _230_32_
 
         return this.results((this.command != null ? this.command.cancel() : undefined))
     }
 
     CommandLine.prototype["clear"] = function ()
     {
-        var _234_29_
+        var _233_29_
 
         if (this.text() === '')
         {
@@ -303,7 +303,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["onCmmdClick"] = function (event)
     {
-        var _246_20_, _250_16_
+        var _245_20_, _249_16_
 
         if (!(this.list != null))
         {
@@ -325,15 +325,15 @@ CommandLine = (function ()
         this.list.innerHTML = ""
         this.list.style.display = 'unset'
         var list = _k_.list(this.mainCommands)
-        for (var _261_17_ = 0; _261_17_ < list.length; _261_17_++)
+        for (var _260_17_ = 0; _260_17_ < list.length; _260_17_++)
         {
-            name = list[_261_17_]
+            name = list[_260_17_]
             cmmd = this.commands[name]
             if (_k_.empty(cmmd))
             {
                 continue
             }
-            for (var _265_22_ = ci = 0, _265_26_ = cmmd.names.length; (_265_22_ <= _265_26_ ? ci < cmmd.names.length : ci > cmmd.names.length); (_265_22_ <= _265_26_ ? ++ci : --ci))
+            for (var _264_22_ = ci = 0, _264_26_ = cmmd.names.length; (_264_22_ <= _264_26_ ? ci < cmmd.names.length : ci > cmmd.names.length); (_264_22_ <= _264_26_ ? ++ci : --ci))
             {
                 cname = cmmd.names[ci]
                 if (_k_.in(cname,this.hideCommands))
@@ -359,7 +359,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["hideList"] = function ()
     {
-        var _280_13_
+        var _278_13_
 
         ;(this.list != null ? this.list.remove() : undefined)
         return this.list = null
@@ -367,7 +367,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["positionList"] = function ()
     {
-        var flex, listHeight, listTop, spaceAbove, spaceBelow, _291_27_
+        var flex, listHeight, listTop, spaceAbove, spaceBelow, _289_27_
 
         if (!(this.list != null))
         {
@@ -390,10 +390,10 @@ CommandLine = (function ()
 
     CommandLine.prototype["resized"] = function ()
     {
-        var _303_13_, _303_22_, _304_16_, _304_29_
+        var _301_13_, _301_22_, _302_16_, _302_29_
 
-        ;((_303_13_=this.list) != null ? typeof (_303_22_=_303_13_.resized) === "function" ? _303_22_() : undefined : undefined)
-        ;((_304_16_=this.command) != null ? (_304_29_=_304_16_.commandList) != null ? _304_29_.resized() : undefined : undefined)
+        ;((_301_13_=this.list) != null ? typeof (_301_22_=_301_13_.resized) === "function" ? _301_22_() : undefined : undefined)
+        ;((_302_16_=this.command) != null ? (_302_29_=_302_16_.commandList) != null ? _302_29_.resized() : undefined : undefined)
         return CommandLine.__super__.resized.call(this)
     }
 
@@ -408,36 +408,35 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleMenuAction"] = function (name, trail)
     {
-        var cmd, cmdName
+        var cmd, cmdName, rest
 
-        if ((trail != null ? trail.startsWith('Command▸') : undefined))
+        if (trail.split('Command▸').length > 1)
         {
-            cmdName = trail.split('▸')[1]
+            rest = trail.split('Command▸')[1]
+            cmdName = rest.split('▸')[0]
             if (name !== 'Case Sensitive')
             {
                 cmdName = cmdName.toLowerCase()
             }
-            if (cmd = this.commandForName(cmdName))
-            {
-                this.startCommand(cmdName)
-                return
-            }
         }
-        else if (trail === 'Command')
+        else if (trail.endsWith('Command'))
         {
             cmdName = name.toLowerCase()
-            if (cmd = this.commandForName(cmdName))
-            {
-                this.startCommand(cmdName)
-                return
-            }
         }
+        if (cmd = this.commandForName(cmdName))
+        {
+            console.log('Commandline.handleMenuAction',cmdName,name,trail)
+            this.startCommand(cmdName)
+            this.command.execute(name)
+            return
+        }
+        console.log('unhandled!',name,trail)
         return 'unhandled'
     }
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _344_19_
+        var _342_19_
 
         if (combo === 'esc')
         {
@@ -456,7 +455,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _352_19_, _360_55_, _361_55_, _371_58_
+        var split, _1_8_, _350_19_, _358_55_, _359_55_, _369_58_
 
         if ((this.command != null))
         {

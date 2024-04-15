@@ -11,6 +11,7 @@ use ../../kxk      ▪ win stash post prefs store stopEvent
 use                ◆ Kore Split Info Tabs Menu Navigate FileHandler Terminal
 use ../tools       ◆ FileWatch Projects Indexer Git fps scheme
 use ../editor      ◆ Editor Syntax FileEditor
+use ../commands    ◆ Macro
 use ../commandline ◆ CommandLine
 
 # 000   000  000  000   000  0000000     0000000   000   000  
@@ -108,11 +109,11 @@ function Window extends win.Delegate
                 return 
     
         if 'unhandled' != window.commandline.handleMenuAction name, trail
+            # log 'commandline handled action' name, trail
             return 
             
         switch name
     
-            # 'doMacro'               ➜ return window.commandline.commands.macro.execute opts.actarg
             'Undo'                  ➜ return window.focusEditor.do.undo()
             'Redo'                  ➜ return window.focusEditor.do.redo()
             'Cut'                   ➜ return window.focusEditor.cut()
@@ -149,6 +150,9 @@ function Window extends win.Delegate
             'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Preferences'           ➜ return post.emit 'loadFile' prefs.store.file
     
+        # if name in Macro.macroNames
+            # return window.commandline.commands.macro.execute name
+            
         log 'onMenuAction unhandled' name, trail
             
 # 00000000    0000000    0000000  000000000

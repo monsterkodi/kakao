@@ -13,7 +13,7 @@ use ../commandline ◆ Command
 
 function Macro extends Command
 
-    @macroNames: ['clean' 'help' 'dbg' 'class' 'req' 'inv' 'blink' 'color' 'fps' 'cwd' 'git' 'unix']
+    @macroNames: ['clean' 'help' 'class' 'inv' 'blink' 'color' 'fps' 'status' 'diff' 'history' 'count' 'sort' 'case' 'lower' 'upper']
 
     @: (commandline) ->
 
@@ -55,9 +55,11 @@ function Macro extends Command
     # 000        000 000   000       000       000   000     000     000
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
-    execute: (command) ->
+    execute: (command, trail) ->
 
         return error 'no command!' if empty command
+        
+        log 'Macro.execute' command, trail
 
         command = super command
 

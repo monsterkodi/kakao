@@ -32,6 +32,8 @@ import Editor from "../editor/Editor.js"
 import Syntax from "../editor/Syntax.js"
 import FileEditor from "../editor/FileEditor.js"
 
+import Macro from "../commands/Macro.js"
+
 import CommandLine from "../commandline/CommandLine.js"
 
 
@@ -140,7 +142,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _106_25_
+        var action, _107_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -332,7 +334,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _208_14_
+    var _212_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -343,7 +345,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _214_22_, _215_19_
+    var _218_22_, _219_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -378,7 +380,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _254_32_
+    var _258_32_
 
     if (!(_k_.isNum(s)))
     {

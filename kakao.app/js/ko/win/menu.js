@@ -27,7 +27,7 @@ getMenu = function (template, name)
 
 Menu = function (template)
 {
-    var actions, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menu, menuName, modName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, transformText, v, value, _38_38_, _44_33_, _45_44_, _47_43_, _48_39_, _66_27_
+    var actions, commandMenu, editMenu, EditMenu, item, k, key, macro, MacroMenu, menu, menuName, modName, submenu, transform, transformList, transformMenu, TransformMenu, transformSubmenu, transformText, v, value, _38_38_, _44_33_, _45_44_, _47_43_, _48_39_, _65_27_
 
     if (_k_.isArr(template))
     {
@@ -86,7 +86,7 @@ Menu = function (template)
     for (var _57_14_ = 0; _57_14_ < list.length; _57_14_++)
     {
         macro = list[_57_14_]
-        MacroMenu.push({text:macro,action:'doMacro'})
+        MacroMenu.push({text:macro})
     }
     commandMenu = getMenu(template,'Command')
     commandMenu.menu = commandMenu.menu.concat({text:'Macro',menu:MacroMenu})
@@ -99,9 +99,9 @@ Menu = function (template)
             transformList = transform.Transform.transformMenus[transformMenu]
             transformSubmenu = []
             var list1 = _k_.list(transformList)
-            for (var _70_30_ = 0; _70_30_ < list1.length; _70_30_++)
+            for (var _69_30_ = 0; _69_30_ < list1.length; _69_30_++)
             {
-                transformText = list1[_70_30_]
+                transformText = list1[_69_30_]
                 transformSubmenu.push({text:transformText,action:'doTransform'})
             }
             TransformMenu.push({text:transformMenu,menu:transformSubmenu})
