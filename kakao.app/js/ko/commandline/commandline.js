@@ -410,7 +410,7 @@ CommandLine = (function ()
     {
         var cmd, cmdName, rest
 
-        if (trail.split('Command▸').length > 1)
+        if ((trail != null ? trail.split('Command▸').length : undefined) > 1)
         {
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
@@ -419,15 +419,25 @@ CommandLine = (function ()
                 cmdName = cmdName.toLowerCase()
             }
         }
-        else if (trail.endsWith('Command'))
+        else if ((trail != null ? trail.endsWith('Command') : undefined))
         {
             cmdName = name.toLowerCase()
         }
         if (cmd = this.commandForName(cmdName))
         {
-            console.log('Commandline.handleMenuAction',cmdName,name,trail)
             this.startCommand(cmdName)
-            this.command.execute(name)
+            if (_k_.in(cmdName,['goto']))
+            {
+                console.log('command should openMenu')
+            }
+            else if (_k_.in(cmdName,['search']))
+            {
+                this.command.execute(this.text())
+            }
+            else
+            {
+                this.command.execute(name)
+            }
             return
         }
         console.log('unhandled!',name,trail)
@@ -436,7 +446,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _342_19_
+        var _348_19_
 
         if (combo === 'esc')
         {
@@ -455,7 +465,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _350_19_, _358_55_, _359_55_, _369_58_
+        var split, _1_8_, _356_19_, _364_55_, _365_55_, _375_58_
 
         if ((this.command != null))
         {

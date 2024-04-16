@@ -184,9 +184,8 @@ class Tabs
     
     delTab: (path) =>
         
-        log 'delTab' path
-
         if tab = @koreTabForPath path
+            log 'delTab' path
             tabs = @fileTabs()
             index = tabs.indexOf tab
             if tab.active

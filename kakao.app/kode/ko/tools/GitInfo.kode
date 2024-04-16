@@ -168,11 +168,16 @@ class GitInfo
                 
                 switch line.type
                     '-'
+                        dss = Syntax.dissForTextAndSyntax line.line, slash.ext path
+                        for ds in dss ➜ ds.clss += ' ' + 'git-deleted'
                         window.terminal.appendMeta
-                            diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
+                            diss:       dss
                             href:       path + ':' + dline
                             clss:       'gitInfoDelete'
                             click:      @onMetaClick
+                            line:       '✘'
+                            # lineClss:   'gitInfoLine '+change
+                            
                         dline++
     
                     '+'
@@ -209,19 +214,35 @@ class GitInfo
                 
                 'deleted'
 
-                    window.terminal.meta.add 
-                        line:       window.terminal.numLines()
-                        start:      0
-                        end:        text.length
-                        clss:       'gitInfoDelete'
+                    for ds in dss ➜ ds.clss += ' ' + 'git-deleted'
+                    
+                    # window.terminal.meta.add
+                        # start:      0
+                        # end:        text.length
+                        # clss:       'gitInfoDelete'
+                        
+                    window.terminal.appendMeta
+                        line:   '✘'
+                        diss:   dss
+                        href:   "#{changes.file}:#{changes.line+index}"
+                        clss:   'gitInfoDelete'
+                        click:  @onMetaClick
 
                 'added'
 
-                    window.terminal.meta.add 
-                        line:       window.terminal.numLines()
-                        start:      0
-                        end:        text.length
-                        clss:       'gitInfoAdded'
+                    # window.terminal.meta.add 
+                        # line:       window.terminal.numLines()
+                        # start:      0
+                        # end:        text.length
+                        # clss:       'gitInfoAdded'
+                        
+                    window.terminal.appendMeta
+                        # line:   '✘'
+                        diss:   dss
+                        href:   "#{changes.file}:#{changes.line+index}"
+                        clss:   'gitInfoAdded'
+                        click:  @onMetaClick
+                        
 
                 'changed'
                     
@@ -237,13 +258,21 @@ class GitInfo
                             for diff in diffs
             
                                 window.terminal.meta.add 
-                                    line:       window.terminal.numLines()
+                                    # line:       window.terminal.numLines()
                                     start:      diff.index
                                     end:        diff.index+diff.length
-                                    clss:       'gitInfoDelete'
-                                                                
+                                    clss:       'gitInfoChange'
+                                                                                                                                        
                             dss = Syntax.dissForTextAndSyntax changes.info.mod[index].old, syntaxName
+                            
+                            window.terminal.appendMeta
+                                diss:   dss
+                                href:   "#{changes.file}:#{changes.line+index}"
+                                clss:   'gitInfoDelete'
+                                click:  @onMetaClick
+                            
                 ➜
+                    log 'CHANGE EVER COME HERE?'
                     for diff in diffs
     
                         window.terminal.meta.add 
@@ -252,13 +281,13 @@ class GitInfo
                             end:        diff.index+diff.length
                             clss:       'gitInfoChange'
                             
-            meta = window.terminal.appendMeta
-                diss: dss
-                href: "#{changes.file}:#{changes.line+index}"
-                clss: 'searchResult'
-                click: @onMetaClick
+            # meta = window.terminal.appendMeta
+                # diss: dss
+                # href: "#{changes.file}:#{changes.line+index}"
+                # clss: 'searchResult'
+                # click: @onMetaClick
                 
-            post.emit 'search-result' meta
+            # post.emit 'search-result' meta
             linesAdded++
                 
             index += 1
@@ -284,7 +313,7 @@ class GitInfo
 
             return if empty status
             
-            log 'status' status
+            # log 'status' status
 
             logFile = (change, file, status, spacer) ->
 

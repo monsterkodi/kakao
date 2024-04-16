@@ -614,7 +614,8 @@ span.macro.macro,
 
 .meta.gitInfoDelete
 {
-    background: #400;
+    background: #000;
+    opacity: 0.5;
 }
 
 .meta.git

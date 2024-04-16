@@ -316,17 +316,23 @@ function CommandLine extends TextEditor
     
     handleMenuAction: (name, trail) ->
         
-        if trail.split('Command▸').length > 1
+        if trail?.split('Command▸').length > 1
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
             if name != 'Case Sensitive' ➜ cmdName = cmdName.toLowerCase()
-        else if trail.endsWith 'Command'
+        else if trail?.endsWith 'Command'
             cmdName = name.toLowerCase()
             
         if cmd = @commandForName cmdName
-            log 'Commandline.handleMenuAction' cmdName, name, trail
+            # log 'Commandline.handleMenuAction' cmdName, name, trail
             @startCommand cmdName
-            @command.execute name
+            if cmdName in ['goto']
+                log 'command should openMenu'
+            else if cmdName in ['search']
+                @command.execute @text()
+            else
+                # log 'command.execute' name
+                @command.execute name
             return
             
         log 'unhandled!' name, trail

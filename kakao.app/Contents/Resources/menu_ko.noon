@@ -60,11 +60,7 @@ Command
     # 000   000  000   000  000   000  000   000       000  000
     # 0000000    000   000   0000000   00     00  0000000   00000000
 
-    Browse
-        Browse              cmdctrl+.
-        -
-        Shelf               alt+.
-        Add to Shelf        alt+shift+.
+    Browse                  cmdctrl+.
 
     #  0000000   00000000   00000000  000   000
     # 000   000  000   000  000       0000  000
@@ -72,9 +68,7 @@ Command
     # 000   000  000        000       000  0000
     #  0000000   000        00000000  000   000
 
-    Open
-        In New Tab          cmdctrl+p
-        In New Window       cmdctrl+shift+p
+    Open                    cmdctrl+p
 
     #  0000000  00000000   0000000   00000000    0000000  000   000
     # 000       000       000   000  000   000  000       000   000

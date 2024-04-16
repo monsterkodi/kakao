@@ -34,7 +34,7 @@ function Open extends Command
 
         post.on 'file' @onFile
 
-        @names    = ['open' 'new window']
+        @names    = ['open']
         @files    = []
         @file     = null
         @dir      = null
@@ -343,11 +343,7 @@ function Open extends Command
             file = @resolvedPath path
             file = slash.joinFilePos file, pos
 
-            if @name == 'new window'
-                # post.toMain 'newWindowWithFile' file
-                log 'open new window with file not implemented!'
-            else
-                post.emit 'jumpToFile' type:'file' path:file
+            post.emit 'jumpToFile' type:'file' path:file
 
             super file
 

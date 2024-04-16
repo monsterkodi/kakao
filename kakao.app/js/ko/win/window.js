@@ -212,9 +212,6 @@ Window = (function ()
             case 'Maximize Editor':
                 return this.split.maximizeEditor()
 
-            case 'Add to Shelf':
-                return addToShelf()
-
             case 'Activate Next Tab':
                 return window.tabs.navigate('right')
 
@@ -334,7 +331,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _212_14_
+    var _211_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -345,7 +342,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _218_22_, _219_19_
+    var _217_22_, _218_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -380,7 +377,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _258_32_
+    var _257_32_
 
     if (!(_k_.isNum(s)))
     {

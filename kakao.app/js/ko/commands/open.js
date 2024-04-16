@@ -47,7 +47,7 @@ Open = (function ()
         this["onFile"] = this["onFile"].bind(this)
         Open.__super__.constructor.call(this,commandline)
         post.on('file',this.onFile)
-        this.names = ['open','new window']
+        this.names = ['open']
         this.files = []
         this.file = null
         this.dir = null
@@ -404,14 +404,7 @@ Open = (function ()
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)
-            if (this.name === 'new window')
-            {
-                console.log('open new window with file not implemented!')
-            }
-            else
-            {
-                post.emit('jumpToFile',{type:'file',path:file})
-            }
+            post.emit('jumpToFile',{type:'file',path:file})
             Open.__super__.execute.call(this,file)
             return {text:file,focus:'editor',show:'editor',status:'ok'}
         }

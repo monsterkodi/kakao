@@ -132,7 +132,6 @@ function Window extends win.Delegate
             'Navigate Backward'     ➜ return @navigate.backward()
             'Navigate Forward'      ➜ return @navigate.forward()
             'Maximize Editor'       ➜ return @split.maximizeEditor()
-            'Add to Shelf'          ➜ return addToShelf()
             'Activate Next Tab'     ➜ return window.tabs.navigate 'right'
             'Activate Previous Tab' ➜ return window.tabs.navigate 'left'
             'Move Tab Left'         ➜ return window.tabs.move 'left'
