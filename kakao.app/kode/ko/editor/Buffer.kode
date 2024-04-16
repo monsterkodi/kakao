@@ -6,7 +6,6 @@
 0000000     0000000   000       000       00000000  000   000
 ###
 
-use ../../../lib/lib_ko ▪ fuzzy
 use ../../kxk ▪ kstr matchr events uniq
 use ./state
 
@@ -360,20 +359,10 @@ function Buffer extends events
     rangesForTextInLineAtIndex: (t, i, opt) ->
         r = []
         type = opt?.type ? 'str'
-        switch type
-            when 'fuzzy'
-                re = new RegExp "\\w+", 'g'
-                while (mtch = re.exec(@line(i))) != null
-                    r.push [i, [mtch.index, re.lastIndex]] if fuzzy.test t, @line(i).slice mtch.index, re.lastIndex
-            else
-                t = kstr.escapeRegExp t if type in ['str' 'Str' 'glob']
-                if type == 'glob'
-                    t = t.replace new RegExp("\\*", 'g'), "\w*"
-                    return r if not t.length
-
-                rngs = matchr.ranges t, @line(i), type in ['str' 'reg' 'glob'] and 'i' or ''
-                for rng in rngs
-                    r.push [i, [rng.start, rng.start + rng.match.length]]
+        t = kstr.escapeRegExp t if type in ['str' 'Str']
+        rngs = matchr.ranges t, @line(i), type in ['str' 'reg'] and 'i' or ''
+        for rng in rngs
+            r.push [i, [rng.start, rng.start + rng.match.length]]
         r
 
     rangesOfStringsInLineAtIndex: (li) -> # todo: handle #{}

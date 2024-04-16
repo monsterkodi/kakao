@@ -12,8 +12,8 @@ Find = (function ()
     {
         Find.__super__.constructor.call(this,commandline)
     
-        this.types = ['str','Str','reg','Reg','fuzzy','glob']
-        this.names = ['find','Find','/find/','/Find/','fiZd','f*nd']
+        this.types = ['str','Str','reg','Reg']
+        this.names = ['find','Find','/find/','/Find/']
     }
 
     Find.prototype["historyKey"] = function ()

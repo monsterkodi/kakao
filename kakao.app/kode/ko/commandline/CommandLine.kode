@@ -49,7 +49,7 @@ function CommandLine extends TextEditor
 
         super viewElem, features: [], fontSize: 24, syntaxName:'commandline'
 
-        @mainCommands = ['browse' 'goto' 'open' 'search' 'find' 'macro']
+        @mainCommands = ['goto' 'open' 'macro' 'browse' 'search' 'find' ]
         @hideCommands = ['selecto' 'Browse' 'shelf' 'Small Browser' 'Large Browser']
 
         @size.lineHeight = 30
@@ -321,6 +321,7 @@ function CommandLine extends TextEditor
         if trail?.split('Command▸').length > 1
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
+            log rest, cmdName, name
             if name != 'Case Sensitive' ➜ cmdName = cmdName.toLowerCase()
         else if trail?.endsWith 'Command'
             cmdName = name.toLowerCase()
@@ -330,7 +331,7 @@ function CommandLine extends TextEditor
             @startCommand cmdName
             if cmdName in ['goto''open''macro']
                 log 'command should openMenu'
-            else if cmdName in ['search']
+            else if cmdName in ['search''Search']
                 st = trim @text()
                 if st.length > 1
                     @command.execute @text()

@@ -32,8 +32,12 @@ function Macro extends Command
     start: (name) ->
 
         super name
+        
+        @initAndShowList()
+        
         text = @last()
         text = 'dbg' if not text?.length
+        
         text:   text
         select: true
 

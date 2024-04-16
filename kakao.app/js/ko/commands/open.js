@@ -384,16 +384,13 @@ Open = (function ()
         }
         this.files = Projects.files(this.dir)
         this.loadState()
-        this.showList()
-        this.showItems(this.listItems())
-        this.grabFocus()
-        this.select(0)
+        this.initAndShowList()
         return {text:this.commandList.line(this.selected),select:true}
     }
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _338_27_
+        var file, path, pos, _336_27_
 
         if (this.selected < 0)
         {
@@ -403,7 +400,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _344_24_ = slash.splitFilePos(command); file = _344_24_[0]; pos = _344_24_[1]
+            var _342_24_ = slash.splitFilePos(command); file = _342_24_[0]; pos = _342_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

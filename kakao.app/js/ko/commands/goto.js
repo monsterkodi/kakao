@@ -19,13 +19,10 @@ Goto = (function ()
     {
         Goto.__super__.start.call(this,name)
     
-        var _32_26_, _32_36_
+        var _31_26_, _31_36_
 
-        this.showList()
-        this.showItems(this.listItems())
-        this.select(0)
-        this.positionList()
-        return {text:((_32_36_=(this.commandList != null ? this.commandList.line(0) : undefined)) != null ? _32_36_ : ''),select:true}
+        this.initAndShowList()
+        return {text:((_31_36_=(this.commandList != null ? this.commandList.line(0) : undefined)) != null ? _31_36_ : ''),select:true}
     }
 
     Goto.prototype["listItems"] = function ()
@@ -38,17 +35,17 @@ Goto = (function ()
         funcs = (files[window.editor.currentFile] != null ? files[window.editor.currentFile].funcs : undefined)
         funcs = (funcs != null ? funcs : [])
         var list = _k_.list(funcs)
-        for (var _50_17_ = 0; _50_17_ < list.length; _50_17_++)
+        for (var _49_17_ = 0; _49_17_ < list.length; _49_17_++)
         {
-            func = list[_50_17_]
+            func = list[_49_17_]
             items.push({text:func.name,line:'▸',clss:'method'})
             this.types[func.name] = 'func'
         }
         clsss = window.indexer.classes
         var list1 = _k_.list(Object.keys(clsss))
-        for (var _55_14_ = 0; _55_14_ < list1.length; _55_14_++)
+        for (var _54_14_ = 0; _54_14_ < list1.length; _54_14_++)
         {
-            k = list1[_55_14_]
+            k = list1[_54_14_]
             name = k
             items.push({text:k,line:'●',clss:'class'})
             this.types[name] = 'class'
@@ -58,7 +55,7 @@ Goto = (function ()
 
     Goto.prototype["execute"] = function (command)
     {
-        var editor, line, type, _86_35_
+        var editor, line, type, _88_35_
 
         command = Goto.__super__.execute.call(this,command)
         if (/^\-?\d+$/.test(command))
@@ -84,7 +81,7 @@ Goto = (function ()
         }
         else if (command.length)
         {
-            type = ((_86_35_=this.types[command]) != null ? _86_35_ : 'func')
+            type = ((_88_35_=this.types[command]) != null ? _88_35_ : 'func')
             window.editor.jumpTo(command,{type:type,dontList:true,extend:this.name === 'selecto'})
             return {focus:'editor',do:"show editor"}
         }

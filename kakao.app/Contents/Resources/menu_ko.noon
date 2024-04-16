@@ -78,7 +78,7 @@ Command
 
     Search
         Case Insensitive    cmdctrl+shift+f
-        Case Sensitive      alt+shift+f
+        Case Sensitive      alt+cmdctrl+f
         Regexp Case Insensitive
         Regexp Case Sensitive
 
@@ -93,8 +93,6 @@ Command
         Case Sensitive      alt+f
         Regexp Case Insensitive
         Regexp Case Sensitive
-        Fuzzy
-        Glob
 
 # 000   000  000  00000000  000   000
 # 000   000  000  000       000 0 000

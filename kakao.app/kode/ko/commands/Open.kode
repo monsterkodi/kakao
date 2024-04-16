@@ -317,10 +317,8 @@ function Open extends Command
         @files = Projects.files @dir
 
         @loadState()
-        @showList()
-        @showItems @listItems()
-        @grabFocus()
-        @select 0
+  
+        @initAndShowList()
 
         text:   @commandList.line @selected
         select: true

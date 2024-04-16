@@ -25,10 +25,9 @@ function Goto extends Command
     start: (name) ->
 
         super name
-        @showList()
-        @showItems @listItems()
-        @select 0
-        @positionList()
+        
+        @initAndShowList()
+        
         text: @commandList?.line(0) ? ''
         select: true
 
@@ -80,13 +79,18 @@ function Goto extends Command
             line = clamp 0, editor.numLines()-1, line
             editor.singleCursorAtPos [0,line], extend: @name == 'selecto'
             editor.scroll.cursorToTop()
-            focus: @receiver
-            do: "show #{editor.name}"
+            
+            focus:  @receiver
+            do:     "show #{editor.name}"
+            
         else if command.length
+            
             type = @types[command] ? 'func'
             window.editor.jumpTo command, type:type, dontList: true, extend: @name == 'selecto'
-            focus: 'editor'
-            do: "show editor"
+            
+            focus:  'editor'
+            do:     "show editor"
+            
         else
             text: ''
 

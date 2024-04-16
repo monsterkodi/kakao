@@ -61,7 +61,7 @@ CommandLine = (function ()
         this["onStashLoaded"] = this["onStashLoaded"].bind(this)
         this["stash"] = this["stash"].bind(this)
         CommandLine.__super__.constructor.call(this,viewElem,{features:[],fontSize:24,syntaxName:'commandline'})
-        this.mainCommands = ['browse','goto','open','search','find','macro']
+        this.mainCommands = ['goto','open','macro','browse','search','find']
         this.hideCommands = ['selecto','Browse','shelf','Small Browser','Large Browser']
         this.size.lineHeight = 30
         this.scroll.setLineHeight(this.size.lineHeight)
@@ -415,6 +415,7 @@ CommandLine = (function ()
         {
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
+            console.log(rest,cmdName,name)
             if (name !== 'Case Sensitive')
             {
                 cmdName = cmdName.toLowerCase()
@@ -431,7 +432,7 @@ CommandLine = (function ()
             {
                 console.log('command should openMenu')
             }
-            else if (_k_.in(cmdName,['search']))
+            else if (_k_.in(cmdName,['search','Search']))
             {
                 st = _k_.trim(this.text())
                 if (st.length > 1)
@@ -452,7 +453,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _353_19_
+        var _354_19_
 
         if (combo === 'esc')
         {
@@ -471,7 +472,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _361_19_, _369_55_, _370_55_, _380_58_
+        var split, _1_8_, _362_19_, _370_55_, _371_55_, _381_58_
 
         if ((this.command != null))
         {

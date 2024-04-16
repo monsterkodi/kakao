@@ -46,8 +46,10 @@ function Command
 
         @setName name
         @loadState()
+
         text = @getText()
         text = @last() if not text?.length
+
         text:   text
         select: true
 
@@ -93,7 +95,7 @@ function Command
                         return o.text if o.text is str
                     ''
                 items = @krzl.filter command
-                    
+
             @showItems @weightedItems items, currentText: command
             @select 0
             @positionList()
@@ -115,6 +117,7 @@ function Command
     cancel: ->
         # log 'Command.cancel'
         @hideList()
+        
         text: ''
         focus: @receiver
         show: 'editor'
@@ -132,6 +135,13 @@ function Command
     # 000      000  0000000      000
     # 000      000       000     000
     # 0000000  000  0000000      000
+    
+    initAndShowList: ->
+        
+        @showList()
+        @showItems @listItems()
+        @select 0
+        @positionList()
 
     showList: ->
 
@@ -409,12 +419,13 @@ function Command
 
     onTabCompletion: (combo) ->
 
-        if @commandline.isCursorAtEndOfLine()
-            @complete()
-            true
-        else if combo == 'tab'
-            true
-        else
-            false
+        if
+            @commandline.isCursorAtEndOfLine()
+                @complete()
+                true
+            combo == 'tab'
+                true
+            ➜
+                false
 
 export Command
