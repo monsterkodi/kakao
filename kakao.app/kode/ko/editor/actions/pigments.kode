@@ -74,11 +74,11 @@ function Pigments
 
     activate: ->
 
-        window.stash.set "pigments|#{@editor.currentFile}", true
+        window.stash.set "pigments|#{@editor.currentFile}" true
         @pigmentize()
 
     deactivate: ->
-
+        
         window.stash.set "pigments|#{@editor.currentFile}"
         @clear()
 
@@ -96,7 +96,7 @@ function Pigments
 
     pigmentize: ->
 
-        @clear()
+        # @clear()
 
         @editor.on 'lineChanged'  @onLineChanged
         @editor.on 'lineInserted' @onLineInserted
@@ -111,13 +111,13 @@ export
         togglePigments:
             name:  'Toggle Pigments'
             text:  'toggle pigments for current file'
-            combo: 'command+alt+shift+p'
+            combo: 'command+alt+ctrl+p'
 
     initPigments: -> @pigments ?= new Pigments @ #; log 'initPigments' @pigments
 
     togglePigments: ->
         
-        if window.stash.get "pigments|#{@currentFile}"
+        if window.stash.get "pigments|#{@currentFile}" false
             @pigments?.deactivate()
         else
             @pigments?.activate()

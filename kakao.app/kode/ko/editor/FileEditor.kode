@@ -440,7 +440,7 @@ function FileEditor extends TextEditor
             text:   ''
         ,
             text:   'Maximize'
-            combo:  'command+shift+y command+,'
+            combo:  'command+,'
             cb:     -> window.split.maximizeEditor()
         ,
             text:   ''

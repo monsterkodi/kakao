@@ -316,6 +316,8 @@ function CommandLine extends TextEditor
     
     handleMenuAction: (name, trail) ->
         
+        log 'handleMenuAction' name, trail
+        
         if trail?.split('Command▸').length > 1
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
@@ -326,7 +328,7 @@ function CommandLine extends TextEditor
         if cmd = @commandForName cmdName
             # log 'Commandline.handleMenuAction' cmdName, name, trail
             @startCommand cmdName
-            if cmdName in ['goto']
+            if cmdName in ['goto''open''macro']
                 log 'command should openMenu'
             else if cmdName in ['search']
                 @command.execute @text()

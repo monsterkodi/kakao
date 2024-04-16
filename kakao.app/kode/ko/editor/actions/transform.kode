@@ -261,11 +261,17 @@ export
             text:  'reverses the order of selected texts'
             combo: 'command+alt+ctrl+r'
 
+        sortSelection:
+            name:  'Sort Selection'
+            text:  'sorts selected texts. toggles between up and down'
+            combo: 'command+alt+ctrl+s'
+            
         doTransform:
             name:  'doTransform'
 
     toggleCase:        -> Transform.do @, 'case'
     reverseSelection:  -> Transform.do @, 'reverse'
+    sortSelection:     -> Transform.do @, 'sort'
     doTransform: (arg) -> Transform.do @, arg
     Transform:         Transform
     transformNames:    Transform.transformNames

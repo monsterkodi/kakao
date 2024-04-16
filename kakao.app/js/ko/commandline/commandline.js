@@ -410,6 +410,7 @@ CommandLine = (function ()
     {
         var cmd, cmdName, rest
 
+        console.log('handleMenuAction',name,trail)
         if ((trail != null ? trail.split('Command▸').length : undefined) > 1)
         {
             rest = trail.split('Command▸')[1]
@@ -426,7 +427,7 @@ CommandLine = (function ()
         if (cmd = this.commandForName(cmdName))
         {
             this.startCommand(cmdName)
-            if (_k_.in(cmdName,['goto']))
+            if (_k_.in(cmdName,['goto','open','macro']))
             {
                 console.log('command should openMenu')
             }
@@ -446,7 +447,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _348_19_
+        var _350_19_
 
         if (combo === 'esc')
         {
@@ -465,7 +466,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _356_19_, _364_55_, _365_55_, _375_58_
+        var split, _1_8_, _358_19_, _366_55_, _367_55_, _377_58_
 
         if ((this.command != null))
         {

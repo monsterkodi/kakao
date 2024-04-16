@@ -102,7 +102,6 @@ Pigments = (function ()
     {
         var li
 
-        this.clear()
         this.editor.on('lineChanged',this.onLineChanged)
         this.editor.on('lineInserted',this.onLineInserted)
         for (var _104_19_ = li = 0, _104_23_ = this.editor.numLines(); (_104_19_ <= _104_23_ ? li < this.editor.numLines() : li > this.editor.numLines()); (_104_19_ <= _104_23_ ? ++li : --li))
@@ -114,7 +113,7 @@ Pigments = (function ()
     return Pigments
 })()
 
-export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+shift+p'}},initPigments:function ()
+export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+ctrl+p'}},initPigments:function ()
 {
     var _116_31_
 
@@ -123,7 +122,7 @@ export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pig
 {
     var _121_21_, _123_21_
 
-    if (window.stash.get(`pigments|${this.currentFile}`))
+    if (window.stash.get(`pigments|${this.currentFile}`,false))
     {
         return (this.pigments != null ? this.pigments.deactivate() : undefined)
     }

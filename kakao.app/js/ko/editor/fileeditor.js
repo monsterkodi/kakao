@@ -502,7 +502,7 @@ FileEditor = (function ()
         }},{text:'Back',combo:'command+1',cb:function ()
         {
             return post.emit('menuAction','Navigate Backward')
-        }},{text:''},{text:'Maximize',combo:'command+shift+y command+,',cb:function ()
+        }},{text:''},{text:'Maximize',combo:'command+,',cb:function ()
         {
             return window.split.maximizeEditor()
         }},{text:''},{text:'DevTools',combo:'alt+cmdctrl+i'},{text:''}]}

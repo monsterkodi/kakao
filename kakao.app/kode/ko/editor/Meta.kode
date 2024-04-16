@@ -379,8 +379,8 @@ class Meta
         @lineMetas = {}
 
     delMeta: (meta) ->
-        if not meta?
-            return error 'del no meta?'
+        
+        if not meta? ➜ return error 'del no meta?'
         pull @lineMetas[meta[0]], meta
         pull @metas, meta
         @delDiv meta

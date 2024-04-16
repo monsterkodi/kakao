@@ -234,6 +234,7 @@ body
 
 .popupCombo
 {
+    font-family: fontMono;
     position: absolute;
     right: 12px;
 }

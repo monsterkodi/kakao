@@ -17,7 +17,7 @@ class Keyinfo
 
     static iconKeyNames = ['shift','ctrl','alt','command','backspace','delete','home','end','page up','page down','return','enter','up','down','left','right','tab','space','click']
 
-    static iconKeyChars = ['⌂','⌃','⌥','⌘','⌫','⌦','↖','↘','⇞','⇟','↩','↩','↑','↓','←','→','⤠','␣','⍝']
+    static iconKeyChars = ['⌂','⌃','⌥','⌘','⌫','⌦','↖','↘','⇞','⇟','↩','↩','▴','▾','◂','▸','⤠','␣','⍝']
 
     static forCombo (combo)
     {
@@ -26,9 +26,9 @@ class Keyinfo
         mods = []
         char = null
         var list = _k_.list(combo.split('+'))
-        for (var _32_14_ = 0; _32_14_ < list.length; _32_14_++)
+        for (var _34_14_ = 0; _34_14_ < list.length; _34_14_++)
         {
-            c = list[_32_14_]
+            c = list[_34_14_]
             if (this.isModifier(c))
             {
                 mods.push(c)
@@ -112,7 +112,7 @@ class Keyinfo
 
     static keynameForEvent (event)
     {
-        var _103_45_, _94_33_
+        var _105_45_, _96_33_
 
         switch (event.code)
         {
@@ -210,7 +210,7 @@ class Keyinfo
 
     static characterForEvent (event)
     {
-        var _108_20_
+        var _110_20_
 
         if ((event.key != null ? event.key.length : undefined) === 1)
         {
@@ -227,7 +227,7 @@ class Keyinfo
         var i, short
 
         short = this.convertCmdCtrl(combo.toLowerCase())
-        for (var _116_17_ = i = 0, _116_21_ = this.iconKeyNames.length; (_116_17_ <= _116_21_ ? i < this.iconKeyNames.length : i > this.iconKeyNames.length); (_116_17_ <= _116_21_ ? ++i : --i))
+        for (var _118_17_ = i = 0, _118_21_ = this.iconKeyNames.length; (_118_17_ <= _118_21_ ? i < this.iconKeyNames.length : i > this.iconKeyNames.length); (_118_17_ <= _118_21_ ? ++i : --i))
         {
             short = short.replace(new RegExp(this.iconKeyNames[i],'gi'),this.iconKeyChars[i])
         }
