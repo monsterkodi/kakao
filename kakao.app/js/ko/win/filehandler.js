@@ -28,7 +28,6 @@ class FileHandler
         post.on('saveChanges',this.saveChanges)
         post.on('loadFile',this.loadFile)
         post.on('openFile',this.openFile)
-        post.on('openFiles',this.openFiles)
         post.on('file',this.onFile)
         post.on('reloadFile',this.reloadFile)
         post.on('openDialog',this.onOpenDialog)
@@ -47,7 +46,7 @@ class FileHandler
         editor.saveFilePosition()
         if ((file != null))
         {
-            var _42_28_ = slash.splitFilePos(file); file = _42_28_[0]; filePos = _42_28_[1]
+            var _41_28_ = slash.splitFilePos(file); file = _41_28_[0]; filePos = _41_28_[1]
 
             if ((filePos != null) && (filePos[0] || filePos[1]))
             {
@@ -61,7 +60,11 @@ class FileHandler
         if (file !== (editor != null ? editor.currentFile : undefined) || !_k_.empty(filePos) || opt.reload)
         {
             this.addToRecent(file)
-            post.emit('storeState',kore.get('editor|file'))
+            if (editor.currentFile && editor.currentFile !== kore.get('editor|file'))
+            {
+                console.log('WTF!?',editor.currentFile,kore.get('editor|file'))
+            }
+            post.emit('storeState',kore.get('editor|file'),editor.do.tabState())
             editor.setCurrentFile(file)
             kore.set('editor|file',file)
             editor.restoreFilePosition()
@@ -90,13 +93,13 @@ class FileHandler
 
     onOpenDialog (files)
     {
-        var file, maxTabs, options, _90_33_
+        var file, maxTabs, options, _92_33_
 
         if (_k_.empty(files))
         {
             return
         }
-        options = ((_90_33_=this.openDialogOpt) != null ? _90_33_ : {})
+        options = ((_92_33_=this.openDialogOpt) != null ? _92_33_ : {})
         console.log('FileHandler.onOpenDialog',files,options)
         maxTabs = prefs.get('maximalNumberOfTabs',8)
         if (!options.newWindow)
@@ -113,9 +116,9 @@ class FileHandler
             return []
         }
         var list = _k_.list(files)
-        for (var _119_17_ = 0; _119_17_ < list.length; _119_17_++)
+        for (var _121_17_ = 0; _121_17_ < list.length; _121_17_++)
         {
-            file = list[_119_17_]
+            file = list[_121_17_]
             if (options.newWindow)
             {
                 console.log('FileHandler new window with file not implemented!')
@@ -192,7 +195,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _194_29_
+        var _196_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {

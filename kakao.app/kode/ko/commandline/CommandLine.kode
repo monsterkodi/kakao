@@ -331,7 +331,10 @@ function CommandLine extends TextEditor
             if cmdName in ['goto''open''macro']
                 log 'command should openMenu'
             else if cmdName in ['search']
-                @command.execute @text()
+                st = trim @text()
+                if st.length > 1
+                    @command.execute @text()
+                    window.split.do 'show terminal'
             else
                 # log 'command.execute' name
                 @command.execute name

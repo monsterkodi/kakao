@@ -287,7 +287,6 @@ class GitInfo
                 # clss: 'searchResult'
                 # click: @onMetaClick
                 
-            # post.emit 'search-result' meta
             linesAdded++
                 
             index += 1

@@ -48,7 +48,7 @@ class Projects
         
         prjPath ?= slash.dir file
         
-        log 'Projects.indexProject ▸' prjPath
+        # log 'Projects.indexProject ▸' prjPath
         
         if @indexing
             return if @indexing == prjPath

@@ -159,7 +159,15 @@ function FileSearcher
 
             @report() if valid @found
 
+    # 00000000   00000000  00000000    0000000   00000000   000000000  
+    # 000   000  000       000   000  000   000  000   000     000     
+    # 0000000    0000000   00000000   000   000  0000000       000     
+    # 000   000  000       000        000   000  000   000     000     
+    # 000   000  00000000  000         0000000   000   000     000     
+    
     report: =>
+        
+        log 'report' @found.length
 
         terminal = window.terminal
 
@@ -170,9 +178,9 @@ function FileSearcher
             click: @command.onMetaClick
             line:  '◼'
 
-        terminal.appendMeta meta
-        terminal.appendMeta clss: 'spacer'
-
+        terminal.queueMeta meta
+        terminal.queueMeta clss: 'spacer'
+        
         for fi in 0...@found.length
 
             f = @found[fi]
@@ -187,12 +195,11 @@ function FileSearcher
                 click: @command.onMetaClick
 
             if fi and @found[fi-1][0] != f[0]-1
-                terminal.appendMeta clss: 'spacer'
+                terminal.queueMeta clss: 'spacer'
 
-            terminal.appendMeta meta
-            post.emit 'search-result' meta
+            terminal.queueMeta meta
 
-        terminal.appendMeta clss: 'spacer'
+        terminal.queueMeta clss: 'spacer'
         terminal.scroll.cursorToTop()
 
 export Search

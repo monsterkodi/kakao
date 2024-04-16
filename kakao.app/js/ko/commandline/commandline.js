@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var CommandLine
 
@@ -408,7 +408,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleMenuAction"] = function (name, trail)
     {
-        var cmd, cmdName, rest
+        var cmd, cmdName, rest, st
 
         console.log('handleMenuAction',name,trail)
         if ((trail != null ? trail.split('Command▸').length : undefined) > 1)
@@ -433,7 +433,12 @@ CommandLine = (function ()
             }
             else if (_k_.in(cmdName,['search']))
             {
-                this.command.execute(this.text())
+                st = _k_.trim(this.text())
+                if (st.length > 1)
+                {
+                    this.command.execute(this.text())
+                    window.split.do('show terminal')
+                }
             }
             else
             {
@@ -447,7 +452,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _350_19_
+        var _353_19_
 
         if (combo === 'esc')
         {
@@ -466,7 +471,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _358_19_, _366_55_, _367_55_, _377_58_
+        var split, _1_8_, _361_19_, _369_55_, _370_55_, _380_58_
 
         if ((this.command != null))
         {

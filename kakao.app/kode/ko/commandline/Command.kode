@@ -256,8 +256,8 @@ function Command
             error 'hideList dafuk?'
             return
 
-        if @commandList?
-            log 'hideList' 
+        # if @commandList?
+            # log 'hideList' 
         @selected = -1
         @commandList?.del()
         @commandList?.view?.remove()
@@ -312,6 +312,8 @@ function Command
     #    000     00000000  000   000     000   
     
     setText: (t) -> 
+        
+        log "Command[#{@name}].setText" t
         @currentText = t
         @commandline.setText t
         

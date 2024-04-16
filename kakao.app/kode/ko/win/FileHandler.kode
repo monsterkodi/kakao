@@ -18,7 +18,6 @@ class FileHandler
         post.on 'saveChanges' @saveChanges
         post.on 'loadFile'    @loadFile
         post.on 'openFile'    @openFile
-        post.on 'openFiles'   @openFiles
         post.on 'file'        @onFile
         post.on 'reloadFile'  @reloadFile
         post.on 'openDialog'  @onOpenDialog
@@ -49,7 +48,10 @@ class FileHandler
             
             @addToRecent file
             
-            post.emit 'storeState' kore.get 'editor|file'
+            if editor.currentFile and editor.currentFile != kore.get 'editor|file'
+                log 'WTF!?' editor.currentFile, kore.get 'editor|file'
+                
+            post.emit 'storeState' kore.get('editor|file'), editor.do.tabState()
 
             editor.setCurrentFile file
             

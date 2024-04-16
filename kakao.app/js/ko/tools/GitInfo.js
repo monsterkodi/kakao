@@ -351,18 +351,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _340_21_ = 0; _340_21_ < list.length; _340_21_++)
+            for (var _339_21_ = 0; _339_21_ < list.length; _339_21_++)
             {
-                file = list[_340_21_]
+                file = list[_339_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _345_21_ = 0; _345_21_ < list1.length; _345_21_++)
+            for (var _344_21_ = 0; _344_21_ < list1.length; _344_21_++)
             {
-                file = list1[_345_21_]
+                file = list1[_344_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,diff)
@@ -376,9 +376,9 @@ class GitInfo
                 }
             }
             var list2 = _k_.list(status.changed)
-            for (var _354_21_ = 0; _354_21_ < list2.length; _354_21_++)
+            for (var _353_21_ = 0; _353_21_ < list2.length; _353_21_++)
             {
-                file = list2[_354_21_]
+                file = list2[_353_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('changed',file,status,diff)
@@ -388,9 +388,9 @@ class GitInfo
                     }
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _362_31_ = 0; _362_31_ < list3.length; _362_31_++)
+                    for (var _361_31_ = 0; _361_31_ < list3.length; _361_31_++)
                     {
-                        change = list3[_362_31_]
+                        change = list3[_361_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {

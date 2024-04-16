@@ -39,7 +39,6 @@ Store = (function ()
         }
         this.sep = opt.separator
         this.file = slash.path(kakao.bundle.path,`/.stash/${this.name}.noon`)
-        console.log('Store.file',this.file)
         post.on('store',(function (name, action, ...argl)
         {
             if (this.name !== name)

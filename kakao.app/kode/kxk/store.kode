@@ -30,7 +30,7 @@ function Store extends events
         
         @file = slash.path kakao.bundle.path, "/.stash/#{@name}.noon"
         
-        log 'Store.file' @file
+        # log 'Store.file' @file
         
         post.on 'store' (name, action, argl...) =>
             return if @name != name

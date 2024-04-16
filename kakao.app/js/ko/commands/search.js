@@ -195,11 +195,12 @@ FileSearcher = (function ()
     {
         var dss, f, fi, meta, regions, terminal
 
+        console.log('report',this.found.length)
         terminal = window.terminal
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
-        terminal.appendMeta(meta)
-        terminal.appendMeta({clss:'spacer'})
-        for (var _176_18_ = fi = 0, _176_22_ = this.found.length; (_176_18_ <= _176_22_ ? fi < this.found.length : fi > this.found.length); (_176_18_ <= _176_22_ ? ++fi : --fi))
+        terminal.queueMeta(meta)
+        terminal.queueMeta({clss:'spacer'})
+        for (var _184_18_ = fi = 0, _184_22_ = this.found.length; (_184_18_ <= _184_22_ ? fi < this.found.length : fi > this.found.length); (_184_18_ <= _184_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]
@@ -207,12 +208,11 @@ FileSearcher = (function ()
             meta = {diss:dss,href:`${this.file}:${f[0]}`,clss:'searchResult',click:this.command.onMetaClick}
             if (fi && this.found[fi - 1][0] !== f[0] - 1)
             {
-                terminal.appendMeta({clss:'spacer'})
+                terminal.queueMeta({clss:'spacer'})
             }
-            terminal.appendMeta(meta)
-            post.emit('search-result',meta)
+            terminal.queueMeta(meta)
         }
-        terminal.appendMeta({clss:'spacer'})
+        terminal.queueMeta({clss:'spacer'})
         return terminal.scroll.cursorToTop()
     }
 

@@ -126,13 +126,14 @@ function Open extends Command
         if opt.currentText is str
             lf = 1 + opt.currentText.length/n.length
             contBonus = n.indexOf(opt.currentText.toLowerCase()) >= 0 and 10000 * lf or 0
-            nameBonus = n.startsWith(opt.currentText.toLowerCase()) and 50000 * lf or 0
+            nameBonus = n.startsWith(opt.currentText.toLowerCase()) and 10000 * lf or 0
 
         # TODO: move this stuff to a config.noon file
 
         extensionBonus = switch slash.ext b
-            'coffee' 'kode'      ➜ 1000
-            'cpp' 'hpp' 'mm' 'h' ➜ 90
+            'kode'               ➜ 100
+            'coffee'             ➜ 95
+            'cpp' 'hpp' 'mm' 'h' ➜ 60
             'md' 'styl' 'pug'    ➜ 50
             'noon'               ➜ 25
             'js' 'mjs'           ➜ -5
@@ -140,11 +141,13 @@ function Open extends Command
                                  ➜ 0
 
         if @file and slash.ext(@file) == slash.ext b
-            extensionBonus += 10000
+            extensionBonus += 100
+            
+        extensionBonus *= 10+10*contBonus+10*nameBonus # give file types and matching extension more weight
 
         lengthPenalty = slash.dir(f).length
 
-        updirPenalty   = r.split('../').length * 819
+        updirPenalty  = r.split('../').length * 819
 
         if f.startsWith @dir
             localBonus = Math.max 0, (5-r.split('/').length) * 4095

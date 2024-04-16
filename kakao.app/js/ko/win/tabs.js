@@ -329,9 +329,8 @@ class Tabs
                 this.setActive(path)
                 if (tab.dirty && this.tabState[tab.path])
                 {
-                    console.log('restoreTab',tab.path,this.tabState[tab.path])
+                    console.log('restoreTab',path,tab.path,kore.get('editor|file'))
                     post.emit('restoreTab',tab,this.tabState[tab.path])
-                    delete this.tabState[tab.path]
                     return
                 }
                 return post.emit('jumpToFile',path)
@@ -715,15 +714,16 @@ class Tabs
         }
     }
 
-    onStoreState (path)
+    onStoreState (path, state)
     {
         var tab
 
+        console.log('storeState',path)
         if (tab = this.koreTabForPath(path))
         {
             if (tab.dirty)
             {
-                this.tabState[tab.path] = window.editor.do.tabState()
+                this.tabState[tab.path] = state
                 console.log('store tab state',tab.path)
                 console.log('      tab  text',this.tabState[tab.path].state.s.lines.join('\n'))
             }
@@ -747,9 +747,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _526_16_ = 0; _526_16_ < list.length; _526_16_++)
+        for (var _527_16_ = 0; _527_16_ < list.length; _527_16_++)
         {
-            tab = list[_526_16_]
+            tab = list[_527_16_]
             if (tab.dirty)
             {
                 if (tab.active)

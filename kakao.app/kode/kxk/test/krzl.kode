@@ -1,0 +1,43 @@
+###
+000   000  00000000   0000000  000    
+000  000   000   000     000   000    
+0000000    0000000      000    000    
+000  000   000   000   000     000    
+000   000  000   000  0000000  0000000
+###
+
+use .. ◆ krzl
+
+▸ krzl
+
+    ▸ strings
+
+        k = new krzl ['hello' 'world'] 
+        
+        k.filter '✘'    ▸ []
+        k.filter 'h'    ▸ ['hello']
+        k.filter 'w'    ▸ ['world']
+        k.filter 'l'    ▸ ['hello' 'world']
+        k.filter 'll'   ▸ ['hello']
+        k.filter 'o'    ▸ ['world' 'hello']
+        
+    ▸ extract
+    
+        k = new krzl [{key:'hello'}, {key:'world' evil:666}]
+        k.extract = (i) -> i.key
+        
+        k.filter '✘'    ▸ []
+        k.filter 'h'    ▸ [key:'hello']
+        k.filter 'w'    ▸ [key:'world' evil:666]
+        k.filter 'l'    ▸ [{key:'hello'} {key:'world' evil:666}]
+        k.filter 'll'   ▸ [key:'hello']
+        k.filter 'o'    ▸ [{key:'world' evil:666} {key:'hello'}]
+        
+    ▸ weight
+    
+        k = new krzl ['bba' 'aa'  'a' 'aba' 'acccca' 'aaa' 'akkaakka']
+        k.filter 'a'    ▸ ['a' 'aa' 'aba' 'aaa' 'acccca' 'akkaakka' 'bba']
+        k.filter 'b'    ▸ ['bba' 'aba']
+        k.filter 'aa'   ▸ ['aa' 'aba' 'aaa' 'acccca' 'akkaakka']
+    
+    

@@ -141,6 +141,7 @@ function FileEditor extends TextEditor
     saveFilePosition: ->
         
         return if not @currentFile
+        
         # return if     @currentFile.startsWith 'untitled-'
         
         filePositions = window.stash.get 'filePositions' {}
@@ -165,19 +166,28 @@ function FileEditor extends TextEditor
 
     restoreTab: (tab, state) =>
         
-        post.emit 'storeState' kore.get 'editor|file'
-        
-        log 'FileEditor.restoreTab' tab, state
-        
+        if @currentFile != kore.get 'editor|file'
+            error 'FileEditor.restoreTab -- editor file mismatch!' @currentFile, kore.get 'editor|file'
+            return
+            
         if state.file != tab.path
             error 'FileEditor.restoreTab -- file path mismatch!' state.file, tab.path
+            return
+            
+        if @currentFile == state.file
+            error 'FileEditor.restoreTab -- trying to restore currentFile!' @currentFile
+            return
+            
+        log 'FileEditor.restoreTab' tab.path
+        
+        post.emit 'storeState' kore.get 'editor|file'
         
         @currentFile = state.file
         if state.file.startsWith 'untitled-'
             text = state.state.s.lines.join '\n'
         else
             @do.setTabState state
-            text = @state.text()
+            text = @do.text()
         log 'text:' text
         @setText text
         kore.set 'editor|file' state.file

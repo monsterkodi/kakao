@@ -156,21 +156,23 @@ Open = (function ()
         {
             lf = 1 + opt.currentText.length / n.length
             contBonus = n.indexOf(opt.currentText.toLowerCase()) >= 0 && 10000 * lf || 0
-            nameBonus = n.startsWith(opt.currentText.toLowerCase()) && 50000 * lf || 0
+            nameBonus = n.startsWith(opt.currentText.toLowerCase()) && 10000 * lf || 0
         }
         extensionBonus = ((function ()
         {
             switch (slash.ext(b))
             {
-                case 'coffee':
                 case 'kode':
-                    return 1000
+                    return 100
+
+                case 'coffee':
+                    return 95
 
                 case 'cpp':
                 case 'hpp':
                 case 'mm':
                 case 'h':
-                    return 90
+                    return 60
 
                 case 'md':
                 case 'styl':
@@ -195,8 +197,9 @@ Open = (function ()
         }).bind(this))()
         if (this.file && slash.ext(this.file) === slash.ext(b))
         {
-            extensionBonus += 10000
+            extensionBonus += 100
         }
+        extensionBonus *= 10 + 10 * contBonus + 10 * nameBonus
         lengthPenalty = slash.dir(f).length
         updirPenalty = r.split('../').length * 819
         if (f.startsWith(this.dir))
@@ -221,11 +224,11 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _173_21_, _174_17_, _191_41_, _193_19_
+        var f, file, iconSpan, item, items, rel, _176_21_, _177_17_, _194_41_, _196_19_
 
         opt = (opt != null ? opt : {})
-        opt.maxItems = ((_173_21_=opt.maxItems) != null ? _173_21_ : 200)
-        opt.flat = ((_174_17_=opt.flat) != null ? _174_17_ : true)
+        opt.maxItems = ((_176_21_=opt.maxItems) != null ? _176_21_ : 200)
+        opt.flat = ((_177_17_=opt.flat) != null ? _177_17_ : true)
         iconSpan = function (file)
         {
             if (slash.ext(file) === 'kode')
@@ -259,9 +262,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _207_21_ = 0; _207_21_ < list.length; _207_21_++)
+            for (var _210_21_ = 0; _210_21_ < list.length; _210_21_++)
             {
-                file = list[_207_21_]
+                file = list[_210_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -288,9 +291,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _238_18_ = 0; _238_18_ < list.length; _238_18_++)
+            for (var _241_18_ = 0; _241_18_ < list.length; _241_18_++)
             {
-                f = list[_238_18_]
+                f = list[_241_18_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -309,9 +312,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _254_58_, _254_65_
+        var _257_58_, _257_65_
 
-        if (this.commandList && this.selected === ((_254_58_=this.commandList.meta) != null ? (_254_65_=_254_58_.metas) != null ? _254_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_257_58_=this.commandList.meta) != null ? (_257_65_=_257_58_.metas) != null ? _257_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -324,7 +327,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _269_27_
+        var _272_27_
 
         if (name === this.names[0])
         {
@@ -338,7 +341,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _290_40_, _304_41_
+        var dir, item, _293_40_, _307_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -350,7 +353,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_290_40_=slash.dir(this.file)) != null ? _290_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_293_40_=slash.dir(this.file)) != null ? _293_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -390,7 +393,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _335_27_
+        var file, path, pos, _338_27_
 
         if (this.selected < 0)
         {
@@ -400,7 +403,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _341_24_ = slash.splitFilePos(command); file = _341_24_[0]; pos = _341_24_[1]
+            var _344_24_ = slash.splitFilePos(command); file = _344_24_[0]; pos = _344_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

@@ -340,16 +340,12 @@ Command = (function ()
 
     Command.prototype["hideList"] = function ()
     {
-        var _259_23_, _262_20_, _263_20_, _263_26_
+        var _262_20_, _263_20_, _263_26_
 
         if (!this)
         {
             console.error('hideList dafuk?')
             return
-        }
-        if ((this.commandList != null))
-        {
-            console.log('hideList')
         }
         this.selected = -1
         ;(this.commandList != null ? this.commandList.del() : undefined)
@@ -431,6 +427,7 @@ Command = (function ()
 
     Command.prototype["setText"] = function (t)
     {
+        console.log(`Command[${this.name}].setText`,t)
         this.currentText = t
         return this.commandline.setText(t)
     }
@@ -454,7 +451,7 @@ Command = (function ()
 
     Command.prototype["complete"] = function ()
     {
-        var _329_34_
+        var _331_34_
 
         if (!(this.commandList != null))
         {
@@ -494,11 +491,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _369_17_, _370_28_, _370_39_
+        var _371_17_, _372_28_, _372_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_369_17_=this.history) != null ? _369_17_ : [])
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_370_39_=1) != null ? _370_39_ : 0)
+        this.history = ((_371_17_=this.history) != null ? _371_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_372_39_=1) != null ? _372_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -543,7 +540,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _402_31_
+        var _404_31_
 
         switch (combo)
         {

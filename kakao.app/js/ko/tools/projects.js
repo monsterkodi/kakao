@@ -61,7 +61,6 @@ class Projects
         }
         prjPath = await ffs.git(file)
         prjPath = (prjPath != null ? prjPath : slash.dir(file))
-        console.log('Projects.indexProject ▸',prjPath)
         if (this.indexing)
         {
             if (this.indexing === prjPath)
