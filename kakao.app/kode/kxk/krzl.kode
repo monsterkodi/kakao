@@ -6,7 +6,7 @@
     000   000  000   000  0000000  0000000
     
     stores an array of values
-    provides a function to filter values by an abbreviation
+    filters those values by an abbreviation
 ###
 
 function Krzl
@@ -14,7 +14,7 @@ function Krzl
     @: (@values) -> 
     
         @extract = (i) -> i
-        @weight  = @defaultWeight
+        @weight  = null
     
     match: (abbrv, exstr) ->
         
@@ -42,21 +42,27 @@ function Krzl
                     indices:indices 
         null
 
-    defaultWeight: (pair) ->
+    calcWeight: (pair) ->
         
         [value, info] = pair
+
+        e = 0.00001
+        w = e
+        if @weight is func
+            w = @weight value, info
+            w = e if not w is num or w < e
         
-        # log 'weight' value, info
-        
-        info.indices[0] + 1-1/info.extract.length
+        (1/w) * (info.indices[0] + 1-1/info.extract.length)
         
     sort: (pairs) ->
         
-        pairs.sort (a,b) => @weight(a) - @weight(b)
+        pairs.sort (a,b) => @calcWeight(a) - @calcWeight(b)
         
     filter: (abbrv) -> # subset of values that match abbreviation
     
         pairs = []
+        
+        if empty abbrv ➜ warn 'krzl.filter without abbreviation?'; return pairs 
         
         for value in @values
             if mi = @match abbrv, @extract value

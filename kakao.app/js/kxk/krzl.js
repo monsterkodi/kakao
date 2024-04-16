@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var Krzl
 
@@ -13,7 +13,7 @@ Krzl = (function ()
         {
             return i
         }
-        this.weight = this.defaultWeight
+        this.weight = null
     }
 
     Krzl.prototype["match"] = function (abbrv, exstr)
@@ -46,20 +46,30 @@ Krzl = (function ()
         return null
     }
 
-    Krzl.prototype["defaultWeight"] = function (pair)
+    Krzl.prototype["calcWeight"] = function (pair)
     {
-        var info, value
+        var e, info, value, w
 
         var _47_22_ = pair; value = _47_22_[0]; info = _47_22_[1]
 
-        return info.indices[0] + 1 - 1 / info.extract.length
+        e = 0.00001
+        w = e
+        if (_k_.isFunc(this.weight))
+        {
+            w = this.weight(value,info)
+            if (!(_k_.isNum(w)) || w < e)
+            {
+                w = e
+            }
+        }
+        return (1 / w) * (info.indices[0] + 1 - 1 / info.extract.length)
     }
 
     Krzl.prototype["sort"] = function (pairs)
     {
         return pairs.sort((function (a, b)
         {
-            return this.weight(a) - this.weight(b)
+            return this.calcWeight(a) - this.calcWeight(b)
         }).bind(this))
     }
 
@@ -68,10 +78,15 @@ Krzl = (function ()
         var mi, pairs, value
 
         pairs = []
-        var list = _k_.list(this.values)
-        for (var _61_18_ = 0; _61_18_ < list.length; _61_18_++)
+        if (_k_.empty(abbrv))
         {
-            value = list[_61_18_]
+            console.warn('krzl.filter without abbreviation?')
+            return pairs
+        }
+        var list = _k_.list(this.values)
+        for (var _67_18_ = 0; _67_18_ < list.length; _67_18_++)
+        {
+            value = list[_67_18_]
             if (mi = this.match(abbrv,this.extract(value)))
             {
                 pairs.push([value,mi])

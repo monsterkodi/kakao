@@ -6,14 +6,16 @@
 000   000  000   000  0000000  0000000
 ###
 
-use .. ◆ krzl
+use .. ◆ krzl slash
 
 ▸ krzl
 
     ▸ strings
 
-        k = new krzl ['hello' 'world'] 
+        k = new krzl      ['hello' 'world'] 
         
+        k.filter()      ▸ []
+        k.filter ''     ▸ []
         k.filter '✘'    ▸ []
         k.filter 'h'    ▸ ['hello']
         k.filter 'w'    ▸ ['world']
@@ -23,7 +25,7 @@ use .. ◆ krzl
         
     ▸ extract
     
-        k = new krzl [{key:'hello'}, {key:'world' evil:666}]
+        k = new krzl      [{key:'hello'}, {key:'world' evil:666}]
         k.extract = (i) -> i.key
         
         k.filter '✘'    ▸ []
@@ -35,9 +37,52 @@ use .. ◆ krzl
         
     ▸ weight
     
-        k = new krzl ['bba' 'aa'  'a' 'aba' 'acccca' 'aaa' 'akkaakka']
+        k = new krzl      ['bba' 'aa'  'a' 'aba' 'acccca' 'aaa' 'akkaakka']
         k.filter 'a'    ▸ ['a' 'aa' 'aba' 'aaa' 'acccca' 'akkaakka' 'bba']
         k.filter 'b'    ▸ ['bba' 'aba']
         k.filter 'aa'   ▸ ['aa' 'aba' 'aaa' 'acccca' 'akkaakka']
+        
+    ▸ custom
+    
+        k = new krzl      ['a.txt' 'a.a' 'a' 'a.noon' 'a.kode']
+        k.filter 'a'    ▸ ['a' 'a.a' 'a.txt' 'a.noon' 'a.kode']
+        
+        k.weight = (i) ->
+            switch slash.ext i
+                'kode' ➜ 1
+                'noon' ➜ 0.5
+                       ➜ 0
+                       
+        k.filter 'a'    ▸ ['a' 'a.kode' 'a.noon' 'a.a' 'a.txt']
+        
+        k.weight = (i) ->
+            switch slash.ext i
+                'kode' ➜ 100
+                'noon' ➜ 50
+                       ➜ 1
+                       
+        k.filter 'a'    ▸ ['a' 'a.kode' 'a.noon' 'a.a' 'a.txt']
+
+        k.weight = (i) ->
+            switch slash.ext i
+                'kode' ➜ 10
+                'noon' ➜ 0.5
+                       ➜ 0.1
+                       
+        k.filter 'a'    ▸ ['a' 'a.kode' 'a.noon' 'a.a' 'a.txt']
+
+    ▸ negative
+        
+        k = new krzl ['a.txt' 'a.aaa' 'a.blork' 'a.noon' 'a.kode']
+        
+        k.weight = (i) ->
+            switch slash.ext i
+                'noon'  ➜ -1
+                'txt'   ➜ -100000
+                'blork' ➜ -666
+                        ➜ 'dafuk'
+                       
+        k.filter 'a'    ▸ ['a.txt' 'a.aaa' 'a.noon' 'a.kode' 'a.blork' ]
+        
     
     
