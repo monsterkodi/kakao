@@ -39,7 +39,7 @@ function Krzl
             if ai == abbrv.length
                 return 
                     extract:exstr 
-                    indices:indices 
+                    indices:indices
         null
 
     calcWeight: (pair) ->
@@ -60,12 +60,14 @@ function Krzl
         
     filter: (abbrv) -> # subset of values that match abbreviation
     
+        if empty abbrv        ➜ warn 'krzl.filter without abbreviation?'      ; return []
+        if empty @values      ➜ warn 'krzl.filter without @values?'           ; return []
+        if not abbrv is str   ➜ warn 'krzl.filter abbreviation not a string?' ; return []
+        if not @values is arr ➜ warn 'krzl.filter @values not an array?'      ; return []
+        
         pairs = []
-        
-        if empty abbrv ➜ warn 'krzl.filter without abbreviation?'; return pairs 
-        
         for value in @values
-            if mi = @match abbrv, @extract value
+            if mi = @match abbrv.toLowerCase(), @extract(value).toLowerCase()
                 pairs.push [value, mi]
         
         @sort pairs

@@ -64,7 +64,7 @@ function Open extends Command
         items = @listItems currentText:cmmd, maxItems:10000
 
         if cmmd.length
-
+            
             fuzzied = fuzzy.filter slash.file(file), items, extract: (o) -> o.text
             items = (f.original for f in fuzzied)
             items.sort (a,b) -> b.weight - a.weight

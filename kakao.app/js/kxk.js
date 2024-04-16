@@ -14,6 +14,7 @@ import prefs from "./kxk/prefs.js"
 import matchr from "./kxk/matchr.js"
 import linediff from "./kxk/linediff.js"
 import karg from "./kxk/karg.js"
+import krzl from "./kxk/krzl.js"
 import keyinfo from "./kxk/keyinfo.js"
 import tooltip from "./kxk/tooltip.js"
 import events from "./kxk/events.js"
@@ -28,7 +29,7 @@ import os from "./kxk/os.js"
 import ffs from "./kxk/ffs.js"
 import noon from "./kxk/noon.js"
 
-var list = _k_.list("dom elem post drag slash stash store prefs matchr linediff karg keyinfo tooltip events popup kstr kermit kpos util sds win os ffs noon".split(' '))
+var list = _k_.list("dom elem post drag slash stash store prefs matchr linediff karg krzl keyinfo tooltip events popup kstr kermit kpos util sds win os ffs noon".split(' '))
 for (var _12_8_ = 0; _12_8_ < list.length; _12_8_++)
 {
     exp = list[_12_8_]

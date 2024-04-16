@@ -117,6 +117,14 @@ toExport["krzl"] = function ()
         }
         compare(k.filter('a'),['a.txt','a.aaa','a.noon','a.kode','a.blork'])
     })
+    section("case insensitive", function ()
+    {
+        k = new krzl(['a','aA','Aa','A','BaBa','bABA'])
+        compare(k.filter('a'),['a','A','aA','Aa','BaBa','bABA'])
+        compare(k.filter('A'),['a','A','aA','Aa','BaBa','bABA'])
+        compare(k.filter('b'),['BaBa','bABA'])
+        compare(k.filter('B'),['BaBa','bABA'])
+    })
 }
 toExport["krzl"]._section_ = true
 toExport._test_ = true

@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var Krzl
 
@@ -77,17 +77,32 @@ Krzl = (function ()
     {
         var mi, pairs, value
 
-        pairs = []
         if (_k_.empty(abbrv))
         {
             console.warn('krzl.filter without abbreviation?')
-            return pairs
+            return []
         }
-        var list = _k_.list(this.values)
-        for (var _67_18_ = 0; _67_18_ < list.length; _67_18_++)
+        if (_k_.empty(this.values))
         {
-            value = list[_67_18_]
-            if (mi = this.match(abbrv,this.extract(value)))
+            console.warn('krzl.filter without @values?')
+            return []
+        }
+        if (!(_k_.isStr(abbrv)))
+        {
+            console.warn('krzl.filter abbreviation not a string?')
+            return []
+        }
+        if (!(_k_.isArr(this.values)))
+        {
+            console.warn('krzl.filter @values not an array?')
+            return []
+        }
+        pairs = []
+        var list = _k_.list(this.values)
+        for (var _69_18_ = 0; _69_18_ < list.length; _69_18_++)
+        {
+            value = list[_69_18_]
+            if (mi = this.match(abbrv.toLowerCase(),this.extract(value).toLowerCase()))
             {
                 pairs.push([value,mi])
             }

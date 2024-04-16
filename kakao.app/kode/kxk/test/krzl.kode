@@ -73,7 +73,7 @@ use .. ◆ krzl slash
 
     ▸ negative
         
-        k = new krzl ['a.txt' 'a.aaa' 'a.blork' 'a.noon' 'a.kode']
+        k = new krzl      ['a.txt' 'a.aaa' 'a.blork' 'a.noon' 'a.kode']
         
         k.weight = (i) ->
             switch slash.ext i
@@ -84,5 +84,13 @@ use .. ◆ krzl slash
                        
         k.filter 'a'    ▸ ['a.txt' 'a.aaa' 'a.noon' 'a.kode' 'a.blork' ]
         
+    ▸ case insensitive
     
+        k = new krzl      ['a' 'aA' 'Aa' 'A' 'BaBa' 'bABA']
+        
+        k.filter 'a'    ▸ ['a' 'A'  'aA' 'Aa' 'BaBa' 'bABA']
+        k.filter 'A'    ▸ ['a' 'A'  'aA' 'Aa' 'BaBa' 'bABA']
+        k.filter 'b'    ▸ ['BaBa' 'bABA']
+        k.filter 'B'    ▸ ['BaBa' 'bABA']
+        
     
