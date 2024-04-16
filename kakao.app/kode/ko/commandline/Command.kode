@@ -6,7 +6,6 @@
  0000000   0000000   000   000  000   000  000   000  000   000  0000000
 ###
 
-use ../../../lib/lib_ko ▪ fuzzy
 use ../../kxk ▪ pull reversed krzl elem
 
 use ./CommandList
@@ -93,13 +92,6 @@ function Command
                         return o if o is str
                         return o.text if o.text is str
                     ''
-                # log 'KRZL' @krzl.filter command
-                # fuzzied = fuzzy.filter command, items, extract: (o) ->
-                    # if o?
-                        # return o if o is str
-                        # return o.text if o.text is str
-                    # ''
-                # items = (f.original for f in fuzzied.sort (a,b) -> a.index - b.index)
                 items = @krzl.filter command
                     
             @showItems @weightedItems items, currentText: command

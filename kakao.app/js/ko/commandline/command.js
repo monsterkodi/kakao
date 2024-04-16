@@ -2,9 +2,6 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var Command
 
-import lib_ko from "../../../lib/lib_ko.js"
-let fuzzy = lib_ko.fuzzy
-
 import kxk from "../../kxk.js"
 let pull = kxk.pull
 let reversed = kxk.reversed
@@ -61,7 +58,7 @@ Command = (function ()
 
     Command.prototype["execute"] = function (command)
     {
-        var _66_23_
+        var _65_23_
 
         if (_k_.empty(command))
         {
@@ -82,7 +79,7 @@ Command = (function ()
 
     Command.prototype["changed"] = function (command)
     {
-        var items, _83_34_
+        var items, _82_34_
 
         if (!(this.commandList != null))
         {
@@ -156,7 +153,7 @@ Command = (function ()
 
     Command.prototype["showList"] = function ()
     {
-        var listView, _146_27_
+        var listView, _138_27_
 
         if (!(this.commandList != null))
         {
@@ -174,7 +171,7 @@ Command = (function ()
 
     Command.prototype["showItems"] = function (items)
     {
-        var _157_34_, _159_39_
+        var _149_34_, _151_39_
 
         if (!(this.commandList != null) && !items.length)
         {
@@ -205,7 +202,7 @@ Command = (function ()
 
     Command.prototype["positionList"] = function ()
     {
-        var flex, listHeight, listTop, spaceBelow, _172_34_
+        var flex, listHeight, listTop, spaceBelow, _164_34_
 
         if (!(this.commandList != null))
         {
@@ -237,7 +234,7 @@ Command = (function ()
 
     Command.prototype["select"] = function (i)
     {
-        var _195_34_
+        var _187_34_
 
         if (!(this.commandList != null))
         {
@@ -271,7 +268,7 @@ Command = (function ()
 
     Command.prototype["prev"] = function ()
     {
-        var _216_23_
+        var _208_23_
 
         if ((this.commandList != null))
         {
@@ -302,7 +299,7 @@ Command = (function ()
 
     Command.prototype["next"] = function ()
     {
-        var _237_27_, _240_23_
+        var _229_27_, _232_23_
 
         if (!(this.commandList != null) && this.listItems().length)
         {
@@ -340,7 +337,7 @@ Command = (function ()
 
     Command.prototype["hideList"] = function ()
     {
-        var _272_20_, _273_20_, _273_26_
+        var _264_20_, _265_20_, _265_26_
 
         if (!this)
         {
@@ -349,7 +346,7 @@ Command = (function ()
         }
         this.selected = -1
         ;(this.commandList != null ? this.commandList.del() : undefined)
-        ;((_273_20_=this.commandList) != null ? (_273_26_=_273_20_.view) != null ? _273_26_.remove() : undefined : undefined)
+        ;((_265_20_=this.commandList) != null ? (_265_26_=_265_20_.view) != null ? _265_26_.remove() : undefined : undefined)
         return this.commandList = null
     }
 
@@ -374,7 +371,7 @@ Command = (function ()
 
     Command.prototype["setCurrent"] = function (command)
     {
-        var _296_36_
+        var _288_36_
 
         if (!(this.history != null))
         {
@@ -400,14 +397,14 @@ Command = (function ()
 
     Command.prototype["current"] = function ()
     {
-        var _307_36_
+        var _299_36_
 
-        return ((_307_36_=this.history[this.selected]) != null ? _307_36_ : '')
+        return ((_299_36_=this.history[this.selected]) != null ? _299_36_ : '')
     }
 
     Command.prototype["last"] = function ()
     {
-        var _310_23_
+        var _302_23_
 
         if ((this.commandList != null))
         {
@@ -451,7 +448,7 @@ Command = (function ()
 
     Command.prototype["complete"] = function ()
     {
-        var _341_34_
+        var _333_34_
 
         if (!(this.commandList != null))
         {
@@ -491,11 +488,11 @@ Command = (function ()
 
     Command.prototype["loadState"] = function ()
     {
-        var _381_17_, _382_28_, _382_39_
+        var _373_17_, _374_28_, _374_39_
 
         this.history = this.getState(this.historyKey(),[])
-        this.history = ((_381_17_=this.history) != null ? _381_17_ : [])
-        return this.selected = (this.history != null ? this.history.length : undefined) - ((_382_39_=1) != null ? _382_39_ : 0)
+        this.history = ((_373_17_=this.history) != null ? _373_17_ : [])
+        return this.selected = (this.history != null ? this.history.length : undefined) - ((_374_39_=1) != null ? _374_39_ : 0)
     }
 
     Command.prototype["setState"] = function (key, value)
@@ -540,7 +537,7 @@ Command = (function ()
 
     Command.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _414_31_
+        var _406_31_
 
         switch (combo)
         {

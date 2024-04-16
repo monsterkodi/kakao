@@ -6,9 +6,7 @@
  0000000   0000000   0000000   0000000   000   000  000   000
 ###
 
-use ../../../lib/lib_ko ▪ fuzzy
-
-use ../../kxk ▪ ffs kpos elem drag post prefs slash popup keyinfo setStyle stopEvent $
+use ../../kxk ▪ krzl ffs kpos elem drag post prefs slash popup keyinfo setStyle stopEvent $
 use ../tools  ◆ DirWatch File
 use           ◆ Crumb Scroller Row
 
@@ -565,10 +563,12 @@ function Column
 
         for rows in [@rows.slice(activeIndex), @rows.slice(0,activeIndex+1)]
             
-            fuzzied = fuzzy.filter @search, rows, extract: (r) -> r.item.file ? r.item.name
+            k = new krzl values:rows, sortByLength:false extract:(r) -> r.item.file ? r.item.name
+            fuzzied = k.filter @search
 
             if fuzzied.length
-                row = fuzzied[0].original
+                # row = fuzzied[0].original
+                row = fuzzied[0]
                 row.div.appendChild @searchDiv
                 row.activate()
                 break

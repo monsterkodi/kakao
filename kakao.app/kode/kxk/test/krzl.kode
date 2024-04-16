@@ -93,4 +93,9 @@ use .. ◆ krzl slash
         k.filter 'b'    ▸ ['BaBa' 'bABA']
         k.filter 'B'    ▸ ['BaBa' 'bABA']
         
+    ▸ length insensitive
+    
+        k = new krzl values:['a' 'aA' 'Aa' 'A' 'BaBa' 'bABA'] sortByLength:false
+        k.filter 'a'    ▸ ['a' 'aA' 'Aa' 'A' 'BaBa' 'bABA']
+        
     

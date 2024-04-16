@@ -1,19 +1,29 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var Krzl
 
 
 Krzl = (function ()
 {
-    function Krzl (values)
+    function Krzl (opt)
     {
-        this.values = values
-    
-        this.extract = function (i)
+        var _23_31_, _24_41_
+
+        if (_k_.isArr(opt))
+        {
+            opt = {values:opt}
+        }
+        else
+        {
+            opt = (opt != null ? opt : {})
+        }
+        this.values = opt.values
+        this.weight = opt.weight
+        this.extract = ((_23_31_=opt.extract) != null ? _23_31_ : function (i)
         {
             return i
-        }
-        this.weight = null
+        })
+        this.sortByLength = ((_24_41_=opt.sortByLength) != null ? _24_41_ : true)
     }
 
     Krzl.prototype["match"] = function (abbrv, exstr)
@@ -48,9 +58,9 @@ Krzl = (function ()
 
     Krzl.prototype["calcWeight"] = function (pair)
     {
-        var e, info, value, w
+        var e, info, lengthOffset, value, w
 
-        var _47_22_ = pair; value = _47_22_[0]; info = _47_22_[1]
+        var _54_22_ = pair; value = _54_22_[0]; info = _54_22_[1]
 
         e = 0.00001
         w = e
@@ -62,7 +72,8 @@ Krzl = (function ()
                 w = e
             }
         }
-        return (1 / w) * (info.indices[0] + 1 - 1 / info.extract.length)
+        lengthOffset = (this.sortByLength ? 1 - 1 / info.extract.length : 0)
+        return (1 / w) * (info.indices[0] + lengthOffset)
     }
 
     Krzl.prototype["sort"] = function (pairs)
@@ -99,9 +110,9 @@ Krzl = (function ()
         }
         pairs = []
         var list = _k_.list(this.values)
-        for (var _69_18_ = 0; _69_18_ < list.length; _69_18_++)
+        for (var _78_18_ = 0; _78_18_ < list.length; _78_18_++)
         {
-            value = list[_69_18_]
+            value = list[_78_18_]
             if (mi = this.match(abbrv.toLowerCase(),this.extract(value).toLowerCase()))
             {
                 pairs.push([value,mi])

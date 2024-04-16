@@ -11,10 +11,17 @@
 
 function Krzl
 
-    @: (@values) -> 
-    
-        @extract = (i) -> i
-        @weight  = null
+    @: (opt) -> 
+        
+        if opt is arr
+            opt = values:opt
+        else 
+            opt ?= {}
+            
+        @values  = opt.values
+        @weight  = opt.weight
+        @extract = opt.extract ? (i) -> i
+        @sortByLength = opt.sortByLength ? true
     
     match: (abbrv, exstr) ->
         
@@ -51,8 +58,10 @@ function Krzl
         if @weight is func
             w = @weight value, info
             w = e if not w is num or w < e
+            
+        lengthOffset = @sortByLength ? 1-1/info.extract.length : 0
         
-        (1/w) * (info.indices[0] + 1-1/info.extract.length)
+        (1/w) * (info.indices[0] + lengthOffset)
         
     sort: (pairs) ->
         

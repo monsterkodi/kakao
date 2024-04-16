@@ -125,6 +125,11 @@ toExport["krzl"] = function ()
         compare(k.filter('b'),['BaBa','bABA'])
         compare(k.filter('B'),['BaBa','bABA'])
     })
+    section("length insensitive", function ()
+    {
+        k = new krzl({values:['a','aA','Aa','A','BaBa','bABA'],sortByLength:false})
+        compare(k.filter('a'),['a','aA','Aa','A','BaBa','bABA'])
+    })
 }
 toExport["krzl"]._section_ = true
 toExport._test_ = true
