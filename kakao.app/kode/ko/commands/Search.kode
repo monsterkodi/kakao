@@ -167,7 +167,7 @@ function FileSearcher
     
     report: =>
         
-        log 'report' @found.length
+        # log 'report' @found.length
 
         terminal = window.terminal
 

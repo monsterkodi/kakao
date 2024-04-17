@@ -2,10 +2,8 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Open, relative
 
-import lib_ko from "../../../lib/lib_ko.js"
-let fuzzy = lib_ko.fuzzy
-
 import kxk from "../../kxk.js"
+let krzl = kxk.krzl
 let post = kxk.post
 let slash = kxk.slash
 let uniqBy = kxk.uniqBy
@@ -72,19 +70,20 @@ Open = (function ()
 
     Open.prototype["changed"] = function (cmmd)
     {
-        var f, file, fuzzied, items, pos
+        var file, items, pos
 
         cmmd = cmmd.trim()
-        var _62_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _62_20_[0]; pos = _62_20_[1]
+        var _60_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _60_20_[0]; pos = _60_20_[1]
 
         items = this.listItems({currentText:cmmd,maxItems:10000})
         if (cmmd.length)
         {
-            fuzzied = fuzzy.filter(slash.file(file),items,{extract:function (o)
+            this.krzl.values = items
+            this.krzl.extract = function (o)
             {
                 return o.text
-            }})
-            items = (function () { var r_69_38_ = []; var list = _k_.list(fuzzied); for (var _69_38_ = 0; _69_38_ < list.length; _69_38_++)  { f = list[_69_38_];r_69_38_.push(f.original)  } return r_69_38_ }).bind(this)()
+            }
+            items = this.krzl.filter(slash.file(file))
             items.sort(function (a, b)
             {
                 return b.weight - a.weight
@@ -104,7 +103,7 @@ Open = (function ()
 
     Open.prototype["complete"] = function ()
     {
-        var p, pdir, projects, _89_23_
+        var p, pdir, projects, _90_23_
 
         console.log('complete not implemented!')
         if ((this.commandList != null) && this.commandList.line(this.selected).startsWith(slash.file(this.getText())) && !this.getText().trim().endsWith('/'))
@@ -127,9 +126,9 @@ Open = (function ()
         {
             projects = post.get('indexer','projects')
             var list = _k_.list(Object.keys(projects).sort())
-            for (var _101_18_ = 0; _101_18_ < list.length; _101_18_++)
+            for (var _102_18_ = 0; _102_18_ < list.length; _102_18_++)
             {
-                p = list[_101_18_]
+                p = list[_102_18_]
                 if (p.startsWith(this.getText()))
                 {
                     pdir = Projects.projects[p].dir
@@ -224,11 +223,11 @@ Open = (function ()
 
     Open.prototype["listItems"] = function (opt)
     {
-        var f, file, iconSpan, item, items, rel, _176_21_, _177_17_, _194_41_, _196_19_
+        var f, file, iconSpan, item, items, rel, _177_21_, _178_17_, _195_41_, _197_19_
 
         opt = (opt != null ? opt : {})
-        opt.maxItems = ((_176_21_=opt.maxItems) != null ? _176_21_ : 200)
-        opt.flat = ((_177_17_=opt.flat) != null ? _177_17_ : true)
+        opt.maxItems = ((_177_21_=opt.maxItems) != null ? _177_21_ : 200)
+        opt.flat = ((_178_17_=opt.flat) != null ? _178_17_ : true)
         iconSpan = function (file)
         {
             if (slash.ext(file) === 'kode')
@@ -262,9 +261,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _210_21_ = 0; _210_21_ < list.length; _210_21_++)
+            for (var _211_21_ = 0; _211_21_ < list.length; _211_21_++)
             {
-                file = list[_210_21_]
+                file = list[_211_21_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -291,9 +290,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _241_18_ = 0; _241_18_ < list.length; _241_18_++)
+            for (var _242_18_ = 0; _242_18_ < list.length; _242_18_++)
             {
-                f = list[_241_18_]
+                f = list[_242_18_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -312,9 +311,9 @@ Open = (function ()
 
     Open.prototype["showFirst"] = function ()
     {
-        var _257_58_, _257_65_
+        var _258_58_, _258_65_
 
-        if (this.commandList && this.selected === ((_257_58_=this.commandList.meta) != null ? (_257_65_=_257_58_.metas) != null ? _257_65_.length : undefined : undefined) - 1)
+        if (this.commandList && this.selected === ((_258_58_=this.commandList.meta) != null ? (_258_65_=_258_58_.metas) != null ? _258_65_.length : undefined : undefined) - 1)
         {
             this.showItems(this.listItems())
             return this.select(0)
@@ -327,7 +326,7 @@ Open = (function ()
 
     Open.prototype["cancel"] = function (name)
     {
-        var _272_27_
+        var _273_27_
 
         if (name === this.names[0])
         {
@@ -341,7 +340,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _293_40_, _307_41_
+        var dir, item, _294_40_, _308_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -353,7 +352,7 @@ Open = (function ()
             }
             else
             {
-                this.dir = ((_293_40_=slash.dir(this.file)) != null ? _293_40_ : kakao.bundle.app('kode'))
+                this.dir = ((_294_40_=slash.dir(this.file)) != null ? _294_40_ : kakao.bundle.app('kode'))
             }
         }
         else if (this.commandline.lastFocus === 'shelf' || this.commandline.lastFocus.startsWith('FileBrowser'))
@@ -390,7 +389,7 @@ Open = (function ()
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _336_27_
+        var file, path, pos, _337_27_
 
         if (this.selected < 0)
         {
@@ -400,7 +399,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _342_24_ = slash.splitFilePos(command); file = _342_24_[0]; pos = _342_24_[1]
+            var _343_24_ = slash.splitFilePos(command); file = _343_24_[0]; pos = _343_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

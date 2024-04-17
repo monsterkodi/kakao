@@ -195,7 +195,6 @@ FileSearcher = (function ()
     {
         var dss, f, fi, meta, regions, terminal
 
-        console.log('report',this.found.length)
         terminal = window.terminal
         meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.queueMeta(meta)

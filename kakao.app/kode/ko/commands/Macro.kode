@@ -233,11 +233,13 @@ function Macro extends Command
 
             'class'
 
-                clss = cmds.length and cmds[0] or last editor.textsInRanges(editor.selections())
+                clss  = cmds.length and cmds[0] or last editor.textsInRanges(editor.selections())
                 clss ?= 'Class'
-                dir = editor.currentFile? and slash.dir(editor.currentFile) or kakao.bundle.app('kode')
-                file = slash.path dir, clss.toLowerCase() + '.kode'
-                text = "###\n"
+                
+                dir   = editor.currentFile? and slash.dir(editor.currentFile) or kakao.bundle.app('kode')
+                file  = slash.path dir, clss.toLowerCase() + '.kode'
+                
+                text  = "###\n"
                 text += (s for s in salt(clss).split '\n').join '\n'
                 text += "\n###\n"
                 text += """

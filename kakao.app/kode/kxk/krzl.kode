@@ -5,23 +5,30 @@
     000  000   000   000   000     000    
     000   000  000   000  0000000  0000000
     
-    stores an array of values
-    filters those values by an abbreviation
+    filters values by an abbreviation.
+    the abbreviation matches if each character
+    is contained in the (extracted) string.
 ###
 
 function Krzl
 
-    @: (opt) -> 
+    @: (opt) ->
         
         if opt is arr
             opt = values:opt
         else 
             opt ?= {}
             
-        @values  = opt.values
-        @weight  = opt.weight
-        @extract = opt.extract ? (i) -> i
-        @sortByLength = opt.sortByLength ? true
+        @values  = opt.values             # the values to sort
+        @weight  = opt.weight             # customize result order, can be undefined
+        @extract = opt.extract ? (i) -> i # only works on strings if @extract isn't provided
+        @sortByLength = opt.sortByLength ? true # by default, results are sorted by length
+    
+    # 00     00   0000000   000000000   0000000  000   000  
+    # 000   000  000   000     000     000       000   000  
+    # 000000000  000000000     000     000       000000000  
+    # 000 0 000  000   000     000     000       000   000  
+    # 000   000  000   000     000      0000000  000   000  
     
     match: (abbrv, exstr) ->
         
@@ -48,6 +55,14 @@ function Krzl
                     extract:exstr 
                     indices:indices
         null
+        
+    #  0000000   0000000   00000000   000000000  
+    # 000       000   000  000   000     000     
+    # 0000000   000   000  0000000       000     
+    #      000  000   000  000   000     000     
+    # 0000000    0000000   000   000     000     
+    
+    sort: (pairs) -> pairs.sort (a,b) => @calcWeight(a) - @calcWeight(b)
 
     calcWeight: (pair) ->
         
@@ -63,10 +78,12 @@ function Krzl
         
         (1/w) * (info.indices[0] + lengthOffset)
         
-    sort: (pairs) ->
-        
-        pairs.sort (a,b) => @calcWeight(a) - @calcWeight(b)
-        
+    # 00000000  000  000      000000000  00000000  00000000   
+    # 000       000  000         000     000       000   000  
+    # 000000    000  000         000     0000000   0000000    
+    # 000       000  000         000     000       000   000  
+    # 000       000  0000000     000     00000000  000   000  
+    
     filter: (abbrv) -> # subset of values that match abbreviation
     
         if empty abbrv        ➜ warn 'krzl.filter without abbreviation?'      ; return []

@@ -29,7 +29,7 @@ Browse = (function ()
         this.cmdID = 0
         this.browser = new FileBrowser($('browser'))
         this.commands = {}
-        this.names = ['browse','Browse','shelf','Small Browser','Large Browser']
+        this.names = ['browse','shelf']
         post.on('file',this.onFile)
         this.browser.on('itemActivated',this.onBrowserItemActivated)
         this.syntaxName = 'browser'

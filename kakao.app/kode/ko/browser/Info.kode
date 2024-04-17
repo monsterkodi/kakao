@@ -6,7 +6,6 @@
 000  000   000  000        0000000
 ###
 
-use ../../../lib/lib_ko ▪ moment pbytes
 use ../../kxk ▪ ffs elem slash $
 use ../tools/File
 
@@ -36,15 +35,10 @@ image = (file) ->
         img.style.maxWidth  = '100%'
 
         info =○ ffs.info file
-        size = pbytes(info.size).split ' '
-
-        age = moment().to(moment(info.modified), true)
-        [num, range] = age.split ' '
-        num = '1' if num[0] == 'a'
 
         html  = "<tr><th colspan=2>#{width}<span class='punct'>x</span>#{height}</th></tr>"
-        html += "<tr><th>#{size[0]}</th><td>#{size[1]}</td></tr>"
-        html += "<tr><th>#{num}</th><td>#{range}</td></tr>"
+        html += "<tr><th>#{info.size}</th><td>bytes</td></tr>"
+        html += "<tr><th>#{info.modified}</th><td>time</td></tr>"
 
         table.innerHTML = html
 
@@ -73,17 +67,8 @@ file = (file) ->
             return error "file #{file} doesn't exist?"
 
         info =○ ffs.info file
-        size = pbytes(info.size).split ' '
 
-        t = moment info.modified
-        age = moment().to(t, true)
-        [num, range] = age.split ' '
-        num = '1' if num[0] == 'a'
-        if range == 'few'
-            num = moment().diff t, 'seconds'
-            range = 'seconds'
-
-        table.innerHTML = "<tr><th>#{size[0]}</th><td>#{size[1]}</td></tr><tr><th>#{num}</th><td>#{range}</td></tr>"
+        table.innerHTML = "<tr><th>#{info.size}</th><td>bytes</td></tr><tr><th>#{info.modified}</th><td>time</td></tr>"
 
     info = elem class:'browserFileInfo' children: [
         elem 'div' class:"fileInfoIcon #{slash.ext file} #{File.iconClassName file}"

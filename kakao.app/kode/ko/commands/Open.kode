@@ -6,9 +6,7 @@
  0000000   000        00000000  000   000
 ###
 
-use ../../../lib/lib_ko ▪ fuzzy
-
-use ../../kxk ▪ post slash uniqBy reversed
+use ../../kxk ▪ krzl post slash uniqBy reversed
 
 use ../tools/File
 use ../tools/Projects
@@ -65,8 +63,11 @@ function Open extends Command
 
         if cmmd.length
             
-            fuzzied = fuzzy.filter slash.file(file), items, extract: (o) -> o.text
-            items = (f.original for f in fuzzied)
+            @krzl.values  = items
+            @krzl.extract = (o) -> o.text
+
+            items = @krzl.filter slash.file file
+            
             items.sort (a,b) -> b.weight - a.weight
 
         if items.length

@@ -58,7 +58,7 @@ Macro = (function ()
 
     Macro.prototype["execute"] = function (command, trail)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, transform, words, wordsInArgsOrCursorsOrSelection, _121_35_, _238_40_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, indent, insert, li, line, lines, lst, num, s, step, t, text, ti, transform, words, wordsInArgsOrCursorsOrSelection, _121_35_, _239_42_
 
         if (_k_.empty(command))
         {
@@ -221,7 +221,7 @@ Macro = (function ()
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || kakao.bundle.app('kode')
                 file = slash.path(dir,clss.toLowerCase() + '.kode')
                 text = "###\n"
-                text += (function () { var r_241_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _241_33_ = 0; _241_33_ < list1.length; _241_33_++)  { s = list1[_241_33_];r_241_33_.push(s)  } return r_241_33_ }).bind(this)().join('\n')
+                text += (function () { var r_243_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _243_33_ = 0; _243_33_ < list1.length; _243_33_++)  { s = list1[_243_33_];r_243_33_.push(s)  } return r_243_33_ }).bind(this)().join('\n')
                 text += "\n###\n"
                 text += `
 function ${clss}
@@ -238,7 +238,7 @@ export ${clss}
 
             case 'clean':
                 editor.do.start()
-                for (var _266_27_ = li = 0, _266_31_ = editor.numLines(); (_266_27_ <= _266_31_ ? li < editor.numLines() : li > editor.numLines()); (_266_27_ <= _266_31_ ? ++li : --li))
+                for (var _268_27_ = li = 0, _268_31_ = editor.numLines(); (_268_27_ <= _268_31_ ? li < editor.numLines() : li > editor.numLines()); (_268_27_ <= _268_31_ ? ++li : --li))
                 {
                     line = editor.line(li)
                     cleaned = line.trimRight()

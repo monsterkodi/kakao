@@ -254,9 +254,6 @@ Window = (function ()
             case 'Small Browser':
                 return window.commandline.startCommand('browse')
 
-            case 'Large Browser':
-                return window.commandline.startCommand('Browse')
-
             case 'Preferences':
                 return post.emit('loadFile',prefs.store.file)
 
@@ -331,7 +328,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _211_14_
+    var _210_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -342,7 +339,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _217_22_, _218_19_
+    var _216_22_, _217_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -377,7 +374,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _257_32_
+    var _256_32_
 
     if (!(_k_.isNum(s)))
     {

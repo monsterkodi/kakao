@@ -50,7 +50,7 @@ function CommandLine extends TextEditor
         super viewElem, features: [], fontSize: 24, syntaxName:'commandline'
 
         @mainCommands = ['goto' 'open' 'macro' 'browse' 'search' 'find' ]
-        @hideCommands = ['selecto' 'Browse' 'shelf' 'Small Browser' 'Large Browser']
+        @hideCommands = ['selecto' 'shelf']
 
         @size.lineHeight = 30
         @scroll.setLineHeight @size.lineHeight

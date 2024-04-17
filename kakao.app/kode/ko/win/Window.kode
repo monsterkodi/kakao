@@ -146,7 +146,6 @@ function Window extends win.Delegate
             'Close Other Tabs'      ➜ return post.emit 'closeOtherTabs'
             'Close Other Windows'   ➜ return post.toWins 'closeWindow'
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'
-            'Large Browser'         ➜ return window.commandline.startCommand 'Browse'
             'Preferences'           ➜ return post.emit 'loadFile' prefs.store.file
     
         # if name in Macro.macroNames

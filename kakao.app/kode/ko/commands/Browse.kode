@@ -24,7 +24,7 @@ function Browse extends Command
         @browser  = new FileBrowser $ 'browser'
 
         @commands = {}
-        @names    = ['browse' 'Browse' 'shelf' 'Small Browser' 'Large Browser'] # only browse is shown in commandline menu (see CommandList.hideCommands)
+        @names    = ['browse' 'shelf'] # only browse is shown in commandline menu (see CommandList.hideCommands)
 
         post.on 'file' @onFile
 

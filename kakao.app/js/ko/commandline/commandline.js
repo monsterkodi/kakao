@@ -62,7 +62,7 @@ CommandLine = (function ()
         this["stash"] = this["stash"].bind(this)
         CommandLine.__super__.constructor.call(this,viewElem,{features:[],fontSize:24,syntaxName:'commandline'})
         this.mainCommands = ['goto','open','macro','browse','search','find']
-        this.hideCommands = ['selecto','Browse','shelf','Small Browser','Large Browser']
+        this.hideCommands = ['selecto','shelf']
         this.size.lineHeight = 30
         this.scroll.setLineHeight(this.size.lineHeight)
         this.button = $('commandline-button')
