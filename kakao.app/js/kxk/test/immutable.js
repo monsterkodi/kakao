@@ -56,7 +56,6 @@ toExport["immutable"] = function ()
         }
         catch (err)
         {
-            console.log(`${err}`)
             compare(`${err}`.indexOf("Cannot assign to read only property 'int' of object") >= 0,true)
         }
     })

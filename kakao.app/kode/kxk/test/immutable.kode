@@ -74,7 +74,6 @@ use .. ◆ immutable
             imm.int += 1
             true ▸ false
         catch err
-            log "#{err}"
             "#{err}".indexOf("Cannot assign to read only property 'int' of object") >= 0 ▸ true
             
     
