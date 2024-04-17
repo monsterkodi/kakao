@@ -20,6 +20,7 @@ import Menu from "./Menu.js"
 import Navigate from "./Navigate.js"
 import FileHandler from "./FileHandler.js"
 import Terminal from "./Terminal.js"
+import Viewer from "./Viewer.js"
 
 import FileWatch from "../tools/FileWatch.js"
 import Projects from "../tools/Projects.js"
@@ -100,6 +101,7 @@ Window = (function ()
         this.info = window.info = new Info(this.editor)
         this.fps = window.fps = new fps()
         this.indexer = window.indexer = new Indexer()
+        this.viewer = window.viewer = new Viewer('editor')
         window.textEditor = window.focusEditor = this.editor
         window.setLastFocus(this.editor.name)
         this.editor.on('changed',function (changeInfo)
@@ -142,7 +144,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _107_25_
+        var action, _108_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -328,7 +330,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _210_14_
+    var _211_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -339,7 +341,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _216_22_, _217_19_
+    var _217_22_, _218_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -374,7 +376,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _256_32_
+    var _257_32_
 
     if (!(_k_.isNum(s)))
     {

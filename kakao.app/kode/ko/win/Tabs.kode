@@ -208,13 +208,17 @@ class Tabs
     activate: (path) =>
         
         if tab = @koreTabForPath path
+            
             if tab.type == 'file'
+                
                 @setActive path
+                
                 if tab.dirty and @tabState[tab.path]
                     log 'restoreTab' path, tab.path, kore.get 'editor|file'
                     post.emit 'restoreTab' tab, @tabState[tab.path]
-                    # delete @tabState[tab.path]
+                    delete @tabState[tab.path]
                     return 
+                    
                 post.emit 'jumpToFile' path
             else
                 tab.collapsed = not tab.collapsed

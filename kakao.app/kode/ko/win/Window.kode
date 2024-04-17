@@ -8,7 +8,7 @@
 
 use ../../kakao
 use ../../kxk      ▪ win stash post prefs store stopEvent
-use                ◆ Kore Split Info Tabs Menu Navigate FileHandler Terminal
+use                ◆ Kore Split Info Tabs Menu Navigate FileHandler Terminal Viewer
 use ../tools       ◆ FileWatch Projects Indexer Git fps scheme
 use ../editor      ◆ Editor Syntax FileEditor
 use ../commands    ◆ Macro
@@ -59,6 +59,7 @@ function Window extends win.Delegate
         @info        = window.info        = new Info @editor
         @fps         = window.fps         = new fps()
         @indexer     = window.indexer     = new Indexer()
+        @viewer      = window.viewer      = new Viewer 'editor'
         
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name

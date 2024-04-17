@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ▪ deleteBy ffs kpos post popup slash stopEvent setStyle kstr
-
-use ◆ Syntax TextEditor
+use ../tools  ◆ File
+use           ◆ Syntax TextEditor
 
 function FileEditor extends TextEditor
 
@@ -232,12 +232,15 @@ function FileEditor extends TextEditor
             log 'FileEditor.jumpToFilePos loadFile?' opt
 
     jumpToFile: (opt) =>
-
-        # log 'jumpToFile' opt, window.lastFocus
-
+        
         opt ?= {}
         if opt is str ➜ opt = path:opt
 
+        if File.isImage opt.path
+            # kore.set 'view|file' opt.path
+            return
+
+        # log 'jumpToFile' opt, window.lastFocus
         if window.lastFocus == 'editor'
 
             [file, fpos] = slash.splitFilePos opt.path
