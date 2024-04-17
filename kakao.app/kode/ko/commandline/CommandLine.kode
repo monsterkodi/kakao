@@ -316,12 +316,12 @@ function CommandLine extends TextEditor
     
     handleMenuAction: (name, trail) ->
         
-        log 'handleMenuAction' name, trail
+        # log 'handleMenuAction' name, trail
         
         if trail?.split('Command▸').length > 1
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
-            log rest, cmdName, name
+            # log rest, cmdName, name
             if name != 'Case Sensitive' ➜ cmdName = cmdName.toLowerCase()
         else if trail?.endsWith 'Command'
             cmdName = name.toLowerCase()
@@ -341,7 +341,6 @@ function CommandLine extends TextEditor
                 @command.execute name
             return
             
-        log 'unhandled!' name, trail
         'unhandled'
 
     globalModKeyComboEvent: (mod, key, combo, event) ->

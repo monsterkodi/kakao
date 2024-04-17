@@ -432,7 +432,6 @@ Command = (function ()
 
     Command.prototype["setText"] = function (t)
     {
-        console.log(`Command[${this.name}].setText`,t)
         this.currentText = t
         return this.commandline.setText(t)
     }

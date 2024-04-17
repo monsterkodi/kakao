@@ -13,8 +13,7 @@ Kore = (function ()
     {
         this["get"] = this["get"].bind(this)
         this["set"] = this["set"].bind(this)
-        Kore.__super__.constructor.call(this)
-        console.log('K@re')
+        return Kore.__super__.constructor.apply(this, arguments)
     }
 
     Kore.prototype["set"] = function (key, value)

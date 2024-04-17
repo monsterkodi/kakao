@@ -48,11 +48,6 @@ use ../../kxk ▪ events
 
 function Kore extends events
 
-    @: ->
-        
-        super()
-        log 'K@re'
-        
     set: (key, value) =>
         
         # log 'kore.set' key, noon value

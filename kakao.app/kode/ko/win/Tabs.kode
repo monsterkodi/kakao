@@ -495,12 +495,12 @@ class Tabs
     
     onStoreState: (path, state) =>
 
-        log 'storeState' path
+        # log 'storeState' path
         if tab = @koreTabForPath path
             if tab.dirty
                 @tabState[tab.path] = state
                 log 'store tab state' tab.path
-                log '      tab  text' @tabState[tab.path].state.s.lines.join '\n'
+                log '      tab  text' state?.s?.lines?.join '\n'
                 
     # 00000000   00000000  000   000  00000000  00000000   000000000       00000000  000  000      00000000  
     # 000   000  000       000   000  000       000   000     000          000       000  000      000       

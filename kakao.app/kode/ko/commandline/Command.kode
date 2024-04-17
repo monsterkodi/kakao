@@ -325,7 +325,7 @@ function Command
 
     setText: (t) ->
 
-        log "Command[#{@name}].setText" t
+        # log "Command[#{@name}].setText" t
         @currentText = t
         @commandline.setText t
 

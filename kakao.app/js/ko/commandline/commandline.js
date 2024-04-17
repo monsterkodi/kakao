@@ -410,12 +410,10 @@ CommandLine = (function ()
     {
         var cmd, cmdName, rest, st
 
-        console.log('handleMenuAction',name,trail)
         if ((trail != null ? trail.split('Command▸').length : undefined) > 1)
         {
             rest = trail.split('Command▸')[1]
             cmdName = rest.split('▸')[0]
-            console.log(rest,cmdName,name)
             if (name !== 'Case Sensitive')
             {
                 cmdName = cmdName.toLowerCase()
@@ -447,13 +445,12 @@ CommandLine = (function ()
             }
             return
         }
-        console.log('unhandled!',name,trail)
         return 'unhandled'
     }
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _354_19_
+        var _353_19_
 
         if (combo === 'esc')
         {
@@ -472,7 +469,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _362_19_, _370_55_, _371_55_, _381_58_
+        var split, _1_8_, _361_19_, _369_55_, _370_55_, _380_58_
 
         if ((this.command != null))
         {

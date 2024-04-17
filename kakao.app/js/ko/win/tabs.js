@@ -716,16 +716,15 @@ class Tabs
 
     onStoreState (path, state)
     {
-        var tab
+        var tab, _503_46_, _503_53_
 
-        console.log('storeState',path)
         if (tab = this.koreTabForPath(path))
         {
             if (tab.dirty)
             {
                 this.tabState[tab.path] = state
                 console.log('store tab state',tab.path)
-                console.log('      tab  text',this.tabState[tab.path].state.s.lines.join('\n'))
+                console.log('      tab  text',(state != null ? (_503_46_=state.s) != null ? (_503_53_=_503_46_.lines) != null ? _503_53_.join('\n') : undefined : undefined : undefined))
             }
         }
     }
