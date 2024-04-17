@@ -180,7 +180,7 @@ function FileEditor extends TextEditor
             
         log 'FileEditor.restoreTab' tab.path
         
-        post.emit 'storeState' kore.get 'editor|file'
+        post.emit 'storeState' @currentFile, @do.tabState()
         
         @currentFile = state.file
         if state.file.startsWith 'untitled-'

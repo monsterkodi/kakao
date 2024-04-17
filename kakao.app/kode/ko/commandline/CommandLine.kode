@@ -330,7 +330,8 @@ function CommandLine extends TextEditor
             # log 'Commandline.handleMenuAction' cmdName, name, trail
             @startCommand cmdName
             if cmdName in ['goto''open''macro']
-                log 'command should openMenu'
+                # log 'command should openMenu'
+                true
             else if cmdName in ['search''Search']
                 st = trim @text()
                 if st.length > 1

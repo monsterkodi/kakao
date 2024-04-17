@@ -120,7 +120,7 @@ function Window extends win.Delegate
             'Copy'                  ➜ return window.focusEditor.copy()
             'Paste'                 ➜ return window.focusEditor.paste()
             'New Tab'               ➜ return post.emit 'newEmptyTab'
-            'New Window'            ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'newWindowWithFile' @editor.currentFile
+            'New Window'            ➜ return kakao 'window.new' 'ko.html' @editor.currentFile
             'Arrange Windows'       ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
             'Toggle Scheme'         ➜ return scheme.toggle()
             'Toggle Center Text'    ➜ return toggleCenterText()

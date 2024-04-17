@@ -30,28 +30,28 @@ class Tabs
             onMove:  @onDragMove
             onStop:  @onDragStop
 
-        post.on 'newTabWithFile'    @onNewTabWithFile
-        post.on 'newEmptyTab'       @onNewEmptyTab
+        post.on 'newTabWithFile' @onNewTabWithFile
+        post.on 'newEmptyTab'    @onNewEmptyTab
 
-        post.on 'fileRemoved'       @delTab
-        post.on 'fileRenamed'       @renameFile
-        post.on 'fileCreated'       @reloadFile
-        post.on 'fileChanged'       @reloadFile
-        post.on 'reloadFile'        @reloadFile
+        post.on 'fileRemoved'    @delTab
+        post.on 'fileRenamed'    @renameFile
+        post.on 'fileCreated'    @reloadFile
+        post.on 'fileChanged'    @reloadFile
+        post.on 'reloadFile'     @reloadFile
         
-        post.on 'saveAll'           @onSaveAll
-        post.on 'closeTab'          @onCloseTab
-        post.on 'closeOtherTabs'    @onCloseOtherTabs
-        post.on 'dirty'             @onDirty
-        post.on 'storeState'        @onStoreState
-        post.on 'revertFile'        @revertFile
-        post.on 'editorFocus'       @onEditorFocus
-        post.on 'stashLoaded'       @update
-        post.on 'projectIndexed'    @onProjectIndexed
-        post.on 'gitStatus'         @onGitStatus
+        post.on 'saveAll'        @onSaveAll
+        post.on 'closeTab'       @onCloseTab
+        post.on 'closeOtherTabs' @onCloseOtherTabs
+        post.on 'dirty'          @onDirty
+        post.on 'storeState'     @onStoreState
+        post.on 'revertFile'     @revertFile
+        post.on 'editorFocus'    @onEditorFocus
+        post.on 'stashLoaded'    @update
+        post.on 'projectIndexed' @onProjectIndexed
+        post.on 'gitStatus'      @onGitStatus
         
-        kore.on 'tabs'              @onKoreTabs
-        kore.on 'editor|file'       @addTab
+        kore.on 'tabs'           @onKoreTabs
+        kore.on 'editor|file'    @addTab
         
     # 000   000   0000000   00000000   00000000  
     # 000  000   000   000  000   000  000       
@@ -185,7 +185,7 @@ class Tabs
     delTab: (path) =>
         
         if tab = @koreTabForPath path
-            log 'delTab' path
+            # log 'delTab' path
             tabs = @fileTabs()
             index = tabs.indexOf tab
             if tab.active
@@ -307,8 +307,9 @@ class Tabs
             tabDiv = elem.upElem id, class:'tab'
             t = @tabs.find (t) -> t.div == tabDiv
             if not t
-                log @tabs
-                log @tabs.map (t) -> t.div
+                warn 'no tee?'
+                warn @tabs
+                warn @tabs.map (t) -> t.div
             return t
         if id is str ➜ return @tabs.find (t) -> t.path == id
 
@@ -495,12 +496,14 @@ class Tabs
     
     onStoreState: (path, state) =>
 
-        # log 'storeState' path
+        if empty state
+            warn 'storeState empty state?' path, state
+            return
+            
         if tab = @koreTabForPath path
-            if tab.dirty
+            if tab.dirty and tab.path
                 @tabState[tab.path] = state
-                log 'store tab state' tab.path
-                log '      tab  text' state?.s?.lines?.join '\n'
+                log 'store tab state' tab.path, state
                 
     # 00000000   00000000  000   000  00000000  00000000   000000000       00000000  000  000      00000000  
     # 000   000  000       000   000  000       000   000     000          000       000  000      000       

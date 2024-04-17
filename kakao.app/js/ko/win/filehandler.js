@@ -93,37 +93,25 @@ class FileHandler
 
     onOpenDialog (files)
     {
-        var file, maxTabs, options, _92_33_
+        var file, options, _92_33_
 
         if (_k_.empty(files))
         {
             return
         }
         options = ((_92_33_=this.openDialogOpt) != null ? _92_33_ : {})
-        console.log('FileHandler.onOpenDialog',files,options)
-        maxTabs = prefs.get('maximalNumberOfTabs',8)
-        if (!options.newWindow)
+        var list = _k_.list(files.slice(0, 30))
+        for (var _96_17_ = 0; _96_17_ < list.length; _96_17_++)
         {
-            files = files.slice(0, typeof maxTabs === 'number' ? maxTabs : -1)
-        }
-        if (files.length > maxTabs && !options.skipCheck)
-        {
-            console.log('messageBox for too may files not implemented!')
-            return
-        }
-        if (_k_.empty(files))
-        {
-            return []
-        }
-        var list = _k_.list(files)
-        for (var _121_17_ = 0; _121_17_ < list.length; _121_17_++)
-        {
-            file = list[_121_17_]
+            file = list[_96_17_]
             if (options.newWindow)
             {
-                console.log('FileHandler new window with file not implemented!')
+                kakao('window.new','ko.html',file)
             }
-            post.emit('newTabWithFile',file)
+            else
+            {
+                post.emit('newTabWithFile',file)
+            }
         }
         post.emit('loadFile',_k_.last(files))
         return true
@@ -195,7 +183,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _196_29_
+        var _170_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {

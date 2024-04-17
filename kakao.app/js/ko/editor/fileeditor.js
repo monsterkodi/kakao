@@ -195,7 +195,7 @@ FileEditor = (function ()
             return
         }
         console.log('FileEditor.restoreTab',tab.path)
-        post.emit('storeState',kore.get('editor|file'))
+        post.emit('storeState',this.currentFile,this.do.tabState())
         this.currentFile = state.file
         if (state.file.startsWith('untitled-'))
         {

@@ -91,39 +91,13 @@ class FileHandler
 
         options = @openDialogOpt ? {}
 
-        log 'FileHandler.onOpenDialog' files, options
+        # log 'FileHandler.onOpenDialog' files, options
         
-        maxTabs = prefs.get 'maximalNumberOfTabs' 8
-
-        if not options.newWindow
-            files = files[0...maxTabs]
-
-        if files.length > maxTabs and not options.skipCheck
-            log 'messageBox for too may files not implemented!'
-            return
-            # window.win.messageBox
-                # type:       'warning'
-                # buttons:    ['Cancel' 'Open All']
-                # defaultId:  1
-                # cancelId:   0
-                # title:      'A Lot of Files Warning'
-                # message:    "You have selected #{files.length} files."
-                # detail:     'Are you sure you want to open that many files?'
-                # cb: (answer) =>
-                    # if answer == 1
-                        # options.skipCheck = true
-                        # @openFiles ofiles, options
-            # return
-
-        if empty files
-            return []
-            
-        for file in files
+        for file in files[0...30]
             if options.newWindow
-                # post.toMain 'newWindowWithFile' file
-                log 'FileHandler new window with file not implemented!'
-            # log 'post newTabWithFile' file
-            post.emit 'newTabWithFile' file
+                kakao 'window.new' 'ko.html' file
+            else
+                post.emit 'newTabWithFile' file
             
         post.emit 'loadFile' last files
         true

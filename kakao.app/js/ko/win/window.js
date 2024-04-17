@@ -177,7 +177,7 @@ Window = (function ()
                 return post.emit('newEmptyTab')
 
             case 'New Window':
-                return console.log(`ko.window ${name} unimplemented!`)
+                return kakao('window.new','ko.html',this.editor.currentFile)
 
             case 'Arrange Windows':
                 return console.log(`ko.window ${name} unimplemented!`)

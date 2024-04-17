@@ -428,7 +428,7 @@ CommandLine = (function ()
             this.startCommand(cmdName)
             if (_k_.in(cmdName,['goto','open','macro']))
             {
-                console.log('command should openMenu')
+                true
             }
             else if (_k_.in(cmdName,['search','Search']))
             {
@@ -450,7 +450,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["globalModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var _353_19_
+        var _354_19_
 
         if (combo === 'esc')
         {
@@ -469,7 +469,7 @@ CommandLine = (function ()
 
     CommandLine.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var split, _1_8_, _361_19_, _369_55_, _370_55_, _380_58_
+        var split, _1_8_, _362_19_, _370_55_, _371_55_, _381_58_
 
         if ((this.command != null))
         {
