@@ -6,8 +6,8 @@
 000  000   000  000        0000000
 ###
 
-use ../../kxk ▪ ffs elem slash $
-use ../tools/File
+use ../../kxk ▪ pretty ffs elem slash $
+use ../tools  ◆ File
 
 # 000  00     00   0000000    0000000   00000000
 # 000  000   000  000   000  000        000
@@ -35,10 +35,12 @@ image = (file) ->
         img.style.maxWidth  = '100%'
 
         info =○ ffs.info file
+        
+        [size, unit] = pretty.bytes(info.size).split ' '
 
         html  = "<tr><th colspan=2>#{width}<span class='punct'>x</span>#{height}</th></tr>"
-        html += "<tr><th>#{info.size}</th><td>bytes</td></tr>"
-        html += "<tr><th>#{info.modified}</th><td>time</td></tr>"
+        html += "<tr><th>#{size}</th><td>#{unit}</td></tr>"
+        html += "<tr><th>#{pretty.age info.modified}</th><td>ago</td></tr>"
 
         table.innerHTML = html
 
@@ -46,9 +48,8 @@ image = (file) ->
         elem 'div' class:"fileInfoFile #{slash.ext file}" html:File.span file
         table
     ]
-    # cnt =$ '.browserImageContainer'
-    cnt.appendChild info
 
+    cnt.appendChild info
     cnt
 
 # 00000000  000  000      00000000
@@ -68,7 +69,8 @@ file = (file) ->
 
         info =○ ffs.info file
 
-        table.innerHTML = "<tr><th>#{info.size}</th><td>bytes</td></tr><tr><th>#{info.modified}</th><td>time</td></tr>"
+        [size, unit] = pretty.bytes(info.size).split ' '
+        table.innerHTML = "<tr><th>#{size}</th><td>#{unit}</td></tr><tr><th>#{pretty.age info.modified}</th><td>ago</td></tr>"
 
     info = elem class:'browserFileInfo' children: [
         elem 'div' class:"fileInfoIcon #{slash.ext file} #{File.iconClassName file}"

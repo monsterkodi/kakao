@@ -1,0 +1,55 @@
+###
+00000000   00000000   00000000  000000000  000000000  000   000
+000   000  000   000  000          000        000      000 000 
+00000000   0000000    0000000      000        000       00000  
+000        000   000  000          000        000        000   
+000        000   000  00000000     000        000        000   
+###
+
+function pretty
+
+    @age: (dateOrString) -> 
+    
+        if dateOrString is str
+            date = new Date Date.parse 
+        else
+            date = new Date dateOrString
+            
+        diff = new Date Date.now() - date.valueOf()
+        
+        time =
+            year:   diff.getUTCFullYear() - 1970
+            month:  diff.getUTCMonth()
+            day:    diff.getUTCDay()
+            hour:   diff.getUTCHours()
+            minute: diff.getUTCMinutes()
+            second: diff.getUTCSeconds()
+        
+        s = []
+        for key,val of time
+            if
+                val == 0 ➜ if s.length ➜ return s[0]
+                val == 1 ➜ s.push "a #{key}"
+                         ➜ s.push "#{val} #{key}s"
+            if s.length == 2 ➜ return s.join ' '
+                         
+        s.join ' '
+        
+    @bytes: (bytes) ->
+        
+        number = parseInt bytes
+        
+        UNITS = [ 'B' 'kB' 'MB' 'GB' 'TB' ]
+
+        exponent = Math.min Math.floor(Math.log10(number)/3), UNITS.length - 1
+        number  /= Math.pow 1000 exponent
+    
+        number = number.toPrecision 2
+    
+        numberString = new String number
+    
+        unit = UNITS[exponent]
+    
+        numberString + ' ' + unit
+
+export pretty
