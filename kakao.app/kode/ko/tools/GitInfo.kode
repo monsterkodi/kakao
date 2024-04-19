@@ -45,7 +45,7 @@ class GitInfo
                 diss:       Syntax.dissForTextAndSyntax text, 'git'
                 text:       text
                 clss:       'gitInfoFile'
-                href:       "macro kd #{commit.commit}"
+                href:       "macro diff #{commit.commit}"
                 click:      @onMetaClick
                 # line:       '●'
                 # lineClss:   'gitInfoLine changed'
@@ -180,7 +180,7 @@ class GitInfo
                             
                         dline++
     
-                    '+'
+                    '+' # TODO: add diff line metas like in logDiff 'changed'
                         window.terminal.appendMeta
                             diss:       Syntax.dissForTextAndSyntax line.line, slash.ext path
                             href:       path + ':' + aline
@@ -355,7 +355,7 @@ class GitInfo
             if diff 
                 for file in status.changed.filter (f) -> slash.ext(f) in SOURCE_FILE_EXTS
                     
-                    logFile 'changed' file, status, diff
+                    logFile 'changed' file, status, NaN
                     
                     changeInfo =○ Git.diff file
 
@@ -389,8 +389,14 @@ class GitInfo
         if href = meta[2].href
             
             if href.startsWith 'macro '
+                log 'GitInfo.onMetaClick start macro' href[6..]
                 window.commandline.startCommand 'macro'
-                window.commandline.setText href[6..]
+                window.commandline.hideList() # not sure if startCommand should get more paramters to prevent list opening?
+                if href[6..].startsWith 'diff'
+                    window.commandline.setText 'history'
+                else
+                    window.commandline.setText href[6..]
+                log 'GitInfo.onMetaClick execute' href[6..]
                 window.commandline.command.execute href[6..]
             else
                 if href.indexOf(':') > 0

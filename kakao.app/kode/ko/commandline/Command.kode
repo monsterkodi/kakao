@@ -60,17 +60,22 @@ function Command
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
     execute: (command) ->
+        
+        log 'Command.execute' command, @commandList?
 
         if empty command
             return error 'no command!'
 
         if @commandList?
             if 0 <= @selected < @commandList.numLines()
+                log 'Command.execute commandList selected' @selected
                 command = @commandList.line @selected
             @hideList()
 
         command = command.trim()
+        log 'Command.execute setCurrent ?' command
         @setCurrent command
+        log 'Command.execute setCurrent ▸' command
         command
 
     #  0000000  000   000   0000000   000   000   0000000   00000000  0000000
@@ -138,6 +143,7 @@ function Command
     
     initAndShowList: ->
         
+        log "Command.initAndShowList #{@name}"
         @showList()
         @showItems @listItems()
         @select 0
@@ -148,6 +154,8 @@ function Command
         if not @commandList?
             listView = elem class: "commandlist #{@prefsID}"
             window.split.elem.appendChild listView
+            
+            log 'Command.showList' @name
             @commandList = new CommandList @, '.commandlist' syntaxName:@syntaxName
 
     listItems: ->
@@ -271,9 +279,12 @@ function Command
         # if @commandList?
             # log 'hideList'
         @selected = -1
-        @commandList?.del()
-        @commandList?.view?.remove()
-        @commandList = null
+        
+        if @commandList?
+            log "Command.hideList " @name #@commandList
+            @commandList.del()
+            @commandList.view?.remove()
+            @commandList = null
 
     # 000   000  000   0000000  000000000   0000000   00000000   000   000
     # 000   000  000  000          000     000   000  000   000   000 000

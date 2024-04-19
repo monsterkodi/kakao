@@ -49,7 +49,7 @@ class GitInfo
         {
             commit = list[_40_19_]
             text = `${commit.msg}`
-            window.terminal.queueMeta({diss:Syntax.dissForTextAndSyntax(text,'git'),text:text,clss:'gitInfoFile',href:`macro kd ${commit.commit}`,click:this.onMetaClick})
+            window.terminal.queueMeta({diss:Syntax.dissForTextAndSyntax(text,'git'),text:text,clss:'gitInfoFile',href:`macro diff ${commit.commit}`,click:this.onMetaClick})
             var list1 = _k_.list(commit.files)
             for (var _53_21_ = 0; _53_21_ < list1.length; _53_21_++)
             {
@@ -396,7 +396,7 @@ class GitInfo
                 for (var _356_25_ = 0; _356_25_ < list2.length; _356_25_++)
                 {
                     file = list2[_356_25_]
-                    logFile('changed',file,status,diff)
+                    logFile('changed',file,status,NaN)
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
                     for (var _362_31_ = 0; _362_31_ < list3.length; _362_31_++)
@@ -443,8 +443,18 @@ class GitInfo
         {
             if (href.startsWith('macro '))
             {
+                console.log('GitInfo.onMetaClick start macro',href.slice(6))
                 window.commandline.startCommand('macro')
-                window.commandline.setText(href.slice(6))
+                window.commandline.hideList()
+                if (href.slice(6).startsWith('diff'))
+                {
+                    window.commandline.setText('history')
+                }
+                else
+                {
+                    window.commandline.setText(href.slice(6))
+                }
+                console.log('GitInfo.onMetaClick execute',href.slice(6))
                 window.commandline.command.execute(href.slice(6))
             }
             else
