@@ -443,7 +443,6 @@ class GitInfo
         {
             if (href.startsWith('macro '))
             {
-                console.log('GitInfo.onMetaClick start macro',href.slice(6))
                 window.commandline.startCommand('macro')
                 window.commandline.hideList()
                 if (href.slice(6).startsWith('diff'))
@@ -454,7 +453,6 @@ class GitInfo
                 {
                     window.commandline.setText(href.slice(6))
                 }
-                console.log('GitInfo.onMetaClick execute',href.slice(6))
                 window.commandline.command.execute(href.slice(6))
             }
             else

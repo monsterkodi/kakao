@@ -63,18 +63,18 @@ function Macro extends Command
 
         return error 'no command!' if empty command
         
-        log 'Macro.execute' command#, trail
+        # log 'Macro.execute' command#, trail
 
         command = super command
         
-        log 'Macro.execute super' command
+        # log 'Macro.execute super' command
 
         editor  = window.editor
         cp      = editor.cursorPos()
         cmds    = command.split /\s+/
         cmmd    = cmds.shift()
         
-        log 'Macro.execute' cmmd, cmds
+        # log 'Macro.execute' cmmd, cmds
 
         wordsInArgsOrCursorsOrSelection = (argl, opt) ->
             
@@ -140,7 +140,7 @@ function Macro extends Command
             'kd'
             'diff'
                 
-                log 'Macro.diff' cmds
+                # log 'Macro.diff' cmds
                 GitInfo.diff cmds
                 window.split.do 'minimize editor' 
                 # window.commandline.setText 'commit '

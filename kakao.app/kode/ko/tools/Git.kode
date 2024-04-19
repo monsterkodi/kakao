@@ -156,7 +156,7 @@ function Git
         
         gitDir =○ kakao 'fs.git' editor.currentFile
         
-        log "git --no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines"
+        # log "git --no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines"
         
         patch =○ kakao 'app.sh' '/usr/bin/git' arg:"--no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines" cwd:gitDir 
         patch = '\n' + patch

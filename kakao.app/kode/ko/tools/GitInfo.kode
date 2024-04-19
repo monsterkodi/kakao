@@ -389,14 +389,14 @@ class GitInfo
         if href = meta[2].href
             
             if href.startsWith 'macro '
-                log 'GitInfo.onMetaClick start macro' href[6..]
+                # log 'GitInfo.onMetaClick start macro' href[6..]
                 window.commandline.startCommand 'macro'
                 window.commandline.hideList() # not sure if startCommand should get more paramters to prevent list opening?
                 if href[6..].startsWith 'diff'
                     window.commandline.setText 'history'
                 else
                     window.commandline.setText href[6..]
-                log 'GitInfo.onMetaClick execute' href[6..]
+                # log 'GitInfo.onMetaClick execute' href[6..]
                 window.commandline.command.execute href[6..]
             else
                 if href.indexOf(':') > 0

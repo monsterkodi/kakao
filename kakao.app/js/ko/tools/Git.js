@@ -196,7 +196,6 @@ Git = (function ()
         var diffgit, gitDir, patch, patches, r
 
         gitDir = await kakao('fs.git',editor.currentFile)
-        console.log(`git --no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`)
         patch = await kakao('app.sh','/usr/bin/git',{arg:`--no-pager diff ${rev}^..${rev} --no-color -U0 --ignore-blank-lines`,cwd:gitDir})
         patch = '\n' + patch
         patches = []

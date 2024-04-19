@@ -61,21 +61,21 @@ function Command
 
     execute: (command) ->
         
-        log 'Command.execute' command, @commandList?
+        # log 'Command.execute' command, @commandList?
 
         if empty command
             return error 'no command!'
 
         if @commandList?
             if 0 <= @selected < @commandList.numLines()
-                log 'Command.execute commandList selected' @selected
+                # log 'Command.execute commandList selected' @selected
                 command = @commandList.line @selected
             @hideList()
 
         command = command.trim()
-        log 'Command.execute setCurrent ?' command
+        # log 'Command.execute setCurrent ?' command
         @setCurrent command
-        log 'Command.execute setCurrent ▸' command
+        # log 'Command.execute setCurrent ▸' command
         command
 
     #  0000000  000   000   0000000   000   000   0000000   00000000  0000000
@@ -276,12 +276,10 @@ function Command
             error 'hideList dafuk?'
             return
 
-        # if @commandList?
-            # log 'hideList'
         @selected = -1
         
         if @commandList?
-            log "Command.hideList " @name #@commandList
+            # log "Command.hideList " @name #@commandList
             @commandList.del()
             @commandList.view?.remove()
             @commandList = null

@@ -63,14 +63,11 @@ Macro = (function ()
         {
             return console.error('no command!')
         }
-        console.log('Macro.execute',command)
         command = Macro.__super__.execute.call(this,command)
-        console.log('Macro.execute super',command)
         editor = window.editor
         cp = editor.cursorPos()
         cmds = command.split(/\s+/)
         cmmd = cmds.shift()
-        console.log('Macro.execute',cmmd,cmds)
         wordsInArgsOrCursorsOrSelection = function (argl, opt)
         {
             var cw, ws
@@ -121,7 +118,6 @@ Macro = (function ()
             case 'd':
             case 'kd':
             case 'diff':
-                console.log('Macro.diff',cmds)
                 GitInfo.diff(cmds)
                 window.split.do('minimize editor')
                 return {select:false}
