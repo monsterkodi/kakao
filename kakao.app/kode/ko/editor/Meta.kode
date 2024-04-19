@@ -264,8 +264,11 @@ class Meta
 
     append: (meta) ->
 
-        lineMeta = @addLineMeta [@editor.numLines(), [0, 0], meta]
-        lineMeta
+        @addLineMeta [@editor.numLines(), [0, 0], meta]
+        
+    appendLineMeta: (meta) ->
+        
+        @addLineMeta [@editor.numLines()-1, [meta.start, meta.end], meta]
 
     addLineMeta: (lineMeta) ->
 

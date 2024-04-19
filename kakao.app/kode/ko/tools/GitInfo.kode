@@ -207,7 +207,7 @@ class GitInfo
         for text in changes.lines
             
             dss = Syntax.dissForTextAndSyntax text, syntaxName
-            
+                        
             continue if empty dss
             
             switch changes.change
@@ -216,11 +216,6 @@ class GitInfo
 
                     for ds in dss ➜ ds.clss += ' ' + 'git-deleted'
                     
-                    # window.terminal.meta.add
-                        # start:      0
-                        # end:        text.length
-                        # clss:       'gitInfoDelete'
-                        
                     window.terminal.appendMeta
                         line:   '✘'
                         diss:   dss
@@ -230,35 +225,31 @@ class GitInfo
 
                 'added'
 
-                    # window.terminal.meta.add 
-                        # line:       window.terminal.numLines()
-                        # start:      0
-                        # end:        text.length
-                        # clss:       'gitInfoAdded'
-                        
                     window.terminal.appendMeta
-                        # line:   '✘'
                         diss:   dss
                         href:   "#{changes.file}:#{changes.line+index}"
                         clss:   'gitInfoAdded'
                         click:  @onMetaClick
-                        
 
                 'changed'
                     
                     if linediff.isBoring changes.info.mod[index].old, changes.info.mod[index].new
+                        
+                        # log 'boring' changes.info.mod[index].old, changes.info.mod[index].new
+                                    
                         index += 1
                         continue
     
                     diffs = linediff changes.info.mod[index].old, changes.info.mod[index].new
+                    
                     if empty diffs and not trim(changes.info.mod[index].old).startsWith "#"
                         diffs = linediff changes.info.mod[index].new, changes.info.mod[index].old
                         if valid diffs
     
+                            metas = []
                             for diff in diffs
             
-                                window.terminal.meta.add 
-                                    # line:       window.terminal.numLines()
+                                metas.push 
                                     start:      diff.index
                                     end:        diff.index+diff.length
                                     clss:       'gitInfoChange'
@@ -270,23 +261,34 @@ class GitInfo
                                 href:   "#{changes.file}:#{changes.line+index}"
                                 clss:   'gitInfoDelete'
                                 click:  @onMetaClick
+                                metas:  metas
+                    else 
+
+                        metas = []
+                        for diff in diffs
+        
+                           metas.push 
+                                start:      diff.index
+                                end:        diff.index+diff.length
+                                clss:       'gitInfoChange'
+    
+                        window.terminal.appendMeta
+                            diss:       dss
+                            href:       "#{changes.file}:#{changes.line+index}"
+                            clss:       'gitInfoAdded'
+                            click:      @onMetaClick
+                            metas:      metas
                             
                 ➜
                     log 'CHANGE EVER COME HERE?'
                     for diff in diffs
     
-                        window.terminal.meta.add 
+                        window.terminal.appendMeta
                             line:       window.terminal.numLines()
                             start:      diff.index
                             end:        diff.index+diff.length
                             clss:       'gitInfoChange'
                             
-            # meta = window.terminal.appendMeta
-                # diss: dss
-                # href: "#{changes.file}:#{changes.line+index}"
-                # clss: 'searchResult'
-                # click: @onMetaClick
-                
             linesAdded++
                 
             index += 1
@@ -350,11 +352,10 @@ class GitInfo
                     lines = text.split '\n'
                     logDiff lines:lines, line:1, file:file, change:'added'
 
-            for file in status.changed
-                
-                if slash.ext(file) in SOURCE_FILE_EXTS
+            if diff 
+                for file in status.changed.filter (f) -> slash.ext(f) in SOURCE_FILE_EXTS
+                    
                     logFile 'changed' file, status, diff
-                    continue if not diff 
                     
                     changeInfo =○ Git.diff file
 

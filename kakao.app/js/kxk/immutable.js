@@ -84,9 +84,9 @@ isMergableObject = function (target)
 }
 mutatingObjectMethods = ["setPrototypeOf"]
 nonMutatingObjectMethods = ["keys"]
-mutatingArrayMethods = mutatingObjectMethods.concat(["push","pop","sort","splice","shift","unshift","reverse"])
-nonMutatingArrayMethods = nonMutatingObjectMethods.concat(["map","filter","slice","concat","reduce","reduceRight"])
-mutatingDateMethods = mutatingObjectMethods.concat(["setDate","setFullYear","setHours","setMilliseconds","setMinutes","setMonth","setSeconds","setTime","setUTCDate","setUTCFullYear","setUTCHours","setUTCMilliseconds","setUTCMinutes","setUTCMonth","setUTCSeconds","setYear"])
+mutatingArrayMethods = mutatingObjectMethods.concat(['push','pop','sort','splice','shift','unshift','reverse'])
+nonMutatingArrayMethods = nonMutatingObjectMethods.concat(['map','filter','slice','concat','reduce','reduceRight'])
+mutatingDateMethods = mutatingObjectMethods.concat(['setDate','setFullYear','setHours','setMilliseconds','setMinutes','setMonth','setSeconds','setTime','setUTCDate','setUTCFullYear','setUTCHours','setUTCMilliseconds','setUTCMinutes','setUTCMonth','setUTCSeconds','setYear'])
 
 ImmutableError = function (message)
 {

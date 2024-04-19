@@ -45,7 +45,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, text, _55_21_, _57_33_, _72_21_
+        var l, mm, text, _55_21_, _57_33_, _72_21_
 
         if (!(meta != null))
         {
@@ -79,6 +79,12 @@ Terminal = (function ()
         else
         {
             this.appendLineDiss('')
+        }
+        var list1 = _k_.list(meta.metas)
+        for (var _79_15_ = 0; _79_15_ < list1.length; _79_15_++)
+        {
+            mm = list1[_79_15_]
+            this.meta.appendLineMeta(mm)
         }
         return meta
     }

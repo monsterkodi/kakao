@@ -75,6 +75,9 @@ function Terminal extends TextEditor
             
             ➜
                 @appendLineDiss ''
+              
+        for mm in meta.metas
+            @meta.appendLineMeta mm
                 
         meta
         

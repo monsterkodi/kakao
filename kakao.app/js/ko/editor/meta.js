@@ -364,21 +364,23 @@ class Meta
 
     append (meta)
     {
-        var lineMeta
+        return this.addLineMeta([this.editor.numLines(),[0,0],meta])
+    }
 
-        lineMeta = this.addLineMeta([this.editor.numLines(),[0,0],meta])
-        return lineMeta
+    appendLineMeta (meta)
+    {
+        return this.addLineMeta([this.editor.numLines() - 1,[meta.start,meta.end],meta])
     }
 
     addLineMeta (lineMeta)
     {
-        var _274_32_
+        var _277_32_
 
         if (!((lineMeta != null ? lineMeta[2] : undefined) != null))
         {
             return console.error('invalid line meta?',lineMeta)
         }
-        this.lineMetas[lineMeta[0]] = ((_274_32_=this.lineMetas[lineMeta[0]]) != null ? _274_32_ : [])
+        this.lineMetas[lineMeta[0]] = ((_277_32_=this.lineMetas[lineMeta[0]]) != null ? _277_32_ : [])
         this.lineMetas[lineMeta[0]].push(lineMeta)
         this.metas.push(lineMeta)
         return lineMeta
@@ -386,7 +388,7 @@ class Meta
 
     moveLineMeta (lineMeta, d)
     {
-        var _286_32_
+        var _289_32_
 
         if (!(lineMeta != null) || d === 0)
         {
@@ -398,7 +400,7 @@ class Meta
             delete this.lineMetas[lineMeta[0]]
         }
         lineMeta[0] += d
-        this.lineMetas[lineMeta[0]] = ((_286_32_=this.lineMetas[lineMeta[0]]) != null ? _286_32_ : [])
+        this.lineMetas[lineMeta[0]] = ((_289_32_=this.lineMetas[lineMeta[0]]) != null ? _289_32_ : [])
         this.lineMetas[lineMeta[0]].push(lineMeta)
         return this.updatePos(lineMeta)
     }
@@ -408,9 +410,9 @@ class Meta
         var meta
 
         var list = _k_.list(this.metasAtLineIndex(e.lineIndex))
-        for (var _292_17_ = 0; _292_17_ < list.length; _292_17_++)
+        for (var _295_17_ = 0; _295_17_ < list.length; _295_17_++)
         {
-            meta = list[_292_17_]
+            meta = list[_295_17_]
             if (meta[1][1] === 0)
             {
                 meta[1][1] = e.text.length
@@ -420,19 +422,19 @@ class Meta
 
     metasAtLineIndex (li)
     {
-        var _295_45_
+        var _298_45_
 
-        return ((_295_45_=this.lineMetas[li]) != null ? _295_45_ : [])
+        return ((_298_45_=this.lineMetas[li]) != null ? _298_45_ : [])
     }
 
     hrefAtLineIndex (li)
     {
-        var meta, _300_47_
+        var meta, _303_47_
 
         var list = _k_.list(this.metasAtLineIndex(li))
-        for (var _299_17_ = 0; _299_17_ < list.length; _299_17_++)
+        for (var _302_17_ = 0; _302_17_ < list.length; _302_17_++)
         {
-            meta = list[_299_17_]
+            meta = list[_302_17_]
             if ((meta[2].href != null))
             {
                 return meta[2].href
@@ -445,9 +447,9 @@ class Meta
         var meta
 
         var list = _k_.list(this.metas)
-        for (var _310_17_ = 0; _310_17_ < list.length; _310_17_++)
+        for (var _313_17_ = 0; _313_17_ < list.length; _313_17_++)
         {
-            meta = list[_310_17_]
+            meta = list[_313_17_]
             this.delDiv(meta)
             if ((top <= meta[0] && meta[0] <= bot))
             {
@@ -463,30 +465,30 @@ class Meta
         if (num > 0)
         {
             var list = _k_.list(rangesFromTopToBotInRanges(top - num,top - 1,this.metas))
-            for (var _324_21_ = 0; _324_21_ < list.length; _324_21_++)
+            for (var _327_21_ = 0; _327_21_ < list.length; _327_21_++)
             {
-                meta = list[_324_21_]
+                meta = list[_327_21_]
                 this.delDiv(meta)
             }
             var list1 = _k_.list(rangesFromTopToBotInRanges(bot - num + 1,bot,this.metas))
-            for (var _325_21_ = 0; _325_21_ < list1.length; _325_21_++)
+            for (var _328_21_ = 0; _328_21_ < list1.length; _328_21_++)
             {
-                meta = list1[_325_21_]
+                meta = list1[_328_21_]
                 this.addDiv(meta)
             }
         }
         else
         {
             var list2 = _k_.list(rangesFromTopToBotInRanges(bot + 1,bot - num,this.metas))
-            for (var _327_21_ = 0; _327_21_ < list2.length; _327_21_++)
+            for (var _330_21_ = 0; _330_21_ < list2.length; _330_21_++)
             {
-                meta = list2[_327_21_]
+                meta = list2[_330_21_]
                 this.delDiv(meta)
             }
             var list3 = _k_.list(rangesFromTopToBotInRanges(top,top - num - 1,this.metas))
-            for (var _328_21_ = 0; _328_21_ < list3.length; _328_21_++)
+            for (var _331_21_ = 0; _331_21_ < list3.length; _331_21_++)
             {
-                meta = list3[_328_21_]
+                meta = list3[_331_21_]
                 this.addDiv(meta)
             }
         }
@@ -499,9 +501,9 @@ class Meta
 
         size = this.editor.size
         var list = _k_.list(rangesFromTopToBotInRanges(li,this.editor.scroll.bot,this.metas))
-        for (var _335_17_ = 0; _335_17_ < list.length; _335_17_++)
+        for (var _338_17_ = 0; _338_17_ < list.length; _338_17_++)
         {
-            meta = list[_335_17_]
+            meta = list[_338_17_]
             this.updatePos(meta)
         }
     }
@@ -511,9 +513,9 @@ class Meta
         var meta
 
         var list = _k_.list(rangesFromTopToBotInRanges(li,this.editor.numLines(),this.metas))
-        for (var _340_17_ = 0; _340_17_ < list.length; _340_17_++)
+        for (var _343_17_ = 0; _343_17_ < list.length; _343_17_++)
         {
-            meta = list[_340_17_]
+            meta = list[_343_17_]
             this.moveLineMeta(meta,1)
         }
         return this.updatePositionsBelowLineIndex(li)
@@ -528,9 +530,9 @@ class Meta
             this.delMeta(meta)
         }
         var list = _k_.list(rangesFromTopToBotInRanges(li,this.editor.numLines(),this.metas))
-        for (var _356_17_ = 0; _356_17_ < list.length; _356_17_++)
+        for (var _359_17_ = 0; _359_17_ < list.length; _359_17_++)
         {
-            meta = list[_356_17_]
+            meta = list[_359_17_]
             this.moveLineMeta(meta,-1)
         }
         return this.updatePositionsBelowLineIndex(li)
@@ -541,9 +543,9 @@ class Meta
         var meta
 
         var list = _k_.list(this.metas)
-        for (var _369_17_ = 0; _369_17_ < list.length; _369_17_++)
+        for (var _372_17_ = 0; _372_17_ < list.length; _372_17_++)
         {
-            meta = list[_369_17_]
+            meta = list[_372_17_]
             this.delDiv(meta)
         }
         this.metas = []
@@ -571,13 +573,13 @@ class Meta
 
     delClass (clss)
     {
-        var clsss, meta, _391_34_
+        var clsss, meta, _394_34_
 
         var list = _k_.list(_k_.clone(this.metas))
-        for (var _390_17_ = 0; _390_17_ < list.length; _390_17_++)
+        for (var _393_17_ = 0; _393_17_ < list.length; _393_17_++)
         {
-            meta = list[_390_17_]
-            clsss = (meta != null ? meta[2] != null ? (_391_34_=meta[2].clss) != null ? _391_34_.split(' ') : undefined : undefined : undefined)
+            meta = list[_393_17_]
+            clsss = (meta != null ? meta[2] != null ? (_394_34_=meta[2].clss) != null ? _394_34_.split(' ') : undefined : undefined : undefined)
             if (!_k_.empty((clsss)) && _k_.in(clss,clsss))
             {
                 this.delMeta(meta)
