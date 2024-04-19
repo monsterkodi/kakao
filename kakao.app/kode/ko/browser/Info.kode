@@ -19,7 +19,7 @@ image = (file) ->
 
     img = elem 'img' class:'browserImage' src:slash.fileUrl file
     cnt = elem class:'browserImageContainer' child:img
-    cnt.addEventListener 'dblclick' -> open file
+    cnt.addEventListener 'dblclick' -> kore.set 'view|file' file #open file
 
     table = elem 'table' class:"fileInfoData"
 
@@ -69,13 +69,16 @@ file = (file) ->
 
         info =○ ffs.info file
 
-        [size, unit] = pretty.bytes(info.size).split ' '
-        table.innerHTML = "<tr><th>#{size}</th><td>#{unit}</td></tr><tr><th>#{pretty.age info.modified}</th><td>ago</td></tr>"
+        [size, size_unit] = pretty.bytes(info.size).split ' '
+        [time, time_unit] = pretty.age(info.modified).split ' '
+        table.innerHTML = "<tr><th>#{size}</th><td>#{size_unit}</td></tr><tr><th>#{time}</th><td>#{time_unit}</td></tr>"
 
     info = elem class:'browserFileInfo' children: [
-        elem 'div' class:"fileInfoIcon #{slash.ext file} #{File.iconClassName file}"
-        elem 'div' class:"fileInfoFile #{slash.ext file}" html:File.span file
+        elem class:'fileInfoSpacer'
+        elem class:"fileInfoIcon #{slash.ext file} #{File.iconClassName file}"
+        elem class:"fileInfoFile #{slash.ext file}" html:File.span file
         table
+        elem class:'fileInfoSpacer'
     ]
 
     info

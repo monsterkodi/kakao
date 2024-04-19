@@ -200,29 +200,39 @@ body
     position            absolute
     right               6px
     
-.browserFileInfo    
-    center-x()
-    padding             frameWidth
-    bottom              0
-    max-height          20%
+// 00000000  000  000      00000000        000  000   000  00000000   0000000   
+// 000       000  000      000             000  0000  000  000       000   000  
+// 000000    000  000      0000000         000  000 0 000  000000    000   000  
+// 000       000  000      000             000  000  0000  000       000   000  
+// 000       000  0000000  00000000        000  000   000  000        0000000   
 
-.fileInfoIcon
+.browserFileInfo    
+    fill-abs()
+    display             flex
+    flex-direction      column
+    padding             frameWidth
     text-align          center
-    padding-top         1vw
-    padding-bottom      1vw
-    transform           scale(1.1)
+    // border   2px solid red
+
+.fileInfoSpacer
+    flex                1 1 0
+    // border     1px solid gray
+    
+.fileInfoIcon
+    flex                0.1 1 14vh
+    // border 1px dotted green
+    // transform           scale(1.1)
     &:before
-        font-size       120px
+        font-size       14vh
 
 .fileInfoFile
-    text-align          center
+    flex                0 1 50px
     display             block
     font-size           28px
     
 .fileInfoData
     margin              auto
     font-size           16px
-    line-height         1.1
     & th
         text-align      right
     & td

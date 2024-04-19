@@ -203,29 +203,34 @@ body
 .browserFileInfo
 {
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    padding: 4px;
     bottom: 0;
-    max-height: 20%;
+    right: 0;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    text-align: center;
+}
+
+.fileInfoSpacer
+{
+    flex: 1 1 0;
 }
 
 .fileInfoIcon
 {
-    text-align: center;
-    padding-top: 1vw;
-    padding-bottom: 1vw;
-    transform: scale(1.1);
+    flex: 0.1 1 14vh;
 }
 
 .fileInfoIcon:before
 {
-    font-size: 120px;
+    font-size: 14vh;
 }
 
 .fileInfoFile
 {
-    text-align: center;
+    flex: 0 1 50px;
     display: block;
     font-size: 28px;
 }
@@ -234,7 +239,6 @@ body
 {
     margin: auto;
     font-size: 16px;
-    line-height: 1.1;
 }
 
 .fileInfoData th

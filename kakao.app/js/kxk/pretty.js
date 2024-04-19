@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var pretty
 
@@ -8,20 +8,22 @@ pretty = (function ()
     function pretty ()
     {}
 
-    pretty["age"] = function (dateOrString)
+    pretty["age"] = function (dateOrString, opt = {})
     {
-        var date, diff, key, s, time, val
+        var date, diff, key, levels, s, sec, time, val, _19_28_
 
+        levels = ((_19_28_=opt.levels) != null ? _19_28_ : 1)
         if (_k_.isStr(dateOrString))
         {
-            date = new Date(Date.parse)
+            date = new Date(Date.parse(dateOrString))
         }
         else
         {
             date = new Date(dateOrString)
         }
-        diff = new Date(Date.now() - date.valueOf())
-        time = {year:diff.getUTCFullYear() - 1970,month:diff.getUTCMonth(),day:diff.getUTCDay(),hour:diff.getUTCHours(),minute:diff.getUTCMinutes(),second:diff.getUTCSeconds()}
+        diff = Date.now() - date.valueOf()
+        sec = parseInt(diff / 1000)
+        time = {year:Math.floor(sec / (60 * 60 * 24 * 30 * 12)),month:Math.floor(sec / (60 * 60 * 24 * 30) % 12),day:Math.floor(sec / (60 * 60 * 24) % 30),hour:Math.floor(sec / (60 * 60) % 24),minute:Math.floor(sec / 60 % 60),second:Math.floor(sec % 60)}
         s = []
         for (key in time)
         {
@@ -33,34 +35,72 @@ pretty = (function ()
                     return s[0]
                 }
             }
-            else if (val === 1)
-            {
-                s.push(`a ${key}`)
-            }
             else
             {
-                s.push(`${val} ${key}s`)
+                s.push(`${val} ${this.deplural(key + 's',val)}`)
             }
-            if (s.length === 2)
+            if (s.length === levels)
             {
                 return s.join(' ')
             }
         }
-        return s.join(' ')
+        if (_k_.empty(s))
+        {
+            return '0 seconds'
+        }
+        else
+        {
+            return s.join(' ')
+        }
     }
 
     pretty["bytes"] = function (bytes)
     {
-        var exponent, number, numberString, unit, UNITS
+        var exponent, number, numStr, UNITS
 
-        number = parseInt(bytes)
-        UNITS = ['B','kB','MB','GB','TB']
+        number = Math.abs(parseInt(bytes))
+        if (!(_k_.isNum(number)) || number === 0)
+        {
+            return '0 bytes'
+        }
+        UNITS = ['bytes','kB','MB','GB','TB']
         exponent = Math.min(Math.floor(Math.log10(number) / 3),UNITS.length - 1)
         number /= Math.pow(1000,exponent)
-        number = number.toPrecision(2)
-        numberString = new String(number)
-        unit = UNITS[exponent]
-        return numberString + ' ' + unit
+        numStr = this.number(number,{decimals:0})
+        return numStr + ' ' + this.deplural(UNITS[exponent],numStr)
+    }
+
+    pretty["number"] = function (number, opt = {})
+    {
+        var decimals, prune, ps, _81_32_, _84_32_
+
+        decimals = ((_81_32_=opt.decimals) != null ? _81_32_ : 1)
+        prune = ((_84_32_=opt.prune) != null ? _84_32_ : true)
+        ps = number.toFixed(decimals)
+        if (prune && decimals)
+        {
+            while (ps.slice(-1)[0] === '0')
+            {
+                ps = ps.slice(0, -1)
+            }
+            if (ps.slice(-1)[0] === '.')
+            {
+                ps = ps.slice(0, -1)
+            }
+        }
+        return ps
+    }
+
+    pretty["deplural"] = function (plural, num)
+    {
+        if (parseInt(num) === 1 && plural.slice(-1)[0] === 's')
+        {
+            return plural.slice(0, -1)
+        }
+        else
+        {
+            return plural
+        }
     }
 
     return pretty

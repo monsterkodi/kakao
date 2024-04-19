@@ -20,7 +20,7 @@ image = function (file)
     cnt = elem({class:'browserImageContainer',child:img})
     cnt.addEventListener('dblclick',function ()
     {
-        return open(file)
+        return kore.set('view|file',file)
     })
     table = elem('table',{class:"fileInfoData"})
     img.onload = async function ()
@@ -54,18 +54,20 @@ file = function (file)
     table = elem('table',{class:"fileInfoData"})
     ffs.fileExists(file).then(async function (stat)
     {
-        var info, size, unit
+        var info, size, size_unit, time, time_unit
 
         if (!stat)
         {
             return console.error(`file ${file} doesn't exist?`)
         }
         info = await ffs.info(file)
-        var _72_21_ = pretty.bytes(info.size).split(' '); size = _72_21_[0]; unit = _72_21_[1]
+        var _72_26_ = pretty.bytes(info.size).split(' '); size = _72_26_[0]; size_unit = _72_26_[1]
 
-        return table.innerHTML = `<tr><th>${size}</th><td>${unit}</td></tr><tr><th>${pretty.age(info.modified)}</th><td>ago</td></tr>`
+        var _73_26_ = pretty.age(info.modified).split(' '); time = _73_26_[0]; time_unit = _73_26_[1]
+
+        return table.innerHTML = `<tr><th>${size}</th><td>${size_unit}</td></tr><tr><th>${time}</th><td>${time_unit}</td></tr>`
     })
-    info = elem({class:'browserFileInfo',children:[elem('div',{class:`fileInfoIcon ${slash.ext(file)} ${File.iconClassName(file)}`}),elem('div',{class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),table]})
+    info = elem({class:'browserFileInfo',children:[elem({class:'fileInfoSpacer'}),elem({class:`fileInfoIcon ${slash.ext(file)} ${File.iconClassName(file)}`}),elem({class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),table,elem({class:'fileInfoSpacer'})]})
     return info
 }
 export default {file:file,image:image}
