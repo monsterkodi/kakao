@@ -11,7 +11,7 @@ use ../../kxk ▪ slash matchr elem kstr ffs
 
 class Syntax
     
-    @: (@name, @getLine, @getLines) ->
+    @: (@name, @getLine) ->
 
         @diss   = []
         @colors = {}

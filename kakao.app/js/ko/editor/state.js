@@ -44,6 +44,7 @@ class State
 
     lines ()
     {
+        console.log('lines')
         return this.s.lines.map(function (l)
         {
             return kstr.detab(l)

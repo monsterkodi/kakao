@@ -11,11 +11,10 @@ let ffs = kxk.ffs
 
 class Syntax
 {
-    constructor (name, getLine, getLines)
+    constructor (name, getLine)
     {
         this.name = name
         this.getLine = getLine
-        this.getLines = getLines
     
         this.diss = []
         this.colors = {}

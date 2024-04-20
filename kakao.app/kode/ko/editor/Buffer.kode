@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ kstr matchr events uniq
-use ./state
+use           ◆ State
 
 startOf = (r) -> r[0]
 endOf   = (r) -> r[0] + Math.max 1, r[1]-r[0]
@@ -20,16 +20,16 @@ function Buffer extends events
         @newlineCharacters = '\n'
         @wordRegExp = new RegExp "(\\s+|\\w+|[^\\s])", 'g'
         @realWordRegExp = new RegExp "(\\w+)", 'g'
-        @setState new state()
+        @setState new State()
 
     setLines: (lines) ->
 
         @emit 'numLines' 0 # give listeners a chance to clear their stuff
-        @state = new state lines:lines
+        @state = new State lines:lines
         if @name == 'editor'
             @emit 'numLines' @numLines()
 
-    setState: (s) -> @state = new state s.s
+    setState: (s) -> @state = new State s.s
 
     mainCursor:    -> @state.mainCursor()
     line:      (i) => @state.line i

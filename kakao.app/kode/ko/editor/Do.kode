@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post
 use ../tools  ◆ ranges
-use           ◆ state
+use           ◆ State
 
 class Do
 
@@ -70,7 +70,7 @@ class Do
 
         @groupCount += 1
         if @groupCount == 1
-            @startState = @state = new state @editor.state.s
+            @startState = @state = new State @editor.state.s
             if empty(@history) or @state.s != last(@history).s
                 @history.push @state
 

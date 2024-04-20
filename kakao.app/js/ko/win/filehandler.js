@@ -101,9 +101,9 @@ class FileHandler
         }
         options = ((_92_33_=this.openDialogOpt) != null ? _92_33_ : {})
         var list = _k_.list(files.slice(0, 30))
-        for (var _96_17_ = 0; _96_17_ < list.length; _96_17_++)
+        for (var _94_17_ = 0; _94_17_ < list.length; _94_17_++)
         {
-            file = list[_96_17_]
+            file = list[_94_17_]
             if (options.newWindow)
             {
                 kakao('window.new','ko.html',file)
@@ -183,7 +183,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _170_29_
+        var _168_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {

@@ -35,7 +35,7 @@ class State
             return ''
         kstr.detab @s.lines[i]
     
-    lines:         -> @s.lines.map (l) -> kstr.detab l
+    lines:         -> log 'lines'; @s.lines.map (l) -> kstr.detab l
     cursors:       -> @s.cursors.asMutable    deep: true
     highlights:    -> @s.highlights.asMutable deep: true
     selections:    -> @s.selections.asMutable deep: true

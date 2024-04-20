@@ -344,6 +344,16 @@ span.macro.macro,
     opacity: 1;
 }
 
+.unsaved-icon
+{
+    color: #aaf;
+}
+
+.unsaved-icon:hover
+{
+    color: #fff;
+}
+
 .dot:hover
 {
     color: #f80;

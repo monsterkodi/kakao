@@ -88,7 +88,7 @@ Editor = (function ()
         this.config.syntaxName = ((_70_27_=this.config.syntaxName) != null ? _70_27_ : 'txt')
         this.indentString = _k_.lpad(4,"")
         this.stickySelection = false
-        this.syntax = new Syntax(this.config.syntaxName,this.line,this.lines)
+        this.syntax = new Syntax(this.config.syntaxName,this.line)
         this.do = new Do(this)
         this.setupFileType()
     }

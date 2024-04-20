@@ -8,7 +8,7 @@ let matchr = kxk.matchr
 let events = kxk.events
 let uniq = kxk.uniq
 
-import state from "./state.js"
+import State from "./State.js"
 
 
 startOf = function (r)
@@ -34,13 +34,13 @@ Buffer = (function ()
         this.newlineCharacters = '\n'
         this.wordRegExp = new RegExp("(\\s+|\\w+|[^\\s])",'g')
         this.realWordRegExp = new RegExp("(\\w+)",'g')
-        this.setState(new state())
+        this.setState(new State())
     }
 
     Buffer.prototype["setLines"] = function (lines)
     {
         this.emit('numLines',0)
-        this.state = new state({lines:lines})
+        this.state = new State({lines:lines})
         if (this.name === 'editor')
         {
             return this.emit('numLines',this.numLines())
@@ -49,7 +49,7 @@ Buffer = (function ()
 
     Buffer.prototype["setState"] = function (s)
     {
-        return this.state = new state(s.s)
+        return this.state = new State(s.s)
     }
 
     Buffer.prototype["mainCursor"] = function ()

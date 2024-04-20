@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var addImmutabilityTag, addPropertyTo, arraySet, arraySetIn, asDeepMutable, asMutableArray, asMutableDate, asMutableObject, asObject, banProperty, flatMap, getIn, getInPath, immutabilityTag, Immutable, immutableEmptyArray, immutableEmptyObject, ImmutableError, instantiateEmptyObject, isBlobObject, isEqual, isError, isFileObject, isImmutable, isMergableObject, isObject, isPromise, makeImmutable, makeImmutableArray, makeImmutableDate, makeImmutableObject, makeMethodReturnImmutable, merge, mutatingArrayMethods, mutatingDateMethods, mutatingObjectMethods, nonMutatingArrayMethods, nonMutatingObjectMethods, objectReplace, objectSet, objectSetIn, quickCopy, toStatic, toStaticObjectOrArray, toStaticObjectOrDateOrArray, update, updateIn, without
 
@@ -99,15 +99,14 @@ ImmutableError.prototype.constructor = Error
 
 makeImmutable = function (obj, bannedMethods)
 {
-    var index
+    var banned
 
     addImmutabilityTag(obj)
-    for (index in bannedMethods)
+    var list = _k_.list(bannedMethods)
+    for (var _86_15_ = 0; _86_15_ < list.length; _86_15_++)
     {
-        if (bannedMethods.hasOwnProperty(index))
-        {
-            banProperty(obj,bannedMethods[index])
-        }
+        banned = list[_86_15_]
+        banProperty(obj,banned)
     }
     Object.freeze(obj)
     return obj
@@ -129,15 +128,13 @@ makeImmutableObject = function (obj)
 
 makeImmutableArray = function (array)
 {
-    var i, index, methodName
+    var i, methodName
 
-    for (index in nonMutatingArrayMethods)
+    var list = _k_.list(nonMutatingArrayMethods)
+    for (var _109_19_ = 0; _109_19_ < list.length; _109_19_++)
     {
-        if (nonMutatingArrayMethods.hasOwnProperty(index))
-        {
-            methodName = nonMutatingArrayMethods[index]
-            makeMethodReturnImmutable(array,methodName)
-        }
+        methodName = list[_109_19_]
+        makeMethodReturnImmutable(array,methodName)
     }
     addPropertyTo(array,"flatMap",flatMap)
     addPropertyTo(array,"asObject",asObject)
@@ -147,7 +144,7 @@ makeImmutableArray = function (array)
     addPropertyTo(array,"update",update)
     addPropertyTo(array,"updateIn",updateIn)
     addPropertyTo(array,"getIn",getIn)
-    for (var _124_13_ = i = 0, _124_17_ = array.length; (_124_13_ <= _124_17_ ? i < array.length : i > array.length); (_124_13_ <= _124_17_ ? ++i : --i))
+    for (var _121_13_ = i = 0, _121_17_ = array.length; (_121_13_ <= _121_17_ ? i < array.length : i > array.length); (_121_13_ <= _121_17_ ? ++i : --i))
     {
         array[i] = Immutable(array[i])
     }
@@ -295,7 +292,7 @@ flatMap = function (iterator)
         return this
     }
     result = []
-    for (var _240_17_ = index = 0, _240_21_ = this.length; (_240_17_ <= _240_21_ ? index < this.length : index > this.length); (_240_17_ <= _240_21_ ? ++index : --index))
+    for (var _238_17_ = index = 0, _238_21_ = this.length; (_238_17_ <= _238_21_ ? index < this.length : index > this.length); (_238_17_ <= _238_21_ ? ++index : --index))
     {
         iteratorResult = iterator(this[index],index,this)
         if (Array.isArray(iteratorResult))
@@ -351,14 +348,14 @@ asMutableArray = function (opts)
     result = []
     if (opts && opts.deep)
     {
-        for (var _286_17_ = i = 0, _286_21_ = this.length; (_286_17_ <= _286_21_ ? i < this.length : i > this.length); (_286_17_ <= _286_21_ ? ++i : --i))
+        for (var _284_17_ = i = 0, _284_21_ = this.length; (_284_17_ <= _284_21_ ? i < this.length : i > this.length); (_284_17_ <= _284_21_ ? ++i : --i))
         {
             result.push(asDeepMutable(this[i]))
         }
     }
     else
     {
-        for (var _289_17_ = i = 0, _289_21_ = this.length; (_289_17_ <= _289_21_ ? i < this.length : i > this.length); (_289_17_ <= _289_21_ ? ++i : --i))
+        for (var _287_17_ = i = 0, _287_21_ = this.length; (_287_17_ <= _287_21_ ? i < this.length : i > this.length); (_287_17_ <= _287_21_ ? ++i : --i))
         {
             result.push(this[i])
         }
@@ -379,7 +376,7 @@ asObject = function (iterator)
     }
     result = {}
     length = this.length
-    for (var _310_17_ = index = 0, _310_21_ = length; (_310_17_ <= _310_21_ ? index < length : index > length); (_310_17_ <= _310_21_ ? ++index : --index))
+    for (var _308_17_ = index = 0, _308_21_ = length; (_308_17_ <= _308_21_ ? index < length : index > length); (_308_17_ <= _308_21_ ? ++index : --index))
     {
         pair = iterator(this[index],index,this)
         key = pair[0]
@@ -493,7 +490,7 @@ merge = function (other, config)
     }
     else
     {
-        for (var _399_21_ = index = 0, _399_25_ = other.length; (_399_21_ <= _399_25_ ? index < other.length : index > other.length); (_399_21_ <= _399_25_ ? ++index : --index))
+        for (var _397_21_ = index = 0, _397_25_ = other.length; (_397_21_ <= _397_25_ ? index < other.length : index > other.length); (_397_21_ <= _397_25_ ? ++index : --index))
         {
             otherFromArray = other[index]
             for (key in otherFromArray)
@@ -599,7 +596,7 @@ getInPath = function (obj, path)
 {
     var i
 
-    for (var _473_13_ = i = 0, _473_17_ = path.length; (_473_13_ <= _473_17_ ? i < path.length : i > path.length); (_473_13_ <= _473_17_ ? ++i : --i))
+    for (var _471_13_ = i = 0, _471_17_ = path.length; (_471_13_ <= _471_17_ ? i < path.length : i > path.length); (_471_13_ <= _471_17_ ? ++i : --i))
     {
         obj = obj[path[i]]
         if (obj === null)

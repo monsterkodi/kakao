@@ -330,20 +330,6 @@ function FileEditor extends TextEditor
         cp = @cursorPos()
         currext = slash.ext @currentFile
 
-        # switch currext
-            # 'coffee' 'kode'
-                # [file,line,col] = srcmap.toJs @currentFile, cp[1]+1, cp[0]
-            # 'js'
-                # [file,line,col] = srcmap.toKode @currentFile, cp[1]+1, cp[0]
-                # if not ffs.fileExists file
-                    # [file,line,col] = srcmap.toCoffee @currentFile, cp[1]+1, cp[0]
-
-        # log 'counterpart' @currentFile, file, line, col
-
-        # if valid(file) and not slash.samePath(@currentFile, file) #and slash.fileExists file
-            # post.emit 'loadFile' slash.joinFileLine file,line,col
-            # return true
-
         # TODO: move this stuff to a config.noon file
 
         counterparts =

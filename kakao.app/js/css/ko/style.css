@@ -198,6 +198,21 @@ body
     opacity: 0.5;
     position: absolute;
     right: 6px;
+    pointer-events: none;
+}
+
+.tabStatusIcon
+{
+    position: absolute;
+    right: 8px;
+    pointer-events: none;
+}
+
+# .tabUnsavedIcon
+{
+    #: position            absolute;
+    #: right               8px;
+    #: pointer-events      none;
 }
 
 .browserFileInfo
@@ -306,6 +321,12 @@ body
 {
     font-family: FontAwesome;
     content: '\f141';
+}
+
+.unsaved-icon:before
+{
+    font-family: FontAwesomeSolid;
+    content: '\f0c7';
 }
 
 .file-icon:before
@@ -557,6 +578,14 @@ body
     display: none;
 }
 
+.unsaved-icon
+{
+    display: inline-block;
+    padding-left: 6px;
+    padding-right: 8px;
+    padding-top: 5.5px;
+}
+
 .dot
 {
     display: inline-block;
@@ -657,6 +686,13 @@ body
     flex: 1 1 0;
 }
 
+.tab .name .dirty
+{
+    position: absolute;
+    padding-left: 6px;
+    transform: translateY(-1px);
+}
+
 
 
 .tab .name,
@@ -669,7 +705,7 @@ body
 .tabstate
 {
     flex: 0 1 30px;
-    border-radius: 6px;
+    border-top-right-radius: 6px;
     stroke-width: 2;
     height: 30px;
     min-width: 15px;

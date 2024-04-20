@@ -120,7 +120,7 @@ function Command
     #  0000000  000   000  000   000   0000000  00000000  0000000
 
     cancel: ->
-        # log 'Command.cancel'
+
         @hideList()
         
         text: ''
@@ -143,7 +143,6 @@ function Command
     
     initAndShowList: ->
         
-        log "Command.initAndShowList #{@name}"
         @showList()
         @showItems @listItems()
         @select 0
@@ -155,11 +154,10 @@ function Command
             listView = elem class: "commandlist #{@prefsID}"
             window.split.elem.appendChild listView
             
-            log 'Command.showList' @name
             @commandList = new CommandList @, '.commandlist' syntaxName:@syntaxName
 
     listItems: ->
-        log 'Command.listItems' @history
+
         reversed @history
 
     showItems: (items) ->

@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post elem kpos slash drag popup stopEvent $ 
 use ../tools  ◆ Projects File
-use ./Tab
+use           ◆ Tab
 
 class Tabs
 
@@ -294,6 +294,21 @@ class Tabs
         if tab = @tab event.target
             if event.target.classList.contains 'dot'
                 @delTab tab.path
+            else if event.target.classList.contains 'unsaved-icon'
+                log 'save tab via icon click' tab.path
+                tab = @koreTabForPath tab.path
+                if tab.dirty
+                    if tab.active
+                        post.emit 'saveFile'
+                    else
+                        if tab.path.startsWith 'untitled'
+                            post.emit 'saveFileAs'
+                        else
+                            delete tab.dirty
+                            if state = @tabState[tab.path]
+                                File.save state.file, state.state.text(), (file) ->
+                                    error "Tabs.onClick failed to save #{state.file}" if not file
+                    delete tab.dirty
             else
                 @activate tab.path
         true

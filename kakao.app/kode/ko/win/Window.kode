@@ -64,13 +64,9 @@ function Window extends win.Delegate
         window.textEditor = window.focusEditor = @editor
         window.setLastFocus @editor.name
 
-        # @terminal.on 'fileSearchResultChange' (file, lineChange) -> # sends changes to all windows
-            # post.toWins 'fileLineChanges' file, [lineChange]
-    
         @editor.on 'changed' (changeInfo) ->
             return if changeInfo.foreign
             if changeInfo.changes.length
-                # post.toOtherWins 'fileLineChanges' @editor.currentFile, changeInfo.changes
                 if changeInfo.deletes == 1
                     window.navigate.delFilePos file: window.editor.currentFile, pos: [0 changeInfo.changes[0].oldIndex]
                 else
@@ -149,9 +145,6 @@ function Window extends win.Delegate
             'Small Browser'         ➜ return window.commandline.startCommand 'browse'
             'Preferences'           ➜ return post.emit 'loadFile' prefs.store.file
     
-        # if name in Macro.macroNames
-            # return window.commandline.commands.macro.execute name
-            
         log 'onMenuAction unhandled' name, trail
             
 # 00000000    0000000    0000000  000000000
@@ -172,17 +165,6 @@ post.on 'editorFocus' (editor) ->
     window.setLastFocus window.editor.name
     window.focusEditor = window.editor
     window.textEditor = window.editor if window.editor.name != 'commandline-editor'
- 
-post.on 'mainlog' -> 
- 
-post.on 'ping' (wID, argA, argB) -> post.toWin wID, 'pong' window.winID, argA, argB
-post.on 'postEditorState' ->
-    post.toAll 'editorState' window.winID,
-        lines:      window.editor.lines()
-        cursors:    window.editor.cursors()
-        main:       window.editor.mainCursor()
-        selections: window.editor.selections()
-        highlights: window.editor.highlights()
  
 # 00000000  0000000    000  000000000   0000000   00000000
 # 000       000   000  000     000     000   000  000   000

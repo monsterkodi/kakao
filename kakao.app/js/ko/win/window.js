@@ -144,7 +144,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _108_25_
+        var action, _104_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -297,16 +297,6 @@ post.on('editorFocus',function (editor)
         return window.textEditor = window.editor
     }
 })
-post.on('mainlog',function ()
-{})
-post.on('ping',function (wID, argA, argB)
-{
-    return post.toWin(wID,'pong',window.winID,argA,argB)
-})
-post.on('postEditorState',function ()
-{
-    return post.toAll('editorState',window.winID,{lines:window.editor.lines(),cursors:window.editor.cursors(),main:window.editor.mainCursor(),selections:window.editor.selections(),highlights:window.editor.highlights()})
-})
 
 window.editorWithName = function (n)
 {
@@ -330,7 +320,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _211_14_
+    var _193_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -341,7 +331,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _217_22_, _218_19_
+    var _199_22_, _200_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -376,7 +366,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _257_32_
+    var _239_32_
 
     if (!(_k_.isNum(s)))
     {

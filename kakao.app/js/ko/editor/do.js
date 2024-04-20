@@ -5,7 +5,7 @@ let post = kxk.post
 
 import ranges from "../tools/ranges.js"
 
-import state from "./state.js"
+import State from "./State.js"
 
 class Do
 {
@@ -58,7 +58,7 @@ class Do
         this.groupCount += 1
         if (this.groupCount === 1)
         {
-            this.startState = this.state = new state(this.editor.state.s)
+            this.startState = this.state = new State(this.editor.state.s)
             if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history).s)
             {
                 return this.history.push(this.state)

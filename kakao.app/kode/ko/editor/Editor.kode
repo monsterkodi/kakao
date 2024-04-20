@@ -72,7 +72,7 @@ function Editor extends Buffer
         @indentString    = lpad 4 ""
         @stickySelection = false
 
-        @syntax = new Syntax @config.syntaxName, @line, @lines
+        @syntax = new Syntax @config.syntaxName, @line
 
         @do = new Do @
 

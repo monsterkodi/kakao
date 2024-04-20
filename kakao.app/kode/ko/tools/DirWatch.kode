@@ -30,8 +30,6 @@ class DirWatch
         else
             dir = slash.dir path
         
-        # log 'DirWatch.onChange' change, path, dir
-        
         for k,v of DirWatch.watches
             if k == dir
                 post.emit 'dirChanged' change:change, path:path, dir:dir

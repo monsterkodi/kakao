@@ -412,13 +412,47 @@ class Tabs
 
     onClick (event)
     {
-        var tab
+        var state, tab
 
         if (tab = this.tab(event.target))
         {
             if (event.target.classList.contains('dot'))
             {
                 this.delTab(tab.path)
+            }
+            else if (event.target.classList.contains('unsaved-icon'))
+            {
+                console.log('save tab via icon click',tab.path)
+                tab = this.koreTabForPath(tab.path)
+                if (tab.dirty)
+                {
+                    if (tab.active)
+                    {
+                        post.emit('saveFile')
+                    }
+                    else
+                    {
+                        if (tab.path.startsWith('untitled'))
+                        {
+                            post.emit('saveFileAs')
+                        }
+                        else
+                        {
+                            delete tab.dirty
+                            if (state = this.tabState[tab.path])
+                            {
+                                File.save(state.file,state.state.text(),function (file)
+                                {
+                                    if (!file)
+                                    {
+                                        console.error(`Tabs.onClick failed to save ${state.file}`)
+                                    }
+                                })
+                            }
+                        }
+                    }
+                    delete tab.dirty
+                }
             }
             else
             {
@@ -501,7 +535,7 @@ class Tabs
 
         active = this.activeKoreTab()
         tabs = this.koreTabs()
-        for (var _346_21_ = index = tabs.length - 1, _346_36_ = 0; (_346_21_ <= _346_36_ ? index <= 0 : index >= 0); (_346_21_ <= _346_36_ ? ++index : --index))
+        for (var _361_21_ = index = tabs.length - 1, _361_36_ = 0; (_361_21_ <= _361_36_ ? index <= 0 : index >= 0); (_361_21_ <= _361_36_ ? ++index : --index))
         {
             tab = tabs[index]
             if (tab === active)
@@ -528,7 +562,7 @@ class Tabs
     {
         var col, line, path, prjPath
 
-        var _368_26_ = slash.splitFileLine(file); path = _368_26_[0]; line = _368_26_[1]; col = _368_26_[2]
+        var _383_26_ = slash.splitFileLine(file); path = _383_26_[0]; line = _383_26_[1]; col = _383_26_[2]
 
         if (!this.koreTabForPath(path))
         {
@@ -647,7 +681,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _445_25_ = [tb,ta]; ta = _445_25_[0]; tb = _445_25_[1]
+                    var _460_25_ = [tb,ta]; ta = _460_25_[0]; tb = _460_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -690,9 +724,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _477_16_ = 0; _477_16_ < list.length; _477_16_++)
+        for (var _492_16_ = 0; _492_16_ < list.length; _492_16_++)
         {
-            tab = list[_477_16_]
+            tab = list[_492_16_]
             tab.update()
         }
     }
@@ -751,9 +785,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _534_16_ = 0; _534_16_ < list.length; _534_16_++)
+        for (var _549_16_ = 0; _549_16_ < list.length; _549_16_++)
         {
-            tab = list[_534_16_]
+            tab = list[_549_16_]
             if (tab.dirty)
             {
                 if (tab.active)

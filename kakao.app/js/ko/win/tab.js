@@ -38,7 +38,7 @@ class Tab
 
     update ()
     {
-        var diss, dot, html, name, prj, sep, tab, tabs, _36_45_, _37_46_, _92_21_
+        var diss, dot, html, name, prj, sep, tab, tabs, _36_45_, _37_46_, _42_17_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -48,7 +48,14 @@ class Tab
         {
             sep = ''
         }
-        this.dot = elem('span',{class:'dot',text:sep})
+        if ((this.dirty != null))
+        {
+            this.dot = elem('span',{class:'unsaved-icon'})
+        }
+        else
+        {
+            this.dot = elem('span',{class:'dot',text:sep})
+        }
         this.div.appendChild(this.dot)
         diss = Syntax.dissForTextAndSyntax(slash.file(this.path),'ko')
         if (!prefs.get('tabs|extension'))
@@ -96,9 +103,9 @@ class Tab
             {
                 tabs = this.tabs.fileTabsForPath(this.path)
                 var list = _k_.list(tabs)
-                for (var _84_24_ = 0; _84_24_ < list.length; _84_24_++)
+                for (var _89_24_ = 0; _89_24_ < list.length; _89_24_++)
                 {
-                    tab = list[_84_24_]
+                    tab = list[_89_24_]
                     dot = elem('span',{class:'prjdot',text:'■'})
                     this.div.appendChild(dot)
                     if (tab.active)
@@ -110,10 +117,6 @@ class Tab
         }
         else
         {
-            if ((this.dirty != null))
-            {
-                this.div.appendChild(elem('span',{class:'dot',text:'●'}))
-            }
             if (prj = this.tabs.prjTabForPath(this.path))
             {
                 if (prj.collapsed)
@@ -127,7 +130,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _108_16_
+        var diss, html, numFiles, _109_16_
 
         if ((this.path != null))
         {
@@ -144,7 +147,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _129_19_, _129_24_
+        var t, _130_19_, _130_24_
 
         if (status.gitDir !== this.path)
         {

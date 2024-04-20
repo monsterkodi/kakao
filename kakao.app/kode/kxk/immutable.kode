@@ -83,9 +83,8 @@ makeImmutable = (obj, bannedMethods) ->
     addImmutabilityTag obj # Tag it so we can quickly tell it's immutable later
   
     # Make all mutating methods throw exceptions
-    for index of bannedMethods
-        if bannedMethods.hasOwnProperty index
-            banProperty obj, bannedMethods[index]
+    for banned in bannedMethods
+        banProperty obj, banned
     
     Object.freeze obj
     obj
@@ -107,10 +106,8 @@ makeImmutableObject = (obj) ->
 makeImmutableArray = (array) ->
     # Don't change their implementations, but wrap these functions to make sure
     # they always return an immutable value.
-    for index of nonMutatingArrayMethods
-        if nonMutatingArrayMethods.hasOwnProperty index
-            methodName = nonMutatingArrayMethods[index]
-            makeMethodReturnImmutable array, methodName
+    for methodName in nonMutatingArrayMethods
+        makeMethodReturnImmutable array, methodName
   
     addPropertyTo array, "flatMap"   flatMap
     addPropertyTo array, "asObject"  asObject
@@ -166,6 +163,7 @@ Immutable = (obj, options, stackRemaining) ->
             makeImmutableObject theClone
 
 makeMethodReturnImmutable = (obj, methodName) ->
+    
     currentMethod = obj[methodName]
 
     addPropertyTo obj, methodName, -> Immutable currentMethod.apply obj, arguments
@@ -194,8 +192,8 @@ arraySetIn = (pth, value, config) ->
     if pth.length == 1
         arraySet.call @, head, value, config
     else 
-        tail = pth.slice(1);
-        thisHead = @[head];
+        tail = pth.slice 1
+        thisHead = @[head]
         newValue;
     
         if typeof(thisHead) == "object" and thisHead != null
