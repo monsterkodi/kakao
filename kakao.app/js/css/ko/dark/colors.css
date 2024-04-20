@@ -82,12 +82,14 @@ body
     background: #111111;
 }
 
+
+.imageInfoData,
 .fileInfoData
 {
-    margin-top: 20px;
     color: #444;
 }
 
+.imageInfoData.punct,
 .fileInfoData .punct
 {
     color: #222;
@@ -351,7 +353,7 @@ span.macro.macro,
 
 .unsaved-icon:hover
 {
-    color: #fff;
+    color: #f00;
 }
 
 .temp-icon
@@ -387,7 +389,7 @@ span.macro.macro,
 
 .tabstate:hover
 {
-    background: #181818;
+    background: #333;
 }
 
 .tab.active .tabstate:hover
@@ -414,6 +416,16 @@ span.macro.macro,
 .git-status-icon
 {
     display: inline-block;
+}
+
+.lock-icon:hover
+{
+    color: #ff0;
+}
+
+.temp-icon:hover
+{
+    color: #888;
 }
 
 #browser
@@ -720,7 +732,7 @@ span.macro.macro,
 .highlight
 {
     color: rgba(255, 100, 255, 0.7);
-    background: rgba(100, 50, 255, 0.2);
+    background: rgba(100, 50,  255, 0.2);
 }
 
 .bracketmatch

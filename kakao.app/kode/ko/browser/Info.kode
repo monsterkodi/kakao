@@ -18,39 +18,25 @@ use ../tools  ◆ File
 image = (file) ->
 
     img = elem 'img' class:'browserImage' src:slash.fileUrl file
-    cnt = elem class:'browserImageContainer' child:img
-    cnt.addEventListener 'dblclick' -> kore.set 'view|file' file #open file
+    imgdiv = elem class:'browserImageDiv' child:img
+    cnt = elem class:'browserImageContainer' child:imgdiv
+    
+    img.addEventListener 'dblclick' -> kore.set 'view|file' file
 
-    table = elem 'table' class:"fileInfoData"
+    table = elem 'table' class:'imageInfoData'
 
     img.onload = ○->
 
-        img =$ '.browserImage'
-        br = img.getBoundingClientRect()
-        x = img.clientX
-        width  = parseInt br.right - br.left - 2
-        height = parseInt br.bottom - br.top - 2
-
-        img.style.opacity   = '1'
-        img.style.maxWidth  = '100%'
+        img.style.opacity = '1'
 
         info =○ ffs.info file
         
-        [size, unit] = pretty.bytes(info.size).split ' '
+        [size, size_unit] = pretty.bytes(info.size).split ' '
+        [time, time_unit] = pretty.age(info.modified).split ' '
+        table.innerHTML = "<tr><th colspan=2><div class='fileInfoFile #{slash.ext file}'>#{File.span file}</div></th></tr><tr class='dataRow'><th>#{size}</th><td>#{size_unit}</td></tr><tr class='dataRow'><th>#{time}</th><td>#{time_unit}</td></tr>"
 
-        html  = "<tr><th colspan=2>#{width}<span class='punct'>x</span>#{height}</th></tr>"
-        html += "<tr><th>#{size}</th><td>#{unit}</td></tr>"
-        html += "<tr><th>#{pretty.age info.modified}</th><td>ago</td></tr>"
-
-        table.innerHTML = html
-
-    info = elem class:'browserFileInfo' children: [
-        elem 'div' class:"fileInfoFile #{slash.ext file}" html:File.span file
-        table
-    ]
-
-    cnt.appendChild info
-    cnt
+    elem class:'browserImageInfo' children: [ elem(class:'imageInfoSpacer'), cnt, table, elem(class:'imageInfoSpacer') ]
+    
 
 # 00000000  000  000      00000000
 # 000       000  000      000
@@ -60,7 +46,7 @@ image = (file) ->
 
 file = (file) ->
 
-    table = elem 'table' class:"fileInfoData"
+    table = elem 'table' class:'fileInfoData'
 
     ffs.fileExists(file).then (stat) ○->
 

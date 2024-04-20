@@ -702,7 +702,7 @@ Column = (function ()
 
         this.browser.skipOnDblClick = true
         item = (this.activeRow() != null ? this.activeRow().item : undefined)
-        if (item.type === 'dir')
+        if ((item != null ? item.type : undefined) === 'dir')
         {
             this.browser.clearColumnsFrom(1,{pop:true})
             return this.browser.loadDirItem(item,0,{activate:false})

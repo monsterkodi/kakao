@@ -90,8 +90,8 @@ body
 #shelf.focus
     background          frameColor
     
+.imageInfoData
 .fileInfoData
-    margin-top          20px
     color               #444
     
     & .punct
@@ -275,7 +275,7 @@ span.macro
 .unsaved-icon 
     color               #aaf
     &:hover
-        color           #fff
+        color           #f00
         
 .temp-icon
     color               #555
@@ -295,7 +295,7 @@ span.macro
     stroke              #444
     fill                #444
     &:hover
-        background      #181818
+        background      #333
         
 .tab.active .tabstate:hover
     background          #282828
@@ -311,6 +311,12 @@ span.macro
 .git-status-icon
     display             inline-block
 
+.lock-icon:hover
+    color               #ff0
+    
+.temp-icon:hover
+    color               #888
+    
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  
 // 0000000    0000000    000   000  000000000  0000000   0000000   0000000    
@@ -515,7 +521,7 @@ span.macro
 
 .highlight
     color                   rgba(255, 100, 255, 0.7)
-    background              rgba(100, 50, 255, 0.2)
+    background              rgba(100, 50,  255, 0.2)
 
 .bracketmatch
     background              rgba(255, 255, 255, 0.2)
