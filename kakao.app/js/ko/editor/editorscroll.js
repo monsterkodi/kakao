@@ -214,6 +214,14 @@ class EditorScroll extends events
         }
     }
 
+    cursorInitView ()
+    {
+        var delta
+
+        delta = this.editor.mainCursor()[1] - (this.top + this.fullLines / 6)
+        return this.by(delta * this.lineHeight - this.offsetSmooth)
+    }
+
     cursorIntoView ()
     {
         var delta
@@ -227,11 +235,11 @@ class EditorScroll extends events
 
     deltaToEnsureMainCursorIsVisible ()
     {
-        var cl, maindelta, offset, _238_31_, _238_46_
+        var cl, maindelta, offset, _243_31_, _243_46_
 
         maindelta = 0
         cl = this.editor.mainCursor()[1]
-        offset = ((_238_46_=(this.editor.config != null ? this.editor.config.scrollOffset : undefined)) != null ? _238_46_ : 2)
+        offset = ((_243_46_=(this.editor.config != null ? this.editor.config.scrollOffset : undefined)) != null ? _243_46_ : 2)
         if (cl < this.top + offset + this.offsetTop / this.lineHeight)
         {
             maindelta = cl - (this.top + offset + this.offsetTop / this.lineHeight)
