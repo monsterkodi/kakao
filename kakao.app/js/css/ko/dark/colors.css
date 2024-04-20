@@ -503,7 +503,7 @@ span.macro.macro,
 
 *:focus .cursor.blink.off
 {
-    background: transparent;
+    background: #a00;
 }
 
 .cursors.salterMode .cursor

@@ -481,7 +481,7 @@ span.macro.macro,
 
 *:focus .cursor         // focus colors.blink.off
 {
-    background: transparent;
+    background: #00f;
 }
 
 .cursors.salterMode .cursor

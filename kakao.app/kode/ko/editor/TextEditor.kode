@@ -56,6 +56,9 @@ function TextEditor extends Editor
         
         @transform = new Editor.actionModules.transform.Transform @
 
+        @blink = false
+        @startBlink()
+        
         post.on 'schemeChanged' @onSchemeChanged
 
     # 00000000  00000000   0000000   000000000  000   000  00000000   00000000   0000000  
@@ -497,12 +500,11 @@ function TextEditor extends Editor
 
     suspendBlink: ->
 
-        return if not @blinkTimer
+        # return if not @blinkTimer
         @stopBlink()
         @cursorDiv()?.classList.toggle 'blink' false
         clearTimeout @suspendTimer
-        blinkDelay = prefs.get 'cursorBlinkDelay' [800,200]
-        @suspendTimer = setTimeout @releaseBlink, blinkDelay[0]
+        @suspendTimer = setTimeout @releaseBlink, 2000
 
     releaseBlink: =>
 
@@ -527,12 +529,11 @@ function TextEditor extends Editor
         @minimap?.drawMainCursor @blink
         
         clearTimeout @blinkTimer
-        blinkDelay = prefs.get 'cursorBlinkDelay' [800,200]
-        @blinkTimer = setTimeout @doBlink, @blink and blinkDelay[1] or blinkDelay[0]
+        @blinkTimer = setTimeout @doBlink, @blink and 100 or 1200
 
     startBlink: -> 
     
-        if not @blinkTimer and prefs.get 'blink'
+        if not @suspendTimer and prefs.get 'blink' true
             @doBlink() 
 
     stopBlink: ->
