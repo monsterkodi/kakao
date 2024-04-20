@@ -309,16 +309,17 @@ body
 
 .fileInfoIcon
 {
-    flex: 0.1 1 14vh;
+    flex: 0.1 1 13vh;
 }
 
 .fileInfoIcon:before
 {
-    font-size: 14vh;
+    font-size: 13vh;
 }
 
 .fileInfoFile
 {
+    padding-top: 8px;
     flex: 0 0 50px;
     display: block;
     font-size: 28px;
@@ -867,14 +868,6 @@ body
     pointer-events: auto;
     background: #000;
     opacity: 1;
-}
-
-.viewerImage
-{
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .layerScroll

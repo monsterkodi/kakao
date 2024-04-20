@@ -17,6 +17,22 @@
 
 @font-face
 {
+    font-family: FontAwesomeRegular;
+    font-weight: normal;
+    font-style: normal;
+    src: url("../../../Contents/Resources/font/fa-regular-400.woff2");
+}
+
+@font-face
+{
+    font-family: FontAwesomeBrands;
+    font-weight: normal;
+    font-style: normal;
+    src: url("../../../Contents/Resources/font/fa-brands-400.woff2");
+}
+
+@font-face
+{
     font-family: Mfizz;
     src: url("../../../Contents/Resources/font/mfixx.woff2");
     font-weight: normal;
@@ -59,12 +75,10 @@
 .icon.checklist:before    { font-family: octicons; content: "\f076"; }
 .icon.code:before         { font-family: octicons; content: "\f05f"; }
 .icon.database:before     { font-family: octicons; content: "\f096"; }
-.icon.gear:before         { font-family: octicons; content: "\f02f"; }
 .icon.git-commit:before   { font-family: octicons; content: "\f01f"; }
 .icon.git-merge:before    { font-family: octicons; content: "\f023"; }
 .icon.github:before       { font-family: octicons; content: "\f00a"; }
 .icon.graph:before        { font-family: octicons; content: "\f043"; }
-.icon.image:before        { font-family: octicons; content: "\f012"; }
 .icon.key:before          { font-family: octicons; content: "\f049"; }
 .icon.link:before         { font-family: octicons; content: "\f0b0"; }
 .icon.markdown:before     { font-family: octicons; content: "\f0c9"; }
@@ -72,9 +86,18 @@
 .icon.ruby:before         { font-family: octicons; content: "\f047"; }
 .icon.secret:before       { font-family: octicons; content: "\f08c"; }
 .icon.squirrel:before     { font-family: octicons; content: "\f0b2"; }
-.icon.text:before         { font-family: octicons; content: "\f011"; }
 .icon.zip:before          { font-family: octicons; content: "\f013"; }
-.icon.law:before          { font-family: octicons; content: "\f0d8"; }
+.icon.text:before         { font-family: FontAwesomeRegular; content: "\f15c"; }
+.icon.gear:before         { font-family: FontAwesomeSolid;   content: "\f013"; }
+.icon.law:before          { font-family: FontAwesomeSolid;   content: "\f24e"; }
+.icon.json:before         { font-family: FontAwesomeSolid;   content: "\f544"; }
+.icon.js:before           { font-family: FontAwesomeBrands;  content: "\f3b9"; }
+.icon.html5:before        { font-family: FontAwesomeBrands;  content: "\f13b"; }
+.icon.css:before          { font-family: FontAwesomeBrands;  content: "\f13c"; }
+.icon.image:before        { font-family: FontAwesomeRegular; content: "\f03e"; }
+.icon.pxm:before    { font-family: FontAwesomeSolid;   content: "\f03e"; }
+.icon.icns:before   { font-family: FontAwesomeSolid;   content: "\f03e"; }
+.icon.webp:before   { font-family: FontAwesomeSolid;   content: "\f03e"; }
 .icon.file:before         { font-family: FontAwesome; content: "\f016"; }
 .icon.android:before      { font-family: FontAwesome; content: "\f17b"; }
 .icon.at:before           { font-family: FontAwesome; content: "\f1fa"; }
@@ -83,11 +106,9 @@
 .icon.calc:before         { font-family: FontAwesome; content: "\f1ec"; }
 .icon.coffee:before       { font-family: FontAwesome; content: "\f0f4"; }
 .icon.kode:before         { font-family: Devicons;    content: "\e680"; }
-.icon.css3:before         { font-family: FontAwesome; content: "\f13c"; }
 .icon.circle:before       { font-family: FontAwesome; content: "\f111"; }
 .icon.earth:before        { font-family: FontAwesome; content: "\f0ac"; }
 .icon.gears:before        { font-family: FontAwesome; content: "\f085"; }
-.icon.html5:before        { font-family: FontAwesome; content: "\f13b"; }
 .icon.mobile:before       { font-family: FontAwesome; content: "\f10b"; }
 .icon.moon:before         { font-family: FontAwesome; content: "\f186"; }
 .icon.music:before        { font-family: FontAwesome; content: "\f001"; }
@@ -110,8 +131,6 @@
 .icon.gnome:before        { font-family: Mfizz; content: "\f119"; }
 .icon.haskell:before      { font-family: Mfizz; content: "\f121"; }
 .icon.java:before         { font-family: Mfizz; content: "\f126"; }
-.icon.json:before         { font-family: file-icons; content: "\e959"; }
-.icon.js:before           { font-family: Mfizz; content: "\f128"; }
 .icon.mjs:before          { font-family: Mfizz; content: "\f129"; }
 .icon.msql:before         { font-family: Mfizz; content: "\f136"; }
 .icon.objc:before         { font-family: Mfizz; content: "\f13e"; }

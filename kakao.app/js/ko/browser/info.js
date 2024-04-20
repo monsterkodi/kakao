@@ -24,15 +24,16 @@ image = function (file)
         return kore.set('view|file',file)
     })
     table = elem('table',{class:'imageInfoData'})
+    table.innerHTML = "<tr class='dataRow'><th></th><td></td></tr><tr class='dataRow'><th></th><td></td></tr>"
     img.onload = async function ()
     {
         var info, size, size_unit, time, time_unit
 
         img.style.opacity = '1'
         info = await ffs.info(file)
-        var _34_26_ = pretty.bytes(info.size).split(' '); size = _34_26_[0]; size_unit = _34_26_[1]
+        var _35_26_ = pretty.bytes(info.size).split(' '); size = _35_26_[0]; size_unit = _35_26_[1]
 
-        var _35_26_ = pretty.age(info.modified).split(' '); time = _35_26_[0]; time_unit = _35_26_[1]
+        var _36_26_ = pretty.age(info.modified).split(' '); time = _36_26_[0]; time_unit = _36_26_[1]
 
         return table.innerHTML = `<tr class='fileRow'><th colspan=2><div class='fileInfoFile ${slash.ext(file)}'>${File.span(file)}</div></th></tr><tr class='dataRow'><th>${size}</th><td>${size_unit}</td></tr><tr class='dataRow'><th>${time}</th><td>${time_unit}</td></tr>`
     }
@@ -44,6 +45,7 @@ file = function (file)
     var info, table
 
     table = elem('table',{class:'fileInfoData'})
+    table.innerHTML = "<tr class='dataRow'><th></th><td></td></tr><tr class='dataRow'><th></th><td></td></tr>"
     ffs.fileExists(file).then(async function (stat)
     {
         var info, size, size_unit, time, time_unit
@@ -53,9 +55,9 @@ file = function (file)
             return console.error(`file ${file} doesn't exist?`)
         }
         info = await ffs.info(file)
-        var _58_26_ = pretty.bytes(info.size).split(' '); size = _58_26_[0]; size_unit = _58_26_[1]
+        var _60_26_ = pretty.bytes(info.size).split(' '); size = _60_26_[0]; size_unit = _60_26_[1]
 
-        var _59_26_ = pretty.age(info.modified).split(' '); time = _59_26_[0]; time_unit = _59_26_[1]
+        var _61_26_ = pretty.age(info.modified).split(' '); time = _61_26_[0]; time_unit = _61_26_[1]
 
         return table.innerHTML = `<tr class='dataRow'><th>${size}</th><td>${size_unit}</td></tr><tr class='dataRow'><th>${time}</th><td>${time_unit}</td></tr>`
     })

@@ -126,7 +126,7 @@ ext
     csh                   terminal
     cson                  database
     csproj                vs
-    css                   css3
+    css                   css
     csv                   graph
     csx                   csscript
     ctags                 tag
@@ -270,7 +270,7 @@ ext
     hx                    haxe
     iced                  coffee
     icl                   clean
-    icns                  image
+    icns                  icns
     ico                   image
     idc                   c
     ily                   music
@@ -527,7 +527,7 @@ ext
     pwn                   pawn
     pxd                   cython
     pxi                   cython
-    pxm                   image
+    pxm                   pxm
     py                    python
     py3                   python
     pyc                   python
@@ -718,7 +718,7 @@ ext
     wav                   audio
     wbm                   image
     webm                  video
-    webp                  image
+    webp                  webp
     wiki                  mediawiki
     wl                    mathematica
     wlt                   mathematica

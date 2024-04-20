@@ -395,7 +395,6 @@ function Column
     path: -> @parent?.path ? ''
 
     numRows:    -> @rows.length ? 0
-    # @rows[0]?.div.clientHeight ? 0
     rowHeight:  -> @parent?.type == 'file' ? 19 : 21
     numVisible: -> @rowHeight() and parseInt(@browser.height() / @rowHeight()) or 0
 

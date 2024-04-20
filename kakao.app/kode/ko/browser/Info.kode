@@ -24,6 +24,7 @@ image = (file) ->
     img.addEventListener 'dblclick' -> kore.set 'view|file' file
 
     table = elem 'table' class:'imageInfoData'
+    table.innerHTML = "<tr class='dataRow'><th></th><td></td></tr><tr class='dataRow'><th></th><td></td></tr>"
 
     img.onload = ○->
 
@@ -47,6 +48,7 @@ image = (file) ->
 file = (file) ->
 
     table = elem 'table' class:'fileInfoData'
+    table.innerHTML = "<tr class='dataRow'><th></th><td></td></tr><tr class='dataRow'><th></th><td></td></tr>"
 
     ffs.fileExists(file).then (stat) ○->
 
