@@ -143,6 +143,7 @@ body
     white-space         nowrap
     cursor              pointer
 
+    & .git-changed-icon
     & .git-dirs-icon
         padding-top     1px
         
@@ -226,12 +227,9 @@ body
 
 .fileInfoSpacer
     flex                1 1 0
-    // border     1px solid gray
     
 .fileInfoIcon
     flex                0.1 1 14vh
-    // border 1px dotted green
-    // transform           scale(1.1)
     &:before
         font-size       14vh
 
@@ -290,13 +288,13 @@ unicode(char)
     content             char
     
 .git-changed-icon:before
-    awesome('\f040')
+    fasolid('\f304')
     
 .git-added-icon:before
     awesome('\f067')
     
 .git-dirs-icon:before
-    awesome('\f044')
+    fasolid('\f14b')
 
 .history-icon:before
     awesome('\f141')
@@ -309,6 +307,21 @@ unicode(char)
     
 .folder-icon:before
     octicon('\f016')
+    
+.lock-icon:before
+    fasolid('\f023')
+
+.temp-icon:before
+    fasolid('\f039')
+
+.tab-temp
+    padding-left    8px
+    padding-top     6px
+    display         inline-block
+.tab-lock
+    padding-left    9px
+    padding-top     6px
+    display         inline-block
     
 //  0000000  00000000   000   000  00     00  0000000    
 // 000       000   000  000   000  000   000  000   000  

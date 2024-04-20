@@ -354,6 +354,11 @@ span.macro.macro,
     color: #fff;
 }
 
+.temp-icon
+{
+    color: #555;
+}
+
 .dot:hover
 {
     color: #f80;

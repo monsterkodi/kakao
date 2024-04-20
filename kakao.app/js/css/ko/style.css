@@ -122,6 +122,8 @@ body
     cursor: pointer;
 }
 
+
+.browserRow .git-changed-icon,
 .browserRow .git-dirs-icon
 {
     padding-top: 1px;
@@ -301,8 +303,8 @@ body
 
 .git-changed-icon:before
 {
-    font-family: FontAwesome;
-    content: '\f040';
+    font-family: FontAwesomeSolid;
+    content: '\f304';
 }
 
 .git-added-icon:before
@@ -313,8 +315,8 @@ body
 
 .git-dirs-icon:before
 {
-    font-family: FontAwesome;
-    content: '\f044';
+    font-family: FontAwesomeSolid;
+    content: '\f14b';
 }
 
 .history-icon:before
@@ -339,6 +341,32 @@ body
 {
     font-family: octicons;
     content: '\f016';
+}
+
+.lock-icon:before
+{
+    font-family: FontAwesomeSolid;
+    content: '\f023';
+}
+
+.temp-icon:before
+{
+    font-family: FontAwesomeSolid;
+    content: '\f039';
+}
+
+.tab-temp
+{
+    padding-left: 8px;
+    padding-top: 6px;
+    display: inline-block;
+}
+
+.tab-lock
+{
+    padding-left: 9px;
+    padding-top: 6px;
+    display: inline-block;
 }
 
 .inline

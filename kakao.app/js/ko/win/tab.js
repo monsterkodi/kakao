@@ -77,18 +77,11 @@ class Tab
             html = ''
             if (this.pinned)
             {
-                html = `<svg width="100%" height="100%" viewBox="0 0 30 30" fill="transparent">
-    <circle cx="15" cy="12" r="4" />
-    <line x1="15" y1="16"  x2="15"  y2="22" stroke-linecap="round"></line>
-</svg>`
+                html = `<span class="tab-lock"><span class="lock-icon"></span></span>`
             }
             else if (this.tmp)
             {
-                html = `<svg width="100%" height="100%" viewBox="0 0 30 30">
-    <circle cx="15" cy="9"  r="2" />
-    <circle cx="15" cy="15" r="2" />
-    <circle cx="15" cy="21" r="2" />
-</svg>`
+                html = `<span class="tab-temp"><span class="temp-icon"></span></span>`
             }
             this.div.appendChild(elem('span',{class:'tabstate app-drag-region',html:html,click:this.togglePinned}))
         }
@@ -103,9 +96,9 @@ class Tab
             {
                 tabs = this.tabs.fileTabsForPath(this.path)
                 var list = _k_.list(tabs)
-                for (var _89_24_ = 0; _89_24_ < list.length; _89_24_++)
+                for (var _95_24_ = 0; _95_24_ < list.length; _95_24_++)
                 {
-                    tab = list[_89_24_]
+                    tab = list[_95_24_]
                     dot = elem('span',{class:'prjdot',text:'■'})
                     this.div.appendChild(dot)
                     if (tab.active)
@@ -130,7 +123,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _109_16_
+        var diss, html, numFiles, _115_16_
 
         if ((this.path != null))
         {
@@ -147,7 +140,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _129_19_, _129_24_
+        var t, _135_19_, _135_24_
 
         if (status.gitDir !== this.path)
         {
