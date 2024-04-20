@@ -452,6 +452,7 @@ class Tabs
                         }
                     }
                     delete tab.dirty
+                    this.update()
                 }
             }
             else
@@ -535,7 +536,7 @@ class Tabs
 
         active = this.activeKoreTab()
         tabs = this.koreTabs()
-        for (var _361_21_ = index = tabs.length - 1, _361_36_ = 0; (_361_21_ <= _361_36_ ? index <= 0 : index >= 0); (_361_21_ <= _361_36_ ? ++index : --index))
+        for (var _362_21_ = index = tabs.length - 1, _362_36_ = 0; (_362_21_ <= _362_36_ ? index <= 0 : index >= 0); (_362_21_ <= _362_36_ ? ++index : --index))
         {
             tab = tabs[index]
             if (tab === active)
@@ -562,7 +563,7 @@ class Tabs
     {
         var col, line, path, prjPath
 
-        var _383_26_ = slash.splitFileLine(file); path = _383_26_[0]; line = _383_26_[1]; col = _383_26_[2]
+        var _384_26_ = slash.splitFileLine(file); path = _384_26_[0]; line = _384_26_[1]; col = _384_26_[2]
 
         if (!this.koreTabForPath(path))
         {
@@ -681,7 +682,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _460_25_ = [tb,ta]; ta = _460_25_[0]; tb = _460_25_[1]
+                    var _461_25_ = [tb,ta]; ta = _461_25_[0]; tb = _461_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -724,9 +725,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _492_16_ = 0; _492_16_ < list.length; _492_16_++)
+        for (var _493_16_ = 0; _493_16_ < list.length; _493_16_++)
         {
-            tab = list[_492_16_]
+            tab = list[_493_16_]
             tab.update()
         }
     }
@@ -785,9 +786,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _549_16_ = 0; _549_16_ < list.length; _549_16_++)
+        for (var _550_16_ = 0; _550_16_ < list.length; _550_16_++)
         {
-            tab = list[_549_16_]
+            tab = list[_550_16_]
             if (tab.dirty)
             {
                 if (tab.active)

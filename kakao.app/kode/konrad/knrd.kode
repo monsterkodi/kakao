@@ -13,7 +13,7 @@ use ../kxk/slash ▪ tilde
 use ../kxk ◆ fs pug styl noon
 
 kodeDir = slash.path ◆dir, '/../../kode'
-pugDir  = slash.path ◆dir, '/../../pug'
+pygDir  = slash.path ◆dir, '/../../pyg'
 jsDir   = slash.path ◆dir, '/../../js'
 
 # 00000000   000   000  000      00000000   0000000  
@@ -30,12 +30,12 @@ rules =
         compile: (srcText, srcFile) -> k0de = new kode header:false; k0de.compile srcText, srcFile
     styl:
         tgtExt:  'css'
-        srcDir:  pugDir
+        srcDir:  pygDir
         tgtDir:  jsDir + '/css'
         compile: (srcText, srcFile) -> styl srcText
     pug:
         tgtExt:  'html'
-        srcDir:  pugDir
+        srcDir:  pygDir
         tgtDir:  jsDir
         compile: (srcText, srcFile) -> pug srcText
     noon:
@@ -58,7 +58,7 @@ rules =
 gatherFiles = ○->
     
     list  =○ fs.list kodeDir
-    list  = list.concat ○ fs.list pugDir
+    list  = list.concat ○ fs.list pygDir
     list  = list.filter (item) -> item.type == 'file'
     
     files = list.map (item) -> item.path

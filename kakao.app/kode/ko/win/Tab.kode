@@ -114,7 +114,6 @@ class Tab
             if @isPrj() and numFiles = Projects.files(@path).length
                 html += Render.line Syntax.dissForTextAndSyntax("#{numFiles} files" 'git'), wrapSpan:'tooltip-line'
                 Git.status @path
-
         html
 
     #  0000000   000  000000000   0000000  000000000   0000000   000000000  000   000   0000000

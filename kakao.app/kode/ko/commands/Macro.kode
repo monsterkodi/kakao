@@ -186,7 +186,7 @@ function Macro extends Command
 
             'req'
 
-                return if slash.ext(editor.currentFile) not in ['coffee' 'kode']
+                return if slash.ext(editor.currentFile) not in ['kode']
                 lines = req editor.currentFile, editor.lines(), editor
 
                 if valid lines

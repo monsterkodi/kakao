@@ -217,7 +217,7 @@
             rebuildApp = YES;
         }
 
-        if ([relPath hasPrefix:@"pug/"] || ([relPath hasPrefix:@"kode/"] && ![relPath hasPrefix:@"kode/kode/"]))
+        if ([relPath hasPrefix:@"pyg/"] || ([relPath hasPrefix:@"kode/"] && ![relPath hasPrefix:@"kode/kode/"]))
         {
             NSString* ext = [change.path pathExtension];
             

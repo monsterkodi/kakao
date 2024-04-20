@@ -147,7 +147,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _130_19_, _130_24_
+        var t, _129_19_, _129_24_
 
         if (status.gitDir !== this.path)
         {

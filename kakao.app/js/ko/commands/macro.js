@@ -155,7 +155,7 @@ Macro = (function ()
                 })
                 break
             case 'req':
-                if (!(_k_.in(slash.ext(editor.currentFile),['coffee','kode'])))
+                if (!(_k_.in(slash.ext(editor.currentFile),['kode'])))
                 {
                     return
                 }

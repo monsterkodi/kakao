@@ -309,6 +309,7 @@ class Tabs
                                 File.save state.file, state.state.text(), (file) ->
                                     error "Tabs.onClick failed to save #{state.file}" if not file
                     delete tab.dirty
+                    @update()
             else
                 @activate tab.path
         true
