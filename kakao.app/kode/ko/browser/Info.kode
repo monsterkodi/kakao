@@ -33,7 +33,7 @@ image = (file) ->
         
         [size, size_unit] = pretty.bytes(info.size).split ' '
         [time, time_unit] = pretty.age(info.modified).split ' '
-        table.innerHTML = "<tr><th colspan=2><div class='fileInfoFile #{slash.ext file}'>#{File.span file}</div></th></tr><tr class='dataRow'><th>#{size}</th><td>#{size_unit}</td></tr><tr class='dataRow'><th>#{time}</th><td>#{time_unit}</td></tr>"
+        table.innerHTML = "<tr class='fileRow'><th colspan=2><div class='fileInfoFile #{slash.ext file}'>#{File.span file}</div></th></tr><tr class='dataRow'><th>#{size}</th><td>#{size_unit}</td></tr><tr class='dataRow'><th>#{time}</th><td>#{time_unit}</td></tr>"
 
     elem class:'browserImageInfo' children: [ elem(class:'imageInfoSpacer'), cnt, table, elem(class:'imageInfoSpacer') ]
     
@@ -57,7 +57,7 @@ file = (file) ->
 
         [size, size_unit] = pretty.bytes(info.size).split ' '
         [time, time_unit] = pretty.age(info.modified).split ' '
-        table.innerHTML = "<tr><th>#{size}</th><td>#{size_unit}</td></tr><tr><th>#{time}</th><td>#{time_unit}</td></tr>"
+        table.innerHTML = "<tr class='dataRow'><th>#{size}</th><td>#{size_unit}</td></tr><tr class='dataRow'><th>#{time}</th><td>#{time_unit}</td></tr>"
 
     info = elem class:'browserFileInfo' children: [
         elem class:'fileInfoSpacer'

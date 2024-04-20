@@ -34,7 +34,7 @@ image = function (file)
 
         var _35_26_ = pretty.age(info.modified).split(' '); time = _35_26_[0]; time_unit = _35_26_[1]
 
-        return table.innerHTML = `<tr><th colspan=2><div class='fileInfoFile ${slash.ext(file)}'>${File.span(file)}</div></th></tr><tr class='dataRow'><th>${size}</th><td>${size_unit}</td></tr><tr class='dataRow'><th>${time}</th><td>${time_unit}</td></tr>`
+        return table.innerHTML = `<tr class='fileRow'><th colspan=2><div class='fileInfoFile ${slash.ext(file)}'>${File.span(file)}</div></th></tr><tr class='dataRow'><th>${size}</th><td>${size_unit}</td></tr><tr class='dataRow'><th>${time}</th><td>${time_unit}</td></tr>`
     }
     return elem({class:'browserImageInfo',children:[elem({class:'imageInfoSpacer'}),cnt,table,elem({class:'imageInfoSpacer'})]})
 }
@@ -57,7 +57,7 @@ file = function (file)
 
         var _59_26_ = pretty.age(info.modified).split(' '); time = _59_26_[0]; time_unit = _59_26_[1]
 
-        return table.innerHTML = `<tr><th>${size}</th><td>${size_unit}</td></tr><tr><th>${time}</th><td>${time_unit}</td></tr>`
+        return table.innerHTML = `<tr class='dataRow'><th>${size}</th><td>${size_unit}</td></tr><tr class='dataRow'><th>${time}</th><td>${time_unit}</td></tr>`
     })
     info = elem({class:'browserFileInfo',children:[elem({class:'fileInfoSpacer'}),elem({class:`fileInfoIcon ${slash.ext(file)} ${File.iconClassName(file)}`}),elem({class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),table,elem({class:'fileInfoSpacer'})]})
     return info
