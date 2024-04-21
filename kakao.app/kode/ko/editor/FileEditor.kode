@@ -150,11 +150,11 @@ function FileEditor extends TextEditor
 
         cursor = @mainCursor()
         if cursor[0] or cursor[1]
-            filePositions[@currentFile] = "#{cursor[0]} #{cursor[1]}"
+            filePositions[@currentFile] = "#{cursor[0]} #{cursor[1]} #{@scroll.scroll}"
         else
             delete filePositions[@currentFile]
 
-        deleteBy filePositions, (f,fp) -> fp == '0 0'
+        deleteBy filePositions, (f,fp) -> fp.startsWith '0 0 '
 
         window.stash.set 'filePositions' filePositions
 
@@ -200,8 +200,12 @@ function FileEditor extends TextEditor
         
         if cursor = filePositions[@currentFile]
 
-            @singleCursorAtPos cursor.split(' ').map (c) -> parseInt c
-            @scroll.cursorInitView()
+            posScroll = cursor.split(' ').map (c) -> parseInt c
+            @singleCursorAtPos posScroll
+            # @scroll.cursorInitView()
+            if posScroll.length == 3
+                @scroll.scroll = 0
+                @scroll.by last posScroll
             
         else
             @singleCursorAtPos [0,0]

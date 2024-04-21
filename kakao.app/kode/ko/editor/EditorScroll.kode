@@ -216,24 +216,13 @@ class EditorScroll extends events
 
             if sl.length == 0 == hl.length
                 @by @lineHeight * (cp[1] - @top - topDist)
-
-    cursorInitView: ->
-        
-        delta = @editor.mainCursor()[1] - (@top + @fullLines / 6)
-        @by delta * @lineHeight - @offsetSmooth
                         
     cursorIntoView: ->
 
-        # ●▸ cursorIntoView
         if delta = @deltaToEnsureMainCursorIsVisible()
-            # ●▸ by
             @by delta * @lineHeight - @offsetSmooth
-            # ●▪ by
 
-        # ●▸ updateCursorOffset
         @updateCursorOffset()
-        # ●▪ updateCursorOffset
-        # ●▪ cursorIntoView
 
     deltaToEnsureMainCursorIsVisible: ->
 
