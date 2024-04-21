@@ -32,8 +32,14 @@ crumbHeight           = 25px
     font-family     fontMono
     font-weight     normal
     font-style      normal
-    src             url("../../../Contents/Resources/font/Meslo.woff")
+    src             url("../../../Contents/Resources/font/MesloLGS-NF-Regular.woff2")
 
+@font-face 
+    font-family     fontLigature
+    font-weight     normal
+    font-style      normal
+    src             url("../../../Contents/Resources/font/Lilex-Bold.woff2")
+    
 fill-abs()
     position            absolute
     bottom              0
@@ -1147,30 +1153,36 @@ infoPadding = 6px
 // 000   000  000   000  000   000  000   000  000   000       000
 // 000   000  000   000  000   000   0000000   00     00  0000000
 
-.arrow.head
-.arrow.tail
-.function.head
-.function.tail
-     opacity            1
-     color              transparent
+// .arrow.head
+// .arrow.tail
+// .function.head
+// .function.tail
+     // opacity            1
+     // color              transparent
 
-.function.tail:before
-    content             ' ▬'
-         
-.function.head:before
-    content             ' ▶'
-    
+// .function.tail:before
+    // content             ' ▬'
+//          
+// .function.head:before
+    // content             ' ▶'
+//     
 
-.arrow.tail:before
-    content             ' ━'
-    position            absolute
-    top                 -0.06ex
-    left                0.2ex
+// .arrow.tail:before
+    // content             ' ━'
+    // position            absolute
+    // top                 -0.06ex
+    // left                0.2ex
+//     
+// .arrow.head:before
+    // content             ' ▶'
+    // position            absolute
+    // top                 -0.1ex
     
-.arrow.head:before
-    content             ' ▶'
-    position            absolute
-    top                 -0.1ex
+// .punct.function
+
+.ligature
+    font-family         fontLigature
+    opacity             1
     
 //  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000
 // 000       000       000   000  000   000  000      000      000   000  000   000  000   000

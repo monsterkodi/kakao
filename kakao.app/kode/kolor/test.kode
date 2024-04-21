@@ -663,39 +663,7 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
     
             rgs = ranges "i == 3"
             inc rgs, 0 'i'              ▸ 'text'
-        
-        # 00     00  00000000  000000000  000   000   0000000   0000000    
-        # 000   000  000          000     000   000  000   000  000   000  
-        # 000000000  0000000      000     000000000  000   000  000   000  
-        # 000 0 000  000          000     000   000  000   000  000   000  
-        # 000   000  00000000     000     000   000   0000000   0000000    
-        
-        ▸ method
-            
-            lang 'coffee'
-            
-            rgs = ranges " a: =>"
-            inc rgs, 1 "a"      ▸ 'method'
-            inc rgs, 2 ":"      ▸ 'punct method'
-            inc rgs, 4 "="      ▸ 'punct function bound tail'
-            inc rgs, 5 ">"      ▸ 'punct function bound head'
-            
-            rgs = ranges " a: ->"
-            inc rgs, 1 "a"      ▸ 'method'
-            inc rgs, 2 ":"      ▸ 'punct method'
-            inc rgs, 4 "-"      ▸ 'punct function tail'
-            inc rgs, 5 ">"      ▸ 'punct function head'
-            
-            rgs = ranges "mthd:  (arg)    => @member memarg"
-            inc rgs, 0  'mthd'  ▸ 'method'
-            inc rgs, 4  ':'     ▸ 'punct method'
-            inc rgs, 16 '='     ▸ 'punct function bound tail'
-            inc rgs, 17 '>'     ▸ 'punct function bound head'
-            
-            rgs = ranges "@mthd: (arg) ->"
-            inc rgs, 0 '@'      ▸ 'punct method class'
-            inc rgs, 1 'mthd'   ▸ 'method class'
-                                
+                                        
     # 000   000   0000000   0000000    00000000  
     # 000  000   000   000  000   000  000       
     # 0000000    000   000  000   000  0000000   
@@ -709,14 +677,14 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
         rgs = ranges " @: ->"
         inc rgs, 1 "@"  ▸ 'method'
         inc rgs, 2 ":"  ▸ 'punct method'
-        inc rgs, 4 "-"  ▸ 'punct function tail'
-        inc rgs, 5 ">"  ▸ 'punct function head'
+        inc rgs, 4 "->" ▸ 'punct function tail ligature'
+        # inc rgs, 5 ">"  ▸ 'punct function head'
 
         rgs = ranges " @:->a"
         inc rgs, 1 "@"  ▸ 'method'
         inc rgs, 2 ":"  ▸ 'punct method'
-        inc rgs, 3 "-"  ▸ 'punct function tail'
-        inc rgs, 4 ">"  ▸ 'punct function head'
+        inc rgs, 3 "->" ▸ 'punct function tail ligature'
+        # inc rgs, 4 ">"  ▸ 'punct function head'
 
         rgs = ranges "empty noon valid "
         inc rgs, 0 "empty"  ▸ 'keyword'
@@ -827,6 +795,36 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
             inc rgs, 7  "a"     ▸ 'dictionary key'
             inc rgs, 11 "c"     ▸ 'dictionary key'
 
+        # 00     00  00000000  000000000  000   000   0000000   0000000    
+        # 000   000  000          000     000   000  000   000  000   000  
+        # 000000000  0000000      000     000000000  000   000  000   000  
+        # 000 0 000  000          000     000   000  000   000  000   000  
+        # 000   000  00000000     000     000   000   0000000   0000000    
+        
+        ▸ method
+            
+            lang 'kode'
+            
+            rgs = ranges " a: =>"
+            inc rgs, 1 "a"      ▸ 'method'
+            inc rgs, 2 ":"      ▸ 'punct method'
+            inc rgs, 4 "=>"     ▸ 'punct function bound tail ligature'
+            
+            rgs = ranges " a: ->"
+            inc rgs, 1 "a"      ▸ 'method'
+            inc rgs, 2 ":"      ▸ 'punct method'
+            inc rgs, 4 "->"     ▸ 'punct function tail ligature'
+            
+            rgs = ranges "mthd:  (arg)    => @member memarg"
+            inc rgs, 0  'mthd'  ▸ 'method'
+            inc rgs, 4  ':'     ▸ 'punct method'
+            inc rgs, 16 '=>'    ▸ 'punct function bound tail ligature'
+            
+            rgs = ranges "@mthd: (arg) ->"
+            inc rgs, 0 '@'      ▸ 'punct method class'
+            inc rgs, 1 'mthd'   ▸ 'method class'
+
+            
     #       000   0000000  
     #       000  000       
     #       000  0000000   

@@ -600,7 +600,7 @@ TextEditor = (function ()
         this.stopBlink()
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',false) : undefined)
         clearTimeout(this.suspendTimer)
-        return this.suspendTimer = setTimeout(this.releaseBlink,2000)
+        return this.suspendTimer = setTimeout(this.releaseBlink,4000)
     }
 
     TextEditor.prototype["releaseBlink"] = function ()
@@ -634,7 +634,7 @@ TextEditor = (function ()
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',this.blink) : undefined)
         ;(this.minimap != null ? this.minimap.drawMainCursor(this.blink) : undefined)
         clearTimeout(this.blinkTimer)
-        return this.blinkTimer = setTimeout(this.doBlink,this.blink && 100 || 1200)
+        return this.blinkTimer = setTimeout(this.doBlink,this.blink && 100 || 2000)
     }
 
     TextEditor.prototype["startBlink"] = function ()

@@ -504,7 +504,7 @@ function TextEditor extends Editor
         @stopBlink()
         @cursorDiv()?.classList.toggle 'blink' false
         clearTimeout @suspendTimer
-        @suspendTimer = setTimeout @releaseBlink, 2000
+        @suspendTimer = setTimeout @releaseBlink, 4000
 
     releaseBlink: =>
 
@@ -529,7 +529,7 @@ function TextEditor extends Editor
         @minimap?.drawMainCursor @blink
         
         clearTimeout @blinkTimer
-        @blinkTimer = setTimeout @doBlink, @blink and 100 or 1200
+        @blinkTimer = setTimeout @doBlink, @blink and 100 or 2000
 
     startBlink: -> 
     

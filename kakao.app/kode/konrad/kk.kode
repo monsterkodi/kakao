@@ -53,14 +53,14 @@ class kk
             args.test  = true
             args.run   = true
         
-        if args.info    ➜ ○ kk.info()
-        if args.knrd    ➜ ○ knrd args.options, args
-        if args.build   ➜ ○ kk.build()
-        if args.test    ➜ ○ kk.test args.options[0]
-        if args.run     ➜ ○ kk.spawn args.options
-        if args.clean   ➜ ○ kk.clean()
-        if args.rebuild ➜ ○ kk.rebuild()                            
-        if args.watch   ➜ ○ kk.watch()                            
+        if args.info    ➜○ kk.info()
+        if args.knrd    ➜○ knrd args.options, args
+        if args.build   ➜○ kk.build()
+        if args.test    ➜○ kk.test args.options[0]
+        if args.run     ➜○ kk.spawn args.options
+        if args.clean   ➜○ kk.clean()
+        if args.rebuild ➜○ kk.rebuild()                            
+        if args.watch   ➜○ kk.watch()                            
             
         # if valid args.options
             # log 'leftover options' args.options

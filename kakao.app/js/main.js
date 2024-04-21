@@ -2,9 +2,16 @@ var _k_
 
 import kakao from "./kakao.js"
 
-import win from "./kxk/win.js"
+import kxk from "./kxk.js"
+let win = kxk.win
+let elem = kxk.elem
+let $ = kxk.$
 
 kakao.init(function ()
 {
-    return new win
+    var main
+
+    new win
+    main = $('main')
+    return elem({text:'func = () -> => a == b:{}, c()',parent:main})
 })

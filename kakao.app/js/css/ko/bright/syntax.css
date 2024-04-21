@@ -96,18 +96,24 @@
     color: #f80;
 }
 
+.func.ligature,
+
 .func.tail:before,
 
 .func.head:before,
+.function.ligature,
 .function.tail:before,
 .function.head:before
 {
     color: #55f;
 }
 
+.func.bound.ligature,
+
 .func.tail.bound:before,
 
 .func.head.bound:before,
+.function.bound.ligature,
 .function.tail.bound:before,
 .function.head.bound:before
 {

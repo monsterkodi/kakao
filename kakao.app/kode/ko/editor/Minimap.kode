@@ -139,11 +139,12 @@ class Minimap
     drawMainCursor: (blink) =>
 
         ctx = @cursors.getContext '2d'
-        ctx.fillStyle = blink and '#000' or '#ff0'
+        ctx.fillStyle = blink and '#a00' or '#ff0'
         mc = @editor.mainCursor()
         y = (mc[1]-@scroll.exposeTop)*@scroll.lineHeight
         if 2*mc[0] < @width
-            ctx.fillRect @offsetLeft+2*mc[0], y, 2, @scroll.lineHeight
+            ctx.fillRect @offsetLeft+2*mc[0]-1, y, 4, @scroll.lineHeight
+        ctx.fillStyle = '#ff0' if @editor.scroll.top < mc[1] < @editor.scroll.bot
         ctx.fillRect 260-8, y, 8, @scroll.lineHeight
 
     drawTopBot: =>

@@ -13,6 +13,9 @@
 ###
 
 use ./kakao
-use ./kxk/win
+use ./kxk ▪ win elem $
     
-kakao.init -> new win
+kakao.init ->
+    new win
+    main =$ 'main'
+    elem text:'func = () -> => a == b:{}, c()' parent:main

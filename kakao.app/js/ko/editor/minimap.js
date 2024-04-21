@@ -192,12 +192,16 @@ class Minimap
         var ctx, mc, y
 
         ctx = this.cursors.getContext('2d')
-        ctx.fillStyle = blink && '#000' || '#ff0'
+        ctx.fillStyle = blink && '#a00' || '#ff0'
         mc = this.editor.mainCursor()
         y = (mc[1] - this.scroll.exposeTop) * this.scroll.lineHeight
         if (2 * mc[0] < this.width)
         {
-            ctx.fillRect(this.offsetLeft + 2 * mc[0],y,2,this.scroll.lineHeight)
+            ctx.fillRect(this.offsetLeft + 2 * mc[0] - 1,y,4,this.scroll.lineHeight)
+        }
+        if ((this.editor.scroll.top < mc[1] && mc[1] < this.editor.scroll.bot))
+        {
+            ctx.fillStyle = '#ff0'
         }
         return ctx.fillRect(260 - 8,y,8,this.scroll.lineHeight)
     }
@@ -233,7 +237,7 @@ class Minimap
 
     onVanishLines (e)
     {
-        var _174_16_
+        var _175_16_
 
         if ((e.top != null))
         {
@@ -247,7 +251,7 @@ class Minimap
 
     onChanged (changeInfo)
     {
-        var change, li, _199_33_
+        var change, li, _200_33_
 
         if (this.scroll.numLines !== this.editor.numLines() || (changeInfo.inserts || changeInfo.deletes))
         {
@@ -267,10 +271,10 @@ class Minimap
             this.drawCursors()
         }
         var list = _k_.list(changeInfo.changes)
-        for (var _198_19_ = 0; _198_19_ < list.length; _198_19_++)
+        for (var _199_19_ = 0; _199_19_ < list.length; _199_19_++)
         {
-            change = list[_198_19_]
-            li = ((_199_33_=change.oldIndex) != null ? _199_33_ : change.doIndex)
+            change = list[_199_19_]
+            li = ((_200_33_=change.oldIndex) != null ? _200_33_ : change.doIndex)
             this.drawLines(li,li)
         }
     }
