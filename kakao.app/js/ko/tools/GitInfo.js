@@ -462,6 +462,7 @@ class GitInfo
                     href += ':' + window.terminal.posForEvent(event)[0]
                 }
                 post.emit('loadFile',href)
+                window.split.do('quart terminal')
             }
         }
         return 'unhandled'

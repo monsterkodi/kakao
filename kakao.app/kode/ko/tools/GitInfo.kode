@@ -402,6 +402,7 @@ class GitInfo
                 if href.indexOf(':') > 0
                     href += ':' + window.terminal.posForEvent(event)[0]
                 post.emit 'loadFile' href
+                window.split.do 'quart terminal'
                 
         'unhandled' # otherwise cursor doesn't get set
                     

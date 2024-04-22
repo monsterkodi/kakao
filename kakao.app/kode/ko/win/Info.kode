@@ -80,7 +80,20 @@ class Info
 
         @elem.appendChild @botline
         
-        # @setEditor editor        
+        @infoEditor = elem class:'info-editor' click:@changeEditorFocus
+        
+        @elem.appendChild @infoEditor
+        
+        @setEditor editor     
+        
+    changeEditorFocus: =>
+        
+        if @editor.name == 'terminal'
+            window.split.do 'maximize editor'
+            window.split.do 'focus editor'
+        else
+            window.split.do 'enlarge terminal'
+            window.split.do 'focus terminal'
 
     #  0000000  00000000  000000000        00000000  0000000    000  000000000   0000000   00000000 
     # 000       000          000           000       000   000  000     000     000   000  000   000
@@ -92,7 +105,10 @@ class Info
         
         return if editor.name not in ['editor''terminal']
         
-        return if editor == @editor         
+        return if editor == @editor
+        
+        @infoEditor.classList.toggle 'terminal-icon' editor.name == 'editor'
+        @infoEditor.classList.toggle 'editor-icon'   editor.name == 'terminal'
         
         if @editor?
             @editor.removeListener 'numLines'     @onNumLines

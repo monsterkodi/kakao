@@ -103,6 +103,10 @@ class Split
                 {
                     return this.maximizeEditor()
                 }
+                if (what === 'terminal')
+                {
+                    return this.maximizeTerminal()
+                }
                 delta = this.flex.size()
                 break
             case 'minimize':
@@ -165,11 +169,26 @@ class Split
         console.error(`Split.do -- unhandled do command? ${sentence}?`)
     }
 
+    maximizeTerminal ()
+    {
+        this.focus('terminal')
+        this.flex.expand('terminal')
+        this.hideEditor()
+        return this.flex.resized()
+    }
+
     maximizeEditor ()
     {
         this.focus('editor')
         this.flex.expand('editor')
-        this.hideCommandline()
+        if (this.terminalHeight() > 0)
+        {
+            this.hideTerminal()
+        }
+        else
+        {
+            this.hideCommandline()
+        }
         return this.flex.resized()
     }
 
@@ -287,7 +306,7 @@ class Split
 
     focus (n)
     {
-        var e, _224_31_, _228_22_
+        var e, _235_31_, _239_22_
 
         if (n === 'commandline')
         {

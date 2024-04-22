@@ -96,6 +96,7 @@ class Split
             'quart'    ➜ pos   =  @flex.size()/4
             'maximize' 
                 if what == 'editor' then return @maximizeEditor()
+                if what == 'terminal' then return @maximizeTerminal()
                 delta =  @flex.size()
             'minimize' 
                 if what == 'editor' then return @minimizeEditor()
@@ -122,13 +123,23 @@ class Split
                 
         error "Split.do -- unhandled do command? #{sentence}?"
 
+    maximizeTerminal: -> 
+        
+        @focus 'terminal'
+        @flex.expand 'terminal'
+        @hideEditor()
+        @flex.resized()
+
     maximizeEditor: -> 
         
         @focus 'editor'
         @flex.expand 'editor'
-        @hideCommandline()
+        if @terminalHeight() > 0
+            @hideTerminal()
+        else
+            @hideCommandline()
         @flex.resized()
-
+        
     minimizeEditor: ->
         
         @showCommandline()

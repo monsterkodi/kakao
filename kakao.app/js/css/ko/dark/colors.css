@@ -300,6 +300,16 @@ span.macro.macro,
     color: rgb(103,103,171);
 }
 
+.info-editor
+{
+    color: #333;
+}
+
+.info-editor:hover
+{
+    color: #f80;
+}
+
 .tooltip
 {
     background: #111111;

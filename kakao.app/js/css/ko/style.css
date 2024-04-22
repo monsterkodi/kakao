@@ -708,6 +708,17 @@ body
     display: none;
 }
 
+.info-editor
+{
+    padding-top: 2px;
+    font-size: 20px;
+    position: absolute;
+    right: 6px;
+    position: absolute;
+    top: 50%;
+    transform: translate(0%, -50%);
+}
+
 .unsaved-icon
 {
     display: inline-block;

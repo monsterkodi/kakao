@@ -37,6 +37,7 @@ class Info
         this.onNumLines = this.onNumLines.bind(this)
         this.reload = this.reload.bind(this)
         this.setEditor = this.setEditor.bind(this)
+        this.changeEditorFocus = this.changeEditorFocus.bind(this)
         post.on('editorFocus',this.setEditor)
         ttip = function (e, t)
         {
@@ -92,11 +93,28 @@ class Info
         this.botline.appendChild(this.lines)
         ttip(this.lines,'lines')
         this.elem.appendChild(this.botline)
+        this.infoEditor = elem({class:'info-editor',click:this.changeEditorFocus})
+        this.elem.appendChild(this.infoEditor)
+        this.setEditor(editor)
+    }
+
+    changeEditorFocus ()
+    {
+        if (this.editor.name === 'terminal')
+        {
+            window.split.do('maximize editor')
+            return window.split.do('focus editor')
+        }
+        else
+        {
+            window.split.do('enlarge terminal')
+            return window.split.do('focus terminal')
+        }
     }
 
     setEditor (editor)
     {
-        var _97_18_
+        var _113_18_
 
         if (!(_k_.in(editor.name,['editor','terminal'])))
         {
@@ -106,6 +124,8 @@ class Info
         {
             return
         }
+        this.infoEditor.classList.toggle('terminal-icon',editor.name === 'editor')
+        this.infoEditor.classList.toggle('editor-icon',editor.name === 'terminal')
         if ((this.editor != null))
         {
             this.editor.removeListener('numLines',this.onNumLines)
