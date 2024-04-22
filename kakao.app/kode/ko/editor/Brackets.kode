@@ -30,6 +30,8 @@ class Brackets
 
     onCursor: =>
         
+        # ● Brackets.onCursor
+        
         if @editor.numHighlights() # don't highlight brackets when other highlights exist
             for h in @editor.highlights()
                 return if not h[2]?

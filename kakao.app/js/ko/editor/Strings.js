@@ -31,9 +31,9 @@ class Strings
         if (this.editor.numHighlights())
         {
             var list = _k_.list(this.editor.highlights())
-            for (var _26_18_ = 0; _26_18_ < list.length; _26_18_++)
+            for (var _28_18_ = 0; _28_18_ < list.length; _28_18_++)
             {
-                h = list[_26_18_]
+                h = list[_28_18_]
                 if (!(h[2] != null))
                 {
                     return
@@ -55,7 +55,7 @@ class Strings
         stack = []
         pairs = []
         pair = null
-        var _39_17_ = pos; cp = _39_17_[0]; li = _39_17_[1]
+        var _41_17_ = pos; cp = _41_17_[0]; li = _41_17_[1]
 
         line = this.editor.line(li)
         rngs = matchr.ranges(this.config,line)
@@ -63,7 +63,7 @@ class Strings
         {
             return
         }
-        for (var _43_18_ = i = 0, _43_22_ = rngs.length; (_43_18_ <= _43_22_ ? i < rngs.length : i > rngs.length); (_43_18_ <= _43_22_ ? ++i : --i))
+        for (var _45_18_ = i = 0, _45_22_ = rngs.length; (_45_18_ <= _45_22_ ? i < rngs.length : i > rngs.length); (_45_18_ <= _45_22_ ? ++i : --i))
         {
             ths = rngs[i]
             if (ths.start > 0 && line[ths.start - 1] === '\\')
@@ -120,7 +120,7 @@ class Strings
         var cls, opn
 
         this.clear()
-        var _79_18_ = pair; opn = _79_18_[0]; cls = _79_18_[1]
+        var _81_18_ = pair; opn = _81_18_[0]; cls = _81_18_[1]
 
         pair[0].clss = `stringmatch ${this.editor.stringCharacters[opn.match]}`
         pair[1].clss = `stringmatch ${this.editor.stringCharacters[cls.match]}`
@@ -133,9 +133,9 @@ class Strings
     {
         return this.editor.setHighlights(this.editor.highlights().filter(function (h)
         {
-            var _87_79_
+            var _89_79_
 
-            return !(h[2] != null ? (_87_79_=h[2].clss) != null ? _87_79_.startsWith('stringmatch') : undefined : undefined)
+            return !(h[2] != null ? (_89_79_=h[2].clss) != null ? _89_79_.startsWith('stringmatch') : undefined : undefined)
         }))
     }
 }

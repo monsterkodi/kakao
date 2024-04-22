@@ -1,0 +1,23 @@
+###
+00000000   00000000    0000000   00000000  000  000      00000000
+000   000  000   000  000   000  000       000  000      000     
+00000000   0000000    000   000  000000    000  000      0000000 
+000        000   000  000   000  000       000  000      000     
+000        000   000   0000000   000       000  0000000  00000000
+###
+
+function profile
+
+    @hrtime: {}
+    @start: (id) -> @hrtime[id] = performance.now()
+    @end:   (id, threshold) -> 
+        
+        b = performance.now()-@hrtime[id]
+            f=0.001 
+            for u in ['s' 'ms' 'μs' 'ns']
+                if u=='ns' or b*f>1
+                    if b > threshold ➜ log id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u
+                    return b
+                f*=1000
+
+export profile

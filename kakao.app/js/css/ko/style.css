@@ -421,6 +421,18 @@ body
     content: '\f0c7';
 }
 
+.terminal-icon:before
+{
+    font-family: FontAwesomeRegular;
+    content: '\f022';
+}
+
+.editor-icon:before
+{
+    font-family: FontAwesomeRegular;
+    content: '\f410';
+}
+
 .file-icon:before
 {
     font-family: octicons;

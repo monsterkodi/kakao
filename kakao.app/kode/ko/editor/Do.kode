@@ -15,7 +15,7 @@ class Do
     @: (@editor) ->
 
         @reset()
-
+        
     del: -> post.removeListener 'fileLineChanges' @onFileLineChanges
 
     # 000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000
@@ -96,15 +96,21 @@ class Do
     # 00000000  000   000  0000000
 
     end: (opt) ->
+        
+        # ● Do.end
 
         @redos = []
         @groupCount -= 1
         if @groupCount == 0
-            @merge()
+            # ●▸ Do.end.merge
+            # @merge()
+            # ●▪ Do.end.merge
+
             changes = @calculateChanges @startState, @state
-            changes.foreign = opt?.foreign
             @editor.setState @state
             @editor.changed? changes
+
+        null
 
     # 000   000  000   000  0000000     0000000
     # 000   000  0000  000  000   000  000   000
@@ -115,7 +121,7 @@ class Do
     undo: ->
 
         if @history.length
-
+            
             if empty @redos
                 @redos.unshift @editor.state
 
@@ -169,8 +175,6 @@ class Do
 
     setCursors: (newCursors, opt) ->
 
-        # log 'do.setCursors' newCursors
-
         if not newCursors? or newCursors.length < 1
             return error "Do.setCursors -- empty cursors?"
 
@@ -192,9 +196,6 @@ class Do
         @state = @state.setCursors newCursors
         @state = @state.setMain mainIndex
 
-        # log 'setCursors' @editor.mainCursor()[1] if @editor.name == 'editor'
-        # @state
-
     #  0000000   0000000   000       0000000  000   000  000       0000000   000000000  00000000
     # 000       000   000  000      000       000   000  000      000   000     000     000
     # 000       000000000  000      000       000   000  000      000000000     000     0000000
@@ -202,7 +203,7 @@ class Do
     #  0000000  000   000  0000000   0000000   0000000   0000000  000   000     000     00000000
 
     calculateChanges: (oldState, newState) ->
-
+        
         oi = 0 # index in oldState
         ni = 0 # index in newState
         dd = 0 # delta for doIndex
@@ -294,24 +295,34 @@ class Do
     #       when they contain only changes of the same set of lines
 
     merge: ->
+        
+        return
+        
+        ● Do.merge
 
         while @history.length > 1
             b = @history[@history.length-2]
             a = last @history
             if a.text() == b.text()
                 if @history.length > 2
+                    log 'splice history1' @history.length-2
                     @history.splice @history.length-2, 1
                 else
+                    log 'bail history1'
                     return
             else if @history.length > 2
                 c = @history[@history.length-3]
                 if a.numLines() == b.numLines() == c.numLines()
-                    for li in [0...a.numLines()]
+                    numLines = a.numLines()
+                    for li in [0...numLines]
+                        ●▸ lines
                         la = a.line li
                         lb = b.line li
                         lc = c.line li
+                        ●▪ lines
                         if la == lb and lc != lb or la != lb and lc == lb
                             return
+                    log 'splice history2' @history.length-2
                     @history.splice @history.length-2, 1
                 else return
             else return

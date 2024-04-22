@@ -6,7 +6,7 @@
    000     00000000  000   000     000           00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk ▪ keyinfo prefs post drag elem stopEvent $
+use ../../kxk ▪ profile keyinfo prefs post drag elem stopEvent $
 
 use ◆ Do Meta AutoComplete Scrollbar Brackets Numbers Diffbar Minimap Strings Render EditorScroll Editor
 
@@ -60,7 +60,7 @@ function TextEditor extends Editor
         @startBlink()
         
         post.on 'schemeChanged' @onSchemeChanged
-
+        
     # 00000000  00000000   0000000   000000000  000   000  00000000   00000000   0000000  
     # 000       000       000   000     000     000   000  000   000  000       000       
     # 000000    0000000   000000000     000     000   000  0000000    0000000   0000000   
@@ -239,6 +239,8 @@ function TextEditor extends Editor
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
     changed: (changeInfo) ->
+        
+        profile.start 'changed'
 
         @syntax.changed changeInfo
 
@@ -273,14 +275,21 @@ function TextEditor extends Editor
         if changeInfo.cursors
             @renderCursors()
             @scroll.cursorIntoView()
+            # ●▸ emitcrs
             @emit 'cursor'
+            # ●▪ emitcrs
             @suspendBlink()
 
         if changeInfo.selects
             @renderSelection()
             @emit 'selection'
 
+        # ●▸ emit
         @emit 'changed' changeInfo
+        # ●▪ emit
+        
+        profile.end 'changed' 15
+        null
 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000

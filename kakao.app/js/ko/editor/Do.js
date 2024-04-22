@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let post = kxk.post
@@ -92,23 +92,22 @@ class Do
 
     end (opt)
     {
-        var changes, _107_27_
+        var changes, _111_27_
 
         this.redos = []
         this.groupCount -= 1
         if (this.groupCount === 0)
         {
-            this.merge()
             changes = this.calculateChanges(this.startState,this.state)
-            changes.foreign = (opt != null ? opt.foreign : undefined)
             this.editor.setState(this.state)
-            return (typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
+            ;(typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
         }
+        return null
     }
 
     undo ()
     {
-        var changes, _127_27_
+        var changes, _133_27_
 
         if (this.history.length)
         {
@@ -126,7 +125,7 @@ class Do
 
     redo ()
     {
-        var changes, _148_27_
+        var changes, _154_27_
 
         if (this.redos.length)
         {
@@ -283,8 +282,10 @@ class Do
 
     merge ()
     {
-        var a, b, c, la, lb, lc, li
+        var a, b, c, la, lb, lc, li, numLines
 
+        return
+        _k_.profile('Do.merge')
         while (this.history.length > 1)
         {
             b = this.history[this.history.length - 2]
@@ -293,10 +294,12 @@ class Do
             {
                 if (this.history.length > 2)
                 {
+                    console.log('splice history1',this.history.length - 2)
                     this.history.splice(this.history.length - 2,1)
                 }
                 else
                 {
+                    console.log('bail history1')
                     return
                 }
             }
@@ -305,16 +308,20 @@ class Do
                 c = this.history[this.history.length - 3]
                 if ((a.numLines() === b.numLines() && b.numLines() === c.numLines()))
                 {
-                    for (var _309_31_ = li = 0, _309_35_ = a.numLines(); (_309_31_ <= _309_35_ ? li < a.numLines() : li > a.numLines()); (_309_31_ <= _309_35_ ? ++li : --li))
+                    numLines = a.numLines()
+                    for (var _317_31_ = li = 0, _317_35_ = numLines; (_317_31_ <= _317_35_ ? li < numLines : li > numLines); (_317_31_ <= _317_35_ ? ++li : --li))
                     {
+                        _k_.profile('lines')
                         la = a.line(li)
                         lb = b.line(li)
                         lc = c.line(li)
+                        _k_.profilend('lines')
                         if (la === lb && lc !== lb || la !== lb && lc === lb)
                         {
                             return
                         }
                     }
+                    console.log('splice history2',this.history.length - 2)
                     this.history.splice(this.history.length - 2,1)
                 }
                 else
@@ -327,6 +334,7 @@ class Do
                 return
             }
         }
+        _k_.profilend('Do.merge')
     }
 
     cleanCursors (cs)
@@ -334,16 +342,16 @@ class Do
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _327_14_ = 0; _327_14_ < list.length; _327_14_++)
+        for (var _338_14_ = 0; _338_14_ < list.length; _338_14_++)
         {
-            p = list[_327_14_]
+            p = list[_338_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _334_22_ = ci = cs.length - 1, _334_36_ = 0; (_334_22_ <= _334_36_ ? ci < 0 : ci > 0); (_334_22_ <= _334_36_ ? ++ci : --ci))
+            for (var _345_22_ = ci = cs.length - 1, _345_36_ = 0; (_345_22_ <= _345_36_ ? ci < 0 : ci > 0); (_345_22_ <= _345_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -423,7 +431,7 @@ class Do
 
     textInRange (r)
     {
-        var _363_41_
+        var _374_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

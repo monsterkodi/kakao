@@ -106,10 +106,6 @@ Window = (function ()
         window.setLastFocus(this.editor.name)
         this.editor.on('changed',function (changeInfo)
         {
-            if (changeInfo.foreign)
-            {
-                return
-            }
             if (changeInfo.changes.length)
             {
                 if (changeInfo.deletes === 1)

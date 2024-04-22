@@ -178,7 +178,7 @@ function FileEditor extends TextEditor
             error 'FileEditor.restoreTab -- trying to restore currentFile!' @currentFile
             return
             
-        log 'FileEditor.restoreTab' tab.path
+        # log 'FileEditor.restoreTab' tab.path
         
         post.emit 'storeState' @currentFile, @do.tabState()
         
@@ -188,7 +188,7 @@ function FileEditor extends TextEditor
         else
             @do.setTabState state
             text = @do.text()
-        log 'text:' text
+        # log 'text:' text 
         @setText text
         kore.set 'editor|file' state.file
     
@@ -333,7 +333,7 @@ function FileEditor extends TextEditor
         currext = slash.ext @currentFile
 
         # TODO: move this stuff to a config.noon file
-
+        
         counterparts =
             mm:      ['h']
             cpp:     ['hpp' 'h']

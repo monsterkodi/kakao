@@ -12,6 +12,8 @@ function EditorState
     
     @: (stateOrLines = []) ->
         
+        @lineCache = []
+        
         if immutable.isImmutable stateOrLines
             @s = stateOrLines
         else if stateOrLines is arr
@@ -75,12 +77,17 @@ function EditorState
     # 0000000  000  000   000  00000000  0000000   
     
     line: (i) ->
+        
+        if @lineCache[i] ➜ return @lineCache[i]
 
         l = null
         li = -1
         @traverse (lineIndex, lineId, linkId) => l = @s.lines[lineId]; li = lineIndex; li < i
         
-        kstr.detab l if li == i
+        if li == i
+            @lineCache[i] = kstr.detab l 
+            
+        @lineCache[i]
         
     lines: ->
         
@@ -201,12 +208,14 @@ function EditorState
     mainCursor:    -> @s.cursors[@s.main].asMutable deep: true
 
     # modify:
+        
+    lineState: (s) -> ns = new EditorState(s); ns.lineCache = @lineCache; ns
 
-    setSelections: (s) -> new EditorState @s.set 'selections' s
-    setHighlights: (h) -> new EditorState @s.set 'highlights' h
-    setCursors:    (c) -> new EditorState @s.set 'cursors'    c
-    setMain:       (m) -> new EditorState @s.set 'main'       m
+    setSelections: (s) -> @lineState @s.set 'selections' s
+    setHighlights: (h) -> @lineState @s.set 'highlights' h
+    setCursors:    (c) -> @lineState @s.set 'cursors'    c
+    setMain:       (m) -> @lineState @s.set 'main'       m
     
-    addHighlight:  (h) -> m = @s.highlights.asMutable(); m.push h; new EditorState @s.set 'highlights' m
+    addHighlight:  (h) -> m = @s.highlights.asMutable(); m.push h; @lineState @s.set 'highlights' m
 
 export EditorState

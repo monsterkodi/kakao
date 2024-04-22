@@ -65,7 +65,7 @@ function Window extends win.Delegate
         window.setLastFocus @editor.name
 
         @editor.on 'changed' (changeInfo) ->
-            return if changeInfo.foreign
+
             if changeInfo.changes.length
                 if changeInfo.deletes == 1
                     window.navigate.delFilePos file: window.editor.currentFile, pos: [0 changeInfo.changes[0].oldIndex]

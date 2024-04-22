@@ -347,6 +347,10 @@ awesome(char)
 fasolid(char)
     font-family         FontAwesomeSolid
     content             char
+
+faregular(char)
+    font-family         FontAwesomeRegular
+    content             char
     
 unicode(char)
     font-family         Sans-Serif
@@ -366,6 +370,12 @@ unicode(char)
     
 .unsaved-icon:before
     fasolid('\f0c7')
+    
+.terminal-icon:before
+    faregular('\f022')
+
+.editor-icon:before
+    faregular('\f410')
     
 .file-icon:before
     octicon('\f011')

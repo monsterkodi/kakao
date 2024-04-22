@@ -239,8 +239,11 @@ class AutoComplete extends events
             @list.removeEventListener 'wheel' @onWheel
             @list.removeEventListener 'click' @onClick
             @list.remove()
+            delete @list
 
         @span?.remove()
+        delete @span
+        
         @selected   = -1
         @list       = null
         @span       = null

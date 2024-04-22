@@ -196,7 +196,6 @@ FileEditor = (function ()
             console.error('FileEditor.restoreTab -- trying to restore currentFile!',this.currentFile)
             return
         }
-        console.log('FileEditor.restoreTab',tab.path)
         post.emit('storeState',this.currentFile,this.do.tabState())
         this.currentFile = state.file
         if (state.file.startsWith('untitled-'))
@@ -208,7 +207,6 @@ FileEditor = (function ()
             this.do.setTabState(state)
             text = this.do.text()
         }
-        console.log('text:',text)
         this.setText(text)
         return kore.set('editor|file',state.file)
     }

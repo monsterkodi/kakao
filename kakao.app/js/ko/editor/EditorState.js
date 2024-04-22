@@ -11,6 +11,7 @@ EditorState = (function ()
 {
     function EditorState (stateOrLines = [])
     {
+        this.lineCache = []
         if (immutable.isImmutable(stateOrLines))
         {
             this.s = stateOrLines
@@ -72,6 +73,10 @@ EditorState = (function ()
     {
         var l, li
 
+        if (this.lineCache[i])
+        {
+            return this.lineCache[i]
+        }
         l = null
         li = -1
         this.traverse((function (lineIndex, lineId, linkId)
@@ -82,8 +87,9 @@ EditorState = (function ()
         }).bind(this))
         if (li === i)
         {
-            return kstr.detab(l)
+            this.lineCache[i] = kstr.detab(l)
         }
+        return this.lineCache[i]
     }
 
     EditorState.prototype["lines"] = function ()
@@ -255,24 +261,33 @@ EditorState = (function ()
         return this.s.cursors[this.s.main].asMutable({deep:true})
     }
 
+    EditorState.prototype["lineState"] = function (s)
+    {
+        var ns
+
+        ns = new EditorState(s)
+        ns.lineCache = this.lineCache
+        return ns
+    }
+
     EditorState.prototype["setSelections"] = function (s)
     {
-        return new EditorState(this.s.set('selections',s))
+        return this.lineState(this.s.set('selections',s))
     }
 
     EditorState.prototype["setHighlights"] = function (h)
     {
-        return new EditorState(this.s.set('highlights',h))
+        return this.lineState(this.s.set('highlights',h))
     }
 
     EditorState.prototype["setCursors"] = function (c)
     {
-        return new EditorState(this.s.set('cursors',c))
+        return this.lineState(this.s.set('cursors',c))
     }
 
     EditorState.prototype["setMain"] = function (m)
     {
-        return new EditorState(this.s.set('main',m))
+        return this.lineState(this.s.set('main',m))
     }
 
     EditorState.prototype["addHighlight"] = function (h)
@@ -281,7 +296,7 @@ EditorState = (function ()
 
         m = this.s.highlights.asMutable()
         m.push(h)
-        return new EditorState(this.s.set('highlights',m))
+        return this.lineState(this.s.set('highlights',m))
     }
 
     return EditorState

@@ -219,10 +219,10 @@ class EditorScroll extends events
                         
     cursorIntoView: ->
 
-        if delta = @deltaToEnsureMainCursorIsVisible()
+        if delta = @deltaToEnsureMainCursorIsVisible() 
             @by delta * @lineHeight - @offsetSmooth
-
-        @updateCursorOffset()
+            @updateCursorOffset()
+        null
 
     deltaToEnsureMainCursorIsVisible: ->
 

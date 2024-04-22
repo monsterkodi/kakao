@@ -21,6 +21,8 @@ class Strings
         @config = ( [new RegExp(kstr.escapeRegexp(p)), a] for p,a of @editor.stringCharacters )
         
     onCursor: =>
+        
+        # ● Strings.onCursor
 
         if @editor.numHighlights() # don't highlight strings when other highlights exist
             for h in @editor.highlights()

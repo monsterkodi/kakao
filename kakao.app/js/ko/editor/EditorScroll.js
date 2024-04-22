@@ -221,8 +221,9 @@ class EditorScroll extends events
         if (delta = this.deltaToEnsureMainCursorIsVisible())
         {
             this.by(delta * this.lineHeight - this.offsetSmooth)
+            this.updateCursorOffset()
         }
-        return this.updateCursorOffset()
+        return null
     }
 
     deltaToEnsureMainCursorIsVisible ()
