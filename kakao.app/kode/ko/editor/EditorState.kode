@@ -32,12 +32,17 @@ function EditorState
             
             linkId++
             lineId++
-        
+            
         immutable
             lineId: lineId
             linkId: linkId
             lines:  lines
             links:  links
+                    
+            cursors:    [[0,0]]
+            selections: []
+            highlights: []
+            main:       0
             
     next: (link) -> if valid link?[1] ➜ @s.links[link[1]]
             
@@ -157,5 +162,35 @@ function EditorState
     # 000   000  000        000        00000000  000   000  0000000    
     
     appendLine: (t) -> @insertLine Infinity, t
+    
+    # read only:
+    
+    text: (n='\n') -> @lines().join n
+    tabline:   (i) -> @lines()[i]
+    line:      (i) -> kstr.detab @lines()[i]
+    
+    cursors:       -> @s.cursors.asMutable    deep: true
+    highlights:    -> @s.highlights.asMutable deep: true
+    selections:    -> @s.selections.asMutable deep: true
+    main:          -> @s.main
+
+    cursor:    (i) -> @s.cursors[i]?.asMutable    deep: true
+    selection: (i) -> @s.selections[i]?.asMutable deep: true
+    highlight: (i) -> @s.highlights[i]?.asMutable deep: true
+
+    numLines:      -> @lines().length # this could be solved more efficiently!
+    numCursors:    -> @s.cursors.length
+    numSelections: -> @s.selections.length
+    numHighlights: -> @s.highlights.length
+    mainCursor:    -> @s.cursors[@s.main].asMutable deep: true
+
+    # modify:
+
+    setSelections: (s) -> new State @s.set 'selections' s
+    setHighlights: (h) -> new State @s.set 'highlights' h
+    setCursors:    (c) -> new State @s.set 'cursors'    c
+    setMain:       (m) -> new State @s.set 'main'       m
+    
+    addHighlight:  (h) -> m = @s.highlights.asMutable(); m.push h; new State @s.set 'highlights' m
 
 export EditorState

@@ -39,7 +39,7 @@ EditorState = (function ()
             linkId++
             lineId++
         }
-        return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links})
+        return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links,cursors:[[0,0]],selections:[],highlights:[],main:0})
     }
 
     EditorState.prototype["next"] = function (link)
@@ -159,6 +159,110 @@ EditorState = (function ()
     EditorState.prototype["appendLine"] = function (t)
     {
         return this.insertLine(Infinity,t)
+    }
+
+    EditorState.prototype["text"] = function (n = '\n')
+    {
+        return this.lines().join(n)
+    }
+
+    EditorState.prototype["tabline"] = function (i)
+    {
+        return this.lines()[i]
+    }
+
+    EditorState.prototype["line"] = function (i)
+    {
+        return kstr.detab(this.lines()[i])
+    }
+
+    EditorState.prototype["cursors"] = function ()
+    {
+        return this.s.cursors.asMutable({deep:true})
+    }
+
+    EditorState.prototype["highlights"] = function ()
+    {
+        return this.s.highlights.asMutable({deep:true})
+    }
+
+    EditorState.prototype["selections"] = function ()
+    {
+        return this.s.selections.asMutable({deep:true})
+    }
+
+    EditorState.prototype["main"] = function ()
+    {
+        return this.s.main
+    }
+
+    EditorState.prototype["cursor"] = function (i)
+    {
+        return (this.s.cursors[i] != null ? this.s.cursors[i].asMutable({deep:true}) : undefined)
+    }
+
+    EditorState.prototype["selection"] = function (i)
+    {
+        return (this.s.selections[i] != null ? this.s.selections[i].asMutable({deep:true}) : undefined)
+    }
+
+    EditorState.prototype["highlight"] = function (i)
+    {
+        return (this.s.highlights[i] != null ? this.s.highlights[i].asMutable({deep:true}) : undefined)
+    }
+
+    EditorState.prototype["numLines"] = function ()
+    {
+        return this.lines().length
+    }
+
+    EditorState.prototype["numCursors"] = function ()
+    {
+        return this.s.cursors.length
+    }
+
+    EditorState.prototype["numSelections"] = function ()
+    {
+        return this.s.selections.length
+    }
+
+    EditorState.prototype["numHighlights"] = function ()
+    {
+        return this.s.highlights.length
+    }
+
+    EditorState.prototype["mainCursor"] = function ()
+    {
+        return this.s.cursors[this.s.main].asMutable({deep:true})
+    }
+
+    EditorState.prototype["setSelections"] = function (s)
+    {
+        return new State(this.s.set('selections',s))
+    }
+
+    EditorState.prototype["setHighlights"] = function (h)
+    {
+        return new State(this.s.set('highlights',h))
+    }
+
+    EditorState.prototype["setCursors"] = function (c)
+    {
+        return new State(this.s.set('cursors',c))
+    }
+
+    EditorState.prototype["setMain"] = function (m)
+    {
+        return new State(this.s.set('main',m))
+    }
+
+    EditorState.prototype["addHighlight"] = function (h)
+    {
+        var m
+
+        m = this.s.highlights.asMutable()
+        m.push(h)
+        return new State(this.s.set('highlights',m))
     }
 
     return EditorState
