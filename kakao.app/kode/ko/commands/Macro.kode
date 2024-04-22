@@ -140,10 +140,9 @@ function Macro extends Command
             'kd'
             'diff'
                 
-                # log 'Macro.diff' cmds
                 GitInfo.diff cmds
                 window.split.do 'minimize editor' 
-                # window.commandline.setText 'commit '
+                window.commandline.setText 'commit ' if empty cmds
                 return select:false
                 
             'h'
@@ -152,6 +151,7 @@ function Macro extends Command
             
                 GitInfo.history()
                 window.split.do 'minimize editor' 
+                window.split.do 'focus terminal' 
 
             'c'
             'kc'

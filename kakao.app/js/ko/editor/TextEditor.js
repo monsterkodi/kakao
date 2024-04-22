@@ -520,7 +520,7 @@ TextEditor = (function ()
                 cursorLine = this.state.line(mc[1])
                 if (!(cursorLine != null))
                 {
-                    return console.error('no main cursor line?')
+                    return console.error('no main cursor line?',this.state)
                 }
                 if (mc[0] > cursorLine.length)
                 {

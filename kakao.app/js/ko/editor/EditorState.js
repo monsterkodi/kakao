@@ -23,7 +23,7 @@ EditorState = (function ()
 
     EditorState.prototype["stateForLines"] = function (lineStrings)
     {
-        var lineId, lineIndex, lines, lineString, linkId, links, nextLinkId
+        var lineId, lineIndex, lines, lineString, linkId, links, mcy, nextLinkId
 
         lineId = 0
         linkId = 0
@@ -39,7 +39,8 @@ EditorState = (function ()
             linkId++
             lineId++
         }
-        return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links,cursors:[[0,0]],selections:[],highlights:[],main:0})
+        mcy = (lineId ? 0 : -1)
+        return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links,numLines:lineId,numOriginal:lineId,cursors:[[0,mcy]],selections:[],highlights:[],main:0})
     }
 
     EditorState.prototype["next"] = function (link)
@@ -134,6 +135,7 @@ EditorState = (function ()
             s = s.setIn(['links',info.prev],[s.links[info.prev][0],s.links[info.linkId][1]])
         }
         s = s.setIn(['links',info.linkId])
+        s = s.set('numLines',s.numLines - 1)
         return new EditorState(s)
     }
 
@@ -174,6 +176,7 @@ EditorState = (function ()
         }
         s = s.set('lineId',s.lineId + 1)
         s = s.set('linkId',s.linkId + 1)
+        s = s.set('numLines',s.numLines + 1)
         return new EditorState(s)
     }
 
@@ -229,7 +232,7 @@ EditorState = (function ()
 
     EditorState.prototype["numLines"] = function ()
     {
-        return this.lines().length
+        return this.s.numLines
     }
 
     EditorState.prototype["numCursors"] = function ()

@@ -15,26 +15,31 @@ use ../editor ◆ EditorState
     
         is = new EditorState ['hello' 'world' '!']
         is.lines() ▸ ['hello' 'world' '!']
+        is.numLines() ▸ 3
         
     ▸ delete
         
         ns = is.deleteLine 1
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hello' '!']
+        ns.numLines() ▸ 2
         
         ss = ns.deleteLine 1
         is.lines() ▸ ['hello' 'world' '!']        
         ns.lines() ▸ ['hello' '!']
         ss.lines() ▸ ['hello']
+        ss.numLines() ▸ 1
         
         es = ss.deleteLine 0
         is.lines() ▸ ['hello' 'world' '!']        
         ns.lines() ▸ ['hello' '!']
         ss.lines() ▸ ['hello']
-        es.lines() ▸ []     
+        es.lines() ▸ [] 
+        es.numLines() ▸ 0
         
         es = es.deleteLine 0
         es.lines() ▸ []  
+        es.numLines() ▸ 0
         
         es = is.deleteLine 100
         es.lines() ▸ ['hello' 'world' '!']
@@ -44,37 +49,46 @@ use ../editor ◆ EditorState
         ns = is.changeLine 1, 'test'
         is.lines() ▸ ['hello' 'world' '!']        
         ns.lines() ▸ ['hello' 'test' '!']
+        ns.numLines() ▸ 3
         
         fs = ns.changeLine 0, 'good'
         fs.lines() ▸ ['good' 'test' '!']
+        ns.numLines() ▸ 3
         
         fs = fs.changeLine 2, '!!!'
         fs.lines() ▸ ['good' 'test' '!!!']
+        ns.numLines() ▸ 3
         
     ▸ insert
     
         ns = is.insertLine 1, 'new'
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hello' 'new' 'world' '!']
+        ns.numLines() ▸ 4
         
         bs = ns.insertLine 1 'brave'
         bs.lines() ▸ ['hello' 'brave' 'new' 'world' '!']
+        bs.numLines() ▸ 5
 
         ns = is.insertLine 0, 'hi'
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hi' 'hello' 'world' '!']
+        ns.numLines() ▸ 4
 
         ns = is.insertLine 2, '?'
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hello' 'world' '?'  '!']
+        ns.numLines() ▸ 4
 
         ns = is.insertLine -1, '>'
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['>' 'hello' 'world' '!']
+        ns.numLines() ▸ 4
 
         ns = is.insertLine Infinity, '<'
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hello' 'world' '!' '<']
+        ns.numLines() ▸ 4
         
     ▸ append
     
@@ -83,9 +97,7 @@ use ../editor ◆ EditorState
         ns.lines() ▸ ['hello' 'world' '!' 'howdy?']
         
     ▸ line
-    
-        is.numLines() ▸ 3
-    
+        
         is.line 0  ▸ 'hello'
         is.line 1  ▸ 'world'
         is.line 2  ▸ '!'
@@ -95,24 +107,30 @@ use ../editor ◆ EditorState
     ▸ empty
     
         es = new EditorState []
+        es.numLines() ▸ 0
         es.text() ▸ ''
         es.lines() ▸ []
 
         es = new EditorState ['']
+        es.numLines() ▸ 1
         es.text() ▸ ''
         es.lines() ▸ ['']
         
         es = new EditorState()
+        es.numLines() ▸ 0
         es.text() ▸ ''
         es.lines() ▸ []
 
         ns = es.insertLine 0 '!'
         ns.text() ▸ '!'
+        ns.numLines() ▸ 1
 
         ns = ns.changeLine 0 '!!!'
         ns.text() ▸ '!!!'
+        ns.numLines() ▸ 1
 
         ns = es.changeLine 0 '!?!'
         ns.text() ▸ ''
+        ns.numLines() ▸ 0
         
         

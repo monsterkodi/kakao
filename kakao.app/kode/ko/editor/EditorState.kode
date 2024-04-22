@@ -33,16 +33,22 @@ function EditorState
             linkId++
             lineId++
             
+        mcy = lineId ? 0 : -1
+            
         immutable
-            lineId: lineId
-            linkId: linkId
-            lines:  lines
-            links:  links
+            
+            lineId:      lineId
+            linkId:      linkId
+            lines:       lines
+            links:       links
+            
+            numLines:    lineId
+            numOriginal: lineId
                     
-            cursors:    [[0,0]]
-            selections: []
-            highlights: []
-            main:       0
+            cursors:     [[0,mcy]]
+            selections:  []
+            highlights:  []
+            main:        0
             
     next: (link) -> if valid link?[1] ➜ @s.links[link[1]]
             
@@ -121,6 +127,7 @@ function EditorState
         if valid info.prev
             s = s.setIn ['links' info.prev], [s.links[info.prev][0], s.links[info.linkId][1]]
         s = s.setIn ['links' info.linkId]
+        s = s.set 'numLines' s.numLines-1
         
         new EditorState s
         
@@ -159,8 +166,9 @@ function EditorState
             if valid info # link previously last line to new line
                 s = s.setIn ['links' info.linkId], [s.links[info.linkId][0], s.linkId] 
             
-        s = s.set 'lineId' s.lineId+1 
-        s = s.set 'linkId' s.linkId+1 
+        s = s.set 'lineId'   s.lineId+1 
+        s = s.set 'linkId'   s.linkId+1 
+        s = s.set 'numLines' s.numLines+1
         
         new EditorState s
         
@@ -186,7 +194,7 @@ function EditorState
     selection: (i) -> @s.selections[i]?.asMutable deep: true
     highlight: (i) -> @s.highlights[i]?.asMutable deep: true
 
-    numLines:      -> @lines().length # this could be solved more efficiently!
+    numLines:      -> @s.numLines 
     numCursors:    -> @s.cursors.length
     numSelections: -> @s.selections.length
     numHighlights: -> @s.highlights.length

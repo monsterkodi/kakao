@@ -447,7 +447,7 @@ function TextEditor extends Editor
 
                 ri = mc[1]-@scroll.top
                 cursorLine = @state.line(mc[1])
-                return error 'no main cursor line?' if not cursorLine?
+                return error 'no main cursor line?' @state if not cursorLine?
                 if mc[0] > cursorLine.length
                     cs[0][2] = 'virtual'
                     cs.push [cursorLine.length, ri, 'main off']

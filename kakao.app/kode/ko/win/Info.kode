@@ -90,6 +90,8 @@ class Info
     
     setEditor: (editor) =>
         
+        return if editor.name not in ['editor''terminal']
+        
         return if editor == @editor         
         
         if @editor?

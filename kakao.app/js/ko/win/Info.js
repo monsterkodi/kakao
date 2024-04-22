@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var shortCount
 
@@ -96,8 +96,12 @@ class Info
 
     setEditor (editor)
     {
-        var _95_18_
+        var _97_18_
 
+        if (!(_k_.in(editor.name,['editor','terminal'])))
+        {
+            return
+        }
         if (editor === this.editor)
         {
             return

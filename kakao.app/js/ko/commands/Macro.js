@@ -120,6 +120,10 @@ Macro = (function ()
             case 'diff':
                 GitInfo.diff(cmds)
                 window.split.do('minimize editor')
+                if (_k_.empty(cmds))
+                {
+                    window.commandline.setText('commit ')
+                }
                 return {select:false}
 
             case 'h':
@@ -127,6 +131,7 @@ Macro = (function ()
             case 'history':
                 GitInfo.history()
                 window.split.do('minimize editor')
+                window.split.do('focus terminal')
                 break
             case 'c':
             case 'kc':
