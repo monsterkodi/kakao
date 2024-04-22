@@ -1,0 +1,161 @@
+###
+00000000  0000000    000  000000000   0000000   00000000    0000000  000000000   0000000   000000000  00000000
+000       000   000  000     000     000   000  000   000  000          000     000   000     000     000     
+0000000   000   000  000     000     000   000  0000000    0000000      000     000000000     000     0000000 
+000       000   000  000     000     000   000  000   000       000     000     000   000     000     000     
+00000000  0000000    000     000      0000000   000   000  0000000      000     000   000     000     00000000
+###
+
+use ../../kxk ▪ kstr immutable
+
+function EditorState
+    
+    @: (stateOrLines = []) ->
+        
+        if immutable.isImmutable stateOrLines
+            @s = stateOrLines
+        else if stateOrLines is arr
+            @s = @stateForLines stateOrLines
+            
+    stateForLines: (lineStrings) ->
+        
+        lineId = 0
+        linkId = 0
+        lines  = {}
+        links  = '-1':[-1 linkId]
+        
+        for lineString,lineIndex in lineStrings
+            
+            nextLinkId    = lineIndex<lineStrings.length-1 ? linkId+1 : null
+            lines[lineId] = lineString
+            links[linkId] = [lineId, nextLinkId]
+            
+            linkId++
+            lineId++
+        
+        immutable
+            lineId: lineId
+            linkId: linkId
+            lines:  lines
+            links:  links
+            
+    next: (link) -> if valid link?[1] ➜ @s.links[link[1]]
+            
+    # 000000000  00000000    0000000   000   000  00000000  00000000    0000000  00000000  
+    #    000     000   000  000   000  000   000  000       000   000  000       000       
+    #    000     0000000    000000000   000 000   0000000   0000000    0000000   0000000   
+    #    000     000   000  000   000     000     000       000   000       000  000       
+    #    000     000   000  000   000      0      00000000  000   000  0000000   00000000  
+    
+    traverse: (cb) ->
+        
+        lineIndex = 0
+        prev = next = @s.links['-1']
+        
+        while next = @next prev
+            if not cb lineIndex, next[0], prev[1] ➜ return
+            prev = next
+            lineIndex++
+            
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
+    lines: ->
+        
+        l = []
+        @traverse (lineIndex, lineId, linkId) => l.push @s.lines[lineId]; true
+        l
+        
+    #  0000000  00000000  00000000  000   000  
+    # 000       000       000       000  000   
+    # 0000000   0000000   0000000   0000000    
+    #      000  000       000       000  000   
+    # 0000000   00000000  00000000  000   000  
+    
+    seek: (i) ->
+        
+        i = max 0 i
+        
+        info = {}
+        prev = null
+        
+        @traverse (lineIndex, lineId, linkId) => 
+            
+            info = {lineIndex, lineId, linkId, prev}
+            prev = linkId
+            lineIndex < i
+            
+        info
+        
+    seekLast: -> @seek Infinity
+
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    deleteLine: (i) ->
+
+        info = @seek i
+        
+        return @ if info.lineIndex != i
+        
+        s = @s
+        if valid info.prev
+            s = s.setIn ['links' info.prev], [s.links[info.prev][0], s.links[info.linkId][1]]
+        s = s.setIn ['links' info.linkId]
+        
+        new EditorState s
+        
+    #  0000000  000   000   0000000   000   000   0000000   00000000  
+    # 000       000   000  000   000  0000  000  000        000       
+    # 000       000000000  000000000  000 0 000  000  0000  0000000   
+    # 000       000   000  000   000  000  0000  000   000  000       
+    #  0000000  000   000  000   000  000   000   0000000   00000000  
+    
+    changeLine: (i, t) ->
+        
+        info = @seek i
+        new EditorState @s.setIn ['lines' info.lineId], t
+        
+    # 000  000   000   0000000  00000000  00000000   000000000  
+    # 000  0000  000  000       000       000   000     000     
+    # 000  000 0 000  0000000   0000000   0000000       000     
+    # 000  000  0000       000  000       000   000     000     
+    # 000  000   000  0000000   00000000  000   000     000     
+    
+    insertLine: (i, t) ->
+        
+        info = @seek i
+                
+        s = @s
+        s = s.setIn ['lines' s.lineId], t # new line record
+        
+        if info.lineIndex >= i
+            s = s.setIn ['links' s.linkId], [s.lineId, info.linkId] # link new line to next line
+            if valid info.prev # insert ▸ change link of previous line
+                s = s.setIn ['links' info.prev], [s.links[info.prev][0], s.linkId]
+            else
+                s = s.setIn ['links' '-1'], [-1, s.linkId] # prepend ▸ link root to new line
+        else 
+            s = s.setIn ['links' s.linkId], [s.lineId, null] # # append ▸ link new line to nada
+            s = s.setIn ['links' info.linkId], [s.links[info.linkId][0], s.linkId] # link last line to new line
+            
+        s = s.set 'lineId' s.lineId+1 
+        s = s.set 'linkId' s.linkId+1 
+        
+        new EditorState s
+        
+    #  0000000   00000000   00000000   00000000  000   000  0000000    
+    # 000   000  000   000  000   000  000       0000  000  000   000  
+    # 000000000  00000000   00000000   0000000   000 0 000  000   000  
+    # 000   000  000        000        000       000  0000  000   000  
+    # 000   000  000        000        00000000  000   000  0000000    
+    
+    appendLine: (t) -> @insertLine Infinity, t
+
+export EditorState

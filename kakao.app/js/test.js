@@ -56,4 +56,16 @@ if (1)
     test = await import(file)
     tester.test(test.default)
 }
+if (1)
+{
+    hdr('ko')
+    files = await fs.list(slash.path(_k_.dir(),'ko/test'))
+    var list2 = _k_.list(files)
+    for (var _45_13_ = 0; _45_13_ < list2.length; _45_13_++)
+    {
+        file = list2[_45_13_]
+        test = await import(file.path)
+        tester.test(test.default)
+    }
+}
 tester.summarize()

@@ -131,6 +131,15 @@ class State
         return new State(this.s.set('main',m))
     }
 
+    addHighlight (h)
+    {
+        var m
+
+        m = this.s.highlights.asMutable()
+        m.push(h)
+        return new State(this.s.set('highlights',m))
+    }
+
     changeLine (i, t)
     {
         return new State(this.s.setIn(['lines',i],t))
@@ -161,15 +170,6 @@ class State
         l = this.s.lines.asMutable()
         l.push(t)
         return new State(this.s.set('lines',l))
-    }
-
-    addHighlight (h)
-    {
-        var m
-
-        m = this.s.highlights.asMutable()
-        m.push(h)
-        return new State(this.s.set('highlights',m))
     }
 }
 

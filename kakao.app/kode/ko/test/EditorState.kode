@@ -1,0 +1,83 @@
+###
+    00000000  0000000    000  000000000   0000000   00000000          0000000  000000000   0000000   000000000  00000000  
+    000       000   000  000     000     000   000  000   000        000          000     000   000     000     000       
+    0000000   000   000  000     000     000   000  0000000          0000000      000     000000000     000     0000000   
+    000       000   000  000     000     000   000  000   000             000     000     000   000     000     000       
+    00000000  0000000    000     000      0000000   000   000        0000000      000     000   000     000     00000000  
+###
+
+use ../../kxk ◆ kstr
+use ../editor ◆ EditorState
+
+▸ EditorState
+
+    ▸ init
+    
+        is = new EditorState ['hello' 'world' '!']
+        is.lines() ▸ ['hello' 'world' '!']
+        
+    ▸ delete
+        
+        ns = is.deleteLine 1
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hello' '!']
+        
+        ss = ns.deleteLine 1
+        is.lines() ▸ ['hello' 'world' '!']        
+        ns.lines() ▸ ['hello' '!']
+        ss.lines() ▸ ['hello']
+        
+        es = ss.deleteLine 0
+        is.lines() ▸ ['hello' 'world' '!']        
+        ns.lines() ▸ ['hello' '!']
+        ss.lines() ▸ ['hello']
+        es.lines() ▸ []     
+        
+        es = es.deleteLine 0
+        es.lines() ▸ []  
+        
+        es = is.deleteLine 100
+        es.lines() ▸ ['hello' 'world' '!']
+        
+    ▸ change
+    
+        ns = is.changeLine 1, 'test'
+        is.lines() ▸ ['hello' 'world' '!']        
+        ns.lines() ▸ ['hello' 'test' '!']
+        
+        fs = ns.changeLine 0, 'good'
+        fs.lines() ▸ ['good' 'test' '!']
+        
+        fs = fs.changeLine 2, '!!!'
+        fs.lines() ▸ ['good' 'test' '!!!']
+        
+    ▸ insert
+    
+        ns = is.insertLine 1, 'new'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hello' 'new' 'world' '!']
+        
+        bs = ns.insertLine 1 'brave'
+        bs.lines() ▸ ['hello' 'brave' 'new' 'world' '!']
+
+        ns = is.insertLine 0, 'hi'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hi' 'hello' 'world' '!']
+
+        ns = is.insertLine 2, '?'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hello' 'world' '?'  '!']
+
+        ns = is.insertLine -1, '>'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['>' 'hello' 'world' '!']
+
+        ns = is.insertLine Infinity, '<'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hello' 'world' '!' '<']
+        
+    ▸ append
+    
+        ns = is.appendLine 'howdy?'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hello' 'world' '!' 'howdy?']

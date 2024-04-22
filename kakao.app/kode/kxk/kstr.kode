@@ -10,18 +10,10 @@
 
 use ./ansi
 
-str = (o) -> # converts anything into a string, in noon syntax for objects.
+str = (o) -> # converts anything into a string in noon syntax 
 
     return 'null' if not o?
-    if o is obj
-        if o._str?
-            o._str()
-        else
-            '\n' + noon o
-    else if o is arr
-        '\n' + noon o
-    else
-        String o
+    '\n' + noon o
         
 # the function above is exported as the default
 # all the functions below are attached to it
@@ -256,8 +248,11 @@ str.detab = (s) ->
 #    000     000  000   000  00000000
 
 str.time = (t) ->
+    
     switch typeof t
-        when 'number'
+        
+        'number'
+            
             f = 1
             o = ms:     1000
                 second: 60
@@ -266,13 +261,16 @@ str.time = (t) ->
                 day:    30
                 month:  12
                 year:   0
+                
             for k in Object.keys o
+                
                 num = parseInt t/f
                 f *= o[k]
                 if k == 'year' or t < f
                     k += 's' if k != 'ms' and num != 1
                     return '' + num + ' ' + k
-        when 'bigint'
+        'bigint'
+            
             thsnd = BigInt 1000
             f = thsnd
             for k in ['ns' 'μs' 'ms' 'second']
@@ -281,7 +279,7 @@ str.time = (t) ->
                     k += 's' if k == 'second' and num != 1
                     return '' + num + ' ' + k
                 f *= thsnd
-        else
+        ➜
             String t
 
 # 000   000   0000000   000   000

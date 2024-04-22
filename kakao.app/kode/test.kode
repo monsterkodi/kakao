@@ -38,5 +38,12 @@ if 1
     file = slash.path ◆dir, 'kolor/test.js'
     test =○ import(file)
     tester.test test.default
+
+if 1
+    hdr 'ko'
+    files =○ fs.list slash.path ◆dir, 'ko/test'
+    for file in files
+        test =○ import(file.path)
+        tester.test test.default
                 
 tester.summarize()

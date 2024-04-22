@@ -243,7 +243,8 @@ function Macro extends Command
                 clss ?= 'Class'
                 
                 dir   = editor.currentFile? and slash.dir(editor.currentFile) or kakao.bundle.app('kode')
-                file  = slash.path dir, clss.toLowerCase() + '.kode'
+                # file  = slash.path dir, clss.toLowerCase() + '.kode'
+                file  = slash.path dir, clss + '.kode'
                 
                 text  = "###\n"
                 text += (s for s in salt(clss).split '\n').join '\n'

@@ -9,7 +9,7 @@
 use ../../kxk ▪ kstr immutable
 
 class State
-
+    
     @: (opt) ->
 
         if opt? and immutable.isImmutable opt
@@ -35,7 +35,7 @@ class State
             return ''
         kstr.detab @s.lines[i]
     
-    lines:         -> log 'lines'; @s.lines.map (l) -> kstr.detab l
+    lines:         -> log 'lines'; @s.lines.map (l) -> kstr.detab l # is this still used? doesn't seem so.
     cursors:       -> @s.cursors.asMutable    deep: true
     highlights:    -> @s.highlights.asMutable deep: true
     selections:    -> @s.selections.asMutable deep: true
@@ -57,11 +57,12 @@ class State
     setHighlights: (h) -> new State @s.set 'highlights' h
     setCursors:    (c) -> new State @s.set 'cursors'    c
     setMain:       (m) -> new State @s.set 'main'       m
+    
+    addHighlight:  (h) -> m = @s.highlights.asMutable(); m.push h;   new State @s.set 'highlights' m
 
     changeLine: (i,t) -> new State @s.setIn ['lines' i], t
     insertLine: (i,t) -> l = @s.lines.asMutable(); l.splice i, 0, t; new State @s.set 'lines' l
     deleteLine: (i)   -> l = @s.lines.asMutable(); l.splice i, 1;    new State @s.set 'lines' l
     appendLine:   (t) -> l = @s.lines.asMutable(); l.push t;         new State @s.set 'lines' l
-    addHighlight: (h) -> m = @s.highlights.asMutable(); m.push h;    new State @s.set 'highlights' m
 
 export State

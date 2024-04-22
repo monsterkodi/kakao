@@ -216,9 +216,9 @@ Macro = (function ()
                 clss = cmds.length && cmds[0] || _k_.last(editor.textsInRanges(editor.selections()))
                 clss = (clss != null ? clss : 'Class')
                 dir = (editor.currentFile != null) && slash.dir(editor.currentFile) || kakao.bundle.app('kode')
-                file = slash.path(dir,clss.toLowerCase() + '.kode')
+                file = slash.path(dir,clss + '.kode')
                 text = "###\n"
-                text += (function () { var r_249_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _249_33_ = 0; _249_33_ < list1.length; _249_33_++)  { s = list1[_249_33_];r_249_33_.push(s)  } return r_249_33_ }).bind(this)().join('\n')
+                text += (function () { var r_250_33_ = []; var list1 = _k_.list(salt(clss).split('\n')); for (var _250_33_ = 0; _250_33_ < list1.length; _250_33_++)  { s = list1[_250_33_];r_250_33_.push(s)  } return r_250_33_ }).bind(this)().join('\n')
                 text += "\n###\n"
                 text += `
 function ${clss}
@@ -235,7 +235,7 @@ export ${clss}
 
             case 'clean':
                 editor.do.start()
-                for (var _274_27_ = li = 0, _274_31_ = editor.numLines(); (_274_27_ <= _274_31_ ? li < editor.numLines() : li > editor.numLines()); (_274_27_ <= _274_31_ ? ++li : --li))
+                for (var _275_27_ = li = 0, _275_31_ = editor.numLines(); (_275_27_ <= _275_31_ ? li < editor.numLines() : li > editor.numLines()); (_275_27_ <= _275_31_ ? ++li : --li))
                 {
                     line = editor.line(li)
                     cleaned = line.trimRight()
