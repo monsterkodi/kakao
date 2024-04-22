@@ -201,7 +201,7 @@ FileEditor = (function ()
         this.currentFile = state.file
         if (state.file.startsWith('untitled-'))
         {
-            text = state.state.s.lines.join('\n')
+            text = state.state.text('\n')
         }
         else
         {

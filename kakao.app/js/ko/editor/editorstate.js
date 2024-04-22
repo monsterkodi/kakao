@@ -67,6 +67,24 @@ EditorState = (function ()
         }
     }
 
+    EditorState.prototype["line"] = function (i)
+    {
+        var l, li
+
+        l = null
+        li = -1
+        this.traverse((function (lineIndex, lineId, linkId)
+        {
+            l = this.s.lines[lineId]
+            li = lineIndex
+            return li < i
+        }).bind(this))
+        if (li === i)
+        {
+            return kstr.detab(l)
+        }
+    }
+
     EditorState.prototype["lines"] = function ()
     {
         var l
@@ -149,7 +167,10 @@ EditorState = (function ()
         else
         {
             s = s.setIn(['links',s.linkId],[s.lineId,null])
-            s = s.setIn(['links',info.linkId],[s.links[info.linkId][0],s.linkId])
+            if (!_k_.empty(info))
+            {
+                s = s.setIn(['links',info.linkId],[s.links[info.linkId][0],s.linkId])
+            }
         }
         s = s.set('lineId',s.lineId + 1)
         s = s.set('linkId',s.linkId + 1)
@@ -169,11 +190,6 @@ EditorState = (function ()
     EditorState.prototype["tabline"] = function (i)
     {
         return this.lines()[i]
-    }
-
-    EditorState.prototype["line"] = function (i)
-    {
-        return kstr.detab(this.lines()[i])
     }
 
     EditorState.prototype["cursors"] = function ()
@@ -238,22 +254,22 @@ EditorState = (function ()
 
     EditorState.prototype["setSelections"] = function (s)
     {
-        return new State(this.s.set('selections',s))
+        return new EditorState(this.s.set('selections',s))
     }
 
     EditorState.prototype["setHighlights"] = function (h)
     {
-        return new State(this.s.set('highlights',h))
+        return new EditorState(this.s.set('highlights',h))
     }
 
     EditorState.prototype["setCursors"] = function (c)
     {
-        return new State(this.s.set('cursors',c))
+        return new EditorState(this.s.set('cursors',c))
     }
 
     EditorState.prototype["setMain"] = function (m)
     {
-        return new State(this.s.set('main',m))
+        return new EditorState(this.s.set('main',m))
     }
 
     EditorState.prototype["addHighlight"] = function (h)
@@ -262,7 +278,7 @@ EditorState = (function ()
 
         m = this.s.highlights.asMutable()
         m.push(h)
-        return new State(this.s.set('highlights',m))
+        return new EditorState(this.s.set('highlights',m))
     }
 
     return EditorState

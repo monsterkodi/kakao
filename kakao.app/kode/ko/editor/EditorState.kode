@@ -68,6 +68,14 @@ function EditorState
     # 000      000  000  0000  000            000  
     # 0000000  000  000   000  00000000  0000000   
     
+    line: (i) ->
+
+        l = null
+        li = -1
+        @traverse (lineIndex, lineId, linkId) => l = @s.lines[lineId]; li = lineIndex; li < i
+        
+        kstr.detab l if li == i
+        
     lines: ->
         
         l = []
@@ -148,7 +156,8 @@ function EditorState
                 s = s.setIn ['links' '-1'], [-1, s.linkId] # prepend ▸ link root to new line
         else 
             s = s.setIn ['links' s.linkId], [s.lineId, null] # # append ▸ link new line to nada
-            s = s.setIn ['links' info.linkId], [s.links[info.linkId][0], s.linkId] # link last line to new line
+            if valid info # link previously last line to new line
+                s = s.setIn ['links' info.linkId], [s.links[info.linkId][0], s.linkId] 
             
         s = s.set 'lineId' s.lineId+1 
         s = s.set 'linkId' s.linkId+1 
@@ -167,7 +176,6 @@ function EditorState
     
     text: (n='\n') -> @lines().join n
     tabline:   (i) -> @lines()[i]
-    line:      (i) -> kstr.detab @lines()[i]
     
     cursors:       -> @s.cursors.asMutable    deep: true
     highlights:    -> @s.highlights.asMutable deep: true
@@ -186,11 +194,11 @@ function EditorState
 
     # modify:
 
-    setSelections: (s) -> new State @s.set 'selections' s
-    setHighlights: (h) -> new State @s.set 'highlights' h
-    setCursors:    (c) -> new State @s.set 'cursors'    c
-    setMain:       (m) -> new State @s.set 'main'       m
+    setSelections: (s) -> new EditorState @s.set 'selections' s
+    setHighlights: (h) -> new EditorState @s.set 'highlights' h
+    setCursors:    (c) -> new EditorState @s.set 'cursors'    c
+    setMain:       (m) -> new EditorState @s.set 'main'       m
     
-    addHighlight:  (h) -> m = @s.highlights.asMutable(); m.push h; new State @s.set 'highlights' m
+    addHighlight:  (h) -> m = @s.highlights.asMutable(); m.push h; new EditorState @s.set 'highlights' m
 
 export EditorState

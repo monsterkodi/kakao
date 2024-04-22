@@ -81,3 +81,38 @@ use ../editor ◆ EditorState
         ns = is.appendLine 'howdy?'
         is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hello' 'world' '!' 'howdy?']
+        
+    ▸ line
+    
+        is.numLines() ▸ 3
+    
+        is.line 0  ▸ 'hello'
+        is.line 1  ▸ 'world'
+        is.line 2  ▸ '!'
+        is.line 3  ▸ undefined
+        is.line -1 ▸ undefined
+        
+    ▸ empty
+    
+        es = new EditorState []
+        es.text() ▸ ''
+        es.lines() ▸ []
+
+        es = new EditorState ['']
+        es.text() ▸ ''
+        es.lines() ▸ ['']
+        
+        es = new EditorState()
+        es.text() ▸ ''
+        es.lines() ▸ []
+
+        ns = es.insertLine 0 '!'
+        ns.text() ▸ '!'
+
+        ns = ns.changeLine 0 '!!!'
+        ns.text() ▸ '!!!'
+
+        ns = es.changeLine 0 '!?!'
+        ns.text() ▸ ''
+        
+        

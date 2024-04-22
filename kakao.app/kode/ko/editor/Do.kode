@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post
 use ../tools  ◆ ranges
-use           ◆ State
+use           ◆ EditorState
 
 class Do
 
@@ -70,7 +70,7 @@ class Do
 
         @groupCount += 1
         if @groupCount == 1
-            @startState = @state = new State @editor.state.s
+            @startState = @state = new EditorState @editor.state.s
             if empty(@history) or @state.s != last(@history).s
                 @history.push @state
 
@@ -208,8 +208,8 @@ class Do
         dd = 0 # delta for doIndex
         changes = []
 
-        oldLines = oldState.s.lines # we are working on raw
-        newLines = newState.s.lines # immutables here!
+        oldLines = oldState.lines()
+        newLines = newState.lines()
 
         insertions = 0 # number of insertions
         deletions  = 0 # number of deletions
@@ -298,7 +298,7 @@ class Do
         while @history.length > 1
             b = @history[@history.length-2]
             a = last @history
-            if a.s.lines == b.s.lines
+            if a.text() == b.text()
                 if @history.length > 2
                     @history.splice @history.length-2, 1
                 else
@@ -307,9 +307,9 @@ class Do
                 c = @history[@history.length-3]
                 if a.numLines() == b.numLines() == c.numLines()
                     for li in [0...a.numLines()]
-                        la = a.s.lines[li]
-                        lb = b.s.lines[li]
-                        lc = c.s.lines[li]
+                        la = a.line li
+                        lb = b.line li
+                        lc = c.line li
                         if la == lb and lc != lb or la != lb and lc == lb
                             return
                     @history.splice @history.length-2, 1

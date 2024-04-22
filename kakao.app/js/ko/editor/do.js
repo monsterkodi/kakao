@@ -5,7 +5,7 @@ let post = kxk.post
 
 import ranges from "../tools/ranges.js"
 
-import State from "./State.js"
+import EditorState from "./EditorState.js"
 
 class Do
 {
@@ -58,7 +58,7 @@ class Do
         this.groupCount += 1
         if (this.groupCount === 1)
         {
-            this.startState = this.state = new State(this.editor.state.s)
+            this.startState = this.state = new EditorState(this.editor.state.s)
             if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history).s)
             {
                 return this.history.push(this.state)
@@ -207,8 +207,8 @@ class Do
         ni = 0
         dd = 0
         changes = []
-        oldLines = oldState.s.lines
-        newLines = newState.s.lines
+        oldLines = oldState.lines()
+        newLines = newState.lines()
         insertions = 0
         deletions = 0
         if (oldLines !== newLines)
@@ -289,7 +289,7 @@ class Do
         {
             b = this.history[this.history.length - 2]
             a = _k_.last(this.history)
-            if (a.s.lines === b.s.lines)
+            if (a.text() === b.text())
             {
                 if (this.history.length > 2)
                 {
@@ -307,9 +307,9 @@ class Do
                 {
                     for (var _309_31_ = li = 0, _309_35_ = a.numLines(); (_309_31_ <= _309_35_ ? li < a.numLines() : li > a.numLines()); (_309_31_ <= _309_35_ ? ++li : --li))
                     {
-                        la = a.s.lines[li]
-                        lb = b.s.lines[li]
-                        lc = c.s.lines[li]
+                        la = a.line(li)
+                        lb = b.line(li)
+                        lc = c.line(li)
                         if (la === lb && lc !== lb || la !== lb && lc === lb)
                         {
                             return
