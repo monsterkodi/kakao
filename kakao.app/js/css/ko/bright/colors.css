@@ -313,6 +313,16 @@ span.macro.macro,
     color: rgb(103,103,171);
 }
 
+.info-editor
+{
+    color: #333;
+}
+
+.info-editor:hover
+{
+    color: #f80;
+}
+
 .tooltip
 {
     background: #111111;
@@ -354,6 +364,21 @@ span.macro.macro,
     opacity: 1;
 }
 
+.unsaved-icon
+{
+    color: #aaf;
+}
+
+.unsaved-icon:hover
+{
+    color: #f00;
+}
+
+.temp-icon
+{
+    color: #555;
+}
+
 .dot:hover
 {
     color: #f80;
@@ -371,7 +396,7 @@ span.macro.macro,
 
 .tab.active
 {
-    background: #222222;
+    background: #333;
 }
 
 .tabstate
@@ -404,6 +429,21 @@ span.macro.macro,
 .tab.prj.active
 {
     background: #444;
+}
+
+.git-status-icon
+{
+    display: inline-block;
+}
+
+.lock-icon:hover
+{
+    color: #ff0;
+}
+
+.temp-icon:hover
+{
+    color: #888;
 }
 
 #browser
@@ -459,29 +499,29 @@ span.macro.macro,
     border-color: #111111;
 }
 
-*:focus .cursor         // focus colors
+*:focus .cursor
 {
     background: #f80;
 }
 
-*:focus .cursor         // focus colors.virtual
+*:focus .cursor.virtual
 {
     background: #008;
 }
 
-*:focus .cursor         // focus colors.main
+*:focus .cursor.main
 {
     background: #ff0;
 }
 
-*:focus .cursor         // focus colors.blink
+*:focus .cursor.blink
 {
     background: #f80;
 }
 
-*:focus .cursor         // focus colors.blink.off
+*:focus .cursor.blink.off
 {
-    background: #00f;
+    background: #a00;
 }
 
 .cursors.salterMode .cursor
@@ -605,7 +645,7 @@ span.macro.macro,
 
 .meta.gitInfoFile
 {
-    background: #222222;
+    background: #111111;
     opacity: 0.5;
     padding-right: 10px;
     border-top-right-radius: 4px;
@@ -614,8 +654,13 @@ span.macro.macro,
 
 .meta.gitInfoChange
 {
-    background: #080;
-    opacity: 0.25;
+    border-bottom: 3px solid #060;
+}
+
+.meta.gitInfoDelete
+{
+    background: #141414;
+    opacity: 0.5;
 }
 
 .meta.git
@@ -686,17 +731,9 @@ span.macro.macro,
     color: #0f0;
 }
 
-.linenumber span.gitCommitLine
-{
-    transform: translateY(-4px);
-    color: #ff0;
-}
-
-
-.linenumber.gitCommitLine,
 .linenumber.gitInfoLine
 {
-    background: #111111;
+    background: #141414;
 }
 
 .minimap

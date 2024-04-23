@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import kxk from "../../kxk.js"
 let post = kxk.post
@@ -9,6 +9,8 @@ import Walker from "./Walker.js"
 
 class Projects
 {
+    static currentProject = null
+
     static projects = {}
 
     static allFiles = {}
@@ -19,9 +21,9 @@ class Projects
 
     static files (path)
     {
-        var _20_59_
+        var _21_59_
 
-        return ((_20_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _20_59_ : [])
+        return ((_21_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _21_59_ : [])
     }
 
     static dir (path)
@@ -50,24 +52,48 @@ class Projects
         return null
     }
 
+    static current ()
+    {
+        var c
+
+        c = this.currentProject
+        c = (c != null ? c : _k_.last(Object.keys(this.projects)))
+        c = (c != null ? c : kakao.bundle.path)
+        return c
+    }
+
+    static setCurrent (currentProject)
+    {
+        this.currentProject = currentProject
+    
+        console.log('Project.setCurrent',this.currentProject)
+    }
+
     static async indexProject (file)
     {
-        var exists, prjPath, result, walker, _55_19_
+        var exists, prjPath, result, walker, _71_19_
 
+        if (file.startsWith('untitled-'))
+        {
+            return
+        }
+        console.log('Projects.indexProject ●',file)
         exists = await ffs.exists(file)
         if (!exists)
         {
             return
         }
+        console.log('Projects.indexProject ▪',exists)
         prjPath = await ffs.git(file)
         prjPath = (prjPath != null ? prjPath : slash.dir(file))
+        console.log('Projects.indexProject ▸',prjPath)
         if (this.indexing)
         {
             if (this.indexing === prjPath)
             {
                 return
             }
-            this.queue = ((_55_19_=this.queue) != null ? _55_19_ : [])
+            this.queue = ((_71_19_=this.queue) != null ? _71_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -88,9 +114,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _75_21_ = 0; _75_21_ < list.length; _75_21_++)
+            for (var _91_21_ = 0; _91_21_ < list.length; _91_21_++)
             {
-                file = list[_75_21_]
+                file = list[_91_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('Projects project indexed',prjPath,this.projects)

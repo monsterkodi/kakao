@@ -1,6 +1,7 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
+let immutable = kxk.immutable
 let post = kxk.post
 
 import ranges from "../tools/ranges.js"
@@ -23,7 +24,9 @@ class Do
 
     tabState ()
     {
-        return {saveIndex:this.saveIndex,history:this.history,redos:this.redos,state:this.state,file:this.editor.currentFile}
+        var _32_25_
+
+        return {saveIndex:this.saveIndex,history:this.history,redos:this.redos,state:(this.state != null ? this.state.s : undefined),file:this.editor.currentFile}
     }
 
     setTabState (tabState)
@@ -32,7 +35,7 @@ class Do
         this.saveIndex = tabState.saveIndex
         this.history = tabState.history
         this.redos = tabState.redos
-        return this.state = tabState.state
+        return this.state = new EditorState(immutable(tabState.state))
     }
 
     reset ()
@@ -59,7 +62,7 @@ class Do
         if (this.groupCount === 1)
         {
             this.startState = this.state = new EditorState(this.editor.state.s)
-            if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history).s)
+            if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history))
             {
                 return this.history.push(this.state)
             }
@@ -113,10 +116,10 @@ class Do
         {
             if (_k_.empty(this.redos))
             {
-                this.redos.unshift(this.editor.state)
+                this.redos.unshift(this.editor.state.s)
             }
-            this.state = this.history.pop()
-            this.redos.unshift(this.state)
+            this.state = new EditorState(this.history.pop())
+            this.redos.unshift(this.state.s)
             changes = this.calculateChanges(this.editor.state,this.state)
             this.editor.setState(this.state)
             return (typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)

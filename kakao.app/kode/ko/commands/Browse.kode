@@ -9,8 +9,9 @@
 use ../../kxk ▪ ffs post slash $
 use ../../kakao
 
-use ../commandline/Command
-use ../browser/FileBrowser
+use ../commandline ◆ Command
+use ../browser     ◆ FileBrowser
+use ../tools       ◆ Projects
 
 function Browse extends Command
 
@@ -54,8 +55,12 @@ function Browse extends Command
 
         if action != 'shelf'
             if window.editor.currentFile? #and slash.isFile window.editor.currentFile
-                @setText slash.tilde window.editor.currentFile
-                @browser.navigateToFile window.editor.currentFile
+                if window.editor.currentFile.startsWith 'untitled-'
+                    @setText Projects.current()
+                    @browser.loadDir Projects.current()
+                else
+                    @setText slash.tilde window.editor.currentFile
+                    @browser.navigateToFile window.editor.currentFile
             else
                 # post.emit 'filebrowser' 'loadItem' file:process.cwd(), type:'dir'
                 # post.emit 'filebrowser' 'loadItem' file:'~', type:'dir'
@@ -170,7 +175,6 @@ function Browse extends Command
             @hideList()
             return
 
-        # path = slash.resolve @getText().trim()
         path = slash.path @getText().trim()
         matches = files.filter (f) -> f.file.startsWith path
 

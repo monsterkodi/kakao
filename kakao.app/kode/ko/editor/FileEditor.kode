@@ -142,8 +142,6 @@ function FileEditor extends TextEditor
         
         return if not @currentFile
         
-        # return if @currentFile.startsWith 'untitled-'
-        
         filePositions = window.stash.get 'filePositions' {}
 
         if not filePositions is obj ➜ filePositions = {}
@@ -195,7 +193,6 @@ function FileEditor extends TextEditor
         # log 'text:' text 
         @setText text
         
-        # log 'FileHandler restoreTab2' @currentFile
         kore.set 'editor|file' @currentFile
     
     restoreFilePosition: ->

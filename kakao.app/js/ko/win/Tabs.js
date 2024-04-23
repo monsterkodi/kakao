@@ -76,7 +76,10 @@ class Tabs
 
     koreTabs ()
     {
-        return kore.get('tabs',[])
+        var tabs
+
+        tabs = kore.get('tabs')
+        return (tabs != null ? tabs : [])
     }
 
     update (tabs)
@@ -210,7 +213,7 @@ class Tabs
 
     addTab (path)
     {
-        var prjPath
+        var prjPath, tabs, _136_22_
 
         if (_k_.empty(path))
         {
@@ -220,14 +223,19 @@ class Tabs
         {
             prjPath = Projects.dir(path)
             prjPath = (prjPath != null ? prjPath : slash.dir(path))
+            if (_k_.empty(prjPath))
+            {
+                prjPath = kakao.bundle.path
+            }
+            tabs = this.koreTabs()
             if (!this.koreTabForPath(prjPath))
             {
-                this.koreTabs().push({type:'prj',path:prjPath})
+                tabs.push({type:'prj',path:prjPath})
             }
-            this.koreTabs().push({type:'file',path:path,tmp:!path.startsWith('untitled-')})
+            tabs.push({type:'file',path:path,tmp:!path.startsWith('untitled-')})
+            this.cleanTabs(tabs)
             this.setActive(path)
-            this.cleanTabs()
-            this.tab(path).div.scrollIntoViewIfNeeded()
+            ;(this.tab(path) != null ? this.tab(path).div.scrollIntoViewIfNeeded() : undefined)
             return
         }
         this.setActive(path)
@@ -235,11 +243,11 @@ class Tabs
         return this
     }
 
-    cleanTabs ()
+    cleanTabs (tabs)
     {
-        var i, k, prjPath, prjTabs, remain, sorted, tab, tabs, v, _162_29_
+        var i, k, prjPath, prjTabs, remain, sorted, tab, v, _165_29_
 
-        tabs = this.koreTabs()
+        tabs = (tabs != null ? tabs : this.koreTabs())
         sorted = tabs.filter(function (t)
         {
             return t.type === 'prj'
@@ -250,16 +258,20 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _155_16_ = 0; _155_16_ < list.length; _155_16_++)
+        for (var _157_16_ = 0; _157_16_ < list.length; _157_16_++)
         {
-            tab = list[_155_16_]
+            tab = list[_157_16_]
             prjTabs[tab.path] = [tab]
         }
         while (tab = remain.shift())
         {
             prjPath = Projects.dir(tab.path)
             prjPath = (prjPath != null ? prjPath : slash.dir(tab.path))
-            prjTabs[prjPath] = ((_162_29_=prjTabs[prjPath]) != null ? _162_29_ : [{type:'prj',path:prjPath}])
+            if (_k_.empty(prjPath))
+            {
+                prjPath = kakao.bundle.path
+            }
+            prjTabs[prjPath] = ((_165_29_=prjTabs[prjPath]) != null ? _165_29_ : [{type:'prj',path:prjPath}])
             prjTabs[prjPath].push(tab)
         }
         for (k in prjTabs)
@@ -267,6 +279,7 @@ class Tabs
             v = prjTabs[k]
             if (v.length <= 1)
             {
+                console.log('delete',k,prjTabs[k])
                 delete prjTabs[k]
             }
         }
@@ -276,7 +289,7 @@ class Tabs
             v = prjTabs[k]
             if (v.slice(-1)[0].tmp)
             {
-                for (var _172_25_ = i = v.length - 2, _172_37_ = 0; (_172_25_ <= _172_37_ ? i <= 0 : i >= 0); (_172_25_ <= _172_37_ ? ++i : --i))
+                for (var _176_25_ = i = v.length - 2, _176_37_ = 0; (_176_25_ <= _176_37_ ? i <= 0 : i >= 0); (_176_25_ <= _176_37_ ? ++i : --i))
                 {
                     if (v[i].tmp)
                     {
@@ -343,17 +356,17 @@ class Tabs
 
     setActive (path)
     {
-        var tab, _231_26_, _231_31_
+        var tab, _235_26_, _235_31_
 
         var list = _k_.list(this.koreTabs())
-        for (var _227_16_ = 0; _227_16_ < list.length; _227_16_++)
+        for (var _231_16_ = 0; _231_16_ < list.length; _231_16_++)
         {
-            tab = list[_227_16_]
+            tab = list[_231_16_]
             delete tab.active
             if (slash.samePath(tab.path,path))
             {
                 tab.active = true
-                ;((_231_26_=this.tab(path)) != null ? (_231_31_=_231_26_.div) != null ? _231_31_.scrollIntoViewIfNeeded() : undefined : undefined)
+                ;((_235_26_=this.tab(path)) != null ? (_235_31_=_235_26_.div) != null ? _235_31_.scrollIntoViewIfNeeded() : undefined : undefined)
             }
         }
     }
@@ -535,7 +548,7 @@ class Tabs
 
         active = this.activeKoreTab()
         tabs = this.koreTabs()
-        for (var _357_21_ = index = tabs.length - 1, _357_36_ = 0; (_357_21_ <= _357_36_ ? index <= 0 : index >= 0); (_357_21_ <= _357_36_ ? ++index : --index))
+        for (var _361_21_ = index = tabs.length - 1, _361_36_ = 0; (_361_21_ <= _361_36_ ? index <= 0 : index >= 0); (_361_21_ <= _361_36_ ? ++index : --index))
         {
             tab = tabs[index]
             if (tab === active)
@@ -562,7 +575,7 @@ class Tabs
     {
         var col, line, path, prjPath
 
-        var _379_26_ = slash.splitFileLine(file); path = _379_26_[0]; line = _379_26_[1]; col = _379_26_[2]
+        var _383_26_ = slash.splitFileLine(file); path = _383_26_[0]; line = _383_26_[1]; col = _383_26_[2]
 
         if (!this.koreTabForPath(path))
         {
@@ -681,7 +694,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _456_25_ = [tb,ta]; ta = _456_25_[0]; tb = _456_25_[1]
+                    var _460_25_ = [tb,ta]; ta = _460_25_[0]; tb = _460_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -724,9 +737,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _488_16_ = 0; _488_16_ < list.length; _488_16_++)
+        for (var _492_16_ = 0; _492_16_ < list.length; _492_16_++)
         {
-            tab = list[_488_16_]
+            tab = list[_492_16_]
             tab.update()
         }
     }
@@ -785,9 +798,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _545_16_ = 0; _545_16_ < list.length; _545_16_++)
+        for (var _549_16_ = 0; _549_16_ < list.length; _549_16_++)
         {
-            tab = list[_545_16_]
+            tab = list[_549_16_]
             if (tab.dirty)
             {
                 if (tab.active)

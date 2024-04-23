@@ -58,7 +58,7 @@ class Tabs
     # 000  000   000   000  000   000  000       
     # 000   000   0000000   000   000  00000000  
     
-    koreTabs: -> kore.get 'tabs' []
+    koreTabs: -> tabs = kore.get 'tabs'; tabs ? []
     
     update: (tabs) => kore.set 'tabs' tabs ? @koreTabs()
         
@@ -126,12 +126,14 @@ class Tabs
         
             prjPath = Projects.dir path
             prjPath ?= slash.dir path
+            prjPath = kakao.bundle.path if empty prjPath
+            tabs = @koreTabs()
             if not @koreTabForPath prjPath
-                @koreTabs().push type:'prj' path:prjPath
-            @koreTabs().push type:'file' path:path, tmp:not path.startsWith 'untitled-'
+                tabs.push type:'prj' path:prjPath
+            tabs.push type:'file' path:path, tmp:not path.startsWith 'untitled-'
+            @cleanTabs tabs
             @setActive path
-            @cleanTabs()
-            @tab(path).div.scrollIntoViewIfNeeded()
+            @tab(path)?.div.scrollIntoViewIfNeeded()
             return
 
         @setActive path
@@ -144,9 +146,9 @@ class Tabs
     # 000       000      000       000   000  000  0000           000     000   000  000   000       000  
     #  0000000  0000000  00000000  000   000  000   000           000     000   000  0000000    0000000   
     
-    cleanTabs: ->
+    cleanTabs: (tabs) ->
         
-        tabs = @koreTabs()
+        tabs ?= @koreTabs()
 
         sorted = tabs.filter (t) -> t.type == 'prj'
         remain = tabs.filter (t) -> t.type != 'prj'
@@ -157,13 +159,15 @@ class Tabs
            
         while tab = remain.shift()
             
-            prjPath = Projects.dir tab.path
+            prjPath  = Projects.dir tab.path
             prjPath ?= slash.dir tab.path
+            prjPath  = kakao.bundle.path if empty prjPath
             prjTabs[prjPath] ?= [type:'prj', path:prjPath]
             prjTabs[prjPath].push tab
              
         for k,v of prjTabs
             if v.length <= 1
+                log 'delete' k, prjTabs[k]
                 delete prjTabs[k]
                 
         tabs = []

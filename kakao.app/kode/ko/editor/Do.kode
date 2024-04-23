@@ -6,7 +6,7 @@
 0000000     0000000
 ###
 
-use ../../kxk ▪ post
+use ../../kxk ▪ immutable post
 use ../tools  ◆ ranges
 use           ◆ EditorState
 
@@ -29,7 +29,7 @@ class Do
         saveIndex: @saveIndex
         history:   @history
         redos:     @redos
-        state:     @state
+        state:     @state?.s
         file:      @editor.currentFile
 
     setTabState: (tabState) ->
@@ -38,7 +38,7 @@ class Do
         @saveIndex  = tabState.saveIndex
         @history    = tabState.history
         @redos      = tabState.redos
-        @state      = tabState.state
+        @state      = new EditorState immutable tabState.state
 
     # 00000000   00000000   0000000  00000000  000000000
     # 000   000  000       000       000          000
@@ -71,7 +71,7 @@ class Do
         @groupCount += 1
         if @groupCount == 1
             @startState = @state = new EditorState @editor.state.s
-            if empty(@history) or @state.s != last(@history).s
+            if empty(@history) or @state.s != last(@history)
                 @history.push @state
 
     isDoing: -> @groupCount > 0
@@ -123,10 +123,10 @@ class Do
         if @history.length
             
             if empty @redos
-                @redos.unshift @editor.state
+                @redos.unshift @editor.state.s
 
-            @state = @history.pop()
-            @redos.unshift @state
+            @state = new EditorState @history.pop()
+            @redos.unshift @state.s
 
             changes = @calculateChanges @editor.state, @state
             @editor.setState @state

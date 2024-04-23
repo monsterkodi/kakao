@@ -40,11 +40,16 @@ function Window extends win.Delegate
         post.on 'stash' -> window.editor.saveFilePosition()
         
         window.aboutImage = kakao.bundle.img 'about_ko.png'
+
+    onWindowWithoutStash: ○->
         
-    onWindowCreated: (win) => 
+        ○ kakao 'win.setSize' 1000 1000
+        ○ kakao 'win.center' 
+        
+    onWindowCreated: (win) =>
         
         @id = win.id
-        a = 1+2
+        a = 1+2+3
                     
         new FileHandler
         new FileWatch
@@ -82,6 +87,8 @@ function Window extends win.Delegate
     
         window.split.resized()
         window.info.reload()
+        
+        if empty window.tabs.tabs ➜ log 'not tab! empty tab!'; post.emit 'newEmptyTab'
         
         @editor.focus()
 

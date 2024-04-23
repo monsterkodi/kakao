@@ -15,16 +15,19 @@ use ◆ ffs elem post prefs slash stash keyinfo title
 
 function Delegate
     
-    onWindowAboutToShow:    (win)           -> log "onWindowAboutToShow #{win.id}"
-    onWindowCreated:        (win)           -> log "win #{win.id}"
-    onWindowAnimationTick:  (win, tickInfo) -> #log("onWindowAnimationTick" tickInfo) if tickInfo.fps < 20
-    onWindowResize:         (win, event)    -> log "onWindowResize" event
-    onWindowFocus:          (win)           -> log "onWindowFocus"
-    onWindowBlur:           (win)           -> log "onWindowBlur"
-    onWindowKeyDown:        (win, keyInfo)  -> log "onWindowKeyDown " keyInfo.combo if not empty keyInfo.combo
-    onWindowKeyUp:          (win, keyInfo)  -> log "onWindowKeyUp  " keyInfo.combo if not empty keyInfo.combo
-    onWindowClose:          (win)           -> log "onWindowClose #{win.id}"
-    onWindowMenuTemplate:   (win, template) -> log "onWindowMenuTemplate #{win.id}" template
+    onWindowWillLoadStash:    (win)           -> log "onWindowWillLoadStash #{win.id}"
+    onWindowDidLoadStash:     (win)           -> log "onWindowDidLoadStash #{win.id}"
+    onWindowWithoutStash:     (win)           -> log "onWindowWithoutStash #{win.id}"
+    onWindowAboutToShow:      (win)           -> log "onWindowAboutToShow #{win.id}"
+    onWindowCreated:          (win)           -> log "win #{win.id}"
+    onWindowAnimationTick:    (win, tickInfo) -> #log("onWindowAnimationTick" tickInfo) if tickInfo.fps < 20
+    onWindowResize:           (win, event)    -> log "onWindowResize" event
+    onWindowFocus:            (win)           -> log "onWindowFocus"
+    onWindowBlur:             (win)           -> log "onWindowBlur"
+    onWindowKeyDown:          (win, keyInfo)  -> log "onWindowKeyDown " keyInfo.combo if not empty keyInfo.combo
+    onWindowKeyUp:            (win, keyInfo)  -> log "onWindowKeyUp  " keyInfo.combo if not empty keyInfo.combo
+    onWindowClose:            (win)           -> log "onWindowClose #{win.id}"
+    onWindowMenuTemplate:     (win, template) -> log "onWindowMenuTemplate #{win.id}" template
     
 function Win
 
@@ -75,24 +78,30 @@ function Win
         
         @delegate?.onWindowCreated? @
         
-    restoreFromStash: ○=>
+    restoreFromStash: ○->
+        
+        log 'restoreFromStash' @
                     
         list =○ ffs.list kakao.bundle.app '.stash/old'
         if valid list
+            
             old = list.shift()
             
-            if @delegate?.onWindowAboutToRestoreFromStash is func
-                ○ @delegate.onWindowAboutToRestoreFromStash @
+            if @delegate.onWindowWillLoadStash is func ➜ ○ @delegate.onWindowWillLoadStash @
             
-            ○ window.stash.load(old.path)
+            ○ window.stash.load old.path
+
+            if @delegate.onWindowDidLoadStash is func ➜ ○ @delegate.onWindowDidLoadStash @
             
             ffs.remove old.path
             
             if valid list
-                kakao 'window.new' 'ko.html'
+                
+                kakao 'window.new' 'ko.html' # only load one old window, it will load the next one ...
+        else 
+            if @delegate.onWindowWithoutStash is func ➜ ○ @delegate.onWindowWithoutStash @
 
-        if @delegate?.onWindowAboutToShow is func
-            ○ @delegate.onWindowAboutToShow @
+        if @delegate.onWindowAboutToShow is func ➜ ○ @delegate.onWindowAboutToShow @
                     
     saveStash: ->
         

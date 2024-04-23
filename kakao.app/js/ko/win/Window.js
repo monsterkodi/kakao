@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
 var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSize, toggleCenterText, Window
 
@@ -83,12 +83,18 @@ Window = (function ()
         return Window.__super__.constructor.apply(this, arguments)
     }
 
+    Window.prototype["onWindowWithoutStash"] = async function ()
+    {
+        await kakao('win.setSize',1000,1000)
+        return await kakao('win.center')
+    }
+
     Window.prototype["onWindowCreated"] = function (win)
     {
         var a
 
         this.id = win.id
-        a = 1 + 2
+        a = 1 + 2 + 3
         new FileHandler
         new FileWatch
         new Git
@@ -130,6 +136,11 @@ Window = (function ()
         }).bind(this))
         window.split.resized()
         window.info.reload()
+        if (_k_.empty(window.tabs.tabs))
+        {
+            console.log('not tab! empty tab!')
+            post.emit('newEmptyTab')
+        }
         return this.editor.focus()
     }
 
@@ -140,7 +151,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _104_25_
+        var action, _111_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -316,7 +327,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _193_14_
+    var _200_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -327,7 +338,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _199_22_, _200_19_
+    var _206_22_, _207_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -362,7 +373,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _239_32_
+    var _246_32_
 
     if (!(_k_.isNum(s)))
     {

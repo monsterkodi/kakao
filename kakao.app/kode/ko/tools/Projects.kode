@@ -12,6 +12,7 @@ use ./Walker
 
 class Projects
     
+    @currentProject: null
     @projects: {}
     @allFiles: {}
     @indexing: null
@@ -31,6 +32,15 @@ class Projects
                     return prjPath
         # log 'missing prj?' path
         null
+        
+    @current: ->
+    
+        c  = @currentProject 
+        c ?= last Object.keys @projects
+        c ?= kakao.bundle.path
+        c
+        
+    @setCurrent: (@currentProject) -> log 'Project.setCurrent' @currentProject
     
     # 000  000   000  0000000    00000000  000   000  
     # 000  0000  000  000   000  000        000 000   
@@ -40,15 +50,21 @@ class Projects
     
     @indexProject: (file) ○=>
         
+        return if file.startsWith 'untitled-'
+        
+        log 'Projects.indexProject ●' file
+        
         exists =○ ffs.exists file
         
         return if not exists
+        
+        log 'Projects.indexProject ▪' exists
         
         prjPath =○ ffs.git file
         
         prjPath ?= slash.dir file
         
-        # log 'Projects.indexProject ▸' prjPath
+        log 'Projects.indexProject ▸' prjPath
         
         if @indexing
             return if @indexing == prjPath
