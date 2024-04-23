@@ -142,7 +142,7 @@ function FileEditor extends TextEditor
         
         return if not @currentFile
         
-        # return if     @currentFile.startsWith 'untitled-'
+        # return if @currentFile.startsWith 'untitled-'
         
         filePositions = window.stash.get 'filePositions' {}
 
@@ -164,22 +164,26 @@ function FileEditor extends TextEditor
     # 000   000  000            000     000     000   000  000   000  000
     # 000   000  00000000  0000000      000      0000000   000   000  00000000
 
-    restoreTab: (tab, state) =>
+    restoreTab: (tab) =>
+        
+        state = tab.state
         
         if @currentFile != kore.get 'editor|file'
-            error 'FileEditor.restoreTab -- editor file mismatch!' @currentFile, kore.get 'editor|file'
-            return
+            if empty @currentFile and valid kore.get('editor|file') # empty @currentFile should be ok
+                warn 'FileEditor.restoreTab -- empty @currentFile:' @currentFile, kore.get 'editor|file'
+            else
+                error 'FileEditor.restoreTab -- editor file mismatch!' @currentFile, kore.get 'editor|file'
+                return 
             
         if state.file != tab.path
             error 'FileEditor.restoreTab -- file path mismatch!' state.file, tab.path
+            log 'state:' state
             return
             
         if @currentFile == state.file
             error 'FileEditor.restoreTab -- trying to restore currentFile!' @currentFile
             return
             
-        # log 'FileEditor.restoreTab' tab.path
-        
         post.emit 'storeState' @currentFile, @do.tabState()
         
         @currentFile = state.file
@@ -190,7 +194,9 @@ function FileEditor extends TextEditor
             text = @do.text()
         # log 'text:' text 
         @setText text
-        kore.set 'editor|file' state.file
+        
+        # log 'FileHandler restoreTab2' @currentFile
+        kore.set 'editor|file' @currentFile
     
     restoreFilePosition: ->
 

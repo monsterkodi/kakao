@@ -72,7 +72,7 @@
     "txt",
     "txt.ext"
   ],
-  "([^\\/]+)(\\.png|\\.jpg|\\.gif)$": [
+  "([^\\/]+)(\\.png|\\.jpe?g|\\.gif)$": [
     "image",
     "image.ext"
   ],

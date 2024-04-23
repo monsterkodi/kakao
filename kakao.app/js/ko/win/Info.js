@@ -37,8 +37,10 @@ class Info
         this.onNumLines = this.onNumLines.bind(this)
         this.reload = this.reload.bind(this)
         this.setEditor = this.setEditor.bind(this)
+        this.updateEditorButton = this.updateEditorButton.bind(this)
         this.changeEditorFocus = this.changeEditorFocus.bind(this)
         post.on('editorFocus',this.setEditor)
+        post.on('split',this.updateEditorButton)
         ttip = function (e, t)
         {
             return new tooltip({elem:e,text:t,x:0,y:1,textSize:11,keep:true})
@@ -100,21 +102,26 @@ class Info
 
     changeEditorFocus ()
     {
-        if (this.editor.name === 'terminal')
+        if (window.split.terminalVisible())
         {
             window.split.do('maximize editor')
             return window.split.do('focus editor')
         }
         else
         {
-            window.split.do('enlarge terminal')
-            return window.split.do('focus terminal')
+            return window.split.do('half editor')
         }
+    }
+
+    updateEditorButton ()
+    {
+        this.infoEditor.classList.toggle('terminal-icon',!window.split.terminalVisible())
+        return this.infoEditor.classList.toggle('editor-icon',window.split.terminalVisible())
     }
 
     setEditor (editor)
     {
-        var _113_18_
+        var _121_18_
 
         if (!(_k_.in(editor.name,['editor','terminal'])))
         {
@@ -124,8 +131,6 @@ class Info
         {
             return
         }
-        this.infoEditor.classList.toggle('terminal-icon',editor.name === 'editor')
-        this.infoEditor.classList.toggle('editor-icon',editor.name === 'terminal')
         if ((this.editor != null))
         {
             this.editor.removeListener('numLines',this.onNumLines)

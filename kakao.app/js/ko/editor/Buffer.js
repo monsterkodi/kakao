@@ -635,23 +635,26 @@ Buffer = (function ()
 
         r = []
         ir = [top,bot]
-        for (var _348_19_ = li = startOf(ir), _348_33_ = endOf(ir); (_348_19_ <= _348_33_ ? li < endOf(ir) : li > endOf(ir)); (_348_19_ <= _348_33_ ? ++li : --li))
+        for (var _348_18_ = li = startOf(ir), _348_32_ = endOf(ir); (_348_18_ <= _348_32_ ? li < endOf(ir) : li > endOf(ir)); (_348_18_ <= _348_32_ ? ++li : --li))
         {
-            r.push(this.rangeForLineAtIndex(li))
+            if ((0 <= li && li < this.numLines()))
+            {
+                r.push(this.rangeForLineAtIndex(li))
+            }
         }
         return r
     }
 
     Buffer.prototype["rangesForText"] = function (t, opt)
     {
-        var li, r, _357_43_
+        var li, r, _358_43_
 
         t = t.split('\n')[0]
         r = []
-        for (var _355_19_ = li = 0, _355_23_ = this.numLines(); (_355_19_ <= _355_23_ ? li < this.numLines() : li > this.numLines()); (_355_19_ <= _355_23_ ? ++li : --li))
+        for (var _356_19_ = li = 0, _356_23_ = this.numLines(); (_356_19_ <= _356_23_ ? li < this.numLines() : li > this.numLines()); (_356_19_ <= _356_23_ ? ++li : --li))
         {
             r = r.concat(this.rangesForTextInLineAtIndex(t,li,opt))
-            if (r.length >= (((_357_43_=(opt != null ? opt.max : undefined)) != null ? _357_43_ : 999)))
+            if (r.length >= (((_358_43_=(opt != null ? opt.max : undefined)) != null ? _358_43_ : 999)))
             {
                 break
             }
@@ -661,19 +664,19 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForTextInLineAtIndex"] = function (t, i, opt)
     {
-        var r, rng, rngs, type, _362_25_
+        var r, rng, rngs, type, _363_25_
 
         r = []
-        type = ((_362_25_=(opt != null ? opt.type : undefined)) != null ? _362_25_ : 'str')
+        type = ((_363_25_=(opt != null ? opt.type : undefined)) != null ? _363_25_ : 'str')
         if (_k_.in(type,['str','Str']))
         {
             t = kstr.escapeRegExp(t)
         }
         rngs = matchr.ranges(t,this.line(i),_k_.in(type,['str','reg']) && 'i' || '')
         var list = _k_.list(rngs)
-        for (var _365_16_ = 0; _365_16_ < list.length; _365_16_++)
+        for (var _366_16_ = 0; _366_16_ < list.length; _366_16_++)
         {
-            rng = list[_365_16_]
+            rng = list[_366_16_]
             r.push([i,[rng.start,rng.start + rng.match.length]])
         }
         return r
@@ -687,7 +690,7 @@ Buffer = (function ()
         r = []
         ss = -1
         cc = null
-        for (var _374_18_ = i = 0, _374_22_ = t.length; (_374_18_ <= _374_22_ ? i < t.length : i > t.length); (_374_18_ <= _374_22_ ? ++i : --i))
+        for (var _375_18_ = i = 0, _375_22_ = t.length; (_375_18_ <= _375_22_ ? i < t.length : i > t.length); (_375_18_ <= _375_22_ ? ++i : --i))
         {
             c = t[i]
             if (!cc && _k_.in(c,"'\""))

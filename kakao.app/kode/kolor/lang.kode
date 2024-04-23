@@ -26,7 +26,6 @@ exts = ['txt''log']
 langNoon = ○ noon.load noonFile
 for names, keywords of langNoon
 
-    # log names
     for ext in names.split /\s/
         exts.push(ext) if ext not in exts
         lang[ext] ?= {}

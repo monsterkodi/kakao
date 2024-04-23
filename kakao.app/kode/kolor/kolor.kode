@@ -1074,7 +1074,6 @@ keyword = ->
     return if notCode
 
     if not lang[ext]
-        # log "no lang for ext? #{ext}"
         return
 
     if lang[ext].hasOwnProperty(chunk.match)

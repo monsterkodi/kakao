@@ -114,14 +114,15 @@ class Split
             ➜ return error "Split.do -- unknown action '#{action}'"
                     
         switch what
-            'editor' ➜ return @moveCommandLineBy -delta
+            'editor' 
+                if delta? ➜ return @moveCommandLineBy -delta
+                if pos?   ➜ return @flex.moveHandleToPos @flex.handles[0], pos
             'terminal' 'browser' 'commandline'
                 @raise what if what != 'commandline'
-                if delta? then @moveCommandLineBy delta
-                if pos? then @flex.moveHandleToPos @flex.handles[0], pos
-                return
-                
-        error "Split.do -- unhandled do command? #{sentence}?"
+                if delta? ➜ return @moveCommandLineBy delta
+                if pos?   ➜ return @flex.moveHandleToPos @flex.handles[0], pos
+            ➜    
+                error "Split.do -- unhandled do command? #{sentence}?"
 
     maximizeTerminal: -> 
         
@@ -274,7 +275,7 @@ class Split
     termEditHeight: -> @terminalHeight() + @commandlineHeight + @editorHeight()
         
     commandlineVisible: -> not @flex.isCollapsed 'commandline'
-    terminalVisible:    -> not @flex.isCollapsed 'terminal'
-    editorVisible:      -> not @flex.isCollapsed 'editor'
+    terminalVisible:    -> not @flex.isCollapsed('terminal') and @terminalHeight() > 0
+    editorVisible:      -> not @flex.isCollapsed 'editor'    and @editorHeight() > 0
         
 export Split

@@ -423,14 +423,14 @@ body
 
 .terminal-icon:before
 {
-    font-family: FontAwesomeRegular;
-    content: '\f022';
+    font-family: FontAwesomeSolid;
+    content: '\f107';
 }
 
 .editor-icon:before
 {
-    font-family: FontAwesomeRegular;
-    content: '\f410';
+    font-family: FontAwesomeSolid;
+    content: '\f106';
 }
 
 .file-icon:before
@@ -899,6 +899,16 @@ body
     pointer-events: auto;
     background: #000;
     opacity: 1;
+}
+
+.viewerEmbed
+{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    border: 10px solid #888;
 }
 
 .layerScroll

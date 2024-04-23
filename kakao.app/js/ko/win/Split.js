@@ -145,8 +145,15 @@ class Split
         switch (what)
         {
             case 'editor':
-                return this.moveCommandLineBy(-delta)
-
+                if ((delta != null))
+                {
+                    return this.moveCommandLineBy(-delta)
+                }
+                if ((pos != null))
+                {
+                    return this.flex.moveHandleToPos(this.flex.handles[0],pos)
+                }
+                break
             case 'terminal':
             case 'browser':
             case 'commandline':
@@ -156,17 +163,17 @@ class Split
                 }
                 if ((delta != null))
                 {
-                    this.moveCommandLineBy(delta)
+                    return this.moveCommandLineBy(delta)
                 }
                 if ((pos != null))
                 {
-                    this.flex.moveHandleToPos(this.flex.handles[0],pos)
+                    return this.flex.moveHandleToPos(this.flex.handles[0],pos)
                 }
-                return
-
+                break
+            default:
+                console.error(`Split.do -- unhandled do command? ${sentence}?`)
         }
 
-        console.error(`Split.do -- unhandled do command? ${sentence}?`)
     }
 
     maximizeTerminal ()
@@ -306,7 +313,7 @@ class Split
 
     focus (n)
     {
-        var e, _235_31_, _239_22_
+        var e, _236_31_, _240_22_
 
         if (n === 'commandline')
         {
@@ -382,12 +389,12 @@ class Split
 
     terminalVisible ()
     {
-        return !this.flex.isCollapsed('terminal')
+        return !this.flex.isCollapsed('terminal') && this.terminalHeight() > 0
     }
 
     editorVisible ()
     {
-        return !this.flex.isCollapsed('editor')
+        return !this.flex.isCollapsed('editor' && this.editorHeight() > 0)
     }
 }
 

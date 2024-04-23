@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var Viewer
 
@@ -24,7 +24,14 @@ Viewer = (function ()
     {
         this.close()
         this.div.classList.add('active')
-        return elem('img',{class:'viewerImage',parent:this.div,src:slash.fileUrl(path)})
+        if (_k_.in(slash.ext(path),['html']))
+        {
+            return elem('embed',{type:`text/${slash.ext(path)}`,class:'viewerEmbed',parent:this.div,src:slash.fileUrl(path)})
+        }
+        else
+        {
+            return elem('img',{class:'viewerImage',parent:this.div,src:slash.fileUrl(path)})
+        }
     }
 
     Viewer.prototype["close"] = function ()

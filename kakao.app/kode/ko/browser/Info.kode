@@ -56,7 +56,7 @@ file = (file) ->
             return error "file #{file} doesn't exist?"
 
         info =○ ffs.info file
-
+        
         [size, size_unit] = pretty.bytes(info.size).split ' '
         [time, time_unit] = pretty.age(info.modified).split ' '
         table.innerHTML = "<tr class='dataRow'><th>#{size}</th><td>#{size_unit}</td></tr><tr class='dataRow'><th>#{time}</th><td>#{time_unit}</td></tr>"
@@ -69,6 +69,9 @@ file = (file) ->
         elem class:'fileInfoSpacer'
     ]
 
+    if slash.ext(file) in ['html']
+        info.addEventListener 'dblclick' -> kore.set 'view|file' file
+    
     info
 
 export

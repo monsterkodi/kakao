@@ -23,7 +23,10 @@ function Viewer
         
         @div.classList.add 'active'
         
-        elem 'img' class:'viewerImage' parent:@div, src:slash.fileUrl path
+        if slash.ext(path) in ['html']
+            elem 'embed' type:"text/#{slash.ext path}" class:'viewerEmbed' parent:@div, src:slash.fileUrl path
+        else
+            elem 'img' class:'viewerImage' parent:@div, src:slash.fileUrl path
         
     close: => 
     

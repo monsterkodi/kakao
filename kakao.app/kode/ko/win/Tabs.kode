@@ -14,7 +14,6 @@ class Tabs
 
     @: (titlebar) ->
 
-        @tabState = {}
         @emptyid = 0
         @tabs = []
         
@@ -185,7 +184,7 @@ class Tabs
     delTab: (path) =>
         
         if tab = @koreTabForPath path
-            # log 'delTab' path
+
             tabs = @fileTabs()
             index = tabs.indexOf tab
             if tab.active
@@ -213,10 +212,9 @@ class Tabs
                 
                 @setActive path
                 
-                if tab.dirty and @tabState[tab.path]
+                if tab.dirty and tab.state
                     log 'restoreTab' path, tab.path, kore.get 'editor|file'
-                    post.emit 'restoreTab' tab, @tabState[tab.path]
-                    delete @tabState[tab.path]
+                    post.emit 'restoreTab' tab
                     return 
                     
                 post.emit 'jumpToFile' path
@@ -247,17 +245,13 @@ class Tabs
             
     renameFile: (file, src) =>
         
-        # log 'Tabs.renameFile' file, src
-        
         if src
             if tab = @koreTabForPath src
-                # log 'Tabs.fileRenamed' src, file
                 post.emit 'loadFile' file
                 @delTab src
                 return
 
         if file == kore.get('editor|file') and tab = @koreTabForPath file
-            # log 'Tabs.fileRenamed ▸ loadFile' file
             post.emit 'loadFile' file
         
     #  0000000   000  000000000        0000000  000000000   0000000   000000000  000   000   0000000  
@@ -305,11 +299,12 @@ class Tabs
                             post.emit 'saveFileAs'
                         else
                             delete tab.dirty
-                            if state = @tabState[tab.path]
-                                File.save state.file, state.state.text(), (file) ->
-                                    error "Tabs.onClick failed to save #{state.file}" if not file
-                    delete tab.dirty
-                    @update()
+                            if state = tab.state
+                                File.save state.file, state.state.text(), (file) =>
+                                    return error "Tabs.onClick failed to save #{state.file}" if not file
+                                    delete tab.state
+                                    delete tab.dirty
+                                    @update()
             else
                 @activate tab.path
         true
@@ -376,7 +371,7 @@ class Tabs
 
         log 'onNewEmptyTab'
         @emptyid += 1
-        @addTab "untitled-#{@emptyid}"
+        @addTab   "untitled-#{@emptyid}"
         @activate "untitled-#{@emptyid}"
 
     onNewTabWithFile: (file) =>
@@ -517,12 +512,12 @@ class Tabs
     onStoreState: (path, state) =>
 
         if empty state
-            warn 'storeState empty state?' path, state
+            warn 'storeState empty state??' path, state
             return
             
         if tab = @koreTabForPath path
             if tab.dirty and tab.path
-                @tabState[tab.path] = state
+                tab.state = state
                 log 'store tab state' tab.path, state
                 
     # 00000000   00000000  000   000  00000000  00000000   000000000       00000000  000  000      00000000  
@@ -533,9 +528,9 @@ class Tabs
 
     revertFile: (path) =>
         
-        delete @tabState[path]
         if tab = @koreTabForPath path
             delete tab.dirty
+            delete tab.state
         @update()
         
         
@@ -553,10 +548,13 @@ class Tabs
                     post.emit 'saveFile'
                 else
                     continue if tab.path.startsWith 'untitled'
-                    if state = @tabState[tab.path]
-                        File.save state.file, state.state.text(), (file) ->
-                            error "Tabs.onSaveAll failed to save #{state.file}" if not file
-                delete tab.dirty
+                    # if state = @tabState[tab.path]
+                    if state = tab.state
+                        File.save state.file, state.state.text(), (file) =>
+                            return error "Tabs.onSaveAll failed to save #{state.file}" if not file
+                            delete tab.state
+                            delete tab.dirty
+                            @update()
         @update()
 
     #  0000000   0000000   000   000  000000000  00000000  000   000  000000000

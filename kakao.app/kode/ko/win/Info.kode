@@ -21,6 +21,7 @@ class Info
     @: (editor) ->
         
         post.on 'editorFocus' @setEditor
+        post.on 'split'       @updateEditorButton
 
         ttip = (e,t) -> new tooltip elem:e, text:t, x:0, y:1, textSize: 11, keep:true
                 
@@ -86,14 +87,24 @@ class Info
         
         @setEditor editor     
         
+    # 00000000  0000000    000  000000000   0000000   00000000   
+    # 000       000   000  000     000     000   000  000   000  
+    # 0000000   000   000  000     000     000   000  0000000    
+    # 000       000   000  000     000     000   000  000   000  
+    # 00000000  0000000    000     000      0000000   000   000  
+    
     changeEditorFocus: =>
         
-        if @editor.name == 'terminal'
+        if window.split.terminalVisible()
             window.split.do 'maximize editor'
             window.split.do 'focus editor'
         else
-            window.split.do 'enlarge terminal'
-            window.split.do 'focus terminal'
+            window.split.do 'half editor'
+            
+    updateEditorButton: =>
+        
+        @infoEditor.classList.toggle 'terminal-icon' not window.split.terminalVisible()
+        @infoEditor.classList.toggle 'editor-icon'       window.split.terminalVisible()
 
     #  0000000  00000000  000000000        00000000  0000000    000  000000000   0000000   00000000 
     # 000       000          000           000       000   000  000     000     000   000  000   000
@@ -106,9 +117,6 @@ class Info
         return if editor.name not in ['editor''terminal']
         
         return if editor == @editor
-        
-        @infoEditor.classList.toggle 'terminal-icon' editor.name == 'editor'
-        @infoEditor.classList.toggle 'editor-icon'   editor.name == 'terminal'
         
         if @editor?
             @editor.removeListener 'numLines'     @onNumLines

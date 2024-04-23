@@ -60,7 +60,7 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
         inc rgs, 5 '😀'     ▸   'text'
         
         rgs = ranges "a➜b a▬▶b"
-        # log rgs
+
         inc rgs, 1 '➜' ▸ 'punct'
         inc rgs, 5 '▬' ▸ 'punct'
         inc rgs, 6 '▶' ▸ 'punct'

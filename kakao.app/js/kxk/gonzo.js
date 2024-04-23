@@ -7,7 +7,7 @@ import kstr from "./kstr.js"
 
 gonzo = function (str)
 {
-    var indent, line, lines, lst, stack, top, _29_25_, _35_21_
+    var indent, line, lines, lst, stack, top, _27_25_, _33_21_
 
     lines = str.split('\n')
     stack = [{indent:-1,blck:[]}]
@@ -24,7 +24,7 @@ gonzo = function (str)
         {
             if (indent > lst.indent)
             {
-                lst.blck = ((_29_25_=lst.blck) != null ? _29_25_ : [])
+                lst.blck = ((_27_25_=lst.blck) != null ? _27_25_ : [])
                 lst.blck.push({line:line,indent:indent})
                 stack.push(lst)
                 continue
@@ -32,7 +32,7 @@ gonzo = function (str)
         }
         if (indent > top.indent)
         {
-            top.blck = ((_35_21_=top.blck) != null ? _35_21_ : [])
+            top.blck = ((_33_21_=top.blck) != null ? _33_21_ : [])
             top.blck.push({line:line,indent:indent})
             continue
         }

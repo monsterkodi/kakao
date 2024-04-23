@@ -22,8 +22,6 @@ gonzo = (str) ->
         while line[indent] == ' ' ➜ indent++
         line = line[indent..]
         
-        # log 'line' b2(indent), y5(line), g4 kstr stack
-
         if lst = last top.blck
             if indent > lst.indent
                 lst.blck ?= []
@@ -40,11 +38,6 @@ gonzo = (str) ->
             stack.pop()
             top = last stack
 
-        # if indent == top.indent and stack.length > 1
-            # log b3(indent), y5(line)
-            # for si,idx in stack
-                # log g1(idx), g3(kstr si)
-            
         top.blck.push line:line, indent:indent
             
     stack[0].blck

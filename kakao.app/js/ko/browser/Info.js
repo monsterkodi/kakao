@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var file, image
 
@@ -62,6 +62,13 @@ file = function (file)
         return table.innerHTML = `<tr class='dataRow'><th>${size}</th><td>${size_unit}</td></tr><tr class='dataRow'><th>${time}</th><td>${time_unit}</td></tr>`
     })
     info = elem({class:'browserFileInfo',children:[elem({class:'fileInfoSpacer'}),elem({class:`fileInfoIcon ${slash.ext(file)} ${File.iconClassName(file)}`}),elem({class:`fileInfoFile ${slash.ext(file)}`,html:File.span(file)}),table,elem({class:'fileInfoSpacer'})]})
+    if (_k_.in(slash.ext(file),['html']))
+    {
+        info.addEventListener('dblclick',function ()
+        {
+            return kore.set('view|file',file)
+        })
+    }
     return info
 }
 export default {file:file,image:image}

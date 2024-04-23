@@ -46,7 +46,6 @@ class Tabs
         this.activeKoreTab = this.activeKoreTab.bind(this)
         this.onKoreTabs = this.onKoreTabs.bind(this)
         this.update = this.update.bind(this)
-        this.tabState = {}
         this.emptyid = 0
         this.tabs = []
         this.div = $('title')
@@ -92,9 +91,9 @@ class Tabs
         this.div.innerHTML = ''
         this.tabs = []
         var list = _k_.list(tabs)
-        for (var _70_20_ = 0; _70_20_ < list.length; _70_20_++)
+        for (var _69_20_ = 0; _69_20_ < list.length; _69_20_++)
         {
-            koreTab = list[_70_20_]
+            koreTab = list[_69_20_]
             this.tabs.push(new Tab(this,koreTab))
         }
     }
@@ -104,9 +103,9 @@ class Tabs
         var tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _75_16_ = 0; _75_16_ < list.length; _75_16_++)
+        for (var _74_16_ = 0; _74_16_ < list.length; _74_16_++)
         {
-            tab = list[_75_16_]
+            tab = list[_74_16_]
             if (slash.samePath(tab.path,path))
             {
                 return tab
@@ -148,9 +147,9 @@ class Tabs
         var tab
 
         var list = _k_.list(this.prjTabs())
-        for (var _87_16_ = 0; _87_16_ < list.length; _87_16_++)
+        for (var _86_16_ = 0; _86_16_ < list.length; _86_16_++)
         {
-            tab = list[_87_16_]
+            tab = list[_86_16_]
             if (path.startsWith(tab.path))
             {
                 return tab
@@ -163,9 +162,9 @@ class Tabs
         var tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _92_16_ = 0; _92_16_ < list.length; _92_16_++)
+        for (var _91_16_ = 0; _91_16_ < list.length; _91_16_++)
         {
-            tab = list[_92_16_]
+            tab = list[_91_16_]
             if (tab.active)
             {
                 return tab
@@ -180,9 +179,9 @@ class Tabs
         if (fileTab = this.activeKoreTab())
         {
             var list = _k_.list(this.koreTabs())
-            for (var _98_20_ = 0; _98_20_ < list.length; _98_20_++)
+            for (var _97_20_ = 0; _97_20_ < list.length; _97_20_++)
             {
-                tab = list[_98_20_]
+                tab = list[_97_20_]
                 if (tab.type === 'prj' && fileTab.path.startsWith(tab.path))
                 {
                     return tab
@@ -238,7 +237,7 @@ class Tabs
 
     cleanTabs ()
     {
-        var i, k, prjPath, prjTabs, remain, sorted, tab, tabs, v, _163_29_
+        var i, k, prjPath, prjTabs, remain, sorted, tab, tabs, v, _162_29_
 
         tabs = this.koreTabs()
         sorted = tabs.filter(function (t)
@@ -251,16 +250,16 @@ class Tabs
         })
         prjTabs = {}
         var list = _k_.list(sorted)
-        for (var _156_16_ = 0; _156_16_ < list.length; _156_16_++)
+        for (var _155_16_ = 0; _155_16_ < list.length; _155_16_++)
         {
-            tab = list[_156_16_]
+            tab = list[_155_16_]
             prjTabs[tab.path] = [tab]
         }
         while (tab = remain.shift())
         {
             prjPath = Projects.dir(tab.path)
             prjPath = (prjPath != null ? prjPath : slash.dir(tab.path))
-            prjTabs[prjPath] = ((_163_29_=prjTabs[prjPath]) != null ? _163_29_ : [{type:'prj',path:prjPath}])
+            prjTabs[prjPath] = ((_162_29_=prjTabs[prjPath]) != null ? _162_29_ : [{type:'prj',path:prjPath}])
             prjTabs[prjPath].push(tab)
         }
         for (k in prjTabs)
@@ -277,7 +276,7 @@ class Tabs
             v = prjTabs[k]
             if (v.slice(-1)[0].tmp)
             {
-                for (var _173_25_ = i = v.length - 2, _173_37_ = 0; (_173_25_ <= _173_37_ ? i <= 0 : i >= 0); (_173_25_ <= _173_37_ ? ++i : --i))
+                for (var _172_25_ = i = v.length - 2, _172_37_ = 0; (_172_25_ <= _172_37_ ? i <= 0 : i >= 0); (_172_25_ <= _172_37_ ? ++i : --i))
                 {
                     if (v[i].tmp)
                     {
@@ -326,11 +325,10 @@ class Tabs
             if (tab.type === 'file')
             {
                 this.setActive(path)
-                if (tab.dirty && this.tabState[tab.path])
+                if (tab.dirty && tab.state)
                 {
                     console.log('restoreTab',path,tab.path,kore.get('editor|file'))
-                    post.emit('restoreTab',tab,this.tabState[tab.path])
-                    delete this.tabState[tab.path]
+                    post.emit('restoreTab',tab)
                     return
                 }
                 return post.emit('jumpToFile',path)
@@ -345,17 +343,17 @@ class Tabs
 
     setActive (path)
     {
-        var tab, _233_26_, _233_31_
+        var tab, _231_26_, _231_31_
 
         var list = _k_.list(this.koreTabs())
-        for (var _229_16_ = 0; _229_16_ < list.length; _229_16_++)
+        for (var _227_16_ = 0; _227_16_ < list.length; _227_16_++)
         {
-            tab = list[_229_16_]
+            tab = list[_227_16_]
             delete tab.active
             if (slash.samePath(tab.path,path))
             {
                 tab.active = true
-                ;((_233_26_=this.tab(path)) != null ? (_233_31_=_233_26_.div) != null ? _233_31_.scrollIntoViewIfNeeded() : undefined : undefined)
+                ;((_231_26_=this.tab(path)) != null ? (_231_31_=_231_26_.div) != null ? _231_31_.scrollIntoViewIfNeeded() : undefined : undefined)
             }
         }
     }
@@ -439,20 +437,21 @@ class Tabs
                         else
                         {
                             delete tab.dirty
-                            if (state = this.tabState[tab.path])
+                            if (state = tab.state)
                             {
-                                File.save(state.file,state.state.text(),function (file)
+                                File.save(state.file,state.state.text(),(function (file)
                                 {
                                     if (!file)
                                     {
-                                        console.error(`Tabs.onClick failed to save ${state.file}`)
+                                        return console.error(`Tabs.onClick failed to save ${state.file}`)
                                     }
-                                })
+                                    delete tab.state
+                                    delete tab.dirty
+                                    return this.update()
+                                }).bind(this))
                             }
                         }
                     }
-                    delete tab.dirty
-                    this.update()
                 }
             }
             else
@@ -536,7 +535,7 @@ class Tabs
 
         active = this.activeKoreTab()
         tabs = this.koreTabs()
-        for (var _362_21_ = index = tabs.length - 1, _362_36_ = 0; (_362_21_ <= _362_36_ ? index <= 0 : index >= 0); (_362_21_ <= _362_36_ ? ++index : --index))
+        for (var _357_21_ = index = tabs.length - 1, _357_36_ = 0; (_357_21_ <= _357_36_ ? index <= 0 : index >= 0); (_357_21_ <= _357_36_ ? ++index : --index))
         {
             tab = tabs[index]
             if (tab === active)
@@ -563,7 +562,7 @@ class Tabs
     {
         var col, line, path, prjPath
 
-        var _384_26_ = slash.splitFileLine(file); path = _384_26_[0]; line = _384_26_[1]; col = _384_26_[2]
+        var _379_26_ = slash.splitFileLine(file); path = _379_26_[0]; line = _379_26_[1]; col = _379_26_[2]
 
         if (!this.koreTabForPath(path))
         {
@@ -682,7 +681,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _461_25_ = [tb,ta]; ta = _461_25_[0]; tb = _461_25_[1]
+                    var _456_25_ = [tb,ta]; ta = _456_25_[0]; tb = _456_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -725,9 +724,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _493_16_ = 0; _493_16_ < list.length; _493_16_++)
+        for (var _488_16_ = 0; _488_16_ < list.length; _488_16_++)
         {
-            tab = list[_493_16_]
+            tab = list[_488_16_]
             tab.update()
         }
     }
@@ -756,14 +755,14 @@ class Tabs
 
         if (_k_.empty(state))
         {
-            console.warn('storeState empty state?',path,state)
+            console.warn('storeState empty state??',path,state)
             return
         }
         if (tab = this.koreTabForPath(path))
         {
             if (tab.dirty && tab.path)
             {
-                this.tabState[tab.path] = state
+                tab.state = state
                 console.log('store tab state',tab.path,state)
             }
         }
@@ -773,10 +772,10 @@ class Tabs
     {
         var tab
 
-        delete this.tabState[path]
         if (tab = this.koreTabForPath(path))
         {
             delete tab.dirty
+            delete tab.state
         }
         return this.update()
     }
@@ -786,9 +785,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _550_16_ = 0; _550_16_ < list.length; _550_16_++)
+        for (var _545_16_ = 0; _545_16_ < list.length; _545_16_++)
         {
-            tab = list[_550_16_]
+            tab = list[_545_16_]
             if (tab.dirty)
             {
                 if (tab.active)
@@ -801,18 +800,20 @@ class Tabs
                     {
                         continue
                     }
-                    if (state = this.tabState[tab.path])
+                    if (state = tab.state)
                     {
-                        File.save(state.file,state.state.text(),function (file)
+                        File.save(state.file,state.state.text(),(function (file)
                         {
                             if (!file)
                             {
-                                console.error(`Tabs.onSaveAll failed to save ${state.file}`)
+                                return console.error(`Tabs.onSaveAll failed to save ${state.file}`)
                             }
-                        })
+                            delete tab.state
+                            delete tab.dirty
+                            return this.update()
+                        }).bind(this))
                     }
                 }
-                delete tab.dirty
             }
         }
         return this.update()

@@ -345,8 +345,9 @@ function Buffer extends events
     rangesForLinesFromTopToBot: (top,bot) ->
         r = []
         ir = [top,bot]
-        for li in [startOf(ir)...endOf(ir)]
-            r.push @rangeForLineAtIndex li
+        for li in startOf(ir)...endOf(ir)
+            if 0 <= li < @numLines()
+                r.push @rangeForLineAtIndex li
         r
 
     rangesForText: (t, opt) ->

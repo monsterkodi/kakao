@@ -24,8 +24,8 @@
 ([^\/]+)(\.sh$)         . sh      . sh.ext
 ([^\/]+)(\.md$)         . md      . md.ext
 ([^\/]+)(\.txt$)        . txt     . txt.ext
-([^\/]+)(\.png|\.jpg|\.gif)$     . image . image.ext
-([^\/]+)(\.pxm|\.tiff?|\.icns)   . pic . pic.ext
+([^\/]+)(\.png|\.jpe?g|\.gif)$    . image . image.ext
+([^\/]+)(\.pxm|\.tiff?|\.icns)    . pic . pic.ext
 
 ([^\/]+)(?:\/)    dir
 
