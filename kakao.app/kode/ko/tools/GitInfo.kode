@@ -97,7 +97,13 @@ class GitInfo
         log 'GitInfo.commit currentFile' window.textEditor.currentFile
         log 'GitInfo.commit Projects.current' Projects.current()
         
-        if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
+        gitDir  = Projects.dir kore.get 'editor|file'
+        gitDir ?= Projects.current()
+        
+        if empty gitDir
+            gitDir =○ kakao 'fs.git' kore.get 'editor|file'
+        
+        if gitDir
             
             m = msg.join ' '
             m = 'misc' if empty m
@@ -124,6 +130,7 @@ class GitInfo
 
     onDiff: (prjDir) =>
         
+        window.commandline.startCommand 'macro'
         @status diff:true prjDir:prjDir
         window.split.do 'minimize editor'
         window.commandline.setText 'commit ' #if empty prjDir

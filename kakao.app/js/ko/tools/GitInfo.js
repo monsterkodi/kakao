@@ -114,7 +114,13 @@ class GitInfo
         console.log('GitInfo.commit editor|file',kore.get('editor|file'))
         console.log('GitInfo.commit currentFile',window.textEditor.currentFile)
         console.log('GitInfo.commit Projects.current',Projects.current())
-        if (gitDir = await kakao('fs.git',window.textEditor.currentFile))
+        gitDir = Projects.dir(kore.get('editor|file'))
+        gitDir = (gitDir != null ? gitDir : Projects.current())
+        if (_k_.empty(gitDir))
+        {
+            gitDir = await kakao('fs.git',kore.get('editor|file'))
+        }
+        if (gitDir)
         {
             m = msg.join(' ')
             if (_k_.empty(m))
@@ -127,9 +133,9 @@ class GitInfo
             out += await kakao('app.sh','/usr/bin/git',{cwd:gitDir,arg:"push -q"})
             window.terminal.clear()
             var list = _k_.list(out.split('\n'))
-            for (var _112_21_ = 0; _112_21_ < list.length; _112_21_++)
+            for (var _118_21_ = 0; _118_21_ < list.length; _118_21_++)
             {
-                line = list[_112_21_]
+                line = list[_118_21_]
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(line,'kode')})
             }
             window.split.do('maximize editor')
@@ -139,6 +145,7 @@ class GitInfo
 
     onDiff (prjDir)
     {
+        window.commandline.startCommand('macro')
         this.status({diff:true,prjDir:prjDir})
         window.split.do('minimize editor')
         return window.commandline.setText('commit ')
@@ -159,9 +166,9 @@ class GitInfo
             gitDir = await kakao('fs.git',editor.currentFile)
             patch = await Git.patch(revs[0])
             var list = _k_.list(patch)
-            for (var _142_18_ = 0; _142_18_ < list.length; _142_18_++)
+            for (var _149_18_ = 0; _149_18_ < list.length; _149_18_++)
             {
-                p = list[_142_18_]
+                p = list[_149_18_]
                 path = slash.path(gitDir,p.srcfile.slice(2))
                 if (_k_.in(slash.ext(path),IGNORE_FILE_EXTS))
                 {
@@ -182,22 +189,22 @@ class GitInfo
         var aline, an, change, dline, dn, ds, dss, line, linfo
 
         var list = _k_.list(changes)
-        for (var _169_19_ = 0; _169_19_ < list.length; _169_19_++)
+        for (var _176_19_ = 0; _176_19_ < list.length; _176_19_++)
         {
-            change = list[_169_19_]
+            change = list[_176_19_]
             spacer()
             linfo = change.lineinfo.split(' ')
             if (linfo[0][0] === '-' && linfo[1][0] === '+')
             {
-                var _175_28_ = linfo[0].slice(1).split(',').map(function (i)
+                var _182_28_ = linfo[0].slice(1).split(',').map(function (i)
                 {
                     return parseInt(i)
-                }); dline = _175_28_[0]; dn = _175_28_[1]
+                }); dline = _182_28_[0]; dn = _182_28_[1]
 
-                var _176_28_ = linfo[1].slice(1).split(',').map(function (i)
+                var _183_28_ = linfo[1].slice(1).split(',').map(function (i)
                 {
                     return parseInt(i)
-                }); aline = _176_28_[0]; an = _176_28_[1]
+                }); aline = _183_28_[0]; an = _183_28_[1]
 
                 if (!(_k_.isNum(dn)))
                 {
@@ -209,17 +216,17 @@ class GitInfo
                 }
             }
             var list1 = _k_.list(change.changedlines)
-            for (var _180_21_ = 0; _180_21_ < list1.length; _180_21_++)
+            for (var _187_21_ = 0; _187_21_ < list1.length; _187_21_++)
             {
-                line = list1[_180_21_]
+                line = list1[_187_21_]
                 switch (line.type)
                 {
                     case '-':
                         dss = Syntax.dissForTextAndSyntax(line.line,slash.ext(path))
                         var list2 = _k_.list(dss)
-                        for (var _185_31_ = 0; _185_31_ < list2.length; _185_31_++)
+                        for (var _192_31_ = 0; _192_31_ < list2.length; _192_31_++)
                         {
-                            ds = list2[_185_31_]
+                            ds = list2[_192_31_]
                             ds.clss += ' ' + 'git-deleted'
                         }
                         window.terminal.appendMeta({diss:dss,href:path + ':' + dline,clss:'gitInfoDelete',click:this.onMetaClick,line:'✘'})
@@ -251,9 +258,9 @@ class GitInfo
         linesAdded = 0
         index = 0
         var list = _k_.list(changes.lines)
-        for (var _220_17_ = 0; _220_17_ < list.length; _220_17_++)
+        for (var _227_17_ = 0; _227_17_ < list.length; _227_17_++)
         {
-            text = list[_220_17_]
+            text = list[_227_17_]
             dss = Syntax.dissForTextAndSyntax(text,syntaxName)
             if (_k_.empty(dss))
             {
@@ -263,9 +270,9 @@ class GitInfo
             {
                 case 'deleted':
                     var list1 = _k_.list(dss)
-                    for (var _230_27_ = 0; _230_27_ < list1.length; _230_27_++)
+                    for (var _237_27_ = 0; _237_27_ < list1.length; _237_27_++)
                     {
-                        ds = list1[_230_27_]
+                        ds = list1[_237_27_]
                         ds.clss += ' ' + 'git-deleted'
                     }
                     window.terminal.appendMeta({line:'✘',diss:dss,href:`${changes.file}:${changes.line + index}`,clss:'gitInfoDelete',click:this.onMetaClick})
@@ -287,9 +294,9 @@ class GitInfo
                         {
                             metas = []
                             var list2 = _k_.list(diffs)
-                            for (var _263_37_ = 0; _263_37_ < list2.length; _263_37_++)
+                            for (var _270_37_ = 0; _270_37_ < list2.length; _270_37_++)
                             {
-                                diff = list2[_263_37_]
+                                diff = list2[_270_37_]
                                 metas.push({start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                             }
                             dss = Syntax.dissForTextAndSyntax(changes.info.mod[index].old,syntaxName)
@@ -300,9 +307,9 @@ class GitInfo
                     {
                         metas = []
                         var list3 = _k_.list(diffs)
-                        for (var _281_33_ = 0; _281_33_ < list3.length; _281_33_++)
+                        for (var _288_33_ = 0; _288_33_ < list3.length; _288_33_++)
                         {
-                            diff = list3[_281_33_]
+                            diff = list3[_288_33_]
                             metas.push({start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                         }
                         window.terminal.appendMeta({diss:dss,href:`${changes.file}:${changes.line + index}`,clss:'gitInfoAdded',click:this.onMetaClick,metas:metas})
@@ -311,9 +318,9 @@ class GitInfo
                 default:
                     console.log('CHANGE EVER COME HERE?')
                     var list4 = _k_.list(diffs)
-                for (var _297_29_ = 0; _297_29_ < list4.length; _297_29_++)
+                for (var _304_29_ = 0; _304_29_ < list4.length; _304_29_++)
                 {
-                    diff = list4[_297_29_]
+                    diff = list4[_304_29_]
                     window.terminal.appendMeta({line:window.terminal.numLines(),start:diff.index,end:diff.index + diff.length,clss:'gitInfoChange'})
                 }
             }
@@ -330,10 +337,10 @@ class GitInfo
 
     status (opt = {})
     {
-        var logDiff, onMetaClick, _320_19_, _321_19_
+        var logDiff, onMetaClick, _327_19_, _328_19_
 
-        opt.diff = ((_320_19_=opt.diff) != null ? _320_19_ : false)
-        opt.prjDir = ((_321_19_=opt.prjDir) != null ? _321_19_ : Projects.dir(window.editor.currentFile))
+        opt.diff = ((_327_19_=opt.diff) != null ? _327_19_ : false)
+        opt.prjDir = ((_328_19_=opt.prjDir) != null ? _328_19_ : Projects.dir(window.editor.currentFile))
         window.split.raise('terminal')
         window.terminal.clear()
         onMetaClick = this.onMetaClick
@@ -378,18 +385,18 @@ class GitInfo
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _357_21_ = 0; _357_21_ < list.length; _357_21_++)
+            for (var _364_21_ = 0; _364_21_ < list.length; _364_21_++)
             {
-                file = list[_357_21_]
+                file = list[_364_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,opt.diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _362_21_ = 0; _362_21_ < list1.length; _362_21_++)
+            for (var _369_21_ = 0; _369_21_ < list1.length; _369_21_++)
             {
-                file = list1[_362_21_]
+                file = list1[_369_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,opt.diff)
@@ -408,15 +415,15 @@ class GitInfo
                 {
                     return _k_.in(slash.ext(f),SOURCE_FILE_EXTS)
                 }))
-                for (var _372_25_ = 0; _372_25_ < list2.length; _372_25_++)
+                for (var _379_25_ = 0; _379_25_ < list2.length; _379_25_++)
                 {
-                    file = list2[_372_25_]
+                    file = list2[_379_25_]
                     logFile('changed',file,status,NaN)
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _378_31_ = 0; _378_31_ < list3.length; _378_31_++)
+                    for (var _385_31_ = 0; _385_31_ < list3.length; _385_31_++)
                     {
-                        change = list3[_378_31_]
+                        change = list3[_385_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {
