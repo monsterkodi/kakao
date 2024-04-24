@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import kxk from "../../kxk.js"
 let post = kxk.post
@@ -71,8 +71,13 @@ class Projects
 
     static async indexProject (file)
     {
-        var exists, prjPath, result, walker, _71_19_
+        var exists, prjPath, result, walker, _75_19_
 
+        if (!(_k_.isStr(file)))
+        {
+            console.log('Projects.indexProject file not a str?',file)
+            return
+        }
         if (file.startsWith('untitled-'))
         {
             return
@@ -93,7 +98,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_71_19_=this.queue) != null ? _71_19_ : [])
+            this.queue = ((_75_19_=this.queue) != null ? _75_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -114,9 +119,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _91_21_ = 0; _91_21_ < list.length; _91_21_++)
+            for (var _95_21_ = 0; _95_21_ < list.length; _95_21_++)
             {
-                file = list[_91_21_]
+                file = list[_95_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('Projects project indexed',prjPath,this.projects)

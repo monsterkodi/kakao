@@ -85,7 +85,7 @@ class FileHandler
     # opens a list of files in new tabs
     # called from open file dialog
     
-    onOpenDialog: (files) -> 
+    onOpenDialog: (files) ->
 
         return if empty files
 

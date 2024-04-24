@@ -19,10 +19,11 @@ class GitInfo
 
     @: ->
         
-        post.on 'git.diff'    @onDiff
-        post.on 'git.status'  @status
-        post.on 'git.commit'  @commit
-        post.on 'git.history' @history
+        post.on 'git.log'     @log      # diff for certain revision
+        post.on 'git.diff'    @diff     # diff for whole project
+        post.on 'git.status'  @status   # current file status (file changes) in project
+        post.on 'git.commit'  @commit   
+        post.on 'git.history' @history  # history of commits and file changes in project
         
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   
@@ -30,7 +31,9 @@ class GitInfo
     # 000   000  000       000     000     000   000  000   000     000     
     # 000   000  000  0000000      000      0000000   000   000     000     
     
-    history: (path) ○=>
+    history: (path) => @doHistory path
+        
+    doHistory: (path) ○->
 
         path ?= window.editor.currentFile
         return if not path
@@ -50,7 +53,7 @@ class GitInfo
                 diss:       Syntax.dissForTextAndSyntax text, 'git'
                 text:       text
                 clss:       'gitInfoFile'
-                href:       "macro diff #{commit.commit}"
+                href:       "macro log #{commit.commit}"
                 click:      @onMetaClick
                 # line:       '●'
                 # lineClss:   'gitInfoLine changed'
@@ -81,6 +84,8 @@ class GitInfo
                     line:       symbol
                     lineClss:   'gitInfoLine '+change
                     
+        window.split.do 'minimize editor' 
+        window.split.do 'focus terminal' 
         window.terminal.singleCursorAtPos [0 0]
 
     #  0000000   0000000   00     00  00     00  000  000000000  
@@ -131,42 +136,49 @@ class GitInfo
     # 000   000  000  000       000       
     # 0000000    000  000       000       
 
-    onDiff: (prjDir) =>
+    diff: (prjDir) =>
         
         window.commandline.startCommand 'macro'
         @status diff:true prjDir:prjDir
         window.split.do 'minimize editor'
         window.commandline.setText 'commit ' #if empty prjDir
+        
+    # 000       0000000    0000000   
+    # 000      000   000  000        
+    # 000      000   000  000  0000  
+    # 000      000   000  000   000  
+    # 0000000   0000000    0000000   
     
-    diff: (revs) ○->
+    log: (rev) => @doLog rev
     
-        if empty revs
-            @status diff:true
-        else
-            window.split.raise 'terminal'
-            window.terminal.clear()
+    doLog: (rev) ○->
+        
+        # log 'doLog' rev
+        
+        window.split.raise 'terminal'
+        window.terminal.clear()
+        
+        gitDir =○ kakao 'fs.git' editor.currentFile
+        patch  =○ Git.patch rev
+        
+        for p in patch
             
-            gitDir =○ kakao 'fs.git' editor.currentFile
-            patch  =○ Git.patch revs[0]
+            path = slash.path gitDir, p.srcfile[2..]
             
-            for p in patch
+            continue if slash.ext(path) in IGNORE_FILE_EXTS
+            
+            window.terminal.appendMeta
+                diss:       Syntax.dissForTextAndSyntax "#{path}" 'ko'
+                href:       path
+                clss:       'gitInfoFile'
+                click:      @onMetaClick
+                line:       '●'
+                lineClss:   'gitInfoLine changed'
                 
-                path = slash.path gitDir, p.srcfile[2..]
+            if p.changes is arr
                 
-                continue if slash.ext(path) in IGNORE_FILE_EXTS
-                
-                window.terminal.appendMeta
-                    diss:       Syntax.dissForTextAndSyntax "#{path}" 'ko'
-                    href:       path
-                    clss:       'gitInfoFile'
-                    click:      @onMetaClick
-                    line:       '●'
-                    lineClss:   'gitInfoLine changed'
-                    
-                if p.changes is arr
-                    
-                    @logChanges gitDir, path, p.changes
-                    spacer()
+                @logChanges gitDir, path, p.changes
+                spacer()
     
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
     # 000       000   000  000   000  0000  000  000        000       000       
@@ -411,18 +423,19 @@ class GitInfo
     #  0000000  0000000  000   0000000  000   000
 
     onMetaClick: (meta, event) =>
-
+        
         if href = meta[2].href
+            log 'onMetaClick' href
             
             if href.startsWith 'macro '
                 # log 'GitInfo.onMetaClick start macro' href[6..]
                 window.commandline.startCommand 'macro'
-                window.commandline.hideList() # not sure if startCommand should get more paramters to prevent list opening?
-                if href[6..].startsWith 'diff'
+                window.commandline.hideList() # should startCommand get more parameters to prevent list opening?
+                if href[6..].startsWith 'log'
                     window.commandline.setText 'history'
                 else
                     window.commandline.setText href[6..]
-                # log 'GitInfo.onMetaClick execute' href[6..]
+                log 'GitInfo.onMetaClick execute' href[6..]
                 window.commandline.command.execute href[6..]
             else
                 if href.indexOf(':') > 0
@@ -430,6 +443,7 @@ class GitInfo
                 post.emit 'loadFile' href
                 window.split.do 'quart terminal'
                 
+        log 'onMetaClick unhandled?'
         'unhandled' # otherwise cursor doesn't get set
                     
 export new GitInfo

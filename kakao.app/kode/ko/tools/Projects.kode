@@ -50,6 +50,10 @@ class Projects
     
     @indexProject: (file) ○=>
         
+        if not file is str
+            log 'Projects.indexProject file not a str?' file
+            return
+            
         return if file.startsWith 'untitled-'
         
         log 'Projects.indexProject ●' file

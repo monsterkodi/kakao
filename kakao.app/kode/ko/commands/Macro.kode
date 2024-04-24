@@ -134,30 +134,22 @@ function Macro extends Command
             's'
             'ks'
             'status'
-            'git'   ➜ post.emit 'git.status'
+            'git'       ➜ post.emit 'git.status'
+            
+            'h'
+            'history'   ➜ post.emit 'git.history'
 
             'd'
             'kd'
-            'diff'
+            'diff'      ➜ post.emit 'git.diff' cmds
                 
-                post.emit 'git.diff' cmds
-                return select:false
-                
-            'h'
-            'log'
-            'history'
+            'log'       ➜ post.emit 'git.log' cmds
             
-                post.emit 'git.history'
-                window.split.do 'minimize editor' 
-                window.split.do 'focus terminal' 
-
             'c'
             'kc'
             'commit'
-            'ci'    ➜ post.emit 'git.commit' cmds
+            'ci'        ➜ post.emit 'git.commit' cmds
             
-            'err'   ➜ throw new Error 'err'
-
             # 000   000  00000000  000      00000000
             # 000   000  000       000      000   000
             # 000000000  0000000   000      00000000

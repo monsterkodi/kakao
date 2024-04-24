@@ -84,10 +84,7 @@ Window = (function ()
     }
 
     Window.prototype["onWindowWithoutStash"] = async function ()
-    {
-        await kakao('win.setSize',1000,1000)
-        return await kakao('win.center')
-    }
+    {}
 
     Window.prototype["onWindowCreated"] = function (win)
     {

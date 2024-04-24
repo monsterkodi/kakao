@@ -43,8 +43,8 @@ function Window extends win.Delegate
 
     onWindowWithoutStash: ○->
         
-        ○ kakao 'win.setSize' 1000 1000
-        ○ kakao 'win.center' 
+        # ○ kakao 'win.setSize' 1000 1000
+        # ○ kakao 'win.center' 
         
     onWindowCreated: (win) =>
         
