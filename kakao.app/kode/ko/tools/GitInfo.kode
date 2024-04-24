@@ -19,7 +19,10 @@ class GitInfo
 
     @: ->
         
-        post.on 'git.diff' @onDiff
+        post.on 'git.diff'    @onDiff
+        post.on 'git.status'  @status
+        post.on 'git.commit'  @commit
+        post.on 'git.history' @history
         
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   
@@ -27,7 +30,7 @@ class GitInfo
     # 000   000  000       000     000     000   000  000   000     000     
     # 000   000  000  0000000      000      0000000   000   000     000     
     
-    history: (path) ○->
+    history: (path) ○=>
 
         path ?= window.editor.currentFile
         return if not path

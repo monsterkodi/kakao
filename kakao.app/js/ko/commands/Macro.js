@@ -113,7 +113,7 @@ Macro = (function ()
             case 'ks':
             case 'status':
             case 'git':
-                GitInfo.status()
+                post.emit('git.status')
                 break
             case 'd':
             case 'kd':
@@ -124,7 +124,7 @@ Macro = (function ()
             case 'h':
             case 'log':
             case 'history':
-                GitInfo.history()
+                post.emit('git.history')
                 window.split.do('minimize editor')
                 window.split.do('focus terminal')
                 break
@@ -132,7 +132,7 @@ Macro = (function ()
             case 'kc':
             case 'commit':
             case 'ci':
-                GitInfo.commit(cmds)
+                post.emit('git.commit',cmds)
                 break
             case 'err':
                 throw new Error('err')

@@ -134,7 +134,7 @@ function Macro extends Command
             's'
             'ks'
             'status'
-            'git'   ➜ GitInfo.status()
+            'git'   ➜ post.emit 'git.status'
 
             'd'
             'kd'
@@ -147,14 +147,14 @@ function Macro extends Command
             'log'
             'history'
             
-                GitInfo.history()
+                post.emit 'git.history'
                 window.split.do 'minimize editor' 
                 window.split.do 'focus terminal' 
 
             'c'
             'kc'
             'commit'
-            'ci'    ➜ GitInfo.commit cmds
+            'ci'    ➜ post.emit 'git.commit' cmds
             
             'err'   ➜ throw new Error 'err'
 
