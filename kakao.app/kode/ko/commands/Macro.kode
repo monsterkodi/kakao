@@ -140,9 +140,7 @@ function Macro extends Command
             'kd'
             'diff'
                 
-                GitInfo.diff cmds
-                window.split.do 'minimize editor' 
-                window.commandline.setText 'commit ' if empty cmds
+                post.emit 'git.diff' cmds
                 return select:false
                 
             'h'

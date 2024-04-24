@@ -460,6 +460,7 @@ body
 .tab-temp
 {
     padding-left: 8px;
+    padding-right: 8px;
     padding-top: 6px;
     display: inline-block;
 }
@@ -467,6 +468,7 @@ body
 .tab-lock
 {
     padding-left: 9px;
+    padding-right: 9px;
     padding-top: 6px;
     display: inline-block;
 }
@@ -845,7 +847,7 @@ body
 
 .tabstate
 {
-    flex: 0 1 30px;
+    flex: 0 0 30px;
     border-top-right-radius: 6px;
     stroke-width: 2;
     height: 30px;

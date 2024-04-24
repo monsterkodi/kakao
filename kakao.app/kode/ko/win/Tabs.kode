@@ -67,6 +67,7 @@ class Tabs
         @div.innerHTML = ''
         @tabs = []
         for koreTab in tabs
+            # log 'koreTab' koreTab
             @tabs.push new Tab @, koreTab
     
     koreTabForPath: (path) ->
@@ -131,8 +132,8 @@ class Tabs
             if not @koreTabForPath prjPath
                 tabs.push type:'prj' path:prjPath
             tabs.push type:'file' path:path, tmp:not path.startsWith 'untitled-'
-            @cleanTabs tabs
             @setActive path
+            @cleanTabs tabs
             @tab(path)?.div.scrollIntoViewIfNeeded()
             return
 
@@ -227,11 +228,12 @@ class Tabs
                 @update()
             
     setActive: (path) =>
-        
+        # log 'setActive' path
         for tab in @koreTabs()
             delete tab.active
             if slash.samePath tab.path, path
                 tab.active = true
+                # log 'setActive tab' tab
                 @tab(path)?.div?.scrollIntoViewIfNeeded()
                         
     # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
@@ -293,7 +295,7 @@ class Tabs
             if event.target.classList.contains 'dot'
                 @delTab tab.path
             else if event.target.classList.contains 'unsaved-icon'
-                log 'save tab via icon click' tab.path
+                # log 'save tab via icon click' tab.path
                 tab = @koreTabForPath tab.path
                 if tab.dirty
                     if tab.active
@@ -310,6 +312,10 @@ class Tabs
                                     delete tab.dirty
                                     @update()
             else
+                if tab.type == 'prj' 
+                    if event.target.classList.contains 'git-status-icon'
+                        post.emit 'git.diff' tab.path
+                        return
                 @activate tab.path
         true
 

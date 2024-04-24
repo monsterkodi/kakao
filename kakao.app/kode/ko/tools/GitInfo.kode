@@ -19,6 +19,8 @@ class GitInfo
 
     @: ->
         
+        post.on 'git.diff' @onDiff
+        
     # 000   000  000   0000000  000000000   0000000   00000000   000   000  
     # 000   000  000  000          000     000   000  000   000   000 000   
     # 000000000  000  0000000      000     000   000  0000000      00000    
@@ -90,6 +92,11 @@ class GitInfo
         window.terminal.clear()
         window.terminal.appendMeta diss: Syntax.dissForTextAndSyntax "commit #{msg}", 'kode'
 
+        log 'GitInfo.commit' msg
+        log 'GitInfo.commit editor|file' kore.get 'editor|file'
+        log 'GitInfo.commit currentFile' window.textEditor.currentFile
+        log 'GitInfo.commit Projects.current' Projects.current()
+        
         if gitDir =○ kakao 'fs.git' window.textEditor.currentFile
             
             m = msg.join ' '
@@ -114,17 +121,23 @@ class GitInfo
     # 000   000  000  000000    000000    
     # 000   000  000  000       000       
     # 0000000    000  000       000       
+
+    onDiff: (prjDir) =>
+        
+        @status diff:true prjDir:prjDir
+        window.split.do 'minimize editor'
+        window.commandline.setText 'commit ' #if empty prjDir
     
-    diff: (revs) ○-> 
+    diff: (revs) ○->
     
         if empty revs
-            @status true
+            @status diff:true
         else
             window.split.raise 'terminal'
             window.terminal.clear()
             
             gitDir =○ kakao 'fs.git' editor.currentFile
-            patch =○ Git.patch revs[0]
+            patch  =○ Git.patch revs[0]
             
             for p in patch
                 
@@ -302,7 +315,10 @@ class GitInfo
     #      000     000     000   000     000     000   000       000
     # 0000000      000     000   000     000      0000000   0000000
                             
-    status: (diff) ->
+    status: (opt={}) ->
+        
+        opt.diff   ?= false
+        opt.prjDir ?= Projects.dir window.editor.currentFile
 
         window.split.raise 'terminal'
         window.terminal.clear()
@@ -310,7 +326,7 @@ class GitInfo
         onMetaClick = @onMetaClick
         logDiff  = @logDiff
         
-        Git.status(window.editor.currentFile).then (status) ○->
+        Git.status(opt.prjDir).then (status) ○->
 
             return if empty status
             
@@ -341,18 +357,18 @@ class GitInfo
             for file in status.deleted
 
                 if slash.ext(file) in SOURCE_FILE_EXTS
-                    logFile 'deleted' file, status, diff
+                    logFile 'deleted' file, status, opt.diff
 
             for file in status.added
 
                 if slash.ext(file) in SOURCE_FILE_EXTS
-                    logFile 'added' file, status, diff
-                    continue if not diff
+                    logFile 'added' file, status, opt.diff
+                    continue if not opt.diff
                     text =○ ffs.read file
                     lines = text.split '\n'
                     logDiff lines:lines, line:1, file:file, change:'added'
 
-            if diff 
+            if opt.diff 
                 for file in status.changed.filter (f) -> slash.ext(f) in SOURCE_FILE_EXTS
                     
                     logFile 'changed' file, status, NaN
