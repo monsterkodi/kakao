@@ -829,8 +829,7 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
             lang 'kode'
             
             rgs = ranges "⮐  1"
-            log rgs
-            inc rgs, 0 "⮐"      ▸ 'keyword return'
+            inc rgs, 0 "⮐"      ▸ 'punct keyword return'
             
     #       000   0000000  
     #       000  000       

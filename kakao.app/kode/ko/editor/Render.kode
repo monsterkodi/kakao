@@ -17,6 +17,7 @@ class Render
     # 0000000  000  000   000  00000000
 
     @line: (diss, opt={charWidth:0 wrapSpan:false spanClass:null}) ->
+        
         l = ""
         if diss?.length
             for di in diss.length-1..0
@@ -33,6 +34,7 @@ class Render
     @lineSpan: (diss, size) ->
 
         div = elem class: 'linespans'
+        
         if diss.length > 4000
             log 'line too long!'
             span = elem 'span'
@@ -40,15 +42,29 @@ class Render
             span.textContent = '*** line too long! ***'
             div.appendChild span
             return div
+            
+        cx = 0
+        ds = 0
+        
         for d in diss ? []
+            
+            cx += (d.start-ds) * size.charWidth
+            cf = cx.toFixed 1
+                
             span = elem 'span'
-            span.style.transform = "translatex(#{d.start * size.charWidth}px)"
+            span.style.transform = "translatex(#{cf}px)"
             span.className = d.clss if d.clss?
             span.textContent = d.match.replace /\x1b/g, '▪'
+            
+            ds  = d.start + span.textContent.length
+            
+            cx += size.widthOfText span.textContent 
+            
             if d.styl?
                 for st in d.styl.split ';'
                     ss = st.split ':'
                     span.style[ss[0]] = ss[1]
+                    
             div.appendChild span
         div
 
@@ -62,10 +78,9 @@ class Render
 
         i = 0
         h = ""
-        cw = size.charWidth
         lh = size.lineHeight
         for c in cs
-            tx  = c[0] * cw + size.offsetX
+            tx  = size.xOffsetAtCharacterInLine c[0], c[1]
             ty  = c[1] * lh
             cls = ""
             cls = c[2] if c.length > 2
@@ -105,25 +120,25 @@ class Render
         if not prev
             border += " tl tr"
         else
-            if (sel[1][0] < prev[1][0]) or (sel[1][0] > prev[1][1])
+            if sel[1][0] < prev[1][0] or sel[1][0] > prev[1][1]
                 border += " tl"
-            if (sel[1][1] > prev[1][1]) or (sel[1][1] < prev[1][0])
+            if sel[1][1] > prev[1][1] or sel[1][1] < prev[1][0]
                 border += " tr"
 
         if not next
             border += " bl br"
         else
-            if sel[1][1] > next[1][1] or (sel[1][1] < next[1][0])
+            if sel[1][1] > next[1][1] or sel[1][1] < next[1][0]
                 border += " br"
-            if (sel[1][0] < next[1][0]) or (sel[1][0] > next[1][1])
+            if sel[1][0] < next[1][0] or sel[1][0] > next[1][1]
                 border += " bl"
 
         if sel[1][0] == 0 and not size.centerText
             border += " start" # wider offset at start of line
 
-        sw = size.charWidth * (sel[1][1]-sel[1][0])
-        tx = size.charWidth *  sel[1][0] + size.offsetX
-        ty = size.lineHeight * sel[0]
+        sw = size.widthOfRangeInLine sel[1][0], sel[1][1]
+        tx = size.xOffsetAtCharacterInLine sel[1][0], sel[0]
+        ty = size.lineHeight *  sel[0]
         lh = size.lineHeight
 
         if clss.startsWith 'stringmatch'

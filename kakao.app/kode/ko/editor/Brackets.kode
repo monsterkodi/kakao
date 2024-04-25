@@ -40,7 +40,7 @@ class Brackets
         [before, after] = @beforeAfterForPos cp
 
         if after.length or before.length
-            if after.length and first(after).start == cp[0] and first(after).clss == 'open' then cp[0] += 1
+            if after.length  and first(after).start == cp[0]   and first(after).clss == 'open'  then cp[0] += 1
             if before.length and last(before).start == cp[0]-1 and last(before).clss == 'close' then cp[0] -= 1
 
         if @highlightInside cp

@@ -34,6 +34,10 @@ function TextEditor extends Editor
         @initLayers layer
 
         @size = {}
+        @size.xOffsetAtCharacterInLine = @xOffsetAtCharacterInLine
+        @size.xAtCharacterInLine       = @xAtCharacterInLine
+        @size.widthOfRangeInLine       = @widthOfRangeInLine
+        @size.widthOfText              = @widthOfText
         @elem = @layerDict.lines
 
         @spanCache = [] # cache for rendered line spans
@@ -577,16 +581,47 @@ function TextEditor extends Editor
     # 000        000   000       000
     # 000         0000000   0000000
 
+    widthOfText: (text) =>
+            
+        w = text.length * @size.charWidth
+        
+        if text == '⮐'
+            log 'add some for' text
+            w += @size.charWidth
+        w
+
+    widthOfRangeInLine: (firstCharacter, lastCharacter, line) =>
+        
+        @size.charWidth  * (lastCharacter-firstCharacter)
+    
+    xOffsetAtCharacterInLine: (character, line) =>
+        
+        log 'xOffsetAtCharacterInLine' character, line, @size.offsetX
+        
+        character * @size.charWidth + @size.offsetX
+
+    xAtCharacterInLine: (character, line) =>
+        
+        log 'xAtCharacterInLine' character, line
+        
+        character * @size.charWidth
+        
     posAtXY:(x,y) ->
 
         sl = @layerScroll.scrollLeft
         st = @scroll.offsetTop
         br = @view.getBoundingClientRect()
-        lx = clamp 0, @layers.offsetWidth,  x - br.left - @size.offsetX + @size.charWidth/3
-        ly = clamp 0, @layers.offsetHeight, y - br.top
-        px = parseInt(Math.floor((Math.max(0, sl + lx))/@size.charWidth))
-        py = parseInt(Math.floor((Math.max(0, st + ly))/@size.lineHeight)) + @scroll.top
-        p  = [px, Math.min(@numLines()-1, py)]
+        lx = clamp 0 @layers.offsetWidth,  x - br.left - @size.offsetX + @size.charWidth/3
+        if ln = @line y
+            log 'ln' ln
+            if '⮐' in  ln 
+                log 'fix offsetX' ln
+        else
+            log 'no line at' y, @numLines(), @lineCache
+        ly = clamp 0 @layers.offsetHeight, y - br.top
+        px = parseInt Math.floor (Math.max 0 sl + lx)/@size.charWidth
+        py = parseInt(Math.floor((Math.max 0 st + ly)/@size.lineHeight)) + @scroll.top
+        p  = [px, Math.min @numLines()-1 py]
         p
 
     posForEvent: (event) -> @posAtXY event.clientX, event.clientY

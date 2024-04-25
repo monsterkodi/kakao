@@ -8,17 +8,17 @@ class Render
 {
     static line (diss, opt = {charWidth:0,wrapSpan:false,spanClass:null})
     {
-        var clrzd, clss, d, di, l, spanClass, transform, tx, _1_7_, _24_45_, _26_35_
+        var clrzd, clss, d, di, l, spanClass, transform, tx, _1_7_, _25_45_, _27_35_
 
         l = ""
         if ((diss != null ? diss.length : undefined))
         {
-            for (var _22_22_ = di = diss.length - 1, _22_37_ = 0; (_22_22_ <= _22_37_ ? di <= 0 : di >= 0); (_22_22_ <= _22_37_ ? ++di : --di))
+            for (var _23_22_ = di = diss.length - 1, _23_37_ = 0; (_23_22_ <= _23_37_ ? di <= 0 : di >= 0); (_23_22_ <= _23_37_ ? ++di : --di))
             {
                 d = diss[di]
-                tx = d.start * ((_24_45_=opt.charWidth) != null ? _24_45_ : 0)
+                tx = d.start * ((_25_45_=opt.charWidth) != null ? _25_45_ : 0)
                 transform = (tx ? `transform:translatex(${tx}px);` : '')
-                spanClass = ((_26_35_=d.clss) != null ? _26_35_ : opt.spanClass)
+                spanClass = ((_27_35_=d.clss) != null ? _27_35_ : opt.spanClass)
                 clss = spanClass && ` class=\"${spanClass}\"` || ''
                 clrzd = `<span style=\"${transform}${((_1_7_=d.styl) != null ? _1_7_ : '')}\"${clss}>${d.match}</span>`
                 l = clrzd + l
@@ -33,7 +33,7 @@ class Render
 
     static lineSpan (diss, size)
     {
-        var d, div, span, ss, st, _46_45_, _48_21_
+        var cf, cx, d, div, ds, span, ss, st, _56_45_, _63_21_
 
         div = elem({class:'linespans'})
         if (diss.length > 4000)
@@ -45,23 +45,29 @@ class Render
             div.appendChild(span)
             return div
         }
+        cx = 0
+        ds = 0
         var list = (diss != null ? diss : [])
-        for (var _43_14_ = 0; _43_14_ < list.length; _43_14_++)
+        for (var _49_14_ = 0; _49_14_ < list.length; _49_14_++)
         {
-            d = list[_43_14_]
+            d = list[_49_14_]
+            cx += (d.start - ds) * size.charWidth
+            cf = cx.toFixed(1)
             span = elem('span')
-            span.style.transform = `translatex(${d.start * size.charWidth}px)`
+            span.style.transform = `translatex(${cf}px)`
             if ((d.clss != null))
             {
                 span.className = d.clss
             }
             span.textContent = d.match.replace(/\x1b/g,'▪')
+            ds = d.start + span.textContent.length
+            cx += size.widthOfText(span.textContent)
             if ((d.styl != null))
             {
                 var list1 = _k_.list(d.styl.split(';'))
-                for (var _49_23_ = 0; _49_23_ < list1.length; _49_23_++)
+                for (var _64_23_ = 0; _64_23_ < list1.length; _64_23_++)
                 {
-                    st = list1[_49_23_]
+                    st = list1[_64_23_]
                     ss = st.split(':')
                     span.style[ss[0]] = ss[1]
                 }
@@ -73,17 +79,16 @@ class Render
 
     static cursors (cs, size)
     {
-        var c, cls, cw, h, i, lh, tx, ty, zi
+        var c, cls, h, i, lh, tx, ty, zi
 
         i = 0
         h = ""
-        cw = size.charWidth
         lh = size.lineHeight
         var list = _k_.list(cs)
-        for (var _67_14_ = 0; _67_14_ < list.length; _67_14_++)
+        for (var _82_14_ = 0; _82_14_ < list.length; _82_14_++)
         {
-            c = list[_67_14_]
-            tx = c[0] * cw + size.offsetX
+            c = list[_82_14_]
+            tx = size.xOffsetAtCharacterInLine(c[0],c[1])
             ty = c[1] * lh
             cls = ""
             if (c.length > 2)
@@ -99,17 +104,17 @@ class Render
 
     static selection (ss, size, clss = 'selection')
     {
-        var b, h, n, p, s, si, _92_58_, _92_65_
+        var b, h, n, p, s, si, _107_58_, _107_65_
 
         h = ""
         p = null
         n = null
-        for (var _88_19_ = si = 0, _88_23_ = ss.length; (_88_19_ <= _88_23_ ? si < ss.length : si > ss.length); (_88_19_ <= _88_23_ ? ++si : --si))
+        for (var _103_19_ = si = 0, _103_23_ = ss.length; (_103_19_ <= _103_23_ ? si < ss.length : si > ss.length); (_103_19_ <= _103_23_ ? ++si : --si))
         {
             s = ss[si]
             n = (si < ss.length - 1) && (ss[si + 1][0] === s[0] + 1) && ss[si + 1] || null
             b = (p != null ? p[0] : undefined) === s[0] - 1 && p || null
-            h += this.selectionSpan(b,s,n,size,((_92_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _92_58_ : ((_92_65_=s[2]) != null ? _92_65_ : clss)))
+            h += this.selectionSpan(b,s,n,size,((_107_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _107_58_ : ((_107_65_=s[2]) != null ? _107_65_ : clss)))
             p = s
         }
         return h
@@ -126,11 +131,11 @@ class Render
         }
         else
         {
-            if ((sel[1][0] < prev[1][0]) || (sel[1][0] > prev[1][1]))
+            if (sel[1][0] < prev[1][0] || sel[1][0] > prev[1][1])
             {
                 border += " tl"
             }
-            if ((sel[1][1] > prev[1][1]) || (sel[1][1] < prev[1][0]))
+            if (sel[1][1] > prev[1][1] || sel[1][1] < prev[1][0])
             {
                 border += " tr"
             }
@@ -141,11 +146,11 @@ class Render
         }
         else
         {
-            if (sel[1][1] > next[1][1] || (sel[1][1] < next[1][0]))
+            if (sel[1][1] > next[1][1] || sel[1][1] < next[1][0])
             {
                 border += " br"
             }
-            if ((sel[1][0] < next[1][0]) || (sel[1][0] > next[1][1]))
+            if (sel[1][0] < next[1][0] || sel[1][0] > next[1][1])
             {
                 border += " bl"
             }
@@ -154,8 +159,8 @@ class Render
         {
             border += " start"
         }
-        sw = size.charWidth * (sel[1][1] - sel[1][0])
-        tx = size.charWidth * sel[1][0] + size.offsetX
+        sw = size.widthOfRangeInLine(sel[1][0],sel[1][1])
+        tx = size.xOffsetAtCharacterInLine(sel[1][0],sel[0])
         ty = size.lineHeight * sel[0]
         lh = size.lineHeight
         if (clss.startsWith('stringmatch'))

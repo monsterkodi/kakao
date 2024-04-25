@@ -125,10 +125,6 @@ export default {insertCharacter:function (ch)
         if (substitute)
         {
             sub = kstr.splice(line,cursor[0] - 1,1,substitute)
-            if (char === 'r')
-            {
-                cursor[0]++
-            }
             return sub
         }
     }
