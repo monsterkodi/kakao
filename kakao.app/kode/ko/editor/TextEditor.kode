@@ -478,7 +478,7 @@ function TextEditor extends Editor
                     vc.push [line.length, c[1], 'virtual']
             cs = cs.concat vc
 
-        html = Render.cursors cs, @size
+        html = Render.cursors cs, @size, @scroll.top
         @layerDict.cursors.innerHTML = html
         
         ty = (mc[1] - @scroll.top) * @size.lineHeight
@@ -492,7 +492,7 @@ function TextEditor extends Editor
         h = ""
         s = @selectionsInLineIndexRangeRelativeToLineIndex [@scroll.top, @scroll.bot], @scroll.top
         if s
-            h += Render.selection s, @size
+            h += Render.selection s, @size, @scroll.top
         @layerDict.selections.innerHTML = h
 
     renderHighlights: ->
@@ -500,7 +500,7 @@ function TextEditor extends Editor
         h = ""
         s = @highlightsInLineIndexRangeRelativeToLineIndex [@scroll.top, @scroll.bot], @scroll.top
         if s
-            h += Render.selection s, @size, "highlight"
+            h += Render.selection s, @size, @scroll.top, 'highlight'
         @layerDict.highlights.innerHTML = h
 
     # 0000000    000      000  000   000  000   000
@@ -585,18 +585,24 @@ function TextEditor extends Editor
             
         w = text.length * @size.charWidth
         
-        if text == '⮐'
-            log 'add some for' text
-            w += @size.charWidth
+        for char in text
+            if char == '⮐'
+                w += @size.charWidth
         w
 
     widthOfRangeInLine: (firstCharacter, lastCharacter, line) =>
+        
+        if ln = @line line
+            
+            ⮐ @widthOfText ln[firstCharacter...lastCharacter]
         
         @size.charWidth  * (lastCharacter-firstCharacter)
     
     xOffsetAtCharacterInLine: (character, line) =>
         
-        log 'xOffsetAtCharacterInLine' character, line, @size.offsetX
+        if ln = @line line
+            
+            ⮐ @size.offsetX + @widthOfText ln[0...character]
         
         character * @size.charWidth + @size.offsetX
 
@@ -613,7 +619,6 @@ function TextEditor extends Editor
         br = @view.getBoundingClientRect()
         lx = clamp 0 @layers.offsetWidth,  x - br.left - @size.offsetX + @size.charWidth/3
         if ln = @line y
-            log 'ln' ln
             if '⮐' in  ln 
                 log 'fix offsetX' ln
         else

@@ -102,7 +102,7 @@ export default {insertCharacter:function (ch)
                     return '○'
 
                 case 'r':
-                    return '⮐ '
+                    return '⮐'
 
                 case 's':
                     return '▪'

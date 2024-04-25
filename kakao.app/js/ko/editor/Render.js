@@ -77,7 +77,7 @@ class Render
         return div
     }
 
-    static cursors (cs, size)
+    static cursors (cs, size, top)
     {
         var c, cls, h, i, lh, tx, ty, zi
 
@@ -88,7 +88,7 @@ class Render
         for (var _82_14_ = 0; _82_14_ < list.length; _82_14_++)
         {
             c = list[_82_14_]
-            tx = size.xOffsetAtCharacterInLine(c[0],c[1])
+            tx = size.xOffsetAtCharacterInLine(c[0],c[1] + top)
             ty = c[1] * lh
             cls = ""
             if (c.length > 2)
@@ -102,9 +102,9 @@ class Render
         return h
     }
 
-    static selection (ss, size, clss = 'selection')
+    static selection (ss, size, top, clss = 'selection')
     {
-        var b, h, n, p, s, si, _107_58_, _107_65_
+        var b, h, n, p, s, si, _107_63_, _107_70_
 
         h = ""
         p = null
@@ -114,13 +114,13 @@ class Render
             s = ss[si]
             n = (si < ss.length - 1) && (ss[si + 1][0] === s[0] + 1) && ss[si + 1] || null
             b = (p != null ? p[0] : undefined) === s[0] - 1 && p || null
-            h += this.selectionSpan(b,s,n,size,((_107_58_=(s[2] != null ? s[2].clss : undefined)) != null ? _107_58_ : ((_107_65_=s[2]) != null ? _107_65_ : clss)))
+            h += this.selectionSpan(b,s,n,size,top,((_107_63_=(s[2] != null ? s[2].clss : undefined)) != null ? _107_63_ : ((_107_70_=s[2]) != null ? _107_70_ : clss)))
             p = s
         }
         return h
     }
 
-    static selectionSpan (prev, sel, next, size, clss)
+    static selectionSpan (prev, sel, next, size, top, clss)
     {
         var border, empty, lh, sw, tx, ty
 
@@ -159,8 +159,8 @@ class Render
         {
             border += " start"
         }
-        sw = size.widthOfRangeInLine(sel[1][0],sel[1][1])
-        tx = size.xOffsetAtCharacterInLine(sel[1][0],sel[0])
+        sw = size.widthOfRangeInLine(sel[1][0],sel[1][1],sel[0] + top)
+        tx = size.xOffsetAtCharacterInLine(sel[1][0],sel[0] + top)
         ty = size.lineHeight * sel[0]
         lh = size.lineHeight
         if (clss.startsWith('stringmatch'))

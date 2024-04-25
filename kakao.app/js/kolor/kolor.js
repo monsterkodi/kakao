@@ -407,7 +407,7 @@ kodePunct = function ()
     {
         return addValue(0,'keyword')
     }
-    if (_k_.in(chunk.match,'⮐ '))
+    if (_k_.in(chunk.match,'⮐'))
     {
         return addValue(0,'keyword return')
     }

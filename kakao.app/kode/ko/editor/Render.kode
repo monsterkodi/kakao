@@ -74,13 +74,13 @@ class Render
     # 000       000   000  000   000       000  000   000  000   000       000
     #  0000000   0000000   000   000  0000000    0000000   000   000  0000000
 
-    @cursors: (cs, size) -> # cs: [ [charIndex, lineIndex] ... ]  (lineIndex relative to view)
+    @cursors: (cs, size, top) -> # cs: [ [charIndex, lineIndex] ... ]  (lineIndex relative to top)
 
         i = 0
         h = ""
         lh = size.lineHeight
         for c in cs
-            tx  = size.xOffsetAtCharacterInLine c[0], c[1]
+            tx  = size.xOffsetAtCharacterInLine c[0], c[1]+top
             ty  = c[1] * lh
             cls = ""
             cls = c[2] if c.length > 2
@@ -95,7 +95,7 @@ class Render
     #      000  000       000      000       000          000     000  000   000  000  0000
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-    @selection: (ss, size, clss='selection') => # ss: [ [lineIndex, [startIndex, endIndex]], ... ]  (lineIndex relative to view)
+    @selection: (ss, size, top, clss='selection') => # ss: [ [lineIndex, [startIndex, endIndex]], ... ]  (lineIndex relative to top)
 
         h = ""
         p = null
@@ -104,11 +104,11 @@ class Render
             s = ss[si]
             n = (si < ss.length-1) and (ss[si+1][0] == s[0]+1) and ss[si+1] or null # next line selection
             b = p?[0] == s[0]-1 and p or null # selection in line before
-            h += @selectionSpan b, s, n, size, s[2]?.clss ? s[2] ? clss
+            h += @selectionSpan b, s, n, size, top, s[2]?.clss ? s[2] ? clss
             p = s
         h
 
-    @selectionSpan: (prev, sel, next, size, clss) ->
+    @selectionSpan: (prev, sel, next, size, top, clss) ->
 
         # 0000000     0000000   00000000   0000000    00000000  00000000
         # 000   000  000   000  000   000  000   000  000       000   000
@@ -136,9 +136,9 @@ class Render
         if sel[1][0] == 0 and not size.centerText
             border += " start" # wider offset at start of line
 
-        sw = size.widthOfRangeInLine sel[1][0], sel[1][1]
-        tx = size.xOffsetAtCharacterInLine sel[1][0], sel[0]
-        ty = size.lineHeight *  sel[0]
+        sw = size.widthOfRangeInLine sel[1][0], sel[1][1], sel[0] + top
+        tx = size.xOffsetAtCharacterInLine sel[1][0], sel[0] + top
+        ty = size.lineHeight * sel[0]
         lh = size.lineHeight
 
         if clss.startsWith 'stringmatch'

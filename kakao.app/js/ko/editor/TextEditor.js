@@ -564,7 +564,7 @@ TextEditor = (function ()
             }
             cs = cs.concat(vc)
         }
-        html = Render.cursors(cs,this.size)
+        html = Render.cursors(cs,this.size,this.scroll.top)
         this.layerDict.cursors.innerHTML = html
         ty = (mc[1] - this.scroll.top) * this.size.lineHeight
         if (this.cursorLine)
@@ -582,7 +582,7 @@ TextEditor = (function ()
         s = this.selectionsInLineIndexRangeRelativeToLineIndex([this.scroll.top,this.scroll.bot],this.scroll.top)
         if (s)
         {
-            h += Render.selection(s,this.size)
+            h += Render.selection(s,this.size,this.scroll.top)
         }
         return this.layerDict.selections.innerHTML = h
     }
@@ -595,7 +595,7 @@ TextEditor = (function ()
         s = this.highlightsInLineIndexRangeRelativeToLineIndex([this.scroll.top,this.scroll.bot],this.scroll.top)
         if (s)
         {
-            h += Render.selection(s,this.size,"highlight")
+            h += Render.selection(s,this.size,this.scroll.top,'highlight')
         }
         return this.layerDict.highlights.innerHTML = h
     }
@@ -686,25 +686,40 @@ TextEditor = (function ()
 
     TextEditor.prototype["widthOfText"] = function (text)
     {
-        var w
+        var char, w
 
         w = text.length * this.size.charWidth
-        if (text === '⮐')
+        var list = _k_.list(text)
+        for (var _588_17_ = 0; _588_17_ < list.length; _588_17_++)
         {
-            console.log('add some for',text)
-            w += this.size.charWidth
+            char = list[_588_17_]
+            if (char === '⮐')
+            {
+                w += this.size.charWidth
+            }
         }
         return w
     }
 
     TextEditor.prototype["widthOfRangeInLine"] = function (firstCharacter, lastCharacter, line)
     {
+        var ln
+
+        if (ln = this.line(line))
+        {
+            return this.widthOfText(ln.slice(firstCharacter, typeof lastCharacter === 'number' ? lastCharacter : -1))
+        }
         return this.size.charWidth * (lastCharacter - firstCharacter)
     }
 
     TextEditor.prototype["xOffsetAtCharacterInLine"] = function (character, line)
     {
-        console.log('xOffsetAtCharacterInLine',character,line,this.size.offsetX)
+        var ln
+
+        if (ln = this.line(line))
+        {
+            return this.size.offsetX + this.widthOfText(ln.slice(0, typeof character === 'number' ? character : -1))
+        }
         return character * this.size.charWidth + this.size.offsetX
     }
 
@@ -724,7 +739,6 @@ TextEditor = (function ()
         lx = _k_.clamp(0,this.layers.offsetWidth,x - br.left - this.size.offsetX + this.size.charWidth / 3)
         if (ln = this.line(y))
         {
-            console.log('ln',ln)
             if (_k_.in('⮐',ln))
             {
                 console.log('fix offsetX',ln)
@@ -762,9 +776,9 @@ TextEditor = (function ()
         {
             lr = lineElem.getBoundingClientRect()
             var list = _k_.list(lineElem.firstChild.children)
-            for (var _638_18_ = 0; _638_18_ < list.length; _638_18_++)
+            for (var _643_18_ = 0; _643_18_ < list.length; _643_18_++)
             {
-                e = list[_638_18_]
+                e = list[_643_18_]
                 br = e.getBoundingClientRect()
                 if ((br.left <= x && x <= br.left + br.width))
                 {
@@ -783,7 +797,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["viewHeight"] = function ()
     {
-        var _649_18_, _650_13_
+        var _654_18_, _655_13_
 
         if ((this.scroll != null ? this.scroll.viewHeight : undefined) >= 0)
         {
@@ -931,7 +945,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _771_24_, _787_35_, _793_33_
+        var action, actionCombo, combos, _776_24_, _792_35_, _798_33_
 
         if ((this.autocomplete != null))
         {
@@ -961,18 +975,18 @@ TextEditor = (function ()
         }
 
         var list = _k_.list(Editor.actions)
-        for (var _785_19_ = 0; _785_19_ < list.length; _785_19_++)
+        for (var _790_19_ = 0; _790_19_ < list.length; _790_19_++)
         {
-            action = list[_785_19_]
-            combos = ((_787_35_=action.combos) != null ? _787_35_ : [action.combo])
+            action = list[_790_19_]
+            combos = ((_792_35_=action.combos) != null ? _792_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _791_28_ = 0; _791_28_ < list1.length; _791_28_++)
+            for (var _796_28_ = 0; _796_28_ < list1.length; _796_28_++)
             {
-                actionCombo = list1[_791_28_]
+                actionCombo = list1[_796_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))
