@@ -636,6 +636,13 @@ toExport["ranges"] = function ()
             compare(inc(rgs,0,'@'),'punct method class')
             compare(inc(rgs,1,'mthd'),'method class')
         })
+        section("return", function ()
+        {
+            lang('kode')
+            rgs = ranges("⮐  1")
+            console.log(rgs)
+            compare(inc(rgs,0,"⮐"),'keyword return')
+        })
     })
     section("js", function ()
     {

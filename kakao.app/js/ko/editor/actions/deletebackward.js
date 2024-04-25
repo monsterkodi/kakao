@@ -99,9 +99,9 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',co
         }).bind(this))))
     }
     var list = _k_.list(reversed(newCursors))
-    for (var _82_14_ = 0; _82_14_ < list.length; _82_14_++)
+    for (var _80_14_ = 0; _80_14_ < list.length; _80_14_++)
     {
-        c = list[_82_14_]
+        c = list[_80_14_]
         if (c[0] === 0)
         {
             if ((opt != null ? opt.ignoreLineBoundary : undefined) || this.do.numCursors() === 1)
@@ -112,15 +112,15 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',co
                     this.do.change(c[1] - 1,this.do.line(c[1] - 1) + this.do.line(c[1]))
                     this.do.delete(c[1])
                     var list1 = _k_.list(positionsAtLineIndexInPositions(c[1],newCursors))
-                    for (var _90_31_ = 0; _90_31_ < list1.length; _90_31_++)
+                    for (var _88_31_ = 0; _88_31_ < list1.length; _88_31_++)
                     {
-                        nc = list1[_90_31_]
+                        nc = list1[_88_31_]
                         cursorDelta(nc,ll,-1)
                     }
                     var list2 = _k_.list(positionsBelowLineIndexInPositions(c[1],newCursors))
-                    for (var _93_31_ = 0; _93_31_ < list2.length; _93_31_++)
+                    for (var _91_31_ = 0; _91_31_ < list2.length; _91_31_++)
                     {
-                        nc = list2[_93_31_]
+                        nc = list2[_91_31_]
                         cursorDelta(nc,0,-1)
                     }
                 }
@@ -142,11 +142,12 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',co
             {
                 n = removeNum
             }
+            console.log('deleteCharacterBackward',n)
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - n,n))
             var list3 = _k_.list(positionsAtLineIndexInPositions(c[1],newCursors))
-            for (var _104_23_ = 0; _104_23_ < list3.length; _104_23_++)
+            for (var _103_23_ = 0; _103_23_ < list3.length; _103_23_++)
             {
-                nc = list3[_104_23_]
+                nc = list3[_103_23_]
                 if (nc[0] >= c[0])
                 {
                     cursorDelta(nc,-n)

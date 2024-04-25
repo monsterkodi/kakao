@@ -114,11 +114,11 @@ class Syntax
         diss = @dissForTextAndSyntax text, n
         if diss?.length
             last = 0
-            for di in [0...diss.length]
+            for di in 0...diss.length
                 d = diss[di]
                 style = d.styl? and d.styl.length and " style=\"#{d.styl}\"" or ''
                 spc = ''
-                for sp in [last...d.start]
+                for sp in last...d.start
                     spc += '&nbsp;'
                 last  = d.start + d.match.length
                 clss  = d.clss? and d.clss.length and " class=\"#{d.clss}\"" or ''

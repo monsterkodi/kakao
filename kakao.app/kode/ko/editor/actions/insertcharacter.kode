@@ -17,7 +17,6 @@ export
         @do.start()
         @clampCursorOrFillVirtualSpaces()
         
-        # log 'surroundCharacters' @surroundCharacters
         if valid @surroundCharacters
             if ch in @surroundCharacters
                 if @insertSurroundCharacter ch
@@ -46,6 +45,7 @@ export
     twiggleSubstitute: (line,cursor,char) ->
         
         if cursor[0] and line[cursor[0]-1] == '~'
+            
             substitute = switch char
                 '>' ➜ '▸'
                 '.' ➜ '▶'
@@ -64,8 +64,12 @@ export
                 't' ➜ '➜'
                 'X' ➜ '✘'
                 'O' ➜ '✔'
+                
             if substitute
-                return kstr.splice line, cursor[0]-1, 1, substitute
+                
+                sub = kstr.splice line, cursor[0]-1, 1, substitute
+                if char == 'r' ➜ cursor[0]++
+                sub
     
     clampCursorOrFillVirtualSpaces: ->
         

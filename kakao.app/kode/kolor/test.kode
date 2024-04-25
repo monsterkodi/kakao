@@ -8,7 +8,7 @@
 
 use ./kolor
 
-inc = (rgs, start, match) -> for r in rgs then if r.start == start and r.match == match ➜ return r.clss
+inc = (rgs, start, match) -> for r in rgs ➜ if r.start == start and r.match == match ➜ return r.clss
 
 ext = 'coffee'
 lang    = (l) -> ext = l
@@ -824,6 +824,13 @@ dissect = (c,e) -> kolor.dissect c.split('\n'), e ? ext
             inc rgs, 0 '@'      ▸ 'punct method class'
             inc rgs, 1 'mthd'   ▸ 'method class'
 
+        ▸ return
+        
+            lang 'kode'
+            
+            rgs = ranges "⮐  1"
+            log rgs
+            inc rgs, 0 "⮐"      ▸ 'keyword return'
             
     #       000   0000000  
     #       000  000       

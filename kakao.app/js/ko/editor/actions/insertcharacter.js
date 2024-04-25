@@ -32,9 +32,9 @@ export default {insertCharacter:function (ch)
     this.deleteSelection()
     newCursors = this.do.cursors()
     var list = _k_.list(newCursors)
-    for (var _31_15_ = 0; _31_15_ < list.length; _31_15_++)
+    for (var _30_15_ = 0; _30_15_ < list.length; _30_15_++)
     {
-        cc = list[_31_15_]
+        cc = list[_30_15_]
         cline = this.do.line(cc[1])
         sline = this.twiggleSubstitute(cline,cc,ch)
         if (sline)
@@ -45,9 +45,9 @@ export default {insertCharacter:function (ch)
         {
             this.do.change(cc[1],kstr.splice(cline,cc[0],0,ch))
             var list1 = _k_.list(positionsAtLineIndexInPositions(cc[1],newCursors))
-            for (var _38_23_ = 0; _38_23_ < list1.length; _38_23_++)
+            for (var _37_23_ = 0; _37_23_ < list1.length; _37_23_++)
             {
-                nc = list1[_38_23_]
+                nc = list1[_37_23_]
                 if (nc[0] >= cc[0])
                 {
                     nc[0] += 1
@@ -60,7 +60,7 @@ export default {insertCharacter:function (ch)
     return this.emitEdit('insert')
 },twiggleSubstitute:function (line, cursor, char)
 {
-    var substitute
+    var sub, substitute
 
     if (cursor[0] && line[cursor[0] - 1] === '~')
     {
@@ -124,7 +124,12 @@ export default {insertCharacter:function (ch)
         }).bind(this))()
         if (substitute)
         {
-            return kstr.splice(line,cursor[0] - 1,1,substitute)
+            sub = kstr.splice(line,cursor[0] - 1,1,substitute)
+            if (char === 'r')
+            {
+                cursor[0]++
+            }
+            return sub
         }
     }
 },clampCursorOrFillVirtualSpaces:function ()
@@ -151,9 +156,9 @@ export default {insertCharacter:function (ch)
 
     this.do.start()
     var list = _k_.list(reversed(this.do.cursors()))
-    for (var _86_14_ = 0; _86_14_ < list.length; _86_14_++)
+    for (var _90_14_ = 0; _90_14_ < list.length; _90_14_++)
     {
-        c = list[_86_14_]
+        c = list[_90_14_]
         if (c[0] > this.do.line(c[1]).length)
         {
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))

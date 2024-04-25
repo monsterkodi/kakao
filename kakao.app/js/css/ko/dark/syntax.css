@@ -401,6 +401,12 @@
     color: #c0c;
 }
 
+.punct.keyword.return
+{
+    opacity: 1;
+    color: #44a;
+}
+
 
 
 .comment,

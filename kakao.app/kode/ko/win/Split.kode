@@ -169,8 +169,8 @@ class Split
             'command' ➜ @flex.expand 'commandline'
             ➜ error "split.show -- unhandled: #{n}!"
 
-    hideEditor:     => @flex.collapse 'editor'
-    hideTerminal:   => @flex.collapse 'terminal'
+    hideEditor:   => @flex.collapse 'editor'
+    hideTerminal: => @flex.collapse 'terminal'
             
     # 00000000    0000000   000   0000000  00000000  
     # 000   000  000   000  000  000       000       
@@ -234,7 +234,7 @@ class Split
         
         n = 'commandline-editor' if n == 'commandline'
         if n == '.' or not $(n)?
-            return error "Split.focus -- can't find element '#{n}'"
+            ⮐  error "Split.focus -- can't find element '#{n}'"
 
         if e =$ n
             if e.focus?
@@ -243,8 +243,8 @@ class Split
             
     focusAnything: ->
         
-        return @focus 'editor'   if @editorVisible()
-        return @focus 'terminal' if @terminalVisible()
+        ⮐  @focus 'editor'   if @editorVisible()
+        ⮐  @focus 'terminal' if @terminalVisible()
         @focus 'commandline-editor'
 
     # 00000000   00000000   0000000  000  0000000  00000000  0000000  

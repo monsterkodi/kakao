@@ -324,8 +324,11 @@ kodePunct = ->
 
     return if notCode
 
-    if chunk.match in '▸➜⮐ '
+    if chunk.match in '▸➜'
         return addValue 0 'keyword'
+        
+    if chunk.match in '⮐ '
+        return addValue 0 'keyword return'
 
     if next = getChunk 1
         

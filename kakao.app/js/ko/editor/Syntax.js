@@ -127,12 +127,12 @@ class Syntax
         if ((diss != null ? diss.length : undefined))
         {
             last = 0
-            for (var _117_23_ = di = 0, _117_27_ = diss.length; (_117_23_ <= _117_27_ ? di < diss.length : di > diss.length); (_117_23_ <= _117_27_ ? ++di : --di))
+            for (var _117_22_ = di = 0, _117_26_ = diss.length; (_117_22_ <= _117_26_ ? di < diss.length : di > diss.length); (_117_22_ <= _117_26_ ? ++di : --di))
             {
                 d = diss[di]
                 style = (d.styl != null) && d.styl.length && ` style=\"${d.styl}\"` || ''
                 spc = ''
-                for (var _121_27_ = sp = last, _121_34_ = d.start; (_121_27_ <= _121_34_ ? sp < d.start : sp > d.start); (_121_27_ <= _121_34_ ? ++sp : --sp))
+                for (var _121_26_ = sp = last, _121_33_ = d.start; (_121_26_ <= _121_33_ ? sp < d.start : sp > d.start); (_121_26_ <= _121_33_ ? ++sp : --sp))
                 {
                     spc += '&nbsp;'
                 }
