@@ -17,8 +17,8 @@ export
     insertThen: (before, after) ->
         if /(when|if)/.test before 
             bw = lastWordInLine before
-            if bw not in ['and', 'or'] and (not after.trim().startsWith 'then') and not /then/.test before
-                after = 'then ' + after
+            if bw not in ['and', 'or'] and (not after.trim().startsWith 'then') (not after.trim().startsWith '➜') and not /then|➜/.test before
+                after = '➜ ' + after
         after
 
     joinLines: ->

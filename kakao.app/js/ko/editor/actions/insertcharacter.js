@@ -101,6 +101,9 @@ export default {insertCharacter:function (ch)
                 case 'o':
                     return '○'
 
+                case 'r':
+                    return '⮐ '
+
                 case 's':
                     return '▪'
 
@@ -148,9 +151,9 @@ export default {insertCharacter:function (ch)
 
     this.do.start()
     var list = _k_.list(reversed(this.do.cursors()))
-    for (var _85_14_ = 0; _85_14_ < list.length; _85_14_++)
+    for (var _86_14_ = 0; _86_14_ < list.length; _86_14_++)
     {
-        c = list[_85_14_]
+        c = list[_86_14_]
         if (c[0] > this.do.line(c[1]).length)
         {
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))

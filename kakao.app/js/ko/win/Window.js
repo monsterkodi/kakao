@@ -84,7 +84,9 @@ Window = (function ()
     }
 
     Window.prototype["onWindowWithoutStash"] = async function ()
-    {}
+    {
+        console.log('onWindowWithoutStash!')
+    }
 
     Window.prototype["onWindowCreated"] = function (win)
     {
@@ -148,7 +150,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _111_25_
+        var action, _113_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -324,7 +326,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _200_14_
+    var _202_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -335,7 +337,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _206_22_, _207_19_
+    var _208_22_, _209_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -370,7 +372,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _246_32_
+    var _248_32_
 
     if (!(_k_.isNum(s)))
     {

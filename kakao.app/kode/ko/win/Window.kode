@@ -43,6 +43,8 @@ function Window extends win.Delegate
 
     onWindowWithoutStash: ○->
         
+        log 'onWindowWithoutStash!'
+        
         # ○ kakao 'win.setSize' 1000 1000
         # ○ kakao 'win.center' 
         

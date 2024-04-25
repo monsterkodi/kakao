@@ -7,9 +7,9 @@ export default {actions:{menu:'Line',joinLines:{name:'Join Lines',combo:'command
     if (/(when|if)/.test(before))
     {
         bw = lastWordInLine(before)
-        if (!(_k_.in(bw,['and','or'])) && (!after.trim().startsWith('then')) && !/then/.test(before))
+        if (!(_k_.in(bw,['and','or'])) && (!after.trim().startsWith('then'))((!after.trim().startsWith('➜')) && !/then|➜/.test(before)))
         {
-            after = 'then ' + after
+            after = '➜ ' + after
         }
     }
     return after

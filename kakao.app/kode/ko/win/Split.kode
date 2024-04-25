@@ -49,7 +49,7 @@ class Split
             snapFirst:  20
             snapLast:   100
             
-    onDrag: => if @flex? then @emitSplit()
+    onDrag: => if @flex? ➜ @emitSplit()
     
     emitSplit: => post.emit 'split' @flex.panePositions()
     
@@ -84,22 +84,22 @@ class Split
     do: (sentence) ->
         
         sentence = sentence.trim()
-        return if not sentence.length
+        ⮐  if not sentence.length
         words  = sentence.split /\s+/
         action = words[0]
         what   = words[1]
         switch action
-            'show'     ➜ return @show  what
-            'focus'    ➜ return @focus what
-            'half'     ➜ pos   =  @flex.size()/2
-            'third'    ➜ pos   =  @flex.size()/3
-            'quart'    ➜ pos   =  @flex.size()/4
+            'show'     ➜ ⮐  @show  what
+            'focus'    ➜ ⮐  @focus what
+            'half'     ➜ pos = @flex.size()/2
+            'third'    ➜ pos = @flex.size()/3
+            'quart'    ➜ pos = @flex.size()/4
             'maximize' 
-                if what == 'editor' then return @maximizeEditor()
-                if what == 'terminal' then return @maximizeTerminal()
+                if what == 'editor'   ➜ ⮐  @maximizeEditor()
+                if what == 'terminal' ➜ ⮐  @maximizeTerminal()
                 delta =  @flex.size()
             'minimize' 
-                if what == 'editor' then return @minimizeEditor()
+                if what == 'editor'   ➜ ⮐  @minimizeEditor()
                 delta = -@flex.size()
             'enlarge'
                 if words[2] == 'by'
@@ -111,16 +111,16 @@ class Split
                     delta = - parseInt words[3]
                 else
                     delta = - parseInt 0.25 * @termEditHeight()
-            ➜ return error "Split.do -- unknown action '#{action}'"
+            ➜ ⮐  error "Split.do -- unknown action '#{action}'"
                     
         switch what
             'editor' 
-                if delta? ➜ return @moveCommandLineBy -delta
-                if pos?   ➜ return @flex.moveHandleToPos @flex.handles[0], pos
+                if delta? ➜ ⮐  @moveCommandLineBy -delta
+                if pos?   ➜ ⮐  @flex.moveHandleToPos @flex.handles[0], pos
             'terminal' 'browser' 'commandline'
                 @raise what if what != 'commandline'
-                if delta? ➜ return @moveCommandLineBy delta
-                if pos?   ➜ return @flex.moveHandleToPos @flex.handles[0], pos
+                if delta? ➜ ⮐  @moveCommandLineBy delta
+                if pos?   ➜ ⮐  @flex.moveHandleToPos @flex.handles[0], pos
             ➜    
                 error "Split.do -- unhandled do command? #{sentence}?"
 
@@ -166,7 +166,7 @@ class Split
                     if @flex.handles[2]?.pos() < 2*@flex.size()/3
                         @flex.moveHandleToPos @flex.handles[2], 2*@flex.size()/3
                         
-            'command' then @flex.expand 'commandline'
+            'command' ➜ @flex.expand 'commandline'
             ➜ error "split.show -- unhandled: #{n}!"
 
     hideEditor:     => @flex.collapse 'editor'
@@ -209,7 +209,7 @@ class Split
     
     moveCommandLineBy: (delta) ->
         
-        @flex.moveHandle index:1, pos:@flex.posOfHandle(1) + delta
+        @flex.moveHandle index:1 pos:@flex.posOfHandle(1) + delta
         
     hideCommandline: -> 
         

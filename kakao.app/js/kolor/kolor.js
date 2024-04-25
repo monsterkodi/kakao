@@ -403,7 +403,7 @@ kodePunct = function ()
     {
         return
     }
-    if (_k_.in(chunk.match,'▸➜'))
+    if (_k_.in(chunk.match,'▸➜⮐ '))
     {
         return addValue(0,'keyword')
     }

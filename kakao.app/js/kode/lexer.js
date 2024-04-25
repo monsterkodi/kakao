@@ -66,6 +66,11 @@ class Lexer
                         value = 'then'
                         key = 'keyword'
                     }
+                    if (key === 'return')
+                    {
+                        value = 'return'
+                        key = 'keyword'
+                    }
                     if (value === 'then' && (tokens.slice(-2,-1)[0] != null ? tokens.slice(-2,-1)[0].text : undefined) === 'else')
                     {
                     }
@@ -168,9 +173,9 @@ class Lexer
         var minind, splt, tok
 
         var list = _k_.list(tokens)
-        for (var _139_16_ = 0; _139_16_ < list.length; _139_16_++)
+        for (var _143_16_ = 0; _143_16_ < list.length; _143_16_++)
         {
-            tok = list[_139_16_]
+            tok = list[_143_16_]
             if (tok.type === 'triple')
             {
                 splt = tok.text.slice(3, -3).split('\n')
@@ -322,7 +327,7 @@ class Lexer
                 block = blocks.slice(-1)[0]
             }
         }
-        for (var _271_19_ = idx = 0, _271_23_ = tokens.length; (_271_19_ <= _271_23_ ? idx < tokens.length : idx > tokens.length); (_271_19_ <= _271_23_ ? ++idx : --idx))
+        for (var _275_19_ = idx = 0, _275_23_ = tokens.length; (_275_19_ <= _275_23_ ? idx < tokens.length : idx > tokens.length); (_275_19_ <= _275_23_ ? ++idx : --idx))
         {
             tok = tokens[idx]
             if (tok.type === 'nl')
