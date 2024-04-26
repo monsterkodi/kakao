@@ -26,7 +26,6 @@ class Do
 
     tabState: ->
 
-        saveIndex: @saveIndex
         history:   @history
         redos:     @redos
         state:     @state?.s
@@ -35,7 +34,6 @@ class Do
     setTabState: (tabState) ->
 
         @groupCount = 0
-        @saveIndex  = tabState.saveIndex
         @history    = tabState.history
         @redos      = tabState.redos
         @state      = new EditorState immutable tabState.state
@@ -49,18 +47,18 @@ class Do
     reset: ->
 
         @groupCount = 0
-        @saveIndex  = 0
         @history    = []
         @redos      = []
         @state      = null
 
     hasChanges: ->
+        
+        ⮐ false if empty @history
 
-        if @saveIndex < @history.length
-            ts = new EditorState @history[@saveIndex] # is this a good idea?
-            if ts.text() == @editor.text()
-                return false
-        return true
+        ts = new EditorState @history[0] # is this a good idea?
+        ⮐ false if ts.text() == @editor.text()
+            
+        ⮐ true
 
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000

@@ -24,15 +24,14 @@ class Do
 
     tabState ()
     {
-        var _32_25_
+        var _31_25_
 
-        return {saveIndex:this.saveIndex,history:this.history,redos:this.redos,state:(this.state != null ? this.state.s : undefined),file:this.editor.currentFile}
+        return {history:this.history,redos:this.redos,state:(this.state != null ? this.state.s : undefined),file:this.editor.currentFile}
     }
 
     setTabState (tabState)
     {
         this.groupCount = 0
-        this.saveIndex = tabState.saveIndex
         this.history = tabState.history
         this.redos = tabState.redos
         return this.state = new EditorState(immutable(tabState.state))
@@ -41,7 +40,6 @@ class Do
     reset ()
     {
         this.groupCount = 0
-        this.saveIndex = 0
         this.history = []
         this.redos = []
         return this.state = null
@@ -51,13 +49,14 @@ class Do
     {
         var ts
 
-        if (this.saveIndex < this.history.length)
+        if (_k_.empty(this.history))
         {
-            ts = new EditorState(this.history[this.saveIndex])
-            if (ts.text() === this.editor.text())
-            {
-                return false
-            }
+            return false
+        }
+        ts = new EditorState(this.history[0])
+        if (ts.text() === this.editor.text())
+        {
+            return false
         }
         return true
     }
@@ -101,7 +100,7 @@ class Do
 
     end (opt)
     {
-        var changes, _113_27_
+        var changes, _111_27_
 
         this.redos = []
         this.groupCount -= 1
@@ -116,7 +115,7 @@ class Do
 
     undo ()
     {
-        var changes, _135_27_
+        var changes, _133_27_
 
         if (this.history.length)
         {
@@ -134,7 +133,7 @@ class Do
 
     redo ()
     {
-        var changes, _156_27_
+        var changes, _154_27_
 
         if (this.redos.length)
         {
@@ -318,7 +317,7 @@ class Do
                 if ((a.numLines() === b.numLines() && b.numLines() === c.numLines()))
                 {
                     numLines = a.numLines()
-                    for (var _319_31_ = li = 0, _319_35_ = numLines; (_319_31_ <= _319_35_ ? li < numLines : li > numLines); (_319_31_ <= _319_35_ ? ++li : --li))
+                    for (var _317_31_ = li = 0, _317_35_ = numLines; (_317_31_ <= _317_35_ ? li < numLines : li > numLines); (_317_31_ <= _317_35_ ? ++li : --li))
                     {
                         _k_.profile('lines')
                         la = a.line(li)
@@ -351,16 +350,16 @@ class Do
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _340_14_ = 0; _340_14_ < list.length; _340_14_++)
+        for (var _338_14_ = 0; _338_14_ < list.length; _338_14_++)
         {
-            p = list[_340_14_]
+            p = list[_338_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _347_22_ = ci = cs.length - 1, _347_36_ = 0; (_347_22_ <= _347_36_ ? ci < 0 : ci > 0); (_347_22_ <= _347_36_ ? ++ci : --ci))
+            for (var _345_22_ = ci = cs.length - 1, _345_36_ = 0; (_345_22_ <= _345_36_ ? ci < 0 : ci > 0); (_345_22_ <= _345_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -440,7 +439,7 @@ class Do
 
     textInRange (r)
     {
-        var _376_41_
+        var _374_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

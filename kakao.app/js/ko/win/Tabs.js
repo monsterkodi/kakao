@@ -805,9 +805,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _555_16_ = 0; _555_16_ < list.length; _555_16_++)
+        for (var _554_16_ = 0; _554_16_ < list.length; _554_16_++)
         {
-            tab = list[_555_16_]
+            tab = list[_554_16_]
             if (tab.dirty)
             {
                 if (tab.active)

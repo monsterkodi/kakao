@@ -44,20 +44,103 @@
         kore.on  'editor|file' @editorFile
 ###
 
-use ../../kxk ▪ events
+use ../../kxk ▪ isEqual events
 
 function Kore extends events
 
     set: (key, value) =>
-        
         # log 'kore.set' key, noon value
+        if key == 'tabs'
+            value = @compressTabStates value
+        
         stash.set "kore|#{key}" value
         @emit key, value
         
     get: (key, def) =>
         
         r = stash.get "kore|#{key}" def
+        
+        if key == 'tabs'
+            r = @decompressTabStates r
         # log 'kore.get' key, noon r
         r
+        
+    compressTabStates: (tabs) -> 
+        
+        for tab in tabs
+            if tab.state
+                tab.state = @compressState tab.state
+        tabs
+        
+    decompressTabStates: (tabs) -> 
+        
+        for tab in tabs
+            if tab.state
+                tab.state = @decompressState tab.state
+        tabs
+        
+    compressState: (state) ->
+        
+        log 'compressState' state
+        # asdm asd asdasd as asde asde asde asde asde asde asde
+        
+        compress = (s) ->
+            
+            cs = ''
+            for li in -1...s.linkId
+                cs += "#{s.links[li][0]} #{s.links[li][1]} "
+                
+            cs += "▸ #{s.numLines} #{s.main} " 
+            
+            cs += '▸ '
+            for ci in 0...s.cursors.length
+                cs += "#{s.cursors[ci][0]} #{s.cursors[ci][1]} "
+
+            cs += '▸ '
+            
+            for sl in s.selections
+                cs += "#{sl[0]} #{sl[1][0]} #{sl[1][1]} "
+
+            cs += '▸ '
+            for sl in s.highlights
+                cs += "#{sl[0]} #{sl[1][0]} #{sl[1][1]} "
+              
+            log cs
+            cs
+        
+        comp = {} 
+        comp.lines = []
+        for li in 0...state.state.lineId
+            comp.lines.push state.state.lines[li]
+        comp.history = state.history.map (hs) -> compress hs
+        comp.history.push compress state.state
+        
+        log comp
+                
+        state.comp = comp
+        state
+        
+    decompressState: (state) ->
+    
+        # log 'decompressState' state asdasd
+        
+        if s = state.state
+            if ls = s.ls
+                lk = {}
+                vs = ls.split ' '
+                li = -1
+                vi = 0
+                while vi < vs.length-1
+                    nxt = parseInt(vs[vi+1])
+                    nxt = null if Number.isNaN nxt
+                    lk[li] = [parseInt(vs[vi]), nxt]
+                    li++
+                    vi+= 2
+                    
+                if not isEqual lk, s.links
+                    log 'not equal▸' lk
+                    log 'not equal ' s.links
+        
+        state
                 
 export window.kore = new Kore

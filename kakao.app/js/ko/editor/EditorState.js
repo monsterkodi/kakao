@@ -11,14 +11,11 @@ EditorState = (function ()
 {
     function EditorState (stateOrLines = [], lineCache = [])
     {
-        var _17_45_, _17_63_
-
         this.lineCache = lineCache
     
         if (immutable.isImmutable(stateOrLines))
         {
             this.s = stateOrLines
-            console.log('EditorState copy',(this.lineCache != null ? this.lineCache.length : undefined),(this.lines() != null ? this.lines().length : undefined),this.numLines())
         }
         else if (_k_.isArr(stateOrLines))
         {
