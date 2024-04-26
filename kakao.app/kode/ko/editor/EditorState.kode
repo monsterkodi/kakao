@@ -16,7 +16,7 @@ function EditorState
             @s = stateOrLines
             # log 'EditorState copy' @lineCache?.length, @lines()?.length, @numLines() #if valid @lineCache
         else if stateOrLines is arr
-            log 'EditorState lines'
+            # log 'EditorState lines'
             @s = @stateForLines stateOrLines
             
     stateForLines: (lineStrings) ->

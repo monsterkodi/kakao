@@ -60,6 +60,8 @@ class Tabs
     
     koreTabs: -> tabs = kore.get 'tabs'; tabs ? []
     
+    setKoreTabs: (tabs) => kore.set 'tabs' tabs; tabs
+    
     update: (tabs) => kore.set 'tabs' tabs ? @koreTabs()
         
     onKoreTabs: (tabs) =>
@@ -70,17 +72,19 @@ class Tabs
             # log 'koreTab' koreTab
             @tabs.push new Tab @, koreTab
     
-    koreTabForPath: (path) ->
+    koreTabForPath: (path, tabs) ->
         
-        for tab in @koreTabs()
+        tabs ?= @koreTabs()
+        
+        for tab in tabs
             if slash.samePath tab.path, path
                 return tab
 
-    fileTabsForPath: (path) -> @fileTabs().filter (t) -> t.path.startsWith path
+    fileTabsForPath: (path) -> @fileTabs(@koreTabs()).filter (t) -> t.path.startsWith path
     
-    fileTabs: -> @koreTabs().filter (t) -> t.type == 'file'
+    fileTabs: (tabs) -> tabs.filter (t) -> t.type == 'file'
     prjTabs:  -> @koreTabs().filter (t) -> t.type == 'prj'
-    numFileTabs: -> @fileTabs().length
+    numFileTabs: -> @fileTabs(@koreTabs()).length
     
     prjTabForPath: (path) ->
         
@@ -108,10 +112,9 @@ class Tabs
         
         if editor.name == 'editor'
             if tab = @koreTabForPath kore.get 'editor|file'
-                if tab.tmp
-                    delete tab.tmp
-                @setActive tab.path
-                @update()
+                tabs = @setActive tab.path
+                for tab in tabs ➜ delete tab.tmp
+                @setKoreTabs tabs
 
     #  0000000   0000000    0000000          000000000   0000000   0000000
     # 000   000  000   000  000   000           000     000   000  000   000
@@ -131,14 +134,14 @@ class Tabs
             tabs = @koreTabs()
             if not @koreTabForPath prjPath
                 tabs.push type:'prj' path:prjPath
-            tabs.push type:'file' path:path, tmp:not path.startsWith 'untitled-'
-            @setActive path
+            for tab in tabs
+                delete tab.active
+            tabs.push type:'file' path:path, active:true tmp:not path.startsWith 'untitled-'
             @cleanTabs tabs
             @tab(path)?.div.scrollIntoViewIfNeeded()
             return
 
-        @setActive path
-        @cleanTabs()
+        @cleanTabs @setActive path
         @
         
     #  0000000  000      00000000   0000000   000   000        000000000   0000000   0000000     0000000  
@@ -149,8 +152,6 @@ class Tabs
     
     cleanTabs: (tabs) ->
         
-        tabs ?= @koreTabs()
-
         sorted = tabs.filter (t) -> t.type == 'prj'
         remain = tabs.filter (t) -> t.type != 'prj'
         
@@ -178,7 +179,7 @@ class Tabs
                     if v[i].tmp ➜ v.splice i, 1
             tabs = tabs.concat v
             
-        @update tabs
+        @setKoreTabs tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
     # 000   000  000       000                000     000   000  000   000  
@@ -189,18 +190,20 @@ class Tabs
     delTab: (path) =>
         
         if tab = @koreTabForPath path
-
-            tabs = @fileTabs()
-            index = tabs.indexOf tab
-            if tab.active
-                if index+1 < tabs.length
-                    tabs[index+1].active = true
-                else if index-1 >= 0
-                    tabs[index-1].active = true
+            
             tabs = @koreTabs()
+
+            ftabs = @fileTabs tabs
+            index = ftabs.indexOf tab
+            if tab.active
+                if index+1 < ftabs.length
+                    ftabs[index+1].active = true
+                else if index-1 >= 0
+                    ftabs[index-1].active = true
+            
             index = tabs.indexOf tab
             tabs.splice index, 1
-            @cleanTabs()
+            @cleanTabs tabs
             @activate @activeKoreTab().path
             
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
@@ -215,26 +218,56 @@ class Tabs
             
             if tab.type == 'file'
                 
-                @setActive path
+                @cleanTabs @setActive path
                 
                 if tab.dirty and tab.state
                     log 'restoreTab' path, tab.path, kore.get 'editor|file'
                     post.emit 'restoreTab' tab
-                    return 
+                    return
                     
                 post.emit 'jumpToFile' path
             else
+                tabs = @koreTabs()
+                tab = @koreTabForPath path, tabs
                 tab.collapsed = not tab.collapsed
-                @update()
+                @setKoreTabs tabs
             
+    #  0000000  00000000  000000000   0000000    0000000  000000000  000  000   000  00000000  
+    # 000       000          000     000   000  000          000     000  000   000  000       
+    # 0000000   0000000      000     000000000  000          000     000   000 000   0000000   
+    #      000  000          000     000   000  000          000     000     000     000       
+    # 0000000   00000000     000     000   000   0000000     000     000      0      00000000  
+    
     setActive: (path) =>
         # log 'setActive' path
-        for tab in @koreTabs()
+        
+        tabs = @koreTabs()
+        for tab in tabs
             delete tab.active
             if slash.samePath tab.path, path
                 tab.active = true
                 # log 'setActive tab' tab
                 @tab(path)?.div?.scrollIntoViewIfNeeded()
+        tabs
+
+    # 00000000   000  000   000  000   000  00000000  0000000    
+    # 000   000  000  0000  000  0000  000  000       000   000  
+    # 00000000   000  000 0 000  000 0 000  0000000   000   000  
+    # 000        000  000  0000  000  0000  000       000   000  
+    # 000        000  000   000  000   000  00000000  0000000    
+    
+    togglePinned: (path) =>
+        
+        tabs = @koreTabs()
+        for tab in tabs
+            if slash.samePath tab.path, path
+                if 
+                    tab.tmp    ➜ delete tab.tmp
+                    tab.pinned ➜ delete tab.pinned
+                               ➜ tab.pinned = true
+                @setKoreTabs tabs
+                break
+        tabs
                         
     # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
     # 000   000  000       000      000   000  000   000  000   000        000       000  000      000
@@ -279,9 +312,10 @@ class Tabs
     # 000        000   000   0000000    0000000   00000000   0000000     000     
     
     onProjectIndexed: (path) => 
-    
-        @koreTabs().push type:'prj' path:path
-        @cleanTabs()
+        
+        tabs = @koreTabs()
+        tabs.push type:'prj' path:path
+        @cleanTabs tabs
     
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000
@@ -369,7 +403,7 @@ class Tabs
             continue if tab == active
             if not tab.pinned and tab.type == 'file'
                 tabs.splice index, 1
-        @cleanTabs()
+        @cleanTabs tabs
         
     # 000000000  00     00  00000000   
     #    000     000   000  000   000  
@@ -390,11 +424,13 @@ class Tabs
 
         if not @koreTabForPath path
         
+            tabs = @koreTabs()
+            
             if prjPath = Projects.dir path
                 if not @koreTabForPath prjPath
-                    @koreTabs().push type:'prj' path:prjPath
-            @koreTabs().push type:'file' path:path
-            @cleanTabs()
+                    tabs.push type:'prj' path:prjPath
+            tabs.push type:'file' path:path
+            @cleanTabs tabs
 
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
     # 0000  000  000   000  000   000  000  000        000   000     000     000
@@ -405,7 +441,7 @@ class Tabs
     navigate: (key) ->
         
         if tab = @activeKoreTab()
-            tabs = @fileTabs()
+            tabs = @fileTabs @koreTabs()
             index = tabs.indexOf tab
             index += switch key
                 'left'  ➜ -1
@@ -426,7 +462,7 @@ class Tabs
         index = tabs.indexOf tab
         tabs.splice(index, 1)
         tabs.splice(index+delta, 0, tab)
-        @cleanTabs()
+        @cleanTabs tabs
             
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000
@@ -507,10 +543,17 @@ class Tabs
     onDirty: (dirty) =>
         
         if tab = @activeKoreTab()
+            
+            # if tab.dirty != dirty
+            log 'update tab dirty?' tab, dirty
+
             if dirty
                 tab.dirty = true
+                tab.state = window.editor.do.tabState()
             else
                 delete tab.dirty
+                delete tab.state
+                
             @update()
             
     #  0000000  000000000   0000000   00000000   00000000       0000000  000000000   0000000   000000000  00000000  

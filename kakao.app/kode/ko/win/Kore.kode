@@ -5,11 +5,12 @@
     000  000   000   000  000   000  000     
     000   000   0000000   000   000  00000000
 
-    single source of truth for editor state per window
+    stores editor state per window
         
         editor
             file
             class▸function | test▸tree▸item▸ ... at main cursor
+            
         tabs
             path
             type
@@ -20,23 +21,28 @@
             
         project
             current
+            
         navigation
             index
             history
                 file
                 line
                 col
+                
         commandline
             command
             text
+            
         browser
             columns
                 path
                 type
+                
         shelf
             items
                 path
                 type
+                
         split?
         
     ■
@@ -45,7 +51,7 @@
         kore.on  'editor|file' @editorFile
 ###
 
-use ../../kxk ▪ isEqual events
+use ../../kxk ▪ isEqual immutable events
 
 function Kore extends events
 
@@ -66,20 +72,26 @@ function Kore extends events
         # log 'kore.get' key, noon r
         r
     
-    # 000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000   0000000  
-    #    000     000   000  000   000  000          000     000   000     000     000       000       
-    #    000     000000000  0000000    0000000      000     000000000     000     0000000   0000000   
-    #    000     000   000  000   000       000     000     000   000     000     000            000  
-    #    000     000   000  0000000    0000000      000     000   000     000     00000000  0000000   
+    ###
+    000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000   0000000  
+       000     000   000  000   000  000          000     000   000     000     000       000       
+       000     000000000  0000000    0000000      000     000000000     000     0000000   0000000   
+       000     000   000  000   000       000     000     000   000     000     000            000  
+       000     000   000  0000000    0000000      000     000   000     000     00000000  0000000   
+    ###
     
-    compressTabStates: (tabs) -> 
+    compressTabStates: (tabs) ->
+        
+        log 'compressTabStates' tabs
         
         for tab in tabs
             if tab.state
                 tab.state = @compressState tab.state
         tabs
         
-    decompressTabStates: (tabs) -> 
+    decompressTabStates: (tabs) ->
+        
+        log 'decompressTabStates' tabs
         
         for tab in tabs
             if tab.state
@@ -94,7 +106,7 @@ function Kore extends events
     
     compressState: (state) ->
         
-        # log 'compressState' state
+        log 'compressState' state
 
         compress = (s) ->
             
@@ -141,6 +153,8 @@ function Kore extends events
     
         log 'decompressState' state
         
+        ⮐ if empty state.history
+        
         decompress = (s) ->
             
             ⮐ if not s is str
@@ -165,7 +179,7 @@ function Kore extends events
             for i in 0...lineId
                 lines[i] = state.lines[i]
             
-            dcp = 
+            comp =
                 numLines: numLines
                 main:     main
                 cursors:  cursors
@@ -175,8 +189,10 @@ function Kore extends events
                 lines:    lines
                 lineId:   lineId
                 
-            dcp
-
+            comp = immutable comp
+            log 'comp:' comp
+            comp
+               
         history = state.history.map (hs) -> decompress hs
 
         decomp = 
@@ -185,7 +201,7 @@ function Kore extends events
             redos: []
             history: history
         
-        log 'decomp' decomp
+        log 'decomp:' decomp
         decomp
                             
 export window.kore = new Kore

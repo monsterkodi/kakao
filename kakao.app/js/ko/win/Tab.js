@@ -179,28 +179,7 @@ class Tab
 
     togglePinned ()
     {
-        var tab
-
-        if (tab = this.tabs.koreTabForPath(this.path))
-        {
-            if (tab.tmp)
-            {
-                delete tab.tmp
-            }
-            else
-            {
-                if (tab.pinned)
-                {
-                    delete tab.pinned
-                }
-                else
-                {
-                    tab.pinned = true
-                }
-            }
-            this.tabs.update()
-        }
-        return this
+        return this.tabs.togglePinned(this.path)
     }
 
     isPrj ()

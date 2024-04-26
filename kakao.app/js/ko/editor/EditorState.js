@@ -19,7 +19,6 @@ EditorState = (function ()
         }
         else if (_k_.isArr(stateOrLines))
         {
-            console.log('EditorState lines')
             this.s = this.stateForLines(stateOrLines)
         }
     }
