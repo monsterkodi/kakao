@@ -602,7 +602,12 @@ function TextEditor extends Editor
         
         if ln = @line line
             
-            ⮐ @size.offsetX + @widthOfText ln[0...character]
+            if character > ln.length
+                beyond = (character - ln.length) * @size.charWidth
+            else
+                beyond = 0
+            
+            ⮐ @size.offsetX + beyond + @widthOfText ln[0...character]
         
         character * @size.charWidth + @size.offsetX
 
@@ -629,7 +634,7 @@ function TextEditor extends Editor
         p  = [px, Math.min @numLines()-1 py]
         p
 
-    posForEvent: (event) -> @posAtXY event.clientX, event.clientY
+    posForEvent: (event) -> log 'posForEvent'; @posAtXY event.clientX, event.clientY
 
     lineElemAtXY:(x,y) ->
 
@@ -679,7 +684,11 @@ function TextEditor extends Editor
                 
                 @view.focus()
                     
+                log 'initDrag' event.clientX, event.clientY
+                
                 eventPos = @posForEvent event
+                
+                log 'initDrag' eventPos
 
                 if event.button == 2
                     return 'skip'

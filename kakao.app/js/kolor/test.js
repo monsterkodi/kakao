@@ -639,7 +639,7 @@ toExport["ranges"] = function ()
         section("return", function ()
         {
             lang('kode')
-            rgs = ranges("⮐  1")
+            rgs = ranges("⮐ 1")
             compare(inc(rgs,0,"⮐"),'punct keyword return')
         })
     })

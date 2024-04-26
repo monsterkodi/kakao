@@ -78,6 +78,8 @@ export
     # 0000000   00000000     000
 
     singleCursorAtPos: (p, opt = extend:false) ->
+        
+        # log 'singleCursorAtPos' p
 
         if @numLines() == 0
             @do.start()

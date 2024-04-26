@@ -84,22 +84,22 @@ class Split
     do: (sentence) ->
         
         sentence = sentence.trim()
-        ⮐  if not sentence.length
+        ⮐ if not sentence.length
         words  = sentence.split /\s+/
         action = words[0]
         what   = words[1]
         switch action
-            'show'     ➜ ⮐  @show  what
-            'focus'    ➜ ⮐  @focus what
+            'show'     ➜ ⮐ @show  what
+            'focus'    ➜ ⮐ @focus what
             'half'     ➜ pos = @flex.size()/2
             'third'    ➜ pos = @flex.size()/3
             'quart'    ➜ pos = @flex.size()/4
             'maximize' 
-                if what == 'editor'   ➜ ⮐  @maximizeEditor()
-                if what == 'terminal' ➜ ⮐  @maximizeTerminal()
+                if what == 'editor'   ➜ ⮐ @maximizeEditor()
+                if what == 'terminal' ➜ ⮐ @maximizeTerminal()
                 delta =  @flex.size()
             'minimize' 
-                if what == 'editor'   ➜ ⮐  @minimizeEditor()
+                if what == 'editor'   ➜ ⮐ @minimizeEditor()
                 delta = -@flex.size()
             'enlarge'
                 if words[2] == 'by'
@@ -111,16 +111,16 @@ class Split
                     delta = - parseInt words[3]
                 else
                     delta = - parseInt 0.25 * @termEditHeight()
-            ➜ ⮐  error "Split.do -- unknown action '#{action}'"
+            ➜ ⮐ error "Split.do -- unknown action '#{action}'"
                     
         switch what
             'editor' 
-                if delta? ➜ ⮐  @moveCommandLineBy -delta
-                if pos?   ➜ ⮐  @flex.moveHandleToPos @flex.handles[0], pos
+                if delta? ➜ ⮐ @moveCommandLineBy -delta
+                if pos?   ➜ ⮐ @flex.moveHandleToPos @flex.handles[0], pos
             'terminal' 'browser' 'commandline'
                 @raise what if what != 'commandline'
-                if delta? ➜ ⮐  @moveCommandLineBy delta
-                if pos?   ➜ ⮐  @flex.moveHandleToPos @flex.handles[0], pos
+                if delta? ➜ ⮐ @moveCommandLineBy delta
+                if pos?   ➜ ⮐ @flex.moveHandleToPos @flex.handles[0], pos
             ➜    
                 error "Split.do -- unhandled do command? #{sentence}?"
 

@@ -25,7 +25,7 @@ use ./utils ▪ kc ke
         }
         """
 
-    kc  'f = -> ⮐  2'       ▸ """
+    kc  'f = -> ⮐ 2'       ▸ """
         
         f = function ()
         {
@@ -48,7 +48,7 @@ use ./utils ▪ kc ke
         }
         """
 
-    kc  'f = -> if true ➜ 4 else ⮐  5'       ▸ """
+    kc  'f = -> if true ➜ 4 else ⮐ 5'       ▸ """
         
         f = function ()
         {
@@ -66,8 +66,8 @@ use ./utils ▪ kc ke
     kc  """
         f = -> 
             if true 
-                ⮐  4 
-            else ⮐  5"""  ▸ """
+                ⮐ 4 
+            else ⮐ 5"""  ▸ """
         
         f = function ()
         {
@@ -85,8 +85,8 @@ use ./utils ▪ kc ke
     kc  """
         f = -> 
             switch a
-                '1' ➜ ⮐  4 
-                '2' ➜ ⮐  5 
+                '1' ➜ ⮐ 4 
+                '2' ➜ ⮐ 5 
         """ ▸ """
         
         f = function ()

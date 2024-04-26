@@ -85,7 +85,9 @@ function EditorState
         @traverse (lineIndex, lineId, linkId) => l = @s.lines[lineId]; li = lineIndex; li < i
         
         if li == i
-            @lineCache[i] = kstr.detab l 
+            @lineCache[i] = kstr.detab l
+        else
+            log "line #{i} traverse mismatch?" li 
             
         @lineCache[i]
         

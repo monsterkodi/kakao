@@ -178,7 +178,7 @@
             
             [args addObject:info];
             
-            NSLog(@"%@ %@", type, change.path);
+            // NSLog(@"%@ %@", type, change.path);
             
             [msg setObject:@"fs.change" forKey:@"name"];
             [msg setObject:args forKey:@"args"];

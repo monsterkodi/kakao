@@ -63,7 +63,7 @@ class Lexer
 
                     value = if key == 'nl' then '' else match[0]
                     
-                    # simple substitution ➜ then ⮐  return
+                    # simple substitution ➜ then ⮐ return
                     
                     if key == 'then' ➜ value = 'then'; key = 'keyword'
                     if key == 'return' ➜ value = 'return'; key = 'keyword'

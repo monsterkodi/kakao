@@ -32,9 +32,9 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
     return this.do.end()
 },cursorMoves:function (key, info)
 {
-    var extend, _105_30_
+    var extend, _107_30_
 
-    extend = ((_105_30_=(info != null ? info.extend : undefined)) != null ? _105_30_ : 0 <= (info != null ? info.mod.indexOf('shift') : undefined))
+    extend = ((_107_30_=(info != null ? info.extend : undefined)) != null ? _107_30_ : 0 <= (info != null ? info.mod.indexOf('shift') : undefined))
     switch (info.combo)
     {
         case 'alt+-':
@@ -76,9 +76,9 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
         this.do.start()
         newCursors = []
         var list = _k_.list(this.do.selections())
-        for (var _124_18_ = 0; _124_18_ < list.length; _124_18_++)
+        for (var _126_18_ = 0; _126_18_ < list.length; _126_18_++)
         {
-            s = list[_124_18_]
+            s = list[_126_18_]
             newCursors.push(rangeStartPos(s))
             newCursors.push(rangeEndPos(s))
         }
@@ -141,9 +141,9 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
     oldCursors = this.state.cursors()
     newCursors = this.do.cursors()
     var list = _k_.list(oldCursors)
-    for (var _167_14_ = 0; _167_14_ < list.length; _167_14_++)
+    for (var _169_14_ = 0; _169_14_ < list.length; _169_14_++)
     {
-        c = list[_167_14_]
+        c = list[_169_14_]
         if (!isPosInPositions([c[0],c[1] + d],oldCursors))
         {
             newCursors.push([c[0],c[1] + d])
@@ -174,7 +174,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
     var i
 
     this.do.start()
-    this.do.setCursors((function () { var r_181_36_ = []; for (var _181_40_ = i = 0, _181_44_ = this.numLines(); (_181_40_ <= _181_44_ ? i < this.numLines() : i > this.numLines()); (_181_40_ <= _181_44_ ? ++i : --i))  { r_181_36_.push([0,i])  } return r_181_36_ }).bind(this)(),{main:'closest'})
+    this.do.setCursors((function () { var r_183_36_ = []; for (var _183_40_ = i = 0, _183_44_ = this.numLines(); (_183_40_ <= _183_44_ ? i < this.numLines() : i > this.numLines()); (_183_40_ <= _183_44_ ? ++i : --i))  { r_183_36_.push([0,i])  } return r_183_36_ }).bind(this)(),{main:'closest'})
     return this.do.end()
 },cursorColumns:function (num, step = 1)
 {
@@ -182,7 +182,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
 
     cp = this.cursorPos()
     this.do.start()
-    this.do.setCursors((function () { var r_187_51_ = []; for (var _187_55_ = i = 0, _187_59_ = num; (_187_55_ <= _187_59_ ? i < num : i > num); (_187_55_ <= _187_59_ ? ++i : --i))  { r_187_51_.push([cp[0] + i * step,cp[1]])  } return r_187_51_ }).bind(this)(),{main:'closest'})
+    this.do.setCursors((function () { var r_189_51_ = []; for (var _189_55_ = i = 0, _189_59_ = num; (_189_55_ <= _189_59_ ? i < num : i > num); (_189_55_ <= _189_59_ ? ++i : --i))  { r_189_51_.push([cp[0] + i * step,cp[1]])  } return r_189_51_ }).bind(this)(),{main:'closest'})
     return this.do.end()
 },cursorLines:function (num, step = 1)
 {
@@ -190,7 +190,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
 
     cp = this.cursorPos()
     this.do.start()
-    this.do.setCursors((function () { var r_193_51_ = []; for (var _193_55_ = i = 0, _193_59_ = num; (_193_55_ <= _193_59_ ? i < num : i > num); (_193_55_ <= _193_59_ ? ++i : --i))  { r_193_51_.push([cp[0],cp[1] + i * step])  } return r_193_51_ }).bind(this)(),{main:'closest'})
+    this.do.setCursors((function () { var r_195_51_ = []; for (var _195_55_ = i = 0, _195_59_ = num; (_195_55_ <= _195_59_ ? i < num : i > num); (_195_55_ <= _195_59_ ? ++i : --i))  { r_195_51_.push([cp[0],cp[1] + i * step])  } return r_195_51_ }).bind(this)(),{main:'closest'})
     return this.do.end()
 },alignCursorsAndText:function ()
 {
@@ -198,12 +198,12 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
 
     this.do.start()
     newCursors = this.do.cursors()
-    newX = _k_.max((function () { var r_206_31_ = []; var list = _k_.list(newCursors); for (var _206_31_ = 0; _206_31_ < list.length; _206_31_++)  { c = list[_206_31_];r_206_31_.push(c[0])  } return r_206_31_ }).bind(this)())
+    newX = _k_.max((function () { var r_208_31_ = []; var list = _k_.list(newCursors); for (var _208_31_ = 0; _208_31_ < list.length; _208_31_++)  { c = list[_208_31_];r_208_31_.push(c[0])  } return r_208_31_ }).bind(this)())
     lines = {}
     var list1 = _k_.list(newCursors)
-    for (var _208_15_ = 0; _208_15_ < list1.length; _208_15_++)
+    for (var _210_15_ = 0; _210_15_ < list1.length; _210_15_++)
     {
-        nc = list1[_208_15_]
+        nc = list1[_210_15_]
         lines[nc[1]] = nc[0]
         cursorSet(nc,newX,c[1])
     }
@@ -245,18 +245,18 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
                 return _k_.last(newCursors)[0]
 
             case 'left':
-                return _k_.min((function () { var r_228_46_ = []; var list = _k_.list(newCursors); for (var _228_46_ = 0; _228_46_ < list.length; _228_46_++)  { c = list[_228_46_];r_228_46_.push(c[0])  } return r_228_46_ }).bind(this)())
+                return _k_.min((function () { var r_230_46_ = []; var list = _k_.list(newCursors); for (var _230_46_ = 0; _230_46_ < list.length; _230_46_++)  { c = list[_230_46_];r_230_46_.push(c[0])  } return r_230_46_ }).bind(this)())
 
             case 'right':
-                return _k_.max((function () { var r_229_46_ = []; var list1 = _k_.list(newCursors); for (var _229_46_ = 0; _229_46_ < list1.length; _229_46_++)  { c = list1[_229_46_];r_229_46_.push(c[0])  } return r_229_46_ }).bind(this)())
+                return _k_.max((function () { var r_231_46_ = []; var list1 = _k_.list(newCursors); for (var _231_46_ = 0; _231_46_ < list1.length; _231_46_++)  { c = list1[_231_46_];r_231_46_.push(c[0])  } return r_231_46_ }).bind(this)())
 
         }
 
     }).bind(this))()
     var list = _k_.list(newCursors)
-    for (var _230_14_ = 0; _230_14_ < list.length; _230_14_++)
+    for (var _232_14_ = 0; _232_14_ < list.length; _232_14_++)
     {
-        c = list[_230_14_]
+        c = list[_232_14_]
         cursorSet(c,charPos,c[1])
     }
     main = ((function ()
@@ -309,9 +309,9 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
         {
             case 'up':
                 var list = _k_.list(this.do.cursors())
-                for (var _263_22_ = 0; _263_22_ < list.length; _263_22_++)
+                for (var _265_22_ = 0; _265_22_ < list.length; _265_22_++)
                 {
-                    c = list[_263_22_]
+                    c = list[_265_22_]
                     if (isPosInPositions([c[0],c[1] - 1],newCursors) && !isPosInPositions([c[0],c[1] + 1],newCursors))
                     {
                         ci = newCursors.indexOf(c)
@@ -321,9 +321,9 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
                 break
             case 'down':
                 var list1 = _k_.list(reversed(newCursors))
-                for (var _268_22_ = 0; _268_22_ < list1.length; _268_22_++)
+                for (var _270_22_ = 0; _270_22_ < list1.length; _270_22_++)
                 {
-                    c = list1[_268_22_]
+                    c = list1[_270_22_]
                     if (isPosInPositions([c[0],c[1] + 1],newCursors) && !isPosInPositions([c[0],c[1] - 1],newCursors))
                     {
                         ci = newCursors.indexOf(c)

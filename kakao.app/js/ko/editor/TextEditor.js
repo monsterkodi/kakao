@@ -714,11 +714,19 @@ TextEditor = (function ()
 
     TextEditor.prototype["xOffsetAtCharacterInLine"] = function (character, line)
     {
-        var ln
+        var beyond, ln
 
         if (ln = this.line(line))
         {
-            return this.size.offsetX + this.widthOfText(ln.slice(0, typeof character === 'number' ? character : -1))
+            if (character > ln.length)
+            {
+                beyond = (character - ln.length) * this.size.charWidth
+            }
+            else
+            {
+                beyond = 0
+            }
+            return this.size.offsetX + beyond + this.widthOfText(ln.slice(0, typeof character === 'number' ? character : -1))
         }
         return character * this.size.charWidth + this.size.offsetX
     }
@@ -757,6 +765,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["posForEvent"] = function (event)
     {
+        console.log('posForEvent')
         return this.posAtXY(event.clientX,event.clientY)
     }
 
@@ -776,9 +785,9 @@ TextEditor = (function ()
         {
             lr = lineElem.getBoundingClientRect()
             var list = _k_.list(lineElem.firstChild.children)
-            for (var _643_18_ = 0; _643_18_ < list.length; _643_18_++)
+            for (var _648_18_ = 0; _648_18_ < list.length; _648_18_++)
             {
-                e = list[_643_18_]
+                e = list[_648_18_]
                 br = e.getBoundingClientRect()
                 if ((br.left <= x && x <= br.left + br.width))
                 {
@@ -797,7 +806,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["viewHeight"] = function ()
     {
-        var _654_18_, _655_13_
+        var _659_18_, _660_13_
 
         if ((this.scroll != null ? this.scroll.viewHeight : undefined) >= 0)
         {
@@ -829,7 +838,9 @@ TextEditor = (function ()
             var eventPos, p, r, range
 
             this.view.focus()
+            console.log('initDrag',event.clientX,event.clientY)
             eventPos = this.posForEvent(event)
+            console.log('initDrag',eventPos)
             if (event.button === 2)
             {
                 return 'skip'
@@ -945,7 +956,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _776_24_, _792_35_, _798_33_
+        var action, actionCombo, combos, _785_24_, _801_35_, _807_33_
 
         if ((this.autocomplete != null))
         {
@@ -975,18 +986,18 @@ TextEditor = (function ()
         }
 
         var list = _k_.list(Editor.actions)
-        for (var _790_19_ = 0; _790_19_ < list.length; _790_19_++)
+        for (var _799_19_ = 0; _799_19_ < list.length; _799_19_++)
         {
-            action = list[_790_19_]
-            combos = ((_792_35_=action.combos) != null ? _792_35_ : [action.combo])
+            action = list[_799_19_]
+            combos = ((_801_35_=action.combos) != null ? _801_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _796_28_ = 0; _796_28_ < list1.length; _796_28_++)
+            for (var _805_28_ = 0; _805_28_ < list1.length; _805_28_++)
             {
-                actionCombo = list1[_796_28_]
+                actionCombo = list1[_805_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))
