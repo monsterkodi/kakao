@@ -10,6 +10,14 @@
         editor
             file
             class▸function | test▸tree▸item▸ ... at main cursor
+        tabs
+            path
+            type
+            collapsed
+            pinned
+            tmp
+            state
+            
         project
             current
         navigation
@@ -29,13 +37,6 @@
             items
                 path
                 type
-        tabs
-            path
-            type
-            collapsed
-            pinned
-            tmp
-            state (modified)?
         split?
         
     ■
@@ -116,7 +117,6 @@ function Kore extends events
             for sl in s.highlights
                 cs += "#{sl[0]}○#{sl[1][0]}■#{sl[1][1]} "
               
-            # log 'cs:' cs
             cs
         
         comp = {} 
@@ -127,10 +127,9 @@ function Kore extends events
         comp.history = state.history.map (hs) -> compress hs
         comp.history.push compress state.state
         
-        # log 'comp' comp
+        log 'comp' comp
                 
-        state.comp = comp
-        state
+        comp
         
     # 0000000    00000000   0000000   0000000   00     00  00000000   00000000   00000000   0000000   0000000  
     # 000   000  000       000       000   000  000   000  000   000  000   000  000       000       000       
@@ -140,60 +139,53 @@ function Kore extends events
     
     decompressState: (state) ->
     
-        # log 'decompressState' state asd xyz
+        log 'decompressState' state
         
-        if comp = state.comp
+        decompress = (s) ->
             
-            decompress = (s) -> 
-                
-                [links, numMain, cursors, selections, highlights] = s.split('▸').map (s) -> trim s
-                
-                # log 's', s
-                # log 'ss', links, numMain, cursors, selections, highlights
-                
-                [numLines, main, lineId] = numMain.split(' ').map (n) -> parseInt n
-
-                xy = (s) -> s.split('■').map (n) -> parseInt n
-                
-                cursors    = cursors.split(' ').map xy
-                selections = empty selections ? [] : selections.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('●'); [parseInt(sss[0]), xy(sss[1])]
-                highlights = empty highlights ? [] : highlights.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('○'); [parseInt(sss[0]), xy(sss[1])]
-                
-                linkNum = links.split(' ').map (s) -> s.split('◆').map (n) -> parseInt n
-                
-                links = {}
-                for idx in -1...linkNum.length-1
-                    links[idx] = linkNum[idx+1]
-                
-                lines = {}
-                for i in 0...lineId
-                    lines[i] = comp.lines[i]
-                
-                dcp = 
-                    numLines: numLines
-                    main:     main
-                    cursors:  cursors
-                    selections:  selections
-                    highlights:  highlights
-                    links:    links
-                    lines:    lines
-                    lineId:   lineId
-                    
-                # log 'dcp:' dcp
-                dcp
-
-            history = comp.history.map (hs) -> decompress hs
-
-            decomp = 
-                file:  state.file
-                state: history.pop()
-                redos: null
-                history: history
+            ⮐ if not s is str
             
-            log 'decomp' decomp
-            return decomp
+            [links, numMain, cursors, selections, highlights] = s.split('▸').map (s) -> trim s
             
-        log 'state' state
-        state
+            [numLines, main, lineId] = numMain.split(' ').map (n) -> parseInt n
+
+            xy = (s) -> s.split('■').map (n) -> parseInt n
+            
+            cursors    = cursors.split(' ').map xy
+            selections = empty selections ? [] : selections.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('●'); [parseInt(sss[0]), xy(sss[1])]
+            highlights = empty highlights ? [] : highlights.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('○'); [parseInt(sss[0]), xy(sss[1])]
+            
+            linkNum = links.split(' ').map (s) -> s.split('◆').map (n) -> parseInt n
+            
+            links = {}
+            for idx in -1...linkNum.length-1
+                links[idx] = linkNum[idx+1]
+            
+            lines = {}
+            for i in 0...lineId
+                lines[i] = state.lines[i]
+            
+            dcp = 
+                numLines: numLines
+                main:     main
+                cursors:  cursors
+                selections:  selections
+                highlights:  highlights
+                links:    links
+                lines:    lines
+                lineId:   lineId
                 
+            dcp
+
+        history = state.history.map (hs) -> decompress hs
+
+        decomp = 
+            file:  state.file
+            state: history.pop()
+            redos: []
+            history: history
+        
+        log 'decomp' decomp
+        decomp
+                            
 export window.kore = new Kore
