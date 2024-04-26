@@ -16,6 +16,7 @@ use ./kakao
 use ./kxk ▪ win elem $
     
 kakao.init ->
+
     new win
-    main =$ 'main'
-    elem text:'func = () -> => a == b:{}, c()' parent:main
+
+    elem text:'func = () -> => a == b:{}, c()' parent:$ 'main'

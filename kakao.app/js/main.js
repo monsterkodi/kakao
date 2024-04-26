@@ -9,9 +9,6 @@ let $ = kxk.$
 
 kakao.init(function ()
 {
-    var main
-
     new win
-    main = $('main')
-    return elem({text:'func = () -> => a == b:{}, c()',parent:main})
+    return elem({text:'func = () -> => a == b:{}, c()',parent:$('main')})
 })

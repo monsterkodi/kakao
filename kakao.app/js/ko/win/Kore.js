@@ -75,7 +75,6 @@ Kore = (function ()
     {
         var comp, compress, li
 
-        console.log('compressState',state)
         compress = function (s)
         {
             var ci, cs, li, sl
@@ -105,7 +104,6 @@ Kore = (function ()
                 sl = list1[_116_19_]
                 cs += `${sl[0]}○${sl[1][0]}■${sl[1][1]} `
             }
-            console.log('cs:',cs)
             return cs
         }
         comp = {}
@@ -119,7 +117,6 @@ Kore = (function ()
             return compress(hs)
         })
         comp.history.push(compress(state.state))
-        console.log('comp',comp)
         state.comp = comp
         return state
     }
@@ -139,8 +136,6 @@ Kore = (function ()
                     return _k_.trim(s)
                 }); links = _149_66_[0]; numMain = _149_66_[1]; cursors = _149_66_[2]; selections = _149_66_[3]; highlights = _149_66_[4]
 
-                console.log('s',s)
-                console.log('ss',links,numMain,cursors,selections,highlights)
                 var _154_41_ = numMain.split(' ').map(function (n)
                 {
                     return parseInt(n)
@@ -188,7 +183,6 @@ Kore = (function ()
                     lines[i] = comp.lines[i]
                 }
                 dcp = {numLines:numLines,main:main,cursors:cursors,selections:selections,highlights:highlights,links:links,lines:lines,lineId:lineId}
-                console.log('dcp:',dcp)
                 return dcp
             }
             history = comp.history.map(function (hs)
@@ -197,8 +191,9 @@ Kore = (function ()
             })
             decomp = {file:state.file,state:history.pop(),redos:null,history:history}
             console.log('decomp',decomp)
-            console.log('state',state)
+            return decomp
         }
+        console.log('state',state)
         return state
     }
 

@@ -93,7 +93,7 @@ function Kore extends events
     
     compressState: (state) ->
         
-        log 'compressState' state
+        # log 'compressState' state
 
         compress = (s) ->
             
@@ -116,7 +116,7 @@ function Kore extends events
             for sl in s.highlights
                 cs += "#{sl[0]}○#{sl[1][0]}■#{sl[1][1]} "
               
-            log 'cs:' cs
+            # log 'cs:' cs
             cs
         
         comp = {} 
@@ -127,7 +127,7 @@ function Kore extends events
         comp.history = state.history.map (hs) -> compress hs
         comp.history.push compress state.state
         
-        log 'comp' comp
+        # log 'comp' comp
                 
         state.comp = comp
         state
@@ -140,7 +140,7 @@ function Kore extends events
     
     decompressState: (state) ->
     
-        # log 'decompressState' state asdasd
+        # log 'decompressState' state asd xyz
         
         if comp = state.comp
             
@@ -148,8 +148,8 @@ function Kore extends events
                 
                 [links, numMain, cursors, selections, highlights] = s.split('▸').map (s) -> trim s
                 
-                log 's', s
-                log 'ss', links, numMain, cursors, selections, highlights
+                # log 's', s
+                # log 'ss', links, numMain, cursors, selections, highlights
                 
                 [numLines, main, lineId] = numMain.split(' ').map (n) -> parseInt n
 
@@ -179,7 +179,7 @@ function Kore extends events
                     lines:    lines
                     lineId:   lineId
                     
-                log 'dcp:' dcp
+                # log 'dcp:' dcp
                 dcp
 
             history = comp.history.map (hs) -> decompress hs
@@ -191,7 +191,9 @@ function Kore extends events
                 history: history
             
             log 'decomp' decomp
-            log 'state' state
+            return decomp
+            
+        log 'state' state
         state
                 
 export window.kore = new Kore
