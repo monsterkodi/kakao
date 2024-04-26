@@ -64,7 +64,13 @@ function Kore extends events
             r = @decompressTabStates r
         # log 'kore.get' key, noon r
         r
-        
+    
+    # 000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000   0000000  
+    #    000     000   000  000   000  000          000     000   000     000     000       000       
+    #    000     000000000  0000000    0000000      000     000000000     000     0000000   0000000   
+    #    000     000   000  000   000       000     000     000   000     000     000            000  
+    #    000     000   000  0000000    0000000      000     000   000     000     00000000  0000000   
+    
     compressTabStates: (tabs) -> 
         
         for tab in tabs
@@ -79,68 +85,113 @@ function Kore extends events
                 tab.state = @decompressState tab.state
         tabs
         
+    #  0000000   0000000   00     00  00000000   00000000   00000000   0000000   0000000  
+    # 000       000   000  000   000  000   000  000   000  000       000       000       
+    # 000       000   000  000000000  00000000   0000000    0000000   0000000   0000000   
+    # 000       000   000  000 0 000  000        000   000  000            000       000  
+    #  0000000   0000000   000   000  000        000   000  00000000  0000000   0000000   
+    
     compressState: (state) ->
         
         log 'compressState' state
-        # asdm asd asdasd as asde asde asde asde asde asde asde
-        
+
         compress = (s) ->
             
             cs = ''
             for li in -1...s.linkId
-                cs += "#{s.links[li][0]} #{s.links[li][1]} "
+                cs += "#{s.links[li][0]}◆#{s.links[li][1]} "
                 
-            cs += "▸ #{s.numLines} #{s.main} " 
+            cs += "▸ #{s.numLines} #{s.main} #{s.lineId} " 
             
             cs += '▸ '
             for ci in 0...s.cursors.length
-                cs += "#{s.cursors[ci][0]} #{s.cursors[ci][1]} "
+                cs += "#{s.cursors[ci][0]}■#{s.cursors[ci][1]} "
 
             cs += '▸ '
             
             for sl in s.selections
-                cs += "#{sl[0]} #{sl[1][0]} #{sl[1][1]} "
+                cs += "#{sl[0]}●#{sl[1][0]}■#{sl[1][1]} "
 
             cs += '▸ '
             for sl in s.highlights
-                cs += "#{sl[0]} #{sl[1][0]} #{sl[1][1]} "
+                cs += "#{sl[0]}○#{sl[1][0]}■#{sl[1][1]} "
               
-            log cs
+            log 'cs:' cs
             cs
         
         comp = {} 
         comp.lines = []
         for li in 0...state.state.lineId
             comp.lines.push state.state.lines[li]
+            
         comp.history = state.history.map (hs) -> compress hs
         comp.history.push compress state.state
         
-        log comp
+        log 'comp' comp
                 
         state.comp = comp
         state
         
+    # 0000000    00000000   0000000   0000000   00     00  00000000   00000000   00000000   0000000   0000000  
+    # 000   000  000       000       000   000  000   000  000   000  000   000  000       000       000       
+    # 000   000  0000000   000       000   000  000000000  00000000   0000000    0000000   0000000   0000000   
+    # 000   000  000       000       000   000  000 0 000  000        000   000  000            000       000  
+    # 0000000    00000000   0000000   0000000   000   000  000        000   000  00000000  0000000   0000000   
+    
     decompressState: (state) ->
     
         # log 'decompressState' state asdasd
         
-        if s = state.state
-            if ls = s.ls
-                lk = {}
-                vs = ls.split ' '
-                li = -1
-                vi = 0
-                while vi < vs.length-1
-                    nxt = parseInt(vs[vi+1])
-                    nxt = null if Number.isNaN nxt
-                    lk[li] = [parseInt(vs[vi]), nxt]
-                    li++
-                    vi+= 2
+        if comp = state.comp
+            
+            decompress = (s) -> 
+                
+                [links, numMain, cursors, selections, highlights] = s.split('▸').map (s) -> trim s
+                
+                log 's', s
+                log 'ss', links, numMain, cursors, selections, highlights
+                
+                [numLines, main, lineId] = numMain.split(' ').map (n) -> parseInt n
+
+                xy = (s) -> s.split('■').map (n) -> parseInt n
+                
+                cursors    = cursors.split(' ').map xy
+                selections = empty selections ? [] : selections.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('●'); [parseInt(sss[0]), xy(sss[1])]
+                highlights = empty highlights ? [] : highlights.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('○'); [parseInt(sss[0]), xy(sss[1])]
+                
+                linkNum = links.split(' ').map (s) -> s.split('◆').map (n) -> parseInt n
+                
+                links = {}
+                for idx in -1...linkNum.length-1
+                    links[idx] = linkNum[idx+1]
+                
+                lines = {}
+                for i in 0...lineId
+                    lines[i] = comp.lines[i]
+                
+                dcp = 
+                    numLines: numLines
+                    main:     main
+                    cursors:  cursors
+                    selections:  selections
+                    highlights:  highlights
+                    links:    links
+                    lines:    lines
+                    lineId:   lineId
                     
-                if not isEqual lk, s.links
-                    log 'not equal▸' lk
-                    log 'not equal ' s.links
-        
+                log 'dcp:' dcp
+                dcp
+
+            history = comp.history.map (hs) -> decompress hs
+
+            decomp = 
+                file:  state.file
+                state: history.pop()
+                redos: null
+                history: history
+            
+            log 'decomp' decomp
+            log 'state' state
         state
                 
 export window.kore = new Kore

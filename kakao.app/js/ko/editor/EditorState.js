@@ -43,7 +43,7 @@ EditorState = (function ()
             lineId++
         }
         mcy = (lineId ? 0 : -1)
-        return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links,numLines:lineId,numOriginal:lineId,cursors:[[0,mcy]],selections:[],highlights:[],main:0})
+        return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links,numLines:lineId,cursors:[[0,mcy]],selections:[],highlights:[],main:0})
     }
 
     EditorState.prototype["traverse"] = function (cb)

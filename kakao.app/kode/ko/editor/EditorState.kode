@@ -45,7 +45,6 @@ function EditorState
             links:       links
             
             numLines:    lineId
-            numOriginal: lineId
                     
             cursors:     [[0,mcy]]
             selections:  []

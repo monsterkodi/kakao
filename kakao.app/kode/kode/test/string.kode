@@ -9,6 +9,11 @@
 use ./utils ▪ kc ke
 
 ▸ string
+
+    ▸ unicode
+    
+        kc '"▾"'   ▸   '"▾"'
+        kc 'cs += "#{s.links[li][0]}▾#{s.links[li][1]} "' ▸ 'cs += `${s.links[li][0]}▾${s.links[li][1]} `'
     
     # 000000000  00000000   000  00000000   000      00000000  
     #    000     000   000  000  000   000  000      000       

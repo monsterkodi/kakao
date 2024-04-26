@@ -7,6 +7,11 @@ let ke = utils.ke
 
 toExport["string"] = function ()
 {
+    section("unicode", function ()
+    {
+        compare(kc('"▾"'),'"▾"')
+        compare(kc('cs += "#{s.links[li][0]}#{s.links[li][1]} "'),'cs += `${s.links[li][0]}${s.links[li][1]} `')
+    })
     section("triple", function ()
     {
         compare(ke(`a =\"\"\"
