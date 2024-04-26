@@ -70,7 +70,7 @@ class Do
 
         @groupCount += 1
         if @groupCount == 1
-            @startState = @state = new EditorState @editor.state.s
+            @startState = @state = new EditorState @editor.state.s, @editor.state.lineCache
             if empty(@history) or @state.s != last(@history)
                 @history.push @state
 

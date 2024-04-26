@@ -61,7 +61,7 @@ class Do
         this.groupCount += 1
         if (this.groupCount === 1)
         {
-            this.startState = this.state = new EditorState(this.editor.state.s)
+            this.startState = this.state = new EditorState(this.editor.state.s,this.editor.state.lineCache)
             if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history))
             {
                 return this.history.push(this.state)

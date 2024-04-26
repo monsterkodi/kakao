@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var EditorState
 
@@ -9,15 +9,20 @@ let immutable = kxk.immutable
 
 EditorState = (function ()
 {
-    function EditorState (stateOrLines = [])
+    function EditorState (stateOrLines = [], lineCache = [])
     {
-        this.lineCache = []
+        var _17_45_, _17_63_
+
+        this.lineCache = lineCache
+    
         if (immutable.isImmutable(stateOrLines))
         {
             this.s = stateOrLines
+            console.log('EditorState copy',(this.lineCache != null ? this.lineCache.length : undefined),(this.lines() != null ? this.lines().length : undefined),this.numLines())
         }
         else if (_k_.isArr(stateOrLines))
         {
+            console.log('EditorState lines')
             this.s = this.stateForLines(stateOrLines)
         }
     }
@@ -44,21 +49,13 @@ EditorState = (function ()
         return immutable({lineId:lineId,linkId:linkId,lines:lines,links:links,numLines:lineId,numOriginal:lineId,cursors:[[0,mcy]],selections:[],highlights:[],main:0})
     }
 
-    EditorState.prototype["next"] = function (link)
-    {
-        if (!_k_.empty((link != null ? link[1] : undefined)))
-        {
-            return this.s.links[link[1]]
-        }
-    }
-
     EditorState.prototype["traverse"] = function (cb)
     {
         var lineIndex, next, prev
 
         lineIndex = 0
-        prev = next = this.s.links['-1']
-        while (next = this.next(prev))
+        prev = this.s.links['-1']
+        while (next = this.s.links[prev[1]])
         {
             if (!cb(lineIndex,next[0],prev[1]))
             {
@@ -91,7 +88,7 @@ EditorState = (function ()
         }
         else
         {
-            console.log(`line ${i} traverse mismatch?`,li)
+            console.log(`line ${i} traverse mismatch?`,li,this.s)
         }
         return this.lineCache[i]
     }
@@ -154,7 +151,8 @@ EditorState = (function ()
         var info
 
         info = this.seek(i)
-        return new EditorState(this.s.setIn(['lines',info.lineId],t))
+        this.lineCache[i] = t
+        return new EditorState(this.s.setIn(['lines',info.lineId],t),this.lineCache)
     }
 
     EditorState.prototype["insertLine"] = function (i, t)
@@ -267,11 +265,7 @@ EditorState = (function ()
 
     EditorState.prototype["lineState"] = function (s)
     {
-        var ns
-
-        ns = new EditorState(s)
-        ns.lineCache = this.lineCache
-        return ns
+        return new EditorState(s,this.lineCache)
     }
 
     EditorState.prototype["setSelections"] = function (s)

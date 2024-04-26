@@ -622,19 +622,15 @@ function TextEditor extends Editor
         sl = @layerScroll.scrollLeft
         st = @scroll.offsetTop
         br = @view.getBoundingClientRect()
+        
         lx = clamp 0 @layers.offsetWidth,  x - br.left - @size.offsetX + @size.charWidth/3
-        if ln = @line y
-            if '⮐' in  ln 
-                log 'fix offsetX' ln
-        else
-            log 'no line at' y, @numLines(), @lineCache
         ly = clamp 0 @layers.offsetHeight, y - br.top
         px = parseInt Math.floor (Math.max 0 sl + lx)/@size.charWidth
         py = parseInt(Math.floor((Math.max 0 st + ly)/@size.lineHeight)) + @scroll.top
         p  = [px, Math.min @numLines()-1 py]
         p
 
-    posForEvent: (event) -> log 'posForEvent'; @posAtXY event.clientX, event.clientY
+    posForEvent: (event) -> @posAtXY event.clientX, event.clientY
 
     lineElemAtXY:(x,y) ->
 
@@ -684,11 +680,11 @@ function TextEditor extends Editor
                 
                 @view.focus()
                     
-                log 'initDrag' event.clientX, event.clientY
+                # log 'initDrag1' event.clientX, event.clientY
                 
                 eventPos = @posForEvent event
                 
-                log 'initDrag' eventPos
+                # log 'initDrag2' eventPos
 
                 if event.button == 2
                     return 'skip'

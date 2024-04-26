@@ -10,13 +10,13 @@ use ../../kxk ▪ kstr immutable
 
 function EditorState
     
-    @: (stateOrLines = []) ->
-        
-        @lineCache = []
+    @: (stateOrLines = [], @lineCache = []) ->
         
         if immutable.isImmutable stateOrLines
             @s = stateOrLines
+            log 'EditorState copy' @lineCache?.length, @lines()?.length, @numLines() #if valid @lineCache
         else if stateOrLines is arr
+            log 'EditorState lines'
             @s = @stateForLines stateOrLines
             
     stateForLines: (lineStrings) ->
@@ -52,8 +52,6 @@ function EditorState
             highlights:  []
             main:        0
             
-    next: (link) -> if valid link?[1] ➜ @s.links[link[1]]
-            
     # 000000000  00000000    0000000   000   000  00000000  00000000    0000000  00000000  
     #    000     000   000  000   000  000   000  000       000   000  000       000       
     #    000     0000000    000000000   000 000   0000000   0000000    0000000   0000000   
@@ -63,10 +61,10 @@ function EditorState
     traverse: (cb) ->
         
         lineIndex = 0
-        prev = next = @s.links['-1']
+        prev = @s.links['-1']
         
-        while next = @next prev
-            if not cb lineIndex, next[0], prev[1] ➜ return
+        while next = @s.links[prev[1]]
+            ⮐ if not cb lineIndex, next[0], prev[1]
             prev = next
             lineIndex++
             
@@ -87,7 +85,7 @@ function EditorState
         if li == i
             @lineCache[i] = kstr.detab l
         else
-            log "line #{i} traverse mismatch?" li 
+            log "line #{i} traverse mismatch?" li, @s
             
         @lineCache[i]
         
@@ -149,7 +147,8 @@ function EditorState
     changeLine: (i, t) ->
         
         info = @seek i
-        new EditorState @s.setIn ['lines' info.lineId], t
+        @lineCache[i] = t
+        new EditorState @s.setIn(['lines' info.lineId], t), @lineCache
         
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
@@ -211,7 +210,7 @@ function EditorState
 
     # modify:
         
-    lineState: (s) -> ns = new EditorState(s); ns.lineCache = @lineCache; ns
+    lineState:     (s) -> new EditorState s, @lineCache
 
     setSelections: (s) -> @lineState @s.set 'selections' s
     setHighlights: (h) -> @lineState @s.set 'highlights' h

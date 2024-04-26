@@ -739,23 +739,12 @@ TextEditor = (function ()
 
     TextEditor.prototype["posAtXY"] = function (x, y)
     {
-        var br, ln, lx, ly, p, px, py, sl, st
+        var br, lx, ly, p, px, py, sl, st
 
         sl = this.layerScroll.scrollLeft
         st = this.scroll.offsetTop
         br = this.view.getBoundingClientRect()
         lx = _k_.clamp(0,this.layers.offsetWidth,x - br.left - this.size.offsetX + this.size.charWidth / 3)
-        if (ln = this.line(y))
-        {
-            if (_k_.in('⮐',ln))
-            {
-                console.log('fix offsetX',ln)
-            }
-        }
-        else
-        {
-            console.log('no line at',y,this.numLines(),this.lineCache)
-        }
         ly = _k_.clamp(0,this.layers.offsetHeight,y - br.top)
         px = parseInt(Math.floor((Math.max(0,sl + lx)) / this.size.charWidth))
         py = parseInt(Math.floor((Math.max(0,st + ly)) / this.size.lineHeight)) + this.scroll.top
@@ -765,7 +754,6 @@ TextEditor = (function ()
 
     TextEditor.prototype["posForEvent"] = function (event)
     {
-        console.log('posForEvent')
         return this.posAtXY(event.clientX,event.clientY)
     }
 
@@ -785,9 +773,9 @@ TextEditor = (function ()
         {
             lr = lineElem.getBoundingClientRect()
             var list = _k_.list(lineElem.firstChild.children)
-            for (var _648_18_ = 0; _648_18_ < list.length; _648_18_++)
+            for (var _644_18_ = 0; _644_18_ < list.length; _644_18_++)
             {
-                e = list[_648_18_]
+                e = list[_644_18_]
                 br = e.getBoundingClientRect()
                 if ((br.left <= x && x <= br.left + br.width))
                 {
@@ -806,7 +794,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["viewHeight"] = function ()
     {
-        var _659_18_, _660_13_
+        var _655_18_, _656_13_
 
         if ((this.scroll != null ? this.scroll.viewHeight : undefined) >= 0)
         {
@@ -838,9 +826,7 @@ TextEditor = (function ()
             var eventPos, p, r, range
 
             this.view.focus()
-            console.log('initDrag',event.clientX,event.clientY)
             eventPos = this.posForEvent(event)
-            console.log('initDrag',eventPos)
             if (event.button === 2)
             {
                 return 'skip'
@@ -956,7 +942,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _785_24_, _801_35_, _807_33_
+        var action, actionCombo, combos, _781_24_, _797_35_, _803_33_
 
         if ((this.autocomplete != null))
         {
@@ -986,18 +972,18 @@ TextEditor = (function ()
         }
 
         var list = _k_.list(Editor.actions)
-        for (var _799_19_ = 0; _799_19_ < list.length; _799_19_++)
+        for (var _795_19_ = 0; _795_19_ < list.length; _795_19_++)
         {
-            action = list[_799_19_]
-            combos = ((_801_35_=action.combos) != null ? _801_35_ : [action.combo])
+            action = list[_795_19_]
+            combos = ((_797_35_=action.combos) != null ? _797_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _805_28_ = 0; _805_28_ < list1.length; _805_28_++)
+            for (var _801_28_ = 0; _801_28_ < list1.length; _801_28_++)
             {
-                actionCombo = list1[_805_28_]
+                actionCombo = list1[_801_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))
