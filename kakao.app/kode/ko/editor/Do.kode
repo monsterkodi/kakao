@@ -56,8 +56,10 @@ class Do
 
     hasChanges: ->
 
-        if @history.length > @saveIndex and @history[@saveIndex]?.text() == @editor.text()
-            return false
+        if @saveIndex < @history.length
+            ts = new EditorState @history[@saveIndex] # is this a good idea?
+            if ts.text() == @editor.text()
+                return false
         return true
 
     #  0000000  000000000   0000000   00000000   000000000
@@ -72,7 +74,7 @@ class Do
         if @groupCount == 1
             @startState = @state = new EditorState @editor.state.s, @editor.state.lineCache
             if empty(@history) or @state.s != last(@history)
-                @history.push @state
+                @history.push @state.s
 
     isDoing: -> @groupCount > 0
 
@@ -145,7 +147,7 @@ class Do
             if @redos.length > 1
                 @history.push @redos.shift()
 
-            @state = @redos[0]
+            @state = new EditorState @redos[0]
             if @redos.length == 1
                 @redos = []
 
@@ -296,7 +298,7 @@ class Do
 
     merge: ->
         
-        return
+        return # deactivated for now!
         
         ● Do.merge
 

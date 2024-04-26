@@ -680,12 +680,8 @@ function TextEditor extends Editor
                 
                 @view.focus()
                     
-                # log 'initDrag1' event.clientX, event.clientY
-                
                 eventPos = @posForEvent event
                 
-                # log 'initDrag2' eventPos
-
                 if event.button == 2
                     return 'skip'
                 else if event.button == 1
