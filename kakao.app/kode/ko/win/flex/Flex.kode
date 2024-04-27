@@ -165,7 +165,7 @@ class Flex
         
         offset = pos - handle.actualPos()
         
-        return if Math.abs(offset) < 1
+        ⮐ if Math.abs(offset) < 1
         
         prev  = @prevAllInv(handle) ? @prevVisFlex(handle) ? @prevFlex handle
         next  = @nextAllInv(handle) ? @nextVisFlex(handle) ? @nextFlex handle
@@ -227,7 +227,7 @@ class Flex
     
     restoreState: (state) ->
         
-        return if not state?.length
+        ⮐ if not state?.length
         for si in [0...state.length]
             s = state[si]
             p = @pane si
@@ -324,16 +324,16 @@ class Flex
     
     nextVisPane: (p) ->
         pi = @panes.indexOf p
-        return null if pi >= @panes.length-1
+        ⮐ null if pi >= @panes.length-1
         next = @panes[pi+1]
-        return next if next.isVisible()
+        ⮐ next if next.isVisible()
         @nextVisPane next
         
     prevVisPane: (p) ->
         pi = @panes.indexOf p
-        return null if pi <= 0
+        ⮐ null if pi <= 0
         prev = @panes[pi-1]
-        return prev if prev.isVisible()
+        ⮐ prev if prev.isVisible()
         @prevVisPane prev
 
     closestVisFlex: (p) ->
@@ -342,14 +342,11 @@ class Flex
         
         isVisFlexPane = (i) =>
             if i >= 0 and i < @panes.length
-                if not @panes[i].collapsed and not @panes[i].fixed
-                    return true 
+                ⮐ true if not @panes[i].collapsed and not @panes[i].fixed
             
         while d < @panes.length-1
-            if isVisFlexPane pi + d
-                return @panes[pi + d]
-            else if isVisFlexPane pi - d
-                return @panes[pi - d]
+            ⮐ @panes[pi + d] if isVisFlexPane pi + d
+            ⮐ @panes[pi - d] if isVisFlexPane pi - d
             d++
 
     travPrev: (h, f) -> f(h) and h.panea or h.index > 0 and @travPrev(@handles[h.index-1], f) or null    

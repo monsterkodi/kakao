@@ -120,39 +120,39 @@ function Window extends win.Delegate
             
         switch name
     
-            'Undo'                  ➜ return window.focusEditor.do.undo()
-            'Redo'                  ➜ return window.focusEditor.do.redo()
-            'Cut'                   ➜ return window.focusEditor.cut()
-            'Copy'                  ➜ return window.focusEditor.copy()
-            'Paste'                 ➜ return window.focusEditor.paste()
-            'New Tab'               ➜ return post.emit 'newEmptyTab'
-            'New Window'            ➜ return kakao 'window.new' 'ko.html' @editor.currentFile
-            'Arrange Windows'       ➜ return log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
-            'Toggle Scheme'         ➜ return scheme.toggle()
-            'Toggle Center Text'    ➜ return toggleCenterText()
-            'Toggle Tab Pinned'     ➜ return toggleTabPinned()
-            'Toggle Tab Extensions' ➜ return tabs.toggleExtension()
-            'Increase'              ➜ return changeFontSize +1
-            'Decrease'              ➜ return changeFontSize -1
-            'Reset'                 ➜ return resetFontSize()
-            'Navigate Backward'     ➜ return @navigate.backward()
-            'Navigate Forward'      ➜ return @navigate.forward()
-            'Maximize Editor'       ➜ return @split.maximizeEditor()
-            'Activate Next Tab'     ➜ return window.tabs.navigate 'right'
-            'Activate Previous Tab' ➜ return window.tabs.navigate 'left'
-            'Move Tab Left'         ➜ return window.tabs.move 'left'
-            'Move Tab Right'        ➜ return window.tabs.move 'right'
-            'Open...'               ➜ return post.emit 'openFile'
-            'Open In New Window...' ➜ return post.emit 'openFile' newWindow: true
-            'Save'                  ➜ return post.emit 'saveFile'
-            'Save All'              ➜ return post.emit 'saveAll'
-            'Save As ...'           ➜ return post.emit 'saveFileAs'
-            'Revert'                ➜ return post.emit 'reloadFile' kore.get 'editor|file'
-            'Close Tab'             ➜ return post.emit 'closeTab'
-            'Close Other Tabs'      ➜ return post.emit 'closeOtherTabs'
-            'Close Other Windows'   ➜ return post.toWins 'closeWindow'
-            'Small Browser'         ➜ return window.commandline.startCommand 'browse'
-            'Preferences'           ➜ return post.emit 'loadFile' prefs.store.file
+            'Undo'                  ➜ ⮐ window.focusEditor.do.undo()
+            'Redo'                  ➜ ⮐ window.focusEditor.do.redo()
+            'Cut'                   ➜ ⮐ window.focusEditor.cut()
+            'Copy'                  ➜ ⮐ window.focusEditor.copy()
+            'Paste'                 ➜ ⮐ window.focusEditor.paste()
+            'New Tab'               ➜ ⮐ post.emit 'newEmptyTab'
+            'New Window'            ➜ ⮐ kakao 'window.new' 'ko.html' @editor.currentFile
+            'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
+            'Toggle Scheme'         ➜ ⮐ scheme.toggle()
+            'Toggle Center Text'    ➜ ⮐ toggleCenterText()
+            'Toggle Tab Pinned'     ➜ ⮐ toggleTabPinned()
+            'Toggle Tab Extensions' ➜ ⮐ tabs.toggleExtension()
+            'Increase'              ➜ ⮐ changeFontSize +1
+            'Decrease'              ➜ ⮐ changeFontSize -1
+            'Reset'                 ➜ ⮐ resetFontSize()
+            'Navigate Backward'     ➜ ⮐ @navigate.backward()
+            'Navigate Forward'      ➜ ⮐ @navigate.forward()
+            'Maximize Editor'       ➜ ⮐ @split.maximizeEditor()
+            'Activate Next Tab'     ➜ ⮐ window.tabs.navigate 'right'
+            'Activate Previous Tab' ➜ ⮐ window.tabs.navigate 'left'
+            'Move Tab Left'         ➜ ⮐ window.tabs.move 'left'
+            'Move Tab Right'        ➜ ⮐ window.tabs.move 'right'
+            'Open...'               ➜ ⮐ post.emit 'openFile'
+            'Open In New Window...' ➜ ⮐ post.emit 'openFile' newWindow: true
+            'Save'                  ➜ ⮐ post.emit 'saveFile'
+            'Save All'              ➜ ⮐ post.emit 'saveAll'
+            'Save As ...'           ➜ ⮐ post.emit 'saveFileAs'
+            'Revert'                ➜ ⮐ post.emit 'reloadFile' kore.get 'editor|file'
+            'Close Tab'             ➜ ⮐ post.emit 'closeTab'
+            'Close Other Tabs'      ➜ ⮐ post.emit 'closeOtherTabs'
+            'Close Other Windows'   ➜ ⮐ post.toWins 'closeWindow'
+            'Small Browser'         ➜ ⮐ window.commandline.startCommand 'browse'
+            'Preferences'           ➜ ⮐ post.emit 'loadFile' prefs.store.file
     
         log 'onMenuAction unhandled' name, trail
             

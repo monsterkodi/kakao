@@ -895,10 +895,8 @@ function Column
 
     pastePaths: ->
         
-        log 'pastePaths not implemented!'
+        ⮐ log 'pastePaths not implemented!'
         
-        return
-
         text = electron.clipboard.readText()
         paths = text.split '\n'
 
@@ -922,38 +920,38 @@ function Column
         { mod, key, combo, char } = keyinfo.forEvent event
 
         switch combo
-            'shift+`' '~'                      ➜ return stopEvent event, @browser.browse '~'
-            '/'                                ➜ return stopEvent event, @browser.browse '/'
-            'backspace'                        ➜ return stopEvent event, @browser.onBackspaceInColumn @
-            'delete'                           ➜ return stopEvent event, @browser.onDeleteInColumn @
-            'alt+left'                         ➜ return stopEvent event, window.split.focus 'shelf'
-            'alt+shift+.'                      ➜ return stopEvent event, @addToShelf()
-            'alt+e'                            ➜ return stopEvent event, @explorer()
-            'alt+n'                            ➜ return stopEvent event, @newFolder()
-            'ctrl+x' 'command+x'               ➜ return stopEvent event, @cutPaths()
-            'ctrl+c' 'command+c'               ➜ return stopEvent event, @copyPaths()
-            'ctrl+v' 'command+v'               ➜ return stopEvent event, @pastePaths()
-            'page up' 'page down' 'home' 'end' ➜ return stopEvent event, @navigateRows key
-            'enter''alt+up'                    ➜ return stopEvent event, @navigateCols key
-            'command+up' 'ctrl+up'             ➜ return stopEvent event, @navigateRows 'home'
-            'command+down' 'ctrl+down'         ➜ return stopEvent event, @navigateRows 'end'
-            'ctrl+t'                           ➜ return stopEvent event, @sortByType()
-            'ctrl+n'                           ➜ return stopEvent event, @sortByName()
-            'ctrl+a'                           ➜ return stopEvent event, @sortByDateAdded()
-            'ctrl+e'                           ➜ return stopEvent event, @toggleExtensions()
-            'command+i' 'ctrl+i'               ➜ return stopEvent event, @toggleDotFiles()
-            'command+d' 'ctrl+d'               ➜ return stopEvent event, @duplicateFile()
-            'command+k' 'ctrl+k'               ➜ return stopEvent event if @browser.cleanUp() # needed?
-            'f2'                               ➜ return stopEvent event, @activeRow()?.editName()
+            'shift+`' '~'                      ➜ ⮐ stopEvent event, @browser.browse '~'
+            '/'                                ➜ ⮐ stopEvent event, @browser.browse '/'
+            'backspace'                        ➜ ⮐ stopEvent event, @browser.onBackspaceInColumn @
+            'delete'                           ➜ ⮐ stopEvent event, @browser.onDeleteInColumn @
+            'alt+left'                         ➜ ⮐ stopEvent event, window.split.focus 'shelf'
+            'alt+shift+.'                      ➜ ⮐ stopEvent event, @addToShelf()
+            'alt+e'                            ➜ ⮐ stopEvent event, @explorer()
+            'alt+n'                            ➜ ⮐ stopEvent event, @newFolder()
+            'ctrl+x' 'command+x'               ➜ ⮐ stopEvent event, @cutPaths()
+            'ctrl+c' 'command+c'               ➜ ⮐ stopEvent event, @copyPaths()
+            'ctrl+v' 'command+v'               ➜ ⮐ stopEvent event, @pastePaths()
+            'page up' 'page down' 'home' 'end' ➜ ⮐ stopEvent event, @navigateRows key
+            'enter''alt+up'                    ➜ ⮐ stopEvent event, @navigateCols key
+            'command+up' 'ctrl+up'             ➜ ⮐ stopEvent event, @navigateRows 'home'
+            'command+down' 'ctrl+down'         ➜ ⮐ stopEvent event, @navigateRows 'end'
+            'ctrl+t'                           ➜ ⮐ stopEvent event, @sortByType()
+            'ctrl+n'                           ➜ ⮐ stopEvent event, @sortByName()
+            'ctrl+a'                           ➜ ⮐ stopEvent event, @sortByDateAdded()
+            'ctrl+e'                           ➜ ⮐ stopEvent event, @toggleExtensions()
+            'command+i' 'ctrl+i'               ➜ ⮐ stopEvent event, @toggleDotFiles()
+            'command+d' 'ctrl+d'               ➜ ⮐ stopEvent event, @duplicateFile()
+            'command+k' 'ctrl+k'               ➜ ⮐ stopEvent event if @browser.cleanUp() # needed?
+            'f2'                               ➜ ⮐ stopEvent event, @activeRow()?.editName()
             'shift+up' 'shift+down' 'shift+home' 'shift+end' 'shift+page up' 'shift+page down'
-                return stopEvent event, @extendSelection key
+                ⮐ stopEvent event, @extendSelection key
             'command+left' 'command+right' 'ctrl+left' 'ctrl+right'
-                return stopEvent event, @navigateRoot key
+                ⮐ stopEvent event, @navigateRoot key
             'command+backspace' 'ctrl+backspace' 'command+delete' 'ctrl+delete'
-                return stopEvent event, @moveToTrash()
+                ⮐ stopEvent event, @moveToTrash()
             'tab'
                 if @search.length then @doSearch ''
-                return stopEvent event
+                ⮐ stopEvent event
             'esc'
                 if @dragDiv
                     @dragDiv.drag.dragStop()
@@ -962,10 +960,10 @@ function Column
                 else if @browser.select.files().length > 1
                     @browser.select.row @activeRow()
                 else if @search.length then @clearSearch()
-                return stopEvent event
+                ⮐ stopEvent event
 
-        if combo in ['up'   'down']  ➜ return stopEvent event, @navigateRows key
-        if combo in ['left' 'right'] ➜ return stopEvent event, @navigateCols key
+        if combo in ['up'   'down']  ➜ ⮐ stopEvent event, @navigateRows key
+        if combo in ['left' 'right'] ➜ ⮐ stopEvent event, @navigateCols key
 
         if mod in ['shift' ''] and char then @doSearch char
 

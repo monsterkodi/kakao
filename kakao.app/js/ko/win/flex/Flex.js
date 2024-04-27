@@ -518,7 +518,7 @@ class Flex
             {
                 return this.panes[pi + d]
             }
-            else if (isVisFlexPane(pi - d))
+            if (isVisFlexPane(pi - d))
             {
                 return this.panes[pi - d]
             }

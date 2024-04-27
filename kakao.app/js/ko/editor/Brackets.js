@@ -71,7 +71,7 @@ class Brackets
         cnt = 0
         while (pp[1] >= 0)
         {
-            var _68_28_ = this.beforeAfterForPos(pp); before = _68_28_[0]; after = _68_28_[1]
+            var _67_28_ = this.beforeAfterForPos(pp); before = _67_28_[0]; after = _67_28_[1]
 
             while (before.length)
             {
@@ -120,7 +120,7 @@ class Brackets
         pp = pos
         while (pp[1] <= this.editor.numLines())
         {
-            var _93_28_ = this.beforeAfterForPos(pp); before = _93_28_[0]; after = _93_28_[1]
+            var _92_28_ = this.beforeAfterForPos(pp); before = _92_28_[0]; after = _92_28_[1]
 
             while (after.length)
             {
@@ -176,7 +176,7 @@ class Brackets
     {
         var after, before, cp, firstAfterIndex, fst, i, li, line, lst, r, rngs
 
-        var _127_17_ = pos; cp = _127_17_[0]; li = _127_17_[1]
+        var _126_17_ = pos; cp = _126_17_[0]; li = _126_17_[1]
 
         line = this.editor.line(li)
         rngs = matchr.ranges(this.config,line)
@@ -202,14 +202,14 @@ class Brackets
         if (rngs.length)
         {
             var list = _k_.list(rngs)
-            for (var _147_30_ = 0; _147_30_ < list.length; _147_30_++)
+            for (var _146_30_ = 0; _146_30_ < list.length; _146_30_++)
             {
-                r = list[_147_30_]
+                r = list[_146_30_]
                 r.line = li
             }
             lst = _k_.last(rngs)
             fst = _k_.first(rngs)
-            for (var _150_36_ = firstAfterIndex = 0, _150_40_ = rngs.length; (_150_36_ <= _150_40_ ? firstAfterIndex < rngs.length : firstAfterIndex > rngs.length); (_150_36_ <= _150_40_ ? ++firstAfterIndex : --firstAfterIndex))
+            for (var _149_36_ = firstAfterIndex = 0, _149_40_ = rngs.length; (_149_36_ <= _149_40_ ? firstAfterIndex < rngs.length : firstAfterIndex > rngs.length); (_149_36_ <= _149_40_ ? ++firstAfterIndex : --firstAfterIndex))
             {
                 if (rngs[firstAfterIndex].start >= cp)
                 {

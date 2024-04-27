@@ -34,7 +34,7 @@ class Brackets
         
         if @editor.numHighlights() # don't highlight brackets when other highlights exist
             for h in @editor.highlights()
-                return if not h[2]?
+                ⮐ if not h[2]?
 
         cp = @editor.cursorPos()
         [before, after] = @beforeAfterForPos cp
@@ -43,8 +43,7 @@ class Brackets
             if after.length  and first(after).start == cp[0]   and first(after).clss == 'open'  then cp[0] += 1
             if before.length and last(before).start == cp[0]-1 and last(before).clss == 'close' then cp[0] -= 1
 
-        if @highlightInside cp
-            return
+        ⮐ if @highlightInside cp
 
         @clear()
         @editor.renderHighlights()
@@ -81,11 +80,11 @@ class Brackets
                     stack.push prev
 
             break if lastOpen?
-            return if pp[1] < 1
-            return if cnt++ > maxLookBeforeAndAhead # maximum number of lines exceeded
+            ⮐ if pp[1] < 1
+            ⮐ if cnt++ > maxLookBeforeAndAhead # maximum number of lines exceeded
             pp = [@editor.line(pp[1]-1).length, pp[1]-1]
 
-        return if not lastOpen?
+        ⮐ if not lastOpen?
 
         stack = []
         pp = pos
@@ -106,11 +105,11 @@ class Brackets
                     stack.push next
 
             break if firstClose?
-            return if pp[1] >= @editor.numLines()-1
-            return if cnt++ > maxLookBeforeAndAhead # maximum number of lines exceeded
+            ⮐ if pp[1] >= @editor.numLines()-1
+            ⮐ if cnt++ > maxLookBeforeAndAhead # maximum number of lines exceeded
             pp = [0, pp[1]+1]
 
-        return if not firstClose?
+        ⮐ if not firstClose?
 
         if @open[lastOpen.match] == firstClose.match
             @highlight lastOpen, firstClose
@@ -151,7 +150,8 @@ class Brackets
                 break if rngs[firstAfterIndex].start >= cp
             before = rngs.slice 0, firstAfterIndex
             after  = rngs.slice firstAfterIndex
-            return [before, after]
+            ⮐ [before, after]
+            
         [[],[]]
 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000

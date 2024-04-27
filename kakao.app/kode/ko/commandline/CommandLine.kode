@@ -364,21 +364,21 @@ function CommandLine extends TextEditor
 
         split = window.split
         switch combo
-            'enter'                ➜ return @execute()
-            'command+enter'        ➜ return @execute() + window.split.do "focus #{@command?.focus}"
-            'command+shift+enter'  ➜ return @focusTerminal()
-            'up'                   ➜ return @command?.selectListItem 'up'
-            'down'                 ➜ return @command?.selectListItem 'down'
-            'esc'                  ➜ return @cancel()
-            'command+k'            ➜ return @clear()
-            'shift+tab'            ➜ return
-            'home' 'command+up'    ➜ return split.do 'maximize editor'
-            'end' 'command+down'   ➜ return split.do 'minimize editor'
-            'alt+up'               ➜ return split.do 'enlarge editor'
-            'ctrl+up'              ➜ return split.do 'enlarge editor by 20'
-            'alt+down'             ➜ return split.do 'reduce editor'
-            'ctrl+down'            ➜ return split.do 'reduce editor by 20'
-            'right' 'tab'          ➜ return if @command?.onTabCompletion combo
+            'enter'                ➜ ⮐ @execute()
+            'command+enter'        ➜ ⮐ @execute() + window.split.do "focus #{@command?.focus}"
+            'command+shift+enter'  ➜ ⮐ @focusTerminal()
+            'up'                   ➜ ⮐ @command?.selectListItem 'up'
+            'down'                 ➜ ⮐ @command?.selectListItem 'down'
+            'esc'                  ➜ ⮐ @cancel()
+            'command+k'            ➜ ⮐ @clear()
+            'shift+tab'            ➜ ⮐
+            'home' 'command+up'    ➜ ⮐ split.do 'maximize editor'
+            'end' 'command+down'   ➜ ⮐ split.do 'minimize editor'
+            'alt+up'               ➜ ⮐ split.do 'enlarge editor'
+            'ctrl+up'              ➜ ⮐ split.do 'enlarge editor by 20'
+            'alt+down'             ➜ ⮐ split.do 'reduce editor'
+            'ctrl+down'            ➜ ⮐ split.do 'reduce editor by 20'
+            'right' 'tab'          ➜ ⮐ if @command?.onTabCompletion combo
 
         return super mod, key, combo, char, event
 

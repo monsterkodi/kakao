@@ -1277,10 +1277,9 @@ Column = (function ()
 
     Column.prototype["pastePaths"] = function ()
     {
-        var action, paths, target, text, _910_23_
+        var action, paths, target, text, _908_23_
 
-        console.log('pastePaths not implemented!')
-        return
+        return console.log('pastePaths not implemented!')
         text = electron.clipboard.readText()
         paths = text.split('\n')
         if (text === this.browser.cutPaths)
@@ -1301,7 +1300,7 @@ Column = (function ()
 
     Column.prototype["onKey"] = function (event)
     {
-        var char, combo, key, mod, _947_88_
+        var char, combo, key, mod, _945_88_
 
         mod = keyinfo.forEvent(event).mod
         key = keyinfo.forEvent(event).key
