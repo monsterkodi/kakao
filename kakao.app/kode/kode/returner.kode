@@ -115,12 +115,12 @@ class Returner
         if e is Array
             lst = e[-1]
             if 
-                lst.return ➜ return @profilend e, -1
-                lst.while  ➜ return @profilend e
-                lst.for    ➜ return @profilend e
-                lst.if     ➜ return @if lst.if
-                lst.try    ➜ return @try lst.try
-                lst.switch ➜ return @switch lst.switch
+                lst.return ➜ ⮐ @profilend e, -1
+                lst.while  ➜ ⮐ @profilend e
+                lst.for    ➜ ⮐ @profilend e
+                lst.if     ➜ ⮐ @if lst.if
+                lst.try    ➜ ⮐ @try lst.try
+                lst.switch ➜ ⮐ @switch lst.switch
             
             if not (lst.call?.callee?.text in ['log' 'warn' 'error' 'throw'])
                 e.push
@@ -152,10 +152,10 @@ class Returner
     
     exp: (e) ->
 
-        if not e then return
+        ⮐ if not e
             
         if  
-            e.type      ➜ return
+            e.type      ➜ ⮐
             e is Array  ➜ @exp v for v in e if e.length
             e is Object
             
@@ -164,10 +164,11 @@ class Returner
                 else
                     for key,val of e
                         if val
-                            if val.type then @exp val
+                            if val.type 
+                                @exp val
                             else
                                 @exp v for k,v of val
         
-    verb: -> if @debug then console.log.apply console.log, arguments 
+    verb: -> if @debug ➜ console.log.apply console.log, arguments 
 
 export Returner

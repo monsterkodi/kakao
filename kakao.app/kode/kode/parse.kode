@@ -248,19 +248,19 @@ function Parse extends parseutils
                                     else if tokens[0].text in '.'
                                         break
                                 
-                                switch tok.text 
-                                    'return'   ➜ return @return   tok, tokens
-                                    'switch'   ➜ return @switch   tok, tokens
-                                    'class'    ➜ return @class    tok, tokens
-                                    'function' ➜ return @function tok, tokens                        
-                                    'await'    ➜ return @await    tok, tokens
-                                    'import'   ➜ return @import   tok, tokens
-                                    'export'   ➜ return @export   tok, tokens
-                                    'while'    ➜ return @while    tok, tokens
-                                    'when'     ➜ return @when     tok, tokens
-                                    'use'      ➜ return @use      tok, tokens
-                                    'try'      ➜ return @try      tok, tokens
-                                    'for'      ➜ return @for      tok, tokens
+                                switch tok.text
+                                    'return'   ➜ ⮐ @return   tok, tokens
+                                    'switch'   ➜ ⮐ @switch   tok, tokens
+                                    'class'    ➜ ⮐ @class    tok, tokens
+                                    'function' ➜ ⮐ @function tok, tokens                        
+                                    'await'    ➜ ⮐ @await    tok, tokens
+                                    'import'   ➜ ⮐ @import   tok, tokens
+                                    'export'   ➜ ⮐ @export   tok, tokens
+                                    'while'    ➜ ⮐ @while    tok, tokens
+                                    'when'     ➜ ⮐ @when     tok, tokens
+                                    'use'      ➜ ⮐ @use      tok, tokens
+                                    'try'      ➜ ⮐ @try      tok, tokens
+                                    'for'      ➜ ⮐ @for      tok, tokens
                                     'if' 
                                         if @stack[-1] not in ['▸return']
                                             @verb 'if' @stack if @stack.length

@@ -1664,36 +1664,36 @@ class Renderer
     containsAssert: (e) ->
         
         return false if not e
-        if e.assert  ➜ return true
-        if e.prop    ➜ return @containsAssert e.prop.obj
-        if e.index   ➜ return @containsAssert e.index.idxee
-        if e.call    ➜ return @containsAssert e.call.callee
+        if e.assert  ➜ ⮐ true
+        if e.prop    ➜ ⮐ @containsAssert e.prop.obj
+        if e.index   ➜ ⮐ @containsAssert e.index.idxee
+        if e.call    ➜ ⮐ @containsAssert e.call.callee
         false
         
     pruneAssert: (e) ->
   
         return e if not e
-        if e.prop  ➜ return @pruneAssert e.prop.obj
-        if e.index ➜ return @pruneAssert e.index.idxee
-        if e.call  ➜ return @pruneAssert e.call.callee
+        if e.prop  ➜ ⮐ @pruneAssert e.prop.obj
+        if e.index ➜ ⮐ @pruneAssert e.index.idxee
+        if e.call  ➜ ⮐ @pruneAssert e.call.callee
         e
         
     clearAsserts: (e) ->
         
-        return e if not e
-        if e.assert ➜ return @clearAsserts e.assert.obj
+        ⮐ e if not e
+        if e.assert ➜ ⮐ @clearAsserts e.assert.obj
         if e.prop
             c = clone e
             c.prop.obj = @clearAsserts e.prop.obj
-            return c
+            ⮐ c
         if e.index
             c = clone e
             c.index.idxee = @clearAsserts e.index.idxee
-            return c
+            ⮐ c
         if e.call
             c = clone e
             c.call.callee = @clearAsserts e.call.callee
-            return c
+            ⮐ c
         e
         
     #  0000000   0000000   00000000   000000000  000   000   0000000   00000000    0000000  

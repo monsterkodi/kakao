@@ -472,7 +472,7 @@ getInPath = (obj, path) ->
         obj = obj[path[i]]
         break if obj == null
   
-    return (i == path.length) ? obj : undefined
+    (i == path.length) ? obj : undefined
 
 updateIn = (path, updater) ->
     

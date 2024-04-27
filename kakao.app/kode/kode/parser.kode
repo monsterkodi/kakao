@@ -38,7 +38,7 @@ function Parser extends parse
     if: (tok, tokens) ->
 
         if tokens[0].type == 'block'
-            return @ifBlock tok, tokens
+            ⮐ @ifBlock tok, tokens
 
         @push 'if'
         @lockBlock = true
@@ -55,7 +55,7 @@ function Parser extends parse
         if tokens[0]?.type == 'block'
             @verb 'block after if then -> switch to block mode' 
             @pop 'if'
-            return @ifBlock tok, tokens, e
+            ⮐ @ifBlock tok, tokens, e
         
         while tokens[0]?.text == 'else' and tokens[1]?.text == 'if'
 

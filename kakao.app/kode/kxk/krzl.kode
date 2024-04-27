@@ -86,10 +86,10 @@ function Krzl
     
     filter: (abbrv) -> # subset of values that match abbreviation
     
-        if empty abbrv        ➜ warn 'krzl.filter without abbreviation?'      ; return []
-        if empty @values      ➜ warn 'krzl.filter without @values?'           ; return []
-        if not abbrv is str   ➜ warn 'krzl.filter abbreviation not a string?' ; return []
-        if not @values is arr ➜ warn 'krzl.filter @values not an array?'      ; return []
+        if empty abbrv        ➜ warn 'krzl.filter without abbreviation?'      ; ⮐ []
+        if empty @values      ➜ warn 'krzl.filter without @values?'           ; ⮐ []
+        if not abbrv is str   ➜ warn 'krzl.filter abbreviation not a string?' ; ⮐ []
+        if not @values is arr ➜ warn 'krzl.filter @values not an array?'      ; ⮐ []
         
         pairs = []
         for value in @values

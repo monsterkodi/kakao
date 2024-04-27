@@ -253,16 +253,16 @@ function ParseUtils
     ifSuitableForInline: (e) ->
 
         if e.if
-            if e.if.then?.length > 1 ➜ return false
-            if e.if.then?[0].if      ➜ return false if not @ifSuitableForInline e.if.then[0]
-            if e.if.else?.length > 1 ➜ return false
-            if e.if.else?[0].if      ➜ return false if not @ifSuitableForInline e.if.else[0]
+            if e.if.then?.length > 1 ➜ ⮐ false
+            if e.if.then?[0].if      ➜ ⮐ false if not @ifSuitableForInline e.if.then[0]
+            if e.if.else?.length > 1 ➜ ⮐ false
+            if e.if.else?[0].if      ➜ ⮐ false if not @ifSuitableForInline e.if.else[0]
             for ei in e.if.elifs
                 return false if not @ifSuitableForInline ei
             return true
         if e.elif
-            if e.elif.then?.length > 1 ➜ return false
-            if e.elif.then?[0].if      ➜ return false if not @ifSuitableForInline e.elif.then[0]
+            if e.elif.then?.length > 1 ➜ ⮐ false
+            if e.elif.then?[0].if      ➜ ⮐ false if not @ifSuitableForInline e.elif.then[0]
             return true
         false
         
@@ -275,8 +275,8 @@ function ParseUtils
     stackAllowsBlockArg: ->
         
         s = @stack.filter (s) -> s in ['if' 'for' 'while' 'then' 'class' 'function' '{' ':' 'switch' 'when' '▸body' 'try' 'catch']
-        return true if empty s
-        return true if s[-1] in ['then' '▸body']
+        ⮐ true if empty s
+        ⮐ true if s[-1] in ['then' '▸body']
         false
         
     # 000   000   0000000   000000000  000   000  00000000  000   000   0000000   000   000  00000000   0000000   0000000    
@@ -287,13 +287,13 @@ function ParseUtils
     
     noThenAhead: (tokens) ->
         
-        return false if tokens[1]?.type == 'block'
+        ⮐ false if tokens[1]?.type == 'block'
         ti = 0
         while ++ti < tokens.length
             if tokens[ti].text == 'then'
                 if tokens[ti].col > tokens[ti-1].col + tokens[ti-1].text.length # if then is spaced
-                    return false 
-            return true  if tokens[ti].type in ['nl' 'block']
+                    ⮐ false 
+            ⮐ true  if tokens[ti].type in ['nl' 'block']
         true
         
     #  0000000  000   000  00000000   0000000   00000000     
