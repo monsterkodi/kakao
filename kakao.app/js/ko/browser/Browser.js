@@ -35,7 +35,7 @@ Browser = (function ()
     {
         var hideExtensions
 
-        hideExtensions = window.stash.get('browser|hideExtensions',false)
+        hideExtensions = window.stash.get('browser|hideExtensions',true)
         return setStyle('.browserRow .ext','display',hideExtensions && 'none' || 'initial')
     }
 

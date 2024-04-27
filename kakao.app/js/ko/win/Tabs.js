@@ -313,6 +313,7 @@ class Tabs
             }
             tabs = tabs.concat(v)
         }
+        console.log('cleanTabs',tabs)
         return this.setKoreTabs(tabs)
     }
 
@@ -372,18 +373,18 @@ class Tabs
 
     setActive (path)
     {
-        var tab, tabs, _250_26_, _250_31_
+        var tab, tabs, _251_26_, _251_31_
 
         tabs = this.koreTabs()
         var list = _k_.list(tabs)
-        for (var _245_16_ = 0; _245_16_ < list.length; _245_16_++)
+        for (var _246_16_ = 0; _246_16_ < list.length; _246_16_++)
         {
-            tab = list[_245_16_]
+            tab = list[_246_16_]
             delete tab.active
             if (slash.samePath(tab.path,path))
             {
                 tab.active = true
-                ;((_250_26_=this.tab(path)) != null ? (_250_31_=_250_26_.div) != null ? _250_31_.scrollIntoViewIfNeeded() : undefined : undefined)
+                ;((_251_26_=this.tab(path)) != null ? (_251_31_=_251_26_.div) != null ? _251_31_.scrollIntoViewIfNeeded() : undefined : undefined)
             }
         }
         return tabs
@@ -395,9 +396,9 @@ class Tabs
 
         tabs = this.koreTabs()
         var list = _k_.list(tabs)
-        for (var _262_16_ = 0; _262_16_ < list.length; _262_16_++)
+        for (var _263_16_ = 0; _263_16_ < list.length; _263_16_++)
         {
-            tab = list[_262_16_]
+            tab = list[_263_16_]
             if (slash.samePath(tab.path,path))
             {
                 if (tab.tmp)
@@ -606,7 +607,7 @@ class Tabs
 
         active = this.activeKoreTab()
         tabs = this.koreTabs()
-        for (var _401_21_ = index = tabs.length - 1, _401_36_ = 0; (_401_21_ <= _401_36_ ? index <= 0 : index >= 0); (_401_21_ <= _401_36_ ? ++index : --index))
+        for (var _402_21_ = index = tabs.length - 1, _402_36_ = 0; (_402_21_ <= _402_36_ ? index <= 0 : index >= 0); (_402_21_ <= _402_36_ ? ++index : --index))
         {
             tab = tabs[index]
             if (tab === active)
@@ -633,7 +634,7 @@ class Tabs
     {
         var col, line, path, prjPath, tabs
 
-        var _423_26_ = slash.splitFileLine(file); path = _423_26_[0]; line = _423_26_[1]; col = _423_26_[2]
+        var _424_26_ = slash.splitFileLine(file); path = _424_26_[0]; line = _424_26_[1]; col = _424_26_[2]
 
         if (!this.koreTabForPath(path))
         {
@@ -753,7 +754,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _502_25_ = [tb,ta]; ta = _502_25_[0]; tb = _502_25_[1]
+                    var _503_25_ = [tb,ta]; ta = _503_25_[0]; tb = _503_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -796,9 +797,9 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _534_16_ = 0; _534_16_ < list.length; _534_16_++)
+        for (var _535_16_ = 0; _535_16_ < list.length; _535_16_++)
         {
-            tab = list[_534_16_]
+            tab = list[_535_16_]
             tab.update()
         }
     }
@@ -860,9 +861,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _597_16_ = 0; _597_16_ < list.length; _597_16_++)
+        for (var _598_16_ = 0; _598_16_ < list.length; _598_16_++)
         {
-            tab = list[_597_16_]
+            tab = list[_598_16_]
             if (tab.dirty)
             {
                 if (tab.active)

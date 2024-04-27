@@ -63,7 +63,7 @@ class FPS
 
     onStashLoaded ()
     {
-        if (window.stash.get('fps'))
+        if (window.stash.get('fps',true))
         {
             return this.toggle()
         }

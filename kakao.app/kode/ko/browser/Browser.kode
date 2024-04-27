@@ -20,7 +20,7 @@ function Browser extends events
         
     onStashLoaded: =>
         
-        hideExtensions = window.stash.get 'browser|hideExtensions' false
+        hideExtensions = window.stash.get 'browser|hideExtensions' true
         setStyle '.browserRow .ext' 'display' hideExtensions and 'none' or 'initial'
 
     # 000  000   000  000  000000000       0000000   0000000   000      000   000  00     00  000   000   0000000

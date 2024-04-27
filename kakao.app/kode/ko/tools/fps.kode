@@ -56,7 +56,7 @@ class FPS
 
     visible: -> @elem.style.display != 'none'
 
-    onStashLoaded: => @toggle() if window.stash.get 'fps'
+    onStashLoaded: => @toggle() if window.stash.get 'fps' true
     stash:         => if @visible() then window.stash.set('fps' true) else window.stash.set 'fps'
 
     toggle: -> 
