@@ -62,7 +62,7 @@ class Tabs
     
     setKoreTabs: (tabs) => kore.set 'tabs' tabs; tabs
     
-    update: (tabs) => kore.set 'tabs' tabs ? @koreTabs()
+    refreshTabs: => @onKoreTabs @koreTabs()
         
     onKoreTabs: (tabs) =>
         
@@ -169,7 +169,7 @@ class Tabs
              
         for k,v of prjTabs
             if v.length <= 1
-                log 'delete' k, prjTabs[k]
+                # log 'delete' k, prjTabs[k]
                 delete prjTabs[k]
                 
         tabs = []
@@ -281,7 +281,7 @@ class Tabs
         file ?= kore.get 'editor|file'
         if tab = @koreTabForPath file
             delete tab.dirty
-            @update()
+            @refreshTabs()
             
     renameFile: (file, src) =>
         
@@ -345,7 +345,7 @@ class Tabs
                                     return error "Tabs.onClick failed to save #{state.file}" if not file
                                     delete tab.state
                                     delete tab.dirty
-                                    @update()
+                                    @refreshTabs()
             else
                 if tab.type == 'prj' 
                     if event.target.classList.contains 'git-status-icon'
@@ -555,7 +555,7 @@ class Tabs
                 delete tab.dirty
                 delete tab.state
                 
-            @update()
+            @refreshTabs()
             
     #  0000000  000000000   0000000   00000000   00000000       0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000  000   000  000           000          000     000   000     000     000       
@@ -565,9 +565,7 @@ class Tabs
     
     onStoreState: (path, state) =>
 
-        if empty state
-            warn 'storeState empty state??' path, state
-            return
+        ⮐ if empty state
             
         if tab = @koreTabForPath path
             if tab.dirty and tab.path
@@ -585,7 +583,7 @@ class Tabs
         if tab = @koreTabForPath path
             delete tab.dirty
             delete tab.state
-        @update()
+        @refreshTabs()
         
     #  0000000   0000000   000   000  00000000         0000000   000      000
     # 000       000   000  000   000  000             000   000  000      000
@@ -601,14 +599,14 @@ class Tabs
                     post.emit 'saveFile'
                 else
                     continue if tab.path.startsWith 'untitled'
-                    # if state = @tabState[tab.path]
                     if state = tab.state
                         File.save state.file, state.state.text(), (file) =>
-                            return error "Tabs.onSaveAll failed to save #{state.file}" if not file
-                            delete tab.state
-                            delete tab.dirty
-                            @update()
-        @update()
+                            ⮐ error "Tabs.onSaveAll failed to save #{state.file}" if not file
+                            tabs = @koreTabs()
+                            if tab = @koreTabForPath file, tabs
+                                delete tab.state
+                                delete tab.dirty
+                                @setKoreTabs tabs
 
     #  0000000   0000000   000   000  000000000  00000000  000   000  000000000
     # 000       000   000  0000  000     000     000        000 000      000

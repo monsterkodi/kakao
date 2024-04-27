@@ -267,7 +267,6 @@ Window = (function ()
 
         }
 
-        console.log('onMenuAction unhandled',name,trail)
     }
 
     return Window

@@ -56,19 +56,19 @@ class Projects
             
         return if file.startsWith 'untitled-'
         
-        log 'Projects.indexProject ●' file
+        # log 'Projects.indexProject ●' file
         
         exists =○ ffs.exists file
         
         return if not exists
         
-        log 'Projects.indexProject ▪' exists
+        # log 'Projects.indexProject ▪' exists
         
         prjPath =○ ffs.git file
         
         prjPath ?= slash.dir file
         
-        log 'Projects.indexProject ▸' prjPath
+        # log 'Projects.indexProject ▸' prjPath
         
         if @indexing
             return if @indexing == prjPath
@@ -95,7 +95,7 @@ class Projects
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            log 'Projects project indexed' prjPath, @projects
+            log 'Projects indexed' prjPath, @projects
 
             post.emit 'projectIndexed' prjPath
         

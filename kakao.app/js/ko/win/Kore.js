@@ -44,11 +44,10 @@ Kore = (function ()
     {
         var tab
 
-        console.log('compressTabStates',tabs)
         var list = _k_.list(tabs)
-        for (var _87_16_ = 0; _87_16_ < list.length; _87_16_++)
+        for (var _85_16_ = 0; _85_16_ < list.length; _85_16_++)
         {
-            tab = list[_87_16_]
+            tab = list[_85_16_]
             if (tab.state)
             {
                 tab.state = this.compressState(tab.state)
@@ -61,11 +60,10 @@ Kore = (function ()
     {
         var tab
 
-        console.log('decompressTabStates',tabs)
         var list = _k_.list(tabs)
-        for (var _96_16_ = 0; _96_16_ < list.length; _96_16_++)
+        for (var _92_16_ = 0; _92_16_ < list.length; _92_16_++)
         {
-            tab = list[_96_16_]
+            tab = list[_92_16_]
             if (tab.state)
             {
                 tab.state = this.decompressState(tab.state)
@@ -84,35 +82,35 @@ Kore = (function ()
             var ci, cs, li, sl
 
             cs = ''
-            for (var _114_22_ = li = -1, _114_27_ = s.linkId; (_114_22_ <= _114_27_ ? li < s.linkId : li > s.linkId); (_114_22_ <= _114_27_ ? ++li : --li))
+            for (var _110_22_ = li = -1, _110_27_ = s.linkId; (_110_22_ <= _110_27_ ? li < s.linkId : li > s.linkId); (_110_22_ <= _110_27_ ? ++li : --li))
             {
                 cs += `${s.links[li][0]}◆${s.links[li][1]} `
             }
             cs += `▸ ${s.numLines} ${s.main} ${s.lineId} `
             cs += '▸ '
-            for (var _120_22_ = ci = 0, _120_26_ = s.cursors.length; (_120_22_ <= _120_26_ ? ci < s.cursors.length : ci > s.cursors.length); (_120_22_ <= _120_26_ ? ++ci : --ci))
+            for (var _116_22_ = ci = 0, _116_26_ = s.cursors.length; (_116_22_ <= _116_26_ ? ci < s.cursors.length : ci > s.cursors.length); (_116_22_ <= _116_26_ ? ++ci : --ci))
             {
                 cs += `${s.cursors[ci][0]}■${s.cursors[ci][1]} `
             }
             cs += '▸ '
             var list = _k_.list(s.selections)
-            for (var _125_19_ = 0; _125_19_ < list.length; _125_19_++)
+            for (var _121_19_ = 0; _121_19_ < list.length; _121_19_++)
             {
-                sl = list[_125_19_]
+                sl = list[_121_19_]
                 cs += `${sl[0]}●${sl[1][0]}■${sl[1][1]} `
             }
             cs += '▸ '
             var list1 = _k_.list(s.highlights)
-            for (var _129_19_ = 0; _129_19_ < list1.length; _129_19_++)
+            for (var _125_19_ = 0; _125_19_ < list1.length; _125_19_++)
             {
-                sl = list1[_129_19_]
+                sl = list1[_125_19_]
                 cs += `${sl[0]}○${sl[1][0]}■${sl[1][1]} `
             }
             return cs
         }
         comp = {}
         comp.lines = []
-        for (var _136_18_ = li = 0, _136_22_ = state.state.lineId; (_136_18_ <= _136_22_ ? li < state.state.lineId : li > state.state.lineId); (_136_18_ <= _136_22_ ? ++li : --li))
+        for (var _132_18_ = li = 0, _132_22_ = state.state.lineId; (_132_18_ <= _132_22_ ? li < state.state.lineId : li > state.state.lineId); (_132_18_ <= _132_22_ ? ++li : --li))
         {
             comp.lines.push(state.state.lines[li])
         }
@@ -142,15 +140,15 @@ Kore = (function ()
             {
                 return
             }
-            var _162_62_ = s.split('▸').map(function (s)
+            var _158_62_ = s.split('▸').map(function (s)
             {
                 return _k_.trim(s)
-            }); links = _162_62_[0]; numMain = _162_62_[1]; cursors = _162_62_[2]; selections = _162_62_[3]; highlights = _162_62_[4]
+            }); links = _158_62_[0]; numMain = _158_62_[1]; cursors = _158_62_[2]; selections = _158_62_[3]; highlights = _158_62_[4]
 
-            var _164_37_ = numMain.split(' ').map(function (n)
+            var _160_37_ = numMain.split(' ').map(function (n)
             {
                 return parseInt(n)
-            }); numLines = _164_37_[0]; main = _164_37_[1]; lineId = _164_37_[2]
+            }); numLines = _160_37_[0]; main = _160_37_[1]; lineId = _160_37_[2]
 
             xy = function (s)
             {
@@ -184,12 +182,12 @@ Kore = (function ()
                 })
             })
             links = {}
-            for (var _175_23_ = idx = -1, _175_28_ = linkNum.length - 1; (_175_23_ <= _175_28_ ? idx < linkNum.length - 1 : idx > linkNum.length - 1); (_175_23_ <= _175_28_ ? ++idx : --idx))
+            for (var _171_23_ = idx = -1, _171_28_ = linkNum.length - 1; (_171_23_ <= _171_28_ ? idx < linkNum.length - 1 : idx > linkNum.length - 1); (_171_23_ <= _171_28_ ? ++idx : --idx))
             {
                 links[idx] = linkNum[idx + 1]
             }
             lines = {}
-            for (var _179_21_ = i = 0, _179_25_ = lineId; (_179_21_ <= _179_25_ ? i < lineId : i > lineId); (_179_21_ <= _179_25_ ? ++i : --i))
+            for (var _175_21_ = i = 0, _175_25_ = lineId; (_175_21_ <= _175_25_ ? i < lineId : i > lineId); (_175_21_ <= _175_25_ ? ++i : --i))
             {
                 lines[i] = state.lines[i]
             }

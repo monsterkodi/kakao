@@ -82,16 +82,12 @@ function Kore extends events
     
     compressTabStates: (tabs) ->
         
-        log 'compressTabStates' tabs
-        
         for tab in tabs
             if tab.state
                 tab.state = @compressState tab.state
         tabs
         
     decompressTabStates: (tabs) ->
-        
-        log 'decompressTabStates' tabs
         
         for tab in tabs
             if tab.state

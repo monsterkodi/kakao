@@ -154,7 +154,7 @@ function Window extends win.Delegate
             'Small Browser'         ➜ ⮐ window.commandline.startCommand 'browse'
             'Preferences'           ➜ ⮐ post.emit 'loadFile' prefs.store.file
     
-        log 'onMenuAction unhandled' name, trail
+        # log 'onMenuAction unhandled' name, trail
             
 # 00000000    0000000    0000000  000000000
 # 000   000  000   000  000          000

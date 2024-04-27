@@ -82,16 +82,13 @@ class Projects
         {
             return
         }
-        console.log('Projects.indexProject ●',file)
         exists = await ffs.exists(file)
         if (!exists)
         {
             return
         }
-        console.log('Projects.indexProject ▪',exists)
         prjPath = await ffs.git(file)
         prjPath = (prjPath != null ? prjPath : slash.dir(file))
-        console.log('Projects.indexProject ▸',prjPath)
         if (this.indexing)
         {
             if (this.indexing === prjPath)
@@ -124,7 +121,7 @@ class Projects
                 file = list[_95_21_]
                 this.allFiles[file] = prjPath
             }
-            console.log('Projects project indexed',prjPath,this.projects)
+            console.log('Projects indexed',prjPath,this.projects)
             post.emit('projectIndexed',prjPath)
         }
         delete this.indexing
