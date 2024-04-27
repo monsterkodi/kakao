@@ -162,25 +162,27 @@ function FileEditor extends TextEditor
     # 000   000  000            000     000     000   000  000   000  000
     # 000   000  00000000  0000000      000      0000000   000   000  00000000
 
-    restoreTab: (tab) =>
+    restoreTab: (path) =>
         
-        state = tab.state
+        tabStates = kore.get 'tabStates' {}
+        
+        state = tabStates[path]
+        
+        if empty state
+            ⮐ error 'FileEditor.restoreTab -- empty state?' path
         
         if @currentFile != kore.get 'editor|file'
             if empty @currentFile and valid kore.get('editor|file') # empty @currentFile should be ok
                 warn 'FileEditor.restoreTab -- empty @currentFile:' @currentFile, kore.get 'editor|file'
             else
-                error 'FileEditor.restoreTab -- editor file mismatch!' @currentFile, kore.get 'editor|file'
-                return 
+                ⮐ error 'FileEditor.restoreTab -- editor file mismatch!' @currentFile, kore.get 'editor|file'
             
         if state.file != tab.path
-            error 'FileEditor.restoreTab -- file path mismatch!' state.file, tab.path
             log 'state:' state
-            return
+            ⮐ error 'FileEditor.restoreTab -- file path mismatch!' state.file, tab.path
             
         if @currentFile == state.file
-            error 'FileEditor.restoreTab -- trying to restore currentFile!' @currentFile
-            return
+            ⮐ error 'FileEditor.restoreTab -- trying to restore currentFile!' @currentFile
             
         post.emit 'storeState' @currentFile, @do.tabState()
         

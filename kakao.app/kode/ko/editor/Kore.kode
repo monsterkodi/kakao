@@ -57,20 +57,21 @@ function Kore extends events
 
     set: (key, value) =>
         # log 'kore.set' key, noon value
-        if key == 'tabs'
+        if key == 'tabStates'
             value = @compressTabStates value
-            log 'set tabs' value
+            log 'set tabStates' value
         
-        stash.set "kore|#{key}" value
+        stash.set "kore|#{key}" value 
         @emit key, value
         
     get: (key, def) =>
         
         r = stash.get "kore|#{key}" def
         
-        if key == 'tabs'
+        if key == 'tabStates'
+            log 'get tabStates stored' r
             r = @decompressTabStates r
-            log 'get tabs' r
+            log 'get tabStates decopd' r
         # log 'kore.get' key, noon r
         r
     
@@ -82,19 +83,17 @@ function Kore extends events
        000     000   000  0000000    0000000      000     000   000     000     00000000  0000000   
     ###
     
-    compressTabStates: (tabs) ->
+    compressTabStates: (tabStates) ->
         
-        for tab in tabs
-            if tab.state
-                tab.state = @compressState tab.state
-        tabs
+        for path,state of tabStates
+            tabStates[path] = @compressState state
+        tabStates
         
-    decompressTabStates: (tabs) ->
+    decompressTabStates: (tabStates) ->
         
-        for tab in tabs
-            if tab.state
-                tab.state = @decompressState tab.state
-        tabs
+        for path,state of tabStates
+            tabStates[path] = @decompressState state
+        tabStates
         
     #  0000000   0000000   00     00  00000000   00000000   00000000   0000000   0000000  
     # 000       000   000  000   000  000   000  000   000  000       000       000       

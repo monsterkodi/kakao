@@ -20,10 +20,10 @@ Kore = (function ()
 
     Kore.prototype["set"] = function (key, value)
     {
-        if (key === 'tabs')
+        if (key === 'tabStates')
         {
             value = this.compressTabStates(value)
-            console.log('set tabs',value)
+            console.log('set tabStates',value)
         }
         stash.set(`kore|${key}`,value)
         return this.emit(key,value)
@@ -34,44 +34,37 @@ Kore = (function ()
         var r
 
         r = stash.get(`kore|${key}`,def)
-        if (key === 'tabs')
+        if (key === 'tabStates')
         {
+            console.log('get tabStates stored',r)
             r = this.decompressTabStates(r)
-            console.log('get tabs',r)
+            console.log('get tabStates decopd',r)
         }
         return r
     }
 
-    Kore.prototype["compressTabStates"] = function (tabs)
+    Kore.prototype["compressTabStates"] = function (tabStates)
     {
-        var tab
+        var path, state
 
-        var list = _k_.list(tabs)
-        for (var _87_16_ = 0; _87_16_ < list.length; _87_16_++)
+        for (path in tabStates)
         {
-            tab = list[_87_16_]
-            if (tab.state)
-            {
-                tab.state = this.compressState(tab.state)
-            }
+            state = tabStates[path]
+            tabStates[path] = this.compressState(state)
         }
-        return tabs
+        return tabStates
     }
 
-    Kore.prototype["decompressTabStates"] = function (tabs)
+    Kore.prototype["decompressTabStates"] = function (tabStates)
     {
-        var tab
+        var path, state
 
-        var list = _k_.list(tabs)
-        for (var _94_16_ = 0; _94_16_ < list.length; _94_16_++)
+        for (path in tabStates)
         {
-            tab = list[_94_16_]
-            if (tab.state)
-            {
-                tab.state = this.decompressState(tab.state)
-            }
+            state = tabStates[path]
+            tabStates[path] = this.decompressState(state)
         }
-        return tabs
+        return tabStates
     }
 
     Kore.prototype["compressState"] = function (state)
@@ -84,35 +77,35 @@ Kore = (function ()
             var ci, cs, li, sl
 
             cs = ''
-            for (var _112_22_ = li = -1, _112_27_ = s.linkId; (_112_22_ <= _112_27_ ? li < s.linkId : li > s.linkId); (_112_22_ <= _112_27_ ? ++li : --li))
+            for (var _111_22_ = li = -1, _111_27_ = s.linkId; (_111_22_ <= _111_27_ ? li < s.linkId : li > s.linkId); (_111_22_ <= _111_27_ ? ++li : --li))
             {
                 cs += `${s.links[li][0]}◆${s.links[li][1]} `
             }
             cs += `▸ ${s.numLines} ${s.main} ${s.lineId} `
             cs += '▸ '
-            for (var _118_22_ = ci = 0, _118_26_ = s.cursors.length; (_118_22_ <= _118_26_ ? ci < s.cursors.length : ci > s.cursors.length); (_118_22_ <= _118_26_ ? ++ci : --ci))
+            for (var _117_22_ = ci = 0, _117_26_ = s.cursors.length; (_117_22_ <= _117_26_ ? ci < s.cursors.length : ci > s.cursors.length); (_117_22_ <= _117_26_ ? ++ci : --ci))
             {
                 cs += `${s.cursors[ci][0]}■${s.cursors[ci][1]} `
             }
             cs += '▸ '
             var list = _k_.list(s.selections)
-            for (var _123_19_ = 0; _123_19_ < list.length; _123_19_++)
+            for (var _122_19_ = 0; _122_19_ < list.length; _122_19_++)
             {
-                sl = list[_123_19_]
+                sl = list[_122_19_]
                 cs += `${sl[0]}●${sl[1][0]}■${sl[1][1]} `
             }
             cs += '▸ '
             var list1 = _k_.list(s.highlights)
-            for (var _127_19_ = 0; _127_19_ < list1.length; _127_19_++)
+            for (var _126_19_ = 0; _126_19_ < list1.length; _126_19_++)
             {
-                sl = list1[_127_19_]
+                sl = list1[_126_19_]
                 cs += `${sl[0]}○${sl[1][0]}■${sl[1][1]} `
             }
             return cs
         }
         comp = {file:state.file,redos:[]}
         comp.lines = []
-        for (var _133_18_ = li = 0, _133_22_ = state.state.lineId; (_133_18_ <= _133_22_ ? li < state.state.lineId : li > state.state.lineId); (_133_18_ <= _133_22_ ? ++li : --li))
+        for (var _132_18_ = li = 0, _132_22_ = state.state.lineId; (_132_18_ <= _132_22_ ? li < state.state.lineId : li > state.state.lineId); (_132_18_ <= _132_22_ ? ++li : --li))
         {
             comp.lines.push(state.state.lines[li])
         }
@@ -143,15 +136,15 @@ Kore = (function ()
             {
                 return
             }
-            var _161_62_ = s.split('▸').map(function (s)
+            var _160_62_ = s.split('▸').map(function (s)
             {
                 return _k_.trim(s)
-            }); links = _161_62_[0]; numMain = _161_62_[1]; cursors = _161_62_[2]; selections = _161_62_[3]; highlights = _161_62_[4]
+            }); links = _160_62_[0]; numMain = _160_62_[1]; cursors = _160_62_[2]; selections = _160_62_[3]; highlights = _160_62_[4]
 
-            var _163_37_ = numMain.split(' ').map(function (n)
+            var _162_37_ = numMain.split(' ').map(function (n)
             {
                 return parseInt(n)
-            }); numLines = _163_37_[0]; main = _163_37_[1]; lineId = _163_37_[2]
+            }); numLines = _162_37_[0]; main = _162_37_[1]; lineId = _162_37_[2]
 
             xy = function (s)
             {
@@ -185,12 +178,12 @@ Kore = (function ()
                 })
             })
             links = {}
-            for (var _174_23_ = idx = -1, _174_28_ = linkNum.length - 1; (_174_23_ <= _174_28_ ? idx < linkNum.length - 1 : idx > linkNum.length - 1); (_174_23_ <= _174_28_ ? ++idx : --idx))
+            for (var _173_23_ = idx = -1, _173_28_ = linkNum.length - 1; (_173_23_ <= _173_28_ ? idx < linkNum.length - 1 : idx > linkNum.length - 1); (_173_23_ <= _173_28_ ? ++idx : --idx))
             {
                 links[idx] = linkNum[idx + 1]
             }
             lines = {}
-            for (var _178_21_ = i = 0, _178_25_ = lineId; (_178_21_ <= _178_25_ ? i < lineId : i > lineId); (_178_21_ <= _178_25_ ? ++i : --i))
+            for (var _177_21_ = i = 0, _177_25_ = lineId; (_177_21_ <= _177_25_ ? i < lineId : i > lineId); (_177_21_ <= _177_25_ ? ++i : --i))
             {
                 lines[i] = state.lines[i]
             }

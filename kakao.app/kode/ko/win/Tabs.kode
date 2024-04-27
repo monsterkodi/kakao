@@ -223,7 +223,7 @@ class Tabs
                 
                 if tab.dirty and tab.state
                     log 'restoreTab' path, tab.path, kore.get 'editor|file'
-                    post.emit 'restoreTab' tab
+                    post.emit 'restoreTab' tab.path
                     return
                     
                 post.emit 'jumpToFile' path
@@ -342,15 +342,14 @@ class Tabs
                             delete tab.dirty
                             if state = tab.state
                                 File.save state.file, state.state.text(), (file) =>
-                                    return error "Tabs.onClick failed to save #{state.file}" if not file
+                                    ⮐ error "Tabs.onClick failed to save #{state.file}" if not file
                                     delete tab.state
                                     delete tab.dirty
                                     @refreshTabs()
             else
                 if tab.type == 'prj' 
                     if event.target.classList.contains 'git-status-icon'
-                        post.emit 'git.diff' tab.path
-                        return
+                        ⮐ post.emit 'git.diff' tab.path
                 @activate tab.path
         true
 
@@ -366,7 +365,8 @@ class Tabs
         if elem.isElement id
             tabDiv = elem.upElem id, class:'tab'
             ⮐ @tabs.find (t) -> t.div == tabDiv
-        if id is str ➜ ⮐ @tabs.find (t) -> t.path == id
+        if id is str 
+            ⮐ @tabs.find (t) -> t.path == id
 
     tabAtX: (x) ->
 
@@ -468,15 +468,13 @@ class Tabs
 
     onDragStart: (d, event) =>
 
-        return 'skip' if event.target.classList.contains 'tab'
-        
-        if event.target.classList.contains 'tabstate'
-            return 'skip' 
+        ⮐ 'skip' if event.target.classList.contains 'tab'
+        ⮐ 'skip' if event.target.classList.contains 'tabstate'
         
         @dragTab = @tab event.target
 
-        return 'skip' if empty @dragTab
-        return 'skip' if event.button != 0
+        ⮐ 'skip' if empty @dragTab
+        ⮐ 'skip' if event.button != 0
 
         @dragIndex = @dragTab.index()
         @dragDiv = @dragTab.div.cloneNode true
@@ -541,18 +539,23 @@ class Tabs
         if tab = @activeKoreTab()
             
             tabs = @koreTabs()
-            tab  = @koreTabForPath tab.path
+            tab  = @koreTabForPath tab.path, tabs
             
             # if tab.dirty != dirty
-            log 'update tab dirty?' tab, dirty
+            
+            log 'update tab dirty? getting tabStates...'
+            tabStates = kore.get 'tabStates' {}
+            log 'update tab dirty??' tab, dirty, tabStates
 
             if dirty
                 tab.dirty = true
-                tab.state = window.editor.do.tabState()
+                tabStates[tab.path] = window.editor.do.tabState()
             else
                 delete tab.dirty
-                delete tab.state
-                
+                delete tabStates[tab.path]
+
+            kore.set 'tabStates' tabStates
+            
             @setKoreTabs tabs
             
     #  0000000  000000000   0000000   00000000   00000000       0000000  000000000   0000000   000000000  00000000  
@@ -567,8 +570,10 @@ class Tabs
             
         if tab = @koreTabForPath path
             if tab.dirty and tab.path
-                tab.state = state
+                tabStates = kore.get 'tabStates' {}
+                tabStates[tab.path] = state
                 log 'store tab state' tab.path, state
+                kore.set 'tabStates' tabStates
                 
     # 00000000   00000000  000   000  00000000  00000000   000000000       00000000  000  000      00000000  
     # 000   000  000       000   000  000       000   000     000          000       000  000      000       
@@ -578,10 +583,13 @@ class Tabs
 
     revertFile: (path) =>
         
-        if tab = @koreTabForPath path
+        tabs = @koreTabs()
+        if tab = @koreTabForPath path, tabs
             delete tab.dirty
-            delete tab.state
-        @refreshTabs()
+            tabStates = kore.get 'tabStates' {}
+            delete tabStates[path]
+            kore.set 'tabStates' tabStates
+            @setKoreTabs tabs
         
     #  0000000   0000000   000   000  00000000         0000000   000      000
     # 000       000   000  000   000  000             000   000  000      000

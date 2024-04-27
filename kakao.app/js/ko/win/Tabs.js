@@ -355,7 +355,7 @@ class Tabs
                 if (tab.dirty && tab.state)
                 {
                     console.log('restoreTab',path,tab.path,kore.get('editor|file'))
-                    post.emit('restoreTab',tab)
+                    post.emit('restoreTab',tab.path)
                     return
                 }
                 return post.emit('jumpToFile',path)
@@ -523,8 +523,7 @@ class Tabs
                 {
                     if (event.target.classList.contains('git-status-icon'))
                     {
-                        post.emit('git.diff',tab.path)
-                        return
+                        return post.emit('git.diff',tab.path)
                     }
                 }
                 this.activate(tab.path)
@@ -743,7 +742,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _498_25_ = [tb,ta]; ta = _498_25_[0]; tb = _498_25_[1]
+                    var _496_25_ = [tb,ta]; ta = _496_25_[0]; tb = _496_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -786,39 +785,42 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _530_16_ = 0; _530_16_ < list.length; _530_16_++)
+        for (var _528_16_ = 0; _528_16_ < list.length; _528_16_++)
         {
-            tab = list[_530_16_]
+            tab = list[_528_16_]
             tab.update()
         }
     }
 
     onDirty (dirty)
     {
-        var tab, tabs
+        var tab, tabs, tabStates
 
         if (tab = this.activeKoreTab())
         {
             tabs = this.koreTabs()
-            tab = this.koreTabForPath(tab.path)
-            console.log('update tab dirty?',tab,dirty)
+            tab = this.koreTabForPath(tab.path,tabs)
+            console.log('update tab dirty? getting tabStates...')
+            tabStates = kore.get('tabStates',{})
+            console.log('update tab dirty??',tab,dirty,tabStates)
             if (dirty)
             {
                 tab.dirty = true
-                tab.state = window.editor.do.tabState()
+                tabStates[tab.path] = window.editor.do.tabState()
             }
             else
             {
                 delete tab.dirty
-                delete tab.state
+                delete tabStates[tab.path]
             }
+            kore.set('tabStates',tabStates)
             return this.setKoreTabs(tabs)
         }
     }
 
     onStoreState (path, state)
     {
-        var tab
+        var tab, tabStates
 
         if (_k_.empty(state))
         {
@@ -828,22 +830,27 @@ class Tabs
         {
             if (tab.dirty && tab.path)
             {
-                tab.state = state
+                tabStates = kore.get('tabStates',{})
+                tabStates[tab.path] = state
                 console.log('store tab state',tab.path,state)
+                return kore.set('tabStates',tabStates)
             }
         }
     }
 
     revertFile (path)
     {
-        var tab
+        var tab, tabs, tabStates
 
-        if (tab = this.koreTabForPath(path))
+        tabs = this.koreTabs()
+        if (tab = this.koreTabForPath(path,tabs))
         {
             delete tab.dirty
-            delete tab.state
+            tabStates = kore.get('tabStates',{})
+            delete tabStates[path]
+            kore.set('tabStates',tabStates)
+            return this.setKoreTabs(tabs)
         }
-        return this.refreshTabs()
     }
 
     onSaveAll ()
@@ -851,9 +858,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _594_16_ = 0; _594_16_ < list.length; _594_16_++)
+        for (var _602_16_ = 0; _602_16_ < list.length; _602_16_++)
         {
-            tab = list[_594_16_]
+            tab = list[_602_16_]
             if (tab.dirty)
             {
                 if (tab.active)
