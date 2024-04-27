@@ -23,6 +23,7 @@ Kore = (function ()
         if (key === 'tabs')
         {
             value = this.compressTabStates(value)
+            console.log('set tabs',value)
         }
         stash.set(`kore|${key}`,value)
         return this.emit(key,value)
@@ -36,6 +37,7 @@ Kore = (function ()
         if (key === 'tabs')
         {
             r = this.decompressTabStates(r)
+            console.log('get tabs',r)
         }
         return r
     }
@@ -44,7 +46,6 @@ Kore = (function ()
     {
         var tab
 
-        console.log('compressTabStates',tabs)
         var list = _k_.list(tabs)
         for (var _87_16_ = 0; _87_16_ < list.length; _87_16_++)
         {
@@ -61,11 +62,10 @@ Kore = (function ()
     {
         var tab
 
-        console.log('decompressTabStates',tabs)
         var list = _k_.list(tabs)
-        for (var _96_16_ = 0; _96_16_ < list.length; _96_16_++)
+        for (var _94_16_ = 0; _94_16_ < list.length; _94_16_++)
         {
-            tab = list[_96_16_]
+            tab = list[_94_16_]
             if (tab.state)
             {
                 tab.state = this.decompressState(tab.state)
@@ -84,35 +84,35 @@ Kore = (function ()
             var ci, cs, li, sl
 
             cs = ''
-            for (var _114_22_ = li = -1, _114_27_ = s.linkId; (_114_22_ <= _114_27_ ? li < s.linkId : li > s.linkId); (_114_22_ <= _114_27_ ? ++li : --li))
+            for (var _112_22_ = li = -1, _112_27_ = s.linkId; (_112_22_ <= _112_27_ ? li < s.linkId : li > s.linkId); (_112_22_ <= _112_27_ ? ++li : --li))
             {
                 cs += `${s.links[li][0]}◆${s.links[li][1]} `
             }
             cs += `▸ ${s.numLines} ${s.main} ${s.lineId} `
             cs += '▸ '
-            for (var _120_22_ = ci = 0, _120_26_ = s.cursors.length; (_120_22_ <= _120_26_ ? ci < s.cursors.length : ci > s.cursors.length); (_120_22_ <= _120_26_ ? ++ci : --ci))
+            for (var _118_22_ = ci = 0, _118_26_ = s.cursors.length; (_118_22_ <= _118_26_ ? ci < s.cursors.length : ci > s.cursors.length); (_118_22_ <= _118_26_ ? ++ci : --ci))
             {
                 cs += `${s.cursors[ci][0]}■${s.cursors[ci][1]} `
             }
             cs += '▸ '
             var list = _k_.list(s.selections)
-            for (var _125_19_ = 0; _125_19_ < list.length; _125_19_++)
+            for (var _123_19_ = 0; _123_19_ < list.length; _123_19_++)
             {
-                sl = list[_125_19_]
+                sl = list[_123_19_]
                 cs += `${sl[0]}●${sl[1][0]}■${sl[1][1]} `
             }
             cs += '▸ '
             var list1 = _k_.list(s.highlights)
-            for (var _129_19_ = 0; _129_19_ < list1.length; _129_19_++)
+            for (var _127_19_ = 0; _127_19_ < list1.length; _127_19_++)
             {
-                sl = list1[_129_19_]
+                sl = list1[_127_19_]
                 cs += `${sl[0]}○${sl[1][0]}■${sl[1][1]} `
             }
             return cs
         }
-        comp = {}
+        comp = {file:state.file,redos:[]}
         comp.lines = []
-        for (var _136_18_ = li = 0, _136_22_ = state.state.lineId; (_136_18_ <= _136_22_ ? li < state.state.lineId : li > state.state.lineId); (_136_18_ <= _136_22_ ? ++li : --li))
+        for (var _133_18_ = li = 0, _133_22_ = state.state.lineId; (_133_18_ <= _133_22_ ? li < state.state.lineId : li > state.state.lineId); (_133_18_ <= _133_22_ ? ++li : --li))
         {
             comp.lines.push(state.state.lines[li])
         }
@@ -127,7 +127,7 @@ Kore = (function ()
 
     Kore.prototype["decompressState"] = function (state)
     {
-        var decomp, decompress, history
+        var decomp, decompress, file, history
 
         console.log('decompressState',state)
         if (_k_.empty(state.history))
@@ -138,19 +138,20 @@ Kore = (function ()
         {
             var comp, cursors, highlights, i, idx, lineId, lines, linkNum, links, main, numLines, numMain, selections, xy
 
+            console.log('decompress s',s)
             if (!(_k_.isStr(s)))
             {
                 return
             }
-            var _162_62_ = s.split('▸').map(function (s)
+            var _161_62_ = s.split('▸').map(function (s)
             {
                 return _k_.trim(s)
-            }); links = _162_62_[0]; numMain = _162_62_[1]; cursors = _162_62_[2]; selections = _162_62_[3]; highlights = _162_62_[4]
+            }); links = _161_62_[0]; numMain = _161_62_[1]; cursors = _161_62_[2]; selections = _161_62_[3]; highlights = _161_62_[4]
 
-            var _164_37_ = numMain.split(' ').map(function (n)
+            var _163_37_ = numMain.split(' ').map(function (n)
             {
                 return parseInt(n)
-            }); numLines = _164_37_[0]; main = _164_37_[1]; lineId = _164_37_[2]
+            }); numLines = _163_37_[0]; main = _163_37_[1]; lineId = _163_37_[2]
 
             xy = function (s)
             {
@@ -184,12 +185,12 @@ Kore = (function ()
                 })
             })
             links = {}
-            for (var _175_23_ = idx = -1, _175_28_ = linkNum.length - 1; (_175_23_ <= _175_28_ ? idx < linkNum.length - 1 : idx > linkNum.length - 1); (_175_23_ <= _175_28_ ? ++idx : --idx))
+            for (var _174_23_ = idx = -1, _174_28_ = linkNum.length - 1; (_174_23_ <= _174_28_ ? idx < linkNum.length - 1 : idx > linkNum.length - 1); (_174_23_ <= _174_28_ ? ++idx : --idx))
             {
                 links[idx] = linkNum[idx + 1]
             }
             lines = {}
-            for (var _179_21_ = i = 0, _179_25_ = lineId; (_179_21_ <= _179_25_ ? i < lineId : i > lineId); (_179_21_ <= _179_25_ ? ++i : --i))
+            for (var _178_21_ = i = 0, _178_25_ = lineId; (_178_21_ <= _178_25_ ? i < lineId : i > lineId); (_178_21_ <= _178_25_ ? ++i : --i))
             {
                 lines[i] = state.lines[i]
             }
@@ -202,7 +203,13 @@ Kore = (function ()
         {
             return decompress(hs)
         })
-        decomp = {file:state.file,state:history.pop(),redos:[],history:history}
+        file = state.file
+        console.log('file:',file)
+        console.log('history>',history)
+        state = history.pop()
+        console.log('state:',state)
+        console.log('history:',history)
+        decomp = {file:file,state:state,history:history,redos:[]}
         console.log('decomp:',decomp)
         return decomp
     }

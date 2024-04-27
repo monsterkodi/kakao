@@ -330,30 +330,30 @@ function Shelf extends Column
 
         switch combo
             'command+enter'
-            'ctrl+enter'    ➜ return @openFileInNewWindow()
-            'enter'         ➜ return stopEvent event, @navigateCols key
+            'ctrl+enter'    ➜ ⮐ @openFileInNewWindow()
+            'enter'         ➜ ⮐ stopEvent event, @navigateCols key
             'backspace'
-            'delete'        ➜ return stopEvent event, @clearSearch().removeObject()
+            'delete'        ➜ ⮐ stopEvent event, @clearSearch().removeObject()
             'command+k'
-            'ctrl+k'        ➜ return stopEvent event if @browser.cleanUp()
+            'ctrl+k'        ➜ ⮐ stopEvent event if @browser.cleanUp()
             'ctrl+e'        ➜ @toggleExtensions()
             'up' 'down'
             'page up'
             'page down'
-            'home' 'end'    ➜ return stopEvent event, @navigateRows key
+            'home' 'end'    ➜ ⮐ stopEvent event, @navigateRows key
             'right'
             'alt+right'
-            'enter'         ➜ return stopEvent event, @focusBrowser()
-            'tab'           ➜ if @search.length ➜ @doSearch ''; return stopEvent event
+            'enter'         ➜ ⮐ stopEvent event, @focusBrowser()
+            'tab'           ➜ if @search.length ➜ @doSearch ''; ⮐ stopEvent event
             'esc'
                 if @dragDiv
                     @dragDiv.drag.dragStop()
                     @dragDiv.remove()
                     delete @dragDiv
                 if @search.length ➜ @clearSearch()
-                return stopEvent event
+                ⮐ stopEvent event
 
-        if mod in ['shift' ''] and char then @doSearch char
+        if mod in ['shift' ''] and char ➜ @doSearch char
 
         if @dragDiv
             @updateDragIndicator event

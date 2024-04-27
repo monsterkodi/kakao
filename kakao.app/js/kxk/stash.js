@@ -84,6 +84,11 @@ Stash = (function ()
         return this.set(key)
     }
 
+    Stash.prototype["isEmpty"] = function ()
+    {
+        return _k_.empty(this.data)
+    }
+
     Stash.prototype["clear"] = function ()
     {
         this.data = {}

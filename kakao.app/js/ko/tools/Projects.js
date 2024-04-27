@@ -9,6 +9,18 @@ import Walker from "./Walker.js"
 
 class Projects
 {
+    constructor ()
+    {
+        kore.on('editor|file',function (file)
+        {
+            return Projects.indexProject(file)
+        })
+        post.on('indexProject',function (file)
+        {
+            return Projects.indexProject(file)
+        })
+    }
+
     static currentProject = null
 
     static projects = {}
@@ -21,9 +33,9 @@ class Projects
 
     static files (path)
     {
-        var _21_59_
+        var _26_59_
 
-        return ((_21_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _21_59_ : [])
+        return ((_26_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _26_59_ : [])
     }
 
     static dir (path)
@@ -71,7 +83,7 @@ class Projects
 
     static async indexProject (file)
     {
-        var exists, prjPath, result, walker, _75_19_
+        var exists, prjPath, result, walker, _80_19_
 
         if (!(_k_.isStr(file)))
         {
@@ -95,7 +107,7 @@ class Projects
             {
                 return
             }
-            this.queue = ((_75_19_=this.queue) != null ? _75_19_ : [])
+            this.queue = ((_80_19_=this.queue) != null ? _80_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -116,9 +128,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _95_21_ = 0; _95_21_ < list.length; _95_21_++)
+            for (var _100_21_ = 0; _100_21_ < list.length; _100_21_++)
             {
-                file = list[_95_21_]
+                file = list[_100_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('Projects indexed',prjPath,this.projects)
@@ -133,12 +145,4 @@ class Projects
     }
 }
 
-kore.on('editor|file',function (file)
-{
-    return Projects.indexProject(file)
-})
-post.on('indexProject',function (file)
-{
-    return Projects.indexProject(file)
-})
 export default Projects;

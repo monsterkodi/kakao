@@ -69,7 +69,7 @@ class Tabs
         post.on('storeState',this.onStoreState)
         post.on('revertFile',this.revertFile)
         post.on('editorFocus',this.onEditorFocus)
-        post.on('stashLoaded',this.update)
+        post.on('stashLoaded',this.refreshTabs)
         post.on('projectIndexed',this.onProjectIndexed)
         post.on('gitStatus',this.onGitStatus)
         kore.on('tabs',this.onKoreTabs)
@@ -412,8 +412,7 @@ class Tabs
                 {
                     tab.pinned = true
                 }
-                this.setKoreTabs(tabs)
-                break
+                return this.setKoreTabs(tabs)
             }
         }
         return tabs
@@ -476,6 +475,7 @@ class Tabs
     {
         var state, tab
 
+        console.log('onClick')
         if (tab = this.tab(event.target))
         {
             if (event.target.classList.contains('dot'))
@@ -535,7 +535,7 @@ class Tabs
 
     tab (id)
     {
-        var t, tabDiv
+        var tabDiv
 
         if (_k_.isNum(id))
         {
@@ -544,20 +544,10 @@ class Tabs
         if (elem.isElement(id))
         {
             tabDiv = elem.upElem(id,{class:'tab'})
-            t = this.tabs.find(function (t)
+            return this.tabs.find(function (t)
             {
                 return t.div === tabDiv
             })
-            if (!t)
-            {
-                console.warn('no tee?')
-                console.warn(this.tabs)
-                console.warn(this.tabs.map(function (t)
-                {
-                    return t.div
-                }))
-            }
-            return t
         }
         if (_k_.isStr(id))
         {
@@ -606,7 +596,7 @@ class Tabs
 
         active = this.activeKoreTab()
         tabs = this.koreTabs()
-        for (var _402_21_ = index = tabs.length - 1, _402_36_ = 0; (_402_21_ <= _402_36_ ? index <= 0 : index >= 0); (_402_21_ <= _402_36_ ? ++index : --index))
+        for (var _397_21_ = index = tabs.length - 1, _397_36_ = 0; (_397_21_ <= _397_36_ ? index <= 0 : index >= 0); (_397_21_ <= _397_36_ ? ++index : --index))
         {
             tab = tabs[index]
             if (tab === active)
@@ -633,7 +623,7 @@ class Tabs
     {
         var col, line, path, prjPath, tabs
 
-        var _424_26_ = slash.splitFileLine(file); path = _424_26_[0]; line = _424_26_[1]; col = _424_26_[2]
+        var _419_26_ = slash.splitFileLine(file); path = _419_26_[0]; line = _419_26_[1]; col = _419_26_[2]
 
         if (!this.koreTabForPath(path))
         {
@@ -753,7 +743,7 @@ class Tabs
             {
                 if (ta.index() > tb.index())
                 {
-                    var _503_25_ = [tb,ta]; ta = _503_25_[0]; tb = _503_25_[1]
+                    var _498_25_ = [tb,ta]; ta = _498_25_[0]; tb = _498_25_[1]
 
                 }
                 this.tabs[ta.index()] = tb
@@ -796,19 +786,21 @@ class Tabs
 
         prefs.toggle('tabs|extension')
         var list = _k_.list(this.tabs)
-        for (var _535_16_ = 0; _535_16_ < list.length; _535_16_++)
+        for (var _530_16_ = 0; _530_16_ < list.length; _530_16_++)
         {
-            tab = list[_535_16_]
+            tab = list[_530_16_]
             tab.update()
         }
     }
 
     onDirty (dirty)
     {
-        var tab
+        var tab, tabs
 
         if (tab = this.activeKoreTab())
         {
+            tabs = this.koreTabs()
+            tab = this.koreTabForPath(tab.path)
             console.log('update tab dirty?',tab,dirty)
             if (dirty)
             {
@@ -820,7 +812,7 @@ class Tabs
                 delete tab.dirty
                 delete tab.state
             }
-            return this.refreshTabs()
+            return this.setKoreTabs(tabs)
         }
     }
 
@@ -859,9 +851,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _596_16_ = 0; _596_16_ < list.length; _596_16_++)
+        for (var _594_16_ = 0; _594_16_ < list.length; _594_16_++)
         {
-            tab = list[_596_16_]
+            tab = list[_594_16_]
             if (tab.dirty)
             {
                 if (tab.active)

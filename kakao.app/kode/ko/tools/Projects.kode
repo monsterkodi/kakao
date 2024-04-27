@@ -12,6 +12,11 @@ use ./Walker
 
 class Projects
     
+    @: ->
+        
+        kore.on 'editor|file'  (file) -> Projects.indexProject file
+        post.on 'indexProject' (file) -> Projects.indexProject file
+    
     @currentProject: null
     @projects: {}
     @allFiles: {}
@@ -104,13 +109,5 @@ class Projects
         if valid @queue
             log 'dequeue' @queue[0]
             ○ @indexProject @queue.shift()
-
-# post.on 'fileLoaded' (file) ->
-    # Projects.indexProject file
-    
-kore.on 'editor|file' (file) -> Projects.indexProject file
-
-post.on 'indexProject' (file) -> 
-    Projects.indexProject file
-    
+            
 export Projects

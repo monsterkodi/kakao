@@ -8,9 +8,9 @@
 
 use ../../kakao
 use ../../kxk      ▪ win stash post prefs store stopEvent
-use                ◆ Kore Split Info Tabs Menu Navigate FileHandler Terminal Viewer
+use                ◆ Split Info Tabs Menu Navigate FileHandler Terminal Viewer
 use ../tools       ◆ FileWatch Projects Indexer Git fps scheme
-use ../editor      ◆ Editor Syntax FileEditor
+use ../editor      ◆ Kore Editor Syntax FileEditor
 use ../commands    ◆ Macro
 use ../commandline ◆ CommandLine
 
@@ -45,8 +45,10 @@ function Window extends win.Delegate
         
         log 'onWindowWithoutStash!'
         
-        # ○ kakao 'win.setSize' 1000 1000
-        # ○ kakao 'win.center' 
+        if empty window.tabs.tabs ➜ log 'new empty tab!'; post.emit 'newEmptyTab'
+            
+        ○ kakao 'win.setSize' 1000 1000
+        ○ kakao 'win.center' 
         
     onWindowCreated: (win) =>
         
@@ -55,6 +57,7 @@ function Window extends win.Delegate
                     
         new FileHandler
         new FileWatch
+        new Projects
         new Git
         
         @tabs        = window.tabs        = new Tabs window.titlebar.elem
@@ -90,7 +93,7 @@ function Window extends win.Delegate
         window.split.resized()
         window.info.reload()
         
-        if empty window.tabs.tabs ➜ log 'not tab! empty tab!'; post.emit 'newEmptyTab'
+        # if empty window.tabs.tabs ➜ log 'not tab! empty tab!'; post.emit 'newEmptyTab'
         
         @editor.focus()
 

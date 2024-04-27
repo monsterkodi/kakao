@@ -45,7 +45,7 @@ class Tabs
         post.on 'storeState'     @onStoreState
         post.on 'revertFile'     @revertFile
         post.on 'editorFocus'    @onEditorFocus
-        post.on 'stashLoaded'    @update
+        post.on 'stashLoaded'    @refreshTabs
         post.on 'projectIndexed' @onProjectIndexed
         post.on 'gitStatus'      @onGitStatus
         
@@ -266,8 +266,7 @@ class Tabs
                     tab.tmp    ➜ delete tab.tmp
                     tab.pinned ➜ delete tab.pinned
                                ➜ tab.pinned = true
-                @setKoreTabs tabs
-                break
+                ⮐ @setKoreTabs tabs
         tabs
                         
     # 00000000   00000000  000       0000000    0000000   0000000          00000000  000  000      00000000
@@ -326,6 +325,7 @@ class Tabs
 
     onClick: (event) =>
         
+        log 'onClick'
         if tab = @tab event.target
             if event.target.classList.contains 'dot'
                 @delTab tab.path
@@ -362,16 +362,11 @@ class Tabs
 
     tab: (id) ->
 
-        if id is num ➜ return @tabs[id]
+        if id is num ➜ ⮐ @tabs[id]
         if elem.isElement id
             tabDiv = elem.upElem id, class:'tab'
-            t = @tabs.find (t) -> t.div == tabDiv
-            if not t
-                warn 'no tee?'
-                warn @tabs
-                warn @tabs.map (t) -> t.div
-            return t
-        if id is str ➜ return @tabs.find (t) -> t.path == id
+            ⮐ @tabs.find (t) -> t.div == tabDiv
+        if id is str ➜ ⮐ @tabs.find (t) -> t.path == id
 
     tabAtX: (x) ->
 
@@ -545,6 +540,9 @@ class Tabs
         
         if tab = @activeKoreTab()
             
+            tabs = @koreTabs()
+            tab  = @koreTabForPath tab.path
+            
             # if tab.dirty != dirty
             log 'update tab dirty?' tab, dirty
 
@@ -555,7 +553,7 @@ class Tabs
                 delete tab.dirty
                 delete tab.state
                 
-            @refreshTabs()
+            @setKoreTabs tabs
             
     #  0000000  000000000   0000000   00000000   00000000       0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000  000   000  000           000          000     000   000     000     000       

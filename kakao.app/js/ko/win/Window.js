@@ -12,7 +12,6 @@ let prefs = kxk.prefs
 let store = kxk.store
 let stopEvent = kxk.stopEvent
 
-import Kore from "./Kore.js"
 import Split from "./Split.js"
 import Info from "./Info.js"
 import Tabs from "./Tabs.js"
@@ -29,6 +28,7 @@ import Git from "../tools/Git.js"
 import fps from "../tools/fps.js"
 import scheme from "../tools/scheme.js"
 
+import Kore from "../editor/Kore.js"
 import Editor from "../editor/Editor.js"
 import Syntax from "../editor/Syntax.js"
 import FileEditor from "../editor/FileEditor.js"
@@ -86,6 +86,13 @@ Window = (function ()
     Window.prototype["onWindowWithoutStash"] = async function ()
     {
         console.log('onWindowWithoutStash!')
+        if (_k_.empty(window.tabs.tabs))
+        {
+            console.log('new empty tab!')
+            post.emit('newEmptyTab')
+        }
+        await kakao('win.setSize',1000,1000)
+        return await kakao('win.center')
     }
 
     Window.prototype["onWindowCreated"] = function (win)
@@ -96,6 +103,7 @@ Window = (function ()
         a = 1 + 2 + 3
         new FileHandler
         new FileWatch
+        new Projects
         new Git
         this.tabs = window.tabs = new Tabs(window.titlebar.elem)
         this.navigate = window.navigate = new Navigate()
@@ -135,11 +143,6 @@ Window = (function ()
         }).bind(this))
         window.split.resized()
         window.info.reload()
-        if (_k_.empty(window.tabs.tabs))
-        {
-            console.log('not tab! empty tab!')
-            post.emit('newEmptyTab')
-        }
         return this.editor.focus()
     }
 
@@ -150,7 +153,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _113_25_
+        var action, _116_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -325,7 +328,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _202_14_
+    var _205_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -336,7 +339,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _208_22_, _209_19_
+    var _211_22_, _212_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -371,7 +374,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _248_32_
+    var _251_32_
 
     if (!(_k_.isNum(s)))
     {

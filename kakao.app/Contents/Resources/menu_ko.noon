@@ -37,7 +37,7 @@ File
 
 Edit
     Undo                    cmdctrl+z
-    Redo                    cmdctrl+shift+z
+    Redo                    cmdctrl+shift+z alt+z
     -
     Cut                     cmdctrl+x
     Copy                    cmdctrl+c

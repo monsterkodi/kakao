@@ -99,7 +99,10 @@ function Win
                 
                 kakao 'window.new' 'ko.html' # only load one old window, it will load the next one ...
         else 
-            if @delegate.onWindowWithoutStash is func ➜ ○ @delegate.onWindowWithoutStash @
+            if window.stash.isEmpty()
+                if @delegate.onWindowWithoutStash is func ➜ ○ @delegate.onWindowWithoutStash @
+            else
+                if @delegate.onWindowDidLoadStash is func ➜ ○ @delegate.onWindowDidLoadStash @
 
         if @delegate.onWindowAboutToShow is func ➜ ○ @delegate.onWindowAboutToShow @
                     
@@ -132,7 +135,7 @@ function Win
     onWindowClose:     => post.emit 'saveStash' if @saveStashOnClose; @delegate?.onWindowClose?  @
     onWindowFrame: (info) => window.stash.set 'frame' info.frame
     onStashLoaded: => 
-        
+        log 'win.stashLoaded'
         if frame = window.stash.get 'frame'
             kakao 'window.setFrame' frame
     
