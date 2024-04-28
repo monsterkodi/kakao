@@ -1,7 +1,9 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
+let isEqual = kxk.isEqual
 let immutable = kxk.immutable
+let profile = kxk.profile
 let events = kxk.events
 let post = kxk.post
 
@@ -20,14 +22,85 @@ class Do extends events
 
     tabState ()
     {
-        return {history:this.history,undos:this.undos}
+        var c, changes, chg, index, nxt, o, prv
+
+        changes = []
+        for (var _31_21_ = index = 0, _31_25_ = this.history.length - 1 - this.undos; (_31_21_ <= _31_25_ ? index < this.history.length - 1 - this.undos : index > this.history.length - 1 - this.undos); (_31_21_ <= _31_25_ ? ++index : --index))
+        {
+            chg = this.calculateChanges(this.history[index],this.history[index + 1])
+            if (!_k_.empty(chg.changes))
+            {
+                o = {}
+                var list = _k_.list(chg.changes)
+                for (var _35_22_ = 0; _35_22_ < list.length; _35_22_++)
+                {
+                    c = list[_35_22_]
+                    switch (c.change)
+                    {
+                        case 'changed':
+                            o[`■ ${c.doIndex}`] = `■${c.after}■`
+                            break
+                        case 'inserted':
+                            o[`● ${c.doIndex}`] = `●${c.after}●`
+                            break
+                        case 'deleted':
+                            o[`○ ${c.doIndex}`] = '○'
+                            break
+                    }
+
+                }
+                changes.push(o)
+            }
+        }
+        if (changes.length > 1)
+        {
+            index = changes.length - 1
+            while (index > 0)
+            {
+                prv = changes[index - 1]
+                nxt = changes[index]
+                if (isEqual(Object.keys(prv),Object.keys(nxt)))
+                {
+                    changes.splice(index - 1,1)
+                }
+                index--
+            }
+        }
+        return changes
     }
 
     setTabState (tabState)
     {
-        this.doCount = 0
-        this.history = tabState.history
-        return this.undos = tabState.undos
+        var changes, index, key, line, type, value
+
+        var list = _k_.list(tabState)
+        for (var _56_20_ = 0; _56_20_ < list.length; _56_20_++)
+        {
+            changes = list[_56_20_]
+            this.start()
+            for (key in changes)
+            {
+                value = changes[key]
+                var _59_30_ = key.split(' '); type = _59_30_[0]; index = _59_30_[1]
+
+                line = value.slice(1, value.length - 1)
+                switch (type)
+                {
+                    case '○':
+                        this.delete(index)
+                        break
+                    case '●':
+                        this.insert(index,line)
+                        break
+                    case '■':
+                        this.change(index,line)
+                        break
+                }
+
+            }
+            this.end()
+        }
+        return this
     }
 
     setLines (lines)
@@ -172,6 +245,11 @@ class Do extends events
         return this.state.setMain(mainIndex)
     }
 
+    setMain (m)
+    {
+        return this.state.set('main',m)
+    }
+
     setSelections (s)
     {
         return this.state.setSelections(s)
@@ -192,16 +270,16 @@ class Do extends events
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _196_14_ = 0; _196_14_ < list.length; _196_14_++)
+        for (var _227_14_ = 0; _227_14_ < list.length; _227_14_++)
         {
-            p = list[_196_14_]
+            p = list[_227_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _203_22_ = ci = cs.length - 1, _203_36_ = 0; (_203_22_ <= _203_36_ ? ci < 0 : ci > 0); (_203_22_ <= _203_36_ ? ++ci : --ci))
+            for (var _234_22_ = ci = cs.length - 1, _234_36_ = 0; (_234_22_ <= _234_36_ ? ci < 0 : ci > 0); (_234_22_ <= _234_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -375,7 +453,7 @@ class Do extends events
 
     textInRange (r)
     {
-        var _327_41_
+        var _358_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

@@ -20,9 +20,9 @@ class Tab
         @div = elem class: 'tab app-drag-region'
         @tabs.div.appendChild @div
 
-        @update() 
+        @update()
 
-        if @isPrj() ➜ Git.status @path
+        # if @isPrj() ➜ Git.status @path
 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
@@ -119,6 +119,7 @@ class Tab
 
             if @isPrj() and numFiles = Projects.files(@path).length
                 html += Render.line Syntax.dissForTextAndSyntax("#{numFiles} files" 'git'), wrapSpan:'tooltip-line'
+                log 'ttip git status'
                 Git.status @path
         html
 

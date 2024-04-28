@@ -544,17 +544,18 @@ class Tabs
             # if tab.dirty != dirty
             
             # log 'update tab dirty? getting tabStates...'
-            tabStates = kore.get 'tabStates' {}
+            # tabStates = kore.get 'tabStates' {}
             # log 'update tab dirty??' tab, dirty, tabStates
 
             if dirty
                 tab.dirty = true
-                tabStates[tab.path] = window.editor.do.tabState()
+                # tabStates[tab.path] = window.editor.do.tabState()
+                # window.editor.do.tabState()
             else
                 delete tab.dirty
-                delete tabStates[tab.path]
+                # delete tabStates[tab.path]
 
-            kore.set 'tabStates' tabStates
+            # kore.set 'tabStates' tabStates
             
             @setKoreTabs tabs
             
@@ -566,14 +567,17 @@ class Tabs
     
     onStoreState: (path, state) =>
 
-        ⮐ if empty state
+        # ⮐ if empty state
             
+        tabStates = kore.get 'tabStates' {}
         if tab = @koreTabForPath path
-            if tab.dirty and tab.path
-                tabStates = kore.get 'tabStates' {}
-                tabStates[tab.path] = state
-                log 'store tab state' tab.path, state
+            if tab.dirty and tab.path and valid state
+                tabStates[path] = state
+                log 'store tab state' path, state
                 kore.set 'tabStates' tabStates
+                return
+        delete tabStates[path]
+        kore.set 'tabStates' tabStates
                 
     # 00000000   00000000  000   000  00000000  00000000   000000000       00000000  000  000      00000000  
     # 000   000  000       000   000  000       000   000     000          000       000  000      000       

@@ -30,10 +30,6 @@ class Tab
         this.div = elem({class:'tab app-drag-region'})
         this.tabs.div.appendChild(this.div)
         this.update()
-        if (this.isPrj())
-        {
-            Git.status(this.path)
-        }
     }
 
     update ()
@@ -132,6 +128,7 @@ class Tab
             if (this.isPrj() && (numFiles = Projects.files(this.path).length))
             {
                 html += Render.line(Syntax.dissForTextAndSyntax(`${numFiles} files`,'git'),{wrapSpan:'tooltip-line'})
+                console.log('ttip git status')
                 Git.status(this.path)
             }
         }
@@ -140,7 +137,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _135_19_, _135_24_
+        var t, _136_19_, _136_24_
 
         if (status.gitDir !== this.path)
         {

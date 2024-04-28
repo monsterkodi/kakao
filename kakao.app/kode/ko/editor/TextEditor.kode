@@ -246,7 +246,7 @@ function TextEditor extends Editor
         
         # log 'TextEditor.changed' changeInfo
         
-        profile.start 'changed'
+        # profile.start 'changed'
         
         @syntax.changed changeInfo
 
@@ -294,7 +294,7 @@ function TextEditor extends Editor
         @emit 'changed' changeInfo
         # ●▪ emit
         
-        profile.end 'changed'
+        # profile.end 'changed'
         null
 
     # 000   000  00000000   0000000     0000000   000000000  00000000

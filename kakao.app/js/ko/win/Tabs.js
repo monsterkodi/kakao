@@ -793,24 +793,20 @@ class Tabs
 
     onDirty (dirty)
     {
-        var tab, tabs, tabStates
+        var tab, tabs
 
         if (tab = this.activeKoreTab())
         {
             tabs = this.koreTabs()
             tab = this.koreTabForPath(tab.path,tabs)
-            tabStates = kore.get('tabStates',{})
             if (dirty)
             {
                 tab.dirty = true
-                tabStates[tab.path] = window.editor.do.tabState()
             }
             else
             {
                 delete tab.dirty
-                delete tabStates[tab.path]
             }
-            kore.set('tabStates',tabStates)
             return this.setKoreTabs(tabs)
         }
     }
@@ -819,20 +815,19 @@ class Tabs
     {
         var tab, tabStates
 
-        if (_k_.empty(state))
-        {
-            return
-        }
+        tabStates = kore.get('tabStates',{})
         if (tab = this.koreTabForPath(path))
         {
-            if (tab.dirty && tab.path)
+            if (tab.dirty && tab.path && !_k_.empty(state))
             {
-                tabStates = kore.get('tabStates',{})
-                tabStates[tab.path] = state
-                console.log('store tab state',tab.path,state)
-                return kore.set('tabStates',tabStates)
+                tabStates[path] = state
+                console.log('store tab state',path,state)
+                kore.set('tabStates',tabStates)
+                return
             }
         }
+        delete tabStates[path]
+        return kore.set('tabStates',tabStates)
     }
 
     revertFile (path)
@@ -855,9 +850,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _602_16_ = 0; _602_16_ < list.length; _602_16_++)
+        for (var _606_16_ = 0; _606_16_ < list.length; _606_16_++)
         {
-            tab = list[_602_16_]
+            tab = list[_606_16_]
             if (tab.dirty)
             {
                 if (tab.active)

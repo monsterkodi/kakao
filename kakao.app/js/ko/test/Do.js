@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-var doo, lines, text
+var d2, doo, lines, text, ts
 
 import Do from "../editor/Do.js"
 
@@ -75,6 +75,40 @@ toExport["Do"] = function ()
         compare(doo.lines(),['a','d','C','c'])
         doo.redo()
         compare(doo.lines(),['a','d','C','c'])
+    })
+    section("tabState", function ()
+    {
+        compare(doo.tabState(),[{'■ 1':'■d■','● 2':'●C●'}])
+        doo = new Do([])
+        compare(doo.tabState(),[])
+        doo.start()
+        doo.insert(0,'bla')
+        doo.insert(0,'blub')
+        doo.end()
+        compare(doo.lines(),['blub','bla'])
+        compare(doo.tabState(),[{'● 0':'●blub●','● 1':'●bla●'}])
+        doo.start()
+        doo.insert(1,'')
+        doo.insert(3,'')
+        doo.end()
+        compare(doo.lines(),['blub','','bla',''])
+        compare(doo.tabState(),[{'● 0':'●blub●','● 1':'●bla●'},{'● 1':'●●','● 3':'●●'}])
+        compare(doo.history.length,3)
+        doo.start()
+        doo.change(1,'krep')
+        doo.change(3,'krap')
+        doo.end()
+        compare(doo.lines(),['blub','krep','bla','krap'])
+        compare(doo.tabState(),[{'● 0':'●blub●','● 1':'●bla●'},{'● 1':'●●','● 3':'●●'},{'■ 1':'■krep■','■ 3':'■krap■'}])
+        doo.undo()
+        compare(doo.tabState(),[{'● 0':'●blub●','● 1':'●bla●'},{'● 1':'●●','● 3':'●●'}])
+        doo.redo()
+        ts = doo.tabState()
+        compare(ts,[{'● 0':'●blub●','● 1':'●bla●'},{'● 1':'●●','● 3':'●●'},{'■ 1':'■krep■','■ 3':'■krap■'}])
+        d2 = new Do([])
+        d2.setTabState(ts)
+        compare(d2.lines(),['blub','krep','bla','krap'])
+        compare(d2.tabState(),ts)
     })
 }
 toExport["Do"]._section_ = true

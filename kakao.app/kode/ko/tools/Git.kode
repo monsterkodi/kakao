@@ -26,7 +26,7 @@ function Git
                 @gitDirs.push slash.path gitDir, '.git'
                 
     onFileChanged: (file) =>
-        
+        log 'Git.fileChanged' file
         for gitDir in @gitDirs
             if file.startsWith gitDir
                 if slash.dir(file).endsWith '.git/refs/heads'
@@ -41,6 +41,8 @@ function Git
     # 0000000      000     000   000     000      0000000   0000000   
     
     @status: (file) ○->
+        
+        log 'Git.status' file
         
         gitDir =○ kakao 'fs.git' file
         

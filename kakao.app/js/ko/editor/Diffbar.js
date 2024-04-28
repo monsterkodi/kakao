@@ -2,6 +2,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 import kxk from "../../kxk.js"
 let linediff = kxk.linediff
+let profile = kxk.profile
 let elem = kxk.elem
 let post = kxk.post
 
@@ -191,6 +192,7 @@ class Diffbar
     {
         if (this.editor.currentFile)
         {
+            console.log('Diffbar Git.status',this.editor.currentFile)
             return Git.status(this.editor.currentFile)
         }
     }
@@ -202,7 +204,9 @@ class Diffbar
             return Git.diff(this.editor.currentFile).then((function (changes)
             {
                 this.changes = changes
+                profile.start('Diffbar.onGitStatus updateMetas')
                 this.updateMetas()
+                profile.end('Diffbar.onGitStatus updateMetas')
                 return this.updateScroll()
             }).bind(this))
         }
@@ -216,7 +220,7 @@ class Diffbar
 
     updateScroll ()
     {
-        var alpha, boring, ctx, h, length, lh, li, meta, w, _220_45_
+        var alpha, boring, ctx, h, length, lh, li, meta, w, _223_45_
 
         w = 2
         h = this.editor.scroll.viewHeight
@@ -231,9 +235,9 @@ class Diffbar
         if (this.changes)
         {
             var list = _k_.list(this.editor.meta.metas)
-            for (var _218_21_ = 0; _218_21_ < list.length; _218_21_++)
+            for (var _221_21_ = 0; _221_21_ < list.length; _221_21_++)
             {
-                meta = list[_218_21_]
+                meta = list[_221_21_]
                 if (!((meta != null ? meta[2] != null ? meta[2].git : undefined : undefined) != null))
                 {
                     continue

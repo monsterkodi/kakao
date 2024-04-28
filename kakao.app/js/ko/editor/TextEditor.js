@@ -265,7 +265,6 @@ TextEditor = (function ()
     {
         var ch, change, di, li, num
 
-        profile.start('changed')
         this.syntax.changed(changeInfo)
         var list = _k_.list(changeInfo.changes)
         for (var _253_19_ = 0; _253_19_ < list.length; _253_19_++)
@@ -321,7 +320,6 @@ TextEditor = (function ()
             this.emit('selection')
         }
         this.emit('changed',changeInfo)
-        profile.end('changed')
         return null
     }
 

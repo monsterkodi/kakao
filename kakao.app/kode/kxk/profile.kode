@@ -12,11 +12,18 @@ function profile
 
     @start: (id) ○-> 
         
-        profile.hrtime[id] =○ kakao 'now'
+        if globalThis.kakao
+            profile.hrtime[id] =○ kakao 'now'
+        else
+            profile.hrtime[id] = performance.now()
         
     @end: (id, threshold=0) ○->
         
-        t =○ kakao 'now'
+        if globalThis.kakao
+            t =○ kakao 'now'
+        else
+            t = performance.now()
+            
         b = t-profile.hrtime[id]
         f=0.001 
         for u in ['s' 'ms' 'μs']

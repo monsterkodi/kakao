@@ -11,20 +11,34 @@ profile = (function ()
     profile["hrtime"] = {}
     profile["start"] = async function (id)
     {
-        return profile.hrtime[id] = await kakao('now')
+        if (globalThis.kakao)
+        {
+            return profile.hrtime[id] = await kakao('now')
+        }
+        else
+        {
+            return profile.hrtime[id] = performance.now()
+        }
     }
 
     profile["end"] = async function (id, threshold = 0)
     {
         var b, f, t, u, v
 
-        t = await kakao('now')
+        if (globalThis.kakao)
+        {
+            t = await kakao('now')
+        }
+        else
+        {
+            t = performance.now()
+        }
         b = t - profile.hrtime[id]
         f = 0.001
         var list = ['s','ms','μs']
-        for (var _22_14_ = 0; _22_14_ < list.length; _22_14_++)
+        for (var _29_14_ = 0; _29_14_ < list.length; _29_14_++)
         {
-            u = list[_22_14_]
+            u = list[_29_14_]
             if (u === 'μs' || b * f > 1)
             {
                 v = b * f

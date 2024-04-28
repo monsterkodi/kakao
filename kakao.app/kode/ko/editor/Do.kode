@@ -6,7 +6,7 @@
 0000000     0000000       
 ###
 
-use ../../kxk ▪ immutable events post
+use ../../kxk ▪ isEqual immutable profile events post
 use ../tools  ◆ ranges
 use           ◆ DoState
 
@@ -24,15 +24,46 @@ class Do extends events
     #    000     000   000  0000000          0000000      000     000   000     000     00000000
 
     tabState: ->
+
+        # profile.start 'tabState'
+        changes = []
         
-        history:   @history
-        undos:     @undos
+        for index in 0...@history.length-1-@undos
+            chg = @calculateChanges @history[index], @history[index+1]
+            if valid chg.changes
+                o = {}
+                for c in chg.changes
+                    switch c.change
+                        'changed'  ➜ o["■ #{c.doIndex}"] = "■#{c.after}■" 
+                        'inserted' ➜ o["● #{c.doIndex}"] = "●#{c.after}●" 
+                        'deleted'  ➜ o["○ #{c.doIndex}"] = '○'
+                changes.push o
+        
+        if changes.length > 1
+            index = changes.length-1
+            while index > 0
+                prv = changes[index-1]
+                nxt = changes[index]
+                if isEqual Object.keys(prv), Object.keys(nxt)
+                    changes.splice index-1, 1
+                index--
+                
+        # profile.end 'tabState'
+        changes
 
     setTabState: (tabState) ->
-
-        @doCount = 0
-        @history    = tabState.history
-        @undos      = tabState.undos
+        
+        for changes in tabState
+            @start()
+            for key,value of changes
+                [type, index] = key.split ' '
+                line = value[1...value.length-1]
+                switch type
+                    '○' ➜ @delete index
+                    '●' ➜ @insert index, line
+                    '■' ➜ @change index, line
+            @end()
+        @
     
     #  0000000  00000000  000000000        000      000  000   000  00000000   0000000  
     # 000       000          000           000      000  0000  000  000       000       
@@ -166,6 +197,8 @@ class Do extends events
         @state.setCursors newCursors
         @state.setMain mainIndex
 
+    setMain: (m) -> @state.set 'main' m
+            
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
     # 000       000       000      000       000          000     000  000   000  0000  000  000       
     # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  0000000   
@@ -182,9 +215,7 @@ class Do extends events
     
     setHighlights: (h) -> @state.setHighlights h
     addHighlight:  (h) -> @state.addHighlight h
-    
-    # setMain:       (m) -> @s = @s.set 'main'       m
-        
+            
     #  0000000  000      00000000   0000000   000   000
     # 000       000      000       000   000  0000  000
     # 000       000      0000000   000000000  000 0 000
@@ -231,7 +262,7 @@ class Do extends events
         newLines = DoState.lines newState
 
         inserts = 0 # number of insertions
-        deletes  = 0 # number of deletions
+        deletes = 0 # number of deletions
 
         if oldLines != newLines
 
