@@ -44,7 +44,7 @@ class Do extends events
                             o[`● ${c.doIndex}`] = `●${c.after}●`
                             break
                         case 'deleted':
-                            o[`○ ${c.doIndex}`] = '○'
+                            o[`○ ${c.doIndex} ${c.oldIndex}`] = '○'
                             break
                     }
 
@@ -71,7 +71,7 @@ class Do extends events
 
     setTabState (tabState)
     {
-        var changes, index, key, line, type, value
+        var changes, index, key, type, value
 
         var list = _k_.list(tabState)
         for (var _56_20_ = 0; _56_20_ < list.length; _56_20_++)
@@ -83,17 +83,16 @@ class Do extends events
                 value = changes[key]
                 var _59_30_ = key.split(' '); type = _59_30_[0]; index = _59_30_[1]
 
-                line = value.slice(1, value.length - 1)
                 switch (type)
                 {
                     case '○':
                         this.delete(index)
                         break
                     case '●':
-                        this.insert(index,line)
+                        this.insert(index,value.slice(1, value.length - 1))
                         break
                     case '■':
-                        this.change(index,line)
+                        this.change(index,value.slice(1, value.length - 1))
                         break
                 }
 
@@ -270,16 +269,16 @@ class Do extends events
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _227_14_ = 0; _227_14_ < list.length; _227_14_++)
+        for (var _226_14_ = 0; _226_14_ < list.length; _226_14_++)
         {
-            p = list[_227_14_]
+            p = list[_226_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _234_22_ = ci = cs.length - 1, _234_36_ = 0; (_234_22_ <= _234_36_ ? ci < 0 : ci > 0); (_234_22_ <= _234_36_ ? ++ci : --ci))
+            for (var _233_22_ = ci = cs.length - 1, _233_36_ = 0; (_233_22_ <= _233_36_ ? ci < 0 : ci > 0); (_233_22_ <= _233_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -453,7 +452,7 @@ class Do extends events
 
     textInRange (r)
     {
-        var _358_41_
+        var _357_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

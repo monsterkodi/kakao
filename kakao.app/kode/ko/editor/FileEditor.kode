@@ -86,7 +86,14 @@ function FileEditor extends TextEditor
     setText: (text="") =>
 
         super text
-
+        
+        tabStates = kore.get 'tabStates'
+            
+        if tab = window.tabs.koreTabForPath @currentFile
+            if tab.dirty and tabStates[@currentFile]
+                log 'apply  tabstate' @currentFile, tabStates[@currentFile]
+                @do.setTabState tabStates[@currentFile]
+        
         @restoreFilePosition()
         post.emit 'file' @currentFile # browser & shelf
         @emit 'file' @currentFile # diffbar, invisible, pigments, ...
@@ -161,42 +168,7 @@ function FileEditor extends TextEditor
     # 0000000    0000000   0000000      000     000   000  0000000    0000000
     # 000   000  000            000     000     000   000  000   000  000
     # 000   000  00000000  0000000      000      0000000   000   000  00000000
-
-    restoreTab: (path) =>
-        
-        tabStates = kore.get 'tabStates' {}
-        
-        state = tabStates[path]
-        
-        if empty state
-            ⮐ error 'FileEditor.restoreTab -- empty state?' path
-        
-        if @currentFile != kore.get 'editor|file'
-            if empty @currentFile and valid kore.get('editor|file') # empty @currentFile should be ok
-                warn 'FileEditor.restoreTab -- empty @currentFile:' @currentFile, kore.get 'editor|file'
-            else
-                ⮐ error 'FileEditor.restoreTab -- editor file mismatch!' @currentFile, kore.get 'editor|file'
-            
-        if state.file != tab.path
-            log 'state:' state
-            ⮐ error 'FileEditor.restoreTab -- file path mismatch!' state.file, tab.path
-            
-        if @currentFile == state.file
-            ⮐ error 'FileEditor.restoreTab -- trying to restore currentFile!' @currentFile
-            
-        post.emit 'storeState' @currentFile, @do.tabState()
-        
-        @currentFile = state.file
-        if state.file.startsWith 'untitled-'
-            text = state.state.text '\n'
-        else
-            @do.setTabState state
-            text = @do.text()
-        # log 'text:' text 
-        @setText text
-        
-        kore.set 'editor|file' @currentFile
-    
+                        
     restoreFilePosition: ->
 
         return if not @currentFile
@@ -221,7 +193,7 @@ function FileEditor extends TextEditor
         @updateLayers()
         @numbers?.updateColors()
         @minimap.onEditorScroll()
-        @emit 'cursor'
+        
         @emit 'selection'
 
     #       000  000   000  00     00  00000000
@@ -483,8 +455,6 @@ function FileEditor extends TextEditor
                     return item
 
         if RecentMenu.length
-            # RecentMenu.push text: ''
-            # RecentMenu.push text: 'Clear List'
             if fileMenu = getMenu opt.items, 'File'
                 fileMenu.menu = [{text:'Recent' menu:RecentMenu}, {text:''}].concat fileMenu.menu
 
@@ -518,9 +488,9 @@ function FileEditor extends TextEditor
 
         return if 'unhandled' != super mod, key, combo, char, event
         switch combo
-            'alt+ctrl+enter'         ➜ return window.commandline.commands.coffee.executeText @textOfSelectionForClipboard()
-            'alt+ctrl+shift+enter'   ➜ return window.commandline.commands.coffee.executeTextInMain @textOfSelectionForClipboardt()
-            'command+alt+up' 'alt+o' ➜ return @jumpToCounterpart()
+            'alt+ctrl+enter'         ➜ ⮐ window.commandline.commands.coffee.executeText @textOfSelectionForClipboard()
+            'alt+ctrl+shift+enter'   ➜ ⮐ window.commandline.commands.coffee.executeTextInMain @textOfSelectionForClipboardt()
+            'command+alt+up' 'alt+o' ➜ ⮐ @jumpToCounterpart()
             'esc'
                 split = window.split
                 if split.terminalVisible()

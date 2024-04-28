@@ -219,13 +219,9 @@ class Tabs
             
             if tab.type == 'file'
                 
+                log 'activate tab' tab
                 @cleanTabs @setActive path
-                
-                if tab.dirty and tab.state
-                    log 'restoreTab' path, tab.path, kore.get 'editor|file'
-                    post.emit 'restoreTab' tab.path
-                    return
-                    
+                                    
                 post.emit 'jumpToFile' path
             else
                 tabs = @koreTabs()

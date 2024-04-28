@@ -36,7 +36,7 @@ class Do extends events
                     switch c.change
                         'changed'  ➜ o["■ #{c.doIndex}"] = "■#{c.after}■" 
                         'inserted' ➜ o["● #{c.doIndex}"] = "●#{c.after}●" 
-                        'deleted'  ➜ o["○ #{c.doIndex}"] = '○'
+                        'deleted'  ➜ o["○ #{c.doIndex} #{c.oldIndex}"] = '○'
                 changes.push o
         
         if changes.length > 1
@@ -57,11 +57,10 @@ class Do extends events
             @start()
             for key,value of changes
                 [type, index] = key.split ' '
-                line = value[1...value.length-1]
                 switch type
                     '○' ➜ @delete index
-                    '●' ➜ @insert index, line
-                    '■' ➜ @change index, line
+                    '●' ➜ @insert index, value[1...value.length-1]
+                    '■' ➜ @change index, value[1...value.length-1]
             @end()
         @
     

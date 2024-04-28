@@ -223,5 +223,43 @@ use ../editor ◆ Do
         
         d2.tabState() ▸ ts
         
+    ▸ tabState delete
+    
+        doo = new Do ['kermit' 'alfred' 'gonzo']
         
+        doo.start()
+        doo.delete 1
+        doo.end()
+        
+        doo.lines() ▸ ['kermit' 'gonzo']
+        
+        ts = doo.tabState()
+        ts ▸ ['○ 1 1': '○']
+        
+        d2 = new Do ['kermit' 'alfred' 'gonzo']
+        d2.setTabState ts
+        
+        d2.lines() ▸ ['kermit' 'gonzo']
+        
+        d2.tabState() ▸ ts
+        
+        d2.start()
+        d2.delete 0
+        d2.delete 0
+        d2.end()
+        
+        d2.lines() ▸ []
+        
+        ts = d2.tabState()
+        
+        ts ▸ [
+                '○ 1 1': '○'
+            ,
+                '○ 0 0': '○'
+                '○ 0 1': '○'
+            ]
+        
+        d3 = new Do ['kermit' 'alfred' 'gonzo']
+        d3.setTabState ts
+        d3.lines() ▸ []
         

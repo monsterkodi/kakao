@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_
 
-var d2, doo, lines, text, ts
+var d2, d3, doo, lines, text, ts
 
 import Do from "../editor/Do.js"
 
@@ -109,6 +109,30 @@ toExport["Do"] = function ()
         d2.setTabState(ts)
         compare(d2.lines(),['blub','krep','bla','krap'])
         compare(d2.tabState(),ts)
+    })
+    section("tabState delete", function ()
+    {
+        doo = new Do(['kermit','alfred','gonzo'])
+        doo.start()
+        doo.delete(1)
+        doo.end()
+        compare(doo.lines(),['kermit','gonzo'])
+        ts = doo.tabState()
+        compare(ts,[{'○ 1 1':'○'}])
+        d2 = new Do(['kermit','alfred','gonzo'])
+        d2.setTabState(ts)
+        compare(d2.lines(),['kermit','gonzo'])
+        compare(d2.tabState(),ts)
+        d2.start()
+        d2.delete(0)
+        d2.delete(0)
+        d2.end()
+        compare(d2.lines(),[])
+        ts = d2.tabState()
+        compare(ts,[{'○ 1 1':'○'},{'○ 0 0':'○','○ 0 1':'○'}])
+        d3 = new Do(['kermit','alfred','gonzo'])
+        d3.setTabState(ts)
+        compare(d3.lines(),[])
     })
 }
 toExport["Do"]._section_ = true
