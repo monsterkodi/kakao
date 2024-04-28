@@ -82,10 +82,6 @@ EditorState = (function ()
         {
             this.lineCache[i] = kstr.detab(l)
         }
-        else
-        {
-            console.log(`line ${i} traverse mismatch?`,li,this.s)
-        }
         return this.lineCache[i]
     }
 

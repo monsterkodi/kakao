@@ -11,9 +11,10 @@ use ../../kxk ▪ uniq
 class Ranges
     
     @pollute: ->
+        
         for member in Object.getOwnPropertyNames Ranges.prototype 
             continue if member in ['constructor']
-            window[member] = Ranges.prototype[member]
+            globalThis[member] = Ranges.prototype[member]
         Ranges
 
     cursorDelta: (c, dx, dy=0) ->

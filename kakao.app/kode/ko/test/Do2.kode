@@ -1,0 +1,51 @@
+###
+0000000     0000000   00000 
+000   000  000   000     000
+000   000  000   000    000 
+000   000  000   000   000  
+0000000     0000000   000000
+###
+
+use ../editor ◆ Do2
+
+▸ Do2
+
+    ▸ setLines
+    
+        text  = "hello\nworld"
+        lines = text.split '\n'
+    
+        do2 = new Do2
+        do2.setLines lines
+        do2.lines() ▸ lines
+        do2.text()  ▸ text
+
+    ▸ insert
+    
+        do2.insert 1 'beautiful'
+        do2.lines() ▸ ['hello''beautiful''world']
+
+        do2.insert 3 '!'
+        do2.lines() ▸ ['hello''beautiful''world''!']
+
+        do2.insert 666 '?'
+        do2.lines() ▸ ['hello''beautiful''world''!''?']
+
+        do2.insert -666 '▴'
+        do2.lines() ▸ ['▴''hello''beautiful''world''!''?']
+        
+    ▸ delete
+    
+        do2.delete 0
+        do2.lines() ▸ ['hello''beautiful''world''!''?']
+        
+        do2.delete 1
+        do2.lines() ▸ ['hello''world''!''?']
+
+        do2.delete 666
+        do2.lines() ▸ ['hello''world''!''?']
+        
+        do2.delete -2
+        do2.lines() ▸ ['hello''world''?']
+        
+        

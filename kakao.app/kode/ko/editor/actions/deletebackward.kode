@@ -98,7 +98,7 @@ export
                     n = Math.max 1, n
                 else
                     n = removeNum
-                log 'deleteCharacterBackward' n
+                # log 'deleteCharacterBackward' n
                 @do.change c[1], kstr.splice @do.line(c[1]), c[0]-n, n
                 for nc in positionsAtLineIndexInPositions c[1], newCursors
                     if nc[0] >= c[0]

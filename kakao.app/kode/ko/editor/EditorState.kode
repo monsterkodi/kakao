@@ -83,8 +83,8 @@ function EditorState
         
         if li == i
             @lineCache[i] = kstr.detab l
-        else
-            log "line #{i} traverse mismatch?" li, @s
+        # else
+            # log "line #{i} traverse mismatch?" li, @s
             
         @lineCache[i]
         
@@ -127,7 +127,7 @@ function EditorState
 
         info = @seek i
         
-        return @ if info.lineIndex != i
+        ⮐ @ if info.lineIndex != i
         
         s = @s
         if valid info.prev

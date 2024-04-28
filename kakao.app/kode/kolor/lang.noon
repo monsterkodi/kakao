@@ -28,6 +28,7 @@ coffee kode js ts
         typeof
         extends
         instanceof
+        globalThis
         __dirname
         __filename
         Infinity
@@ -64,6 +65,7 @@ coffee kode js ts
         tooltip
         util
         window
+        global
 
     function call
         err

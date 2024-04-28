@@ -312,7 +312,6 @@ class Tabs
             }
             tabs = tabs.concat(v)
         }
-        console.log('cleanTabs',tabs)
         return this.setKoreTabs(tabs)
     }
 
@@ -800,9 +799,7 @@ class Tabs
         {
             tabs = this.koreTabs()
             tab = this.koreTabForPath(tab.path,tabs)
-            console.log('update tab dirty? getting tabStates...')
             tabStates = kore.get('tabStates',{})
-            console.log('update tab dirty??',tab,dirty,tabStates)
             if (dirty)
             {
                 tab.dirty = true

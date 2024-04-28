@@ -59,7 +59,7 @@ function Kore extends events
         # log 'kore.set' key, noon value
         if key == 'tabStates'
             value = @compressTabStates value
-            log 'set tabStates' value
+            # log 'set tabStates' value
         
         stash.set "kore|#{key}" value 
         @emit key, value
@@ -69,9 +69,9 @@ function Kore extends events
         r = stash.get "kore|#{key}" def
         
         if key == 'tabStates'
-            log 'get tabStates stored' r
+            # log 'get tabStates stored' r
             r = @decompressTabStates r
-            log 'get tabStates decopd' r
+            # log 'get tabStates decopd' r
         # log 'kore.get' key, noon r
         r
     
@@ -103,7 +103,7 @@ function Kore extends events
     
     compressState: (state) ->
         
-        log 'compressState' state
+        # log 'compressState' state
 
         compress = (s) ->
             
@@ -135,7 +135,7 @@ function Kore extends events
         comp.history = state.history.map (hs) -> compress hs
         comp.history.push compress state.state
         
-        log 'comp' comp
+        # log 'comp' comp
                 
         comp
         
@@ -147,13 +147,11 @@ function Kore extends events
     
     decompressState: (state) ->
     
-        log 'decompressState' state
+        # log 'decompressState' state
         
         ⮐ if empty state.history
         
         decompress = (s) ->
-            
-            log 'decompress s' s
             
             ⮐ if not s is str
             
@@ -164,8 +162,8 @@ function Kore extends events
             xy = (s) -> s.split('■').map (n) -> parseInt n
             
             cursors    = cursors.split(' ').map xy
-            selections = empty selections ? [] : selections.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('●'); [parseInt(sss[0]), xy(sss[1])]
-            highlights = empty highlights ? [] : highlights.split(' ').map (ss) -> log 'ss' ss; sss = ss.split('○'); [parseInt(sss[0]), xy(sss[1])]
+            selections = empty selections ? [] : selections.split(' ').map (ss) -> sss = ss.split('●'); [parseInt(sss[0]), xy(sss[1])]
+            highlights = empty highlights ? [] : highlights.split(' ').map (ss) -> sss = ss.split('○'); [parseInt(sss[0]), xy(sss[1])]
             
             linkNum = links.split(' ').map (s) -> s.split('◆').map (n) -> parseInt n
             
@@ -188,17 +186,17 @@ function Kore extends events
                 lineId:   lineId
                 
             comp = immutable comp
-            log 'comp:' comp
+            # log 'comp:' comp
             comp
                
         history = state.history.map (hs) -> decompress hs
         
         file = state.file
-        log 'file:'    file
-        log 'history>' history
+        # log 'file:'    file
+        # log 'history>' history
         state = history.pop()
-        log 'state:'   state
-        log 'history:' history
+        # log 'state:'   state
+        # log 'history:' history
 
         decomp = 
             file:       file
@@ -206,7 +204,7 @@ function Kore extends events
             history:    history
             redos:      []
         
-        log 'decomp:' decomp
+        # log 'decomp:' decomp
         decomp
                             
 export window.kore = new Kore

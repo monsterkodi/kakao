@@ -179,7 +179,7 @@ class Tabs
                     if v[i].tmp ➜ v.splice i, 1
             tabs = tabs.concat v
         
-        log 'cleanTabs' tabs
+        # log 'cleanTabs' tabs
         @setKoreTabs tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
@@ -543,9 +543,9 @@ class Tabs
             
             # if tab.dirty != dirty
             
-            log 'update tab dirty? getting tabStates...'
+            # log 'update tab dirty? getting tabStates...'
             tabStates = kore.get 'tabStates' {}
-            log 'update tab dirty??' tab, dirty, tabStates
+            # log 'update tab dirty??' tab, dirty, tabStates
 
             if dirty
                 tab.dirty = true

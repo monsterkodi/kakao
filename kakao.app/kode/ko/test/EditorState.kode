@@ -31,7 +31,7 @@ use ../editor ◆ EditorState
         ss.numLines() ▸ 1
         
         es = ss.deleteLine 0
-        is.lines() ▸ ['hello' 'world' '!']        
+        is.lines() ▸ ['hello' 'world' '!']
         ns.lines() ▸ ['hello' '!']
         ss.lines() ▸ ['hello']
         es.lines() ▸ [] 
@@ -52,12 +52,15 @@ use ../editor ◆ EditorState
         ns.numLines() ▸ 3
         
         fs = ns.changeLine 0, 'good'
+        is.lines() ▸ ['hello' 'world' '!']
+        ns.lines() ▸ ['hello' 'test' '!']
         fs.lines() ▸ ['good' 'test' '!']
-        ns.numLines() ▸ 3
+        fs.numLines() ▸ 3
         
         fs = fs.changeLine 2, '!!!'
+        is.lines() ▸ ['hello' 'world' '!']
         fs.lines() ▸ ['good' 'test' '!!!']
-        ns.numLines() ▸ 3
+        fs.numLines() ▸ 3
         
     ▸ insert
     
@@ -98,6 +101,7 @@ use ../editor ◆ EditorState
         
     ▸ line
         
+        is = new EditorState ['hello' 'world' '!']
         is.line 0  ▸ 'hello'
         is.line 1  ▸ 'world'
         is.line 2  ▸ '!'

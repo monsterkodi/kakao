@@ -142,7 +142,6 @@ export default {actions:{menu:'Delete',deleteBackward:{name:'Delete Backward',co
             {
                 n = removeNum
             }
-            console.log('deleteCharacterBackward',n)
             this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - n,n))
             var list3 = _k_.list(positionsAtLineIndexInPositions(c[1],newCursors))
             for (var _103_23_ = 0; _103_23_ < list3.length; _103_23_++)

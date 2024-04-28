@@ -156,7 +156,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b'},to
 
     invertedRanges = []
     sc = this.selectedAndCursorLineIndices()
-    for (var _194_19_ = li = 0, _194_23_ = this.numLines(); (_194_19_ <= _194_23_ ? li < this.numLines() : li > this.numLines()); (_194_19_ <= _194_23_ ? ++li : --li))
+    for (var _195_19_ = li = 0, _195_23_ = this.numLines(); (_195_19_ <= _195_23_ ? li < this.numLines() : li > this.numLines()); (_195_19_ <= _195_23_ ? ++li : --li))
     {
         if (!(_k_.in(li,sc)))
         {
@@ -180,7 +180,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b'},to
         newSelections = []
         newCursors = []
         oldCursors = this.do.cursors()
-        for (var _216_22_ = i = 0, _216_26_ = oldCursors.length; (_216_22_ <= _216_26_ ? i < oldCursors.length : i > oldCursors.length); (_216_22_ <= _216_26_ ? ++i : --i))
+        for (var _217_22_ = i = 0, _217_26_ = oldCursors.length; (_217_22_ <= _217_26_ ? i < oldCursors.length : i > oldCursors.length); (_217_22_ <= _217_26_ ? ++i : --i))
         {
             c0 = oldCursors[i]
             c1 = oldCursors[i + 1]
@@ -227,13 +227,13 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b'},to
         this.do.select(surr)
         if (this.do.numSelections())
         {
-            this.do.setCursors((function () { var r_247_53_ = []; var list = _k_.list(this.do.selections()); for (var _247_53_ = 0; _247_53_ < list.length; _247_53_++)  { r = list[_247_53_];r_247_53_.push(rangeEndPos(r))  } return r_247_53_ }).bind(this)(),{main:'closest'})
+            this.do.setCursors((function () { var r_248_53_ = []; var list = _k_.list(this.do.selections()); for (var _248_53_ = 0; _248_53_ < list.length; _248_53_++)  { r = list[_248_53_];r_248_53_.push(rangeEndPos(r))  } return r_248_53_ }).bind(this)(),{main:'closest'})
         }
         return this.do.end()
     }
 },selectNextHighlight:function ()
 {
-    var r, searchText, _259_57_, _266_33_
+    var r, searchText, _260_57_, _267_33_
 
     if (!this.numHighlights() && (window != null))
     {
@@ -256,7 +256,7 @@ select text between highlighted brackets or quotes otherwise.`,combo:'alt+b'},to
     }
 },selectPrevHighlight:function ()
 {
-    var hs, r, searchText, _271_57_
+    var hs, r, searchText, _272_57_
 
     if (!this.numHighlights() && (window != null))
     {

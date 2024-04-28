@@ -177,6 +177,7 @@ export
         @do.end()
         
     selectAll: ->
+        
         @do.start()
         @do.select @rangesForAllLines()
         @do.end()
