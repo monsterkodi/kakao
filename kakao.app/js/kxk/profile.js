@@ -9,26 +9,29 @@ profile = (function ()
     {}
 
     profile["hrtime"] = {}
-    profile["start"] = function (id)
+    profile["start"] = async function (id)
     {
-        return this.hrtime[id] = performance.now()
+        return profile.hrtime[id] = await kakao('now')
     }
 
-    profile["end"] = function (id, threshold)
+    profile["end"] = async function (id, threshold = 0)
     {
-        var b, f, u
+        var b, f, t, u, v
 
-        b = performance.now() - this.hrtime[id]
+        t = await kakao('now')
+        b = t - profile.hrtime[id]
         f = 0.001
-        var list = ['s','ms','μs','ns']
-        for (var _17_18_ = 0; _17_18_ < list.length; _17_18_++)
+        var list = ['s','ms','μs']
+        for (var _22_14_ = 0; _22_14_ < list.length; _22_14_++)
         {
-            u = list[_17_18_]
-            if (u === 'ns' || b * f > 1)
+            u = list[_22_14_]
+            if (u === 'μs' || b * f > 1)
             {
-                if (b > threshold)
+                v = b * f
+                v < 1 ? f = v.toFixed(2) : f = v.toFixed(0)
+                if (b >= threshold)
                 {
-                    console.log(id + ' ' + Number.parseFloat(b * f).toFixed(1) + ' ' + u)
+                    console.log(id + ' ' + f + ' ' + u)
                 }
                 return b
             }

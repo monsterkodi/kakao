@@ -30,6 +30,7 @@
     NSArray*  args  = [msg.body valueForKey:@"args"];
 
          if ([route isEqualToString:@"log"  ]) { NSLog(@"%ld %@ %@", (long)win.windowNumber, msg.name, msg.body); }
+    else if ([route isEqualToString:@"now"  ]) { reply = [NSNumber numberWithDouble:CFAbsoluteTimeGetCurrent()]; }
     else if ([route hasPrefix:@"bundle."    ]) { reply = [Route bundle:     [route substringFromIndex:7]    args:args win:win]; }
     else if ([route hasPrefix:@"window."    ]) { reply = [Route window:     [route substringFromIndex:7]    args:args win:win]; }
     else if ([route hasPrefix:@"clipboard." ]) { reply = [Route clipboard:  [route substringFromIndex:10]   args:args win:win]; }

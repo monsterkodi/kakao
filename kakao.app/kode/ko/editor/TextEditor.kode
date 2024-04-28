@@ -244,10 +244,10 @@ function TextEditor extends Editor
 
     changed: (changeInfo) ->
         
-        log 'TextEditor.changed' changeInfo
+        # log 'TextEditor.changed' changeInfo
         
         profile.start 'changed'
-
+        
         @syntax.changed changeInfo
 
         for change in changeInfo.changes
@@ -265,7 +265,7 @@ function TextEditor extends Editor
                 'inserted'
                     @spanCache = @spanCache.slice 0, di
                     @emit 'lineInserted' li, di
-
+                            
         if changeInfo.inserts or changeInfo.deletes
             @layersWidth = @layerScroll.offsetWidth
             if @numLines() != @scroll.numLines
@@ -294,7 +294,7 @@ function TextEditor extends Editor
         @emit 'changed' changeInfo
         # ●▪ emit
         
-        profile.end 'changed' 15
+        profile.end 'changed'
         null
 
     # 000   000  00000000   0000000     0000000   000000000  00000000

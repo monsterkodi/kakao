@@ -9,15 +9,22 @@
 function profile
 
     @hrtime: {}
-    @start: (id) -> @hrtime[id] = performance.now()
-    @end:   (id, threshold) -> 
+
+    @start: (id) ○-> 
         
-        b = performance.now()-@hrtime[id]
-            f=0.001 
-            for u in ['s' 'ms' 'μs' 'ns']
-                if u=='ns' or b*f>1
-                    if b > threshold ➜ log id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u
-                    return b
-                f*=1000
+        profile.hrtime[id] =○ kakao 'now'
+        
+    @end: (id, threshold=0) ○->
+        
+        t =○ kakao 'now'
+        b = t-profile.hrtime[id]
+        f=0.001 
+        for u in ['s' 'ms' 'μs']
+            if u=='μs' or b*f>1
+                v = b*f
+                if v < 1 ➜ f = v.toFixed 2 else f = v.toFixed 0
+                if b >= threshold ➜ log id+' '+f+' '+u
+                return b
+            f*=1000
 
 export profile

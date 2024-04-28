@@ -265,7 +265,6 @@ TextEditor = (function ()
     {
         var ch, change, di, li, num
 
-        console.log('TextEditor.changed',changeInfo)
         profile.start('changed')
         this.syntax.changed(changeInfo)
         var list = _k_.list(changeInfo.changes)
@@ -322,7 +321,7 @@ TextEditor = (function ()
             this.emit('selection')
         }
         this.emit('changed',changeInfo)
-        profile.end('changed',15)
+        profile.end('changed')
         return null
     }
 
