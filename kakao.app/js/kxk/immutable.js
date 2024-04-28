@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var addImmutabilityTag, addPropertyTo, arraySet, arraySetIn, asDeepMutable, asMutableArray, asMutableDate, asMutableObject, asObject, banProperty, flatMap, getIn, getInPath, immutabilityTag, Immutable, immutableEmptyArray, immutableEmptyObject, ImmutableError, instantiateEmptyObject, isBlobObject, isEqual, isError, isFileObject, isImmutable, isMergableObject, isObject, isPromise, makeImmutable, makeImmutableArray, makeImmutableDate, makeImmutableObject, makeMethodReturnImmutable, merge, mutatingArrayMethods, mutatingDateMethods, mutatingObjectMethods, nonMutatingArrayMethods, nonMutatingObjectMethods, objectReplace, objectSet, objectSetIn, quickCopy, toStatic, toStaticObjectOrArray, toStaticObjectOrDateOrArray, update, updateIn, without
+var addImmutabilityTag, addPropertyTo, arraySet, arraySetIn, asDeepMutable, asMutableArray, asMutableObject, asObject, banProperty, flatMap, getIn, getInPath, immutabilityTag, Immutable, immutableEmptyArray, immutableEmptyObject, ImmutableError, instantiateEmptyObject, isBlobObject, isEqual, isError, isFileObject, isImmutable, isMergableObject, isObject, isPromise, makeImmutable, makeImmutableArray, makeImmutableObject, makeMethodReturnImmutable, merge, mutatingArrayMethods, mutatingObjectMethods, nonMutatingArrayMethods, nonMutatingObjectMethods, objectReplace, objectSet, objectSetIn, quickCopy, toStatic, toStaticObjectOrArray, update, updateIn, without
 
 
 isObject = function (obj)
@@ -80,13 +80,12 @@ isEqual = function (a, b)
 
 isMergableObject = function (target)
 {
-    return (target !== null) && typeof(target) === "object" && (!Array.isArray(target)) && !(target instanceof Date)
+    return (target !== null) && typeof(target) === "object" && (!Array.isArray(target))
 }
 mutatingObjectMethods = ["setPrototypeOf"]
 nonMutatingObjectMethods = ["keys"]
 mutatingArrayMethods = mutatingObjectMethods.concat(['push','pop','sort','splice','shift','unshift','reverse'])
 nonMutatingArrayMethods = nonMutatingObjectMethods.concat(['map','filter','slice','concat','reduce','reduceRight'])
-mutatingDateMethods = mutatingObjectMethods.concat(['setDate','setFullYear','setHours','setMilliseconds','setMinutes','setMonth','setSeconds','setTime','setUTCDate','setUTCFullYear','setUTCHours','setUTCMilliseconds','setUTCMinutes','setUTCMonth','setUTCSeconds','setYear'])
 
 ImmutableError = function (message)
 {
@@ -103,9 +102,9 @@ makeImmutable = function (obj, bannedMethods)
 
     addImmutabilityTag(obj)
     var list = _k_.list(bannedMethods)
-    for (var _86_15_ = 0; _86_15_ < list.length; _86_15_++)
+    for (var _80_15_ = 0; _80_15_ < list.length; _80_15_++)
     {
-        banned = list[_86_15_]
+        banned = list[_80_15_]
         banProperty(obj,banned)
     }
     Object.freeze(obj)
@@ -131,9 +130,9 @@ makeImmutableArray = function (array)
     var i, methodName
 
     var list = _k_.list(nonMutatingArrayMethods)
-    for (var _109_19_ = 0; _109_19_ < list.length; _109_19_++)
+    for (var _103_19_ = 0; _103_19_ < list.length; _103_19_++)
     {
-        methodName = list[_109_19_]
+        methodName = list[_103_19_]
         makeMethodReturnImmutable(array,methodName)
     }
     addPropertyTo(array,"flatMap",flatMap)
@@ -144,7 +143,7 @@ makeImmutableArray = function (array)
     addPropertyTo(array,"update",update)
     addPropertyTo(array,"updateIn",updateIn)
     addPropertyTo(array,"getIn",getIn)
-    for (var _121_13_ = i = 0, _121_17_ = array.length; (_121_13_ <= _121_17_ ? i < array.length : i > array.length); (_121_13_ <= _121_17_ ? ++i : --i))
+    for (var _115_13_ = i = 0, _115_17_ = array.length; (_115_13_ <= _115_17_ ? i < array.length : i > array.length); (_115_13_ <= _115_17_ ? ++i : --i))
     {
         array[i] = Immutable(array[i])
     }
@@ -155,7 +154,7 @@ Immutable = function (obj, options, stackRemaining)
 {
     var key, prototype, theClone
 
-    if ((isImmutable(obj) || isFileObject(obj) || isBlobObject(obj) || isError(obj)))
+    if (isImmutable(obj) || isFileObject(obj) || isBlobObject(obj) || isError(obj))
     {
         return obj
     }
@@ -166,10 +165,6 @@ Immutable = function (obj, options, stackRemaining)
     else if (Array.isArray(obj))
     {
         return makeImmutableArray(obj.slice())
-    }
-    else if (obj instanceof Date)
-    {
-        return makeImmutableDate(new Date(obj.getTime()))
     }
     else
     {
@@ -272,17 +267,6 @@ arraySetIn = function (pth, value, config)
     }
 }
 
-makeImmutableDate = function (date)
-{
-    addPropertyTo(date,"asMutable",asMutableDate)
-    return makeImmutable(date,mutatingDateMethods)
-}
-
-asMutableDate = function ()
-{
-    return new Date(this.getTime())
-}
-
 flatMap = function (iterator)
 {
     var index, iteratorResult, result
@@ -292,7 +276,7 @@ flatMap = function (iterator)
         return this
     }
     result = []
-    for (var _238_17_ = index = 0, _238_21_ = this.length; (_238_17_ <= _238_21_ ? index < this.length : index > this.length); (_238_17_ <= _238_21_ ? ++index : --index))
+    for (var _220_17_ = index = 0, _220_21_ = this.length; (_220_17_ <= _220_21_ ? index < this.length : index > this.length); (_220_17_ <= _220_21_ ? ++index : --index))
     {
         iteratorResult = iterator(this[index],index,this)
         if (Array.isArray(iteratorResult))
@@ -346,19 +330,9 @@ asMutableArray = function (opts)
     var i, result
 
     result = []
-    if (opts && opts.deep)
+    for (var _265_13_ = i = 0, _265_17_ = this.length; (_265_13_ <= _265_17_ ? i < this.length : i > this.length); (_265_13_ <= _265_17_ ? ++i : --i))
     {
-        for (var _284_17_ = i = 0, _284_21_ = this.length; (_284_17_ <= _284_21_ ? i < this.length : i > this.length); (_284_17_ <= _284_21_ ? ++i : --i))
-        {
-            result.push(asDeepMutable(this[i]))
-        }
-    }
-    else
-    {
-        for (var _287_17_ = i = 0, _287_21_ = this.length; (_287_17_ <= _287_21_ ? i < this.length : i > this.length); (_287_17_ <= _287_21_ ? ++i : --i))
-        {
-            result.push(this[i])
-        }
+        result.push(asDeepMutable(this[i]))
     }
     return result
 }
@@ -376,7 +350,7 @@ asObject = function (iterator)
     }
     result = {}
     length = this.length
-    for (var _308_17_ = index = 0, _308_21_ = length; (_308_17_ <= _308_21_ ? index < length : index > length); (_308_17_ <= _308_21_ ? ++index : --index))
+    for (var _286_17_ = index = 0, _286_21_ = length; (_286_17_ <= _286_21_ ? index < length : index > length); (_286_17_ <= _286_21_ ? ++index : --index))
     {
         pair = iterator(this[index],index,this)
         key = pair[0]
@@ -388,11 +362,11 @@ asObject = function (iterator)
 
 asDeepMutable = function (obj)
 {
-    if (!obj || (typeof(obj) !== 'object') || !Object.getOwnPropertyDescriptor(obj,immutabilityTag) || (obj instanceof Date))
+    if (!obj || (typeof(obj) !== 'object') || !Object.getOwnPropertyDescriptor(obj,immutabilityTag))
     {
         return obj
     }
-    return Immutable.asMutable(obj,{deep:true})
+    return Immutable.asMutable(obj)
 }
 
 quickCopy = function (src, dest)
@@ -490,7 +464,7 @@ merge = function (other, config)
     }
     else
     {
-        for (var _397_21_ = index = 0, _397_25_ = other.length; (_397_21_ <= _397_25_ ? index < other.length : index > other.length); (_397_21_ <= _397_25_ ? ++index : --index))
+        for (var _382_21_ = index = 0, _382_25_ = other.length; (_382_21_ <= _382_25_ ? index < other.length : index > other.length); (_382_21_ <= _382_25_ ? ++index : --index))
         {
             otherFromArray = other[index]
             for (key in otherFromArray)
@@ -596,7 +570,7 @@ getInPath = function (obj, path)
 {
     var i
 
-    for (var _471_13_ = i = 0, _471_17_ = path.length; (_471_13_ <= _471_17_ ? i < path.length : i > path.length); (_471_13_ <= _471_17_ ? ++i : --i))
+    for (var _456_13_ = i = 0, _456_17_ = path.length; (_456_13_ <= _456_17_ ? i < path.length : i > path.length); (_456_13_ <= _456_17_ ? ++i : --i))
     {
         obj = obj[path[i]]
         if (obj === null)
@@ -637,24 +611,11 @@ asMutableObject = function (opts)
 
     result = instantiateEmptyObject(this)
     key
-    if (opts && opts.deep)
+    for (key in this)
     {
-        for (key in this)
+        if (this.hasOwnProperty(key))
         {
-            if (this.hasOwnProperty(key))
-            {
-                result[key] = asDeepMutable(this[key])
-            }
-        }
-    }
-    else
-    {
-        for (key in this)
-        {
-            if (this.hasOwnProperty(key))
-            {
-                result[key] = this[key]
-            }
+            result[key] = asDeepMutable(this[key])
         }
     }
     return result
@@ -696,39 +657,13 @@ toStaticObjectOrArray = function (fnObject, fnArray)
     }
     return staticWrapper
 }
-
-toStaticObjectOrDateOrArray = function (fnObject, fnArray, fnDate)
-{
-    var staticWrapper
-
-    staticWrapper = function ()
-    {
-        var args, self
-
-        args = [].slice.call(arguments)
-        self = args.shift()
-        if (Array.isArray(self))
-        {
-            return fnArray.apply(self,args)
-        }
-        else if (self instanceof Date)
-        {
-            return fnDate.apply(self,args)
-        }
-        else
-        {
-            return fnObject.apply(self,args)
-        }
-    }
-    return staticWrapper
-}
 Immutable.from = Immutable
 Immutable.isImmutable = isImmutable
 Immutable.ImmutableError = ImmutableError
 Immutable.merge = toStatic(merge)
 Immutable.replace = toStatic(objectReplace)
 Immutable.without = toStatic(without)
-Immutable.asMutable = toStaticObjectOrDateOrArray(asMutableObject,asMutableArray,asMutableDate)
+Immutable.asMutable = toStaticObjectOrArray(asMutableObject,asMutableArray)
 Immutable.set = toStaticObjectOrArray(objectSet,arraySet)
 Immutable.setIn = toStaticObjectOrArray(objectSetIn,arraySetIn)
 Immutable.update = toStatic(update)

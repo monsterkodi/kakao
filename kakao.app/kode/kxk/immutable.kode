@@ -52,7 +52,7 @@ isImmutable = (target) ->
 
 isEqual = (a, b) -> a == b or (a != a and b != b) # Avoid false positives due to (NaN != NaN) evaluating to true
 
-isMergableObject = (target) -> (target != null) and typeof(target) == "object" and (not Array.isArray target) and not (target instanceof Date)
+isMergableObject = (target) -> (target != null) and typeof(target) == "object" and (not Array.isArray target) #and not (target instanceof Date)
 
 mutatingObjectMethods    = [ "setPrototypeOf" ]
 nonMutatingObjectMethods = [ "keys" ];
@@ -62,12 +62,6 @@ mutatingArrayMethods     = mutatingObjectMethods.concat [
 
 nonMutatingArrayMethods = nonMutatingObjectMethods.concat [
         'map' 'filter' 'slice' 'concat' 'reduce' 'reduceRight'
-    ]
-
-mutatingDateMethods = mutatingObjectMethods.concat [
-        'setDate' 'setFullYear' 'setHours' 'setMilliseconds' 'setMinutes' 'setMonth' 'setSeconds'
-        'setTime' 'setUTCDate' 'setUTCFullYear' 'setUTCHours' 'setUTCMilliseconds' 'setUTCMinutes'
-        'setUTCMonth' 'setUTCSeconds' 'setYear'
     ]
 
 ImmutableError = (message) ->
@@ -126,7 +120,7 @@ makeImmutableArray = (array) ->
 Immutable = (obj, options, stackRemaining) ->
     
     if 
-        (isImmutable(obj) or isFileObject(obj) or isBlobObject(obj) or isError(obj)) 
+        isImmutable(obj) or isFileObject(obj) or isBlobObject(obj) or isError(obj)
       
             obj
       
@@ -137,11 +131,7 @@ Immutable = (obj, options, stackRemaining) ->
         Array.isArray obj
       
             makeImmutableArray obj.slice()
-      
-        obj instanceof Date
-      
-            makeImmutableDate new Date obj.getTime()
-      
+            
         ➜
             # Don't freeze the object we were given; make a clone and use that.
             prototype = options and options.prototype
@@ -214,14 +204,6 @@ arraySetIn = (pth, value, config) ->
         mutable[head] = newValue
         makeImmutableArray mutable
 
-makeImmutableDate = (date) ->
-
-    addPropertyTo date, "asMutable" asMutableDate
-
-    makeImmutable date, mutatingDateMethods
-
-asMutableDate = -> new Date @getTime()
-
 # Effectively performs a map() over the elements in the array, using the
 # provided iterator, except that whenever the iterator returns an array, that
 # array's elements are added to the final result instead of the array itself.
@@ -279,14 +261,10 @@ without = (remove) ->
 asMutableArray = (opts) ->
     
     result = []
-  
-    if opts and opts.deep
-        for i in 0...@length
-            result.push asDeepMutable @[i]
-    else 
-        for i in 0...@length
-            result.push @[i]
-  
+
+    for i in 0...@length
+        result.push asDeepMutable @[i]
+
     result
 
 # Effectively performs a [map](https:#developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) over the elements in the array, expecting that the iterator function
@@ -316,10 +294,9 @@ asObject = (iterator) ->
 
 asDeepMutable = (obj) ->
     
-    if not obj or (typeof obj != 'object') or not Object.getOwnPropertyDescriptor(obj, immutabilityTag) or (obj instanceof Date)
-        return obj
+    ⮐ obj if not obj or (typeof obj != 'object') or not Object.getOwnPropertyDescriptor(obj, immutabilityTag)
         
-    Immutable.asMutable obj, deep:true
+    Immutable.asMutable obj
 
 quickCopy = (src, dest) ->
     
@@ -328,14 +305,22 @@ quickCopy = (src, dest) ->
             dest[key] = src[key]
     dest
 
- # Returns an Immutable Object containing the properties and values of both
- # this object and the provided object, prioritizing the provided object's
- # values whenever the same key is present in both objects.
- # 
- # other  - The other object to merge. Multiple objects can be passed as an array. In such a case, the later an object appears in that list, the higher its priority.
- # config - Optional config object that contains settings. Supported settings are: {deep: true} for deep merge and {merger: mergerFunc} where mergerFunc is a function
- #          that takes a property from both objects. If anything is returned it overrides the normal merge behaviour.
- #          {mode: 'replace'|'merge'}
+###
+    00     00  00000000  00000000    0000000   00000000  
+    000   000  000       000   000  000        000       
+    000000000  0000000   0000000    000  0000  0000000   
+    000 0 000  000       000   000  000   000  000       
+    000   000  00000000  000   000   0000000   00000000  
+
+    Returns an Immutable Object containing the properties and values of both
+    this object and the provided object, prioritizing the provided object's
+    values whenever the same key is present in both objects.
+    
+    other  - The other object to merge. Multiple objects can be passed as an array. In such a case, the later an object appears in that list, the higher its priority.
+    config - Optional config object that contains settings. Supported settings are: {deep: true} for deep merge and {merger: mergerFunc} where mergerFunc is a function
+             that takes a property from both objects. If anything is returned it overrides the normal merge behaviour.
+             {mode: 'replace'|'merge'}
+###
 
 merge = (other, config) ->
     
@@ -494,14 +479,9 @@ asMutableObject = (opts) ->
     
     result = instantiateEmptyObject(@), key
   
-    if opts and opts.deep
-        for key of @
-            if @hasOwnProperty key
-                result[key] = asDeepMutable @[key]
-    else
-      for key of @
+    for key of @
         if @hasOwnProperty key
-            result[key] = @[key]
+            result[key] = asDeepMutable @[key]
   
     result
     
@@ -530,30 +510,13 @@ toStaticObjectOrArray = (fnObject, fnArray) ->
   
     staticWrapper
 
-# Wrapper to allow the use of object methods as static methods of Immutable.
-# with the additional condition of choosing which to call depending
-# if argument is an array or an object or a date.
-toStaticObjectOrDateOrArray = (fnObject, fnArray, fnDate) ->
-    
-    staticWrapper = ->
-        args = [].slice.call arguments
-        self = args.shift()
-        if Array.isArray self
-            fnArray.apply self, args
-        else if self instanceof Date
-            fnDate.apply self, args
-        else
-            fnObject.apply self, args
-  
-    staticWrapper
-
 Immutable.from           = Immutable
 Immutable.isImmutable    = isImmutable
 Immutable.ImmutableError = ImmutableError
 Immutable.merge          = toStatic merge
 Immutable.replace        = toStatic objectReplace
 Immutable.without        = toStatic without
-Immutable.asMutable      = toStaticObjectOrDateOrArray asMutableObject, asMutableArray, asMutableDate
+Immutable.asMutable      = toStaticObjectOrArray asMutableObject, asMutableArray
 Immutable.set            = toStaticObjectOrArray objectSet, arraySet
 Immutable.setIn          = toStaticObjectOrArray objectSetIn, arraySetIn
 Immutable.update         = toStatic update

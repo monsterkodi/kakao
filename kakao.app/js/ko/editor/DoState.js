@@ -142,17 +142,17 @@ DoState = (function ()
 
     DoState.prototype["cursors"] = function ()
     {
-        return this.s.cursors.asMutable({deep:true})
+        return this.s.cursors.asMutable()
     }
 
     DoState.prototype["highlights"] = function ()
     {
-        return this.s.highlights.asMutable({deep:true})
+        return this.s.highlights.asMutable()
     }
 
     DoState.prototype["selections"] = function ()
     {
-        return this.s.selections.asMutable({deep:true})
+        return this.s.selections.asMutable()
     }
 
     DoState.prototype["main"] = function ()
@@ -162,17 +162,17 @@ DoState = (function ()
 
     DoState.prototype["cursor"] = function (i)
     {
-        return (this.s.cursors[i] != null ? this.s.cursors[i].asMutable({deep:true}) : undefined)
+        return (this.s.cursors[i] != null ? this.s.cursors[i].asMutable() : undefined)
     }
 
     DoState.prototype["selection"] = function (i)
     {
-        return (this.s.selections[i] != null ? this.s.selections[i].asMutable({deep:true}) : undefined)
+        return (this.s.selections[i] != null ? this.s.selections[i].asMutable() : undefined)
     }
 
     DoState.prototype["highlight"] = function (i)
     {
-        return (this.s.highlights[i] != null ? this.s.highlights[i].asMutable({deep:true}) : undefined)
+        return (this.s.highlights[i] != null ? this.s.highlights[i].asMutable() : undefined)
     }
 
     DoState.prototype["numLines"] = function ()
@@ -197,7 +197,7 @@ DoState = (function ()
 
     DoState.prototype["mainCursor"] = function ()
     {
-        return this.s.cursors[this.s.main].asMutable({deep:true})
+        return this.s.cursors[this.s.main].asMutable()
     }
 
     DoState.prototype["setSelections"] = function (s)

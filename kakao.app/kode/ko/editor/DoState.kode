@@ -59,7 +59,6 @@ function DoState
                 
     lines: -> DoState.lines @s
         
-        
     #  0000000  000   000   0000000   000   000   0000000   00000000  
     # 000       000   000  000   000  0000  000  000        000       
     # 000       000000000  000000000  000 0 000  000  0000  0000000   
@@ -120,20 +119,20 @@ function DoState
     text: (n='\n') -> @lines().join n
     tabline:   (i) -> @lines()[i]
     
-    cursors:       -> @s.cursors.asMutable    deep: true
-    highlights:    -> @s.highlights.asMutable deep: true
-    selections:    -> @s.selections.asMutable deep: true
+    cursors:       -> @s.cursors.asMutable()    
+    highlights:    -> @s.highlights.asMutable() 
+    selections:    -> @s.selections.asMutable() 
     main:          -> @s.main
 
-    cursor:    (i) -> @s.cursors[i]?.asMutable    deep: true
-    selection: (i) -> @s.selections[i]?.asMutable deep: true
-    highlight: (i) -> @s.highlights[i]?.asMutable deep: true
+    cursor:    (i) -> @s.cursors[i]?.asMutable()    
+    selection: (i) -> @s.selections[i]?.asMutable() 
+    highlight: (i) -> @s.highlights[i]?.asMutable() 
 
     numLines:      -> @s.numLines
     numCursors:    -> @s.cursors.length
     numSelections: -> @s.selections.length
     numHighlights: -> @s.highlights.length
-    mainCursor:    -> @s.cursors[@s.main].asMutable deep: true
+    mainCursor:    -> @s.cursors[@s.main].asMutable()
 
     # modify:
         
