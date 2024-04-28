@@ -65,13 +65,33 @@ DoState = (function ()
 
     DoState.prototype["changeLine"] = function (i, t)
     {
-        return this.s = this.s.setIn(['lines',i],t)
+        var lines
+
+        if (i > this.s.numLines - 1)
+        {
+            return
+        }
+        if (i < 0 && -i > this.s.numLines)
+        {
+            return
+        }
+        lines = this.lines()
+        lines.splice(i,1,t)
+        return this.s = this.s.set('lines',this.dictFromLines(lines))
     }
 
     DoState.prototype["insertLine"] = function (i, t)
     {
         var lines
 
+        if (i > this.s.numLines)
+        {
+            return
+        }
+        if (i < 0 && -i > this.s.numLines)
+        {
+            return
+        }
         lines = this.lines()
         lines.splice(i,0,t)
         this.s = this.s.set('lines',this.dictFromLines(lines))
@@ -98,7 +118,7 @@ DoState = (function ()
 
     DoState.prototype["appendLine"] = function (t)
     {
-        return this.insertLine(Infinity,t)
+        return this.insertLine(this.s.numLines,t)
     }
 
     DoState.prototype["text"] = function (n = '\n')

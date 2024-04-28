@@ -112,17 +112,18 @@ use ../editor ◆ DoState
         cs.numLines() ▸ 5
 
         cs.insertLine 0, 'hi'
-        os.lines() ▸ ['hello' 'world' '!']
         cs.lines() ▸ ['hi' 'hello' 'brave' 'new' 'world' '!']
         cs.numLines() ▸ 6
 
         cs.insertLine -1, '>'
-        os.lines() ▸ ['hello' 'world' '!']
         cs.lines() ▸ ['hi' 'hello' 'brave' 'new' 'world' '>' '!']
         cs.numLines() ▸ 7
 
         cs.insertLine Infinity, '<'
-        os.lines() ▸ ['hello' 'world' '!']
+        cs.lines() ▸ ['hi' 'hello' 'brave' 'new' 'world' '>' '!']
+        cs.numLines() ▸ 7
+        
+        cs.insertLine 7, '<'
         cs.lines() ▸ ['hi' 'hello' 'brave' 'new' 'world' '>' '!' '<']
         cs.numLines() ▸ 8
         

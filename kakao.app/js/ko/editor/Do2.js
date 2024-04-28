@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let immutable = kxk.immutable
@@ -10,9 +10,9 @@ import DoState from "./DoState.js"
 
 class Do2
 {
-    constructor ()
+    constructor (lines = [])
     {
-        this.reset()
+        this.setLines(lines)
     }
 
     tabState ()
@@ -29,34 +29,36 @@ class Do2
 
     setLines (lines)
     {
-        this.startState = new DoState(lines)
-        this.state = this.startState
-        return this.reset()
+        this.state = new DoState(lines)
+        this.reset()
+        return this.history.push(this.state.s)
     }
 
     reset ()
     {
+        this.undos = 0
         this.doCount = 0
-        this.history = []
-        return this.undos = 0
+        return this.history = []
     }
 
     start ()
     {
-        this.doCount += 1
-        if (this.doCount === 1)
-        {
-            this.state = new DoState(this.startState.s)
-            if (_k_.empty((this.history)) || this.state.s !== _k_.last(this.history))
-            {
-                return this.history.push(this.state.s)
-            }
-        }
+        return this.doCount += 1
     }
 
     isDoing ()
     {
         return this.doCount > 0
+    }
+
+    end (opt)
+    {
+        this.doCount -= 1
+        if (this.doCount === 0)
+        {
+            this.history.push(this.state.s)
+        }
+        return null
     }
 
     change (index, text)
@@ -74,57 +76,25 @@ class Do2
         return this.state.deleteLine(index)
     }
 
-    end (opt)
-    {
-        var changes, _98_27_
-
-        this.redos = []
-        this.doCount -= 1
-        if (this.doCount === 0)
-        {
-            changes = this.calculateChanges(this.startState,this.state)
-            this.editor.setState(this.state)
-            ;(typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
-        }
-        return null
-    }
-
     undo ()
     {
-        var changes, _120_27_
-
-        if (this.history.length)
+        if (this.undos + 1 < this.history.length)
         {
-            if (_k_.empty(this.redos))
-            {
-                this.redos.unshift(this.editor.state.s)
-            }
-            this.state = new DoState(this.history.pop())
-            this.redos.unshift(this.state.s)
-            changes = this.calculateChanges(this.editor.state,this.state)
-            this.editor.setState(this.state)
-            return (typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
+            this.undos += 1
+            return this.state = new DoState(this.history[this.history.length - 1 - this.undos])
         }
     }
 
     redo ()
     {
-        var changes, _141_27_
-
-        if (this.redos.length)
+        if (this.undos <= 0)
         {
-            if (this.redos.length > 1)
-            {
-                this.history.push(this.redos.shift())
-            }
-            this.state = new DoState(this.redos[0])
-            if (this.redos.length === 1)
-            {
-                this.redos = []
-            }
-            changes = this.calculateChanges(this.editor.state,this.state)
-            this.editor.setState(this.state)
-            return (typeof this.editor.changed === "function" ? this.editor.changed(changes) : undefined)
+            return
+        }
+        if (this.undos - 1 < this.history.length)
+        {
+            this.undos -= 1
+            return this.state = new DoState(this.history[this.history.length - 1 - this.undos])
         }
     }
 
@@ -133,11 +103,11 @@ class Do2
         if (newSelections.length)
         {
             newSelections = cleanRanges(newSelections)
-            return this.state = this.state.setSelections(newSelections)
+            return this.state.setSelections(newSelections)
         }
         else
         {
-            return this.state = this.state.setSelections([])
+            return this.state.setSelections([])
         }
     }
 
@@ -160,7 +130,7 @@ class Do2
                     mainIndex = newCursors.length - 1
                     break
                 case 'closest':
-                    mainIndex = newCursors.indexOf(posClosestToPosInPositions(this.editor.mainCursor(),newCursors))
+                    mainIndex = newCursors.indexOf(posClosestToPosInPositions(this.state.mainCursor(),newCursors))
                     break
                 default:
                     mainIndex = newCursors.indexOf(opt.main)
@@ -178,8 +148,8 @@ class Do2
         mainCursor = newCursors[mainIndex]
         this.cleanCursors(newCursors)
         mainIndex = newCursors.indexOf(posClosestToPosInPositions(mainCursor,newCursors))
-        this.state = this.state.setCursors(newCursors)
-        return this.state = this.state.setMain(mainIndex)
+        this.state.setCursors(newCursors)
+        return this.state.setMain(mainIndex)
     }
 
     cleanCursors (cs)
@@ -187,16 +157,16 @@ class Do2
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _194_14_ = 0; _194_14_ < list.length; _194_14_++)
+        for (var _167_14_ = 0; _167_14_ < list.length; _167_14_++)
         {
-            p = list[_194_14_]
+            p = list[_167_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _201_22_ = ci = cs.length - 1, _201_36_ = 0; (_201_22_ <= _201_36_ ? ci < 0 : ci > 0); (_201_22_ <= _201_36_ ? ++ci : --ci))
+            for (var _174_22_ = ci = cs.length - 1, _174_36_ = 0; (_174_22_ <= _174_36_ ? ci < 0 : ci > 0); (_174_22_ <= _174_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -358,7 +328,7 @@ class Do2
 
     textInRange (r)
     {
-        var _318_41_
+        var _291_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

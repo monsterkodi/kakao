@@ -15,37 +15,85 @@ use ../editor ◆ Do2
         text  = "hello\nworld"
         lines = text.split '\n'
     
-        do2 = new Do2
-        do2.setLines lines
-        do2.lines() ▸ lines
-        do2.text()  ▸ text
+        doo = new Do2
+        doo.setLines lines
+        doo.lines() ▸ lines
+        doo.text()  ▸ text
 
     ▸ insert
     
-        do2.insert 1 'beautiful'
-        do2.lines() ▸ ['hello''beautiful''world']
+        doo.insert 1 'beautiful'
+        doo.lines() ▸ ['hello''beautiful''world']
 
-        do2.insert 3 '!'
-        do2.lines() ▸ ['hello''beautiful''world''!']
+        doo.insert 3 '!'
+        doo.lines() ▸ ['hello''beautiful''world''!']
 
-        do2.insert 666 '?'
-        do2.lines() ▸ ['hello''beautiful''world''!''?']
+        doo.insert 666 '?'
+        doo.lines() ▸ ['hello''beautiful''world''!']
 
-        do2.insert -666 '▴'
-        do2.lines() ▸ ['▴''hello''beautiful''world''!''?']
+        doo.insert -666 '▴'
+        doo.lines() ▸ ['hello''beautiful''world''!']
         
     ▸ delete
     
-        do2.delete 0
-        do2.lines() ▸ ['hello''beautiful''world''!''?']
+        doo = new Do2 lines
+    
+        doo.delete 0
+        doo.lines() ▸ ['world']
         
-        do2.delete 1
-        do2.lines() ▸ ['hello''world''!''?']
+        doo.delete 1
+        doo.lines() ▸ ['world']
 
-        do2.delete 666
-        do2.lines() ▸ ['hello''world''!''?']
+        doo.delete -2
+        doo.lines() ▸ ['world']
         
-        do2.delete -2
-        do2.lines() ▸ ['hello''world''?']
+        doo.delete -1
+        doo.lines() ▸ []
+        
+    ▸ change
+
+        doo = new Do2 ['hello''world''○']
+    
+        doo.change 2 '~'
+        doo.lines() ▸ ['hello''world''~']
+        
+        doo.change -1 '!!'
+        doo.lines() ▸ ['hello''world''!!']
+
+        doo.change -3 'hi'
+        doo.lines() ▸ ['hi''world''!!']
+
+        doo.change -5 'blork'
+        doo.lines() ▸ ['hi''world''!!']
+
+        doo.change 666 'blark'
+        doo.lines() ▸ ['hi''world''!!']
+        
+        
+    ▸ undo
+    
+        doo = new Do2 ['a''b''c']
+        
+        doo.start()
+        doo.insert 1 'd'
+        doo.change 2 'C'
+        doo.end()
+        
+        doo.lines() ▸ ['a''d''C''c']
+        doo.undo()
+        doo.lines() ▸ ['a''b''c']
+
+        doo.undo()
+        doo.lines() ▸ ['a''b''c']
+        
+    ▸ redo
+    
+        doo.lines() ▸ ['a''b''c']
+        doo.redo()  
+        doo.lines()▸ ['a''d''C''c']
+        doo.redo()  
+        doo.lines()▸ ['a''d''C''c']
+        # doo.redo()  
+        # doo.lines()▸ ['a''d''C''c']
         
         

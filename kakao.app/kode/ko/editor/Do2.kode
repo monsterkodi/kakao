@@ -12,7 +12,7 @@ use           ◆ DoState
 
 class Do2
 
-    @: -> @reset()
+    @: (lines=[]) -> @setLines lines
         
     # 000000000   0000000   0000000           0000000  000000000   0000000   000000000  00000000
     #    000     000   000  000   000        000          000     000   000     000     000
@@ -39,9 +39,9 @@ class Do2
     
     setLines: (lines) ->
         
-        @startState = new DoState lines        
-        @state      = @startState
+        @state = new DoState lines
         @reset()
+        @history.push @state.s
 
     # 00000000   00000000   0000000  00000000  000000000
     # 000   000  000       000       000          000
@@ -51,9 +51,9 @@ class Do2
 
     reset: ->
 
+        @undos   = 0
         @doCount = 0
         @history = []
-        @undos   = 0
 
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000
@@ -61,15 +61,21 @@ class Do2
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    start: ->
-
-        @doCount += 1
-        if @doCount == 1
-            @state = new DoState @startState.s
-            if empty(@history) or @state.s != last(@history)
-                @history.push @state.s
-
+    start:   -> @doCount += 1
     isDoing: -> @doCount > 0
+    
+    # 00000000  000   000  0000000
+    # 000       0000  000  000   000
+    # 0000000   000 0 000  000   000
+    # 000       000  0000  000   000
+    # 00000000  000   000  0000000
+
+    end: (opt) ->
+        
+        @doCount -= 1
+        if @doCount == 0
+            @history.push @state.s
+        null
 
     # 00     00   0000000   0000000    000  00000000  000   000
     # 000   000  000   000  000   000  000  000        000 000
@@ -81,24 +87,6 @@ class Do2
     insert: (index, text) -> @state.insertLine index, text
     delete: (index)       -> @state.deleteLine index
 
-    # 00000000  000   000  0000000
-    # 000       0000  000  000   000
-    # 0000000   000 0 000  000   000
-    # 000       000  0000  000   000
-    # 00000000  000   000  0000000
-
-    end: (opt) ->
-        
-        @redos = []
-        @doCount -= 1
-        if @doCount == 0
-
-            changes = @calculateChanges @startState, @state
-            @editor.setState @state
-            @editor.changed? changes
-
-        null
-
     # 000   000  000   000  0000000     0000000
     # 000   000  0000  000  000   000  000   000
     # 000   000  000 0 000  000   000  000   000
@@ -107,17 +95,9 @@ class Do2
 
     undo: ->
 
-        if @history.length
-            
-            if empty @redos
-                @redos.unshift @editor.state.s
-
-            @state = new DoState @history.pop()
-            @redos.unshift @state.s
-
-            changes = @calculateChanges @editor.state, @state
-            @editor.setState @state
-            @editor.changed? changes
+        if @undos+1 < @history.length
+            @undos += 1
+            @state = new DoState @history[@history.length-1-@undos]
 
     # 00000000   00000000  0000000     0000000
     # 000   000  000       000   000  000   000
@@ -126,19 +106,12 @@ class Do2
     # 000   000  00000000  0000000     0000000
 
     redo: ->
-
-        if @redos.length
-
-            if @redos.length > 1
-                @history.push @redos.shift()
-
-            @state = new DoState @redos[0]
-            if @redos.length == 1
-                @redos = []
-
-            changes = @calculateChanges @editor.state, @state
-            @editor.setState @state
-            @editor.changed? changes
+        
+        ⮐ if @undos <= 0
+        
+        if @undos-1 < @history.length
+            @undos -= 1
+            @state = new DoState @history[@history.length-1-@undos]
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
@@ -150,9 +123,9 @@ class Do2
 
         if newSelections.length
             newSelections = cleanRanges newSelections
-            @state = @state.setSelections newSelections
+            @state.setSelections newSelections
         else
-            @state = @state.setSelections []
+            @state.setSelections []
 
     #  0000000  000   000  00000000    0000000   0000000   00000000
     # 000       000   000  000   000  000       000   000  000   000
@@ -169,7 +142,7 @@ class Do2
             switch opt.main
                 'first'   ➜ mainIndex = 0
                 'last'    ➜ mainIndex = newCursors.length-1
-                'closest' ➜ mainIndex = newCursors.indexOf posClosestToPosInPositions @editor.mainCursor(), newCursors
+                'closest' ➜ mainIndex = newCursors.indexOf posClosestToPosInPositions @state.mainCursor(), newCursors
                           ➜
                             mainIndex = newCursors.indexOf opt.main
                             mainIndex = parseInt opt.main if mainIndex < 0
@@ -180,8 +153,8 @@ class Do2
         @cleanCursors newCursors
         mainIndex = newCursors.indexOf posClosestToPosInPositions mainCursor, newCursors
 
-        @state = @state.setCursors newCursors
-        @state = @state.setMain mainIndex
+        @state.setCursors newCursors
+        @state.setMain mainIndex
 
     #  0000000  000      00000000   0000000   000   000
     # 000       000      000       000   000  0000  000

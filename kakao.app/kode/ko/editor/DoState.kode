@@ -13,8 +13,10 @@ function DoState
     @: (stateOrLines = []) ->
         
         if immutable.isImmutable stateOrLines
+            # log 'dostate immutable'
             @s = stateOrLines
         else if stateOrLines is arr
+            # log 'dostate lines'
             @s = @stateForLines stateOrLines
             
     stateForLines: (lineStrings) ->
@@ -59,7 +61,14 @@ function DoState
     # 000       000   000  000   000  000  0000  000   000  000       
     #  0000000  000   000  000   000  000   000   0000000   00000000  
     
-    changeLine: (i, t) -> @s = @s.setIn ['lines' i], t
+    changeLine: (i, t) -> 
+
+        ⮐ if i > @s.numLines-1
+        ⮐ if i < 0 and -i > @s.numLines
+        
+        lines = @lines()
+        lines.splice i, 1 t
+        @s = @s.set 'lines' @dictFromLines lines
         
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
@@ -68,7 +77,10 @@ function DoState
     # 000  000   000  0000000   00000000  000   000     000     
     
     insertLine: (i, t) -> 
-    
+
+        ⮐ if i > @s.numLines
+        ⮐ if i < 0 and -i > @s.numLines
+        
         lines = @lines()
         lines.splice i, 0 t
         @s = @s.set 'lines' @dictFromLines lines
@@ -96,7 +108,7 @@ function DoState
     # 000   000  000        000        000       000  0000  000   000  
     # 000   000  000        000        00000000  000   000  0000000    
     
-    appendLine: (t) -> @insertLine Infinity, t
+    appendLine: (t) -> @insertLine @s.numLines, t
     
     # read only:
     
