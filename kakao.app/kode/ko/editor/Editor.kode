@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ ffs kstr slash
-use ◆ Do2 Syntax Buffer
+use ◆ Syntax Buffer
 
 function Editor extends Buffer
 

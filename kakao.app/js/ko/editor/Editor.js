@@ -7,7 +7,6 @@ let ffs = kxk.ffs
 let kstr = kxk.kstr
 let slash = kxk.slash
 
-import Do2 from "./Do2.js"
 import Syntax from "./Syntax.js"
 import Buffer from "./Buffer.js"
 

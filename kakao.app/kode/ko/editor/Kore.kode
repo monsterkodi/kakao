@@ -51,160 +51,17 @@
         kore.on  'editor|file' @editorFile
 ###
 
-use ../../kxk ▪ isEqual immutable events
+use ../../kxk ▪ events
 
 function Kore extends events
 
     set: (key, value) =>
-        # log 'kore.set' key, noon value
-        # if key == 'tabStates'
-            # value = @compressTabStates value
-            # log 'set tabStates' value
         
         stash.set "kore|#{key}" value 
         @emit key, value
         
     get: (key, def) =>
         
-        r = stash.get "kore|#{key}" def
-        
-        # if key == 'tabStates'
-            # log 'get tabStates stored' r
-            # r = @decompressTabStates r
-            # log 'get tabStates decopd' r
-        # log 'kore.get' key, noon r
-        r
+        stash.get "kore|#{key}" def
     
-    ###
-    000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000   0000000  
-       000     000   000  000   000  000          000     000   000     000     000       000       
-       000     000000000  0000000    0000000      000     000000000     000     0000000   0000000   
-       000     000   000  000   000       000     000     000   000     000     000            000  
-       000     000   000  0000000    0000000      000     000   000     000     00000000  0000000   
-    ###
-    
-    compressTabStates: (tabStates) ->
-        
-        for path,state of tabStates
-            tabStates[path] = @compressState state
-        tabStates
-        
-    decompressTabStates: (tabStates) ->
-        
-        for path,state of tabStates
-            tabStates[path] = @decompressState state
-        tabStates
-        
-    #  0000000   0000000   00     00  00000000   00000000   00000000   0000000   0000000  
-    # 000       000   000  000   000  000   000  000   000  000       000       000       
-    # 000       000   000  000000000  00000000   0000000    0000000   0000000   0000000   
-    # 000       000   000  000 0 000  000        000   000  000            000       000  
-    #  0000000   0000000   000   000  000        000   000  00000000  0000000   0000000   
-    
-    compressState: (state) ->
-        
-        # log 'compressState' state
-
-        compress = (s) ->
-            
-            cs = ''
-            for li in -1...s.linkId
-                cs += "#{s.links[li][0]}◆#{s.links[li][1]} "
-                
-            cs += "▸ #{s.numLines} #{s.main} #{s.lineId} " 
-            
-            cs += '▸ '
-            for ci in 0...s.cursors.length
-                cs += "#{s.cursors[ci][0]}■#{s.cursors[ci][1]} "
-
-            cs += '▸ '
-            
-            for sl in s.selections
-                cs += "#{sl[0]}●#{sl[1][0]}■#{sl[1][1]} "
-
-            cs += '▸ '
-            for sl in s.highlights
-                cs += "#{sl[0]}○#{sl[1][0]}■#{sl[1][1]} "
-            cs
-        
-        comp = file:state.file, redos:[]
-        comp.lines = []
-        for li in 0...state.state.lineId
-            comp.lines.push state.state.lines[li]
-            
-        comp.history = state.history.map (hs) -> compress hs
-        comp.history.push compress state.state
-        
-        # log 'comp' comp
-                
-        comp
-        
-    # 0000000    00000000   0000000   0000000   00     00  00000000   00000000   00000000   0000000   0000000  
-    # 000   000  000       000       000   000  000   000  000   000  000   000  000       000       000       
-    # 000   000  0000000   000       000   000  000000000  00000000   0000000    0000000   0000000   0000000   
-    # 000   000  000       000       000   000  000 0 000  000        000   000  000            000       000  
-    # 0000000    00000000   0000000   0000000   000   000  000        000   000  00000000  0000000   0000000   
-    
-    decompressState: (state) ->
-    
-        # log 'decompressState' state
-        
-        ⮐ if empty state.history
-        
-        decompress = (s) ->
-            
-            ⮐ if not s is str
-            
-            [links, numMain, cursors, selections, highlights] = s.split('▸').map (s) -> trim s
-            
-            [numLines, main, lineId] = numMain.split(' ').map (n) -> parseInt n
-
-            xy = (s) -> s.split('■').map (n) -> parseInt n
-            
-            cursors    = cursors.split(' ').map xy
-            selections = empty selections ? [] : selections.split(' ').map (ss) -> sss = ss.split('●'); [parseInt(sss[0]), xy(sss[1])]
-            highlights = empty highlights ? [] : highlights.split(' ').map (ss) -> sss = ss.split('○'); [parseInt(sss[0]), xy(sss[1])]
-            
-            linkNum = links.split(' ').map (s) -> s.split('◆').map (n) -> parseInt n
-            
-            links = {}
-            for idx in -1...linkNum.length-1
-                links[idx] = linkNum[idx+1]
-            
-            lines = {}
-            for i in 0...lineId
-                lines[i] = state.lines[i]
-            
-            comp =
-                numLines: numLines
-                main:     main
-                cursors:  cursors
-                selections:  selections
-                highlights:  highlights
-                links:    links
-                lines:    lines
-                lineId:   lineId
-                
-            comp = immutable comp
-            # log 'comp:' comp
-            comp
-               
-        history = state.history.map (hs) -> decompress hs
-        
-        file = state.file
-        # log 'file:'    file
-        # log 'history>' history
-        state = history.pop()
-        # log 'state:'   state
-        # log 'history:' history
-
-        decomp = 
-            file:       file
-            state:      state
-            history:    history
-            redos:      []
-        
-        # log 'decomp:' decomp
-        decomp
-                            
 export window.kore = new Kore

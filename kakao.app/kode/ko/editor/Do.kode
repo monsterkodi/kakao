@@ -1,44 +1,50 @@
 ###
-0000000     0000000
-000   000  000   000
-000   000  000   000
-000   000  000   000
-0000000     0000000
+0000000     0000000       
+000   000  000   000      
+000   000  000   000      
+000   000  000   000      
+0000000     0000000       
 ###
 
-use ../../kxk ▪ immutable post
+use ../../kxk ▪ immutable events post
 use ../tools  ◆ ranges
-use           ◆ EditorState
+use           ◆ DoState
 
-class Do
+class Do extends events
 
-    @: (@editor) ->
-
-        @reset()
+    @: (lines=[]) -> 
         
-    del: -> post.removeListener 'fileLineChanges' @onFileLineChanges
-
-    # 000000000   0000000   0000000     0000000  000000000   0000000   000000000  00000000
-    #    000     000   000  000   000  000          000     000   000     000     000
-    #    000     000000000  0000000    0000000      000     000000000     000     0000000
-    #    000     000   000  000   000       000     000     000   000     000     000
-    #    000     000   000  0000000    0000000      000     000   000     000     00000000
+        super()
+        @setLines lines
+        
+    # 000000000   0000000   0000000           0000000  000000000   0000000   000000000  00000000
+    #    000     000   000  000   000        000          000     000   000     000     000
+    #    000     000000000  0000000          0000000      000     000000000     000     0000000
+    #    000     000   000  000   000             000     000     000   000     000     000
+    #    000     000   000  0000000          0000000      000     000   000     000     00000000
 
     tabState: ->
         
-        ⮐ if not @state?.s
-
         history:   @history
-        redos:     @redos
-        state:     @state.s
-        file:      @editor.currentFile
+        undos:     @undos
 
     setTabState: (tabState) ->
 
-        @groupCount = 0
+        @doCount = 0
         @history    = tabState.history
-        @redos      = tabState.redos
-        @state      = new EditorState immutable tabState.state
+        @undos      = tabState.undos
+    
+    #  0000000  00000000  000000000        000      000  000   000  00000000   0000000  
+    # 000       000          000           000      000  0000  000  000       000       
+    # 0000000   0000000      000           000      000  000 0 000  0000000   0000000   
+    #      000  000          000           000      000  000  0000  000            000  
+    # 0000000   00000000     000           0000000  000  000   000  00000000  0000000   
+    
+    setLines: (lines) ->
+        
+        @state = new DoState lines
+        @reset()
+        @history.push @state.s
 
     # 00000000   00000000   0000000  00000000  000000000
     # 000   000  000       000       000          000
@@ -48,19 +54,9 @@ class Do
 
     reset: ->
 
-        @groupCount = 0
-        @history    = []
-        @redos      = []
-        @state      = null
-
-    hasChanges: ->
-        
-        ⮐ false if empty @history
-
-        ts = new EditorState @history[0] # is this a good idea?
-        ⮐ false if ts.text() == @editor.text()
-            
-        ⮐ true
+        @undos   = 0
+        @doCount = 0
+        @history = []
 
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000
@@ -68,31 +64,9 @@ class Do
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    start: ->
-
-        @groupCount += 1
-        if @groupCount == 1
-            @startState = @state = new EditorState @editor.state.s, @editor.state.lineCache
-            if empty(@history) or @state.s != last(@history)
-                @history.push @state.s
-
-    isDoing: -> @groupCount > 0
-
-    # 00     00   0000000   0000000    000  00000000  000   000
-    # 000   000  000   000  000   000  000  000        000 000
-    # 000000000  000   000  000   000  000  000000      00000
-    # 000 0 000  000   000  000   000  000  000          000
-    # 000   000   0000000   0000000    000  000          000
-
-    change: (index, text) -> @state = @state.changeLine index, text
-    insert: (index, text) -> @state = @state.insertLine index, text
-    delete: (index) ->
-        if @numLines() >= 1 and 0 <= index < @numLines()
-            @editor.emit 'willDeleteLine' @line index
-            @state = @state.deleteLine index
-            
-    append: (text) -> @state.appendLine text
-
+    start:   -> @doCount += 1
+    isDoing: -> @doCount > 0
+    
     # 00000000  000   000  0000000
     # 000       0000  000  000   000
     # 0000000   000 0 000  000   000
@@ -101,20 +75,23 @@ class Do
 
     end: (opt) ->
         
-        # ● Do.end
-
-        @redos = []
-        @groupCount -= 1
-        if @groupCount == 0
-            # ●▸ Do.end.merge
-            # @merge()
-            # ●▪ Do.end.merge
-
-            changes = @calculateChanges @startState, @state
-            @editor.setState @state
-            @editor.changed? changes
-
+        @doCount -= 1
+        if @doCount == 0
+            changes = @calculateChanges @history[-1], @state.s
+            @history.push @state.s
+            @emit 'changes' changes
         null
+
+    # 00     00   0000000   0000000    000  00000000  000   000
+    # 000   000  000   000  000   000  000  000        000 000
+    # 000000000  000   000  000   000  000  000000      00000
+    # 000 0 000  000   000  000   000  000  000          000
+    # 000   000   0000000   0000000    000  000          000
+
+    change: (index, text) -> @state.changeLine index, text
+    insert: (index, text) -> @state.insertLine index, text
+    delete: (index)       -> @state.deleteLine index
+    append:        (text) -> @state.appendLine text
 
     # 000   000  000   000  0000000     0000000
     # 000   000  0000  000  000   000  000   000
@@ -124,17 +101,11 @@ class Do
 
     undo: ->
 
-        if @history.length
-            
-            if empty @redos
-                @redos.unshift @editor.state.s
-
-            @state = new EditorState @history.pop()
-            @redos.unshift @state.s
-
-            changes = @calculateChanges @editor.state, @state
-            @editor.setState @state
-            @editor.changed? changes
+        if @undos+1 < @history.length
+            @undos += 1
+            changes = @calculateChanges @state.s, @history[@history.length-1-@undos]
+            @state = new DoState @history[@history.length-1-@undos]
+            @emit 'changes' changes
 
     # 00000000   00000000  0000000     0000000
     # 000   000  000       000   000  000   000
@@ -143,19 +114,14 @@ class Do
     # 000   000  00000000  0000000     0000000
 
     redo: ->
-
-        if @redos.length
-
-            if @redos.length > 1
-                @history.push @redos.shift()
-
-            @state = new EditorState @redos[0]
-            if @redos.length == 1
-                @redos = []
-
-            changes = @calculateChanges @editor.state, @state
-            @editor.setState @state
-            @editor.changed? changes
+        
+        ⮐ if @undos <= 0
+        
+        if @undos-1 < @history.length
+            @undos -= 1
+            changes = @calculateChanges @state.s, @history[@history.length-1-@undos]
+            @state = new DoState @history[@history.length-1-@undos]
+            @emit 'changes' changes
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
@@ -167,9 +133,9 @@ class Do
 
         if newSelections.length
             newSelections = cleanRanges newSelections
-            @state = @state.setSelections newSelections
+            @state.setSelections newSelections
         else
-            @state = @state.setSelections []
+            @state.setSelections []
 
     #  0000000  000   000  00000000    0000000   0000000   00000000
     # 000       000   000  000   000  000       000   000  000   000
@@ -186,7 +152,7 @@ class Do
             switch opt.main
                 'first'   ➜ mainIndex = 0
                 'last'    ➜ mainIndex = newCursors.length-1
-                'closest' ➜ mainIndex = newCursors.indexOf posClosestToPosInPositions @editor.mainCursor(), newCursors
+                'closest' ➜ mainIndex = newCursors.indexOf posClosestToPosInPositions @state.mainCursor(), newCursors
                           ➜
                             mainIndex = newCursors.indexOf opt.main
                             mainIndex = parseInt opt.main if mainIndex < 0
@@ -197,14 +163,62 @@ class Do
         @cleanCursors newCursors
         mainIndex = newCursors.indexOf posClosestToPosInPositions mainCursor, newCursors
 
-        @state = @state.setCursors newCursors
-        @state = @state.setMain mainIndex
+        @state.setCursors newCursors
+        @state.setMain mainIndex
 
+    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
+    # 000       000       000      000       000          000     000  000   000  0000  000  000       
+    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  0000000   
+    #      000  000       000      000       000          000     000  000   000  000  0000       000  
+    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000   
+    
+    setSelections: (s) -> @state.setSelections s
+    
+    # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
+    # 000   000  000  000        000   000  000      000  000        000   000     000     000       
+    # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     0000000   
+    # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
+    # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
+    
+    setHighlights: (h) -> @state.setHighlights h
+    addHighlight:  (h) -> @state.addHighlight h
+    
+    # setMain:       (m) -> @s = @s.set 'main'       m
+        
+    #  0000000  000      00000000   0000000   000   000
+    # 000       000      000       000   000  0000  000
+    # 000       000      0000000   000000000  000 0 000
+    # 000       000      000       000   000  000  0000
+    #  0000000  0000000  00000000  000   000  000   000
+
+    cleanCursors: (cs) ->
+
+        for p in cs
+            p[0] = Math.max p[0], 0
+            p[1] = clamp 0, @state.numLines()-1, p[1]
+
+        sortPositions cs
+
+        if cs.length > 1
+            for ci in cs.length-1...0
+                c = cs[ci]
+                p = cs[ci-1]
+                if c[1] == p[1] and c[0] == p[0]
+                    cs.splice ci, 1
+        cs
+        
     #  0000000   0000000   000       0000000  000   000  000       0000000   000000000  00000000
     # 000       000   000  000      000       000   000  000      000   000     000     000
     # 000       000000000  000      000       000   000  000      000000000     000     0000000
     # 000       000   000  000      000       000   000  000      000   000     000     000
     #  0000000  000   000  0000000   0000000   0000000   0000000  000   000     000     00000000
+    
+    hasChanges: ->
+        
+        return false if empty @history
+        
+        changes = @calculateChanges @history[0], @state.s
+        changes.changes.length > 0
 
     calculateChanges: (oldState, newState) ->
         
@@ -213,11 +227,11 @@ class Do
         dd = 0 # delta for doIndex
         changes = []
 
-        oldLines = oldState.lines()
-        newLines = newState.lines()
+        oldLines = DoState.lines oldState
+        newLines = DoState.lines newState
 
-        insertions = 0 # number of insertions
-        deletions  = 0 # number of deletions
+        inserts = 0 # number of insertions
+        deletes  = 0 # number of deletions
 
         if oldLines != newLines
 
@@ -227,7 +241,7 @@ class Do
             while oi < oldLines.length
 
                 if not nl? # new state has not enough lines, mark remaining lines in oldState as deleted
-                    deletions += 1
+                    deletes += 1
                     changes.push change: 'deleted' oldIndex: oi, doIndex: oi+dd
                     oi += 1
                     dd -= 1
@@ -256,7 +270,7 @@ class Do
                         changes.push change: 'deleted' oldIndex: oi, doIndex: oi+dd
                         oi += 1
                         dd -= 1
-                        deletions += 1
+                        deletes += 1
                         ol = oldLines[oi]
 
                     else if ol == newLines[ni+1] and oldLines[oi+1] != newLines[ni+1]
@@ -264,7 +278,7 @@ class Do
                         changes.push change: 'inserted' newIndex: ni, doIndex: oi+dd, after: nl
                         ni += 1
                         dd += 1
-                        insertions += 1
+                        inserts += 1
                         nl = newLines[ni]
 
                     else # change
@@ -277,81 +291,16 @@ class Do
 
             while ni < newLines.length # mark remaining lines in newState as inserted
 
-                insertions += 1
+                inserts += 1
                 changes.push change: 'inserted' newIndex: ni, doIndex: ni, after: nl
                 ni += 1
                 nl = newLines[ni]
 
         changes: changes
-        inserts: insertions
-        deletes: deletions
-        cursors: oldState.s.cursors    != newState.s.cursors
-        selects: oldState.s.selections != newState.s.selections
-
-    # 00     00  00000000  00000000    0000000   00000000
-    # 000   000  000       000   000  000        000
-    # 000000000  0000000   0000000    000  0000  0000000
-    # 000 0 000  000       000   000  000   000  000
-    # 000   000  00000000  000   000   0000000   00000000
-
-    # looks at last two actions and merges them
-    #       when they contain no line changes
-    #       when they contain only changes of the same set of lines
-
-    merge: ->
-        
-        return # deactivated for now!
-        
-        ● Do.merge
-
-        while @history.length > 1
-            b = @history[@history.length-2]
-            a = last @history
-            if a.text() == b.text()
-                if @history.length > 2
-                    log 'splice history1' @history.length-2
-                    @history.splice @history.length-2, 1
-                else
-                    log 'bail history1'
-                    return
-            else if @history.length > 2
-                c = @history[@history.length-3]
-                if a.numLines() == b.numLines() == c.numLines()
-                    numLines = a.numLines()
-                    for li in [0...numLines]
-                        ●▸ lines
-                        la = a.line li
-                        lb = b.line li
-                        lc = c.line li
-                        ●▪ lines
-                        if la == lb and lc != lb or la != lb and lc == lb
-                            return
-                    log 'splice history2' @history.length-2
-                    @history.splice @history.length-2, 1
-                else return
-            else return
-
-    #  0000000  000      00000000   0000000   000   000
-    # 000       000      000       000   000  0000  000
-    # 000       000      0000000   000000000  000 0 000
-    # 000       000      000       000   000  000  0000
-    #  0000000  0000000  00000000  000   000  000   000
-
-    cleanCursors: (cs) ->
-
-        for p in cs
-            p[0] = Math.max p[0], 0
-            p[1] = clamp 0, @state.numLines()-1, p[1]
-
-        sortPositions cs
-
-        if cs.length > 1
-            for ci in cs.length-1...0
-                c = cs[ci]
-                p = cs[ci-1]
-                if c[1] == p[1] and c[0] == p[0]
-                    cs.splice ci, 1
-        cs
+        inserts: inserts
+        deletes: deletes
+        cursors: oldState.cursors    != newState.cursors
+        selects: oldState.selections != newState.selections
 
     #  0000000  000000000   0000000   000000000  00000000
     # 000          000     000   000     000     000

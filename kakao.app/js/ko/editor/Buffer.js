@@ -8,7 +8,7 @@ let matchr = kxk.matchr
 let events = kxk.events
 let uniq = kxk.uniq
 
-import Do2 from "./Do2.js"
+import Do from "./Do.js"
 
 
 startOf = function (r)
@@ -35,7 +35,7 @@ Buffer = (function ()
         this.newlineCharacters = '\n'
         this.wordRegExp = new RegExp("(\\s+|\\w+|[^\\s])",'g')
         this.realWordRegExp = new RegExp("(\\w+)",'g')
-        this.do = new Do2()
+        this.do = new Do()
         this.do.on('changes',this.onDoChanges)
     }
 
@@ -43,7 +43,6 @@ Buffer = (function ()
     {
         var _30_16_
 
-        console.log('Buffer.onDoChanges',changes)
         return (typeof this.changed === "function" ? this.changed(changes) : undefined)
     }
 

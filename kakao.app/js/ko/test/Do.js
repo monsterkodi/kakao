@@ -3,15 +3,15 @@ var _k_
 
 var doo, lines, text
 
-import Do2 from "../editor/Do2.js"
+import Do from "../editor/Do.js"
 
-toExport["Do2"] = function ()
+toExport["Do"] = function ()
 {
     section("setLines", function ()
     {
         text = "hello\nworld"
         lines = text.split('\n')
-        doo = new Do2
+        doo = new Do
         doo.setLines(lines)
         compare(doo.lines(),lines)
         compare(doo.text(),text)
@@ -29,7 +29,7 @@ toExport["Do2"] = function ()
     })
     section("delete", function ()
     {
-        doo = new Do2(lines)
+        doo = new Do(lines)
         doo.delete(0)
         compare(doo.lines(),['world'])
         doo.delete(1)
@@ -41,7 +41,7 @@ toExport["Do2"] = function ()
     })
     section("change", function ()
     {
-        doo = new Do2(['hello','world','○'])
+        doo = new Do(['hello','world','○'])
         doo.change(2,'~')
         compare(doo.lines(),['hello','world','~'])
         doo.change(-1,'!!')
@@ -55,7 +55,7 @@ toExport["Do2"] = function ()
     })
     section("undo", function ()
     {
-        doo = new Do2(['a','b','c'])
+        doo = new Do(['a','b','c'])
         doo.start()
         doo.insert(1,'d')
         doo.change(2,'C')
@@ -77,6 +77,6 @@ toExport["Do2"] = function ()
         compare(doo.lines(),['a','d','C','c'])
     })
 }
-toExport["Do2"]._section_ = true
+toExport["Do"]._section_ = true
 toExport._test_ = true
 export default toExport
