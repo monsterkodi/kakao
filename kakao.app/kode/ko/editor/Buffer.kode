@@ -30,7 +30,7 @@ function Buffer extends events
         if @name == 'editor'
             @emit 'numLines' @numLines()
 
-    setState: (s) -> @state = new EditorState s.s
+    setState: (s)  -> @state = new EditorState s.s
 
     mainCursor:    -> @state.mainCursor()
     line:      (i) => @state.line i

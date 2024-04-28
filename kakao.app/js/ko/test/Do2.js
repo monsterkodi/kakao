@@ -73,6 +73,8 @@ toExport["Do2"] = function ()
         compare(doo.lines(),['a','d','C','c'])
         doo.redo()
         compare(doo.lines(),['a','d','C','c'])
+        doo.redo()
+        compare(doo.lines(),['a','d','C','c'])
     })
 }
 toExport["Do2"]._section_ = true

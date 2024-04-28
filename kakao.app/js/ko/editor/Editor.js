@@ -94,9 +94,7 @@ Editor = (function ()
     }
 
     Editor.prototype["del"] = function ()
-    {
-        return this.do.del()
-    }
+    {}
 
     Editor["actionWithName"] = function (name)
     {
