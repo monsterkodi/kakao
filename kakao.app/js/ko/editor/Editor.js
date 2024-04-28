@@ -7,7 +7,7 @@ let ffs = kxk.ffs
 let kstr = kxk.kstr
 let slash = kxk.slash
 
-import Do from "./Do.js"
+import Do2 from "./Do2.js"
 import Syntax from "./Syntax.js"
 import Buffer from "./Buffer.js"
 
@@ -89,7 +89,6 @@ Editor = (function ()
         this.indentString = _k_.lpad(4,"")
         this.stickySelection = false
         this.syntax = new Syntax(this.config.syntaxName,this.line)
-        this.do = new Do(this)
         this.setupFileType()
     }
 
@@ -101,9 +100,9 @@ Editor = (function ()
         var action
 
         var list = _k_.list(Editor.actions)
-        for (var _91_19_ = 0; _91_19_ < list.length; _91_19_++)
+        for (var _89_19_ = 0; _89_19_ < list.length; _89_19_++)
         {
-            action = list[_91_19_]
+            action = list[_89_19_]
             if (action.name === name)
             {
                 return action
@@ -114,9 +113,9 @@ Editor = (function ()
 
     Editor.prototype["shebangFileType"] = function ()
     {
-        var _102_31_, _102_44_
+        var _100_31_, _100_44_
 
-        return ((_102_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _102_44_ : 'txt')
+        return ((_100_44_=(this.config != null ? this.config.syntaxName : undefined)) != null ? _100_44_ : 'txt')
     }
 
     Editor.prototype["setupFileType"] = function ()
@@ -138,7 +137,7 @@ Editor = (function ()
 
     Editor.prototype["setFileType"] = function (fileType)
     {
-        var cstr, k, key, reg, v, _137_21_
+        var cstr, k, key, reg, v, _135_21_
 
         this.fileType = fileType
     
@@ -166,9 +165,9 @@ Editor = (function ()
         }
         this.bracketCharacters.regexp = []
         var list = ['open','close']
-        for (var _132_16_ = 0; _132_16_ < list.length; _132_16_++)
+        for (var _130_16_ = 0; _130_16_ < list.length; _130_16_++)
         {
-            key = list[_132_16_]
+            key = list[_130_16_]
             cstr = Object.keys(this.bracketCharacters[key]).join('')
             reg = new RegExp(`[${kstr.escapeRegexp(cstr)}]`)
             this.bracketCharacters.regexps.push([reg,key])
@@ -328,7 +327,7 @@ Editor = (function ()
 
     Editor.prototype["indentStringForLineAtIndex"] = function (li)
     {
-        var e, il, indentLength, line, thisIndent, _247_33_, _248_50_, _254_52_
+        var e, il, indentLength, line, thisIndent, _245_33_, _246_50_, _252_52_
 
         while (_k_.empty((this.line(li).trim())) && li > 0)
         {
@@ -345,9 +344,9 @@ Editor = (function ()
                 if ((this.indentNewLineMore.lineEndsWith != null ? this.indentNewLineMore.lineEndsWith.length : undefined))
                 {
                     var list = _k_.list(this.indentNewLineMore.lineEndsWith)
-                    for (var _249_26_ = 0; _249_26_ < list.length; _249_26_++)
+                    for (var _247_26_ = 0; _247_26_ < list.length; _247_26_++)
                     {
-                        e = list[_249_26_]
+                        e = list[_247_26_]
                         if (line.trim().endsWith(e))
                         {
                             il = thisIndent + indentLength

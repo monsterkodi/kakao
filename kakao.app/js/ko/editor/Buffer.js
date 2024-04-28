@@ -8,7 +8,7 @@ let matchr = kxk.matchr
 let events = kxk.events
 let uniq = kxk.uniq
 
-import EditorState from "./EditorState.js"
+import Do2 from "./Do2.js"
 
 
 startOf = function (r)
@@ -30,121 +30,126 @@ Buffer = (function ()
         this["endOfWordAtPos"] = this["endOfWordAtPos"].bind(this)
         this["lines"] = this["lines"].bind(this)
         this["line"] = this["line"].bind(this)
+        this["onDoChanges"] = this["onDoChanges"].bind(this)
         Buffer.__super__.constructor.call(this)
         this.newlineCharacters = '\n'
         this.wordRegExp = new RegExp("(\\s+|\\w+|[^\\s])",'g')
         this.realWordRegExp = new RegExp("(\\w+)",'g')
-        this.setState(new EditorState())
+        this.do = new Do2()
+        this.do.on('changes',this.onDoChanges)
+    }
+
+    Buffer.prototype["onDoChanges"] = function (changes)
+    {
+        var _30_16_
+
+        console.log('Buffer.onDoChanges',changes)
+        return (typeof this.changed === "function" ? this.changed(changes) : undefined)
     }
 
     Buffer.prototype["setLines"] = function (lines)
     {
         this.emit('numLines',0)
-        this.state = new EditorState(lines)
+        this.do.setLines(lines)
         if (this.name === 'editor')
         {
             return this.emit('numLines',this.numLines())
         }
     }
 
-    Buffer.prototype["setState"] = function (s)
-    {
-        return this.state = new EditorState(s.s)
-    }
-
     Buffer.prototype["mainCursor"] = function ()
     {
-        return this.state.mainCursor()
+        return this.do.mainCursor()
     }
 
     Buffer.prototype["line"] = function (i)
     {
-        return this.state.line(i)
+        return this.do.line(i)
     }
 
     Buffer.prototype["tabline"] = function (i)
     {
-        return this.state.tabline(i)
+        return this.do.tabline(i)
     }
 
     Buffer.prototype["cursor"] = function (i)
     {
-        return this.state.cursor(i)
+        return this.do.cursor(i)
     }
 
     Buffer.prototype["highlight"] = function (i)
     {
-        return this.state.highlight(i)
+        return this.do.highlight(i)
     }
 
     Buffer.prototype["selection"] = function (i)
     {
-        return this.state.selection(i)
+        return this.do.selection(i)
     }
 
     Buffer.prototype["lines"] = function ()
     {
-        return this.state.lines()
+        return this.do.lines()
     }
 
     Buffer.prototype["cursors"] = function ()
     {
-        return this.state.cursors()
+        return this.do.cursors()
     }
 
     Buffer.prototype["highlights"] = function ()
     {
-        return this.state.highlights()
+        return this.do.highlights()
     }
 
     Buffer.prototype["selections"] = function ()
     {
-        return this.state.selections()
+        return this.do.selections()
     }
 
     Buffer.prototype["numLines"] = function ()
     {
-        return this.state.numLines()
+        return this.do.numLines()
     }
 
     Buffer.prototype["numCursors"] = function ()
     {
-        return this.state.numCursors()
+        return this.do.numCursors()
     }
 
     Buffer.prototype["numSelections"] = function ()
     {
-        return this.state.numSelections()
+        return this.do.numSelections()
     }
 
     Buffer.prototype["numHighlights"] = function ()
     {
-        return this.state.numHighlights()
+        return this.do.numHighlights()
     }
 
     Buffer.prototype["setCursors"] = function (c)
     {
-        return this.state = this.state.setCursors(c)
+        return this.do.setCursors(c)
     }
 
     Buffer.prototype["setSelections"] = function (s)
     {
-        return this.state = this.state.setSelections(s)
+        return this.do.setSelections(s)
     }
 
     Buffer.prototype["setHighlights"] = function (h)
     {
-        return this.state = this.state.setHighlights(h)
+        return this.do.setHighlights(h)
     }
 
     Buffer.prototype["setMain"] = function (m)
     {
-        return this.state = this.state.setMain(m)
+        return this.do.setMain(m)
     }
 
     Buffer.prototype["addHighlight"] = function (h)
     {
-        return this.state = this.state.addHighlight(h)
+        return this.do.addHighlight(h)
     }
 
     Buffer.prototype["select"] = function (s)
@@ -203,14 +208,14 @@ Buffer = (function ()
     {
         var r
 
-        return (function () { var r_87_66_ = []; var list = _k_.list(this.rangesForWordsAtCursors(cs,opt)); for (var _87_66_ = 0; _87_66_ < list.length; _87_66_++)  { r = list[_87_66_];r_87_66_.push(this.textInRange(r))  } return r_87_66_ }).bind(this)()
+        return (function () { var r_93_66_ = []; var list = _k_.list(this.rangesForWordsAtCursors(cs,opt)); for (var _93_66_ = 0; _93_66_ < list.length; _93_66_++)  { r = list[_93_66_];r_93_66_.push(this.textInRange(r))  } return r_93_66_ }).bind(this)()
     }
 
     Buffer.prototype["rangesForWordsAtCursors"] = function (cs = this.cursors(), opt)
     {
         var c, rngs
 
-        rngs = (function () { var r_90_49_ = []; var list = _k_.list(cs); for (var _90_49_ = 0; _90_49_ < list.length; _90_49_++)  { c = list[_90_49_];r_90_49_.push(this.rangeForWordAtPos(c,opt))  } return r_90_49_ }).bind(this)()
+        rngs = (function () { var r_96_49_ = []; var list = _k_.list(cs); for (var _96_49_ = 0; _96_49_ < list.length; _96_49_++)  { c = list[_96_49_];r_96_49_.push(this.rangeForWordAtPos(c,opt))  } return r_96_49_ }).bind(this)()
         return rngs = cleanRanges(rngs)
     }
 
@@ -296,10 +301,10 @@ Buffer = (function ()
 
     Buffer.prototype["wordRangesInLineAtIndex"] = function (li, opt = {})
     {
-        var mtch, r, _141_19_, _142_89_
+        var mtch, r, _147_19_, _148_89_
 
-        opt.regExp = ((_141_19_=opt.regExp) != null ? _141_19_ : this.wordRegExp)
-        if ((opt != null ? (_142_89_=opt.include) != null ? _142_89_.length : undefined : undefined))
+        opt.regExp = ((_147_19_=opt.regExp) != null ? _147_19_ : this.wordRegExp)
+        if ((opt != null ? (_148_89_=opt.include) != null ? _148_89_.length : undefined : undefined))
         {
             opt.regExp = new RegExp(`(\\s+|[\\w${opt.include}]+|[^\\s])`,'g')
         }
@@ -330,7 +335,7 @@ Buffer = (function ()
         hl = this.highlightsInLineIndexRange(lineIndexRange)
         if (hl)
         {
-            return (function () { var r_165_61_ = []; var list = _k_.list(hl); for (var _165_61_ = 0; _165_61_ < list.length; _165_61_++)  { s = list[_165_61_];r_165_61_.push([s[0] - relIndex,[s[1][0],s[1][1]],s[2]])  } return r_165_61_ }).bind(this)()
+            return (function () { var r_171_61_ = []; var list = _k_.list(hl); for (var _171_61_ = 0; _171_61_ < list.length; _171_61_++)  { s = list[_171_61_];r_171_61_.push([s[0] - relIndex,[s[1][0],s[1][1]],s[2]])  } return r_171_61_ }).bind(this)()
         }
     }
 
@@ -349,7 +354,7 @@ Buffer = (function ()
         sl = this.selectionsInLineIndexRange(lineIndexRange)
         if (sl)
         {
-            return (function () { var r_181_55_ = []; var list = _k_.list(sl); for (var _181_55_ = 0; _181_55_ < list.length; _181_55_++)  { s = list[_181_55_];r_181_55_.push([s[0] - relIndex,[s[1][0],s[1][1]]])  } return r_181_55_ }).bind(this)()
+            return (function () { var r_187_55_ = []; var list = _k_.list(sl); for (var _187_55_ = 0; _187_55_ < list.length; _187_55_++)  { s = list[_187_55_];r_187_55_.push([s[0] - relIndex,[s[1][0],s[1][1]]])  } return r_187_55_ }).bind(this)()
         }
     }
 
@@ -365,14 +370,14 @@ Buffer = (function ()
     {
         var s
 
-        return uniq((function () { var r_187_45_ = []; var list = _k_.list(this.selections()); for (var _187_45_ = 0; _187_45_ < list.length; _187_45_++)  { s = list[_187_45_];r_187_45_.push(s[0])  } return r_187_45_ }).bind(this)())
+        return uniq((function () { var r_193_45_ = []; var list = _k_.list(this.selections()); for (var _193_45_ = 0; _193_45_ < list.length; _193_45_++)  { s = list[_193_45_];r_193_45_.push(s[0])  } return r_193_45_ }).bind(this)())
     }
 
     Buffer.prototype["cursorLineIndices"] = function ()
     {
         var c
 
-        return uniq((function () { var r_188_45_ = []; var list = _k_.list(this.cursors()); for (var _188_45_ = 0; _188_45_ < list.length; _188_45_++)  { c = list[_188_45_];r_188_45_.push(c[1])  } return r_188_45_ }).bind(this)())
+        return uniq((function () { var r_194_45_ = []; var list = _k_.list(this.cursors()); for (var _194_45_ = 0; _194_45_ < list.length; _194_45_++)  { c = list[_194_45_];r_194_45_.push(c[1])  } return r_194_45_ }).bind(this)())
     }
 
     Buffer.prototype["selectedAndCursorLineIndices"] = function ()
@@ -389,9 +394,9 @@ Buffer = (function ()
         if (il.length)
         {
             var list = _k_.list(il)
-            for (var _199_19_ = 0; _199_19_ < list.length; _199_19_++)
+            for (var _205_19_ = 0; _205_19_ < list.length; _205_19_++)
             {
-                li = list[_199_19_]
+                li = list[_205_19_]
                 if (csr.length && _k_.last(csr)[1] === li - 1)
                 {
                     _k_.last(csr)[1] = li
@@ -423,12 +428,12 @@ Buffer = (function ()
 
     Buffer.prototype["text"] = function ()
     {
-        return this.state.text(this.newlineCharacters)
+        return this.do.text(this.newlineCharacters)
     }
 
     Buffer.prototype["textInRange"] = function (rg)
     {
-        var _222_58_
+        var _228_58_
 
         return (!_k_.empty((rg)) ? (typeof this.line(rg[0]).slice === "function" ? this.line(rg[0]).slice(rg[1][0],rg[1][1]) : undefined) : '')
     }
@@ -437,7 +442,7 @@ Buffer = (function ()
     {
         var r
 
-        return (function () { var r_223_51_ = []; var list = _k_.list(rgs); for (var _223_51_ = 0; _223_51_ < list.length; _223_51_++)  { r = list[_223_51_];r_223_51_.push(this.textInRange(r))  } return r_223_51_ }).bind(this)()
+        return (function () { var r_229_51_ = []; var list = _k_.list(rgs); for (var _229_51_ = 0; _229_51_ < list.length; _229_51_++)  { r = list[_229_51_];r_229_51_.push(this.textInRange(r))  } return r_229_51_ }).bind(this)()
     }
 
     Buffer.prototype["textInRanges"] = function (rgs)
@@ -533,7 +538,7 @@ Buffer = (function ()
 
     Buffer.prototype["isRangeInString"] = function (r)
     {
-        var _287_61_
+        var _293_61_
 
         return (this.rangeOfStringSurroundingRange(r) != null)
     }
@@ -595,7 +600,7 @@ Buffer = (function ()
     {
         var c
 
-        return (function () { var r_329_78_ = []; var list = _k_.list(cs); for (var _329_78_ = 0; _329_78_ < list.length; _329_78_++)  { c = list[_329_78_];r_329_78_.push(this.rangeForLineAtIndex(c[1]))  } return r_329_78_ }).bind(this)()
+        return (function () { var r_335_78_ = []; var list = _k_.list(cs); for (var _335_78_ = 0; _335_78_ < list.length; _335_78_++)  { c = list[_335_78_];r_335_78_.push(this.rangeForLineAtIndex(c[1]))  } return r_335_78_ }).bind(this)()
     }
 
     Buffer.prototype["rangesForAllLines"] = function ()
@@ -608,7 +613,7 @@ Buffer = (function ()
         var i, r
 
         r = []
-        var _334_14_ = sortPositions([a,b]); a = _334_14_[0]; b = _334_14_[1]
+        var _340_14_ = sortPositions([a,b]); a = _340_14_[0]; b = _340_14_[1]
 
         if (a[1] === b[1])
         {
@@ -619,7 +624,7 @@ Buffer = (function ()
             r.push([a[1],[a[0],this.line(a[1]).length]])
             if (b[1] - a[1] > 1)
             {
-                for (var _340_26_ = i = a[1] + 1, _340_35_ = b[1]; (_340_26_ <= _340_35_ ? i < b[1] : i > b[1]); (_340_26_ <= _340_35_ ? ++i : --i))
+                for (var _346_26_ = i = a[1] + 1, _346_35_ = b[1]; (_346_26_ <= _346_35_ ? i < b[1] : i > b[1]); (_346_26_ <= _346_35_ ? ++i : --i))
                 {
                     r.push([i,[0,this.line(i).length]])
                 }
@@ -635,7 +640,7 @@ Buffer = (function ()
 
         r = []
         ir = [top,bot]
-        for (var _348_18_ = li = startOf(ir), _348_32_ = endOf(ir); (_348_18_ <= _348_32_ ? li < endOf(ir) : li > endOf(ir)); (_348_18_ <= _348_32_ ? ++li : --li))
+        for (var _354_18_ = li = startOf(ir), _354_32_ = endOf(ir); (_354_18_ <= _354_32_ ? li < endOf(ir) : li > endOf(ir)); (_354_18_ <= _354_32_ ? ++li : --li))
         {
             if ((0 <= li && li < this.numLines()))
             {
@@ -647,14 +652,14 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForText"] = function (t, opt)
     {
-        var li, r, _358_43_
+        var li, r, _364_43_
 
         t = t.split('\n')[0]
         r = []
-        for (var _356_19_ = li = 0, _356_23_ = this.numLines(); (_356_19_ <= _356_23_ ? li < this.numLines() : li > this.numLines()); (_356_19_ <= _356_23_ ? ++li : --li))
+        for (var _362_19_ = li = 0, _362_23_ = this.numLines(); (_362_19_ <= _362_23_ ? li < this.numLines() : li > this.numLines()); (_362_19_ <= _362_23_ ? ++li : --li))
         {
             r = r.concat(this.rangesForTextInLineAtIndex(t,li,opt))
-            if (r.length >= (((_358_43_=(opt != null ? opt.max : undefined)) != null ? _358_43_ : 999)))
+            if (r.length >= (((_364_43_=(opt != null ? opt.max : undefined)) != null ? _364_43_ : 999)))
             {
                 break
             }
@@ -664,19 +669,19 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForTextInLineAtIndex"] = function (t, i, opt)
     {
-        var r, rng, rngs, type, _363_25_
+        var r, rng, rngs, type, _369_25_
 
         r = []
-        type = ((_363_25_=(opt != null ? opt.type : undefined)) != null ? _363_25_ : 'str')
+        type = ((_369_25_=(opt != null ? opt.type : undefined)) != null ? _369_25_ : 'str')
         if (_k_.in(type,['str','Str']))
         {
             t = kstr.escapeRegExp(t)
         }
         rngs = matchr.ranges(t,this.line(i),_k_.in(type,['str','reg']) && 'i' || '')
         var list = _k_.list(rngs)
-        for (var _366_16_ = 0; _366_16_ < list.length; _366_16_++)
+        for (var _372_16_ = 0; _372_16_ < list.length; _372_16_++)
         {
-            rng = list[_366_16_]
+            rng = list[_372_16_]
             r.push([i,[rng.start,rng.start + rng.match.length]])
         }
         return r
@@ -690,7 +695,7 @@ Buffer = (function ()
         r = []
         ss = -1
         cc = null
-        for (var _375_18_ = i = 0, _375_22_ = t.length; (_375_18_ <= _375_22_ ? i < t.length : i > t.length); (_375_18_ <= _375_22_ ? ++i : --i))
+        for (var _381_18_ = i = 0, _381_22_ = t.length; (_381_18_ <= _381_22_ ? i < t.length : i > t.length); (_381_18_ <= _381_22_ ? ++i : --i))
         {
             c = t[i]
             if (!cc && _k_.in(c,"'\""))

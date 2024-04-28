@@ -6,13 +6,16 @@
 0000000     0000000   000000      
 ###
 
-use ../../kxk ▪ immutable post
+use ../../kxk ▪ immutable events post
 use ../tools  ◆ ranges
 use           ◆ DoState
 
-class Do2
+class Do2 extends events
 
-    @: (lines=[]) -> @setLines lines
+    @: (lines=[]) -> 
+        
+        super()
+        @setLines lines
         
     # 000000000   0000000   0000000           0000000  000000000   0000000   000000000  00000000
     #    000     000   000  000   000        000          000     000   000     000     000
@@ -74,7 +77,10 @@ class Do2
         
         @doCount -= 1
         if @doCount == 0
+            changes = @calculateChanges @history[-1], @state.s
             @history.push @state.s
+            # log 'do2.end changes' changes
+            @emit 'changes' changes
         null
 
     # 00     00   0000000   0000000    000  00000000  000   000
@@ -86,6 +92,7 @@ class Do2
     change: (index, text) -> @state.changeLine index, text
     insert: (index, text) -> @state.insertLine index, text
     delete: (index)       -> @state.deleteLine index
+    append:        (text) -> @state.appendLine text
 
     # 000   000  000   000  0000000     0000000
     # 000   000  0000  000  000   000  000   000
@@ -97,7 +104,9 @@ class Do2
 
         if @undos+1 < @history.length
             @undos += 1
+            changes = @calculateChanges @state.s, @history[@history.length-1-@undos]
             @state = new DoState @history[@history.length-1-@undos]
+            @emit 'changes' changes
 
     # 00000000   00000000  0000000     0000000
     # 000   000  000       000   000  000   000
@@ -111,7 +120,9 @@ class Do2
         
         if @undos-1 < @history.length
             @undos -= 1
+            changes = @calculateChanges @state.s, @history[@history.length-1-@undos]
             @state = new DoState @history[@history.length-1-@undos]
+            @emit 'changes' changes
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
@@ -156,6 +167,25 @@ class Do2
         @state.setCursors newCursors
         @state.setMain mainIndex
 
+    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
+    # 000       000       000      000       000          000     000  000   000  0000  000  000       
+    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  0000000   
+    #      000  000       000      000       000          000     000  000   000  000  0000       000  
+    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000   
+    
+    setSelections: (s) -> @state.setSelections s
+    
+    # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
+    # 000   000  000  000        000   000  000      000  000        000   000     000     000       
+    # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     0000000   
+    # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
+    # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
+    
+    setHighlights: (h) -> @state.setHighlights h
+    addHighlight:  (h) -> @state.addHighlight h
+    
+    # setMain:       (m) -> @s = @s.set 'main'       m
+        
     #  0000000  000      00000000   0000000   000   000
     # 000       000      000       000   000  0000  000
     # 000       000      0000000   000000000  000 0 000
@@ -183,6 +213,13 @@ class Do2
     # 000       000000000  000      000       000   000  000      000000000     000     0000000
     # 000       000   000  000      000       000   000  000      000   000     000     000
     #  0000000  000   000  0000000   0000000   0000000   0000000  000   000     000     00000000
+    
+    hasChanges: ->
+        
+        return false if empty @history
+        
+        changes = @calculateChanges @history[0], @state.s
+        changes.changes.length > 0
 
     calculateChanges: (oldState, newState) ->
         
@@ -191,8 +228,8 @@ class Do2
         dd = 0 # delta for doIndex
         changes = []
 
-        oldLines = oldState.lines()
-        newLines = newState.lines()
+        oldLines = DoState.lines oldState
+        newLines = DoState.lines newState
 
         inserts = 0 # number of insertions
         deletes  = 0 # number of deletions
@@ -263,8 +300,8 @@ class Do2
         changes: changes
         inserts: inserts
         deletes: deletes
-        cursors: oldState.s.cursors    != newState.s.cursors
-        selects: oldState.s.selections != newState.s.selections
+        cursors: oldState.cursors    != newState.cursors
+        selects: oldState.selections != newState.selections
 
     #  0000000  000000000   0000000   000000000  00000000
     # 000          000     000   000     000     000

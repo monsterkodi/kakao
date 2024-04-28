@@ -156,7 +156,7 @@ export default {actions:{startSalter:{name:'ASCII Header Mode',text:`if cursor i
 
     rgs = []
     li = p[1]
-    state = this.do.isDoing() && this.do.state || this.state
+    state = this.do.state
     while (rgs.length < 5 && li < state.numLines() && this.headerRegExp.test(state.line(li)))
     {
         rgs.push([li,[0,state.line(li).length]])
@@ -180,15 +180,15 @@ export default {actions:{startSalter:{name:'ASCII Header Mode',text:`if cursor i
 {
     var col, cols, i, maxv, minv, s
 
-    minv = _k_.min((function () { var r_172_39_ = []; var list = _k_.list(slt); for (var _172_39_ = 0; _172_39_ < list.length; _172_39_++)  { s = list[_172_39_];r_172_39_.push(s.search(/0/))  } return r_172_39_ }).bind(this)())
+    minv = _k_.min((function () { var r_173_39_ = []; var list = _k_.list(slt); for (var _173_39_ = 0; _173_39_ < list.length; _173_39_++)  { s = list[_173_39_];r_173_39_.push(s.search(/0/))  } return r_173_39_ }).bind(this)())
     if (minv < 0)
     {
-        minv = _k_.min((function () { var r_174_46_ = []; var list1 = _k_.list(slt); for (var _174_46_ = 0; _174_46_ < list1.length; _174_46_++)  { s = list1[_174_46_];r_174_46_.push(s.search(/#/) + 1)  } return r_174_46_ }).bind(this)())
+        minv = _k_.min((function () { var r_175_46_ = []; var list1 = _k_.list(slt); for (var _175_46_ = 0; _175_46_ < list1.length; _175_46_++)  { s = list1[_175_46_];r_175_46_.push(s.search(/#/) + 1)  } return r_175_46_ }).bind(this)())
         return [minv]
     }
-    maxv = _k_.max((function () { var r_176_35_ = []; var list2 = _k_.list(slt); for (var _176_35_ = 0; _176_35_ < list2.length; _176_35_++)  { s = list2[_176_35_];r_176_35_.push(s.length)  } return r_176_35_ }).bind(this)())
+    maxv = _k_.max((function () { var r_177_35_ = []; var list2 = _k_.list(slt); for (var _177_35_ = 0; _177_35_ < list2.length; _177_35_++)  { s = list2[_177_35_];r_177_35_.push(s.length)  } return r_177_35_ }).bind(this)())
     cols = [minv,maxv]
-    for (var _178_20_ = col = minv, _178_26_ = maxv; (_178_20_ <= _178_26_ ? col <= maxv : col >= maxv); (_178_20_ <= _178_26_ ? ++col : --col))
+    for (var _179_20_ = col = minv, _179_26_ = maxv; (_179_20_ <= _179_26_ ? col <= maxv : col >= maxv); (_179_20_ <= _179_26_ ? ++col : --col))
     {
         s = 0
         for (i = 0; i < 5; i++)

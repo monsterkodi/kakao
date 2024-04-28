@@ -57,8 +57,8 @@ function Kore extends events
 
     set: (key, value) =>
         # log 'kore.set' key, noon value
-        if key == 'tabStates'
-            value = @compressTabStates value
+        # if key == 'tabStates'
+            # value = @compressTabStates value
             # log 'set tabStates' value
         
         stash.set "kore|#{key}" value 
@@ -68,9 +68,9 @@ function Kore extends events
         
         r = stash.get "kore|#{key}" def
         
-        if key == 'tabStates'
+        # if key == 'tabStates'
             # log 'get tabStates stored' r
-            r = @decompressTabStates r
+            # r = @decompressTabStates r
             # log 'get tabStates decopd' r
         # log 'kore.get' key, noon r
         r

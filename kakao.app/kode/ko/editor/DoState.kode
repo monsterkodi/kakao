@@ -18,6 +18,8 @@ function DoState
         else if stateOrLines is arr
             # log 'dostate lines'
             @s = @stateForLines stateOrLines
+        else
+            log 'dostate without array or state?' stateOrLines
             
     stateForLines: (lineStrings) ->
         
@@ -47,13 +49,16 @@ function DoState
     # 0000000  000  000   000  00000000  0000000   
     
     line: (i) -> @s.lines[i]
-                
-    lines: -> 
+    
+    @lines: (s) ->
         
         l = []
-        for index,line of @s.lines
+        for index,line of s.lines
             l.push line
         l
+                
+    lines: -> DoState.lines @s
+        
         
     #  0000000  000   000   0000000   000   000   0000000   00000000  
     # 000       000   000  000   000  0000  000  000        000       

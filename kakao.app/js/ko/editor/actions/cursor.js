@@ -92,7 +92,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
     }
 },toggleCursorAtPos:function (p)
 {
-    if (isPosInPositions(p,this.state.cursors()))
+    if (isPosInPositions(p,this.do.cursors()))
     {
         return this.delCursorAtPos(p)
     }
@@ -124,6 +124,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
     {
         return
     }
+    oldCursors = this.do.cursors()
     this.do.start()
     d = ((function ()
     {
@@ -138,7 +139,6 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
         }
 
     }).bind(this))()
-    oldCursors = this.state.cursors()
     newCursors = this.do.cursors()
     var list = _k_.list(oldCursors)
     for (var _169_14_ = 0; _169_14_ < list.length; _169_14_++)
@@ -278,7 +278,7 @@ select brackets or quotes otherwise.`,combo:'command+alt+b'},addCursorsUp:{separ
 {
     var c, newCursors, oldCursors
 
-    oldCursors = this.state.cursors()
+    oldCursors = this.do.cursors()
     c = posInPositions(p,oldCursors)
     if (c && this.numCursors() > 1)
     {

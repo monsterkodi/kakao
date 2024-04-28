@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ ffs kstr slash
-use ◆ Do Syntax Buffer
+use ◆ Do2 Syntax Buffer
 
 function Editor extends Buffer
 
@@ -73,8 +73,6 @@ function Editor extends Buffer
         @stickySelection = false
 
         @syntax = new Syntax @config.syntaxName, @line
-
-        @do = new Do @
 
         @setupFileType()
 

@@ -223,7 +223,7 @@ TextEditor = (function ()
         for (var _198_14_ = 0; _198_14_ < list.length; _198_14_++)
         {
             l = list[_198_14_]
-            this.state = this.state.appendLine(l)
+            this.do.append(l)
             appended.push(this.numLines() - 1)
         }
         if (this.scroll.viewHeight !== this.viewHeight())
@@ -265,13 +265,14 @@ TextEditor = (function ()
     {
         var ch, change, di, li, num
 
+        console.log('TextEditor.changed',changeInfo)
         profile.start('changed')
         this.syntax.changed(changeInfo)
         var list = _k_.list(changeInfo.changes)
-        for (var _251_19_ = 0; _251_19_ < list.length; _251_19_++)
+        for (var _253_19_ = 0; _253_19_ < list.length; _253_19_++)
         {
-            change = list[_251_19_]
-            var _252_23_ = [change.doIndex,change.newIndex,change.change]; di = _252_23_[0]; li = _252_23_[1]; ch = _252_23_[2]
+            change = list[_253_19_]
+            var _254_23_ = [change.doIndex,change.newIndex,change.change]; di = _254_23_[0]; li = _254_23_[1]; ch = _254_23_[2]
 
             switch (ch)
             {
@@ -355,7 +356,7 @@ TextEditor = (function ()
     {
         var li
 
-        for (var _322_19_ = li = top, _322_24_ = bot; (_322_19_ <= _322_24_ ? li <= bot : li >= bot); (_322_19_ <= _322_24_ ? ++li : --li))
+        for (var _324_19_ = li = top, _324_24_ = bot; (_324_19_ <= _324_24_ ? li <= bot : li >= bot); (_324_19_ <= _324_24_ ? ++li : --li))
         {
             this.syntax.getDiss(li,true)
             this.updateLine(li)
@@ -368,7 +369,7 @@ TextEditor = (function ()
 
         this.lineDivs = {}
         this.elem.innerHTML = ''
-        for (var _337_19_ = li = top, _337_24_ = bot; (_337_19_ <= _337_24_ ? li <= bot : li >= bot); (_337_19_ <= _337_24_ ? ++li : --li))
+        for (var _339_19_ = li = top, _339_24_ = bot; (_339_19_ <= _339_24_ ? li <= bot : li >= bot); (_339_19_ <= _339_24_ ? ++li : --li))
         {
             this.appendLine(li)
         }
@@ -440,7 +441,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["updateLinePositions"] = function (animate = 0)
     {
-        var div, li, resetTrans, y, _406_25_
+        var div, li, resetTrans, y, _408_25_
 
         for (li in this.lineDivs)
         {
@@ -463,9 +464,9 @@ TextEditor = (function ()
                 var c
 
                 var list = _k_.list(this.elem.children)
-                for (var _414_22_ = 0; _414_22_ < list.length; _414_22_++)
+                for (var _416_22_ = 0; _416_22_ < list.length; _416_22_++)
                 {
-                    c = list[_414_22_]
+                    c = list[_416_22_]
                     c.style.transition = 'initial'
                 }
             }).bind(this)
@@ -477,7 +478,7 @@ TextEditor = (function ()
     {
         var li
 
-        for (var _420_19_ = li = this.scroll.top, _420_32_ = this.scroll.bot; (_420_19_ <= _420_32_ ? li <= this.scroll.bot : li >= this.scroll.bot); (_420_19_ <= _420_32_ ? ++li : --li))
+        for (var _422_19_ = li = this.scroll.top, _422_32_ = this.scroll.bot; (_422_19_ <= _422_32_ ? li <= this.scroll.bot : li >= this.scroll.bot); (_422_19_ <= _422_32_ ? ++li : --li))
         {
             this.updateLine(li)
         }
@@ -507,9 +508,9 @@ TextEditor = (function ()
 
         cs = []
         var list = _k_.list(this.cursors())
-        for (var _446_14_ = 0; _446_14_ < list.length; _446_14_++)
+        for (var _448_14_ = 0; _448_14_ < list.length; _448_14_++)
         {
-            c = list[_446_14_]
+            c = list[_448_14_]
             if (c[1] >= this.scroll.top && c[1] <= this.scroll.bot)
             {
                 cs.push([c[0],c[1] - this.scroll.top])
@@ -529,10 +530,10 @@ TextEditor = (function ()
                     return console.error(`${this.name}.renderCursors mainCursor DAFUK?`,this.numLines(),str(this.mainCursor()))
                 }
                 ri = mc[1] - this.scroll.top
-                cursorLine = this.state.line(mc[1])
+                cursorLine = this.do.line(mc[1])
                 if (!(cursorLine != null))
                 {
-                    return console.error('no main cursor line?',this.state)
+                    return console.error('no main cursor line?',this.do)
                 }
                 if (mc[0] > cursorLine.length)
                 {
@@ -549,9 +550,9 @@ TextEditor = (function ()
         {
             vc = []
             var list1 = _k_.list(cs)
-            for (var _473_18_ = 0; _473_18_ < list1.length; _473_18_++)
+            for (var _475_18_ = 0; _475_18_ < list1.length; _475_18_++)
             {
-                c = list1[_473_18_]
+                c = list1[_475_18_]
                 if (isSamePos(this.mainCursor(),[c[0],c[1] + this.scroll.top]))
                 {
                     c[2] = 'main'
@@ -607,7 +608,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["suspendBlink"] = function ()
     {
-        var _518_20_
+        var _520_20_
 
         this.stopBlink()
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',false) : undefined)
@@ -640,7 +641,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["doBlink"] = function ()
     {
-        var _541_20_, _542_16_
+        var _543_20_, _544_16_
 
         this.blink = !this.blink
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',this.blink) : undefined)
@@ -659,7 +660,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["stopBlink"] = function ()
     {
-        var _554_20_
+        var _556_20_
 
         ;(this.cursorDiv() != null ? this.cursorDiv().classList.toggle('blink',false) : undefined)
         clearTimeout(this.blinkTimer)
@@ -690,9 +691,9 @@ TextEditor = (function ()
 
         w = text.length * this.size.charWidth
         var list = _k_.list(text)
-        for (var _588_17_ = 0; _588_17_ < list.length; _588_17_++)
+        for (var _590_17_ = 0; _590_17_ < list.length; _590_17_++)
         {
-            char = list[_588_17_]
+            char = list[_590_17_]
             if (char === '⮐')
             {
                 w += this.size.charWidth
@@ -773,9 +774,9 @@ TextEditor = (function ()
         {
             lr = lineElem.getBoundingClientRect()
             var list = _k_.list(lineElem.firstChild.children)
-            for (var _644_18_ = 0; _644_18_ < list.length; _644_18_++)
+            for (var _646_18_ = 0; _646_18_ < list.length; _646_18_++)
             {
-                e = list[_644_18_]
+                e = list[_646_18_]
                 br = e.getBoundingClientRect()
                 if ((br.left <= x && x <= br.left + br.width))
                 {
@@ -794,7 +795,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["viewHeight"] = function ()
     {
-        var _655_18_, _656_13_
+        var _657_18_, _658_13_
 
         if ((this.scroll != null ? this.scroll.viewHeight : undefined) >= 0)
         {
@@ -942,7 +943,7 @@ TextEditor = (function ()
 
     TextEditor.prototype["handleModKeyComboCharEvent"] = function (mod, key, combo, char, event)
     {
-        var action, actionCombo, combos, _777_24_, _793_35_, _799_33_
+        var action, actionCombo, combos, _779_24_, _795_35_, _801_33_
 
         if ((this.autocomplete != null))
         {
@@ -972,18 +973,18 @@ TextEditor = (function ()
         }
 
         var list = _k_.list(Editor.actions)
-        for (var _791_19_ = 0; _791_19_ < list.length; _791_19_++)
+        for (var _793_19_ = 0; _793_19_ < list.length; _793_19_++)
         {
-            action = list[_791_19_]
-            combos = ((_793_35_=action.combos) != null ? _793_35_ : [action.combo])
+            action = list[_793_19_]
+            combos = ((_795_35_=action.combos) != null ? _795_35_ : [action.combo])
             if (_k_.empty(combos))
             {
                 continue
             }
             var list1 = _k_.list(combos)
-            for (var _797_28_ = 0; _797_28_ < list1.length; _797_28_++)
+            for (var _799_28_ = 0; _799_28_ < list1.length; _799_28_++)
             {
-                actionCombo = list1[_797_28_]
+                actionCombo = list1[_799_28_]
                 if (combo === actionCombo)
                 {
                     if ((action.key != null) && _k_.isFunc(this[action.key]))

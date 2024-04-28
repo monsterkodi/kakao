@@ -90,6 +90,8 @@ class Do
         if @numLines() >= 1 and 0 <= index < @numLines()
             @editor.emit 'willDeleteLine' @line index
             @state = @state.deleteLine index
+            
+    append: (text) -> @state.appendLine text
 
     # 00000000  000   000  0000000
     # 000       0000  000  000   000

@@ -140,7 +140,7 @@ export
 
     toggleCursorAtPos: (p) ->
 
-        if isPosInPositions p, @state.cursors()
+        if isPosInPositions p, @do.cursors()
             @delCursorAtPos p
         else
             @addCursorAtPos p
@@ -160,11 +160,11 @@ export
 
         dir = key
         return if @numCursors() >= 999
+        oldCursors = @do.cursors()
         @do.start()
         d = switch dir
-            when 'up'    then -1
-            when 'down'  then +1
-        oldCursors = @state.cursors()
+            'up'    ➜ -1
+            'down'  ➜ +1
         newCursors = @do.cursors()
         for c in oldCursors
             if not isPosInPositions [c[0], c[1]+d], oldCursors
@@ -244,7 +244,7 @@ export
     # 0000000    00000000  0000000
 
     delCursorAtPos: (p) ->
-        oldCursors = @state.cursors()
+        oldCursors = @do.cursors()
         c = posInPositions p, oldCursors
         if c and @numCursors() > 1
             @do.start()

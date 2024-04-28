@@ -19,6 +19,10 @@ DoState = (function ()
         {
             this.s = this.stateForLines(stateOrLines)
         }
+        else
+        {
+            console.log('dostate without array or state?',stateOrLines)
+        }
     }
 
     DoState.prototype["stateForLines"] = function (lineStrings)
@@ -50,17 +54,22 @@ DoState = (function ()
         return this.s.lines[i]
     }
 
-    DoState.prototype["lines"] = function ()
+    DoState["lines"] = function (s)
     {
         var index, l, line
 
         l = []
-        for (index in this.s.lines)
+        for (index in s.lines)
         {
-            line = this.s.lines[index]
+            line = s.lines[index]
             l.push(line)
         }
         return l
+    }
+
+    DoState.prototype["lines"] = function ()
+    {
+        return DoState.lines(this.s)
     }
 
     DoState.prototype["changeLine"] = function (i, t)

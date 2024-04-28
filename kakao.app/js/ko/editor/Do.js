@@ -102,9 +102,14 @@ class Do
         }
     }
 
+    append (text)
+    {
+        return this.state.appendLine(text)
+    }
+
     end (opt)
     {
-        var changes, _113_27_
+        var changes, _115_27_
 
         this.redos = []
         this.groupCount -= 1
@@ -119,7 +124,7 @@ class Do
 
     undo ()
     {
-        var changes, _135_27_
+        var changes, _137_27_
 
         if (this.history.length)
         {
@@ -137,7 +142,7 @@ class Do
 
     redo ()
     {
-        var changes, _156_27_
+        var changes, _158_27_
 
         if (this.redos.length)
         {
@@ -321,7 +326,7 @@ class Do
                 if ((a.numLines() === b.numLines() && b.numLines() === c.numLines()))
                 {
                     numLines = a.numLines()
-                    for (var _319_31_ = li = 0, _319_35_ = numLines; (_319_31_ <= _319_35_ ? li < numLines : li > numLines); (_319_31_ <= _319_35_ ? ++li : --li))
+                    for (var _321_31_ = li = 0, _321_35_ = numLines; (_321_31_ <= _321_35_ ? li < numLines : li > numLines); (_321_31_ <= _321_35_ ? ++li : --li))
                     {
                         _k_.profile('lines')
                         la = a.line(li)
@@ -354,16 +359,16 @@ class Do
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _340_14_ = 0; _340_14_ < list.length; _340_14_++)
+        for (var _342_14_ = 0; _342_14_ < list.length; _342_14_++)
         {
-            p = list[_340_14_]
+            p = list[_342_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _347_22_ = ci = cs.length - 1, _347_36_ = 0; (_347_22_ <= _347_36_ ? ci < 0 : ci > 0); (_347_22_ <= _347_36_ ? ++ci : --ci))
+            for (var _349_22_ = ci = cs.length - 1, _349_36_ = 0; (_349_22_ <= _349_36_ ? ci < 0 : ci > 0); (_349_22_ <= _349_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -443,7 +448,7 @@ class Do
 
     textInRange (r)
     {
-        var _376_41_
+        var _378_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

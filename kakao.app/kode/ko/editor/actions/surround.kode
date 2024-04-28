@@ -66,7 +66,7 @@ export
         return false if @numCursors() > 1
         return false if @numSelections()
         p = @cursorPos()
-        [before, after] = @splitStateLineAtPos @state, p
+        [before, after] = @splitStateLineAtPos @do, p
         return false if not before.endsWith '""'
         return false if before.length > 2 and before[before.length-3] == '"'
         return false if after.startsWith '"'

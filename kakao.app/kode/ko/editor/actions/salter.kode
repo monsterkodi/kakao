@@ -150,7 +150,8 @@ export
         
         rgs = []
         li = p[1]
-        state = @do.isDoing() and @do.state or @state
+        # state = @do.isDoing() and @do.state or @state
+        state = @do.state
         while rgs.length < 5 and li < state.numLines() and @headerRegExp.test state.line(li)
             rgs.push [li, [0, state.line(li).length]] 
             li += 1

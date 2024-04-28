@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ kstr matchr events uniq
-use           ◆ EditorState
+use           ◆ Do2
 
 startOf = (r) -> r[0]
 endOf   = (r) -> r[0] + Math.max 1, r[1]-r[0]
@@ -20,41 +20,47 @@ function Buffer extends events
         @newlineCharacters = '\n'
         @wordRegExp = new RegExp "(\\s+|\\w+|[^\\s])", 'g'
         @realWordRegExp = new RegExp "(\\w+)", 'g'
-        @setState new EditorState()
+        @do = new Do2()
+        @do.on 'changes' @onDoChanges
+        
+    onDoChanges: (changes) => 
+        
+        log 'Buffer.onDoChanges' changes
+    
+        @changed? changes
 
     setLines: (lines) ->
 
         @emit 'numLines' 0 # give listeners a chance to clear their stuff
 
-        @state = new EditorState lines
+        @do.setLines lines
         if @name == 'editor'
             @emit 'numLines' @numLines()
 
-    setState: (s)  -> @state = new EditorState s.s
+    # setState: (s)  -> @state = new DoState s.s
 
-    mainCursor:    -> @state.mainCursor()
-    line:      (i) => @state.line i
-    tabline:   (i) -> @state.tabline i
-    cursor:    (i) -> @state.cursor i
-    highlight: (i) -> @state.highlight i
-    selection: (i) -> @state.selection i
+    mainCursor:    -> @do.mainCursor()
+    line:      (i) => @do.line      i
+    tabline:   (i) -> @do.tabline   i
+    cursor:    (i) -> @do.cursor    i
+    highlight: (i) -> @do.highlight i
+    selection: (i) -> @do.selection i
 
-    lines:         => @state.lines()
-    cursors:       -> @state.cursors()
-    highlights:    -> @state.highlights()
-    selections:    -> @state.selections()
+    lines:         => @do.lines()
+    cursors:       -> @do.cursors()
+    highlights:    -> @do.highlights()
+    selections:    -> @do.selections()
 
-    numLines:      -> @state.numLines()
-    numCursors:    -> @state.numCursors()
-    numSelections: -> @state.numSelections()
-    numHighlights: -> @state.numHighlights()
+    numLines:      -> @do.numLines()
+    numCursors:    -> @do.numCursors()
+    numSelections: -> @do.numSelections()
+    numHighlights: -> @do.numHighlights()
 
-    # these are used from tests and restore
-    setCursors:    (c) -> @state = @state.setCursors    c
-    setSelections: (s) -> @state = @state.setSelections s
-    setHighlights: (h) -> @state = @state.setHighlights h
-    setMain:       (m) -> @state = @state.setMain       m
-    addHighlight:  (h) -> @state = @state.addHighlight  h
+    setCursors:    (c) -> @do.setCursors    c
+    setSelections: (s) -> @do.setSelections s
+    setHighlights: (h) -> @do.setHighlights h
+    setMain:       (m) -> @do.setMain       m
+    addHighlight:  (h) -> @do.addHighlight  h
 
     select: (s) ->
 
@@ -218,7 +224,7 @@ function Buffer extends events
     #    000     000        000 000      000
     #    000     00000000  000   000     000
 
-    text:                -> @state.text @newlineCharacters
+    text:                -> @do.text @newlineCharacters
     textInRange:   (rg)  -> valid(rg) ? @line(rg[0]).slice?(rg[1][0], rg[1][1]) : ''
     textsInRanges: (rgs) -> (@textInRange(r) for r in rgs)
     textInRanges:  (rgs) -> @textsInRanges(rgs).join '\n'

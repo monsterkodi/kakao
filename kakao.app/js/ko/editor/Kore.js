@@ -20,10 +20,6 @@ Kore = (function ()
 
     Kore.prototype["set"] = function (key, value)
     {
-        if (key === 'tabStates')
-        {
-            value = this.compressTabStates(value)
-        }
         stash.set(`kore|${key}`,value)
         return this.emit(key,value)
     }
@@ -33,10 +29,6 @@ Kore = (function ()
         var r
 
         r = stash.get(`kore|${key}`,def)
-        if (key === 'tabStates')
-        {
-            r = this.decompressTabStates(r)
-        }
         return r
     }
 

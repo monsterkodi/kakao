@@ -96,7 +96,7 @@ export default {initSurround:function ()
         return false
     }
     p = this.cursorPos()
-    var _69_24_ = this.splitStateLineAtPos(this.state,p); before = _69_24_[0]; after = _69_24_[1]
+    var _69_24_ = this.splitStateLineAtPos(this.do,p); before = _69_24_[0]; after = _69_24_[1]
 
     if (!before.endsWith('""'))
     {

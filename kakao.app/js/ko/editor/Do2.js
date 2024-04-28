@@ -1,17 +1,20 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let immutable = kxk.immutable
+let events = kxk.events
 let post = kxk.post
 
 import ranges from "../tools/ranges.js"
 
 import DoState from "./DoState.js"
 
-class Do2
+class Do2 extends events
 {
     constructor (lines = [])
     {
+        super()
+    
         this.setLines(lines)
     }
 
@@ -53,10 +56,14 @@ class Do2
 
     end (opt)
     {
+        var changes
+
         this.doCount -= 1
         if (this.doCount === 0)
         {
+            changes = this.calculateChanges(this.history.slice(-1)[0],this.state.s)
             this.history.push(this.state.s)
+            this.emit('changes',changes)
         }
         return null
     }
@@ -76,17 +83,28 @@ class Do2
         return this.state.deleteLine(index)
     }
 
+    append (text)
+    {
+        return this.state.appendLine(text)
+    }
+
     undo ()
     {
+        var changes
+
         if (this.undos + 1 < this.history.length)
         {
             this.undos += 1
-            return this.state = new DoState(this.history[this.history.length - 1 - this.undos])
+            changes = this.calculateChanges(this.state.s,this.history[this.history.length - 1 - this.undos])
+            this.state = new DoState(this.history[this.history.length - 1 - this.undos])
+            return this.emit('changes',changes)
         }
     }
 
     redo ()
     {
+        var changes
+
         if (this.undos <= 0)
         {
             return
@@ -94,7 +112,9 @@ class Do2
         if (this.undos - 1 < this.history.length)
         {
             this.undos -= 1
-            return this.state = new DoState(this.history[this.history.length - 1 - this.undos])
+            changes = this.calculateChanges(this.state.s,this.history[this.history.length - 1 - this.undos])
+            this.state = new DoState(this.history[this.history.length - 1 - this.undos])
+            return this.emit('changes',changes)
         }
     }
 
@@ -152,21 +172,36 @@ class Do2
         return this.state.setMain(mainIndex)
     }
 
+    setSelections (s)
+    {
+        return this.state.setSelections(s)
+    }
+
+    setHighlights (h)
+    {
+        return this.state.setHighlights(h)
+    }
+
+    addHighlight (h)
+    {
+        return this.state.addHighlight(h)
+    }
+
     cleanCursors (cs)
     {
         var c, ci, p
 
         var list = _k_.list(cs)
-        for (var _167_14_ = 0; _167_14_ < list.length; _167_14_++)
+        for (var _197_14_ = 0; _197_14_ < list.length; _197_14_++)
         {
-            p = list[_167_14_]
+            p = list[_197_14_]
             p[0] = Math.max(p[0],0)
             p[1] = _k_.clamp(0,this.state.numLines() - 1,p[1])
         }
         sortPositions(cs)
         if (cs.length > 1)
         {
-            for (var _174_22_ = ci = cs.length - 1, _174_36_ = 0; (_174_22_ <= _174_36_ ? ci < 0 : ci > 0); (_174_22_ <= _174_36_ ? ++ci : --ci))
+            for (var _204_22_ = ci = cs.length - 1, _204_36_ = 0; (_204_22_ <= _204_36_ ? ci < 0 : ci > 0); (_204_22_ <= _204_36_ ? ++ci : --ci))
             {
                 c = cs[ci]
                 p = cs[ci - 1]
@@ -179,6 +214,18 @@ class Do2
         return cs
     }
 
+    hasChanges ()
+    {
+        var changes
+
+        if (_k_.empty(this.history))
+        {
+            return false
+        }
+        changes = this.calculateChanges(this.history[0],this.state.s)
+        return changes.changes.length > 0
+    }
+
     calculateChanges (oldState, newState)
     {
         var changes, dd, deletes, inserts, newLines, ni, nl, oi, ol, oldLines
@@ -187,8 +234,8 @@ class Do2
         ni = 0
         dd = 0
         changes = []
-        oldLines = oldState.lines()
-        newLines = newState.lines()
+        oldLines = DoState.lines(oldState)
+        newLines = DoState.lines(newState)
         inserts = 0
         deletes = 0
         if (oldLines !== newLines)
@@ -258,7 +305,7 @@ class Do2
                 nl = newLines[ni]
             }
         }
-        return {changes:changes,inserts:inserts,deletes:deletes,cursors:oldState.s.cursors !== newState.s.cursors,selects:oldState.s.selections !== newState.s.selections}
+        return {changes:changes,inserts:inserts,deletes:deletes,cursors:oldState.cursors !== newState.cursors,selects:oldState.selections !== newState.selections}
     }
 
     text ()
@@ -328,7 +375,7 @@ class Do2
 
     textInRange (r)
     {
-        var _291_41_
+        var _328_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

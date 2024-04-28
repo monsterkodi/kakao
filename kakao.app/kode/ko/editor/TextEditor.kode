@@ -196,7 +196,7 @@ function TextEditor extends Editor
         ls = text?.split /\n/
 
         for l in ls
-            @state = @state.appendLine l
+            @do.append l
             appended.push @numLines()-1
 
         if @scroll.viewHeight != @viewHeight()
@@ -243,6 +243,8 @@ function TextEditor extends Editor
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
     changed: (changeInfo) ->
+        
+        log 'TextEditor.changed' changeInfo
         
         profile.start 'changed'
 
@@ -459,8 +461,8 @@ function TextEditor extends Editor
                     return error "#{@name}.renderCursors mainCursor DAFUK?", @numLines(), str @mainCursor()
 
                 ri = mc[1]-@scroll.top
-                cursorLine = @state.line(mc[1])
-                return error 'no main cursor line?' @state if not cursorLine?
+                cursorLine = @do.line(mc[1]) # not @line(mc[1]) ???
+                return error 'no main cursor line?' @do if not cursorLine?
                 if mc[0] > cursorLine.length
                     cs[0][2] = 'virtual'
                     cs.push [cursorLine.length, ri, 'main off']
