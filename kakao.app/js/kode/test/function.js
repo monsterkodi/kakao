@@ -59,6 +59,21 @@ D = (function ()
 })()
 `)
     })
+    section("method args", function ()
+    {
+        compare(kc(`function D
+    f: a b -> a+b`),`
+D = (function ()
+{
+    function D (a, b)
+    {
+        return a+b
+    }
+
+    return D
+})()
+`)
+    })
     section("async", function ()
     {
         compare(kc(`function C

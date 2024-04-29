@@ -423,9 +423,9 @@ Browser = (function ()
         var c
 
         var list = _k_.list(this.columns)
-        for (var _266_14_ = 0; _266_14_ < list.length; _266_14_++)
+        for (var _264_14_ = 0; _264_14_ < list.length; _264_14_++)
         {
-            c = list[_266_14_]
+            c = list[_264_14_]
             c.scroll.update()
         }
     }

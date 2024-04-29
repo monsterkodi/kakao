@@ -31,13 +31,13 @@ function Browser extends events
 
     initColumns: ->
 
-        return if @cols? and @cols.parentNode == @view
+        ⮐ if @cols? and @cols.parentNode == @view
 
         @view.innerHTML = ''
 
         if @cols?
             @view.appendChild @cols
-            return
+            ⮐
 
         @cols = elem class:'browser' id:'columns'
         @view.appendChild @cols
@@ -52,7 +52,7 @@ function Browser extends events
 
         for col in @columns
             if elem.containsPos col.div, pos
-                return col
+                ⮐ col
         null
 
     columnAtX: (x) ->
@@ -61,13 +61,13 @@ function Browser extends events
             cpos = kpos col.div.getBoundingClientRect().left, col.div.getBoundingClientRect().top
             pos = kpos x, cpos.y
             if elem.containsPos col.div, pos
-                return col
+                ⮐ col
         null
 
     rowAtPos: (pos) ->
 
         if col = @columnAtPos pos
-            return col.rowAtPos pos
+            ⮐ col.rowAtPos pos
         null
 
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
@@ -98,7 +98,7 @@ function Browser extends events
                            ➜  0
 
             nuidx = clamp 0, @numCols()-1, nuidx
-            return if nuidx == index
+            ⮐ if nuidx == index
             if @columns[nuidx].numRows()
                 @columns[nuidx].focus()?.activeRow()?.activate()
 
@@ -117,7 +117,7 @@ function Browser extends events
 
     focusColumn: ->
         for c in @columns
-            return c if c.hasFocus()
+            ⮐ c if c.hasFocus()
 
     # 00000000  00     00  00000000   000000000  000   000
     # 000       000   000  000   000     000      000 000
@@ -132,7 +132,7 @@ function Browser extends events
                 @clearColumn c
 
         for col in @columns
-            return col if col.isEmpty()
+            ⮐ col if col.isEmpty()
 
         @addColumn()
 
@@ -257,9 +257,7 @@ function Browser extends events
         @flex.relax()
         true
 
-    resized: ->
-
-        @updateColumnScrolls()
+    resized: -> @updateColumnScrolls()
 
     updateColumnScrolls: =>
 

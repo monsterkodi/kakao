@@ -6,12 +6,14 @@
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
 
 (● )(.+)                  . class.marker . class
-(◆ )(.+)                  . static.method.marker . static.method
-(○◆ )(.+)                 . async.static.method.marker . async.static.method
-(⬢ )(.+)                  . post.func.marker . post.func
-(▸ )(.+)                  . func.marker . func
-(○▸ )(.+)                 . async.func.marker . async.func
-(⦿ )(.+)                  . class.member.marker . class.member
+(●-> )(.+)                . static.method.marker . static.method
+(●=> )(.+)                . static.bound.method.marker . static.bound.method
+(○●-> )(.+)               . async.static.method.marker . async.static.method
+(○●=> )(.+)               . async.static.bound.method.marker . async.static.bound.method
+(-> )(.+)                 . func.marker . func
+(=> )(.+)                 . func.bound.marker . func
+(○-> )(.+)                . async.func.marker . async.func
+(○=> )(.+)                . async.bound.func.marker . async.func
 (\d+\s+)(▫\s)             . arrayIndex . arrayDot
 
 [~\/\.\-\_\w]+\/            dirname

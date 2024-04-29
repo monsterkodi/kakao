@@ -27,7 +27,7 @@ class Do extends events
         for (var _31_21_ = index = 0, _31_25_ = this.history.length - 1 - this.undos; (_31_21_ <= _31_25_ ? index < this.history.length - 1 - this.undos : index > this.history.length - 1 - this.undos); (_31_21_ <= _31_25_ ? ++index : --index))
         {
             chg = this.calculateChanges(this.history[index],this.history[index + 1])
-            if (!_k_.empty(chg.changes))
+            if (!_k_.empty((chg != null ? chg.changes : undefined)))
             {
                 o = {}
                 var list = _k_.list(chg.changes)
@@ -139,7 +139,10 @@ class Do extends events
         {
             changes = this.calculateChanges(this.history.slice(-1)[0],this.state.s)
             this.history.push(this.state.s)
-            this.emit('changes',changes)
+            if (!_k_.empty(changes))
+            {
+                this.emit('changes',changes)
+            }
         }
         return null
     }
@@ -173,7 +176,10 @@ class Do extends events
             this.undos += 1
             changes = this.calculateChanges(this.state.s,this.history[this.history.length - 1 - this.undos])
             this.state = new DoState(this.history[this.history.length - 1 - this.undos])
-            return this.emit('changes',changes)
+            if (!_k_.empty(changes))
+            {
+                return this.emit('changes',changes)
+            }
         }
     }
 
@@ -304,6 +310,10 @@ class Do extends events
             return false
         }
         changes = this.calculateChanges(this.history[0],this.state.s)
+        if (_k_.empty(changes))
+        {
+            return false
+        }
         return changes.changes.length > 0
     }
 
@@ -311,6 +321,14 @@ class Do extends events
     {
         var changes, dd, deletes, inserts, newLines, ni, nl, oi, ol, oldLines
 
+        if (_k_.empty(oldState))
+        {
+            return
+        }
+        if (_k_.empty(newState))
+        {
+            return
+        }
         oi = 0
         ni = 0
         dd = 0
@@ -456,7 +474,7 @@ class Do extends events
 
     textInRange (r)
     {
-        var _359_41_
+        var _365_41_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

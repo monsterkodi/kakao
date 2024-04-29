@@ -388,7 +388,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadSourceItem"] = function (item, col)
     {
-        var clss, clsss, func, funcs, info, items, text, _326_29_, _331_27_
+        var arr, clss, clsss, func, funcs, info, items, text, _326_29_, _331_27_
 
         info = this.srcCache[item.path]
         if (_k_.empty(info))
@@ -409,34 +409,38 @@ FileBrowser = (function ()
         for (var _332_17_ = 0; _332_17_ < list1.length; _332_17_++)
         {
             func = list1[_332_17_]
-            if (func.test === 'describe')
+            arr = (func.bound ? '=> ' : '-> ')
+            if (func.test)
             {
-                text = '● ' + func.name
+                if (func.test === 'describe')
+                {
+                    text = '● ' + func.name
+                }
+                else
+                {
+                    text = '▸ ' + func.name
+                }
             }
             else if (func.static)
             {
                 if (func.async)
                 {
-                    text = ' ○◆ ' + func.name
+                    text = '○●' + arr + func.name
                 }
                 else
                 {
-                    text = '  ◆ ' + func.name
+                    text = ' ●' + arr + func.name
                 }
-            }
-            else if (func.post)
-            {
-                text = '  ⬢ ' + func.name
             }
             else
             {
                 if (func.async)
                 {
-                    text = ' ○▸ ' + func.name
+                    text = ' ○' + arr + func.name
                 }
                 else
                 {
-                    text = '  ▸ ' + func.name
+                    text = '  ' + arr + func.name
                 }
             }
             items.push({name:func.name,text:text,type:'func',path:item.path,line:func.line})
@@ -456,9 +460,9 @@ FileBrowser = (function ()
         var column
 
         var list = _k_.list(this.columns)
-        for (var _361_19_ = 0; _361_19_ < list.length; _361_19_++)
+        for (var _364_19_ = 0; _364_19_ < list.length; _364_19_++)
         {
-            column = list[_361_19_]
+            column = list[_364_19_]
             if (column.path() === info.dir)
             {
                 this.loadDirItem({path:info.dir,type:'dir'},column.index,{active:column.activePath(),focus:false})
@@ -497,7 +501,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadDirItems"] = function (item, items, col, opt)
     {
-        var cols, lastColumn, row, _406_52_, _410_85_, _414_14_
+        var cols, lastColumn, row, _409_52_, _413_85_, _417_14_
 
         this.updateColumnScrolls()
         if (this.skipOnDblClick && col > 0)
@@ -635,16 +639,16 @@ FileBrowser = (function ()
     {
         FileBrowser.__super__.updateColumnScrolls.call(this)
     
-        var _481_14_
+        var _484_14_
 
         return (this.shelf != null ? this.shelf.scroll.update() : undefined)
     }
 
     FileBrowser.prototype["getGitStatus"] = function (item, col)
     {
-        var file, _491_25_, _491_38_
+        var file, _494_25_, _494_38_
 
-        file = ((_491_25_=item.path) != null ? _491_25_ : (item.parent != null ? item.parent.path : undefined))
+        file = ((_494_25_=item.path) != null ? _494_25_ : (item.parent != null ? item.parent.path : undefined))
         if (!_k_.empty(file))
         {
             Git.status(file).then((function (status)
@@ -664,7 +668,7 @@ FileBrowser = (function ()
     {
         var col
 
-        for (var _502_19_ = col = 0, _502_23_ = this.columns.length; (_502_19_ <= _502_23_ ? col < this.columns.length : col > this.columns.length); (_502_19_ <= _502_23_ ? ++col : --col))
+        for (var _505_19_ = col = 0, _505_23_ = this.columns.length; (_505_19_ <= _505_23_ ? col < this.columns.length : col > this.columns.length); (_505_19_ <= _505_23_ ? ++col : --col))
         {
             this.applyGitStatusFiles(col,status.files)
         }
@@ -692,7 +696,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["toggleShelf"] = function ()
     {
-        var _531_29_
+        var _534_29_
 
         if (this.shelfSize < 1)
         {

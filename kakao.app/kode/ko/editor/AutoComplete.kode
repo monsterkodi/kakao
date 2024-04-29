@@ -18,7 +18,7 @@ class AutoComplete extends events
     @: (@editor) ->
 
         super()
-
+        
         @wordinfo  = {}
         @mthdinfo  = {}
         @matchList = []
@@ -154,8 +154,18 @@ class AutoComplete extends events
                         else
                             @matchList.push w
 
-                return if not @firstMatch?
-                @completion = @firstMatch.slice @word.length
+                ⮐ if not @firstMatch?
+                
+                if @word == 'r'
+                    @matchList.unshift @firstMatch
+                    @firstMatch = '⮐'
+                    @completion = @firstMatch
+                else if @word == 't'
+                    @matchList.unshift @firstMatch
+                    @firstMatch = '➜'
+                    @completion = @firstMatch
+                else
+                    @completion = @firstMatch.slice @word.length
 
                 @open info
 
@@ -170,7 +180,7 @@ class AutoComplete extends events
         cursor =$ '.main' @editor.view
         if not cursor?
             error "AutoComplete.open --- no cursor?"
-            return
+            ⮐ 
 
         @span = elem 'span' class: 'autocomplete-span'
         @span.textContent = @completion
@@ -185,7 +195,7 @@ class AutoComplete extends events
 
             p = @editor.posAtXY cr.left, cr.top
             ci = p[1]-@editor.scroll.top
-            return error "no span for autocomplete? cursor topleft: #{parseInt cr.left} #{parseInt cr.top}", info
+            ⮐ error "no span for autocomplete? cursor topleft: #{parseInt cr.left} #{parseInt cr.top}", info
 
         sp = spanInfo.span
         inner = sp.innerHTML
@@ -276,11 +286,19 @@ class AutoComplete extends events
 
     onEnter: ->
 
-        @editor.pasteText @selectedCompletion()
+        if @selectedCompletion() in ['⮐''➜']
+            @editor.deleteCharacterBackward singleCharacter:true
+            @editor.pasteText @selectedCompletion()
+
+            c = @editor.mainCursor()
+            if @editor.textInRange([c[1], [c[0], c[0]+1]]) != ' '
+                @editor.insertCharacter ' '
+        else
+            @editor.pasteText @selectedCompletion()
         @close()
 
     selectedCompletion: ->
-
+        
         if @selected >= 0
             @matchList[@selected].slice @word.length
         else
@@ -294,15 +312,18 @@ class AutoComplete extends events
 
     navigate: (delta) ->
 
-        return if not @list
+        ⮐ if not @list
         @select clamp -1, @matchList.length-1, @selected+delta
 
     select: (index) ->
+        
         @list.children[@selected]?.classList.remove 'selected'
         @selected = index
+        
         if @selected >= 0
             @list.children[@selected]?.classList.add 'selected'
             @list.children[@selected]?.scrollIntoViewIfNeeded()
+            
         @span.innerHTML = @selectedCompletion()
         @moveClonesBy @span.innerHTML.length
         @span.classList.remove 'selected' if @selected < 0
@@ -320,14 +341,17 @@ class AutoComplete extends events
 
     moveClonesBy: (numChars) ->
 
-        return if empty @clones
+        ⮐ if empty @clones
+        
         beforeLength = @clones[0].innerHTML.length
+        
         for ci in [1...@clones.length]
             c = @clones[ci]
             offset = parseFloat @cloned[ci-1].style.transform.split('translateX(')[1]
             charOffset = numChars
             charOffset += beforeLength if ci == 1
             c.style.transform = "translatex(#{offset+@editor.size.charWidth*charOffset}px)"
+            
         spanOffset = parseFloat @cloned[0].style.transform.split('translateX(')[1]
         spanOffset += @editor.size.charWidth*beforeLength
         @span.style.transform = "translatex(#{spanOffset}px)"
@@ -348,12 +372,12 @@ class AutoComplete extends events
 
         @close()
 
-        return if not lines?
+        ⮐ if not lines?
 
         cursorWord = @cursorWord()
         for l in lines
             if not l?.split?
-                return error "AutoComplete.parseLines -- line has no split? action: #{opt.action} line: #{l}", lines
+                ⮐ error "AutoComplete.parseLines -- line has no split? action: #{opt.action} line: #{l}", lines
 
             if l.length > 240
                 # if l.startsWith '//# sourceMapping'
@@ -365,9 +389,9 @@ class AutoComplete extends events
             words = l.split @splitRegExp
             words = words.filter (w) =>
                 # return false if not Indexer.testWord w
-                return false if w == cursorWord
-                return false if @word == w.slice 0, w.length-1
-                return false if @headerRegExp.test w
+                ⮐ false if w == cursorWord
+                ⮐ false if @word == w.slice 0, w.length-1
+                ⮐ false if @headerRegExp.test w
                 true
 
             for w in words # append words without leading special character
@@ -419,19 +443,19 @@ class AutoComplete extends events
 
     handleModKeyComboEvent: (mod, key, combo, event) ->
 
-        return 'unhandled' if not @span?
+        ⮐ 'unhandled' if not @span?
 
         switch combo
-            when 'enter' then return @onEnter()
+            'enter' ➜ ⮐ @onEnter()
 
         if @list?
             switch combo
                 'down'
                     @next()
-                    return
+                    ⮐ 
                 'up'
-                    if @selected >= 0 then @prev() else @last()
-                    return
+                    @selected >= 0 ? @prev() : @last()
+                    ⮐ 
         @close()
         'unhandled'
 

@@ -152,13 +152,14 @@ class Indexer
         
         funcInfo
 
-    addMethod: (className, funcName, file, li, async) ->
+    addMethod: (className, funcName, file, li, async, bound) ->
 
         funcInfo = @addFuncInfo funcName,
             line:  li+1
             file:  file
             class: className
             async: async
+            bound: bound
 
         sds.set @classes, "#{className}.methods.#{funcInfo.name}" funcInfo
         
@@ -267,7 +268,7 @@ class Indexer
                             # 000   000  00000000     000     000   000   0000000   0000000    0000000
     
                             if methodName = Indexer.methodNameInLine line
-                                funcInfo = @addMethod currentClass, methodName, file, li, line.indexOf('○')>=0
+                                funcInfo = @addMethod currentClass, methodName, file, li, line.indexOf('○')>=0, line.indexOf('=>')>=0
                                 funcStack.push [indent, funcInfo]
                                 funcAdded = true
                         else

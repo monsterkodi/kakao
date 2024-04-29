@@ -30,7 +30,7 @@ class Do extends events
         
         for index in 0...@history.length-1-@undos
             chg = @calculateChanges @history[index], @history[index+1]
-            if valid chg.changes
+            if valid chg?.changes
                 o = {}
                 for c in chg.changes
                     switch c.change
@@ -111,7 +111,7 @@ class Do extends events
             # log 'Do.end' @history, @state.s
             changes = @calculateChanges @history[-1], @state.s
             @history.push @state.s
-            @emit 'changes' changes
+            @emit 'changes' changes if valid changes
         null
 
     # 00     00   0000000   0000000    000  00000000  000   000
@@ -137,7 +137,7 @@ class Do extends events
             @undos += 1
             changes = @calculateChanges @state.s, @history[@history.length-1-@undos]
             @state = new DoState @history[@history.length-1-@undos]
-            @emit 'changes' changes
+            @emit 'changes' changes if valid changes
 
     # 00000000   00000000  0000000     0000000
     # 000   000  000       000   000  000   000
@@ -247,12 +247,18 @@ class Do extends events
     
     hasChanges: ->
         
-        return false if empty @history
+        ⮐ false if empty @history
         
         changes = @calculateChanges @history[0], @state.s
+        
+        ⮐ false if empty changes
+        
         changes.changes.length > 0
 
     calculateChanges: (oldState, newState) ->
+        
+        ⮐ if empty oldState
+        ⮐ if empty newState
         
         oi = 0 # index in oldState
         ni = 0 # index in newState

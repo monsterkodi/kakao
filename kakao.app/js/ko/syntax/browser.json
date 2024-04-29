@@ -3,29 +3,37 @@
     "class.marker",
     "class"
   ],
-  "(◆ )(.+)": [
+  "(●-> )(.+)": [
     "static.method.marker",
     "static.method"
   ],
-  "(○◆ )(.+)": [
+  "(●=> )(.+)": [
+    "static.bound.method.marker",
+    "static.bound.method"
+  ],
+  "(○●-> )(.+)": [
     "async.static.method.marker",
     "async.static.method"
   ],
-  "(⬢ )(.+)": [
-    "post.func.marker",
-    "post.func"
+  "(○●=> )(.+)": [
+    "async.static.bound.method.marker",
+    "async.static.bound.method"
   ],
-  "(▸ )(.+)": [
+  "(-> )(.+)": [
     "func.marker",
     "func"
   ],
-  "(○▸ )(.+)": [
+  "(=> )(.+)": [
+    "func.bound.marker",
+    "func"
+  ],
+  "(○-> )(.+)": [
     "async.func.marker",
     "async.func"
   ],
-  "(⦿ )(.+)": [
-    "class.member.marker",
-    "class.member"
+  "(○=> )(.+)": [
+    "async.bound.func.marker",
+    "async.func"
   ],
   "(\\d+\\s+)(▫\\s)": [
     "arrayIndex",

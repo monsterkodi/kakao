@@ -8,6 +8,21 @@
 
 use ../editor ◆ Do
 
+#class Dummy
+#    
+#    @: ->
+#        
+#    sync: ->
+#    async: ○->
+#    @static: ->
+#    @staticAsync: ○->
+#        
+#    bound: =>
+#    boundAsync: ○=>
+#    @staticBound: =>
+#    @staticBoundAsync: ○=>
+        
+
 ▸ Do
 
     # 000      000  000   000  00000000   0000000  
