@@ -36,7 +36,7 @@ class GitInfo
     doHistory: (path) ○->
 
         path ?= window.editor.currentFile
-        return if not path
+        ⮐ if not path
         
         window.split.raise 'terminal'
         window.terminal.clear()
@@ -142,6 +142,7 @@ class GitInfo
         @status diff:true prjDir:prjDir
         window.split.do 'minimize editor'
         window.commandline.setText 'commit ' #if empty prjDir
+        window.commandline.selectNone()
         
     # 000       0000000    0000000   
     # 000      000   000  000        
@@ -350,13 +351,13 @@ class GitInfo
         
         Git.status(opt.prjDir).then (status) ○->
 
-            return if empty status
+            ⮐ if empty status
             
             # log 'status' status
 
             logFile = (change, file, status, spacer) ->
 
-                return if slash.ext(file) in IGNORE_FILE_EXTS
+                ⮐ if slash.ext(file) in IGNORE_FILE_EXTS
 
                 symbol = switch change
 
@@ -416,6 +417,8 @@ class GitInfo
             window.terminal.appendMeta clss: 'spacer'
             window.terminal.scroll.cursorToTop 7
             
+            window.terminal.do.resetHistory()
+            
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000
     # 000       000      000  000       0000000
@@ -443,7 +446,6 @@ class GitInfo
                 post.emit 'loadFile' href
                 window.split.do 'quart terminal'
                 
-        log 'onMetaClick unhandled?'
         'unhandled' # otherwise cursor doesn't get set
                     
 export new GitInfo

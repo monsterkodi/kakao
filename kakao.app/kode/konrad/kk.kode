@@ -112,7 +112,7 @@ class kk
     
         start (sourceFile) ○->
             
-            return if slash.contains sourceFile, '.stash'
+            ⮐ if slash.contains sourceFile, '.stash'
             
             log b5('🔧'), w3 sourceFile
             

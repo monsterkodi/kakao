@@ -33,7 +33,7 @@ function Store extends events
         # log 'Store.file' @file
         
         post.on 'store' (name, action, argl...) =>
-            return if @name != name
+            ⮐ if @name != name
             switch action
                 'data' ➜ @data = argl[0]
                 'set'  ➜ sds.set @data, @keypath(argl[0]), argl[1]
@@ -70,9 +70,9 @@ function Store extends events
         
         # log "Store[#{@name}].set" key, value
 
-        return if not key is str
-        return if isEqual @get(key), value
-        return if @get(key) == value
+        ⮐ if not key is str
+        ⮐ if isEqual @get(key), value
+        ⮐ if @get(key) == value
 
         @data ?= {}
         sds.set @data, @keypath(key), value
@@ -81,7 +81,7 @@ function Store extends events
                     
     del: (key) => 
     
-        return if not @data
+        ⮐ if not @data
         sds.del @data, @keypath key
         @delayedSave()
         post.toWins 'store' @name, 'del' key
@@ -124,8 +124,8 @@ function Store extends events
 
     save: ○=>
         
-        return if not @file
-        return if empty @data
+        ⮐ if not @file
+        ⮐ if empty @data
 
         clearTimeout @timer
         @timer = null

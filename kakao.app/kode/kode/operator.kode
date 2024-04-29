@@ -138,12 +138,12 @@ class Operator
         
         if precedence(e) < precedence(op.rhs)
             
-            return if op.operator.text == 'not' and 
+            ⮐ if op.operator.text == 'not' and 
                 (op.rhs?.incond or op.rhs?.operation?.operator?.text) in assign
                 
-            return if op.operator.text in assign
+            ⮐ if op.operator.text in assign
                 
-            return if e.operation.rhs?.operation?.operator.text in assign
+            ⮐ if e.operation.rhs?.operation?.operator.text in assign
                 
             @verb 'swap' precedence(e), precedence(op.rhs)
             print.ast 'before swap' e if @debug

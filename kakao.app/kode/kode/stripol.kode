@@ -47,9 +47,9 @@ class Stripol
     
     exp: (p, k, e) ->
 
-        if not e then return
+        ⮐ if not e
             
-        if e.type 
+        if e.type
             if e.type in ['double' 'triple']
                 p[k] = @string e
             return

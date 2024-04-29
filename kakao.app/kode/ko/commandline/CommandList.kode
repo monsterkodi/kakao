@@ -68,6 +68,8 @@ function CommandList extends TextEditor
                 click: @onMetaClick
 
             index += 1
+            
+        @do.resetHistory()
 
     onMetaClick: (meta) =>
 
@@ -92,8 +94,7 @@ function CommandList extends TextEditor
 
     appendMeta: (meta) ->
 
-        if not meta?
-            return error 'CommandList.appendMeta -- no meta?'
+        ⮐ error 'CommandList.appendMeta -- no meta?' if not meta?
 
         @meta.addDiv @meta.append meta
 

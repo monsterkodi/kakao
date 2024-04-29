@@ -103,7 +103,7 @@ export
     
     deleteSalterCharacter: ->
         
-        return if not @salterMode
+        ⮐ if not @salterMode
         
         @do.start()
         cp = @do.mainCursor()
@@ -135,9 +135,9 @@ export
             if @do.numCursors() == 5 and positionsInContinuousLine @do.cursors()
                 cs = @do.cursors()
                 rgs = @salterRangesAtPos @do.mainCursor()
-                return if not rgs? or rgs[0][0] != cs[0][1]
+                ⮐ if not rgs? or rgs[0][0] != cs[0][1]
                 cols = @columnsInSalt (@do.textInRange(r) for r in rgs)
-                return if cs[0][0] < cols[0]
+                ⮐ if cs[0][0] < cols[0]
                 @setSalterMode true
         
     # 00000000    0000000   000   000   0000000   00000000   0000000  
@@ -155,12 +155,12 @@ export
         while rgs.length < 5 and li < state.numLines() and @headerRegExp.test state.line(li)
             rgs.push [li, [0, state.line(li).length]] 
             li += 1
-        return if not rgs.length
+        ⮐ if not rgs.length
         li = p[1]-1
         while rgs.length < 5 and li >= 0 and @headerRegExp.test state.line(li)
             rgs.unshift [li, [0, state.line(li).length]]
             li -= 1
-        return rgs if rgs.length == 5
+        rgs if rgs.length == 5
       
     #  0000000   0000000   000      000   000  00     00  000   000   0000000  
     # 000       000   000  000      000   000  000   000  0000  000  000       

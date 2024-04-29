@@ -120,7 +120,7 @@ export
 
     toggleInvisibles: ->
 
-        return if not @invisibles
+        ⮐ if not @invisibles
         
         if window.stash.get "invisibles|#{@currentFile ? @name}", false
             @invisibles.deactivate()

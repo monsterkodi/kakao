@@ -121,12 +121,11 @@ export
                     if @isRangeInString rangeForPos c
                         found = true
                         break
-            return false if not found
+            ⮐ false if not found
             
         if ch == "'" and not @numSelections() # check if any alpabetical character is before any cursor
             for c in newCursors
-                if c[0] > 0 and /[A-Za-z]/.test @do.line(c[1])[c[0]-1] 
-                    return false
+                ⮐ false if c[0] > 0 and /[A-Za-z]/.test @do.line(c[1])[c[0]-1] 
         
         @do.start()
         if @do.numSelections() == 0

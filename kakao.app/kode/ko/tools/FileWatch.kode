@@ -14,7 +14,7 @@ class FileWatch
         
     onChange: (change, path, info) =>
         
-        return if info.type == 'dir'
+        ⮐ if info.type == 'dir'
         
         # log 'FileWatch' change, path, info
         

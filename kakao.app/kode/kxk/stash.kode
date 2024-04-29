@@ -101,7 +101,7 @@ function Stash
         clearTimeout @timer
         @timer = null
         
-        return if not @file
+        ⮐ if not @file
         
         try
             text = noon.stringify @data

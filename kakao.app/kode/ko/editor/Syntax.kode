@@ -160,10 +160,10 @@ class Syntax
         if line.startsWith "#!"
             lastWord = last line.split /[\s\/]/
             switch lastWord
-                'python' ➜ return 'py'
-                'node'   ➜ return 'js'
-                'bash'   ➜ return 'sh'
-                         ➜ return lastWord if lastWord in @syntaxNames
+                'python' ➜ ⮐ 'py'
+                'node'   ➜ ⮐ 'js'
+                'bash'   ➜ ⮐ 'sh'
+                         ➜ ⮐ lastWord if lastWord in @syntaxNames
         'txt'
 
     # 000  000   000  000  000000000

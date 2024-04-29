@@ -63,6 +63,7 @@ CommandList = (function ()
             this.appendMeta({line:((_62_32_=item.line) != null ? _62_32_ : ' '),text:text,rngs:rngs,type:((_65_32_=item.type) != null ? _65_32_ : this.config.syntaxName),clss:'commandlistItem',index:index,click:this.onMetaClick})
             index += 1
         }
+        return this.do.resetHistory()
     }
 
     CommandList.prototype["onMetaClick"] = function (meta)
@@ -81,7 +82,7 @@ CommandList = (function ()
 
     CommandList.prototype["appendMeta"] = function (meta)
     {
-        var diss, r, rngs, text, _100_20_, _102_25_, _103_29_
+        var diss, r, rngs, text, _101_20_, _103_25_, _104_29_
 
         if (!(meta != null))
         {
@@ -94,7 +95,7 @@ CommandList = (function ()
         }
         else if ((meta.text != null) && meta.text.trim().length)
         {
-            r = ((_103_29_=meta.rngs) != null ? _103_29_ : [])
+            r = ((_104_29_=meta.rngs) != null ? _104_29_ : [])
             text = meta.text.trim()
             rngs = r.concat(Syntax.rangesForTextAndSyntax(text,meta.type || 'ko'))
             matchr.sortRanges(rngs)
@@ -133,7 +134,7 @@ CommandList = (function ()
 
     CommandList.prototype["clear"] = function ()
     {
-        var _129_13_
+        var _130_13_
 
         this.items = []
         ;(this.meta != null ? this.meta.clear() : undefined)

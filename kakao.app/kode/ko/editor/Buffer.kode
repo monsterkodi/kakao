@@ -25,7 +25,7 @@ function Buffer extends events
         
     onDoChanges: (changes) => 
         
-        # log 'Buffer.onDoChanges' changes
+        # log 'Buffer.onDoChanges' @name, @changed?, changes
     
         @changed? changes
 

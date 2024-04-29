@@ -132,33 +132,33 @@ class Ranges
     rangesAfterLineColInRanges: (li,col,ranges) -> ranges.filter (r) -> r[0]==li and r[1][0] > col
     
     rangeAtPosInRanges: (pos, ranges) ->
-        return if ranges.length == 0
+        ⮐ if ranges.length == 0
         for ri in [ranges.length-1..0]
             r = ranges[ri]
             if (r[0] == pos[1]) and (r[1][0] <= pos[0] <= r[1][1])
-                return r
+                ⮐ r
 
     rangesBeforePosInRanges: (pos, ranges) ->
-        return [] if ranges.length == 0
+        ⮐ [] if ranges.length == 0
         rs = []
         for r in ranges
             if (r[0] > pos[1]) or ((r[0] == pos[1]) and (r[1][0] > pos[0]))
-                return rs 
+                ⮐ rs 
             rs.push r
         rs
 
     rangesAfterPosInRanges: (pos, ranges) ->
-        return [] if ranges.length == 0
+        ⮐ [] if ranges.length == 0
         rs = []
         for ri in [ranges.length-1..0]
             r = ranges[ri]
             if (r[0] < pos[1]) or ((r[0] == pos[1]) and (r[1][1] < pos[0]))
-                return rs 
+                ⮐ rs 
             rs.unshift r
         rs
         
     rangesSplitAtPosInRanges: (pos, ranges) ->
-        return [[],null,[]] if ranges.length == 0
+        ⮐ [[],null,[]] if ranges.length == 0
         [bef,at,aft] = [[],null,[]]
         for ri in [0...ranges.length]
             r = ranges[ri]
@@ -170,31 +170,31 @@ class Ranges
         [bef,at,aft]
             
     rangeBeforePosInRanges: (pos, ranges) ->
-        return if ranges.length == 0
+        ⮐ if ranges.length == 0
         for ri in [ranges.length-1..0]
             r = ranges[ri]
             if (r[0] < pos[1]) or ((r[0] == pos[1]) and (r[1][1] < pos[0]))
-                return r 
+                ⮐ r 
     
     rangeAfterPosInRanges: (pos, ranges) ->
         for r in ranges
             if (r[0] > pos[1]) or ((r[0] == pos[1]) and (r[1][0] > pos[0]))
-                return r
+                ⮐ r
     
     rangeStartingOrEndingAtPosInRanges: (p, ranges) ->
-        return if ranges.length == 0
+        ⮐ if ranges.length == 0
         for ri in [ranges.length-1..0]
             r = ranges[ri]
             if r[0] == p[1]
                 if r[1][0] == p[0] or r[1][1] == p[0]
-                    return r
+                    ⮐ r
     
     rangesFromTopToBotInRanges: (top, bot, ranges) ->
         ranges.filter (r) -> top <= r[0] <= bot
         
     rangeContainingRangeInRanges: (r, ranges) ->
         if cr = rangeAtPosInRanges rangeStartPos(r), ranges
-            return cr if cr[1][1] >= r[1][1]
+            ⮐ cr if cr[1][1] >= r[1][1]
         
     rangesShrunkenBy: (ranges, delta) ->
         ranges.filter((r) -> r[1][1]-r[1][0]>=2*delta).map (r) -> [r[0], [r[1][0]+delta, r[1][1]-delta]]
@@ -204,8 +204,8 @@ class Ranges
     areSameRanges: (ra, rb) -> 
         if ra.length == rb.length
             for i in [0...ra.length]
-                return false if not isSameRange ra[i], rb[i]
-            return true
+                ⮐ false if not isSameRange ra[i], rb[i]
+            ⮐ true
         false
 
     #  0000000  000      00000000   0000000   000   000  

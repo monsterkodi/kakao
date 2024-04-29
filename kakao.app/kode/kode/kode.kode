@@ -37,7 +37,7 @@ class Kode
 
     eval: (text, file, glob) ->
 
-        return if empty text
+        ⮐ if empty text
 
         sandbox = vm.createContext()
         if glob then sandbox[k] = v for k,v of glob

@@ -831,7 +831,7 @@ function Parser extends parse
     
     lcomp: (exps) ->
         
-        return if not f = exps[0].for
+        ⮐ if not f = exps[0].for
         
         lcomp: exps[0]
             
@@ -844,7 +844,7 @@ function Parser extends parse
     curly: (open, tokens) ->
 
         if tokens[0]?.text == '}'
-            return object:
+            ⮐ object:
                 open:    open
                 keyvals: []
                 close:   tokens.shift()

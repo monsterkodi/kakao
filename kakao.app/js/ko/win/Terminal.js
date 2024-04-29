@@ -22,11 +22,21 @@ Terminal = (function ()
         this["showContextMenu"] = this["showContextMenu"].bind(this)
         this["onContextMenu"] = this["onContextMenu"].bind(this)
         this["dequeueMeta"] = this["dequeueMeta"].bind(this)
+        this["onDoChanges"] = this["onDoChanges"].bind(this)
         Terminal.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Minimap','Meta'],fontSize:15})
         this.view.addEventListener("contextmenu",this.onContextMenu)
         this.metaQueue = []
         this.setLines([''])
         this.initInvisibles()
+    }
+
+    Terminal.prototype["onDoChanges"] = function (changes)
+    {
+        if (this.metaQueue.length)
+        {
+            return
+        }
+        return Terminal.__super__.onDoChanges.call(this,changes)
     }
 
     Terminal.prototype["appendLineDiss"] = function (text, diss = [])
@@ -45,7 +55,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, mm, text, _55_21_, _57_33_, _72_21_
+        var l, mm, text, _61_21_, _63_33_, _78_21_
 
         if (!(meta != null))
         {
@@ -54,16 +64,16 @@ Terminal = (function ()
         this.meta.append(meta)
         if ((meta.diss != null))
         {
-            text = ((_57_33_=meta.text) != null ? _57_33_ : Syntax.lineForDiss(meta.diss))
+            text = ((_63_33_=meta.text) != null ? _63_33_ : Syntax.lineForDiss(meta.diss))
             this.appendLineDiss(text,meta.diss)
         }
         else if (meta.clss === 'salt')
         {
             this.appendMeta({clss:'spacer'})
             var list = _k_.list(salt(meta.text).split('\n'))
-            for (var _64_22_ = 0; _64_22_ < list.length; _64_22_++)
+            for (var _70_22_ = 0; _70_22_ < list.length; _70_22_++)
             {
-                l = list[_64_22_]
+                l = list[_70_22_]
                 this.appendMeta({clss:'spacer',text:'# ' + l})
             }
             this.appendMeta({clss:'spacer'})
@@ -81,9 +91,9 @@ Terminal = (function ()
             this.appendLineDiss('')
         }
         var list1 = _k_.list(meta.metas)
-        for (var _79_15_ = 0; _79_15_ < list1.length; _79_15_++)
+        for (var _85_15_ = 0; _85_15_ < list1.length; _85_15_++)
         {
-            mm = list1[_79_15_]
+            mm = list1[_85_15_]
             this.meta.appendLineMeta(mm)
         }
         return meta
@@ -121,6 +131,10 @@ Terminal = (function ()
         if (this.metaQueue.length)
         {
             return this.metaTimer = setTimeout(this.dequeueMeta,0)
+        }
+        else
+        {
+            return this.do.resetHistory()
         }
     }
 

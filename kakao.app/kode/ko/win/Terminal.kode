@@ -24,6 +24,12 @@ function Terminal extends TextEditor
         @setLines ['']
         
         @initInvisibles()
+        
+    onDoChanges: (changes) =>
+        
+        ⮐ if @metaQueue.length
+    
+        super changes
                 
     #  0000000   00000000   00000000   00000000  000   000  0000000  
     # 000   000  000   000  000   000  000       0000  000  000   000
@@ -106,8 +112,13 @@ function Terminal extends TextEditor
             @appendMeta meta
             count += 1
             break if count > 20
+            
         clearTimeout @metaTimer
-        @metaTimer = setTimeout @dequeueMeta, 0 if @metaQueue.length
+        
+        if @metaQueue.length
+            @metaTimer = setTimeout @dequeueMeta, 0 
+        else
+            @do.resetHistory()
         
     isCursorAtEnd: -> @cursorPos()[1] == @numLines()-1 and @numCursors() == 1
     singleCursorInLastLineAndScrollToBottom: ->

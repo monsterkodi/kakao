@@ -121,7 +121,7 @@ function Editor extends Buffer
         # _______________________________________________________________ brackets
 
         switch @fileType
-            when 'html' then @bracketCharacters.open['<'] = '>'
+            'html' ➜ @bracketCharacters.open['<'] = '>'
 
         for k,v of @bracketCharacters.open
             @bracketCharacters.close[v] = k
@@ -141,7 +141,7 @@ function Editor extends Buffer
         @insertIndentedEmptyLineBetween = '{}'
 
         switch @fileType
-            when 'coffee' 'kode'
+            'coffee' 'kode'
                 @indentNewLineMore =
                     lineEndsWith: ['->' '=>' ':' '=']
                     lineRegExp:   /^(\s+when|\s*if|\s*else\s+if\s+)(?!.*\sthen\s)|(^|\s)(else\s*$|switch\s|for\s|while\s|class\s)/
