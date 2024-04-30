@@ -666,11 +666,10 @@ Parser = (function ()
     {
         var exps
 
-        exps = [firstArg]
-        while (tokens[0].type !== 'func')
-        {
-            exps.push(tokens.shift())
-        }
+        this.push('○rgs')
+        tokens.unshift(firstArg)
+        exps = this.exps('○rgs',tokens)
+        this.pop('○rgs')
         return {parens:{open:{type:'paren',text:'('},exps:exps,close:{type:'paren',text:')'}}}
     }
 

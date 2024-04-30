@@ -822,12 +822,20 @@ function Parser extends parse
             exps:  exps
             close: close
             
+    # 000   000   0000000         00000000    0000000   00000000   00000000  000   000   0000000  
+    # 0000  000  000   000        000   000  000   000  000   000  000       0000  000  000       
+    # 000 0 000  000   000        00000000   000000000  0000000    0000000   000 0 000  0000000   
+    # 000  0000  000   000        000        000   000  000   000  000       000  0000       000  
+    # 000   000   0000000         000        000   000  000   000  00000000  000   000  0000000   
+    
     argsWithoutParens: (firstArg, tokens) ->
         
-        exps = [firstArg]
-
-        while tokens[0].type != 'func'
-            exps.push tokens.shift()
+        @push '○rgs'
+        tokens.unshift firstArg
+        exps = @exps '○rgs' tokens
+        @pop '○rgs'
+        
+        # log '○rgs exps' noon exps
         
         parens:
             open:  type: 'paren' text:'('

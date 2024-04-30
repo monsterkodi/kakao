@@ -62,7 +62,7 @@ function Parse extends parseutils
             numTokens = tokens.length
             tok = tokens[0]
             
-            b = switch @stack[-1]
+            doBreak = switch @stack[-1]
             
                 '▸arg'      ➜ es.length
                 'switch'
@@ -71,13 +71,16 @@ function Parse extends parseutils
                 '['         ➜ tok.text == ']'  
                 '{'         ➜ tok.text in ['}' '->' '=>' '○->' '○=>' '(' '▸' ':' ']']
                 '('         ➜ tok.text == ')'
+                '○rgs'      ➜ tok.type == 'func'
                 '▸args'     ➜ tok.text in [']' ';' 'else' 'then']
                 '▸return'   ➜ tok.text == 'if'
                 'call'      ➜ tok.text in ';' # bail out for implicit calls
                 rule        ➜ tok.text == stop and tok.type != 'var'
                             ➜ false
 
-            if b then @verb "exps break for #{tok.text} and stack top" @stack ; break 
+            if doBreak
+                @verb "exps break for #{tok.text} and stack top" @stack 
+                break 
                 
             if stop and tok.text == stop and tok.type != 'var'
                 @verb "exps break for #{tok.text} and stop" stop 
@@ -167,11 +170,8 @@ function Parse extends parseutils
                     @stack[-1] not in ['▸args' '▸return'] and
                     last.line == tokens[0].line )
 
-                if not @noThenAhead(tokens)
-                    log 'then ahead!' tokens
-                    
                 @verb "exps #{tokens[0].text }Tail" e, @stack
-                switch tokens[0].text 
+                switch tokens[0].text
                     'if'    ➜ e = @ifTail    e, tokens.shift(), tokens
                     'for'   ➜ e = @forTail   e, tokens.shift(), tokens
                     'while' ➜ e = @whileTail e, tokens.shift(), tokens
@@ -443,7 +443,7 @@ function Parse extends parseutils
                             if @debug
                                 print.ast "rhs no nxt match?? stack:#{@stack} e:" e
                                 print.tokens "rhs no nxt match?? nxt:" nxt
-                                log noon e
+                                # log noon e
                             break
                     
             if numTokens == tokens.length
@@ -577,7 +577,7 @@ function Parse extends parseutils
                         
                 (   spaced and 
                     (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if'])) and
-                    # (not (@stack[-2] == 'class' and @stack[-1] == ':')) and
+                    @stack[-1] != '○rgs' and
                     nxt.text not in ['then' 'when' 'else' 'break' 'continue' 'in' 'of' 'for' 'while'] and
                     (nxt.text not in ['if'] or not @noThenAhead tokens) and
                     nxt.text not in ',.;:)}]' and

@@ -108,3 +108,84 @@ use ./utils ▪ kc ke kd
             }
             
             """
+            
+    ▸ this
+
+        kc  """
+            class D
+                t: (@a) ->
+            """ ▸
+            """
+            class D
+            {
+                t (a)
+                {
+                    this.a = a
+                }
+            }
+            
+            """
+        ###            
+        parens
+            open
+                type  paren
+                text  (
+                line  2
+                col  7
+            exps
+                .
+                    prop
+                        obj
+                            type  this
+                            text  @
+                            line  2
+                            col  8
+                        dot
+                            type  punct
+                            text  .
+                            line  2
+                            col  8
+                        prop
+                            type  var
+                            text  a
+                            line  2
+                            col  9
+            close
+                type  paren
+                text  )
+                line  2
+                col  10
+        ###            
+    
+        kd  """
+            class D
+                t: @a ->
+            """ ▸
+            """
+            class D
+            {
+                t (a)
+                {
+                    this.a = a
+                }
+            }
+            
+            """
+    
+        #kc  """
+        #    class D
+        #        t: @a @b -> @a + @b
+        #    """ ▸
+        #    """
+        #    class D
+        #    {
+        #        t (a, b)
+        #        {
+        #            this.a = a
+        #            this.b = b
+        #            this.a + this.b
+        #        }
+        #    }
+        #    
+        #    """
+    

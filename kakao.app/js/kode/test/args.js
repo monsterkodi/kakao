@@ -80,6 +80,27 @@ D = (function ()
 }
 `)
     })
+    section("this", function ()
+    {
+        compare(kc(`class D
+    t: (@a) ->`),`class D
+{
+    t (a)
+    {
+        this.a = a
+    }
+}
+`)
+        compare(kd(`class D
+    t: @a ->`),`class D
+{
+    t (a)
+    {
+        this.a = a
+    }
+}
+`)
+    })
 }
 toExport["args"]._section_ = true
 toExport._test_ = true
