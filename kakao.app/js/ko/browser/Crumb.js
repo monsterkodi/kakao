@@ -89,7 +89,7 @@ class Crumb
         }
         else
         {
-            return this.elem.innerHTML = slash.file(file)
+            return this.elem.innerHTML = File.crumbSpan(slash.file(file))
         }
     }
 

@@ -58,7 +58,7 @@ class Crumb
         if @column.index == 0
             @elem.innerHTML = File.crumbSpan slash.tilde file
         else
-            @elem.innerHTML = slash.file file
+            @elem.innerHTML = File.crumbSpan slash.file file
 
     clear: -> @elem.innerHTML = ''
 

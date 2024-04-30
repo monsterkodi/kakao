@@ -577,7 +577,7 @@ function Parse extends parseutils
                         
                 (   spaced and 
                     (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if'])) and
-                    @stack[-1] != '○rgs' and
+                    '○rgs' not in @stack and
                     nxt.text not in ['then' 'when' 'else' 'break' 'continue' 'in' 'of' 'for' 'while'] and
                     (nxt.text not in ['if'] or not @noThenAhead tokens) and
                     nxt.text not in ',.;:)}]' and

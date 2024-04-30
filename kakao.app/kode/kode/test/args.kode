@@ -10,29 +10,6 @@ use ./utils ▪ kc ke kd
 
 ▸ args
 
-    ▸ before
-    
-        kc  """
-            function D
-                f: (a, b) -> a+b
-            """ ▸
-            """
-
-            D = (function ()
-            {
-                function D ()
-                {}
-            
-                D.prototype["f"] = function (a, b)
-                {
-                    return a + b
-                }
-            
-                return D
-            })()
-            
-            """
-
     ▸ function
     
         kc  """
@@ -110,54 +87,8 @@ use ./utils ▪ kc ke kd
             """
             
     ▸ this
-
-        kc  """
-            class D
-                t: (@a) ->
-            """ ▸
-            """
-            class D
-            {
-                t (a)
-                {
-                    this.a = a
-                }
-            }
-            
-            """
-        ###            
-        parens
-            open
-                type  paren
-                text  (
-                line  2
-                col  7
-            exps
-                .
-                    prop
-                        obj
-                            type  this
-                            text  @
-                            line  2
-                            col  8
-                        dot
-                            type  punct
-                            text  .
-                            line  2
-                            col  8
-                        prop
-                            type  var
-                            text  a
-                            line  2
-                            col  9
-            close
-                type  paren
-                text  )
-                line  2
-                col  10
-        ###            
     
-        kd  """
+        kc  """
             class D
                 t: @a ->
             """ ▸
@@ -172,20 +103,113 @@ use ./utils ▪ kc ke kd
             
             """
     
-        #kc  """
-        #    class D
-        #        t: @a @b -> @a + @b
-        #    """ ▸
-        #    """
-        #    class D
-        #    {
-        #        t (a, b)
-        #        {
-        #            this.a = a
-        #            this.b = b
-        #            this.a + this.b
-        #        }
-        #    }
-        #    
-        #    """
+        kc  """
+            class D
+                t: @a @b -> @a + @b
+            """ ▸
+            """
+            class D
+            {
+                t (a, b)
+                {
+                    this.a = a
+                    this.b = b
+                
+                    return this.a + this.b
+                }
+            }
+            
+            """
     
+    ▸ default
+            
+        kc  """
+            class D
+                d: a=1 -> a
+            """ ▸
+            """
+            class D
+            {
+                d (a = 1)
+                {
+                    return a
+                }
+            }
+            
+            """
+
+        kc  """
+            class D
+                d: a='2' -> a
+            """ ▸
+            """
+            class D
+            {
+                d (a = '2')
+                {
+                    return a
+                }
+            }
+            
+            """
+
+        kc  """
+            class D
+                d: a b=2 d='3' -> a
+            """ ▸
+            """
+            class D
+            {
+                d (a, b = 2, d = '3')
+                {
+                    return a
+                }
+            }
+            
+            """
+            
+        kc  """
+            class D
+                d: a=@b -> a
+            """ ▸
+            """
+            class D
+            {
+                d (a = this.b)
+                {
+                    return a
+                }
+            }
+            
+            """
+
+        kc  """
+            class D
+                d: a={} -> a
+            """ ▸
+            """
+            class D
+            {
+                d (a = {})
+                {
+                    return a
+                }
+            }
+            
+            """
+
+        kc  """
+            class D
+                d: a=[] -> a
+            """ ▸
+            """
+            class D
+            {
+                d (a = [])
+                {
+                    return a
+                }
+            }
+            
+            """
+            

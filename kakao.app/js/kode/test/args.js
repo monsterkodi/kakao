@@ -8,24 +8,6 @@ let kd = utils.kd
 
 toExport["args"] = function ()
 {
-    section("before", function ()
-    {
-        compare(kc(`function D
-    f: (a, b) -> a+b`),`
-D = (function ()
-{
-    function D ()
-    {}
-
-    D.prototype["f"] = function (a, b)
-    {
-        return a + b
-    }
-
-    return D
-})()
-`)
-    })
     section("function", function ()
     {
         compare(kc(`function D
@@ -83,7 +65,7 @@ D = (function ()
     section("this", function ()
     {
         compare(kc(`class D
-    t: (@a) ->`),`class D
+    t: @a ->`),`class D
 {
     t (a)
     {
@@ -91,12 +73,72 @@ D = (function ()
     }
 }
 `)
-        compare(kd(`class D
-    t: @a ->`),`class D
+        compare(kc(`class D
+    t: @a @b -> @a + @b`),`class D
 {
-    t (a)
+    t (a, b)
     {
         this.a = a
+        this.b = b
+    
+        return this.a + this.b
+    }
+}
+`)
+    })
+    section("default", function ()
+    {
+        compare(kc(`class D
+    d: a=1 -> a`),`class D
+{
+    d (a = 1)
+    {
+        return a
+    }
+}
+`)
+        compare(kc(`class D
+    d: a='2' -> a`),`class D
+{
+    d (a = '2')
+    {
+        return a
+    }
+}
+`)
+        compare(kc(`class D
+    d: a b=2 d='3' -> a`),`class D
+{
+    d (a, b = 2, d = '3')
+    {
+        return a
+    }
+}
+`)
+        compare(kc(`class D
+    d: a=@b -> a`),`class D
+{
+    d (a = this.b)
+    {
+        return a
+    }
+}
+`)
+        compare(kc(`class D
+    d: a={} -> a`),`class D
+{
+    d (a = {})
+    {
+        return a
+    }
+}
+`)
+        compare(kc(`class D
+    d: a=[] -> a`),`class D
+{
+    d (a = [])
+    {
+        return a
     }
 }
 `)

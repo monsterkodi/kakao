@@ -334,7 +334,7 @@ ParseUtils = (function ()
             {
                 return true
             }
-            if (_k_.in(tokens[ti].type,['nl','block','paren']))
+            if (_k_.in(tokens[ti].type,['nl','block']))
             {
                 return false
             }

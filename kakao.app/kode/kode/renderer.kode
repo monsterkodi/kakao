@@ -29,6 +29,7 @@ class Renderer
     
     render: (ast, source) ->
 
+        if @verbose ➜ log noon ast
         
         @file = source
         @source = slash.relative source, process.cwd()
