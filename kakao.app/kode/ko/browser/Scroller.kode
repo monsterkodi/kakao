@@ -41,7 +41,7 @@ class Scroller
     onStart: drag event =>
 
         br = @elem.getBoundingClientRect()
-        sy = clamp 0, @height(), event.clientY - br.top
+        sy = clamp 0 @height(), event.clientY - br.top
         ln = parseInt @numRows() * sy/@height()
         ly = (ln - @visRows() / 2) * @rowHeight()
         @target.scrollTop = ly

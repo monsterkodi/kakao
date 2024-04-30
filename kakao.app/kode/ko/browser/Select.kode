@@ -26,19 +26,17 @@ class Select
 
     freeIndex: ->
 
-        return -1 if not @active
+        ⮐ -1 if not @active
 
         index = @active.index()
         while index < @active.column.numRows()-1
             index += 1
-            if not @active.column.rows[index].isSelected()
-                return index
+            ⮐ index if not @active.column.rows[index].isSelected()
 
         index = @active.index()
         while index > 0
             index -= 1
-            if not @active.column.rows[index].isSelected()
-                return index
+            ⮐ index if not @active.column.rows[index].isSelected()
         -1
 
     clear: ->
@@ -55,11 +53,9 @@ class Select
 
         if row.column != @active?.column
             @row row
-            return
+            ⮐ 
 
         if row.isSelected()
-
-            log 'unselect' row.item.path
 
             row.clearActive()
             row.clearSelected()
@@ -71,7 +67,7 @@ class Select
 
     row: (row, activate=true) ->
 
-        return if not row
+        ⮐ if not row
 
         if @active?.column == row.column and activate
             @active?.clearActive()
@@ -87,13 +83,13 @@ class Select
 
     to: (row, moveActive=false) ->
 
-        return if not row
-        return if row == @active
-        return if not @active
+        ⮐ if not row
+        ⮐ if row == @active
+        ⮐ if not @active
 
         if row.column != @active.column
             @row row
-            return
+            ⮐ 
 
         if row.index() > @active.index()
             from = @active.index()+1

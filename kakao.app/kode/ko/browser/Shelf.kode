@@ -120,9 +120,9 @@ function Shelf extends Column
             @savePrefs()
         @
 
-    addItems: items opt ->q
+    addItems: items opt ->
 
-        return if empty items
+        ⮐ if empty items
 
         for item in items
             @rows.push new Row @, item

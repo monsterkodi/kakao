@@ -65,7 +65,7 @@ function FileBrowser extends Browser
             if action == 'move'
                 if source == target or slash.dir(source) == target
                     log 'noop' source, target
-                    return
+                    ⮐ 
 
         for source in sources
 
@@ -76,8 +76,7 @@ function FileBrowser extends Browser
     columnForFile: file ->
 
         for column in @columns
-            if column.parent?.path == slash.dir file
-                return column
+            ⮐ column if column.parent?.path == slash.dir file
 
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
     # 0000  000  000   000  000   000  000  000        000   000     000     000
@@ -95,19 +94,19 @@ function FileBrowser extends Browser
             else
                 break
 
-        if col == 1 and slash.dir(file) != @columns[0]?.path()
-            return 0
+        ⮐ 0 if col == 1 and slash.dir(file) != @columns[0]?.path()
+            
         Math.max -1, col-2
 
     browse: file opt =>
 
         log 'FileBrowser.browse' file, opt
-        if file then @loadItem @pathItem(file), opt
+        if file ➜ @loadItem @pathItem(file), opt
 
     onFile: file =>
 
         # log 'onFile' file
-        if file and @flex then @navigateToFile file
+        if file and @flex ➜ @navigateToFile file
 
     navigateToFile: file =>
 
@@ -122,8 +121,7 @@ function FileBrowser extends Browser
 
         file = slash.path file
 
-        if file == lastPath or file == @lastColumnPath() or slash.isRelative file
-            return
+        ⮐ if file == lastPath or file == @lastColumnPath() or slash.isRelative file
 
         col = @sharedColumnIndex file
 
@@ -140,8 +138,7 @@ function FileBrowser extends Browser
 
         @clearColumnsFrom col+1, pop:true clear:col+paths.length
 
-        while @numCols() < paths.length
-            @addColumn()
+        while @numCols() < paths.length ➜ @addColumn()
 
         for index in 0...paths.length
 
@@ -318,9 +315,7 @@ function FileBrowser extends Browser
 
         info = @srcCache[item.path]
 
-        if empty info
-            # @columns[col].loadItems [], item
-            return
+        ⮐ if empty info
 
         items = []
         clsss = info.classes ? []
@@ -441,31 +436,31 @@ function FileBrowser extends Browser
     columnAtPos: pos ->
 
         if column = super pos
-            return column
+            ⮐ column
 
         if elem.containsPos @shelf.div, pos
-            return @shelf
+            ⮐ @shelf
 
     lastColumnPath: ->
 
         if lastColumn = @lastUsedColumn()
-            return lastColumn.path()
+            ⮐ lastColumn.path()
 
     lastDirColumn: ->
 
         if lastColumn = @lastUsedColumn()
             if lastColumn.isDir()
-                return lastColumn
+                ⮐ lastColumn
             else
-                return lastColumn.prevColumn()
+                ⮐ lastColumn.prevColumn()
 
     lastDirOrSrcColumn: ->
 
         if lastColumn = @lastUsedColumn()
             if lastColumn.isDir() or lastColumn.isSrc()
-                return lastColumn
+                ⮐ lastColumn
             else
-                return lastColumn.prevColumn()
+                ⮐ lastColumn.prevColumn()
 
     onBackspaceInColumn: column ->
 
@@ -514,7 +509,7 @@ function FileBrowser extends Browser
 
     onShelfDrag: drag event =>
 
-        shelfSize = clamp 0, 400, drag.pos.x
+        shelfSize = clamp 0 400 drag.pos.x
         @setShelfSize shelfSize
 
     setShelfSize: (@shelfSize) ->

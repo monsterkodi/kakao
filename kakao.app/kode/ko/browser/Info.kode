@@ -53,7 +53,7 @@ file = (file) ->
     ffs.fileExists(file).then (stat) ○->
 
         if not stat
-            return error "file #{file} doesn't exist?"
+            ⮐ error "file #{file} doesn't exist?"
 
         info =○ ffs.info file
         

@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var item, Shelf
+var Shelf
 
 import kxk from "../../kxk.js"
 let pullAllWith = kxk.pullAllWith
@@ -170,23 +170,34 @@ Shelf = (function ()
 
     Shelf.prototype["addItems"] = function (items, opt)
     {
+        var item
+
         if (_k_.empty(items))
         {
-            return q(return)
+            return
         }
+        var list = _k_.list(items)
+        for (var _127_17_ = 0; _127_17_ < list.length; _127_17_++)
+        {
+            item = list[_127_17_]
+            this.rows.push(new Row(this,item))
+        }
+        this.scroll.update()
+        return this
     }
-
-
-
 
     Shelf.prototype["addDir"] = function (dir, opt)
     {
+        var item
+
         item = {name:slash.file(slash.tilde(dir)),type:'dir',path:slash.path(dir)}
         return this.addItem(item,opt)
     }
 
     Shelf.prototype["addFile"] = function (file, opt)
     {
+        var item
+
         item = {name:slash.file(file),path:slash.path(file),type:'file'}
         if (File.isText(file))
         {
@@ -233,7 +244,7 @@ Shelf = (function ()
 
     Shelf.prototype["onDrop"] = function (event)
     {
-        var action, source
+        var action, item, source
 
         action = event.getModifierState('Shift') && 'copy' || 'move'
         source = event.dataTransfer.getData('text/plain')
@@ -404,7 +415,7 @@ Shelf = (function ()
 
     Shelf.prototype["openFileInNewWindow"] = function ()
     {
-        var _279_30_
+        var item, _279_30_
 
         if (item = (this.activeRow() != null ? this.activeRow().item : undefined))
         {

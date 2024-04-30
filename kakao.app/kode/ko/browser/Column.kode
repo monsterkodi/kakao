@@ -120,19 +120,21 @@ function Column
 
         if @dragStartRow
 
-            if e.shiftKey
-                @browser.select.to @dragStartRow
-            else if e.metaKey or e.altKey or e.ctrlKey
-                if not @dragStartRow.isSelected()
-                    @browser.select.toggle @dragStartRow
-                else
-                    @toggle = true
-            else
-                if @dragStartRow.isSelected()
-                    @deselect = true
-                else
-                    @activeRow()?.clearActive()
-                    @browser.select.row @dragStartRow, false
+            if 
+                e.shiftKey
+                    @browser.select.to @dragStartRow
+                    
+                e.metaKey or e.altKey or e.ctrlKey
+                    if not @dragStartRow.isSelected()
+                        @browser.select.toggle @dragStartRow
+                    else
+                        @toggle = true
+                ➜
+                    if @dragStartRow.isSelected()
+                        @deselect = true
+                    else
+                        @activeRow()?.clearActive()
+                        @browser.select.row @dragStartRow, false
         else
             if @hasFocus() and @activeRow()
                 @browser.select.row @activeRow()
@@ -147,7 +149,7 @@ function Column
 
         if @dragStartRow and not @dragDiv and valid @browser.select.files()
 
-            return if Math.abs(d.deltaSum.x) < 20 and Math.abs(d.deltaSum.y) < 10
+            ⮐ if Math.abs(d.deltaSum.x) < 20 and Math.abs(d.deltaSum.y) < 10
 
             delete @toggle
             delete @deselect
@@ -214,14 +216,16 @@ function Column
             delete @dragDiv
             delete @dragStartRow
 
-            if row = @browser.rowAtPos d.pos
-                column = row.column
-                target = row.item?.path
-            else if column = @browser.columnAtPos d.pos
-                target = column.parent?.path
-            else
-                log 'no drop target'
-                return
+            if 
+                row = @browser.rowAtPos d.pos
+                    column = row.column
+                    target = row.item?.path
+                    
+                column = @browser.columnAtPos d.pos
+                    target = column.parent?.path
+                ➜
+                    log 'no drop target'
+                    ⮐ 
 
             action = e.shiftKey and 'copy' or 'move'
 
@@ -315,8 +319,9 @@ function Column
 
     sort: ->
 
-        return if empty @parent?.path
-        return if @parent.type == 'file'
+        ⮐ if empty @parent?.path
+        ⮐ if @parent.type == 'file'
+        
         sortBy = prefs.get 'browser|sort' {}
         switch sortBy[@parent.path]
             'type'  ➜ @sortByType()
@@ -348,8 +353,7 @@ function Column
     isFile: -> @parent?.type == 'file'
     isSrc:  ->
         if @parent?.type == 'file'
-            if @items[0]?.type in ['class' 'func']
-                return true
+            ⮐ true if @items[0]?.type in ['class' 'func']
         false
 
     isEmpty: -> empty @parent
@@ -366,7 +370,7 @@ function Column
 
     setIndex: (@index) ->
 
-        if @crumb? then @crumb.elem.columnIndex = @index
+        if @crumb? ➜ @crumb.elem.columnIndex = @index
 
     width: -> @div.getBoundingClientRect().width
 
@@ -383,10 +387,11 @@ function Column
     selectedRow: -> @rows.find (r) -> r.isSelected()
 
     row: row -> # accepts element, index, string or row
-        if      Number.isInteger(row) then return 0 <= row < @numRows() and @rows[row] or null
-        else if typeof(row) == 'string' then return @rows.find (r) -> r.item.file == row or r.item.path == row
-        else if row instanceof HTMLElement then return @rows.find (r) -> r.div.contains row
-        else return row
+        if
+            Number.isInteger(row)       ➜ ⮐ 0 <= row < @numRows() and @rows[row] or null
+            typeof(row) == 'string'     ➜ ⮐ @rows.find (r) -> r.item.file == row or r.item.path == row
+            row instanceof HTMLElement  ➜ ⮐ @rows.find (r) -> r.div.contains row
+                                        ➜ ⮐ row
 
     nextColumn: -> @browser.column @index+1
     prevColumn: -> @browser.column @index-1
@@ -462,9 +467,10 @@ function Column
         
         if @parent.type == 'file'
             @navigateRows key
-            return
+            ⮐ 
 
-        return error "no rows in column #{@index}?" if not @numRows()
+        ⮐ error "no rows in column #{@index}?" if not @numRows()
+        
         index = @activeRow()?.index() ? -1
         error "no index from activeRow? #{index}?", @activeRow() if not index? or Number.isNaN index
 
@@ -487,7 +493,8 @@ function Column
 
     navigateRows: key ->
 
-        return error "no rows in column #{@index}?" if not @numRows()
+        ⮐ error "no rows in column #{@index}?" if not @numRows()
+        
         index = @activeRow()?.index() ? -1
         error "no index from activeRow? #{index}?" @activeRow() if not index? or Number.isNaN index
 
@@ -539,7 +546,7 @@ function Column
 
     doSearch: char ->
 
-        return if not @numRows()
+        ⮐ if not @numRows()
 
         if not @searchDiv
             @searchDiv = elem class: 'browserSearch'
@@ -749,8 +756,8 @@ function Column
     updateGitFiles: files ->
 
         for row in @rows
-            return if row.item.type not in ['dir' 'file']
-            return if not row.div
+            ⮐ if row.item.type not in ['dir' 'file']
+            ⮐ if not row.div
             status = files[row.item.path]
 
             if icon =$ '.browserStatusIcon' row.div
@@ -772,7 +779,7 @@ function Column
 
     makeRoot: =>
 
-        return if not @parent
+        ⮐ if not @parent
 
         @browser.shiftColumnsTo @index
 
@@ -884,22 +891,18 @@ function Column
 
     copyPaths: ->
         
-        log 'copyPaths not implemented!'
-        return ''
-        
         paths = @browser.select.files().join '\n'
-        electron.clipboard.writeText paths
+        kakao 'clipboard.set' paths
         paths
 
     cutPaths: ->
 
         @browser.cutPaths = @copyPaths()
 
-    pastePaths: ->
+    pastePaths: ○->
         
-        ⮐ log 'pastePaths not implemented!'
+        text  =○ kakao 'clipboard.get'
         
-        text = electron.clipboard.readText()
         paths = text.split '\n'
 
         if text == @browser.cutPaths

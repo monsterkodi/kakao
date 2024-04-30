@@ -63,12 +63,12 @@ class Select
 
     clear ()
     {
-        var row, _46_25_
+        var row, _44_25_
 
-        var list = ((_46_25_=this.rows) != null ? _46_25_ : [])
-        for (var _46_16_ = 0; _46_16_ < list.length; _46_16_++)
+        var list = ((_44_25_=this.rows) != null ? _44_25_ : [])
+        for (var _44_16_ = 0; _44_16_ < list.length; _44_16_++)
         {
-            row = list[_46_16_]
+            row = list[_44_16_]
             row.clearSelected()
         }
         this.rows = []
@@ -77,7 +77,7 @@ class Select
 
     toggle (row)
     {
-        var _56_32_
+        var _54_32_
 
         if (row.column !== (this.active != null ? this.active.column : undefined))
         {
@@ -86,7 +86,6 @@ class Select
         }
         if (row.isSelected())
         {
-            console.log('unselect',row.item.path)
             row.clearActive()
             row.clearSelected()
             return this.rows.splice(this.rows.indexOf(row),1)
@@ -101,7 +100,7 @@ class Select
 
     row (row, activate = true)
     {
-        var _76_18_, _77_19_
+        var _72_18_, _73_19_
 
         if (!row)
         {
@@ -123,7 +122,7 @@ class Select
 
     to (row, moveActive = false)
     {
-        var from, index, r, to, _112_19_
+        var from, index, r, to, _108_19_
 
         if (!row)
         {
@@ -152,7 +151,7 @@ class Select
             from = row.index()
             to = this.active.index() - 1
         }
-        for (var _105_22_ = index = from, _105_28_ = to; (_105_22_ <= _105_28_ ? index <= to : index >= to); (_105_22_ <= _105_28_ ? ++index : --index))
+        for (var _101_22_ = index = from, _101_28_ = to; (_101_22_ <= _101_28_ ? index <= to : index >= to); (_101_22_ <= _101_28_ ? ++index : --index))
         {
             r = this.active.column.rows[index]
             if (!r.isSelected())

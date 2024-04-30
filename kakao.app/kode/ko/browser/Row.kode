@@ -37,9 +37,9 @@ function Row
 
     path: ->
         if @item.path? and @item.path is str
-            return @item.path
+            ⮐ @item.path
         if @item.obj?.path? and @item.obj.path is str
-            return @item.obj.path
+            ⮐ @item.obj.path
 
     setIcon: ->
 
@@ -52,7 +52,7 @@ function Row
                 """
 
             @div.insertBefore icon, @div.firstChild
-            return
+            ⮐ 
 
         if @item.icon
             className = @item.icon
@@ -79,7 +79,7 @@ function Row
 
         if @column.index < 0 # shelf handles row activation
             @column.activateRow @
-            return
+            ⮐ 
 
         $('.hover')?.classList.remove 'hover'
         
@@ -89,17 +89,17 @@ function Row
         if @item.file == '..'
             if emit
                 post.emit 'filebrowser' 'loadItem' @item
-                return
+                ⮐ 
             else
                 @setActive()
                 @browser.clearColumnsFrom @column.index+1, pop:true
-                return
+                ⮐ 
 
         @setActive emit:emit
 
         switch @item.type
 
-            when 'dir' 'file'
+            'dir' 'file'
 
                 post.emit 'filebrowser' 'activateItem' @item, @column.index
 
@@ -107,7 +107,7 @@ function Row
 
                 @browser.select.row @, false
 
-            else # if @item.type == 'func'
+            ➜ # if @item.type == 'func'
                 
                 @browser.clearColumnsFrom @column.index+1, pop:true
 
@@ -158,7 +158,8 @@ function Row
 
     editName: =>
 
-        return if @input?
+        ⮐ if @input?
+        
         @input = elem 'input' class:'rowNameInput'
         @input.value = slash.file @item.path
 
@@ -177,13 +178,13 @@ function Row
         file = slash.file @item.path
 
         switch combo
-            when 'esc'
+            'esc'
                 if @input.value != file
                     @input.value = file
                     event.preventDefault()
                     event.stopImmediatePropagation()
                 @onNameFocusOut()
-            when 'enter'
+            'enter'
                 if @input.value != file
                     @onNameChange()
                 else
@@ -193,7 +194,8 @@ function Row
 
     removeInput: ->
 
-        return if not @input?
+        ⮐ if not @input?
+        
         @input.removeEventListener 'focusout' @onNameFocusOut
         @input.removeEventListener 'change'   @onNameChange
         @input.removeEventListener 'keydown'  @onNameKeyDown
@@ -227,7 +229,7 @@ function Row
 
     rename: targetFile =>
 
-        return if slash.samePath @item.path, targetFile
+        ⮐ if slash.samePath @item.path, targetFile
 
         File.rename @item.path, targetFile
 
