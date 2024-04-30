@@ -12,7 +12,7 @@ use           ◆ Row Column
 
 function Shelf extends Column
 
-    @: (browser) ->
+    @: browser ->
 
         super browser
 
@@ -20,10 +20,10 @@ function Shelf extends Column
         @index  = -1
         @div.id = 'shelf'
 
-        post.on 'gitStatus'              @onGitStatus
-        post.on 'addToShelf'             @addPath
-        post.on 'stashLoaded'            @onStashLoaded
-        post.on 'file' @onFile
+        post.on 'gitStatus'     @onGitStatus
+        post.on 'addToShelf'    @addPath
+        post.on 'stashLoaded'   @onStashLoaded
+        post.on 'file'          @onFile
 
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  0000000     00000000    0000000   000   000
     # 000   000  000          000     000  000   000  000   000     000     000         000   000  000   000  000 0 000
@@ -31,7 +31,7 @@ function Shelf extends Column
     # 000   000  000          000     000     000     000   000     000     000         000   000  000   000  000   000
     # 000   000   0000000     000     000      0      000   000     000     0000000     000   000   0000000   00     00
 
-    activateRow: (row) ->
+    activateRow: row ->
 
         $('.hover')?.classList.remove 'hover'
 
@@ -50,25 +50,25 @@ function Shelf extends Column
     # 000   000  000  0000      000       000  000      000
     #  0000000   000   000      000       000  0000000  00000000
 
-    onFile: (file) =>
+    onFile: file =>
 
-        return if empty file
+        ⮐ if empty file
 
         if @navigatingRows
             delete @navigatingRows
-            return
+            ⮐ 
 
-        for index in [0...@items.length]
+        for index in 0...@items.length
             if @items[index].path == file
                 @rows[index].setActive()
-                return
+                ⮐ 
 
         matches = []
         for index,item of @items
             if file?.startsWith item.path
                 matches.push [index, item]
 
-        if not empty matches
+        if valid matches
             matches.sort (a,b) -> b[1].path.length - a[1].path.length
             [index, item] = first matches
             @rows[index].setActive()
@@ -91,7 +91,7 @@ function Shelf extends Column
 
         @setItems items, save:false
 
-    addPath: (path, opt) =>
+    addPath: path opt =>
 
         if ffs.isDir(path).then (isDir) =>
             if isDir
@@ -120,7 +120,7 @@ function Shelf extends Column
             @savePrefs()
         @
 
-    addItems: (items, opt) ->
+    addItems: items opt ->q
 
         return if empty items
 
@@ -130,7 +130,7 @@ function Shelf extends Column
         @scroll.update()
         @
 
-    addDir: (dir, opt) ->
+    addDir: dir opt ->
 
         item =
             name: slash.file slash.tilde dir
@@ -139,7 +139,7 @@ function Shelf extends Column
 
         @addItem item, opt
 
-    addFile: (file, opt) ->
+    addFile: file opt ->
 
         item =
             name: slash.file file
@@ -148,7 +148,7 @@ function Shelf extends Column
         item.textFile = true if File.isText file
         @addItem item, opt
 
-    addFiles: (files, opt) ○->
+    addFiles: files opt ○->
 
         for file in files
             if ○ ffs.isDir file
@@ -156,19 +156,19 @@ function Shelf extends Column
             else
                 @addFile file, opt
 
-    addItem:  (item, opt) ->
+    addItem: item opt ->
 
         pullAllWith @items, [item] # remove item if on shelf already
 
         if opt?.pos
             index = @rowIndexAtPos opt.pos
-            @items.splice Math.min(index, @items.length), 0, item
+            @items.splice Math.min(index, @items.length), 0 item
         else
             @items.push item
 
         @setItems @items
 
-    onDrop: (event) =>
+    onDrop: event =>
 
         action = event.getModifierState('Shift') and 'copy' or 'move'
         source = event.dataTransfer.getData 'text/plain'
@@ -194,7 +194,7 @@ function Shelf extends Column
     # 000   000  000     000
     #  0000000   000     000
 
-    onGitStatus: (status) =>
+    onGitStatus: status =>
 
         for row in @rows
             if row.path().startsWith status.gitDir
@@ -229,9 +229,9 @@ function Shelf extends Column
     # 000 0 000  000   000  000   000       000  000
     # 000   000   0000000    0000000   0000000   00000000
 
-    onMouseOver: (event) => @row(event.target)?.onMouseOver?()
-    onMouseOut:  (event) => @row(event.target)?.onMouseOut?()
-    onDblClick:  (event) => @navigateCols 'enter'
+    onMouseOver: event => @row(event.target)?.onMouseOver?()
+    onMouseOut:  event => @row(event.target)?.onMouseOut?()
+    onDblClick:  event => @navigateCols 'enter'
 
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000
     # 0000  000  000   000  000   000  000  000        000   000     000     000
@@ -239,11 +239,12 @@ function Shelf extends Column
     # 000  0000  000   000     000     000  000   000  000   000     000     000
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
-    navigateRows: (key) ->
+    navigateRows: key ->
 
-        return error "no rows in column #{@index}?" if not @numRows()
+        ⮐ error "no rows in column #{@index}?" if not @numRows()
+        
         index = @activeRow()?.index() ? -1
-        error "no index from activeRow? #{index}?", @activeRow() if not index? or Number.isNaN index
+        error "no index from activeRow? #{index}?" @activeRow() if not index? or Number.isNaN index
 
         index = switch key
             'up'        ➜ index-1
@@ -263,8 +264,8 @@ function Shelf extends Column
             @navigatingRows = true
             post.emit 'menuAction' action
 
-        if      key == 'up'   and index > @items.length     then navigate 'Navigate Forward'
-        else if key == 'down' and index > @items.length + 1 then navigate 'Navigate Backward'
+        if      key == 'up'   and index > @items.length     ➜ navigate 'Navigate Forward'
+        else if key == 'down' and index > @items.length + 1 ➜ navigate 'Navigate Backward'
         else
             row = @rows[index]
             row.setActive emit:false
@@ -299,7 +300,7 @@ function Shelf extends Column
     # 000        000   000  000        000   000  000
     # 000         0000000   000         0000000   000
 
-    showContextMenu: (absPos) =>
+    showContextMenu: absPos =>
 
         if not absPos?
             absPos = pos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top
@@ -324,7 +325,7 @@ function Shelf extends Column
     # 000  000   000          000
     # 000   000  00000000     000
 
-    onKey: (event) =>
+    onKey: event =>
 
         { mod, key, combo, char } = keyinfo.forEvent event
 
@@ -358,7 +359,7 @@ function Shelf extends Column
         if @dragDiv
             @updateDragIndicator event
 
-    onKeyUp: (event) =>
+    onKeyUp: event =>
 
         if @dragDiv
             @updateDragIndicator event

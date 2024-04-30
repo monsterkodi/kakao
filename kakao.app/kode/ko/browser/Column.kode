@@ -54,7 +54,7 @@ function Column
     # 000      000   000  000   000  000   000  000     000     000       000 0 000       000
     # 0000000   0000000   000   000  0000000    000     000     00000000  000   000  0000000
 
-    loadItems: (items, parent) ○->
+    loadItems: items parent ○->
 
         # log 'loadItems parent:' parent
         # log 'loadItems items:' items
@@ -107,12 +107,12 @@ function Column
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000   0000000
 
-    updateDragIndicator: (event) ->
+    updateDragIndicator: event ->
 
         @dragInd?.classList.toggle 'copy' event.shiftKey
         @dragInd?.classList.toggle 'move' event.ctrlKey or event.metaKey or event.altKey
 
-    onDragStart: (d, e) =>
+    onDragStart: d e =>
 
         @dragStartRow = @row e.target
 
@@ -143,7 +143,7 @@ function Column
     # 000 0 000  000   000     000     000
     # 000   000   0000000       0      00000000
 
-    onDragMove: (d,e) =>
+    onDragMove: d e =>
 
         if @dragStartRow and not @dragDiv and valid @browser.select.files()
 
@@ -202,7 +202,7 @@ function Column
     #      000     000     000   000  000
     # 0000000      000      0000000   000
 
-    onDragStop: (d,e) =>
+    onDragStop: d e =>
 
         clearTimeout @browser.springLoadTimer
         delete @browser.springLoadTarget
@@ -260,7 +260,7 @@ function Column
     # 000   000  000       000 0 000  000   000     000     000
     # 000   000  00000000  000   000   0000000       0      00000000
 
-    removeFile: (file) =>
+    removeFile: file =>
 
         if row = @row slash.file file
             @removeRow row
@@ -272,14 +272,14 @@ function Column
     # 000  000  0000       000  000       000   000     000
     # 000  000   000  0000000   00000000  000   000     000
 
-    insertFile: (file) =>
+    insertFile: file =>
 
         item = @browser.fileItem file
         row = new Row @, item
         @rows.push row
         row
 
-    insertDir: (dir) =>
+    insertDir: dir =>
 
         item = @browser.dirItem dir
         row = new Row @, item
@@ -292,7 +292,7 @@ function Column
     # 000     000     000       000 0 000
     # 000     000     00000000  000   000
 
-    unshiftItem: (item) ->
+    unshiftItem: item ->
 
         @items.unshift item
         @rows.unshift new Row @, item
@@ -300,14 +300,14 @@ function Column
         @scroll.update()
         @rows[0]
 
-    pushItem: (item) ->
+    pushItem: item ->
 
         @items.push item
         @rows.push new Row @, item
         @scroll.update()
         @rows[-1]
 
-    addItem: (item) ->
+    addItem: item ->
 
         row = @pushItem item
         @sort()
@@ -376,13 +376,13 @@ function Column
     # 000   000  000          000     000     000     000
     # 000   000   0000000     000     000      0      00000000
 
-    activateRow: (row) -> @row(row)?.activate()
+    activateRow: row -> @row(row)?.activate()
 
     activeRow: -> @rows.find (r) -> r.isActive()
     activePath: -> @activeRow()?.path() ? @parent.path
     selectedRow: -> @rows.find (r) -> r.isSelected()
 
-    row: (row) -> # accepts element, index, string or row
+    row: row -> # accepts element, index, string or row
         if      Number.isInteger(row) then return 0 <= row < @numRows() and @rows[row] or null
         else if typeof(row) == 'string' then return @rows.find (r) -> r.item.file == row or r.item.path == row
         else if row instanceof HTMLElement then return @rows.find (r) -> r.div.contains row
@@ -398,9 +398,9 @@ function Column
     rowHeight:  -> @parent?.type == 'file' ? 19 : 21
     numVisible: -> @rowHeight() and parseInt(@browser.height() / @rowHeight()) or 0
 
-    rowAtPos: (pos) -> @row @rowIndexAtPos pos
+    rowAtPos: pos -> @row @rowIndexAtPos pos
 
-    rowIndexAtPos: (pos) ->
+    rowIndexAtPos: pos ->
         dy = pos.y - @content.getBoundingClientRect().top
         rh = @rowHeight()
         if dy >= 0 and rh > 0
@@ -416,11 +416,12 @@ function Column
 
     hasFocus: -> @div.classList.contains 'focus'
 
-    focus: (opt) ->
+    focus: opt ->
 
         opt ?= {}
 
-        return @ if not opt.force and not window.lastFocus.startsWith @browser.name
+        ⮐ @ if not opt.force and not window.lastFocus.startsWith @browser.name
+        
 
         if not @activeRow() and @numRows() and opt.activate != false
             @rows[0].setActive()
@@ -444,10 +445,10 @@ function Column
     # 000 0 000  000   000  000   000       000  000
     # 000   000   0000000    0000000   0000000   00000000
 
-    onMouseOver: (event) => @row(event.target)?.onMouseOver?()
-    onMouseOut:  (event) => @row(event.target)?.onMouseOut?()
+    onMouseOver: event => @row(event.target)?.onMouseOver?()
+    onMouseOut:  event => @row(event.target)?.onMouseOut?()
 
-    onDblClick:  (event) =>
+    onDblClick:  event =>
 
         @browser.skipOnDblClick = true
         item = @activeRow()?.item
@@ -457,7 +458,7 @@ function Column
         else
             editor.focus() # test if editor.currentFile == item.path ?
 
-    extendSelection: (key) ->
+    extendSelection: key ->
         
         if @parent.type == 'file'
             @navigateRows key
@@ -484,7 +485,7 @@ function Column
     # 000  0000  000   000     000     000  000   000  000   000     000     000
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
-    navigateRows: (key) ->
+    navigateRows: key ->
 
         return error "no rows in column #{@index}?" if not @numRows()
         index = @activeRow()?.index() ? -1
@@ -507,7 +508,7 @@ function Column
         if newIndex != index
             @rows[newIndex].activate null @parent.type=='file'
 
-    navigateCols: (key) -> # move to file browser?
+    navigateCols: key -> # move to file browser?
 
         switch key
             'up'    ➜ @browser.navigate 'up'
@@ -523,7 +524,8 @@ function Column
                         post.emit 'focus' 'editor'
         @
 
-    navigateRoot: (key) ->
+    navigateRoot: key ->
+        
         switch key
             'left'  ➜ @browser.browse slash.dir @parent.path
             'right' ➜ @browser.browse @activeRow().item.path
@@ -535,7 +537,7 @@ function Column
     #      000  000       000   000  000   000  000       000   000
     # 0000000   00000000  000   000  000   000   0000000  000   000
 
-    doSearch: (char) ->
+    doSearch: char ->
 
         return if not @numRows()
 
@@ -588,7 +590,7 @@ function Column
             nextOrPrev?.activate()
         @
 
-    removeRow: (row) ->
+    removeRow: row ->
 
         if row == @activeRow()
             if @nextColumn()?.parent?.path == row.item?.path
@@ -744,7 +746,7 @@ function Column
     # 000   000  000     000
     #  0000000   000     000
 
-    updateGitFiles: (files) ->
+    updateGitFiles: files ->
 
         for row in @rows
             return if row.item.type not in ['dir' 'file']
@@ -783,7 +785,7 @@ function Column
 
         @crumb.setFile @parent.path
 
-    onContextMenu: (event, column) =>
+    onContextMenu: event column =>
 
         stopEvent event
 
@@ -810,7 +812,7 @@ function Column
             opt.y = absPos.y
             popup.menu opt
 
-    showContextMenu: (absPos) =>
+    showContextMenu: absPos =>
 
         if not absPos?
             absPos = kpos @div.getBoundingClientRect().left, @div.getBoundingClientRect().top
@@ -915,7 +917,7 @@ function Column
     # 000  000   000          000
     # 000   000  00000000     000
 
-    onKey: (event) =>
+    onKey: event =>
 
         { mod, key, combo, char } = keyinfo.forEvent event
 
@@ -970,7 +972,7 @@ function Column
         if @dragDiv
             @updateDragIndicator event
 
-    onKeyUp: (event) =>
+    onKeyUp: event =>
 
         if @dragDiv
             @updateDragIndicator event

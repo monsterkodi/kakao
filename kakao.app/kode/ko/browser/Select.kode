@@ -49,7 +49,7 @@ class Select
         @rows = []
         @active = null
 
-    toggle: (row) ->
+    toggle: row ->
 
         # return if row == @active
 

@@ -22,11 +22,11 @@ class Crumb
     show: -> @elem.style.display = 'block'
     hide: -> @elem.style.display = 'none'
 
-    onMouseDown: (event) =>
+    onMouseDown: event =>
 
         @downPos = kpos window.win?.getBounds()
 
-    onMouseUp: (event) =>
+    onMouseUp: event =>
 
         return if not @downPos
 
@@ -53,7 +53,7 @@ class Crumb
 
         delete @downPos
 
-    setFile: (file) ->
+    setFile: file ->
 
         if @column.index == 0
             @elem.innerHTML = File.crumbSpan slash.tilde file

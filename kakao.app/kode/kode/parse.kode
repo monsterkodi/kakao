@@ -51,7 +51,7 @@ function Parse extends parseutils
 
     exps: (rule, tokens, stop) ->
         
-        return if empty tokens
+        ⮐ if empty tokens
         
         @sheapPush 'exps' rule
         
@@ -278,6 +278,7 @@ function Parse extends parseutils
             if @funcAhead tokens
                 
                 paren = @argsWithoutParens tok, tokens
+                @sheapPop 'exp' tok.text ? tok.type
                 ⮐ @lhs paren, tokens
         
         e = tok

@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var Shelf
+var item, Shelf
 
 import kxk from "../../kxk.js"
 let pullAllWith = kxk.pullAllWith
@@ -79,7 +79,7 @@ Shelf = (function ()
             delete this.navigatingRows
             return
         }
-        for (var _61_22_ = index = 0, _61_26_ = this.items.length; (_61_22_ <= _61_26_ ? index < this.items.length : index > this.items.length); (_61_22_ <= _61_26_ ? ++index : --index))
+        for (var _61_21_ = index = 0, _61_25_ = this.items.length; (_61_21_ <= _61_25_ ? index < this.items.length : index > this.items.length); (_61_21_ <= _61_25_ ? ++index : --index))
         {
             if (this.items[index].path === file)
             {
@@ -170,34 +170,23 @@ Shelf = (function ()
 
     Shelf.prototype["addItems"] = function (items, opt)
     {
-        var item
-
         if (_k_.empty(items))
         {
-            return
+            return q(return)
         }
-        var list = _k_.list(items)
-        for (var _127_17_ = 0; _127_17_ < list.length; _127_17_++)
-        {
-            item = list[_127_17_]
-            this.rows.push(new Row(this,item))
-        }
-        this.scroll.update()
-        return this
     }
+
+
+
 
     Shelf.prototype["addDir"] = function (dir, opt)
     {
-        var item
-
         item = {name:slash.file(slash.tilde(dir)),type:'dir',path:slash.path(dir)}
         return this.addItem(item,opt)
     }
 
     Shelf.prototype["addFile"] = function (file, opt)
     {
-        var item
-
         item = {name:slash.file(file),path:slash.path(file),type:'file'}
         if (File.isText(file))
         {
@@ -244,7 +233,7 @@ Shelf = (function ()
 
     Shelf.prototype["onDrop"] = function (event)
     {
-        var action, item, source
+        var action, source
 
         action = event.getModifierState('Shift') && 'copy' || 'move'
         source = event.dataTransfer.getData('text/plain')
@@ -319,16 +308,16 @@ Shelf = (function ()
 
     Shelf.prototype["onMouseOver"] = function (event)
     {
-        var _232_46_, _232_59_
+        var _232_44_, _232_57_
 
-        return ((_232_46_=this.row(event.target)) != null ? typeof (_232_59_=_232_46_.onMouseOver) === "function" ? _232_59_() : undefined : undefined)
+        return ((_232_44_=this.row(event.target)) != null ? typeof (_232_57_=_232_44_.onMouseOver) === "function" ? _232_57_() : undefined : undefined)
     }
 
     Shelf.prototype["onMouseOut"] = function (event)
     {
-        var _233_46_, _233_58_
+        var _233_44_, _233_56_
 
-        return ((_233_46_=this.row(event.target)) != null ? typeof (_233_58_=_233_46_.onMouseOut) === "function" ? _233_58_() : undefined : undefined)
+        return ((_233_44_=this.row(event.target)) != null ? typeof (_233_56_=_233_44_.onMouseOut) === "function" ? _233_56_() : undefined : undefined)
     }
 
     Shelf.prototype["onDblClick"] = function (event)
@@ -338,13 +327,13 @@ Shelf = (function ()
 
     Shelf.prototype["navigateRows"] = function (key)
     {
-        var index, navigate, row, _245_28_, _245_38_, _260_99_
+        var index, navigate, row, _246_28_, _246_38_, _261_99_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_245_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _245_38_ : -1)
+        index = ((_246_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _246_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -415,7 +404,7 @@ Shelf = (function ()
 
     Shelf.prototype["openFileInNewWindow"] = function ()
     {
-        var item, _278_30_
+        var _279_30_
 
         if (item = (this.activeRow() != null ? this.activeRow().item : undefined))
         {
@@ -429,12 +418,12 @@ Shelf = (function ()
 
     Shelf.prototype["removeObject"] = function ()
     {
-        var nextOrPrev, row, _285_27_, _288_36_
+        var nextOrPrev, row, _286_27_, _289_36_
 
-        row = ((_285_27_=this.activeRow()) != null ? _285_27_ : this.selectedRow())
+        row = ((_286_27_=this.activeRow()) != null ? _286_27_ : this.selectedRow())
         if (row)
         {
-            nextOrPrev = ((_288_36_=row.next()) != null ? _288_36_ : row.prev())
+            nextOrPrev = ((_289_36_=row.next()) != null ? _289_36_ : row.prev())
             row.div.remove()
             this.items.splice(row.index(),1)
             this.rows.splice(row.index(),1)

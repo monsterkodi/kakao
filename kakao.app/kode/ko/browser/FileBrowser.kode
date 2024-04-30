@@ -13,7 +13,7 @@ use          ◆ Select Info Browser Shelf
 
 function FileBrowser extends Browser
 
-    @: (view) ->
+    @: view ->
 
         super view
 
@@ -55,7 +55,7 @@ function FileBrowser extends Browser
     # 000   000  000   000  000   000  000        000   000  000          000     000  000   000  000  0000
     # 0000000    000   000   0000000   000        000   000   0000000     000     000   0000000   000   000
 
-    dropAction: (action, sources, target) ->
+    dropAction: action sources target ->
 
         # if slash.isFile target
             # target = slash.dir target
@@ -73,7 +73,7 @@ function FileBrowser extends Browser
                 'move' ➜ File.rename source, target
                 'copy' ➜ File.copy source, target
 
-    columnForFile: (file) ->
+    columnForFile: file ->
 
         for column in @columns
             if column.parent?.path == slash.dir file
@@ -85,7 +85,7 @@ function FileBrowser extends Browser
     # 000  0000  000   000     000     000  000   000  000   000     000     000
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
-    sharedColumnIndex: (file) ->
+    sharedColumnIndex: file ->
 
         col = 0
 
@@ -99,17 +99,17 @@ function FileBrowser extends Browser
             return 0
         Math.max -1, col-2
 
-    browse: (file, opt) =>
+    browse: file opt =>
 
         log 'FileBrowser.browse' file, opt
         if file then @loadItem @pathItem(file), opt
 
-    onFile: (file) =>
+    onFile: file =>
 
         # log 'onFile' file
         if file and @flex then @navigateToFile file
 
-    navigateToFile: (file) =>
+    navigateToFile: file =>
 
         # triggered by
         #     browse.start
@@ -179,7 +179,7 @@ function FileBrowser extends Browser
     # 000     000     000       000 0 000
     # 000     000     00000000  000   000
 
-    pathItem: (path) ->
+    pathItem: path ->
 
         p = slash.path path
         item = slash.parse p
@@ -187,28 +187,28 @@ function FileBrowser extends Browser
         ffs.type(p).then ((i) -> (t) -> i.type = t)(item)
         item
 
-    fileItem: (path) ->
+    fileItem: path ->
 
         p = slash.path path
         item = slash.parse p
         item.type = 'file'
         item
 
-    dirItem: (path) ->
+    dirItem: path ->
 
         item = slash.parse path
         item.type = 'dir'
         item
 
-    onFileBrowser: (action, item, arg) =>
+    onFileBrowser: action item arg =>
 
         switch action
             'loadItem'     ➜ @loadItem     item, arg
             'activateItem' ➜ @activateItem item, arg
 
-    loadDir: (path) -> @loadItem type:'dir' path:path
+    loadDir: path -> @loadItem type:'dir' path:path
 
-    loadItem: (item, opt) ->
+    loadItem: item opt ->
 
         ###
         triggered by
@@ -246,7 +246,7 @@ function FileBrowser extends Browser
     # 000   000  000          000     000     000     000   000     000     000
     # 000   000   0000000     000     000      0      000   000     000     00000000
 
-    activateItem: (item, col) ->
+    activateItem: item col ->
 
         # triggered by post('filebrowser' 'activateItem') in row.activate
         # loads item in the column to the right of col while keeping the other columns
@@ -291,12 +291,12 @@ function FileBrowser extends Browser
 
         @updateColumnScrolls()
 
-    imageInfoColumn: (col, file) ->
+    imageInfoColumn: col file ->
 
         @columns[col].crumb.hide()
         @columns[col].table.appendChild Info.image file
 
-    fileInfoColumn: (col, file) ->
+    fileInfoColumn: col file ->
         # log 'fileInfoColumn' col, file
         @columns[col].crumb.hide()
         @columns[col].table.appendChild Info.file file
@@ -307,14 +307,14 @@ function FileBrowser extends Browser
     #      000  000   000  000   000  000   000  000       000       000     000     000       000 0 000
     # 0000000    0000000    0000000   000   000   0000000  00000000  000     000     00000000  000   000
 
-    onFileIndexed: (file, info) =>
+    onFileIndexed: file info =>
 
         @srcCache[file] = info
 
         if file == @lastUsedColumn()?.parent?.file
             @loadSourceItem { file:file, type:'file' }, @lastUsedColumn()?.index
 
-    loadSourceItem: (item, col) ->
+    loadSourceItem: item col ->
 
         info = @srcCache[item.path]
 
@@ -359,7 +359,7 @@ function FileBrowser extends Browser
     # 000   000  000  000   000  000     000     000       000 0 000
     # 0000000    000  000   000  000     000     00000000  000   000
 
-    onDirChanged: (info) =>
+    onDirChanged: info =>
 
         for column in @columns
             if column.path() == info.dir
@@ -384,7 +384,7 @@ function FileBrowser extends Browser
                 
         true
 
-    loadDirItems: (item, items, col, opt) =>
+    loadDirItems: item items col opt =>
 
         # log 'loadDirItems' item, items, col, opt
 
@@ -438,7 +438,7 @@ function FileBrowser extends Browser
 
         @setShelfSize @shelfSize
 
-    columnAtPos: (pos) ->
+    columnAtPos: pos ->
 
         if column = super pos
             return column
@@ -467,11 +467,11 @@ function FileBrowser extends Browser
             else
                 return lastColumn.prevColumn()
 
-    onBackspaceInColumn: (column) ->
+    onBackspaceInColumn: column ->
 
         column.backspaceSearch()
 
-    onDeleteInColumn: (column) ->
+    onDeleteInColumn: column ->
 
         if column.searchDiv
             column.clearSearch()
@@ -489,18 +489,18 @@ function FileBrowser extends Browser
     # 000   000  000     000          000     000     000   000     000     000   000       000
     #  0000000   000     000     0000000      000     000   000     000      0000000   0000000
 
-    getGitStatus: (item, col) =>
+    getGitStatus: item col =>
 
         file = item.path ? item.parent?.path
         if valid file
             Git.status(file).then (status) => @applyGitStatusFiles col, status.files
         @
 
-    applyGitStatusFiles: (col, files) =>
+    applyGitStatusFiles: col files =>
 
         @columns[col]?.updateGitFiles files
 
-    onGitStatus: (status) =>
+    onGitStatus: status =>
 
         for col in 0...@columns.length
             @applyGitStatusFiles col, status.files
@@ -512,7 +512,7 @@ function FileBrowser extends Browser
     #      000  000   000  000       000      000
     # 0000000   000   000  00000000  0000000  000
 
-    onShelfDrag: (drag, event) =>
+    onShelfDrag: drag event =>
 
         shelfSize = clamp 0, 400, drag.pos.x
         @setShelfSize shelfSize

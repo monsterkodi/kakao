@@ -203,7 +203,7 @@ function Row
         if not document.activeElement? or document.activeElement == document.body
             @column.focus activate:false
 
-    onNameFocusOut: (event) => @removeInput()
+    onNameFocusOut: event => @removeInput()
 
     #  0000000  000   000   0000000   000   000   0000000   00000000
     # 000       000   000  000   000  0000  000  000        000
@@ -211,7 +211,7 @@ function Row
     # 000       000   000  000   000  000  0000  000   000  000
     #  0000000  000   000  000   000  000   000   0000000   00000000
 
-    onNameChange: (event) =>
+    onNameChange: event =>
 
         targetFile = slash.path slash.dir(@item.path), @input.value.trim()
 
@@ -225,7 +225,7 @@ function Row
     # 000   000  000       000  0000  000   000  000 0 000  000
     # 000   000  00000000  000   000  000   000  000   000  00000000
 
-    rename: (targetFile) =>
+    rename: targetFile =>
 
         return if slash.samePath @item.path, targetFile
 

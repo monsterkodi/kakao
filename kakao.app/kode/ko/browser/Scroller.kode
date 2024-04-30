@@ -38,7 +38,7 @@ class Scroller
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    onStart: (drag, event) =>
+    onStart: drag event =>
 
         br = @elem.getBoundingClientRect()
         sy = clamp 0, @height(), event.clientY - br.top
@@ -52,7 +52,7 @@ class Scroller
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000   0000000
 
-    onDrag: (drag) =>
+    onDrag: drag =>
 
         delta = (drag.delta.y / (@visRows() * @rowHeight())) * @numRows() * @rowHeight()
         @target.scrollTop += delta
@@ -64,14 +64,14 @@ class Scroller
     # 000   000  000   000  000       000       000
     # 00     00  000   000  00000000  00000000  0000000
 
-    onWheel: (event) =>
+    onWheel: event =>
 
         if Math.abs(event.deltaX) >= 2*Math.abs(event.deltaY) or Math.abs(event.deltaY) == 0
             @target.scrollLeft += event.deltaX
         else
             @target.scrollTop += event.deltaY
 
-    onScroll: (event) => @update()
+    onScroll: event => @update()
 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
@@ -79,7 +79,7 @@ class Scroller
     # 000   000  000        000   000  000   000     000     000
     #  0000000   000        0000000    000   000     000     00000000
 
-    toIndex: (i) ->
+    toIndex: i ->
 
         row = @column.rows[i].div
         newTop = @target.scrollTop

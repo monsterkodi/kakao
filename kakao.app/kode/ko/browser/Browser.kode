@@ -48,14 +48,14 @@ function Browser extends events
             view:       @cols
             onPaneSize: @updateColumnScrolls
 
-    columnAtPos: (pos) ->
+    columnAtPos: pos ->
 
         for col in @columns
             if elem.containsPos col.div, pos
                 ⮐ col
         null
 
-    columnAtX: (x) ->
+    columnAtX: x ->
 
         for col in @columns
             cpos = kpos col.div.getBoundingClientRect().left, col.div.getBoundingClientRect().top
@@ -64,7 +64,7 @@ function Browser extends events
                 ⮐ col
         null
 
-    rowAtPos: (pos) ->
+    rowAtPos: pos ->
 
         if col = @columnAtPos pos
             ⮐ col.rowAtPos pos
@@ -76,7 +76,7 @@ function Browser extends events
     # 000  0000  000   000     000     000  000   000  000   000     000     000
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
-    navigate: (key) ->
+    navigate: key ->
 
         @select.clear()
 
@@ -111,7 +111,7 @@ function Browser extends events
     # 000       000   000  000       000   000       000
     # 000        0000000    0000000   0000000   0000000
 
-    focus: (opt) =>
+    focus: opt =>
         @lastDirOrSrcColumn()?.focus opt
         @
 
@@ -125,7 +125,7 @@ function Browser extends events
     # 000       000 0 000  000           000        000
     # 00000000  000   000  000           000        000
 
-    emptyColumn: (colIndex) ->
+    emptyColumn: colIndex ->
 
         if colIndex?
             for c in [colIndex...@numCols()]
@@ -162,7 +162,7 @@ function Browser extends events
 
     height: -> @flex?.height()
     numCols: -> @columns.length
-    column: (i) -> @columns[i] if 0 <= i < @numCols()
+    column: i -> @columns[i] if 0 <= i < @numCols()
 
     #  0000000   0000000    0000000     0000000   0000000   000
     # 000   000  000   000  000   000  000       000   000  000
@@ -185,7 +185,7 @@ function Browser extends events
     # 000        000   000  000
     # 000         0000000   000
 
-    clearColumn: (index) -> if index < @columns.length then @columns[index].clear()
+    clearColumn: index -> if index < @columns.length then @columns[index].clear()
 
     shiftColumn: ->
 
@@ -198,18 +198,18 @@ function Browser extends events
         for i in [0...@columns.length]
             @columns[i].setIndex i
 
-    popColumn: (opt) ->
+    popColumn: opt ->
 
         return if not @flex
         @clearColumn @columns.length-1
         @flex.popPane opt
         @columns.pop()
 
-    popEmptyColumns: (opt) ->
+    popEmptyColumns: opt ->
 
         @clearColumnsFrom @lastDirColumn()?.index ? 0, pop:true
 
-    shiftColumnsTo: (col) ->
+    shiftColumnsTo: col ->
 
         for i in [0...col]
             @shiftColumn()
@@ -276,7 +276,7 @@ function Browser extends events
     # 000  000 0 000  000   000  000   000  000
     # 000  000   000  000   000   0000000   00000000
 
-    loadImage: (row, file) ->
+    loadImage: row file ->
 
         return if not row.isActive()
 
