@@ -19,9 +19,8 @@
 
 backColor           = #000000
 darkColor           = #0a0a0a
-
-separatorColor      = #0e0e0e
 bgColor             = #0d0d0d
+separatorColor      = #0e0e0e
 frameColor          = #111111
 scrollHoverColor    = #b00
 crumbHoverColor     = #0e0e0e
@@ -518,7 +517,29 @@ span.macro
 
 .topbot
     background-color        frameColor
+    
+// 00000000  000   000  000   000   0000000  000      000   0000000  000000000  
+// 000       000   000  0000  000  000       000      000  000          000     
+// 000000    000   000  000 0 000  000       000      000  0000000      000     
+// 000       000   000  000  0000  000       000      000       000     000     
+// 000        0000000   000   000   0000000  0000000  000  0000000      000     
 
+.funclist
+    background-color        rgba(16, 16, 16, 0.5)
+
+.funclist-item
+    
+    cursor                  pointer
+    opacity                 0.8
+
+    &:hover    
+        opacity                 1
+        background-color        rgba(16, 16, 16, 1)
+
+    &active
+        opacity                 1
+        background-color        rgba(32, 32, 32, 1)
+    
 // 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000
 // 000   000  000  000        000   000  000      000  000        000   000     000
 // 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000

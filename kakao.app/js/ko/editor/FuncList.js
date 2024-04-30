@@ -18,12 +18,24 @@ FuncList = (function ()
     {
         this.editor = editor
     
+        this["onItemClick"] = this["onItemClick"].bind(this)
         this["onFileIndexed"] = this["onFileIndexed"].bind(this)
         this["onEditorFile"] = this["onEditorFile"].bind(this)
+        this["onSplit"] = this["onSplit"].bind(this)
         this.elem = elem({class:'funclist'})
         this.editor.view.appendChild(this.elem)
         post.on('fileIndexed',this.onFileIndexed)
+        post.on('split',this.onSplit)
         kore.on('editor|file',this.onEditorFile)
+    }
+
+    FuncList.prototype["onSplit"] = function ()
+    {
+        var browserVisible
+
+        browserVisible = window.split.browserVisible()
+        console.log('onSplit',browserVisible)
+        return this.elem.style.display = (browserVisible ? 'none' : 'inherit')
     }
 
     FuncList.prototype["onEditorFile"] = function (file)
@@ -38,7 +50,7 @@ FuncList = (function ()
 
     FuncList.prototype["onFileIndexed"] = function (file, info)
     {
-        var item, items
+        var e, item, items
 
         if (file === kore.get('editor|file'))
         {
@@ -46,11 +58,24 @@ FuncList = (function ()
             console.log('FuncList.onFileIndexed',file,info,items)
             this.elem.innerHTML = ''
             var list = _k_.list(items)
-            for (var _43_21_ = 0; _43_21_ < list.length; _43_21_++)
+            for (var _51_21_ = 0; _51_21_ < list.length; _51_21_++)
             {
-                item = list[_43_21_]
-                elem({parent:this.elem,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
+                item = list[_51_21_]
+                e = elem({class:'funclist-item',parent:this.elem,click:this.onItemClick,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
+                e.item = item
             }
+        }
+    }
+
+    FuncList.prototype["onItemClick"] = function (event)
+    {
+        var item, listitem
+
+        listitem = elem.upElem(event,{prop:'item'})
+        if (item = (listitem != null ? listitem.item : undefined))
+        {
+            console.log('jumpTo',item)
+            return post.emit('jumpTo',item)
         }
     }
 

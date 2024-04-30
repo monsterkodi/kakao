@@ -277,5 +277,6 @@ class Split
     commandlineVisible: -> not @flex.isCollapsed 'commandline'
     terminalVisible:    -> not @flex.isCollapsed('terminal') and @terminalHeight() > 0
     editorVisible:      -> not @flex.isCollapsed 'editor'    and @editorHeight() > 0
+    browserVisible:     -> @terminalHeight() > 0 and @flex.panes[0].div == @browser
         
 export Split

@@ -19,7 +19,15 @@ function FuncList
         @editor.view.appendChild @elem
         
         post.on 'fileIndexed' @onFileIndexed
+        post.on 'split'       @onSplit
+        
         kore.on 'editor|file' @onEditorFile
+        
+    onSplit: =>
+        
+        browserVisible = window.split.browserVisible()
+        log 'onSplit' browserVisible
+        @elem.style.display = browserVisible ? 'none' : 'inherit'
         
     onEditorFile: file =>
         
@@ -41,6 +49,21 @@ function FuncList
             @elem.innerHTML = ''
             
             for item in items
-                elem parent:@elem, html:Syntax.spanForTextAndSyntax item.text, 'browser'
+                e = elem class:'funclist-item' parent:@elem, click:@onItemClick, html:Syntax.spanForTextAndSyntax item.text, 'browser'
+                e.item = item
+                
+    # 000  000000000  00000000  00     00         0000000  000      000   0000000  000   000  
+    # 000     000     000       000   000        000       000      000  000       000  000   
+    # 000     000     0000000   000000000        000       000      000  000       0000000    
+    # 000     000     000       000 0 000        000       000      000  000       000  000   
+    # 000     000     00000000  000   000         0000000  0000000  000   0000000  000   000  
+    
+    onItemClick: event =>
+        
+        listitem = elem.upElem event, prop:'item'
+        
+        if item = listitem?.item
+            log 'jumpTo' item
+            post.emit 'jumpTo' item
 
 export FuncList

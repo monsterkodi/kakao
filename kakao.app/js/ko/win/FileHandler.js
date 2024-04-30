@@ -161,6 +161,7 @@ class FileHandler
             }
             else
             {
+                post.emit('dirty',false)
                 return post.emit('reloadFile',saved)
             }
         })
@@ -187,7 +188,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _171_29_
+        var _172_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {

@@ -72,6 +72,9 @@ elem.upProp = (element, prop) ->
 elem.upElem = (element, opt) ->
     
     ⮐ null if not element?
+    
+    element = element.target if element is Event
+    
     ⮐ element if opt?.tag? and opt.tag == element.tagName
     ⮐ element if opt?.prop? and element[opt.prop]?
     ⮐ element if opt?.attr? and element.getAttribute?(opt.attr)?

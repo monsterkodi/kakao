@@ -396,6 +396,11 @@ class Split
     {
         return !this.flex.isCollapsed('editor' && this.editorHeight() > 0)
     }
+
+    browserVisible ()
+    {
+        return this.terminalHeight() > 0 && this.flex.panes[0].div === this.browser
+    }
 }
 
 export default Split;

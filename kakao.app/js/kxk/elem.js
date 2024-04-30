@@ -116,11 +116,15 @@ elem.upProp = function (element, prop)
 
 elem.upElem = function (element, opt)
 {
-    var _75_30_, _76_31_, _77_31_, _77_57_, _77_68_, _78_32_, _78_55_
+    var _78_30_, _79_31_, _80_31_, _80_57_, _80_68_, _81_32_, _81_55_
 
     if (!(element != null))
     {
         return null
+    }
+    if (element instanceof Event)
+    {
+        element = element.target
     }
     if (((opt != null ? opt.tag : undefined) != null) && opt.tag === element.tagName)
     {
@@ -143,7 +147,7 @@ elem.upElem = function (element, opt)
 
 elem.downElem = function (element, opt)
 {
-    var child, found, _84_30_, _85_16_, _86_40_, _87_16_, _87_42_, _87_53_, _88_40_
+    var child, found, _87_30_, _88_16_, _89_40_, _90_16_, _90_42_, _90_53_, _91_40_
 
     if (!(element != null))
     {
@@ -168,9 +172,9 @@ elem.downElem = function (element, opt)
         }
     }
     var list = _k_.list(element.children)
-    for (var _89_14_ = 0; _89_14_ < list.length; _89_14_++)
+    for (var _92_14_ = 0; _92_14_ < list.length; _92_14_++)
     {
-        child = list[_89_14_]
+        child = list[_92_14_]
         if (found = elem.downElem(child,opt))
         {
             return found

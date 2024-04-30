@@ -739,6 +739,29 @@ span.macro.macro,
     background-color: #111111;
 }
 
+.funclist
+{
+    background-color: rgba(16, 16, 16, 0.5);
+}
+
+.funclist-item
+{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.funclist-item:hover
+{
+    opacity: 1;
+    background-color: rgba(16, 16, 16, 1);
+}
+
+.funclist-itemactive
+{
+    opacity: 1;
+    background-color: rgba(32, 32, 32, 1);
+}
+
 .highlight
 {
     color: rgba(255, 100, 255, 0.7);
