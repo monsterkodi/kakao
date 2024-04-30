@@ -226,25 +226,25 @@ function Parse extends parseutils
 
     exp: (tokens) ->
 
-        return if empty tokens
+        ⮐ if empty tokens
 
         tok = tokens.shift()
 
         log Y5 w1 tok?.text if @debug
-        
+                
         switch tok.type
             
-            'block'     ➜   print.tokens 'ERROR: exp unexpected block' [tok].concat tokens; return error "INTERNAL ERROR: unexpected block token in exp!"
-            'nl'        ➜   print.tokens 'ERROR: exp unexpected nl'    [tok].concat tokens; return error "INTERNAL ERROR: unexpected nl token in exp!"
-            ';'         ➜   print.tokens 'ERROR: exp unexpected ;'     [tok].concat tokens; return error "INTERNAL ERROR: unexpected ; token in exp!"
-            'section'   ➜   return @section tok, tokens                
+            'block'     ➜   print.tokens 'ERROR: exp unexpected block' [tok].concat tokens; ⮐ error "INTERNAL ERROR: unexpected block token in exp!"
+            'nl'        ➜   print.tokens 'ERROR: exp unexpected nl'    [tok].concat tokens; ⮐ error "INTERNAL ERROR: unexpected nl token in exp!"
+            ';'         ➜   print.tokens 'ERROR: exp unexpected ;'     [tok].concat tokens; ⮐ error "INTERNAL ERROR: unexpected ; token in exp!"
+            'section'   ➜   ⮐ @section tok, tokens                
             'keyword'       # dispatch to block rules identified by keyword
                             if tokens[0]?.text not in ':' # allow keywords as dictionary keys
                                 
                                 if tok.text == 'import'
                                     if tokens[0].text == '(' # this is really ugly! implement dynamic inline use
                                         tok.type = 'call'
-                                        return @call tok, tokens
+                                        ⮐ @call tok, tokens
                                     else if tokens[0].text in '.'
                                         break
                                 
@@ -264,14 +264,21 @@ function Parse extends parseutils
                                     'if' 
                                         if @stack[-1] not in ['▸return']
                                             @verb 'if' @stack if @stack.length
-                                            return @if tok, tokens
+                                            ⮐ @if tok, tokens
                         ➜   switch tok.text
-                                '○' ➜ return @await tok, tokens
+                                '○' ➜ ⮐ @await tok, tokens
                                 '->' '=>' '○->' '○=>'
                                     if @stack[-1] not in ['{']
-                                        return @func null, tok, tokens
+                                        ⮐ @func null, tok, tokens
 
         @sheapPush 'exp' tok.text ? tok.type
+        
+        if tok.type != 'paren' and @stack[-1] == ':' and @stack[-2] == 'class'
+            
+            if @funcAhead tokens
+                
+                paren = @argsWithoutParens tok, tokens
+                ⮐ @lhs paren, tokens
         
         e = tok
         while tokens.length                  # repeatedly call rhs and lhs until all tokens are swallowed
@@ -435,6 +442,7 @@ function Parse extends parseutils
                             if @debug
                                 print.ast "rhs no nxt match?? stack:#{@stack} e:" e
                                 print.tokens "rhs no nxt match?? nxt:" nxt
+                                log noon e
                             break
                     
             if numTokens == tokens.length
@@ -568,6 +576,7 @@ function Parse extends parseutils
                         
                 (   spaced and 
                     (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if'])) and
+                    # (not (@stack[-2] == 'class' and @stack[-1] == ':')) and
                     nxt.text not in ['then' 'when' 'else' 'break' 'continue' 'in' 'of' 'for' 'while'] and
                     (nxt.text not in ['if'] or not @noThenAhead tokens) and
                     nxt.text not in ',.;:)}]' and

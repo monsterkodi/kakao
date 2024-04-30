@@ -323,6 +323,25 @@ ParseUtils = (function ()
         return true
     }
 
+    ParseUtils.prototype["funcAhead"] = function (tokens)
+    {
+        var ti
+
+        ti = -1
+        while (++ti < tokens.length)
+        {
+            if (tokens[ti].type === 'func')
+            {
+                return true
+            }
+            if (_k_.in(tokens[ti].type,['nl','block','paren']))
+            {
+                return false
+            }
+        }
+        return false
+    }
+
     ParseUtils.prototype["sheapPush"] = function (type, text)
     {
         this.sheap.push({type:type,text:text})

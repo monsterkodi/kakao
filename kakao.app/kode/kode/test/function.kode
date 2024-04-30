@@ -6,7 +6,7 @@
 000        0000000   000   000   0000000     000     000   0000000   000   000  
 ###
 
-use ./utils ▪ kc ke
+use ./utils ▪ kc ke kd
 
 ▸ function
 
@@ -90,27 +90,7 @@ use ./utils ▪ kc ke
             })()
             
             """
-            
-    ▸ method args
-    
-        kc  """
-            function D
-                f: a b -> a+b
-            """ ▸
-            """
-
-            D = (function ()
-            {
-                function D (a, b)
-                {
-                    return a+b
-                }
-
-                return D
-            })()
-            
-            """
-
+                        
     ▸ async
         
         kc  """

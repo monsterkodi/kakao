@@ -295,6 +295,14 @@ function ParseUtils
                     ⮐ false 
             ⮐ true  if tokens[ti].type in ['nl' 'block']
         true
+
+    funcAhead: (tokens) ->
+        
+        ti = -1
+        while ++ti < tokens.length
+            ⮐ true  if tokens[ti].type == 'func'
+            ⮐ false if tokens[ti].type in ['nl' 'block' 'paren']
+        false
         
     #  0000000  000   000  00000000   0000000   00000000     
     # 000       000   000  000       000   000  000   000    

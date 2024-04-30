@@ -59,7 +59,7 @@ class kk
         }
         if (args.test)
         {
-            await kk.test(args.options[0])
+            await kk.test(args.options)
         }
         if (args.run)
         {
@@ -129,19 +129,19 @@ class kk
             if (_k_.in(slash.ext(sourceFile),['kode','pug','styl','noon']))
             {
                 await knrd(sourceFile)
-                return await kk.test('silent')
+                return await kk.test(args.options)
             }
         })
     }
 
-    static async test (mode)
+    static async test (options)
     {
         var cmd, opt
 
         cmd = "node js/test.js"
-        if (mode)
+        if (!_k_.empty(options))
         {
-            cmd += ' ' + mode
+            cmd += ' ' + options.join(' ')
         }
         opt = {shell:true,cwd:kk.appPath()}
         return new Promise(function (resolve, reject)

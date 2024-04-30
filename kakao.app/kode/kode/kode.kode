@@ -69,7 +69,9 @@ class Kode
     
     compile: (text, file) ->
 
-        return '' if empty trim text
+        ⮐ '' if empty trim text
+        
+        log text if @args.verbose
 
         @renderer.render @ast(text), file
         

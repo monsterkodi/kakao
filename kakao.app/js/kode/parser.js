@@ -662,6 +662,18 @@ Parser = (function ()
         return {parens:{open:open,exps:exps,close:close}}
     }
 
+    Parser.prototype["argsWithoutParens"] = function (firstArg, tokens)
+    {
+        var exps
+
+        exps = [firstArg]
+        while (tokens[0].type !== 'func')
+        {
+            exps.push(tokens.shift())
+        }
+        return {parens:{open:{type:'paren',text:'('},exps:exps,close:{type:'paren',text:')'}}}
+    }
+
     Parser.prototype["lcomp"] = function (exps)
     {
         var f

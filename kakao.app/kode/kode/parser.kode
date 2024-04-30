@@ -802,7 +802,7 @@ function Parser extends parse
     parens: (open, tokens) ->
 
         if tokens[0]?.text == ')'
-            return parens:
+            ⮐ parens:
                 open:  open
                 exps:  []
                 close: tokens.shift()
@@ -815,13 +815,24 @@ function Parser extends parse
         
         @pop '('
 
-        if comp = @lcomp exps
-            return comp
+        ⮐ comp if comp = @lcomp exps
         
         parens:
             open:  open
             exps:  exps
             close: close
+            
+    argsWithoutParens: (firstArg, tokens) ->
+        
+        exps = [firstArg]
+
+        while tokens[0].type != 'func'
+            exps.push tokens.shift()
+        
+        parens:
+            open:  type: 'paren' text:'('
+            exps:  exps
+            close: type: 'paren' text:')'
 
     # 000       0000000   0000000   00     00  00000000   
     # 000      000       000   000  000   000  000   000  

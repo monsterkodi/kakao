@@ -56,7 +56,7 @@ class kk
         if args.info    ➜○ kk.info()
         if args.knrd    ➜○ knrd args.options, args
         if args.build   ➜○ kk.build()
-        if args.test    ➜○ kk.test args.options[0]
+        if args.test    ➜○ kk.test args.options
         if args.run     ➜○ kk.spawn args.options
         if args.clean   ➜○ kk.clean()
         if args.rebuild ➜○ kk.rebuild()                            
@@ -118,7 +118,7 @@ class kk
             
             if slash.ext(sourceFile) in ['kode' 'pug' 'styl' 'noon']
                 ○ knrd sourceFile
-                ○ kk.test 'silent'
+                ○ kk.test args.options
     
     # 000000000  00000000   0000000  000000000  
     #    000     000       000          000     
@@ -126,10 +126,10 @@ class kk
     #    000     000            000     000     
     #    000     00000000  0000000      000     
     
-    @test: (mode) ○->
+    @test: (options) ○->
                 
         cmd = "node js/test.js"
-        cmd += ' ' + mode if mode
+        cmd += ' ' + options.join ' ' if valid options
         opt = shell:true cwd:kk.appPath() # run tests inside the .app folder
         
         # log w4 '○● test'

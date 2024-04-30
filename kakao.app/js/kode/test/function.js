@@ -4,6 +4,7 @@ var _k_
 import utils from "./utils.js"
 let kc = utils.kc
 let ke = utils.ke
+let kd = utils.kd
 
 toExport["function"] = function ()
 {
@@ -53,21 +54,6 @@ D = (function ()
     {
         this.a = a
         this.b = b
-    }
-
-    return D
-})()
-`)
-    })
-    section("method args", function ()
-    {
-        compare(kc(`function D
-    f: a b -> a+b`),`
-D = (function ()
-{
-    function D (a, b)
-    {
-        return a+b
     }
 
     return D

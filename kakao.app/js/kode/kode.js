@@ -84,6 +84,10 @@ class Kode
         {
             return ''
         }
+        if (this.args.verbose)
+        {
+            console.log(text)
+        }
         return this.renderer.render(this.ast(text),file)
     }
 
@@ -120,9 +124,9 @@ class Kode
             return
         }
         var list = _k_.list(this.args.files)
-        for (var _113_17_ = 0; _113_17_ < list.length; _113_17_++)
+        for (var _115_17_ = 0; _115_17_ < list.length; _115_17_++)
         {
-            file = list[_113_17_]
+            file = list[_115_17_]
             file = slash.path(file)
             if (this.args.verbose)
             {

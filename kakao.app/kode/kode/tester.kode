@@ -123,7 +123,7 @@ class Tester
     test: (testModule) =>
         
         # return if not /\n\s*▸\s\w+/gm.test text
-        return if testModule?._test_ != true
+        ⮐ if testModule?._test_ != true
         
         comps = 0
         succs = 0
