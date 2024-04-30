@@ -51,7 +51,7 @@ class FileHandler
             if editor.currentFile and editor.currentFile != kore.get 'editor|file'
                 log 'WTF!?' editor.currentFile, kore.get 'editor|file'
                 
-            post.emit 'storeState' kore.get('editor|file'), editor.do.tabState()
+            post.emit 'storeState' kore.get('editor|file'), editor.do.tabState() if not opt.reload
 
             editor.setCurrentFile file
             
@@ -125,13 +125,16 @@ class FileHandler
         
         if not file? or file.startsWith 'untitled'
             @saveFileAs()
-            return
+            ⮐ 
 
         editor.saveFilePosition()
             
         File.save file, editor.text(), (saved) ->
 
-            return error 'File.save failed!' if not saved
+            ⮐ error 'File.save failed!' if not saved
+            
+            post.emit 'clearState' saved
+            
             if saved != kore.get 'editor|file'
                 close = kore.get 'editor|file'
                 post.emit 'loadFile' saved

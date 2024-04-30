@@ -7,7 +7,8 @@
 ###
 
 use ../../kxk ▪ kpos elem slash
-use ../tools/File
+use ../tools  ◆ File
+use ../editor ◆ Syntax
 
 class Crumb
 
@@ -56,9 +57,9 @@ class Crumb
     setFile: file ->
 
         if @column.index == 0
-            @elem.innerHTML = File.crumbSpan slash.tilde file
+            @elem.innerHTML = File.crumbDirSpan slash.tilde file
         else
-            @elem.innerHTML = File.crumbSpan slash.file file
+            @elem.innerHTML = Syntax.spanForTextAndSyntax slash.file(file), 'browser'
 
     clear: -> @elem.innerHTML = ''
 

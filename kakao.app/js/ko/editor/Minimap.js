@@ -81,9 +81,9 @@ class Minimap
         ctx = this.selecti.getContext('2d')
         ctx.fillStyle = this.editor.syntax.colorForClassnames('selection')
         var list = _k_.list(rangesFromTopToBotInRanges(this.scroll.exposeTop,this.scroll.exposeBot,this.editor.selections()))
-        for (var _85_14_ = 0; _85_14_ < list.length; _85_14_++)
+        for (var _86_14_ = 0; _86_14_ < list.length; _86_14_++)
         {
-            r = list[_85_14_]
+            r = list[_86_14_]
             y = (r[0] - this.scroll.exposeTop) * this.scroll.lineHeight
             if (2 * r[1][0] < this.width)
             {
@@ -96,7 +96,7 @@ class Minimap
 
     drawLines (top = this.scroll.exposeTop, bot = this.scroll.exposeBot)
     {
-        var ctx, diss, li, r, y, _105_25_, _107_30_
+        var ctx, diss, li, r, y, _106_25_, _108_30_
 
         ctx = this.lines.getContext('2d')
         y = parseInt((top - this.scroll.exposeTop) * this.scroll.lineHeight)
@@ -110,14 +110,14 @@ class Minimap
         {
             return
         }
-        for (var _100_19_ = li = top, _100_24_ = bot; (_100_19_ <= _100_24_ ? li <= bot : li >= bot); (_100_19_ <= _100_24_ ? ++li : --li))
+        for (var _101_19_ = li = top, _101_24_ = bot; (_101_19_ <= _101_24_ ? li <= bot : li >= bot); (_101_19_ <= _101_24_ ? ++li : --li))
         {
             diss = this.editor.syntax.getDiss(li)
             y = parseInt((li - this.scroll.exposeTop) * this.scroll.lineHeight)
             var list = (diss != null ? diss : [])
-            for (var _103_18_ = 0; _103_18_ < list.length; _103_18_++)
+            for (var _104_18_ = 0; _104_18_ < list.length; _104_18_++)
             {
-                r = list[_103_18_]
+                r = list[_104_18_]
                 if (2 * r.start >= this.width)
                 {
                     break
@@ -148,9 +148,9 @@ class Minimap
         ctx = this.highlig.getContext('2d')
         ctx.fillStyle = this.editor.syntax.colorForClassnames('highlight')
         var list = _k_.list(rangesFromTopToBotInRanges(this.scroll.exposeTop,this.scroll.exposeBot,this.editor.highlights()))
-        for (var _118_14_ = 0; _118_14_ < list.length; _118_14_++)
+        for (var _119_14_ = 0; _119_14_ < list.length; _119_14_++)
         {
-            r = list[_118_14_]
+            r = list[_119_14_]
             y = (r[0] - this.scroll.exposeTop) * this.scroll.lineHeight
             if (2 * r[1][0] < this.width)
             {
@@ -172,9 +172,9 @@ class Minimap
         }
         ctx = this.cursors.getContext('2d')
         var list = _k_.list(rangesFromTopToBotInRanges(this.scroll.exposeTop,this.scroll.exposeBot,rangesFromPositions(this.editor.cursors())))
-        for (var _130_14_ = 0; _130_14_ < list.length; _130_14_++)
+        for (var _131_14_ = 0; _131_14_ < list.length; _131_14_++)
         {
-            r = list[_130_14_]
+            r = list[_131_14_]
             y = (r[0] - this.scroll.exposeTop) * this.scroll.lineHeight
             if (2 * r[1][0] < this.width)
             {
@@ -237,7 +237,7 @@ class Minimap
 
     onVanishLines (e)
     {
-        var _175_16_
+        var _176_16_
 
         if ((e.top != null))
         {
@@ -251,7 +251,7 @@ class Minimap
 
     onChanged (changeInfo)
     {
-        var change, li, _200_33_
+        var change, li, _201_33_
 
         if (this.scroll.numLines !== this.editor.numLines() || (changeInfo.inserts || changeInfo.deletes))
         {
@@ -271,10 +271,10 @@ class Minimap
             this.drawCursors()
         }
         var list = _k_.list(changeInfo.changes)
-        for (var _199_19_ = 0; _199_19_ < list.length; _199_19_++)
+        for (var _200_19_ = 0; _200_19_ < list.length; _200_19_++)
         {
-            change = list[_199_19_]
-            li = ((_200_33_=change.oldIndex) != null ? _200_33_ : change.doIndex)
+            change = list[_200_19_]
+            li = ((_201_33_=change.oldIndex) != null ? _201_33_ : change.doIndex)
             this.drawLines(li,li)
         }
     }

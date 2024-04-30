@@ -1195,6 +1195,16 @@ body
     background-color: transparent;
 }
 
+.funclist
+{
+    position: absolute;
+    top: 0;
+    right: 130px;
+    min-width: 130px;
+    min-height: 20px;
+    border: 1px solid red;
+}
+
 .highlight
 {
     position: absolute;

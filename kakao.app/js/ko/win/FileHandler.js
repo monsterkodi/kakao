@@ -64,7 +64,10 @@ class FileHandler
             {
                 console.log('WTF!?',editor.currentFile,kore.get('editor|file'))
             }
-            post.emit('storeState',kore.get('editor|file'),editor.do.tabState())
+            if (!opt.reload)
+            {
+                post.emit('storeState',kore.get('editor|file'),editor.do.tabState())
+            }
             editor.setCurrentFile(file)
             kore.set('editor|file',file)
             editor.restoreFilePosition()
@@ -146,6 +149,7 @@ class FileHandler
             {
                 return console.error('File.save failed!')
             }
+            post.emit('clearState',saved)
             if (saved !== kore.get('editor|file'))
             {
                 close = kore.get('editor|file')
@@ -183,7 +187,7 @@ class FileHandler
 
     saveChanges ()
     {
-        var _168_29_
+        var _171_29_
 
         if ((editor.currentFile != null) && editor.do.hasChanges())
         {

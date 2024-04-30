@@ -25,6 +25,7 @@ function FileEditor extends TextEditor
                 'Brackets'
                 'Strings'
                 'CursorLine'
+                'FuncList'
             ],
             fontSize: 19
 
@@ -91,7 +92,7 @@ function FileEditor extends TextEditor
             
         if tab = window.tabs.koreTabForPath @currentFile
             if tab.dirty and tabStates[@currentFile]
-                log 'apply  tabstate' @currentFile, tabStates[@currentFile]
+                # log 'apply  tabstate' @currentFile, tabStates[@currentFile]
                 @do.setTabState tabStates[@currentFile]
         
         @restoreFilePosition()

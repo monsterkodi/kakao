@@ -100,28 +100,28 @@ class File
         return span
     }
 
-    static crumbSpan (file)
+    static crumbDirSpan (dir)
     {
         var i, root, s, spans, split
 
-        if (_k_.in(file,['/','']))
+        if (_k_.in(dir,['/','']))
         {
             return "<span>/</span>"
         }
         spans = []
         root = ''
-        if (slash.isAbsolute(file))
+        if (slash.isAbsolute(dir))
         {
             spans.push("")
             root = '/'
         }
-        split = slash.split(file)
+        split = slash.split(dir)
         for (var _100_18_ = i = 0, _100_22_ = split.length - 1; (_100_18_ <= _100_22_ ? i < split.length - 1 : i > split.length - 1); (_100_18_ <= _100_22_ ? ++i : --i))
         {
             s = split[i]
             spans.push(`<div class='inline path' id='${root}${split.slice(0, typeof i === 'number' ? i+1 : Infinity).join('/')}'>${s}</div>`)
         }
-        spans.push(`<div class='inline' id='${file}'>${split.slice(-1)[0]}</div>`)
+        spans.push(`<div class='inline' id='${dir}'>${split.slice(-1)[0]}</div>`)
         return spans.join("<span class='punct'>/</span>")
     }
 }

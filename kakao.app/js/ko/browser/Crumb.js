@@ -7,6 +7,8 @@ let slash = kxk.slash
 
 import File from "../tools/File.js"
 
+import Syntax from "../editor/Syntax.js"
+
 class Crumb
 {
     constructor (column)
@@ -34,14 +36,14 @@ class Crumb
 
     onMouseDown (event)
     {
-        var _27_34_
+        var _28_34_
 
         return this.downPos = kpos((window.win != null ? window.win.getBounds() : undefined))
     }
 
     onMouseUp (event)
     {
-        var br, root, upPos, _33_31_
+        var br, root, upPos, _34_31_
 
         if (!this.downPos)
         {
@@ -85,11 +87,11 @@ class Crumb
     {
         if (this.column.index === 0)
         {
-            return this.elem.innerHTML = File.crumbSpan(slash.tilde(file))
+            return this.elem.innerHTML = File.crumbDirSpan(slash.tilde(file))
         }
         else
         {
-            return this.elem.innerHTML = File.crumbSpan(slash.file(file))
+            return this.elem.innerHTML = Syntax.spanForTextAndSyntax(slash.file(file),'browser')
         }
     }
 

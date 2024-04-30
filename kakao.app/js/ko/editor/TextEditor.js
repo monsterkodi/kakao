@@ -23,6 +23,7 @@ import Minimap from "./Minimap.js"
 import Strings from "./Strings.js"
 import Render from "./Render.js"
 import EditorScroll from "./EditorScroll.js"
+import FuncList from "./FuncList.js"
 import Editor from "./Editor.js"
 
 

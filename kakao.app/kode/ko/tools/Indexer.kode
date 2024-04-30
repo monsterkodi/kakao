@@ -51,6 +51,8 @@ class Indexer
         
         m?[1]
         
+    @file: file -> window.indexer.files[file]
+        
     # 000000000  00000000   0000000  000000000  000   000   0000000   00000000   0000000    
     #    000     000       000          000     000 0 000  000   000  000   000  000   000  
     #    000     0000000   0000000      000     000000000  000   000  0000000    000   000  
@@ -199,20 +201,21 @@ class Indexer
         @removeFile file if opt?.refresh
 
         if @files[file]?
-            return @shiftQueue()
+            post.emit 'fileIndexed' file, @files[file]
+            ⮐ @shiftQueue()
 
         fileExt = slash.ext file 
 
         if fileExt in @imageExtensions
             @files[file] = {}
-            return @shiftQueue()
+            ⮐ @shiftQueue()
             
         isCpp = fileExt in ['cpp' 'cc' 'mm' 'c' 'frag' 'vert']
         isHpp = fileExt in ['hpp' 'h' ]
 
         ffs.read(file).then (text) =>
             
-            return if empty text
+            ⮐ if empty text
             
             lines = text.split /\r?\n/
             

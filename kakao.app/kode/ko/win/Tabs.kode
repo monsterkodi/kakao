@@ -43,6 +43,7 @@ class Tabs
         post.on 'closeOtherTabs' @onCloseOtherTabs
         post.on 'dirty'          @onDirty
         post.on 'storeState'     @onStoreState
+        post.on 'clearState'     @onClearState
         post.on 'revertFile'     @revertFile
         post.on 'editorFocus'    @onEditorFocus
         post.on 'stashLoaded'    @refreshTabs
@@ -274,9 +275,10 @@ class Tabs
     reloadFile: (file) =>
         
         file ?= kore.get 'editor|file'
-        if tab = @koreTabForPath file
+        tabs = @koreTabs()
+        if tab = @koreTabForPath file, tabs
             delete tab.dirty
-            @refreshTabs()
+            @cleanTabs tabs
             
     renameFile: (file, src) =>
         
@@ -537,29 +539,18 @@ class Tabs
             tabs = @koreTabs()
             tab  = @koreTabForPath tab.path, tabs
             
-            # if tab.dirty != dirty
-            
-            # log 'update tab dirty? getting tabStates...'
-            # tabStates = kore.get 'tabStates' {}
-            # log 'update tab dirty??' tab, dirty, tabStates
-
             if dirty
                 tab.dirty = true
-                # tabStates[tab.path] = window.editor.do.tabState()
-                # window.editor.do.tabState()
             else
                 delete tab.dirty
-                # delete tabStates[tab.path]
 
-            # kore.set 'tabStates' tabStates
-            
             @setKoreTabs tabs
             
-    #  0000000  000000000   0000000   00000000   00000000       0000000  000000000   0000000   000000000  00000000  
-    # 000          000     000   000  000   000  000           000          000     000   000     000     000       
-    # 0000000      000     000   000  0000000    0000000       0000000      000     000000000     000     0000000   
-    #      000     000     000   000  000   000  000                000     000     000   000     000     000       
-    # 0000000      000      0000000   000   000  00000000      0000000      000     000   000     000     00000000  
+    # 000000000   0000000   0000000           0000000  000000000   0000000   000000000  00000000  
+    #    000     000   000  000   000        000          000     000   000     000     000       
+    #    000     000000000  0000000          0000000      000     000000000     000     0000000   
+    #    000     000   000  000   000             000     000     000   000     000     000       
+    #    000     000   000  0000000          0000000      000     000   000     000     00000000  
     
     onStoreState: (path, state) =>
 
@@ -569,9 +560,15 @@ class Tabs
         if tab = @koreTabForPath path
             if tab.dirty and tab.path and valid state
                 tabStates[path] = state
-                log 'store tab state' path, state
+                # log 'store tab state' path, state
                 kore.set 'tabStates' tabStates
-                return
+                ⮐ 
+        delete tabStates[path]
+        kore.set 'tabStates' tabStates
+        
+    onClearState: (path) =>
+        
+        tabStates = kore.get 'tabStates' {}
         delete tabStates[path]
         kore.set 'tabStates' tabStates
                 

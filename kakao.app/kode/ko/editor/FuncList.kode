@@ -1,0 +1,46 @@
+###
+00000000  000   000  000   000   0000000  000      000   0000000  000000000
+000       000   000  0000  000  000       000      000  000          000   
+000000    000   000  000 0 000  000       000      000  0000000      000   
+000       000   000  000  0000  000       000      000       000     000   
+000        0000000   000   000   0000000  0000000  000  0000000      000   
+###
+
+use ../../kxk ▪ elem post
+use ../tools  ◆ FuncItems Indexer
+use ../editor ◆ Syntax
+
+function FuncList
+
+    @: @editor ->
+        
+        @elem = elem class:'funclist'
+        
+        @editor.view.appendChild @elem
+        
+        post.on 'fileIndexed' @onFileIndexed
+        kore.on 'editor|file' @onEditorFile
+        
+    onEditorFile: file =>
+        
+        if info = Indexer.file file
+            @onFileIndexed file, info
+        
+    # 000  000   000  0000000    00000000  000   000  00000000  0000000    
+    # 000  0000  000  000   000  000        000 000   000       000   000  
+    # 000  000 0 000  000   000  0000000     00000    0000000   000   000  
+    # 000  000  0000  000   000  000        000 000   000       000   000  
+    # 000  000   000  0000000    00000000  000   000  00000000  0000000    
+    
+    onFileIndexed: file info =>
+        
+        if file == kore.get 'editor|file'
+        
+            items = FuncItems.forIndexerInfo file, info
+            log 'FuncList.onFileIndexed' file, info, items
+            @elem.innerHTML = ''
+            
+            for item in items
+                elem parent:@elem, html:Syntax.spanForTextAndSyntax item.text, 'browser'
+
+export FuncList
