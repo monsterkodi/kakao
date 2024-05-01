@@ -1200,12 +1200,14 @@ body
 {
     position: absolute;
     top: 0;
+    bottom: 0;
     right: 130px;
     min-width: 130px;
     padding-top: 6px;
     padding-bottom: 6px;
     font-size: 16px;
     border-bottom-left-radius: 6px;
+    overflow: hidden;
 }
 
 .funclist-item

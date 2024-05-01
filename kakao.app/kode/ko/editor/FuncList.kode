@@ -18,6 +18,9 @@ function FuncList
         
         @editor.view.appendChild @elem
         
+        @editor.scroll.on 'scroll' @onEditorScrollOrCursor
+        @editor.on 'cursor'        @onEditorScrollOrCursor
+        
         post.on 'fileIndexed' @onFileIndexed
         post.on 'split'       @onSplit
         
@@ -26,9 +29,29 @@ function FuncList
     onSplit: =>
         
         browserVisible = window.split.browserVisible()
-        log 'onSplit' browserVisible
         @elem.style.display = browserVisible ? 'none' : 'inherit'
+        @onEditorScrollOrCursor()
         
+    onEditorScrollOrCursor: => 
+        
+        scroll  = @editor.scroll.scroll
+    
+        topLine = parseInt scroll/@editor.scroll.lineHeight
+        botLine = topLine + @editor.numFullLines()
+        mainLine= @editor.mainCursor()[1]+1
+        
+        for child in @elem.children
+            
+            lastLine = child.nextSibling ? child.nextSibling.item.line : @editor.numLines()
+            
+            visible = lastLine-1 > topLine and child.item.line <= botLine
+            child.classList.toggle 'visible' visible
+            
+            if visible ➜ child.scrollIntoViewIfNeeded()
+            
+            inside = child.item.line <= mainLine and lastLine > mainLine
+            child.classList.toggle 'inside' inside
+                
     onEditorFile: file =>
         
         if info = Indexer.file file

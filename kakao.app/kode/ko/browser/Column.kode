@@ -108,9 +108,10 @@ function Column
     # 0000000    000   000  000   000   0000000
 
     updateDragIndicator: event ->
-
-        @dragInd?.classList.toggle 'copy' event.shiftKey
-        @dragInd?.classList.toggle 'move' event.ctrlKey or event.metaKey or event.altKey
+        
+        if @dragDiv
+            @dragInd?.classList.toggle 'copy' event.shiftKey
+            @dragInd?.classList.toggle 'move' event.ctrlKey or event.metaKey or event.altKey
 
     onDragStart: d e =>
 
@@ -970,13 +971,11 @@ function Column
 
         if mod in ['shift' ''] and char then @doSearch char
 
-        if @dragDiv
-            @updateDragIndicator event
+        @updateDragIndicator event
 
     onKeyUp: event =>
 
-        if @dragDiv
-            @updateDragIndicator event
+        @updateDragIndicator event
 
 export Column
 

@@ -762,6 +762,18 @@ span.macro.macro,
         background-color: #222;
 }
 
+.funclist-item.visible
+{
+        opacity: 1;
+        background-color: #111111;
+}
+
+.funclist-item.inside
+{
+        opacity: 1;
+        background-color: #333;
+}
+
 .highlight
 {
     color: rgba(255, 100, 255, 0.7);

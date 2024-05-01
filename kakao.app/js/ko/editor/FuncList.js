@@ -21,9 +21,12 @@ FuncList = (function ()
         this["onItemClick"] = this["onItemClick"].bind(this)
         this["onFileIndexed"] = this["onFileIndexed"].bind(this)
         this["onEditorFile"] = this["onEditorFile"].bind(this)
+        this["onEditorScrollOrCursor"] = this["onEditorScrollOrCursor"].bind(this)
         this["onSplit"] = this["onSplit"].bind(this)
         this.elem = elem({class:'funclist'})
         this.editor.view.appendChild(this.elem)
+        this.editor.scroll.on('scroll',this.onEditorScrollOrCursor)
+        this.editor.on('cursor',this.onEditorScrollOrCursor)
         post.on('fileIndexed',this.onFileIndexed)
         post.on('split',this.onSplit)
         kore.on('editor|file',this.onEditorFile)
@@ -34,8 +37,32 @@ FuncList = (function ()
         var browserVisible
 
         browserVisible = window.split.browserVisible()
-        console.log('onSplit',browserVisible)
-        return this.elem.style.display = (browserVisible ? 'none' : 'inherit')
+        this.elem.style.display = (browserVisible ? 'none' : 'inherit')
+        return this.onEditorScrollOrCursor()
+    }
+
+    FuncList.prototype["onEditorScrollOrCursor"] = function ()
+    {
+        var botLine, child, inside, lastLine, mainLine, scroll, topLine, visible
+
+        scroll = this.editor.scroll.scroll
+        topLine = parseInt(scroll / this.editor.scroll.lineHeight)
+        botLine = topLine + this.editor.numFullLines()
+        mainLine = this.editor.mainCursor()[1] + 1
+        var list = _k_.list(this.elem.children)
+        for (var _43_18_ = 0; _43_18_ < list.length; _43_18_++)
+        {
+            child = list[_43_18_]
+            lastLine = (child.nextSibling ? child.nextSibling.item.line : this.editor.numLines())
+            visible = lastLine - 1 > topLine && child.item.line <= botLine
+            child.classList.toggle('visible',visible)
+            if (visible)
+            {
+                child.scrollIntoViewIfNeeded()
+            }
+            inside = child.item.line <= mainLine && lastLine > mainLine
+            child.classList.toggle('inside',inside)
+        }
     }
 
     FuncList.prototype["onEditorFile"] = function (file)
@@ -58,9 +85,9 @@ FuncList = (function ()
             console.log('FuncList.onFileIndexed',file,info,items)
             this.elem.innerHTML = ''
             var list = _k_.list(items)
-            for (var _51_21_ = 0; _51_21_ < list.length; _51_21_++)
+            for (var _74_21_ = 0; _74_21_ < list.length; _74_21_++)
             {
-                item = list[_51_21_]
+                item = list[_74_21_]
                 e = elem({class:'funclist-item',parent:this.elem,click:this.onItemClick,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
                 e.item = item
             }
