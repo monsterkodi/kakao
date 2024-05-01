@@ -18,37 +18,77 @@ class IndexJS
     # 000        000   000  000   000       000  000            000      000  000  0000  000
     # 000        000   000  000   000  0000000   00000000       0000000  000  000   000  00000000
 
-    validFuncName: name -> name not in ['if''for''while''switch''return']
+    validFuncName:  name  -> name not in ['if''for''while''switch''return']
+    validFuncArgs:  args  -> args[0] == '(' and args[-1] == ')'
+    validFuncMatch: match -> @validFuncArgs(match.args) and @validFuncName(match.name)
     
     parseLine: index line ->
         
         if match = kermit.lineMatch line, 'class ●name'
             match.line = index
+            match.type = 'class'
             @result.classes.push match
             ⮐ 
+
+        if match = kermit.lineMatch line, '●name = (function ()'
+            match.line = index
+            match.type = 'function'
+            @result.classes.push match
+            ⮐
             
         if @result.classes.length
             
-            if match = kermit.lineMatch line, '●name ○args'
-                if match.args[0] == '(' and match.args[-1] == ')'
-                    if @validFuncName match.name
-                        @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name
-                        ⮐
+            className = @result.classes[-1].name
+            classType = @result.classes[-1].type
+            
+            addFunc = (name, opt={}) =>
+                
+                fnc = method:name, line:index, class:className
+                fnc.static = true if opt.static
+                fnc.async = true if opt.async
+                
+                @result.funcs.push fnc
+                null
+                
+            if classType == 'class'
+                
+                if match = kermit.lineMatch line, '●name ○args'
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name
+    
+                if match = kermit.lineMatch line, 'static ●name ○args'
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name, static:true
+    
+                if match = kermit.lineMatch line, 'static async ●name ○args'
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name, static:true, async:true
+    
+                if match = kermit.lineMatch line, 'async ●name ○args'
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name, async:true
+                        
+            if classType == 'function'
+                
+                if match = kermit.lineMatch line, "function #{className} ○args"
+                    if @validFuncMatch match
+                        ⮐ addFunc className
 
-            if match = kermit.lineMatch line, 'static ●name ○args'
-                if match.args[0] == '(' and match.args[-1] == ')'
-                    @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name, static:true
-                    ⮐
-
-            if match = kermit.lineMatch line, 'static async ●name ○args'
-                if match.args[0] == '(' and match.args[-1] == ')'
-                    @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name, static:true, async:true
-                    ⮐
-
-            if match = kermit.lineMatch line, 'async ●name ○args'
-                if match.args[0] == '(' and match.args[-1] == ')'
-                    @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name, async:true
-                    ⮐
+                if match = kermit.lineMatch line, """#{className}["●name"] = function ○args""" ['"']
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name
+                        
+                if match = kermit.lineMatch line, """#{className}["●name"] = async function ○args""" ['"']
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name, async:true
+                        
+                if match = kermit.lineMatch line, """#{className}.prototype["●name"] = function ○args""" ['"']
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name, static:true
+                        
+                if match = kermit.lineMatch line, """#{className}.prototype["●name"] = async function ○args""" ['"']
+                    if @validFuncMatch match
+                        ⮐ addFunc match.name, static:true, async:true
                     
     # 00000000    0000000   00000000    0000000  00000000       000000000  00000000  000   000  000000000
     # 000   000  000   000  000   000  000       000               000     000        000 000      000

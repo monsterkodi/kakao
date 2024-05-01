@@ -10,6 +10,12 @@ use ../tools ◆ IndexJS
 
 ▸ IndexJS
 
+    #  0000000  000       0000000    0000000   0000000  
+    # 000       000      000   000  000       000       
+    # 000       000      000000000  0000000   0000000   
+    # 000       000      000   000       000       000  
+    #  0000000  0000000  000   000  0000000   0000000   
+    
     ▸ class
     
         idx = new IndexJS
@@ -20,7 +26,7 @@ use ../tools ◆ IndexJS
             lines: 1
 
         idx.parse "class Hello" ▸
-            classes:[name:'Hello' line:0] 
+            classes:[name:'Hello' line:0 type:'class'] 
             funcs:[] 
             lines: 1
 
@@ -28,7 +34,7 @@ use ../tools ◆ IndexJS
             class World
                 constructor ()
             """ ▸
-            classes:[name:'World' line:0] 
+            classes:[name:'World' line:0 type:'class'] 
             funcs:[method:'constructor' line:1 class:'World'] 
             lines: 2
 
@@ -36,7 +42,7 @@ use ../tools ◆ IndexJS
             class World
                 constructor (a,b)
             """ ▸
-            classes:[name:'World' line:0] 
+            classes:[name:'World' line:0 type:'class'] 
             funcs:[method:'constructor' line:1 class:'World'] 
             lines: 2
 
@@ -53,7 +59,70 @@ use ../tools ◆ IndexJS
                     }
                 }
             """ ▸
-            classes:[name:'World' line:0] 
+            classes:[name:'World' line:0 type:'class'] 
             funcs:[method:'fun' line:1 class:'World'] 
             lines: 11
+            
+    # 00000000  000   000  000   000   0000000  000000000  000   0000000   000   000  
+    # 000       000   000  0000  000  000          000     000  000   000  0000  000  
+    # 000000    000   000  000 0 000  000          000     000  000   000  000 0 000  
+    # 000       000   000  000  0000  000          000     000  000   000  000  0000  
+    # 000        0000000   000   000   0000000     000     000   0000000   000   000  
+    
+    ▸ function
+    
+        idx = new IndexJS
+    
+        idx.parse "Git = (function ()" ▸
+            classes:[name:'Git' line:0 type:'function'] 
+            funcs:[] 
+            lines: 1
+
+        idx.parse """
+            Git = (function ()
+            {
+                Git["statusRequests"] = {}
+                Git["statusCache"] = {}
+                function Git ()
+            """ ▸
+            classes:[name:'Git' line:0 type:'function'] 
+            funcs:[method:'Git' line:4 class:'Git'] 
+            lines: 5
+
+        idx.parse """
+            Git = (function ()
+            {
+                Git.prototype["onProjectIndexed"] = function (prjPath)
+                {
+                }
+            
+                Git["onFileChanged"] = function (file)
+                {
+            """ ▸
+            classes:[name:'Git' line:0 type:'function'] 
+            funcs:[
+                method:'onProjectIndexed' line:2 class:'Git' static:true
+            ,
+                method:'onFileChanged' line:6 class:'Git'
+            ] 
+            lines: 8
+
+        idx.parse """
+            Git = (function ()
+            {
+                Git.prototype["onProjectIndexed"] = async function (prjPath)
+                {
+                }
+            
+                Git["onFileChanged"] = async function (file)
+                {
+            """ ▸
+            classes:[name:'Git' line:0 type:'function'] 
+            funcs:[
+                method:'onProjectIndexed' line:2 class:'Git' static:true async:true
+            ,
+                method:'onFileChanged' line:6 class:'Git' async:true
+            ] 
+            lines: 8
+            
             

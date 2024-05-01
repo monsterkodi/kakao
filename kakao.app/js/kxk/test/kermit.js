@@ -1,6 +1,8 @@
 var toExport = {}
 var _k_
 
+var lm
+
 import kermit from "../kermit.js"
 
 toExport["kermit"] = function ()
@@ -18,13 +20,15 @@ toExport["kermit"] = function ()
     })
     section("lineMatch", function ()
     {
-        compare(kermit.lineMatch("","class ●class"),undefined)
-        compare(kermit.lineMatch("hello","class ●class"),undefined)
-        compare(kermit.lineMatch("class","class ●class"),{class:undefined})
-        compare(kermit.lineMatch("class MyClass","class ●class"),{class:'MyClass'})
-        compare(kermit.lineMatch("func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
-        compare(kermit.lineMatch("  func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
-        compare(kermit.lineMatch("  constructor ()","●name ○args"),{name:'constructor',args:'()'})
+        lm = kermit.lineMatch
+        compare(lm("","class ●class"),undefined)
+        compare(lm("hello","class ●class"),undefined)
+        compare(lm("class","class ●class"),{class:undefined})
+        compare(lm("class MyClass","class ●class"),{class:'MyClass'})
+        compare(lm("func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
+        compare(lm("  func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
+        compare(lm("  constructor ()","●name ○args"),{name:'constructor',args:'()'})
+        compare(lm(`Git.prototype["onFileChanged"] = function (file)`,`Git.prototype["●name"] = function ○args`,['"']),{name:'onFileChanged',args:'(file)'})
     })
     section("simple", function ()
     {

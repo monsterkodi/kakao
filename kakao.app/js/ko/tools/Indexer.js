@@ -275,7 +275,7 @@ class Indexer
         isJS = _k_.in(fileExt,['js','mjs'])
         ffs.read(file).then((function (text)
         {
-            var className, clss, cnt, currentClass, fileInfo, func, funcAdded, funcInfo, funcName, funcStack, indent, indexHpp, indexJS, li, line, lines, m, methodName, parsed, word, words, _284_43_, _342_47_, _370_35_, _371_35_
+            var className, clss, cnt, currentClass, fileInfo, func, funcAdded, funcInfo, funcName, funcStack, indent, indexHpp, indexJS, li, line, lines, m, methodName, parsed, word, words, _288_43_, _346_47_, _374_35_, _375_35_
 
             if (_k_.empty(text))
             {
@@ -330,7 +330,7 @@ class Indexer
             }
             else
             {
-                for (var _273_26_ = li = 0, _273_30_ = lines.length; (_273_26_ <= _273_30_ ? li < lines.length : li > lines.length); (_273_26_ <= _273_30_ ? ++li : --li))
+                for (var _277_26_ = li = 0, _277_30_ = lines.length; (_277_26_ <= _277_30_ ? li < lines.length : li > lines.length); (_277_26_ <= _277_30_ ? ++li : --li))
                 {
                     line = lines[li]
                     if (line.trim().length)
@@ -340,7 +340,7 @@ class Indexer
                         {
                             _k_.last(funcStack)[1].last = li - 1
                             funcInfo = funcStack.pop()[1]
-                            funcInfo.class = ((_284_43_=funcInfo.class) != null ? _284_43_ : slash.name(file))
+                            funcInfo.class = ((_288_43_=funcInfo.class) != null ? _288_43_ : slash.name(file))
                             fileInfo.funcs.push(funcInfo)
                         }
                         if ((currentClass != null))
@@ -381,12 +381,12 @@ class Indexer
                     }
                     words = line.split(Indexer.splitRegExp)
                     var list4 = _k_.list(words)
-                    for (var _339_29_ = 0; _339_29_ < list4.length; _339_29_++)
+                    for (var _343_29_ = 0; _343_29_ < list4.length; _343_29_++)
                     {
-                        word = list4[_339_29_]
+                        word = list4[_343_29_]
                         if (Indexer.testWord(word))
                         {
-                            cnt = ((_342_47_=this.words[word]) != null ? _342_47_ : 0)
+                            cnt = ((_346_47_=this.words[word]) != null ? _346_47_ : 0)
                             this.words[word] = cnt + 1
                         }
                         switch (word)
@@ -412,8 +412,8 @@ class Indexer
                 {
                     _k_.last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
-                    funcInfo.class = ((_370_35_=funcInfo.class) != null ? _370_35_ : slash.name(funcInfo.file))
-                    funcInfo.class = ((_371_35_=funcInfo.class) != null ? _371_35_ : slash.name(file))
+                    funcInfo.class = ((_374_35_=funcInfo.class) != null ? _374_35_ : slash.name(funcInfo.file))
+                    funcInfo.class = ((_375_35_=funcInfo.class) != null ? _375_35_ : slash.name(file))
                     fileInfo.funcs.push(funcInfo)
                 }
                 if ((opt != null ? opt.post : undefined) !== false)

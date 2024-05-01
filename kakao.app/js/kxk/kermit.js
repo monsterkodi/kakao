@@ -1,6 +1,6 @@
-var _k_ = {trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isArr: function (o) {return Array.isArray(o)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}};_k_.r5=_k_.k.F256(_k_.k.r(5))
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isArr: function (o) {return Array.isArray(o)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}};_k_.r5=_k_.k.F256(_k_.k.r(5))
 
-var addMatch, collect, hasStrongMatch, kermit, lineMatch, pattern, traverse, wrapIndex
+var addMatch, collect, hasStrongMatch, kermit, lineMatch, pattern, splitWords, traverse, wrapIndex
 
 import kstr from "./kstr.js"
 import gonzo from "./gonzo.js"
@@ -16,9 +16,33 @@ hasStrongMatch = function (splt, ctx, d)
     return splt[0] === ctx.ptn[wrapIndex(ctx,d)][0][0]
 }
 
-lineMatch = function (line, pt)
+splitWords = function (words, splitBy)
 {
-    var ci, cp, cpt, rslt, si, splt, strongMatch, tln, varName, weakMatch
+    var index, newWords, sw, sws, word
+
+    newWords = []
+    var list = _k_.list(words)
+    for (var _25_13_ = 0; _25_13_ < list.length; _25_13_++)
+    {
+        word = list[_25_13_]
+        sws = word.split(splitBy)
+        var list1 = _k_.list(sws)
+        for (index = 0; index < list1.length; index++)
+        {
+            sw = list1[index]
+            newWords.push(sw)
+            if (index < sws.length - 1)
+            {
+                newWords.push(splitBy)
+            }
+        }
+    }
+    return newWords
+}
+
+lineMatch = function (line, pt, splitlist)
+{
+    var ci, cp, cpt, rslt, si, sl, splt, strongMatch, tln, varName, weakMatch
 
     tln = _k_.trim(line)
     if (_k_.empty(tln))
@@ -27,6 +51,13 @@ lineMatch = function (line, pt)
     }
     splt = tln.split(/\s+/)
     cpt = _k_.trim(pt).split(/\s+/)
+    var list = _k_.list(splitlist)
+    for (var _41_11_ = 0; _41_11_ < list.length; _41_11_++)
+    {
+        sl = list[_41_11_]
+        splt = splitWords(splt,sl)
+        cpt = splitWords(cpt,sl)
+    }
     if (_k_.empty(splt))
     {
         return
@@ -149,9 +180,9 @@ addMatch = function (line, ctx)
     if (!strongMatch)
     {
         var list = [1,-1]
-        for (var _138_14_ = 0; _138_14_ < list.length; _138_14_++)
+        for (var _154_14_ = 0; _154_14_ < list.length; _154_14_++)
         {
-            d = list[_138_14_]
+            d = list[_154_14_]
             if (hasStrongMatch(splt,ctx,d))
             {
                 ctx.pind = wrapIndex(ctx,d)
@@ -176,9 +207,9 @@ traverse = function (ctx)
 
     ctx.matches = []
     var list = _k_.list(ctx.lines)
-    for (var _157_13_ = 0; _157_13_ < list.length; _157_13_++)
+    for (var _173_13_ = 0; _173_13_ < list.length; _173_13_++)
     {
-        line = list[_157_13_]
+        line = list[_173_13_]
         addMatch(line,ctx)
     }
     return collect(ctx)
@@ -193,9 +224,9 @@ collect = function (ctx)
     la = []
     stack = [_k_.last(ctx.result)]
     var list = _k_.list(ctx.matches)
-    for (var _177_14_ = 0; _177_14_ < list.length; _177_14_++)
+    for (var _193_14_ = 0; _193_14_ < list.length; _193_14_++)
     {
-        match = list[_177_14_]
+        match = list[_193_14_]
         ma = ctx.ptn[match.pind][1]
         lo = _k_.last(stack)
         if (ma.length > la.length)
@@ -206,7 +237,7 @@ collect = function (ctx)
         }
         else if (ma.length < la.length)
         {
-            for (var _188_21_ = i = 0, _188_25_ = la.length - ma.length; (_188_21_ <= _188_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_188_21_ <= _188_25_ ? ++i : --i))
+            for (var _204_21_ = i = 0, _204_25_ = la.length - ma.length; (_204_21_ <= _204_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_204_21_ <= _204_25_ ? ++i : --i))
             {
                 stack.pop()
             }
@@ -275,9 +306,9 @@ pattern = function (kmt)
         var gz, lpt
 
         var list = _k_.list(gzo)
-        for (var _237_15_ = 0; _237_15_ < list.length; _237_15_++)
+        for (var _253_15_ = 0; _253_15_ < list.length; _253_15_++)
         {
-            gz = list[_237_15_]
+            gz = list[_253_15_]
             lpt = _k_.trim(gz.line).split(/\s+/)
             if (lpt[0][0] === '■')
             {

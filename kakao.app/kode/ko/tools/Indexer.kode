@@ -266,10 +266,14 @@ class Indexer
                         line: clss.line+1
                         
                 for func in parsed.funcs
+                    # this is ugly as fuck, consider fixing it!
                     funcInfo = @addMethod func.class, func.method, file, func.line, func.async, false, func.static
                     fileInfo.funcs.push funcInfo
                     
             else
+                
+                # this is essentially the kode indexer. shouldn't that get split off like cpp and js indexers?
+                
                 for li in 0...lines.length
                     
                     line = lines[li]
