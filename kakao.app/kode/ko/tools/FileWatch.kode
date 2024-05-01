@@ -12,13 +12,12 @@ class FileWatch
     
     @: -> post.on 'fs.change' @onChange
         
-    onChange: (change, path, info) =>
+    onChange: change path info =>
         
         ⮐ if info.type == 'dir'
         
-        # log 'FileWatch' change, path, info
-        
         switch change
+            
             'created' ➜ post.emit 'fileCreated' path
             'deleted' ➜ post.emit 'fileRemoved' path
             'changed' ➜ post.emit 'fileChanged' path

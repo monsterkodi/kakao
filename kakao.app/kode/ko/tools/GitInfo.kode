@@ -31,9 +31,9 @@ class GitInfo
     # 000   000  000       000     000     000   000  000   000     000     
     # 000   000  000  0000000      000      0000000   000   000     000     
     
-    history: (path) => @doHistory path
+    history: path => @doHistory path
         
-    doHistory: (path) ○->
+    doHistory: path ○->
 
         path ?= window.editor.currentFile
         ⮐ if not path
@@ -94,7 +94,7 @@ class GitInfo
     # 000       000   000  000 0 000  000 0 000  000     000     
     #  0000000   0000000   000   000  000   000  000     000     
     
-    commit: (msg) ○->
+    commit: msg ○->
         
         window.split.raise 'terminal'
         window.terminal.clear()
@@ -136,12 +136,12 @@ class GitInfo
     # 000   000  000  000       000       
     # 0000000    000  000       000       
 
-    diff: (prjDir) =>
+    diff: prjDir =>
         
         window.commandline.startCommand 'macro'
         @status diff:true prjDir:prjDir
         window.split.do 'minimize editor'
-        window.commandline.setText 'commit ' #if empty prjDir
+        window.commandline.setText 'commit '
         window.commandline.selectNone()
         
     # 000       0000000    0000000   
@@ -150,9 +150,9 @@ class GitInfo
     # 000      000   000  000   000  
     # 0000000   0000000    0000000   
     
-    log: (rev) => @doLog rev
+    log: rev => @doLog rev
     
-    doLog: (rev) ○->
+    doLog: rev ○->
         
         # log 'doLog' rev
         
@@ -180,6 +180,8 @@ class GitInfo
                 
                 @logChanges gitDir, path, p.changes
                 spacer()
+                
+        window.terminal.do.resetHistory()
     
     #  0000000  000   000   0000000   000   000   0000000   00000000   0000000  
     # 000       000   000  000   000  0000  000  000        000       000       
@@ -187,7 +189,7 @@ class GitInfo
     # 000       000   000  000   000  000  0000  000   000  000            000  
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000   
     
-    logChanges: (gitDir, path, changes) =>
+    logChanges: gitDir path changes =>
         
         for change in changes
             
@@ -230,7 +232,7 @@ class GitInfo
     # 000      000   000  000   000  000   000  000  000       000       
     # 0000000   0000000    0000000   0000000    000  000       000       
     
-    logDiff: (changes) =>
+    logDiff: changes =>
         
         extn = slash.ext changes.file
         if extn in Syntax.syntaxNames
@@ -338,7 +340,7 @@ class GitInfo
     #      000     000     000   000     000     000   000       000
     # 0000000      000     000   000     000      0000000   0000000
                             
-    status: (opt={}) ->
+    status: opt={} ->
         
         opt.diff   ?= false
         opt.prjDir ?= Projects.dir window.editor.currentFile
@@ -425,7 +427,7 @@ class GitInfo
     # 000       000      000  000       000  000
     #  0000000  0000000  000   0000000  000   000
 
-    onMetaClick: (meta, event) =>
+    onMetaClick: meta event =>
         
         if href = meta[2].href
             log 'onMetaClick' href

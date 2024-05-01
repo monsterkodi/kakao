@@ -12,7 +12,7 @@ use           ◆ Crumb Scroller Row
 
 function Column
 
-    @: (@browser) ->
+    @: @browser ->
 
         @searchTimer = null
         @search = ''
@@ -328,7 +328,7 @@ function Column
             'date'  ➜ @sortByDateAdded()
                     ➜ @sortByName()
 
-    setItems: (@items, opt) ->
+    setItems: @items, opt ->
 
         @browser.clearColumn @index
 
@@ -368,7 +368,7 @@ function Column
         @rows = []
         @scroll.update()
 
-    setIndex: (@index) ->
+    setIndex: @index ->
 
         if @crumb? ➜ @crumb.elem.columnIndex = @index
 

@@ -1053,6 +1053,7 @@ body
 .meta.gitInfoDelete,
 .meta.gitInfoAdded
 {
+    cursor: pointer;
     border-radius: 0.15em;
 }
 
