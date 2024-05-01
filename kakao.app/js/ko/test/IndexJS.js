@@ -70,6 +70,10 @@ toExport["IndexJS"] = function ()
     Git["onFileChanged"] = function (file)
     {`),{classes:[{name:'Git',type:'function',line:0}],funcs:[{method:'Git',line:2,class:'Git'},{method:'onFileChanged',line:7,class:'Git',static:true,bound:true}],lines:9})
     })
+    section("func", function ()
+    {
+        compare(idx.parse(`myFunc = function (a, b)`),{classes:[],funcs:[{name:'myFunc',line:0}],lines:1})
+    })
 }
 toExport["IndexJS"]._section_ = true
 toExport._test_ = true

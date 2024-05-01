@@ -133,14 +133,14 @@ class Ranges
 
     isPosInRanges (p, rgs)
     {
-        var _66_58_
+        var _66_57_
 
         return (rangeAtPosInRanges(p,rgs) != null)
     }
 
     isPosInPositions (p, ps)
     {
-        var _67_52_
+        var _67_51_
 
         return (posInPositions(p,ps) != null)
     }
@@ -301,21 +301,21 @@ class Ranges
     {
         var r
 
-        return (function () { var r_120_64_ = []; var list = _k_.list(ranges); for (var _120_64_ = 0; _120_64_ < list.length; _120_64_++)  { r = list[_120_64_];r_120_64_.push(rangeEndPos(r))  } return r_120_64_ }).bind(this)()
+        return (function () { var r_120_62_ = []; var list = _k_.list(ranges); for (var _120_62_ = 0; _120_62_ < list.length; _120_62_++)  { r = list[_120_62_];r_120_62_.push(rangeEndPos(r))  } return r_120_62_ }).bind(this)()
     }
 
     startPositionsFromRanges (ranges)
     {
         var r
 
-        return (function () { var r_121_66_ = []; var list = _k_.list(ranges); for (var _121_66_ = 0; _121_66_ < list.length; _121_66_++)  { r = list[_121_66_];r_121_66_.push(rangeStartPos(r))  } return r_121_66_ }).bind(this)()
+        return (function () { var r_121_64_ = []; var list = _k_.list(ranges); for (var _121_64_ = 0; _121_64_ < list.length; _121_64_++)  { r = list[_121_64_];r_121_64_.push(rangeStartPos(r))  } return r_121_64_ }).bind(this)()
     }
 
     rangesFromPositions (pl)
     {
         var p
 
-        return (function () { var r_129_61_ = []; var list = _k_.list(pl); for (var _129_61_ = 0; _129_61_ < list.length; _129_61_++)  { p = list[_129_61_];r_129_61_.push([p[1],[p[0],p[0]]])  } return r_129_61_ }).bind(this)()
+        return (function () { var r_129_68_ = []; var list = _k_.list(pl); for (var _129_68_ = 0; _129_68_ < list.length; _129_68_++)  { p = list[_129_68_];r_129_68_.push([p[1],[p[0],p[0]]])  } return r_129_68_ }).bind(this)()
     }
 
     rangesAtLineIndexInRanges (li, ranges)

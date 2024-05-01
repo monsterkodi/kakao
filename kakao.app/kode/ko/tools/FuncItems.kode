@@ -8,7 +8,7 @@
 
 function FuncItems
 
-    @forIndexerInfo: file, info ->
+    @forIndexerInfo: file info ->
     
         items = []
         clsss = info.classes ? []

@@ -275,7 +275,7 @@ class Indexer
         isJS = _k_.in(fileExt,['js','mjs'])
         ffs.read(file).then((function (text)
         {
-            var className, clss, cnt, currentClass, fileInfo, func, funcAdded, funcInfo, funcName, funcStack, indent, indexHpp, indexJS, li, line, lines, m, methodName, parsed, word, words, _288_43_, _346_47_, _374_35_, _375_35_
+            var className, clss, cnt, currentClass, fileInfo, func, funcAdded, funcInfo, funcName, funcStack, indent, indexHpp, indexJS, li, line, lines, m, methodName, parsed, word, words, _294_43_, _352_47_, _380_35_, _381_35_
 
             if (_k_.empty(text))
             {
@@ -324,13 +324,22 @@ class Indexer
                 for (var _268_25_ = 0; _268_25_ < list3.length; _268_25_++)
                 {
                     func = list3[_268_25_]
-                    funcInfo = this.addMethod(func.class,func.method,file,func.line,func.async,func.bound,func.static)
+                    if (func.method)
+                    {
+                        funcInfo = this.addMethod(func.class,func.method,file,func.line,func.async,func.bound,func.static)
+                    }
+                    else
+                    {
+                        func.line = func.line + 1
+                        func.file = file
+                        funcInfo = this.addFuncInfo(func.name,func)
+                    }
                     fileInfo.funcs.push(funcInfo)
                 }
             }
             else
             {
-                for (var _277_26_ = li = 0, _277_30_ = lines.length; (_277_26_ <= _277_30_ ? li < lines.length : li > lines.length); (_277_26_ <= _277_30_ ? ++li : --li))
+                for (var _283_26_ = li = 0, _283_30_ = lines.length; (_283_26_ <= _283_30_ ? li < lines.length : li > lines.length); (_283_26_ <= _283_30_ ? ++li : --li))
                 {
                     line = lines[li]
                     if (line.trim().length)
@@ -340,7 +349,7 @@ class Indexer
                         {
                             _k_.last(funcStack)[1].last = li - 1
                             funcInfo = funcStack.pop()[1]
-                            funcInfo.class = ((_288_43_=funcInfo.class) != null ? _288_43_ : slash.name(file))
+                            funcInfo.class = ((_294_43_=funcInfo.class) != null ? _294_43_ : slash.name(file))
                             fileInfo.funcs.push(funcInfo)
                         }
                         if ((currentClass != null))
@@ -381,12 +390,12 @@ class Indexer
                     }
                     words = line.split(Indexer.splitRegExp)
                     var list4 = _k_.list(words)
-                    for (var _343_29_ = 0; _343_29_ < list4.length; _343_29_++)
+                    for (var _349_29_ = 0; _349_29_ < list4.length; _349_29_++)
                     {
-                        word = list4[_343_29_]
+                        word = list4[_349_29_]
                         if (Indexer.testWord(word))
                         {
-                            cnt = ((_346_47_=this.words[word]) != null ? _346_47_ : 0)
+                            cnt = ((_352_47_=this.words[word]) != null ? _352_47_ : 0)
                             this.words[word] = cnt + 1
                         }
                         switch (word)
@@ -412,8 +421,8 @@ class Indexer
                 {
                     _k_.last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
-                    funcInfo.class = ((_374_35_=funcInfo.class) != null ? _374_35_ : slash.name(funcInfo.file))
-                    funcInfo.class = ((_375_35_=funcInfo.class) != null ? _375_35_ : slash.name(file))
+                    funcInfo.class = ((_380_35_=funcInfo.class) != null ? _380_35_ : slash.name(funcInfo.file))
+                    funcInfo.class = ((_381_35_=funcInfo.class) != null ? _381_35_ : slash.name(file))
                     fileInfo.funcs.push(funcInfo)
                 }
                 if ((opt != null ? opt.post : undefined) !== false)

@@ -33,17 +33,24 @@ class IndexJS
                 match.line = index
                 @result.classes.push match
                 ⮐
+
+        validFuncName =  (name)  -> name not in ['if''for''while''switch''return']
+        validFuncArgs =  (args)  -> args[0] == '(' and args[-1] == ')'
+        validFuncMatch = (match) -> match and validFuncArgs(match.args) and validFuncName(match.name)
+                
+        doMatch = (ptn) -> kermit.lineMatch line, ptn, ['"''.'','"'"]
+        
+        funcMatch = (ptn) ->
             
+            match = doMatch ptn
+            match if validFuncMatch match
+        
         if @result.classes.length
             
             className = @result.classes[-1].name
             classType = @result.classes[-1].type
-            
-            validFuncName =  (name)  -> name not in ['if''for''while''switch''return']
-            validFuncArgs =  (args)  -> args[0] == '(' and args[-1] == ')'
-            validFuncMatch = (match) -> match and validFuncArgs(match.args) and validFuncName(match.name)
-            
-            addFunc = (name, opt={}) =>
+                        
+            addMeth = (name, opt={}) =>
                 
                 fnc = method:name, line:index, class:className
                 fnc.static = true if opt.static
@@ -52,32 +59,37 @@ class IndexJS
                 # log fnc
                 @result.funcs.push fnc
                 null
-                
-            doMatch = (ptn) -> kermit.lineMatch line, ptn, ['"''.'','"'"]
-            
-            funcMatch = (ptn) ->
-                
-                match = doMatch ptn
-                match if validFuncMatch match
-                
+                                
             if classType == 'class'
                 
-                if match = funcMatch '●name ○args'              ➜ ⮐ addFunc match.name
-                if match = funcMatch 'async ●name ○args'        ➜ ⮐ addFunc match.name, async:true
-                if match = funcMatch 'static ●name ○args'       ➜ ⮐ addFunc match.name, static:true
-                if match = funcMatch 'static async ●name ○args' ➜ ⮐ addFunc match.name, static:true async:true
+                if match = funcMatch '●name ○args'              ➜ ⮐ addMeth match.name
+                if match = funcMatch 'async ●name ○args'        ➜ ⮐ addMeth match.name, async:true
+                if match = funcMatch 'static ●name ○args'       ➜ ⮐ addMeth match.name, static:true
+                if match = funcMatch 'static async ●name ○args' ➜ ⮐ addMeth match.name, static:true async:true
                     
                 if match = doMatch """this.●name = this.●bound.bind(this)""" ➜ @bound[match.name] = true
                         
             if classType == 'function'
                                 
-                if match = funcMatch "function #{className} ○args"                                ➜ ⮐ addFunc className
-                if match = funcMatch """#{className}["●name"] = function ○args"""                 ➜ ⮐ addFunc match.name, static:true
-                if match = funcMatch """#{className}["●name"] = async function ○args"""           ➜ ⮐ addFunc match.name, static:true async:true
-                if match = funcMatch """#{className}.prototype["●name"] = function ○args"""       ➜ ⮐ addFunc match.name, 
-                if match = funcMatch """#{className}.prototype["●name"] = async function ○args""" ➜ ⮐ addFunc match.name, async:true
+                if match = funcMatch "function #{className} ○args"                                ➜ ⮐ addMeth className
+                if match = funcMatch """#{className}["●name"] = function ○args"""                 ➜ ⮐ addMeth match.name, static:true
+                if match = funcMatch """#{className}["●name"] = async function ○args"""           ➜ ⮐ addMeth match.name, static:true async:true
+                if match = funcMatch """#{className}.prototype["●name"] = function ○args"""       ➜ ⮐ addMeth match.name, 
+                if match = funcMatch """#{className}.prototype["●name"] = async function ○args""" ➜ ⮐ addMeth match.name, async:true
                     
                 if match = doMatch """this["●name"] = this["●bound"].bind(this)""" ➜ @bound[match.name] = true
+             
+        if not line.startsWith ' '
+            
+            addFunc = (name, opt={}) =>
+                
+                fnc = name:name, line:index
+                fnc.async  = true if opt.async
+                @result.funcs.push fnc
+                null
+            
+            if match = funcMatch '●name = function ○args'       ➜ addFunc match.name
+            if match = funcMatch '●name = async function ○args' ➜ addFunc match.name, async:true
                     
     # 00000000    0000000   00000000    0000000  00000000       000000000  00000000  000   000  000000000
     # 000   000  000   000  000   000  000       000               000     000        000 000      000

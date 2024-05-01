@@ -14,25 +14,26 @@ function Git
     @statusCache: {}
 
     @: ->
+        
         @gitDirs = []
         
         post.on 'projectIndexed' @onProjectIndexed
         post.on 'fileChanged'    @onFileChanged
         
-    onProjectIndexed: (prjPath) =>
+    onProjectIndexed: prjPath =>
         
         kakao('fs.git' prjPath).then (gitDir) =>
             if valid gitDir and gitDir not in @gitDirs
                 @gitDirs.push slash.path gitDir, '.git'
                 
-    onFileChanged: (file) =>
+    onFileChanged: file =>
         log 'Git.fileChanged' file
         for gitDir in @gitDirs
             if file.startsWith gitDir
                 if slash.dir(file).endsWith '.git/refs/heads'
                     if slash.name(file) in ['master' 'main']
                         Git.status gitDir
-                        return
+                        ⮐ 
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  
     # 000          000     000   000     000     000   000  000       
@@ -40,7 +41,7 @@ function Git
     #      000     000     000   000     000     000   000       000  
     # 0000000      000     000   000     000      0000000   0000000   
     
-    @status: (file) ○->
+    @status: file ○->
         
         log 'Git.status' file
         
@@ -53,7 +54,7 @@ function Git
             added:   []
             files:   {}
         
-        return status if empty gitDir or @statusRequests[gitDir]
+        ⮐ status if empty gitDir or @statusRequests[gitDir]
         
         @statusRequests[gitDir] = true
         
@@ -61,7 +62,7 @@ function Git
         
         delete @statusRequests[gitDir]
         
-        return status if gitStatus.startsWith 'fatal:'
+        ⮐ status if gitStatus.startsWith 'fatal:'
         
         lines = gitStatus.split '\n'
                 
@@ -97,7 +98,7 @@ function Git
     # 000   000  000  000       000       
     # 0000000    000  000       000       
     
-    @diff: (file) ○->
+    @diff: file ○->
         
         gitDir =○ kakao 'fs.git' file
         
@@ -154,7 +155,7 @@ function Git
     # 000        000   000     000     000       000   000  
     # 000        000   000     000      0000000  000   000  
     
-    @patch: (rev) ○->
+    @patch: rev ○->
         
         gitDir =○ kakao 'fs.git' editor.currentFile
         
@@ -193,7 +194,7 @@ function Git
     # 000   000  000       000     000     000   000  000   000     000     
     # 000   000  000  0000000      000      0000000   000   000     000     
     
-    @history: (path) ○->
+    @history: path ○->
         
         args = ["--no-pager" "log" "--name-status" "--no-color" '.']
         

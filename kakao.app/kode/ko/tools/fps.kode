@@ -10,7 +10,7 @@ use ../../kxk ▪ elem post $
 
 class FPS
 
-    @: () ->
+    @: ->
                     
         @elem = elem class: 'fps'
         @elem.style.display = 'none'

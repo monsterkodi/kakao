@@ -19,12 +19,11 @@ class File
     
     @sourceFileExtensions: [ 'kode' 'coffee' 'styl' 'swift' 'pug' 'md' 'noon' 'txt' 'json' 'sh' 'py' 'cpp' 'mm' 'cc' 'c' 'cs' 'h' 'hpp' 'ts' 'js' 'mjs' 'frag' 'vert']
 
-    @isCode:  (file) -> slash.ext(file) in ['coffee' 'kode' 'py' 'cpp' 'cc' 'mm' 'c' 'cs' 'ts' 'js' 'mjs' 'h' 'hpp' 'frag' 'vert']
-    @isImage: (file) -> slash.ext(file) in ['gif' 'png' 'jpg' 'jpeg' 'svg' 'bmp' 'ico']
-    # @isText:  (file) -> slash.ext(file) in File.sourceFileExtensions
-    @isText:  (file) -> true
+    @isCode:  file -> slash.ext(file) in ['coffee' 'kode' 'py' 'cpp' 'cc' 'mm' 'c' 'cs' 'ts' 'js' 'mjs' 'h' 'hpp' 'frag' 'vert']
+    @isImage: file -> slash.ext(file) in ['gif' 'png' 'jpg' 'jpeg' 'svg' 'bmp' 'ico']
+    @isText:  file -> true # slash.ext(file) in File.sourceFileExtensions
    
-    @rename: (from, to) ○->
+    @rename: from to ○->
         
         ○ ffs.mkdir slash.dir to
             
@@ -35,30 +34,23 @@ class File
                 
             if editor.currentFile == from # this is not right! use kore!
                 editor.currentFile = to
-                # if tabs.activeTab()?.file == from
-                    # tabs.activeTab().setFile to
-                # if commandline.command.name == 'browse'
-                    # if commandline.text() == slash.tilde from
-                        # commandline.setText slash.tilde to
-                # if not tabs.tab to
-                    # log 'recreate tab!' tabs.activeTab().file, to
             
             [from, to]
         else 
             null
 
-    @duplicate: (from) ○-> 
+    @duplicate: from ○-> 
 
         ○ ffs.duplicate from
     
-    @copy: (from, to) ○->
+    @copy: from to ○->
         
         if ○ ffs.isDir to
             to = slash.path to, slash.file from
         
         ○ ffs.copy from, to
     
-    @iconClassName: (file) ->
+    @iconClassName: file ->
         
         file = slash.removeLinePos file
         
@@ -67,11 +59,11 @@ class File
         clss ?= 'file'
         "icon #{clss}"
         
-    @save: (file, text, cb) ->
+    @save: file text cb ->
         
         ffs.write(file, text).then cb
     
-    @span: (text) ->
+    @span: text ->
         
         base = slash.name text
         ext  = slash.ext(text).toLowerCase()
@@ -85,9 +77,9 @@ class File
             span += "<span class='ext punct#{clss}'>.</span>" + "<span class='ext text#{clss}'>"+ext+"</span>"
         span
                 
-    @crumbDirSpan: (dir) ->
+    @crumbDirSpan: dir ->
         
-        return "<span>/</span>" if dir in ['/' '']
+        ⮐ "<span>/</span>" if dir in ['/' '']
         
         spans = []
         root = ''

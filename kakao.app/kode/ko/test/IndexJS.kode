@@ -162,5 +162,14 @@ use ../tools ◆ IndexJS
             ] 
             lines: 9
             
+    ▸ func
             
-            
+        idx.parse """
+            myFunc = function (a, b)
+            """ ▸
+            classes:[] 
+            funcs:[
+                name:'myFunc' line:0
+            ] 
+            lines: 1
+    
