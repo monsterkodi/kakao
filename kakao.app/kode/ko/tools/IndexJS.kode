@@ -1,0 +1,70 @@
+###
+000  000   000  0000000    00000000  000   000              000   0000000  
+000  0000  000  000   000  000        000 000               000  000       
+000  000 0 000  000   000  0000000     00000                000  0000000   
+000  000  0000  000   000  000        000 000         000   000       000  
+000  000   000  0000000    00000000  000   000         0000000   0000000   
+###
+
+use ../../kxk ▪ kermit
+
+class IndexJS
+
+    @: ->
+
+    # 00000000    0000000   00000000    0000000  00000000       000      000  000   000  00000000
+    # 000   000  000   000  000   000  000       000            000      000  0000  000  000
+    # 00000000   000000000  0000000    0000000   0000000        000      000  000 0 000  0000000
+    # 000        000   000  000   000       000  000            000      000  000  0000  000
+    # 000        000   000  000   000  0000000   00000000       0000000  000  000   000  00000000
+
+    validFuncName: name -> name not in ['if''for''while''switch''return']
+    
+    parseLine: index line ->
+        
+        if match = kermit.lineMatch line, 'class ●name'
+            match.line = index
+            @result.classes.push match
+            ⮐ 
+            
+        if @result.classes.length
+            
+            if match = kermit.lineMatch line, '●name ○args'
+                if match.args[0] == '(' and match.args[-1] == ')'
+                    if @validFuncName match.name
+                        @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name
+                        ⮐
+
+            if match = kermit.lineMatch line, 'static ●name ○args'
+                if match.args[0] == '(' and match.args[-1] == ')'
+                    @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name, static:true
+                    ⮐
+
+            if match = kermit.lineMatch line, 'static async ●name ○args'
+                if match.args[0] == '(' and match.args[-1] == ')'
+                    @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name, static:true, async:true
+                    ⮐
+
+            if match = kermit.lineMatch line, 'async ●name ○args'
+                if match.args[0] == '(' and match.args[-1] == ')'
+                    @result.funcs.push method:match.name, line:index, class:@result.classes[-1].name, async:true
+                    ⮐
+                    
+    # 00000000    0000000   00000000    0000000  00000000       000000000  00000000  000   000  000000000
+    # 000   000  000   000  000   000  000       000               000     000        000 000      000
+    # 00000000   000000000  0000000    0000000   0000000           000     0000000     00000       000
+    # 000        000   000  000   000       000  000               000     000        000 000      000
+    # 000        000   000  000   000  0000000   00000000          000     00000000  000   000     000
+
+    parse: text ->
+        
+        lines = text.split '\n'
+
+        @result = classes:[], funcs:[], lines:lines.length
+        
+        for lineText,lineIndex in lines
+            @parseLine lineIndex, lineText
+
+        @result
+
+export IndexJS

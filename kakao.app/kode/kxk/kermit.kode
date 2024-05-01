@@ -12,6 +12,70 @@ wrapIndex = (ctx,offset) -> (ctx.pind+offset) % ctx.ptn.length
     
 hasStrongMatch = (splt, ctx, d) -> splt[0] == ctx.ptn[wrapIndex(ctx,d)][0][0]
     
+# 000      000  000   000  00000000  00     00   0000000   000000000   0000000  000   000  
+# 000      000  0000  000  000       000   000  000   000     000     000       000   000  
+# 000      000  000 0 000  0000000   000000000  000000000     000     000       000000000  
+# 000      000  000  0000  000       000 0 000  000   000     000     000       000   000  
+# 0000000  000  000   000  00000000  000   000  000   000     000      0000000  000   000  
+
+lineMatch = (line, pt) ->
+    
+    tln = trim line
+    ⮐ if empty tln
+    
+    splt = tln.split /\s+/
+    cpt  = trim(pt).split /\s+/
+    
+    ⮐ if empty splt
+    
+    strongMatch = false
+    weakMatch = false
+    varName = null
+    
+    ci = 0
+    si = 0
+    rslt = {}
+    
+    while ci < cpt.length
+        
+        cp = cpt[ci]
+        
+        if cp == splt[si]
+            strongMatch = true
+            varName = null
+            si++
+            ci++
+            continue
+            
+        if cp?[0] in '●○'
+            
+            weakMatch = true
+            varName = cp[1..]
+            switch cp[0]
+                '●' ➜ rslt[varName] = splt[si]
+                '○' 
+                    rslt[varName] = splt[si..].join ' '
+                    varName = null
+                    break
+            si++
+            ci++
+            continue
+            
+        if weakMatch and varName and valid splt[si+1]
+            
+            rslt[varName] += ' ' + splt[si]
+            si++
+            continue
+
+        # log "kermit no match |#{line}| #{cpt}" ci, cp
+        ⮐ 
+    
+    if ci == cpt.length and varName and si < splt.length
+        rslt[varName] += ' ' + splt[si..].join ' '
+    
+    # log rslt, strongMatch, weakMatch
+    ⮐ rslt if strongMatch or weakMatch
+
 #  0000000   0000000    0000000    00     00   0000000   000000000   0000000  000   000  
 # 000   000  000   000  000   000  000   000  000   000     000     000       000   000  
 # 000000000  000   000  000   000  000000000  000000000     000     000       000000000  
@@ -199,5 +263,6 @@ kermit = (kmt, str) ->
     ctx.result
     
 kermit.pattern = pattern
+kermit.lineMatch = lineMatch
 
 export kermit

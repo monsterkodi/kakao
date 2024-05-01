@@ -93,7 +93,7 @@ class IndexHpp
                 {
                     if (p === 0 && (match = lineText.match(this.classRegExp)))
                     {
-                        this.tokenStack.push({line:lineIndex,col:p,classType:match[2],depth:this.regionStack.length})
+                        this.tokenStack.push({line:lineIndex,col:p,classType:match[1],depth:this.regionStack.length})
                         advance(match[0].length)
                         this.currentWord = ''
                         continue

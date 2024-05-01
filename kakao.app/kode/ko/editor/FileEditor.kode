@@ -257,14 +257,14 @@ function FileEditor extends TextEditor
 
         if opt.path?
             @jumpToFile opt
-            return true
+            ⮐ true
 
-        return error 'nothing to jump to?' if empty word
+        ⮐ error 'nothing to jump to?' if empty word
 
         find = word.toLowerCase().trim()
         find = find.slice 1 if find[0] == '@'
 
-        return error 'FileEditor.jumpTo -- nothing to find?' if empty find
+        ⮐ error 'FileEditor.jumpTo -- nothing to find?' if empty find
 
         type = opt?.type
 
@@ -273,7 +273,7 @@ function FileEditor extends TextEditor
             for clss, info of classes
                 if clss.toLowerCase() == find
                     @jumpToFile info
-                    return true
+                    ⮐ true
 
         if not type or type == 'func'
             funcs = window.indexer.funcs
@@ -284,7 +284,7 @@ function FileEditor extends TextEditor
                         if i.file == @currentFile
                             info = i
                     @jumpToFile info
-                    return true
+                    ⮐ true
 
         if not type or type == 'file'
             files = window.indexer.files

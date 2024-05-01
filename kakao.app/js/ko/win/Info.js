@@ -1,30 +1,12 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var shortCount
-
 import kxk from "../../kxk.js"
+let pretty = kxk.pretty
 let post = kxk.post
 let elem = kxk.elem
 let tooltip = kxk.tooltip
 let $ = kxk.$
 
-
-shortCount = function (v)
-{
-    v = parseInt(v)
-    if (v > 999999)
-    {
-        return `${Math.floor(v / 1000000)}M`
-    }
-    else if (v > 999)
-    {
-        return `${Math.floor(v / 1000)}k`
-    }
-    else
-    {
-        return `${v}`
-    }
-}
 class Info
 {
     constructor (editor)
@@ -121,7 +103,7 @@ class Info
 
     setEditor (editor)
     {
-        var _121_18_
+        var _113_18_
 
         if (!(_k_.in(editor.name,['editor','terminal'])))
         {
@@ -155,7 +137,7 @@ class Info
 
     onNumLines (lc)
     {
-        return this.lines.textContent = shortCount((lc != null ? lc : 0))
+        return this.lines.textContent = pretty.shortCount((lc != null ? lc : 0))
     }
 
     onCursor ()

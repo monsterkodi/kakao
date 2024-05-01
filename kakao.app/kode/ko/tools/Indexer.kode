@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ pickBy pullIf deleteBy sds matchr slash post ffs 
 
-use ◆ Walker IndexHpp
+use ◆ Walker IndexHpp IndexJS
 
 class Indexer
 
@@ -154,14 +154,15 @@ class Indexer
         
         funcInfo
 
-    addMethod: className funcName file li async bound ->
+    addMethod: className funcName file li async bound statik ->
 
         funcInfo = @addFuncInfo funcName,
-            line:  li+1
-            file:  file
-            class: className
-            async: async
-            bound: bound
+            line:   li+1
+            file:   file
+            class:  className
+            async:  async
+            bound:  bound
+            static: statik
 
         sds.set @classes, "#{className}.methods.#{funcInfo.name}" funcInfo
         
@@ -196,7 +197,7 @@ class Indexer
     indexFile: file opt =>
         
         # ● indexFile
-        # log 'Indexer.indexFile' file, opt
+        # log 'Indexer.indexFile' file
         
         @removeFile file if opt?.refresh
 
@@ -212,7 +213,8 @@ class Indexer
             
         isCpp = fileExt in ['cpp' 'cc' 'mm' 'c' 'frag' 'vert']
         isHpp = fileExt in ['hpp' 'h' ]
-
+        isJS  = fileExt in ['js' 'mjs']
+        
         ffs.read(file).then (text) =>
             
             ⮐ if empty text
@@ -247,8 +249,28 @@ class Indexer
                     funcInfo = @addMethod func.class, func.method, file, func.line
                     fileInfo.funcs.push funcInfo
                     
+            else if isJS
+                
+                indexJS = new IndexJS
+                parsed = indexJS.parse text
+                
+                funcAdded = not empty(parsed.classes) or not empty(parsed.funcs)
+                
+                for clss in parsed.classes
+                    
+                    sds.set @classes, "#{clss.name}.file" file
+                    sds.set @classes, "#{clss.name}.line" clss.line+1
+                    
+                    fileInfo.classes.push 
+                        name: clss.name
+                        line: clss.line+1
+                        
+                for func in parsed.funcs
+                    funcInfo = @addMethod func.class, func.method, file, func.line, func.async, false, func.static
+                    fileInfo.funcs.push funcInfo
+                    
             else
-                for li in [0...lines.length]
+                for li in 0...lines.length
                     
                     line = lines[li]
     
@@ -282,7 +304,7 @@ class Indexer
                             # 000       000   000  000  0000  000          000     000  000   000  000  0000       000
                             # 000        0000000   000   000   0000000     000     000   0000000   000   000  0000000
     
-                            currentClass = null if indent < 2 # was 4
+                            currentClass = null if indent < 2 
     
                             if funcName = Indexer.funcNameInLine line
                                 funcInfo = @addFuncInfo funcName,
@@ -340,30 +362,6 @@ class Indexer
                                         name: className
                                         line: li+1
     
-                            # 00000000   00000000   0000000   000   000  000  00000000   00000000
-                            # 000   000  000       000   000  000   000  000  000   000  000
-                            # 0000000    0000000   000 00 00  000   000  000  0000000    0000000
-                            # 000   000  000       000 0000   000   000  000  000   000  000
-                            # 000   000  00000000   00000 00   0000000   000  000   000  00000000
-                            
-                            # 'require'
-#                                 
-                                # m = line.match Indexer.requireRegExp
-                                # if m?[1]? and m[2]?
-                                    # r = fileInfo.require ? []
-                                    # r.push [m[1], m[2]]
-                                    # fileInfo.require = r
-                                    # abspath = slash.path slash.dir(file), m[2]
-                                    # if slash.ext(abspath) not in ['json']
-                                        # for ext in ['kode''coffee']
-                                            # required = "#{abspath}.#{ext}"
-                                            # # log '???' required
-                                            # if (m[2][0] == '.') and (not @files[required]?) and (@queue.indexOf(required) < 0)
-                                                # # log required
-                                                # if slash.isFile required
-                                                    # log '!!!!' required
-                                                    # @queue.push required
-                                            
             if funcAdded
 
                 while funcStack.length
@@ -374,11 +372,13 @@ class Indexer
                     fileInfo.funcs.push funcInfo
 
                 if opt?.post != false
-                    post.emit 'classesCount' Object.keys(@classes).length
-                    post.emit 'funcsCount'   Object.keys(@funcs).length
-                    post.emit 'fileIndexed'  file, fileInfo
+                    # post.emit 'classesCount' Object.keys(@classes).length
+                    # post.emit 'funcsCount'   Object.keys(@funcs).length
+                    post.emit 'fileIndexed' file, fileInfo
 
             @files[file] = fileInfo
+            
+            log 'Indexer' file, fileInfo
             
             if opt?.post != false
                 post.emit 'filesCount' Object.keys(@files).length

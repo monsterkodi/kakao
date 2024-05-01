@@ -32,6 +32,17 @@ use .. ◆ kermit
                 [['sub' '●sub'], ['level1']]
                 [['●prefix' '●suffix'], ['level1' 'level2']]
             ]
+            
+    ▸ lineMatch
+    
+        kermit.lineMatch "" "class ●class" ▸ undefined
+        kermit.lineMatch "hello" "class ●class" ▸ undefined
+        kermit.lineMatch "class" "class ●class" ▸ class:undefined
+        kermit.lineMatch "class MyClass" "class ●class" ▸ class:'MyClass'
+        
+        kermit.lineMatch "func (arg1, arg2)" "●name ○args" ▸ name:'func' args:'(arg1, arg2)'
+        kermit.lineMatch "  func (arg1, arg2)" "●name ○args" ▸ name:'func' args:'(arg1, arg2)'
+        kermit.lineMatch "  constructor ()" "●name ○args" ▸ name:'constructor' args:'()'
 
     #  0000000  000  00     00  00000000   000      00000000  
     # 000       000  000   000  000   000  000      000       
@@ -72,8 +83,6 @@ use .. ◆ kermit
     # 000  000   000  0000000  000  000   000  00000000  
     
     ▸ inline
-    
-        # return
     
         kermit "@@ ●lineinfo @@ ●context" """
             @@ -111 +222 @@ one two ...
@@ -139,8 +148,6 @@ use .. ◆ kermit
     
     ▸ array2
     
-        # return
-    
         kermit """
             commit  ●commit
             Author: ●author
@@ -197,8 +204,6 @@ use .. ◆ kermit
     
     ▸ nested
     
-        # return
-    
         kermit """
             header ●header
             ■level1
@@ -221,8 +226,6 @@ use .. ◆ kermit
             ]
     
     ▸ nested array
-    
-        # return
     
         kermit """
             header ●header

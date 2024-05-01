@@ -103,6 +103,25 @@ pretty = (function ()
         }
     }
 
+    pretty["shortCount"] = function (num)
+    {
+        var v
+
+        v = parseInt(num)
+        if (v > 999999)
+        {
+            return `${Math.floor(v / 1000000)}M`
+        }
+        else if (v > 999)
+        {
+            return `${Math.floor(v / 1000)}k`
+        }
+        else
+        {
+            return `${v}`
+        }
+    }
+
     return pretty
 })()
 

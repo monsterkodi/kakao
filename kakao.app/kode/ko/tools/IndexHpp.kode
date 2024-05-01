@@ -81,7 +81,7 @@ class IndexHpp
                         @tokenStack.push
                             line:       lineIndex
                             col:        p
-                            classType:  match[2]
+                            classType:  match[1]
                             depth:      @regionStack.length
                         advance match[0].length
                         @currentWord = ''

@@ -16,6 +16,16 @@ toExport["kermit"] = function ()
     ■level2
         ●prefix ●suffix`),[[['header','●header'],[]],[['sub','●sub'],['level1']],[['●prefix','●suffix'],['level1','level2']]])
     })
+    section("lineMatch", function ()
+    {
+        compare(kermit.lineMatch("","class ●class"),undefined)
+        compare(kermit.lineMatch("hello","class ●class"),undefined)
+        compare(kermit.lineMatch("class","class ●class"),{class:undefined})
+        compare(kermit.lineMatch("class MyClass","class ●class"),{class:'MyClass'})
+        compare(kermit.lineMatch("func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
+        compare(kermit.lineMatch("  func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
+        compare(kermit.lineMatch("  constructor ()","●name ○args"),{name:'constructor',args:'()'})
+    })
     section("simple", function ()
     {
         compare(kermit(`commit  ●commit

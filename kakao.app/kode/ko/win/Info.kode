@@ -6,15 +6,7 @@
 000  000   000  000        0000000 
 ###
 
-use ../../kxk ▪ post elem tooltip $
-
-shortCount = (v) ->
-    
-    v = parseInt v
-    if
-        v > 999999 ➜ "#{Math.floor v/1000000}M"
-        v > 999    ➜ "#{Math.floor v/1000}k"
-                   ➜ "#{v}"
+use ../../kxk ▪ pretty post elem tooltip $
 
 class Info
     
@@ -153,7 +145,7 @@ class Info
     
     onNumLines: (lc) =>
         
-        @lines.textContent = shortCount lc ? 0
+        @lines.textContent = pretty.shortCount lc ? 0
             
     onCursor: => 
 
