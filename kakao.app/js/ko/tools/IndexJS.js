@@ -20,27 +20,28 @@ class IndexJS
 
     validFuncMatch (match)
     {
-        return this.validFuncArgs(match.args) && this.validFuncName(match.name)
+        return match && this.validFuncArgs(match.args) && this.validFuncName(match.name)
     }
 
     parseLine (index, line)
     {
-        var addFunc, className, classType, match
+        var addFunc, className, classType, doMatch, match, splits
 
         if (match = kermit.lineMatch(line,'class ●name'))
         {
-            match.line = index
             match.type = 'class'
+            match.line = index
             this.result.classes.push(match)
             return
         }
         if (match = kermit.lineMatch(line,'●name = (function ()'))
         {
-            match.line = index
             match.type = 'function'
+            match.line = index
             this.result.classes.push(match)
             return
         }
+        splits = ['"','.',',',"'"]
         if (this.result.classes.length)
         {
             className = this.result.classes.slice(-1)[0].name
@@ -61,73 +62,54 @@ class IndexJS
                 this.result.funcs.push(fnc)
                 return null
             }).bind(this)
+            doMatch = (function (ptn)
+            {
+                match = kermit.lineMatch(line,ptn,splits)
+                if (this.validFuncMatch(match))
+                {
+                    return match
+                }
+            }).bind(this)
             if (classType === 'class')
             {
-                if (match = kermit.lineMatch(line,'●name ○args'))
+                if (match = doMatch('●name ○args'))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name)
-                    }
+                    return addFunc(match.name)
                 }
-                if (match = kermit.lineMatch(line,'static ●name ○args'))
+                if (match = doMatch('async ●name ○args'))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name,{static:true})
-                    }
+                    return addFunc(match.name,{async:true})
                 }
-                if (match = kermit.lineMatch(line,'static async ●name ○args'))
+                if (match = doMatch('static ●name ○args'))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name,{static:true,async:true})
-                    }
+                    return addFunc(match.name,{static:true})
                 }
-                if (match = kermit.lineMatch(line,'async ●name ○args'))
+                if (match = doMatch('static async ●name ○args'))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name,{async:true})
-                    }
+                    return addFunc(match.name,{static:true,async:true})
                 }
             }
             if (classType === 'function')
             {
-                if (match = kermit.lineMatch(line,`function ${className} ○args`))
+                if (match = doMatch(`function ${className} ○args`))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(className)
-                    }
+                    return addFunc(className)
                 }
-                if (match = kermit.lineMatch(line,`${className}["●name"] = function ○args`,['"']))
+                if (match = doMatch(`${className}["●name"] = function ○args`))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name)
-                    }
+                    return addFunc(match.name)
                 }
-                if (match = kermit.lineMatch(line,`${className}["●name"] = async function ○args`,['"']))
+                if (match = doMatch(`${className}["●name"] = async function ○args`))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name,{async:true})
-                    }
+                    return addFunc(match.name,{async:true})
                 }
-                if (match = kermit.lineMatch(line,`${className}.prototype["●name"] = function ○args`,['"']))
+                if (match = doMatch(`${className}.prototype["●name"] = function ○args`))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name,{static:true})
-                    }
+                    return addFunc(match.name,{static:true})
                 }
-                if (match = kermit.lineMatch(line,`${className}.prototype["●name"] = async function ○args`,['"']))
+                if (match = doMatch(`${className}.prototype["●name"] = async function ○args`))
                 {
-                    if (this.validFuncMatch(match))
-                    {
-                        return addFunc(match.name,{static:true,async:true})
-                    }
+                    return addFunc(match.name,{static:true,async:true})
                 }
             }
         }

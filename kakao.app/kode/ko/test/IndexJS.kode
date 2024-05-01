@@ -26,7 +26,7 @@ use ../tools ◆ IndexJS
             lines: 1
 
         idx.parse "class Hello" ▸
-            classes:[name:'Hello' line:0 type:'class'] 
+            classes:[name:'Hello' type:'class' line:0] 
             funcs:[] 
             lines: 1
 
@@ -34,7 +34,7 @@ use ../tools ◆ IndexJS
             class World
                 constructor ()
             """ ▸
-            classes:[name:'World' line:0 type:'class'] 
+            classes:[name:'World' type:'class' line:0] 
             funcs:[method:'constructor' line:1 class:'World'] 
             lines: 2
 
@@ -42,7 +42,7 @@ use ../tools ◆ IndexJS
             class World
                 constructor (a,b)
             """ ▸
-            classes:[name:'World' line:0 type:'class'] 
+            classes:[name:'World' type:'class' line:0] 
             funcs:[method:'constructor' line:1 class:'World'] 
             lines: 2
 
@@ -59,7 +59,7 @@ use ../tools ◆ IndexJS
                     }
                 }
             """ ▸
-            classes:[name:'World' line:0 type:'class'] 
+            classes:[name:'World' type:'class' line:0] 
             funcs:[method:'fun' line:1 class:'World'] 
             lines: 11
             
@@ -74,7 +74,7 @@ use ../tools ◆ IndexJS
         idx = new IndexJS
     
         idx.parse "Git = (function ()" ▸
-            classes:[name:'Git' line:0 type:'function'] 
+            classes:[name:'Git' type:'function' line:0] 
             funcs:[] 
             lines: 1
 
@@ -85,7 +85,7 @@ use ../tools ◆ IndexJS
                 Git["statusCache"] = {}
                 function Git ()
             """ ▸
-            classes:[name:'Git' line:0 type:'function'] 
+            classes:[name:'Git' type:'function' line:0] 
             funcs:[method:'Git' line:4 class:'Git'] 
             lines: 5
 
@@ -99,7 +99,7 @@ use ../tools ◆ IndexJS
                 Git["onFileChanged"] = function (file)
                 {
             """ ▸
-            classes:[name:'Git' line:0 type:'function'] 
+            classes:[name:'Git' type:'function' line:0] 
             funcs:[
                 method:'onProjectIndexed' line:2 class:'Git' static:true
             ,
@@ -117,7 +117,7 @@ use ../tools ◆ IndexJS
                 Git["onFileChanged"] = async function (file)
                 {
             """ ▸
-            classes:[name:'Git' line:0 type:'function'] 
+            classes:[name:'Git' type:'function' line:0] 
             funcs:[
                 method:'onProjectIndexed' line:2 class:'Git' static:true async:true
             ,

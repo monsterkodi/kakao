@@ -20,21 +20,23 @@ class IndexJS
 
     validFuncName:  name  -> name not in ['if''for''while''switch''return']
     validFuncArgs:  args  -> args[0] == '(' and args[-1] == ')'
-    validFuncMatch: match -> @validFuncArgs(match.args) and @validFuncName(match.name)
+    validFuncMatch: match -> match and @validFuncArgs(match.args) and @validFuncName(match.name)
     
     parseLine: index line ->
         
         if match = kermit.lineMatch line, 'class ●name'
-            match.line = index
             match.type = 'class'
+            match.line = index
             @result.classes.push match
             ⮐ 
 
         if match = kermit.lineMatch line, '●name = (function ()'
-            match.line = index
             match.type = 'function'
+            match.line = index
             @result.classes.push match
             ⮐
+            
+        splits = ['"''.'','"'"]
             
         if @result.classes.length
             
@@ -50,45 +52,25 @@ class IndexJS
                 @result.funcs.push fnc
                 null
                 
+            doMatch = (ptn) =>
+            
+                match = kermit.lineMatch line, ptn, splits
+                match if @validFuncMatch match
+                
             if classType == 'class'
                 
-                if match = kermit.lineMatch line, '●name ○args'
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name
-    
-                if match = kermit.lineMatch line, 'static ●name ○args'
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name, static:true
-    
-                if match = kermit.lineMatch line, 'static async ●name ○args'
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name, static:true, async:true
-    
-                if match = kermit.lineMatch line, 'async ●name ○args'
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name, async:true
+                if match = doMatch '●name ○args'              ➜ ⮐ addFunc match.name
+                if match = doMatch 'async ●name ○args'        ➜ ⮐ addFunc match.name, async:true
+                if match = doMatch 'static ●name ○args'       ➜ ⮐ addFunc match.name, static:true
+                if match = doMatch 'static async ●name ○args' ➜ ⮐ addFunc match.name, static:true async:true
                         
             if classType == 'function'
                 
-                if match = kermit.lineMatch line, "function #{className} ○args"
-                    if @validFuncMatch match
-                        ⮐ addFunc className
-
-                if match = kermit.lineMatch line, """#{className}["●name"] = function ○args""" ['"']
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name
-                        
-                if match = kermit.lineMatch line, """#{className}["●name"] = async function ○args""" ['"']
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name, async:true
-                        
-                if match = kermit.lineMatch line, """#{className}.prototype["●name"] = function ○args""" ['"']
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name, static:true
-                        
-                if match = kermit.lineMatch line, """#{className}.prototype["●name"] = async function ○args""" ['"']
-                    if @validFuncMatch match
-                        ⮐ addFunc match.name, static:true, async:true
+                if match = doMatch "function #{className} ○args"                                ➜ ⮐ addFunc className
+                if match = doMatch """#{className}["●name"] = function ○args"""                 ➜ ⮐ addFunc match.name
+                if match = doMatch """#{className}["●name"] = async function ○args"""           ➜ ⮐ addFunc match.name, async:true
+                if match = doMatch """#{className}.prototype["●name"] = function ○args"""       ➜ ⮐ addFunc match.name, static:true
+                if match = doMatch """#{className}.prototype["●name"] = async function ○args""" ➜ ⮐ addFunc match.name, static:true async:true
                     
     # 00000000    0000000   00000000    0000000  00000000       000000000  00000000  000   000  000000000
     # 000   000  000   000  000   000  000       000               000     000        000 000      000

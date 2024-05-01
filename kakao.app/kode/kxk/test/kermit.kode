@@ -49,6 +49,10 @@ use .. ◆ kermit
         lm """Git.prototype["onFileChanged"] = function (file)""" """Git.prototype["●name"] = function ○args""" ['"'] ▸
             name:'onFileChanged'
             args:'(file)'
+            
+        lm "post.on('index',(function (file)" '●name ○args' ['"''.'','"'"] ▸ 
+            name:'post'
+            args:". on( ' index '  , (function (file)"
 
     #  0000000  000  00     00  00000000   000      00000000  
     # 000       000  000   000  000   000  000      000       

@@ -29,6 +29,7 @@ toExport["kermit"] = function ()
         compare(lm("  func (arg1, arg2)","●name ○args"),{name:'func',args:'(arg1, arg2)'})
         compare(lm("  constructor ()","●name ○args"),{name:'constructor',args:'()'})
         compare(lm(`Git.prototype["onFileChanged"] = function (file)`,`Git.prototype["●name"] = function ○args`,['"']),{name:'onFileChanged',args:'(file)'})
+        compare(lm("post.on('index',(function (file)",'●name ○args',['"','.',',',"'"]),{name:'post',args:". on( ' index '  , (function (file)"})
     })
     section("simple", function ()
     {
