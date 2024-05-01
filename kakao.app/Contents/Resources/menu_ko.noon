@@ -24,6 +24,7 @@ File
     -
     Open...                 cmdctrl+o
     Open In New Window...   cmdctrl+shift+o
+    Open Counterpart        alt+o
     --
     Save                    cmdctrl+s
     Save As ...             cmdctrl+shift+s

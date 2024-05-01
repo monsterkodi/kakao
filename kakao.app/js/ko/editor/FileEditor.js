@@ -579,10 +579,6 @@ FileEditor = (function ()
             case 'alt+ctrl+shift+enter':
                 return window.commandline.commands.coffee.executeTextInMain(this.textOfSelectionForClipboardt())
 
-            case 'command+alt+up':
-            case 'alt+o':
-                return this.jumpToCounterpart()
-
             case 'esc':
                 split = window.split
                 if (split.terminalVisible())

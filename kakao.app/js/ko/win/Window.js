@@ -241,6 +241,9 @@ Window = (function ()
             case 'Open In New Window...':
                 return post.emit('openFile',{newWindow:true})
 
+            case 'Open Counterpart':
+                return window.editor.jumpToCounterpart()
+
             case 'Save':
                 return post.emit('saveFile')
 
@@ -328,7 +331,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _205_14_
+    var _206_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -339,7 +342,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _211_22_, _212_19_
+    var _212_22_, _213_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -374,7 +377,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _251_32_
+    var _252_32_
 
     if (!(_k_.isNum(s)))
     {

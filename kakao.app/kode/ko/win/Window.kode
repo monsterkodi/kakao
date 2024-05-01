@@ -147,6 +147,7 @@ function Window extends win.Delegate
             'Move Tab Right'        ➜ ⮐ window.tabs.move 'right'
             'Open...'               ➜ ⮐ post.emit 'openFile'
             'Open In New Window...' ➜ ⮐ post.emit 'openFile' newWindow: true
+            'Open Counterpart'      ➜ ⮐ window.editor.jumpToCounterpart()
             'Save'                  ➜ ⮐ post.emit 'saveFile'
             'Save All'              ➜ ⮐ post.emit 'saveAll'
             'Save As ...'           ➜ ⮐ post.emit 'saveFileAs'

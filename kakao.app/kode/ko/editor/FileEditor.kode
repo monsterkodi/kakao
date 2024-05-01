@@ -490,8 +490,7 @@ function FileEditor extends TextEditor
         return if 'unhandled' != super mod, key, combo, char, event
         switch combo
             'alt+ctrl+enter'         ➜ ⮐ window.commandline.commands.coffee.executeText @textOfSelectionForClipboard()
-            'alt+ctrl+shift+enter'   ➜ ⮐ window.commandline.commands.coffee.executeTextInMain @textOfSelectionForClipboardt()
-            'command+alt+up' 'alt+o' ➜ ⮐ @jumpToCounterpart()
+            'alt+ctrl+shift+enter'   ➜ ⮐ window.commandline.commands.coffee.executeTextInMain @textOfSelectionForClipboardt()            
             'esc'
                 split = window.split
                 if split.terminalVisible()
