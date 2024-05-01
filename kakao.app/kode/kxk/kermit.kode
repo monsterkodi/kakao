@@ -42,6 +42,8 @@ lineMatch = (line, pt, splitlist) ->
         splt = splitWords splt, sl
         cpt  = splitWords cpt, sl
         
+    # log splt, cpt
+        
     ⮐ if empty splt
     
     strongMatch = false

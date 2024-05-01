@@ -267,7 +267,7 @@ class Indexer
                         
                 for func in parsed.funcs
                     # this is ugly as fuck, consider fixing it!
-                    funcInfo = @addMethod func.class, func.method, file, func.line, func.async, false, func.static
+                    funcInfo = @addMethod func.class, func.method, file, func.line, func.async, func.bound, func.static
                     fileInfo.funcs.push funcInfo
                     
             else

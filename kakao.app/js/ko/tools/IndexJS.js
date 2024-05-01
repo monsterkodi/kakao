@@ -8,44 +8,43 @@ class IndexJS
     constructor ()
     {}
 
-    validFuncName (name)
-    {
-        return !(_k_.in(name,['if','for','while','switch','return']))
-    }
-
-    validFuncArgs (args)
-    {
-        return args[0] === '(' && args.slice(-1)[0] === ')'
-    }
-
-    validFuncMatch (match)
-    {
-        return match && this.validFuncArgs(match.args) && this.validFuncName(match.name)
-    }
-
     parseLine (index, line)
     {
-        var addFunc, className, classType, doMatch, match, splits
+        var addFunc, className, classType, doMatch, funcMatch, match, validFuncArgs, validFuncMatch, validFuncName
 
-        if (match = kermit.lineMatch(line,'class ●name'))
+        if (!line.startsWith(' '))
         {
-            match.type = 'class'
-            match.line = index
-            this.result.classes.push(match)
-            return
+            if (match = kermit.lineMatch(line,'class ●name'))
+            {
+                match.type = 'class'
+                match.line = index
+                this.result.classes.push(match)
+                return
+            }
+            if (match = kermit.lineMatch(line,'●name = (function ()'))
+            {
+                match.type = 'function'
+                match.line = index
+                this.result.classes.push(match)
+                return
+            }
         }
-        if (match = kermit.lineMatch(line,'●name = (function ()'))
-        {
-            match.type = 'function'
-            match.line = index
-            this.result.classes.push(match)
-            return
-        }
-        splits = ['"','.',',',"'"]
         if (this.result.classes.length)
         {
             className = this.result.classes.slice(-1)[0].name
             classType = this.result.classes.slice(-1)[0].type
+            validFuncName = function (name)
+            {
+                return !(_k_.in(name,['if','for','while','switch','return']))
+            }
+            validFuncArgs = function (args)
+            {
+                return args[0] === '(' && args.slice(-1)[0] === ')'
+            }
+            validFuncMatch = function (match)
+            {
+                return match && validFuncArgs(match.args) && validFuncName(match.name)
+            }
             addFunc = (function (name, opt = {})
             {
                 var fnc
@@ -59,57 +58,73 @@ class IndexJS
                 {
                     fnc.async = true
                 }
+                if (this.bound[name] && name !== 'constructor')
+                {
+                    fnc.bound = true
+                }
                 this.result.funcs.push(fnc)
                 return null
             }).bind(this)
-            doMatch = (function (ptn)
+            doMatch = function (ptn)
             {
-                match = kermit.lineMatch(line,ptn,splits)
-                if (this.validFuncMatch(match))
+                return kermit.lineMatch(line,ptn,['"','.',',',"'"])
+            }
+            funcMatch = function (ptn)
+            {
+                match = doMatch(ptn)
+                if (validFuncMatch(match))
                 {
                     return match
                 }
-            }).bind(this)
+            }
             if (classType === 'class')
             {
-                if (match = doMatch('●name ○args'))
+                if (match = funcMatch('●name ○args'))
                 {
                     return addFunc(match.name)
                 }
-                if (match = doMatch('async ●name ○args'))
+                if (match = funcMatch('async ●name ○args'))
                 {
                     return addFunc(match.name,{async:true})
                 }
-                if (match = doMatch('static ●name ○args'))
+                if (match = funcMatch('static ●name ○args'))
                 {
                     return addFunc(match.name,{static:true})
                 }
-                if (match = doMatch('static async ●name ○args'))
+                if (match = funcMatch('static async ●name ○args'))
                 {
                     return addFunc(match.name,{static:true,async:true})
+                }
+                if (match = doMatch(`this.●name = this.●bound.bind(this)`))
+                {
+                    this.bound[match.name] = true
                 }
             }
             if (classType === 'function')
             {
-                if (match = doMatch(`function ${className} ○args`))
+                if (match = funcMatch(`function ${className} ○args`))
                 {
                     return addFunc(className)
                 }
-                if (match = doMatch(`${className}["●name"] = function ○args`))
-                {
-                    return addFunc(match.name)
-                }
-                if (match = doMatch(`${className}["●name"] = async function ○args`))
-                {
-                    return addFunc(match.name,{async:true})
-                }
-                if (match = doMatch(`${className}.prototype["●name"] = function ○args`))
+                if (match = funcMatch(`${className}["●name"] = function ○args`))
                 {
                     return addFunc(match.name,{static:true})
                 }
-                if (match = doMatch(`${className}.prototype["●name"] = async function ○args`))
+                if (match = funcMatch(`${className}["●name"] = async function ○args`))
                 {
                     return addFunc(match.name,{static:true,async:true})
+                }
+                if (match = funcMatch(`${className}.prototype["●name"] = function ○args`))
+                {
+                    return addFunc(match.name)
+                }
+                if (match = funcMatch(`${className}.prototype["●name"] = async function ○args`))
+                {
+                    return addFunc(match.name,{async:true})
+                }
+                if (match = doMatch(`this["●name"] = this["●bound"].bind(this)`))
+                {
+                    return this.bound[match.name] = true
                 }
             }
         }
@@ -120,6 +135,7 @@ class IndexJS
         var lineIndex, lines, lineText
 
         lines = text.split('\n')
+        this.bound = {}
         this.result = {classes:[],funcs:[],lines:lines.length}
         var list = _k_.list(lines)
         for (lineIndex = 0; lineIndex < list.length; lineIndex++)

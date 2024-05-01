@@ -27,6 +27,13 @@ toExport["IndexJS"] = function ()
             }
         }
     }`),{classes:[{name:'World',type:'class',line:0}],funcs:[{method:'fun',line:1,class:'World'}],lines:11})
+        compare(idx.parse(`class World
+    constructor (a,b)
+    {
+        this.onFileChanged = this.onFileChanged.bind(this)
+    }
+    
+    onFileChanged ()`),{classes:[{name:'World',type:'class',line:0}],funcs:[{method:'constructor',line:1,class:'World'},{method:'onFileChanged',line:6,class:'World',bound:true}],lines:7})
     })
     section("function", function ()
     {
@@ -44,7 +51,7 @@ toExport["IndexJS"] = function ()
     }
 
     Git["onFileChanged"] = function (file)
-    {`),{classes:[{name:'Git',type:'function',line:0}],funcs:[{method:'onProjectIndexed',line:2,class:'Git',static:true},{method:'onFileChanged',line:6,class:'Git'}],lines:8})
+    {`),{classes:[{name:'Git',type:'function',line:0}],funcs:[{method:'onProjectIndexed',line:2,class:'Git'},{method:'onFileChanged',line:6,class:'Git',static:true}],lines:8})
         compare(idx.parse(`Git = (function ()
 {
     Git.prototype["onProjectIndexed"] = async function (prjPath)
@@ -52,7 +59,16 @@ toExport["IndexJS"] = function ()
     }
 
     Git["onFileChanged"] = async function (file)
-    {`),{classes:[{name:'Git',type:'function',line:0}],funcs:[{method:'onProjectIndexed',line:2,class:'Git',static:true,async:true},{method:'onFileChanged',line:6,class:'Git',async:true}],lines:8})
+    {`),{classes:[{name:'Git',type:'function',line:0}],funcs:[{method:'onProjectIndexed',line:2,class:'Git',async:true},{method:'onFileChanged',line:6,class:'Git',static:true,async:true}],lines:8})
+        compare(idx.parse(`Git = (function ()
+{
+    function Git ()
+    {
+        this["onFileChanged"] = this["onFileChanged"].bind(this)
+    }
+
+    Git["onFileChanged"] = function (file)
+    {`),{classes:[{name:'Git',type:'function',line:0}],funcs:[{method:'Git',line:2,class:'Git'},{method:'onFileChanged',line:7,class:'Git',static:true,bound:true}],lines:9})
     })
 }
 toExport["IndexJS"]._section_ = true

@@ -180,9 +180,9 @@ addMatch = function (line, ctx)
     if (!strongMatch)
     {
         var list = [1,-1]
-        for (var _154_14_ = 0; _154_14_ < list.length; _154_14_++)
+        for (var _156_14_ = 0; _156_14_ < list.length; _156_14_++)
         {
-            d = list[_154_14_]
+            d = list[_156_14_]
             if (hasStrongMatch(splt,ctx,d))
             {
                 ctx.pind = wrapIndex(ctx,d)
@@ -207,9 +207,9 @@ traverse = function (ctx)
 
     ctx.matches = []
     var list = _k_.list(ctx.lines)
-    for (var _173_13_ = 0; _173_13_ < list.length; _173_13_++)
+    for (var _175_13_ = 0; _175_13_ < list.length; _175_13_++)
     {
-        line = list[_173_13_]
+        line = list[_175_13_]
         addMatch(line,ctx)
     }
     return collect(ctx)
@@ -224,9 +224,9 @@ collect = function (ctx)
     la = []
     stack = [_k_.last(ctx.result)]
     var list = _k_.list(ctx.matches)
-    for (var _193_14_ = 0; _193_14_ < list.length; _193_14_++)
+    for (var _195_14_ = 0; _195_14_ < list.length; _195_14_++)
     {
-        match = list[_193_14_]
+        match = list[_195_14_]
         ma = ctx.ptn[match.pind][1]
         lo = _k_.last(stack)
         if (ma.length > la.length)
@@ -237,7 +237,7 @@ collect = function (ctx)
         }
         else if (ma.length < la.length)
         {
-            for (var _204_21_ = i = 0, _204_25_ = la.length - ma.length; (_204_21_ <= _204_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_204_21_ <= _204_25_ ? ++i : --i))
+            for (var _206_21_ = i = 0, _206_25_ = la.length - ma.length; (_206_21_ <= _206_25_ ? i < la.length - ma.length : i > la.length - ma.length); (_206_21_ <= _206_25_ ? ++i : --i))
             {
                 stack.pop()
             }
@@ -306,9 +306,9 @@ pattern = function (kmt)
         var gz, lpt
 
         var list = _k_.list(gzo)
-        for (var _253_15_ = 0; _253_15_ < list.length; _253_15_++)
+        for (var _255_15_ = 0; _255_15_ < list.length; _255_15_++)
         {
-            gz = list[_253_15_]
+            gz = list[_255_15_]
             lpt = _k_.trim(gz.line).split(/\s+/)
             if (lpt[0][0] === '■')
             {

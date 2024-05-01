@@ -30,6 +30,7 @@ toExport["kermit"] = function ()
         compare(lm("  constructor ()","●name ○args"),{name:'constructor',args:'()'})
         compare(lm(`Git.prototype["onFileChanged"] = function (file)`,`Git.prototype["●name"] = function ○args`,['"']),{name:'onFileChanged',args:'(file)'})
         compare(lm("post.on('index',(function (file)",'●name ○args',['"','.',',',"'"]),{name:'post',args:". on( ' index '  , (function (file)"})
+        compare(lm('        this["onKeyUp"] = this["onKeyUp"].bind(this)','this["●name"] = this["●bind"].bind(this)',['"','.',',',"'"]),{name:'onKeyUp',bind:'onKeyUp'})
     })
     section("simple", function ()
     {

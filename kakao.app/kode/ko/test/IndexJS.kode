@@ -63,6 +63,24 @@ use ../tools ◆ IndexJS
             funcs:[method:'fun' line:1 class:'World'] 
             lines: 11
             
+        idx.parse """
+            class World
+                constructor (a,b)
+                {
+                    this.onFileChanged = this.onFileChanged.bind(this)
+                }
+                
+                onFileChanged ()
+            """ ▸
+            classes:[name:'World' type:'class' line:0] 
+            funcs:[
+                method:'constructor' line:1 class:'World'
+            ,
+                method:'onFileChanged' line:6 class:'World' bound:true
+            ] 
+            lines: 7
+            
+            
     # 00000000  000   000  000   000   0000000  000000000  000   0000000   000   000  
     # 000       000   000  0000  000  000          000     000  000   000  0000  000  
     # 000000    000   000  000 0 000  000          000     000  000   000  000 0 000  
@@ -101,9 +119,9 @@ use ../tools ◆ IndexJS
             """ ▸
             classes:[name:'Git' type:'function' line:0] 
             funcs:[
-                method:'onProjectIndexed' line:2 class:'Git' static:true
+                method:'onProjectIndexed' line:2 class:'Git'
             ,
-                method:'onFileChanged' line:6 class:'Git'
+                method:'onFileChanged' line:6 class:'Git' static:true
             ] 
             lines: 8
 
@@ -119,10 +137,30 @@ use ../tools ◆ IndexJS
             """ ▸
             classes:[name:'Git' type:'function' line:0] 
             funcs:[
-                method:'onProjectIndexed' line:2 class:'Git' static:true async:true
+                method:'onProjectIndexed' line:2 class:'Git' async:true
             ,
-                method:'onFileChanged' line:6 class:'Git' async:true
+                method:'onFileChanged' line:6 class:'Git' static:true async:true
             ] 
             lines: 8
+            
+        idx.parse """
+            Git = (function ()
+            {
+                function Git ()
+                {
+                    this["onFileChanged"] = this["onFileChanged"].bind(this)
+                }
+            
+                Git["onFileChanged"] = function (file)
+                {
+            """ ▸
+            classes:[name:'Git' type:'function' line:0] 
+            funcs:[
+                method:'Git' line:2 class:'Git'
+            ,
+                method:'onFileChanged' line:7 class:'Git' static:true bound:true
+            ] 
+            lines: 9
+            
             
             

@@ -324,7 +324,7 @@ class Indexer
                 for (var _268_25_ = 0; _268_25_ < list3.length; _268_25_++)
                 {
                     func = list3[_268_25_]
-                    funcInfo = this.addMethod(func.class,func.method,file,func.line,func.async,false,func.static)
+                    funcInfo = this.addMethod(func.class,func.method,file,func.line,func.async,func.bound,func.static)
                     fileInfo.funcs.push(funcInfo)
                 }
             }
