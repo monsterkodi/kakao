@@ -158,7 +158,7 @@ function Browser extends events
             else break
         used
 
-    hasEmptyColumns: -> @columns[-1].isEmpty()
+    hasEmptyColumns: -> @columns[-1]?.isEmpty()
 
     height: -> @flex?.height()
     numCols: -> @columns.length
@@ -189,25 +189,27 @@ function Browser extends events
 
     shiftColumn: ->
 
-        return if not @flex
-        return if not @columns.length
+        ⮐ if not @flex
+        ⮐ if not @columns.length
         @clearColumn 0
         @flex.shiftPane()
         @columns.shift()
 
-        for i in [0...@columns.length]
+        for i in 0...@columns.length
             @columns[i].setIndex i
 
     popColumn: opt ->
 
-        return if not @flex
+        ⮐ if not @flex
         @clearColumn @columns.length-1
         @flex.popPane opt
         @columns.pop()
 
     popEmptyColumns: opt ->
-
-        @clearColumnsFrom @lastDirColumn()?.index ? 0, pop:true
+        
+        if col = @lastDirColumn()?.index
+            log 'Browser.popEmptyColumns' col, @lastDirColumn()
+            @clearColumnsFrom col, pop:true
 
     shiftColumnsTo: col ->
 
@@ -251,8 +253,11 @@ function Browser extends events
     isMessy: -> not @flex.relaxed or @hasEmptyColumns()
 
     cleanUp: ->
-        return false if not @flex?
-        return false if not @isMessy()
+        
+        ⮐ false if not @flex?
+        ⮐ false if not @isMessy()
+        
+        log 'Browser.cleanUp'
         @popEmptyColumns()
         @flex.relax()
         true

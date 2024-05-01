@@ -684,21 +684,21 @@ Column = (function ()
 
     Column.prototype["onMouseOver"] = function (event)
     {
-        var _453_44_, _453_57_
+        var _452_44_, _452_57_
 
-        return ((_453_44_=this.row(event.target)) != null ? typeof (_453_57_=_453_44_.onMouseOver) === "function" ? _453_57_() : undefined : undefined)
+        return ((_452_44_=this.row(event.target)) != null ? typeof (_452_57_=_452_44_.onMouseOver) === "function" ? _452_57_() : undefined : undefined)
     }
 
     Column.prototype["onMouseOut"] = function (event)
     {
-        var _454_44_, _454_56_
+        var _453_44_, _453_56_
 
-        return ((_454_44_=this.row(event.target)) != null ? typeof (_454_56_=_454_44_.onMouseOut) === "function" ? _454_56_() : undefined : undefined)
+        return ((_453_44_=this.row(event.target)) != null ? typeof (_453_56_=_453_44_.onMouseOut) === "function" ? _453_56_() : undefined : undefined)
     }
 
     Column.prototype["onDblClick"] = function (event)
     {
-        var item, _459_27_
+        var item, _458_27_
 
         this.browser.skipOnDblClick = true
         item = (this.activeRow() != null ? this.activeRow().item : undefined)
@@ -715,7 +715,7 @@ Column = (function ()
 
     Column.prototype["extendSelection"] = function (key)
     {
-        var index, toIndex, _474_28_, _474_38_
+        var index, toIndex, _473_28_, _473_38_
 
         if (this.parent.type === 'file')
         {
@@ -726,7 +726,7 @@ Column = (function ()
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_474_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _474_38_ : -1)
+        index = ((_473_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _473_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -763,13 +763,13 @@ Column = (function ()
 
     Column.prototype["navigateRows"] = function (key)
     {
-        var index, newIndex, _498_28_, _498_38_
+        var index, newIndex, _497_28_, _497_38_
 
         if (!this.numRows())
         {
             return console.error(`no rows in column ${this.index}?`)
         }
-        index = ((_498_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _498_38_ : -1)
+        index = ((_497_38_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _497_38_ : -1)
         if (!(index != null) || Number.isNaN(index))
         {
             console.error(`no index from activeRow? ${index}?`,this.activeRow())
@@ -814,7 +814,7 @@ Column = (function ()
 
     Column.prototype["navigateCols"] = function (key)
     {
-        var item, type, _525_38_
+        var item, type, _524_38_
 
         switch (key)
         {
@@ -885,14 +885,14 @@ Column = (function ()
 
     Column.prototype["setSearch"] = function (search)
     {
-        var activeIndex, fuzzied, k, row, rows, _568_35_, _568_45_
+        var activeIndex, fuzzied, k, row, rows, _567_35_, _567_45_
 
         this.search = search
     
         clearTimeout(this.searchTimer)
         this.searchTimer = setTimeout(this.clearSearch,700)
         this.searchDiv.textContent = this.search
-        activeIndex = ((_568_45_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _568_45_ : 0)
+        activeIndex = ((_567_45_=(this.activeRow() != null ? this.activeRow().index() : undefined)) != null ? _567_45_ : 0)
         if ((this.search.length === 1))
         {
             activeIndex += 1
@@ -902,14 +902,14 @@ Column = (function ()
             activeIndex = 0
         }
         var list = [this.rows.slice(activeIndex),this.rows.slice(0,activeIndex + 1)]
-        for (var _572_17_ = 0; _572_17_ < list.length; _572_17_++)
+        for (var _571_17_ = 0; _571_17_ < list.length; _571_17_++)
         {
-            rows = list[_572_17_]
+            rows = list[_571_17_]
             k = new krzl({values:rows,sortByLength:false,extract:function (r)
             {
-                var _574_84_
+                var _573_84_
 
-                return ((_574_84_=r.item.file) != null ? _574_84_ : r.item.name)
+                return ((_573_84_=r.item.file) != null ? _573_84_ : r.item.name)
             }})
             fuzzied = k.filter(this.search)
             if (fuzzied.length)
@@ -925,7 +925,7 @@ Column = (function ()
 
     Column.prototype["clearSearch"] = function ()
     {
-        var _588_18_
+        var _586_18_
 
         this.search = ''
         ;(this.searchDiv != null ? this.searchDiv.remove() : undefined)
@@ -935,11 +935,11 @@ Column = (function ()
 
     Column.prototype["removeObject"] = function ()
     {
-        var nextOrPrev, row, _595_36_
+        var nextOrPrev, row, _593_36_
 
         if (row = this.activeRow())
         {
-            nextOrPrev = ((_595_36_=row.next()) != null ? _595_36_ : row.prev())
+            nextOrPrev = ((_593_36_=row.next()) != null ? _593_36_ : row.prev())
             this.removeRow(row)
             ;(nextOrPrev != null ? nextOrPrev.activate() : undefined)
         }
@@ -948,11 +948,11 @@ Column = (function ()
 
     Column.prototype["removeRow"] = function (row)
     {
-        var _603_28_, _603_36_, _603_54_
+        var _601_28_, _601_36_, _601_54_
 
         if (row === this.activeRow())
         {
-            if (((_603_28_=this.nextColumn()) != null ? (_603_36_=_603_28_.parent) != null ? _603_36_.path : undefined : undefined) === (row.item != null ? row.item.path : undefined))
+            if (((_601_28_=this.nextColumn()) != null ? (_601_36_=_601_28_.parent) != null ? _601_36_.path : undefined : undefined) === (row.item != null ? row.item.path : undefined))
             {
                 this.browser.clearColumnsFrom(this.index + 1)
             }
@@ -972,9 +972,9 @@ Column = (function ()
         })
         this.table.innerHTML = ''
         var list = _k_.list(this.rows)
-        for (var _622_16_ = 0; _622_16_ < list.length; _622_16_++)
+        for (var _620_16_ = 0; _620_16_ < list.length; _620_16_++)
         {
-            row = list[_622_16_]
+            row = list[_620_16_]
             this.table.appendChild(row.div)
         }
         prefs.set(`browser|sort|${this.parent.path}`)
@@ -995,9 +995,9 @@ Column = (function ()
         })
         this.table.innerHTML = ''
         var list = _k_.list(this.rows)
-        for (var _636_16_ = 0; _636_16_ < list.length; _636_16_++)
+        for (var _634_16_ = 0; _634_16_ < list.length; _634_16_++)
         {
-            row = list[_636_16_]
+            row = list[_634_16_]
             this.table.appendChild(row.div)
         }
         prefs.set(`browser|sort|${this.parent.path}`,'type')
@@ -1010,15 +1010,15 @@ Column = (function ()
 
         this.rows.sort(function (a, b)
         {
-            var _644_39_, _644_62_
+            var _642_39_, _642_62_
 
             return (b.item.stat != null ? b.item.stat.atimeMs : undefined) - (a.item.stat != null ? a.item.stat.atimeMs : undefined)
         })
         this.table.innerHTML = ''
         var list = _k_.list(this.rows)
-        for (var _647_16_ = 0; _647_16_ < list.length; _647_16_++)
+        for (var _645_16_ = 0; _645_16_ < list.length; _645_16_++)
         {
-            row = list[_647_16_]
+            row = list[_645_16_]
             this.table.appendChild(row.div)
         }
         prefs.set(`browser|sort|${this.parent.path}`,'date')
@@ -1065,9 +1065,9 @@ Column = (function ()
             selectRow = this.row(index)
         }
         var list = _k_.list(this.browser.select.rows)
-        for (var _689_16_ = 0; _689_16_ < list.length; _689_16_++)
+        for (var _687_16_ = 0; _687_16_ < list.length; _687_16_++)
         {
-            row = list[_689_16_]
+            row = list[_687_16_]
             ffs.trash(row.path()).then((function (d)
             {
                 if (d)
@@ -1119,9 +1119,9 @@ Column = (function ()
         var item
 
         var list = _k_.list(this.browser.select.items())
-        for (var _722_17_ = 0; _722_17_ < list.length; _722_17_++)
+        for (var _720_17_ = 0; _720_17_ < list.length; _720_17_++)
         {
-            item = list[_722_17_]
+            item = list[_720_17_]
             File.duplicate(item.path).then((function (target)
             {
                 var col, row
@@ -1167,9 +1167,9 @@ Column = (function ()
         var file, icon, row, status
 
         var list = _k_.list(this.rows)
-        for (var _758_16_ = 0; _758_16_ < list.length; _758_16_++)
+        for (var _756_16_ = 0; _756_16_ < list.length; _756_16_++)
         {
-            row = list[_758_16_]
+            row = list[_756_16_]
             if (!(_k_.in(row.item.type,['dir','file'])))
             {
                 return
@@ -1275,7 +1275,7 @@ Column = (function ()
 
     Column.prototype["pastePaths"] = async function ()
     {
-        var action, paths, target, text, _913_23_
+        var action, paths, target, text, _911_23_
 
         text = await kakao('clipboard.get')
         paths = text.split('\n')
@@ -1297,7 +1297,7 @@ Column = (function ()
 
     Column.prototype["onKey"] = function (event)
     {
-        var char, combo, key, mod, _950_88_
+        var char, combo, key, mod, _948_88_
 
         mod = keyinfo.forEvent(event).mod
         key = keyinfo.forEvent(event).key

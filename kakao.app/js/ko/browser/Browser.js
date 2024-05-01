@@ -256,7 +256,7 @@ Browser = (function ()
 
     Browser.prototype["hasEmptyColumns"] = function ()
     {
-        return this.columns.slice(-1)[0].isEmpty()
+        return (this.columns.slice(-1)[0] != null ? this.columns.slice(-1)[0].isEmpty() : undefined)
     }
 
     Browser.prototype["height"] = function ()
@@ -316,7 +316,7 @@ Browser = (function ()
         this.clearColumn(0)
         this.flex.shiftPane()
         this.columns.shift()
-        for (var _198_18_ = i = 0, _198_22_ = this.columns.length; (_198_18_ <= _198_22_ ? i < this.columns.length : i > this.columns.length); (_198_18_ <= _198_22_ ? ++i : --i))
+        for (var _198_17_ = i = 0, _198_21_ = this.columns.length; (_198_17_ <= _198_21_ ? i < this.columns.length : i > this.columns.length); (_198_17_ <= _198_21_ ? ++i : --i))
         {
             this.columns[i].setIndex(i)
         }
@@ -335,16 +335,20 @@ Browser = (function ()
 
     Browser.prototype["popEmptyColumns"] = function (opt)
     {
-        var _210_42_, _210_50_
+        var col, _210_33_
 
-        return this.clearColumnsFrom(((_210_50_=(this.lastDirColumn() != null ? this.lastDirColumn().index : undefined)) != null ? _210_50_ : 0),{pop:true})
+        if (col = (this.lastDirColumn() != null ? this.lastDirColumn().index : undefined))
+        {
+            console.log('Browser.popEmptyColumns',col,this.lastDirColumn())
+            return this.clearColumnsFrom(col,{pop:true})
+        }
     }
 
     Browser.prototype["shiftColumnsTo"] = function (col)
     {
         var i
 
-        for (var _214_18_ = i = 0, _214_22_ = col; (_214_18_ <= _214_22_ ? i < col : i > col); (_214_18_ <= _214_22_ ? ++i : --i))
+        for (var _216_18_ = i = 0, _216_22_ = col; (_216_18_ <= _216_22_ ? i < col : i > col); (_216_18_ <= _216_22_ ? ++i : --i))
         {
             this.shiftColumn()
         }
@@ -358,7 +362,7 @@ Browser = (function ()
 
     Browser.prototype["clearColumnsFrom"] = function (c = 0, opt = {pop:false})
     {
-        var num, _233_24_
+        var num, _235_24_
 
         if (!(c != null) || c < 0)
         {
@@ -398,7 +402,7 @@ Browser = (function ()
 
     Browser.prototype["cleanUp"] = function ()
     {
-        var _254_33_
+        var _257_33_
 
         if (!(this.flex != null))
         {
@@ -408,6 +412,7 @@ Browser = (function ()
         {
             return false
         }
+        console.log('Browser.cleanUp')
         this.popEmptyColumns()
         this.flex.relax()
         return true
@@ -423,9 +428,9 @@ Browser = (function ()
         var c
 
         var list = _k_.list(this.columns)
-        for (var _264_14_ = 0; _264_14_ < list.length; _264_14_++)
+        for (var _269_14_ = 0; _269_14_ < list.length; _269_14_++)
         {
-            c = list[_264_14_]
+            c = list[_269_14_]
             c.scroll.update()
         }
     }

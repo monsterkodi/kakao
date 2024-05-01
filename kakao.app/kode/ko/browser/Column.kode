@@ -426,7 +426,6 @@ function Column
         opt ?= {}
 
         ⮐ @ if not opt.force and not window.lastFocus.startsWith @browser.name
-        
 
         if not @activeRow() and @numRows() and opt.activate != false
             @rows[0].setActive()
@@ -575,7 +574,6 @@ function Column
             fuzzied = k.filter @search
 
             if fuzzied.length
-                # row = fuzzied[0].original
                 row = fuzzied[0]
                 row.div.appendChild @searchDiv
                 row.activate()
@@ -628,8 +626,8 @@ function Column
     sortByType: =>
 
         @rows.sort (a,b) ->
-            atype = a.item.type == 'file' and slash.ext(a.item.path) or '___' #a.item.type
-            btype = b.item.type == 'file' and slash.ext(b.item.path) or '___' #b.item.type
+            atype = a.item.type == 'file' and slash.ext(a.item.path) or '___'
+            btype = b.item.type == 'file' and slash.ext(b.item.path) or '___'
             (a.item.type + atype + a.item.name).localeCompare(b.item.type + btype + b.item.name, undefined, numeric:true)
 
         @table.innerHTML = ''
