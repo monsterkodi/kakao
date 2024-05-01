@@ -237,7 +237,7 @@ class Minimap
 
     onVanishLines (e)
     {
-        var _176_16_
+        var _175_16_
 
         if ((e.top != null))
         {
@@ -251,7 +251,7 @@ class Minimap
 
     onChanged (changeInfo)
     {
-        var change, li, _201_33_
+        var change, li, _200_33_
 
         if (this.scroll.numLines !== this.editor.numLines() || (changeInfo.inserts || changeInfo.deletes))
         {
@@ -271,10 +271,10 @@ class Minimap
             this.drawCursors()
         }
         var list = _k_.list(changeInfo.changes)
-        for (var _200_19_ = 0; _200_19_ < list.length; _200_19_++)
+        for (var _199_19_ = 0; _199_19_ < list.length; _199_19_++)
         {
-            change = list[_200_19_]
-            li = ((_201_33_=change.oldIndex) != null ? _201_33_ : change.doIndex)
+            change = list[_199_19_]
+            li = ((_200_33_=change.oldIndex) != null ? _200_33_ : change.doIndex)
             this.drawLines(li,li)
         }
     }

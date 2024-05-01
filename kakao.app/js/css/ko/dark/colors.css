@@ -741,7 +741,7 @@ span.macro.macro,
 
 .funclist
 {
-    background-color: rgba(16, 16, 16, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 .funclist-item
@@ -753,7 +753,7 @@ span.macro.macro,
 .funclist-item:hover
 {
     opacity: 1;
-    background-color: rgba(16, 16, 16, 1);
+    background-color: rgba(0, 0, 0, 1);
 }
 
 .funclist-itemactive

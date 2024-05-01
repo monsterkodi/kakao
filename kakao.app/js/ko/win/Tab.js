@@ -34,7 +34,7 @@ class Tab
 
     update ()
     {
-        var diss, dot, html, name, prj, sep, tab, tabs, _36_45_, _37_46_, _42_17_
+        var diss, dot, html, name, prj, sep, tab, tabs, _34_45_, _35_46_, _40_17_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -92,9 +92,9 @@ class Tab
             {
                 tabs = this.tabs.fileTabsForPath(this.path)
                 var list = _k_.list(tabs)
-                for (var _95_24_ = 0; _95_24_ < list.length; _95_24_++)
+                for (var _93_24_ = 0; _93_24_ < list.length; _93_24_++)
                 {
-                    tab = list[_95_24_]
+                    tab = list[_93_24_]
                     dot = elem('span',{class:'prjdot',text:'■'})
                     this.div.appendChild(dot)
                     if (tab.active)
@@ -119,7 +119,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _115_16_
+        var diss, html, numFiles, _113_16_
 
         if ((this.path != null))
         {
@@ -137,7 +137,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _136_19_, _136_24_
+        var t, _134_19_, _134_24_
 
         if (status.gitDir !== this.path)
         {

@@ -14,19 +14,19 @@ class Indexer
 
     @requireRegExp   : /^\s*([\w\{\}]+)\s+=\s+require\s+[\'\"]([\.\/\w]+)[\'\"]/
     @includeRegExp   : /^#include\s+[\"\<]([\.\/\w]+)[\"\>]/
-    @methodRegExp    : /^\s+([\@]?\w+|@)\s*\:\s*(\(.*\))?\s*○?[=-]\>/
+    @methodRegExp    : /^\s+([\@]?\w+|@)\s*\:\s*(\(?.*\)?)?\s*○?[=-]\>/
     @funcRegExp      : /^\s*([\w\.]+)\s*[\:\=][^\(\)]*(\(.*\))?\s*○?[=-]\>/
     @postRegExp      : /^\s*post\.on\s+[\'\"](\w+)[\'\"]\s*\,?\s*(\(.*\))?\s*[=-]\>/
     @testRegExp      : /^\s*(▸\s+.+)/
     @splitRegExp     : new RegExp "[^\\w\\d\\_]+", 'g'
     @classRegExp     : /^(\s*\S+\s*=)?\s*(class|function)\s+(\w+)/
 
-    @classNameInLine: (line) ->
+    @classNameInLine: line ->
                     
         m = line.match Indexer.classRegExp
         m?[3]
         
-    @methodNameInLine: (line) ->
+    @methodNameInLine: line ->
         
         m = line.match Indexer.methodRegExp
         if m?
@@ -35,7 +35,7 @@ class Indexer
                 return null
         m?[1]
         
-    @funcNameInLine: (line) ->
+    @funcNameInLine: line ->
 
         if m = line.match Indexer.funcRegExp
             rgs = matchr.ranges Indexer.funcRegExp, line
@@ -44,7 +44,7 @@ class Indexer
             
         m?[1]
 
-    @postNameInLine: (line) ->
+    @postNameInLine: line ->
         
         if m = line.match Indexer.postRegExp
             rgs = matchr.ranges Indexer.postRegExp, line
@@ -59,7 +59,7 @@ class Indexer
     #    000     000            000     000     000   000  000   000  000   000  000   000  
     #    000     00000000  0000000      000     00     00   0000000   000   000  0000000    
     
-    @testWord: (word) ->
+    @testWord: word ->
         
         if
             word.length < 3                     ➜ false # exclude when too short
@@ -136,7 +136,7 @@ class Indexer
     # 000   000  000   000  000   000      000       000   000  000  0000  000       
     # 000   000  0000000    0000000        000        0000000   000   000   0000000  
 
-    addFuncInfo: (funcName, funcInfo) ->
+    addFuncInfo: funcName funcInfo ->
         
         if not funcName
             log "addFuncInfo #{funcName}" funcInfo
@@ -154,7 +154,7 @@ class Indexer
         
         funcInfo
 
-    addMethod: (className, funcName, file, li, async, bound) ->
+    addMethod: className funcName file li async bound ->
 
         funcInfo = @addFuncInfo funcName,
             line:  li+1
@@ -175,7 +175,7 @@ class Indexer
     # 000   000  000       000 0 000  000   000     000     000             000       000  000      000
     # 000   000  00000000  000   000   0000000       0      00000000        000       000  0000000  00000000
 
-    removeFile: (file) ->
+    removeFile: file ->
         
         return if not @files[file]?
         
@@ -193,7 +193,7 @@ class Indexer
     # 000  000  0000  000   000  000        000 000         000       000  000      000
     # 000  000   000  0000000    00000000  000   000        000       000  0000000  00000000
 
-    indexFile: (file, opt) =>
+    indexFile: file opt =>
         
         # ● indexFile
         # log 'Indexer.indexFile' file, opt

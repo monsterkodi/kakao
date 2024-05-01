@@ -19,7 +19,7 @@ class Indexer
 
     static includeRegExp = /^#include\s+[\"\<]([\.\/\w]+)[\"\>]/
 
-    static methodRegExp = /^\s+([\@]?\w+|@)\s*\:\s*(\(.*\))?\s*○?[=-]\>/
+    static methodRegExp = /^\s+([\@]?\w+|@)\s*\:\s*(\(?.*\)?)?\s*○?[=-]\>/
 
     static funcRegExp = /^\s*([\w\.]+)\s*[\:\=][^\(\)]*(\(.*\))?\s*○?[=-]\>/
 

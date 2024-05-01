@@ -161,8 +161,8 @@ class FileHandler
             }
             else
             {
-                post.emit('dirty',false)
-                return post.emit('reloadFile',saved)
+                post.emit('reloadFile',saved)
+                return post.emit('dirty',false)
             }
         })
     }

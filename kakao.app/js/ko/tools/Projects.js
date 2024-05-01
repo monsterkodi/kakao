@@ -33,9 +33,9 @@ class Projects
 
     static files (path)
     {
-        var _26_59_
+        var _26_57_
 
-        return ((_26_59_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _26_59_ : [])
+        return ((_26_57_=(Projects.projects[this.dir(path)] != null ? Projects.projects[this.dir(path)].files : undefined)) != null ? _26_57_ : [])
     }
 
     static dir (path)
