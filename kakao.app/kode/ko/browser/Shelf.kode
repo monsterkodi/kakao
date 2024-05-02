@@ -109,7 +109,7 @@ function Shelf extends Column
 
     savePrefs: -> prefs.set "shelf|items" @items
 
-    setItems: (@items, opt) ->
+    setItems: @items opt ->
 
         @clear()
 

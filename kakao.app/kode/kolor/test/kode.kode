@@ -220,6 +220,21 @@ lang 'kode'
         inc rgs, 4 'a'              ▸ 'function argument'
         inc rgs, 6 'b'              ▸ 'function argument'
         inc rgs, 8 '->'             ▸ 'punct function tail ligature'
+
+    ▸ args
+    
+        rgs = ranges "    f: a b ->"
+        inc rgs, 7 'a'              ▸ 'function argument'
+        inc rgs, 9 'b'              ▸ 'function argument'
+        inc rgs, 11 '->'            ▸ 'punct function tail ligature'
+
+    ▸ args
+    
+        rgs = ranges "    f: a b ○->"
+        inc rgs, 7 'a'              ▸ 'function argument'
+        inc rgs, 9 'b'              ▸ 'function argument'
+        inc rgs, 11 '○'             ▸ 'punct function async'
+        inc rgs, 12 '->'            ▸ 'punct function tail ligature'
         
     # 000   000   0000000          0000000   0000000   000      000      
     # 0000  000  000   000        000       000   000  000      000      

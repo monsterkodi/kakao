@@ -12,7 +12,7 @@ use ./Column
 
 function Browser extends events
 
-    @: (@view) ->
+    @: @view ->
 
         @columns = []
 
@@ -128,7 +128,7 @@ function Browser extends events
     emptyColumn: colIndex ->
 
         if colIndex?
-            for c in [colIndex...@numCols()]
+            for c in colIndex...@numCols()
                 @clearColumn c
 
         for col in @columns
@@ -146,7 +146,7 @@ function Browser extends events
     activeColumnIndex: ->
 
         for col in @columns
-            if col.hasFocus() then return col.index
+            if col.hasFocus() ➜ ⮐ col.index
         0
 
     lastUsedColumn: ->
@@ -172,7 +172,7 @@ function Browser extends events
 
     addColumn: ->
 
-        return if not @flex
+        ⮐ if not @flex
 
         col = new Column @
         @columns.push col
@@ -283,7 +283,7 @@ function Browser extends events
 
     loadImage: row file ->
 
-        return if not row.isActive()
+        ⮐ if not row.isActive()
 
         col = @emptyColumn opt?.col
         @clearColumnsFrom col.index

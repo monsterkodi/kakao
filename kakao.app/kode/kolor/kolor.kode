@@ -243,10 +243,11 @@ funcArgs = ->
     
     turd = chunk.turd[0] == '○' ? chunk.turd[1..2] : chunk.turd[0..1]
     if turd[0] in '=-' and turd[1] == '>'
+        log 'funcArgs' chunkIndex, chunk, line.chunks
         ⮐ if getChunk(-1).match in ':)'
-        if line.chunks[0].clss == 'text' and line.chunks[1].match in ':=' 
+        if line.chunks[0].clss in ['text''dictionary key'] and line.chunks[1].match in ':=' 
             for ch in line.chunks[2...chunkIndex]
-                if ch.clss == 'function call'
+                if ch.clss in ['function call' 'text']
                     ch.clss = 'function argument'
     ⮐ 
 
@@ -260,8 +261,8 @@ dashArrow = ->
 
     ⮐ if notCode
     
-    log 'dashArrow' line.chunks
-    log 'dashArrow chunk' chunkIndex, chunk
+    # log 'dashArrow' line.chunks
+    # log 'dashArrow chunk' chunkIndex, chunk
 
     markFunc = ->
         if line.chunks[0].clss == 'text'
@@ -396,6 +397,12 @@ kodePunct = ->
                     next = getChunk 1
                     if not next or next.match != '=' and next.start == chunk.start+1
                         ⮐ thisCall()
+
+# 000   000   0000000   0000000    00000000  000   000   0000000   00000000   0000000    
+# 000  000   000   000  000   000  000       000 0 000  000   000  000   000  000   000  
+# 0000000    000   000  000   000  0000000   000000000  000   000  0000000    000   000  
+# 000  000   000   000  000   000  000       000   000  000   000  000   000  000   000  
+# 000   000   0000000   0000000    00000000  00     00   0000000   000   000  0000000    
 
 kodeWord = ->
 
@@ -1259,7 +1266,7 @@ handlers =
             punct:[ blockComment, hashComment, tripleRegexp, coffeePunct, tripleString, simpleString, interpolation, dashArrow, regexp, dict ]
             word: [ keyword, coffeeWord, number, property ]
     kode:
-            punct:[ blockComment, hashComment, tripleRegexp, kodePunct,   tripleString, simpleString, interpolation, funcArgs, dashArrow, regexp, dict ]
+            punct:[ blockComment, hashComment, tripleRegexp, kodePunct, tripleString, simpleString, interpolation, funcArgs, dashArrow, regexp, dict ]
             word: [ keyword, kodeWord, number, property ]
     noon:   punct:[ noonComment,  noonPunct, urlPunct                                          ], word:[ noonWord, urlWord, number          ]
     js:     punct:[ starComment,  slashComment, jsPunct, simpleString, dashArrow, regexp, dict ], word:[ keyword, jsWord, number, property  ]

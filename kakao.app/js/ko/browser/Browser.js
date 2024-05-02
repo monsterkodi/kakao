@@ -195,7 +195,7 @@ Browser = (function ()
 
         if ((colIndex != null))
         {
-            for (var _131_22_ = c = colIndex, _131_33_ = this.numCols(); (_131_22_ <= _131_33_ ? c < this.numCols() : c > this.numCols()); (_131_22_ <= _131_33_ ? ++c : --c))
+            for (var _131_21_ = c = colIndex, _131_32_ = this.numCols(); (_131_21_ <= _131_32_ ? c < this.numCols() : c > this.numCols()); (_131_21_ <= _131_32_ ? ++c : --c))
             {
                 this.clearColumn(c)
             }
