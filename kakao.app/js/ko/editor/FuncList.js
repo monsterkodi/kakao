@@ -3,6 +3,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 var FuncList
 
 import kxk from "../../kxk.js"
+let drag = kxk.drag
 let elem = kxk.elem
 let post = kxk.post
 
@@ -23,6 +24,9 @@ FuncList = (function ()
         this["onEditorFile"] = this["onEditorFile"].bind(this)
         this["onEditorScrollOrCursor"] = this["onEditorScrollOrCursor"].bind(this)
         this["onSplit"] = this["onSplit"].bind(this)
+        this["onDragMove"] = this["onDragMove"].bind(this)
+        this["onDragStop"] = this["onDragStop"].bind(this)
+        this["onDragStart"] = this["onDragStart"].bind(this)
         this.elem = elem({class:'funclist'})
         this.editor.view.appendChild(this.elem)
         this.editor.scroll.on('scroll',this.onEditorScrollOrCursor)
@@ -30,6 +34,29 @@ FuncList = (function ()
         post.on('fileIndexed',this.onFileIndexed)
         post.on('split',this.onSplit)
         kore.on('editor|file',this.onEditorFile)
+        this.drag = new drag({target:this.elem,onMove:this.onDragMove})
+    }
+
+    FuncList.prototype["onDragStart"] = function (drag, event)
+    {}
+
+    FuncList.prototype["onDragStop"] = function (drag, event)
+    {}
+
+    FuncList.prototype["onDragMove"] = function (drag, event)
+    {
+        var item, listitem
+
+        listitem = elem.upElem(event,{prop:'item'})
+        if (item = (listitem != null ? listitem.item : undefined))
+        {
+            if (item !== this.lastDragItem)
+            {
+                this.lastDragItem = item
+                console.log('jumpTo',item)
+                return post.emit('jumpTo',item)
+            }
+        }
     }
 
     FuncList.prototype["onSplit"] = function ()
@@ -50,9 +77,9 @@ FuncList = (function ()
         botLine = topLine + this.editor.numFullLines()
         mainLine = this.editor.mainCursor()[1] + 1
         var list = _k_.list(this.elem.children)
-        for (var _43_18_ = 0; _43_18_ < list.length; _43_18_++)
+        for (var _61_18_ = 0; _61_18_ < list.length; _61_18_++)
         {
-            child = list[_43_18_]
+            child = list[_61_18_]
             lastLine = (child.nextSibling ? child.nextSibling.item.line : this.editor.numLines())
             visible = lastLine - 1 > topLine && child.item.line <= botLine
             child.classList.toggle('visible',visible)
@@ -85,9 +112,9 @@ FuncList = (function ()
             console.log('FuncList.onFileIndexed',file,info,items)
             this.elem.innerHTML = ''
             var list = _k_.list(items)
-            for (var _74_21_ = 0; _74_21_ < list.length; _74_21_++)
+            for (var _92_21_ = 0; _92_21_ < list.length; _92_21_++)
             {
-                item = list[_74_21_]
+                item = list[_92_21_]
                 e = elem({class:'funclist-item',parent:this.elem,click:this.onItemClick,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
                 e.item = item
             }
@@ -101,7 +128,6 @@ FuncList = (function ()
         listitem = elem.upElem(event,{prop:'item'})
         if (item = (listitem != null ? listitem.item : undefined))
         {
-            console.log('jumpTo',item)
             return post.emit('jumpTo',item)
         }
     }

@@ -37,7 +37,6 @@ function FileEditor extends TextEditor
         post.on 'jumpTo'        @jumpTo
         post.on 'jumpToFile'    @jumpToFile
         post.on 'jumpToFilePos' @jumpToFilePos
-        post.on 'restoreTab'    @restoreTab
 
         @setText ''
 

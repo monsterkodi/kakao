@@ -224,7 +224,7 @@ function Browser extends events
     # 000       000      000       000   000  000   000
     #  0000000  0000000  00000000  000   000  000   000
 
-    clear: -> @clearColumnsFrom 0, pop:true
+    clear: -> @clearColumnsFrom 0 pop:true
 
     clearColumnsFrom: (c=0, opt=pop:false) ->
 

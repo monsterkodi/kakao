@@ -59,7 +59,6 @@ Git = (function ()
     {
         var dirSet, gitDir, gitStatus, header, key, line, lines, rel, status
 
-        console.log('Git.status',file)
         gitDir = await kakao('fs.git',file)
         status = {gitDir:gitDir,changed:[],deleted:[],added:[],files:{}}
         if (_k_.empty(gitDir) || this.statusRequests[gitDir])

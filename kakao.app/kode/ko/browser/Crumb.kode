@@ -12,7 +12,7 @@ use ../editor ◆ Syntax
 
 class Crumb
 
-    @: (@column) ->
+    @: @column ->
 
         @elem = elem class:'crumb'
         @elem.columnIndex = @column.index

@@ -10,7 +10,7 @@ use ../commandline/Command
 
 function Find extends Command
 
-    @: (commandline) ->
+    @: commandline ->
 
         super commandline
 
@@ -25,7 +25,7 @@ function Find extends Command
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    start: (name) ->
+    start: name ->
 
         if name == 'find'
             editor = @receivingEditor()
@@ -55,7 +55,7 @@ function Find extends Command
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
-    changed: (command) ->
+    changed: command ->
 
         super command
 
@@ -75,7 +75,7 @@ function Find extends Command
     # 000        000 000   000       000       000   000     000     000
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
-    execute: (command) ->
+    execute: command ->
 
         command = super command
 
@@ -92,7 +92,7 @@ function Find extends Command
     # 000  000   000          000
     # 000   000  00000000     000
 
-    handleModKeyComboEvent: (mod, key, combo, event) ->
+    handleModKeyComboEvent: mod key combo event ->
 
         switch combo
 

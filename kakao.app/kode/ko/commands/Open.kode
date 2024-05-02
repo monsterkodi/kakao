@@ -12,7 +12,7 @@ use ../tools/File
 use ../tools/Projects
 use ../commandline/Command
 
-relative = (rel, to) ->
+relative = rel to ->
 
     r = slash.relative rel, to
 
@@ -26,7 +26,7 @@ relative = (rel, to) ->
 
 function Open extends Command
 
-    @: (commandline) ->
+    @: commandline ->
 
         super commandline
 
@@ -39,7 +39,7 @@ function Open extends Command
         @pkg      = null
         @selected = 0
 
-    onFile: (file) =>
+    onFile: file =>
 
         if @isActive()
             if empty file
@@ -53,7 +53,7 @@ function Open extends Command
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
-    changed: (cmmd) ->
+    changed: cmmd ->
 
         cmmd = cmmd.trim()
 
@@ -114,7 +114,7 @@ function Open extends Command
     # 000   000  000       000  000   000  000   000     000
     # 00     00  00000000  000   0000000   000   000     000
 
-    weight: (item, opt) =>
+    weight: item opt =>
 
         f = item.file
         r = item.text
@@ -157,7 +157,7 @@ function Open extends Command
 
         item.weight = localBonus + contBonus + nameBonus + extensionBonus - lengthPenalty - updirPenalty
 
-    weightedItems: (items, opt) ->
+    weightedItems: items opt ->
 
         items.sort (a,b) => b.weight - a.weight
         items
@@ -168,7 +168,7 @@ function Open extends Command
     # 000      000       000     000
     # 0000000  000  0000000      000
 
-    listItems: (opt) ->
+    listItems: opt ->
 
         # log 'Open.listItems history:' @history
         # log 'Open.listItems files:' @files
@@ -267,7 +267,7 @@ function Open extends Command
     # 000       000   000  000  0000  000       000       000
     #  0000000  000   000  000   000   0000000  00000000  0000000
 
-    cancel: (name) ->
+    cancel: name ->
 
         if name == @names[0] # command+p command+p to open previous file
             if @commandList? and @lastFileIndex == @selected
@@ -281,7 +281,7 @@ function Open extends Command
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    start: (name) ->
+    start: name ->
 
         @setName name
 
@@ -330,7 +330,7 @@ function Open extends Command
     # 000        000 000   000       000       000   000     000     000
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
-    execute: (command) ->
+    execute: command ->
 
         if @selected < 0 then return status:'failed'
 
@@ -362,7 +362,7 @@ function Open extends Command
     # 000   000  000            000  000   000  000         000     000       000   000
     # 000   000  00000000  0000000    0000000   0000000      0      00000000  0000000
 
-    resolvedPath: (p, parent=@dir) ->
+    resolvedPath: p parent=@dir ->
 
         # return (parent ? slash.resolve '~') if not p?
         return (parent ? slash.path '~') if not p?
@@ -379,7 +379,7 @@ function Open extends Command
     # 000  000   000          000
     # 000   000  00000000     000
 
-    handleModKeyComboEvent: (mod, key, combo, event) ->
+    handleModKeyComboEvent: mod key combo event ->
 
         switch combo
             'up'   ➜ return @showHistory()

@@ -12,7 +12,7 @@ use ./CommandList
 
 function Command
 
-    @: (@commandline) ->
+    @: @commandline ->
 
         @syntaxName = 'ko'
         @maxHistory = 20
@@ -30,7 +30,7 @@ function Command
         text:  @getText()
         name:  @name
 
-    restoreState: (state) =>
+    restoreState: state =>
 
         if state?.name
             @name = state.name
@@ -42,7 +42,7 @@ function Command
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    start: (name) ->
+    start: name ->
 
         @setName name
         @loadState()
@@ -59,7 +59,7 @@ function Command
     # 000        000 000   000       000       000   000     000     000
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
-    execute: (command) ->
+    execute: command ->
         
         # log 'Command.execute' command, @commandList?
 
@@ -84,7 +84,7 @@ function Command
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
-    changed: (command) ->
+    changed: command ->
 
         return if not @commandList?
 
@@ -105,7 +105,7 @@ function Command
             @select 0
             @positionList()
 
-    weight: (item, opt) ->
+    weight: item opt ->
 
         w = 0
         w += item.text.startsWith(opt.currentText) and 65535 * (opt.currentText.length/item.text.length) or 0
@@ -160,7 +160,7 @@ function Command
 
         reversed @history
 
-    showItems: (items) ->
+    showItems: items ->
 
         return if not @commandList? and not items.length
         return @hideList() if not items.length
@@ -168,12 +168,12 @@ function Command
         @commandList.addItems items
         @positionList()
 
-    listClick: (index) =>
+    listClick: index =>
 
         @selected = index
         @execute @commandList.line index
 
-    onBot: (bot) => @positionList()
+    onBot: bot => @positionList()
 
     positionList: ->
 
@@ -199,7 +199,7 @@ function Command
     #      000  000       000      000       000          000
     # 0000000   00000000  0000000  00000000   0000000     000
 
-    select: (i) ->
+    select: i ->
         return if not @commandList?
         @selected = clamp -1, @commandList.numLines()-1, i
         if @selected >= 0
@@ -208,7 +208,7 @@ function Command
             @commandList.singleCursorAtPos [0,0]
         @commandList.scroll.cursorIntoView()
 
-    selectListItem: (dir) ->
+    selectListItem: dir ->
 
         switch dir
             when 'up'   then @setAndSelectText @prev()
@@ -296,11 +296,11 @@ function Command
         @selected = -1
         @setState @historyKey(), @history
 
-    setHistory: (@history) ->
+    setHistory: @history ->
 
         @setState @historyKey(), @history
 
-    setCurrent: (command) ->
+    setCurrent: command ->
 
         @loadState() if not @history?
         if not @history is arr
@@ -330,19 +330,19 @@ function Command
     #    000     000        000 000      000
     #    000     00000000  000   000     000
 
-    setText: (t) ->
+    setText: t ->
 
         # log "Command[#{@name}].setText" t
         @currentText = t
         @commandline.setText t
 
-    setAndSelectText: (t) ->
+    setAndSelectText: t ->
         @currentText = t
         @commandline.setAndSelectText t
 
     getText: -> @commandline.line(0)
 
-    setName: (n) ->
+    setName: n ->
         @name = n
         @commandline.setName n
 
@@ -366,7 +366,7 @@ function Command
     # 000   000  000       000       000       000     000     000       000   000
     # 000   000  00000000   0000000  00000000  000      0      00000000  000   000
 
-    setReceiver: (receiver) ->
+    setReceiver: receiver ->
 
         return if receiver == 'body'
         @receiver = receiver ? 'editor'
@@ -379,7 +379,7 @@ function Command
     #      000     000     000   000     000     000
     # 0000000      000     000   000     000     00000000
 
-    setPrefsID: (id) ->
+    setPrefsID: id ->
 
         @prefsID = id
         @loadState()
@@ -390,18 +390,18 @@ function Command
         @history ?= []
         @selected = @history?.length-1 ? 0
 
-    setState: (key, value) ->
+    setState: key value ->
 
         return if not @prefsID
         if @prefsID
             window.stash.set "command|#{@prefsID}|#{key}", value
 
-    getState: (key, value) ->
+    getState: key value ->
 
         return value if not @prefsID
         window.stash.get "command|#{@prefsID}|#{key}", value
 
-    delState: (key) ->
+    delState: key ->
 
         return if not @prefsID
         window.stash.del "command|#{@prefsID}|#{key}"
@@ -414,9 +414,9 @@ function Command
     # 000  000   000          000
     # 000   000  00000000     000
 
-    globalModKeyComboEvent: (mod, key, combo, event) -> 'unhandled'
+    globalModKeyComboEvent: mod key combo event -> 'unhandled'
 
-    handleModKeyComboEvent: (mod, key, combo, event) ->
+    handleModKeyComboEvent: mod key combo event ->
 
         switch combo
             'page up' 'page down'
@@ -424,7 +424,7 @@ function Command
                     return @select clamp 0, @commandList.numLines()-1, @selected+(@commandList.numFullLines()-1)*(combo=='page up' and -1 or 1)
         'unhandled'
 
-    onTabCompletion: (combo) ->
+    onTabCompletion: combo ->
 
         if
             @commandline.isCursorAtEndOfLine()

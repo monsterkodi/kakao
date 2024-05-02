@@ -336,7 +336,7 @@ function FileBrowser extends Browser
             if column.path() == info.path and info.change == 'remove'
                 column.clear()
 
-    loadDirItem: (item, col=0, opt={}) ○->
+    loadDirItem: item col=0 opt={} ○->
 
         return if col > 0 and item.name == '/'
 

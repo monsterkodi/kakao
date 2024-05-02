@@ -14,7 +14,7 @@ use ../commandline  ◆ Command
 
 function Search extends Command
 
-    @: (commandline) ->
+    @: commandline ->
 
         super commandline
 
@@ -28,7 +28,7 @@ function Search extends Command
     # 000        000 000   000       000       000   000     000     000
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
-    execute: (command) ->
+    execute: command ->
 
         return if not command.length
         
@@ -67,7 +67,7 @@ function Search extends Command
     #      000     000     000   000  000   000     000                000  000       000   000  000   000  000       000   000
     # 0000000      000     000   000  000   000     000           0000000   00000000  000   000  000   000   0000000  000   000
 
-    startSearch: (opt) ->
+    startSearch: opt ->
 
         terminal = window.terminal
 
@@ -87,7 +87,7 @@ function Search extends Command
 
         @walker.start()
 
-    searchInFile: (opt, file) =>
+    searchInFile: opt file =>
         # log file, opt.text
         new FileSearcher @, opt, file
 
@@ -97,7 +97,7 @@ function Search extends Command
     # 000 0 000  000          000     000   000  000       000      000  000       000  000
     # 000   000  00000000     000     000   000   0000000  0000000  000   0000000  000   000
 
-    onMetaClick: (meta, event) =>
+    onMetaClick: meta event =>
 
         if href = meta[2].href
     
@@ -124,7 +124,7 @@ function Search extends Command
 
 function FileSearcher
 
-    @: (@command, @opt, @file) ->
+    @: @command @opt @file ->
 
         @line = 0
         @flags = ''

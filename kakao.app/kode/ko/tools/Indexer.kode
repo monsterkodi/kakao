@@ -388,7 +388,7 @@ class Indexer
 
             @files[file] = fileInfo
             
-            log 'Indexer' file, fileInfo
+            # log 'Indexer' file, fileInfo
             
             if opt?.post != false
                 post.emit 'filesCount' Object.keys(@files).length

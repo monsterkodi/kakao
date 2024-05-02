@@ -207,14 +207,14 @@ Buffer = (function ()
     {
         var r
 
-        return (function () { var r_93_66_ = []; var list = _k_.list(this.rangesForWordsAtCursors(cs,opt)); for (var _93_66_ = 0; _93_66_ < list.length; _93_66_++)  { r = list[_93_66_];r_93_66_.push(this.textInRange(r))  } return r_93_66_ }).bind(this)()
+        return (function () { var r_91_66_ = []; var list = _k_.list(this.rangesForWordsAtCursors(cs,opt)); for (var _91_66_ = 0; _91_66_ < list.length; _91_66_++)  { r = list[_91_66_];r_91_66_.push(this.textInRange(r))  } return r_91_66_ }).bind(this)()
     }
 
     Buffer.prototype["rangesForWordsAtCursors"] = function (cs = this.cursors(), opt)
     {
         var c, rngs
 
-        rngs = (function () { var r_96_49_ = []; var list = _k_.list(cs); for (var _96_49_ = 0; _96_49_ < list.length; _96_49_++)  { c = list[_96_49_];r_96_49_.push(this.rangeForWordAtPos(c,opt))  } return r_96_49_ }).bind(this)()
+        rngs = (function () { var r_94_49_ = []; var list = _k_.list(cs); for (var _94_49_ = 0; _94_49_ < list.length; _94_49_++)  { c = list[_94_49_];r_94_49_.push(this.rangeForWordAtPos(c,opt))  } return r_94_49_ }).bind(this)()
         return rngs = cleanRanges(rngs)
     }
 
@@ -300,10 +300,10 @@ Buffer = (function ()
 
     Buffer.prototype["wordRangesInLineAtIndex"] = function (li, opt = {})
     {
-        var mtch, r, _147_19_, _148_89_
+        var mtch, r, _145_19_, _146_89_
 
-        opt.regExp = ((_147_19_=opt.regExp) != null ? _147_19_ : this.wordRegExp)
-        if ((opt != null ? (_148_89_=opt.include) != null ? _148_89_.length : undefined : undefined))
+        opt.regExp = ((_145_19_=opt.regExp) != null ? _145_19_ : this.wordRegExp)
+        if ((opt != null ? (_146_89_=opt.include) != null ? _146_89_.length : undefined : undefined))
         {
             opt.regExp = new RegExp(`(\\s+|[\\w${opt.include}]+|[^\\s])`,'g')
         }
@@ -334,7 +334,7 @@ Buffer = (function ()
         hl = this.highlightsInLineIndexRange(lineIndexRange)
         if (hl)
         {
-            return (function () { var r_171_61_ = []; var list = _k_.list(hl); for (var _171_61_ = 0; _171_61_ < list.length; _171_61_++)  { s = list[_171_61_];r_171_61_.push([s[0] - relIndex,[s[1][0],s[1][1]],s[2]])  } return r_171_61_ }).bind(this)()
+            return (function () { var r_169_61_ = []; var list = _k_.list(hl); for (var _169_61_ = 0; _169_61_ < list.length; _169_61_++)  { s = list[_169_61_];r_169_61_.push([s[0] - relIndex,[s[1][0],s[1][1]],s[2]])  } return r_169_61_ }).bind(this)()
         }
     }
 
@@ -353,7 +353,7 @@ Buffer = (function ()
         sl = this.selectionsInLineIndexRange(lineIndexRange)
         if (sl)
         {
-            return (function () { var r_187_55_ = []; var list = _k_.list(sl); for (var _187_55_ = 0; _187_55_ < list.length; _187_55_++)  { s = list[_187_55_];r_187_55_.push([s[0] - relIndex,[s[1][0],s[1][1]]])  } return r_187_55_ }).bind(this)()
+            return (function () { var r_185_55_ = []; var list = _k_.list(sl); for (var _185_55_ = 0; _185_55_ < list.length; _185_55_++)  { s = list[_185_55_];r_185_55_.push([s[0] - relIndex,[s[1][0],s[1][1]]])  } return r_185_55_ }).bind(this)()
         }
     }
 
@@ -369,14 +369,14 @@ Buffer = (function ()
     {
         var s
 
-        return uniq((function () { var r_193_45_ = []; var list = _k_.list(this.selections()); for (var _193_45_ = 0; _193_45_ < list.length; _193_45_++)  { s = list[_193_45_];r_193_45_.push(s[0])  } return r_193_45_ }).bind(this)())
+        return uniq((function () { var r_191_45_ = []; var list = _k_.list(this.selections()); for (var _191_45_ = 0; _191_45_ < list.length; _191_45_++)  { s = list[_191_45_];r_191_45_.push(s[0])  } return r_191_45_ }).bind(this)())
     }
 
     Buffer.prototype["cursorLineIndices"] = function ()
     {
         var c
 
-        return uniq((function () { var r_194_45_ = []; var list = _k_.list(this.cursors()); for (var _194_45_ = 0; _194_45_ < list.length; _194_45_++)  { c = list[_194_45_];r_194_45_.push(c[1])  } return r_194_45_ }).bind(this)())
+        return uniq((function () { var r_192_45_ = []; var list = _k_.list(this.cursors()); for (var _192_45_ = 0; _192_45_ < list.length; _192_45_++)  { c = list[_192_45_];r_192_45_.push(c[1])  } return r_192_45_ }).bind(this)())
     }
 
     Buffer.prototype["selectedAndCursorLineIndices"] = function ()
@@ -393,9 +393,9 @@ Buffer = (function ()
         if (il.length)
         {
             var list = _k_.list(il)
-            for (var _205_19_ = 0; _205_19_ < list.length; _205_19_++)
+            for (var _203_19_ = 0; _203_19_ < list.length; _203_19_++)
             {
-                li = list[_205_19_]
+                li = list[_203_19_]
                 if (csr.length && _k_.last(csr)[1] === li - 1)
                 {
                     _k_.last(csr)[1] = li
@@ -432,7 +432,7 @@ Buffer = (function ()
 
     Buffer.prototype["textInRange"] = function (rg)
     {
-        var _228_58_
+        var _226_58_
 
         return (!_k_.empty((rg)) ? (typeof this.line(rg[0]).slice === "function" ? this.line(rg[0]).slice(rg[1][0],rg[1][1]) : undefined) : '')
     }
@@ -441,7 +441,7 @@ Buffer = (function ()
     {
         var r
 
-        return (function () { var r_229_51_ = []; var list = _k_.list(rgs); for (var _229_51_ = 0; _229_51_ < list.length; _229_51_++)  { r = list[_229_51_];r_229_51_.push(this.textInRange(r))  } return r_229_51_ }).bind(this)()
+        return (function () { var r_227_51_ = []; var list = _k_.list(rgs); for (var _227_51_ = 0; _227_51_ < list.length; _227_51_++)  { r = list[_227_51_];r_227_51_.push(this.textInRange(r))  } return r_227_51_ }).bind(this)()
     }
 
     Buffer.prototype["textInRanges"] = function (rgs)
@@ -537,7 +537,7 @@ Buffer = (function ()
 
     Buffer.prototype["isRangeInString"] = function (r)
     {
-        var _293_61_
+        var _291_59_
 
         return (this.rangeOfStringSurroundingRange(r) != null)
     }
@@ -599,7 +599,7 @@ Buffer = (function ()
     {
         var c
 
-        return (function () { var r_335_78_ = []; var list = _k_.list(cs); for (var _335_78_ = 0; _335_78_ < list.length; _335_78_++)  { c = list[_335_78_];r_335_78_.push(this.rangeForLineAtIndex(c[1]))  } return r_335_78_ }).bind(this)()
+        return (function () { var r_333_78_ = []; var list = _k_.list(cs); for (var _333_78_ = 0; _333_78_ < list.length; _333_78_++)  { c = list[_333_78_];r_333_78_.push(this.rangeForLineAtIndex(c[1]))  } return r_333_78_ }).bind(this)()
     }
 
     Buffer.prototype["rangesForAllLines"] = function ()
@@ -612,7 +612,7 @@ Buffer = (function ()
         var i, r
 
         r = []
-        var _340_14_ = sortPositions([a,b]); a = _340_14_[0]; b = _340_14_[1]
+        var _338_14_ = sortPositions([a,b]); a = _338_14_[0]; b = _338_14_[1]
 
         if (a[1] === b[1])
         {
@@ -623,7 +623,7 @@ Buffer = (function ()
             r.push([a[1],[a[0],this.line(a[1]).length]])
             if (b[1] - a[1] > 1)
             {
-                for (var _346_26_ = i = a[1] + 1, _346_35_ = b[1]; (_346_26_ <= _346_35_ ? i < b[1] : i > b[1]); (_346_26_ <= _346_35_ ? ++i : --i))
+                for (var _344_26_ = i = a[1] + 1, _344_35_ = b[1]; (_344_26_ <= _344_35_ ? i < b[1] : i > b[1]); (_344_26_ <= _344_35_ ? ++i : --i))
                 {
                     r.push([i,[0,this.line(i).length]])
                 }
@@ -639,7 +639,7 @@ Buffer = (function ()
 
         r = []
         ir = [top,bot]
-        for (var _354_18_ = li = startOf(ir), _354_32_ = endOf(ir); (_354_18_ <= _354_32_ ? li < endOf(ir) : li > endOf(ir)); (_354_18_ <= _354_32_ ? ++li : --li))
+        for (var _352_18_ = li = startOf(ir), _352_32_ = endOf(ir); (_352_18_ <= _352_32_ ? li < endOf(ir) : li > endOf(ir)); (_352_18_ <= _352_32_ ? ++li : --li))
         {
             if ((0 <= li && li < this.numLines()))
             {
@@ -651,14 +651,14 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForText"] = function (t, opt)
     {
-        var li, r, _364_43_
+        var li, r, _362_43_
 
         t = t.split('\n')[0]
         r = []
-        for (var _362_19_ = li = 0, _362_23_ = this.numLines(); (_362_19_ <= _362_23_ ? li < this.numLines() : li > this.numLines()); (_362_19_ <= _362_23_ ? ++li : --li))
+        for (var _360_19_ = li = 0, _360_23_ = this.numLines(); (_360_19_ <= _360_23_ ? li < this.numLines() : li > this.numLines()); (_360_19_ <= _360_23_ ? ++li : --li))
         {
             r = r.concat(this.rangesForTextInLineAtIndex(t,li,opt))
-            if (r.length >= (((_364_43_=(opt != null ? opt.max : undefined)) != null ? _364_43_ : 999)))
+            if (r.length >= (((_362_43_=(opt != null ? opt.max : undefined)) != null ? _362_43_ : 999)))
             {
                 break
             }
@@ -668,19 +668,19 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForTextInLineAtIndex"] = function (t, i, opt)
     {
-        var r, rng, rngs, type, _369_25_
+        var r, rng, rngs, type, _367_25_
 
         r = []
-        type = ((_369_25_=(opt != null ? opt.type : undefined)) != null ? _369_25_ : 'str')
+        type = ((_367_25_=(opt != null ? opt.type : undefined)) != null ? _367_25_ : 'str')
         if (_k_.in(type,['str','Str']))
         {
             t = kstr.escapeRegExp(t)
         }
         rngs = matchr.ranges(t,this.line(i),_k_.in(type,['str','reg']) && 'i' || '')
         var list = _k_.list(rngs)
-        for (var _372_16_ = 0; _372_16_ < list.length; _372_16_++)
+        for (var _370_16_ = 0; _370_16_ < list.length; _370_16_++)
         {
-            rng = list[_372_16_]
+            rng = list[_370_16_]
             r.push([i,[rng.start,rng.start + rng.match.length]])
         }
         return r
@@ -694,7 +694,7 @@ Buffer = (function ()
         r = []
         ss = -1
         cc = null
-        for (var _381_18_ = i = 0, _381_22_ = t.length; (_381_18_ <= _381_22_ ? i < t.length : i > t.length); (_381_18_ <= _381_22_ ? ++i : --i))
+        for (var _379_18_ = i = 0, _379_22_ = t.length; (_379_18_ <= _379_22_ ? i < t.length : i > t.length); (_379_18_ <= _379_22_ ? ++i : --i))
         {
             c = t[i]
             if (!cc && _k_.in(c,"'\""))

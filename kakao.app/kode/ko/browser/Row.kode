@@ -13,7 +13,7 @@ use ../tools/File
 
 function Row
 
-    @: (@column, @item) ->
+    @: @column @item ->
 
         @browser = @column.browser
 
@@ -116,7 +116,7 @@ function Row
 
     isActive: -> @div.classList.contains 'active'
 
-    setActive: (opt={}) ->
+    setActive: opt={} ->
 
         if @column.activeRow() != @
             @column.activeRow()?.clearActive()
@@ -171,7 +171,7 @@ function Row
 
         @input.setSelectionRange 0, slash.name(@item.path).length
 
-    onNameKeyDown: (event) =>
+    onNameKeyDown: event =>
 
         {mod, key, combo} = keyinfo.forEvent event
 

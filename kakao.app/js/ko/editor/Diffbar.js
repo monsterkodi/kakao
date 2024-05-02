@@ -192,7 +192,6 @@ class Diffbar
     {
         if (this.editor.currentFile)
         {
-            console.log('Diffbar Git.status',this.editor.currentFile)
             return Git.status(this.editor.currentFile)
         }
     }
@@ -204,9 +203,7 @@ class Diffbar
             return Git.diff(this.editor.currentFile).then((function (changes)
             {
                 this.changes = changes
-                profile.start('Diffbar.onGitStatus updateMetas')
                 this.updateMetas()
-                profile.end('Diffbar.onGitStatus updateMetas')
                 return this.updateScroll()
             }).bind(this))
         }

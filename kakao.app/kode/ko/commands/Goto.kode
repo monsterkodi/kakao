@@ -10,7 +10,7 @@ use ../commandline/Command
 
 function Goto extends Command
 
-    @: (commandline) ->
+    @: commandline ->
 
         super commandline
 
@@ -22,7 +22,7 @@ function Goto extends Command
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    start: (name) ->
+    start: name ->
 
         super name
         
@@ -64,7 +64,7 @@ function Goto extends Command
     # 000        000 000   000       000       000   000     000     000
     # 00000000  000   000  00000000   0000000   0000000      000     00000000
 
-    execute: (command) ->
+    execute: command ->
 
         command = super command
 

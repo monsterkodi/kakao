@@ -12,7 +12,7 @@ use ../editor ◆ Syntax TextEditor
 
 function CommandList extends TextEditor
 
-    @: (@command, viewElem, opt) ->
+    @: @command viewElem opt ->
 
         super viewElem,
             features:     ['Scrollbar' 'Numbers' 'Meta']
@@ -32,7 +32,7 @@ function CommandList extends TextEditor
     # 000   000  000   000  000   000  000     000     000       000 0 000       000
     # 000   000  0000000    0000000    000     000     00000000  000   000  0000000
 
-    addItems: (items) ->
+    addItems: items ->
 
         @clear()
         index = 0
@@ -71,7 +71,7 @@ function CommandList extends TextEditor
             
         @do.resetHistory()
 
-    onMetaClick: (meta) =>
+    onMetaClick: meta =>
 
         @command.listClick meta[2].index
 
@@ -92,7 +92,7 @@ function CommandList extends TextEditor
     # 000 0 000  000          000     000   000
     # 000   000  00000000     000     000   000
 
-    appendMeta: (meta) ->
+    appendMeta: meta ->
 
         ⮐ error 'CommandList.appendMeta -- no meta?' if not meta?
 
@@ -108,7 +108,7 @@ function CommandList extends TextEditor
             diss = matchr.dissect rngs, join:true
             @appendLineDiss text, diss
 
-    queueMeta: (meta) ->
+    queueMeta: meta ->
 
         @metaQueue.push meta
         clearTimeout @metaTimer

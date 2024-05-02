@@ -11,7 +11,7 @@ use ../../kxk ▪ elem drag
 
 class Scroller
 
-    @: (@column, @parent) ->
+    @: @column @parent ->
 
         @elem   = elem class:'scrollbar right'    parent:@parent
         @handle = elem class:'scrollhandle right' parent:@elem

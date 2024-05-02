@@ -33,7 +33,7 @@ function Win
 
     @Delegate: Delegate
     
-    @: (@delegate) ->
+    @: @delegate ->
         
         window.prefs = prefs
         window.prefs.init()
@@ -129,13 +129,13 @@ function Win
             
         @delegate?.onWindowAnimationTick? @, delta:delta, fps:fps, time:now
                                     
-    onResize: (event)  => @delegate?.onWindowResize? @, event
-    onWindowFocus:     => @delegate?.onWindowFocus?  @
-    onWindowBlur:      => @delegate?.onWindowBlur?   @
-    onWindowClose:     => post.emit 'saveStash' if @saveStashOnClose; @delegate?.onWindowClose?  @
-    onWindowFrame: (info) => window.stash.set 'frame' info.frame
+    onResize:     event => @delegate?.onWindowResize? @, event
+    onWindowFocus:      => @delegate?.onWindowFocus?  @
+    onWindowBlur:       => @delegate?.onWindowBlur?   @
+    onWindowClose:      => post.emit 'saveStash' if @saveStashOnClose; @delegate?.onWindowClose?  @
+    onWindowFrame: info => window.stash.set 'frame' info.frame
     onStashLoaded: => 
-        log 'win.stashLoaded'
+        # log 'win.stashLoaded'
         if frame = window.stash.get 'frame'
             kakao 'window.setFrame' frame
     
@@ -145,11 +145,11 @@ function Win
     # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
     # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
     
-    onMenuAction: (action) =>
+    onMenuAction: action =>
         
         # log 'onMenuAction' action
         
-        return if @delegate?.onWindowMenuAction? @, action
+        ⮐ if @delegate?.onWindowMenuAction? @, action
             
         switch action.toLowerCase()
             'focus next'     ➜ kakao 'window.focusNext'
@@ -183,7 +183,7 @@ function Win
     # 000  000   000          000
     # 000   000  00000000     000
     
-    onKeyDown: (event) =>
+    onKeyDown: event =>
 
         info = keyinfo.forEvent event
         info.event = event
@@ -194,7 +194,7 @@ function Win
             
             @delegate?.onWindowKeyDown? @, info
                 
-    onKeyUp: (event) =>
+    onKeyUp: event =>
         
         info = keyinfo.forEvent event
         info.event = event

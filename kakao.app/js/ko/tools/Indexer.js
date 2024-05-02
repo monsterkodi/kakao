@@ -431,7 +431,6 @@ class Indexer
                 }
             }
             this.files[file] = fileInfo
-            console.log('Indexer',file,fileInfo)
             if ((opt != null ? opt.post : undefined) !== false)
             {
                 post.emit('filesCount',Object.keys(this.files).length)

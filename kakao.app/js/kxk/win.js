@@ -219,34 +219,34 @@ Win = (function ()
 
     Win.prototype["onResize"] = function (event)
     {
-        var _132_35_, _132_51_
+        var _132_36_, _132_52_
 
-        return ((_132_35_=this.delegate) != null ? typeof (_132_51_=_132_35_.onWindowResize) === "function" ? _132_51_(this,event) : undefined : undefined)
+        return ((_132_36_=this.delegate) != null ? typeof (_132_52_=_132_36_.onWindowResize) === "function" ? _132_52_(this,event) : undefined : undefined)
     }
 
     Win.prototype["onWindowFocus"] = function ()
     {
-        var _133_35_, _133_50_
+        var _133_36_, _133_51_
 
-        return ((_133_35_=this.delegate) != null ? typeof (_133_50_=_133_35_.onWindowFocus) === "function" ? _133_50_(this) : undefined : undefined)
+        return ((_133_36_=this.delegate) != null ? typeof (_133_51_=_133_36_.onWindowFocus) === "function" ? _133_51_(this) : undefined : undefined)
     }
 
     Win.prototype["onWindowBlur"] = function ()
     {
-        var _134_35_, _134_49_
+        var _134_36_, _134_50_
 
-        return ((_134_35_=this.delegate) != null ? typeof (_134_49_=_134_35_.onWindowBlur) === "function" ? _134_49_(this) : undefined : undefined)
+        return ((_134_36_=this.delegate) != null ? typeof (_134_50_=_134_36_.onWindowBlur) === "function" ? _134_50_(this) : undefined : undefined)
     }
 
     Win.prototype["onWindowClose"] = function ()
     {
-        var _135_79_, _135_94_
+        var _135_80_, _135_95_
 
         if (this.saveStashOnClose)
         {
             post.emit('saveStash')
         }
-        return ((_135_79_=this.delegate) != null ? typeof (_135_94_=_135_79_.onWindowClose) === "function" ? _135_94_(this) : undefined : undefined)
+        return ((_135_80_=this.delegate) != null ? typeof (_135_95_=_135_80_.onWindowClose) === "function" ? _135_95_(this) : undefined : undefined)
     }
 
     Win.prototype["onWindowFrame"] = function (info)
@@ -258,7 +258,6 @@ Win = (function ()
     {
         var frame
 
-        console.log('win.stashLoaded')
         if (frame = window.stash.get('frame'))
         {
             return kakao('window.setFrame',frame)

@@ -23,13 +23,13 @@ function Buffer extends events
         @do = new Do()
         @do.on 'changes' @onDoChanges
         
-    onDoChanges: (changes) => 
+    onDoChanges: changes => 
         
         # log 'Buffer.onDoChanges' @name, @changed?, changes
     
         @changed? changes
 
-    setLines: (lines) ->
+    setLines: lines ->
 
         @emit 'numLines' 0 # give listeners a chance to clear their stuff
 
@@ -37,32 +37,30 @@ function Buffer extends events
         if @name == 'editor'
             @emit 'numLines' @numLines()
 
-    # setState: (s)  -> @state = new DoState s.s
+    mainCursor:      -> @do.mainCursor()
+    line:          i => @do.line      i
+    tabline:       i -> @do.tabline   i
+    cursor:        i -> @do.cursor    i
+    highlight:     i -> @do.highlight i
+    selection:     i -> @do.selection i
+                   
+    lines:           => @do.lines()
+    cursors:         -> @do.cursors()
+    highlights:      -> @do.highlights()
+    selections:      -> @do.selections()
+                   
+    numLines:        -> @do.numLines()
+    numCursors:      -> @do.numCursors()
+    numSelections:   -> @do.numSelections()
+    numHighlights:   -> @do.numHighlights()
 
-    mainCursor:    -> @do.mainCursor()
-    line:      (i) => @do.line      i
-    tabline:   (i) -> @do.tabline   i
-    cursor:    (i) -> @do.cursor    i
-    highlight: (i) -> @do.highlight i
-    selection: (i) -> @do.selection i
+    setCursors:    c -> @do.setCursors    c
+    setSelections: s -> @do.setSelections s
+    setHighlights: h -> @do.setHighlights h
+    setMain:       m -> @do.setMain       m
+    addHighlight:  h -> @do.addHighlight  h
 
-    lines:         => @do.lines()
-    cursors:       -> @do.cursors()
-    highlights:    -> @do.highlights()
-    selections:    -> @do.selections()
-
-    numLines:      -> @do.numLines()
-    numCursors:    -> @do.numCursors()
-    numSelections: -> @do.numSelections()
-    numHighlights: -> @do.numHighlights()
-
-    setCursors:    (c) -> @do.setCursors    c
-    setSelections: (s) -> @do.setSelections s
-    setHighlights: (h) -> @do.setHighlights h
-    setMain:       (m) -> @do.setMain       m
-    addHighlight:  (h) -> @do.addHighlight  h
-
-    select: (s) ->
+    select: s ->
 
         @do.start()
         @do.select s
@@ -89,28 +87,28 @@ function Buffer extends events
     # 00     00   0000000   000   000  0000000
 
     wordAtCursor: -> @wordAtPos @mainCursor()
-    wordAtPos: (c) -> @textInRange @rangeForRealWordAtPos c
+    wordAtPos:  c -> @textInRange @rangeForRealWordAtPos c
     wordsAtCursors: (cs=@cursors(), opt) -> (@textInRange r for r in @rangesForWordsAtCursors cs, opt)
 
     rangesForWordsAtCursors: (cs=@cursors(), opt) ->
         rngs = (@rangeForWordAtPos(c, opt) for c in cs)
         rngs = cleanRanges rngs
 
-    selectionTextOrWordAtCursor: () ->
+    selectionTextOrWordAtCursor: ->
 
         if @numSelections() == 1
             @textInRange @selection 0
         else
             @wordAtCursor()
 
-    rangeForWordAtPos: (pos, opt) ->
+    rangeForWordAtPos: pos opt ->
 
         p = @clampPos pos
         wr = @wordRangesInLineAtIndex p[1], opt
         r = rangeAtPosInRanges p, wr
         r
 
-    rangeForRealWordAtPos: (pos, opt) ->
+    rangeForRealWordAtPos: pos opt ->
 
         p = @clampPos pos
         wr = @realWordRangesInLineAtIndex p[1], opt
@@ -123,7 +121,7 @@ function Buffer extends events
         r ?= rangeForPos p
         r
 
-    endOfWordAtPos: (c) =>
+    endOfWordAtPos: c =>
 
         r = @rangeForWordAtPos c
         if @isCursorAtEndOfLine c
@@ -131,7 +129,7 @@ function Buffer extends events
             r = @rangeForWordAtPos [0, c[1]+1]
         [r[1][1], r[0]]
 
-    startOfWordAtPos: (c) =>
+    startOfWordAtPos: c =>
 
         if @isCursorAtStartOfLine c
             return c if @isCursorInFirstLine c
@@ -142,7 +140,7 @@ function Buffer extends events
                 r = @rangeForWordAtPos [c[0]-1, c[1]]
         [r[1][0], r[0]]
 
-    wordRangesInLineAtIndex: (li, opt={}) ->
+    wordRangesInLineAtIndex: li opt={} ->
 
         opt.regExp ?= @wordRegExp
         opt.regExp = new RegExp "(\\s+|[\\w#{opt.include}]+|[^\\s])", 'g' if opt?.include?.length
@@ -151,7 +149,7 @@ function Buffer extends events
             r.push [li, [mtch.index, opt.regExp.lastIndex]]
         r.length and r or [[li, [0,0]]]
 
-    realWordRangesInLineAtIndex: (li, opt={}) ->
+    realWordRangesInLineAtIndex: li opt={} ->
 
         r = []
         while (mtch = @realWordRegExp.exec(@line(li))) != null
@@ -164,13 +162,13 @@ function Buffer extends events
     # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000
 
-    highlightsInLineIndexRangeRelativeToLineIndex: (lineIndexRange, relIndex) ->
+    highlightsInLineIndexRangeRelativeToLineIndex: lineIndexRange relIndex ->
 
         hl = @highlightsInLineIndexRange lineIndexRange
         if hl
             ([s[0]-relIndex, [s[1][0], s[1][1]], s[2]] for s in hl)
 
-    highlightsInLineIndexRange: (lineIndexRange) ->
+    highlightsInLineIndexRange: lineIndexRange ->
 
         @highlights().filter (s) -> s[0] >= lineIndexRange[0] and s[0] <= lineIndexRange[1]
 
@@ -180,13 +178,13 @@ function Buffer extends events
     #      000  000       000      000       000          000     000  000   000  000  0000       000
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000
 
-    selectionsInLineIndexRangeRelativeToLineIndex: (lineIndexRange, relIndex) ->
+    selectionsInLineIndexRangeRelativeToLineIndex: lineIndexRange relIndex ->
 
         sl = @selectionsInLineIndexRange lineIndexRange
         if sl
             ([s[0]-relIndex, [s[1][0], s[1][1]]] for s in sl)
 
-    selectionsInLineIndexRange: (lineIndexRange) ->
+    selectionsInLineIndexRange: lineIndexRange ->
 
         @selections().filter (s) -> s[0] >= lineIndexRange[0] and s[0] <= lineIndexRange[1]
 
@@ -209,7 +207,7 @@ function Buffer extends events
                     csr.push [li,li]
         csr
 
-    isSelectedLineAtIndex: (li) ->
+    isSelectedLineAtIndex: li ->
 
         il = @selectedLineIndices()
         if li in il
@@ -225,9 +223,9 @@ function Buffer extends events
     #    000     00000000  000   000     000
 
     text:                -> @do.text @newlineCharacters
-    textInRange:   (rg)  -> valid(rg) ? @line(rg[0]).slice?(rg[1][0], rg[1][1]) : ''
-    textsInRanges: (rgs) -> (@textInRange(r) for r in rgs)
-    textInRanges:  (rgs) -> @textsInRanges(rgs).join '\n'
+    textInRange:     rg  -> valid(rg) ? @line(rg[0]).slice?(rg[1][0], rg[1][1]) : ''
+    textsInRanges:   rgs -> (@textInRange(r) for r in rgs)
+    textInRanges:    rgs -> @textsInRanges(rgs).join '\n'
     textOfSelection:     -> @textInRanges @selections()
     textOfHighlight:     -> @numHighlights() and @textInRange(@highlight 0) or ''
 
@@ -237,7 +235,7 @@ function Buffer extends events
     # 000  000  0000  000   000  000       000  0000     000
     # 000  000   000  0000000    00000000  000   000     000
 
-    indentationAtLineIndex: (li) ->
+    indentationAtLineIndex: li ->
 
         return 0 if li >= @numLines()
         line = @line li
@@ -259,7 +257,7 @@ function Buffer extends events
 
     cursorPos: -> @clampPos @mainCursor()
 
-    clampPos: (p) ->
+    clampPos: p ->
 
         if not @numLines() then return [0,-1]
         l = clamp 0, @numLines()-1,  p[1]
@@ -285,20 +283,20 @@ function Buffer extends events
     # 000   000  000   000  000  0000  000   000  000
     # 000   000  000   000  000   000   0000000   00000000
 
-    rangeForLineAtIndex: (i) ->
+    rangeForLineAtIndex: i ->
 
         return error "Buffer.rangeForLineAtIndex -- index #{i} >= #{@numLines()}" if i >= @numLines()
         [i, [0, @line(i).length]]
 
-    isRangeInString: (r) -> @rangeOfStringSurroundingRange(r)?
+    isRangeInString: r -> @rangeOfStringSurroundingRange(r)?
 
-    rangeOfInnerStringSurroundingRange: (r) ->
+    rangeOfInnerStringSurroundingRange: r ->
 
         rgs = @rangesOfStringsInLineAtIndex r[0]
         rgs = rangesShrunkenBy rgs, 1
         rangeContainingRangeInRanges r, rgs
 
-    rangeOfStringSurroundingRange: (r) ->
+    rangeOfStringSurroundingRange: r ->
 
         if ir = @rangeOfInnerStringSurroundingRange r
             rangeGrownBy ir, 1
@@ -348,7 +346,7 @@ function Buffer extends events
             r.push [b[1], [0, extend and b[0] == 0 and @line(b[1]).length or b[0]]]
         r
 
-    rangesForLinesFromTopToBot: (top,bot) ->
+    rangesForLinesFromTopToBot: top bot ->
         r = []
         ir = [top,bot]
         for li in startOf(ir)...endOf(ir)
@@ -356,7 +354,7 @@ function Buffer extends events
                 r.push @rangeForLineAtIndex li
         r
 
-    rangesForText: (t, opt) ->
+    rangesForText: t opt ->
         t = t.split('\n')[0]
         r = []
         for li in [0...@numLines()]
@@ -364,7 +362,7 @@ function Buffer extends events
             break if r.length >= (opt?.max ? 999)
         r
 
-    rangesForTextInLineAtIndex: (t, i, opt) ->
+    rangesForTextInLineAtIndex: t i opt ->
         r = []
         type = opt?.type ? 'str'
         t = kstr.escapeRegExp t if type in ['str' 'Str']
@@ -373,7 +371,7 @@ function Buffer extends events
             r.push [i, [rng.start, rng.start + rng.match.length]]
         r
 
-    rangesOfStringsInLineAtIndex: (li) -> # todo: handle #{}
+    rangesOfStringsInLineAtIndex: li -> # todo: handle #{}
         t = @line(li)
         r = []
         ss = -1

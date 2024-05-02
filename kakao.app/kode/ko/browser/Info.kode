@@ -15,7 +15,7 @@ use ../tools  ◆ File
 # 000  000 0 000  000   000  000   000  000
 # 000  000   000  000   000   0000000   00000000
 
-image = (file) ->
+image = file ->
 
     img = elem 'img' class:'browserImage' src:slash.fileUrl file
     imgdiv = elem class:'browserImageDiv' child:img
@@ -45,7 +45,7 @@ image = (file) ->
 # 000       000  000      000
 # 000       000  0000000  00000000
 
-file = (file) ->
+file = file ->
 
     table = elem 'table' class:'fileInfoData'
     table.innerHTML = "<tr class='dataRow'><th></th><td></td></tr><tr class='dataRow'><th></th><td></td></tr>"

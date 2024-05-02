@@ -45,7 +45,7 @@ function CommandLine extends TextEditor
     # 000       000   000  000  0000       000     000     000   000  000   000  000          000     000   000  000   000  
     #  0000000   0000000   000   000  0000000      000     000   000   0000000    0000000     000      0000000   000   000  
     
-    @: (viewElem) ->
+    @: viewElem ->
 
         super viewElem, features: [], fontSize: 24, syntaxName:'commandline'
 
@@ -112,7 +112,7 @@ function CommandLine extends TextEditor
     #      000  000       000   000  000   000  000       000   000     000     000        000 000      000     
     # 0000000   00000000  000   000  000   000   0000000  000   000     000     00000000  000   000     000     
     
-    onSearchText: (text) =>
+    onSearchText: text =>
         
         if window.split.commandlineVisible()
             if @command?.prefsID not in ['search' 'find']
@@ -121,23 +121,23 @@ function CommandLine extends TextEditor
         @commands.search.currentText = text
         @setAndSelectText text
             
-    setName: (name) ->
+    setName: name ->
 
         @button.innerHTML = name
         @layers.style.width = @view.style.width
 
-    setLines: (l) ->
+    setLines: l ->
 
         @scroll.reset()
         super l
 
-    setAndSelectText: (t) ->
+    setAndSelectText: t ->
 
         @setLines [t ? '']
         @selectAll()
         @selectSingleRange @rangeForLineAtIndex 0
 
-    setText: (t) ->
+    setText: t ->
 
         @setLines [t ? '']
         @singleCursorAtPos? [@line(0).length, 0]
@@ -148,7 +148,7 @@ function CommandLine extends TextEditor
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
-    changed: (changeInfo) ->
+    changed: changeInfo ->
 
         @hideList()
         super changeInfo
@@ -156,7 +156,7 @@ function CommandLine extends TextEditor
             @button.className = "commandline-button active #{@command?.prefsID}"
             @command?.changed @line(0)
 
-    onSplit: (s) =>
+    onSplit: s =>
 
         @command?.onBot? s[1]
         @positionList()
@@ -167,7 +167,7 @@ function CommandLine extends TextEditor
     #      000     000     000   000  000   000     000
     # 0000000      000     000   000  000   000     000
 
-    startCommand: (name) ->
+    startCommand: name ->
         
         r = @command?.cancel name
 
@@ -197,7 +197,7 @@ function CommandLine extends TextEditor
         else
             error "no command #{name}"
 
-    commandForName: (name) ->
+    commandForName: name ->
 
         for n,c of @commands
             if n == name or name in c.names
@@ -217,7 +217,7 @@ function CommandLine extends TextEditor
     # 000   000  000            000  000   000  000         000          000
     # 000   000  00000000  0000000    0000000   0000000     000     0000000
 
-    results: (r) ->
+    results: r ->
 
         @setName r.name if r?.name?
         @setText r.text if r?.text?
@@ -240,7 +240,7 @@ function CommandLine extends TextEditor
     # 000      000       000     000
     # 0000000  000  0000000      000
 
-    onCmmdClick: (event) =>
+    onCmmdClick: event =>
 
         if not @list?
             @list = elem class: 'list commands'
@@ -314,7 +314,7 @@ function CommandLine extends TextEditor
     # 000 0 000  000       000  0000  000   000       000   000  000          000     000  000   000  000  0000  
     # 000   000  00000000  000   000   0000000        000   000   0000000     000     000   0000000   000   000  
     
-    handleMenuAction: (name, trail) ->
+    handleMenuAction: name trail ->
         
         # log 'handleMenuAction' name, trail
         
@@ -344,7 +344,7 @@ function CommandLine extends TextEditor
             
         'unhandled'
 
-    globalModKeyComboEvent: (mod, key, combo, event) ->
+    globalModKeyComboEvent: mod key combo event ->
 
         if combo == 'esc'
             if document.activeElement == @view
@@ -356,7 +356,7 @@ function CommandLine extends TextEditor
 
         'unhandled'
 
-    handleModKeyComboCharEvent: (mod, key, combo, char, event) ->
+    handleModKeyComboCharEvent: mod key combo char event ->
 
         # log 'handleModKeyComboEvent' mod, key, combo, char
         if @command?
