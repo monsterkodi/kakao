@@ -34,7 +34,7 @@ class IndexJS
                 @result.classes.push match
                 ⮐
 
-        validFuncName =  (name)  -> name not in ['if''for''while''switch''return']
+        validFuncName =  (name)  -> name not in ['if''for''while''switch''return''catch']
         validFuncArgs =  (args)  -> args[0] == '(' and args[-1] == ')'
         validFuncMatch = (match) -> match and validFuncArgs(match.args) and validFuncName(match.name)
                 

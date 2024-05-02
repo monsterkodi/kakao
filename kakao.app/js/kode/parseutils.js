@@ -334,6 +334,10 @@ ParseUtils = (function ()
             {
                 return true
             }
+            if (_k_.in(tokens[ti].text,['(',')','.']))
+            {
+                return false
+            }
             if (_k_.in(tokens[ti].type,['nl','block']))
             {
                 return false

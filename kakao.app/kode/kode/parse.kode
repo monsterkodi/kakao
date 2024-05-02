@@ -273,13 +273,16 @@ function Parse extends parseutils
 
         @sheapPush 'exp' tok.text ? tok.type
         
-        if tok.type != 'paren' and @stack[-1] == ':' and @stack[-2] == 'class'
+        if tok.type != 'paren' # treat methods and funcs with minimal args
             
-            if @funcAhead tokens
+            if @stack[-1] == ':' and @stack[-2] == 'class' or # m: a b -> 
+               @stack[-1] == 'op=' and '○rgs' not in @stack   # f = a b ->
                 
-                paren = @argsWithoutParens tok, tokens
-                @sheapPop 'exp' tok.text ? tok.type
-                ⮐ @lhs paren, tokens
+                if @funcAhead tokens
+                    
+                    paren = @argsWithoutParens tok, tokens
+                    @sheapPop 'exp' tok.text ? tok.type
+                    ⮐ @lhs paren, tokens
         
         e = tok
         while tokens.length                  # repeatedly call rhs and lhs until all tokens are swallowed

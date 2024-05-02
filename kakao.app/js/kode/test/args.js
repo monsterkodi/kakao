@@ -8,6 +8,28 @@ let kd = utils.kd
 
 toExport["args"] = function ()
 {
+    section("func", function ()
+    {
+        compare(kc(`f = a -> a`),`
+f = function (a)
+{
+    return a
+}`)
+        compare(kc(`f = a b -> a + b`),`
+f = function (a, b)
+{
+    return a + b
+}`)
+        compare(kc(`f = a b=0 -> a + b`),`
+f = function (a, b = 0)
+{
+    return a + b
+}`)
+        compare(kc(`f = a.map -> `),`f = a.map(function ()
+{})`)
+        compare(kc(`f = a() -> `),`f = a()(function ()
+{})`)
+    })
     section("function", function ()
     {
         compare(kc(`function D

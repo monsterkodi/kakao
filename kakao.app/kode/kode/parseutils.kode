@@ -301,6 +301,7 @@ function ParseUtils
         ti = -1
         while ++ti < tokens.length
             ⮐ true  if tokens[ti].type == 'func'
+            ⮐ false if tokens[ti].text in ['('')''.']
             ⮐ false if tokens[ti].type in ['nl' 'block']
         false
         

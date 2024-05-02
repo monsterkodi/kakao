@@ -31,7 +31,7 @@ class IndexJS
         }
         validFuncName = function (name)
         {
-            return !(_k_.in(name,['if','for','while','switch','return']))
+            return !(_k_.in(name,['if','for','while','switch','return','catch']))
         }
         validFuncArgs = function (args)
         {
