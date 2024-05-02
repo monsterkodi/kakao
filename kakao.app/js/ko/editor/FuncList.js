@@ -25,8 +25,6 @@ FuncList = (function ()
         this["onEditorScrollOrCursor"] = this["onEditorScrollOrCursor"].bind(this)
         this["onSplit"] = this["onSplit"].bind(this)
         this["onDragMove"] = this["onDragMove"].bind(this)
-        this["onDragStop"] = this["onDragStop"].bind(this)
-        this["onDragStart"] = this["onDragStart"].bind(this)
         this.elem = elem({class:'funclist'})
         this.editor.view.appendChild(this.elem)
         this.editor.scroll.on('scroll',this.onEditorScrollOrCursor)
@@ -37,12 +35,6 @@ FuncList = (function ()
         this.drag = new drag({target:this.elem,onMove:this.onDragMove})
     }
 
-    FuncList.prototype["onDragStart"] = function (drag, event)
-    {}
-
-    FuncList.prototype["onDragStop"] = function (drag, event)
-    {}
-
     FuncList.prototype["onDragMove"] = function (drag, event)
     {
         var item, listitem
@@ -50,12 +42,7 @@ FuncList = (function ()
         listitem = elem.upElem(event,{prop:'item'})
         if (item = (listitem != null ? listitem.item : undefined))
         {
-            if (item !== this.lastDragItem)
-            {
-                this.lastDragItem = item
-                console.log('jumpTo',item)
-                return post.emit('jumpTo',item)
-            }
+            return post.emit('singleCursorAtPos',[4,item.line - 1])
         }
     }
 
@@ -77,9 +64,9 @@ FuncList = (function ()
         botLine = topLine + this.editor.numFullLines()
         mainLine = this.editor.mainCursor()[1] + 1
         var list = _k_.list(this.elem.children)
-        for (var _61_18_ = 0; _61_18_ < list.length; _61_18_++)
+        for (var _54_18_ = 0; _54_18_ < list.length; _54_18_++)
         {
-            child = list[_61_18_]
+            child = list[_54_18_]
             lastLine = (child.nextSibling ? child.nextSibling.item.line : this.editor.numLines())
             visible = lastLine - 1 > topLine && child.item.line <= botLine
             child.classList.toggle('visible',visible)
@@ -112,9 +99,9 @@ FuncList = (function ()
             console.log('FuncList.onFileIndexed',file,info,items)
             this.elem.innerHTML = ''
             var list = _k_.list(items)
-            for (var _92_21_ = 0; _92_21_ < list.length; _92_21_++)
+            for (var _85_21_ = 0; _85_21_ < list.length; _85_21_++)
             {
-                item = list[_92_21_]
+                item = list[_85_21_]
                 e = elem({class:'funclist-item',parent:this.elem,click:this.onItemClick,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
                 e.item = item
             }

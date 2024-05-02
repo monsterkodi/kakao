@@ -28,21 +28,14 @@ function FuncList
         
         @drag = new drag
             target:  @elem
-            # onStart: @onDragStart
             onMove:  @onDragMove
-            # onStop:  @onDragStop
             
-    onDragStart: drag event => 
-    onDragStop:  drag event =>
     onDragMove:  drag event => 
         
         listitem = elem.upElem event, prop:'item'
         
         if item = listitem?.item
-            if item != @lastDragItem
-                @lastDragItem = item
-                log 'jumpTo' item
-                post.emit 'jumpTo' item
+            post.emit 'singleCursorAtPos' [4 item.line-1]
         
     onSplit: =>
         
