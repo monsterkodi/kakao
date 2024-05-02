@@ -16,7 +16,7 @@ function Store extends events
 
     @stores: {}
 
-    @: (name, opt={}) ->
+    @: name opt={} ->
 
         super()
         
@@ -47,7 +47,7 @@ function Store extends events
             # log "store #{@name}Loaded" @data
             post.emit "#{@name}Loaded"
         
-    keypath: (key) => key.split @sep
+    keypath: key => key.split @sep
     
     #  0000000   00000000  000000000
     # 000        000          000   
@@ -55,7 +55,7 @@ function Store extends events
     # 000   000  000          000   
     #  0000000   00000000     000   
         
-    get: (key, value) =>
+    get: key value =>
         
         return clone(value) if not key?.split?
         clone sds.get @data, @keypath(key), value
@@ -66,7 +66,7 @@ function Store extends events
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: (key, value) =>
+    set: key value =>
         
         # log "Store[#{@name}].set" key, value
 
@@ -79,7 +79,7 @@ function Store extends events
         @delayedSave()
         post.toWins 'store' @name, 'set' key, value
                     
-    del: (key) => 
+    del: key => 
     
         ⮐ if not @data
         sds.del @data, @keypath key

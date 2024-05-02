@@ -22,7 +22,7 @@ class Indexer
 
     static methodRegExp = /^\s+([\@]?\w+|@)\s*\:\s*(\(?.*\)?)?\s*○?[=-]\>/
 
-    static funcRegExp = /^\s*([\w\.]+)\s*[\:\=][^\(\)]*(\(.*\))?\s*○?[=-]\>/
+    static funcRegExp = /^\s*([\w\.]+)\s*[\:\=][^\(\)\'\"]*(\(.*\))?\s*○?[=-]\>/
 
     static postRegExp = /^\s*post\.on\s+[\'\"](\w+)[\'\"]\s*\,?\s*(\(.*\))?\s*[=-]\>/
 
@@ -143,12 +143,12 @@ class Indexer
 
     onGet (key, ...filter)
     {
-        var names, value, _107_45_, _108_43_, _109_43_, _110_43_, _111_42_
+        var names, value, _107_45_, _108_45_, _109_45_, _110_45_, _111_45_
 
         switch (key)
         {
             case 'counts':
-                return {classes:((_107_45_=this.classes.length) != null ? _107_45_ : 0),files:((_108_43_=this.files.length) != null ? _108_43_ : 0),funcs:((_109_43_=this.funcs.length) != null ? _109_43_ : 0),words:((_110_43_=this.words.length) != null ? _110_43_ : 0),dirs:((_111_42_=this.dirs.length) != null ? _111_42_ : 0)}
+                return {classes:((_107_45_=this.classes.length) != null ? _107_45_ : 0),files:((_108_45_=this.files.length) != null ? _108_45_ : 0),funcs:((_109_45_=this.funcs.length) != null ? _109_45_ : 0),words:((_110_45_=this.words.length) != null ? _110_45_ : 0),dirs:((_111_45_=this.dirs.length) != null ? _111_45_ : 0)}
 
             case 'file':
                 return this.files[filter[0]]

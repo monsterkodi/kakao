@@ -50,7 +50,7 @@ function Window extends win.Delegate
         ○ kakao 'win.setSize' 1000 1000
         ○ kakao 'win.center' 
         
-    onWindowCreated: (win) =>
+    onWindowCreated: win =>
         
         @id = win.id
         a = 1+2+3
@@ -97,7 +97,7 @@ function Window extends win.Delegate
         
         @editor.focus()
 
-    onMoved: (bounds) => window.stash.set 'bounds' bounds
+    onMoved: bounds => window.stash.set 'bounds' bounds
                 
     # 00     00  00000000  000   000  000   000      0000000    0000000  000000000  000   0000000   000   000
     # 000   000  000       0000  000  000   000     000   000  000          000     000  000   000  0000  000
@@ -105,7 +105,7 @@ function Window extends win.Delegate
     # 000 0 000  000       000  0000  000   000     000   000  000          000     000  000   000  000  0000
     # 000   000  00000000  000   000   0000000      000   000   0000000     000     000   0000000   000   000
     
-    onMenuAction: (name, trail) =>
+    onMenuAction: name trail =>
         
         # log 'ko.Window.onMenuAction' name, trail
         
@@ -185,7 +185,7 @@ post.on 'editorFocus' (editor) ->
 # 000       000   000  000     000     000   000  000   000
 # 00000000  0000000    000     000      0000000   000   000
  
-window.editorWithName = (n) ->
+window.editorWithName = n ->
  
     switch n
         'command' 
@@ -242,7 +242,7 @@ toggleCenterText = ->
 # 000       000   000  000  0000     000             000  000   000     000
 # 000        0000000   000   000     000        0000000   000  0000000  00000000
 
-setFontSize = (s) ->
+setFontSize = s ->
 
     s = prefs.get('editorFontSize' 19) if not s is num
     s = clamp 8 100 s
@@ -252,7 +252,7 @@ setFontSize = (s) ->
     if window.editor.currentFile?
         post.emit 'loadFile' window.editor.currentFile, reload:true
 
-changeFontSize = (d) ->
+changeFontSize = d ->
 
     if  window.editor.size.fontSize >= 20 ➜ f = 2
         window.editor.size.fontSize >= 30 ➜ f = 4
@@ -288,7 +288,7 @@ resetZoom = ->
     webframe.setZoomFactor 1
     window.editor.resized()
 
-changeZoom = (d) ->
+changeZoom = d ->
     
     z = webframe.getZoomFactor()
     z *= 1+d/20
@@ -302,8 +302,8 @@ changeZoom = (d) ->
 # 000       000   000  000       000   000       000
 # 000        0000000    0000000   0000000   0000000
  
-window.onblur  = (event) -> post.emit 'winFocus' false
-window.onfocus = (event) ->
+window.onblur  = event -> post.emit 'winFocus' false
+window.onfocus = event ->
     post.emit 'winFocus' true
     if document.activeElement.className == 'body'
         if window.split.editorVisible()
@@ -311,7 +311,7 @@ window.onfocus = (event) ->
         else
             window.split.focus 'commandline-editor'
  
-window.setLastFocus = (name) -> window.lastFocus = name
+window.setLastFocus = name -> window.lastFocus = name
 
 kakao.preInit = ○->
     

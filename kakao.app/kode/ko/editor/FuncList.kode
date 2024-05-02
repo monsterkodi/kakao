@@ -30,7 +30,7 @@ function FuncList
             target:  @elem
             onMove:  @onDragMove
             
-    onDragMove:  drag event => 
+    onDragMove: drag event => 
         
         listitem = elem.upElem event, prop:'item'
         

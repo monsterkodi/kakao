@@ -12,14 +12,14 @@ use ◆ Walker IndexHpp IndexJS
 
 class Indexer
 
-    @requireRegExp   : /^\s*([\w\{\}]+)\s+=\s+require\s+[\'\"]([\.\/\w]+)[\'\"]/
-    @includeRegExp   : /^#include\s+[\"\<]([\.\/\w]+)[\"\>]/
-    @methodRegExp    : /^\s+([\@]?\w+|@)\s*\:\s*(\(?.*\)?)?\s*○?[=-]\>/
-    @funcRegExp      : /^\s*([\w\.]+)\s*[\:\=][^\(\)]*(\(.*\))?\s*○?[=-]\>/
-    @postRegExp      : /^\s*post\.on\s+[\'\"](\w+)[\'\"]\s*\,?\s*(\(.*\))?\s*[=-]\>/
-    @testRegExp      : /^\s*(▸\s+.+)/
-    @splitRegExp     : new RegExp "[^\\w\\d\\_]+", 'g'
-    @classRegExp     : /^(\s*\S+\s*=)?\s*(class|function)\s+(\w+)/
+    @requireRegExp : /^\s*([\w\{\}]+)\s+=\s+require\s+[\'\"]([\.\/\w]+)[\'\"]/
+    @includeRegExp : /^#include\s+[\"\<]([\.\/\w]+)[\"\>]/
+    @methodRegExp  : /^\s+([\@]?\w+|@)\s*\:\s*(\(?.*\)?)?\s*○?[=-]\>/
+    @funcRegExp    : /^\s*([\w\.]+)\s*[\:\=][^\(\)\'\"]*(\(.*\))?\s*○?[=-]\>/
+    @postRegExp    : /^\s*post\.on\s+[\'\"](\w+)[\'\"]\s*\,?\s*(\(.*\))?\s*[=-]\>/
+    @testRegExp    : /^\s*(▸\s+.+)/
+    @splitRegExp   : new RegExp "[^\\w\\d\\_]+", 'g'
+    @classRegExp   : /^(\s*\S+\s*=)?\s*(class|function)\s+(\w+)/
 
     @classNameInLine: line ->
                     
@@ -103,16 +103,16 @@ class Indexer
         
         switch key
             'counts'
-                return 
+                return
                     classes: @classes.length ? 0
-                    files:   @files.length ? 0
-                    funcs:   @funcs.length ? 0
-                    words:   @words.length ? 0
-                    dirs:    @dirs.length ? 0
+                    files:   @files.length   ? 0
+                    funcs:   @funcs.length   ? 0
+                    words:   @words.length   ? 0
+                    dirs:    @dirs.length    ? 0
             'file'
-                return @files[filter[0]]
+                ⮐ @files[filter[0]]
             'project'
-                return @projectInfo filter[0]
+                ⮐ @projectInfo filter[0]
         
         value = @[key]
         if valid filter
@@ -127,7 +127,7 @@ class Indexer
                     for cn in names
                         lc = key.toLowerCase()
                         if cn.length>1 and lc.indexOf(cn)>=0 or lc.startsWith(cn)
-                            return true
+                            ⮐ true
         value
                 
     #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
