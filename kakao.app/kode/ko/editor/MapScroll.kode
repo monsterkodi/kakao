@@ -10,7 +10,7 @@ use ../../kxk ▪ events
 
 class MapScroll extends events
 
-    @: (cfg) ->
+    @: cfg ->
 
         super()
         @lineHeight = cfg.lineHeight ? 0
@@ -89,7 +89,7 @@ class MapScroll extends events
     #    000     000   000
     #    000      0000000
 
-    to: (p) => @by p-@scroll
+    to: p => @by p-@scroll
 
     # 0000000    000   000
     # 000   000   000 000
@@ -97,7 +97,7 @@ class MapScroll extends events
     # 000   000     000
     # 0000000       000
 
-    by: (delta) =>
+    by: delta =>
 
         scroll = @scroll
         delta = 0 if Number.isNaN delta
@@ -121,7 +121,7 @@ class MapScroll extends events
     #      000  000          000        000     000   000  000
     # 0000000   00000000     000        000      0000000   000
 
-    setTop: (top) =>
+    setTop: top =>
 
         return if @exposeBot < 0 and @numLines < 1
 
@@ -169,7 +169,7 @@ class MapScroll extends events
     # 000  000  0000       000  000       000   000     000
     # 000  000   000  0000000   00000000  000   000     000
 
-    insertLine: (li,oi) =>
+    insertLine: li oi =>
         
         @exposeBot += 1 if @lineIndexIsInExpose oi
         @bot       += 1 if @lineIndexIsInView oi
@@ -184,17 +184,17 @@ class MapScroll extends events
     # 000   000  000       000      000          000     000
     # 0000000    00000000  0000000  00000000     000     00000000
 
-    deleteLine: (li,oi) =>
+    deleteLine: li oi =>
         
         @exposeBot -= 1 if @lineIndexIsInExpose(oi) or @numLines < @exposeNum
         @bot       -= 1 if @lineIndexIsInView oi
 
-    lineIndexIsInView: (li) ->
+    lineIndexIsInView: li ->
         
         return true if @top <= li <= @bot
         return @bot-@top+1 < @fullLines
 
-    lineIndexIsInExpose: (li) ->
+    lineIndexIsInExpose: li ->
         
         return true if @exposeTop <= li <= @exposeBot
         return @exposeBot-@exposeTop+1 < @exposeNum
@@ -205,7 +205,7 @@ class MapScroll extends events
     #    000     000  000       000   000  000   000  000       000  000   000  000   000     000
     #     0      000  00000000  00     00  000   000  00000000  000   0000000   000   000     000
 
-    setViewHeight: (h) =>
+    setViewHeight: h =>
         if @viewHeight != h
             @viewHeight = h
             @calc()
@@ -217,7 +217,7 @@ class MapScroll extends events
     # 000  0000  000   000  000 0 000  000      000  000  0000  000            000
     # 000   000   0000000   000   000  0000000  000  000   000  00000000  0000000
 
-    setNumLines: (n) =>
+    setNumLines: n =>
 
         if @numLines != n
             @numLines = n
@@ -235,7 +235,7 @@ class MapScroll extends events
     # 000      000  000  0000  000       000   000  000       000  000   000  000   000     000
     # 0000000  000  000   000  00000000  000   000  00000000  000   0000000   000   000     000
 
-    setLineHeight: (h) =>
+    setLineHeight: h =>
 
         if @lineHeight != h
             @lineHeight = h

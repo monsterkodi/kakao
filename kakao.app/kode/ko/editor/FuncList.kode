@@ -28,6 +28,7 @@ function FuncList
         
         @drag = new drag
             target:  @elem
+            onStart: @onDragMove
             onMove:  @onDragMove
             
     onDragMove: drag event => 
@@ -79,11 +80,12 @@ function FuncList
         if file == kore.get 'editor|file'
         
             items = FuncItems.forIndexerInfo file, info
-            log 'FuncList.onFileIndexed' file, info, items
+            # log 'FuncList.onFileIndexed' file, info, items
             @elem.innerHTML = ''
             
             for item in items
-                e = elem class:'funclist-item' parent:@elem, click:@onItemClick, html:Syntax.spanForTextAndSyntax item.text, 'browser'
+                # e = elem class:'funclist-item' parent:@elem, click:@onItemClick, html:Syntax.spanForTextAndSyntax item.text, 'browser'
+                e = elem class:'funclist-item' parent:@elem, html:Syntax.spanForTextAndSyntax item.text, 'browser'
                 e.item = item
                 
     # 000  000000000  00000000  00     00         0000000  000      000   0000000  000   000  
@@ -92,12 +94,12 @@ function FuncList
     # 000     000     000       000 0 000        000       000      000  000       000  000   
     # 000     000     00000000  000   000         0000000  0000000  000   0000000  000   000  
     
-    onItemClick: event =>
-        
-        listitem = elem.upElem event, prop:'item'
-        
-        if item = listitem?.item
-            # log 'jumpTo' item
-            post.emit 'jumpTo' item
+    # onItemClick: event =>
+#         
+        # listitem = elem.upElem event, prop:'item'
+#         
+        # if item = listitem?.item
+            # # log 'jumpTo' item
+            # post.emit 'jumpTo' item
 
 export FuncList

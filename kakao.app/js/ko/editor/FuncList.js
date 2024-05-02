@@ -19,7 +19,6 @@ FuncList = (function ()
     {
         this.editor = editor
     
-        this["onItemClick"] = this["onItemClick"].bind(this)
         this["onFileIndexed"] = this["onFileIndexed"].bind(this)
         this["onEditorFile"] = this["onEditorFile"].bind(this)
         this["onEditorScrollOrCursor"] = this["onEditorScrollOrCursor"].bind(this)
@@ -32,7 +31,7 @@ FuncList = (function ()
         post.on('fileIndexed',this.onFileIndexed)
         post.on('split',this.onSplit)
         kore.on('editor|file',this.onEditorFile)
-        this.drag = new drag({target:this.elem,onMove:this.onDragMove})
+        this.drag = new drag({target:this.elem,onStart:this.onDragMove,onMove:this.onDragMove})
     }
 
     FuncList.prototype["onDragMove"] = function (drag, event)
@@ -64,9 +63,9 @@ FuncList = (function ()
         botLine = topLine + this.editor.numFullLines()
         mainLine = this.editor.mainCursor()[1] + 1
         var list = _k_.list(this.elem.children)
-        for (var _54_18_ = 0; _54_18_ < list.length; _54_18_++)
+        for (var _55_18_ = 0; _55_18_ < list.length; _55_18_++)
         {
-            child = list[_54_18_]
+            child = list[_55_18_]
             lastLine = (child.nextSibling ? child.nextSibling.item.line : this.editor.numLines())
             visible = lastLine - 1 > topLine && child.item.line <= botLine
             child.classList.toggle('visible',visible)
@@ -96,26 +95,14 @@ FuncList = (function ()
         if (file === kore.get('editor|file'))
         {
             items = FuncItems.forIndexerInfo(file,info)
-            console.log('FuncList.onFileIndexed',file,info,items)
             this.elem.innerHTML = ''
             var list = _k_.list(items)
-            for (var _85_21_ = 0; _85_21_ < list.length; _85_21_++)
+            for (var _86_21_ = 0; _86_21_ < list.length; _86_21_++)
             {
-                item = list[_85_21_]
-                e = elem({class:'funclist-item',parent:this.elem,click:this.onItemClick,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
+                item = list[_86_21_]
+                e = elem({class:'funclist-item',parent:this.elem,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
                 e.item = item
             }
-        }
-    }
-
-    FuncList.prototype["onItemClick"] = function (event)
-    {
-        var item, listitem
-
-        listitem = elem.upElem(event,{prop:'item'})
-        if (item = (listitem != null ? listitem.item : undefined))
-        {
-            return post.emit('jumpTo',item)
         }
     }
 

@@ -132,6 +132,13 @@ toExport["kode"] = function ()
         rgs = ranges("pos= (item, p) -> ")
         compare(inc(rgs,0,"pos"),'function')
     })
+    section("args", function ()
+    {
+        rgs = ranges("f = a b ->")
+        compare(inc(rgs,4,'a'),'function argument')
+        compare(inc(rgs,6,'b'),'function argument')
+        compare(inc(rgs,8,'->'),'punct function tail ligature')
+    })
     section("no call", function ()
     {
         rgs = ranges("i != false")
