@@ -22,8 +22,8 @@ FuncList = (function ()
         this["onFileIndexed"] = this["onFileIndexed"].bind(this)
         this["onEditorFile"] = this["onEditorFile"].bind(this)
         this["onEditorScrollOrCursor"] = this["onEditorScrollOrCursor"].bind(this)
-        this["onDragMove"] = this["onDragMove"].bind(this)
         this["onSplit"] = this["onSplit"].bind(this)
+        this["onDragMove"] = this["onDragMove"].bind(this)
         this["toggle"] = this["toggle"].bind(this)
         this.elem = elem({class:'funclist'})
         this.editor.view.appendChild(this.elem)
@@ -38,19 +38,14 @@ FuncList = (function ()
 
     FuncList.prototype["toggle"] = function ()
     {
-        prefs.toggle('funclist')
-        return this.onSplit()
-    }
-
-    FuncList.prototype["onSplit"] = function ()
-    {
-        var browserVisible, funclistActive, hide
-
-        browserVisible = window.split.browserVisible()
-        funclistActive = prefs.get('funclist')
-        hide = browserVisible || !funclistActive
-        this.elem.style.display = (hide ? 'none' : 'inherit')
-        return this.onEditorScrollOrCursor()
+        if (prefs.toggle('funclist',true))
+        {
+            console.log('funclist on')
+        }
+        else
+        {
+            console.log('funclist off')
+        }
     }
 
     FuncList.prototype["onDragMove"] = function (drag, event)
@@ -62,6 +57,15 @@ FuncList = (function ()
         {
             return post.emit('singleCursorAtPos',[4,item.line - 1])
         }
+    }
+
+    FuncList.prototype["onSplit"] = function ()
+    {
+        var browserVisible
+
+        browserVisible = window.split.browserVisible()
+        this.elem.style.display = (browserVisible ? 'none' : 'inherit')
+        return this.onEditorScrollOrCursor()
     }
 
     FuncList.prototype["onEditorScrollOrCursor"] = function ()
