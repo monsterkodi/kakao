@@ -32,24 +32,24 @@ function FuncList
             onStart: @onDragMove
             onMove:  @onDragMove
             
-    toggle: =>
-        
-        if prefs.toggle 'funclist' true
-            log 'funclist on'
-        else
-            log 'funclist off'
-            
     onDragMove: drag event => 
         
         listitem = elem.upElem event, prop:'item'
         
         if item = listitem?.item
             post.emit 'singleCursorAtPos' [4 item.line-1]
+            
+    toggle: =>
         
+        prefs.toggle 'funclist'
+        @onSplit()
+                    
     onSplit: =>
         
         browserVisible = window.split.browserVisible()
-        @elem.style.display = browserVisible ? 'none' : 'inherit'
+        funclistActive = prefs.get 'funclist'
+        hide = browserVisible or not funclistActive
+        @elem.style.display = hide ? 'none' : 'inherit'
         @onEditorScrollOrCursor()
         
     onEditorScrollOrCursor: => 
