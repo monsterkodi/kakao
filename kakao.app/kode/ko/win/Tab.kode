@@ -12,7 +12,7 @@ use ../editor ◆ Render Syntax
 
 class Tab
 
-    @: (@tabs, koreTab) ->
+    @: @tabs koreTab ->
 
         for k,v of koreTab
             @[k] = v
@@ -21,6 +21,9 @@ class Tab
         @tabs.div.appendChild @div
 
         @update()
+        
+    isPrj: -> @type == 'prj'
+    index: -> @tabs.tabs.indexOf @
 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
@@ -28,7 +31,7 @@ class Tab
     # 000   000  000        000   000  000   000     000     000
     #  0000000   000        0000000    000   000     000     00000000
 
-    update: ->
+    update: =>
 
         @div.innerHTML = ''
         @div.classList.toggle 'dirty'  @dirty?
@@ -149,8 +152,5 @@ class Tab
     # 000        000  000   000  000   000  00000000  0000000
 
     togglePinned: => @tabs.togglePinned @path
-
-    isPrj: -> @type == 'prj'
-    index: -> @tabs.tabs.indexOf @
 
 export Tab

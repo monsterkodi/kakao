@@ -22,6 +22,7 @@ class Tab
         this.togglePinned = this.togglePinned.bind(this)
         this.onGitStatus = this.onGitStatus.bind(this)
         this.tooltipHtml = this.tooltipHtml.bind(this)
+        this.update = this.update.bind(this)
         for (k in koreTab)
         {
             v = koreTab[k]
@@ -32,9 +33,19 @@ class Tab
         this.update()
     }
 
+    isPrj ()
+    {
+        return this.type === 'prj'
+    }
+
+    index ()
+    {
+        return this.tabs.tabs.indexOf(this)
+    }
+
     update ()
     {
-        var diss, dot, html, name, prj, sep, tab, tabs, _34_45_, _35_46_, _40_17_
+        var diss, dot, html, name, prj, sep, tab, tabs, _37_45_, _38_46_, _43_17_
 
         this.div.innerHTML = ''
         this.div.classList.toggle('dirty',(this.dirty != null))
@@ -92,9 +103,9 @@ class Tab
             {
                 tabs = this.tabs.fileTabsForPath(this.path)
                 var list = _k_.list(tabs)
-                for (var _93_24_ = 0; _93_24_ < list.length; _93_24_++)
+                for (var _96_24_ = 0; _96_24_ < list.length; _96_24_++)
                 {
-                    tab = list[_93_24_]
+                    tab = list[_96_24_]
                     dot = elem('span',{class:'prjdot',text:'■'})
                     this.div.appendChild(dot)
                     if (tab.active)
@@ -119,7 +130,7 @@ class Tab
 
     tooltipHtml ()
     {
-        var diss, html, numFiles, _113_16_
+        var diss, html, numFiles, _116_16_
 
         if ((this.path != null))
         {
@@ -137,7 +148,7 @@ class Tab
 
     onGitStatus (status)
     {
-        var t, _134_19_, _134_24_
+        var t, _137_19_, _137_24_
 
         if (status.gitDir !== this.path)
         {
@@ -177,16 +188,6 @@ class Tab
     togglePinned ()
     {
         return this.tabs.togglePinned(this.path)
-    }
-
-    isPrj ()
-    {
-        return this.type === 'prj'
-    }
-
-    index ()
-    {
-        return this.tabs.tabs.indexOf(this)
     }
 }
 

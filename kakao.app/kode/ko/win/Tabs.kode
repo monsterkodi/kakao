@@ -53,6 +53,27 @@ class Tabs
         kore.on 'tabs'           @onKoreTabs
         kore.on 'editor|file'    @addTab
         
+    # 000000000   0000000   0000000
+    #    000     000   000  000   000
+    #    000     000000000  0000000
+    #    000     000   000  000   000
+    #    000     000   000  0000000
+
+    tab: id ->
+
+        if id is num ➜ ⮐ @tabs[id]
+        if elem.isElement id
+            tabDiv = elem.upElem id, class:'tab'
+            ⮐ @tabs.find (t) -> t.div == tabDiv
+        if id is str 
+            ⮐ @tabs.find (t) -> t.path == id
+
+    tabAtX: x ->
+
+        @tabs.find (t) ->
+            br = t.div.getBoundingClientRect()
+            br.left <= x <= br.left + br.width
+        
     # 000   000   0000000   00000000   00000000  
     # 000  000   000   000  000   000  000       
     # 0000000    000   000  0000000    0000000   
@@ -60,19 +81,7 @@ class Tabs
     # 000   000   0000000   000   000  00000000  
     
     koreTabs: -> tabs = kore.get 'tabs'; tabs ? []
-    
-    setKoreTabs: tabs => kore.set 'tabs' tabs; tabs
-    
-    refreshTabs: => @onKoreTabs @koreTabs()
         
-    onKoreTabs: tabs =>
-        
-        @div.innerHTML = ''
-        @tabs = []
-        for koreTab in tabs
-            # log 'koreTab' koreTab
-            @tabs.push new Tab @, koreTab
-    
     koreTabForPath: path tabs ->
         
         tabs ?= @koreTabs()
@@ -91,6 +100,18 @@ class Tabs
         
         for tab in @prjTabs()
             return tab if path.startsWith tab.path
+            
+    setKoreTabs: tabs => kore.set 'tabs' tabs; tabs
+    
+    refreshTabs: => @onKoreTabs @koreTabs()
+        
+    onKoreTabs: tabs =>
+        
+        @div.innerHTML = ''
+        @tabs = []
+        for koreTab in tabs
+            # log 'koreTab' koreTab
+            @tabs.push new Tab @, koreTab
     
     activeKoreTab: =>
         
@@ -151,7 +172,7 @@ class Tabs
     # 000       000      000       000   000  000  0000           000     000   000  000   000       000  
     #  0000000  0000000  00000000  000   000  000   000           000     000   000  0000000    0000000   
     
-    cleanTabs: tabs ->
+    cleanTabs: tabs =>
         
         sorted = tabs.filter (t) -> t.type == 'prj'
         remain = tabs.filter (t) -> t.type != 'prj'
@@ -170,7 +191,6 @@ class Tabs
              
         for k,v of prjTabs
             if v.length <= 1
-                # log 'delete' k, prjTabs[k]
                 delete prjTabs[k]
                 
         tabs = []
@@ -180,7 +200,6 @@ class Tabs
                     if v[i].tmp ➜ v.splice i, 1
             tabs = tabs.concat v
         
-        # log 'cleanTabs' tabs
         @setKoreTabs tabs
         
     # 0000000    00000000  000             000000000   0000000   0000000    
@@ -220,7 +239,6 @@ class Tabs
             
             if tab.type == 'file'
                 
-                log 'activate tab' tab
                 @cleanTabs @setActive path
                                     
                 post.emit 'jumpToFile' path
@@ -243,7 +261,6 @@ class Tabs
             delete tab.active
             if slash.samePath tab.path, path
                 tab.active = true
-                # log 'setActive tab' tab
                 @tab(path)?.div?.scrollIntoViewIfNeeded()
         tabs
 
@@ -326,7 +343,6 @@ class Tabs
             if event.target.classList.contains 'dot'
                 @delTab tab.path
             else if event.target.classList.contains 'unsaved-icon'
-                # log 'save tab via icon click' tab.path
                 tab = @koreTabForPath tab.path
                 if tab.dirty
                     if tab.active
@@ -348,27 +364,6 @@ class Tabs
                         ⮐ post.emit 'git.diff' tab.path
                 @activate tab.path
         true
-
-    # 000000000   0000000   0000000
-    #    000     000   000  000   000
-    #    000     000000000  0000000
-    #    000     000   000  000   000
-    #    000     000   000  0000000
-
-    tab: id ->
-
-        if id is num ➜ ⮐ @tabs[id]
-        if elem.isElement id
-            tabDiv = elem.upElem id, class:'tab'
-            ⮐ @tabs.find (t) -> t.div == tabDiv
-        if id is str 
-            ⮐ @tabs.find (t) -> t.path == id
-
-    tabAtX: x ->
-
-        @tabs.find (t) ->
-            br = t.div.getBoundingClientRect()
-            br.left <= x <= br.left + br.width
             
     #  0000000  000       0000000    0000000  00000000
     # 000       000      000   000  000       000
@@ -430,7 +425,7 @@ class Tabs
     # 000  0000  000   000     000     000  000   000  000   000     000     000
     # 000   000  000   000      0      000   0000000   000   000     000     00000000
 
-    navigate: key ->
+    navigate: key =>
         
         if tab = @activeKoreTab()
             tabs = @fileTabs @koreTabs()
@@ -441,14 +436,14 @@ class Tabs
             if 0 <= index < tabs.length
                 @activate tabs[index].path
 
-    move: key ->
+    move: key =>
         
         if tab = @activeKoreTab()
             switch key
                 'left'  ➜ @shiftTab tab, -1
                 'right' ➜ @shiftTab tab, +1
                 
-    shiftTab: tab delta ->
+    shiftTab: tab delta =>
         
         tabs = @koreTabs()
         index = tabs.indexOf tab
@@ -517,7 +512,7 @@ class Tabs
     # 000        000 000      000     000       000  0000       000  000  000   000  000  0000  
     # 00000000  000   000     000     00000000  000   000  0000000   000   0000000   000   000  
     
-    toggleExtension: ->
+    toggleExtension: =>
         
         prefs.toggle 'tabs|extension'
         
@@ -556,7 +551,6 @@ class Tabs
         if tab = @koreTabForPath path
             if tab.dirty and tab.path and valid state
                 tabStates[path] = state
-                # log 'store tab state' path, state
                 kore.set 'tabStates' tabStates
                 ⮐ 
         delete tabStates[path]

@@ -10,7 +10,7 @@ use ../../kxk ▪ pretty post elem tooltip $
 
 class Info
     
-    @: (editor) ->
+    @: editor ->
         
         post.on 'editorFocus' @setEditor
         post.on 'split'       @updateEditorButton
@@ -104,7 +104,7 @@ class Info
     #      000  000          000           000       000   000  000     000     000   000  000   000
     # 0000000   00000000     000           00000000  0000000    000     000      0000000   000   000
     
-    setEditor: (editor) =>
+    setEditor: editor =>
         
         return if editor.name not in ['editor''terminal']
         
@@ -143,7 +143,7 @@ class Info
     # 000   000  000  0000        000  000  000
     #  0000000   000   000        000  000  000
     
-    onNumLines: (lc) =>
+    onNumLines: lc =>
         
         @lines.textContent = pretty.shortCount lc ? 0
             
