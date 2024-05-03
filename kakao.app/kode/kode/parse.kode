@@ -6,6 +6,18 @@
     000        000   000  000   000  0000000   00000000
     
     the base class of Parser
+        
+    converts token blocks to an abstract syntax tree:
+        
+        exps: [top level expressions ...]
+        
+    expressions are build recursively
+    
+      ┌─▶ @exps ──────────┐
+      ├─▶ ┌─▶─┐ @exp ─────┤
+      │   ▲   ▼ ┌▶╷ @rhs ─┼─▶ Parser methods ▶─┐
+      │   └─◀─┘ ╵◀┘ @lhs ─┘                    │
+      └────────────────────────────────────────┘
 ###
 
 use ./utils ▪ firstLineCol lastLineCol
@@ -13,7 +25,7 @@ use         ◆ print parseutils
 
 function Parse extends parseutils
 
-    @: (@kode) ->
+    @: @kode ->
 
         @debug    = @kode.args.debug
         @verbose  = @kode.args.verbose
@@ -24,7 +36,7 @@ function Parse extends parseutils
     # 000        000   000  000   000       000  000
     # 000        000   000  000   000  0000000   00000000
 
-    parse: (block) -> # convert block tree to abstract syntax tree
+    parse: block -> # convert block tree to abstract syntax tree
 
         @stack = []
         @sheap = []
@@ -49,7 +61,7 @@ function Parse extends parseutils
     #   - ...
     # essentially everything that represents a list of something
 
-    exps: (rule, tokens, stop) ->
+    exps: rule tokens stop ->
         
         ⮐ if empty tokens
         
