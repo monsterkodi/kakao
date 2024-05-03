@@ -11,7 +11,7 @@ use ../tools  ◆ ranges File
 
 class Meta
 
-    @: (@editor) ->
+    @: @editor ->
 
         @metas     = [] # [ [lineIndex, [start, end], {href: ...}], ... ]
         @lineMetas = {} # { lineIndex: [ lineMeta, ... ], ... }
@@ -39,7 +39,7 @@ class Meta
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
-    onChanged: (changeInfo) =>
+    onChanged: changeInfo =>
 
         for change in changeInfo.changes
             li = change.oldIndex
@@ -66,25 +66,24 @@ class Meta
     #      000  000   000     000     000
     # 0000000   000   000      0      00000000
 
-    saveFileLineMetas: (file, lineMetas) ->
+    saveFileLineMetas: file lineMetas ○->
 
-        fs.readFile file, encoding:'utf8' (err, data) ->
+        text =○ ffs.readFile file
 
-            if err? then return error "Meta.saveFileLineMetas -- readFile err:#{err}"
-            lines = data.split /\r?\n/
+        lines = text.split /\r?\n/
+        for lineMeta in lineMetas
+            lines[lineMeta[0]] = lineMeta[1]
+        text = lines.join '\n'
+
+        File.save file, text, (file) ->
+            # return error "Meta.saveFileLineMetas -- writeFile err:#{err}" if not file
             for lineMeta in lineMetas
-                lines[lineMeta[0]] = lineMeta[1]
-            data = lines.join '\n'
+                if meta = lineMeta[2]
+                    delete meta[2].state if meta[2]
+                    meta[2].span.innerHTML = lineMeta[0]+1 if meta[2]?.span
+            # post.emit 'search-saved' file
 
-            File.save file, data, (file) ->
-                return error "Meta.saveFileLineMetas -- writeFile err:#{err}" if not file
-                for lineMeta in lineMetas
-                    if meta = lineMeta[2]
-                        delete meta[2].state if meta[2]
-                        meta[2].span.innerHTML = lineMeta[0]+1 if meta[2]?.span
-                post.emit 'search-saved' file
-
-    saveLine: (li) ->
+    saveLine: li ->
 
         for meta in @metasAtLineIndex li
             if meta[2].state == 'unsaved'
@@ -126,24 +125,24 @@ class Meta
     # 000  0000  000   000  000 0 000  000   000  000       000   000
     # 000   000   0000000   000   000  0000000    00000000  000   000
 
-    onNumber: (e) =>
+    onNumber: e =>
 
         metas = @metasAtLineIndex e.lineIndex
         for meta in metas
             meta[2].span = e.numberSpan
             e.numberSpan.className = ''
             e.numberSpan.parentNode.className = 'linenumber'
-            switch meta[2].clss
-                'spacer' ➜ e.numberSpan.innerHTML = '&nbsp;'
-                ➜
-                    num  = @saveButton(meta[0]) if meta[2].state == 'unsaved'
-                    num ?= meta[2].line
-                    num ?= slash.splitFileLine(meta[2].href)[1]
-                    if valid num
-                        if meta[2].lineClss
-                            e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss 
-                            e.numberSpan.className = meta[2].lineClss
-                        e.numberSpan.innerHTML = num
+            if meta[2].clss == 'spacer'
+                e.numberSpan.innerHTML = '&nbsp;'
+            else
+                num  = @saveButton(meta[0]) if meta[2].state == 'unsaved'
+                num ?= meta[2].line
+                num ?= slash.splitFileLine(meta[2].href)[1]
+                if valid num
+                    if meta[2].lineClss
+                        e.numberSpan.parentNode.className = 'linenumber ' + meta[2].lineClss 
+                        e.numberSpan.className = meta[2].lineClss
+                    e.numberSpan.innerHTML = num
 
     #  0000000  00000000  000000000        00000000    0000000    0000000
     # 000       000          000           000   000  000   000  000
@@ -151,7 +150,7 @@ class Meta
     #      000  000          000           000        000   000       000
     # 0000000   00000000     000           000         0000000   0000000
 
-    setMetaPos: (meta, tx, ty) ->
+    setMetaPos: meta tx ty ->
 
         if meta[2].div
             if meta[2].no_x
@@ -159,7 +158,7 @@ class Meta
             else
                 meta[2].div.style.transform = "translate(#{tx}px,#{ty}px)"
 
-    updatePos: (meta) ->
+    updatePos: meta ->
 
         size = @editor.size
         tx = size.charWidth *  meta[1][0] + size.offsetX + (meta[2].xOffset ? 0)
@@ -172,7 +171,7 @@ class Meta
     # 000   000  000   000  000   000        000   000  000     000
     # 000   000  0000000    0000000          0000000    000      0
 
-    addDiv: (meta) ->
+    addDiv: meta ->
 
         size = @editor.size
         sw = size.charWidth * (meta[1][1]-meta[1][0])
@@ -206,9 +205,9 @@ class Meta
     # 000   000  000       000           000   000  000     000
     # 0000000    00000000  0000000       0000000    000      0
 
-    delDiv: (meta) ->
+    delDiv: meta ->
 
-        return error 'no line meta?' meta if not meta?[2]?
+        ⮐ error 'no line meta?' meta if not meta?[2]?
         meta[2].div?.remove()
         meta[2].div = null
 
@@ -218,7 +217,7 @@ class Meta
     #    000     000        000 000      000
     #    000     00000000  000   000     000
 
-    add: (meta) ->
+    add: meta ->
 
         lineMeta = @addLineMeta [meta.line, [meta.start, meta.end], meta]
 
@@ -231,12 +230,12 @@ class Meta
     # 000   000  000  000       000
     # 0000000    000  000       000
 
-    addDiffMeta: (meta) ->
+    addDiffMeta: meta ->
 
         meta.diff = true
         @addNumberMeta meta
 
-    addNumberMeta: (meta) ->
+    addNumberMeta: meta ->
 
         meta.no_x = true
         lineMeta = @addLineMeta [meta.line, [0, 0], meta]
@@ -250,7 +249,7 @@ class Meta
     # 000       000      000  000       000  000
     #  0000000  0000000  000   0000000  000   000
 
-    onMouseDown: (event) ->
+    onMouseDown: event ->
 
         if event.target.meta?[2].click?
             result = event.target.meta?[2].click event.target.meta, event
@@ -262,26 +261,26 @@ class Meta
     # 000   000  000        000        000       000  0000  000   000
     # 000   000  000        000        00000000  000   000  0000000
 
-    append: (meta) ->
+    append: meta ->
 
         @addLineMeta [@editor.numLines(), [0, 0], meta]
         
-    appendLineMeta: (meta) ->
+    appendLineMeta: meta ->
         
         @addLineMeta [@editor.numLines()-1, [meta.start, meta.end], meta]
 
-    addLineMeta: (lineMeta) ->
+    addLineMeta: lineMeta ->
 
-        return error 'invalid line meta?', lineMeta if not lineMeta?[2]?
+        ⮐ error 'invalid line meta?', lineMeta if not lineMeta?[2]?
 
         @lineMetas[lineMeta[0]] ?= []
         @lineMetas[lineMeta[0]].push lineMeta
         @metas.push lineMeta
         lineMeta
 
-    moveLineMeta: (lineMeta, d) ->
+    moveLineMeta: lineMeta d ->
 
-        return error 'invalid move?' lineMeta, d if not lineMeta? or d == 0
+        ⮐ error 'invalid move?' lineMeta, d if not lineMeta? or d == 0
 
         pull @lineMetas[lineMeta[0]], lineMeta
         delete @lineMetas[lineMeta[0]] if empty @lineMetas[lineMeta[0]]
@@ -290,17 +289,17 @@ class Meta
         @lineMetas[lineMeta[0]].push lineMeta
         @updatePos lineMeta
 
-    onLineAppended: (e) =>
+    onLineAppended: e =>
 
         for meta in @metasAtLineIndex e.lineIndex
             meta[1][1] = e.text.length if meta[1][1] == 0
 
-    metasAtLineIndex: (li) -> @lineMetas[li] ? []
+    metasAtLineIndex: li -> @lineMetas[li] ? []
 
-    hrefAtLineIndex:  (li) ->
+    hrefAtLineIndex:  li ->
 
         for meta in @metasAtLineIndex li
-            return meta[2].href if meta[2].href?
+            ⮐ meta[2].href if meta[2].href?
 
     #  0000000  000   000   0000000   000   000  000   000
     # 000       000   000  000   000  000 0 000  0000  000
@@ -308,7 +307,7 @@ class Meta
     #      000  000   000  000   000  000   000  000  0000
     # 0000000   000   000   0000000   00     00  000   000
 
-    onLinesShown: (top, bot, num) =>
+    onLinesShown: top bot num =>
 
         for meta in @metas
             @delDiv meta
@@ -321,7 +320,7 @@ class Meta
     #      000  000   000  000  000          000     000       000   000
     # 0000000   000   000  000  000          000     00000000  0000000
 
-    onLinesShifted: (top, bot, num) =>
+    onLinesShifted: top bot num =>
 
         if num > 0
             for meta in rangesFromTopToBotInRanges top-num, top-1, @metas ➜ @delDiv meta
@@ -332,13 +331,13 @@ class Meta
 
         @updatePositionsBelowLineIndex top
 
-    updatePositionsBelowLineIndex: (li) ->
+    updatePositionsBelowLineIndex: li ->
 
         size = @editor.size
         for meta in rangesFromTopToBotInRanges li, @editor.scroll.bot, @metas
             @updatePos meta
 
-    onLineInserted: (li) =>
+    onLineInserted: li =>
 
         for meta in rangesFromTopToBotInRanges li, @editor.numLines(), @metas
             @moveLineMeta meta, 1
@@ -351,7 +350,7 @@ class Meta
     # 000   000  000       000      000          000     000       000   000
     # 0000000    00000000  0000000  00000000     000     00000000  0000000
 
-    onLineDeleted: (li) =>
+    onLineDeleted: li =>
 
         while meta = last @metasAtLineIndex li
             @delMeta meta
@@ -381,14 +380,14 @@ class Meta
         @metas = []
         @lineMetas = {}
 
-    delMeta: (meta) ->
+    delMeta: meta ->
         
-        if not meta? ➜ return error 'del no meta?'
+        ⮐ error 'del no meta?' if not meta?
         pull @lineMetas[meta[0]], meta
         pull @metas, meta
         @delDiv meta
 
-    delClass: (clss) ->
+    delClass: clss ->
 
         for meta in clone @metas
             clsss = meta?[2]?.clss?.split ' '

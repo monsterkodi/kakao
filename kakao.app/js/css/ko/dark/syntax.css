@@ -87,9 +87,15 @@
 .func.marker,
 .function.marker
 {
+    font-family: fontLigature;
     opacity: 1;
     color: #33f;
-    font-family: fontLigature;
+}
+
+.func.marker.bound,
+.function.marker.bound
+{
+    color: #826;
 }
 
 .func.marker.async,
@@ -119,7 +125,7 @@
 .function.bound.ligature
 {
     opacity: 1;
-    color: #f80;
+    color: #c48;
 }
 
 .func.bound,
@@ -134,16 +140,16 @@
     color: #f80;
 }
 
-.func.bound.marker,
-.function.bound.marker
-{
-    color: #800;
-}
-
 .func.bracket,
 .function.bracket
 {
     color: #55f;
+}
+
+.func.argument,
+.function.argument
+{
+    color: #0a4;
 }
 
 .arrow
