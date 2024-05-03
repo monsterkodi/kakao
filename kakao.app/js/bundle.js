@@ -1,40 +1,33 @@
 var _k_
 
-var Bundle
-
-
-Bundle = (function ()
+class Bundle
 {
-    function Bundle ()
-    {}
+    static path = window.bundlePath
 
-    Bundle["path"] = window.bundlePath
-    Bundle["app"] = function (p)
+    static app (p)
     {
         return Bundle.path + '/' + p
     }
 
-    Bundle["js"] = function (p)
+    static js (p)
     {
         return Bundle.path + '/js/' + p
     }
 
-    Bundle["mac"] = function (p)
+    static mac (p)
     {
         return Bundle.path + '/Contents/MacOS/' + p
     }
 
-    Bundle["res"] = function (p)
+    static res (p)
     {
         return Bundle.path + '/Contents/Resources/' + p
     }
 
-    Bundle["img"] = function (p)
+    static img (p)
     {
         return Bundle.path + '/Contents/Resources/img/' + p
     }
-
-    return Bundle
-})()
+}
 
 export default Bundle;

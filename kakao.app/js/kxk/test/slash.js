@@ -5,7 +5,7 @@ var home, user
 
 import slash from "../slash.js"
 
-toExport["kslash"] = function ()
+toExport["slash"] = function ()
 {
     section("normalize", function ()
     {
@@ -285,6 +285,38 @@ toExport["kslash"] = function ()
         compare(slash.joinFileLine('/some/path'),'/some/path')
         compare(slash.joinFileLine('/some/path',0),'/some/path')
     })
+    section("sameFilePos", function ()
+    {
+        compare(slash.sameFilePos('/some/other/path:1','/some/path:1'),false)
+        compare(slash.sameFilePos('/some/path:1','/some/path:2'),false)
+        compare(slash.sameFilePos('/some/path:1:2','/some/path:1:3'),false)
+        compare(slash.sameFilePos('/some/path:1:2','/some/path:1'),false)
+        compare(slash.sameFilePos('/some/path:1:2','/some/path'),false)
+        compare(slash.sameFilePos('/some/path:1:3','/some/path:1:3'),true)
+        compare(slash.sameFilePos('/some/path:1:0','/some/path:1:0'),true)
+        compare(slash.sameFilePos('/some/path:1:0','/some/path:1'),true)
+        compare(slash.sameFilePos('/some/path:1:0','/some/path'),true)
+    })
+    section("sameFileLine", function ()
+    {
+        compare(slash.sameFileLine('/some/other/path:1','/some/path:1'),false)
+        compare(slash.sameFileLine('/some/path:1','/some/path:2'),false)
+        compare(slash.sameFileLine('/some/path:2:2','/some/path'),false)
+        compare(slash.sameFileLine('/some/path:1:3','/some/path:1:3'),true)
+        compare(slash.sameFileLine('/some/path:1:4','/some/path:1:0'),true)
+        compare(slash.sameFileLine('/some/path:1:5','/some/path:1'),true)
+        compare(slash.sameFileLine('/some/path:1:6','/some/path'),true)
+    })
+    section("hasFilePos", function ()
+    {
+        compare(slash.hasFilePos('some/path'),false)
+        compare(slash.hasFilePos('some/path:1'),false)
+        compare(slash.hasFilePos('some/path:1:0'),false)
+        compare(slash.hasFilePos('some/path:1:1'),true)
+        compare(slash.hasFilePos('some/path:2'),true)
+        compare(slash.hasFilePos('some/path:2:0'),true)
+        compare(slash.hasFilePos('some/path:2:2'),true)
+    })
     section("isRelative", function ()
     {
         compare(slash.isRelative(_k_.dir()),false)
@@ -317,6 +349,6 @@ toExport["kslash"] = function ()
         compare(slash.contains('/abc.def/ghi.jkl','ghi.jkl'),true)
     })
 }
-toExport["kslash"]._section_ = true
+toExport["slash"]._section_ = true
 toExport._test_ = true
 export default toExport

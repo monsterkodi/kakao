@@ -1,7 +1,8 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
-let pullAllWith = kxk.pullAllWith
+let pullIf = kxk.pullIf
+let keepIf = kxk.keepIf
 let slash = kxk.slash
 let prefs = kxk.prefs
 let post = kxk.post
@@ -10,11 +11,20 @@ class Navigate
 {
     constructor (main)
     {
+        var fp
+
         this.main = main
     
         this.navigate = this.navigate.bind(this)
         post.on('navigate',this.navigate)
-        this.filePositions = prefs.get('navigatePositions',[])
+        this.navlist = stash.get('navigate',[])
+        console.log('history')
+        var list = _k_.list(this.navlist)
+        for (var _19_15_ = 0; _19_15_ < list.length; _19_15_++)
+        {
+            fp = list[_19_15_]
+            console.log(fp)
+        }
         this.currentIndex = -1
         this.navigating = false
     }
@@ -28,11 +38,11 @@ class Navigate
             return
         }
         pos = (pos != null ? pos : [0,0])
-        if (!pos[0] && !pos[1] && this.filePositions.length)
+        if (!pos[0] && !pos[1] && this.navlist.length)
         {
-            for (var _35_22_ = i = this.filePositions.length - 1, _35_47_ = 0; (_35_22_ <= _35_47_ ? i <= 0 : i >= 0); (_35_22_ <= _35_47_ ? ++i : --i))
+            for (var _39_21_ = i = this.navlist.length - 1, _39_40_ = 0; (_39_21_ <= _39_40_ ? i <= 0 : i >= 0); (_39_21_ <= _39_40_ ? ++i : --i))
             {
-                fp = this.filePositions[i]
+                fp = this.navlist[i]
                 if (slash.samePath(fp.file,file))
                 {
                     pos = fp.pos
@@ -40,69 +50,83 @@ class Navigate
                 }
             }
         }
-        pullAllWith(this.filePositions,[{file:file,pos:pos}],function (a, b)
+        pullIf(this.navlist,function (f)
         {
-            return slash.samePath(a.file,b.file) && (a.pos[1] === b.pos[1] || a.pos[1] <= 1)
+            return slash.sameFileLine(f,file)
         })
-        filePos = slash.tilde(slash.joinFilePos(file,pos))
-        if ((this.filePositions.slice(-1)[0] != null ? this.filePositions.slice(-1)[0].file : undefined) === file && (this.filePositions.slice(-1)[0] != null ? this.filePositions.slice(-1)[0].pos[1] : undefined) === pos[1] - 1)
+        keepIf(this.navlist,function (f)
         {
-            this.filePositions.pop()
-        }
-        this.filePositions.push({file:file,pos:pos,line:pos[1] + 1,col:pos[0],name:filePos,text:slash.file(filePos)})
-        while (this.filePositions.length > prefs.get('navigateHistoryLength',100))
+            return slash.hasFilePos(f)
+        })
+        filePos = slash.joinFilePos(file,pos)
+        if (slash.sameFileLine(_k_.last(this.navlist),filePos))
         {
-            this.filePositions.shift()
+            this.navlist.pop()
         }
-        return prefs.set('filePositions',this.filePositions)
+        this.navlist.push(filePos)
+        while (this.navlist.length > prefs.get('navigateHistoryLength',100))
+        {
+            this.navlist.shift()
+        }
+        console.log('addToHistory')
+        var list = _k_.list(this.navlist)
+        for (var _59_15_ = 0; _59_15_ < list.length; _59_15_++)
+        {
+            fp = list[_59_15_]
+            console.log(fp)
+        }
+        return stash.set('navigate',this.navlist)
     }
 
     navigate (opt)
     {
-        var hasFile, _90_30_, _90_45_, _98_39_
+        var hasFile, _103_39_, _94_30_, _94_45_
 
         switch (opt.action)
         {
             case 'clear':
-                this.filePositions = []
+                this.navlist = []
                 return this.currentIndex = -1
 
             case 'backward':
-                if (!this.filePositions.length)
+                console.log('Navigate backward',this.navlist)
+                if (!this.navlist.length)
                 {
                     return
                 }
-                this.currentIndex = _k_.clamp(0,Math.max(0,this.filePositions.length - 2),this.currentIndex - 1)
+                this.currentIndex = _k_.clamp(0,Math.max(0,this.navlist.length - 2),this.currentIndex - 1)
                 this.navigating = true
-                return this.loadFilePos(this.filePositions[this.currentIndex],opt)
+                return this.loadFilePos(this.navlist[this.currentIndex])
 
             case 'forward':
-                if (!this.filePositions.length)
+                if (!this.navlist.length)
                 {
                     return
                 }
-                this.currentIndex = _k_.clamp(0,this.filePositions.length - 1,this.currentIndex + 1)
+                this.currentIndex = _k_.clamp(0,this.navlist.length - 1,this.currentIndex + 1)
                 this.navigating = true
-                return this.loadFilePos(this.filePositions[this.currentIndex],opt)
+                return this.loadFilePos(this.navlist[this.currentIndex])
 
             case 'delFilePos':
-                opt.item.line = ((_90_30_=opt.item.line) != null ? _90_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
-                this.filePositions = this.filePositions.filter(function (f)
+                opt.item.line = ((_94_30_=opt.item.line) != null ? _94_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
+                this.navlist = this.navlist.filter(function (f)
                 {
-                    return f.file !== opt.item.file || f.line !== opt.item.line
+                    var splitPos
+
+                    splitPos = slash.splitFilePos(f)
+                    return splitPos[0] !== opt.item.file || splitPos[1][1] + 1 !== opt.item.line
                 })
-                this.currentIndex = _k_.clamp(0,this.filePositions.length - 1,this.currentIndex)
-                return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
+                return this.currentIndex = _k_.clamp(0,this.navlist.length - 1,this.currentIndex)
 
             case 'addFilePos':
-                if (!(opt != null ? (_98_39_=opt.file) != null ? _98_39_.length : undefined : undefined))
+                if (!(opt != null ? (_103_39_=opt.file) != null ? _103_39_.length : undefined : undefined))
                 {
                     return
                 }
                 this.addToHistory(opt.oldFile,opt.oldPos)
-                hasFile = this.filePositions.find(function (v)
+                hasFile = this.navlist.find(function (f)
                 {
-                    return v.file === opt.file
+                    return slash.splitFilePos(f)[0] === opt.file
                 })
                 if (!this.navigating || !hasFile || _k_.in((opt != null ? opt.for : undefined),['edit','goto']))
                 {
@@ -111,16 +135,14 @@ class Navigate
                         this.navigating = false
                     }
                     this.addToHistory(opt.file,opt.pos)
-                    this.currentIndex = this.filePositions.length - 1
+                    this.currentIndex = this.navlist.length - 1
                     if ((opt != null ? opt.for : undefined) === 'goto')
                     {
-                        post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
-                        return this.loadFilePos(this.filePositions[this.currentIndex],opt)
+                        return this.loadFilePos(this.navlist[this.currentIndex])
                     }
                     else
                     {
-                        this.currentIndex = this.filePositions.length
-                        return post.toWins('navigateHistoryChanged',this.filePositions,this.currentIndex)
+                        return this.currentIndex = this.navlist.length
                     }
                 }
                 break
@@ -128,16 +150,10 @@ class Navigate
 
     }
 
-    loadFilePos (filePos, opt)
+    loadFilePos (filePos)
     {
-        if ((opt != null ? opt.newWindow : undefined))
-        {
-            console.log('navigate new window with file not implemented!')
-        }
-        else
-        {
-            post.emit('loadFile',`${filePos.file}:${filePos.pos[1] + 1}:${filePos.pos[0]}`)
-        }
+        console.log('loadFile',filePos)
+        post.emit('loadFile',filePos)
         return filePos
     }
 

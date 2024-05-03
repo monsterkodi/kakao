@@ -72,19 +72,25 @@ use .. ◆ util
         util.pullIf(arr, (i) -> i == 2) ▸ [1 3]
         arr ▸ [1 3]
         
-    ▸ pullAllWith
+    ▸ keepIf
     
         arr = [1 2 3]
-        util.pullAllWith arr, [1 3] ▸ [2]
+        util.keepIf(arr, (i) -> i >= 2) ▸ [2 3]
+        arr ▸ [2 3]
+        
+    ▸ pullAll
+    
+        arr = [1 2 3]
+        util.pullAll arr, [1 3] ▸ [2]
         arr ▸ [2]
 
         arr = [1 9 9 2 8 3 7]
-        util.pullAllWith(arr, [3 5], (a,b) -> a >= b) ▸ [1 2]
+        util.pullAll(arr, [3 5], (a,b) -> a >= b) ▸ [1 2]
         arr ▸ [1 2]
         
-        util.pullAllWith [], [], null ▸ []
-        util.pullAllWith [], [1, 3], null ▸ []
-        util.pullAllWith [] ▸ []
+        util.pullAll [], [], null ▸ []
+        util.pullAll [], [1, 3], null ▸ []
+        util.pullAll [] ▸ []
         
     ▸ uniq
     

@@ -1,6 +1,6 @@
 var _k_ = {isArr: function (o) {return Array.isArray(o)}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
-var isEqual
+var isEqual, util
 
 
 isEqual = function (a, b)
@@ -28,7 +28,7 @@ isEqual = function (a, b)
     }
     return a === b
 }
-export default {isEqual:isEqual,zip:function (...args)
+util = {isEqual:isEqual,zip:function (...args)
 {
     var i, maxLen, result
 
@@ -79,17 +79,23 @@ export default {isEqual:isEqual,zip:function (...args)
         }
     }
     return arr
-},pullAllWith:function (arr, items, cmp = isEqual)
+},keepIf:function (arr, pred)
+{
+    return util.pullIf(arr,function (m)
+    {
+        return !pred(m)
+    })
+},pullAll:function (arr, items, cmp = isEqual)
 {
     var index, item
 
     if (!_k_.empty(arr) && _k_.isArr(arr))
     {
         var list = _k_.list(items)
-        for (var _68_21_ = 0; _68_21_ < list.length; _68_21_++)
+        for (var _70_21_ = 0; _70_21_ < list.length; _70_21_++)
         {
-            item = list[_68_21_]
-            for (var _69_29_ = index = arr.length - 1, _69_43_ = 0; (_69_29_ <= _69_43_ ? index <= 0 : index >= 0); (_69_29_ <= _69_43_ ? ++index : --index))
+            item = list[_70_21_]
+            for (var _71_29_ = index = arr.length - 1, _71_43_ = 0; (_71_29_ <= _71_43_ ? index <= 0 : index >= 0); (_71_29_ <= _71_43_ ? ++index : --index))
             {
                 if (cmp(arr[index],item))
                 {
@@ -105,9 +111,9 @@ export default {isEqual:isEqual,zip:function (...args)
 
     result = []
     var list = _k_.list(arr)
-    for (var _77_17_ = 0; _77_17_ < list.length; _77_17_++)
+    for (var _79_17_ = 0; _79_17_ < list.length; _79_17_++)
     {
-        item = list[_77_17_]
+        item = list[_79_17_]
         if (!(_k_.in(item,result)))
         {
             result.push(item)
@@ -120,14 +126,14 @@ export default {isEqual:isEqual,zip:function (...args)
 
     result = []
     var list = _k_.list(arr)
-    for (var _85_17_ = 0; _85_17_ < list.length; _85_17_++)
+    for (var _87_17_ = 0; _87_17_ < list.length; _87_17_++)
     {
-        item = list[_85_17_]
+        item = list[_87_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _87_22_ = 0; _87_22_ < list1.length; _87_22_++)
+        for (var _89_22_ = 0; _89_22_ < list1.length; _89_22_++)
         {
-            ritem = list1[_87_22_]
+            ritem = list1[_89_22_]
             if (isEqual(item,ritem))
             {
                 add = false
@@ -154,14 +160,14 @@ export default {isEqual:isEqual,zip:function (...args)
     }
     result = []
     var list = _k_.list(arr)
-    for (var _101_17_ = 0; _101_17_ < list.length; _101_17_++)
+    for (var _103_17_ = 0; _103_17_ < list.length; _103_17_++)
     {
-        item = list[_101_17_]
+        item = list[_103_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _103_22_ = 0; _103_22_ < list1.length; _103_22_++)
+        for (var _105_22_ = 0; _105_22_ < list1.length; _105_22_++)
         {
-            ritem = list1[_103_22_]
+            ritem = list1[_105_22_]
             if (prop(item) === prop(ritem))
             {
                 add = false
@@ -203,12 +209,12 @@ export default {isEqual:isEqual,zip:function (...args)
     })
 },defaults:function (obj, def)
 {
-    var key, val, _133_21_
+    var key, val, _135_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_133_21_=obj[key]) != null ? _133_21_ : val)
+        obj[key] = ((_135_21_=obj[key]) != null ? _135_21_ : val)
     }
     return obj
 },pickBy:function (obj, pred)
@@ -257,3 +263,4 @@ export default {isEqual:isEqual,zip:function (...args)
     }).bind(this))
     return true
 }}
+export default util;

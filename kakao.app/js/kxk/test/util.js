@@ -58,20 +58,29 @@ toExport["util"] = function ()
         }),[1,3])
         compare(arr,[1,3])
     })
-    section("pullAllWith", function ()
+    section("keepIf", function ()
     {
         arr = [1,2,3]
-        compare(util.pullAllWith(arr,[1,3]),[2])
+        compare(util.keepIf(arr,function (i)
+        {
+            return i >= 2
+        }),[2,3])
+        compare(arr,[2,3])
+    })
+    section("pullAll", function ()
+    {
+        arr = [1,2,3]
+        compare(util.pullAll(arr,[1,3]),[2])
         compare(arr,[2])
         arr = [1,9,9,2,8,3,7]
-        compare(util.pullAllWith(arr,[3,5],function (a, b)
+        compare(util.pullAll(arr,[3,5],function (a, b)
         {
             return a >= b
         }),[1,2])
         compare(arr,[1,2])
-        compare(util.pullAllWith([],[],null),[])
-        compare(util.pullAllWith([],[1,3],null),[])
-        compare(util.pullAllWith([]),[])
+        compare(util.pullAll([],[],null),[])
+        compare(util.pullAll([],[1,3],null),[])
+        compare(util.pullAll([]),[])
     })
     section("uniq", function ()
     {

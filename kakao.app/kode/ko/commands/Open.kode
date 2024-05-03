@@ -61,7 +61,7 @@ function Open extends Command
 
         items = @listItems currentText:cmmd, maxItems:10000
 
-        if cmmd.length
+        if valid cmmd and valid items
             
             @krzl.values  = items
             @krzl.extract = (o) -> o.text

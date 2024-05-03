@@ -16,7 +16,7 @@ use ◆ bundle
 
 function Kakao
 
-    @init: (cb) ○->
+    @init: cb ○->
         
         while not window.bundlePath # wait for valid bundle path
             ○ sleep 100
@@ -38,7 +38,7 @@ function Kakao
         
     # receives a message from the application process and posts it in this window
         
-    @receive: (msg) ->
+    @receive: msg ->
 
         if msg is str
             post.emit msg
@@ -50,8 +50,8 @@ function Kakao
     @bundle: bundle  # provides paths and urls relative to the application folder
     @ffs:    ffs     # fake fs
 
-# this is slightly evil: instead of exporting Kakao we just export it's request function
-# and attach the other functions to it. just makes requesting stuff a bit more convenient
+# this is slightly evil: instead of exporting Kakao only the request function is exported
+# with the other functions attached to it. makes requesting stuff a bit more convenient.
     
 kakao = -> Kakao.request.apply null, arguments
 for k,v of Kakao ➜ kakao[k] = v

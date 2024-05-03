@@ -246,6 +246,32 @@ class Slash
         return [d + split[0],Math.max(l,1),Math.max(c,0)]
     }
 
+    static hasFilePos (p)
+    {
+        var ps
+
+        ps = Slash.splitFilePos(p)
+        return ps[1][0] !== 0 || ps[1][1] !== 0
+    }
+
+    static sameFilePos (a, b)
+    {
+        var as, bs
+
+        as = Slash.splitFilePos(a)
+        bs = Slash.splitFilePos(b)
+        return as[0] === bs[0] && as[1][1] === bs[1][1] && as[1][0] === bs[1][0]
+    }
+
+    static sameFileLine (a, b)
+    {
+        var as, bs
+
+        as = Slash.splitFilePos(a)
+        bs = Slash.splitFilePos(b)
+        return as[0] === bs[0] && as[1][1] === bs[1][1]
+    }
+
     static removeFilePos (p)
     {
         return Slash.splitFilePos(p)[0]
@@ -255,7 +281,7 @@ class Slash
     {
         var c, f, l
 
-        var _188_16_ = Slash.splitFileLine(p); f = _188_16_[0]; l = _188_16_[1]; c = _188_16_[2]
+        var _192_16_ = Slash.splitFileLine(p); f = _192_16_[0]; l = _192_16_[1]; c = _192_16_[2]
 
         return [f,[c,l - 1]]
     }
@@ -269,7 +295,7 @@ class Slash
     {
         var f, l
 
-        var _193_14_ = Slash.splitFileLine(p); f = _193_14_[0]; l = _193_14_[1]
+        var _197_14_ = Slash.splitFileLine(p); f = _197_14_[0]; l = _197_14_[1]
 
         if (l > 1)
         {
@@ -426,23 +452,23 @@ class Slash
 
     static home ()
     {
-        var _312_35_
+        var _316_35_
 
-        return ((_312_35_=globalThis.homeDir) != null ? _312_35_ : process.env.HOME)
+        return ((_316_35_=globalThis.homeDir) != null ? _316_35_ : process.env.HOME)
     }
 
     static user ()
     {
-        var _313_35_
+        var _317_35_
 
-        return ((_313_35_=globalThis.useName) != null ? _313_35_ : process.env.USER)
+        return ((_317_35_=globalThis.useName) != null ? _317_35_ : process.env.USER)
     }
 
     static tmpdir ()
     {
-        var _314_35_
+        var _318_35_
 
-        return ((_314_35_=globalThis.tmpDir) != null ? _314_35_ : process.env.TMPDIR)
+        return ((_318_35_=globalThis.tmpDir) != null ? _318_35_ : process.env.TMPDIR)
     }
 
     static tmpfile (ext)

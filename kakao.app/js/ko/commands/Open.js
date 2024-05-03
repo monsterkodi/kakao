@@ -76,7 +76,7 @@ Open = (function ()
         var _60_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _60_20_[0]; pos = _60_20_[1]
 
         items = this.listItems({currentText:cmmd,maxItems:10000})
-        if (cmmd.length)
+        if (!_k_.empty(cmmd) && !_k_.empty(items))
         {
             this.krzl.values = items
             this.krzl.extract = function (o)

@@ -3,7 +3,7 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 var Shelf
 
 import kxk from "../../kxk.js"
-let pullAllWith = kxk.pullAllWith
+let pullAll = kxk.pullAll
 let ffs = kxk.ffs
 let elem = kxk.elem
 let post = kxk.post
@@ -229,7 +229,7 @@ Shelf = (function ()
     {
         var index
 
-        pullAllWith(this.items,[item])
+        pullAll(this.items,[item])
         if ((opt != null ? opt.pos : undefined))
         {
             index = this.rowIndexAtPos(opt.pos)
