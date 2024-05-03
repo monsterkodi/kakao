@@ -555,9 +555,11 @@ Parser = (function ()
         this.push(`op${op.text}`)
         if (op.text === '=' && tokens[0].type === 'block')
         {
+            this.blockAssign = true
             tokens = tokens.shift().tokens
         }
         rhs = this.exp(tokens)
+        delete this.blockAssign
         this.pop(`op${op.text}`)
         rhs = this.prepareCallAssign(rhs)
         if (op.text === '?=')

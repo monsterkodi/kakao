@@ -60,6 +60,31 @@ D = (function ()
 }
 `)
     })
+    section("object", function ()
+    {
+        compare(kc(`obj =
+    f: (a,b) -> a + b`),`obj = {f:function (a, b)
+{
+    return a + b
+}}`)
+        compare(kc(`obj =
+    f: a b -> a + b`),`obj = {f:function (a, b)
+{
+    return a + b
+}}`)
+    })
+    section("varargs", function ()
+    {
+        compare(kc(`obj = 
+    zip: (args...) ->`),`obj = {zip:function (...args)
+{}}`)
+        compare(kd(`obj = 
+    zip: args... ->`),`obj = {zip:function (...args)
+{}}`)
+        compare(kd(`obj = 
+    zip: a b c... ->`),`obj = {zip:function (a, b, ...c)
+{}}`)
+    })
     section("constructor", function ()
     {
         compare(kc(`function D

@@ -273,17 +273,19 @@ function Parse extends parseutils
 
         @sheapPush 'exp' tok.text ? tok.type
         
-        if tok.type != 'paren' # treat methods and funcs with minimal args
+        if tok.type != 'paren' and '○rgs' not in @stack # treat methods and funcs with minimal args
             
-            if @stack[-1] == ':' and @stack[-2] == 'class' or # m: a b -> 
-               @stack[-1] == 'op=' and '○rgs' not in @stack   # f = a b ->
+            if @stack[-1] == ':' and @stack[-2] == 'class' or # class/function  m: a b -> 
+               @stack[-1] == 'op=' and not @blockAssign or  # f = a b ->
+               @stack[-1] == ':' and @stack[-2] == '{' and not '▸args' in @stack # object m: a b -> 
                 
                 if @funcAhead tokens
                     
+                    # log 'funcAhead >>>>>>>>>>>>>>>>>>>> ' @stack, tok, tokens
                     paren = @argsWithoutParens tok, tokens
                     @sheapPop 'exp' tok.text ? tok.type
                     ⮐ @lhs paren, tokens
-        
+                    
         e = tok
         while tokens.length                  # repeatedly call rhs and lhs until all tokens are swallowed
             
@@ -502,17 +504,9 @@ function Parse extends parseutils
                 e = @main e, tokens
                 break
                 
-            # if e.text == 'import'
-                # e = @import e, tokens
-                # break
-
-            # if e.text == 'export'
-                # e = @export e, tokens
-                # break
-                
             if      
                 nxt.text == '.'    ➜ e = @prop   e, tokens
-                nxt.type == 'dots' and not @stack[-1]?.startsWith('op') and @stack[-1] != '(' ➜ e = @slice e, tokens
+                nxt.type == 'dots' and not @stack[-1]?.startsWith('op') and @stack[-1] != '(' and '○rgs' not in @stack ➜ e = @slice e, tokens
                 nxt.text == 'each' ➜ e = @each   e, tokens
                 nxt.text == '?' 
                 

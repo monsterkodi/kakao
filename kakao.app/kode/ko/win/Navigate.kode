@@ -151,7 +151,8 @@ class Navigate
     addFilePos: opt -> # called on editing
         
         opt.action = 'addFilePos'
-        opt.for = 'edit'
+        opt.for    = 'edit'
+        
         post.emit 'navigate' opt
 
     #  0000000    0000000   000000000   0000000   
@@ -163,7 +164,8 @@ class Navigate
     gotoFilePos: opt -> # called on jumpTo
         
         opt.action = 'addFilePos'
-        opt.for = 'goto'
+        opt.for    = 'goto'
+        
         post.emit 'navigate' opt
 
     backward: -> post.emit 'navigate' action:'backward'

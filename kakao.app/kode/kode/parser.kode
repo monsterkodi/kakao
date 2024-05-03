@@ -670,9 +670,13 @@ function Parser extends parse
         @push "op#{op.text}"
         
         if op.text == '=' and tokens[0].type == 'block'
+            @blockAssign = true
             tokens = tokens.shift().tokens
         
         rhs = @exp tokens
+        
+        delete @blockAssign
+        
         @pop "op#{op.text}"
         
         rhs = @prepareCallAssign rhs

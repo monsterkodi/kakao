@@ -49,7 +49,7 @@ FuncList = (function ()
 
     FuncList.prototype["toggle"] = function ()
     {
-        prefs.toggle('funclist')
+        prefs.toggle('funclist|active')
         return this.onSplit()
     }
 
@@ -57,8 +57,8 @@ FuncList = (function ()
     {
         var browserVisible, funclistActive, hide
 
-        browserVisible = window.split.browserVisible()
-        funclistActive = prefs.get('funclist')
+        browserVisible = window.split.browserVisible() && prefs.get('funclist|hideWhenBrowsing',false)
+        funclistActive = prefs.get('funclist|active')
         hide = browserVisible || !funclistActive
         this.elem.style.display = (hide ? 'none' : 'inherit')
         return this.onEditorScrollOrCursor()

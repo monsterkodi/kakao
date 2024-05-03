@@ -41,13 +41,13 @@ function FuncList
             
     toggle: =>
         
-        prefs.toggle 'funclist'
+        prefs.toggle 'funclist|active'
         @onSplit()
                     
     onSplit: =>
         
-        browserVisible = window.split.browserVisible()
-        funclistActive = prefs.get 'funclist'
+        browserVisible = window.split.browserVisible() and prefs.get 'funclist|hideWhenBrowsing' false
+        funclistActive = prefs.get 'funclist|active'
         hide = browserVisible or not funclistActive
         @elem.style.display = hide ? 'none' : 'inherit'
         @onEditorScrollOrCursor()
