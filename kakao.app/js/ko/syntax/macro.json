@@ -2,10 +2,6 @@
   "(clean|help|dbg|class|req|inv|blink|color|fps)\\b": [
     "macro"
   ],
-  "(test)\\s?(.*)?": [
-    "test-suite",
-    "test-pass"
-  ],
   "(basename|filename|dirname|extname|resolve|unresolve)\\b": [
     "keyword"
   ],

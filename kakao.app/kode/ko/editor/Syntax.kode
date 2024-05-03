@@ -133,7 +133,7 @@ class Syntax
 
     @dissForTextAndSyntax: (text, n) ->
 
-        if n not in ['browser' 'ko' 'commandline' 'macro' 'term' 'test' 'git']
+        if n not in ['browser' 'ko' 'commandline' 'macro' 'term' 'git']
             result = kolor.ranges text, n
         else
             if not n? or not Syntax.matchrConfigs[n]?

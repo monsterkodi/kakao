@@ -10,7 +10,7 @@ FuncItems = (function ()
 
     FuncItems["forIndexerInfo"] = function (file, info)
     {
-        var arr, clss, clsss, func, funcs, items, text, _14_29_, _19_27_
+        var arr, clss, clsss, func, funcs, items, text, type, _14_29_, _19_27_
 
         items = []
         clsss = ((_14_29_=info.classes) != null ? _14_29_ : [])
@@ -23,14 +23,17 @@ FuncItems = (function ()
         }
         funcs = ((_19_27_=info.funcs) != null ? _19_27_ : [])
         var list1 = _k_.list(funcs)
-        for (var _20_17_ = 0; _20_17_ < list1.length; _20_17_++)
+        for (var _21_17_ = 0; _21_17_ < list1.length; _21_17_++)
         {
-            func = list1[_20_17_]
+            func = list1[_21_17_]
+            type = 'func'
             arr = (func.bound ? '=> ' : '-> ')
             if (func.test)
             {
+                type = 'test'
                 if (func.test === 'describe')
                 {
+                    console.log('describe still used?')
                     text = '● ' + func.name
                 }
                 else
@@ -60,7 +63,7 @@ FuncItems = (function ()
                     text = '  ' + arr + func.name
                 }
             }
-            items.push({name:func.name,text:text,type:'func',path:file,line:func.line})
+            items.push({name:func.name,text:text,type:type,path:file,line:func.line})
         }
         if (!_k_.empty(items))
         {

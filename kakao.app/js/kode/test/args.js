@@ -78,10 +78,10 @@ D = (function ()
         compare(kc(`obj = 
     zip: (args...) ->`),`obj = {zip:function (...args)
 {}}`)
-        compare(kd(`obj = 
+        compare(kc(`obj = 
     zip: args... ->`),`obj = {zip:function (...args)
 {}}`)
-        compare(kd(`obj = 
+        compare(kc(`obj = 
     zip: a b c... ->`),`obj = {zip:function (a, b, ...c)
 {}}`)
     })

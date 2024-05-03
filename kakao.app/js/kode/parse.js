@@ -260,7 +260,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, paren, tok, _274_34_, _286_45_, _349_33_
+        var block, e, numTokens, paren, tok, _286_34_, _298_45_, _361_33_
 
         if (_k_.empty(tokens))
         {
@@ -374,7 +374,7 @@ Parse = (function ()
 
         }
 
-        this.sheapPush('exp',((_274_34_=tok.text) != null ? _274_34_ : tok.type))
+        this.sheapPush('exp',((_286_34_=tok.text) != null ? _286_34_ : tok.type))
         if (tok.type !== 'paren' && !(_k_.in('○rgs',this.stack)))
         {
             if (this.stack.slice(-1)[0] === ':' && this.stack.slice(-2,-1)[0] === 'class' || this.stack.slice(-1)[0] === 'op=' && !this.blockAssign || this.stack.slice(-1)[0] === ':' && this.stack.slice(-2,-1)[0] === '{' && !(_k_.in('▸args',this.stack)))
@@ -382,7 +382,7 @@ Parse = (function ()
                 if (this.funcAhead(tokens))
                 {
                     paren = this.argsWithoutParens(tok,tokens)
-                    this.sheapPop('exp',((_286_45_=tok.text) != null ? _286_45_ : tok.type))
+                    this.sheapPop('exp',((_298_45_=tok.text) != null ? _298_45_ : tok.type))
                     return this.lhs(paren,tokens)
                 }
             }
@@ -467,13 +467,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_349_33_=tok.text) != null ? _349_33_ : tok.type))
+        this.sheapPop('exp',((_361_33_=tok.text) != null ? _361_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _410_22_
+        var llc, numTokens, nxt, spaced, unspaced, _422_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])

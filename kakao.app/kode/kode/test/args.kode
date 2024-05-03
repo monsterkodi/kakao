@@ -154,7 +154,7 @@ use ./utils ▪ kc ke kd
             {}}
             """
             
-        kd  """
+        kc  """
             obj = 
                 zip: args... ->
             """ ▸
@@ -163,7 +163,7 @@ use ./utils ▪ kc ke kd
             {}}
             """
 
-        kd  """
+        kc  """
             obj = 
                 zip: a b c... ->
             """ ▸

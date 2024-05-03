@@ -466,31 +466,6 @@
     color: #333;
 }
 
-.test
-{
-    color: #ccf;
-}
-
-.test-suite
-{
-    color: #88f;
-}
-
-.test-fail
-{
-    color: #ff0;
-}
-
-.test-error
-{
-    color: #fa0;
-}
-
-.test-pass
-{
-    color: #0a0;
-}
-
 &.h1
 {
     color: #ff0;

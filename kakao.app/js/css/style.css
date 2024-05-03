@@ -21,21 +21,6 @@
     outline-style: none;
 }
 
-.test
-{
-    font-size: 40px;
-    font-family: fontMono;
-    color: #88f;
-    text-align: center;
-    width: 100%;
-}
-
-.test:hover
-{
-    color: white;
-    cursor: pointer;
-}
-
 body
 {
     position: absolute;

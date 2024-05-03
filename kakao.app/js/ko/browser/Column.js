@@ -88,6 +88,7 @@ Column = (function ()
     {
         var dir, item, updir, _66_98_, _92_46_, _93_73_
 
+        console.log('loadItems items:',items)
         this.clear()
         this.parent = parent
         if (this.index === 0 || this.index - 1 < this.browser.numCols() && (this.browser.columns[this.index - 1].activeRow() != null ? this.browser.columns[this.index - 1].activeRow().item.file : undefined) === '..')
