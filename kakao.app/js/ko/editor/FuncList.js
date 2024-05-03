@@ -22,16 +22,35 @@ FuncList = (function ()
         this["onFileIndexed"] = this["onFileIndexed"].bind(this)
         this["onEditorFile"] = this["onEditorFile"].bind(this)
         this["onEditorScrollOrCursor"] = this["onEditorScrollOrCursor"].bind(this)
-        this["onSplit"] = this["onSplit"].bind(this)
         this["onDragMove"] = this["onDragMove"].bind(this)
+        this["onSplit"] = this["onSplit"].bind(this)
+        this["toggle"] = this["toggle"].bind(this)
         this.elem = elem({class:'funclist'})
         this.editor.view.appendChild(this.elem)
         this.editor.scroll.on('scroll',this.onEditorScrollOrCursor)
         this.editor.on('cursor',this.onEditorScrollOrCursor)
         post.on('fileIndexed',this.onFileIndexed)
         post.on('split',this.onSplit)
+        post.on('funclist.toggle',this.toggle)
         kore.on('editor|file',this.onEditorFile)
         this.drag = new drag({target:this.elem,onStart:this.onDragMove,onMove:this.onDragMove})
+    }
+
+    FuncList.prototype["toggle"] = function ()
+    {
+        prefs.toggle('funclist')
+        return this.onSplit()
+    }
+
+    FuncList.prototype["onSplit"] = function ()
+    {
+        var browserVisible, funclistActive, hide
+
+        browserVisible = window.split.browserVisible()
+        funclistActive = prefs.get('funclist')
+        hide = browserVisible || !funclistActive
+        this.elem.style.display = (hide ? 'none' : 'inherit')
+        return this.onEditorScrollOrCursor()
     }
 
     FuncList.prototype["onDragMove"] = function (drag, event)
@@ -45,15 +64,6 @@ FuncList = (function ()
         }
     }
 
-    FuncList.prototype["onSplit"] = function ()
-    {
-        var browserVisible
-
-        browserVisible = window.split.browserVisible()
-        this.elem.style.display = (browserVisible ? 'none' : 'inherit')
-        return this.onEditorScrollOrCursor()
-    }
-
     FuncList.prototype["onEditorScrollOrCursor"] = function ()
     {
         var botLine, child, inside, lastLine, mainLine, scroll, topLine, visible
@@ -63,9 +73,9 @@ FuncList = (function ()
         botLine = topLine + this.editor.numFullLines()
         mainLine = this.editor.mainCursor()[1] + 1
         var list = _k_.list(this.elem.children)
-        for (var _55_18_ = 0; _55_18_ < list.length; _55_18_++)
+        for (var _63_18_ = 0; _63_18_ < list.length; _63_18_++)
         {
-            child = list[_55_18_]
+            child = list[_63_18_]
             lastLine = (child.nextSibling ? child.nextSibling.item.line : this.editor.numLines())
             visible = lastLine - 1 > topLine && child.item.line <= botLine
             child.classList.toggle('visible',visible)
@@ -97,9 +107,9 @@ FuncList = (function ()
             items = FuncItems.forIndexerInfo(file,info)
             this.elem.innerHTML = ''
             var list = _k_.list(items)
-            for (var _86_21_ = 0; _86_21_ < list.length; _86_21_++)
+            for (var _93_21_ = 0; _93_21_ < list.length; _93_21_++)
             {
-                item = list[_86_21_]
+                item = list[_93_21_]
                 e = elem({class:'funclist-item',parent:this.elem,html:Syntax.spanForTextAndSyntax(item.text,'browser')})
                 e.item = item
             }

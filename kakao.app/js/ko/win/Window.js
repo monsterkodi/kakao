@@ -199,6 +199,9 @@ Window = (function ()
             case 'Toggle Center Text':
                 return toggleCenterText()
 
+            case 'Toggle Func List':
+                return post.emit('funclist.toggle')
+
             case 'Toggle Tab Pinned':
                 return toggleTabPinned()
 
@@ -331,7 +334,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _206_14_
+    var _207_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -342,7 +345,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _212_22_, _213_19_
+    var _213_22_, _214_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -377,7 +380,7 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _252_32_
+    var _253_32_
 
     if (!(_k_.isNum(s)))
     {

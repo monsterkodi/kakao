@@ -25,53 +25,37 @@ Prefs = (function ()
 
     Prefs["get"] = function (key, value)
     {
-        if (this.store)
-        {
-            return this.store.get(key,value)
-        }
-        else
-        {
-            return _k_.clone(value)
-        }
+        return (this.store ? this.store.get(key,value) : _k_.clone(value))
     }
 
     Prefs["set"] = function (key, value)
     {
-        var _23_33_
+        var _23_30_
 
         return (this.store != null ? this.store.set(key,value) : undefined)
     }
 
     Prefs["del"] = function (key, value)
     {
-        var _24_33_
+        var _24_30_
 
         return (this.store != null ? this.store.del(key) : undefined)
     }
 
     Prefs["save"] = function ()
     {
-        var _25_33_
+        var _25_30_
 
         return (this.store != null ? this.store.save() : undefined)
     }
 
-    Prefs["toggle"] = function (key, cb)
+    Prefs["toggle"] = function (key)
     {
         var val
 
         val = !this.get(key,false)
         this.set(key,val)
-        return (typeof cb === "function" ? cb(val) : undefined)
-    }
-
-    Prefs["apply"] = function (key, deflt = false, cb)
-    {
-        if (!(cb != null) && deflt !== false)
-        {
-            cb = deflt
-        }
-        return (typeof cb === "function" ? cb(this.get(key,deflt)) : undefined)
+        return val
     }
 
     return Prefs

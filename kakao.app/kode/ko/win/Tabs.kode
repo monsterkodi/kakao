@@ -613,7 +613,7 @@ class Tabs
     # 000       000   000  000  0000     000     000        000 000      000
     #  0000000   0000000   000   000     000     00000000  000   000     000
 
-    onContextMenu: event => 
+    onContextMenu: event =>
 
         if tab = @tab event.target
             @activate tab.path
