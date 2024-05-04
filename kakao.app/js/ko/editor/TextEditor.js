@@ -24,6 +24,7 @@ import Strings from "./Strings.js"
 import Render from "./Render.js"
 import EditorScroll from "./EditorScroll.js"
 import FuncList from "./FuncList.js"
+import FileList from "./FileList.js"
 import Editor from "./Editor.js"
 
 

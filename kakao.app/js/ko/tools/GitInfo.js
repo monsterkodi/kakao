@@ -356,6 +356,7 @@ class GitInfo
         opt.prjDir = ((_346_19_=opt.prjDir) != null ? _346_19_ : Projects.dir(window.editor.currentFile))
         window.split.raise('terminal')
         window.terminal.clear()
+        post.emit('filelist.clear')
         onMetaClick = this.onMetaClick
         logDiff = this.logDiff
         return Git.status(opt.prjDir).then(async function (status)
@@ -392,24 +393,25 @@ class GitInfo
                 }).bind(this))()
                 path = slash.relative(file,status.gitDir)
                 window.terminal.appendMeta({diss:Syntax.dissForTextAndSyntax(`${path}`,'ko'),href:file,clss:'gitInfoFile',click:onMetaClick,line:symbol,lineClss:'gitInfoLine ' + change})
+                post.emit('filelist.add',file,window.terminal.numLines())
                 if (spacer)
                 {
                     return window.terminal.appendMeta({clss:'spacer'})
                 }
             }
             var list = _k_.list(status.deleted)
-            for (var _382_21_ = 0; _382_21_ < list.length; _382_21_++)
+            for (var _386_21_ = 0; _386_21_ < list.length; _386_21_++)
             {
-                file = list[_382_21_]
+                file = list[_386_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('deleted',file,status,opt.diff)
                 }
             }
             var list1 = _k_.list(status.added)
-            for (var _387_21_ = 0; _387_21_ < list1.length; _387_21_++)
+            for (var _391_21_ = 0; _391_21_ < list1.length; _391_21_++)
             {
-                file = list1[_387_21_]
+                file = list1[_391_21_]
                 if (_k_.in(slash.ext(file),SOURCE_FILE_EXTS))
                 {
                     logFile('added',file,status,opt.diff)
@@ -428,15 +430,15 @@ class GitInfo
                 {
                     return _k_.in(slash.ext(f),SOURCE_FILE_EXTS)
                 }))
-                for (var _397_25_ = 0; _397_25_ < list2.length; _397_25_++)
+                for (var _402_25_ = 0; _402_25_ < list2.length; _402_25_++)
                 {
-                    file = list2[_397_25_]
+                    file = list2[_402_25_]
                     logFile('changed',file,status,NaN)
                     changeInfo = await Git.diff(file)
                     var list3 = _k_.list(changeInfo.changes)
-                    for (var _403_31_ = 0; _403_31_ < list3.length; _403_31_++)
+                    for (var _408_31_ = 0; _408_31_ < list3.length; _408_31_++)
                     {
-                        change = list3[_403_31_]
+                        change = list3[_408_31_]
                         line = change.line
                         if (!_k_.empty(change.mod))
                         {

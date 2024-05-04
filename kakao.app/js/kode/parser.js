@@ -453,7 +453,7 @@ Parser = (function ()
             val = this.block('return',tokens)
             if ((val != null ? val.length : undefined) > 1)
             {
-                console.log('dafuk?')
+                console.log('dafuk?',tok,tokens)
             }
             val = (val != null ? val[0] : undefined)
         }

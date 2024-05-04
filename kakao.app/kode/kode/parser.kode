@@ -592,7 +592,7 @@ function Parser extends parse
         if tokens[0]?.type != 'nl'        
             val = @block 'return' tokens
             if val?.length > 1
-                log 'dafuk?'
+                log 'dafuk?' tok, tokens
             val = val?[0]
             
         e = return: ret: tok

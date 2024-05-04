@@ -739,27 +739,36 @@ span.macro.macro,
     background-color: #111111;
 }
 
+
+.filelist-item,
 .funclist-item
 {
     background-color: #000000;
     cursor: pointer;
 }
 
+.filelist-item: hover,
 .funclist-item:hover
 {
     background-color: #0d0d0d;
 }
 
+
+.filelist-item:active,
 .funclist-item:active
 {
         background-color: #222;
 }
 
+
+.filelist-item.visible,
 .funclist-item.visible
 {
         background-color: #111111;
 }
 
+
+.filelist-item.inside,
 .funclist-item.inside
 {
         background-color: #333;

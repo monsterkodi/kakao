@@ -1196,6 +1196,8 @@ body
     background-color: transparent;
 }
 
+
+.filelist,
 .funclist
 {
     position: absolute;
@@ -1211,6 +1213,8 @@ body
     pointer-events: none;
 }
 
+
+.filelist-item,
 .funclist-item
 {
     pointer-events: auto;

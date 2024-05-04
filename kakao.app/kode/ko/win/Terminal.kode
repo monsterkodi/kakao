@@ -13,9 +13,9 @@ use ../editor ◆ Syntax TextEditor
 
 function Terminal extends TextEditor
 
-    @: (viewElem) ->
+    @: viewElem ->
         
-        super viewElem, features: ['Scrollbar' 'Numbers' 'Minimap' 'Meta'], fontSize: 15
+        super viewElem, features: ['Scrollbar' 'Numbers' 'Minimap' 'Meta' 'FileList'], fontSize:16 lineHeight:1.3
         
         @view.addEventListener "contextmenu" @onContextMenu
         
@@ -25,7 +25,7 @@ function Terminal extends TextEditor
         
         @initInvisibles()
         
-    onDoChanges: (changes) =>
+    onDoChanges: changes =>
         
         ⮐ if @metaQueue.length
     
@@ -37,7 +37,7 @@ function Terminal extends TextEditor
     # 000   000  000        000        000       000  0000  000   000
     # 000   000  000        000        00000000  000   000  0000000  
                 
-    appendLineDiss: (text, diss=[]) ->
+    appendLineDiss: text diss=[] ->
         
         @syntax.setDiss @numLines(), diss if diss?.length
         @appendText text
@@ -50,10 +50,9 @@ function Terminal extends TextEditor
     # 000 0 000  000          000     000   000
     # 000   000  00000000     000     000   000
     
-    appendMeta: (meta) ->
+    appendMeta: meta ->
         
-        if not meta?
-            return error 'Terminal.appendMeta -- no meta?'
+        ⮐ error 'Terminal.appendMeta -- no meta?' if not meta?
             
         @meta.append meta
         
@@ -99,7 +98,7 @@ function Terminal extends TextEditor
         @metaTimer = null
         @metaQueue = []
     
-    queueMeta: (meta) ->
+    queueMeta: meta ->
         
         @metaQueue.push meta
         clearTimeout @metaTimer
@@ -145,9 +144,9 @@ function Terminal extends TextEditor
     # 000        000   000  000        000   000  000          
     # 000         0000000   000         0000000   000          
 
-    onContextMenu: (event) => stopEvent event, @showContextMenu kpos event
+    onContextMenu: event => stopEvent event, @showContextMenu kpos event
               
-    showContextMenu: (absPos) =>
+    showContextMenu: absPos =>
         
         if not absPos?
             absPos = kpos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top
@@ -181,9 +180,9 @@ function Terminal extends TextEditor
     # 000  000   000          000   
     # 000   000  00000000     000   
     
-    handleModKeyComboCharEvent: (mod, key, combo, char, event) ->
+    handleModKeyComboCharEvent: mod key combo char event ->
         
-        return if 'unhandled' != super mod, key, combo, char, event
+        ⮐ if 'unhandled' != super mod, key, combo, char, event
         
         switch combo
             
@@ -191,7 +190,7 @@ function Terminal extends TextEditor
                 
                 if href = @meta.hrefAtLineIndex @cursorPos()[1]
                     post.emit 'loadFile' "#{href}" 
-                return
+                ⮐ 
                 
             'ctrl+enter' 
             'command+enter'
@@ -199,19 +198,19 @@ function Terminal extends TextEditor
                 if href = @meta.hrefAtLineIndex @cursorPos()[1]
                     post.emit 'loadFile' "#{href}" 
                     window.editor.focus()
-                return
+                ⮐ 
                 
             'ctrl+s' 
             'command+s'
                 
-                return if @meta.saveChanges()
+                ⮐  if @meta.saveChanges()
                 
             'esc'
                 
                 split = window.split
                 split.focus 'commandline-editor'
                 split.do    'enlarge editor'
-                return
+                ⮐ 
                 
         'unhandled'
 

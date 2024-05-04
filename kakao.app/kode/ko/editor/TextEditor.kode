@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ profile keyinfo prefs post drag elem stopEvent $
 
-use ◆ Do Meta AutoComplete Scrollbar Brackets Numbers Diffbar Minimap Strings Render EditorScroll FuncList Editor
+use ◆ Do Meta AutoComplete Scrollbar Brackets Numbers Diffbar Minimap Strings Render EditorScroll FuncList FileList Editor
 
 function TextEditor extends Editor
 

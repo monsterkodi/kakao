@@ -22,14 +22,14 @@ use ../commandline ◆ CommandLine
 
 function Window extends win.Delegate
 
-    onWindowAboutToShow:    (win)           -> #log "onWindowAboutToShow #{win.id}"
-    onWindowAnimationTick:  (win, tickInfo) -> #log 'onWindowAnimationTick' win.id
-    onWindowResize:         (win, event)    -> #log 'onWindowResize'        win.id
-    onWindowFocus:          (win)           -> #log 'onWindowFocus'         win.id
-    onWindowBlur:           (win)           -> #log 'onWindowBlur'          win.id
-    onWindowKeyDown:        (win, keyInfo)  -> #log 'onWindowKeyDown'       win.id, keyInfo
-    onWindowKeyUp:          (win, keyInfo)  -> #log 'onWindowKeyUp'         win.id, keyInfo
-    onWindowMenuTemplate:   (win, template) -> kakao.menuTemplate = Menu template
+    onWindowAboutToShow:    win          -> #log "onWindowAboutToShow #{win.id}"
+    onWindowAnimationTick:  win tickInfo -> #log 'onWindowAnimationTick' win.id
+    onWindowResize:         win event    -> #log 'onWindowResize'        win.id
+    onWindowFocus:          win          -> #log 'onWindowFocus'         win.id
+    onWindowBlur:           win          -> #log 'onWindowBlur'          win.id
+    onWindowKeyDown:        win keyInfo  -> #log 'onWindowKeyDown'       win.id, keyInfo
+    onWindowKeyUp:          win keyInfo  -> #log 'onWindowKeyUp'         win.id, keyInfo
+    onWindowMenuTemplate:   win template -> kakao.menuTemplate = Menu template
     
     @: ->
         
@@ -53,8 +53,7 @@ function Window extends win.Delegate
     onWindowCreated: win =>
         
         @id = win.id
-        a = 1+2+3
-                    
+        
         new FileHandler
         new FileWatch
         new Projects
@@ -133,7 +132,7 @@ function Window extends win.Delegate
             'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
             'Toggle Scheme'         ➜ ⮐ scheme.toggle()
             'Toggle Center Text'    ➜ ⮐ toggleCenterText()
-            'Toggle Func List'      ➜ ⮐ post.emit 'funclist.toggle'
+            'Toggle Func List'      ➜    prefs.toggle 'list|active'; post.emit 'list.toggle'; ⮐ 
             'Toggle Tab Pinned'     ➜ ⮐ toggleTabPinned()
             'Toggle Tab Extensions' ➜ ⮐ tabs.toggleExtension()
             'Increase'              ➜ ⮐ changeFontSize +1

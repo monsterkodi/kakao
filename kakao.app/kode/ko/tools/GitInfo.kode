@@ -347,6 +347,8 @@ class GitInfo
 
         window.split.raise 'terminal'
         window.terminal.clear()
+        
+        post.emit 'filelist.clear'
 
         onMetaClick = @onMetaClick
         logDiff  = @logDiff
@@ -377,6 +379,8 @@ class GitInfo
                     line:       symbol
                     lineClss:   'gitInfoLine '+change
                 
+                post.emit 'filelist.add' file, window.terminal.numLines()
+                    
                 if spacer ➜ window.terminal.appendMeta clss:'spacer'
 
             for file in status.deleted
@@ -394,6 +398,7 @@ class GitInfo
                     logDiff lines:lines, line:1, file:file, change:'added'
 
             if opt.diff 
+                
                 for file in status.changed.filter (f) -> slash.ext(f) in SOURCE_FILE_EXTS
                     
                     logFile 'changed' file, status, NaN

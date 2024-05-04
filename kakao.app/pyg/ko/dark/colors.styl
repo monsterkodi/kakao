@@ -524,6 +524,7 @@ span.macro
 // 000       000   000  000  0000  000       000      000       000     000     
 // 000        0000000   000   000   0000000  0000000  000  0000000      000     
 
+.filelist-item
 .funclist-item
     
     background-color        backColor
@@ -532,12 +533,15 @@ span.macro
     &:hover    
         background-color        bgColor
 
+.filelist-item:active
 .funclist-item:active
         background-color        titleColor
         
+.filelist-item.visible
 .funclist-item.visible
         background-color        frameColor
 
+.filelist-item.inside
 .funclist-item.inside
         background-color        scrollColor
         
