@@ -13,8 +13,6 @@ use ../editor ◆ Syntax
 SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp' 'noon']
 IGNORE_FILE_EXTS = ['js' 'css' 'json' 'html']
 
-spacer = -> window.terminal.appendMeta clss:'spacer'
-
 class GitInfo
 
     @: ->
@@ -55,8 +53,7 @@ class GitInfo
                 clss:       'gitInfoFile'
                 href:       "macro log #{commit.commit}"
                 click:      @onMetaClick
-                # line:       '●'
-                # lineClss:   'gitInfoLine changed'
+                line:       '●'
 
             for file in commit.files
                 
@@ -171,15 +168,18 @@ class GitInfo
             window.terminal.appendMeta
                 diss:       Syntax.dissForTextAndSyntax "#{path}" 'ko'
                 href:       path
+                list:       path
                 clss:       'gitInfoFile'
                 click:      @onMetaClick
                 line:       '●'
                 lineClss:   'gitInfoLine changed'
-                
+
+            # post.emit 'filelist.add' path, window.terminal.numLines()
+            
             if p.changes is arr
                 
                 @logChanges gitDir, path, p.changes
-                spacer()
+                window.terminal.appendMeta clss:'spacer'
                 
         window.terminal.do.resetHistory()
     
@@ -193,7 +193,7 @@ class GitInfo
         
         for change in changes
             
-            spacer()
+            window.terminal.appendMeta clss:'spacer'
             
             linfo = change.lineinfo.split ' '
             if linfo[0][0] == '-' and linfo[1][0] == '+'
@@ -348,8 +348,6 @@ class GitInfo
         window.split.raise 'terminal'
         window.terminal.clear()
         
-        post.emit 'filelist.clear'
-
         onMetaClick = @onMetaClick
         logDiff  = @logDiff
         
@@ -357,7 +355,7 @@ class GitInfo
 
             ⮐ if empty status
             
-            # log 'status' status
+            log 'status' status
 
             logFile = (change, file, status, spacer) ->
 
@@ -374,12 +372,13 @@ class GitInfo
                 window.terminal.appendMeta
                     diss:       Syntax.dissForTextAndSyntax "#{path}" 'ko'
                     href:       file
+                    list:       file
                     clss:       'gitInfoFile'
                     click:      onMetaClick
                     line:       symbol
                     lineClss:   'gitInfoLine '+change
                 
-                post.emit 'filelist.add' file, window.terminal.numLines()
+                # post.emit 'filelist.add' file, window.terminal.numLines()
                     
                 if spacer ➜ window.terminal.appendMeta clss:'spacer'
 
@@ -397,11 +396,12 @@ class GitInfo
                     lines = text.split '\n'
                     logDiff lines:lines, line:1, file:file, change:'added'
 
-            if opt.diff 
                 
-                for file in status.changed.filter (f) -> slash.ext(f) in SOURCE_FILE_EXTS
+            for file in status.changed.filter (f) -> slash.ext(f) in SOURCE_FILE_EXTS
+                
+                logFile 'changed' file, status
                     
-                    logFile 'changed' file, status, NaN
+                if opt.diff 
                     
                     changeInfo =○ Git.diff file
 

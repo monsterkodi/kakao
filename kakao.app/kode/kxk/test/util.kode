@@ -85,6 +85,13 @@ use .. ◆ util
         arr = [1 2 3]
         util.keepIf(arr, (i) -> i >= 2) ▸ [2 3]
         arr ▸ [2 3]
+
+    ▸ findIf
+    
+        arr = [1 2 3]
+        util.findIf(arr, (i) -> i >= 2) ▸ 2
+        util.findIf(arr, (i) -> i <= 2) ▸ 1
+        util.findIf(arr, (i) -> i >= 8) ▸ undefined
         
     ▸ pullAll
     

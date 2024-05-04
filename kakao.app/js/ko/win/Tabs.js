@@ -25,6 +25,7 @@ class Tabs
         this.revertFile = this.revertFile.bind(this)
         this.onClearState = this.onClearState.bind(this)
         this.onStoreState = this.onStoreState.bind(this)
+        this.setDirty = this.setDirty.bind(this)
         this.onDirty = this.onDirty.bind(this)
         this.toggleExtension = this.toggleExtension.bind(this)
         this.onDragStop = this.onDragStop.bind(this)
@@ -794,13 +795,22 @@ class Tabs
 
     onDirty (dirty)
     {
-        var tab, tabs
+        var tab
 
         if (tab = this.activeKoreTab())
         {
-            tabs = this.koreTabs()
-            tab = this.koreTabForPath(tab.path,tabs)
-            if (dirty)
+            return this.setDirty(tab.path,dirty)
+        }
+    }
+
+    setDirty (path, dirty)
+    {
+        var tab, tabs
+
+        tabs = this.koreTabs()
+        if (tab = this.koreTabForPath(path,tabs))
+        {
+            if (tab.dirty)
             {
                 tab.dirty = true
             }
@@ -819,21 +829,21 @@ class Tabs
         tabStates = kore.get('tabStates',{})
         if (tab = this.koreTabForPath(path))
         {
-            if (tab.dirty && tab.path && !_k_.empty(state))
+            if (!_k_.empty(state))
             {
                 tabStates[path] = state
                 kore.set('tabStates',tabStates)
                 return
             }
         }
-        delete tabStates[path]
-        return kore.set('tabStates',tabStates)
+        return this.onClearState(path)
     }
 
     onClearState (path)
     {
         var tabStates
 
+        this.setDirty(path,false)
         tabStates = kore.get('tabStates',{})
         delete tabStates[path]
         return kore.set('tabStates',tabStates)
@@ -859,9 +869,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _589_16_ = 0; _589_16_ < list.length; _589_16_++)
+        for (var _590_16_ = 0; _590_16_ < list.length; _590_16_++)
         {
-            tab = list[_589_16_]
+            tab = list[_590_16_]
             if (tab.dirty)
             {
                 if (tab.active)

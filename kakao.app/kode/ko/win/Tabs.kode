@@ -15,7 +15,7 @@ class Tabs
     @: titlebar ->
 
         @emptyid = 0
-        @tabs = []
+        @tabs   = []
         
         @div =$ 'title'
         @div.classList.add 'tabs'
@@ -99,7 +99,7 @@ class Tabs
     prjTabForPath: path ->
         
         for tab in @prjTabs()
-            return tab if path.startsWith tab.path
+            ⮐ tab if path.startsWith tab.path
             
     setKoreTabs: tabs => kore.set 'tabs' tabs; tabs
     
@@ -116,13 +116,13 @@ class Tabs
     activeKoreTab: =>
         
         for tab in @koreTabs()
-            return tab if tab.active
+            ⮐ tab if tab.active
 
     activeKorePrj: =>
         
         if fileTab = @activeKoreTab()
             for tab in @koreTabs()
-                return tab if tab.type == 'prj' and fileTab.path.startsWith tab.path 
+                ⮐ tab if tab.type == 'prj' and fileTab.path.startsWith tab.path 
                 
     # 00000000  0000000    000  000000000   0000000   00000000         00000000   0000000    0000000  000   000   0000000  
     # 000       000   000  000     000     000   000  000   000        000       000   000  000       000   000  000       
@@ -146,7 +146,7 @@ class Tabs
 
     addTab: path =>
         
-        return if empty path
+        ⮐ if empty path
         
         if not @koreTabForPath path
         
@@ -161,7 +161,7 @@ class Tabs
             tabs.push type:'file' path:path, active:true tmp:not path.startsWith 'untitled-'
             @cleanTabs tabs
             @tab(path)?.div.scrollIntoViewIfNeeded()
-            return
+            ⮐ 
 
         @cleanTabs @setActive path
         @
@@ -302,7 +302,7 @@ class Tabs
             if tab = @koreTabForPath src
                 post.emit 'loadFile' file
                 @delTab src
-                return
+                ⮐ 
 
         if file == kore.get('editor|file') and tab = @koreTabForPath file
             post.emit 'loadFile' file
@@ -529,14 +529,14 @@ class Tabs
         
         if tab = @activeKoreTab()
             
-            tabs = @koreTabs()
-            tab  = @koreTabForPath tab.path, tabs
+            @setDirty tab.path, dirty
             
-            if dirty
-                tab.dirty = true
-            else
-                delete tab.dirty
-
+    setDirty: path dirty =>
+        
+        tabs = @koreTabs()
+        if tab  = @koreTabForPath path, tabs
+            if tab.dirty ➜ tab.dirty = true
+            else delete tab.dirty
             @setKoreTabs tabs
             
     # 000000000   0000000   0000000           0000000  000000000   0000000   000000000  00000000  
@@ -549,15 +549,16 @@ class Tabs
 
         tabStates = kore.get 'tabStates' {}
         if tab = @koreTabForPath path
-            if tab.dirty and tab.path and valid state
+            if valid state
                 tabStates[path] = state
                 kore.set 'tabStates' tabStates
                 ⮐ 
-        delete tabStates[path]
-        kore.set 'tabStates' tabStates
+          
+        @onClearState path
         
     onClearState: path =>
         
+        @setDirty path, false
         tabStates = kore.get 'tabStates' {}
         delete tabStates[path]
         kore.set 'tabStates' tabStates

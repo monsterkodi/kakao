@@ -75,6 +75,22 @@ toExport["util"] = function ()
         }),[2,3])
         compare(arr,[2,3])
     })
+    section("findIf", function ()
+    {
+        arr = [1,2,3]
+        compare(util.findIf(arr,function (i)
+        {
+            return i >= 2
+        }),2)
+        compare(util.findIf(arr,function (i)
+        {
+            return i <= 2
+        }),1)
+        compare(util.findIf(arr,function (i)
+        {
+            return i >= 8
+        }),undefined)
+    })
     section("pullAll", function ()
     {
         arr = [1,2,3]

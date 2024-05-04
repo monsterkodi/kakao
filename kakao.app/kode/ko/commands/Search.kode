@@ -174,13 +174,14 @@ function FileSearcher
         meta =
             diss:  Syntax.dissForTextAndSyntax "#{slash.tilde @file}" 'ko'
             href:  @file
+            list:  @file
             clss:  'gitInfoFile'
             click: @command.onMetaClick
             line:  '◼'
 
         terminal.queueMeta meta
         terminal.queueMeta clss: 'spacer'
-        
+                
         for fi in 0...@found.length
 
             f = @found[fi]

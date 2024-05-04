@@ -196,10 +196,10 @@ FileSearcher = (function ()
         var dss, f, fi, meta, regions, terminal
 
         terminal = window.terminal
-        meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
+        meta = {diss:Syntax.dissForTextAndSyntax(`${slash.tilde(this.file)}`,'ko'),href:this.file,list:this.file,clss:'gitInfoFile',click:this.command.onMetaClick,line:'◼'}
         terminal.queueMeta(meta)
         terminal.queueMeta({clss:'spacer'})
-        for (var _184_18_ = fi = 0, _184_22_ = this.found.length; (_184_18_ <= _184_22_ ? fi < this.found.length : fi > this.found.length); (_184_18_ <= _184_22_ ? ++fi : --fi))
+        for (var _185_18_ = fi = 0, _185_22_ = this.found.length; (_185_18_ <= _185_22_ ? fi < this.found.length : fi > this.found.length); (_185_18_ <= _185_22_ ? ++fi : --fi))
         {
             f = this.found[fi]
             regions = kolor.dissect([f[1]],this.syntaxName)[0]

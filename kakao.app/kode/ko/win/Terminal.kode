@@ -55,7 +55,7 @@ function Terminal extends TextEditor
         ⮐ error 'Terminal.appendMeta -- no meta?' if not meta?
             
         @meta.append meta
-        
+                
         if 
             meta.diss?
             
@@ -80,7 +80,10 @@ function Terminal extends TextEditor
             
             ➜
                 @appendLineDiss ''
-              
+
+        if meta.list
+            post.emit 'filelist.add' meta.list, @numLines()
+                
         for mm in meta.metas
             @meta.appendLineMeta mm
                 
@@ -133,6 +136,7 @@ function Terminal extends TextEditor
     
     clear: ->
         
+        post.emit 'filelist.clear'
         @clearQueue()
         @meta.clear()
         @singleCursorAtPos [0,0]

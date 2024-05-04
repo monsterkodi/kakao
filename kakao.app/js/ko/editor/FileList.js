@@ -1,4 +1,4 @@
-var _k_
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var FileList
 
@@ -50,12 +50,26 @@ FileList = (function ()
 
     FileList.prototype["onEditorScrollOrCursor"] = function ()
     {
-        var botLine, mainLine, scroll, topLine
+        var botLine, child, inside, lastLine, mainLine, scroll, topLine, visible
 
         scroll = this.editor.scroll.scroll
         topLine = parseInt(scroll / this.editor.scroll.lineHeight)
         botLine = topLine + this.editor.numFullLines()
-        return mainLine = this.editor.mainCursor()[1] + 1
+        mainLine = this.editor.mainCursor()[1] + 1
+        var list = _k_.list(this.elem.children)
+        for (var _50_18_ = 0; _50_18_ < list.length; _50_18_++)
+        {
+            child = list[_50_18_]
+            lastLine = (child.nextSibling ? child.nextSibling.line : this.editor.numLines())
+            visible = lastLine - 1 > topLine && child.line <= botLine
+            child.classList.toggle('visible',visible)
+            if (visible)
+            {
+                child.scrollIntoViewIfNeeded()
+            }
+            inside = child.line <= mainLine && lastLine > mainLine
+            child.classList.toggle('inside',inside)
+        }
     }
 
     FileList.prototype["onClear"] = function ()
@@ -79,6 +93,7 @@ FileList = (function ()
 
         e = elem.upElem(event,{prop:'path'})
         window.terminal.singleCursorAtPos([0,e.line - 1])
+        window.terminal.scroll.cursorToTop(1)
         return window.split.do("focus terminal")
     }
 

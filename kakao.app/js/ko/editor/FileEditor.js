@@ -1,9 +1,10 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, first: function (o) {return o != null ? o.length ? o[0] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }}
 
 var FileEditor
 
 import kxk from "../../kxk.js"
 let deleteBy = kxk.deleteBy
+let findIf = kxk.findIf
 let ffs = kxk.ffs
 let kpos = kxk.kpos
 let post = kxk.post
@@ -279,6 +280,7 @@ FileEditor = (function ()
     {
         var classes, clss, file, files, find, func, funcs, i, info, infos, type, _257_19_
 
+        console.log('FileEditor jumpTo',word,opt)
         if (typeof(word) === 'object' && !(opt != null))
         {
             opt = word
@@ -294,7 +296,8 @@ FileEditor = (function ()
         {
             return console.error('nothing to jump to?')
         }
-        find = word.toLowerCase().trim()
+        word = word.trim()
+        find = word.toLowerCase()
         if (find[0] === '@')
         {
             find = find.slice(1)
@@ -304,6 +307,7 @@ FileEditor = (function ()
             return console.error('FileEditor.jumpTo -- nothing to find?')
         }
         type = (opt != null ? opt.type : undefined)
+        console.log('FileEditor jumpTo',word,type)
         if (!type || type === 'class')
         {
             classes = window.indexer.classes
@@ -320,6 +324,23 @@ FileEditor = (function ()
         if (!type || type === 'func')
         {
             funcs = window.indexer.funcs
+            console.log('funcs',funcs)
+            if (infos = funcs[word])
+            {
+                console.log('direct func infos',infos)
+                info = findIf(infos,(function (info)
+                {
+                    return info.file === this.currentFile
+                }).bind(this))
+                info = (info != null ? info : findIf(infos,(function (info)
+                {
+                    return slash.ext(info.file) === slash.ext(this.currentFile)
+                }).bind(this)))
+                info = (info != null ? info : _k_.first(infos))
+                console.log('FileEditor jumpTo jumpToFile direct',info)
+                this.jumpToFile(info)
+                return true
+            }
             for (func in funcs)
             {
                 infos = funcs[func]
@@ -327,14 +348,15 @@ FileEditor = (function ()
                 {
                     info = infos[0]
                     var list = _k_.list(infos)
-                    for (var _282_26_ = 0; _282_26_ < list.length; _282_26_++)
+                    for (var _297_26_ = 0; _297_26_ < list.length; _297_26_++)
                     {
-                        i = list[_282_26_]
+                        i = list[_297_26_]
                         if (i.file === this.currentFile)
                         {
                             info = i
                         }
                     }
+                    console.log('FileEditor jumpTo jumpToFile indirect',info)
                     this.jumpToFile(info)
                     return true
                 }
@@ -360,25 +382,25 @@ FileEditor = (function ()
 
     FileEditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, counterparts, cp, currext, ext, _329_41_, _334_41_
+        var counter, counterparts, cp, currext, ext, _346_41_, _351_41_
 
         cp = this.cursorPos()
         currext = slash.ext(this.currentFile)
         counterparts = {mm:['h'],cpp:['hpp','h'],cc:['hpp','h'],h:['cpp','c','mm'],hpp:['cpp','c'],coffee:['js','mjs'],kode:['js','mjs'],js:['coffee','kode'],mjs:['coffee','kode'],pug:['html'],html:['pug'],css:['styl'],styl:['css']}
-        var list = ((_329_41_=counterparts[currext]) != null ? _329_41_ : [])
-        for (var _329_16_ = 0; _329_16_ < list.length; _329_16_++)
+        var list = ((_346_41_=counterparts[currext]) != null ? _346_41_ : [])
+        for (var _346_16_ = 0; _346_16_ < list.length; _346_16_++)
         {
-            ext = list[_329_16_]
+            ext = list[_346_16_]
             if (await ffs.fileExists(slash.swapExt(this.currentFile,ext)))
             {
                 post.emit('loadFile',slash.swapExt(this.currentFile,ext))
                 return true
             }
         }
-        var list1 = ((_334_41_=counterparts[currext]) != null ? _334_41_ : [])
-        for (var _334_16_ = 0; _334_16_ < list1.length; _334_16_++)
+        var list1 = ((_351_41_=counterparts[currext]) != null ? _351_41_ : [])
+        for (var _351_16_ = 0; _351_16_ < list1.length; _351_16_++)
         {
-            ext = list1[_334_16_]
+            ext = list1[_351_16_]
             counter = slash.swapExt(this.currentFile,ext)
             counter = this.swapLastDir(counter,currext,ext)
             if (await ffs.fileExists(counter))
@@ -432,15 +454,15 @@ FileEditor = (function ()
                 var l, t
 
                 var list = _k_.list(layers)
-                for (var _379_81_ = 0; _379_81_ < list.length; _379_81_++)
+                for (var _396_81_ = 0; _396_81_ < list.length; _396_81_++)
                 {
-                    l = list[_379_81_]
+                    l = list[_396_81_]
                     setStyle('.editor .layers ' + l,'transform',"translateX(0)")
                 }
                 var list1 = _k_.list(transi)
-                for (var _380_76_ = 0; _380_76_ < list1.length; _380_76_++)
+                for (var _397_76_ = 0; _397_76_ < list1.length; _397_76_++)
                 {
-                    t = list1[_380_76_]
+                    t = list1[_397_76_]
                     setStyle('.editor .layers ' + t,'transition',"initial")
                 }
                 return this.updateLayers()
@@ -456,15 +478,15 @@ FileEditor = (function ()
                 offsetX *= -1
             }
             var list = _k_.list(layers)
-            for (var _390_88_ = 0; _390_88_ < list.length; _390_88_++)
+            for (var _407_88_ = 0; _407_88_ < list.length; _407_88_++)
             {
-                l = list[_390_88_]
+                l = list[_407_88_]
                 setStyle('.editor .layers ' + l,'transform',`translateX(${offsetX}px)`)
             }
             var list1 = _k_.list(transi)
-            for (var _391_85_ = 0; _391_85_ < list1.length; _391_85_++)
+            for (var _408_85_ = 0; _408_85_ < list1.length; _408_85_++)
             {
-                t = list1[_391_85_]
+                t = list1[_408_85_]
                 setStyle('.editor .layers ' + t,'transition',`all ${animate / 1000}s`)
             }
             return setTimeout(resetTrans,animate)
@@ -515,9 +537,9 @@ FileEditor = (function ()
         recent = window.stash.get('recentFiles',[])
         recent = (recent != null ? recent : [])
         var list = _k_.list(recent)
-        for (var _445_14_ = 0; _445_14_ < list.length; _445_14_++)
+        for (var _462_14_ = 0; _462_14_ < list.length; _462_14_++)
         {
-            f = list[_445_14_]
+            f = list[_462_14_]
             RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
             {
                 return post.emit('loadFile',arg)
@@ -528,9 +550,9 @@ FileEditor = (function ()
             var item
 
             var list1 = _k_.list(template)
-            for (var _453_21_ = 0; _453_21_ < list1.length; _453_21_++)
+            for (var _470_21_ = 0; _470_21_ < list1.length; _470_21_++)
             {
-                item = list1[_453_21_]
+                item = list1[_470_21_]
                 if (item.text === name)
                 {
                     return item

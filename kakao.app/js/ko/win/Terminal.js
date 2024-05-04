@@ -90,10 +90,14 @@ Terminal = (function ()
         {
             this.appendLineDiss('')
         }
-        var list1 = _k_.list(meta.metas)
-        for (var _84_15_ = 0; _84_15_ < list1.length; _84_15_++)
+        if (meta.list)
         {
-            mm = list1[_84_15_]
+            post.emit('filelist.add',meta.list,this.numLines())
+        }
+        var list1 = _k_.list(meta.metas)
+        for (var _87_15_ = 0; _87_15_ < list1.length; _87_15_++)
+        {
+            mm = list1[_87_15_]
             this.meta.appendLineMeta(mm)
         }
         return meta
@@ -151,6 +155,7 @@ Terminal = (function ()
 
     Terminal.prototype["clear"] = function ()
     {
+        post.emit('filelist.clear')
         this.clearQueue()
         this.meta.clear()
         this.singleCursorAtPos([0,0])

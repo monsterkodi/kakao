@@ -6,13 +6,13 @@
 000       000  0000000  00000000        00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk ▪ deleteBy ffs kpos post popup slash stopEvent setStyle kstr
+use ../../kxk ▪ deleteBy findIf ffs kpos post popup slash stopEvent setStyle kstr
 use ../tools  ◆ File
 use           ◆ Syntax TextEditor
 
 function FileEditor extends TextEditor
 
-    @: (viewElem) ->
+    @: viewElem ->
 
         super viewElem,
             features: [
@@ -49,7 +49,7 @@ function FileEditor extends TextEditor
     # 000       000   000  000   000  000  0000  000   000  000       000   000
     #  0000000  000   000  000   000  000   000   0000000   00000000  0000000
 
-    changed: (changeInfo) ->
+    changed: changeInfo ->
 
         super changeInfo
 
@@ -72,7 +72,7 @@ function FileEditor extends TextEditor
         @setLines ['']
         @do.reset()
 
-    setCurrentFile: (file) ->
+    setCurrentFile: file ->
 
         @clear()
 
@@ -83,7 +83,7 @@ function FileEditor extends TextEditor
         if @currentFile
             ffs.read(@currentFile).then @setText
 
-    setText: (text="") =>
+    setText: text="" =>
 
         super text
         
@@ -130,7 +130,7 @@ function FileEditor extends TextEditor
     # 000       000   000  000 0 000  000 0 000  000   000  000  0000  000   000  000      000  000  0000  000
     #  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
 
-    onCommandline: (e) =>
+    onCommandline: e =>
 
         switch e
             'hidden' 'shown'
@@ -202,7 +202,7 @@ function FileEditor extends TextEditor
     # 000   000  000   000  000 0 000  000
     #  0000000    0000000   000   000  000
 
-    jumpToFilePos: (opt) =>
+    jumpToFilePos: opt =>
 
         if opt.path == @currentFile
             @singleCursorAtPos [opt.col, opt.line-1]
@@ -210,7 +210,7 @@ function FileEditor extends TextEditor
         else
             log 'FileEditor.jumpToFilePos loadFile?' opt
 
-    jumpToFile: (opt) =>
+    jumpToFile: opt =>
         
         opt ?= {}
         if opt is str ➜ opt = path:opt
@@ -245,9 +245,9 @@ function FileEditor extends TextEditor
 
             post.emit 'loadFile' file
 
-    jumpTo: (word, opt) =>
+    jumpTo: word opt =>
 
-        # log 'FileEditor jumpTo' word, opt
+        log 'FileEditor jumpTo' word, opt
         if typeof(word) == 'object' and not opt?
             opt  = word
             word = opt.word
@@ -260,13 +260,16 @@ function FileEditor extends TextEditor
 
         ⮐ error 'nothing to jump to?' if empty word
 
-        find = word.toLowerCase().trim()
+        word = word.trim()
+        find = word.toLowerCase()
         find = find.slice 1 if find[0] == '@'
 
         ⮐ error 'FileEditor.jumpTo -- nothing to find?' if empty find
 
         type = opt?.type
 
+        log 'FileEditor jumpTo' word, type
+        
         if not type or type == 'class'
             classes = window.indexer.classes
             for clss, info of classes
@@ -276,12 +279,26 @@ function FileEditor extends TextEditor
 
         if not type or type == 'func'
             funcs = window.indexer.funcs
+            
+            log 'funcs' funcs
+            
+            if infos = funcs[word]
+                log 'direct func infos' infos
+                info  = findIf infos, (info) => info.file == @currentFile
+                info ?= findIf infos, (info) => slash.ext(info.file) == slash.ext @currentFile                    
+                info ?= first infos
+                log 'FileEditor jumpTo jumpToFile direct' info
+                @jumpToFile info
+                ⮐ true
+            
             for func, infos of funcs
                 if func.toLowerCase() == find
                     info = infos[0]
                     for i in infos
                         if i.file == @currentFile
                             info = i
+                            
+                    log 'FileEditor jumpTo jumpToFile indirect' info
                     @jumpToFile info
                     ⮐ true
 
@@ -329,7 +346,7 @@ function FileEditor extends TextEditor
         for ext in counterparts[currext] ? []
             if ○ ffs.fileExists slash.swapExt @currentFile, ext
                 post.emit 'loadFile' slash.swapExt @currentFile, ext
-                return true
+                ⮐ true
 
         for ext in counterparts[currext] ? []
             counter = slash.swapExt @currentFile, ext
@@ -337,12 +354,12 @@ function FileEditor extends TextEditor
             counter = @swapLastDir counter, currext, ext
             if ○ ffs.fileExists counter
                 post.emit 'loadFile' counter
-                return true
+                ⮐ true
 
         log 'cant find counterpart' @currentFile
         true
 
-    swapLastDir: (path, from, to) ->
+    swapLastDir: path from to ->
 
         lastIndex = path.lastIndexOf "/#{from}/"
         if lastIndex >= 0
@@ -355,7 +372,7 @@ function FileEditor extends TextEditor
     # 000       000       000  0000     000     000       000   000
     #  0000000  00000000  000   000     000     00000000  000   000
 
-    centerText: (center, animate=300) ->
+    centerText: center animate=300 ->
 
         @size.centerText = center
         @updateLayers()
@@ -399,9 +416,9 @@ function FileEditor extends TextEditor
     # 000        000   000  000        000   000  000
     # 000         0000000   000         0000000   000
 
-    onContextMenu: (event) => stopEvent event, @showContextMenu kpos event
+    onContextMenu: event => stopEvent event, @showContextMenu kpos event
 
-    showContextMenu: (absPos) =>
+    showContextMenu: absPos =>
 
         if not absPos?
             absPos = kpos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top
@@ -469,12 +486,12 @@ function FileEditor extends TextEditor
     # 000       000      000  000       000  000
     #  0000000  0000000  000   0000000  000   000
 
-    clickAtPos: (p, event) ->
+    clickAtPos: p event ->
 
         if event.metaKey
             if kpos(event).x <= @size.numbersWidth
                 @singleCursorAtPos p
-                return
+                ⮐
 
         super p, event
 
@@ -484,9 +501,9 @@ function FileEditor extends TextEditor
     # 000  000   000          000
     # 000   000  00000000     000
 
-    handleModKeyComboCharEvent: (mod, key, combo, char, event) ->
+    handleModKeyComboCharEvent: mod key combo char event ->
 
-        return if 'unhandled' != super mod, key, combo, char, event
+        ⮐ if 'unhandled' != super mod, key, combo, char, event
         switch combo
             'alt+ctrl+enter'         ➜ ⮐ window.commandline.commands.coffee.executeText @textOfSelectionForClipboard()
             'alt+ctrl+shift+enter'   ➜ ⮐ window.commandline.commands.coffee.executeTextInMain @textOfSelectionForClipboardt()            
@@ -496,7 +513,7 @@ function FileEditor extends TextEditor
                     split.hideTerminal()
                 else if split.commandlineVisible()
                     split.hideCommandline()
-                return
+                ⮐ 
         'unhandled'
 
 export FileEditor
