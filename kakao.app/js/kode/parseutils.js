@@ -334,13 +334,27 @@ ParseUtils = (function ()
             {
                 return true
             }
-            if (_k_.in(tokens[ti].text,['(',')','.']))
+            if (_k_.in(tokens[ti].text,['(',')']))
             {
                 return false
             }
             if (_k_.in(tokens[ti].type,['nl','block']))
             {
                 return false
+            }
+            if (tokens[ti].text === '.')
+            {
+                if (!_k_.empty(tokens.slice(0, typeof ti === 'number' ? ti : -1).filter(function (t)
+                    {
+                        return t.text === '='
+                    })))
+                {
+                    continue
+                }
+                else
+                {
+                    return false
+                }
             }
         }
         return false

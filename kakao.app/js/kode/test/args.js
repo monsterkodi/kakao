@@ -85,6 +85,18 @@ D = (function ()
     zip: a b c... ->`),`obj = {zip:function (a, b, ...c)
 {}}`)
     })
+    section("propargs", function ()
+    {
+        compare(kc(`obj = 
+    pullAll: (arr, items, cmp=util.isEqual) ->`),`obj = {pullAll:function (arr, items, cmp = util.isEqual)
+{}}`)
+        compare(kc(`obj = 
+    fnc: cmp=util.isEqual ->`),`obj = {fnc:function (cmp = util.isEqual)
+{}}`)
+        compare(kc(`obj = 
+    fnc: a b=d.c c=x.y.z ->`),`obj = {fnc:function (a, b = d.c, c = x.y.z)
+{}}`)
+    })
     section("constructor", function ()
     {
         compare(kc(`function D

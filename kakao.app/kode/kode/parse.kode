@@ -293,7 +293,6 @@ function Parse extends parseutils
                 
                 if @funcAhead tokens
                     
-                    # log 'funcAhead >>>>>>>>>>>>>>>>>>>> ' @stack, tok, tokens
                     paren = @argsWithoutParens tok, tokens
                     @sheapPop 'exp' tok.text ? tok.type
                     ⮐ @lhs paren, tokens
@@ -404,7 +403,7 @@ function Parse extends parseutils
                     e = @keyval e, tokens
                     break
                 
-                nxt.text == ':' and (unspaced or '?' not in @stack)
+                nxt.text == ':' and (unspaced or ('?' not in @stack))
                     
                     if @stack[-1] != '{'
                         @verb 'rhs is first key of implicit object' e

@@ -260,7 +260,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, paren, tok, _286_34_, _298_45_, _361_33_
+        var block, e, numTokens, paren, tok, _286_34_, _297_45_, _360_33_
 
         if (_k_.empty(tokens))
         {
@@ -382,7 +382,7 @@ Parse = (function ()
                 if (this.funcAhead(tokens))
                 {
                     paren = this.argsWithoutParens(tok,tokens)
-                    this.sheapPop('exp',((_298_45_=tok.text) != null ? _298_45_ : tok.type))
+                    this.sheapPop('exp',((_297_45_=tok.text) != null ? _297_45_ : tok.type))
                     return this.lhs(paren,tokens)
                 }
             }
@@ -467,13 +467,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_361_33_=tok.text) != null ? _361_33_ : tok.type))
+        this.sheapPop('exp',((_360_33_=tok.text) != null ? _360_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _422_22_
+        var llc, numTokens, nxt, spaced, unspaced, _421_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])
@@ -508,7 +508,7 @@ Parse = (function ()
                 e = this.keyval(e,tokens)
                 break
             }
-            else if (nxt.text === ':' && (unspaced || !(_k_.in('?',this.stack))))
+            else if (nxt.text === ':' && (unspaced || (!(_k_.in('?',this.stack)))))
             {
                 if (this.stack.slice(-1)[0] !== '{')
                 {

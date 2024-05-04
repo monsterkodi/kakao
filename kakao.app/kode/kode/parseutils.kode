@@ -301,8 +301,14 @@ function ParseUtils
         ti = -1
         while ++ti < tokens.length
             ⮐ true  if tokens[ti].type == 'func'
-            ⮐ false if tokens[ti].text in ['('')''.']
+            ⮐ false if tokens[ti].text in ['('')'] # '.'
             ⮐ false if tokens[ti].type in ['nl' 'block']
+            
+            if tokens[ti].text == '.'
+                if valid tokens[0...ti].filter (t) -> t.text == '='
+                    continue
+                else
+                    ⮐ false
         false
         
     #  0000000  000   000  00000000   0000000   00000000     
