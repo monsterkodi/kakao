@@ -114,11 +114,11 @@ function Window extends win.Delegate
             
             if action.key? and window.focusEditor[action.key] is func
                 window.focusEditor[action.key] name:name, trail:trail
-                return 
+                ⮐ 
     
         if 'unhandled' != window.commandline.handleMenuAction name, trail
             # log 'commandline handled action' name, trail
-            return 
+            ⮐ 
             
         switch name
     
@@ -257,7 +257,7 @@ changeFontSize = d ->
     if  window.editor.size.fontSize >= 20 ➜ f = 2
         window.editor.size.fontSize >= 30 ➜ f = 4
         window.editor.size.fontSize >= 50 ➜ f = 10
-                                   ➜ f = 1
+                                          ➜ f = 1
                                    
     setFontSize window.editor.size.fontSize + f*d
 
@@ -269,7 +269,8 @@ resetFontSize = ->
 
 addToShelf = ->
 
-    return if window.lastFocus == 'shelf'
+    ⮐ if window.lastFocus == 'shelf'
+    
     fb = window.filebrowser
     if window.lastFocus.startsWith fb.name
         path = fb.columnWithName(window.lastFocus).activePath()
@@ -304,7 +305,9 @@ changeZoom = d ->
  
 window.onblur  = event -> post.emit 'winFocus' false
 window.onfocus = event ->
+    
     post.emit 'winFocus' true
+    
     if document.activeElement.className == 'body'
         if window.split.editorVisible()
             window.split.focus 'editor'

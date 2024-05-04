@@ -435,18 +435,16 @@ class GitInfo
     onMetaClick: meta event =>
         
         if href = meta[2].href
-            log 'onMetaClick' href
             
             if href.startsWith 'macro '
-                # log 'GitInfo.onMetaClick start macro' href[6..]
                 window.commandline.startCommand 'macro'
                 window.commandline.hideList() # should startCommand get more parameters to prevent list opening?
-                if href[6..].startsWith 'log'
+                cmmd = href[6..]
+                if cmmd.startsWith 'log'
                     window.commandline.setText 'history'
                 else
-                    window.commandline.setText href[6..]
-                log 'GitInfo.onMetaClick execute' href[6..]
-                window.commandline.command.execute href[6..]
+                    window.commandline.setText cmmd
+                window.commandline.command.execute cmmd
             else
                 if href.indexOf(':') > 0
                     href += ':' + window.terminal.posForEvent(event)[0]

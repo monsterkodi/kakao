@@ -469,25 +469,24 @@ class GitInfo
 
     onMetaClick (meta, event)
     {
-        var href
+        var cmmd, href
 
         if (href = meta[2].href)
         {
-            console.log('onMetaClick',href)
             if (href.startsWith('macro '))
             {
                 window.commandline.startCommand('macro')
                 window.commandline.hideList()
-                if (href.slice(6).startsWith('log'))
+                cmmd = href.slice(6)
+                if (cmmd.startsWith('log'))
                 {
                     window.commandline.setText('history')
                 }
                 else
                 {
-                    window.commandline.setText(href.slice(6))
+                    window.commandline.setText(cmmd)
                 }
-                console.log('GitInfo.onMetaClick execute',href.slice(6))
-                window.commandline.command.execute(href.slice(6))
+                window.commandline.command.execute(cmmd)
             }
             else
             {
