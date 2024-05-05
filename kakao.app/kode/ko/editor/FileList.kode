@@ -82,9 +82,9 @@ function FileList
         
     onClick: event =>
         
-        e = elem.upElem event, prop:'path'
-        window.terminal.singleCursorAtPos [0 e.line-1]
-        window.terminal.scroll.cursorToTop 1
-        window.split.do "focus terminal"
+        if e = elem.upElem event, prop:'path'
+            window.terminal.singleCursorAtPos [0 e.line-1]
+            window.terminal.scroll.cursorToTop 1
+            window.split.do "focus terminal"
 
 export FileList

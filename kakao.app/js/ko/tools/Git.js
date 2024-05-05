@@ -222,7 +222,7 @@ index ●refs
             }
             catch (err)
             {
-                console.error(err)
+                true
             }
         }
         return patches

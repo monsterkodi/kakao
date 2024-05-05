@@ -57,7 +57,7 @@ function Column
     loadItems: items parent ○->
 
         # log 'loadItems parent:' parent
-        log 'loadItems items:' items
+        # log 'loadItems items:' items
 
         @clear()
 

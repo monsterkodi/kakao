@@ -91,10 +91,12 @@ FileList = (function ()
     {
         var e
 
-        e = elem.upElem(event,{prop:'path'})
-        window.terminal.singleCursorAtPos([0,e.line - 1])
-        window.terminal.scroll.cursorToTop(1)
-        return window.split.do("focus terminal")
+        if (e = elem.upElem(event,{prop:'path'}))
+        {
+            window.terminal.singleCursorAtPos([0,e.line - 1])
+            window.terminal.scroll.cursorToTop(1)
+            return window.split.do("focus terminal")
+        }
     }
 
     return FileList

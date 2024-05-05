@@ -183,7 +183,8 @@ function Git
                     """ 'diff --git ' + diffgit
                 patches = patches.concat r
             catch err
-                error err
+                # error err
+                true
 
         # log '◂◂◂ patches' patches               
         patches

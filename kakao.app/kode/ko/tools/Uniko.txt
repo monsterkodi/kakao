@@ -1,3 +1,4 @@
+kode         ➜ ■ ▪ ◆ ● ▸ ⮐
 file             
 folder          
 ok           ☑ ✓ ✔ ⎷      
@@ -79,9 +80,9 @@ square       ◻ ◼ ▪ ▫ ⬝ ⬞ ▢  濾 麗       
 convex       ◼ ■ ▪ ▬ ▮ ▰ ▲ ▴ ▶ ▸ ► ▼ ▾ ◀ ◂ ◄ ◆ ● ◖ ◗ ◢ ◣ ◤ ◥ ⬟ ⭓ ⬢ ⬣ ⬤ ⬥ ⬧⬩ ⬪⬬ ⬮
 bracket      ❪❫ ❮❯ ❬❭ ❰❱
 math         ⩆ ⩇ ⫗ ⫘ ⟜ ⟠ ∫ ⊿ ⋈ ⌓ ⌔ ⌷ ⌻
-tee          ⊣ ⊢ ⟙ ⊤ ⫟ ⫠ ⊥ ⟘        dbltee  ⫤ ⊨ ⫪ ⫫ ⫣ ⫦ ⍑ ⍊ ⫥ ⊫ ⫩ ⟚ ⟛
-slashed      ⍉ ⌽ ⌀ ⏀ ≠ ≢ ≁          dotted  ⌾ ⟐ ⟔ ⟓ ⦝ ⦜ ⊾     forked    ⫙ ⟒ ⫚ ⫛ ⋔ ⥺
-compair      ⩽ ⩾ ≪ ≫ ⦤ ⦥ ‹ ›        pair    ⋐ ⋑ ⪻ ⪼ ⫏ ⫐ ⊂ ⊃ ⊏ ⊐ ⊰ ⊱ ⪦ ⪧ ⊲ ⊳ ⟃ ⟄ ⟅ ⟆
+tee          ⊣ ⊢ ⟙ ⊤ ⫟ ⫠ ⊥ ⟘    dbltee  ⫤ ⊨ ⫪ ⫫ ⫣ ⫦ ⍑ ⍊ ⫥ ⊫ ⫩ ⟚ ⟛
+slashed      ⍉ ⌽ ⌀ ⏀ ≠ ≢ ≁      dotted  ⌾ ⟐ ⟔ ⟓ ⦝ ⦜ ⊾     forked    ⫙ ⟒ ⫚ ⫛ ⋔ ⥺
+compair      ⩽ ⩾ ≪ ≫ ⦤ ⦥ ‹ ›    pair    ⋐ ⋑ ⪻ ⪼ ⫏ ⫐ ⊂ ⊃ ⊏ ⊐ ⊰ ⊱ ⪦ ⪧ ⊲ ⊳ ⟃ ⟄ ⟅ ⟆
 updown       ⋒ ⋓ ⋎ ⋏ ⩌ ⩍ ⋀ ⋁ ⋂ ⋃ ⊓ ⊔ ∧ ∨ ∩ ∪ ⩜ ⩝ ⌃ ⌄ ⩎ ⩏
 
 corners      ⌜ ⌝ ⎾ ⏉ ⏋
