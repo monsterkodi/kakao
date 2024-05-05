@@ -36,21 +36,21 @@ class Invisibles
             yOffset: -1
             clss:  'invisible ' + kind
             
-        s = @editor.tabline li
-        p = 0
-        while p < s.length
-            n = 1
-            if s[p] == '\t'
-                n = 4-(p%4)
-                s = s.splice p, 1, lpad n
-                @editor.meta.add
-                    line:  li
-                    html:  '&#9656'
-                    start: p
-                    end:   p
-                    yOffset: -1
-                    clss:  'invisible invisible-tab'
-            p += n
+        #s = @editor.tabline li
+        #p = 0
+        #while p < s.length
+        #    n = 1
+        #    if s[p] == '\t'
+        #        n = 4-(p%4)
+        #        s = s.splice p, 1, lpad n
+        #        @editor.meta.add
+        #            line:  li
+        #            html:  '&#9656'
+        #            start: p
+        #            end:   p
+        #            yOffset: -1
+        #            clss:  'invisible invisible-tab'
+        #    p += n
             
     #  0000000  000   000   0000000   000   000   0000000   00000000  
     # 000       000   000  000   000  0000  000  000        000       

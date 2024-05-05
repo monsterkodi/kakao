@@ -1,0 +1,32 @@
+###
+000   000  000   000  000   0000000   0000000   0000000    00000000
+000   000  0000  000  000  000       000   000  000   000  000     
+000   000  000 0 000  000  000       000   000  000   000  0000000 
+000   000  000  0000  000  000       000   000  000   000  000     
+ 0000000   000   000  000   0000000   0000000   0000000    00000000
+###
+
+use ../../kxk ▪ post slash ffs
+
+function Unicode
+
+    @: ->
+        
+        ffs.read(slash.path ◆dir, '../../../kode/ko/tools/Uniko.txt').then (@uniko) =>
+        
+        post.on 'unicode' @onUnicode
+        
+    onUnicode: =>
+        
+        window.split.raise 'terminal'
+        window.terminal.clear()
+        window.terminal.singleCursorAtPos [0 0]
+
+        for line in @uniko.split '\n'
+            # for ch in line 
+                # log 'ch' ch, ch.charCodeAt(0)
+            window.terminal.queueMeta
+                text: line
+                line: '●'
+                                        
+export Unicode

@@ -49,11 +49,16 @@ lang 'kode'
         inc rgs, 2 'lol'     ▸   'text'
         inc rgs, 5 '😀'     ▸   'text'
         
-        rgs = ranges "a➜b a▬▶b"
+        rgs = ranges "a➜b"
     
         inc rgs, 1 '➜' ▸ 'punct keyword'
-        inc rgs, 5 '▬' ▸ 'punct'
-        inc rgs, 6 '▶' ▸ 'punct'
+        
+        rgs = ranges '┌─┬─┐'
+        inc rgs, 0 '┌' ▸ 'text unicode'
+        inc rgs, 1 '─' ▸ 'text unicode'
+        inc rgs, 2 '┬' ▸ 'text unicode'
+        inc rgs, 3 '─' ▸ 'text unicode'
+        inc rgs, 4 '┐' ▸ 'text unicode'
         
         rgs = ranges "🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥"
         inc rgs, 0 '🐀' ▸ 'text'

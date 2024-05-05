@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let pullIf = kxk.pullIf
@@ -11,20 +11,11 @@ class Navigate
 {
     constructor (main)
     {
-        var fp
-
         this.main = main
     
         this.navigate = this.navigate.bind(this)
         post.on('navigate',this.navigate)
         this.navlist = stash.get('navigate',[])
-        console.log('history')
-        var list = _k_.list(this.navlist)
-        for (var _19_15_ = 0; _19_15_ < list.length; _19_15_++)
-        {
-            fp = list[_19_15_]
-            console.log(fp)
-        }
         this.currentIndex = -1
         this.navigating = false
     }
@@ -67,13 +58,6 @@ class Navigate
         while (this.navlist.length > prefs.get('navigateHistoryLength',100))
         {
             this.navlist.shift()
-        }
-        console.log('addToHistory')
-        var list = _k_.list(this.navlist)
-        for (var _59_15_ = 0; _59_15_ < list.length; _59_15_++)
-        {
-            fp = list[_59_15_]
-            console.log(fp)
         }
         return stash.set('navigate',this.navlist)
     }

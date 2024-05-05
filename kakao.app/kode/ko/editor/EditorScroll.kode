@@ -10,7 +10,7 @@ use ../../kxk ▪ events
 
 class EditorScroll extends events
 
-    @: (@editor) ->
+    @: @editor ->
 
         super()
         @lineHeight = @editor.size.lineHeight ? 0
@@ -38,7 +38,7 @@ class EditorScroll extends events
         @top          = -1 # index of first visible line in view
         @bot          = -1 # index of last  visible line in view
 
-    start: (@viewHeight, @numLines) =>
+    start: @viewHeight @numLines =>
 
         @fullHeight = @numLines * @lineHeight
         @top = 0
@@ -67,9 +67,9 @@ class EditorScroll extends events
     # 000   000     000
     # 0000000       000
 
-    to: (p) => @by p-@scroll
+    to: p => @by p-@scroll
 
-    by: (delta, x) =>
+    by: delta x =>
 
         return if @viewLines < 0
 
@@ -79,7 +79,7 @@ class EditorScroll extends events
 
         scroll = @scroll
         delta = 0 if Number.isNaN delta
-        @scroll = parseInt clamp 0, @scrollMax, @scroll+delta
+        @scroll = parseInt clamp 0 @scrollMax, @scroll+delta
         top = parseInt @scroll / @lineHeight
         @offsetSmooth = @scroll - top * @lineHeight
 
@@ -101,7 +101,7 @@ class EditorScroll extends events
     #      000  000          000        000     000   000  000
     # 0000000   00000000     000        000      0000000   000
 
-    setTop: (top) =>
+    setTop: top =>
 
         oldTop = @top
         oldBot = @bot
@@ -125,7 +125,7 @@ class EditorScroll extends events
             if 0 < Math.abs num
                 @emit 'shiftLines' @top, @bot, num
 
-    lineIndexIsInView: (li) -> @top <= li <= @bot
+    lineIndexIsInView: li -> @top <= li <= @bot
 
     # 00000000   00000000   0000000  00000000  000000000
     # 000   000  000       000       000          000
@@ -145,7 +145,7 @@ class EditorScroll extends events
     #    000     000  000       000   000  000   000  000       000  000   000  000   000     000
     #     0      000  00000000  00     00  000   000  00000000  000   0000000   000   000     000
 
-    setViewHeight: (h) =>
+    setViewHeight: h =>
 
         if @viewHeight != h
             @bot = @top-1 # always emit showLines if height changes
@@ -159,7 +159,7 @@ class EditorScroll extends events
     # 000  0000  000   000  000 0 000  000      000  000  0000  000            000
     # 000   000   0000000   000   000  0000000  000  000   000  00000000  0000000
 
-    setNumLines: (n, opt) =>
+    setNumLines: n opt =>
 
         if @numLines != n
             @fullHeight = n * @lineHeight
@@ -179,7 +179,7 @@ class EditorScroll extends events
     # 000      000  000  0000  000       000   000  000       000  000   000  000   000     000
     # 0000000  000  000   000  00000000  000   000  00000000  000   0000000   000   000     000
 
-    setLineHeight: (h) =>
+    setLineHeight: h =>
 
         if @lineHeight != h
             @lineHeight = h
@@ -203,7 +203,7 @@ class EditorScroll extends events
     # 000       000   000  000   000       000  000   000  000   000
     #  0000000   0000000   000   000  0000000    0000000   000   000
 
-    cursorToTop: (topDist=7) ->
+    cursorToTop: topDist=7 ->
 
         cp = @editor.cursorPos()
 

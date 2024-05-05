@@ -31,7 +31,7 @@ class Render
         l = "<span class='#{opt.wrapSpan}'>#{l}</span>" if opt.wrapSpan
         l
 
-    @lineSpan: (diss, size) ->
+    @lineSpan: diss size ->
 
         div = elem class: 'linespans'
         
@@ -74,7 +74,7 @@ class Render
     # 000       000   000  000   000       000  000   000  000   000       000
     #  0000000   0000000   000   000  0000000    0000000   000   000  0000000
 
-    @cursors: (cs, size, top) -> # cs: [ [charIndex, lineIndex] ... ]  (lineIndex relative to top)
+    @cursors: cs size top -> # cs: [ [charIndex, lineIndex] ... ]  (lineIndex relative to top)
 
         i = 0
         h = ""
@@ -95,12 +95,12 @@ class Render
     #      000  000       000      000       000          000     000  000   000  000  0000
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-    @selection: (ss, size, top, clss='selection') => # ss: [ [lineIndex, [startIndex, endIndex]], ... ]  (lineIndex relative to top)
+    @selection: ss size top clss='selection' => # ss: [ [lineIndex, [startIndex, endIndex]], ... ]  (lineIndex relative to top)
 
         h = ""
         p = null
         n = null
-        for si in [0...ss.length]
+        for si in 0...ss.length
             s = ss[si]
             n = (si < ss.length-1) and (ss[si+1][0] == s[0]+1) and ss[si+1] or null # next line selection
             b = p?[0] == s[0]-1 and p or null # selection in line before
@@ -108,7 +108,7 @@ class Render
             p = s
         h
 
-    @selectionSpan: (prev, sel, next, size, top, clss) ->
+    @selectionSpan: prev sel next size top clss ->
 
         # 0000000     0000000   00000000   0000000    00000000  00000000
         # 000   000  000   000  000   000  000   000  000       000   000

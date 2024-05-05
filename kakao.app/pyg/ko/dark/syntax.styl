@@ -17,6 +17,13 @@
 // #808 #a0a #c0c #f0f #f8f #fcf           
 // #a00 #d00 #f08 #48a                     
 
+// prevent large unicode character from clipping
+.linespans .unicode     
+    margin          -10px
+    padding          10px
+    
+    color           #ccf
+
 .syntax
     color           #666
 
@@ -83,6 +90,8 @@
         font-family         fontLigature
         opacity             1
         color               #55f
+        padding             0
+        margin              0
         margin-left         0.2em
         margin-top -0.05em
         

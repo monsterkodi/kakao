@@ -810,7 +810,7 @@ class Tabs
         tabs = this.koreTabs()
         if (tab = this.koreTabForPath(path,tabs))
         {
-            if (tab.dirty)
+            if (dirty)
             {
                 tab.dirty = true
             }
@@ -869,9 +869,9 @@ class Tabs
         var state, tab
 
         var list = _k_.list(this.koreTabs())
-        for (var _590_16_ = 0; _590_16_ < list.length; _590_16_++)
+        for (var _589_16_ = 0; _589_16_ < list.length; _589_16_++)
         {
-            tab = list[_590_16_]
+            tab = list[_589_16_]
             if (tab.dirty)
             {
                 if (tab.active)

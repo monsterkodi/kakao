@@ -528,14 +528,13 @@ class Tabs
     onDirty: dirty =>
         
         if tab = @activeKoreTab()
-            
             @setDirty tab.path, dirty
             
     setDirty: path dirty =>
         
         tabs = @koreTabs()
         if tab  = @koreTabForPath path, tabs
-            if tab.dirty ➜ tab.dirty = true
+            if dirty ➜ tab.dirty = true
             else delete tab.dirty
             @setKoreTabs tabs
             

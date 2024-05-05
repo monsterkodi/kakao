@@ -12,7 +12,7 @@ use ./MapScroll
 
 class Minimap
 
-    @: (@editor) ->
+    @: @editor ->
 
         # add highlights and cursors at right border
 
@@ -90,7 +90,7 @@ class Minimap
                 ctx.fillRect offset+2*r[1][0], y, 2*(r[1][1]-r[1][0]), @scroll.lineHeight
                 ctx.fillRect 260-6, y, 2, @scroll.lineHeight
 
-    drawLines: (top=@scroll.exposeTop, bot=@scroll.exposeBot) =>
+    drawLines: top=@scroll.exposeTop bot=@scroll.exposeBot =>
 
         ctx = @lines.getContext '2d'
         y = parseInt((top-@scroll.exposeTop)*@scroll.lineHeight)
@@ -137,7 +137,7 @@ class Minimap
             ctx.fillRect 260-8, y, 4, @scroll.lineHeight
         @drawMainCursor()
 
-    drawMainCursor: (blink) =>
+    drawMainCursor: blink =>
 
         ctx = @cursors.getContext '2d'
         ctx.fillStyle = blink and '#a00' or '#ff0'
@@ -166,11 +166,11 @@ class Minimap
     # 000        000 000   000        000   000       000  000
     # 00000000  000   000  000         0000000   0000000   00000000
 
-    exposeLine:   (li) => @drawLines li, li
+    exposeLine:   li => @drawLines li, li
 
-    onExposeLines: (e) => @drawLines @scroll.exposeTop, @scroll.exposeBot
+    onExposeLines: e => @drawLines @scroll.exposeTop, @scroll.exposeBot
 
-    onVanishLines: (e) =>
+    onVanishLines: e =>
         
         if e.top?
             @drawLines @scroll.exposeTop, @scroll.exposeBot
@@ -183,7 +183,7 @@ class Minimap
     # 000       000   000  000   000  000  0000  000   000  000
     #  0000000  000   000  000   000  000   000   0000000   00000000
 
-    onChanged: (changeInfo) =>
+    onChanged: changeInfo =>
 
         if @scroll.numLines != @editor.numLines() or (changeInfo.inserts or changeInfo.deletes)
             @scroll.setNumLines 0
@@ -206,7 +206,7 @@ class Minimap
     # 000 0 000  000   000  000   000       000  000
     # 000   000   0000000    0000000   0000000   00000000
 
-    onDrag: (drag, event) =>
+    onDrag: drag event =>
 
         if @scroll.fullHeight > @scroll.viewHeight
             br = @elem.getBoundingClientRect()
@@ -217,9 +217,9 @@ class Minimap
         else
             @jumpToLine @lineIndexForEvent(event), event
 
-    onStart: (drag,event) => @jumpToLine @lineIndexForEvent(event), event
+    onStart: drag event => @jumpToLine @lineIndexForEvent(event), event
 
-    jumpToLine: (li, event) ->
+    jumpToLine: li event ->
 
         jumpTo = =>
             @editor.scroll.to (li-5) * @editor.scroll.lineHeight
@@ -233,7 +233,7 @@ class Minimap
         clearTimeout @jumpToTimer
         @jumpToTimer = setTimeout jumpTo
 
-    lineIndexForEvent: (event) ->
+    lineIndexForEvent: event ->
         
         st = @elem.scrollTop
         br = @elem.getBoundingClientRect()
@@ -248,12 +248,12 @@ class Minimap
     # 000   000  000  0000        000       000   000  000     000     000   000  000   000
     #  0000000   000   000        00000000  0000000    000     000      0000000   000   000
 
-    onEditorNumLines: (n) =>
+    onEditorNumLines: n =>
 
         @onEditorViewHeight @editor.viewHeight() if n and @lines.height <= @scroll.lineHeight
         @scroll.setNumLines n
 
-    onEditorViewHeight: (h) =>
+    onEditorViewHeight: h =>
 
         @scroll.setViewHeight 2*@editor.viewHeight()
         @onScroll()
@@ -290,7 +290,7 @@ class Minimap
     # 000       000      000       000   000  000   000
     #  0000000  0000000  00000000  000   000  000   000
 
-    clearRange: (top, bot) ->
+    clearRange: top bot ->
 
         ctx = @lines.getContext '2d'
         ctx.clearRect 0, (top-@scroll.exposeTop)*@scroll.lineHeight, 2*@width, (bot-top)*@scroll.lineHeight

@@ -15,8 +15,8 @@ class Navigate
         post.on 'navigate' @navigate
         @navlist = stash.get 'navigate' []
         
-        log 'history'
-        for fp in @navlist ➜ log fp
+        # log 'history'
+        # for fp in @navlist ➜ log fp
         
         @currentIndex = -1
         @navigating = false
@@ -55,8 +55,8 @@ class Navigate
         while @navlist.length > prefs.get 'navigateHistoryLength' 100
             @navlist.shift()
             
-        log 'addToHistory'
-        for fp in @navlist ➜ log fp
+        # log 'addToHistory'
+        # for fp in @navlist ➜ log fp
             
         stash.set 'navigate' @navlist
 

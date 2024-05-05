@@ -21,7 +21,8 @@ for ext in exts
 
 SPACE   = /\s/
 HEADER  = /^0+$/
-PUNCT   = /\W+/g
+PUNCT   = /\W+/gu
+# PUNCT   = /[\'\"\.\,\;\:\+\=\-\>\<\#\@\$\%\^\&\*\/\[\]\{\}\/\?]+/g
 NUMBER  = /^\d+$/
 FLOAT   = /^\d+f$/
 HEXNUM  = /^0x[a-fA-F\d]+$/
@@ -84,6 +85,15 @@ chunked = (lines, ext) ->
                 l = s.length
                 sc = c
 
+                isUniko = ch cc -> 
+                    isu = 2000 <= cc
+                    if isu
+                        if ch in '■▪◆●○▸➜⮐'
+                            # log 'skp' ch, cc
+                            ⮐ false
+                        # log 'isu' ch, cc
+                    isu
+                
                 # seperate by punctuation
 
                 while m = PUNCT.exec s
@@ -102,13 +112,22 @@ chunked = (lines, ext) ->
 
                     while pi < punct.length-1
                         pc = punct[pi]
+                        cc = punct.charCodeAt(pi)
+                        
+                        # log 'pc' pc, cc
+                        
                         advance = 1
-                        if 0xD800 <= punct.charCodeAt(pi) <= 0xDBFF and 0xDC00 <= punct.charCodeAt(pi+1) <= 0xDFFF
+                        if 0xD800 <= cc < 0xDBFF and 0xDC00 <= punct.charCodeAt(pi+1) <= 0xDFFF
                             advance = 2
                             clss = 'text'
                             pc += punct[pi+1]
+                        else if isUniko pc, cc
+                            clss = 'text unicode'
+                            # log 'uniko' punct, cc
+                            # pc += punct[pi+1]
                         else
-                            clss = 'punct'
+                            # log 'punct' punct, cc
+                            clss = 'punct' 
                             if pc in [','';''{''}''('')']
                                 clss += ' minor'
                         pi += advance
@@ -117,7 +136,13 @@ chunked = (lines, ext) ->
                         turd = turd[advance..]
 
                     if pi < punct.length
-                        clss = 'punct'
+                        pc = punct[pi]
+                        cc = punct.charCodeAt(pi)
+                        # log 'tail' pc, cc
+                        if isUniko pc, cc
+                            clss = 'text unicode'
+                        else
+                            clss = 'punct'
                         if punct[pi..] in [','';''{''}''('')']
                             clss += ' minor'
                         line.chunks.push start:c, length:advance, match:punct[pi..], clss:clss

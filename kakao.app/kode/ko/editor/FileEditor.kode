@@ -147,7 +147,7 @@ function FileEditor extends TextEditor
 
     saveFilePosition: ->
         
-        return if not @currentFile
+        ⮐  if not @currentFile
         
         filePositions = window.stash.get 'filePositions' {}
 
@@ -171,7 +171,7 @@ function FileEditor extends TextEditor
                         
     restoreFilePosition: ->
 
-        return if not @currentFile
+        ⮐  if not @currentFile
 
         filePositions = window.stash.get 'filePositions' {}
         
@@ -217,7 +217,7 @@ function FileEditor extends TextEditor
 
         if File.isImage opt.path
             # kore.set 'view|file' opt.path
-            return
+            ⮐ 
 
         # log 'jumpToFile' opt, window.lastFocus
         if window.lastFocus == 'editor'
@@ -339,22 +339,44 @@ function FileEditor extends TextEditor
             js:      ['coffee' 'kode']
             mjs:     ['coffee' 'kode']
             pug:     ['html']
+            noon:    ['json']
+            json:    ['noon']
             html:    ['pug']
             css:     ['styl']
             styl:    ['css']
 
         for ext in counterparts[currext] ? []
+            
             if ○ ffs.fileExists slash.swapExt @currentFile, ext
                 post.emit 'loadFile' slash.swapExt @currentFile, ext
                 ⮐ true
 
         for ext in counterparts[currext] ? []
+            
             counter = slash.swapExt @currentFile, ext
-
-            counter = @swapLastDir counter, currext, ext
-            if ○ ffs.fileExists counter
-                post.emit 'loadFile' counter
+            file = @swapLastDir counter, currext, ext
+            
+            if ○ ffs.fileExists file
+                post.emit 'loadFile' file
                 ⮐ true
+
+        for ext in counterparts[currext] ? []
+            
+            counter = slash.swapExt @currentFile, ext
+            
+            if currext in ['noon']
+
+                file = @swapLastDir counter, 'kode' 'js'
+                if ○ ffs.fileExists file
+                    post.emit 'loadFile' file
+                    ⮐ true
+                    
+            if currext in ['json']
+                
+                file = @swapLastDir counter, 'js' 'kode'
+                if ○ ffs.fileExists file
+                    post.emit 'loadFile' file
+                    ⮐ true
 
         log 'cant find counterpart' @currentFile
         true
@@ -451,7 +473,7 @@ function FileEditor extends TextEditor
         
         RecentMenu = []
 
-        fileSpan = (f) ->
+        fileSpan = f ->
             if f?
                 span  = Syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
                 span += Syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
@@ -463,10 +485,9 @@ function FileEditor extends TextEditor
             RecentMenu.unshift
                 html: fileSpan f
                 arg: f
-                # cb: (arg) -> post.emit 'newTabWithFile' arg
                 cb: (arg) -> post.emit 'loadFile' arg
 
-        getMenu = (template, name) ->
+        getMenu = template name ->
             for item in template
                 if item.text == name
                     return item

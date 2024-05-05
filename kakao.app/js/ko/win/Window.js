@@ -25,6 +25,7 @@ import FileWatch from "../tools/FileWatch.js"
 import Projects from "../tools/Projects.js"
 import Indexer from "../tools/Indexer.js"
 import Git from "../tools/Git.js"
+import Unicode from "../tools/Unicode.js"
 import fps from "../tools/fps.js"
 import scheme from "../tools/scheme.js"
 
@@ -101,6 +102,7 @@ Window = (function ()
         new FileHandler
         new FileWatch
         new Projects
+        new Unicode
         new Git
         this.tabs = window.tabs = new Tabs(window.titlebar.elem)
         this.navigate = window.navigate = new Navigate()
@@ -150,7 +152,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _115_25_
+        var action, _116_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -333,7 +335,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _206_14_
+    var _207_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -344,7 +346,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _212_22_, _213_19_
+    var _213_22_, _214_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
@@ -379,19 +381,13 @@ toggleCenterText = function ()
 
 setFontSize = function (s)
 {
-    var _252_32_
-
     if (!(_k_.isNum(s)))
     {
         s = prefs.get('editorFontSize',19)
     }
     s = _k_.clamp(8,100,s)
     window.stash.set("fontSize",s)
-    window.editor.setFontSize(s)
-    if ((window.editor.currentFile != null))
-    {
-        return post.emit('loadFile',window.editor.currentFile,{reload:true})
-    }
+    return window.editor.setFontSize(s)
 }
 
 changeFontSize = function (d)

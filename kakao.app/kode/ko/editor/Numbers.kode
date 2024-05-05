@@ -10,7 +10,7 @@ use ../../kxk ▪ elem events setStyle $
 
 class Numbers extends events
 
-    @: (@editor) ->
+    @: @editor ->
 
         super()
 
@@ -36,7 +36,7 @@ class Numbers extends events
     #      000  000   000  000   000  000   000  000  0000
     # 0000000   000   000   0000000   00     00  000   000
 
-    onLinesShown: (top, bot, num) =>
+    onLinesShown: top bot num =>
 
         @elem.innerHTML = ''
         @lineDivs = {}
@@ -60,7 +60,7 @@ class Numbers extends events
     #      000  000   000  000  000          000     000       000   000
     # 0000000   000   000  000  000          000     00000000  0000000
 
-    onLinesShifted: (top, bot, num) =>
+    onLinesShifted: top bot num =>
 
         oldTop = top - num
         oldBot = bot - num
@@ -108,7 +108,7 @@ class Numbers extends events
             y = @editor.size.lineHeight * (li - @editor.scroll.top)
             div.style.transform = "translate3d(0, #{y}px, 0)"
 
-    addLine: (li) ->
+    addLine: li ->
 
         div = elem class:'linenumber' child:elem 'span' text:"#{li+1}"
         div.style.height = "#{@editor.size.lineHeight}px"
@@ -151,7 +151,7 @@ class Numbers extends events
             for li in [@editor.scroll.top..@editor.scroll.bot]
                 @updateColor li
 
-    updateColor: (li) =>
+    updateColor: li =>
 
         return if not @lineDivs[li]? # ok: e.g. commandlist
         if @lineDivs[li].firstChild? and @lineDivs[li].firstChild.classList.contains 'gitInfoLine'

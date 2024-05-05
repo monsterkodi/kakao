@@ -1,4 +1,4 @@
-var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+var _k_
 
 class Invisibles
 {
@@ -31,24 +31,11 @@ class Invisibles
 
     onLineInserted (li)
     {
-        var kind, line, n, p, s
+        var kind, line
 
         line = this.editor.line(li)
         kind = line.endsWith(' ') && 'trailing' || 'newline'
-        this.editor.meta.add({line:li,html:'&#9687',start:line.length,end:line.length,yOffset:-1,clss:'invisible ' + kind})
-        s = this.editor.tabline(li)
-        p = 0
-        while (p < s.length)
-        {
-            n = 1
-            if (s[p] === '\t')
-            {
-                n = 4 - (p % 4)
-                s = s.splice(p,1,_k_.lpad(n))
-                this.editor.meta.add({line:li,html:'&#9656',start:p,end:p,yOffset:-1,clss:'invisible invisible-tab'})
-            }
-            p += n
-        }
+        return this.editor.meta.add({line:li,html:'&#9687',start:line.length,end:line.length,yOffset:-1,clss:'invisible ' + kind})
     }
 
     onLineChanged (li)

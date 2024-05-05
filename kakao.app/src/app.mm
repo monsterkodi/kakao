@@ -223,6 +223,7 @@
             
             if ([ext isEqualToString:@"kode"] ||
                 [ext isEqualToString:@"styl"] ||
+                [ext isEqualToString:@"noon"] ||
                 [ext isEqualToString:@"pug"])
             {
                 [filesToTranspile addObject:change.path];

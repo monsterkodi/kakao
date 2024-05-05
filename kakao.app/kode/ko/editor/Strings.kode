@@ -10,7 +10,7 @@ use ../../kxk ▪ kstr matchr
 
 class Strings
     
-    @: (@editor) ->
+    @: @editor ->
         
         @editor.on 'cursor' @onCursor
         @editor.on 'fileTypeChanged' @setupConfig
@@ -26,14 +26,14 @@ class Strings
 
         if @editor.numHighlights() # don't highlight strings when other highlights exist
             for h in @editor.highlights()
-                return if not h[2]?
+                ⮐ if not h[2]?
                 
-        return if @highlightInside @editor.cursorPos()
+        ⮐ if @highlightInside @editor.cursorPos()
                 
         @clear()
         @editor.renderHighlights()
 
-    highlightInside: (pos) ->
+    highlightInside: pos ->
         
         stack = []
         pairs = []
@@ -41,8 +41,8 @@ class Strings
         [cp, li] = pos
         line = @editor.line(li)
         rngs = matchr.ranges @config, line       
-        return if not rngs.length
-        for i in [0...rngs.length]
+        ⮐ if not rngs.length
+        for i in  0...rngs.length
             ths = rngs[i]
             
             if ths.start > 0 and line[ths.start-1] == '\\' 

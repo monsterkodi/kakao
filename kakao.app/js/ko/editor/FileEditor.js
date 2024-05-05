@@ -382,31 +382,55 @@ FileEditor = (function ()
 
     FileEditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, counterparts, cp, currext, ext, _346_41_, _351_41_
+        var counter, counterparts, cp, currext, ext, file, _348_41_, _354_41_, _363_41_
 
         cp = this.cursorPos()
         currext = slash.ext(this.currentFile)
-        counterparts = {mm:['h'],cpp:['hpp','h'],cc:['hpp','h'],h:['cpp','c','mm'],hpp:['cpp','c'],coffee:['js','mjs'],kode:['js','mjs'],js:['coffee','kode'],mjs:['coffee','kode'],pug:['html'],html:['pug'],css:['styl'],styl:['css']}
-        var list = ((_346_41_=counterparts[currext]) != null ? _346_41_ : [])
-        for (var _346_16_ = 0; _346_16_ < list.length; _346_16_++)
+        counterparts = {mm:['h'],cpp:['hpp','h'],cc:['hpp','h'],h:['cpp','c','mm'],hpp:['cpp','c'],coffee:['js','mjs'],kode:['js','mjs'],js:['coffee','kode'],mjs:['coffee','kode'],pug:['html'],noon:['json'],json:['noon'],html:['pug'],css:['styl'],styl:['css']}
+        var list = ((_348_41_=counterparts[currext]) != null ? _348_41_ : [])
+        for (var _348_16_ = 0; _348_16_ < list.length; _348_16_++)
         {
-            ext = list[_346_16_]
+            ext = list[_348_16_]
             if (await ffs.fileExists(slash.swapExt(this.currentFile,ext)))
             {
                 post.emit('loadFile',slash.swapExt(this.currentFile,ext))
                 return true
             }
         }
-        var list1 = ((_351_41_=counterparts[currext]) != null ? _351_41_ : [])
-        for (var _351_16_ = 0; _351_16_ < list1.length; _351_16_++)
+        var list1 = ((_354_41_=counterparts[currext]) != null ? _354_41_ : [])
+        for (var _354_16_ = 0; _354_16_ < list1.length; _354_16_++)
         {
-            ext = list1[_351_16_]
+            ext = list1[_354_16_]
             counter = slash.swapExt(this.currentFile,ext)
-            counter = this.swapLastDir(counter,currext,ext)
-            if (await ffs.fileExists(counter))
+            file = this.swapLastDir(counter,currext,ext)
+            if (await ffs.fileExists(file))
             {
-                post.emit('loadFile',counter)
+                post.emit('loadFile',file)
                 return true
+            }
+        }
+        var list2 = ((_363_41_=counterparts[currext]) != null ? _363_41_ : [])
+        for (var _363_16_ = 0; _363_16_ < list2.length; _363_16_++)
+        {
+            ext = list2[_363_16_]
+            counter = slash.swapExt(this.currentFile,ext)
+            if (_k_.in(currext,['noon']))
+            {
+                file = this.swapLastDir(counter,'kode','js')
+                if (await ffs.fileExists(file))
+                {
+                    post.emit('loadFile',file)
+                    return true
+                }
+            }
+            if (_k_.in(currext,['json']))
+            {
+                file = this.swapLastDir(counter,'js','kode')
+                if (await ffs.fileExists(file))
+                {
+                    post.emit('loadFile',file)
+                    return true
+                }
             }
         }
         console.log('cant find counterpart',this.currentFile)
@@ -454,15 +478,15 @@ FileEditor = (function ()
                 var l, t
 
                 var list = _k_.list(layers)
-                for (var _396_81_ = 0; _396_81_ < list.length; _396_81_++)
+                for (var _418_81_ = 0; _418_81_ < list.length; _418_81_++)
                 {
-                    l = list[_396_81_]
+                    l = list[_418_81_]
                     setStyle('.editor .layers ' + l,'transform',"translateX(0)")
                 }
                 var list1 = _k_.list(transi)
-                for (var _397_76_ = 0; _397_76_ < list1.length; _397_76_++)
+                for (var _419_76_ = 0; _419_76_ < list1.length; _419_76_++)
                 {
-                    t = list1[_397_76_]
+                    t = list1[_419_76_]
                     setStyle('.editor .layers ' + t,'transition',"initial")
                 }
                 return this.updateLayers()
@@ -478,15 +502,15 @@ FileEditor = (function ()
                 offsetX *= -1
             }
             var list = _k_.list(layers)
-            for (var _407_88_ = 0; _407_88_ < list.length; _407_88_++)
+            for (var _429_88_ = 0; _429_88_ < list.length; _429_88_++)
             {
-                l = list[_407_88_]
+                l = list[_429_88_]
                 setStyle('.editor .layers ' + l,'transform',`translateX(${offsetX}px)`)
             }
             var list1 = _k_.list(transi)
-            for (var _408_85_ = 0; _408_85_ < list1.length; _408_85_++)
+            for (var _430_85_ = 0; _430_85_ < list1.length; _430_85_++)
             {
-                t = list1[_408_85_]
+                t = list1[_430_85_]
                 setStyle('.editor .layers ' + t,'transition',`all ${animate / 1000}s`)
             }
             return setTimeout(resetTrans,animate)
@@ -537,9 +561,9 @@ FileEditor = (function ()
         recent = window.stash.get('recentFiles',[])
         recent = (recent != null ? recent : [])
         var list = _k_.list(recent)
-        for (var _462_14_ = 0; _462_14_ < list.length; _462_14_++)
+        for (var _484_14_ = 0; _484_14_ < list.length; _484_14_++)
         {
-            f = list[_462_14_]
+            f = list[_484_14_]
             RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
             {
                 return post.emit('loadFile',arg)
@@ -550,9 +574,9 @@ FileEditor = (function ()
             var item
 
             var list1 = _k_.list(template)
-            for (var _470_21_ = 0; _470_21_ < list1.length; _470_21_++)
+            for (var _491_21_ = 0; _491_21_ < list1.length; _491_21_++)
             {
-                item = list1[_470_21_]
+                item = list1[_491_21_]
                 if (item.text === name)
                 {
                     return item

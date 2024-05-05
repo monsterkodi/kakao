@@ -214,7 +214,6 @@ class GitInfo
                             clss:       'gitInfoDelete'
                             click:      @onMetaClick
                             line:       '✘'
-                            # lineClss:   'gitInfoLine '+change
                             
                         dline++
     
@@ -357,7 +356,7 @@ class GitInfo
             
             log 'status' status
 
-            logFile = (change, file, status, spacer) ->
+            logFile = change file status spacer ->
 
                 ⮐ if slash.ext(file) in IGNORE_FILE_EXTS
 

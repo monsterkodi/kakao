@@ -109,7 +109,7 @@ class Render
         h = ""
         p = null
         n = null
-        for (var _103_19_ = si = 0, _103_23_ = ss.length; (_103_19_ <= _103_23_ ? si < ss.length : si > ss.length); (_103_19_ <= _103_23_ ? ++si : --si))
+        for (var _103_18_ = si = 0, _103_22_ = ss.length; (_103_18_ <= _103_22_ ? si < ss.length : si > ss.length); (_103_18_ <= _103_22_ ? ++si : --si))
         {
             s = ss[si]
             n = (si < ss.length - 1) && (ss[si + 1][0] === s[0] + 1) && ss[si + 1] || null
