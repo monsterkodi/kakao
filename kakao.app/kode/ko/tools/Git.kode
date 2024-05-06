@@ -27,7 +27,7 @@ function Git
                 @gitDirs.push slash.path gitDir, '.git'
                 
     onFileChanged: file =>
-        log 'Git.fileChanged' file
+        # log 'Git.fileChanged' file
         for gitDir in @gitDirs
             if file.startsWith gitDir
                 if slash.dir(file).endsWith '.git/refs/heads'

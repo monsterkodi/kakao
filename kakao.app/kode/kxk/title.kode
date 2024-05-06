@@ -40,7 +40,7 @@ function Title
             stopEvent event 
             post.emit 'menuAction' 'Maximize'
                 
-        @winicon = elem class: 'winicon'
+        @winicon = elem class: 'winicon' dblclick: (event) -> stopEvent event
         
         if @opt.icon
             @winicon.appendChild elem 'img' src:@opt.icon 

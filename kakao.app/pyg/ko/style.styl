@@ -732,6 +732,33 @@ infoPadding = 6px
     height              titlebarHeight
     min-width           15px
     max-width           titlebarHeight
+
+//  0000000   000   000  000   0000000  000   000  00     00  00000000  000   000  000   000  
+// 000   000  000   000  000  000       000  000   000   000  000       0000  000  000   000  
+// 000 00 00  000   000  000  000       0000000    000000000  0000000   000 0 000  000   000  
+// 000 0000   000   000  000  000       000  000   000 0 000  000       000  0000  000   000  
+//  00000 00   0000000   000   0000000  000   000  000   000  00000000  000   000   0000000   
+
+.quickmenu
+
+    flex                0 1
+    display             inline-block
+    box-sizing          border-box
+    font-size           24px
+    font-family         fontMono
+
+.quickmenu-item
+
+    height              titlebarHeight - 0.5px
+    width               titlebarHeight * 1.25
+    box-sizing          border-box
+    display             inline-block
+    text-align          center
+    vertical-align      top
+    cursor              pointer
+    
+    &:active
+        padding-top     2px
         
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  

@@ -87,7 +87,7 @@ class Info
     
     changeEditorFocus: =>
         
-        if window.split.terminalVisible()
+        if not window.split.editorMaximized()
             window.split.do 'maximize editor'
             window.split.do 'focus editor'
         else
@@ -95,8 +95,8 @@ class Info
             
     updateEditorButton: =>
         
-        @infoEditor.classList.toggle 'terminal-icon' not window.split.terminalVisible()
-        @infoEditor.classList.toggle 'editor-icon'       window.split.terminalVisible()
+        @infoEditor.classList.toggle 'terminal-icon'     window.split.editorMaximized()
+        @infoEditor.classList.toggle 'editor-icon'   not window.split.editorMaximized()
 
     #  0000000  00000000  000000000        00000000  0000000    000  000000000   0000000   00000000 
     # 000       000          000           000       000   000  000     000     000   000  000   000

@@ -855,6 +855,31 @@ body
     max-width: 30px;
 }
 
+.quickmenu
+{
+    flex: 0 1;
+    display: inline-block;
+    box-sizing: border-box;
+    font-size: 24px;
+    font-family: fontMono;
+}
+
+.quickmenu-item
+{
+    height: 29.5px;
+    width: 37.5px;
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.quickmenu-item:active
+{
+    padding-top: 2px;
+}
+
 #browser
 {
     font-family: titlebarFont;

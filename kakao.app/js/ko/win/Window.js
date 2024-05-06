@@ -16,6 +16,7 @@ import Split from "./Split.js"
 import Info from "./Info.js"
 import Tabs from "./Tabs.js"
 import Menu from "./Menu.js"
+import QuickMenu from "./QuickMenu.js"
 import Navigate from "./Navigate.js"
 import FileHandler from "./FileHandler.js"
 import Terminal from "./Terminal.js"
@@ -104,7 +105,8 @@ Window = (function ()
         new Projects
         new Unicode
         new Git
-        this.tabs = window.tabs = new Tabs(window.titlebar.elem)
+        this.tabs = window.tabs = new Tabs()
+        this.quickMenu = window.quickMenu = new QuickMenu()
         this.navigate = window.navigate = new Navigate()
         this.split = window.split = new Split()
         this.terminal = window.terminal = new Terminal('terminal')
@@ -152,7 +154,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _116_25_
+        var action, _117_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -335,7 +337,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _207_14_
+    var _208_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -346,7 +348,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _213_22_, _214_19_
+    var _214_22_, _215_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)

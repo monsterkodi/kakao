@@ -387,9 +387,9 @@ class Split
         return !this.flex.isCollapsed('commandline')
     }
 
-    terminalVisible ()
+    editorMaximized ()
     {
-        return !this.flex.isCollapsed('terminal') && this.terminalHeight() > 0
+        return this.flex.isCollapsed('terminal') || this.terminalHeight() <= 0
     }
 
     editorVisible ()
@@ -400,6 +400,11 @@ class Split
     browserVisible ()
     {
         return this.terminalHeight() > 0 && this.flex.panes[0].div === this.browser
+    }
+
+    terminalVisible ()
+    {
+        return this.terminalHeight() > 0 && this.flex.panes[0].div === this.terminal
     }
 }
 

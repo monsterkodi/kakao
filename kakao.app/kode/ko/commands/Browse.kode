@@ -119,7 +119,10 @@ function Browse extends Command
 
         text = @getText().trim()
 
-        log 'complete not implemented!' text
+        if not text.endsWith('/') #and slash.dirExists text
+            @setText text + '/'
+            @hideList()
+            true
 
         # if not text.endsWith('/') and slash.dirExists text
             # @setText text + '/'

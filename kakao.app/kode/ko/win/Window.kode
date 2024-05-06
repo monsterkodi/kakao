@@ -8,7 +8,7 @@
 
 use ../../kakao
 use ../../kxk      ▪ win stash post prefs store stopEvent
-use                ◆ Split Info Tabs Menu Navigate FileHandler Terminal Viewer
+use                ◆ Split Info Tabs Menu QuickMenu Navigate FileHandler Terminal Viewer
 use ../tools       ◆ FileWatch Projects Indexer Git Unicode fps scheme
 use ../editor      ◆ Kore Editor Syntax FileEditor
 use ../commands    ◆ Macro
@@ -60,7 +60,8 @@ function Window extends win.Delegate
         new Unicode
         new Git
         
-        @tabs        = window.tabs        = new Tabs window.titlebar.elem
+        @tabs        = window.tabs        = new Tabs()
+        @quickMenu   = window.quickMenu   = new QuickMenu()
         @navigate    = window.navigate    = new Navigate()
         @split       = window.split       = new Split()
         @terminal    = window.terminal    = new Terminal 'terminal'

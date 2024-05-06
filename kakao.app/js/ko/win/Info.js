@@ -84,7 +84,7 @@ class Info
 
     changeEditorFocus ()
     {
-        if (window.split.terminalVisible())
+        if (!window.split.editorMaximized())
         {
             window.split.do('maximize editor')
             return window.split.do('focus editor')
@@ -97,8 +97,8 @@ class Info
 
     updateEditorButton ()
     {
-        this.infoEditor.classList.toggle('terminal-icon',!window.split.terminalVisible())
-        return this.infoEditor.classList.toggle('editor-icon',window.split.terminalVisible())
+        this.infoEditor.classList.toggle('terminal-icon',window.split.editorMaximized())
+        return this.infoEditor.classList.toggle('editor-icon',!window.split.editorMaximized())
     }
 
     setEditor (editor)

@@ -438,6 +438,56 @@ span.macro.macro,
     color: #888;
 }
 
+.quickmenu-item
+{
+    border-radius: 6px;
+}
+
+.quickmenu-item:hover
+{
+    background: #333;
+}
+
+.quickmenu-browser
+{
+    color: #f80;
+}
+
+.quickmenu-browser:hover
+{
+    color: #fc0;
+}
+
+.quickmenu-terminal
+{
+    color: #88f;
+}
+
+.quickmenu-terminal:hover
+{
+    color: #aaf;
+}
+
+.quickmenu-list
+{
+    color: #080;
+}
+
+.quickmenu-list:hover
+{
+    color: #0a0;
+}
+
+.quickmenu-devtools
+{
+    color: #800;
+}
+
+.quickmenu-devtools:hover
+{
+    color: #a00;
+}
+
 #browser
 {
     background: #181818;

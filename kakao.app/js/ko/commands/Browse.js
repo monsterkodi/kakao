@@ -140,7 +140,12 @@ Browse = (function ()
         var text
 
         text = this.getText().trim()
-        console.log('complete not implemented!',text)
+        if (!text.endsWith('/'))
+        {
+            this.setText(text + '/')
+            this.hideList()
+            return true
+        }
     }
 
     Browse.prototype["onTabCompletion"] = function ()
@@ -154,7 +159,7 @@ Browse = (function ()
         var i, prefix
 
         prefix = ''
-        for (var _151_18_ = i = 0, _151_22_ = Math.min(strA.length,strB.length); (_151_18_ <= _151_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_151_18_ <= _151_22_ ? ++i : --i))
+        for (var _154_18_ = i = 0, _154_22_ = Math.min(strA.length,strB.length); (_154_18_ <= _154_22_ ? i < Math.min(strA.length,strB.length) : i > Math.min(strA.length,strB.length)); (_154_18_ <= _154_22_ ? ++i : --i))
         {
             if (strA[i] !== strB[i])
             {
@@ -172,9 +177,9 @@ Browse = (function ()
         brokenPath = slash.path(this.getText())
         longestMatch = ''
         var list = _k_.list(files)
-        for (var _161_17_ = 0; _161_17_ < list.length; _161_17_++)
+        for (var _164_17_ = 0; _164_17_ < list.length; _164_17_++)
         {
-            file = list[_161_17_]
+            file = list[_164_17_]
             file = file.file
             prefix = this.commonPrefix(file,brokenPath)
             if (prefix.length > longestMatch.length)
@@ -252,7 +257,7 @@ Browse = (function ()
 
     Browse.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
-        var focusBrowser, _235_74_
+        var focusBrowser, _238_74_
 
         switch (combo)
         {
@@ -296,7 +301,7 @@ Browse = (function ()
 
     Browse.prototype["select"] = function (i)
     {
-        var l, s, text, _270_42_, _276_20_, _277_20_
+        var l, s, text, _273_42_, _279_20_, _280_20_
 
         this.selected = _k_.clamp(-1,(this.commandList != null ? this.commandList.numLines() : undefined) - 1,i)
         if (this.selected < 0)
@@ -315,7 +320,7 @@ Browse = (function ()
 
     Browse.prototype["selectListItem"] = function (dir)
     {
-        var _287_34_
+        var _290_34_
 
         if (!(this.commandList != null))
         {
@@ -380,11 +385,11 @@ Browse = (function ()
 
     Browse.prototype["onBrowserItemActivated"] = function (item)
     {
-        var pth, _340_32_, _340_56_, _347_64_, _347_72_, _349_61_, _349_69_
+        var pth, _343_32_, _343_56_, _350_64_, _350_72_, _352_61_, _352_69_
 
         if (!this.isActive())
         {
-            ;((_340_32_=this.commandline.command) != null ? typeof (_340_56_=_340_32_.onBrowserItemActivated) === "function" ? _340_56_(item) : undefined : undefined)
+            ;((_343_32_=this.commandline.command) != null ? typeof (_343_56_=_343_32_.onBrowserItemActivated) === "function" ? _343_56_(item) : undefined : undefined)
             return
         }
         if (item.file)
@@ -393,9 +398,9 @@ Browse = (function ()
             if (item.type === 'dir')
             {
                 pth += '/'
-                if (item.name === '..' && ((_347_64_=this.browser.activeColumn()) != null ? (_347_72_=_347_64_.parent) != null ? _347_72_.file : undefined : undefined))
+                if (item.name === '..' && ((_350_64_=this.browser.activeColumn()) != null ? (_350_72_=_350_64_.parent) != null ? _350_72_.file : undefined : undefined))
                 {
-                    pth = slash.tilde(((_349_61_=this.browser.activeColumn()) != null ? (_349_69_=_349_61_.parent) != null ? _349_69_.file : undefined : undefined))
+                    pth = slash.tilde(((_352_61_=this.browser.activeColumn()) != null ? (_352_69_=_352_61_.parent) != null ? _352_69_.file : undefined : undefined))
                 }
             }
             return this.commandline.setText(pth)

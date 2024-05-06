@@ -275,8 +275,10 @@ class Split
     termEditHeight: -> @terminalHeight() + @commandlineHeight + @editorHeight()
         
     commandlineVisible: -> not @flex.isCollapsed 'commandline'
-    terminalVisible:    -> not @flex.isCollapsed('terminal') and @terminalHeight() > 0
+    # terminalVisible:    -> not @flex.isCollapsed('terminal') and @terminalHeight() > 0
+    editorMaximized:    -> @flex.isCollapsed('terminal') or @terminalHeight() <= 0
     editorVisible:      -> not @flex.isCollapsed 'editor'    and @editorHeight() > 0
     browserVisible:     -> @terminalHeight() > 0 and @flex.panes[0].div == @browser
+    terminalVisible:    -> @terminalHeight() > 0 and @flex.panes[0].div == @terminal
         
 export Split

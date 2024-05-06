@@ -56,7 +56,10 @@ Title = (function ()
             stopEvent(event)
             return post.emit('menuAction','Maximize')
         })
-        this.winicon = elem({class:'winicon'})
+        this.winicon = elem({class:'winicon',dblclick:function (event)
+        {
+            return stopEvent(event)
+        }})
         if (this.opt.icon)
         {
             this.winicon.appendChild(elem('img',{src:this.opt.icon}))

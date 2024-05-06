@@ -36,7 +36,6 @@ Git = (function ()
     {
         var gitDir
 
-        console.log('Git.fileChanged',file)
         var list = _k_.list(this.gitDirs)
         for (var _31_19_ = 0; _31_19_ < list.length; _31_19_++)
         {
