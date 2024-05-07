@@ -23,10 +23,11 @@ function Unicode
         window.terminal.clear()
         window.terminal.singleCursorAtPos [0 0]
 
-        for line in @uniko.split '\n'
-            window.terminal.queueMeta
-                text: line
-                line: '●'
+        if false
+            for line in @uniko.split '\n'
+                window.terminal.queueMeta
+                    text: line
+                    line: '●'
                
         if false
             fonts = 
