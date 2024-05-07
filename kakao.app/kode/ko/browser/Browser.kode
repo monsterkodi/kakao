@@ -111,7 +111,7 @@ function Browser extends events
     # 000       000   000  000       000   000       000
     # 000        0000000    0000000   0000000   0000000
 
-    focus: opt =>
+    focus: opt => 
         @lastDirOrSrcColumn()?.focus opt
         @
 
@@ -198,7 +198,7 @@ function Browser extends events
         for i in 0...@columns.length
             @columns[i].setIndex i
 
-    popColumn: opt ->
+    popColumn: opt -> 
 
         ⮐ if not @flex
         @clearColumn @columns.length-1

@@ -32,6 +32,7 @@ function Unicode
         if false
             fonts = 
                 fontMono:61440 
+                # fontMono:61440 
                 # FontAwesome:61440 
                 # FontAwesomeSolid:61440 
                 # FontAwesomeRegular:61440 

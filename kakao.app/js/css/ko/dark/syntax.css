@@ -450,6 +450,7 @@
 
 .punct.keyword.return
 {
+    margin-top: -0.12em;
     opacity: 1;
     color: #44a;
 }

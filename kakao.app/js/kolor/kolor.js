@@ -55,9 +55,9 @@ chunked = function (lines, ext)
         }
         c = 0
         var list1 = _k_.list(chunks)
-        for (var _80_14_ = 0; _80_14_ < list1.length; _80_14_++)
+        for (var _79_14_ = 0; _79_14_ < list1.length; _79_14_++)
         {
-            s = list1[_80_14_]
+            s = list1[_79_14_]
             if (s === '')
             {
                 c++
@@ -74,7 +74,7 @@ chunked = function (lines, ext)
                 {
                     var isu
 
-                    isu = 2000 <= cc
+                    isu = cc >= 2000
                     if (isu)
                     {
                         if (_k_.in(ch,'■▪◆●○▸➜⮐'))
@@ -178,7 +178,7 @@ fillComment = function (n)
 {
     var c, i, mightBeHeader, restChunks
 
-    for (var _191_14_ = i = 0, _191_18_ = n; (_191_14_ <= _191_18_ ? i < n : i > n); (_191_14_ <= _191_18_ ? ++i : --i))
+    for (var _180_14_ = i = 0, _180_18_ = n; (_180_14_ <= _180_18_ ? i < n : i > n); (_180_14_ <= _180_18_ ? ++i : --i))
     {
         addValue(i,'comment')
     }
@@ -187,9 +187,9 @@ fillComment = function (n)
         restChunks = line.chunks.slice(chunkIndex + n)
         mightBeHeader = true
         var list1 = _k_.list(restChunks)
-        for (var _196_14_ = 0; _196_14_ < list1.length; _196_14_++)
+        for (var _185_14_ = 0; _185_14_ < list1.length; _185_14_++)
         {
-            c = list1[_196_14_]
+            c = list1[_185_14_]
             c.clss = 'comment'
             if (mightBeHeader && !HEADER.test(c.match))
             {
@@ -199,9 +199,9 @@ fillComment = function (n)
         if (mightBeHeader)
         {
             var list2 = _k_.list(restChunks)
-            for (var _201_18_ = 0; _201_18_ < list2.length; _201_18_++)
+            for (var _190_18_ = 0; _190_18_ < list2.length; _190_18_++)
             {
-                c = list2[_201_18_]
+                c = list2[_190_18_]
                 c.clss += ' header'
             }
         }
@@ -239,7 +239,7 @@ noonComment = function ()
 
 slashComment = function ()
 {
-    var _225_17_
+    var _214_17_
 
     if (stackTop)
     {
@@ -325,9 +325,9 @@ funcArgs = function ()
         if (_k_.in(line.chunks[0].clss,['text','dictionary key']) && _k_.in(line.chunks[1].match,':='))
         {
             var list1 = _k_.list(line.chunks.slice(2, typeof chunkIndex === 'number' ? chunkIndex : -1))
-            for (var _273_19_ = 0; _273_19_ < list1.length; _273_19_++)
+            for (var _262_19_ = 0; _262_19_ < list1.length; _262_19_++)
             {
-                ch = list1[_273_19_]
+                ch = list1[_262_19_]
                 if (_k_.in(ch.clss,['function call','text']))
                 {
                     ch.clss = 'function argument'
@@ -340,7 +340,7 @@ funcArgs = function ()
 
 dashArrow = function ()
 {
-    var markFunc, _307_77_, _330_77_
+    var markFunc, _296_77_, _319_77_
 
     if (notCode)
     {
@@ -460,7 +460,7 @@ commentHeader = function ()
 
 kodePunct = function ()
 {
-    var next, prev, prevEnd, _406_21_
+    var next, prev, prevEnd, _395_21_
 
     if (notCode)
     {
@@ -546,7 +546,7 @@ kodePunct = function ()
 
 kodeWord = function ()
 {
-    var c, prev, _436_22_
+    var c, prev, _425_22_
 
     if (notCode)
     {
@@ -577,9 +577,9 @@ kodeWord = function ()
             if (_k_.empty(getChunk(-2)))
             {
                 var list1 = _k_.list(line.chunks.slice(chunkIndex))
-                for (var _451_22_ = 0; _451_22_ < list1.length; _451_22_++)
+                for (var _440_22_ = 0; _440_22_ < list1.length; _440_22_++)
                 {
-                    c = list1[_451_22_]
+                    c = list1[_440_22_]
                     c.clss = 'section'
                 }
                 return line.chunks.length - chunkIndex
@@ -642,7 +642,7 @@ thisCall = function ()
 
 coffeePunct = function ()
 {
-    var next, prev, prevEnd, _514_21_
+    var next, prev, prevEnd, _503_21_
 
     if (notCode)
     {
@@ -764,7 +764,7 @@ property = function ()
 
 cppWord = function ()
 {
-    var p, prevPrev, _582_19_
+    var p, prevPrev, _571_19_
 
     if (notCode)
     {
@@ -928,7 +928,7 @@ urlPunct = function ()
         }
         if (chunk.match === '/')
         {
-            for (var _693_22_ = i = chunkIndex, _693_34_ = 0; (_693_22_ <= _693_34_ ? i <= 0 : i >= 0); (_693_22_ <= _693_34_ ? ++i : --i))
+            for (var _682_22_ = i = chunkIndex, _682_34_ = 0; (_682_22_ <= _682_34_ ? i <= 0 : i >= 0); (_682_22_ <= _682_34_ ? ++i : --i))
             {
                 if (line.chunks[i].start + line.chunks[i].length < (line.chunks[i + 1] != null ? line.chunks[i + 1].start : undefined))
                 {
@@ -1013,7 +1013,7 @@ jsWord = function ()
 
 dict = function ()
 {
-    var prev, _741_44_
+    var prev, _730_44_
 
     if (notCode)
     {
@@ -1047,7 +1047,7 @@ jsonPunct = function ()
         {
             if (prev.match === '"')
             {
-                for (var _761_26_ = i = Math.max(0,chunkIndex - 2), _761_52_ = 0; (_761_26_ <= _761_52_ ? i <= 0 : i >= 0); (_761_26_ <= _761_52_ ? ++i : --i))
+                for (var _750_26_ = i = Math.max(0,chunkIndex - 2), _750_52_ = 0; (_750_26_ <= _750_52_ ? i <= 0 : i >= 0); (_750_26_ <= _750_52_ ? ++i : --i))
                 {
                     if ((line.chunks[i] != null ? line.chunks[i].clss : undefined) === 'punct string double')
                     {
@@ -1098,7 +1098,7 @@ jsonWord = function ()
 
 escape = function ()
 {
-    var _794_46_, _795_26_, _799_61_, _802_61_
+    var _783_46_, _784_26_, _788_61_, _791_61_
 
     if (chunk.match === '\\' && ((topType != null ? topType.startsWith('regexp') : undefined) || (topType != null ? topType.startsWith('string') : undefined)))
     {
@@ -1126,7 +1126,7 @@ escape = function ()
 
 regexp = function ()
 {
-    var next, prev, _812_19_
+    var next, prev, _801_19_
 
     if ((topType != null ? topType.startsWith('string') : undefined))
     {
@@ -1203,7 +1203,7 @@ tripleRegexp = function ()
 
 simpleString = function ()
 {
-    var next, scnd, type, _860_19_
+    var next, scnd, type, _849_19_
 
     if (topType === 'regexp')
     {
@@ -1271,7 +1271,7 @@ simpleString = function ()
 
 tripleString = function ()
 {
-    var type, _900_19_
+    var type, _889_19_
 
     if (!chunk.turd || chunk.turd.length < 3)
     {
@@ -1383,7 +1383,7 @@ float = function ()
 
 cssWord = function ()
 {
-    var prev, prevPrev, _996_45_
+    var prev, prevPrev, _985_45_
 
     if (_k_.in(chunk.match.slice(-2),['px','em','ex']) && NUMBER.test(chunk.match.slice(0, -2)))
     {
@@ -1435,7 +1435,7 @@ cssWord = function ()
 
 mdPunct = function ()
 {
-    var type, _1030_65_, _1055_21_, _1080_21_
+    var type, _1019_65_, _1044_21_, _1069_21_
 
     if (chunkIndex === 0)
     {
@@ -1538,7 +1538,7 @@ mdPunct = function ()
 
 interpolation = function ()
 {
-    var _1112_21_
+    var _1101_21_
 
     if ((topType != null ? topType.startsWith('string double') : undefined))
     {
@@ -1629,7 +1629,7 @@ mmString = function ()
 
 shPunct = function ()
 {
-    var _1206_42_, _1206_64_, _1209_102_, _1209_41_, _1209_82_, _1215_102_, _1215_41_, _1215_82_
+    var _1195_42_, _1195_64_, _1198_102_, _1198_41_, _1198_82_, _1204_102_, _1204_41_, _1204_82_
 
     if (notCode)
     {
@@ -1735,16 +1735,16 @@ setValue = function (d, value)
 
 getValue = function (d)
 {
-    var _1276_29_, _1276_36_
+    var _1265_29_, _1265_36_
 
-    return ((_1276_36_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1276_36_ : '')
+    return ((_1265_36_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1265_36_ : '')
 }
 
 getmatch = function (d)
 {
-    var _1277_29_, _1277_37_
+    var _1266_29_, _1266_37_
 
-    return ((_1277_37_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1277_37_ : '')
+    return ((_1266_37_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1266_37_ : '')
 }
 
 addValue = function (d, value)
@@ -1760,7 +1760,7 @@ addValues = function (n, value)
 {
     var i
 
-    for (var _1284_14_ = i = 0, _1284_18_ = n; (_1284_14_ <= _1284_18_ ? i < n : i > n); (_1284_14_ <= _1284_18_ ? ++i : --i))
+    for (var _1273_14_ = i = 0, _1273_18_ = n; (_1273_14_ <= _1273_18_ ? i < n : i > n); (_1273_14_ <= _1273_18_ ? ++i : --i))
     {
         addValue(i,value)
     }
@@ -1768,9 +1768,9 @@ addValues = function (n, value)
 }
 handlers = {coffee:{punct:[blockComment,hashComment,tripleRegexp,coffeePunct,tripleString,simpleString,interpolation,dashArrow,regexp,dict],word:[keyword,coffeeWord,number,property]},kode:{punct:[blockComment,hashComment,tripleRegexp,kodePunct,tripleString,simpleString,interpolation,funcArgs,dashArrow,regexp,dict],word:[keyword,kodeWord,number,property]},noon:{punct:[noonComment,noonPunct,urlPunct],word:[noonWord,urlWord,number]},js:{punct:[starComment,slashComment,jsPunct,simpleString,dashArrow,regexp,dict],word:[keyword,jsWord,number,property]},ts:{punct:[starComment,slashComment,jsPunct,simpleString,dashArrow,regexp,dict],word:[keyword,jsWord,number,property]},iss:{punct:[starComment,slashComment,simpleString],word:[keyword,number]},ini:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[number]},cpp:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},mm:{punct:[starComment,slashComment,simpleString,cppPointer],word:[keyword,number,float,cppWord]},frag:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},vert:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},hpp:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},c:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},h:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},cs:{punct:[starComment,slashComment,simpleString],word:[keyword,number]},pug:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},styl:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},css:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},sass:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},scss:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},swift:{punct:[starComment,slashComment,simpleString,dict],word:[keyword,number,property]},svg:{punct:[simpleString,xmlPunct],word:[keyword,number]},html:{punct:[simpleString,xmlPunct],word:[keyword,number]},htm:{punct:[simpleString,xmlPunct],word:[keyword,number]},xml:{punct:[simpleString,xmlPunct],word:[number]},sh:{punct:[hashComment,simpleString,urlPunct,shPunct],word:[keyword,urlWord,number]},json:{punct:[simpleString,jsonPunct,urlPunct],word:[keyword,jsonWord,urlWord,number]},yml:{punct:[hashComment,simpleString,urlPunct,shPunct,dict],word:[keyword,jsonWord,urlWord,number,property]},yaml:{punct:[hashComment,simpleString,urlPunct,shPunct,dict],word:[keyword,jsonWord,urlWord,number,property]},log:{punct:[simpleString,urlPunct,dict],word:[urlWord,number]},md:{punct:[mdPunct,urlPunct,xmlPunct],word:[urlWord,number]},fish:{punct:[hashComment,simpleString],word:[keyword,number]},py:{punct:[hashComment,simpleString],word:[keyword,number]}}
 var list1 = _k_.list(exts)
-for (var _1327_8_ = 0; _1327_8_ < list1.length; _1327_8_++)
+for (var _1316_8_ = 0; _1316_8_ < list1.length; _1316_8_++)
 {
-    ext = list1[_1327_8_]
+    ext = list1[_1316_8_]
     if (!(handlers[ext] != null))
     {
         handlers[ext] = {punct:[simpleString],word:[number]}
@@ -1785,7 +1785,7 @@ for (ext in handlers)
 
 blocked = function (lines)
 {
-    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1418_40_, _1433_61_
+    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1407_40_, _1422_61_
 
     extStack = []
     stack = []
@@ -1799,18 +1799,18 @@ blocked = function (lines)
     chunk = null
     chunkIndex = 0
     var list2 = _k_.list(lines)
-    for (var _1369_13_ = 0; _1369_13_ < list2.length; _1369_13_++)
+    for (var _1358_13_ = 0; _1358_13_ < list2.length; _1358_13_++)
     {
-        line = list2[_1369_13_]
+        line = list2[_1358_13_]
         if (stackTop)
         {
             if (stackTop.type === 'comment triple')
             {
                 mightBeHeader = true
                 var list3 = _k_.list(line.chunks)
-                for (var _1376_26_ = 0; _1376_26_ < list3.length; _1376_26_++)
+                for (var _1365_26_ = 0; _1365_26_ < list3.length; _1365_26_++)
                 {
-                    chunk = list3[_1376_26_]
+                    chunk = list3[_1365_26_]
                     if (!HEADER.test(chunk.match))
                     {
                         mightBeHeader = false
@@ -1820,9 +1820,9 @@ blocked = function (lines)
                 if (mightBeHeader)
                 {
                     var list4 = _k_.list(line.chunks)
-                    for (var _1381_30_ = 0; _1381_30_ < list4.length; _1381_30_++)
+                    for (var _1370_30_ = 0; _1370_30_ < list4.length; _1370_30_++)
                     {
-                        chunk = list4[_1381_30_]
+                        chunk = list4[_1370_30_]
                         chunk.clss = 'comment triple header'
                     }
                     continue
@@ -1874,9 +1874,9 @@ blocked = function (lines)
                     }
                 }
                 var list5 = _k_.list(handl.punct)
-                for (var _1422_24_ = 0; _1422_24_ < list5.length; _1422_24_++)
+                for (var _1411_24_ = 0; _1411_24_ < list5.length; _1411_24_++)
                 {
-                    hnd = list5[_1422_24_]
+                    hnd = list5[_1411_24_]
                     if (advance = hnd())
                     {
                         chunkIndex += advance
@@ -1893,7 +1893,7 @@ blocked = function (lines)
                         if (mtch.turd)
                         {
                             turdChunk = getChunk(-mtch.turd.length)
-                            if (mtch.turd === (((_1433_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1433_61_ : (turdChunk != null ? turdChunk.match : undefined))))
+                            if (mtch.turd === (((_1422_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1422_61_ : (turdChunk != null ? turdChunk.match : undefined))))
                             {
                                 pushExt(mtch)
                             }
@@ -1905,9 +1905,9 @@ blocked = function (lines)
                     }
                 }
                 var list6 = _k_.list(handl.word)
-                for (var _1439_24_ = 0; _1439_24_ < list6.length; _1439_24_++)
+                for (var _1428_24_ = 0; _1428_24_ < list6.length; _1428_24_++)
                 {
-                    hnd = list6[_1439_24_]
+                    hnd = list6[_1428_24_]
                     if (advance = hnd())
                     {
                         chunkIndex += advance
@@ -1946,12 +1946,12 @@ replaceTabs = function (s)
 
 ligatures = function (lines)
 {
-    var index, _1473_25_, _1478_30_
+    var index, _1463_26_, _1470_26_
 
     var list2 = _k_.list(lines)
-    for (var _1467_13_ = 0; _1467_13_ < list2.length; _1467_13_++)
+    for (var _1456_13_ = 0; _1456_13_ < list2.length; _1456_13_++)
     {
-        line = list2[_1467_13_]
+        line = list2[_1456_13_]
         if (!(_k_.in(line.ext,['kode'])))
         {
             continue
@@ -2004,9 +2004,9 @@ kolorize = function (chunk)
         {
             v = chunk.match
             var list2 = _k_.list(cn)
-            for (var _1510_19_ = 0; _1510_19_ < list2.length; _1510_19_++)
+            for (var _1505_19_ = 0; _1505_19_ < list2.length; _1505_19_++)
             {
-                cr = list2[_1510_19_]
+                cr = list2[_1505_19_]
                 v = kolor[cr](v)
             }
             return v
@@ -2059,7 +2059,7 @@ kolorizeChunks = function (chunks = [], number)
         clrzd += _k_.w2(numstr) + _k_.rpad(4 - numstr.length)
     }
     c = 0
-    for (var _1539_14_ = i = 0, _1539_18_ = chunks.length; (_1539_14_ <= _1539_18_ ? i < chunks.length : i > chunks.length); (_1539_14_ <= _1539_18_ ? ++i : --i))
+    for (var _1534_14_ = i = 0, _1534_18_ = chunks.length; (_1534_14_ <= _1534_18_ ? i < chunks.length : i > chunks.length); (_1534_14_ <= _1534_18_ ? ++i : --i))
     {
         while (c < chunks[i].start)
         {
@@ -2074,19 +2074,19 @@ kolorizeChunks = function (chunks = [], number)
 
 syntax = function (arg)
 {
-    var clines, index, lines, numbers, rngs, text, _1557_19_, _1558_25_
+    var clines, index, lines, numbers, rngs, text, _1552_19_, _1553_25_
 
     arg = (arg != null ? arg : {})
     text = arg.text
-    ext = ((_1557_19_=arg.ext) != null ? _1557_19_ : 'coffee')
-    numbers = ((_1558_25_=arg.numers) != null ? _1558_25_ : false)
+    ext = ((_1552_19_=arg.ext) != null ? _1552_19_ : 'coffee')
+    numbers = ((_1553_25_=arg.numers) != null ? _1553_25_ : false)
     lines = text.split(NEWLINE)
     rngs = parse(lines,ext).map(function (l)
     {
         return l.chunks
     })
     clines = []
-    for (var _1563_18_ = index = 0, _1563_22_ = lines.length; (_1563_18_ <= _1563_22_ ? index < lines.length : index > lines.length); (_1563_18_ <= _1563_22_ ? ++index : --index))
+    for (var _1558_18_ = index = 0, _1558_22_ = lines.length; (_1558_18_ <= _1558_22_ ? index < lines.length : index > lines.length); (_1558_18_ <= _1558_22_ ? ++index : --index))
     {
         line = lines[index]
         if (ext === 'js' && line.startsWith('//# source'))

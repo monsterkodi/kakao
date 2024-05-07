@@ -65,9 +65,9 @@ Unicode = (function ()
             lines = this.fonts[font]
             window.terminal.queueMeta({list:font,text:font,line:'◆'})
             var list1 = _k_.list(lines)
-            for (var _67_21_ = 0; _67_21_ < list1.length; _67_21_++)
+            for (var _68_21_ = 0; _68_21_ < list1.length; _68_21_++)
             {
-                line = list1[_67_21_]
+                line = list1[_68_21_]
                 window.terminal.queueMeta({font:font,text:'        ' + line,line:''})
             }
         }

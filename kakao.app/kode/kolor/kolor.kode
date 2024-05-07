@@ -22,7 +22,6 @@ for ext in exts
 SPACE   = /\s/
 HEADER  = /^0+$/
 PUNCT   = /\W+/gu
-# PUNCT   = /[\'\"\.\,\;\:\+\=\-\>\<\#\@\$\%\^\&\*\/\[\]\{\}\/\?]+/g
 NUMBER  = /^\d+$/
 FLOAT   = /^\d+f$/
 HEXNUM  = /^0x[a-fA-F\d]+$/
@@ -86,12 +85,8 @@ chunked = (lines, ext) ->
                 sc = c
 
                 isUniko = ch cc -> 
-                    isu = 2000 <= cc
-                    if isu
-                        if ch in '■▪◆●○▸➜⮐'
-                            # log 'skp' ch, cc
-                            ⮐ false
-                        # log 'isu' ch, cc
+                    isu = cc >= 2000
+                    if isu ➜ ⮐ false if ch in '■▪◆●○▸➜⮐'
                     isu
                 
                 # seperate by punctuation
@@ -114,8 +109,6 @@ chunked = (lines, ext) ->
                         pc = punct[pi]
                         cc = punct.charCodeAt(pi)
                         
-                        # log 'pc' pc, cc
-                        
                         advance = 1
                         if 0xD800 <= cc < 0xDBFF and 0xDC00 <= punct.charCodeAt(pi+1) <= 0xDFFF
                             advance = 2
@@ -123,10 +116,7 @@ chunked = (lines, ext) ->
                             pc += punct[pi+1]
                         else if isUniko pc, cc
                             clss = 'text unicode'
-                            # log 'uniko' punct, cc
-                            # pc += punct[pi+1]
                         else
-                            # log 'punct' punct, cc
                             clss = 'punct' 
                             if pc in [','';''{''}''('')']
                                 clss += ' minor'
@@ -138,7 +128,6 @@ chunked = (lines, ext) ->
                     if pi < punct.length
                         pc = punct[pi]
                         cc = punct.charCodeAt(pi)
-                        # log 'tail' pc, cc
                         if isUniko pc, cc
                             clss = 'text unicode'
                         else
@@ -1462,7 +1451,7 @@ replaceTabs = (s) ->
 # 000      000  000   000  000   000     000     000   000  000   000  000            000  
 # 0000000  000   0000000   000   000     000      0000000   000   000  00000000  0000000   
 
-ligatures = (lines) -> # => == != === ... .. // << <= >= >>  
+ligatures = (lines) -> # => == != === ... .. // << <= >= >> 
     
     for line in lines
         
@@ -1470,22 +1459,28 @@ ligatures = (lines) -> # => == != === ... .. // << <= >= >>
     
         for chunk,index in line.chunks
             
-            if chunk.turd?.startsWith '...'
-                chunk.clss += ' ligature'
-                chunk.match = '...'
-                chunk.length = 3
-                line.chunks.splice index+1 2
-            else if chunk.turd?.startsWith '..'
-                if chunk.turd[2] != '/'
+            if 
+                chunk.turd?.startsWith '...'
+                    
                     chunk.clss += ' ligature'
-                    chunk.match = '..'
-                    chunk.length = 2
-                    line.chunks.splice index+1 1
-            else if chunk.turd in ['->' '=>' '==' '!=' '<=' '>=' '===' '>>' '<<' '//']
-                chunk.clss += ' ligature'
-                chunk.match = chunk.turd
-                chunk.length = chunk.turd.length
-                line.chunks.splice index+1 chunk.turd.length-1
+                    chunk.match = '...'
+                    chunk.length = 3
+                    line.chunks.splice index+1 2
+                    
+                chunk.turd?.startsWith '..'
+                    
+                    if chunk.turd[2] != '/'
+                        chunk.clss += ' ligature'
+                        chunk.match = '..'
+                        chunk.length = 2
+                        line.chunks.splice index+1 1
+                        
+                chunk.turd in ['->' '=>' '==' '!=' '<=' '>=' '===' '>>' '<<' '//']
+                    
+                    chunk.clss += ' ligature'
+                    chunk.match = chunk.turd
+                    chunk.length = chunk.turd.length
+                    line.chunks.splice index+1 chunk.turd.length-1
     lines
 
 # 00000000    0000000   00000000    0000000  00000000  
@@ -1579,8 +1574,8 @@ export
     exts:       exts
     parse:      parse
     chunked:    chunked
-    ranges:     (line, ext='kode')  -> parse([line], ext)[0].chunks
-    dissect:    (lines, ext='kode') -> parse(lines, ext).map (l) -> l.chunks
+    ranges:     line  ext='kode' -> parse([line], ext)[0].chunks
+    dissect:    lines ext='kode' -> parse(lines, ext).map (l) -> l.chunks
     kolorize:   kolorize
     kolorizeChunks: kolorizeChunks
     syntax:     syntax

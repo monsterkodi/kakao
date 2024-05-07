@@ -17,6 +17,14 @@
 
 @font-face
 {
+    font-family: fontNerd;
+    font-weight: normal;
+    font-style: normal;
+    src: url("../../../Contents/Resources/font/MesloLGS-NF-Regular.woff2");
+}
+
+@font-face
+{
     font-family: fontLigature;
     font-weight: normal;
     font-style: normal;
@@ -861,7 +869,7 @@ body
     display: inline-block;
     box-sizing: border-box;
     font-size: 24px;
-    font-family: fontMono;
+    font-family: fontNerd;
 }
 
 .quickmenu-item
