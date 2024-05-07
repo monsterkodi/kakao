@@ -76,13 +76,17 @@ function Terminal extends TextEditor
 
             meta.text?
             
-                @appendLineDiss meta.text
-            
+                diss = Syntax.dissForTextAndSyntax meta.text, 'txt'
+                diss.font = meta.font if meta.font
+                @appendLineDiss meta.text, diss
             ➜
                 @appendLineDiss ''
 
         if meta.list
-            post.emit 'filelist.add' meta.list, @numLines()
+            if meta.list is str
+                post.emit 'filelist.add' meta.list, @numLines()
+            else
+                post.emit 'filelist.add' meta.text, @numLines()
                 
         for mm in meta.metas
             @meta.appendLineMeta mm

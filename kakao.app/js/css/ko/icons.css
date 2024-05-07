@@ -25,14 +25,6 @@
 
 @font-face
 {
-    font-family: FontAwesomeBrands;
-    font-weight: normal;
-    font-style: normal;
-    src: url("../../../Contents/Resources/font/fa-brands-400.woff2");
-}
-
-@font-face
-{
     font-family: Mfizz;
     src: url("../../../Contents/Resources/font/mfixx.woff2");
     font-weight: normal;
@@ -69,6 +61,9 @@
     display: inline-block;
     text-align: right;
 }
+.icon.js:before           { font-family: fontMono;           content: ""; }
+.icon.html:before         { font-family: fontMono;           content: ""; }
+.icon.css:before          { font-family: fontMono;           content: ""; }
 .icon.binary:before       { font-family: octicons; content: "\f094"; }
 .icon.book:before         { font-family: octicons; content: "\f007"; }
 .icon.brew:before         { font-family: octicons; content: "\f069"; }
@@ -90,14 +85,11 @@
 .icon.gear:before         { font-family: FontAwesomeSolid;   content: "\f013"; }
 .icon.law:before          { font-family: FontAwesomeSolid;   content: "\f24e"; }
 .icon.json:before         { font-family: FontAwesomeSolid;   content: "\f544"; }
-.icon.js:before           { font-family: FontAwesomeBrands;  content: "\f3b9"; }
-.icon.html:before         { font-family: FontAwesomeBrands;  content: "\f13b"; }
-.icon.css:before          { font-family: FontAwesomeBrands;  content: "\f13c"; }
-.icon.text:before         { font-family: FontAwesomeRegular; content: "\f15c"; }
-.icon.image:before        { font-family: FontAwesomeRegular; content: "\f03e"; }
 .icon.pxm:before          { font-family: FontAwesomeSolid;   content: "\f03e"; }
 .icon.icns:before         { font-family: FontAwesomeSolid;   content: "\f03e"; }
 .icon.webp:before         { font-family: FontAwesomeSolid;   content: "\f03e"; }
+.icon.text:before         { font-family: FontAwesomeRegular; content: "\f15c"; }
+.icon.image:before        { font-family: FontAwesomeRegular; content: "\f03e"; }
 .icon.file:before         { font-family: FontAwesome; content: "\f016"; }
 .icon.android:before      { font-family: FontAwesome; content: "\f17b"; }
 .icon.at:before           { font-family: FontAwesome; content: "\f1fa"; }

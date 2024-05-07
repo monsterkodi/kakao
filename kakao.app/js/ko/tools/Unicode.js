@@ -6,6 +6,7 @@ import kxk from "../../kxk.js"
 let post = kxk.post
 let slash = kxk.slash
 let ffs = kxk.ffs
+let noon = kxk.noon
 
 
 Unicode = (function ()
@@ -17,21 +18,55 @@ Unicode = (function ()
         {
             this.uniko = uniko
         }).bind(this))
+        noon.load(slash.path(_k_.dir(),'../../../kode/ko/tools/Uniko.noon')).then((function (fonts)
+        {
+            this.fonts = fonts
+        }).bind(this))
         post.on('unicode',this.onUnicode)
     }
 
     Unicode.prototype["onUnicode"] = function ()
     {
-        var line
+        var ci, font, fonts, li, line, lines, start
 
         window.split.raise('terminal')
         window.terminal.clear()
         window.terminal.singleCursorAtPos([0,0])
         var list = _k_.list(this.uniko.split('\n'))
-        for (var _25_17_ = 0; _25_17_ < list.length; _25_17_++)
+        for (var _26_17_ = 0; _26_17_ < list.length; _26_17_++)
         {
-            line = list[_25_17_]
+            line = list[_26_17_]
             window.terminal.queueMeta({text:line,line:'●'})
+        }
+        if (false)
+        {
+            fonts = {FontAwesome:61440,FontAwesomeSolid:61440,FontAwesomeRegular:61440,octicons:61440,'file-icons':0xe500,Devicons:0xe500,Mfizz:61440}
+            for (font in fonts)
+            {
+                start = fonts[font]
+                window.terminal.queueMeta({list:font,text:font,line:'●'})
+                for (li = 0; li <= 42; li++)
+                {
+                    line = ' '
+                    for (ci = 0; ci <= 80; ci++)
+                    {
+                        line += String.fromCharCode(start + ci + 80 * li)
+                        line += ' '
+                    }
+                    window.terminal.queueMeta({font:font,text:line,line:''})
+                }
+            }
+        }
+        for (font in this.fonts)
+        {
+            lines = this.fonts[font]
+            window.terminal.queueMeta({list:font,text:font,line:'◆'})
+            var list1 = _k_.list(lines)
+            for (var _65_21_ = 0; _65_21_ < list1.length; _65_21_++)
+            {
+                line = list1[_65_21_]
+                window.terminal.queueMeta({font:font,text:'        ' + line,line:''})
+            }
         }
     }
 

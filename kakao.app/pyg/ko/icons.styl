@@ -22,13 +22,7 @@
     font-weight            normal
     font-style             normal
     src                    url("../../../Contents/Resources/font/fa-regular-400.woff2")
-    
-@font-face
-    font-family            FontAwesomeBrands
-    font-weight            normal
-    font-style             normal
-    src                    url("../../../Contents/Resources/font/fa-brands-400.woff2")
-    
+        
 @font-face 
     font-family            Mfizz
     src                    url("../../../Contents/Resources/font/mfixx.woff2")
@@ -64,6 +58,16 @@
     display                inline-block
     text-align             right
     
+// 00000000   0000000   000   000  000000000  00     00   0000000   000   000   0000000   
+// 000       000   000  0000  000     000     000   000  000   000  0000  000  000   000  
+// 000000    000   000  000 0 000     000     000000000  000   000  000 0 000  000   000  
+// 000       000   000  000  0000     000     000 0 000  000   000  000  0000  000   000  
+// 000        0000000   000   000     000     000   000   0000000   000   000   0000000   
+
+.icon.js:before           { font-family: fontMono;           content: ""; }
+.icon.html:before         { font-family: fontMono;           content: ""; }
+.icon.css:before          { font-family: fontMono;           content: ""; }
+    
 //  0000000    0000000  000000000  000   0000000   0000000   000   000   0000000  
 // 000   000  000          000     000  000       000   000  0000  000  000       
 // 000   000  000          000     000  000       000   000  000 0 000  0000000   
@@ -98,15 +102,12 @@
 .icon.gear:before         { font-family: FontAwesomeSolid;   content: "\f013"; }
 .icon.law:before          { font-family: FontAwesomeSolid;   content: "\f24e"; }
 .icon.json:before         { font-family: FontAwesomeSolid;   content: "\f544"; }
-.icon.js:before           { font-family: FontAwesomeBrands;  content: "\f3b9"; }
-.icon.html:before         { font-family: FontAwesomeBrands;  content: "\f13b"; }
-.icon.css:before          { font-family: FontAwesomeBrands;  content: "\f13c"; }
-.icon.text:before         { font-family: FontAwesomeRegular; content: "\f15c"; }
-.icon.image:before        { font-family: FontAwesomeRegular; content: "\f03e"; }
-
 .icon.pxm:before          { font-family: FontAwesomeSolid;   content: "\f03e"; }
 .icon.icns:before         { font-family: FontAwesomeSolid;   content: "\f03e"; }
 .icon.webp:before         { font-family: FontAwesomeSolid;   content: "\f03e"; }
+
+.icon.text:before         { font-family: FontAwesomeRegular; content: "\f15c"; }
+.icon.image:before        { font-family: FontAwesomeRegular; content: "\f03e"; }
 
 .icon.file:before         { font-family: FontAwesome; content: "\f016"; }
 .icon.android:before      { font-family: FontAwesome; content: "\f17b"; }

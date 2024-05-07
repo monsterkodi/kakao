@@ -33,9 +33,13 @@ class Render
 
     static lineSpan (diss, size)
     {
-        var cf, cx, d, div, ds, span, ss, st, _56_45_, _63_21_
+        var cf, cx, d, div, ds, span, ss, st, _58_45_, _65_21_
 
         div = elem({class:'linespans'})
+        if (diss.font)
+        {
+            div.style['font-family'] = diss.font
+        }
         if (diss.length > 4000)
         {
             console.log('line too long!')
@@ -48,9 +52,9 @@ class Render
         cx = 0
         ds = 0
         var list = (diss != null ? diss : [])
-        for (var _49_14_ = 0; _49_14_ < list.length; _49_14_++)
+        for (var _51_14_ = 0; _51_14_ < list.length; _51_14_++)
         {
-            d = list[_49_14_]
+            d = list[_51_14_]
             cx += (d.start - ds) * size.charWidth
             cf = cx.toFixed(1)
             span = elem('span')
@@ -65,9 +69,9 @@ class Render
             if ((d.styl != null))
             {
                 var list1 = _k_.list(d.styl.split(';'))
-                for (var _64_23_ = 0; _64_23_ < list1.length; _64_23_++)
+                for (var _66_23_ = 0; _66_23_ < list1.length; _66_23_++)
                 {
-                    st = list1[_64_23_]
+                    st = list1[_66_23_]
                     ss = st.split(':')
                     span.style[ss[0]] = ss[1]
                 }
@@ -85,9 +89,9 @@ class Render
         h = ""
         lh = size.lineHeight
         var list = _k_.list(cs)
-        for (var _82_14_ = 0; _82_14_ < list.length; _82_14_++)
+        for (var _84_14_ = 0; _84_14_ < list.length; _84_14_++)
         {
-            c = list[_82_14_]
+            c = list[_84_14_]
             tx = size.xOffsetAtCharacterInLine(c[0],c[1] + top)
             ty = c[1] * lh
             cls = ""
@@ -104,17 +108,17 @@ class Render
 
     static selection (ss, size, top, clss = 'selection')
     {
-        var b, h, n, p, s, si, _107_63_, _107_70_
+        var b, h, n, p, s, si, _109_63_, _109_70_
 
         h = ""
         p = null
         n = null
-        for (var _103_18_ = si = 0, _103_22_ = ss.length; (_103_18_ <= _103_22_ ? si < ss.length : si > ss.length); (_103_18_ <= _103_22_ ? ++si : --si))
+        for (var _105_18_ = si = 0, _105_22_ = ss.length; (_105_18_ <= _105_22_ ? si < ss.length : si > ss.length); (_105_18_ <= _105_22_ ? ++si : --si))
         {
             s = ss[si]
             n = (si < ss.length - 1) && (ss[si + 1][0] === s[0] + 1) && ss[si + 1] || null
             b = (p != null ? p[0] : undefined) === s[0] - 1 && p || null
-            h += this.selectionSpan(b,s,n,size,top,((_107_63_=(s[2] != null ? s[2].clss : undefined)) != null ? _107_63_ : ((_107_70_=s[2]) != null ? _107_70_ : clss)))
+            h += this.selectionSpan(b,s,n,size,top,((_109_63_=(s[2] != null ? s[2].clss : undefined)) != null ? _109_63_ : ((_109_70_=s[2]) != null ? _109_70_ : clss)))
             p = s
         }
         return h

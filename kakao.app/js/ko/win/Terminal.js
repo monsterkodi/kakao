@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
 var Terminal
 
@@ -55,7 +55,7 @@ Terminal = (function ()
 
     Terminal.prototype["appendMeta"] = function (meta)
     {
-        var l, mm, text, _60_21_, _62_33_, _77_21_
+        var diss, l, mm, text, _60_21_, _62_33_, _77_21_
 
         if (!(meta != null))
         {
@@ -84,7 +84,12 @@ Terminal = (function ()
         }
         else if ((meta.text != null))
         {
-            this.appendLineDiss(meta.text)
+            diss = Syntax.dissForTextAndSyntax(meta.text,'txt')
+            if (meta.font)
+            {
+                diss.font = meta.font
+            }
+            this.appendLineDiss(meta.text,diss)
         }
         else
         {
@@ -92,12 +97,19 @@ Terminal = (function ()
         }
         if (meta.list)
         {
-            post.emit('filelist.add',meta.list,this.numLines())
+            if (_k_.isStr(meta.list))
+            {
+                post.emit('filelist.add',meta.list,this.numLines())
+            }
+            else
+            {
+                post.emit('filelist.add',meta.text,this.numLines())
+            }
         }
         var list1 = _k_.list(meta.metas)
-        for (var _87_15_ = 0; _87_15_ < list1.length; _87_15_++)
+        for (var _91_15_ = 0; _91_15_ < list1.length; _91_15_++)
         {
-            mm = list1[_87_15_]
+            mm = list1[_91_15_]
             this.meta.appendLineMeta(mm)
         }
         return meta

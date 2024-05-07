@@ -33,7 +33,9 @@ class Render
 
     @lineSpan: diss size ->
 
-        div = elem class: 'linespans'
+        div = elem class:'linespans'
+        
+        div.style['font-family'] = diss.font if diss.font # this is evil 8}
         
         if diss.length > 4000
             log 'line too long!'

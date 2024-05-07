@@ -34,13 +34,13 @@ class IndexJS
                 @result.classes.push match
                 ⮐
 
-        validFuncName =  (name)  -> name not in ['if''for''while''switch''return''catch']
-        validFuncArgs =  (args)  -> args[0] == '(' and args[-1] == ')'
-        validFuncMatch = (match) -> match and validFuncArgs(match.args) and validFuncName(match.name)
+        validFuncName =  name  -> name not in ['if''for''while''switch''return''catch']
+        validFuncArgs =  args  -> args[0] == '(' and args[-1] == ')'
+        validFuncMatch = match -> match and validFuncArgs(match.args) and validFuncName(match.name)
                 
-        doMatch = (ptn) -> kermit.lineMatch line, ptn, ['"''.'','"'"]
+        doMatch = ptn -> kermit.lineMatch line, ptn, ['"''.'','"'"]
         
-        funcMatch = (ptn) ->
+        funcMatch = ptn ->
             
             match = doMatch ptn
             match if validFuncMatch match
@@ -50,7 +50,7 @@ class IndexJS
             className = @result.classes[-1].name
             classType = @result.classes[-1].type
                         
-            addMeth = (name, opt={}) =>
+            addMeth = name opt={} =>
                 
                 fnc = method:name, line:index, class:className
                 fnc.static = true if opt.static
@@ -63,7 +63,7 @@ class IndexJS
             if classType == 'class'
                 
                 if match = funcMatch '●name ○args'              ➜ ⮐ addMeth match.name
-                if match = funcMatch 'async ●name ○args'        ➜ ⮐ addMeth match.name, async:true
+                if match = funcMatch 'async ●name ○args'        ➜ ⮐ addMeth match.name,             async:true
                 if match = funcMatch 'static ●name ○args'       ➜ ⮐ addMeth match.name, static:true
                 if match = funcMatch 'static async ●name ○args' ➜ ⮐ addMeth match.name, static:true async:true
                     
@@ -81,7 +81,7 @@ class IndexJS
              
         if not line.startsWith ' '
             
-            addFunc = (name, opt={}) =>
+            addFunc = name opt={} =>
                 
                 fnc = name:name, line:index
                 fnc.async  = true if opt.async

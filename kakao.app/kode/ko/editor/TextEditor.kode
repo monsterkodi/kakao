@@ -208,7 +208,7 @@ function TextEditor extends Editor
 
         for li in appended
             @emit 'lineAppended',
-                lineIndex: li
+                lineIndex:  li
                 text: @line li
 
         @emit 'linesAppended' ls
