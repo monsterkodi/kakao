@@ -23,7 +23,7 @@ function Unicode
         window.terminal.clear()
         window.terminal.singleCursorAtPos [0 0]
 
-        if false
+        if true
             for line in @uniko.split '\n'
                 window.terminal.queueMeta
                     text: line
@@ -31,13 +31,14 @@ function Unicode
                
         if false
             fonts = 
-                FontAwesome:61440 
-                FontAwesomeSolid:61440 
-                FontAwesomeRegular:61440 
-                octicons:61440 
-                'file-icons':0xe500
-                Devicons:0xe500
-                Mfizz:61440
+                fontMono:61440 
+                # FontAwesome:61440 
+                # FontAwesomeSolid:61440 
+                # FontAwesomeRegular:61440 
+                # octicons:61440 
+                # 'file-icons':0xe500
+                # Devicons:0xe500
+                # Mfizz:61440
                     
             for font,start of fonts
     

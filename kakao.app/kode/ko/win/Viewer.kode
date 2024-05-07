@@ -10,14 +10,14 @@ use ../../kxk ▪ post slash elem $
 
 function Viewer
 
-    @: (parent) ->
+    @: parent ->
         
         @div = elem id:'viewer' parent:$ parent
         
         kore.on 'view|file'   @onViewFile
         kore.on 'editor|file' @close
         
-    onViewFile: (path) =>
+    onViewFile: path =>
         
         @close()
         

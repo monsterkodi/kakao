@@ -140,7 +140,7 @@ class GitInfo
         window.split.do 'minimize editor'
         window.commandline.setText 'commit '
         window.commandline.selectNone()
-        
+
     # 000       0000000    0000000   
     # 000      000   000  000        
     # 000      000   000  000  0000  

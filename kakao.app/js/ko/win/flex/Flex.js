@@ -262,7 +262,7 @@ class Flex
         {
             return
         }
-        for (var _231_19_ = si = 0, _231_23_ = state.length; (_231_19_ <= _231_23_ ? si < state.length : si > state.length); (_231_19_ <= _231_23_ ? ++si : --si))
+        for (var _231_18_ = si = 0, _231_22_ = state.length; (_231_18_ <= _231_22_ ? si < state.length : si > state.length); (_231_18_ <= _231_22_ ? ++si : --si))
         {
             s = state[si]
             p = this.pane(si)
@@ -332,7 +332,7 @@ class Flex
 
     handleStart (handle)
     {
-        var _265_41_
+        var _265_39_
 
         return (typeof this.onDragStart === "function" ? this.onDragStart() : undefined)
     }
@@ -347,7 +347,7 @@ class Flex
 
     handleEnd ()
     {
-        var _271_18_
+        var _272_18_
 
         this.update()
         return (typeof this.onDragEnd === "function" ? this.onDragEnd() : undefined)
@@ -370,14 +370,14 @@ class Flex
     {
         var p
 
-        return (function () { var r_281_40_ = []; var list = _k_.list(this.panes); for (var _281_40_ = 0; _281_40_ < list.length; _281_40_++)  { p = list[_281_40_];r_281_40_.push(p.pos())  } return r_281_40_ }).bind(this)()
+        return (function () { var r_282_40_ = []; var list = _k_.list(this.panes); for (var _282_40_ = 0; _282_40_ < list.length; _282_40_++)  { p = list[_282_40_];r_282_40_.push(p.pos())  } return r_282_40_ }).bind(this)()
     }
 
     paneSizes ()
     {
         var p
 
-        return (function () { var r_282_39_ = []; var list = _k_.list(this.panes); for (var _282_39_ = 0; _282_39_ < list.length; _282_39_++)  { p = list[_282_39_];r_282_39_.push(p.size)  } return r_282_39_ }).bind(this)()
+        return (function () { var r_283_39_ = []; var list = _k_.list(this.panes); for (var _283_39_ = 0; _283_39_ < list.length; _283_39_++)  { p = list[_283_39_];r_283_39_.push(p.size)  } return r_283_39_ }).bind(this)()
     }
 
     sizeOfPane (i)
@@ -444,7 +444,7 @@ class Flex
 
     expand (i, factor = 0.5)
     {
-        var flex, pane, size, _314_38_
+        var flex, pane, size, _315_38_
 
         if (pane = this.pane(i))
         {
@@ -453,7 +453,7 @@ class Flex
                 pane.expand()
                 if (flex = this.closestVisFlex(pane))
                 {
-                    size = ((_314_38_=pane.fixed) != null ? _314_38_ : flex.size * factor)
+                    size = ((_315_38_=pane.fixed) != null ? _315_38_ : flex.size * factor)
                     flex.size -= size
                     pane.size = size
                 }

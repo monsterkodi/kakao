@@ -11,10 +11,11 @@ class Scheme
 {
     static colors = {}
 
-    static toggle (schemes = ['dark','bright'])
+    static toggle ()
     {
-        var currentScheme, link, nextScheme, nextSchemeIndex
+        var currentScheme, link, nextScheme, nextSchemeIndex, schemes
 
+        schemes = ['dark','bright']
         link = $('.scheme-link')
         currentScheme = slash.name(slash.dir(link.href))
         nextSchemeIndex = (schemes.indexOf(currentScheme) + 1) % schemes.length
@@ -28,9 +29,9 @@ class Scheme
 
         this.colors = {}
         var list = _k_.list(document.querySelectorAll('.scheme-link'))
-        for (var _29_17_ = 0; _29_17_ < list.length; _29_17_++)
+        for (var _31_17_ = 0; _31_17_ < list.length; _31_17_++)
         {
-            link = list[_29_17_]
+            link = list[_31_17_]
             css = slash.file(link.href)
             newlink = elem('link',{href:`css/ko/${scheme}/${css}`,rel:'stylesheet',type:'text/css',class:'scheme-link'})
             link.parentNode.replaceChild(newlink,link)

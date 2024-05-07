@@ -12,7 +12,7 @@ use           ◆ DoState
 
 class Do extends events
 
-    @: (lines=[]) -> 
+    @: lines=[] -> 
         
         super()
         @setLines lines
@@ -51,7 +51,7 @@ class Do extends events
         # profile.end 'tabState'
         changes
 
-    setTabState: (tabState) ->
+    setTabState: tabState ->
         
         for changes in tabState
             @start()
@@ -70,7 +70,7 @@ class Do extends events
     #      000  000          000           000      000  000  0000  000            000  
     # 0000000   00000000     000           0000000  000  000   000  00000000  0000000   
     
-    setLines: (lines) ->
+    setLines: lines ->
         
         @state = new DoState lines
         @reset()
@@ -105,7 +105,7 @@ class Do extends events
     # 000       000  0000  000   000
     # 00000000  000   000  0000000
 
-    end: (opt) ->
+    end: opt ->
         @doCount -= 1
         if @doCount == 0
             # log 'Do.end' @history, @state.s
@@ -120,10 +120,10 @@ class Do extends events
     # 000 0 000  000   000  000   000  000  000          000
     # 000   000   0000000   0000000    000  000          000
 
-    change: (index, text) -> @state.changeLine index, text
-    insert: (index, text) -> @state.insertLine index, text
-    delete: (index)       -> @state.deleteLine index
-    append:        (text) -> @state.appendLine text
+    change: index text -> @state.changeLine index, text
+    insert: index text -> @state.insertLine index, text
+    delete: index      -> @state.deleteLine index
+    append:       text -> @state.appendLine text
 
     # 000   000  000   000  0000000     0000000
     # 000   000  0000  000  000   000  000   000
@@ -161,7 +161,7 @@ class Do extends events
     #      000  000       000      000       000          000
     # 0000000   00000000  0000000  00000000   0000000     000
 
-    select: (newSelections) ->
+    select: newSelections ->
 
         if newSelections.length
             newSelections = cleanRanges newSelections
@@ -175,7 +175,7 @@ class Do extends events
     # 000       000   000  000   000       000  000   000  000   000
     #  0000000   0000000   000   000  0000000    0000000   000   000
 
-    setCursors: (newCursors, opt) ->
+    setCursors: newCursors opt ->
 
         if not newCursors? or newCursors.length < 1
             return error "Do.setCursors -- empty cursors?"
@@ -198,7 +198,7 @@ class Do extends events
         @state.setCursors newCursors
         @state.setMain mainIndex
 
-    setMain: (m) -> @state.set 'main' m
+    setMain: m -> @state.set 'main' m
             
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
     # 000       000       000      000       000          000     000  000   000  0000  000  000       
@@ -206,7 +206,7 @@ class Do extends events
     #      000  000       000      000       000          000     000  000   000  000  0000       000  
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000   
     
-    setSelections: (s) -> @state.setSelections s
+    setSelections: s -> @state.setSelections s
     
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       
@@ -214,8 +214,8 @@ class Do extends events
     # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
     
-    setHighlights: (h) -> @state.setHighlights h
-    addHighlight:  (h) -> @state.addHighlight h
+    setHighlights: h -> @state.setHighlights h
+    addHighlight:  h -> @state.addHighlight h
             
     #  0000000  000      00000000   0000000   000   000
     # 000       000      000       000   000  0000  000
@@ -223,7 +223,7 @@ class Do extends events
     # 000       000      000       000   000  000  0000
     #  0000000  0000000  00000000  000   000  000   000
 
-    cleanCursors: (cs) ->
+    cleanCursors: cs ->
 
         for p in cs
             p[0] = Math.max p[0], 0
@@ -255,7 +255,7 @@ class Do extends events
         
         changes.changes.length > 0
 
-    calculateChanges: (oldState, newState) ->
+    calculateChanges: oldState newState ->
         
         ⮐ if empty oldState
         ⮐ if empty newState
@@ -346,24 +346,24 @@ class Do extends events
     #      000     000     000   000     000     000
     # 0000000      000     000   000     000     00000000
 
-    text:            -> @state.text()
-    line:        (i) -> @state.line i
-    cursor:      (i) -> @state.cursor i
-    highlight:   (i) -> @state.highlight i
-    selection:   (i) -> @state.selection i
+    text:          -> @state.text()
+    line:        i -> @state.line i
+    cursor:      i -> @state.cursor i
+    highlight:   i -> @state.highlight i
+    selection:   i -> @state.selection i
 
-    lines:           -> @state.lines()
-    cursors:         -> @state.cursors()
-    highlights:      -> @state.highlights()
-    selections:      -> @state.selections()
+    lines:         -> @state.lines()
+    cursors:       -> @state.cursors()
+    highlights:    -> @state.highlights()
+    selections:    -> @state.selections()
 
-    numLines:        -> @state.numLines()
-    numCursors:      -> @state.numCursors()
-    numSelections:   -> @state.numSelections()
-    numHighlights:   -> @state.numHighlights()
+    numLines:      -> @state.numLines()
+    numCursors:    -> @state.numCursors()
+    numSelections: -> @state.numSelections()
+    numHighlights: -> @state.numHighlights()
 
-    textInRange: (r) -> @state.line(r[0])?.slice r[1][0], r[1][1]
-    mainCursor:      -> @state.mainCursor()
-    rangeForLineAtIndex: (i) -> [i, [0, @line(i).length]]
+    textInRange: r -> @state.line(r[0])?.slice r[1][0], r[1][1]
+    mainCursor:    -> @state.mainCursor()
+    rangeForLineAtIndex: i -> [i, [0, @line(i).length]]
 
 export Do

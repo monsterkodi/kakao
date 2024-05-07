@@ -389,7 +389,8 @@ setFontSize = function (s)
     }
     s = _k_.clamp(8,100,s)
     window.stash.set("fontSize",s)
-    return window.editor.setFontSize(s)
+    window.editor.setFontSize(s)
+    return window.terminal.setFontSize(s)
 }
 
 changeFontSize = function (d)

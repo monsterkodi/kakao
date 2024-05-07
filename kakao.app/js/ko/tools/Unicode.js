@@ -32,7 +32,7 @@ Unicode = (function ()
         window.split.raise('terminal')
         window.terminal.clear()
         window.terminal.singleCursorAtPos([0,0])
-        if (false)
+        if (true)
         {
             var list = _k_.list(this.uniko.split('\n'))
             for (var _27_21_ = 0; _27_21_ < list.length; _27_21_++)
@@ -43,7 +43,7 @@ Unicode = (function ()
         }
         if (false)
         {
-            fonts = {FontAwesome:61440,FontAwesomeSolid:61440,FontAwesomeRegular:61440,octicons:61440,'file-icons':0xe500,Devicons:0xe500,Mfizz:61440}
+            fonts = {fontMono:61440}
             for (font in fonts)
             {
                 start = fonts[font]
@@ -65,9 +65,9 @@ Unicode = (function ()
             lines = this.fonts[font]
             window.terminal.queueMeta({list:font,text:font,line:'◆'})
             var list1 = _k_.list(lines)
-            for (var _66_21_ = 0; _66_21_ < list1.length; _66_21_++)
+            for (var _67_21_ = 0; _67_21_ < list1.length; _67_21_++)
             {
-                line = list1[_66_21_]
+                line = list1[_67_21_]
                 window.terminal.queueMeta({font:font,text:'        ' + line,line:''})
             }
         }

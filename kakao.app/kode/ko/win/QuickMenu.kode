@@ -43,7 +43,7 @@ function QuickMenu
 
     updateIcons: =>
 
-        $(".quickmenu-browser").innerHTML = split.browserVisible() ? '' : ''
-        $(".quickmenu-terminal").innerHTML = split.terminalVisible() ? '' : ''
+        $(".quickmenu-browser").innerHTML  = split.browserVisible()  ? '' : ''
+        $(".quickmenu-terminal").innerHTML = split.terminalVisible() ? '' : ''
         
 export QuickMenu

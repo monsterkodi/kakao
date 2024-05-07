@@ -395,7 +395,7 @@ z
     |0000000|
 """
 
-salt = (text) ->
+salt = text ->
     
     s = text.toLowerCase().trim()
     
@@ -405,7 +405,6 @@ salt = (text) ->
             cs.push font[c]
 
     zs = zip.apply null, cs 
-    # rs = _.map(zs, (j) -> j.join('  '))
     rs = zs.map (j) -> j.join '  '
     
     rs.join '\n'

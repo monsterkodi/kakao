@@ -251,6 +251,7 @@ setFontSize = s ->
 
     window.stash.set "fontSize" s    
     window.editor.setFontSize s
+    window.terminal.setFontSize s
 
 changeFontSize = d ->
 

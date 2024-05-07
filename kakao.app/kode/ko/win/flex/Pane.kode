@@ -10,7 +10,7 @@ use ../../../kxk ▪ getStyle
 
 class Pane
     
-    @: (opt) ->
+    @: opt ->
         
         @[k] = v for k,v of opt
         @collapsed ?= false
@@ -41,7 +41,7 @@ class Pane
         else
             @div.style.flex = "0 0 0"
 
-    setSize: (@size) -> 
+    setSize: @size -> 
 
         @collapsed = @size < 0
         @update()

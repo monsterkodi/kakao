@@ -9,9 +9,9 @@
 use ../../../kxk ▪ defaults
 use ◆ Pane Handle
 
-class Flex 
+class Flex
     
-    @: (opt) ->
+    @: opt ->
         
         @handleSize  = 4
         @direction   = opt.direction ? 'horizontal'
@@ -48,7 +48,7 @@ class Flex
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
-    addPane: (p) ->
+    addPane: p ->
         
         p.flex  ?= @
         p.index ?= @panes.length
@@ -71,7 +71,7 @@ class Flex
     # 000        000   000  000        
     # 000         0000000   000        
     
-    popPane: (opt={}) ->
+    popPane: opt={} ->
         
         if opt?.relax == false
             @unrelax()  
@@ -153,12 +153,12 @@ class Flex
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
 
-    moveHandle: (opt) -> 
+    moveHandle: opt -> 
         
         handle = @handles[opt.index]
         @moveHandleToPos handle, opt.pos        
     
-    moveHandleToPos: (handle, pos) ->
+    moveHandleToPos: handle pos ->
         
         pos = parseInt pos
         if @relaxed then @unrelax()
@@ -225,10 +225,10 @@ class Flex
     #      000     000     000   000     000     000       
     # 0000000      000     000   000     000     00000000  
     
-    restoreState: (state) ->
+    restoreState: state ->
         
         ⮐ if not state?.length
-        for si in [0...state.length]
+        for si in 0...state.length
             s = state[si]
             p = @pane si
             delete p.collapsed
@@ -238,7 +238,7 @@ class Flex
         @updateHandles()
         @onPaneSize?()
         
-    getState: () ->
+    getState: ->
         
         state = []
         for p in @panes
@@ -262,11 +262,12 @@ class Flex
 
     # handle drag callbacks
     
-    handleStart: (handle) -> @onDragStart?()
-    handleDrag:  (handle, drag) ->
+    handleStart: handle -> @onDragStart?()
+    handleDrag:  handle drag ->
         @moveHandleToPos handle, drag.pos[@axis] - @pos() - 4
         @onDrag?()
-    handleEnd: () ->
+        
+    handleEnd: ->
         @update()
         @onDragEnd?()
 
@@ -280,11 +281,11 @@ class Flex
     visiblePanes:    -> @panes.filter (p) -> p.isVisible()
     panePositions:   -> ( p.pos() for p in @panes )
     paneSizes:       -> ( p.size for p in @panes )
-    sizeOfPane:  (i) -> @pane(i).size
-    posOfPane:   (i) -> @pane(i).pos()
-    posOfHandle: (i) -> @handle(i).pos()
-    pane:        (i) -> i is num and @panes[i]   or i is str and @panes.find( (p) -> p.id == i) or i
-    handle:      (i) -> i is num and @handles[i] or i
+    sizeOfPane:    i -> @pane(i).size
+    posOfPane:     i -> @pane(i).pos()
+    posOfHandle:   i -> @handle(i).pos()
+    pane:          i -> i is num and @panes[i]   or i is str and @panes.find( (p) -> p.id == i) or i
+    handle:        i -> i is num and @handles[i] or i
 
     height: -> @view.getBoundingClientRect().height
     size:   -> @view.getBoundingClientRect()[@dimension]
@@ -296,16 +297,16 @@ class Flex
     # 000       000   000  000      000      000   000  000             000  000       
     #  0000000   0000000   0000000  0000000  000   000  000        0000000   00000000  
     
-    isCollapsed: (i) -> @pane(i).collapsed
+    isCollapsed: i -> @pane(i).collapsed
     
-    collapse: (i) -> 
+    collapse: i -> 
         
         if pane = @pane i
             if not pane.collapsed
                 pane.collapse()
                 @calculate()
         
-    expand: (i, factor=0.5) ->
+    expand: i factor=0.5 ->
         
         if pane = @pane i
             if pane.collapsed
@@ -322,21 +323,21 @@ class Flex
     #    000     000       000  000       000      000        000 000   
     #     0      000  0000000   000       0000000  00000000  000   000  
     
-    nextVisPane: (p) ->
+    nextVisPane: p ->
         pi = @panes.indexOf p
         ⮐ null if pi >= @panes.length-1
         next = @panes[pi+1]
         ⮐ next if next.isVisible()
         @nextVisPane next
         
-    prevVisPane: (p) ->
+    prevVisPane: p ->
         pi = @panes.indexOf p
         ⮐ null if pi <= 0
         prev = @panes[pi-1]
         ⮐ prev if prev.isVisible()
         @prevVisPane prev
 
-    closestVisFlex: (p) ->
+    closestVisFlex: p ->
         d = 1
         pi = @panes.indexOf p
         
@@ -349,15 +350,15 @@ class Flex
             ⮐ @panes[pi - d] if isVisFlexPane pi - d
             d++
 
-    travPrev: (h, f) -> f(h) and h.panea or h.index > 0 and @travPrev(@handles[h.index-1], f) or null    
-    travNext: (h, f) -> f(h) and h.paneb or h.index < @handles.length-1 and @travNext(@handles[h.index+1], f) or null
-    prevVisFlex: (h) -> @travPrev h, (v) -> not v.panea.collapsed and not v.panea.fixed
-    nextVisFlex: (h) -> @travNext h, (v) -> not v.paneb.collapsed and not v.paneb.fixed 
-    prevFlex:    (h) -> @travPrev h, (v) -> not v.panea.fixed
-    nextFlex:    (h) -> @travNext h, (v) -> not v.paneb.fixed 
-    prevVis:     (h) -> @travPrev h, (v) -> not v.panea.collapsed 
-    nextVis:     (h) -> @travNext h, (v) -> not v.paneb.collapsed 
-    prevAllInv:  (h) -> p = not @prevVis(h) and h.panea or null; p?.expand(); p
-    nextAllInv:  (h) -> p = not @nextVis(h) and h.paneb or null; p?.expand(); p
+    travPrev:   h f  -> f(h) and h.panea or h.index > 0 and @travPrev(@handles[h.index-1], f) or null    
+    travNext:   h f  -> f(h) and h.paneb or h.index < @handles.length-1 and @travNext(@handles[h.index+1], f) or null
+    prevVisFlex:  h  -> @travPrev h, (v) -> not v.panea.collapsed and not v.panea.fixed
+    nextVisFlex:  h  -> @travNext h, (v) -> not v.paneb.collapsed and not v.paneb.fixed 
+    prevFlex:     h  -> @travPrev h, (v) -> not v.panea.fixed
+    nextFlex:     h  -> @travNext h, (v) -> not v.paneb.fixed 
+    prevVis:      h  -> @travPrev h, (v) -> not v.panea.collapsed 
+    nextVis:      h  -> @travNext h, (v) -> not v.paneb.collapsed 
+    prevAllInv:   h  -> p = not @prevVis(h) and h.panea or null; p?.expand(); p
+    nextAllInv:   h  -> p = not @nextVis(h) and h.paneb or null; p?.expand(); p
         
 export Flex

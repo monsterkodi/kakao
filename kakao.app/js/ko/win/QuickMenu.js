@@ -73,8 +73,8 @@ QuickMenu = (function ()
 
     QuickMenu.prototype["updateIcons"] = function ()
     {
-        $(".quickmenu-browser").innerHTML = (split.browserVisible() ? '' : '')
-        return $(".quickmenu-terminal").innerHTML = (split.terminalVisible() ? '' : '')
+        $(".quickmenu-browser").innerHTML = (split.browserVisible() ? '' : '')
+        return $(".quickmenu-terminal").innerHTML = (split.terminalVisible() ? '' : '')
     }
 
     return QuickMenu
