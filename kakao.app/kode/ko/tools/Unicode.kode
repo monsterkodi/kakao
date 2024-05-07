@@ -20,8 +20,10 @@ function Unicode
     onUnicode: =>
         
         window.split.raise 'terminal'
+        window.split.do 'maximize terminal'
         window.terminal.clear()
         window.terminal.singleCursorAtPos [0 0]
+        window.terminal.setFontSize Math.round window.terminal.view.getBoundingClientRect().width / 64
 
         if true
             for line in @uniko.split '\n'

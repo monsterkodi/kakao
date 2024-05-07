@@ -30,14 +30,16 @@ Unicode = (function ()
         var ci, font, fonts, li, line, lines, start
 
         window.split.raise('terminal')
+        window.split.do('maximize terminal')
         window.terminal.clear()
         window.terminal.singleCursorAtPos([0,0])
+        window.terminal.setFontSize(Math.round(window.terminal.view.getBoundingClientRect().width / 64))
         if (true)
         {
             var list = _k_.list(this.uniko.split('\n'))
-            for (var _27_21_ = 0; _27_21_ < list.length; _27_21_++)
+            for (var _29_21_ = 0; _29_21_ < list.length; _29_21_++)
             {
-                line = list[_27_21_]
+                line = list[_29_21_]
                 window.terminal.queueMeta({text:line,line:'●'})
             }
         }
@@ -65,9 +67,9 @@ Unicode = (function ()
             lines = this.fonts[font]
             window.terminal.queueMeta({list:font,text:font,line:'◆'})
             var list1 = _k_.list(lines)
-            for (var _68_21_ = 0; _68_21_ < list1.length; _68_21_++)
+            for (var _70_21_ = 0; _70_21_ < list1.length; _70_21_++)
             {
-                line = list1[_68_21_]
+                line = list1[_70_21_]
                 window.terminal.queueMeta({font:font,text:'        ' + line,line:''})
             }
         }

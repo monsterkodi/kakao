@@ -1,40 +1,38 @@
 kode         ➜ ■ ▪ ◆ ● ▸ ⮐
-file             
-folder          
-ok           ☑ ✓ ✔ ⎷      
-fail         ☒ ✗ ✘ ⨉ ⨯ ✖    
 key          ⌗ ⌘ ⏎ ⌃ ⌥ ⌂ ↑ ↓ ← → ↩ ↖ ↘ ⇞ ⇟ ⌫ ⌦
-gear          漣  ⛭ ⛯ ⚙  煉
-search        ⚲     ⌕
-edit           ✎ ✐ 
-lock             
-time               ⏱     date          
-info           ℹ               warn              ⟁
-at                             legal         ⚖
-home                           trash         
-tool         ⚒                  bug           
-keyboard       ⌨               term           
-mouse                          key            
-heart        ❤      ❣       beat          勞
-sound        ♪ ♫ ♬              bell                  record      
-light                         diode                  day       ☼  
-pin                            flag         ⚐ ⚑          shield     廬 聯 ❖
-power         襤                 flash        ⚡ ↯
+ok           ☑ ✓ ✔ ⎷       
+fail         ☒ ✗ ✘ ⨉ ⨯ ✖     
+file                            
+folder                  floppy          ﬚ ﴖ 
+gear          漣  ⛭ ⛯ ⚙  煉     search        ⚲     ⌕
+edit                     lock                    key         
+time               ⏱     date               
+info           ℹ               warn              ⟁ 卑 喝                   
+home           ﮟ ﳎ ﳏ ﳐ         trash          﫧 﫨         legal      ⚖
+tool         ⚒                bug            ﴫ           at         
+keyboard        ⌨             term            ﲵ         mouse                       
+light           ﯦ ﯧ           diode           ﲍ         day       ☼  
+sound        ♪ ♫ ♬ ﭵ ﱘ ﱙ        volume       ﱛ ﱜ ﱝ  墳 婢     record      
+bell                    heart        ❤      ❣   beat       﫵  勞
+pin             ﭏ ﭐ           flag         ⚐ ⚑           shield     廬 聯 賓 輦 
+power         襤 拉               flash        ⚡ ↯    ﭹ 
 github                        branch           練
-logo                         os             
+logo                        os             者 
 speak                        
-clipboard                operation           
-box                      db              ⛀ ⛁ ⛂ ⛃
-bookmark                exit                 
-hand                        body             ⛹
-font                          chart             
-grid                       list         ≡ ≣          
-playback     ⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭       link             
-recycle      ♲ ♺ ♻               cycle           ⟲ ⟳ ⥀ ⥁ ↺ ↻  ↶ ↷
+clipboard                 operation           
+db             ⛀ ⛁ ⛂ ⛃         box                 ﰩ     
+bookmark                 exit         﫻 﫼         
+hand           﨓 﨑 晴 塚             body     ⛹    רּ שּ תּ וֹ בֿ    
+font          ﮜ    ﭨ        chart              ﭬ ﭭ 
+playback     ⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭       
+link                        anchor         
+recycle       ♻ ♲ ♺             cycle           累 菱 磻 復 ⟲ ⟳ ⥀ ⥁ ↺ ↻ 北  
 question     ‼ ⁇ ⁈ ⁉             subscript    ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉
-stuff                    
+grid                      
+list         ≡ ≣                       羅 螺 裸 蘿 陼 
+stuff        嗢            
 game         ♡ ♢ ♤ ♧ ❤ ♠ ♣ ♦ ♔ ♕ ♖ ♗ ♘ ♙ ♚ ♛ ♜ ♝ ♞ ♟ ⚀ ⚁ ⚂ ⚃ ⚄ ⚅ 擄
-unsorted         洛  藍    秊           
+unsorted            洛  藍    秊          
              ߷ ⍝ ⍾ ⎌ ⎔ ∟ ≐ ≑ ⌵ ⌶ ☠ ☢ ⚼     
 hash         濫  藍
 math               ⨀ ⨁ ⨂
@@ -63,7 +61,7 @@ arrow        ⏴ ⏵ ⏶ ⏷
              ⬈ ⬉ ⬊ ⬋ ⬌ ⬍ ⬀ ⬁ ⬂ ⬃ ⬄
                      
              ⮑ ⮐
-             ⟵ ⟶ ⟷ ⟻ ⟼ ⟸ ⟹ ⟺ ⤆ ⤇ ⟽ ⟾ ⤎ ⤏ ⤑ ⤔ ⤡ ⤢ ⥰
+             ⟵ ⟶ ⟷ ⟻ ⟼ ⟸ ⟹ ⟺ ⤆ ⤇ ⟽ ⟾ ⤎ ⤏ ⤑ ⤔ ⤡ ⤢ ↶ ↷
                李          ➔ ➘ ➚ ➜ ➙ ➞ ➡ ➤ ⤒⤓ ⤝ ⤞ ⤟ ⤠  
 triangle     △ ▽ ◁ ▷ ◹ ◸ ◿ ◺
              ▲ ▼ ◀ ▶ ◥ ◤ ◢ ◣
@@ -79,7 +77,7 @@ square       ◻ ◼ ▪ ▫ ⬝ ⬞ ▢  濾 麗       
                 ⧉  
 convex       ◼ ■ ▪ ▬ ▮ ▰ ▲ ▴ ▶ ▸ ► ▼ ▾ ◀ ◂ ◄ ◆ ● ◖ ◗ ◢ ◣ ◤ ◥ ⬟ ⭓ ⬢ ⬣ ⬤ ⬥ ⬧⬩ ⬪⬬ ⬮
 bracket      ❪❫ ❮❯ ❬❭ ❰❱
-math         ⩆ ⩇ ⫗ ⫘ ⟜ ⟠ ∫ ⊿ ⋈ ⌓ ⌔ ⌷ ⌻
+math         ⩆ ⩇ ⫗ ⫘ ⟜ ⟠ ∫ ⊿ ⋈ ⌓ ⌔ ⌷ ⌻ ⥰ 
 tee          ⊣ ⊢ ⟙ ⊤ ⫟ ⫠ ⊥ ⟘    dbltee  ⫤ ⊨ ⫪ ⫫ ⫣ ⫦ ⍑ ⍊ ⫥ ⊫ ⫩ ⟚ ⟛
 slashed      ⍉ ⌽ ⌀ ⏀ ≠ ≢ ≁      dotted  ⌾ ⟐ ⟔ ⟓ ⦝ ⦜ ⊾     forked    ⫙ ⟒ ⫚ ⫛ ⋔ ⥺
 compair      ⩽ ⩾ ≪ ≫ ⦤ ⦥ ‹ ›    pair    ⋐ ⋑ ⪻ ⪼ ⫏ ⫐ ⊂ ⊃ ⊏ ⊐ ⊰ ⊱ ⪦ ⪧ ⊲ ⊳ ⟃ ⟄ ⟅ ⟆

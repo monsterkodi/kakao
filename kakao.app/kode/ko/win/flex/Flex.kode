@@ -279,12 +279,12 @@ class Flex
     
     numPanes:        -> @panes.length
     visiblePanes:    -> @panes.filter (p) -> p.isVisible()
-    panePositions:   -> ( p.pos() for p in @panes )
-    paneSizes:       -> ( p.size for p in @panes )
+    panePositions:   -> @panes.map (p) -> p.pos()
+    paneSizes:       -> @panes.map (p) -> p.size
     sizeOfPane:    i -> @pane(i).size
     posOfPane:     i -> @pane(i).pos()
     posOfHandle:   i -> @handle(i).pos()
-    pane:          i -> i is num and @panes[i]   or i is str and @panes.find( (p) -> p.id == i) or i
+    pane:          i -> i is num and @panes[i]   or i is str and @panes.find((p) -> p.id == i) or i
     handle:        i -> i is num and @handles[i] or i
 
     height: -> @view.getBoundingClientRect().height

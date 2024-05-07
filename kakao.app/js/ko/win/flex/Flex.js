@@ -368,16 +368,18 @@ class Flex
 
     panePositions ()
     {
-        var p
-
-        return (function () { var r_282_40_ = []; var list = _k_.list(this.panes); for (var _282_40_ = 0; _282_40_ < list.length; _282_40_++)  { p = list[_282_40_];r_282_40_.push(p.pos())  } return r_282_40_ }).bind(this)()
+        return this.panes.map(function (p)
+        {
+            return p.pos()
+        })
     }
 
     paneSizes ()
     {
-        var p
-
-        return (function () { var r_283_39_ = []; var list = _k_.list(this.panes); for (var _283_39_ = 0; _283_39_ < list.length; _283_39_++)  { p = list[_283_39_];r_283_39_.push(p.size)  } return r_283_39_ }).bind(this)()
+        return this.panes.map(function (p)
+        {
+            return p.size
+        })
     }
 
     sizeOfPane (i)
