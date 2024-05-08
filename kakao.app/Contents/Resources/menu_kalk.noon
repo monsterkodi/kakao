@@ -40,6 +40,9 @@ Window
     Maximize                alt+ctrl+m
     Hide                    command+h h
     ---
+    Focus Next              cmdctrl+`
+    Focus Previous          cmdctrl+shift+`
+    ----
     Reload                  alt+cmdctrl+l
     DevTools                alt+cmdctrl+i
 

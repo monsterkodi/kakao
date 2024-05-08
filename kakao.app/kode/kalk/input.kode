@@ -20,7 +20,7 @@ class Input
         post.on 'button' @onButton
         post.on 'menuAction' (action) => if action == 'Clear' then @clear()
         @input = elem class:'input-text' 'tab-index': 1
-        @view.appendChild @input
+        @view.appendChild elem class:'input-frame' child:@input
                 
     backspace:       -> @setText text.popChar @text()
     appendText: text -> @setText @text() + text

@@ -64,13 +64,13 @@ Delegate = (function ()
         switch (action)
         {
             case 'Cut':
-                return cut()
+                return this.cut()
 
             case 'Copy':
-                return cpy()
+                return this.cpy()
 
             case 'Paste':
-                return paste()
+                return this.paste()
 
             case 'Clear All':
                 post.emit('sheet','clear')
@@ -122,11 +122,11 @@ Delegate = (function ()
 
         if (selection = this.currentSelection())
         {
-            return kakao('clipboard.write',selection)
+            return kakao('clipboard.set',selection)
         }
         else
         {
-            return kakao('clipboard.write',window.input.text())
+            return kakao('clipboard.set',window.input.text())
         }
     }
 
@@ -134,7 +134,7 @@ Delegate = (function ()
     {
         var selection
 
-        cpy()
+        this.cpy()
         if (selection = this.currentSelection())
         {
             return document.getSelection().deleteFromDocument()
@@ -149,7 +149,8 @@ Delegate = (function ()
     {
         var text
 
-        text = await kakao('clipboard.read')
+        text = await kakao('clipboard.get')
+        console.log('got clipboard text',text)
         return window.input.setText(window.input.text() + text)
     }
 

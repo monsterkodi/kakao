@@ -49,9 +49,9 @@ function Delegate extends win.Delegate
 
         switch action
             
-            'Cut'       ➜ ⮐ cut()
-            'Copy'      ➜ ⮐ cpy()
-            'Paste'     ➜ ⮐ paste()
+            'Cut'       ➜ ⮐ @cut()
+            'Copy'      ➜ ⮐ @cpy()
+            'Paste'     ➜ ⮐ @paste()
             'Clear All' ➜ post.emit('sheet' 'clear'); post.emit('menuAction' 'Clear')
             'Save'      ➜ post.toMain 'saveBuffer'
             
@@ -86,13 +86,13 @@ function Delegate extends win.Delegate
     cpy: =>
         
         if selection = @currentSelection()
-            kakao 'clipboard.write' selection
+            kakao 'clipboard.set' selection
         else
-            kakao 'clipboard.write' window.input.text()
+            kakao 'clipboard.set' window.input.text()
     
     cut: => 
         
-        cpy() 
+        @cpy() 
         if selection = @currentSelection()
             document.getSelection().deleteFromDocument()
         else
@@ -100,7 +100,8 @@ function Delegate extends win.Delegate
             
     paste: ○=>
         
-        text =○ kakao 'clipboard.read' 
+        text =○ kakao 'clipboard.get'
+        log 'got clipboard text' text
         
         window.input.setText window.input.text()+text
                 

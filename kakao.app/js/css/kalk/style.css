@@ -83,15 +83,37 @@ body
     padding-right: 6px;
 }
 
+.input-frame
+{
+    position: relative;
+    height: 100px;
+    min-height: 100px;
+    border-radius: 10px;
+}
+
 .input-text
 {
-    height: 100px;
-    border-radius: 10px;
-    text-align: right;
+    position: absolute;
+    top: 50%;
+    transform: translate(0%, -50%);
+    left: 12px;
+    right: 12px;
     font-size: 80px;
     user-select: text;
     white-space: pre;
     pointer-events: all;
+    text-align: right;
+}
+
+.input-text span
+{
+    background: transparent !important;
+    vertical-align: middle;
+}
+
+.input-text span:last-child
+{
+        padding-right: 14px;
 }
 
 

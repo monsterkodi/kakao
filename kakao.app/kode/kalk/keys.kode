@@ -124,31 +124,32 @@ class Keys
     # 000  000   000          000   
     # 000   000  00000000     000   
     
-    globalModKeyComboEvent: (mod, key, combo, event) ->
+    globalModKeyComboEvent: mod key combo event ->
 
         switch combo
-            when 'tab'                     then return stopEvent event, @toggleKeys()
-            when '/' '*' '+' '-' '=' '.'   then return post.emit 'button' combo
-            when 'enter'                   then return post.emit 'button' '='
-            when 'backspace'               then return post.emit 'button' '⌫'
-            when 'delete' 'esc'            then return post.emit 'button' 'c'
-            when 'shift+8'                 then return post.emit 'button' '*'
-            when 'shift+6'                 then return post.emit 'button' '^'
-            when 'shift+='                 then return post.emit 'button' '+'
-            when 'shift+9'                 then return post.emit 'button' '('
-            when 'shift+0'                 then return post.emit 'button' ')'
-            when 'e'                       then return post.emit 'button' 'ℇ'
-            when 'c'                       then return post.emit 'button' 'c'
-            when 'p'                       then return post.emit 'button' 'π'
-            when 's'                       then return post.emit 'button' 'sin'
-            when 'shift+c'                 then return post.emit 'button' 'cos'
-            when 't'                       then return post.emit 'button' 'tan'
-            when 'd'                       then return post.emit 'button' '°'
-            when 'r'                       then return post.emit 'button' '√'
-            when 'l'                       then return post.emit 'button' 'log'
-            when 'x'                       then return post.emit 'button' 'exp'
-            when 'i'                       then return post.emit 'button' '1/x'
-            when 'num lock'                then return stopEvent event, post.emit 'button' 'c'
+            'tab'                     ➜ ⮐ stopEvent event, @toggleKeys()
+            '/' '*' '+' '-' '=' '.'   ➜ ⮐ post.emit 'button' combo
+            'enter'                   ➜ ⮐ post.emit 'button' '='
+            'backspace'               ➜ ⮐ post.emit 'button' '⌫'
+            'delete' 'esc'            ➜ ⮐ post.emit 'button' 'c'
+            'shift+8'                 ➜ ⮐ post.emit 'button' '*'
+            'shift+6'                 ➜ ⮐ post.emit 'button' '^'
+            'shift+='                 ➜ ⮐ post.emit 'button' '+'
+            'shift+9'                 ➜ ⮐ post.emit 'button' '('
+            'shift+0'                 ➜ ⮐ post.emit 'button' ')'
+            'e'                       ➜ ⮐ post.emit 'button' 'ℇ'
+            'c'                       ➜ ⮐ post.emit 'button' 'c'
+            'p'                       ➜ ⮐ post.emit 'button' 'π'
+            's'                       ➜ ⮐ post.emit 'button' 'sin'
+            'shift+s'
+            'shift+c'                 ➜ ⮐ post.emit 'button' 'cos'
+            't'                       ➜ ⮐ post.emit 'button' 'tan'
+            'd'                       ➜ ⮐ post.emit 'button' '°'
+            'r'                       ➜ ⮐ post.emit 'button' '√'
+            'l'                       ➜ ⮐ post.emit 'button' 'log'
+            'x'                       ➜ ⮐ post.emit 'button' 'exp' # eˣ
+            'i'                       ➜ ⮐ post.emit 'button' '1/x'
+            'num lock'                ➜ ⮐ stopEvent event, post.emit 'button' 'c'
             
         if combo.startsWith 'numpad'
             return post.emit 'button' combo.split(' ')[1]

@@ -151,6 +151,7 @@ class Keys
             case 's':
                 return post.emit('button','sin')
 
+            case 'shift+s':
             case 'shift+c':
                 return post.emit('button','cos')
 

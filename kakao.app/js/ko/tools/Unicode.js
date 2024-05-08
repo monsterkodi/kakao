@@ -34,12 +34,25 @@ Unicode = (function ()
         window.terminal.clear()
         window.terminal.singleCursorAtPos([0,0])
         window.terminal.setFontSize(Math.round(window.terminal.view.getBoundingClientRect().width / 64))
+        if (false)
+        {
+            start = 67400
+            for (li = 0; li <= 42; li++)
+            {
+                line = ' '
+                for (ci = 0; ci <= 80; ci++)
+                {
+                    line += String.fromCharCode(start + ci + 80 * li)
+                }
+                window.terminal.queueMeta({font:'fontMono',text:line,line:''})
+            }
+        }
         if (true)
         {
             var list = _k_.list(this.uniko.split('\n'))
-            for (var _29_21_ = 0; _29_21_ < list.length; _29_21_++)
+            for (var _41_21_ = 0; _41_21_ < list.length; _41_21_++)
             {
-                line = list[_29_21_]
+                line = list[_41_21_]
                 window.terminal.queueMeta({text:line,line:'●'})
             }
         }
@@ -67,9 +80,9 @@ Unicode = (function ()
             lines = this.fonts[font]
             window.terminal.queueMeta({list:font,text:font,line:'◆'})
             var list1 = _k_.list(lines)
-            for (var _70_21_ = 0; _70_21_ < list1.length; _70_21_++)
+            for (var _82_21_ = 0; _82_21_ < list1.length; _82_21_++)
             {
-                line = list1[_70_21_]
+                line = list1[_82_21_]
                 window.terminal.queueMeta({font:font,text:'        ' + line,line:''})
             }
         }

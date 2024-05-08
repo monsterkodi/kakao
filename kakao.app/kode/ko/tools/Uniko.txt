@@ -27,7 +27,11 @@ font          ﮜ    ﭨ        chart             
 playback     ⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭       
 link                        anchor         
 recycle       ♻ ♲ ♺             cycle           累 菱 磻 復 ⟲ ⟳ ⥀ ⥁ ↺ ↻ 北  
-question     ‼ ⁇ ⁈ ⁉             subscript    ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉
+question     ‼ ⁇ ⁈ ⁉  
+
+subscript    ₀₁₂₃₄₅₆₇₈₉ ₊₋₌₍₎ ₐₑ     ₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥ ₓ                          
+superscript  ⁰¹²³⁴⁵⁶⁷⁸⁹ ⁺⁻⁼⁽⁾ ᵅᵇᶜᵈᵉᶠᶢʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ ᵃᵋ
+
 grid                      
 list         ≡ ≣                       羅 螺 裸 蘿 陼 
 stuff        嗢            

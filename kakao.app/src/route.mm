@@ -114,8 +114,8 @@
 + (id) clipboard:(NSString*)req args:(NSArray*)args win:(Win*)win
 {
     id pb = [NSPasteboard generalPasteboard];
-    if ([req isEqualToString:@"get"]) { return [pb stringForType:NSPasteboardTypeString]; }
-    if ([req isEqualToString:@"set"]) 
+    if ([req isEqualToString:@"get"] || [req isEqualToString:@"read"]) { return [pb stringForType:NSPasteboardTypeString]; }
+    if ([req isEqualToString:@"set"] || [req isEqualToString:@"write"]) 
     { 
         [pb declareTypes:[NSArray arrayWithObjects:NSPasteboardTypeString, nil] owner:nil]; // wtf?
         if ([pb setString:[args objectAtIndex:0] forType:NSPasteboardTypeString]) 

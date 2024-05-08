@@ -9,6 +9,11 @@ frameWidth          = 6px
 titlebarHeight      = 30px
 titlebarFontSize    = 15px
 
+center-y()
+    position            absolute
+    top                 50%
+    transform           translate(0%, -50%)
+
 // 0000000     0000000   0000000    000   000
 // 000   000  000   000  000   000   000 000 
 // 0000000    000   000  000   000    00000  
@@ -81,22 +86,39 @@ body
 // 000  000   000  000         0000000      000     
 
 #input
-    //box-sizing          border-box
-    //border              1px solid red
+    
     padding-top         0
     padding-bottom      0
     padding-left        6px
     padding-right       6px
     
-.input-text 
+.input-frame
+    
+    position            relative
     height              100px
+    min-height          100px
     border-radius       10px
-    text-align          right
+
+.input-text
+
+    center-y()
+    left                12px
+    right               12px
+    // border              1px solid red
+
     font-size           80px
     user-select         text
     white-space         pre
     pointer-events      all
-
+    text-align          right
+    
+    & span
+        background      transparent !important
+        vertical-align  middle
+        
+.input-text span:last-child
+        padding-right        14px
+            
 // 000   000  00000000  000   000  
 // 000  000   000        000 000   
 // 0000000    0000000     00000    

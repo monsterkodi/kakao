@@ -29,7 +29,7 @@ class Input
             }
         }).bind(this))
         this.input = elem({class:'input-text','tab-index':1})
-        this.view.appendChild(this.input)
+        this.view.appendChild(elem({class:'input-frame',child:this.input}))
     }
 
     backspace ()
