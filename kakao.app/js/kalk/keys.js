@@ -96,15 +96,7 @@ class Keys
 
     toggleKeys ()
     {
-        switch (this.keys)
-        {
-            case 'numbers':
-                return this.functionKeys()
-
-            default:
-                return this.numberKeys()
-        }
-
+        return (this.keys === 'numbers' ? this.functionKeys() : this.numberKeys())
     }
 
     globalModKeyComboEvent (mod, key, combo, event)

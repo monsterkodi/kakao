@@ -14,8 +14,9 @@ function Delegate extends win.Delegate
     
     @: ->
         
-        @menuIcon = kakao.bundle.img 'menu_kalk.png'
-        @menuNoon = kakao.bundle.res 'menu_kalk.noon'
+        @menuIcon   = kakao.bundle.img 'menu_kalk.png'
+        @menuNoon   = kakao.bundle.res 'menu_kalk.noon'
+        @aboutImage = kakao.bundle.img 'about_kalk.png'
         
         post.on 'combo'      @onCombo
         post.on 'menuAction' @onMenuAction
@@ -23,7 +24,8 @@ function Delegate extends win.Delegate
 
     onWindowCreated: =>
         
-        kakao 'win.setMinSize' 470 610
+        kakao 'win.setMinSize' 476 610
+        kakao 'win.setMaxSize' 476 6660
         
     onWindowResize: => post.emit 'resize'
         
@@ -41,6 +43,7 @@ function Delegate extends win.Delegate
     onMenuAction: action args =>
 
         switch action
+            
             'Cut'       ➜ ⮐ cut()
             'Copy'      ➜ ⮐ cpy()
             'Paste'     ➜ ⮐ paste()
@@ -55,11 +58,10 @@ function Delegate extends win.Delegate
     
     onWindowKeyDown: win info =>
         
-        log info
-    
         ⮐ stopEvent(info.event) if 'unhandled' != window.keys.globalModKeyComboEvent info.mod, info.key, info.combo, info.event
         
         switch info.combo
+            
             'ctrl+v' ➜ ⮐ @paste()
             'ctrl+c' ➜ ⮐ @cpy()
             'ctrl+x' ➜ ⮐ @cut()

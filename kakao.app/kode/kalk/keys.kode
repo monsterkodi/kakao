@@ -18,19 +18,19 @@ class Keys
         @numberKeys()
         post.on 'keys' @onKeys
         
-    onKeys: (action) =>
+    onKeys: action =>
         switch action
             when 'functions' then @functionKeys()
             when 'numbers'   then @numberKeys()
         
-    setKeys: (@keys, keys) =>
+    setKeys: @keys keys =>
         
         @table.innerHTML = ''
         for row in keys
             @table.appendChild row
         
-    row: (children) => elem 'tr' class:'key-row' children:children
-    key: (text, clss='') => 
+    row: children => elem 'tr' class:'key-row' children:children
+    key: text clss='' => 
         if text == '_' 
             elem 'td' class:'key hidden'
         else
@@ -114,13 +114,9 @@ class Keys
                 ]
             ]
 
-    onButton: (event) => post.emit 'button' event.target.innerHTML.trim()
+    onButton: event => post.emit 'button' event.target.innerHTML.trim()
     
-    toggleKeys: ->
-        
-        switch @keys
-            when 'numbers' then @functionKeys()
-            else @numberKeys()
+    toggleKeys: -> @keys == 'numbers' ? @functionKeys() : @numberKeys()
     
     # 000   000  00000000  000   000
     # 000  000   000        000 000 

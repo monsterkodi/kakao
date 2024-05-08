@@ -1088,6 +1088,7 @@ body
 {
     cursor: pointer;
     border-radius: 0.15em;
+    padding-right: 0.44999999999999996em;
 }
 
 .meta.gitInfoDelete

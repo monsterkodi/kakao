@@ -48,12 +48,12 @@ class GitInfo
             # text = "#{commit.msg} #{commit.commit}"
             text = "#{commit.msg}"
             window.terminal.queueMeta
-                diss:       Syntax.dissForTextAndSyntax text, 'git'
-                text:       text
-                clss:       'gitInfoFile'
-                href:       "macro log #{commit.commit}"
-                click:      @onMetaClick
-                line:       '●'
+                diss:  Syntax.dissForTextAndSyntax text, 'git'
+                text:  text
+                clss:  'gitInfoFile'
+                href:  "macro log #{commit.commit}"
+                click: @onMetaClick
+                line:  '●'
 
             for file in commit.files
                 
@@ -73,13 +73,13 @@ class GitInfo
                         
                 text = "        #{slash.tilde file.path}"
                 window.terminal.queueMeta
-                    diss:       Syntax.dissForTextAndSyntax text, 'git'
-                    text:       text
-                    clss:       'gitInfoFile'
-                    href:       "#{gitDir}/#{file.path}"
-                    click:      @onMetaClick
-                    line:       symbol
-                    lineClss:   'gitInfoLine '+change
+                    diss:     Syntax.dissForTextAndSyntax text, 'git'
+                    text:     text
+                    clss:     'gitInfoFile'
+                    href:     "#{gitDir}/#{file.path}"
+                    click:    @onMetaClick
+                    line:     symbol
+                    lineClss: 'gitInfoLine '+change
                     
         window.split.do 'minimize editor' 
         window.split.do 'focus terminal' 

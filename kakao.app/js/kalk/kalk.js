@@ -29,6 +29,7 @@ Delegate = (function ()
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
         this.menuIcon = kakao.bundle.img('menu_kalk.png')
         this.menuNoon = kakao.bundle.res('menu_kalk.noon')
+        this.aboutImage = kakao.bundle.img('about_kalk.png')
         post.on('combo',this.onCombo)
         post.on('menuAction',this.onMenuAction)
         post.on('calc',this.onCalc)
@@ -37,7 +38,8 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowCreated"] = function ()
     {
-        return kakao('win.setMinSize',470,610)
+        kakao('win.setMinSize',476,610)
+        return kakao('win.setMaxSize',476,6660)
     }
 
     Delegate.prototype["onWindowResize"] = function ()
@@ -77,7 +79,6 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (win, info)
     {
-        console.log(info)
         if ('unhandled' !== window.keys.globalModKeyComboEvent(info.mod,info.key,info.combo,info.event))
         {
             return stopEvent(info.event)
