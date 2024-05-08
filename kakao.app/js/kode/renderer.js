@@ -765,8 +765,8 @@ class Renderer
             m = list[_619_14_]
             if (!m.keyval)
             {
-                print.ast('not an method?',m)
-                print.ast('not an method?',mthds)
+                print.ast('not a method?',m)
+                print.ast('not a method?',mthds)
                 continue
             }
             if (!m.keyval.val.func)

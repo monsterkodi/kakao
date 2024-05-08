@@ -1,0 +1,121 @@
+
+body
+{
+    font-family: fontMono;
+    font-size: 14px;
+}
+
+#main
+{
+    display: flex;
+    flex-direction: column;
+}
+
+#sheet
+{
+    flex: 1 1 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.sheet-calc
+{
+    flex: 1 1 0;
+}
+
+.sheet-result
+{
+    flex: 1 1 0;
+}
+
+.sheet-line
+{
+    white-space: nowrap;
+    height: 26px;
+    text-align: right;
+    font-size: 22px;
+    -webkit-user-select: auto;
+    padding-right: 10px;
+    display: block;
+    margin-left: auto;
+    width: 94%;
+    overflow: hidden;
+}
+
+.sheet-line.result
+{
+    text-align: left;
+}
+
+#input
+{
+    width: 100%;
+    flex: 0 0 100px;
+    margin-left: 6px;
+    margin-top: 9px;
+}
+
+.input-text
+{
+    height: 100px;
+    border-radius: 10px;
+    text-align: right;
+    font-size: 80px;
+    user-select: text;
+    margin-right: 10px;
+    white-space: pre;
+    pointer-events: all;
+}
+
+
+.key,
+span
+{
+}
+
+.key.function,
+
+.key.complex,
+span.function,
+span.complex
+{
+    font-style: italic;
+}
+
+#keys
+{
+    flex: 0 0 0;
+    align-self: center;
+}
+
+.key-row
+{
+    font-size: 60px;
+    overflow: visible;
+}
+
+.key
+{
+    vertical-align: top;
+    padding-top: 20px;
+    font-size: 35px;
+    width: 80px;
+    height: 60px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -webkit-app-region: no-drag;
+}
+
+.key.bottom
+{
+    padding-top: 105px;
+}
+
+.key.right
+{
+    text-align: right;
+    padding-right: 31px;
+}

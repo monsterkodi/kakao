@@ -618,8 +618,8 @@ class Renderer
         bind = []
         for m in mthds
             if not m.keyval
-                print.ast 'not an method?' m
-                print.ast 'not an method?' mthds
+                print.ast 'not a method?' m
+                print.ast 'not a method?' mthds
                 continue
             if not m.keyval.val.func # probably a static var
                 continue
