@@ -130,8 +130,8 @@ Win = (function ()
 
             return ((_51_54_=this.delegate) != null ? typeof (_51_76_=_51_54_.onWindowMenuTemplate) === "function" ? _51_76_(this,template) : undefined : undefined)
         }).bind(this))
-        menuIcon = ((_53_38_=this.delegate.menuIcon) != null ? _53_38_ : kakao.bundle.img('menu.png'))
-        menuNoon = ((_54_38_=this.delegate.menuNoon) != null ? _54_38_ : kakao.bundle.res('menu.noon'))
+        menuIcon = ((_53_38_=this.delegate.menuIcon) != null ? _53_38_ : kakao.bundle.img('menu_kakao.png'))
+        menuNoon = ((_54_38_=this.delegate.menuNoon) != null ? _54_38_ : kakao.bundle.res('menu_kakao.noon'))
         window.titlebar = new title({icon:menuIcon,menu:menuNoon})
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
@@ -316,13 +316,13 @@ Win = (function ()
                 }).bind(this))
                 break
             case 'about':
-                if (window.aboutImage)
+                if (this.delegate.aboutImage)
                 {
-                    kakao('window.new','about.html',`window.aboutImage = \"${window.aboutImage}\";`)
+                    kakao('window.new','about.html',`window.aboutImage = \"${this.delegate.aboutImage}\";`)
                 }
                 else
                 {
-                    kakao('window.new','about.html')
+                    kakao('window.new','about.html',`window.aboutImage = \"${kakao.bundle.img('about_kakao.png')}\";`)
                 }
                 break
         }

@@ -8,7 +8,6 @@
 
 use ../kxk ▪ kstr post
 use ◆ text 
-log 'calc'
 
 class Calc
 

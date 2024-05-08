@@ -50,8 +50,8 @@ function Win
         post.on 'saveStash'    @saveStash
         post.on 'menu.init'    (template) => @delegate?.onWindowMenuTemplate? @, template
         
-        menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu.png'
-        menuNoon = @delegate.menuNoon ? kakao.bundle.res 'menu.noon'
+        menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu_kakao.png'
+        menuNoon = @delegate.menuNoon ? kakao.bundle.res 'menu_kakao.noon'
         
         window.titlebar = new title icon:menuIcon, menu:menuNoon
         
@@ -171,10 +171,10 @@ function Win
                         @saveStashOnClose = false   #   and prevent saving it 
                     kakao 'window.close'
             'about'          
-                if window.aboutImage
-                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{window.aboutImage}\";"
+                if @delegate.aboutImage
+                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{@delegate.aboutImage}\";"
                 else
-                    kakao 'window.new' 'about.html'
+                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{kakao.bundle.img 'about_kakao.png'}\";"
         0
         
     # 000   000  00000000  000   000

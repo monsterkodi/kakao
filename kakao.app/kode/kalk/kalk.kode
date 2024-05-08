@@ -6,97 +6,100 @@
 000   000  000   000  0000000  000   000  
 ###
 
-log 'kljsla'
-
 use ../kakao
 use ../kxk ▪ win post stopEvent
-
-# 000   000  000  000   000  
-# 000 0 000  000  0000  000  
-# 000000000  000  000 0 000  
-# 000   000  000  000  0000  
-# 00     00  000  000   000  
-
-log 'kalk'
 use ◆ keys input sheet
 
-post.on 'calc' (calc) -> window.input.setText(calc); post.emit 'button' '='
+function Delegate extends win.Delegate
+    
+    @: ->
         
-#  0000000   0000000   00000000   000   000        00000000    0000000    0000000  000000000  00000000    
-# 000       000   000  000   000   000 000         000   000  000   000  000          000     000         
-# 000       000   000  00000000     00000          00000000   000000000  0000000      000     0000000     
-# 000       000   000  000           000           000        000   000       000     000     000         
-#  0000000   0000000   000           000           000        000   000  0000000      000     00000000    
-    
-currentSelection = ->
-    
-    selection = document.getSelection().toString()
-    ⮐ selection if valid selection
-    ''
-    
-cpy = ->
-    if selection = currentSelection()
-        # electron.clipboard?.writeText selection
-        kakao 'clipboard.write' selection
-    else
-        # electron.clipboard?.writeText window.input.text()
-        kakao 'clipboard.write' window.input.text()
-
-cut = -> 
-    cpy() 
-    if selection = currentSelection()
-        document.getSelection().deleteFromDocument()
-    else
-        window.input.clear()
+        @menuIcon = kakao.bundle.img 'menu_kalk.png'
+        @menuNoon = kakao.bundle.res 'menu_kalk.noon'
         
-paste = ○->
-    
-    # electron.clipboard?.readText()
-    
-    text =○ kakao 'clipboard.read' 
-    
-    window.input.setText window.input.text()+text
+        post.on 'combo'      @onCombo
+        post.on 'menuAction' @onMenuAction
+        post.on 'calc'       @onCalc
 
-#  0000000   0000000   00     00  0000000     0000000   
-# 000       000   000  000   000  000   000  000   000  
-# 000       000   000  000000000  0000000    000   000  
-# 000       000   000  000 0 000  000   000  000   000  
-#  0000000   0000000   000   000  0000000     0000000   
-
-onCombo = (combo, info) ->
-
-    ⮐ stopEvent(info.event) if 'unhandled' != window.keys.globalModKeyComboEvent info.mod, info.key, info.combo, info.event
-    
-    switch combo
-        'ctrl+v' ➜ ⮐ paste()
-        'ctrl+c' ➜ ⮐ cpy()
-        'ctrl+x' ➜ ⮐ cut()
+    onWindowCreated: =>
         
-post.on 'combo' onCombo
+        kakao 'win.setMinSize' 470 610
         
-# 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
-# 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
-# 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
-# 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
-# 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
-
-onMenuAction = (action, args) ->
-
-    switch action
-        'Cut'       ➜ ⮐ cut()
-        'Copy'      ➜ ⮐ cpy()
-        'Paste'     ➜ ⮐ paste()
-        'Clear All' ➜ post.emit('sheet' 'clear'); post.emit('menuAction' 'Clear')
-        'Save'      ➜ post.toMain 'saveBuffer'
+    onWindowResize: => post.emit 'resize'
         
-post.on 'menuAction' onMenuAction
+    onCalc: calc =>
         
-window.onresize = -> post.emit 'resize'
+        window.input.setText calc
+        post.emit 'button' '='
 
+    # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
+    # 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
+    # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
+    # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
+
+    onMenuAction: action args =>
+
+        switch action
+            'Cut'       ➜ ⮐ cut()
+            'Copy'      ➜ ⮐ cpy()
+            'Paste'     ➜ ⮐ paste()
+            'Clear All' ➜ post.emit('sheet' 'clear'); post.emit('menuAction' 'Clear')
+            'Save'      ➜ post.toMain 'saveBuffer'
+            
+    #  0000000   0000000   00     00  0000000     0000000   
+    # 000       000   000  000   000  000   000  000   000  
+    # 000       000   000  000000000  0000000    000   000  
+    # 000       000   000  000 0 000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000     0000000   
+    
+    onWindowKeyDown: win info =>
+        
+        log info
+    
+        ⮐ stopEvent(info.event) if 'unhandled' != window.keys.globalModKeyComboEvent info.mod, info.key, info.combo, info.event
+        
+        switch info.combo
+            'ctrl+v' ➜ ⮐ @paste()
+            'ctrl+c' ➜ ⮐ @cpy()
+            'ctrl+x' ➜ ⮐ @cut()
+    
+    #  0000000   0000000   00000000   000   000        00000000    0000000    0000000  000000000  00000000    
+    # 000       000   000  000   000   000 000         000   000  000   000  000          000     000         
+    # 000       000   000  00000000     00000          00000000   000000000  0000000      000     0000000     
+    # 000       000   000  000           000           000        000   000       000     000     000         
+    #  0000000   0000000   000           000           000        000   000  0000000      000     00000000    
+        
+    currentSelection: =>
+        
+        selection = document.getSelection().toString()
+        ⮐ selection if valid selection
+        ''
+                
+    cpy: =>
+        
+        if selection = @currentSelection()
+            kakao 'clipboard.write' selection
+        else
+            kakao 'clipboard.write' window.input.text()
+    
+    cut: => 
+        
+        cpy() 
+        if selection = @currentSelection()
+            document.getSelection().deleteFromDocument()
+        else
+            window.input.clear()
+            
+    paste: ○=>
+        
+        text =○ kakao 'clipboard.read' 
+        
+        window.input.setText window.input.text()+text
+                
 kakao.init ->
-    log 'init'
     
-    new win new win.Delegate
+    new win new Delegate
     
     window.sheet = new sheet
     window.input = new input

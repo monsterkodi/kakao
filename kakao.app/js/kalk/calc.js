@@ -6,12 +6,11 @@ let post = kxk.post
 
 import text from "./text.js"
 
-console.log('calc')
 class Calc
 {
     static calc (expr)
     {
-        var evl, val, _30_20_, _32_28_
+        var evl, val, _29_20_, _31_28_
 
         if (_k_.empty(expr))
         {

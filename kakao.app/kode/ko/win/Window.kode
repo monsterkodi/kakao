@@ -33,13 +33,14 @@ function Window extends win.Delegate
     
     @: ->
         
-        @menuIcon = kakao.bundle.img 'menu_ko.png'
-        @menuNoon = kakao.bundle.res 'menu_ko.noon'
+        @menuIcon   = kakao.bundle.img 'menu_ko.png'
+        @menuNoon   = kakao.bundle.res 'menu_ko.noon'
+        @aboutImage = kakao.bundle.img 'about_ko.png'
         
         post.on 'menuAction' @onMenuAction
         post.on 'stash' -> window.editor.saveFilePosition()
         
-        window.aboutImage = kakao.bundle.img 'about_ko.png'
+        # window.aboutImage = kakao.bundle.img 'about_ko.png'
 
     onWindowWithoutStash: ○->
         

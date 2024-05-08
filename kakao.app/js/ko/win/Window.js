@@ -76,12 +76,12 @@ Window = (function ()
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
         this.menuIcon = kakao.bundle.img('menu_ko.png')
         this.menuNoon = kakao.bundle.res('menu_ko.noon')
+        this.aboutImage = kakao.bundle.img('about_ko.png')
         post.on('menuAction',this.onMenuAction)
         post.on('stash',function ()
         {
             return window.editor.saveFilePosition()
         })
-        window.aboutImage = kakao.bundle.img('about_ko.png')
         return Window.__super__.constructor.apply(this, arguments)
     }
 
@@ -154,7 +154,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _117_25_
+        var action, _118_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -337,7 +337,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _208_14_
+    var _209_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -348,7 +348,7 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _214_22_, _215_19_
+    var _215_22_, _216_19_
 
     ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
     ;(window.terminal != null ? window.terminal.resized() : undefined)
