@@ -19,6 +19,8 @@ function QuickMenu
         ,
             elem text:'' class:'quickmenu-item quickmenu-devtools' click:@onDevTools, dblclick: (e)-> stopEvent e  
         ,
+            elem text:'' class:'quickmenu-item quickmenu-kalk'     click:@onKalk,     dblclick: (e)-> stopEvent e  
+        ,
             elem text:'' class:'quickmenu-item quickmenu-list'     click:@onList,     dblclick: (e)-> stopEvent e  
         ]
         
@@ -31,6 +33,7 @@ function QuickMenu
     onTerminal: => @toggle 'terminal' 
     onList:     => post.emit 'menuAction' 'Toggle Func List'
     onDevTools: => post.emit 'menuAction' 'DevTools'
+    onKalk:     => kakao 'win.new' 'kalk.html'
         
     toggle: (what) ->
         

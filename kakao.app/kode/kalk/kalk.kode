@@ -22,9 +22,14 @@ function Delegate extends win.Delegate
         post.on 'menuAction' @onMenuAction
         post.on 'calc'       @onCalc
 
+    onWindowWithoutStash: ->  
+        
+        kakao 'win.setSize'    476 604
+        kakao 'win.center'
+        
     onWindowCreated: =>
         
-        kakao 'win.setMinSize' 476 610
+        kakao 'win.setMinSize' 476 604
         kakao 'win.setMaxSize' 476 6660
         
     onWindowResize: => post.emit 'resize'

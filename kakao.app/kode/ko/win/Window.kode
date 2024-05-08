@@ -7,9 +7,9 @@
 ###
 
 use ../../kakao
-use ../../kxk      ▪ win stash post prefs store stopEvent
+use ../../kxk      ▪ win scheme stash post prefs store stopEvent
 use                ◆ Split Info Tabs Menu QuickMenu Navigate FileHandler Terminal Viewer
-use ../tools       ◆ FileWatch Projects Indexer Git Unicode fps scheme
+use ../tools       ◆ FileWatch Projects Indexer Git Unicode fps
 use ../editor      ◆ Kore Editor Syntax FileEditor
 use ../commands    ◆ Macro
 use ../commandline ◆ CommandLine 
@@ -22,7 +22,7 @@ use ../commandline ◆ CommandLine
 
 function Window extends win.Delegate
 
-    onWindowAboutToShow:    win          -> #log "onWindowAboutToShow #{win.id}"
+    onWindowWillShow:       win          -> #log "onWindowWillShow"      win.id
     onWindowAnimationTick:  win tickInfo -> #log 'onWindowAnimationTick' win.id
     onWindowResize:         win event    -> #log 'onWindowResize'        win.id
     onWindowFocus:          win          -> #log 'onWindowFocus'         win.id
@@ -40,8 +40,6 @@ function Window extends win.Delegate
         post.on 'menuAction' @onMenuAction
         post.on 'stash' -> window.editor.saveFilePosition()
         
-        # window.aboutImage = kakao.bundle.img 'about_ko.png'
-
     onWindowWithoutStash: ○->
         
         log 'onWindowWithoutStash!'
@@ -125,17 +123,17 @@ function Window extends win.Delegate
             
         switch name
     
-            'Undo'                  ➜ ⮐ window.focusEditor.do.undo()
-            'Redo'                  ➜ ⮐ window.focusEditor.do.redo()
-            'Cut'                   ➜ ⮐ window.focusEditor.cut()
-            'Copy'                  ➜ ⮐ window.focusEditor.copy()
-            'Paste'                 ➜ ⮐ window.focusEditor.paste()
+            'Undo'                  ➜ ⮐ focusEditor.do.undo()
+            'Redo'                  ➜ ⮐ focusEditor.do.redo()
+            'Cut'                   ➜ ⮐ focusEditor.cut()
+            'Copy'                  ➜ ⮐ focusEditor.copy()
+            'Paste'                 ➜ ⮐ focusEditor.paste()
             'New Tab'               ➜ ⮐ post.emit 'newEmptyTab'
             'New Window'            ➜ ⮐ kakao 'window.new' 'ko.html' @editor.currentFile
             'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
             'Toggle Scheme'         ➜ ⮐ scheme.toggle()
             'Toggle Center Text'    ➜ ⮐ toggleCenterText()
-            'Toggle Func List'      ➜    prefs.toggle 'list|active'; post.emit 'list.toggle'; ⮐ 
+            'Toggle Func List'      ➜ ⮐ prefs.toggle('list|active') and post.emit 'list.toggle'
             'Toggle Tab Pinned'     ➜ ⮐ toggleTabPinned()
             'Toggle Tab Extensions' ➜ ⮐ tabs.toggleExtension()
             'Increase'              ➜ ⮐ changeFontSize +1
@@ -144,13 +142,13 @@ function Window extends win.Delegate
             'Navigate Backward'     ➜ ⮐ @navigate.backward()
             'Navigate Forward'      ➜ ⮐ @navigate.forward()
             'Maximize Editor'       ➜ ⮐ @split.maximizeEditor()
-            'Activate Next Tab'     ➜ ⮐ window.tabs.navigate 'right'
-            'Activate Previous Tab' ➜ ⮐ window.tabs.navigate 'left'
-            'Move Tab Left'         ➜ ⮐ window.tabs.move 'left'
-            'Move Tab Right'        ➜ ⮐ window.tabs.move 'right'
+            'Activate Next Tab'     ➜ ⮐ tabs.navigate 'right'
+            'Activate Previous Tab' ➜ ⮐ tabs.navigate 'left'
+            'Move Tab Left'         ➜ ⮐ tabs.move 'left'
+            'Move Tab Right'        ➜ ⮐ tabs.move 'right'
             'Open...'               ➜ ⮐ post.emit 'openFile'
             'Open In New Window...' ➜ ⮐ post.emit 'openFile' newWindow: true
-            'Open Counterpart'      ➜ ⮐ window.editor.jumpToCounterpart()
+            'Open Counterpart'      ➜ ⮐ editor.jumpToCounterpart()
             'Save'                  ➜ ⮐ post.emit 'saveFile'
             'Save All'              ➜ ⮐ post.emit 'saveAll'
             'Save As ...'           ➜ ⮐ post.emit 'saveFileAs'
@@ -158,7 +156,7 @@ function Window extends win.Delegate
             'Close Tab'             ➜ ⮐ post.emit 'closeTab'
             'Close Other Tabs'      ➜ ⮐ post.emit 'closeOtherTabs'
             'Close Other Windows'   ➜ ⮐ post.toWins 'closeWindow'
-            'Small Browser'         ➜ ⮐ window.commandline.startCommand 'browse'
+            'Small Browser'         ➜ ⮐ commandline.startCommand 'browse'
             'Preferences'           ➜ ⮐ post.emit 'loadFile' prefs.store.file
     
         # log 'onMenuAction unhandled' name, trail
@@ -192,10 +190,10 @@ window.editorWithName = n ->
  
     switch n
         'command' 
-        'commandline' ➜ window.commandline
-        'terminal'    ➜ window.terminal
-        'editor'      ➜ window.editor
-                      ➜ window.editor
+        'commandline' ➜ commandline
+        'terminal'    ➜ terminal
+        'editor'      ➜ editor
+                      ➜ editor
   
  # 00000000   00000000   0000000  000  0000000  00000000  
  # 000   000  000       000       000     000   000       
@@ -212,10 +210,10 @@ window.onresize = ->
 
 post.on 'split' (s) ->
 
-    window.filebrowser?.resized()
-    window.terminal?.resized()
-    window.commandline.resized()
-    window.editor.resized()
+    filebrowser?.resized()
+    terminal?.resized()
+    commandline.resized()
+    editor.resized()
 
 #  0000000  00000000  000   000  000000000  00000000  00000000       000000000  00000000  000   000  000000000
 # 000       000       0000  000     000     000       000   000         000     000        000 000      000

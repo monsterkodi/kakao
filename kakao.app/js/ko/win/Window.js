@@ -6,6 +6,7 @@ import kakao from "../../kakao.js"
 
 import kxk from "../../kxk.js"
 let win = kxk.win
+let scheme = kxk.scheme
 let stash = kxk.stash
 let post = kxk.post
 let prefs = kxk.prefs
@@ -28,7 +29,6 @@ import Indexer from "../tools/Indexer.js"
 import Git from "../tools/Git.js"
 import Unicode from "../tools/Unicode.js"
 import fps from "../tools/fps.js"
-import scheme from "../tools/scheme.js"
 
 import Kore from "../editor/Kore.js"
 import Editor from "../editor/Editor.js"
@@ -43,7 +43,7 @@ import CommandLine from "../commandline/CommandLine.js"
 Window = (function ()
 {
     _k_.extend(Window, win.Delegate)
-    Window.prototype["onWindowAboutToShow"] = function (win)
+    Window.prototype["onWindowWillShow"] = function (win)
     {}
 
     Window.prototype["onWindowAnimationTick"] = function (win, tickInfo)
@@ -154,7 +154,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _118_25_
+        var action, _116_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -171,19 +171,19 @@ Window = (function ()
         switch (name)
         {
             case 'Undo':
-                return window.focusEditor.do.undo()
+                return focusEditor.do.undo()
 
             case 'Redo':
-                return window.focusEditor.do.redo()
+                return focusEditor.do.redo()
 
             case 'Cut':
-                return window.focusEditor.cut()
+                return focusEditor.cut()
 
             case 'Copy':
-                return window.focusEditor.copy()
+                return focusEditor.copy()
 
             case 'Paste':
-                return window.focusEditor.paste()
+                return focusEditor.paste()
 
             case 'New Tab':
                 return post.emit('newEmptyTab')
@@ -201,9 +201,7 @@ Window = (function ()
                 return toggleCenterText()
 
             case 'Toggle Func List':
-                prefs.toggle('list|active')
-                post.emit('list.toggle')
-                return
+                return prefs.toggle('list|active') && post.emit('list.toggle')
 
             case 'Toggle Tab Pinned':
                 return toggleTabPinned()
@@ -230,16 +228,16 @@ Window = (function ()
                 return this.split.maximizeEditor()
 
             case 'Activate Next Tab':
-                return window.tabs.navigate('right')
+                return tabs.navigate('right')
 
             case 'Activate Previous Tab':
-                return window.tabs.navigate('left')
+                return tabs.navigate('left')
 
             case 'Move Tab Left':
-                return window.tabs.move('left')
+                return tabs.move('left')
 
             case 'Move Tab Right':
-                return window.tabs.move('right')
+                return tabs.move('right')
 
             case 'Open...':
                 return post.emit('openFile')
@@ -248,7 +246,7 @@ Window = (function ()
                 return post.emit('openFile',{newWindow:true})
 
             case 'Open Counterpart':
-                return window.editor.jumpToCounterpart()
+                return editor.jumpToCounterpart()
 
             case 'Save':
                 return post.emit('saveFile')
@@ -272,7 +270,7 @@ Window = (function ()
                 return post.toWins('closeWindow')
 
             case 'Small Browser':
-                return window.commandline.startCommand('browse')
+                return commandline.startCommand('browse')
 
             case 'Preferences':
                 return post.emit('loadFile',prefs.store.file)
@@ -321,23 +319,23 @@ window.editorWithName = function (n)
     {
         case 'command':
         case 'commandline':
-            return window.commandline
+            return commandline
 
         case 'terminal':
-            return window.terminal
+            return terminal
 
         case 'editor':
-            return window.editor
+            return editor
 
         default:
-            return window.editor
+            return editor
     }
 
 }
 
 window.onresize = function ()
 {
-    var _209_14_
+    var _207_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
@@ -348,12 +346,10 @@ window.onresize = function ()
 }
 post.on('split',function (s)
 {
-    var _215_22_, _216_19_
-
-    ;(window.filebrowser != null ? window.filebrowser.resized() : undefined)
-    ;(window.terminal != null ? window.terminal.resized() : undefined)
-    window.commandline.resized()
-    return window.editor.resized()
+    ;(filebrowser != null ? filebrowser.resized() : undefined)
+    ;(terminal != null ? terminal.resized() : undefined)
+    commandline.resized()
+    return editor.resized()
 })
 
 toggleCenterText = function ()

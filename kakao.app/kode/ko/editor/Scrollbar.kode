@@ -6,8 +6,7 @@
 0000000    0000000  000   000   0000000   0000000  0000000  0000000    000   000  000   000
 ###
 
-use ../tools/scheme
-use ../../kxk ▪ elem drag
+use ../../kxk ▪ scheme elem drag
 
 class Scrollbar
 

@@ -18,16 +18,42 @@ body
     overflow: auto;
     display: flex;
     flex-direction: row;
+    padding: 0;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+
+#input,
+#sheet
+{
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+#keys
+{
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .sheet-calc
 {
+    border-bottom-left-radius: 12px;
     flex: 1 1 0;
 }
 
 .sheet-result
 {
+    border-bottom-right-radius: 12px;
     flex: 1 1 0;
+}
+
+
+.sheet-calc,
+.sheet-result
+{
+    margin-bottom: 8px;
 }
 
 .sheet-line
@@ -51,10 +77,10 @@ body
 
 #input
 {
-    width: 100%;
-    flex: 0 0 100px;
-    margin-left: 6px;
-    margin-top: 9px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 .input-text
@@ -64,7 +90,6 @@ body
     text-align: right;
     font-size: 80px;
     user-select: text;
-    margin-right: 10px;
     white-space: pre;
     pointer-events: all;
 }

@@ -16,6 +16,7 @@ QuickMenu = (function ()
         var title
 
         this["updateIcons"] = this["updateIcons"].bind(this)
+        this["onKalk"] = this["onKalk"].bind(this)
         this["onDevTools"] = this["onDevTools"].bind(this)
         this["onList"] = this["onList"].bind(this)
         this["onTerminal"] = this["onTerminal"].bind(this)
@@ -27,6 +28,9 @@ QuickMenu = (function ()
         {
             return stopEvent(e)
         }}),elem({text:'',class:'quickmenu-item quickmenu-devtools',click:this.onDevTools,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }}),elem({text:'',class:'quickmenu-item quickmenu-kalk',click:this.onKalk,dblclick:function (e)
         {
             return stopEvent(e)
         }}),elem({text:'',class:'quickmenu-item quickmenu-list',click:this.onList,dblclick:function (e)
@@ -56,6 +60,11 @@ QuickMenu = (function ()
     QuickMenu.prototype["onDevTools"] = function ()
     {
         return post.emit('menuAction','DevTools')
+    }
+
+    QuickMenu.prototype["onKalk"] = function ()
+    {
+        return kakao('win.new','kalk.html')
     }
 
     QuickMenu.prototype["toggle"] = function (what)

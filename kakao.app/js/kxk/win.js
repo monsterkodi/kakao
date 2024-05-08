@@ -36,9 +36,9 @@ Delegate = (function ()
         console.log(`onWindowWithoutStash ${win.id}`)
     }
 
-    Delegate.prototype["onWindowAboutToShow"] = function (win)
+    Delegate.prototype["onWindowWillShow"] = function (win)
     {
-        console.log(`onWindowAboutToShow ${win.id}`)
+        console.log(`onWindowWillShow ${win.id}`)
     }
 
     Delegate.prototype["onWindowCreated"] = function (win)
@@ -76,7 +76,7 @@ Delegate = (function ()
     {
         if (!_k_.empty(keyInfo.combo))
         {
-            console.log("onWindowKeyUp  ",keyInfo.combo)
+            console.log("onWindowKeyUp ",keyInfo.combo)
         }
     }
 
@@ -187,9 +187,9 @@ Win = (function ()
                 }
             }
         }
-        if (_k_.isFunc(this.delegate.onWindowAboutToShow))
+        if (_k_.isFunc(this.delegate.onWindowWillShow))
         {
-            return await this.delegate.onWindowAboutToShow(this)
+            return await this.delegate.onWindowWillShow(this)
         }
     }
 

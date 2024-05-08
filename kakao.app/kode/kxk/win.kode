@@ -15,19 +15,19 @@ use ◆ ffs elem post prefs slash stash keyinfo title
 
 function Delegate
     
-    onWindowWillLoadStash:    (win)           -> log "onWindowWillLoadStash #{win.id}"
-    onWindowDidLoadStash:     (win)           -> log "onWindowDidLoadStash #{win.id}"
-    onWindowWithoutStash:     (win)           -> log "onWindowWithoutStash #{win.id}"
-    onWindowAboutToShow:      (win)           -> log "onWindowAboutToShow #{win.id}"
-    onWindowCreated:          (win)           -> log "win #{win.id}"
-    onWindowAnimationTick:    (win, tickInfo) -> #log("onWindowAnimationTick" tickInfo) if tickInfo.fps < 20
-    onWindowResize:           (win, event)    -> log "onWindowResize" event
-    onWindowFocus:            (win)           -> log "onWindowFocus"
-    onWindowBlur:             (win)           -> log "onWindowBlur"
-    onWindowKeyDown:          (win, keyInfo)  -> log "onWindowKeyDown " keyInfo.combo if not empty keyInfo.combo
-    onWindowKeyUp:            (win, keyInfo)  -> log "onWindowKeyUp  " keyInfo.combo if not empty keyInfo.combo
-    onWindowClose:            (win)           -> log "onWindowClose #{win.id}"
-    onWindowMenuTemplate:     (win, template) -> log "onWindowMenuTemplate #{win.id}" template
+    onWindowWillLoadStash:    win          -> log "onWindowWillLoadStash #{win.id}"
+    onWindowDidLoadStash:     win          -> log "onWindowDidLoadStash #{win.id}"
+    onWindowWithoutStash:     win          -> log "onWindowWithoutStash #{win.id}"
+    onWindowWillShow:         win          -> log "onWindowWillShow #{win.id}"
+    onWindowCreated:          win          -> log "win #{win.id}"
+    onWindowAnimationTick:    win tickInfo -> #log("onWindowAnimationTick" tickInfo) if tickInfo.fps < 20
+    onWindowResize:           win event    -> log "onWindowResize" event
+    onWindowFocus:            win          -> log "onWindowFocus"
+    onWindowBlur:             win          -> log "onWindowBlur"
+    onWindowKeyDown:          win keyInfo  -> log "onWindowKeyDown " keyInfo.combo if not empty keyInfo.combo
+    onWindowKeyUp:            win keyInfo  -> log "onWindowKeyUp "   keyInfo.combo if not empty keyInfo.combo
+    onWindowClose:            win          -> log "onWindowClose #{win.id}"
+    onWindowMenuTemplate:     win template -> log "onWindowMenuTemplate #{win.id}" template
     
 function Win
 
@@ -104,7 +104,7 @@ function Win
             else
                 if @delegate.onWindowDidLoadStash is func ➜ ○ @delegate.onWindowDidLoadStash @
 
-        if @delegate.onWindowAboutToShow is func ➜ ○ @delegate.onWindowAboutToShow @
+        if @delegate.onWindowWillShow is func ➜ ○ @delegate.onWindowWillShow @
                     
     saveStash: ->
         

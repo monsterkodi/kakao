@@ -488,6 +488,16 @@ span.macro.macro,
     color: #a00;
 }
 
+.quickmenu-kalk
+{
+    color: #444;
+}
+
+.quickmenu-kalk:hover
+{
+    color: #666;
+}
+
 #browser
 {
     background: #181818;

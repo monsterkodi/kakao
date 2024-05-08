@@ -5,8 +5,16 @@
 // 000   000  000   000  000   000  000  000   
 // 0000000    000   000  000   000  000   000  
 
-bgColor             = #181818
-frameColor          = #222
+// bgColor             = #080808
+// keyColor            = #111
+// frameColor          = #131313
+
+bgColor             = #131313
+keyColor            = #0b0b0b
+keyHoverColor       = #000
+frameColor          = #080808
+inputColor          = #181818
+
 scrollHoverColor    = #b00
 titleRedColor       = #f00
 titleColor          = #333
@@ -15,6 +23,17 @@ textBlurColor       = #666
 textActiveColor     = #999
 textFocusColor      = #fff
 
+#main
+#input
+    background          #131313
+    
+#keys
+    background          bgColor
+    
+.sheet-calc  
+.sheet-result
+    background          keyColor
+        
 // 000  000   000  00000000   000   000  000000000  
 // 000  0000  000  000   000  000   000     000     
 // 000  000 0 000  00000000   000   000     000     
@@ -23,8 +42,8 @@ textFocusColor      = #fff
 
 .input-text 
     color               textFocusColor
-    border              1px solid frameColor
-    border-radius       10px
+    border              2px solid keyColor
+    background          inputColor
   
 // 000   000  00000000  000   000  
 // 000  000   000        000 000   
@@ -34,6 +53,7 @@ textFocusColor      = #fff
 
 .key
 span
+    background          keyColor
     border              none
     white-space         pre
     &.nan
@@ -64,7 +84,7 @@ span
     color               scrollColor
     border              1px solid frameColor
     &:hover
-        background      frameColor
+        background      keyHoverColor
         color           textFocusColor
     &:active
         background      scrollHoverColor
