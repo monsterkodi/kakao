@@ -1,8 +1,16 @@
 var toExport = {}
 var _k_
 
+var epsilon, near
+
 import scooter from "../scooter.js"
 
+epsilon = 0.000000000000001
+
+near = function (a, b)
+{
+    return Math.abs(a - b) < epsilon
+}
 toExport["scooter"] = function ()
 {
     section("add", function ()
@@ -51,15 +59,19 @@ toExport["scooter"] = function ()
         compare(scooter('log(-1)'),NaN)
         compare(scooter('log(10)'),Math.log(10))
     })
-    section("degrees", function ()
+    section("deg rad", function ()
     {
         compare(scooter('rad(180)'),Math.PI)
         compare(scooter('deg(PI)'),180)
+        compare(scooter('deg(rad(E))'),Math.E)
+        compare(scooter('rad(deg(E))'),Math.E)
     })
     section("sqrt", function ()
     {
         compare(scooter('sqrt(9)'),3)
         compare(scooter('sqrt(8+1)'),3)
+        compare(scooter('sqrt(E^2)'),Math.E)
+        compare(near(scooter('sqrt(E)^2'),Math.E),true)
     })
     section("unicode", function ()
     {
@@ -76,6 +88,13 @@ toExport["scooter"] = function ()
             compare(scooter('(2*90)°'),Math.PI)
             compare(scooter('2*90°'),Math.PI)
             compare(scooter('90°+90°'),Math.PI)
+            compare(scooter('60°+60°+60°'),Math.PI)
+            compare(scooter('360°/2'),Math.PI)
+            compare(scooter('(360/2)°'),Math.PI)
+            compare(scooter('cos(0°)'),1)
+            compare(scooter('cos(180°)'),-1)
+            compare(scooter('sin(0°)'),0)
+            compare(near(scooter('sin(180°)'),0),true)
         })
     })
 }

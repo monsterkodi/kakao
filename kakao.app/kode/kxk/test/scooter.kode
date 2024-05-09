@@ -8,6 +8,9 @@
 
 use .. ◆ scooter
 
+epsilon = 0.000000000000001
+near = a b -> Math.abs(a-b) < epsilon
+
 ▸ scooter
 
     ▸ add
@@ -57,15 +60,19 @@ use .. ◆ scooter
         scooter 'log(-1)'       ▸ NaN
         scooter 'log(10)'       ▸ Math.log 10
         
-    ▸ degrees
+    ▸ deg rad
         
         scooter 'rad(180)'      ▸ Math.PI
         scooter 'deg(PI)'       ▸ 180
+        scooter 'deg(rad(E))'   ▸ Math.E
+        scooter 'rad(deg(E))'   ▸ Math.E
         
     ▸ sqrt
         
         scooter 'sqrt(9)'       ▸ 3     
         scooter 'sqrt(8+1)'     ▸ 3 
+        scooter 'sqrt(E^2)'     ▸ Math.E 
+        near scooter('sqrt(E)^2'), Math.E ▸ true
         
     ▸ unicode 
     
@@ -78,9 +85,16 @@ use .. ◆ scooter
         
         ▸ degree
         
-            scooter '180°'      ▸ Math.PI
-            scooter '(90+90)°'  ▸ Math.PI
-            scooter '(2*90)°'   ▸ Math.PI
-            scooter '2*90°'     ▸ Math.PI
-            scooter '90°+90°'   ▸ Math.PI
+            scooter '180°'        ▸ Math.PI
+            scooter '(90+90)°'    ▸ Math.PI
+            scooter '(2*90)°'     ▸ Math.PI
+            scooter '2*90°'       ▸ Math.PI
+            scooter '90°+90°'     ▸ Math.PI
+            scooter '60°+60°+60°' ▸ Math.PI
+            scooter '360°/2'      ▸ Math.PI
+            scooter '(360/2)°'    ▸ Math.PI
+            scooter 'cos(0°)'     ▸  1
+            scooter 'cos(180°)'   ▸ -1
+            scooter 'sin(0°)'     ▸  0
+            near scooter('sin(180°)'), 0 ▸ true
     
