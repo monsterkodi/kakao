@@ -6,7 +6,7 @@
 000   000  00000000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-use ../kxk  ◆ kstr slash fs
+use ../kxk  ◆ kstr slash
 use ./utils ▪ firstLineCol lastLineCol
 use ◆ print 
 
@@ -32,7 +32,8 @@ class Renderer
         if @verbose ➜ log noon ast
         
         @file = source
-        @source = slash.relative source, process.cwd()
+        if source and globalThis.process
+            @source = slash.relative source, globalThis.process.cwd()
         # log @file, @source
         
         @ast = ast

@@ -33,10 +33,10 @@ class Color
     
     colorize: text => 
         
-        log 'text' text, @config
+        # log 'text' text, @config
         rngs = matchr.ranges @config, text
                 
-        log 'rngs' rngs
+        # log 'rngs' rngs
         colorized = ''
         index = 0
         for rng in rngs

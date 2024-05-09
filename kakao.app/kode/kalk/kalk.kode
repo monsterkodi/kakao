@@ -18,7 +18,6 @@ function Delegate extends win.Delegate
         @menuNoon   = kakao.bundle.res 'menu_kalk.noon'
         @aboutImage = kakao.bundle.img 'about_kalk.png'
         
-        post.on 'combo'      @onCombo
         post.on 'menuAction' @onMenuAction
         post.on 'calc'       @onCalc
 

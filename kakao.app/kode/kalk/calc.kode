@@ -6,7 +6,7 @@
  0000000  000   000  0000000   0000000
 ###
 
-use ../kxk ▪ kstr post
+use ../kxk ▪ scooter kstr post
 use ◆ text 
 
 class Calc
@@ -16,40 +16,19 @@ class Calc
         ⮐ '' if empty expr
         
         expr = text.close expr
+        expr = trim expr, ' \n'
         
-        expr = expr.replace /∡/,  '(180/pi)*'
-        expr = expr.replace /√/g, 'sqrt'
-        expr = expr.replace /π/g, 'pi'
-        expr = expr.replace /ϕ/g, 'phi'
-        expr = expr.replace /𝒆/g, 'E'
-        expr = expr.replace /∞/g, 'Infinity'
-        expr = expr.replace /°/g, ' deg'
+        log 'expr' expr
         
-        log 'eval' expr
+        val = kstr scooter expr
         
-        evl  = math.evaluate expr
-        if evl.value?
-            val = kstr evl.value
-        else if evl.toString?
-            val = evl.toString()
-        else
-            val = kstr evl
-            
-        val  = val.replace  /Infinity/g, '∞'
+        log 'val' scooter expr
         
-        expr = expr.replace /\(180\/pi\)\*/, '∡'
-        expr = expr.replace /sqrt/g, '√'
-        expr = expr.replace /pi/g, 'π'
-        expr = expr.replace /E/g, symbol.euler
-        expr = expr.replace /phi/g, 'ϕ'
-        expr = expr.replace /Infinity/g, '∞'
-        expr = expr.replace /deg/g, '°'
-        
-        val += '°' if expr.startsWith '∡'
+        val = val.replace  /Infinity/g, '∞'
         
         post?.emit 'sheet' text:expr, val:val
         
-        val  = val.replace  /NaN/g, ''
+        val = val.replace  /NaN/g, ''
                 
     @textKey: txt key ->
         
@@ -79,7 +58,7 @@ class Calc
                 else if not text.endsWithConstant(txt)
                     txt = text.removeZeroInfinity(txt) + key
                     
-        log 'txtKey' txt, key
+        # log 'txtKey' txt, key
         txt
 
 export Calc

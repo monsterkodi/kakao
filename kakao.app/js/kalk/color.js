@@ -19,9 +19,7 @@ class Color
     {
         var clss, colorized, index, rng, rngs, _48_29_
 
-        console.log('text',text,this.config)
         rngs = matchr.ranges(this.config,text)
-        console.log('rngs',rngs)
         colorized = ''
         index = 0
         var list = _k_.list(rngs)

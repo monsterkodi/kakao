@@ -52,7 +52,7 @@ FuncList = (function ()
         var browserVisible, funclistActive, hide
 
         browserVisible = window.split.browserVisible() && prefs.get('funclist|hideWhenBrowsing',false)
-        funclistActive = prefs.get('list|active')
+        funclistActive = prefs.get('list|active',true)
         hide = browserVisible || !funclistActive
         this.elem.style.display = (hide ? 'none' : 'inherit')
         return this.onEditorScrollOrCursor()

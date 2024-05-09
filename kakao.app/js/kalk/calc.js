@@ -1,6 +1,7 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 import kxk from "../kxk.js"
+let scooter = kxk.scooter
 let kstr = kxk.kstr
 let post = kxk.post
 
@@ -10,46 +11,18 @@ class Calc
 {
     static calc (expr)
     {
-        var evl, val, _31_20_, _33_28_
+        var val
 
         if (_k_.empty(expr))
         {
             return ''
         }
         expr = text.close(expr)
-        expr = expr.replace(/∡/,'(180/pi)*')
-        expr = expr.replace(/√/g,'sqrt')
-        expr = expr.replace(/π/g,'pi')
-        expr = expr.replace(/ϕ/g,'phi')
-        expr = expr.replace(/𝒆/g,'E')
-        expr = expr.replace(/∞/g,'Infinity')
-        expr = expr.replace(/°/g,' deg')
-        console.log('eval',expr)
-        evl = math.evaluate(expr)
-        if ((evl.value != null))
-        {
-            val = kstr(evl.value)
-        }
-        else if ((evl.toString != null))
-        {
-            val = evl.toString()
-        }
-        else
-        {
-            val = kstr(evl)
-        }
+        expr = _k_.trim(expr,' \n')
+        console.log('expr',expr)
+        val = kstr(scooter(expr))
+        console.log('val',scooter(expr))
         val = val.replace(/Infinity/g,'∞')
-        expr = expr.replace(/\(180\/pi\)\*/,'∡')
-        expr = expr.replace(/sqrt/g,'√')
-        expr = expr.replace(/pi/g,'π')
-        expr = expr.replace(/E/g,symbol.euler)
-        expr = expr.replace(/phi/g,'ϕ')
-        expr = expr.replace(/Infinity/g,'∞')
-        expr = expr.replace(/deg/g,'°')
-        if (expr.startsWith('∡'))
-        {
-            val += '°'
-        }
         ;(post != null ? post.emit('sheet',{text:expr,val:val}) : undefined)
         return val = val.replace(/NaN/g,'')
     }
@@ -140,7 +113,6 @@ class Calc
             }
         }
 
-        console.log('txtKey',txt,key)
         return txt
     }
 }

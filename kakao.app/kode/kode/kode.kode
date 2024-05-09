@@ -6,9 +6,8 @@
 000   000   0000000   0000000    00000000
 ###
 
-use ../kxk ◆ fs slash karg
+use ../kxk ◆ slash karg
 use ◆ lexer print parser scoper stripol returner operator renderer
-use vm
 
 class Kode
 
@@ -38,19 +37,10 @@ class Kode
     eval: (text, file, glob) ->
 
         ⮐ if empty text
-
-        sandbox = vm.createContext()
-        if glob then sandbox[k] = v for k,v of glob
-
-        sandbox.__filename = file ? 'eval'
-        sandbox.__dirname  = slash.dir sandbox.__filename
-        sandbox.console    = console
-        sandbox.process    = process
-        sandbox.global     = global
-
+        
         try
             js = @compile text, file
-            vm.runInContext js, sandbox
+            eval js
         catch err
             error err
             throw err
@@ -95,42 +85,7 @@ class Kode
         ast = @operator.collect ast # sort operation chains by precedence
 
     astr: (text, scopes) -> print.astr @ast(text), scopes
-    
-    #  0000000  000      000
-    # 000       000      000
-    # 000       000      000
-    # 000       000      000
-    #  0000000  0000000  000
-
-    cli: ○->
-
-        if @args.compile
-            log @compile @args.compile
-            return
-            
-        if @args.eval
-            log @eval @args.eval, 'eval' global
-            return
-            
-        for file in @args.files
-
-            file = slash.path file
-            log gray file if @args.verbose
-
-            text =○ fs.read file
-
-            if empty text then error Y4 r2 "can't read #{R3 y5 file}"; continue
-
-            if
-                @args.outdir
-                                js  = @compile text, file
-                                out = slash.swapExt slash.path(@args.outdir, slash.file file), 'js'
-                                log out if @args.verbose
-                                if not ○ fs.write out, js then error R2 y3 "can't write #{R3 y6 out}"
-                @args.js    ➜   log @compile text, file
-                @args.run   ➜   log @eval text, file, global
-                            ➜   log @compile text, file
-                
+                    
 export Kode
 
 ◆main    
@@ -149,5 +104,43 @@ export Kode
         
     # log 'args' args if args.verbose
     kode = new Kode args
-    kode.cli()
+    
+    #  0000000  000      000
+    # 000       000      000
+    # 000       000      000
+    # 000       000      000
+    #  0000000  0000000  000
+
+    args = kode.args
+
+    if args.compile
+        log kode.compile args.compile
+        process.exit 0
+        
+    if args.eval
+        log kode.eval args.eval, 'eval' global
+        process.exit 0
+
+    fs =○ import('../kxk/fs.js')
+    fs = fs.default
+        
+    for file in args.files
+
+        file = slash.path file
+        log gray file if args.verbose
+
+        text =○ fs.read file
+
+        if empty text then error Y4 r2 "can't read #{R3 y5 file}"; continue
+
+        if
+            args.outdir
+                            js  = kode.compile text, file
+                            out = slash.swapExt slash.path(args.outdir, slash.file file), 'js'
+                            log out if args.verbose
+                            if not ○ fs.write out, js then error R2 y3 "can't write #{R3 y6 out}"
+            args.js    ➜    log kode.compile text, file
+            args.run   ➜    log kode.eval text, file, global
+                       ➜    log kode.compile text, file
+    
     

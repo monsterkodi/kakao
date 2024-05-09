@@ -1,4 +1,6 @@
-var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+
+var Patterns
 
 import noon from "../kxk/noon.js"
 import kstr from "../kxk/kstr.js"
@@ -7,8 +9,7 @@ import slash from "../kxk/slash.js"
 import util from "../kxk/util.js"
 let pullIf = util.pullIf
 
-import fs from "fs"
-
+Patterns = {ws:"[ \\t]+",nl:"[ \\t]*\\r?\\n",comment:"\\#\\#\\#(?:.|\\n)*?\\#\\#\\#|\\#.*",num:"0x[a-fA-F\\d]+|0o[0-7]+|0b[0-1]+|[0-9]+n|[0-9]+\\.[0-9]+|[0-9]+e[-\\+]?[0-9]+|[1-9][0-9]*|0|\\-?Infinity",triple:"\"\"\"(?:.|\\n)*?\"\"\"",double:"\"(?:\\\\.|\\#\\{[^\\}]*}|[^\\n\\\\\"])*\"",single:"'(?:\\\\['\\\\]|[^\\n'])*'",regex:"(?<!\\d\\s*)\\/(?:\\\\[\\/]|\\([^\\n\\s]*\\)|[^\\n\\s\\)])*\\/[gimsuy]*(?!\\s*\\d)",dots:"(?<!\\.)\\.\\.\\.?(?!\\.)",paren:"[\\(\\)\\[\\]\\{\\}]",func:"(○->|○=>|->|=>)",then:"➜",this:"@",test:"(?<!●)▸[\\s\\n]+",profile:"●▸",profilend:"●▪",prof:"●",await:"○",assert:"▴",down:"▾",left:"◂",right:"▸",use:"▪",square:"■",diamond:"◆",return:"⮐",op:"(\\band\\b|\\bor\\b|\\bnot\\b|\\+\\+|--|==|!=|>=|<=|\\+=|-=|\\*=|\\/=|\\|=|\\^=|\\?=|\\&=|%=|<<|>>|=|\\*|\\/|\\+|-|%|\\^|~|\\&|\\||<|>|\\beql\\b|\\bnew\\b|\\bis\\b|\\binstanceof\\b|\\bdelete\\b|\\bnoon\\b|\\bcopy\\b|\\bclone\\b)",punct:"[,:;!&~\\|\\.\\?\\\\]",bool:"(\\byes\\b|\\bno\\b|\\btrue\\b|\\bfalse\\b)",keyword:["if","then","else","for","each","break","await","return","continue","switch","while","when","is","in","of","class","super","extends","try","catch","throw","finally","function","require","import","export","from","typeof","empty","valid","dbg","log","warn","error","clamp","int","float","first","last","lpad","rpad","trim","ltrim","rtrim","use","min","max"],"var":"[▸a-zA-Z_$][a-zA-Z0-9_$]*"}
 class Lexer
 {
     constructor (kode)
@@ -20,11 +21,10 @@ class Lexer
         this.debug = this.kode.args.debug
         this.verbose = this.kode.args.verbose
         this.raw = this.kode.args.raw
-        this.patterns = JSON.parse(fs.readFileSync(slash.path(_k_.dir(),'./lexer.json'),'utf8'))
         this.regs = []
-        for (key in this.patterns)
+        for (key in Patterns)
         {
-            pat = this.patterns[key]
+            pat = Patterns[key]
             if (typeof(pat) === 'string')
             {
                 this.regs.push([key,new RegExp(pat)])
@@ -53,10 +53,10 @@ class Lexer
         {
             before = text.length
             var list = _k_.list(this.regs)
-            for (var _60_26_ = 0; _60_26_ < list.length; _60_26_++)
+            for (var _137_26_ = 0; _137_26_ < list.length; _137_26_++)
             {
-                key = list[_60_26_][0]
-                reg = list[_60_26_][1]
+                key = list[_137_26_][0]
+                reg = list[_137_26_][1]
                 match = text.match(reg)
                 if ((match != null ? match.index : undefined) === 0)
                 {
@@ -173,9 +173,9 @@ class Lexer
         var minind, splt, tok
 
         var list = _k_.list(tokens)
-        for (var _143_16_ = 0; _143_16_ < list.length; _143_16_++)
+        for (var _220_16_ = 0; _220_16_ < list.length; _220_16_++)
         {
-            tok = list[_143_16_]
+            tok = list[_220_16_]
             if (tok.type === 'triple')
             {
                 splt = tok.text.slice(3, -3).split('\n')
@@ -247,7 +247,7 @@ class Lexer
             if (tok.text === '\\')
             {
                 idx += 1
-                while (_k_.in(tokens[idx].type,['nl','ws']))
+                while (tokens[idx] && _k_.in(tokens[idx].type,['nl','ws']))
                 {
                     idx += 1
                 }
@@ -327,7 +327,7 @@ class Lexer
                 block = blocks.slice(-1)[0]
             }
         }
-        for (var _275_19_ = idx = 0, _275_23_ = tokens.length; (_275_19_ <= _275_23_ ? idx < tokens.length : idx > tokens.length); (_275_19_ <= _275_23_ ? ++idx : --idx))
+        for (var _352_19_ = idx = 0, _352_23_ = tokens.length; (_352_19_ <= _352_23_ ? idx < tokens.length : idx > tokens.length); (_352_19_ <= _352_23_ ? ++idx : --idx))
         {
             tok = tokens[idx]
             if (tok.type === 'nl')

@@ -893,7 +893,14 @@ Parser = (function ()
         {
             this.pop(o.pop)
         }
-        console.error(_k_.B3(_k_.b7(` ${((_1_17_=(tokens != null ? tokens[0] != null ? tokens[0].line : undefined : undefined)) != null ? _1_17_ : ' ')} `)) + _k_.R1(_k_.y4(` ${((_1_6_=o.hdr) != null ? _1_6_ : o.pop)} `)) + _k_.R2(_k_.y7(` ${o.msg} `)))
+        if (globalThis.process)
+        {
+            console.error(_k_.B3(_k_.b7(` ${((_1_17_=(tokens != null ? tokens[0] != null ? tokens[0].line : undefined : undefined)) != null ? _1_17_ : ' ')} `)) + _k_.R1(_k_.y4(` ${((_1_6_=o.hdr) != null ? _1_6_ : o.pop)} `)) + _k_.R2(_k_.y7(` ${o.msg} `)))
+        }
+        else
+        {
+            console.error(` ${((_1_17_=(tokens != null ? tokens[0] != null ? tokens[0].line : undefined : undefined)) != null ? _1_17_ : ' ')} ` + ` ${((_1_6_=o.hdr) != null ? _1_6_ : o.pop)} ` + ` ${o.msg} `)
+        }
         return null
     }
 

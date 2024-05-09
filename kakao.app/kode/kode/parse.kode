@@ -246,9 +246,9 @@ function Parse extends parseutils
                 
         switch tok.type
             
-            'block'     ➜   print.tokens 'ERROR: exp unexpected block' [tok].concat tokens; ⮐ error "INTERNAL ERROR: unexpected block token in exp!"
-            'nl'        ➜   print.tokens 'ERROR: exp unexpected nl'    [tok].concat tokens; ⮐ error "INTERNAL ERROR: unexpected nl token in exp!"
-            ';'         ➜   print.tokens 'ERROR: exp unexpected ;'     [tok].concat tokens; ⮐ error "INTERNAL ERROR: unexpected ; token in exp!"
+            'block'     ➜   ⮐ error "INTERNAL ERROR: unexpected block token in exp!"
+            'nl'        ➜   ⮐ error "INTERNAL ERROR: unexpected nl token in exp!"
+            ';'         ➜   ⮐ error "INTERNAL ERROR: unexpected ; token in exp!"
             'section'   ➜   ⮐ @section tok, tokens                
             'keyword'       # dispatch to block rules identified by keyword
                             if tokens[0]?.text not in ':' # allow keywords as dictionary keys
@@ -456,10 +456,9 @@ function Parse extends parseutils
                         @stack[-1] == '{'       and nxt.text == '}' ➜ @verb 'rhs curly end';            break                    
                         @stack[-1] == '['       and nxt.text == ']' ➜ @verb 'rhs array end';            break
                         ➜
-                            if @debug
-                                print.ast "rhs no nxt match?? stack:#{@stack} e:" e
-                                print.tokens "rhs no nxt match?? nxt:" nxt
-                                # log noon e
+                            print.ast "rhs no nxt match?? stack:#{@stack} e:" e if @debug
+                            print.tokens "rhs no nxt match?? nxt:" nxt if @debug
+                            # log noon e
                             break
                     
             if numTokens == tokens.length

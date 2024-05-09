@@ -204,12 +204,12 @@ use ./utils ▪ kc ke
 
         ▸ of
             kc  """
-                for key,val of @patterns
+                for key,val of @patts
                     log key, val
                 """ ▸ """
-                for (key in this.patterns)
+                for (key in this.patts)
                 {
-                    val = this.patterns[key]
+                    val = this.patts[key]
                     console.log(key,val)
                 }
                 """

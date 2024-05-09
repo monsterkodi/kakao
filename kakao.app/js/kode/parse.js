@@ -274,15 +274,12 @@ Parse = (function ()
         switch (tok.type)
         {
             case 'block':
-                print.tokens('ERROR: exp unexpected block',[tok].concat(tokens))
                 return console.error("INTERNAL ERROR: unexpected block token in exp!")
 
             case 'nl':
-                print.tokens('ERROR: exp unexpected nl',[tok].concat(tokens))
                 return console.error("INTERNAL ERROR: unexpected nl token in exp!")
 
             case ';':
-                print.tokens('ERROR: exp unexpected ;',[tok].concat(tokens))
                 return console.error("INTERNAL ERROR: unexpected ; token in exp!")
 
             case 'section':
@@ -623,6 +620,9 @@ Parse = (function ()
                     if (this.debug)
                     {
                         print.ast(`rhs no nxt match?? stack:${this.stack} e:`,e)
+                    }
+                    if (this.debug)
+                    {
                         print.tokens("rhs no nxt match?? nxt:",nxt)
                     }
                     break

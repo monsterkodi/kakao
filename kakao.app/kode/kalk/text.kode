@@ -39,14 +39,14 @@ class Text
     
     @endsWith: txt chars -> 
         
-        log 'endsWith' txt, chars
+        # log 'endsWith' txt, chars
         
         ⮐ false if empty txt 
         ⮐ false if not txt is str
         
         for c in chars
             if txt.endsWith c
-                log 'yes' txt, c
+                # log 'yes' txt, c
                 ⮐ true 
             
         false

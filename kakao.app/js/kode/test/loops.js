@@ -120,10 +120,10 @@ for (k = 0; k < list.length; k++)
         })
         section("of", function ()
         {
-            compare(kc(`for key,val of @patterns
-    log key, val`),`for (key in this.patterns)
+            compare(kc(`for key,val of @patts
+    log key, val`),`for (key in this.patts)
 {
-    val = this.patterns[key]
+    val = this.patts[key]
     console.log(key,val)
 }`)
             compare(kc(`matches = ([k, r.exec t] for k,r of rgs)`),`matches = (function () { var r_1_33_ = []; for (var k in rgs)  { var r = rgs[k];r_1_33_.push([k,r.exec(t)])  } return r_1_33_ }).bind(this)()`)

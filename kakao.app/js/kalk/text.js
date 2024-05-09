@@ -61,7 +61,6 @@ class Text
     {
         var c
 
-        console.log('endsWith',txt,chars)
         if (_k_.empty(txt))
         {
             return false
@@ -76,7 +75,6 @@ class Text
             c = list[_47_14_]
             if (txt.endsWith(c))
             {
-                console.log('yes',txt,c)
                 return true
             }
         }

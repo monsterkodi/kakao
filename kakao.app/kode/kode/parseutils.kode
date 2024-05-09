@@ -68,7 +68,7 @@ function ParseUtils
             return tokens.shift()
             
         error "parse.shiftClose: '#{rule}' expected closing '#{text}'"
-        print.tokens "shiftClose missing close '#{text}'" tokens
+        print.tokens "shiftClose missing close '#{text}'" tokens if @debug
         null
         
     #  0000000  000   000  000  00000000  000000000  000   000  00000000  000   000  000      000  000   000  00000000  
@@ -144,7 +144,7 @@ function ParseUtils
                     @verb 'unshift' block.tokens[-1]
                     tokens.unshift block.tokens.pop()
                     
-                print.tokens 'then after unshifting dangling block tokens' tokens
+                print.tokens 'then after unshifting dangling block tokens' tokens if @debug
                 
         else
             @verb "no then and no block after #{id}!"

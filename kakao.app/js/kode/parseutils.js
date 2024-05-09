@@ -42,7 +42,10 @@ ParseUtils = (function ()
             return tokens.shift()
         }
         console.error(`parse.shiftClose: '${rule}' expected closing '${text}'`)
-        print.tokens(`shiftClose missing close '${text}'`,tokens)
+        if (this.debug)
+        {
+            print.tokens(`shiftClose missing close '${text}'`,tokens)
+        }
         return null
     }
 
@@ -124,7 +127,10 @@ ParseUtils = (function ()
                     this.verb('unshift',block.tokens.slice(-1)[0])
                     tokens.unshift(block.tokens.pop())
                 }
-                print.tokens('then after unshifting dangling block tokens',tokens)
+                if (this.debug)
+                {
+                    print.tokens('then after unshifting dangling block tokens',tokens)
+                }
             }
         }
         else

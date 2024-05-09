@@ -1113,7 +1113,10 @@ function Parser extends parse
     error: (o, tokens) ->
         
         @pop o.pop if o.pop
-        error B3(b7(" #{tokens?[0]?.line ? ' '} ")) + R1(y4(" #{o.hdr ? o.pop} ")) + R2(y7(" #{o.msg} "))
+        if globalThis.process
+            error B3(b7(" #{tokens?[0]?.line ? ' '} ")) + R1(y4(" #{o.hdr ? o.pop} ")) + R2(y7(" #{o.msg} "))
+        else
+            error " #{tokens?[0]?.line ? ' '} " + " #{o.hdr ? o.pop} " + " #{o.msg} "
         null
         
 export Parser
