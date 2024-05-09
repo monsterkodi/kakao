@@ -27,13 +27,7 @@ use .. ◆ pepe
         pepe "A ({ B }) C" ▸ [ 'A ' {start:'(' content:[ start:'{' content:[' B '] end:'}'] end: ')'} ' C' ]
         pepe "A ({[B]}) C" ▸ [ 'A ' {start:'(' content:[ start:'{' content:[start:'[' content:['B'] end:']'] end:'}'] end: ')'} ' C' ]
         pepe "A [[[B]]] C" ▸ [ 'A ' {start:'[' content:[ start:'[' content:[start:'[' content:['B'] end:']'] end:']'] end: ']'} ' C' ]
-        
-    ▸ strings
-    
-        pepe "''"          ▸ [ start:"'" content:[],     end:"'" ]
-        # pepe "'x'"         ▸ [ start:"'" content:['x'],  end:"'" ]
-        # pepe "'()'"        ▸ [ start:"'" content:['()'], end:"'" ]
-        
+                
     ▸ unbalanced
     
         pepe "("          ▸ unbalanced: [{content:[]},    {start:'(' content:[]}]
@@ -51,4 +45,23 @@ use .. ◆ pepe
         pepe "(]"         ▸ mismatch: [{content:[]}, {start:'(' content:[]}], tail:']'
         pepe "(]xxx"      ▸ mismatch: [{content:[]}, {start:'(' content:[]}], tail:']xxx' 
         pepe "(xxx]"      ▸ mismatch: [{content:[]}, {start:'(' content:['xxx']}], tail:']' 
+        
+    ▸ strings
+    
+        pepe "''"         ▸ [ start:"'" content:[],     end:"'" ]
+        pepe "'x'"        ▸ [ start:"'" content:['x'],  end:"'" ]
+        
+        pepe "'"          ▸ unbalanced: [{content:[]}, {start:"'" content:[]}]
+        pepe '"'          ▸ unbalanced: [{content:[]}, {start:'"' content:[]}]
+        
+        pepe "'()'"       ▸ [ start:"'" content:['()'],  end:"'" ]
+        pepe "'(]}'"      ▸ [ start:"'" content:['(]}'], end:"'" ]
+        pepe "'\"'"       ▸ [ start:"'" content:['"'],   end:"'" ]
+        pepe "'\"\"\"'"   ▸ [ start:"'" content:['"""'], end:"'" ]
+        
+    ▸ depepe
+        
+        cb = s -> s.toLowerCase()
+        pepe.depepe pepe("A ( B ) C"  ), cb ▸ "a ( b ) c"
+        pepe.depepe pepe("A ({ B }) C"), cb ▸ "a ({ b }) c"
         

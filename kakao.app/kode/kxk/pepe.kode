@@ -6,7 +6,7 @@
     000        00000000  000        00000000
     
     takes a string and returns a tree of 
-    delimited ranges:
+    delimited substrings:
         
     "some ( nested [ stuff ] har ) har"
     
@@ -26,14 +26,16 @@
         end: ')'
         ' har'
     ]
+    
+    returns an array on success
+    returns an object on mismatched or unbalanced input
+    delimiter pairs with start == end don't nest and consume any content until closed
 ###
 
 pepe = str delimiters=[['"''"'], ["'""'"], ['('')'], ['['']'], ['{''}']] ->
     
     ⮐ []   if not str is str
     ⮐ [''] if empty str
-    
-    # log '\npepe' R2 str
     
     starts = delimiters.map (d) -> d[0]
     ends   = delimiters.map (d) -> d[1]
@@ -53,31 +55,35 @@ pepe = str delimiters=[['"''"'], ["'""'"], ['('')'], ['['']'], ['{''}']] ->
         for start in starts
             if next.startsWith start
                 if start == pairs[last(stack).start]
-                    # log 'bail close'
+                    break
+                if last(stack).start and pairs[last(stack).start] == last(stack).start
                     break
                 last(stack).content.push str[lp...p] if lp != p
-                # log 'push' b5(last(stack).start), g5(pairs[last(stack).start])
-                # log 'stck' b3 noon stack
                 stack.push start:start, content:[]
-                # last(stack).content.push start:start, content:[]
                 p += start.length
                 lp = p
-                # log 'push' r4 noon stack
                 break
-                
-        for end in ends
-            if next.startsWith end
-                last(stack).content.push str[lp...p] if lp != p
-                if end == pairs[last(stack).start]
-                    last(stack).end = end
-                    popped = stack.pop()
-                    last(stack).content.push popped
-                    p += end.length
-                    lp = p
-                else
-                    r = mismatch:stack, tail:str[p...str.length]
-                    ⮐ r
-                break
+
+        if p == op
+            for end in ends
+                if next.startsWith end
+                    last(stack).content.push str[lp...p] if lp != p
+                    if end == pairs[last(stack).start]
+                        last(stack).end = end
+                        popped = stack.pop()
+                        last(stack).content.push popped
+                        p += end.length
+                        lp = p
+                    else
+                        if last(stack).start and pairs[last(stack).start] == last(stack).start
+                            cnt = last(stack).content.pop()
+                            cnt ?= ''
+                            last(stack).content.push cnt + end
+                            p += end.length
+                            lp = p
+                            break
+                        ⮐ mismatch:stack, tail:str[p...str.length]
+                    break
                 
         if p == op
             p += 1  
@@ -89,5 +95,35 @@ pepe = str delimiters=[['"''"'], ["'""'"], ['('')'], ['['']'], ['{''}']] ->
             
     last(stack).content.push str[lp...p] if lp != p
     last(stack).content
+    
+###
+    0000000    00000000  00000000   00000000  00000000   00000000  
+    000   000  000       000   000  000       000   000  000       
+    000   000  0000000   00000000   0000000   00000000   0000000   
+    000   000  000       000        000       000        000       
+    0000000    00000000  000        00000000  000        00000000  
+    
+    traverses the output of pepe and calls a callback for each chunk
+    returns the joined string
+###
+
+depepe = pep cb ->
+    
+    r = ''
+    
+    # log 'depepe' pep
+    
+    for p in pep
+        if p is str
+            # r += cb p
+            r += p
+        else
+            r += p.start
+            r += cb depepe p.content, cb
+            r += p.end
+    # log 'depeped' r
+    r
+    
+pepe.depepe = depepe
 
 export pepe

@@ -1,0 +1,52 @@
+###
+     0000000   0000000   0000000    0000000   000000000  00000000  00000000 
+    000       000       000   000  000   000     000     000       000   000
+    0000000   000       000   000  000   000     000     0000000   0000000  
+         000  000       000   000  000   000     000     000       000   000
+    0000000    0000000   0000000    0000000      000     00000000  000   000
+    
+    takes a string and evaluates it as a math expression
+###
+
+use ◆ pepe
+use ../kode/kode
+
+pow = str ->
+    
+    splt = str.split '^'
+    if splt.length > 1
+        # log 'pow!' splt
+        str = "pow(#{splt[0]}, #{pow splt[1..].join '^'})"
+    str
+    
+build = str ->
+    
+    pep = pepe str
+    
+    if pep.length > 1 or not pep[0] is str
+        # log 'pep!' pep
+        dep = pepe.depepe pep, build
+        # log 'dep' dep
+        str = dep        
+    
+    str = pow str
+    str
+
+scooter = str ->
+    
+    str = str.replace /log\(/g, 'Math.log('
+    
+    b = """
+        {PI, E, sqrt, pow, cos, sin, tan, acos, asin, atan} = Math
+        rad = d -> PI*d/180.0
+        deg = r -> r*180.0/PI
+        
+        """
+    b += '(' + build(str) + ')'
+    
+    k = new kode
+    r = k.eval b
+    log b5(str), r3(b), g5 r
+    r
+
+export scooter

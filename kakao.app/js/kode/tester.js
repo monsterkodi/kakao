@@ -91,7 +91,6 @@ class Tester
             sameVals = this.sameObjects(Object.values(a),Object.values(b))
             return sameKeys && sameVals
         }
-        console.log('ever reaching this?')
         return a === b
     }
 
@@ -187,9 +186,9 @@ class Tester
         var fail, summary
 
         var list = _k_.list(allfails)
-        for (var _174_17_ = 0; _174_17_ < list.length; _174_17_++)
+        for (var _173_17_ = 0; _173_17_ < list.length; _173_17_++)
         {
-            fail = list[_174_17_]
+            fail = list[_173_17_]
             console.log(_k_.R2(_k_.y5(' ' + fail.stack[0] + ' ')) + _k_.R1(_k_.y5(' ' + fail.stack.slice(1).join(_k_.r3(' ▸ ')) + ' ')))
             console.log(_k_.r5(this.showSpace(fail.lhs)))
             console.log(_k_.R1(_k_.r3(' ▸ ')))
@@ -223,7 +222,7 @@ class Tester
         split = ('' + s).split('\n')
         l = 0
         split = (function (o) {
-            var r_209_22_ = _k_.each_r(o)
+            var r_208_22_ = _k_.each_r(o)
             for (var k in o)
             {   
                 var m = (function (v)
@@ -235,10 +234,10 @@ class Tester
             })(o[k])
                 if (m != null)
                 {
-                    r_209_22_[k] = m
+                    r_208_22_[k] = m
                 }
             }
-            return typeof o == 'string' ? r_209_22_.join('') : r_209_22_
+            return typeof o == 'string' ? r_208_22_.join('') : r_208_22_
         })(split)
         split = split.filter(function (s)
         {
@@ -255,9 +254,9 @@ if (((globalThis.process != null ? globalThis.process.argv : undefined) != null)
     files = await fs.list(slash.path(_k_.dir(),'test'))
     fail = false
     var list = _k_.list(files)
-for (var _228_13_ = 0; _228_13_ < list.length; _228_13_++)
+for (var _227_13_ = 0; _227_13_ < list.length; _227_13_++)
 {
-    file = list[_228_13_]
+    file = list[_227_13_]
     if (slash.name(file.path) === 'utils')
     {
         continue

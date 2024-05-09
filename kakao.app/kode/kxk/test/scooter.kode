@@ -1,0 +1,67 @@
+###
+ 0000000   0000000   0000000    0000000   000000000  00000000  00000000 
+000       000       000   000  000   000     000     000       000   000
+0000000   000       000   000  000   000     000     0000000   0000000  
+     000  000       000   000  000   000     000     000       000   000
+0000000    0000000   0000000    0000000      000     00000000  000   000
+###
+
+use .. ◆ scooter
+
+▸ scooter
+
+    ▸ add
+    
+        scooter '1+1'           ▸ 2
+        scooter '0+0'           ▸ 0
+        scooter '+2'            ▸ 2
+        scooter '-3'            ▸ -3
+            
+    ▸ multiply    
+            
+        scooter '9*9'           ▸ 81    
+        scooter '9*-3'          ▸ -27
+        scooter '-2*-2'         ▸ 4
+        scooter '3*3*3'         ▸ 27    
+        scooter '1/0'           ▸ Infinity
+        scooter '0/0'           ▸ NaN
+        scooter '1/Infinity'    ▸ 0
+            
+    ▸ pow    
+    
+        scooter '2^2'           ▸ 4
+        scooter '2^-2'          ▸ 0.25
+        scooter '2^0.5'         ▸ Math.sqrt 2
+              
+        scooter '2^2^2'         ▸ 16
+        scooter '2^3^4'         ▸ Math.pow(2, Math.pow(3, 4))
+        scooter '2^(3^4)'       ▸ Math.pow(2, Math.pow(3, 4))
+        scooter '(2^3)^4'       ▸ 4096
+        
+    ▸ trigonometry
+
+        scooter 'PI'            ▸ Math.PI
+        scooter 'E'             ▸ Math.E
+        scooter 'cos(PI)'       ▸ -1
+        scooter 'sin(PI/2)'     ▸ 1
+        scooter 'cos(sin(PI))'  ▸ 1
+        
+    ▸ logarithm
+        
+        scooter 'log(E)'        ▸ 1
+        scooter 'log(0)'        ▸ -Infinity
+        scooter 'log(-1)'       ▸ NaN
+        scooter 'log(10)'       ▸ Math.log 10
+        
+    ▸ degrees
+        
+        scooter 'rad(180)'      ▸ Math.PI
+        scooter 'deg(PI)'       ▸ 180
+        
+    ▸ sqrt
+        
+        scooter 'sqrt(9)'       ▸ 3     
+        scooter 'sqrt(8+1)'     ▸ 3 
+        
+    
+        

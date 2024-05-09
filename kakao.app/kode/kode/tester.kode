@@ -58,37 +58,36 @@ class Tester
         if 
             Object.is a, b # simple types
                 
-                return true
+                ⮐ true
                 
             typeof a != typeof b # types differ
                 
-                return false
+                ⮐ false
             
             a is arr and b is arr
                 
                 if a.length != b.length 
-                    return false
+                    ⮐ false
                 for i in 0...a.length
                     if not @sameObjects a[i], b[i]
-                        return false
-                return true
+                        ⮐ false
+                ⮐ true
             
             a is str and b is str
                 
                 if a != b
                     log r5 @showSpace a
                     log g3 @showSpace b
-                    return false 
-                return true
+                    ⮐ false 
+                ⮐ true
             
             a is obj and b is obj
                 
                 sameKeys = @sameObjects Object.keys(a), Object.keys(b)
                 sameVals = @sameObjects Object.values(a), Object.values(b)
                 # log 'sameKeys sameVals' sameKeys and sameVals
-                return sameKeys and sameVals
+                ⮐ sameKeys and sameVals
         
-        log 'ever reaching this?'
         a == b
     
     compare: (a, b) =>

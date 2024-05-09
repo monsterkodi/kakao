@@ -1,6 +1,8 @@
 var toExport = {}
 var _k_
 
+var cb
+
 import pepe from "../pepe.js"
 
 toExport["pepe"] = function ()
@@ -23,10 +25,6 @@ toExport["pepe"] = function ()
         compare(pepe("A ({[B]}) C"),['A ',{start:'(',content:[{start:'{',content:[{start:'[',content:['B'],end:']'}],end:'}'}],end:')'},' C'])
         compare(pepe("A [[[B]]] C"),['A ',{start:'[',content:[{start:'[',content:[{start:'[',content:['B'],end:']'}],end:']'}],end:']'},' C'])
     })
-    section("strings", function ()
-    {
-        compare(pepe("''"),[{start:"'",content:[],end:"'"}])
-    })
     section("unbalanced", function ()
     {
         compare(pepe("("),{unbalanced:[{content:[]},{start:'(',content:[]}]})
@@ -44,6 +42,26 @@ toExport["pepe"] = function ()
         compare(pepe("(]"),{mismatch:[{content:[]},{start:'(',content:[]}],tail:']'})
         compare(pepe("(]xxx"),{mismatch:[{content:[]},{start:'(',content:[]}],tail:']xxx'})
         compare(pepe("(xxx]"),{mismatch:[{content:[]},{start:'(',content:['xxx']}],tail:']'})
+    })
+    section("strings", function ()
+    {
+        compare(pepe("''"),[{start:"'",content:[],end:"'"}])
+        compare(pepe("'x'"),[{start:"'",content:['x'],end:"'"}])
+        compare(pepe("'"),{unbalanced:[{content:[]},{start:"'",content:[]}]})
+        compare(pepe('"'),{unbalanced:[{content:[]},{start:'"',content:[]}]})
+        compare(pepe("'()'"),[{start:"'",content:['()'],end:"'"}])
+        compare(pepe("'(]}'"),[{start:"'",content:['(]}'],end:"'"}])
+        compare(pepe("'\"'"),[{start:"'",content:['"'],end:"'"}])
+        compare(pepe("'\"\"\"'"),[{start:"'",content:['"""'],end:"'"}])
+    })
+    section("depepe", function ()
+    {
+        cb = function (s)
+        {
+            return s.toLowerCase()
+        }
+        compare(pepe.depepe(pepe("A ( B ) C"),cb),"a ( b ) c")
+        compare(pepe.depepe(pepe("A ({ B }) C"),cb),"a ({ b }) c")
     })
 }
 toExport["pepe"]._section_ = true
