@@ -78,9 +78,9 @@ use .. ◆ scooter
         
         ▸ degree
         
-            scooter '180°'          ▸ Math.PI
-            scooter '(90+90)°'      ▸ Math.PI
-            scooter '(2*90)°'       ▸ Math.PI
-            scooter '2*90°'         ▸ Math.PI
-            scooter '90°+90°'       ▸ Math.PI
+            scooter '180°'      ▸ Math.PI
+            scooter '(90+90)°'  ▸ Math.PI
+            scooter '(2*90)°'   ▸ Math.PI
+            scooter '2*90°'     ▸ Math.PI
+            scooter '90°+90°'   ▸ Math.PI
     

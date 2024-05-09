@@ -71,33 +71,36 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
         }
         if (p === op)
         {
-            var list1 = _k_.list(ends)
-            for (var _69_20_ = 0; _69_20_ < list1.length; _69_20_++)
+            if (isGreedy() && !next.startsWith(pairs[_k_.last(stack).start]))
             {
-                end = list1[_69_20_]
-                if (next.startsWith(end))
+                contentPush()
+                cnt = _k_.last(stack).content.pop() || ''
+                _k_.last(stack).content.push(cnt + next[0])
+                advance(1)
+            }
+            else
+            {
+                var list1 = _k_.list(ends)
+                for (var _77_24_ = 0; _77_24_ < list1.length; _77_24_++)
                 {
-                    contentPush()
-                    if (end === pairs[_k_.last(stack).start])
+                    end = list1[_77_24_]
+                    if (next.startsWith(end))
                     {
-                        _k_.last(stack).end = end
-                        popped = stack.pop()
-                        _k_.last(stack).content.push(popped)
-                        advance(end.length)
-                    }
-                    else
-                    {
-                        if (isGreedy())
+                        if (end === pairs[_k_.last(stack).start])
                         {
-                            cnt = _k_.last(stack).content.pop()
-                            cnt = (cnt != null ? cnt : '')
-                            _k_.last(stack).content.push(cnt + end)
+                            contentPush()
+                            _k_.last(stack).end = end
+                            popped = stack.pop()
+                            _k_.last(stack).content.push(popped)
                             advance(end.length)
-                            break
                         }
-                        return {mismatch:stack,tail:str.slice(p, typeof str.length === 'number' ? str.length : -1)}
+                        else
+                        {
+                            contentPush()
+                            return {mismatch:stack,tail:str.slice(p, typeof str.length === 'number' ? str.length : -1)}
+                        }
+                        break
                     }
-                    break
                 }
             }
         }
@@ -125,9 +128,9 @@ pepe.depepe = function (pep, cb)
 
     r = ''
     var list = _k_.list(pep)
-    for (var _113_10_ = 0; _113_10_ < list.length; _113_10_++)
+    for (var _116_10_ = 0; _116_10_ < list.length; _116_10_++)
     {
-        p = list[_113_10_]
+        p = list[_116_10_]
         if (_k_.isStr(p))
         {
             r += p

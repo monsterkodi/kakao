@@ -66,23 +66,26 @@ pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
                 break
 
         if p == op
-            for end in ends
-                if next.startsWith end
-                    contentPush()
-                    if end == pairs[last(stack).start]
-                        last(stack).end = end
-                        popped = stack.pop()
-                        last(stack).content.push popped
-                        advance end.length
-                    else
-                        if isGreedy()
-                            cnt = last(stack).content.pop()
-                            cnt ?= ''
-                            last(stack).content.push cnt + end
+            
+            if isGreedy() and not next.startsWith pairs[last(stack).start]
+                contentPush()
+                cnt = last(stack).content.pop() or ''
+                last(stack).content.push cnt + next[0]
+                advance 1
+            else
+            
+                for end in ends
+                    if next.startsWith end
+                        if end == pairs[last(stack).start]
+                            contentPush()
+                            last(stack).end = end
+                            popped = stack.pop()
+                            last(stack).content.push popped
                             advance end.length
-                            break
-                        ⮐ mismatch:stack, tail:str[p...str.length]
-                    break
+                        else
+                            contentPush()
+                            ⮐ mismatch:stack, tail:str[p...str.length]
+                        break
                 
         if p == op
             p += 1  
