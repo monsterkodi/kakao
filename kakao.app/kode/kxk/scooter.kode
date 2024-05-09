@@ -15,8 +15,24 @@ pow = str ->
     
     splt = str.split '^'
     if splt.length > 1
-        # log 'pow!' splt
         str = "pow(#{splt[0]}, #{pow splt[1..].join '^'})"
+    str
+    
+deg = str ->
+    
+    splt = str.split '°'
+    if splt.length > 1
+        val = splt[0]
+        if val[0] == '(' and val[-1] == ')'
+            str = "rad#{val}" + deg splt[1..].join '°'
+        else
+            for i in val.length-1..0
+                if val[i] not in '0.123456789'
+                    pre  = val[0..i] 
+                    val = val[i+1..-1]
+                    break
+            pre ?= ''
+            str = pre + "rad(#{val})" + deg splt[1..].join '°'
     str
     
 build = str ->
@@ -24,29 +40,37 @@ build = str ->
     pep = pepe str
     
     if pep.length > 1 or not pep[0] is str
-        # log 'pep!' pep
         dep = pepe.depepe pep, build
-        # log 'dep' dep
         str = dep        
     
     str = pow str
+    str = deg str
     str
 
 scooter = str ->
     
+    ost = str
     str = str.replace /log\(/g, 'Math.log('
+    
+    str = str.replace /∡/,  'deg'
+    str = str.replace /√/g, 'sqrt'
+    str = str.replace /π/g, 'PI'
+    str = str.replace /ϕ/g, 'PHI'
+    str = str.replace /𝒆/g, 'E'
+    str = str.replace /∞/g, 'Infinity'
     
     b = """
         {PI, E, sqrt, pow, cos, sin, tan, acos, asin, atan} = Math
         rad = d -> PI*d/180.0
         deg = r -> r*180.0/PI
+        PHI = (1+sqrt(5))/2
         
         """
     b += '(' + build(str) + ')'
     
     k = new kode
     r = k.eval b
-    log b5(str), r3(b), g5 r
+    # log g2(ost), b5(str), r3(build(str)), g5 r
     r
 
 export scooter

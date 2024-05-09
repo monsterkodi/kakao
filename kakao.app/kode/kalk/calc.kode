@@ -21,7 +21,6 @@ class Calc
         expr = expr.replace /√/g, 'sqrt'
         expr = expr.replace /π/g, 'pi'
         expr = expr.replace /ϕ/g, 'phi'
-        # expr = expr.replace /ℇ/g, 'E'
         expr = expr.replace /𝒆/g, 'E'
         expr = expr.replace /∞/g, 'Infinity'
         expr = expr.replace /°/g, ' deg'
