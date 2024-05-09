@@ -45,8 +45,11 @@ pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
     delimiters.map (d) -> pairs[d[0]] = d[1]
     
     stack  = [content:[]]
-    p  = 0
-    lp = 0
+    p = lp = 0
+    
+    isGreedy    = -> last(stack).start and pairs[last(stack).start] == last(stack).start
+    contentPush = -> last(stack).content.push str[lp...p] if lp != p
+    advance     = -> lp = p += start.length 
     
     while p < str.length
         
@@ -55,33 +58,28 @@ pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
         
         for start in starts
             if next.startsWith start
-                if start == pairs[last(stack).start]
-                    break
-                if last(stack).start and pairs[last(stack).start] == last(stack).start
-                    break
-                last(stack).content.push str[lp...p] if lp != p
+                break if start == pairs[last(stack).start]
+                break if isGreedy()
+                contentPush()
                 stack.push start:start, content:[]
-                p += start.length
-                lp = p
+                advance start.length
                 break
 
         if p == op
             for end in ends
                 if next.startsWith end
-                    last(stack).content.push str[lp...p] if lp != p
+                    contentPush()
                     if end == pairs[last(stack).start]
                         last(stack).end = end
                         popped = stack.pop()
                         last(stack).content.push popped
-                        p += end.length
-                        lp = p
+                        advance end.length
                     else
-                        if last(stack).start and pairs[last(stack).start] == last(stack).start
+                        if isGreedy()
                             cnt = last(stack).content.pop()
                             cnt ?= ''
                             last(stack).content.push cnt + end
-                            p += end.length
-                            lp = p
+                            advance end.length
                             break
                         ⮐ mismatch:stack, tail:str[p...str.length]
                     break
@@ -94,7 +92,7 @@ pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
         r.tail = str[lp...p] if lp != p
         ⮐ r
             
-    last(stack).content.push str[lp...p] if lp != p
+    contentPush()
     last(stack).content
     
 ###

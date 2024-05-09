@@ -1,11 +1,11 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var pepe
 
 
 pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{','}']])
 {
-    var cnt, end, ends, lp, next, op, p, pairs, popped, r, stack, start, starts
+    var advance, cnt, contentPush, end, ends, isGreedy, lp, next, op, p, pairs, popped, r, stack, start, starts
 
     if (!(_k_.isStr(str)))
     {
@@ -29,33 +29,43 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
         return pairs[d[0]] = d[1]
     })
     stack = [{content:[]}]
-    p = 0
-    lp = 0
+    p = lp = 0
+    isGreedy = function ()
+    {
+        return _k_.last(stack).start && pairs[_k_.last(stack).start] === _k_.last(stack).start
+    }
+    contentPush = function ()
+    {
+        if (lp !== p)
+        {
+            return _k_.last(stack).content.push(str.slice(lp, typeof p === 'number' ? p : -1))
+        }
+    }
+    advance = function ()
+    {
+        return lp = p += start.length
+    }
     while (p < str.length)
     {
         next = str.slice(p)
         op = p
         var list = _k_.list(starts)
-        for (var _56_18_ = 0; _56_18_ < list.length; _56_18_++)
+        for (var _59_18_ = 0; _59_18_ < list.length; _59_18_++)
         {
-            start = list[_56_18_]
+            start = list[_59_18_]
             if (next.startsWith(start))
             {
                 if (start === pairs[_k_.last(stack).start])
                 {
                     break
                 }
-                if (_k_.last(stack).start && pairs[_k_.last(stack).start] === _k_.last(stack).start)
+                if (isGreedy())
                 {
                     break
                 }
-                if (lp !== p)
-                {
-                    _k_.last(stack).content.push(str.slice(lp, typeof p === 'number' ? p : -1))
-                }
+                contentPush()
                 stack.push({start:start,content:[]})
-                p += start.length
-                lp = p
+                advance(start.length)
                 break
             }
         }
@@ -67,27 +77,22 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
                 end = list1[_69_20_]
                 if (next.startsWith(end))
                 {
-                    if (lp !== p)
-                    {
-                        _k_.last(stack).content.push(str.slice(lp, typeof p === 'number' ? p : -1))
-                    }
+                    contentPush()
                     if (end === pairs[_k_.last(stack).start])
                     {
                         _k_.last(stack).end = end
                         popped = stack.pop()
                         _k_.last(stack).content.push(popped)
-                        p += end.length
-                        lp = p
+                        advance(end.length)
                     }
                     else
                     {
-                        if (_k_.last(stack).start && pairs[_k_.last(stack).start] === _k_.last(stack).start)
+                        if (isGreedy())
                         {
                             cnt = _k_.last(stack).content.pop()
                             cnt = (cnt != null ? cnt : '')
                             _k_.last(stack).content.push(cnt + end)
-                            p += end.length
-                            lp = p
+                            advance(end.length)
                             break
                         }
                         return {mismatch:stack,tail:str.slice(p, typeof str.length === 'number' ? str.length : -1)}
@@ -110,10 +115,7 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
         }
         return r
     }
-    if (lp !== p)
-    {
-        _k_.last(stack).content.push(str.slice(lp, typeof p === 'number' ? p : -1))
-    }
+    contentPush()
     return _k_.last(stack).content
 }
 
@@ -123,9 +125,9 @@ pepe.depepe = function (pep, cb)
 
     r = ''
     var list = _k_.list(pep)
-    for (var _115_10_ = 0; _115_10_ < list.length; _115_10_++)
+    for (var _113_10_ = 0; _113_10_ < list.length; _113_10_++)
     {
-        p = list[_115_10_]
+        p = list[_113_10_]
         if (_k_.isStr(p))
         {
             r += p

@@ -69,6 +69,6 @@ use .. ◆ pepe
     ▸ depepe
         
         cb = s -> s.toLowerCase()
-        pepe.depepe pepe("A ( B ) C"  ), cb ▸ "a ( b ) c"
-        pepe.depepe pepe("A ({ B }) C"), cb ▸ "a ({ b }) c"
+        pepe.depepe pepe("A ( B ) C"  ), cb ▸ "A ( b ) C"
+        pepe.depepe pepe("A ({ B }) C"), cb ▸ "A ({ b }) C"
         

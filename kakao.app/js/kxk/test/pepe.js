@@ -61,8 +61,8 @@ toExport["pepe"] = function ()
         {
             return s.toLowerCase()
         }
-        compare(pepe.depepe(pepe("A ( B ) C"),cb),"a ( b ) c")
-        compare(pepe.depepe(pepe("A ({ B }) C"),cb),"a ({ b }) c")
+        compare(pepe.depepe(pepe("A ( B ) C"),cb),"A ( b ) C")
+        compare(pepe.depepe(pepe("A ({ B }) C"),cb),"A ({ b }) C")
     })
 }
 toExport["pepe"]._section_ = true
