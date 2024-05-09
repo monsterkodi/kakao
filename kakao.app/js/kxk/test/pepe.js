@@ -53,6 +53,7 @@ toExport["pepe"] = function ()
         compare(pepe("'(]}'"),[{start:"'",content:['(]}'],end:"'"}])
         compare(pepe("'\"'"),[{start:"'",content:['"'],end:"'"}])
         compare(pepe("'\"\"\"'"),[{start:"'",content:['"""'],end:"'"}])
+        compare(pepe("str: '}])([{'"),['str: ',{start:"'",content:['}])([{'],end:"'"}])
     })
     section("depepe", function ()
     {

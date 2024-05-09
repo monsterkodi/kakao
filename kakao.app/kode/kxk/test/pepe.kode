@@ -59,6 +59,13 @@ use .. ◆ pepe
         pepe "'\"'"       ▸ [ start:"'" content:['"'],   end:"'" ]
         pepe "'\"\"\"'"   ▸ [ start:"'" content:['"""'], end:"'" ]
         
+        pepe "str: '}])([{'" ▸ [
+            'str: '
+            start: "'"
+            content: ['}])([{']
+            end: "'"
+        ]
+        
     ▸ depepe
         
         cb = s -> s.toLowerCase()

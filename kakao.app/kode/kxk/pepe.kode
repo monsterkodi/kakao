@@ -5,8 +5,8 @@
     000        000       000        000     
     000        00000000  000        00000000
     
-    takes a string and returns a tree of 
-    delimited substrings:
+    takes a string and a list of delimiter pairs
+    dissects the string into substrings:
         
     "some ( nested [ stuff ] har ) har"
     
@@ -14,25 +14,26 @@
     
     [
         'some '
-        start: '(' 
-        content: 
-        [ 
-            ' nested '
-            start: '['
-            content: [' stuff ']
-            end: ']'
-            ' har '
-        ]
-        end: ')'
+        start:'(' content:[' nested ' {start:'[' content:[' stuff '] end:']'} ' har '] end:')'
         ' har'
+    ]
+    
+    delimiter pairs with start == end don't nest and consume any content until closed:
+        
+    "str '}])([{'"
+    
+    ▸ 
+    
+    [
+        'str ' 
+        start:"'" content:['}])([{'] end:"'"
     ]
     
     returns an array on success
     returns an object on mismatched or unbalanced input
-    delimiter pairs with start == end don't nest and consume any content until closed
 ###
 
-pepe = str delimiters=[['"''"'], ["'""'"], ['('')'], ['['']'], ['{''}']] ->
+pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
     
     ⮐ []   if not str is str
     ⮐ [''] if empty str
@@ -103,27 +104,21 @@ pepe = str delimiters=[['"''"'], ["'""'"], ['('')'], ['['']'], ['{''}']] ->
     000   000  000       000        000       000        000       
     0000000    00000000  000        00000000  000        00000000  
     
-    traverses the output of pepe and calls a callback for each chunk
-    returns the joined string
+    traverses the output of pepe and calls a callback for each substring
+    returns the joined substrings with the delimiter pairs reinserted
 ###
 
-depepe = pep cb ->
+pepe.depepe = pep cb ->
     
     r = ''
     
-    # log 'depepe' pep
-    
     for p in pep
         if p is str
-            # r += cb p
             r += p
         else
             r += p.start
-            r += cb depepe p.content, cb
+            r += cb pepe.depepe p.content, cb
             r += p.end
-    # log 'depeped' r
     r
     
-pepe.depepe = depepe
-
 export pepe
