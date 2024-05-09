@@ -9,6 +9,7 @@ let win = kxk.win
 let post = kxk.post
 let stopEvent = kxk.stopEvent
 
+import symbol from "./symbol.js"
 import keys from "./keys.js"
 import input from "./input.js"
 import sheet from "./sheet.js"

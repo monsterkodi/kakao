@@ -21,9 +21,12 @@ class Calc
         expr = expr.replace /√/g, 'sqrt'
         expr = expr.replace /π/g, 'pi'
         expr = expr.replace /ϕ/g, 'phi'
-        expr = expr.replace /ℇ/g, 'E'
+        # expr = expr.replace /ℇ/g, 'E'
+        expr = expr.replace /𝒆/g, 'E'
         expr = expr.replace /∞/g, 'Infinity'
         expr = expr.replace /°/g, ' deg'
+        
+        log 'eval' expr
         
         evl  = math.evaluate expr
         if evl.value?
@@ -38,7 +41,7 @@ class Calc
         expr = expr.replace /\(180\/pi\)\*/, '∡'
         expr = expr.replace /sqrt/g, '√'
         expr = expr.replace /pi/g, 'π'
-        expr = expr.replace /E/g, 'ℇ'
+        expr = expr.replace /E/g, symbol.euler
         expr = expr.replace /phi/g, 'ϕ'
         expr = expr.replace /Infinity/g, '∞'
         expr = expr.replace /deg/g, '°'
@@ -53,22 +56,22 @@ class Calc
         
         switch key
             
-            'sin' 'cos' 'tan' '√' 'deg' 'rad' 'exp' 'log'
+            'sin' 'cos' 'tan' 'atan' symbol.sqrt, 'deg' 'rad' symbol.exp, 'log'
 
                 if not empty(txt) and text.endsWithValue(txt) 
                     txt = @calc key + '(' + txt
                 else if not text.endsWith(txt, ['.'])
                     txt += key + '('
                     
-            '°'     ➜ txt += key if text.endsWithNumber(txt)
-            '='     ➜ txt = @calc txt
-            '1/x'   ➜ txt = @calc '1/(' + txt + ')'
-            '∡'     ➜ txt = @calc '∡(' + txt + ')'
-            '+' '-' ➜ txt += key if not text.endsWith txt, ['+' '-' '.']
-            '.'     ➜ txt += key if text.endsWithNumber(txt) and not text.endsWithFloat(txt)
-            'π' 'ℇ' ➜ txt += key if not text.endsWithConstant(txt)
-            '('     ➜ txt += key if not text.endsWithUnfinished(txt) and not text.endsWithConstant(txt)
-            ')'     ➜ txt += key if not text.endsWithUnfinished(txt) and text.balance(txt) > 0
+            '°'               ➜ txt += key if text.endsWithNumber(txt)
+            '='               ➜ txt = @calc txt
+            symbol.oneoverx   ➜ txt = @calc '1/(' + txt + ')'
+            '∡'               ➜ txt = @calc '∡(' + txt + ')'
+            '+' '-'           ➜ txt += key if not text.endsWith txt, ['+' '-' '.']
+            '.'               ➜ txt += key if text.endsWithNumber(txt) and not text.endsWithFloat(txt)
+            'π', symbol.euler ➜ txt += key if not text.endsWithConstant(txt)
+            '('               ➜ txt += key if not text.endsWithUnfinished(txt) and not text.endsWithConstant(txt)
+            ')'               ➜ txt += key if not text.endsWithUnfinished(txt) and text.balance(txt) > 0
             ➜
                 if key in text.unfinished
                     if not empty txt
@@ -76,6 +79,8 @@ class Calc
                             txt += key
                 else if not text.endsWithConstant(txt)
                     txt = text.removeZeroInfinity(txt) + key
+                    
+        log 'txtKey' txt, key
         txt
 
 export Calc

@@ -108,7 +108,7 @@ span.complex
 {
     z-index: 1000;
     color: #444;
-    border: 1px solid #080808;
+    border: 2px solid #080808;
 }
 
 .key:hover
@@ -119,5 +119,5 @@ span.complex
 
 .key:active
 {
-    background: #b00;
+    background: #181818;
 }

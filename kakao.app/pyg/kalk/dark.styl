@@ -12,10 +12,10 @@
 bgColor             = #131313
 keyColor            = #0b0b0b
 keyHoverColor       = #000
+keyActiveColor      = #181818   
 frameColor          = #080808
 inputColor          = #181818
 
-scrollHoverColor    = #b00
 titleRedColor       = #f00
 titleColor          = #333
 scrollColor         = #444
@@ -84,11 +84,11 @@ span
 .key
     z-index             1000
     color               scrollColor
-    border              1px solid frameColor
+    border              2px solid frameColor
     &:hover
         background      keyHoverColor
         color           textFocusColor
     &:active
-        background      scrollHoverColor
+        background      keyActiveColor
 
     

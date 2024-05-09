@@ -8,7 +8,7 @@
 
 use ../kakao
 use ../kxk ▪ win post stopEvent
-use ◆ keys input sheet
+use ◆ symbol keys input sheet 
 
 function Delegate extends win.Delegate
     

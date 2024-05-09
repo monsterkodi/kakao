@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
 class Text
 {
@@ -53,9 +53,35 @@ class Text
 
     static numbers = ['0','1','2','3','4','5','6','7','8','9']
 
-    static constants = ['ℇ','π','ϕ','°']
+    static constants = [symbol.euler,'π','ϕ','°']
 
     static unfinished = ['.','+','-','/','*','^','(']
+
+    static endsWith (txt, chars)
+    {
+        var c
+
+        console.log('endsWith',txt,chars)
+        if (_k_.empty(txt))
+        {
+            return false
+        }
+        if (!(_k_.isStr(txt)))
+        {
+            return false
+        }
+        var list = _k_.list(chars)
+        for (var _47_14_ = 0; _47_14_ < list.length; _47_14_++)
+        {
+            c = list[_47_14_]
+            if (txt.endsWith(c))
+            {
+                console.log('yes',txt,c)
+                return true
+            }
+        }
+        return false
+    }
 
     static popChar (txt)
     {
@@ -65,11 +91,6 @@ class Text
     static isInteger (txt)
     {
         return /\d+/.test(txt)
-    }
-
-    static endsWith (txt, chars)
-    {
-        return txt.length && _k_.in(txt[txt.length - 1],chars)
     }
 
     static endsWithFloat (txt)

@@ -7,22 +7,27 @@ class Color
 {
     constructor ()
     {
+        var cfg
+
         this.colorize = this.colorize.bind(this)
-        this.config = matchr.config({'=':'equals','e[-+]':'exponent','[\\.]':'dot','[\\(\\)]':'bracket','\\d+':'digit','°':'digit','i':'complex','(sin|cos|tan|exp|log)':'function','NaN':'nan','[πℇx∞ϕ]':'constant','[∡√^]':'op0','[*/]':'op1','[+-]':'dot'})
+        cfg = {'=':'equals','e[-+]':'exponent','[\\.]':'dot','[\\(\\)]':'bracket','\\d+':'digit','°':'digit','i':'complex','(sin|cos|a?tan|exp|log)':'function','NaN':'nan','[πx∞ϕ]':'constant','[∡√^]':'op0','[*/]':'op1','[+-]':'dot'}
+        cfg[symbol.euler] = 'constant'
+        this.config = matchr.config(cfg)
     }
 
     colorize (text)
     {
-        var clss, colorized, index, rng, rngs, _42_29_
+        var clss, colorized, index, rng, rngs, _48_29_
 
+        console.log('text',text,this.config)
         rngs = matchr.ranges(this.config,text)
         console.log('rngs',rngs)
         colorized = ''
         index = 0
         var list = _k_.list(rngs)
-        for (var _36_16_ = 0; _36_16_ < list.length; _36_16_++)
+        for (var _42_16_ = 0; _42_16_ < list.length; _42_16_++)
         {
-            rng = list[_36_16_]
+            rng = list[_42_16_]
             while (index < rng.start)
             {
                 index += 1
@@ -32,7 +37,7 @@ class Color
             {
                 continue
             }
-            clss = ((_42_29_=rng.value) != null ? _42_29_ : 'text')
+            clss = ((_48_29_=rng.value) != null ? _48_29_ : 'text')
             colorized += `<span class=\"${clss}\">${rng.match}</span>`
             index = rng.start + rng.match.length
         }

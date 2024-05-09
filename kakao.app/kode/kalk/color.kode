@@ -12,7 +12,7 @@ class Color
 
     @: ->
         
-        @config = matchr.config 
+        cfg = 
             '=': 'equals'
             'e[-+]': 'exponent'
             '[\\.]': 'dot'
@@ -20,16 +20,22 @@ class Color
             '\\d+': 'digit' 
             '°': 'digit' 
             'i': 'complex'
-            '(sin|cos|tan|exp|log)': 'function'
+            '(sin|cos|a?tan|exp|log)': 'function'
             'NaN': 'nan'
-            '[πℇx∞ϕ]': 'constant'
-            '[∡√^]': 'op0'
+            '[πx∞ϕ]': 'constant'
+            '[∡√^]': 'op0'
             '[*/]': 'op1'
             '[+-]': 'dot'
+            
+        cfg[symbol.euler] = 'constant'
+            
+        @config = matchr.config cfg
     
     colorize: text => 
-    
+        
+        log 'text' text, @config
         rngs = matchr.ranges @config, text
+                
         log 'rngs' rngs
         colorized = ''
         index = 0

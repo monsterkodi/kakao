@@ -43,10 +43,10 @@ class Keys
         
     numberKeys: ->
                 
-        @setKeys 'numbers' [
+        @setKeys 'numbers' [ # ▾ style
             @row [
                     @key 'c' 'tall'
-                    @key '√' 'op0'
+                    @key symbol.sqrt, 'op0'
                     @key '^' 'op0'
                     @key '/' 'op1'
                     @key '*' 'op1'
@@ -58,7 +58,7 @@ class Keys
                     @key '-' 'dot'
                 ]
             @row [
-                    @key '⌫'
+                    @key symbol.backspace
                     @key '4' 'digit'
                     @key '5' 'digit'
                     @key '6' 'digit'
@@ -79,13 +79,13 @@ class Keys
     
     functionKeys: ->
         
-        @setKeys 'functions' [
+        @setKeys 'functions' [ # ▾ style
             @row [
-                    @key 'c' 'tall'
-                    @key '√' 'op0'
-                    @key '^' 'op0'
-                    @key '/' 'op1'
-                    @key '*' 'op1'
+                    @key 'c'  'tall'
+                    @key symbol.sqrt,     'op0'
+                    @key symbol.exp,      'op0'
+                    @key symbol.oneoverx, 'op1'
+                    @key '*'  'op1'
                 ]
             @row [
                     @key 'sin' 'function'
@@ -94,15 +94,15 @@ class Keys
                     @key '-'   'dot'
                 ]
             @row [
-                    @key '⌫'
+                    @key symbol.backspace
                     @key 'tan' 'function'
                     @key 'log' 'function'
-                    @key 'ℇ'   'constant'
+                    @key symbol.euler, 'constant'
                     @key '+'   'dot'
                 ]
             @row [
                     @key 'ℵ'   'tall bottom digit'
-                    @key '1/x' 'op1'
+                    @key 'atan' 'op1'
                     @key '∡'   'op1'
                     @key 'ϕ'   'constant'
                     @key '='   'tall bottom equals'
@@ -130,14 +130,14 @@ class Keys
             'tab'                     ➜ ⮐ stopEvent event, @toggleKeys()
             '/' '*' '+' '-' '=' '.'   ➜ ⮐ post.emit 'button' combo
             'enter'                   ➜ ⮐ post.emit 'button' '='
-            'backspace'               ➜ ⮐ post.emit 'button' '⌫'
+            'backspace'               ➜ ⮐ post.emit 'button' symbol.backspace
             'delete' 'esc'            ➜ ⮐ post.emit 'button' 'c'
             'shift+8'                 ➜ ⮐ post.emit 'button' '*'
             'shift+6'                 ➜ ⮐ post.emit 'button' '^'
             'shift+='                 ➜ ⮐ post.emit 'button' '+'
             'shift+9'                 ➜ ⮐ post.emit 'button' '('
             'shift+0'                 ➜ ⮐ post.emit 'button' ')'
-            'e'                       ➜ ⮐ post.emit 'button' 'ℇ'
+            'e'                       ➜ ⮐ post.emit 'button' symbol.euler
             'c'                       ➜ ⮐ post.emit 'button' 'c'
             'p'                       ➜ ⮐ post.emit 'button' 'π'
             's'                       ➜ ⮐ post.emit 'button' 'sin'
@@ -145,10 +145,10 @@ class Keys
             'shift+c'                 ➜ ⮐ post.emit 'button' 'cos'
             't'                       ➜ ⮐ post.emit 'button' 'tan'
             'd'                       ➜ ⮐ post.emit 'button' '°'
-            'r'                       ➜ ⮐ post.emit 'button' '√'
+            'r'                       ➜ ⮐ post.emit 'button' symbol.sqrt
             'l'                       ➜ ⮐ post.emit 'button' 'log'
-            'x'                       ➜ ⮐ post.emit 'button' 'exp' # eˣ
-            'i'                       ➜ ⮐ post.emit 'button' '1/x'
+            'x'                       ➜ ⮐ post.emit 'button' symbol.exp # eˣ
+            'i'                       ➜ ⮐ post.emit 'button' symbol.oneoverx
             'num lock'                ➜ ⮐ stopEvent event, post.emit 'button' 'c'
             
         if combo.startsWith 'numpad'

@@ -10,7 +10,7 @@ class Calc
 {
     static calc (expr)
     {
-        var evl, val, _29_20_, _31_28_
+        var evl, val, _32_20_, _34_28_
 
         if (_k_.empty(expr))
         {
@@ -21,9 +21,10 @@ class Calc
         expr = expr.replace(/√/g,'sqrt')
         expr = expr.replace(/π/g,'pi')
         expr = expr.replace(/ϕ/g,'phi')
-        expr = expr.replace(/ℇ/g,'E')
+        expr = expr.replace(/𝒆/g,'E')
         expr = expr.replace(/∞/g,'Infinity')
         expr = expr.replace(/°/g,' deg')
+        console.log('eval',expr)
         evl = math.evaluate(expr)
         if ((evl.value != null))
         {
@@ -41,7 +42,7 @@ class Calc
         expr = expr.replace(/\(180\/pi\)\*/,'∡')
         expr = expr.replace(/sqrt/g,'√')
         expr = expr.replace(/pi/g,'π')
-        expr = expr.replace(/E/g,'ℇ')
+        expr = expr.replace(/E/g,symbol.euler)
         expr = expr.replace(/phi/g,'ϕ')
         expr = expr.replace(/Infinity/g,'∞')
         expr = expr.replace(/deg/g,'°')
@@ -60,10 +61,11 @@ class Calc
             case 'sin':
             case 'cos':
             case 'tan':
-            case '√':
+            case 'atan':
+            case symbol.sqrt:
             case 'deg':
             case 'rad':
-            case 'exp':
+            case symbol.exp:
             case 'log':
                 if (!_k_.empty((txt)) && text.endsWithValue(txt))
                 {
@@ -83,7 +85,7 @@ class Calc
             case '=':
                 txt = this.calc(txt)
                 break
-            case '1/x':
+            case symbol.oneoverx:
                 txt = this.calc('1/(' + txt + ')')
                 break
             case '∡':
@@ -103,7 +105,7 @@ class Calc
                 }
                 break
             case 'π':
-            case 'ℇ':
+            case symbol.euler:
                 if (!text.endsWithConstant(txt))
                 {
                     txt += key
@@ -138,6 +140,7 @@ class Calc
             }
         }
 
+        console.log('txtKey',txt,key)
         return txt
     }
 }

@@ -49,9 +49,9 @@ class Input
     onButton: key =>
         
         switch key
+            symbol.backspace ➜ @backspace()
             'ƒ' ➜ post.emit 'keys' 'functions'
             'ℵ' ➜ post.emit 'keys' 'numbers'
-            '⌫' ➜ @backspace()
             'c' ➜ @clear()
                 ➜
                     if key in '()' ➜ @forceBracket = true

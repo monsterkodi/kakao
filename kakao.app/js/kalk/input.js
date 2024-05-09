@@ -94,14 +94,14 @@ class Input
     {
         switch (key)
         {
+            case symbol.backspace:
+                return this.backspace()
+
             case 'ƒ':
                 return post.emit('keys','functions')
 
             case 'ℵ':
                 return post.emit('keys','numbers')
-
-            case '⌫':
-                return this.backspace()
 
             case 'c':
                 return this.clear()

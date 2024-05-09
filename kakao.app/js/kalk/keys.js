@@ -81,12 +81,12 @@ class Keys
 
     numberKeys ()
     {
-        return this.setKeys('numbers',[this.row([this.key('c','tall'),this.key('√','op0'),this.key('^','op0'),this.key('/','op1'),this.key('*','op1')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key('⌫'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom function'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
+        return this.setKeys('numbers',[this.row([this.key('c','tall'),this.key(symbol.sqrt,'op0'),this.key('^','op0'),this.key('/','op1'),this.key('*','op1')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom function'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
     }
 
     functionKeys ()
     {
-        return this.setKeys('functions',[this.row([this.key('c','tall'),this.key('√','op0'),this.key('^','op0'),this.key('/','op1'),this.key('*','op1')]),this.row([this.key('sin','function'),this.key('cos','function'),this.key('π','constant'),this.key('-','dot')]),this.row([this.key('⌫'),this.key('tan','function'),this.key('log','function'),this.key('ℇ','constant'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('1/x','op1'),this.key('∡','op1'),this.key('ϕ','constant'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit'),this.key(')','bracket')])])
+        return this.setKeys('functions',[this.row([this.key('c','tall'),this.key(symbol.sqrt,'op0'),this.key(symbol.exp,'op0'),this.key(symbol.oneoverx,'op1'),this.key('*','op1')]),this.row([this.key('sin','function'),this.key('cos','function'),this.key('π','constant'),this.key('-','dot')]),this.row([this.key(symbol.backspace),this.key('tan','function'),this.key('log','function'),this.key(symbol.euler,'constant'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('atan','op1'),this.key('∡','op1'),this.key('ϕ','constant'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit'),this.key(')','bracket')])])
     }
 
     onButton (event)
@@ -118,7 +118,7 @@ class Keys
                 return post.emit('button','=')
 
             case 'backspace':
-                return post.emit('button','⌫')
+                return post.emit('button',symbol.backspace)
 
             case 'delete':
             case 'esc':
@@ -140,7 +140,7 @@ class Keys
                 return post.emit('button',')')
 
             case 'e':
-                return post.emit('button','ℇ')
+                return post.emit('button',symbol.euler)
 
             case 'c':
                 return post.emit('button','c')
@@ -162,16 +162,16 @@ class Keys
                 return post.emit('button','°')
 
             case 'r':
-                return post.emit('button','√')
+                return post.emit('button',symbol.sqrt)
 
             case 'l':
                 return post.emit('button','log')
 
             case 'x':
-                return post.emit('button','exp')
+                return post.emit('button',symbol.exp)
 
             case 'i':
-                return post.emit('button','1/x')
+                return post.emit('button',symbol.oneoverx)
 
             case 'num lock':
                 return stopEvent(event,post.emit('button','c'))
