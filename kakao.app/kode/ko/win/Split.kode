@@ -7,7 +7,6 @@
 ###
 
 use ../../kxk ▪ post $
-
 use ./flex/flex
 
 class Split
@@ -19,7 +18,7 @@ class Split
     # 000  000   000  000     000   
     
     @: ->
-
+        2+2
         @commandlineHeight = 30
         
         @elem        =$ 'split'
@@ -60,12 +59,13 @@ class Split
     # 0000000      000     000   000  0000000   000   000  
     
     stash: => 
-        
-        window.stash.set 'split|flex' @flex.getState()
-        window.stash.set 'split|browser' @flex.panes[0].div == @browser
+        stash.set 'split|flex'    @flex.getState()
+        stash.set 'split|browser' @flex.panes[0].div == @browser
+        log 'Split.stash' stash.get 'split'
         
     onStashLoaded: =>
 
+        log 'onStashLoaded' stash.get 'split|flex'
         if state = window.stash.get 'split|flex'
             @flex.restoreState state
             @emitSplit()
@@ -81,55 +81,71 @@ class Split
     # 000   000  000   000
     # 0000000     0000000 
     
-    do: (sentence) ->
+    do: sentence ->
         
         sentence = sentence.trim()
         ⮐ if not sentence.length
+        
         words  = sentence.split /\s+/
         action = words[0]
         what   = words[1]
+        
         switch action
+            
             'show'     ➜ ⮐ @show  what
             'focus'    ➜ ⮐ @focus what
             'half'     ➜ pos = @flex.size()/2
             'third'    ➜ pos = @flex.size()/3
             'quart'    ➜ pos = @flex.size()/4
             'maximize' 
+                
                 if what == 'editor'   ➜ ⮐ @maximizeEditor()
                 if what == 'terminal' ➜ ⮐ @maximizeTerminal()
                 delta =  @flex.size()
+                
             'minimize' 
+                
                 if what == 'editor'   ➜ ⮐ @minimizeEditor()
                 delta = -@flex.size()
+                
             'enlarge'
+                
                 if words[2] == 'by'
                     delta = parseInt words[3]
                 else
                     delta = parseInt 0.25 * @termEditHeight()
+                    
             'reduce'
+                
                 if words[2] == 'by'
                     delta = - parseInt words[3]
                 else
                     delta = - parseInt 0.25 * @termEditHeight()
+                    
             ➜ ⮐ error "Split.do -- unknown action '#{action}'"
                     
         switch what
+            
             'editor' 
+                
                 if delta? ➜ ⮐ @moveCommandLineBy -delta
                 if pos?   ➜ ⮐ @flex.moveHandleToPos @flex.handles[0], pos
+                    
             'terminal' 'browser' 'commandline'
+                
                 @raise what if what != 'commandline'
                 if delta? ➜ ⮐ @moveCommandLineBy delta
                 if pos?   ➜ ⮐ @flex.moveHandleToPos @flex.handles[0], pos
             ➜    
                 error "Split.do -- unhandled do command? #{sentence}?"
-
+                
     maximizeTerminal: -> 
         
         @focus 'terminal'
         @flex.expand 'terminal'
         @hideEditor()
         @flex.resized()
+        @stash()
 
     maximizeEditor: -> 
         
@@ -140,12 +156,14 @@ class Split
         else
             @hideCommandline()
         @flex.resized()
+        @stash()
         
     minimizeEditor: ->
         
         @showCommandline()
         @focus 'commandline'
         @flex.moveHandleToPos @flex.handles[1], @flex.size()
+        @stash()
                 
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -153,7 +171,7 @@ class Split
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
 
-    show: (n) ->
+    show: n ->
 
         switch n
             'terminal' 'browser' ➜ @raise n
@@ -168,6 +186,7 @@ class Split
                         
             'command' ➜ @flex.expand 'commandline'
             ➜ error "split.show -- unhandled: #{n}!"
+        @stash()
 
     hideEditor:   => @flex.collapse 'editor'
     hideTerminal: => @flex.collapse 'terminal'
@@ -178,7 +197,7 @@ class Split
     # 000   000  000   000  000       000  000       
     # 000   000  000   000  000  0000000   00000000  
 
-    swap: (old, nju) ->
+    swap: old nju ->
         
         if @flex.panes[0].div != nju
             nju.style.height   = "#{@flex.sizeOfPane 0}px"
@@ -186,7 +205,7 @@ class Split
             nju.style.display  = 'block'
             @flex.panes[0].div = nju
 
-    raise: (n) ->
+    raise: n ->
 
         switch n
             'terminal' ➜ @swap @browser, @terminal
@@ -207,7 +226,7 @@ class Split
     # 000       000   000  000 0 000  000 0 000  000   000  000  0000  000   000  000      000  000  0000  000     
     #  0000000   0000000   000   000  000   000  000   000  000   000  0000000    0000000  000  000   000  00000000
     
-    moveCommandLineBy: (delta) ->
+    moveCommandLineBy: deta ->
         
         @flex.moveHandle index:1 pos:@flex.posOfHandle(1) + delta
         
@@ -230,7 +249,7 @@ class Split
     # 000       000   000  000       000   000       000
     # 000        0000000    0000000   0000000   0000000 
     
-    focus: (n) ->
+    focus: n ->
         
         n = 'commandline-editor' if n == 'commandline'
         if n == '.' or not $(n)?
@@ -269,13 +288,12 @@ class Split
     
     elemHeight: -> @elem.getBoundingClientRect().height - @flex.handleSize
     
-    splitPosY:  (i) -> @flex.posOfHandle i
+    splitPosY:    i -> @flex.posOfHandle i
     terminalHeight: -> @flex.sizeOfPane 0
     editorHeight:   -> @flex.sizeOfPane 2
     termEditHeight: -> @terminalHeight() + @commandlineHeight + @editorHeight()
         
     commandlineVisible: -> not @flex.isCollapsed 'commandline'
-    # terminalVisible:    -> not @flex.isCollapsed('terminal') and @terminalHeight() > 0
     editorMaximized:    -> @flex.isCollapsed('terminal') or @terminalHeight() <= 0
     editorVisible:      -> not @flex.isCollapsed 'editor'    and @editorHeight() > 0
     browserVisible:     -> @terminalHeight() > 0 and @flex.panes[0].div == @browser

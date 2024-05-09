@@ -108,7 +108,7 @@ function Win
                     
     saveStash: ->
         
-        # log 'saveStash'
+        log 'saveStash'
      
         post.emit 'saveChanges' 
         post.emit 'stash'

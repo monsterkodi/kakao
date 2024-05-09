@@ -34,6 +34,10 @@ NSString* typeForNSFileType(NSString* fileType)
     }
     else
     {
+        if ([req isEqualToString:@"git"] || [req isEqualToString:@"pkg"])
+        {
+            return nil; // don't fallback to bundle path for fs.git and fs.pkg
+        }
         NSLog(@"fallback to bundle path! req:%@ args:%@", req, args);
     }
     

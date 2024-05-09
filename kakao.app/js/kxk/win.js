@@ -195,6 +195,7 @@ Win = (function ()
 
     Win.prototype["saveStash"] = function ()
     {
+        console.log('saveStash')
         post.emit('saveChanges')
         post.emit('stash')
         window.prefs.save()

@@ -340,7 +340,7 @@ Open = (function ()
 
     Open.prototype["start"] = function (name)
     {
-        var dir, item, _294_40_, _308_41_
+        var dir, item, text, _294_40_, _308_41_
 
         this.setName(name)
         if ((this.commandline.lastFocus === 'commandline-editor' && 'commandline-editor' === window.lastFocus))
@@ -384,12 +384,17 @@ Open = (function ()
         this.files = Projects.files(this.dir)
         this.loadState()
         this.initAndShowList()
-        return {text:this.commandList.line(this.selected),select:true}
+        if (this.commandList)
+        {
+            text = this.commandList.line(this.selected)
+        }
+        text = (text != null ? text : '')
+        return {text:text,select:true}
     }
 
     Open.prototype["execute"] = function (command)
     {
-        var file, path, pos, _337_27_
+        var file, path, pos, _340_27_
 
         if (this.selected < 0)
         {
@@ -399,7 +404,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _343_24_ = slash.splitFilePos(command); file = _343_24_[0]; pos = _343_24_[1]
+            var _346_24_ = slash.splitFilePos(command); file = _346_24_[0]; pos = _346_24_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)

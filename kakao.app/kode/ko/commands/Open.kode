@@ -321,7 +321,10 @@ function Open extends Command
   
         @initAndShowList()
 
-        text:   @commandList.line @selected
+        text  = @commandList.line @selected if @commandList
+        text ?= ''
+        
+        text:   text
         select: true
 
     # 00000000  000   000  00000000   0000000  000   000  000000000  00000000

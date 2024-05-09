@@ -163,6 +163,8 @@ class GitInfo
             
             path = slash.path gitDir, p.srcfile[2..]
             
+            log 'doLog' path
+            
             continue if slash.ext(path) in IGNORE_FILE_EXTS
             
             window.terminal.appendMeta
@@ -339,10 +341,10 @@ class GitInfo
     #      000     000     000   000     000     000   000       000
     # 0000000      000     000   000     000      0000000   0000000
                             
-    status: opt={} ->
+    status: opt={} ○->
         
         opt.diff   ?= false
-        opt.prjDir ?= Projects.dir window.editor.currentFile
+        opt.prjDir ?= Projects.dir editor.currentFile
 
         window.split.raise 'terminal'
         window.terminal.clear()
@@ -350,11 +352,21 @@ class GitInfo
         onMetaClick = @onMetaClick
         logDiff  = @logDiff
         
+        if empty opt.prjDir 
+            if globalThis.kakao
+                opt.prjDir =○ globalThis.kakao 'fs.git' editor.currentFile
+            else
+                error 'GitInfo.status -- no prjDir and no kakao?'
+                return 
+        
+        log 'GitInfo.status dir' opt.prjDir
+        
         Git.status(opt.prjDir).then (status) ○->
 
             ⮐ if empty status
+            ⮐ if empty status.gitDir
             
-            log 'status' status
+            log 'GitInfo.status got' status
 
             logFile = change file status spacer ->
 

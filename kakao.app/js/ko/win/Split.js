@@ -17,6 +17,7 @@ class Split
         this.stash = this.stash.bind(this)
         this.emitSplit = this.emitSplit.bind(this)
         this.onDrag = this.onDrag.bind(this)
+        2 + 2
         this.commandlineHeight = 30
         this.elem = $('split')
         this.terminal = $('terminal')
@@ -31,7 +32,7 @@ class Split
 
     onDrag ()
     {
-        var _52_23_
+        var _51_23_
 
         if ((this.flex != null))
         {
@@ -46,14 +47,16 @@ class Split
 
     stash ()
     {
-        window.stash.set('split|flex',this.flex.getState())
-        return window.stash.set('split|browser',this.flex.panes[0].div === this.browser)
+        stash.set('split|flex',this.flex.getState())
+        stash.set('split|browser',this.flex.panes[0].div === this.browser)
+        console.log('Split.stash',stash.get('split'))
     }
 
     onStashLoaded ()
     {
         var state
 
+        console.log('onStashLoaded',stash.get('split|flex'))
         if (state = window.stash.get('split|flex'))
         {
             this.flex.restoreState(state)
@@ -181,7 +184,8 @@ class Split
         this.focus('terminal')
         this.flex.expand('terminal')
         this.hideEditor()
-        return this.flex.resized()
+        this.flex.resized()
+        return this.stash()
     }
 
     maximizeEditor ()
@@ -196,14 +200,16 @@ class Split
         {
             this.hideCommandline()
         }
-        return this.flex.resized()
+        this.flex.resized()
+        return this.stash()
     }
 
     minimizeEditor ()
     {
         this.showCommandline()
         this.focus('commandline')
-        return this.flex.moveHandleToPos(this.flex.handles[1],this.flex.size())
+        this.flex.moveHandleToPos(this.flex.handles[1],this.flex.size())
+        return this.stash()
     }
 
     show (n)
@@ -212,8 +218,8 @@ class Split
         {
             case 'terminal':
             case 'browser':
-                return this.raise(n)
-
+                this.raise(n)
+                break
             case 'editor':
                 this.flex.expand('editor')
                 if (this.editorHeight() < this.flex.size() / 3)
@@ -224,17 +230,18 @@ class Split
                     }
                     if ((this.flex.handles[2] != null ? this.flex.handles[2].pos() : undefined) < 2 * this.flex.size() / 3)
                     {
-                        return this.flex.moveHandleToPos(this.flex.handles[2],2 * this.flex.size() / 3)
+                        this.flex.moveHandleToPos(this.flex.handles[2],2 * this.flex.size() / 3)
                     }
                 }
                 break
             case 'command':
-                return this.flex.expand('commandline')
-
+                this.flex.expand('commandline')
+                break
             default:
                 console.error(`split.show -- unhandled: ${n}!`)
         }
 
+        return this.stash()
     }
 
     hideEditor ()
@@ -287,7 +294,7 @@ class Split
         }
     }
 
-    moveCommandLineBy (delta)
+    moveCommandLineBy (deta)
     {
         return this.flex.moveHandle({index:1,pos:this.flex.posOfHandle(1) + delta})
     }
@@ -313,7 +320,7 @@ class Split
 
     focus (n)
     {
-        var e, _236_31_, _240_22_
+        var e, _255_31_, _259_22_
 
         if (n === 'commandline')
         {
