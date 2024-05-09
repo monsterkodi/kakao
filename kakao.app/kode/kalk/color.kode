@@ -23,7 +23,7 @@ class Color
             '(sin|cos|a?tan|exp|log)': 'function'
             'NaN': 'nan'
             '[πx∞ϕ]': 'constant'
-            '[∡√^]': 'op0'
+            '[∡√^]': 'op0'
             '[*/]': 'op1'
             '[+-]': 'dot'
             

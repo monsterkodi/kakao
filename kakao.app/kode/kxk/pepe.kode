@@ -1,0 +1,93 @@
+###
+    00000000   00000000  00000000   00000000
+    000   000  000       000   000  000     
+    00000000   0000000   00000000   0000000 
+    000        000       000        000     
+    000        00000000  000        00000000
+    
+    takes a string and returns a tree of 
+    delimited ranges:
+        
+    "some ( nested [ stuff ] har ) har"
+    
+    ▸ 
+    
+    [
+        'some '
+        start: '(' 
+        content: 
+        [ 
+            ' nested '
+            start: '['
+            content: [' stuff ']
+            end: ']'
+            ' har '
+        ]
+        end: ')'
+        ' har'
+    ]
+###
+
+pepe = str delimiters=[['"''"'], ["'""'"], ['('')'], ['['']'], ['{''}']] ->
+    
+    ⮐ []   if not str is str
+    ⮐ [''] if empty str
+    
+    # log '\npepe' R2 str
+    
+    starts = delimiters.map (d) -> d[0]
+    ends   = delimiters.map (d) -> d[1]
+    
+    pairs  = {}
+    delimiters.map (d) -> pairs[d[0]] = d[1]
+    
+    stack  = [content:[]]
+    p  = 0
+    lp = 0
+    
+    while p < str.length
+        
+        next = str[p..]
+        op = p
+        
+        for start in starts
+            if next.startsWith start
+                if start == pairs[last(stack).start]
+                    # log 'bail close'
+                    break
+                last(stack).content.push str[lp...p] if lp != p
+                # log 'push' b5(last(stack).start), g5(pairs[last(stack).start])
+                # log 'stck' b3 noon stack
+                stack.push start:start, content:[]
+                # last(stack).content.push start:start, content:[]
+                p += start.length
+                lp = p
+                # log 'push' r4 noon stack
+                break
+                
+        for end in ends
+            if next.startsWith end
+                last(stack).content.push str[lp...p] if lp != p
+                if end == pairs[last(stack).start]
+                    last(stack).end = end
+                    popped = stack.pop()
+                    last(stack).content.push popped
+                    p += end.length
+                    lp = p
+                else
+                    r = mismatch:stack, tail:str[p...str.length]
+                    ⮐ r
+                break
+                
+        if p == op
+            p += 1  
+            
+    if stack.length > 1
+        r = unbalanced:stack
+        r.tail = str[lp...p] if lp != p
+        ⮐ r
+            
+    last(stack).content.push str[lp...p] if lp != p
+    last(stack).content
+
+export pepe

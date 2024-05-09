@@ -10,7 +10,7 @@ class Color
         var cfg
 
         this.colorize = this.colorize.bind(this)
-        cfg = {'=':'equals','e[-+]':'exponent','[\\.]':'dot','[\\(\\)]':'bracket','\\d+':'digit','°':'digit','i':'complex','(sin|cos|a?tan|exp|log)':'function','NaN':'nan','[πx∞ϕ]':'constant','[∡√^]':'op0','[*/]':'op1','[+-]':'dot'}
+        cfg = {'=':'equals','e[-+]':'exponent','[\\.]':'dot','[\\(\\)]':'bracket','\\d+':'digit','°':'digit','i':'complex','(sin|cos|a?tan|exp|log)':'function','NaN':'nan','[πx∞ϕ]':'constant','[∡√^]':'op0','[*/]':'op1','[+-]':'dot'}
         cfg[symbol.euler] = 'constant'
         this.config = matchr.config(cfg)
     }
