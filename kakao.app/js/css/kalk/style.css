@@ -37,14 +37,18 @@ body
 
 .sheet-calc
 {
-    padding: 6px;
     flex: 1 1 0;
+    padding: 6px;
+    height: auto;
+    width: auto;
 }
 
 .sheet-result
 {
-    padding: 6px;
+    width: auto;
+    height: auto;
     flex: 1 1 0;
+    padding: 6px;
 }
 
 .sheet-line
@@ -52,12 +56,11 @@ body
     white-space: nowrap;
     height: 26px;
     text-align: right;
-    font-size: 22px;
+    font-size: 16px;
     -webkit-user-select: auto;
     padding-right: 10px;
     display: block;
     margin-left: auto;
-    width: 94%;
     overflow: hidden;
 }
 
@@ -164,22 +167,31 @@ span.complex
     font-size: 32px;
 }
 
-.key.function
+.key.oneoverx
+{
+    letter-spacing: -0.2rem;
+}
+
+.key.function .key-wrap
 {
     padding-right: 6px;
     margin-right: -6px;
 }
 
-.key.clear
+.key.rad2deg .key-wrap
 {
-    vertical-align: top;
+    font-size: 64px;
+    padding-bottom: 24px;
+}
+
+.key.multiply .key-wrap
+{
     padding-top: 12px;
-    font-size: 43px;
 }
 
 .key.function.atan
 {
-    font-size: 22px;
+    font-size: 26px;
 }
 
 .key-table
@@ -190,4 +202,30 @@ span.complex
 .spacing-cell
 {
     padding: 0;
+}
+
+.key
+{
+    position: relative;
+}
+
+.key-wrap
+{
+    pointer-events: none;
+    position: absolute;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.key.clear .key-wrap
+{
+    top: 12px;
+    transform: translate(-50%, 0%);
+}
+
+.key.bottom .key-wrap
+{
+    transform: translate(-50%, 45%);
 }

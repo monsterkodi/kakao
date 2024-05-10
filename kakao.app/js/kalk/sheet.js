@@ -45,14 +45,14 @@ class Sheet
 
     async expand ()
     {
-        var info, spaceAbove
+        var add, info, spaceAbove
 
-        this.view.style.display = 'flex'
         info = await kakao('win.frameInfo')
         spaceAbove = (info.screen.h + info.screen.y) - (info.frame.h + info.frame.y)
         if (spaceAbove > 34)
         {
-            return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:_k_.max(656,info.frame.h + 30)})
+            add = this.view.scrollHeight - this.view.getBoundingClientRect().height + 4
+            return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:_k_.max(656,info.frame.h + add)})
         }
     }
 
@@ -67,7 +67,7 @@ class Sheet
         }
         else if (action.text !== kstr(action.val))
         {
-            this.calc.appendChild(elem({class:'sheet-line calc',html:color(action.text + ' =')}))
+            this.calc.appendChild(elem({class:'sheet-line calc',html:color(action.text)}))
             this.result.appendChild(elem({class:'sheet-line result',html:color(action.val)}))
         }
         else

@@ -35,7 +35,7 @@ class Sheet
         
     expand: ○->
         
-        @view.style.display = 'flex'
+        # @view.style.display = 'flex'
         
         info =○ kakao 'win.frameInfo'
 
@@ -43,7 +43,8 @@ class Sheet
 
         if spaceAbove > 34
             
-            kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:max 656, info.frame.h+30
+            add = @view.scrollHeight-@view.getBoundingClientRect().height+4
+            kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:max 656, info.frame.h+add
         
     onSheet: action =>
         
@@ -59,7 +60,7 @@ class Sheet
 
             action.text != kstr action.val
                 
-                @calc.appendChild   elem class:'sheet-line calc'   html:color action.text + ' ='
+                @calc.appendChild   elem class:'sheet-line calc'   html:color action.text #+ ' ='
                 @result.appendChild elem class:'sheet-line result' html:color action.val
             ➜
                 @calc.appendChild   elem class:'sheet-line calc'   html:''

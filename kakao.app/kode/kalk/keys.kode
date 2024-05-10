@@ -40,7 +40,7 @@ class Keys
         if text == '_' 
             elem 'td' class:'key hidden'
         else
-            cfg = class:'key '+ clss, text:text, click: @onButton
+            cfg = class:'key '+ clss, click:@onButton, child: elem class:'key-wrap' text:text
             if clss.indexOf('wide') >= 0
                 cfg.colSpan = 2
             if clss.indexOf('tall') >= 0
@@ -51,35 +51,35 @@ class Keys
                 
         @setKeys 'numbers' [ # ▾ style
             @row [
-                    @key 'c' 'tall clear'
-                    @key symbol.sqrt, 'op0'
-                    @key '^' 'op1'
-                    @key '/' 'op1'
-                    @key '*' 'op1'
+                    @key 'c'                'tall clear'
+                    @key symbol.sqrt,       'op1 sqrt'
+                    @key '^'                'op1 pow'
+                    @key '/'                'dot divide'
+                    @key '*'                'dot multiply'
                 ]
             @row [
-                    @key '7' 'digit'
-                    @key '8' 'digit'
-                    @key '9' 'digit'
-                    @key '-' 'dot'
+                    @key '7'                'digit'
+                    @key '8'                'digit'
+                    @key '9'                'digit'
+                    @key '-'                'dot'
                 ]
             @row [
-                    @key symbol.backspace, 'backspace'
-                    @key '4' 'digit'
-                    @key '5' 'digit'
-                    @key '6' 'digit'
-                    @key '+' 'dot'
+                    @key symbol.backspace,  'backspace'
+                    @key '4'                'digit'
+                    @key '5'                'digit'
+                    @key '6'                'digit'
+                    @key '+'                'dot'
                 ]
             @row [
-                    @key 'ƒ' 'tall bottom function'
-                    @key '1' 'digit'
-                    @key '2' 'digit'
-                    @key '3' 'digit'
-                    @key '=' 'tall bottom'
+                    @key 'ƒ'                'tall bottom'
+                    @key '1'                'digit'
+                    @key '2'                'digit'
+                    @key '3'                'digit'
+                    @key '='                'tall bottom equals'
                 ]
             @row [
-                    @key '0' 'wide digit right'
-                    @key '.' 'dot'
+                    @key '0'                'wide digit right'
+                    @key '.'                'dot'
                 ]
             ]
     
@@ -87,40 +87,40 @@ class Keys
         
         @setKeys 'functions' [ # ▾ style
             @row [
-                    @key 'c'  'tall clear'
-                    @key symbol.sqrt,     'op0'
-                    @key symbol.exp,      'op1'
-                    @key symbol.oneoverx, 'op1 oneoverx'
-                    @key '*'  'op1'
+                    @key 'c'                'tall clear'
+                    @key symbol.sqrt,       'op1 sqrt'
+                    @key symbol.exp,        'op1 exp'
+                    @key symbol.oneoverx,   'op1 oneoverx'
+                    @key '*'                'dot multiply'
                 ]
             @row [
-                    @key 'sin' 'function sin'
-                    @key 'cos' 'function cos'
-                    @key 'π'   'constant'    
-                    @key '-'   'dot'
+                    @key 'sin'              'function sin'
+                    @key 'cos'              'function cos'
+                    @key 'π'                'constant pi'    
+                    @key '-'                'dot'
                 ]
             @row [
-                    @key symbol.backspace, 'backspace'
-                    @key 'tan' 'function tan'
-                    @key 'log' 'function log'
-                    @key symbol.euler, 'constant'
-                    @key '+'   'dot'
+                    @key symbol.backspace,  'backspace'
+                    @key 'tan'              'function tan'
+                    @key 'log'              'function log'
+                    @key symbol.euler,      'constant euler'
+                    @key '+'                'dot'
                 ]
             @row [
-                    @key 'ℵ'   'tall bottom digit'
-                    @key 'atan' 'function atan'
-                    @key '∡'   'op1'
-                    @key 'ϕ'   'constant'
-                    @key '='   'tall bottom equals'
+                    @key 'ℵ'                'tall bottom digit'
+                    @key 'atan'             'function atan'
+                    @key '∡'                'op1 deg rad2deg'
+                    @key 'ϕ'                'constant phi'
+                    @key '='                'tall bottom equals'
                 ]
             @row [
-                    @key '('   'bracket'
-                    @key '°'   'digit'
-                    @key ')'   'bracket'
+                    @key '('                'bracket'
+                    @key '°'                'digit rad deg2rad'
+                    @key ')'                'bracket'
                 ]
             ]
 
-    onButton: event => post.emit 'button' event.target.innerHTML.trim()
+    onButton: event => post.emit 'button' event.target.firstChild.innerHTML.trim()
     
     toggleKeys: -> @keys == 'numbers' ? @functionKeys() : @numberKeys()
     

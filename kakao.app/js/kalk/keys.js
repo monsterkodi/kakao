@@ -72,7 +72,7 @@ class Keys
         }
         else
         {
-            cfg = {class:'key ' + clss,text:text,click:this.onButton}
+            cfg = {class:'key ' + clss,click:this.onButton,child:elem({class:'key-wrap',text:text})}
             if (clss.indexOf('wide') >= 0)
             {
                 cfg.colSpan = 2
@@ -87,17 +87,17 @@ class Keys
 
     numberKeys ()
     {
-        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op0'),this.key('^','op1'),this.key('/','op1'),this.key('*','op1')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom function'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
+        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key('^','op1 pow'),this.key('/','dot divide'),this.key('*','dot multiply')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom equals')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
     }
 
     functionKeys ()
     {
-        return this.setKeys('functions',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op0'),this.key(symbol.exp,'op1'),this.key(symbol.oneoverx,'op1 oneoverx'),this.key('*','op1')]),this.row([this.key('sin','function sin'),this.key('cos','function cos'),this.key('π','constant'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('tan','function tan'),this.key('log','function log'),this.key(symbol.euler,'constant'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('atan','function atan'),this.key('∡','op1'),this.key('ϕ','constant'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit'),this.key(')','bracket')])])
+        return this.setKeys('functions',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key(symbol.exp,'op1 exp'),this.key(symbol.oneoverx,'op1 oneoverx'),this.key('*','dot multiply')]),this.row([this.key('sin','function sin'),this.key('cos','function cos'),this.key('π','constant pi'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('tan','function tan'),this.key('log','function log'),this.key(symbol.euler,'constant euler'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('atan','function atan'),this.key('∡','op1 deg rad2deg'),this.key('ϕ','constant phi'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit rad deg2rad'),this.key(')','bracket')])])
     }
 
     onButton (event)
     {
-        return post.emit('button',event.target.innerHTML.trim())
+        return post.emit('button',event.target.firstChild.innerHTML.trim())
     }
 
     toggleKeys ()
