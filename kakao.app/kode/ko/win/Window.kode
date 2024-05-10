@@ -130,10 +130,10 @@ function Window extends win.Delegate
             'Paste'                 ➜ ⮐ focusEditor.paste()
             'New Tab'               ➜ ⮐ post.emit 'newEmptyTab'
             'New Window'            ➜ ⮐ kakao 'window.new' 'ko.html' @editor.currentFile
-            'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!" #return post.toMain 'arrangeWindows'
+            'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!"
             'Toggle Scheme'         ➜ ⮐ scheme.toggle()
             'Toggle Center Text'    ➜ ⮐ toggleCenterText()
-            'Toggle Func List'      ➜ ⮐ prefs.toggle('list|active') and post.emit 'list.toggle'
+            'Toggle Func List'      ➜ ⮐ [prefs.toggle('list|active'), post.emit 'list.toggle']
             'Toggle Tab Pinned'     ➜ ⮐ toggleTabPinned()
             'Toggle Tab Extensions' ➜ ⮐ tabs.toggleExtension()
             'Increase'              ➜ ⮐ changeFontSize +1

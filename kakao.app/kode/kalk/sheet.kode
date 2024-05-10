@@ -13,25 +13,51 @@ class Sheet
 
     @: ->
         
-        @view   = $ "#sheet"
+        @view   =$ "#sheet"
         @calc   = elem class:'sheet-calc'
         @result = elem class:'sheet-result'
         @view.appendChild @calc
         @view.appendChild @result
-        post.on 'sheet', @onSheet
+        post.on 'sheet' @onSheet
+        
+    compact: ○->
+        
+        info =○ kakao 'win.frameInfo'
+        kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:604
+        
+    expand: ○->
+        
+        info =○ kakao 'win.frameInfo'
+
+        spaceAbove = (info.screen.h + info.screen.y) - (info.frame.h + info.frame.y)
+        
+        if spaceAbove > 25
+            
+            br = @view.getBoundingClientRect()
+            # log 'br' br.height, @result.getBoundingClientRect().height, @view.height, @result.height
+            
+            kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:max 654, info.frame.h+30
         
     onSheet: action =>
         
-        switch action
-            when 'clear' 
+        # log 'onSheet action' action, action.text, kstr action.val
+        
+        if
+            action == 'clear' 
+                
                 @calc.innerHTML = ''
                 @result.innerHTML = ''
-            else
-                if action.text != kstr action.val
-                    @calc.appendChild elem class:'sheet-line calc', html:color action.text + ' ='
-                    @result.appendChild elem class:'sheet-line result', html:color action.val
-                else
-                    @calc.appendChild elem class:'sheet-line calc', html:''
-                    @result.appendChild elem class:'sheet-line result', html:color action.val
+                @compact()
+                ⮐ 
+
+            action.text != kstr action.val
+                
+                @calc.appendChild   elem class:'sheet-line calc'   html:color action.text + ' ='
+                @result.appendChild elem class:'sheet-line result' html:color action.val
+            ➜
+                @calc.appendChild   elem class:'sheet-line calc'   html:''
+                @result.appendChild elem class:'sheet-line result' html:color action.val
+                
+        @expand()
         
 export Sheet

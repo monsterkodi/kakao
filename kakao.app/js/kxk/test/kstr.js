@@ -9,8 +9,8 @@ toExport["kstr"] = function ()
 {
     section("str", function ()
     {
-        compare(kstr({a:1,b:2}),`\na   1\nb   2`)
-        compare(kstr([1,2,3]),`\n1\n2\n3`)
+        compare(kstr({a:1,b:2}),`a   1\nb   2`)
+        compare(kstr([1,2,3]),`1\n2\n3`)
     })
     section("encode", function ()
     {

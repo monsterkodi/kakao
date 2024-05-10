@@ -135,10 +135,10 @@ Window
     -
     Minimize                alt+cmdctrl+shift+m
     Maximize                alt+cmdctrl+m
-    Fullscreen              alt+cmdctrl+f
+    # Fullscreen              alt+cmdctrl+f
     Hide                    cmdctrl+h
     --    
-    Arrange Windows         alt+cmdctrl+`
+    # Arrange Windows         alt+cmdctrl+`
     Focus Next              cmdctrl+`
     Focus Previous          cmdctrl+shift+`
     ---

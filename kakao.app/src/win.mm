@@ -252,7 +252,7 @@ NSDictionary* dictForRect(NSRect rect)
     [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
                                 [[frame objectForKey:@"y"] floatValue], 
                                 [[frame objectForKey:@"w"] floatValue], 
-                                [[frame objectForKey:@"h"] floatValue]) display:YES];
+                                [[frame objectForKey:@"h"] floatValue]) display:NO];
 }
 
 - (void) setWidth:(unsigned int)width height:(unsigned int)height

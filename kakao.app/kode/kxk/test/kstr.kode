@@ -12,8 +12,8 @@ use .. ◆ kstr
 
     ▸ str
     
-        kstr a:1 b:2 ▸ """\na   1\nb   2"""
-        kstr [1 2 3] ▸ """\n1\n2\n3"""
+        kstr a:1 b:2 ▸ """a   1\nb   2"""
+        kstr [1 2 3] ▸ """1\n2\n3"""
 
     ▸ encode
      

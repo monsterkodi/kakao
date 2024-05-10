@@ -11,7 +11,7 @@ str = function (o)
     {
         return 'null'
     }
-    return '\n' + _k_.noon(o)
+    return _k_.noon(o)
 }
 
 str.fillet = function (s, wordCharacterSet = '')
@@ -23,7 +23,7 @@ str.fillet = function (s, wordCharacterSet = '')
     {
         return fillets
     }
-    for (var _45_14_ = ci = 0, _45_18_ = s.length; (_45_14_ <= _45_18_ ? ci < s.length : ci > s.length); (_45_14_ <= _45_18_ ? ++ci : --ci))
+    for (var _46_14_ = ci = 0, _46_18_ = s.length; (_46_14_ <= _46_18_ ? ci < s.length : ci > s.length); (_46_14_ <= _46_18_ ? ++ci : --ci))
     {
         ch = s[ci]
         if (_k_.in(ch,' \t\n\r'))
@@ -63,9 +63,9 @@ str.unfillet = function (fillets)
 
     s = ''
     var list = _k_.list(fillets)
-    for (var _75_15_ = 0; _75_15_ < list.length; _75_15_++)
+    for (var _76_15_ = 0; _76_15_ < list.length; _76_15_++)
     {
-        fillet = list[_75_15_]
+        fillet = list[_76_15_]
         s = _k_.rpad(fillet.index,s)
         s += fillet.match
     }
@@ -293,9 +293,9 @@ str.time = function (t)
             f = 1
             o = {ms:1000,second:60,minute:60,hour:24,day:30,month:12,year:0}
             var list = _k_.list(Object.keys(o))
-            for (var _265_18_ = 0; _265_18_ < list.length; _265_18_++)
+            for (var _266_18_ = 0; _266_18_ < list.length; _266_18_++)
             {
-                k = list[_265_18_]
+                k = list[_266_18_]
                 num = parseInt(t / f)
                 f *= o[k]
                 if (k === 'year' || t < f)
@@ -312,9 +312,9 @@ str.time = function (t)
             thsnd = BigInt(1000)
             f = thsnd
             var list1 = ['ns','μs','ms','second']
-            for (var _276_18_ = 0; _276_18_ < list1.length; _276_18_++)
+            for (var _277_18_ = 0; _277_18_ < list1.length; _277_18_++)
             {
-                k = list1[_276_18_]
+                k = list1[_277_18_]
                 if (k === 'seconds' || t < f)
                 {
                     num = parseInt(thsnd * t / f)
@@ -344,7 +344,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _304_13_
+    var _305_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

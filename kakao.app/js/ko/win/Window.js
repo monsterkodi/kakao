@@ -201,7 +201,7 @@ Window = (function ()
                 return toggleCenterText()
 
             case 'Toggle Func List':
-                return prefs.toggle('list|active') && post.emit('list.toggle')
+                return [prefs.toggle('list|active'),post.emit('list.toggle')]
 
             case 'Toggle Tab Pinned':
                 return toggleTabPinned()

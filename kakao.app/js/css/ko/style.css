@@ -1081,9 +1081,7 @@ body
 }
 
 
-
 .meta.gitInfoChange,
-.meta.gitInfoDelete,
 .meta.gitInfoAdded
 {
     cursor: pointer;
@@ -1093,6 +1091,8 @@ body
 
 .meta.gitInfoDelete
 {
+    border-radius: 0.15em;
+    padding-right: 0.44999999999999996em;
     margin-left: -4px;
     padding-right: 8px;
 }

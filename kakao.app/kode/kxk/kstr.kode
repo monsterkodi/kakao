@@ -10,10 +10,11 @@
 
 use ./ansi
 
-str = (o) -> # converts anything into a string in noon syntax 
+str = o -> # converts anything into a string in noon syntax 
 
-    return 'null' if not o?
-    '\n' + noon o
+    ⮐ 'null' if not o?
+    # '\n' + noon o # why was this ever prefixed with a newline?
+    noon o
         
 # the function above is exported as the default
 # all the functions below are attached to it
@@ -36,7 +37,7 @@ str = (o) -> # converts anything into a string in noon syntax
     ]
 ###
 
-str.fillet = (s, wordCharacterSet='') ->
+str.fillet = s wordCharacterSet='' ->
     
     fillets = []
     
@@ -69,7 +70,7 @@ str.fillet = (s, wordCharacterSet='') ->
 # 000   000  000  0000  000       000  000      000      000          000     
 #  0000000   000   000  000       000  0000000  0000000  00000000     000     
 
-str.unfillet = (fillets) -> # converts an array of fillet objects into a string
+str.unfillet = fillets -> # converts an array of fillet objects into a string
     
     s = ''
     for fillet in fillets
@@ -83,7 +84,7 @@ str.unfillet = (fillets) -> # converts an array of fillet objects into a string
 # 000   000  000      000   000  000       000  000         000       000  000      000      000          000          000  
 # 0000000    0000000   0000000    0000000  000   000        000       000  0000000  0000000  00000000     000     0000000   
 
-str.blockFillets = (lineFillets) -> # converts an array of fillet objects into a tree of block objects
+str.blockFillets = lineFillets -> # converts an array of fillet objects into a tree of block objects
     
     blocks = []
     stack  = []
@@ -133,7 +134,7 @@ str.blockFillets = (lineFillets) -> # converts an array of fillet objects into a
 
 # like array splice, but not in place
 
-str.splice = (s, i, c, r='') -> s.slice(0, i) + r + s.slice(i + Math.abs(c))
+str.splice = s i c r='' -> s.slice(0, i) + r + s.slice(i + Math.abs(c))
 
 # 00000000  000   000   0000000   0000000   0000000    00000000
 # 000       0000  000  000       000   000  000   000  000
@@ -141,7 +142,7 @@ str.splice = (s, i, c, r='') -> s.slice(0, i) + r + s.slice(i + Math.abs(c))
 # 000       000  0000  000       000   000  000   000  000
 # 00000000  000   000   0000000   0000000   0000000    00000000
 
-str.encode = (s, spaces=true) ->
+str.encode = s spaces=true ->
 
     if s
         r = encodeURI s
@@ -153,8 +154,8 @@ str.encode = (s, spaces=true) ->
 
 ESCAPE_REGEXP = /[\-\\\^\$\*\+\?\.\(\)\|\[\]\{\}\/]/g
 
-str.escapeRegexp = (s) -> s.replace ESCAPE_REGEXP, '\\$&'
-str.escapeRegExp = (s) -> s.replace ESCAPE_REGEXP, '\\$&'
+str.escapeRegexp = s -> s.replace ESCAPE_REGEXP, '\\$&'
+str.escapeRegExp = s -> s.replace ESCAPE_REGEXP, '\\$&'
 
 #  0000000  000000000  00000000   000  00000000
 # 000          000     000   000  000  000   000
@@ -162,19 +163,19 @@ str.escapeRegExp = (s) -> s.replace ESCAPE_REGEXP, '\\$&'
 #      000     000     000   000  000  000
 # 0000000      000     000   000  000  000
 
-str.rstrip = (s, cs=' ') ->
+str.rstrip = s cs=' ' ->
 
     s ?= ''
     s = s[0...s.length-1] while s[-1] in cs
     s
 
-str.lstrip = (s, cs=' ') ->
+str.lstrip = s cs=' ' ->
 
     s ?= ''
     s = s[1..] while s[0] in cs
     s
 
-str.strip = (s, cs=' ') -> str.rstrip str.lstrip(s,cs), cs
+str.strip = s cs=' ' -> str.rstrip str.lstrip(s,cs), cs
 
 # 000000000  00000000   000  00     00
 #    000     000   000  000  000   000
@@ -192,7 +193,7 @@ str.rtrim = str.rstrip
 # 000       000  0000     000
 #  0000000  000   000     000
 
-str.lcnt = (s, c) ->
+str.lcnt = s c ->
     s ?= ''
     if typeof s == 'number' and Number.isFinite s then s = String s
     return 0 if typeof s != 'string'
@@ -201,7 +202,7 @@ str.lcnt = (s, c) ->
     while s[++i] in c then
     i
 
-str.rcnt = (s, c) ->
+str.rcnt = s c ->
     s ?= ''
     if typeof s == 'number' and Number.isFinite s then s = String s
     return 0 if typeof s != 'string'
@@ -210,7 +211,7 @@ str.rcnt = (s, c) ->
     while s[s.length-(++i)-1] in c then
     i
 
-str.cnt = (s, c) ->
+str.cnt = s c ->
     m = s.match(new RegExp(c, 'g'))
     m? ? m.length : 0
 
@@ -220,19 +221,19 @@ str.cnt = (s, c) ->
 # 000        000   000  000   000
 # 000        000   000  0000000
 
-str.lpad = (s, l, c=' ') ->
+str.lpad = s l c=' ' ->
     s = String s
     while s.length < l then s = c + s
     s
 
-str.rpad = (s, l, c=' ') ->
+str.rpad = s l c=' ' ->
     s = String s
     while s.length < l then s += c
     s
 
 str.pad = str.rpad
 
-str.detab = (s) ->
+str.detab = s ->
     s = String s
     i = 0
     while i < s.length
@@ -247,7 +248,7 @@ str.detab = (s) ->
 #    000     000  000 0 000  000
 #    000     000  000   000  00000000
 
-str.time = (t) ->
+str.time = t ->
     
     switch typeof t
         
@@ -303,7 +304,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 str.stripAnsi = (s) ->
     s.replace? STRIPANSI, ''
 
-str.ansi2html = (s) ->
+str.ansi2html = s ->
     ansi.html s
 
 str.ansi = ansi
