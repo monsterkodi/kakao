@@ -45,6 +45,7 @@ function Win
         post.on 'window.focus' @onWindowFocus
         post.on 'window.close' @onWindowClose
         post.on 'window.frame' @onWindowFrame
+        post.on 'window.willResize' @onWindowWillResize
         post.on 'menuAction'   @onMenuAction
         post.on 'stashLoaded'  @onStashLoaded
         post.on 'saveStash'    @saveStash
@@ -129,11 +130,12 @@ function Win
             
         @delegate?.onWindowAnimationTick? @, delta:delta, fps:fps, time:now
                                     
-    onResize:     event => @delegate?.onWindowResize? @, event
+    onResize:     event => @delegate?.onWindowResize? @, event#; log 'resize' event.target.innerWidth, event.target.innerHeight
     onWindowFocus:      => @delegate?.onWindowFocus?  @
     onWindowBlur:       => @delegate?.onWindowBlur?   @
     onWindowClose:      => post.emit 'saveStash' if @saveStashOnClose; @delegate?.onWindowClose?  @
-    onWindowFrame: info => window.stash.set 'frame' info.frame
+    onWindowFrame: info => window.stash.set 'frame' info.frame#; log 'window.frame' info.frame.w, info.frame.h
+    onWindowWillResize: info newSize => #log 'window.willResize' info.frame.w, info.frame.h, newSize
     onStashLoaded: => 
         # log 'win.stashLoaded'
         if frame = window.stash.get 'frame'
@@ -158,6 +160,7 @@ function Win
             'maximize'       ➜ kakao 'window.maximize'
             'minimize'       ➜ kakao 'window.minimize'
             'screenshot'     ➜ kakao 'window.snapshot'
+            'fullscreen'     ➜ kakao 'window.fullscreen'
             'reload'         ➜ kakao 'window.reload'
             'devtools'       ➜ kakao 'window.toggleInspector'
             'quit'           ➜ kakao 'app.quit'

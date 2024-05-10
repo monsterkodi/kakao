@@ -7,8 +7,10 @@
 ###
 
 use ../kakao
-use ../kxk ▪ win post stopEvent
+use ../kxk ▪ $ win post stopEvent
 use ◆ symbol keys input sheet 
+
+window.WIN_MIN_HEIGHT = 612
 
 function Delegate extends win.Delegate
     
@@ -20,15 +22,22 @@ function Delegate extends win.Delegate
         
         post.on 'menuAction' @onMenuAction
         post.on 'calc'       @onCalc
+        
+    onWindowWillShow: ->
+    
+        # log 'onWindowWillShow'
+        document.body.style.display = 'inherit'
 
     onWindowWithoutStash: ->  
         
-        kakao 'win.setSize'    476 604
+        # log 'onWindowWithoutStash'
+        kakao 'win.setSize'    476 window.WIN_MIN_HEIGHT
         kakao 'win.center'
         
     onWindowCreated: =>
         
-        kakao 'win.setMinSize' 476 604
+        # log 'onWindowCreated'
+        kakao 'win.setMinSize' 476 window.WIN_MIN_HEIGHT
         kakao 'win.setMaxSize' 476 6660
         
     onWindowResize: => post.emit 'resize'

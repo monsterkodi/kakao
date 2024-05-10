@@ -5,6 +5,7 @@ var Delegate
 import kakao from "../kakao.js"
 
 import kxk from "../kxk.js"
+let $ = kxk.$
 let win = kxk.win
 let post = kxk.post
 let stopEvent = kxk.stopEvent
@@ -14,6 +15,7 @@ import keys from "./keys.js"
 import input from "./input.js"
 import sheet from "./sheet.js"
 
+window.WIN_MIN_HEIGHT = 612
 
 Delegate = (function ()
 {
@@ -36,15 +38,20 @@ Delegate = (function ()
         return Delegate.__super__.constructor.apply(this, arguments)
     }
 
+    Delegate.prototype["onWindowWillShow"] = function ()
+    {
+        return document.body.style.display = 'inherit'
+    }
+
     Delegate.prototype["onWindowWithoutStash"] = function ()
     {
-        kakao('win.setSize',476,604)
+        kakao('win.setSize',476,window.WIN_MIN_HEIGHT)
         return kakao('win.center')
     }
 
     Delegate.prototype["onWindowCreated"] = function ()
     {
-        kakao('win.setMinSize',476,604)
+        kakao('win.setMinSize',476,window.WIN_MIN_HEIGHT)
         return kakao('win.setMaxSize',476,6660)
     }
 

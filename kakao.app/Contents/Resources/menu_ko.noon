@@ -9,6 +9,7 @@ ko
     About                   alt+cmdctrl+shift+/
     -
     Preferences             cmdctrl+shift+,
+    Calculator              cmdctrl+k
     --
     Quit                    cmdctrl+q
 
@@ -79,7 +80,7 @@ Command
 
     Search
         Case Insensitive    cmdctrl+shift+f
-        Case Sensitive      alt+cmdctrl+f
+        Case Sensitive      alt+shift+f
         Regexp Case Insensitive
         Regexp Case Sensitive
 
@@ -135,8 +136,8 @@ Window
     -
     Minimize                alt+cmdctrl+shift+m
     Maximize                alt+cmdctrl+m
-    # Fullscreen              alt+cmdctrl+f
-    Hide                    cmdctrl+h
+    Fullscreen              alt+cmdctrl+f
+    # Hide                    cmdctrl+h
     --    
     # Arrange Windows         alt+cmdctrl+`
     Focus Next              cmdctrl+`

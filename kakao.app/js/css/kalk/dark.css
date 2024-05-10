@@ -11,10 +11,9 @@
     background: #131313;
 }
 
-
-.sheet-calc,
-.sheet-result
+#sheet
 {
+    border: 2px solid #0b0b0b;
     background: #0f0f0f;
 }
 

@@ -18,25 +18,32 @@ class Sheet
         @result = elem class:'sheet-result'
         @view.appendChild @calc
         @view.appendChild @result
-        post.on 'sheet' @onSheet
+        post.on 'sheet'   @onSheet
+        post.on 'resize'  @onResize
+    
+    onResize: =>
+        
+        if window.innerHeight <= window.WIN_MIN_HEIGHT
+            @view.style.display = 'none'
+        else
+            @view.style.display = 'flex'
         
     compact: ○->
         
         info =○ kakao 'win.frameInfo'
-        kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:604
+        kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:window.WIN_MIN_HEIGHT
         
     expand: ○->
+        
+        @view.style.display = 'flex'
         
         info =○ kakao 'win.frameInfo'
 
         spaceAbove = (info.screen.h + info.screen.y) - (info.frame.h + info.frame.y)
-        
-        if spaceAbove > 25
+
+        if spaceAbove > 34
             
-            br = @view.getBoundingClientRect()
-            # log 'br' br.height, @result.getBoundingClientRect().height, @view.height, @result.height
-            
-            kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:max 654, info.frame.h+30
+            kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:max 656, info.frame.h+30
         
     onSheet: action =>
         
@@ -57,7 +64,8 @@ class Sheet
             ➜
                 @calc.appendChild   elem class:'sheet-line calc'   html:''
                 @result.appendChild elem class:'sheet-line result' html:color action.val
-                
+            
+        @result.lastChild.scrollIntoView()
         @expand()
         
 export Sheet

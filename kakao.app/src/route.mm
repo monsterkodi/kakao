@@ -69,6 +69,7 @@
     if ([req isEqualToString:@"maximize"      ]) { [win zoom:nil];         return nil; }
     if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
     if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }
+    if ([req isEqualToString:@"setTopLeft"    ]) { [win setTopLeft:arg0];  return nil; }
     if ([req isEqualToString:@"setFrame"      ]) { [win setFrame:arg0];    return nil; }
     if ([req isEqualToString:@"setSize"       ]) { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
     if ([req isEqualToString:@"setMinSize"    ]) { [win setContentMinSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
@@ -76,6 +77,7 @@
     if ([req isEqualToString:@"id"            ]) { return [NSNumber numberWithLong:win.windowNumber]; }
     if ([req isEqualToString:@"framerateDrop" ]) { [win framerateDrop:[arg0 longValue]]; return nil; }
     if ([req isEqualToString:@"toggleInspector" ]) { [win.view toggleInspector]; return nil; }
+    if ([req isEqualToString:@"fullscreen"    ]) { [win toggleFullScreen:nil]; return nil; }
     if ([req isEqualToString:@"post" ]) 
     { 
         id payload = [NSString stringWithFormat:@"\"%@\"", [args objectAtIndex:0]];

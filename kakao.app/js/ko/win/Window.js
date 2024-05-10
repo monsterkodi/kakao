@@ -275,6 +275,9 @@ Window = (function ()
             case 'Preferences':
                 return post.emit('loadFile',prefs.store.file)
 
+            case 'Calculator':
+                return this.quickMenu.onKalk()
+
         }
 
     }
@@ -335,7 +338,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _207_14_
+    var _208_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)

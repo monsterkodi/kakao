@@ -15,10 +15,18 @@
 NSDictionary* dictForRect(NSRect rect)
 {
     id dict = [NSMutableDictionary dictionary];
-    [dict setObject:[NSNumber numberWithFloat:rect.origin.x] forKey:@"x"];
-    [dict setObject:[NSNumber numberWithFloat:rect.origin.y] forKey:@"y"];
-    [dict setObject:[NSNumber numberWithFloat:rect.size.width] forKey:@"w"];
+    [dict setObject:[NSNumber numberWithFloat:rect.origin.x]    forKey:@"x"];
+    [dict setObject:[NSNumber numberWithFloat:rect.origin.y]    forKey:@"y"];
+    [dict setObject:[NSNumber numberWithFloat:rect.size.width]  forKey:@"w"];
     [dict setObject:[NSNumber numberWithFloat:rect.size.height] forKey:@"h"];
+    return dict;
+}
+
+NSDictionary* dictForSize(NSSize size)
+{
+    id dict = [NSMutableDictionary dictionary];
+    [dict setObject:[NSNumber numberWithFloat:size.width]  forKey:@"w"];
+    [dict setObject:[NSNumber numberWithFloat:size.height] forKey:@"h"];
     return dict;
 }
 
@@ -34,14 +42,24 @@ NSDictionary* dictForRect(NSRect rect)
     [msg setObject:[NSArray arrayWithObject:[win frameInfo]] forKey:@"args"];
     [Route send:msg win:win];
 }
-- (void) windowDidResize:    (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
-- (void) windowDidMove:      (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
-- (void) windowDidBecomeKey: (NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
-- (void) windowDidResignKey: (NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
-- (void) windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
-- (void) windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
-- (void) windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
-- (BOOL) windowShouldClose:  (NSWindow*)window 
+
+- (void) sendWillResize:(Win*)win newSize:(NSSize)newSize
+{
+    id msg = [NSMutableDictionary dictionary];
+    [msg setObject:@"window.willResize" forKey:@"name"];        
+    [msg setObject:[NSArray arrayWithObjects:[win frameInfo], dictForSize(newSize), nil] forKey:@"args"];
+    [Route send:msg win:win];
+}
+
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize { [self sendWillResize:(Win*)sender newSize:frameSize]; return frameSize; }
+- (void)  windowDidResize:    (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
+- (void)  windowDidMove:      (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
+- (void)  windowDidBecomeKey: (NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
+- (void)  windowDidResignKey: (NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
+- (void)  windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
+- (void)  windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
+- (void)  windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
+- (BOOL)  windowShouldClose:  (NSWindow*)window 
 { 
     if ([[App wins] count] == 1) // make sure the application closes if the last kakao window closes.
         [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
@@ -69,8 +87,9 @@ NSDictionary* dictForRect(NSRect rect)
     }
         
     [animation setAnimationBlockingMode: NSAnimationNonblocking];
-    [animation setDuration: [window animationResizeTime:frame]];     
-    [animation setFrameRate: 0];
+    // [animation setDuration: [window animationResizeTime:frame]];     
+    [animation setDuration: 0.3];     
+    [animation setFrameRate: 60];
     [animation startAnimation]; 
     
     return NO;
@@ -208,7 +227,6 @@ NSDictionary* dictForRect(NSRect rect)
 {
     if ([url isFileURL])
     {
-        // [self.view loadFileRequest:[NSURLRequest requestWithURL:url] allowingReadAccessToURL:[Bundle fileURL:@"/"]]; // ▸ WKNavigation*
         [self.view loadFileRequest:[NSURLRequest requestWithURL:url] allowingReadAccessToURL:[NSURL fileURLWithPath:@"/"]]; // ▸ WKNavigation*
     }
     else
@@ -249,10 +267,24 @@ NSDictionary* dictForRect(NSRect rect)
 
 - (void) setFrame:(id)frame
 {
-    [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
-                                [[frame objectForKey:@"y"] floatValue], 
-                                [[frame objectForKey:@"w"] floatValue], 
-                                [[frame objectForKey:@"h"] floatValue]) display:NO];
+    // [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
+                                // [[frame objectForKey:@"y"] floatValue], 
+                                // [[frame objectForKey:@"w"] floatValue], 
+                                // [[frame objectForKey:@"h"] floatValue]) display:NO animate:NO];
+                                
+    [[self delegate] windowShouldZoom:self toFrame:
+        CGRectMake([[frame objectForKey:@"x"] floatValue], 
+                   [[frame objectForKey:@"y"] floatValue], 
+                   [[frame objectForKey:@"w"] floatValue], 
+                   [[frame objectForKey:@"h"] floatValue])];
+}
+
+- (void) setTopLeft:(id)topLeft
+{
+    float x = [[topLeft objectForKey:@"x"] floatValue];
+    float y = [[topLeft objectForKey:@"y"] floatValue];
+    
+    [self setFrameTopLeftPoint:CGPointMake(x, y)];
 }
 
 - (void) setWidth:(unsigned int)width height:(unsigned int)height

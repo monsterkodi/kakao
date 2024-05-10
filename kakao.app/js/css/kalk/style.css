@@ -1,6 +1,7 @@
 
 body
 {
+    display: none;
     font-family: fontMono;
     font-size: 14px;
 }
@@ -16,19 +17,16 @@ body
 {
     flex: 1 1 0;
     overflow: auto;
-    display: flex;
+    display: none;
     flex-direction: row;
     padding: 0;
     margin-left: 6px;
     margin-right: 6px;
-}
-
-
-#input,
-#sheet
-{
+    margin-bottom: 8px;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 #keys
@@ -39,21 +37,14 @@ body
 
 .sheet-calc
 {
-    border-bottom-left-radius: 12px;
+    padding: 6px;
     flex: 1 1 0;
 }
 
 .sheet-result
 {
-    border-bottom-right-radius: 12px;
+    padding: 6px;
     flex: 1 1 0;
-}
-
-
-.sheet-calc,
-.sheet-result
-{
-    margin-bottom: 8px;
 }
 
 .sheet-line
@@ -77,7 +68,9 @@ body
 
 #input
 {
-    padding-top: 0;
+    flex: 0 0 100px;
+    margin-top: -6px;
+    padding-top: 6px;
     padding-bottom: 0;
     padding-left: 6px;
     padding-right: 6px;
@@ -133,8 +126,7 @@ span.complex
 
 #keys
 {
-    flex: 0 0 0;
-    align-self: center;
+    flex: 0 0;
 }
 
 .key-row

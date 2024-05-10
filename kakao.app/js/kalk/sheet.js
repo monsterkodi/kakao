@@ -13,12 +13,26 @@ class Sheet
     constructor ()
     {
         this.onSheet = this.onSheet.bind(this)
+        this.onResize = this.onResize.bind(this)
         this.view = $("#sheet")
         this.calc = elem({class:'sheet-calc'})
         this.result = elem({class:'sheet-result'})
         this.view.appendChild(this.calc)
         this.view.appendChild(this.result)
         post.on('sheet',this.onSheet)
+        post.on('resize',this.onResize)
+    }
+
+    onResize ()
+    {
+        if (window.innerHeight <= window.WIN_MIN_HEIGHT)
+        {
+            return this.view.style.display = 'none'
+        }
+        else
+        {
+            return this.view.style.display = 'flex'
+        }
     }
 
     async compact ()
@@ -26,19 +40,19 @@ class Sheet
         var info
 
         info = await kakao('win.frameInfo')
-        return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:604})
+        return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:window.WIN_MIN_HEIGHT})
     }
 
     async expand ()
     {
-        var br, info, spaceAbove
+        var info, spaceAbove
 
+        this.view.style.display = 'flex'
         info = await kakao('win.frameInfo')
         spaceAbove = (info.screen.h + info.screen.y) - (info.frame.h + info.frame.y)
-        if (spaceAbove > 25)
+        if (spaceAbove > 34)
         {
-            br = this.view.getBoundingClientRect()
-            return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:_k_.max(654,info.frame.h + 30)})
+            return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:_k_.max(656,info.frame.h + 30)})
         }
     }
 
@@ -61,6 +75,7 @@ class Sheet
             this.calc.appendChild(elem({class:'sheet-line calc',html:''}))
             this.result.appendChild(elem({class:'sheet-line result',html:color(action.val)}))
         }
+        this.result.lastChild.scrollIntoView()
         return this.expand()
     }
 }

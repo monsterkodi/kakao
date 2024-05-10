@@ -20,7 +20,9 @@ center-y()
 // 000   000  000   000  000   000     000   
 // 0000000     0000000   0000000       000   
 
+// initially hidden to prevent flickering on startup
 body
+    display             none
     font-family         fontMono
     font-size           14px
     
@@ -38,32 +40,33 @@ body
 #sheet
     flex                1 1 0
     overflow            auto
-    display             flex
+    display             none
     flex-direction      row
     padding             0
     margin-left         6px
     margin-right        6px
+    margin-bottom       8px
     
-#input
-#sheet
     border-top-left-radius      12px
     border-top-right-radius     12px
+    border-bottom-left-radius   12px
+    border-bottom-right-radius  12px
 
 #keys
     border-bottom-left-radius   12px
     border-bottom-right-radius  12px
 
-.sheet-calc  
-    border-bottom-left-radius   12px
+.sheet-calc 
+    padding                     6px
     flex      1 1 0  
 
 .sheet-result
-    border-bottom-right-radius  12px
+    padding                     6px
     flex      1 1 0               
     
-.sheet-calc  
-.sheet-result
-    margin-bottom  8px
+// .sheet-calc  
+// .sheet-result
+    // margin-bottom  8px
 
 .sheet-line
     white-space         nowrap
@@ -86,8 +89,9 @@ body
 // 000  000   000  000         0000000      000     
 
 #input
-    
-    padding-top         0
+    flex                0 0 100px
+    margin-top          -6px
+    padding-top         6px
     padding-bottom      0
     padding-left        6px
     padding-right       6px
@@ -104,7 +108,6 @@ body
     center-y()
     left                12px
     right               12px
-    // border              1px solid red
 
     font-size           80px
     -webkit-user-select auto
@@ -132,8 +135,8 @@ span
         font-style      italic
     
 #keys
-    flex                0 0 0
-    align-self          center
+    flex                0 0
+    // align-self          center
 
 .key-row
     font-size           60px

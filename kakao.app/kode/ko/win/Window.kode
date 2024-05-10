@@ -158,6 +158,7 @@ function Window extends win.Delegate
             'Close Other Windows'   ➜ ⮐ post.toWins 'closeWindow'
             'Small Browser'         ➜ ⮐ commandline.startCommand 'browse'
             'Preferences'           ➜ ⮐ post.emit 'loadFile' prefs.store.file
+            'Calculator'            ➜ ⮐ @quickMenu.onKalk()
     
         # log 'onMenuAction unhandled' name, trail
             
