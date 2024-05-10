@@ -1,7 +1,7 @@
 name      kakao
 type      module
 notes   
-          kalk   ▸ autoexpand ▸ disable buttons
+          kalk   ▸ disable buttons ▸ color buttons (red backspace)
           clippo ▸ terminal/macro?
           scooter macro?
           context menu include quick menu?

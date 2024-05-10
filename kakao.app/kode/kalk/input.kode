@@ -36,7 +36,6 @@ class Input
         else
             @input.innerHTML = color @plain
             
-        # width: 452+ max font size: 90
         br = @input.getBoundingClientRect()
         cw = 55
         if @plain.length > br.width/cw

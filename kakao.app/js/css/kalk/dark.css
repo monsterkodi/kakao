@@ -43,6 +43,15 @@ span.nan
     color: #f00;
 }
 
+.key.clear,
+
+.key.backspace,
+span.clear,
+span.backspace
+{
+    color: #800;
+}
+
 .key.digit,
 span.digit
 {

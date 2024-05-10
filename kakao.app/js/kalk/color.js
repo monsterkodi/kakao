@@ -17,15 +17,15 @@ class Color
 
     colorize (text)
     {
-        var clss, colorized, index, rng, rngs, _48_29_
+        var clss, colorized, index, rng, rngs, _46_28_
 
         rngs = matchr.ranges(this.config,text)
         colorized = ''
         index = 0
         var list = _k_.list(rngs)
-        for (var _42_16_ = 0; _42_16_ < list.length; _42_16_++)
+        for (var _40_16_ = 0; _40_16_ < list.length; _40_16_++)
         {
-            rng = list[_42_16_]
+            rng = list[_40_16_]
             while (index < rng.start)
             {
                 index += 1
@@ -35,7 +35,7 @@ class Color
             {
                 continue
             }
-            clss = ((_48_29_=rng.value) != null ? _48_29_ : 'text')
+            clss = ((_46_28_=rng.clss) != null ? _46_28_ : 'text')
             colorized += `<span class=\"${clss}\">${rng.match}</span>`
             index = rng.start + rng.match.length
         }

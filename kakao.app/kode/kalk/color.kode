@@ -33,10 +33,8 @@ class Color
     
     colorize: text => 
         
-        # log 'text' text, @config
         rngs = matchr.ranges @config, text
                 
-        # log 'rngs' rngs
         colorized = ''
         index = 0
         for rng in rngs
@@ -45,7 +43,7 @@ class Color
                 colorized += "&nbsp;"
             if index > rng.start
                 continue
-            clss = rng.value ? 'text'
+            clss = rng.clss ? 'text'
             colorized += "<span class=\"#{clss}\">#{rng.match}</span>"
             index = rng.start + rng.match.length
         while index < text.length

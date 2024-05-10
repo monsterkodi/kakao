@@ -106,6 +106,10 @@ toExport["scooter"] = function ()
         compare(scooter('3*2^3^4'),'1072139461476102233493626136964173172062641806115278289878646784')
         compare(scooter('4*2^3^4'),'14134776518227074636666380005943348126619871175004951664972849610340958208')
     })
+    section("smallfloat", function ()
+    {
+        compare(scooter('1/(2^3^4)'),'0.000000000000000000000000414')
+    })
 }
 toExport["scooter"]._section_ = true
 toExport._test_ = true

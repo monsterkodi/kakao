@@ -10,9 +10,20 @@ import kode from "../kode/kode.js"
 
 descience = function (str)
 {
+    var em
+
     if (_k_.in('e+',str))
     {
         str = BigInt(Number.parseFloat(str)).toString()
+    }
+    else if (_k_.in('e-',str))
+    {
+        em = parseInt(str.split('e-')[1])
+        str = Number.parseFloat(str).toFixed(em + 2)
+        while (str.slice(-1)[0] === '0')
+        {
+            str = str.slice(0, -1)
+        }
     }
     return str
 }
@@ -43,7 +54,7 @@ deg = function (str)
         }
         else
         {
-            for (var _38_21_ = i = val.length - 1, _38_35_ = 0; (_38_21_ <= _38_35_ ? i <= 0 : i >= 0); (_38_21_ <= _38_35_ ? ++i : --i))
+            for (var _43_21_ = i = val.length - 1, _43_35_ = 0; (_43_21_ <= _43_35_ ? i <= 0 : i >= 0); (_43_21_ <= _43_35_ ? ++i : --i))
             {
                 if (!(_k_.in(val[i],'0.123456789')))
                 {

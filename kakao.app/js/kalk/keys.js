@@ -38,15 +38,21 @@ class Keys
 
     setKeys (keys1, keys)
     {
-        var row
+        var i, row
 
         this.keys = keys1
     
         this.table.innerHTML = ''
-        var list = _k_.list(keys)
-        for (var _29_16_ = 0; _29_16_ < list.length; _29_16_++)
+        row = elem('tr',{class:'spacing-row'})
+        for (i = 0; i < 5; i++)
         {
-            row = list[_29_16_]
+            row.appendChild(elem('td',{class:'spacing-cell',width:'84px'}))
+        }
+        this.table.appendChild(row)
+        var list = _k_.list(keys)
+        for (var _35_16_ = 0; _35_16_ < list.length; _35_16_++)
+        {
+            row = list[_35_16_]
             this.table.appendChild(row)
         }
     }
@@ -81,12 +87,12 @@ class Keys
 
     numberKeys ()
     {
-        return this.setKeys('numbers',[this.row([this.key('c','tall'),this.key(symbol.sqrt,'op0'),this.key('^','op0'),this.key('/','op1'),this.key('*','op1')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom function'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
+        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op0'),this.key('^','op1'),this.key('/','op1'),this.key('*','op1')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom function'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
     }
 
     functionKeys ()
     {
-        return this.setKeys('functions',[this.row([this.key('c','tall'),this.key(symbol.sqrt,'op0'),this.key(symbol.exp,'op0'),this.key(symbol.oneoverx,'op1'),this.key('*','op1')]),this.row([this.key('sin','function'),this.key('cos','function'),this.key('π','constant'),this.key('-','dot')]),this.row([this.key(symbol.backspace),this.key('tan','function'),this.key('log','function'),this.key(symbol.euler,'constant'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('atan','op1'),this.key('∡','op1'),this.key('ϕ','constant'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit'),this.key(')','bracket')])])
+        return this.setKeys('functions',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op0'),this.key(symbol.exp,'op1'),this.key(symbol.oneoverx,'op1 oneoverx'),this.key('*','op1')]),this.row([this.key('sin','function sin'),this.key('cos','function cos'),this.key('π','constant'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('tan','function tan'),this.key('log','function log'),this.key(symbol.euler,'constant'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('atan','function atan'),this.key('∡','op1'),this.key('ϕ','constant'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit'),this.key(')','bracket')])])
     }
 
     onButton (event)

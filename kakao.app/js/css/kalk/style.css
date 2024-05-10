@@ -132,16 +132,13 @@ span.complex
 .key-row
 {
     font-size: 60px;
-    overflow: visible;
 }
 
 .key
 {
-    vertical-align: top;
-    padding-top: 20px;
+    overflow: hidden;
     font-size: 35px;
-    width: 80px;
-    height: 60px;
+    height: 76px;
     text-align: center;
     border-radius: 10px;
     cursor: pointer;
@@ -158,4 +155,39 @@ span.complex
 {
     text-align: right;
     padding-right: 31px;
+}
+
+
+.key.oneoverx,
+.key.function
+{
+    font-size: 32px;
+}
+
+.key.function
+{
+    padding-right: 6px;
+    margin-right: -6px;
+}
+
+.key.clear
+{
+    vertical-align: top;
+    padding-top: 12px;
+    font-size: 43px;
+}
+
+.key.function.atan
+{
+    font-size: 22px;
+}
+
+.key-table
+{
+    margin-top: -7px;
+}
+
+.spacing-cell
+{
+    padding: 0;
 }
