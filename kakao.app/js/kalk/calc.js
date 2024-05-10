@@ -19,12 +19,9 @@ class Calc
         }
         expr = text.close(expr)
         expr = _k_.trim(expr,' \n')
-        console.log('expr',expr)
-        val = kstr(scooter(expr))
-        console.log('val',scooter(expr))
-        val = val.replace(/Infinity/g,'∞')
+        val = scooter(expr)
         ;(post != null ? post.emit('sheet',{text:expr,val:val}) : undefined)
-        return val = val.replace(/NaN/g,'')
+        return val
     }
 
     static textKey (txt, key)

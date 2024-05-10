@@ -99,7 +99,7 @@ body
     left: 12px;
     right: 12px;
     font-size: 80px;
-    user-select: text;
+    -webkit-user-select: auto;
     white-space: pre;
     pointer-events: all;
     text-align: right;

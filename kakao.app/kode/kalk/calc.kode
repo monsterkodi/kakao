@@ -18,17 +18,11 @@ class Calc
         expr = text.close expr
         expr = trim expr, ' \n'
         
-        log 'expr' expr
-        
-        val = kstr scooter expr
-        
-        log 'val' scooter expr
-        
-        val = val.replace  /Infinity/g, '∞'
-        
+        val = scooter expr
+                
         post?.emit 'sheet' text:expr, val:val
         
-        val = val.replace  /NaN/g, ''
+        val
                 
     @textKey: txt key ->
         
