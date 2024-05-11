@@ -92,8 +92,27 @@ Delegate = (function ()
             case 'Save':
                 return post.toMain('saveBuffer')
 
+            case 'Sin':
+            case 'Cos':
+            case 'Tan':
+            case 'aTan':
+            case 'Log':
+                return post.emit('button',action.toLowerCase())
+
+            case 'Exp':
+                return post.emit('button',symbol.exp)
+
+            case 'Deg2Rad':
+                return post.emit('button',symbol.deg2rad)
+
+            case 'E':
+                return post.emit('button',symbol.euler)
+
             case 'PI':
                 return post.emit('button',symbol.pi)
+
+            case 'PHI':
+                return post.emit('button',symbol.phi)
 
             case 'Plus':
                 return post.emit('button','+')
@@ -110,6 +129,15 @@ Delegate = (function ()
             case 'Sqrt':
                 return post.emit('button',symbol.sqrt)
 
+            case 'Begin':
+                return post.emit('button',symbol.open)
+
+            case 'End':
+                return post.emit('button',symbol.close)
+
+            case 'Del':
+                return post.emit('button',symbol.backspace)
+
             case 'Equals':
                 return post.emit('button','=')
 
@@ -121,7 +149,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (win, info)
     {
-        if ('unhandled' !== window.keys.globalModKeyComboEvent(info.mod,info.key,info.combo,info.event))
+        if ('unhandled' !== window.keys.keyDown(info))
         {
             return stopEvent(info.event)
         }
@@ -141,7 +169,9 @@ Delegate = (function ()
     }
 
     Delegate.prototype["onWindowKeyUp"] = function (win, info)
-    {}
+    {
+        return window.keys.keyUp(info)
+    }
 
     Delegate.prototype["onWindowBlur"] = function (win)
     {}

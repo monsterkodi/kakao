@@ -152,6 +152,10 @@ class Calc
         {
             return txt
         }
+        if (txt === 'NaN')
+        {
+            txt = ''
+        }
         clean = _k_.empty(txt)
         cOnst = text.endsWithConstant(txt)
         value = text.endsWithValue(txt)
@@ -162,10 +166,10 @@ class Calc
         switch (key)
         {
             case symbol.backspace:
-                var list = ['sin','cos','tan','atan','deg','rad','log',symbol.sqrt]
-                for (var _129_22_ = 0; _129_22_ < list.length; _129_22_++)
+                var list = ['sin','cos','tan','atan','deg','rad','log','NaN',symbol.sqrt]
+                for (var _131_22_ = 0; _131_22_ < list.length; _131_22_++)
                 {
-                    f = list[_129_22_]
+                    f = list[_131_22_]
                     if (txt.endsWith(f))
                     {
                         return txt = txt.slice(0, txt.length - f.length)

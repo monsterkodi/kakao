@@ -134,3 +134,15 @@ scoot = s -> Number.parseFloat scooter s
         scooter 'cos(PI/2)' 16  ▸ '0.0000000000000001'
         scooter 'cos(PI/2)' 15  ▸ '0'
         
+    ▸ misc
+    
+        near scoot('log(1/√(𝒆^(16)))'), -8 ▸ true
+        near scoot('log(1/√(𝒆^(6)))'),  -3 ▸ true
+        
+        scooter('1/0')          ▸ '∞'
+        scooter('1/(∞)')        ▸ '0'
+        scooter('𝒆^(0)')       ▸ '1'
+        scooter('∡(π)')         ▸ '180'
+        scooter('180°-π')       ▸ '0'
+        scooter('(1+√(5))/2-ϕ') ▸ '0'
+        

@@ -139,7 +139,6 @@ PHI = (1+sqrt(5))/2
     val = kstr(r)
     val = _k_.trim(val,' \n')
     val = val.replace(/Infinity/g,'∞')
-    val = val.replace(/NaN/g,'')
     val = descience(val)
     if (precision)
     {

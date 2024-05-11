@@ -25,13 +25,31 @@ Edit
     Copy                    cmdctrl+c
     Paste                   cmdctrl+v
     -
-    PI                      shift+p
-    Plus                    p
-    Minus                   m
-    Multiply                t
-    Divide                  d
-    Sqrt                    r
-    Equals                  return
+    Op
+
+        Plus                     a p shift+=
+        Minus                   - s m shift+-
+        Multiply                * t shift+8
+        Divide                  / d
+        Sqrt                    r shift+r
+        Pow                     ^ shift+6
+    Func
+        Sin                     shift+s
+        Cos                     shift+c
+        Tan                     shift+t
+        aTan                    shift+a
+        Log                     shift+l
+        Exp                     shift+x
+        Deg2Rad                 shift+d
+    Const
+        E                       shift+e
+        PI                      shift+p
+        PHI                     shift+f
+    --
+    Del                     backspace shift+backspace
+    Begin                   ( [ shift+9
+    End                     ) ] shift+0
+    Equals                  = return
 
 # 000   000  000  000   000  0000000     0000000   000   000
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000

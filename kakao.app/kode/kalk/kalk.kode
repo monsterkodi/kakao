@@ -62,14 +62,24 @@ function Delegate extends win.Delegate
             'Clear Log' ➜ ⮐ post.emit('sheet' 'clear')
             'Save'      ➜ ⮐ post.toMain 'saveBuffer'
             
+            'Sin' 'Cos' 
+            'Tan' 'aTan' 
+            'Log'       ➜ ⮐ post.emit 'button' action.toLowerCase()
+            'Exp'       ➜ ⮐ post.emit 'button' symbol.exp
+            'Deg2Rad'   ➜ ⮐ post.emit 'button' symbol.deg2rad
+            'E'         ➜ ⮐ post.emit 'button' symbol.euler
             'PI'        ➜ ⮐ post.emit 'button' symbol.pi
+            'PHI'       ➜ ⮐ post.emit 'button' symbol.phi
             'Plus'      ➜ ⮐ post.emit 'button' '+'
             'Minus'     ➜ ⮐ post.emit 'button' '-'
             'Multiply'  ➜ ⮐ post.emit 'button' '*'
             'Divide'    ➜ ⮐ post.emit 'button' '/'
             'Sqrt'      ➜ ⮐ post.emit 'button' symbol.sqrt
+            'Begin'     ➜ ⮐ post.emit 'button' symbol.open
+            'End'       ➜ ⮐ post.emit 'button' symbol.close
+            'Del'       ➜ ⮐ post.emit 'button' symbol.backspace
             'Equals'    ➜ ⮐ post.emit 'button' '='
-            
+
         log 'onMenuAction' action, args
         'unhandled'
             
@@ -81,7 +91,7 @@ function Delegate extends win.Delegate
     
     onWindowKeyDown: win info =>
         
-        ⮐ stopEvent(info.event) if 'unhandled' != window.keys.globalModKeyComboEvent info.mod, info.key, info.combo, info.event
+        ⮐ stopEvent(info.event) if 'unhandled' != window.keys.keyDown info
         
         switch info.combo
             
@@ -90,6 +100,9 @@ function Delegate extends win.Delegate
             'ctrl+x' ➜ ⮐ @cut()
             
     onWindowKeyUp: win info =>
+        
+        window.keys.keyUp info
+        
     onWindowBlur:  win      =>
     onWindowFocus: win      =>
     

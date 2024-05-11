@@ -73,23 +73,23 @@ class Keys
         @setKeys 'numbers' [ # ▾ style
             @row [
                     @key 'c'                'tall clear'
-                    @key symbol.sqrt,       'op1 sqrt'
-                    @key '^'                'op1 pow'
-                    @key '/'                'dot divide'
-                    @key '*'                'dot multiply'
+                    @key symbol.sqrt,       'op0 sqrt'
+                    @key '^'                'op0 pow'
+                    @key '/'                'op1 dot divide'
+                    @key '*'                'op1 dot multiply'
                 ]
             @row [
                     @key '7'                'digit'
                     @key '8'                'digit'
                     @key '9'                'digit'
-                    @key '-'                'dot'
+                    @key '-'                'op2'
                 ]
             @row [
                     @key symbol.backspace,  'backspace'
                     @key '4'                'digit'
                     @key '5'                'digit'
                     @key '6'                'digit'
-                    @key '+'                'dot'
+                    @key '+'                'op2'
                 ]
             @row [
                     @key symbol.func,       'tall bottom func'
@@ -151,10 +151,15 @@ class Keys
     # 000  000   000          000   
     # 000   000  00000000     000   
     
-    globalModKeyComboEvent: mod key combo event ->
+    keyDown: info ->
+        
+        if info.key == 'shift'
+            post.emit 'keys' 'functions'
+            @shiftFunctions = true
 
+        combo = info.combo
         switch combo
-            'tab'                     ➜ ⮐ stopEvent event, @toggleKeys()
+            'tab'                     ➜ ⮐ @toggleKeys()
             '/' '*' '+' '-' '=' '.'   ➜ ⮐ post.emit 'button' combo
             'enter'                   ➜ ⮐ post.emit 'button' '='
             'backspace'               ➜ ⮐ post.emit 'button' symbol.backspace
@@ -162,21 +167,21 @@ class Keys
             'shift+8'                 ➜ ⮐ post.emit 'button' '*'
             'shift+6'                 ➜ ⮐ post.emit 'button' '^'
             'shift+='                 ➜ ⮐ post.emit 'button' '+'
-            'shift+9'                 ➜ ⮐ post.emit 'button' '('
-            'shift+0'                 ➜ ⮐ post.emit 'button' ')'
+            'shift+9'                 ➜ ⮐ post.emit 'button' symbol.open
+            'shift+0'                 ➜ ⮐ post.emit 'button' symbol.close
             'e'                       ➜ ⮐ post.emit 'button' symbol.euler
             'c'                       ➜ ⮐ post.emit 'button' 'c'
-            'p'                       ➜ ⮐ post.emit 'button' 'π'
+            'p'                       ➜ ⮐ post.emit 'button' symbol.pi
             's'                       ➜ ⮐ post.emit 'button' 'sin'
             'shift+s'
             'shift+c'                 ➜ ⮐ post.emit 'button' 'cos'
             't'                       ➜ ⮐ post.emit 'button' 'tan'
-            'd'                       ➜ ⮐ post.emit 'button' '°'
-            'r'                       ➜ ⮐ post.emit 'button' symbol.sqrt
             'l'                       ➜ ⮐ post.emit 'button' 'log'
+            'd'                       ➜ ⮐ post.emit 'button' symbol.deg2rad
+            'r'                       ➜ ⮐ post.emit 'button' symbol.sqrt
             'x'                       ➜ ⮐ post.emit 'button' symbol.exp # eˣ
             'i'                       ➜ ⮐ post.emit 'button' symbol.oneoverx
-            'num lock'                ➜ ⮐ stopEvent event, post.emit 'button' 'c'
+            'num lock'                ➜ ⮐ post.emit 'button' 'c'
             
         if combo.startsWith 'numpad'
             ⮐ post.emit 'button' combo.split(' ')[1]
@@ -184,5 +189,14 @@ class Keys
             ⮐ post.emit 'button' combo
             
         'unhandled'
-            
+        
+    keyUp: info ->
+        
+        log 'up' info
+        
+        if info.key == 'shift'
+            if @shiftFunctions
+                post.emit 'keys' 'numbers'
+                delete @shiftFunctions
+                
 export Keys

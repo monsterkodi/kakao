@@ -113,6 +113,8 @@ class Calc
     @textKey: txt key ->
         
         ⮐ txt if not @activeKey txt, key
+        
+        txt   = '' if txt == 'NaN'
              
         clean = empty txt
         cOnst = text.endsWithConstant   txt
@@ -126,7 +128,7 @@ class Calc
             
             symbol.backspace
             
-                for f in ['sin' 'cos' 'tan' 'atan' 'deg' 'rad' 'log' symbol.sqrt]
+                for f in ['sin' 'cos' 'tan' 'atan' 'deg' 'rad' 'log' 'NaN' symbol.sqrt]
                     if txt.endsWith f
                         ⮐ txt = txt[0..txt.length-f.length]
                     if txt.endsWith f + '('

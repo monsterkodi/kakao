@@ -39,11 +39,15 @@
     white-space: pre;
 }
 
+.input-text span.nan,
+.sheet-line span.nan,
+
 .input-text span.clear,
 .sheet-line span.clear,
 
 .input-text span.backspace,
 .sheet-line span.backspace,
+.key.nan,
 .key.clear,
 .key.backspace
 {
@@ -79,21 +83,21 @@
 .sheet-line span.op0,
 .key.op0
 {
-    color: #fff;
+    color: #88f;
 }
 
 .input-text span.op1,
 .sheet-line span.op1,
 .key.op1
 {
-    color: #aaf;
+    color: #66f;
 }
 
 .input-text span.op2,
 .sheet-line span.op2,
 .key.op2
 {
-    color: #66f;
+    color: #44f;
 }
 
 .input-text span.bracket,

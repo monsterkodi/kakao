@@ -129,6 +129,17 @@ toExport["scooter"] = function ()
         compare(scooter('cos(PI/2)',16),'0.0000000000000001')
         compare(scooter('cos(PI/2)',15),'0')
     })
+    section("misc", function ()
+    {
+        compare(near(scoot('log(1/√(𝒆^(16)))'),-8),true)
+        compare(near(scoot('log(1/√(𝒆^(6)))'),-3),true)
+        compare(scooter('1/0'),'∞')
+        compare(scooter('1/(∞)'),'0')
+        compare(scooter('𝒆^(0)'),'1')
+        compare(scooter('∡(π)'),'180')
+        compare(scooter('180°-π'),'0')
+        compare(scooter('(1+√(5))/2-ϕ'),'0')
+    })
 }
 toExport["scooter"]._section_ = true
 toExport._test_ = true

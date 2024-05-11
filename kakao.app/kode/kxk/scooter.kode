@@ -144,7 +144,7 @@ scooter = str opt ->
     val = kstr r
     val = trim val, ' \n'
     val = val.replace  /Infinity/g, '∞'
-    val = val.replace  /NaN/g, ''
+    # val = val.replace  /NaN/g, ''
     val = descience val
     val = precise val, precision if precision
     val

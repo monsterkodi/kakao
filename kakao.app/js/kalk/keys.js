@@ -114,7 +114,7 @@ class Keys
 
     numberKeys ()
     {
-        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key('^','op1 pow'),this.key('/','dot divide'),this.key('*','dot multiply')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key(symbol.func,'tall bottom func'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom equals')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
+        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op0 sqrt'),this.key('^','op0 pow'),this.key('/','op1 dot divide'),this.key('*','op1 dot multiply')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','op2')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','op2')]),this.row([this.key(symbol.func,'tall bottom func'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom equals')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
     }
 
     functionKeys ()
@@ -132,12 +132,20 @@ class Keys
         return (this.keys === 'numbers' ? this.functionKeys() : this.numberKeys())
     }
 
-    globalModKeyComboEvent (mod, key, combo, event)
+    keyDown (info)
     {
+        var combo
+
+        if (info.key === 'shift')
+        {
+            post.emit('keys','functions')
+            this.shiftFunctions = true
+        }
+        combo = info.combo
         switch (combo)
         {
             case 'tab':
-                return stopEvent(event,this.toggleKeys())
+                return this.toggleKeys()
 
             case '/':
             case '*':
@@ -167,10 +175,10 @@ class Keys
                 return post.emit('button','+')
 
             case 'shift+9':
-                return post.emit('button','(')
+                return post.emit('button',symbol.open)
 
             case 'shift+0':
-                return post.emit('button',')')
+                return post.emit('button',symbol.close)
 
             case 'e':
                 return post.emit('button',symbol.euler)
@@ -179,7 +187,7 @@ class Keys
                 return post.emit('button','c')
 
             case 'p':
-                return post.emit('button','π')
+                return post.emit('button',symbol.pi)
 
             case 's':
                 return post.emit('button','sin')
@@ -191,14 +199,14 @@ class Keys
             case 't':
                 return post.emit('button','tan')
 
+            case 'l':
+                return post.emit('button','log')
+
             case 'd':
-                return post.emit('button','°')
+                return post.emit('button',symbol.deg2rad)
 
             case 'r':
                 return post.emit('button',symbol.sqrt)
-
-            case 'l':
-                return post.emit('button','log')
 
             case 'x':
                 return post.emit('button',symbol.exp)
@@ -207,7 +215,7 @@ class Keys
                 return post.emit('button',symbol.oneoverx)
 
             case 'num lock':
-                return stopEvent(event,post.emit('button','c'))
+                return post.emit('button','c')
 
         }
 
@@ -223,6 +231,19 @@ class Keys
             return post.emit('button',combo)
         }
         return 'unhandled'
+    }
+
+    keyUp (info)
+    {
+        console.log('up',info)
+        if (info.key === 'shift')
+        {
+            if (this.shiftFunctions)
+            {
+                post.emit('keys','numbers')
+                return delete this.shiftFunctions
+            }
+        }
     }
 }
 
