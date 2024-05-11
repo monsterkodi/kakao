@@ -11,7 +11,7 @@ use ../kxk ▪ $ win post stopEvent
 use ◆ symbol keys input sheet 
 
 window.WIN_MIN_WIDTH  = 476
-window.WIN_MIN_HEIGHT = 612
+window.WIN_MIN_HEIGHT  = 596
 
 function Delegate extends win.Delegate
     
@@ -56,6 +56,8 @@ function Delegate extends win.Delegate
 
     onMenuAction: action args =>
 
+        log 'onMenuAction' action, args
+        
         switch action
             
             'Cut'       ➜ ⮐ @cut()

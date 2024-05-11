@@ -11,6 +11,12 @@ use ◆ text
 
 class Calc
     
+    #  0000000    0000000  000000000  000  000   000  00000000        000   000  00000000  000   000  
+    # 000   000  000          000     000  000   000  000             000  000   000        000 000   
+    # 000000000  000          000     000   000 000   0000000         0000000    0000000     00000    
+    # 000   000  000          000     000     000     000             000  000   000          000     
+    # 000   000   0000000     000     000      0      00000000        000   000  00000000     000     
+    
     @activeKey: txt key ->
         
         clean   = empty txt
@@ -58,7 +64,14 @@ class Calc
             '+' '-'             ➜ ⮐ not text.endsWith txt, ['+' '-' '.']
             '.'                 ➜ ⮐ nuber and not float
             symbol.open         ➜ ⮐ not unfin and not cOnst and not close and not value
-            symbol.close        ➜ ⮐ not unfin and text.balance(txt) > 0
+            'blork' symbol.close
+                
+                ⮐ false if unfin or clean
+                ⮐ true if text.balance(txt) > 0
+                ⮐ false if close
+                # log 'close calculation'
+                ⮐ true
+                
             ➜
                 log 'ever come here?' txt, key
                 if key in text.unfinished
@@ -89,11 +102,11 @@ class Calc
         
         val
                 
-    # 000000000  00000000  000   000  000000000  000   000  00000000  000   000  
-    #    000     000        000 000      000     000  000   000        000 000   
-    #    000     0000000     00000       000     0000000    0000000     00000    
-    #    000     000        000 000      000     000  000   000          000     
-    #    000     00000000  000   000     000     000   000  00000000     000     
+    # 000000000  00000000  000   000  000000000        000   000  00000000  000   000  
+    #    000     000        000 000      000           000  000   000        000 000   
+    #    000     0000000     00000       000           0000000    0000000     00000    
+    #    000     000        000 000      000           000  000   000          000     
+    #    000     00000000  000   000     000           000   000  00000000     000     
     
     @textKey: txt key ->
         

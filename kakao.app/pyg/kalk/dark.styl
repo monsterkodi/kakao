@@ -7,8 +7,7 @@
 
 bgColor             = #131313
 keyColor            = #0b0b0b
-keyHoverColor       = #000
-keyActiveColor      = #181818
+keyActiveColor      = #101010
 sheetColor          = #0f0f0f
 frameColor          = #080808
 inputColor          = #181818
@@ -22,7 +21,7 @@ textFocusColor      = #fff
 
 #main
 #input
-    background          #131313
+    background          bgColor
     
 #keys
     background          bgColor
@@ -50,8 +49,9 @@ textFocusColor      = #fff
 // 000  000   000          000     
 // 000   000  00000000     000     
 
+.input-text span
+.sheet-line span
 .key
-span
     background          keyColor
     border              none
     white-space         pre
@@ -85,29 +85,26 @@ span
     z-index             1000
     color               scrollColor
     border              2px solid frameColor
-    &:hover:not(.inactive)
-        background      keyHoverColor
     &:active:not(.inactive)
         background      keyActiveColor
 
-.key:hover:not(.inactive) 
+.key:hover:not(.inactive)
     & .key-wrap
         color           #ddf
-        text-shadow     0 0 30px rgba(175,175,255,1), 0 0 60px rgba(0,0,255,1)
+        text-shadow     0 0 30px rgba(175,175,255,0.8), 0 0 60px rgba(0,0,255,0.8)
         
     &.func .key-wrap
     &.equals .key-wrap
         color           #0f0
-        text-shadow     0 0 30px rgba(0,200,0,1), 0 0 60px rgba(0,155,0,1)
+        text-shadow     0 0 30px rgba(0,200,0,0.8), 0 0 60px rgba(0,155,0,0.8)
         
     &.clear .key-wrap
     &.function .key-wrap
     &.constant .key-wrap
     &.backspace .key-wrap
         color           #ff0
-        text-shadow     0 0 30px rgba(205,0,0,1), 0 0 60px rgba(105,0,0,1)
-    
+        text-shadow     0 0 30px rgba(205,0,0,0.8), 0 0 60px rgba(105,0,0,0.8)
     
 .key.inactive
-    color   bgColor
+    color    bgColor
     

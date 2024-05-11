@@ -16,7 +16,7 @@ import input from "./input.js"
 import sheet from "./sheet.js"
 
 window.WIN_MIN_WIDTH = 476
-window.WIN_MIN_HEIGHT = 612
+window.WIN_MIN_HEIGHT = 596
 
 Delegate = (function ()
 {
@@ -69,6 +69,7 @@ Delegate = (function ()
 
     Delegate.prototype["onMenuAction"] = function (action, args)
     {
+        console.log('onMenuAction',action,args)
         switch (action)
         {
             case 'Cut':

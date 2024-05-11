@@ -90,8 +90,21 @@ class Calc
             case symbol.open:
                 return !unfin && !cOnst && !close && !value
 
+            case 'blork':
             case symbol.close:
-                return !unfin && text.balance(txt) > 0
+                if (unfin || clean)
+                {
+                    return false
+                }
+                if (text.balance(txt) > 0)
+                {
+                    return true
+                }
+                if (close)
+                {
+                    return false
+                }
+                return true
 
             default:
                 console.log('ever come here?',txt,key)

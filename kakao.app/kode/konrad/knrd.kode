@@ -92,8 +92,8 @@ knrd = (files = [], opt = {}) ○->
     
     opt.rerunWhenDirty ?= true
     opt.verbose ?= false
-    log 'opt' opt if opt.verbose
-    log 'files' files if opt.verbose
+    log 'opt' opt if opt.debug
+    log 'files' files if opt.debug
     
     # ● 🔨
             
@@ -124,19 +124,17 @@ knrd = (files = [], opt = {}) ○->
             tgtText =○ fs.read tgtFile
             compText = rule.compile srcText, srcFile
             
-            # log 'tgtText'  tgtFile, tgtText
-            # log 'compText' compText
+            log 'tgtText'  tgtFile, tgtText if opt.debug and opt.verbose
+            log 'compText' compText         if opt.debug and opt.verbose
                 
             if empty compText
                 log y5('✘ '), r5(tilde srcFile), r4('transpiles to empty!')
             else
+                log g2('🔧'), m3 tilde srcFile if opt.verbose
                 if tgtText != compText
                     transpiled++
                     ○ fs.write tgtFile, compText
                     log b5('✔ '), g5 tilde tgtFile
-                else 
-                    if opt.verbose
-                        log g2('▪ '), m3 tilde srcFile
         null
             
     if opt.rerunWhenDirty and transpiled

@@ -90,11 +90,11 @@ knrd = async function (files = [], opt = {})
     }
     opt.rerunWhenDirty = ((_93_23_=opt.rerunWhenDirty) != null ? _93_23_ : true)
     opt.verbose = ((_94_16_=opt.verbose) != null ? _94_16_ : false)
-    if (opt.verbose)
+    if (opt.debug)
     {
         console.log('opt',opt)
     }
-    if (opt.verbose)
+    if (opt.debug)
     {
         console.log('files',files)
     }
@@ -137,24 +137,29 @@ knrd = async function (files = [], opt = {})
             srcText = await fs.read(srcFile)
             tgtText = await fs.read(tgtFile)
             compText = rule.compile(srcText,srcFile)
+            if (opt.debug && opt.verbose)
+            {
+                console.log('tgtText',tgtFile,tgtText)
+            }
+            if (opt.debug && opt.verbose)
+            {
+                console.log('compText',compText)
+            }
             if (_k_.empty(compText))
             {
                 console.log(_k_.y5('✘ '),_k_.r5(tilde(srcFile)),_k_.r4('transpiles to empty!'))
             }
             else
             {
+                if (opt.verbose)
+                {
+                    console.log(_k_.g2('🔧'),_k_.m3(tilde(srcFile)))
+                }
                 if (tgtText !== compText)
                 {
                     transpiled++
                     await fs.write(tgtFile,compText)
                     console.log(_k_.b5('✔ '),_k_.g5(tilde(tgtFile)))
-                }
-                else
-                {
-                    if (opt.verbose)
-                    {
-                        console.log(_k_.g2('▪ '),_k_.m3(tilde(srcFile)))
-                    }
                 }
             }
         }
@@ -172,9 +177,9 @@ knrd.info = async function ()
 
     files = await gatherFiles()
     var list = _k_.list(files)
-    for (var _155_13_ = 0; _155_13_ < list.length; _155_13_++)
+    for (var _153_13_ = 0; _153_13_ < list.length; _153_13_++)
     {
-        file = list[_155_13_]
+        file = list[_153_13_]
         if (rule = rules[slash.ext(file)])
         {
             srcFile = srcForFile(file)

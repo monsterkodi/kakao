@@ -62,7 +62,7 @@ ParseUtils = (function ()
     {
         if ((tokens[0] != null ? tokens[0].type : undefined) === 'nl' && cond)
         {
-            if ((tokens[1] != null ? tokens[1].col : undefined) === tok.col)
+            if ((tokens[1] != null ? tokens[1].col : undefined) === (tok != null ? tok.col : undefined))
             {
                 return this.shiftNewline(rule,tokens)
             }
