@@ -55,17 +55,16 @@ span
     background          keyColor
     border              none
     white-space         pre
-    &.nan
-        color           #f00
     &.clear
     &.backspace
         color           #800
+    &.numbers
     &.digit
         color           #88f
     &.function
         color           #f80
     &.constant
-        color           #ff0
+        color           #fc0
     &.op0
         color           #fff
     &.op1
@@ -74,8 +73,9 @@ span
         color           #66f
     &.bracket
         color           #333
+    &.func
     &.equals
-        color           #444
+        color           #0a0
     &.dot
     &.exponent
     &.complex
@@ -85,10 +85,29 @@ span
     z-index             1000
     color               scrollColor
     border              2px solid frameColor
-    &:hover
+    &:hover:not(.inactive)
         background      keyHoverColor
-        color           textFocusColor
-    &:active
+    &:active:not(.inactive)
         background      keyActiveColor
 
+.key:hover:not(.inactive) 
+    & .key-wrap
+        color           #ddf
+        text-shadow     0 0 30px rgba(175,175,255,1), 0 0 60px rgba(0,0,255,1)
+        
+    &.func .key-wrap
+    &.equals .key-wrap
+        color           #0f0
+        text-shadow     0 0 30px rgba(0,200,0,1), 0 0 60px rgba(0,155,0,1)
+        
+    &.clear .key-wrap
+    &.function .key-wrap
+    &.constant .key-wrap
+    &.backspace .key-wrap
+        color           #ff0
+        text-shadow     0 0 30px rgba(205,0,0,1), 0 0 60px rgba(105,0,0,1)
+    
+    
+.key.inactive
+    color   bgColor
     

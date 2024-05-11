@@ -9,7 +9,52 @@
 use .. ◆ symbol calc
 
 ▸ calc
-
+    
+    # 000  000   000   0000000    0000000  000000000  000  000   000  00000000  
+    # 000  0000  000  000   000  000          000     000  000   000  000       
+    # 000  000 0 000  000000000  000          000     000   000 000   0000000   
+    # 000  000  0000  000   000  000          000     000     000     000       
+    # 000  000   000  000   000   0000000     000     000      0      00000000  
+    
+    ▸ inactive
+        #  if input contents is this ▾     then these keys ▾ should be inactive
+        list = [
+            [['1°'      symbol.euler, symbol.pi],   ['0' '1' symbol.euler, symbol.phi]]
+            [['2°' '0.' symbol.euler, symbol.pi],   [        symbol.euler, symbol.pi]]            
+            [[          symbol.rad2deg, '0.'],      [        symbol.rad2deg]]
+            [['3°' '0.' ],                          [        symbol.deg2rad]]
+            [['' '4^'],                             ['^']]
+            [['' '5.' '5°' '5.5'],                  ['.']]
+            [['' '6.' '6/'],                        ['/']]
+            [['' '7.' '7*'],                        ['*']]
+            [['' '(' '2+2' '((2+2)*3)'],            [symbol.close]]
+            [['' '5.' '5°' '5.5'],                  [symbol.dot]]
+            [['' '4^' '6/'],                        [symbol.pow]]
+            [['9.'],                                [symbol.sqrt]]            
+        ]
+        for l in list
+            for t in l[0]
+                for k in l[1]
+                    calc.activeKey t, k ▸ false
+                
+    #  0000000    0000000  000000000  000  000   000  00000000  
+    # 000   000  000          000     000  000   000  000       
+    # 000000000  000          000     000   000 000   0000000   
+    # 000   000  000          000     000     000     000       
+    # 000   000   0000000     000     000      0      00000000  
+    
+    ▸ active
+        #  if input contents is this ▾     then these keys ▾ should be active
+        list = [
+            [['1' '(1+2)' '5.5' symbol.euler, symbol.pi], [symbol.deg2rad]]
+            [['1' '(1+2)' '5.5' symbol.phi],              [symbol.pow]]
+            [['1' '(1+2)' '5.5' '9/10+12' symbol.phi],   [symbol.oneoverx]]
+        ]
+        for l in list
+            for t in l[0]
+                for k in l[1]
+                    calc.activeKey t, k ▸ true
+    
     ▸ calc
         
         list = [
@@ -76,5 +121,7 @@ use .. ◆ symbol calc
         for l in list
             for t in l[0]
                 calc.textKey t, l[1] ▸ t
+                
+    
             
             

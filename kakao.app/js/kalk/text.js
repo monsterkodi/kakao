@@ -55,7 +55,12 @@ class Text
 
     static constants = [symbol.euler,'π','ϕ','°']
 
+    static ops = ['+','-','/','*','^','(']
+
     static unfinished = ['.','+','-','/','*','^','(']
+
+    static open = ['(']
+undefined
 
     static endsWith (txt, chars)
     {
@@ -70,9 +75,9 @@ class Text
             return false
         }
         var list = _k_.list(chars)
-        for (var _47_14_ = 0; _47_14_ < list.length; _47_14_++)
+        for (var _49_14_ = 0; _49_14_ < list.length; _49_14_++)
         {
-            c = list[_47_14_]
+            c = list[_49_14_]
             if (txt.endsWith(c))
             {
                 return true
@@ -114,6 +119,16 @@ class Text
     static endsWithUnfinished (txt)
     {
         return this.endsWith(txt,this.unfinished)
+    }
+
+    static endsWithOp (txt)
+    {
+        return this.endsWith(txt,this.ops)
+    }
+
+    static endsWithOpen (txt)
+    {
+        return this.endsWith(txt,this.open)
     }
 
     static removeZeroInfinity (txt)

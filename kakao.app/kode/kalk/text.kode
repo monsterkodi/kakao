@@ -35,7 +35,9 @@ class Text
       
     @numbers:     ['0' '1' '2' '3' '4' '5' '6' '7' '8' '9']
     @constants:   [symbol.euler, 'π' 'ϕ' '°']
+    @ops:         ['+' '-' '/' '*' '^' '(']
     @unfinished:  ['.' '+' '-' '/' '*' '^' '(']
+    @open:        ['(']]
     
     @endsWith: txt chars -> 
         
@@ -58,6 +60,8 @@ class Text
     @endsWithNumber:     txt -> @endsWith txt, @numbers
     @endsWithConstant:   txt -> @endsWith txt, @constants
     @endsWithUnfinished: txt -> @endsWith txt, @unfinished
+    @endsWithOp:         txt -> @endsWith txt, @ops
+    @endsWithOpen:       txt -> @endsWith txt, @open
     @removeZeroInfinity: txt -> 
         
         popped = @popChar txt

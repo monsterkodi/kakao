@@ -87,6 +87,7 @@ class Input
         {
             fs = 90
         }
+        post.emit('inputText',this.plain)
         return this.input.style.fontSize = `${fs}px`
     }
 

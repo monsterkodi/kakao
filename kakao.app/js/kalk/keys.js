@@ -6,6 +6,8 @@ let elem = kxk.elem
 let post = kxk.post
 let stopEvent = kxk.stopEvent
 
+import calc from "./calc.js"
+
 class Keys
 {
     constructor ()
@@ -14,12 +16,15 @@ class Keys
         this.key = this.key.bind(this)
         this.row = this.row.bind(this)
         this.setKeys = this.setKeys.bind(this)
+        this.onInputText = this.onInputText.bind(this)
         this.onKeys = this.onKeys.bind(this)
         this.view = $('#keys')
         this.table = elem('table',{class:'key-table',cellSpacing:'7px'})
         this.view.appendChild(this.table)
         this.numberKeys()
         post.on('keys',this.onKeys)
+        post.on('inputText',this.onInputText)
+        this.onInputText()
     }
 
     onKeys (action)
@@ -27,13 +32,29 @@ class Keys
         switch (action)
         {
             case 'functions':
-                return this.functionKeys()
-
+                this.functionKeys()
+                break
             case 'numbers':
-                return this.numberKeys()
-
+                this.numberKeys()
+                break
         }
 
+        return this.onInputText()
+    }
+
+    onInputText (text = '')
+    {
+        var active, wrap, wraps
+
+        wraps = document.querySelectorAll('.key-wrap')
+        var list = _k_.list(wraps)
+        for (var _35_17_ = 0; _35_17_ < list.length; _35_17_++)
+        {
+            wrap = list[_35_17_]
+            active = calc.activeKey(text,wrap.innerHTML)
+            wrap.parentElement.classList.toggle('inactive',!active)
+            wrap.classList.toggle('inactive',!active)
+        }
     }
 
     setKeys (keys1, keys)
@@ -50,9 +71,9 @@ class Keys
         }
         this.table.appendChild(row)
         var list = _k_.list(keys)
-        for (var _35_16_ = 0; _35_16_ < list.length; _35_16_++)
+        for (var _50_16_ = 0; _50_16_ < list.length; _50_16_++)
         {
-            row = list[_35_16_]
+            row = list[_50_16_]
             this.table.appendChild(row)
         }
     }
@@ -87,12 +108,12 @@ class Keys
 
     numberKeys ()
     {
-        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key('^','op1 pow'),this.key('/','dot divide'),this.key('*','dot multiply')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key('ƒ','tall bottom'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom equals')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
+        return this.setKeys('numbers',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key('^','op1 pow'),this.key('/','dot divide'),this.key('*','dot multiply')]),this.row([this.key('7','digit'),this.key('8','digit'),this.key('9','digit'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','digit'),this.key('5','digit'),this.key('6','digit'),this.key('+','dot')]),this.row([this.key(symbol.func,'tall bottom func'),this.key('1','digit'),this.key('2','digit'),this.key('3','digit'),this.key('=','tall bottom equals')]),this.row([this.key('0','wide digit right'),this.key('.','dot')])])
     }
 
     functionKeys ()
     {
-        return this.setKeys('functions',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key(symbol.exp,'op1 exp'),this.key(symbol.oneoverx,'op1 oneoverx'),this.key('*','dot multiply')]),this.row([this.key('sin','function sin'),this.key('cos','function cos'),this.key('π','constant pi'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('tan','function tan'),this.key('log','function log'),this.key(symbol.euler,'constant euler'),this.key('+','dot')]),this.row([this.key('ℵ','tall bottom digit'),this.key('atan','function atan'),this.key('∡','op1 deg rad2deg'),this.key('ϕ','constant phi'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit rad deg2rad'),this.key(')','bracket')])])
+        return this.setKeys('functions',[this.row([this.key('c','tall clear'),this.key(symbol.sqrt,'op1 sqrt'),this.key(symbol.exp,'op1 exp'),this.key(symbol.oneoverx,'op1 oneoverx'),this.key('*','dot multiply')]),this.row([this.key('sin','function sin'),this.key('cos','function cos'),this.key('π','constant pi'),this.key('-','dot')]),this.row([this.key(symbol.backspace,'backspace'),this.key('tan','function tan'),this.key('log','function log'),this.key(symbol.euler,'constant euler'),this.key('+','dot')]),this.row([this.key(symbol.numbers,'tall bottom numbers'),this.key('atan','function atan'),this.key('∡','op1 rad2deg'),this.key('ϕ','constant phi'),this.key('=','tall bottom equals')]),this.row([this.key('(','bracket'),this.key('°','digit deg2rad'),this.key(')','bracket')])])
     }
 
     onButton (event)

@@ -191,7 +191,12 @@ span.complex
 
 .key.function.atan
 {
-    font-size: 26px;
+    font-size: 28px;
+}
+
+.key.function.atan .key-wrap
+{
+    padding-left: 3px;
 }
 
 .key-table
@@ -211,12 +216,12 @@ span.complex
 
 .key-wrap
 {
-    pointer-events: none;
     position: absolute;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    pointer-events: none;
 }
 
 .key.clear .key-wrap

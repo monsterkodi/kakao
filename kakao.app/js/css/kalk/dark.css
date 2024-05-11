@@ -37,12 +37,6 @@ span
     white-space: pre;
 }
 
-.key.nan,
-span.nan
-{
-    color: #f00;
-}
-
 .key.clear,
 
 .key.backspace,
@@ -52,7 +46,10 @@ span.backspace
     color: #800;
 }
 
+.key.numbers,
+
 .key.digit,
+span.numbers,
 span.digit
 {
     color: #88f;
@@ -67,7 +64,7 @@ span.function
 .key.constant,
 span.constant
 {
-    color: #ff0;
+    color: #fc0;
 }
 
 .key.op0,
@@ -94,10 +91,13 @@ span.bracket
     color: #333;
 }
 
+.key.func,
+
 .key.equals,
+span.func,
 span.equals
 {
-    color: #444;
+    color: #0a0;
 }
 
 .key.dot,
@@ -119,13 +119,47 @@ span.complex
     border: 2px solid #080808;
 }
 
-.key:hover
+.key:hover:not(.inactive)
 {
     background: #000;
-    color: #fff;
 }
 
-.key:active
+.key:active:not(.inactive)
 {
     background: #181818;
+}
+
+.key:hover:not(.inactive)
+{
+}
+
+.key:hover:not(.inactive) .key-wrap
+{
+    color: #ddf;
+    text-shadow: 0 0 30px rgba(175,175,255,1), 0 0 60px rgba(0,0,255,1);
+}
+
+
+.key:hover:not(.inactive).func .key-wrap,
+.key:hover:not(.inactive).equals .key-wrap
+{
+    color: #0f0;
+    text-shadow: 0 0 30px rgba(0,200,0,1), 0 0 60px rgba(0,155,0,1);
+}
+
+
+
+
+.key:hover:not(.inactive).clear .key-wrap,
+.key:hover:not(.inactive).function .key-wrap,
+.key:hover:not(.inactive).constant .key-wrap,
+.key:hover:not(.inactive).backspace .key-wrap
+{
+    color: #ff0;
+    text-shadow: 0 0 30px rgba(205,0,0,1), 0 0 60px rgba(105,0,0,1);
+}
+
+.key.inactive
+{
+    color: #131313;
 }
