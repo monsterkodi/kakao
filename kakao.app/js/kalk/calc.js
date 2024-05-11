@@ -31,9 +31,11 @@ class Calc
             case symbol.numbers:
                 return true
 
-            case 'π':
-            case 'ϕ':
+            case symbol.pi:
+            case symbol.phi:
             case symbol.euler:
+                return !cOnst && !deg2rad && !dot
+
             case '1':
             case '2':
             case '3':
@@ -44,14 +46,11 @@ class Calc
             case '8':
             case '9':
             case '0':
-                return !cOnst && !deg2rad && !dot
+                return !cOnst && !deg2rad
 
             case 'c':
             case symbol.backspace:
                 return !clean
-
-            case '=':
-                return !clean && !unfin
 
             case 'sin':
             case 'cos':
@@ -68,6 +67,10 @@ class Calc
 
             case '/':
             case '*':
+            case '=':
+            case symbol.oneoverx:
+            case symbol.sqrt:
+            case symbol.exp:
             case symbol.pow:
                 return apply
 
@@ -77,13 +80,6 @@ class Calc
             case symbol.deg2rad:
                 return apply && !deg2rad
 
-            case symbol.oneoverx:
-            case symbol.sqrt:
-            case symbol.exp:
-            case '∡':
-            case '°':
-                return apply && !deg2rad
-
             case '+':
             case '-':
                 return !text.endsWith(txt,['+','-','.'])
@@ -91,19 +87,25 @@ class Calc
             case '.':
                 return nuber && !float
 
-            case '(':
-                return !unfin && !cOnst
+            case symbol.open:
+                return !unfin && !cOnst && !close && !value
 
-            case ')':
+            case symbol.close:
                 return !unfin && text.balance(txt) > 0
 
             default:
+                console.log('ever come here?',txt,key)
                 if (_k_.in(key,text.unfinished))
             {
                 return !_k_.empty(txt) && !text.endsWithUnfinished(txt)
             }
+            else
+            {
+                console.log('fallthrough')
+            }
         }
 
+        console.log('false?',txt,key)
         return false
     }
 

@@ -1,12 +1,42 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
-var build, deg, descience, pow, scooter
+var build, deg, descience, noTrailingZeros, pow, precise, scooter
 
 import pepe from "./pepe.js"
 import kstr from "./kstr.js"
 
 import kode from "../kode/kode.js"
 
+
+noTrailingZeros = function (str)
+{
+    while (str.slice(-1)[0] === '0')
+    {
+        str = str.slice(0, -1)
+    }
+    if (str.slice(-1)[0] === '.')
+    {
+        str = str.slice(0, -1)
+    }
+    return str
+}
+
+precise = function (str, precision)
+{
+    var val
+
+    if (Math.abs(str) < precise)
+    {
+        return '0'
+    }
+    val = parseFloat(str)
+    if (val < 1)
+    {
+        str = val.toFixed(precision)
+        str = noTrailingZeros(str)
+    }
+    return str
+}
 
 descience = function (str)
 {
@@ -20,10 +50,7 @@ descience = function (str)
     {
         em = parseInt(str.split('e-')[1])
         str = Number.parseFloat(str).toFixed(em + 2)
-        while (str.slice(-1)[0] === '0')
-        {
-            str = str.slice(0, -1)
-        }
+        str = noTrailingZeros(str)
     }
     return str
 }
@@ -54,7 +81,7 @@ deg = function (str)
         }
         else
         {
-            for (var _43_21_ = i = val.length - 1, _43_35_ = 0; (_43_21_ <= _43_35_ ? i <= 0 : i >= 0); (_43_21_ <= _43_35_ ? ++i : --i))
+            for (var _76_21_ = i = val.length - 1, _76_35_ = 0; (_76_21_ <= _76_35_ ? i <= 0 : i >= 0); (_76_21_ <= _76_35_ ? ++i : --i))
             {
                 if (!(_k_.in(val[i],'0.123456789')))
                 {
@@ -85,10 +112,19 @@ build = function (str)
     return str
 }
 
-scooter = function (str)
+scooter = function (str, opt)
 {
-    var b, k, ost, r, val
+    var b, k, ost, precision, r, val
 
+    if (_k_.isNum(opt))
+    {
+        opt = {precision:opt}
+    }
+    else
+    {
+        opt = (opt != null ? opt : {})
+    }
+    precision = opt.precision || 0
     ost = str
     str = str.replace(/log\(/g,'Math.log(')
     str = str.replace(/∡/,'deg')
@@ -110,6 +146,10 @@ PHI = (1+sqrt(5))/2
     val = val.replace(/Infinity/g,'∞')
     val = val.replace(/NaN/g,'')
     val = descience(val)
+    if (precision)
+    {
+        val = precise(val,precision)
+    }
     return val
 }
 

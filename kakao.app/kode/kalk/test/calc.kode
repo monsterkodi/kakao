@@ -17,23 +17,22 @@ use .. ◆ symbol calc
     # 000  000   000  000   000   0000000     000     000      0      00000000  
     
     ▸ inactive
-        #  if input contents is this ▾     then these keys ▾ should be inactive
-        list = [
-            [['1°'      symbol.euler, symbol.pi],   ['0' '1' symbol.euler, symbol.phi]]
-            [['2°' '0.' symbol.euler, symbol.pi],   [        symbol.euler, symbol.pi]]            
-            [[''        symbol.rad2deg, '0.'],      [        symbol.rad2deg]]
-            [[''        symbol.deg2rad, '0.'],      [        symbol.deg2rad]]
-            [['' '8°' '0.' '4^' '6/'],              [symbol.oneoverx, symbol.exp]]
-            [['' '4^'],                             ['^']]
-            [['' '0.' '8°' '5.5'],                  ['.']]
-            [['' '0.' '6/'],                        ['/']]
-            [['' '0.' '7*'],                        ['*']]
-            [['' '(' '2+2' '((2+2)*3)'],            [symbol.close]]
-            [['' '5.' '8°' '5.5'],                  [symbol.dot]]
-            [['' '4^' '6/'],                        [symbol.pow]]
-            # [['' '0.' '8°'],                        [symbol.sqrt]]            
-            [['' '8°'],                        [symbol.sqrt]]            
-            # [['' '0.' '8°'],                        [symbol.sqrt]]            
+        #  if input contents is this ▾                      then these keys ▾ should be inactive
+        list = [    
+            [[        '8°'                                  symbol.phi],    ['0' '1' symbol.euler, symbol.phi]]
+            [[   '0.' '8°'                                  symbol.phi],    [        symbol.euler, symbol.pi]]            
+            [['' '0.'                                                 ],    [        symbol.rad2deg]]
+            [['' '0.'                                                 ],    [        symbol.deg2rad]]
+            [['' '0.' '4^' '6/'],                                           [symbol.oneoverx, symbol.exp]]
+            [['' '4^'],                                                     ['^']]
+            [['' '0.' '8°' '5.5'],                                          ['.']]
+            [['' '0.' '6/'],                                                ['/']]
+            [['' '0.' '7*'],                                                ['*']]
+            [['' '5.' '8°' '5.5'],                                          [symbol.dot]]
+            [['' '4^' '6/'],                                                [symbol.pow]]
+            [['' '0.'],                                                     [symbol.sqrt]]            
+            [['' '(' '2+2' '((2+2)*3)'],                                    [symbol.close]]
+            [[   '(' '2+2' '((2+2)*3)'],                                    [symbol.open]]
         ]
         for l in list
             for t in l[0]
@@ -47,13 +46,15 @@ use .. ◆ symbol calc
     # 000   000   0000000     000     000      0      00000000  
     
     ▸ active
-        #  if input contents is this ▾     then these keys ▾ should be active
+        #  if input contents is this ▾                      then these keys ▾ should be active
         list = [
-            [['1' '(1+2)' '5.5' symbol.euler, symbol.pi], [symbol.deg2rad]]
-            [['1' '(1+2)' '5.5' symbol.euler, symbol.pi], [symbol.rad2deg]]
-            [['1' '(1+2)' '5.5' symbol.phi],              [symbol.pow]]
-            [['1' '(1+2)' '5.5' '9/10+12' symbol.phi],    [symbol.oneoverx]]
-            [['1' '(1+2)' '5.5' '9/10+12' symbol.phi, '8/' '5*'],    ['+''-']]
+            [[        '1' '(1+2)' '5.5'                     symbol.phi],    [symbol.deg2rad]]
+            [[        '1' '(1+2)' '5.5'                     symbol.phi],    [symbol.rad2deg]]
+            [[        '1' '(1+2)' '5.5'                     symbol.phi],    [symbol.pow]]
+            [[        '1' '(1+2)' '5.5' '9/10+12'           symbol.phi],    [symbol.oneoverx]]
+            [[        '1' '(1+2)' '5.5' '8°'                symbol.phi],    [symbol.sqrt]]
+            [[        '1' '(1+2)' '5.5' '9/10+12' '8/' '5*' symbol.phi],    ['+''-']]
+            [['' '0.' '1'         '5.5' '9/10+12' '8/' '5*'],               ['1''2''9''0']]
         ]
         for l in list
             for t in l[0]

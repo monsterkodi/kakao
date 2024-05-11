@@ -110,6 +110,13 @@ toExport["scooter"] = function ()
     {
         compare(scooter('1/(2^3^4)'),'0.000000000000000000000000414')
     })
+    section("precision", function ()
+    {
+        compare(scooter('cos(PI/2)'),'0.0000000000000000612')
+        compare(scooter('cos(PI/2)',17),'0.00000000000000006')
+        compare(scooter('cos(PI/2)',16),'0.0000000000000001')
+        compare(scooter('cos(PI/2)',15),'0')
+    })
 }
 toExport["scooter"]._section_ = true
 toExport._test_ = true

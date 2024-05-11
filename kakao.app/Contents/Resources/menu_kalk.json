@@ -1,0 +1,39 @@
+{
+  "kalk": {
+    "About": "cmdctrl+alt+/",
+    "-": null,
+    "Clear": "c",
+    "Clear Log": "k",
+    "Clear All": "cmdctrl+k",
+    "--": null,
+    "Quit": "cmdctrl+q"
+  },
+  "Edit": {
+    "Cut": "cmdctrl+x",
+    "Copy": "cmdctrl+c",
+    "Paste": "cmdctrl+v",
+    "-": null,
+    "plus": "+ p",
+    "minus": "- m",
+    "multiply": "* t",
+    "divide": "/ d",
+    "sqrt": "r",
+    "equals": "= return"
+  },
+  "Window": {
+    "Close": "cmdctrl+w",
+    "-": null,
+    "Toggle Menu": "alt+m",
+    "Toggle Scheme": "alt+i ctrl+i",
+    "--": null,
+    "Minimize": "alt+ctrl+shift+m",
+    "Maximize": "alt+ctrl+m",
+    "Hide": "command+h h",
+    "---": null,
+    "Focus Next": "cmdctrl+`",
+    "Focus Previous": "cmdctrl+shift+`",
+    "----": null,
+    "Reload": "alt+cmdctrl+l",
+    "DevTools": "alt+cmdctrl+i"
+  }
+}

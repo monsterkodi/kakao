@@ -14,6 +14,28 @@
 use ◆ pepe kstr
 use ../kode/kode
 
+noTrailingZeros = str ->
+    
+        while str[-1] == '0' ➜ str = str[0...-1]
+        if    str[-1] == '.' ➜ str = str[0...-1]
+        str
+
+precise = str precision ->
+    
+    ⮐ '0' if Math.abs(str) < precise
+    val = parseFloat str
+    if val < 1 
+        # log 'precise' val, precision, val.toFixed precision
+        str = val.toFixed precision
+        str = noTrailingZeros str
+    str
+
+# 0000000    00000000   0000000   0000000  000  00000000  000   000   0000000  00000000  
+# 000   000  000       000       000       000  000       0000  000  000       000       
+# 000   000  0000000   0000000   000       000  0000000   000 0 000  000       0000000   
+# 000   000  000            000  000       000  000       000  0000  000       000       
+# 0000000    00000000  0000000    0000000  000  00000000  000   000   0000000  00000000  
+
 descience = str -> # convert scientific/exponential notation
     
     if 'e+' in str
@@ -21,9 +43,14 @@ descience = str -> # convert scientific/exponential notation
     else if 'e-' in str
         em = parseInt str.split('e-')[1]
         str = Number.parseFloat(str).toFixed(em+2)
-        while str[-1] == '0'
-            str = str[0...-1]
+        str = noTrailingZeros str
     str
+
+# 00000000    0000000   000   000  
+# 000   000  000   000  000 0 000  
+# 00000000   000   000  000000000  
+# 000        000   000  000   000  
+# 000         0000000   00     00  
 
 pow = str ->
     
@@ -32,6 +59,12 @@ pow = str ->
         str = "pow(#{splt[0]}, #{pow splt[1..].join '^'})"
     str
     
+# 0000000    00000000   0000000   
+# 000   000  000       000        
+# 000   000  0000000   000  0000  
+# 000   000  000       000   000  
+# 0000000    00000000   0000000   
+
 deg = str ->
     
     splt = str.split '°'
@@ -49,6 +82,12 @@ deg = str ->
             str = pre + "rad(#{val})" + deg splt[1..].join '°'
     str
     
+# 0000000    000   000  000  000      0000000    
+# 000   000  000   000  000  000      000   000  
+# 0000000    000   000  000  000      000   000  
+# 000   000  000   000  000  000      000   000  
+# 0000000     0000000   000  0000000  0000000    
+
 build = str ->
     
     pep = pepe str
@@ -67,7 +106,14 @@ build = str ->
 #      000  000       000   000  000   000     000     000       000   000  
 # 0000000    0000000   0000000    0000000      000     00000000  000   000  
 
-scooter = str ->
+scooter = str opt ->
+    
+    if opt is num
+        opt = precision:opt
+    else
+        opt ?= {}
+        
+    precision = opt.precision or 0
     
     ost = str
     str = str.replace /log\(/g, 'Math.log('
@@ -98,6 +144,7 @@ scooter = str ->
     val = val.replace  /Infinity/g, '∞'
     val = val.replace  /NaN/g, ''
     val = descience val
+    val = precise val, precision if precision
     val
     
 scooter.near = a b -> Math.abs(a-b) < 0.000000000000001

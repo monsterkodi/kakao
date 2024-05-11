@@ -10,6 +10,7 @@ use ../kakao
 use ../kxk ▪ $ win post stopEvent
 use ◆ symbol keys input sheet 
 
+window.WIN_MIN_WIDTH  = 476
 window.WIN_MIN_HEIGHT = 612
 
 function Delegate extends win.Delegate
@@ -31,14 +32,14 @@ function Delegate extends win.Delegate
     onWindowWithoutStash: ->  
         
         # log 'onWindowWithoutStash'
-        kakao 'win.setSize'    476 window.WIN_MIN_HEIGHT
+        kakao 'win.setSize'    window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.center'
         
     onWindowCreated: =>
         
         # log 'onWindowCreated'
-        kakao 'win.setMinSize' 476 window.WIN_MIN_HEIGHT
-        kakao 'win.setMaxSize' 476 6660
+        kakao 'win.setMinSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
+        kakao 'win.setMaxSize' window.WIN_MIN_WIDTH, 6666
         
     onWindowResize: => post.emit 'resize'
         
@@ -60,7 +61,8 @@ function Delegate extends win.Delegate
             'Cut'       ➜ ⮐ @cut()
             'Copy'      ➜ ⮐ @cpy()
             'Paste'     ➜ ⮐ @paste()
-            'Clear All' ➜ post.emit('sheet' 'clear'); post.emit('menuAction' 'Clear')
+            'Clear All' ➜ post.emit('sheet' 'collapse'); post.emit('menuAction' 'Clear')
+            'Clear Log' ➜ post.emit('sheet' 'clear')
             'Save'      ➜ post.toMain 'saveBuffer'
             
     #  0000000   0000000   00     00  0000000     0000000   

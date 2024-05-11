@@ -15,6 +15,7 @@ import keys from "./keys.js"
 import input from "./input.js"
 import sheet from "./sheet.js"
 
+window.WIN_MIN_WIDTH = 476
 window.WIN_MIN_HEIGHT = 612
 
 Delegate = (function ()
@@ -45,14 +46,14 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
     {
-        kakao('win.setSize',476,window.WIN_MIN_HEIGHT)
+        kakao('win.setSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
         return kakao('win.center')
     }
 
     Delegate.prototype["onWindowCreated"] = function ()
     {
-        kakao('win.setMinSize',476,window.WIN_MIN_HEIGHT)
-        return kakao('win.setMaxSize',476,6660)
+        kakao('win.setMinSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
+        return kakao('win.setMaxSize',window.WIN_MIN_WIDTH,6666)
     }
 
     Delegate.prototype["onWindowResize"] = function ()
@@ -80,8 +81,11 @@ Delegate = (function ()
                 return this.paste()
 
             case 'Clear All':
-                post.emit('sheet','clear')
+                post.emit('sheet','collapse')
                 return post.emit('menuAction','Clear')
+
+            case 'Clear Log':
+                return post.emit('sheet','clear')
 
             case 'Save':
                 return post.toMain('saveBuffer')

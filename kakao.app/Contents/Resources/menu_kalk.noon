@@ -9,7 +9,8 @@ kalk
     About                   cmdctrl+alt+/
     -
     Clear                   c
-    Clear All               cmdctrl+k k 
+    Clear Log               k
+    Clear All               cmdctrl+k
     --
     Quit                    cmdctrl+q
 
@@ -23,6 +24,13 @@ Edit
     Cut                     cmdctrl+x
     Copy                    cmdctrl+c
     Paste                   cmdctrl+v
+    -
+    plus                    + p
+    minus                   - m
+    multiply                * t
+    divide                  / d
+    sqrt                    r
+    equals                  = return
 
 # 000   000  000  000   000  0000000     0000000   000   000
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -33,7 +41,7 @@ Edit
 Window
     Close                   cmdctrl+w
     -
-    Toggle Menu             alt+m m
+    Toggle Menu             alt+m
     Toggle Scheme           alt+i ctrl+i
     --
     Minimize                alt+ctrl+shift+m

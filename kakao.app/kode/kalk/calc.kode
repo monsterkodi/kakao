@@ -28,35 +28,45 @@ class Calc
         
         switch key
             
-            symbol.func, symbol.numbers     ➜ ⮐ true
+            symbol.func 
+            symbol.numbers      ➜ ⮐ true
             
-            'π' 'ϕ' symbol.euler
-            '1''2''3''4''5''6''7''8''9''0'  ➜ ⮐ not cOnst and not deg2rad and not dot
+            symbol.pi 
+            symbol.phi 
+            symbol.euler        ➜ ⮐ not cOnst and not deg2rad and not dot
             
-            'c' symbol.backspace            ➜ ⮐ not clean
-            '='                             ➜ ⮐ not clean and not unfin
+            '1''2''3''4''5'
+            '6''7''8''9''0'     ➜ ⮐ not cOnst and not deg2rad
+            
+            'c'
+            symbol.backspace    ➜ ⮐ not clean
             
             'sin' 'cos' 'tan' 'atan' 'deg' 'rad' 'log' 
 
                 ⮐ false if dot or close
                 ⮐ true
 
-            '/' '*'
-            symbol.pow        ➜ ⮐ apply
-                
-            symbol.rad2deg    ➜ ⮐ apply and not rad2deg
-            symbol.deg2rad    ➜ ⮐ apply and not deg2rad
+            '/' '*' '=' 
             symbol.oneoverx
             symbol.sqrt
-            symbol.exp
-            '∡' '°'           ➜ ⮐ apply and not deg2rad #or txt[-1] == ')'
-            '+' '-'           ➜ ⮐ not text.endsWith txt, ['+' '-' '.']
-            '.'               ➜ ⮐ nuber and not float
-            '('               ➜ ⮐ not unfin and not cOnst
-            ')'               ➜ ⮐ not unfin and text.balance(txt) > 0
+            symbol.exp          
+            symbol.pow          ➜ ⮐ apply
+            
+            symbol.rad2deg      ➜ ⮐ apply and not rad2deg
+            symbol.deg2rad      ➜ ⮐ apply and not deg2rad
+            
+            '+' '-'             ➜ ⮐ not text.endsWith txt, ['+' '-' '.']
+            '.'                 ➜ ⮐ nuber and not float
+            symbol.open         ➜ ⮐ not unfin and not cOnst and not close and not value
+            symbol.close        ➜ ⮐ not unfin and text.balance(txt) > 0
             ➜
+                log 'ever come here?' txt, key
                 if key in text.unfinished
                     ⮐ not empty txt and not text.endsWithUnfinished(txt)
+                else
+                    log 'fallthrough'
+                    
+        log 'false?' txt, key
                     
         false
 
@@ -90,10 +100,10 @@ class Calc
         ⮐ txt if not @activeKey txt, key
              
         clean = empty txt
-        cOnst = text.endsWithConstant txt
-        value = text.endsWithValue txt
-        float = text.endsWithFloat txt
-        nuber = text.endsWithNumber txt
+        cOnst = text.endsWithConstant   txt
+        value = text.endsWithValue      txt
+        float = text.endsWithFloat      txt
+        nuber = text.endsWithNumber     txt
         
         switch key
                         

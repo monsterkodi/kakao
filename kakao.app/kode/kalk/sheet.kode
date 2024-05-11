@@ -32,6 +32,7 @@ class Sheet
         
         info =○ kakao 'win.frameInfo'
         kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:window.WIN_MIN_HEIGHT
+        @
         
     expand: ○->
         
@@ -45,18 +46,21 @@ class Sheet
             
             add = @view.scrollHeight-@view.getBoundingClientRect().height+4
             kakao 'win.setFrame' x:info.frame.x, y:info.frame.y, w:476 h:max 656, info.frame.h+add
+        @
         
+    clear: =>
+        
+        @calc.innerHTML   = ''
+        @result.innerHTML = ''
+        @
+            
     onSheet: action =>
         
         # log 'onSheet action' action, action.text, kstr action.val
         
         if
-            action == 'clear' 
-                
-                @calc.innerHTML = ''
-                @result.innerHTML = ''
-                @compact()
-                ⮐ 
+            action == 'clear'    ➜ ⮐ @clear()
+            action == 'collapse' ➜ ⮐ @clear().compact()
 
             action.text != kstr action.val
                 

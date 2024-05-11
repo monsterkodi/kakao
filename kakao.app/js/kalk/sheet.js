@@ -13,6 +13,7 @@ class Sheet
     constructor ()
     {
         this.onSheet = this.onSheet.bind(this)
+        this.clear = this.clear.bind(this)
         this.onResize = this.onResize.bind(this)
         this.view = $("#sheet")
         this.calc = elem({class:'sheet-calc'})
@@ -40,7 +41,8 @@ class Sheet
         var info
 
         info = await kakao('win.frameInfo')
-        return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:window.WIN_MIN_HEIGHT})
+        kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:window.WIN_MIN_HEIGHT})
+        return this
     }
 
     async expand ()
@@ -52,18 +54,27 @@ class Sheet
         if (spaceAbove > 34)
         {
             add = this.view.scrollHeight - this.view.getBoundingClientRect().height + 4
-            return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:_k_.max(656,info.frame.h + add)})
+            kakao('win.setFrame',{x:info.frame.x,y:info.frame.y,w:476,h:_k_.max(656,info.frame.h + add)})
         }
+        return this
+    }
+
+    clear ()
+    {
+        this.calc.innerHTML = ''
+        this.result.innerHTML = ''
+        return this
     }
 
     onSheet (action)
     {
         if (action === 'clear')
         {
-            this.calc.innerHTML = ''
-            this.result.innerHTML = ''
-            this.compact()
-            return
+            return this.clear()
+        }
+        else if (action === 'collapse')
+        {
+            return this.clear().compact()
         }
         else if (action.text !== kstr(action.val))
         {
