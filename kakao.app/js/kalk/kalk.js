@@ -92,6 +92,9 @@ Delegate = (function ()
             case 'Save':
                 return post.toMain('saveBuffer')
 
+            case 'PI':
+                return post.emit('button',symbol.pi)
+
             case 'Plus':
                 return post.emit('button','+')
 

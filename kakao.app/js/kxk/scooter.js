@@ -57,13 +57,7 @@ descience = function (str)
 
 pow = function (str)
 {
-    var splt
-
-    splt = str.split('^')
-    if (splt.length > 1)
-    {
-        str = `pow(${splt[0]}, ${pow(splt.slice(1).join('^'))})`
-    }
+    str = str.replace(/\^/g,'**')
     return str
 }
 
@@ -81,7 +75,7 @@ deg = function (str)
         }
         else
         {
-            for (var _76_21_ = i = val.length - 1, _76_35_ = 0; (_76_21_ <= _76_35_ ? i <= 0 : i >= 0); (_76_21_ <= _76_35_ ? ++i : --i))
+            for (var _77_21_ = i = val.length - 1, _77_35_ = 0; (_77_21_ <= _77_35_ ? i <= 0 : i >= 0); (_77_21_ <= _77_35_ ? ++i : --i))
             {
                 if (!(_k_.in(val[i],'0.123456789')))
                 {
@@ -127,7 +121,8 @@ scooter = function (str, opt)
     precision = opt.precision || 0
     ost = str
     str = str.replace(/log\(/g,'Math.log(')
-    str = str.replace(/∡/,'deg')
+    str = str.replace(/\//g,' / ')
+    str = str.replace(/∡/g,'deg')
     str = str.replace(/√/g,'sqrt')
     str = str.replace(/π/g,'PI')
     str = str.replace(/ϕ/g,'PHI')

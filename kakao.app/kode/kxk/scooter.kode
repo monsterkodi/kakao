@@ -54,9 +54,10 @@ descience = str -> # convert scientific/exponential notation
 
 pow = str ->
     
-    splt = str.split '^'
-    if splt.length > 1
-        str = "pow(#{splt[0]}, #{pow splt[1..].join '^'})"
+    # splt = str.split '^'
+    # if splt.length > 1
+        # str = "pow(#{splt[0]}, #{pow splt[1..].join '^'})"
+    str = str.replace /\^/g, '**'
     str
     
 # 0000000    00000000   0000000   
@@ -118,7 +119,8 @@ scooter = str opt ->
     ost = str
     str = str.replace /log\(/g, 'Math.log('
     
-    str = str.replace /∡/,  'deg'
+    str = str.replace /\//g,  ' / '
+    str = str.replace /∡/g,  'deg'
     str = str.replace /√/g, 'sqrt'
     str = str.replace /π/g, 'PI'
     str = str.replace /ϕ/g, 'PHI'

@@ -22,7 +22,7 @@ class Input
         @input = elem class:'input-text' 'tab-index': 1
         @view.appendChild elem class:'input-frame' child:@input
                 
-    backspace:       -> @setText text.popChar @text()
+    # backspace:       -> @setText text.popChar @text()
     appendText: text -> @setText @text() + text
     textLength:      -> @text().length
     clear:           => @setText(''); delete @forceBracket
@@ -50,7 +50,7 @@ class Input
     onButton: key =>
         
         switch key
-            symbol.backspace ➜ @backspace()
+            # symbol.backspace ➜ @backspace()
             'ƒ' ➜ post.emit 'keys' 'functions'
             'ℵ' ➜ post.emit 'keys' 'numbers'
             'c' ➜ @clear()

@@ -42,6 +42,7 @@ class Kode
             js = @compile text, file
             eval js
         catch err
+            log js
             error err
             throw err
         

@@ -7,7 +7,7 @@
 ###
 
 use ../kxk ▪ scooter kstr post
-use ◆ text 
+use ◆ text
 
 class Calc
     
@@ -115,15 +115,26 @@ class Calc
         ⮐ txt if not @activeKey txt, key
              
         clean = empty txt
-        cOnst = text.endsWithConstant txt
-        value = text.endsWithValue    txt
-        float = text.endsWithFloat    txt
-        nuber = text.endsWithNumber   txt
+        cOnst = text.endsWithConstant   txt
+        value = text.endsWithValue      txt
+        float = text.endsWithFloat      txt
+        nuber = text.endsWithNumber     txt
+        unfin = text.endsWithUnfinished txt
         open  = txt[-1] == symbol.open
         
         switch key
+            
+            symbol.backspace
+            
+                for f in ['sin' 'cos' 'tan' 'atan' 'deg' 'rad' 'log' symbol.sqrt]
+                    if txt.endsWith f
+                        ⮐ txt = txt[0..txt.length-f.length]
+                    if txt.endsWith f + '('
+                        ⮐ txt = txt[0..txt.length-f.length-1]
+            
+                txt = txt[0..-2]
                         
-            'sin' 'cos' 'tan' 'atan' symbol.sqrt, 'deg' 'rad' 'log'
+            symbol.sqrt, 'sin' 'cos' 'tan' 'atan' 'deg' 'rad' 'log'
 
                 if not empty(txt) and text.endsWithValue(txt) 
                     txt = @calc key + '(' + txt
@@ -133,7 +144,7 @@ class Calc
             symbol.exp        ➜ if open or clean ➜ txt += symbol.euler+'^' else txt = @calc symbol.euler+'^(' + txt + ')'
             '°'               ➜ txt += key 
             '='               ➜ txt = @calc txt
-            symbol.oneoverx   ➜ if clean ➜ txt = '1/' else txt = @calc '1/(' + txt + ')'
+            symbol.oneoverx   ➜ if open or clean or unfin ➜ txt += '1/' else txt = @calc '1/(' + txt + ')'
             '∡'               ➜ txt = @calc '∡(' + txt + ')'
             '+' '-'           ➜ txt += key 
             '.'               ➜ txt += key 

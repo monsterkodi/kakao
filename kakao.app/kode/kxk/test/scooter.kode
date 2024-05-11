@@ -26,6 +26,16 @@ scoot = s -> Number.parseFloat scooter s
         scoot   '9*-3'          ▸ -27
         scoot   '-2*-2'         ▸ 4
         scoot   '3*3*3'         ▸ 27    
+        
+    ▸ divide
+        
+        scoot   '1/2'           ▸ 0.5
+        scoot   '1/-4'          ▸ -0.25
+        scoot   '-2/-4'         ▸ 0.5
+        scoot   '-2/8'          ▸ -0.25
+        scoot   '1/1/1/1'       ▸ 1
+        scoot   '20/2/5'        ▸ 2
+    
         scooter '1/0'           ▸ '∞'
         scoot   '1/0'           ▸ NaN
         scoot   '0/0'           ▸ NaN
@@ -35,13 +45,16 @@ scoot = s -> Number.parseFloat scooter s
     
         scoot   '2^2'           ▸ 4
         scoot   '2^-2'          ▸ 0.25
-        return
+
         scoot   '2^0.5'         ▸ Math.sqrt 2
               
         scoot   '2^2^2'         ▸ 16
         scoot   '2^3^4'         ▸ Math.pow(2, Math.pow(3, 4))
         scoot   '2^(3^4)'       ▸ Math.pow(2, Math.pow(3, 4))
         scoot   '(2^3)^4'       ▸ 4096
+        
+        scoot   '2^3+1'         ▸ 9
+        scoot   '2^(3+1)'       ▸ 16
 
     ▸ constants
     
@@ -104,8 +117,10 @@ scoot = s -> Number.parseFloat scooter s
     ▸ bigint 
     
         scooter '2^3^4'         ▸ '2417851639229258349412352'
-        scooter '3*2^3^4'       ▸ '1072139461476102233493626136964173172062641806115278289878646784'
-        scooter '4*2^3^4'       ▸ '14134776518227074636666380005943348126619871175004951664972849610340958208'
+        scooter '3*2^3^4'       ▸ '7253554917687775048237056'
+        scooter '4*2^3^4'       ▸ '9671406556917033397649408'
+        scooter '(3*2)^3^4'     ▸ '1072139461476102233493626136964173172062641806115278289878646784'
+        scooter '(4*2)^3^4'     ▸ '14134776518227074636666380005943348126619871175004951664972849610340958208'
         
     ▸ smallfloat
     

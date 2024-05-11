@@ -32,11 +32,6 @@ class Input
         this.view.appendChild(elem({class:'input-frame',child:this.input}))
     }
 
-    backspace ()
-    {
-        return this.setText(text.popChar(this.text()))
-    }
-
     appendText (text)
     {
         return this.setText(this.text() + text)
@@ -95,9 +90,6 @@ class Input
     {
         switch (key)
         {
-            case symbol.backspace:
-                return this.backspace()
-
             case 'ƒ':
                 return post.emit('keys','functions')
 

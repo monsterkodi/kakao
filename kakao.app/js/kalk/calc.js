@@ -146,7 +146,7 @@ class Calc
 
     static textKey (txt, key)
     {
-        var clean, cOnst, float, nuber, open, value
+        var clean, cOnst, f, float, nuber, open, unfin, value
 
         if (!this.activeKey(txt,key))
         {
@@ -157,14 +157,31 @@ class Calc
         value = text.endsWithValue(txt)
         float = text.endsWithFloat(txt)
         nuber = text.endsWithNumber(txt)
+        unfin = text.endsWithUnfinished(txt)
         open = txt.slice(-1)[0] === symbol.open
         switch (key)
         {
+            case symbol.backspace:
+                var list = ['sin','cos','tan','atan','deg','rad','log',symbol.sqrt]
+                for (var _129_22_ = 0; _129_22_ < list.length; _129_22_++)
+                {
+                    f = list[_129_22_]
+                    if (txt.endsWith(f))
+                    {
+                        return txt = txt.slice(0, txt.length - f.length)
+                    }
+                    if (txt.endsWith(f + '('))
+                    {
+                        return txt = txt.slice(0, txt.length - f.length - 1)
+                    }
+                }
+                txt = txt.slice(0, -1)
+                break
+            case symbol.sqrt:
             case 'sin':
             case 'cos':
             case 'tan':
             case 'atan':
-            case symbol.sqrt:
             case 'deg':
             case 'rad':
             case 'log':
@@ -187,7 +204,7 @@ class Calc
                 txt = this.calc(txt)
                 break
             case symbol.oneoverx:
-                clean ? txt = '1/' : txt = this.calc('1/(' + txt + ')')
+                open || clean || unfin ? txt += '1/' : txt = this.calc('1/(' + txt + ')')
                 break
             case '∡':
                 txt = this.calc('∡(' + txt + ')')
