@@ -11,7 +11,7 @@ class Calc
 {
     static activeKey (txt, key)
     {
-        var clean, cOnst, deg2rad, dot, float, nuber, open, rad2deg, unfin, value
+        var apply, clean, close, cOnst, deg2rad, dot, float, nuber, open, rad2deg, unfin, value
 
         clean = _k_.empty(txt)
         cOnst = text.endsWithConstant(txt)
@@ -19,10 +19,12 @@ class Calc
         float = text.endsWithFloat(txt)
         nuber = text.endsWithNumber(txt)
         unfin = text.endsWithUnfinished(txt)
-        open = text.endsWithOpen(txt)
+        open = txt.slice(-1)[0] === symbol.open
+        close = txt.slice(-1)[0] === symbol.close
         deg2rad = txt.slice(-1)[0] === symbol.deg2rad
         rad2deg = txt.slice(-1)[0] === symbol.rad2deg
         dot = txt.slice(-1)[0] === symbol.dot
+        apply = !unfin && !clean
         switch (key)
         {
             case symbol.func:
@@ -58,47 +60,42 @@ class Calc
             case 'deg':
             case 'rad':
             case 'log':
-            case symbol.sqrt:
-            case symbol.exp:
-                if (unfin)
+                if (dot || close)
                 {
                     return false
                 }
                 return true
 
+            case '/':
+            case '*':
             case symbol.pow:
-                return !unfin && !dot && !clean
+                return apply
 
             case symbol.rad2deg:
-                return !unfin && !dot && !rad2deg
+                return apply && !rad2deg
 
             case symbol.deg2rad:
-                return !unfin && !dot && !deg2rad
+                return apply && !deg2rad
 
             case symbol.oneoverx:
+            case symbol.sqrt:
+            case symbol.exp:
             case '∡':
             case '°':
-                return !unfin && !clean && txt.slice(-1)[0] !== '°'
+                return apply && !deg2rad
 
             case '+':
             case '-':
-                return !text.endsWith(txt,['+','-','.','/','*'])
-
-            case '/':
-            case '*':
-                return !clean && !text.endsWith(txt,['+','-','.','/','*'])
+                return !text.endsWith(txt,['+','-','.'])
 
             case '.':
-                return text.endsWithNumber(txt) && !text.endsWithFloat(txt)
+                return nuber && !float
 
             case '(':
-                if (!text.endsWithUnfinished(txt) && !text.endsWithConstant(txt))
-                {
-                    return
-                }
-                break
+                return !unfin && !cOnst
+
             case ')':
-                return !text.endsWithUnfinished(txt) && text.balance(txt) > 0
+                return !unfin && text.balance(txt) > 0
 
             default:
                 if (_k_.in(key,text.unfinished))
@@ -194,12 +191,14 @@ class Calc
                     txt += key
                 }
                 break
-            case 'π':
             case symbol.euler:
-                if (!text.endsWithConstant(txt))
+            case symbol.phi:
+            case symbol.pi:
+                if (value)
                 {
-                    txt += key
+                    txt += '*'
                 }
+                txt += key
                 break
             case '(':
                 if (!text.endsWithUnfinished(txt) && !text.endsWithConstant(txt))

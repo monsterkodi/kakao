@@ -21,16 +21,19 @@ use .. ◆ symbol calc
         list = [
             [['1°'      symbol.euler, symbol.pi],   ['0' '1' symbol.euler, symbol.phi]]
             [['2°' '0.' symbol.euler, symbol.pi],   [        symbol.euler, symbol.pi]]            
-            [[          symbol.rad2deg, '0.'],      [        symbol.rad2deg]]
-            [['3°' '0.' ],                          [        symbol.deg2rad]]
+            [[''        symbol.rad2deg, '0.'],      [        symbol.rad2deg]]
+            [[''        symbol.deg2rad, '0.'],      [        symbol.deg2rad]]
+            [['' '8°' '0.' '4^' '6/'],              [symbol.oneoverx, symbol.exp]]
             [['' '4^'],                             ['^']]
-            [['' '5.' '5°' '5.5'],                  ['.']]
-            [['' '6.' '6/'],                        ['/']]
-            [['' '7.' '7*'],                        ['*']]
+            [['' '0.' '8°' '5.5'],                  ['.']]
+            [['' '0.' '6/'],                        ['/']]
+            [['' '0.' '7*'],                        ['*']]
             [['' '(' '2+2' '((2+2)*3)'],            [symbol.close]]
-            [['' '5.' '5°' '5.5'],                  [symbol.dot]]
+            [['' '5.' '8°' '5.5'],                  [symbol.dot]]
             [['' '4^' '6/'],                        [symbol.pow]]
-            [['9.'],                                [symbol.sqrt]]            
+            # [['' '0.' '8°'],                        [symbol.sqrt]]            
+            [['' '8°'],                        [symbol.sqrt]]            
+            # [['' '0.' '8°'],                        [symbol.sqrt]]            
         ]
         for l in list
             for t in l[0]
@@ -47,8 +50,10 @@ use .. ◆ symbol calc
         #  if input contents is this ▾     then these keys ▾ should be active
         list = [
             [['1' '(1+2)' '5.5' symbol.euler, symbol.pi], [symbol.deg2rad]]
+            [['1' '(1+2)' '5.5' symbol.euler, symbol.pi], [symbol.rad2deg]]
             [['1' '(1+2)' '5.5' symbol.phi],              [symbol.pow]]
-            [['1' '(1+2)' '5.5' '9/10+12' symbol.phi],   [symbol.oneoverx]]
+            [['1' '(1+2)' '5.5' '9/10+12' symbol.phi],    [symbol.oneoverx]]
+            [['1' '(1+2)' '5.5' '9/10+12' symbol.phi, '8/' '5*'],    ['+''-']]
         ]
         for l in list
             for t in l[0]

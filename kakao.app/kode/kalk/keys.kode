@@ -19,7 +19,7 @@ class Keys
         @numberKeys()
         post.on 'keys'      @onKeys
         post.on 'inputText' @onInputText
-        @onInputText()
+        @update()
         
     onKeys: action =>
         
@@ -27,9 +27,13 @@ class Keys
             'functions' ➜ @functionKeys()
             'numbers'   ➜ @numberKeys()
             
-        @onInputText()
+        @update()
+        
+    update: -> @onInputText window.input.plain
             
-    onInputText: text='' =>
+    onInputText: text =>
+        
+        log 'onInputText' text
         
         wraps = document.querySelectorAll('.key-wrap')
         for wrap in wraps

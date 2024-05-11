@@ -24,7 +24,7 @@ class Keys
         this.numberKeys()
         post.on('keys',this.onKeys)
         post.on('inputText',this.onInputText)
-        this.onInputText()
+        this.update()
     }
 
     onKeys (action)
@@ -39,18 +39,24 @@ class Keys
                 break
         }
 
-        return this.onInputText()
+        return this.update()
     }
 
-    onInputText (text = '')
+    update ()
+    {
+        return this.onInputText(window.input.plain)
+    }
+
+    onInputText (text)
     {
         var active, wrap, wraps
 
+        console.log('onInputText',text)
         wraps = document.querySelectorAll('.key-wrap')
         var list = _k_.list(wraps)
-        for (var _35_17_ = 0; _35_17_ < list.length; _35_17_++)
+        for (var _39_17_ = 0; _39_17_ < list.length; _39_17_++)
         {
-            wrap = list[_35_17_]
+            wrap = list[_39_17_]
             active = calc.activeKey(text,wrap.innerHTML)
             wrap.parentElement.classList.toggle('inactive',!active)
             wrap.classList.toggle('inactive',!active)
@@ -71,9 +77,9 @@ class Keys
         }
         this.table.appendChild(row)
         var list = _k_.list(keys)
-        for (var _50_16_ = 0; _50_16_ < list.length; _50_16_++)
+        for (var _54_16_ = 0; _54_16_ < list.length; _54_16_++)
         {
-            row = list[_50_16_]
+            row = list[_54_16_]
             this.table.appendChild(row)
         }
     }

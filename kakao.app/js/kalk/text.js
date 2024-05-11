@@ -59,9 +59,6 @@ class Text
 
     static unfinished = ['.','+','-','/','*','^','(']
 
-    static open = ['(']
-undefined
-
     static endsWith (txt, chars)
     {
         var c
@@ -75,9 +72,9 @@ undefined
             return false
         }
         var list = _k_.list(chars)
-        for (var _49_14_ = 0; _49_14_ < list.length; _49_14_++)
+        for (var _48_14_ = 0; _48_14_ < list.length; _48_14_++)
         {
-            c = list[_49_14_]
+            c = list[_48_14_]
             if (txt.endsWith(c))
             {
                 return true
@@ -124,11 +121,6 @@ undefined
     static endsWithOp (txt)
     {
         return this.endsWith(txt,this.ops)
-    }
-
-    static endsWithOpen (txt)
-    {
-        return this.endsWith(txt,this.open)
     }
 
     static removeZeroInfinity (txt)
