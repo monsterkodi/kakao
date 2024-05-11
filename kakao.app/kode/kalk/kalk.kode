@@ -11,7 +11,7 @@ use ../kxk ▪ $ win post stopEvent
 use ◆ symbol keys input sheet 
 
 window.WIN_MIN_WIDTH  = 476
-window.WIN_MIN_HEIGHT  = 596
+window.WIN_MIN_HEIGHT = 596
 
 function Delegate extends win.Delegate
     
@@ -26,18 +26,15 @@ function Delegate extends win.Delegate
         
     onWindowWillShow: ->
     
-        # log 'onWindowWillShow'
         document.body.style.display = 'inherit'
 
     onWindowWithoutStash: ->  
         
-        # log 'onWindowWithoutStash'
         kakao 'win.setSize'    window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.center'
         
     onWindowCreated: =>
         
-        # log 'onWindowCreated'
         kakao 'win.setMinSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.setMaxSize' window.WIN_MIN_WIDTH, 6666
         
@@ -56,16 +53,24 @@ function Delegate extends win.Delegate
 
     onMenuAction: action args =>
 
-        log 'onMenuAction' action, args
-        
         switch action
             
             'Cut'       ➜ ⮐ @cut()
             'Copy'      ➜ ⮐ @cpy()
             'Paste'     ➜ ⮐ @paste()
-            'Clear All' ➜ post.emit('sheet' 'collapse'); post.emit('menuAction' 'Clear')
-            'Clear Log' ➜ post.emit('sheet' 'clear')
-            'Save'      ➜ post.toMain 'saveBuffer'
+            'Clear All' ➜ ⮐ post.emit('sheet' 'collapse') and post.emit('menuAction' 'Clear')
+            'Clear Log' ➜ ⮐ post.emit('sheet' 'clear')
+            'Save'      ➜ ⮐ post.toMain 'saveBuffer'
+            
+            'Plus'      ➜ ⮐ post.emit 'button' '+'
+            'Minus'     ➜ ⮐ post.emit 'button' '-'
+            'Multiply'  ➜ ⮐ post.emit 'button' '*'
+            'Divide'    ➜ ⮐ post.emit 'button' '/'
+            'Sqrt'      ➜ ⮐ post.emit 'button' symbol.sqrt
+            'Equals'    ➜ ⮐ post.emit 'button' '='
+            
+        log 'onMenuAction' action, args
+        'unhandled'
             
     #  0000000   0000000   00     00  0000000     0000000   
     # 000       000   000  000   000  000   000  000   000  
@@ -82,6 +87,10 @@ function Delegate extends win.Delegate
             'ctrl+v' ➜ ⮐ @paste()
             'ctrl+c' ➜ ⮐ @cpy()
             'ctrl+x' ➜ ⮐ @cut()
+            
+    onWindowKeyUp: win info =>
+    onWindowBlur:  win      =>
+    onWindowFocus: win      =>
     
     #  0000000   0000000   00000000   000   000        00000000    0000000    0000000  000000000  00000000    
     # 000       000   000  000   000   000 000         000   000  000   000  000          000     000         

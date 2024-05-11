@@ -26,6 +26,9 @@ Delegate = (function ()
         this["cut"] = this["cut"].bind(this)
         this["cpy"] = this["cpy"].bind(this)
         this["currentSelection"] = this["currentSelection"].bind(this)
+        this["onWindowFocus"] = this["onWindowFocus"].bind(this)
+        this["onWindowBlur"] = this["onWindowBlur"].bind(this)
+        this["onWindowKeyUp"] = this["onWindowKeyUp"].bind(this)
         this["onWindowKeyDown"] = this["onWindowKeyDown"].bind(this)
         this["onMenuAction"] = this["onMenuAction"].bind(this)
         this["onCalc"] = this["onCalc"].bind(this)
@@ -69,7 +72,6 @@ Delegate = (function ()
 
     Delegate.prototype["onMenuAction"] = function (action, args)
     {
-        console.log('onMenuAction',action,args)
         switch (action)
         {
             case 'Cut':
@@ -82,8 +84,7 @@ Delegate = (function ()
                 return this.paste()
 
             case 'Clear All':
-                post.emit('sheet','collapse')
-                return post.emit('menuAction','Clear')
+                return post.emit('sheet','collapse') && post.emit('menuAction','Clear')
 
             case 'Clear Log':
                 return post.emit('sheet','clear')
@@ -91,8 +92,28 @@ Delegate = (function ()
             case 'Save':
                 return post.toMain('saveBuffer')
 
+            case 'Plus':
+                return post.emit('button','+')
+
+            case 'Minus':
+                return post.emit('button','-')
+
+            case 'Multiply':
+                return post.emit('button','*')
+
+            case 'Divide':
+                return post.emit('button','/')
+
+            case 'Sqrt':
+                return post.emit('button',symbol.sqrt)
+
+            case 'Equals':
+                return post.emit('button','=')
+
         }
 
+        console.log('onMenuAction',action,args)
+        return 'unhandled'
     }
 
     Delegate.prototype["onWindowKeyDown"] = function (win, info)
@@ -115,6 +136,15 @@ Delegate = (function ()
         }
 
     }
+
+    Delegate.prototype["onWindowKeyUp"] = function (win, info)
+    {}
+
+    Delegate.prototype["onWindowBlur"] = function (win)
+    {}
+
+    Delegate.prototype["onWindowFocus"] = function (win)
+    {}
 
     Delegate.prototype["currentSelection"] = function ()
     {

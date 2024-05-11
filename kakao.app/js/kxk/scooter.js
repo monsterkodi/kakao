@@ -133,7 +133,7 @@ scooter = function (str, opt)
     str = str.replace(/ϕ/g,'PHI')
     str = str.replace(/𝒆/g,'E')
     str = str.replace(/∞/g,'Infinity')
-    b = `{PI, E, sqrt, pow, cos, sin, tan, acos, asin, atan} = Math
+    b = `{PI, E, sqrt, pow, exp, cos, sin, tan, acos, asin, atan} = Math
 rad = d -> PI*d/180.0
 deg = r -> r*180.0/PI
 PHI = (1+sqrt(5))/2

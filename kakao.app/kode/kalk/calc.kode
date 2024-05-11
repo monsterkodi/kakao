@@ -54,10 +54,10 @@ class Calc
 
             '/' '*' '=' 
             
-            symbol.exp          
             symbol.pow          ➜ ⮐ apply
+            symbol.exp          
             symbol.oneoverx
-            symbol.sqrt         ➜ ⮐ apply or clean
+            symbol.sqrt         ➜ ⮐ open or apply or clean or (unfin and not dot)
             
             symbol.rad2deg      ➜ ⮐ apply and not rad2deg
             symbol.deg2rad      ➜ ⮐ apply and not deg2rad
@@ -115,10 +115,11 @@ class Calc
         ⮐ txt if not @activeKey txt, key
              
         clean = empty txt
-        cOnst = text.endsWithConstant   txt
-        value = text.endsWithValue      txt
-        float = text.endsWithFloat      txt
-        nuber = text.endsWithNumber     txt
+        cOnst = text.endsWithConstant txt
+        value = text.endsWithValue    txt
+        float = text.endsWithFloat    txt
+        nuber = text.endsWithNumber   txt
+        open  = txt[-1] == symbol.open
         
         switch key
                         
@@ -129,19 +130,19 @@ class Calc
                 else if not text.endsWith(txt, ['.'])
                     txt += key + '('
                     
-            symbol.exp        ➜ if clean ➜ txt = symbol.euler+'^' else txt = @calc 'exp(' + txt + ')'
-            '°'               ➜ txt += key #if text.endsWithNumber(txt)
+            symbol.exp        ➜ if open or clean ➜ txt += symbol.euler+'^' else txt = @calc symbol.euler+'^(' + txt + ')'
+            '°'               ➜ txt += key 
             '='               ➜ txt = @calc txt
             symbol.oneoverx   ➜ if clean ➜ txt = '1/' else txt = @calc '1/(' + txt + ')'
             '∡'               ➜ txt = @calc '∡(' + txt + ')'
-            '+' '-'           ➜ txt += key #if not text.endsWith txt, ['+' '-' '.']
-            '.'               ➜ txt += key #if text.endsWithNumber(txt) and not text.endsWithFloat(txt)
+            '+' '-'           ➜ txt += key 
+            '.'               ➜ txt += key 
             symbol.euler
             symbol.phi
             symbol.pi         ➜ txt += '*' if value; txt += key
             
-            '('               ➜ txt += key #if not text.endsWithUnfinished(txt) and not text.endsWithConstant(txt)
-            ')'               ➜ txt += key #if not text.endsWithUnfinished(txt) and text.balance(txt) > 0
+            '('               ➜ txt += key 
+            ')'               ➜ txt += key 
             ➜
                 if key in text.unfinished
                     if not empty txt

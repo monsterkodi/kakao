@@ -68,13 +68,13 @@ class Calc
             case '/':
             case '*':
             case '=':
-            case symbol.exp:
             case symbol.pow:
                 return apply
 
+            case symbol.exp:
             case symbol.oneoverx:
             case symbol.sqrt:
-                return apply || clean
+                return open || apply || clean || (unfin && !dot)
 
             case symbol.rad2deg:
                 return apply && !rad2deg
@@ -146,7 +146,7 @@ class Calc
 
     static textKey (txt, key)
     {
-        var clean, cOnst, float, nuber, value
+        var clean, cOnst, float, nuber, open, value
 
         if (!this.activeKey(txt,key))
         {
@@ -157,6 +157,7 @@ class Calc
         value = text.endsWithValue(txt)
         float = text.endsWithFloat(txt)
         nuber = text.endsWithNumber(txt)
+        open = txt.slice(-1)[0] === symbol.open
         switch (key)
         {
             case 'sin':
@@ -177,7 +178,7 @@ class Calc
                 }
                 break
             case symbol.exp:
-                clean ? txt = symbol.euler + '^' : txt = this.calc('exp(' + txt + ')')
+                open || clean ? txt += symbol.euler + '^' : txt = this.calc(symbol.euler + '^(' + txt + ')')
                 break
             case '°':
                 txt += key

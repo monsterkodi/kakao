@@ -13,12 +13,12 @@
     "Copy": "cmdctrl+c",
     "Paste": "cmdctrl+v",
     "-": null,
-    "plus": "+ p",
-    "minus": "- m",
-    "multiply": "* t",
-    "divide": "/ d",
-    "sqrt": "r",
-    "equals": "= return"
+    "Plus": "p",
+    "Minus": "m",
+    "Multiply": "t",
+    "Divide": "d",
+    "Sqrt": "r",
+    "Equals": "return"
   },
   "Window": {
     "Close": "cmdctrl+w",
