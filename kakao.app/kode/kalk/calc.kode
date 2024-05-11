@@ -53,34 +53,36 @@ class Calc
                 ⮐ true
 
             '/' '*' '=' 
-            symbol.oneoverx
-            symbol.sqrt
+            
             symbol.exp          
             symbol.pow          ➜ ⮐ apply
+            symbol.oneoverx
+            symbol.sqrt         ➜ ⮐ apply or clean
             
             symbol.rad2deg      ➜ ⮐ apply and not rad2deg
             symbol.deg2rad      ➜ ⮐ apply and not deg2rad
             
             '+' '-'             ➜ ⮐ not text.endsWith txt, ['+' '-' '.']
             '.'                 ➜ ⮐ nuber and not float
-            symbol.open         ➜ ⮐ not unfin and not cOnst and not close and not value
-            'blork' symbol.close
+            symbol.open         ➜ ⮐ not dot and not open and not cOnst and not close and not value
+            symbol.close
                 
                 ⮐ false if unfin or clean
                 ⮐ true if text.balance(txt) > 0
                 ⮐ false if close
-                # log 'close calculation'
+                # need better check here if it really makes sense to close?
+                for op in ['+' '-' '/' '*' '^']
+                    ⮐ true if op in txt
+                        
+                ⮐ false
                 ⮐ true
                 
             ➜
                 log 'ever come here?' txt, key
                 if key in text.unfinished
-                    ⮐ not empty txt and not text.endsWithUnfinished(txt)
-                else
-                    log 'fallthrough'
+                    ⮐ apply
                     
-        log 'false?' txt, key
-                    
+        log 'fallthrough false?' txt, key
         false
 
     #  0000000   0000000   000       0000000  
@@ -127,18 +129,19 @@ class Calc
                 else if not text.endsWith(txt, ['.'])
                     txt += key + '('
                     
-            symbol.exp        ➜ if clean or text.endsWithOp(txt) ➜ txt += key+'^' else if float or cOnst or nuber txt = @calc 'exp(' + txt + ')'
-            '°'               ➜ txt += key if text.endsWithNumber(txt)
+            symbol.exp        ➜ if clean ➜ txt = symbol.euler+'^' else txt = @calc 'exp(' + txt + ')'
+            '°'               ➜ txt += key #if text.endsWithNumber(txt)
             '='               ➜ txt = @calc txt
-            symbol.oneoverx   ➜ txt = @calc '1/(' + txt + ')'
+            symbol.oneoverx   ➜ if clean ➜ txt = '1/' else txt = @calc '1/(' + txt + ')'
             '∡'               ➜ txt = @calc '∡(' + txt + ')'
-            '+' '-'           ➜ txt += key if not text.endsWith txt, ['+' '-' '.']
-            '.'               ➜ txt += key if text.endsWithNumber(txt) and not text.endsWithFloat(txt)
+            '+' '-'           ➜ txt += key #if not text.endsWith txt, ['+' '-' '.']
+            '.'               ➜ txt += key #if text.endsWithNumber(txt) and not text.endsWithFloat(txt)
             symbol.euler
             symbol.phi
             symbol.pi         ➜ txt += '*' if value; txt += key
-            '('               ➜ txt += key if not text.endsWithUnfinished(txt) and not text.endsWithConstant(txt)
-            ')'               ➜ txt += key if not text.endsWithUnfinished(txt) and text.balance(txt) > 0
+            
+            '('               ➜ txt += key #if not text.endsWithUnfinished(txt) and not text.endsWithConstant(txt)
+            ')'               ➜ txt += key #if not text.endsWithUnfinished(txt) and text.balance(txt) > 0
             ➜
                 if key in text.unfinished
                     if not empty txt

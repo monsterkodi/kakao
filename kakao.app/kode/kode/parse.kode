@@ -583,7 +583,7 @@ function Parse extends parseutils
                 # which is the reason this is uglier than one would normally expect:
                         
                 (   spaced and 
-                    (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if'])) and
+                    (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if''when'])) and
                     '○rgs' not in @stack and
                     nxt.text not in ['then' 'when' 'else' 'break' 'continue' 'in' 'of' 'for' 'while'] and
                     (nxt.text not in ['if'] or not @noThenAhead tokens) and

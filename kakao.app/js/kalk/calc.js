@@ -11,7 +11,7 @@ class Calc
 {
     static activeKey (txt, key)
     {
-        var apply, clean, close, cOnst, deg2rad, dot, float, nuber, open, rad2deg, unfin, value
+        var apply, clean, close, cOnst, deg2rad, dot, float, nuber, op, open, rad2deg, unfin, value
 
         clean = _k_.empty(txt)
         cOnst = text.endsWithConstant(txt)
@@ -68,11 +68,13 @@ class Calc
             case '/':
             case '*':
             case '=':
-            case symbol.oneoverx:
-            case symbol.sqrt:
             case symbol.exp:
             case symbol.pow:
                 return apply
+
+            case symbol.oneoverx:
+            case symbol.sqrt:
+                return apply || clean
 
             case symbol.rad2deg:
                 return apply && !rad2deg
@@ -88,9 +90,8 @@ class Calc
                 return nuber && !float
 
             case symbol.open:
-                return !unfin && !cOnst && !close && !value
+                return !dot && !open && !cOnst && !close && !value
 
-            case 'blork':
             case symbol.close:
                 if (unfin || clean)
                 {
@@ -104,21 +105,27 @@ class Calc
                 {
                     return false
                 }
+                var list = ['+','-','/','*','^']
+                for (var _74_23_ = 0; _74_23_ < list.length; _74_23_++)
+                {
+                    op = list[_74_23_]
+                    if (_k_.in(op,txt))
+                    {
+                        return true
+                    }
+                }
+                return false
                 return true
 
             default:
                 console.log('ever come here?',txt,key)
                 if (_k_.in(key,text.unfinished))
             {
-                return !_k_.empty(txt) && !text.endsWithUnfinished(txt)
-            }
-            else
-            {
-                console.log('fallthrough')
+                return apply
             }
         }
 
-        console.log('false?',txt,key)
+        console.log('fallthrough false?',txt,key)
         return false
     }
 
@@ -170,41 +177,26 @@ class Calc
                 }
                 break
             case symbol.exp:
-                if (clean || text.endsWithOp(txt))
-                {
-                    txt += key + '^'
-                }
-                else if (float || cOnst || nuber(txt = this.calc('exp(' + txt + ')')))
-                {
-                }
+                clean ? txt = symbol.euler + '^' : txt = this.calc('exp(' + txt + ')')
                 break
             case '°':
-                if (text.endsWithNumber(txt))
-                {
-                    txt += key
-                }
+                txt += key
                 break
             case '=':
                 txt = this.calc(txt)
                 break
             case symbol.oneoverx:
-                txt = this.calc('1/(' + txt + ')')
+                clean ? txt = '1/' : txt = this.calc('1/(' + txt + ')')
                 break
             case '∡':
                 txt = this.calc('∡(' + txt + ')')
                 break
             case '+':
             case '-':
-                if (!text.endsWith(txt,['+','-','.']))
-                {
-                    txt += key
-                }
+                txt += key
                 break
             case '.':
-                if (text.endsWithNumber(txt) && !text.endsWithFloat(txt))
-                {
-                    txt += key
-                }
+                txt += key
                 break
             case symbol.euler:
             case symbol.phi:
@@ -216,16 +208,10 @@ class Calc
                 txt += key
                 break
             case '(':
-                if (!text.endsWithUnfinished(txt) && !text.endsWithConstant(txt))
-                {
-                    txt += key
-                }
+                txt += key
                 break
             case ')':
-                if (!text.endsWithUnfinished(txt) && text.balance(txt) > 0)
-                {
-                    txt += key
-                }
+                txt += key
                 break
             default:
                 if (_k_.in(key,text.unfinished))

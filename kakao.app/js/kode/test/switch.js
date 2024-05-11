@@ -3,6 +3,7 @@ var _k_
 
 import utils from "./utils.js"
 let kc = utils.kc
+let kd = utils.kd
 let ke = utils.ke
 
 toExport["switch"] = function ()
@@ -247,6 +248,22 @@ toExport["switch"] = function ()
         break
     default:
         fork
+}\n`)
+        compare(kd(`switch x
+    obj.prop ➜ jup
+    obj.deep.prop
+        cool
+    ➜
+        ok`),`switch (x)
+{
+    case obj.prop:
+        jup
+        break
+    case obj.deep.prop:
+        cool
+        break
+    default:
+        ok
 }\n`)
     })
 }

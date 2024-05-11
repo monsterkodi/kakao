@@ -6,7 +6,7 @@
 0000000   00     00  000     000      0000000  000   000
 ###
 
-use ./utils ▪ kc ke
+use ./utils ▪ kc kd ke
 
 ▸ switch
 
@@ -353,4 +353,26 @@ use ./utils ▪ kc ke
                     fork
             }\n
             """
-                        
+
+        kd  """
+            switch x
+                obj.prop ➜ jup
+                obj.deep.prop
+                    cool
+                ➜
+                    ok
+            """ ▸
+            """
+            switch (x)
+            {
+                case obj.prop:
+                    jup
+                    break
+                case obj.deep.prop:
+                    cool
+                    break
+                default:
+                    ok
+            }\n
+            """
+            
