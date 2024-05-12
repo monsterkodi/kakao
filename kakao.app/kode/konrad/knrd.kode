@@ -23,6 +23,7 @@ jsDir   = slash.path ◆dir, '/../../js'
 # 000   000   0000000   0000000  00000000  0000000   
 
 rules =
+    
     kode: 
         tgtExt:  'js'
         srcDir:  kodeDir
@@ -88,20 +89,27 @@ tgtForSrc = (srcFile, rule) ->
 knrd = (files = [], opt = {}) ○->
        
     if files is str
-        files = [files]
-    
-    opt.rerunWhenDirty ?= true
+        if slash.ext(files) in ['kode']
+            files = [files]
+        else
+            files = []
+            
+    if files is arr
+        if slash.ext(files[0]) not in ['kode']
+            files = []
+        
+    opt.rerunWhenDirty ?= not opt.dryrun
     opt.verbose ?= false
-    log 'opt' opt if opt.debug
+    log 'opt'   opt   if opt.debug
     log 'files' files if opt.debug
     
     # ● 🔨
             
-    if empty files
+    files =○ gatherFiles() if empty files
+    
+    icon = opt.dryrun ? w4('  ') : '🔨 '
         
-        files =○ gatherFiles()
-        
-    log '🔨 ' files.length if not opt.quiet
+    log icon, b5(files.length) if not opt.quiet
     
     transpiled = 0
         
@@ -113,6 +121,7 @@ knrd = (files = [], opt = {}) ○->
                 log w2('✘  '), w3 tilde file if opt.verbose
                 skip = true
                 break
+                
         if skip ➜ continue
         
         if rule = rules[slash.ext file]
@@ -133,7 +142,8 @@ knrd = (files = [], opt = {}) ○->
                 log g2('🔧'), m3 tilde srcFile if opt.verbose
                 if tgtText != compText
                     transpiled++
-                    ○ fs.write tgtFile, compText
+                    
+                    ○ fs.write tgtFile, compText if not opt.dryrun
                     log b5('✔ '), g5 tilde tgtFile
         null
             
@@ -141,26 +151,4 @@ knrd = (files = [], opt = {}) ○->
         
         knrd files, rerunWhenDirty:false
         
-# 000  000   000  00000000   0000000   
-# 000  0000  000  000       000   000  
-# 000  000 0 000  000000    000   000  
-# 000  000  0000  000       000   000  
-# 000  000   000  000        0000000   
-
-knrd.info = ○->
-    
-    files =○ gatherFiles()
-    for file in files
-        if rule = rules[slash.ext file]
-            
-            srcFile = srcForFile file
-            tgtFile = tgtForSrc  srcFile, rule
-            
-            srcInfo =○ fs.info srcFile
-            tgtInfo =○ fs.info tgtFile
-            
-            log y5 srcFile, srcInfo 
-            log m4 tgtFile, tgtInfo
-    []
-    
 export knrd

@@ -70,6 +70,7 @@ Window
     Focus Next              cmdctrl+`
     Focus Previous          cmdctrl+shift+`
     ----
+    Screenshot              f3
     Reload                  alt+cmdctrl+l
     DevTools                alt+cmdctrl+i
 

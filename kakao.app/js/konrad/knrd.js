@@ -1,4 +1,4 @@
-var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g2=_k_.k.F256(_k_.k.g(2));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.m3=_k_.k.F256(_k_.k.m(3));_k_.m4=_k_.k.F256(_k_.k.m(4));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3))
+var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g2=_k_.k.F256(_k_.k.g(2));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.m3=_k_.k.F256(_k_.k.m(3));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w4=_k_.k.F256(_k_.k.w(4))
 
 var gatherFiles, jsDir, knrd, kodeDir, pygDir, rules, srcForFile, tgtForSrc
 
@@ -51,9 +51,9 @@ gatherFiles = async function ()
         var ignore
 
         var list1 = _k_.list(rules.ignore)
-        for (var _66_19_ = 0; _66_19_ < list1.length; _66_19_++)
+        for (var _67_19_ = 0; _67_19_ < list1.length; _67_19_++)
         {
-            ignore = list1[_66_19_]
+            ignore = list1[_67_19_]
             if (file.endsWith(ignore))
             {
                 return false
@@ -82,14 +82,28 @@ tgtForSrc = function (srcFile, rule)
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, ignore, rule, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _93_23_, _94_16_
+    var compText, file, icon, ignore, rule, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _101_23_, _102_16_
 
     if (_k_.isStr(files))
     {
-        files = [files]
+        if (_k_.in(slash.ext(files),['kode']))
+        {
+            files = [files]
+        }
+        else
+        {
+            files = []
+        }
     }
-    opt.rerunWhenDirty = ((_93_23_=opt.rerunWhenDirty) != null ? _93_23_ : true)
-    opt.verbose = ((_94_16_=opt.verbose) != null ? _94_16_ : false)
+    if (_k_.isArr(files))
+    {
+        if (!(_k_.in(slash.ext(files[0]),['kode'])))
+        {
+            files = []
+        }
+    }
+    opt.rerunWhenDirty = ((_101_23_=opt.rerunWhenDirty) != null ? _101_23_ : !opt.dryrun)
+    opt.verbose = ((_102_16_=opt.verbose) != null ? _102_16_ : false)
     if (opt.debug)
     {
         console.log('opt',opt)
@@ -102,20 +116,21 @@ knrd = async function (files = [], opt = {})
     {
         files = await gatherFiles()
     }
+    icon = (opt.dryrun ? _k_.w4('  ') : '🔨 ')
     if (!opt.quiet)
     {
-        console.log('🔨 ',files.length)
+        console.log(icon,_k_.b5(files.length))
     }
     transpiled = 0
     var list = _k_.list(files)
-    for (var _108_13_ = 0; _108_13_ < list.length; _108_13_++)
+    for (var _116_13_ = 0; _116_13_ < list.length; _116_13_++)
     {
-        file = list[_108_13_]
+        file = list[_116_13_]
         skip = false
         var list1 = _k_.list(rules.ignore)
-        for (var _111_19_ = 0; _111_19_ < list1.length; _111_19_++)
+        for (var _119_19_ = 0; _119_19_ < list1.length; _119_19_++)
         {
-            ignore = list1[_111_19_]
+            ignore = list1[_119_19_]
             if (file.endsWith(ignore))
             {
                 if (opt.verbose)
@@ -158,7 +173,10 @@ knrd = async function (files = [], opt = {})
                 if (tgtText !== compText)
                 {
                     transpiled++
-                    await fs.write(tgtFile,compText)
+                    if (!opt.dryrun)
+                    {
+                        await fs.write(tgtFile,compText)
+                    }
                     console.log(_k_.b5('✔ '),_k_.g5(tilde(tgtFile)))
                 }
             }
@@ -169,27 +187,5 @@ knrd = async function (files = [], opt = {})
     {
         return knrd(files,{rerunWhenDirty:false})
     }
-}
-
-knrd.info = async function ()
-{
-    var file, files, rule, srcFile, srcInfo, tgtFile, tgtInfo
-
-    files = await gatherFiles()
-    var list = _k_.list(files)
-    for (var _153_13_ = 0; _153_13_ < list.length; _153_13_++)
-    {
-        file = list[_153_13_]
-        if (rule = rules[slash.ext(file)])
-        {
-            srcFile = srcForFile(file)
-            tgtFile = tgtForSrc(srcFile,rule)
-            srcInfo = await fs.info(srcFile)
-            tgtInfo = await fs.info(tgtFile)
-            console.log(_k_.y5(srcFile,srcInfo))
-            console.log(_k_.m4(tgtFile,tgtInfo))
-        }
-    }
-    return []
 }
 export default knrd;

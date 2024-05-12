@@ -22,7 +22,7 @@ int main(int argc, char ** argv)
 
     // [[App new:html] run]
     
-    id index = ((id(*)(id, SEL, const char *))objc_msgSend)("NSString"_cls, "stringWithUTF8String:"_sel, argv[1] ? argv[1] : "ko.html");
+    id index = ((id(*)(id, SEL, const char *))objc_msgSend)("NSString"_cls, "stringWithUTF8String:"_sel, argv[1] ? argv[1] : "index.html");
     id app = ((id(*)(id, SEL, id))objc_msgSend)("App"_cls, "new:"_sel, index);
     ((void(*)(id, SEL))objc_msgSend)(app, "run"_sel);
 

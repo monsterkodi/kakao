@@ -12,23 +12,25 @@ import watch from "../kxk/watch.js"
 
 import knrd from "./knrd.js"
 import build from "./build.js"
+import spawn from "./spawn.js"
 
 import child_process from "child_process"
 
 import fs from 'fs/promises'
 args = karg(`kk
-    options                                  **
-    info       show build status             = false
-    knrd       transpile kode, styl, pug     = false
-    build      build application executable  = false
-    rebuild    rebuild all targets           = false -R
-    watch      watch for file changes        = false
-    test       run tests                     = false
-    run        run application executable    = false
-    clean      remove transpilated files     = false 
-    verbose    log more                      = false
-    quiet      log nothing                   = false
-    debug      log debug                     = false`)
+    options                                   **
+    info       show build status              = false
+    knrd       transpile kode, styl, pug      = false
+    build      build application executable   = false
+    rebuild    rebuild all targets            = false -R
+    watch      watch for file changes         = false
+    test       run tests                      = false
+    run        launch application executable  = false
+    clean      remove transpilated files      = false 
+    spawn      spawn app                      = false
+    verbose    log more                       = false
+    quiet      log nothing                    = false
+    debug      log debug                      = false`)
 class kk
 {
     static async run ()
@@ -37,17 +39,13 @@ class kk
         {
             await sleep(150)
         }
-        if (!(args.info || args.test || args.knrd || args.build || args.run || args.clean || args.rebuild || args.watch))
-        {
-            args.info = true
-            args.knrd = true
-            args.build = true
-            args.test = true
-            args.run = true
-        }
         if (args.info)
         {
             await kk.info()
+        }
+        if (args.clean)
+        {
+            await kk.clean()
         }
         if (args.knrd)
         {
@@ -57,21 +55,21 @@ class kk
         {
             await kk.build()
         }
+        if (args.rebuild)
+        {
+            await kk.rebuild()
+        }
         if (args.test)
         {
             await kk.test(args.options)
         }
         if (args.run)
         {
+            await kk.launch(args.options)
+        }
+        if (args.spawn)
+        {
             await kk.spawn(args.options)
-        }
-        if (args.clean)
-        {
-            await kk.clean()
-        }
-        if (args.rebuild)
-        {
-            await kk.rebuild()
         }
         if (args.watch)
         {
@@ -92,16 +90,12 @@ class kk
     {
         await knrd()
         await kk.build()
-        return kk.spawn()
+        return kk.launch()
     }
 
     static async info ()
     {
-        var info
-
-        console.log(_k_.w4('○● info'))
-        info = await knrd.info()
-        console.log(info)
+        return await knrd([],{dryrun:true})
     }
 
     static async watch ()
@@ -175,7 +169,12 @@ class kk
         return await fs.unlink(appExe)
     }
 
-    static spawn (args = [])
+    static spawn (args)
+    {
+        return spawn(args)
+    }
+
+    static launch (args = [])
     {
         var cmd, opt
 

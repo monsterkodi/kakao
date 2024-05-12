@@ -10,7 +10,7 @@
 
 use ../kxk ▪ sleep karg slash os
 use ../kxk ◆ watch
-use        ◆ knrd build
+use        ◆ knrd build spawn
 
 use child_process
 
@@ -18,18 +18,19 @@ import fs from 'fs/promises'
 
 args = karg """
     kk
-        options                                  **
-        info       show build status             = false
-        knrd       transpile kode, styl, pug     = false
-        build      build application executable  = false
-        rebuild    rebuild all targets           = false -R
-        watch      watch for file changes        = false
-        test       run tests                     = false
-        run        run application executable    = false
-        clean      remove transpilated files     = false 
-        verbose    log more                      = false
-        quiet      log nothing                   = false
-        debug      log debug                     = false
+        options                                   **
+        info       show build status              = false
+        knrd       transpile kode, styl, pug      = false
+        build      build application executable   = false
+        rebuild    rebuild all targets            = false -R
+        watch      watch for file changes         = false
+        test       run tests                      = false
+        run        launch application executable  = false
+        clean      remove transpilated files      = false 
+        spawn      spawn app                      = false
+        verbose    log more                       = false
+        quiet      log nothing                    = false
+        debug      log debug                      = false
     """
 
 class kk
@@ -45,21 +46,22 @@ class kk
         while not os.loaded # todo: move this check somewhere else!
             ○ sleep 150
             
-        if not (args.info or args.test or args.knrd or args.build or args.run or args.clean or args.rebuild or args.watch)
-            # no command given? assume all of them for now :)
-            args.info  = true
-            args.knrd  = true
-            args.build = true
-            args.test  = true
-            args.run   = true
+        # if not (args.info or args.test or args.knrd or args.build or args.run or args.clean or args.rebuild or args.watch)
+            # # no command given? assume all of them for now :)
+            # args.info  = true
+            # args.knrd  = true
+            # args.build = true
+            # args.test  = true
+            # args.run   = true
         
         if args.info    ➜○ kk.info()
-        if args.knrd    ➜○ knrd args.options, args
-        if args.build   ➜○ kk.build()
-        if args.test    ➜○ kk.test args.options
-        if args.run     ➜○ kk.spawn args.options
         if args.clean   ➜○ kk.clean()
+        if args.knrd    ➜○ knrd         args.options, args
+        if args.build   ➜○ kk.build()
         if args.rebuild ➜○ kk.rebuild()                            
+        if args.test    ➜○ kk.test      args.options
+        if args.run     ➜○ kk.launch    args.options
+        if args.spawn   ➜○ kk.spawn     args.options
         if args.watch   ➜○ kk.watch()                            
             
         # if valid args.options
@@ -80,19 +82,15 @@ class kk
         
         ○ knrd()
         ○ kk.build()
-        kk.spawn()
+        kk.launch()
                         
     # 000  000   000  00000000   0000000   
     # 000  0000  000  000       000   000  
     # 000  000 0 000  000000    000   000  
     # 000  000  0000  000       000   000  
     # 000  000   000  000        0000000   
-    
-    @info: ○->
-        
-        log w4 '○● info' 
-        info =○ knrd.info()
-        log info
+ 
+    @info: ○-> ○ knrd [] dryrun:true
         
     # 000   000   0000000   000000000   0000000  000   000  
     # 000 0 000  000   000     000     000       000   000  
@@ -164,7 +162,15 @@ class kk
     #      000  000        000   000  000   000  000  0000  
     # 0000000   000        000   000  00     00  000   000  
     
-    @spawn: (args=[]) ->
+    @spawn: (args) -> spawn args
+    
+    # 000       0000000   000   000  000   000   0000000  000   000  
+    # 000      000   000  000   000  0000  000  000       000   000  
+    # 000      000000000  000   000  000 0 000  000       000000000  
+    # 000      000   000  000   000  000  0000  000       000   000  
+    # 0000000  000   000   0000000   000   000   0000000  000   000  
+    
+    @launch: (args=[]) ->
         
         log '🚀'
         cmd = slash.path ◆dir, '../../Contents/MacOS/kakao'
