@@ -69,14 +69,14 @@ gatherFiles = ○->
                 return false
         true
         
-srcForFile = (file) ->
+srcForFile = file ->
     
     srcFile = file
     if slash.isRelative srcFile
         srcFile = slash.path process.cwd(), srcFile
     srcFile
     
-tgtForSrc = (srcFile, rule) ->
+tgtForSrc = srcFile rule ->
     
     slash.swapExt srcFile.replace(rule.srcDir, rule.tgtDir), rule.tgtExt
     
@@ -86,7 +86,7 @@ tgtForSrc = (srcFile, rule) ->
 # 000  000   000  0000  000   000  000   000  
 # 000   000  000   000  000   000  0000000    
 
-knrd = (files = [], opt = {}) ○->
+knrd = files=[] opt={} ○->
        
     if files is str
         if slash.ext(files) in ['kode']

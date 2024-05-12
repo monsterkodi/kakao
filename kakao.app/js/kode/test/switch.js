@@ -249,7 +249,7 @@ toExport["switch"] = function ()
     default:
         fork
 }\n`)
-        compare(kd(`switch x
+        compare(kc(`switch x
     obj.prop ➜ jup
     obj.deep.prop
         cool
