@@ -39,8 +39,6 @@ export (args) ○->
     ○ nfs.copy slash.path(bundle.path, "Contents/Resources/img/#{app}.icns"), slash.path(tgt, 'Contents/Resources/img/app.icns')
     
     ○ nfs.remove slash.path tgt, '.stash'
-    ○ nfs.remove slash.path tgt, 'package.noon'
-    ○ nfs.remove slash.path tgt, 'package.json'
     ○ nfs.remove slash.path tgt, 'Contents/Resources/img/zen.png'
     
     if app != 'ko'

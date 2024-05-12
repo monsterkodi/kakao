@@ -12,10 +12,6 @@ use ../kode/kode
 use ../kxk/slash ▪ tilde
 use ../kxk ◆ fs pug styl noon
 
-kodeDir = slash.path ◆dir, '/../../kode'
-pygDir  = slash.path ◆dir, '/../../pyg'
-jsDir   = slash.path ◆dir, '/../../js'
-
 # 00000000   000   000  000      00000000   0000000  
 # 000   000  000   000  000      000       000       
 # 0000000    000   000  000      0000000   0000000   
@@ -26,24 +22,24 @@ rules =
     
     kode: 
         tgtExt:  'js'
-        srcDir:  kodeDir
-        tgtDir:  jsDir
-        compile: (srcText, srcFile) -> k0de = new kode header:false; k0de.compile srcText, srcFile
+        srcDir:  'kode'
+        tgtDir:  'js'
+        compile: srcText srcFile -> k0de = new kode header:false; k0de.compile srcText, srcFile
     styl:
         tgtExt:  'css'
-        srcDir:  pygDir
-        tgtDir:  jsDir + '/css'
-        compile: (srcText, srcFile) -> styl srcText
+        srcDir:  'pyg'
+        tgtDir:  'js/css'
+        compile: srcText srcFile -> styl srcText
     pug:
         tgtExt:  'html'
-        srcDir:  pygDir
-        tgtDir:  jsDir
-        compile: (srcText, srcFile) -> pug srcText
+        srcDir:  'pyg'
+        tgtDir:  'js'
+        compile: srcText srcFile -> pug srcText
     noon:
         tgtExt:  'json'
-        srcDir:  kodeDir
-        tgtDir:  jsDir
-        compile: (srcText, srcFile) -> JSON.stringify noon.parse(srcText), null, '  '
+        srcDir:  'kode'
+        tgtDir:  'js'
+        compile: srcText srcFile -> JSON.stringify noon.parse(srcText), null, '  '
         
     ignore: [
         'kolor/lang.noon'
@@ -58,8 +54,8 @@ rules =
 
 gatherFiles = ○->
     
-    list  =○ fs.list kodeDir
-    list  = list.concat ○ fs.list pygDir
+    list  =○ fs.list bundlePath 'kode'
+    list  = list.concat ○ fs.list bundlePath 'pyg'
     list  = list.filter (item) -> item.type == 'file'
     
     files = list.map (item) -> item.path
@@ -78,7 +74,17 @@ srcForFile = file ->
     
 tgtForSrc = srcFile rule ->
     
-    slash.swapExt srcFile.replace(rule.srcDir, rule.tgtDir), rule.tgtExt
+    slash.swapExt srcFile.replace(bundlePath(rule.srcDir), bundlePath(rule.tgtDir)), rule.tgtExt
+    
+bundlePath = p='' -> slash.path bundleDir(), p
+    
+bundleDir = ->
+    
+    d = process.cwd()
+    while valid d
+        ⮐ d if slash.ext(d) == 'app'
+        d = slash.dir d
+    slash.path ◆dir '../..'
     
 # 000   000  000   000  00000000   0000000    
 # 000  000   0000  000  000   000  000   000  
@@ -98,18 +104,17 @@ knrd = files=[] opt={} ○->
         if slash.ext(files[0]) not in ['kode']
             files = []
         
-    opt.rerunWhenDirty ?= not opt.dryrun
-    opt.verbose ?= false
-    log 'opt'   opt   if opt.debug
-    log 'files' files if opt.debug
+    opt.verbose        ?= opt.debug
+    log 'opt'    opt   if opt.debug
+    log 'files'  files if opt.debug
     
     # ● 🔨
             
     files =○ gatherFiles() if empty files
     
-    icon = opt.dryrun ? w4('  ') : '🔨 '
+    icon = opt.dryrun ? w4(' ') : '🔨'
         
-    log icon, b5(files.length) if not opt.quiet
+    log icon, w5(slash.name bundleDir())+w2('.')+w3(slash.ext bundleDir()), b5(files.length) if not opt.quiet
     
     transpiled = 0
         
@@ -145,10 +150,8 @@ knrd = files=[] opt={} ○->
                     
                     ○ fs.write tgtFile, compText if not opt.dryrun
                     log b5('✔ '), g5 tilde tgtFile
-        null
-            
-    if opt.rerunWhenDirty and transpiled
+    transpiled
         
-        knrd files, rerunWhenDirty:false
-        
+knrd.bundlePath = bundlePath
+    
 export knrd

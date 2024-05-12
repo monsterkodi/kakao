@@ -6,103 +6,9 @@
 0000000      000     000   000     000      0000000   0000000     
 ###
 
-use ../kxk ▪ slash
+use ../kxk ▪ pretty slash
 use ../kolor/kolor ▪ klor
 use child_process
-
-# 00000000   00000000   00000000  000000000  000000000  000   000  
-# 000   000  000   000  000          000        000      000 000   
-# 00000000   0000000    0000000      000        000       00000    
-# 000        000   000  000          000        000        000     
-# 000        000   000  00000000     000        000        000     
-
-pretty = 
-    path:     p c=klor.yellow -> p.split('/').map((n) -> c(n)).join klor.dim(c('/'))
-    ext:      e c=klor.yellow -> e.length ? klor.dim(c('.')) + c(e) : ''
-    file:     f c=klor.yellow -> "#{klor.bold(c(slash.name(f)))}#{pretty.ext(slash.ext(f),c)}"
-    filePath: p c=klor.yellow ->
-
-        if valid slash.dir p
-            "#{pretty.path(slash.dir(p),c)}#{pretty.path('/',c)}#{pretty.file(slash.file(p),c)}"
-        else
-            "#{pretty.file(slash.file(p),c)}"
-
-    ranges: rgs ->
-
-        result = ''
-        plain  = ''
-        
-        for rng in rgs
-            
-            while plain.length < rng.start
-                plain += ' '
-                result += ' '
-
-            cfunc = switch rng.clss
-
-                    'text'                  ➜ ⮐ (s) -> klor.white s
-                    'text require string'   ➜ ⮐ (s) -> klor.gray klor.bold s
-                    'comment'               ➜ ⮐ (s) -> klor.w1 s
-                    'punct comment'         ➜ ⮐ (s) -> klor.w1 klor.dim s
-                    'punct'
-                    'punct minor'
-                    'punct require'
-                    'keyword require'       ➜ ⮐ (s) -> klor.gray klor.dim s
-                    'function'
-                    'function call'
-                    'string single'
-                    'string double'
-                    'dir text'
-                    'property'
-                    'function argument'     ➜ ⮐ (s) -> klor.g3 klor.bold s
-                    'punct string interpolation start' 
-                    'punct string interpolation end' ➜ (s) -> klor.g1 klor.bold s
-                    'punct string single'
-                    'punct string double'
-                    'punct string double triple' 
-                    'punct dir'
-                    'punct function call'   ➜ ⮐ (s) -> klor.green klor.dim s
-                    'method class'          ➜ ⮐ (s) -> klor.y4 klor.bold s
-                    'obj'
-                    'class'
-                    'git file'
-                    'dictionary key'
-                    'module'                ➜ ⮐ (s) -> klor.y4 s
-                    'method'                ➜ ⮐ (s) -> klor.y5 klor.bold s
-                    'punct method'          ➜ ⮐ (s) -> klor.y2 klor.bold s
-                    'punct git'
-                    'git ext'
-                    'punct method class'
-                    'punct dictionary'
-                    'punct function'        ➜ ⮐ (s) -> klor.yellow klor.dim s
-                    'number' 'keyword'
-                    'punct compare ligature'
-                    'url domain'            ➜ ⮐ (s) -> klor.blue klor.bold s  
-                    'require'
-                    'punct property'        ➜ ⮐ (s) -> klor.green klor.dim s  
-                    'punct semver' 
-                    'url protocol'
-                    'punct regexp start'
-                    'punct regexp end'
-                    'punct regexp'
-                    'punct url'             ➜ ⮐ (s) -> klor.magenta s 
-                    'punct escape regexp'   ➜ ⮐ (s) -> klor.m1 s 
-                    'semver' 
-                    'dir url tld'
-                    'text regexp'
-                    'punct url tld'         ➜ ⮐ (s) -> klor.magenta klor.bold s  
-                    'punct function tail ligature' 
-                    'punct function async' 
-                    'punct keyword' 
-                    'punct await'
-                    'punct keyword return'  ➜ ⮐ (s) -> klor.b5 klor.bold s
-                    'nil'                   ➜ ⮐ (s) -> klor.r2 s
-                                            ➜ ⮐ (s) -> klor.white s
-
-            plain  += rng.match
-            result += cfunc rng.match
-
-        result
 
 # 00000000   00000000  00000000    0000000   00000000   000000000  
 # 000   000  000       000   000  000   000  000   000     000     
@@ -124,8 +30,6 @@ report = status opt={} ○->
         
         if k in Object.keys m
         
-            # log 'gitFile k' gitFile, k, opt.diff
-
             prfx   = b[k] "  "
             prfx  += reset '  '
             lame   = slash.ext(gitFile) in ['js' 'json']
@@ -137,12 +41,11 @@ report = status opt={} ○->
 
                 cmd = "git --no-pager diff -U0  --ignore-blank-lines --ignore-space-at-eol --no-color #{gitFile}"
                 res = child_process.execSync(cmd,{encoding:'utf8',cwd:status.gitDir})
-                # log 'diff res' cmd, res, status.gitDir
                 diff = ""
-                c = w2('●')
+                c = w2 '●'
                 start = 0
 
-                for ls in res.split(/\r?\n/)
+                for ls in res.split /\r?\n/
 
                     if 
                         ls.substr(0,4) in ['+++ ' '--- '] ➜
@@ -160,11 +63,11 @@ report = status opt={} ○->
 
                             diff += "\n "
                             start++
-                            rgs = kolor.ranges(ls.substr(1),slash.ext(gitFile))
+                            rgs = kolor.ranges ls.substr(1), slash.ext gitFile
                             if valid rgs
-                                diff += pretty.ranges(rgs)
+                                diff += pretty.ranges rgs
                             else
-                                diff += w8(ls.substr(1))
+                                diff += w8 ls.substr 1
 
                         ls[0] == '-'
                             
@@ -226,11 +129,11 @@ parseStatus = gitStatus gitDir ->
 
     status.dirs = Array.from(dirSet).map (d) -> slash.path gitDir, d
     list = ['deleted' 'created' 'changed']
+    
     for key in list
         for file in status[key]
             status.files[file] = key
 
-    # log 'status' status
     status
 
 # 00000000  000   000  00000000    0000000   00000000   000000000  
@@ -253,7 +156,6 @@ export (opt={}) ○->
             else if valid gitDir
 
                 gitDir = trim gitDir,' \n'
-                # log 'gitDir' gitDir
                 
                 child_process.exec '/usr/bin/git status --porcelain' shopt, (err, status, stderr) -> 
                     

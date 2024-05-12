@@ -34,8 +34,6 @@ export default async function (args)
     await nfs.copy(slash.path(bundle.path,`js/${app}.html`),slash.path(tgt,'js/index.html'))
     await nfs.copy(slash.path(bundle.path,`Contents/Resources/img/${app}.icns`),slash.path(tgt,'Contents/Resources/img/app.icns'))
     await nfs.remove(slash.path(tgt,'.stash'))
-    await nfs.remove(slash.path(tgt,'package.noon'))
-    await nfs.remove(slash.path(tgt,'package.json'))
     await nfs.remove(slash.path(tgt,'Contents/Resources/img/zen.png'))
     if (app !== 'ko')
     {

@@ -10,7 +10,7 @@
 
 use ../kxk ▪ sleep karg slash os
 use ../kxk ◆ watch
-use        ◆ knrd build spawn status
+use        ◆ knrd build spawn status version
 
 use child_process
 
@@ -30,9 +30,9 @@ args = karg """
         status     git status                     = false
         diff       git status with diffs          = false 
         spawn      spawn app                      = false -S
-        verbose    log more                       = false
         quiet      log nothing                    = false
         debug      log debug                      = false -D
+        version    log version                    = false
     """
 
 class kk
@@ -48,6 +48,7 @@ class kk
         while not os.loaded # todo: move this check somewhere else!
             ○ sleep 150
             
+        if args.version ➜ ○ log version, slash.name slash.path ◆dir, '../../'
         if args.info    ➜ ○ kk.info()
         if args.knrd    ➜ ○ knrd         args.options, args
         if args.build   ➜ ○ kk.build()
@@ -163,6 +164,8 @@ class kk
         exec "git add ." 
         exec "git commit -m #{msg}" 
         exec "git push -q 2>&1" 
+        
+        status()
 
     #  0000000  00000000    0000000   000   000  000   000  
     # 000       000   000  000   000  000 0 000  0000  000  
