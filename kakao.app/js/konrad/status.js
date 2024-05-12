@@ -10,7 +10,7 @@ let klor = kolor.klor
 
 import child_process from "child_process"
 
-pretty = {path:function (f, p, c = klor.yellow)
+pretty = {path:function (p, c = klor.yellow)
 {
     return p.split('/').map(function (n)
     {
@@ -34,31 +34,35 @@ pretty = {path:function (f, p, c = klor.yellow)
     }
 },ranges:function (rgs)
 {
-    var cfunc, index, plain, result, rng
+    var cfunc, plain, result, rng
 
     result = ''
     plain = ''
-    var list = _k_.list(rgs.slice(0, typeof ranges.length === 'number' ? ranges.length : -1))
-    for (var _34_18_ = 0; _34_18_ < list.length; _34_18_++)
+    var list = _k_.list(rgs)
+    for (var _35_16_ = 0; _35_16_ < list.length; _35_16_++)
     {
-        index = list[_34_18_]
-        rng = rgs[index]
+        rng = list[_35_16_]
         while (plain.length < rng.start)
         {
             plain += ' '
             result += ' '
         }
-        cfunc = (function ()
+        cfunc = ((function ()
         {
             switch (rng.clss)
             {
                 case 'text':
                     return function (s)
                     {
-                        return klor.white(klor.dim(s))
+                        return klor.white(s)
                     }
 
                 case 'comment':
+                    return function (s)
+                    {
+                        return klor.w1(s)
+                    }
+
                 case 'text require string':
                     return function (s)
                     {
@@ -66,6 +70,11 @@ pretty = {path:function (f, p, c = klor.yellow)
                     }
 
                 case 'punct comment':
+                    return function (s)
+                    {
+                        return klor.w1(klor.dim(s))
+                    }
+
                 case 'punct':
                 case 'punct minor':
                 case 'punct require':
@@ -84,28 +93,52 @@ pretty = {path:function (f, p, c = klor.yellow)
                 case 'function argument':
                     return function (s)
                     {
-                        return klor.green(klor.bold(s))
+                        return klor.g3(klor.bold(s))
                     }
 
-                case 'punct function call':
-                case 'punct dir':
+                case 'punct string interpolation start':
+                case 'punct string interpolation end':
+                    return function (s)
+                    {
+                        return klor.g1(klor.bold(s))
+                    }
+
                 case 'punct string single':
                 case 'punct string double':
                 case 'punct string double triple':
+                case 'punct dir':
+                case 'punct function call':
                     return function (s)
                     {
                         return klor.green(klor.dim(s))
                     }
 
+                case 'method class':
+                    return function (s)
+                    {
+                        return klor.y4(klor.bold(s))
+                    }
+
                 case 'obj':
                 case 'class':
                 case 'git file':
-                case 'method class':
                 case 'dictionary key':
                 case 'module':
                     return function (s)
                     {
-                        return klor.yellow(klor.bold(s))
+                        return klor.y4(s)
+                    }
+
+                case 'method':
+                    return function (s)
+                    {
+                        return klor.y5(klor.bold(s))
+                    }
+
+                case 'punct method':
+                    return function (s)
+                    {
+                        return klor.y2(klor.bold(s))
                     }
 
                 case 'punct git':
@@ -120,6 +153,7 @@ pretty = {path:function (f, p, c = klor.yellow)
 
                 case 'number':
                 case 'keyword':
+                case 'punct compare ligature':
                 case 'url domain':
                     return function (s)
                     {
@@ -135,14 +169,24 @@ pretty = {path:function (f, p, c = klor.yellow)
 
                 case 'punct semver':
                 case 'url protocol':
+                case 'punct regexp start':
+                case 'punct regexp end':
+                case 'punct regexp':
                 case 'punct url':
                     return function (s)
                     {
                         return klor.magenta(s)
                     }
 
+                case 'punct escape regexp':
+                    return function (s)
+                    {
+                        return klor.m1(s)
+                    }
+
                 case 'semver':
                 case 'dir url tld':
+                case 'text regexp':
                 case 'punct url tld':
                     return function (s)
                     {
@@ -162,18 +206,17 @@ pretty = {path:function (f, p, c = klor.yellow)
                 case 'nil':
                     return function (s)
                     {
-                        return klor.r2(klor.bold(s))
+                        return klor.r2(s)
                     }
 
                 default:
                     return function (s)
                 {
-                    console.log('s',s,rng.clss)
-                    return klor.white(klor.bold(s))
+                    return klor.white(s)
                 }
             }
 
-        }).bind(this)
+        }).bind(this))()
         plain += rng.match
         result += cfunc(rng.match)
     }
@@ -185,10 +228,9 @@ report = async function (status, opt = {})
     var aheadBehind, b, c, change, changes, cmd, diff, gitFile, gitPath, k, l, lame, ls, m, prfx, relPath, res, rgs, split, start
 
     changes = []
-    var list = _k_.list(status.files)
-    for (k = 0; k < list.length; k++)
+    for (gitFile in status.files)
     {
-        gitFile = list[k]
+        k = status.files[gitFile]
         relPath = slash.relative(gitFile,process.cwd())
         l = {deleted:r1,created:w2,changed:g1}
         m = {deleted:r4,created:w5,changed:g4}
@@ -207,15 +249,13 @@ report = async function (status, opt = {})
                 }
                 cmd = `git --no-pager diff -U0  --ignore-blank-lines --ignore-space-at-eol --no-color ${gitFile}`
                 res = child_process.execSync(cmd,{encoding:'utf8',cwd:status.gitDir})
-                console.log('diff res',cmd,res,status.gitDir)
                 diff = ""
                 c = _k_.w2('●')
                 start = 0
-                var list1 = _k_.list(res.split(/\r?\n/))
-                for (var _146_22_ = 0; _146_22_ < list1.length; _146_22_++)
+                var list = _k_.list(res.split(/\r?\n/))
+                for (var _145_23_ = 0; _145_23_ < list.length; _145_23_++)
                 {
-                    l = list1[_146_22_]
-                    ls = l
+                    ls = list[_145_23_]
                     if (_k_.in(ls.substr(0,4),['+++ ','--- ']))
                     {
                     }
@@ -228,7 +268,7 @@ report = async function (status, opt = {})
                         diff += "\n" + c
                         c = _k_.w2('●')
                     }
-                    else if ((ls[0] === '+'))
+                    else if (ls[0] === '+')
                     {
                         diff += "\n "
                         start++
@@ -242,12 +282,12 @@ report = async function (status, opt = {})
                             diff += _k_.w8(ls.substr(1))
                         }
                     }
-                    else if ((ls[0] === '-'))
+                    else if (ls[0] === '-')
                     {
                         diff += "\n " + _k_.w3(ls.substr(1))
                     }
                 }
-                if ((diff.length))
+                if (diff.length)
                 {
                     change += diff + "\n" + _k_.w2('●')
                 }
@@ -284,10 +324,10 @@ report = async function (status, opt = {})
         }
     }
     console.log(_k_.B5('    ' + gitPath + ' ') + ' ')
-    var list2 = _k_.list(changes)
-    for (var _192_10_ = 0; _192_10_ < list2.length; _192_10_++)
+    var list1 = _k_.list(changes)
+    for (var _193_10_ = 0; _193_10_ < list1.length; _193_10_++)
     {
-        c = list2[_192_10_]
+        c = list1[_193_10_]
         console.log(c)
     }
 }
@@ -328,13 +368,13 @@ parseStatus = function (gitStatus, gitDir)
     })
     list = ['deleted','created','changed']
     var list1 = _k_.list(list)
-    for (var _228_12_ = 0; _228_12_ < list1.length; _228_12_++)
+    for (var _229_12_ = 0; _229_12_ < list1.length; _229_12_++)
     {
-        key = list1[_228_12_]
+        key = list1[_229_12_]
         var list2 = _k_.list(status[key])
-        for (var _229_17_ = 0; _229_17_ < list2.length; _229_17_++)
+        for (var _230_17_ = 0; _230_17_ < list2.length; _230_17_++)
         {
-            file = list2[_229_17_]
+            file = list2[_230_17_]
             status.files[file] = key
         }
     }
@@ -344,8 +384,10 @@ export default async function (opt = {})
 {
     return new Promise(function (resolve, reject)
     {
-        opt = {shell:true}
-        return child_process.exec('git rev-parse --show-toplevel',opt,function (err, gitDir, stderr)
+        var shopt
+
+        shopt = {shell:true}
+        return child_process.exec('git rev-parse --show-toplevel',shopt,function (err, gitDir, stderr)
         {
             if (err)
             {
@@ -355,8 +397,7 @@ export default async function (opt = {})
             else if (!_k_.empty(gitDir))
             {
                 gitDir = _k_.trim(gitDir,' \n')
-                console.log('gitDir',gitDir)
-                return child_process.exec('/usr/bin/git status --porcelain',opt,function (err, status, stderr)
+                return child_process.exec('/usr/bin/git status --porcelain',shopt,function (err, status, stderr)
                 {
                     if (err)
                     {
