@@ -132,7 +132,7 @@ report = status opt={} ○->
             prfx += reset('  ')
             lame = slash.ext(gitFile) in ['js' 'json']
             change = prfx + pretty.filePath relPath, (lame and l[k] or m[k])
-            if k in ['changed' 'created']) and opt.diff
+            if k in ['changed' 'created'] and opt.diff
 
                 continue if lame
 
@@ -171,25 +171,26 @@ report = status opt={} ○->
                         diff += "\n " + w3(ls.substr(1))
                 if (diff.length)
                     change += diff + "\n" + w2('●')
-            changes.push(change)
+            changes.push change
 
-    relPath = slash.relative(status.gitDir,process.cwd())
+    relPath = slash.relative status.gitDir, process.cwd() 
     relPath = '.' if relPath == ''
-    gitPath = pretty.filePath(relPath,w8)
+    gitPath = pretty.filePath relPath, klor.w5
     
-    aheadBehind = function ()
+    aheadBehind = ->
         if status.ahead or status.behind
             st = ''
             if status.ahead
-                st += w3("▲ #{status.ahead}")
+                st += w3 "▲ #{status.ahead}"
             if status.behind
-                st += r5("▼ #{status.behind}")
-            st = _.padEnd(st,4)
+                st += r5 "▼ #{status.behind}"
+            st = rpad 4 st
         else
             ''
-    log(B5('    ' + gitPath + ' ') + ' ')
+            
+    log B5('    ' + gitPath + ' ') + ' '
     for c in changes
-        log(c)
+        log c
 
 # 00000000    0000000   00000000    0000000  00000000  
 # 000   000  000   000  000   000  000       000       
@@ -199,24 +200,31 @@ report = status opt={} ○->
 
 parseStatus = gitStatus gitDir -> 
 
-    lines = gitStatus.split('\n')
-    status = {gitDir:gitDir,deleted:[],created:[],changed:[],files:{}}
+    lines = gitStatus.split '\n'
+    status = 
+        gitDir:  gitDir
+        deleted: []
+        created: []
+        changed: []
+        files:   {}
+        
     dirSet = new Set
+    
     while line = lines.shift()
 
-        rel = line.slice(3)
-        file = slash.path(gitDir,line.slice(3))
+        rel = line.slice 3
+        file = slash.path gitDir, line.slice 3
         while (rel = slash.dir(rel)) != ''
             dirSet.add(rel)
 
-        switch line.slice(0,2)
-            ' D' ➜  status.deleted.push(file)
+        switch line.slice 0 2
+            ' D' ➜  status.deleted.push file
             'MM'
-            ' M' ➜  status.changed.push(file)
-            '??' ➜  status.created.push(file)
+            ' M' ➜  status.changed.push file
+            '??' ➜  status.created.push file
 
-    status.dirs = Array.from(dirSet).map (d) -> slash.path(gitDir,d)
-    list = ['deleted','created','changed']
+    status.dirs = Array.from(dirSet).map (d) -> slash.path gitDir, d
+    list = ['deleted' 'created' 'changed']
     for key in list
         for file in status[key]
             status.files[file] = key
@@ -229,12 +237,12 @@ parseStatus = gitStatus gitDir ->
 # 000        000 000   000        000   000  000   000     000     
 # 00000000  000   000  000         0000000   000   000     000     
 
-export ○->
+export (opt={}) ○->
 
     new Promise (resolve, reject) ->
 
         opt = shell:true
-        child_process.exec('git rev-parse --show-toplevel',opt, (err, gitDir, stderr) -> 
+        child_process.exec 'git rev-parse --show-toplevel', opt, (err, gitDir, stderr) -> 
 
             if err
                 error 'ERROR' err
@@ -245,7 +253,7 @@ export ○->
                 gitDir = trim gitDir,' \n'
                 log 'gitDir' gitDir
                 
-                child_process.exec('/usr/bin/git status --porcelain',opt, (err, status, stderr) -> 
+                child_process.exec '/usr/bin/git status --porcelain', opt, (err, status, stderr) -> 
                     
                     if err
                         error 'ERROR' err
@@ -253,6 +261,7 @@ export ○->
 
                     else if valid status
 
-                        report parseStatus(status,gitDir), diff:true
+                        report parseStatus(status,gitDir), opt
 
                         ⮐ resolve()
+                        
