@@ -26,7 +26,7 @@ args = karg """
         watch      watch for file changes         = false
         test       run tests                      = false
         run        launch application executable  = false
-        clean      remove transpilated files      = false 
+        commit     git commit                     = false 
         status     git status                     = false
         diff       git status with diffs          = false 
         spawn      spawn app                      = false -S
@@ -49,12 +49,12 @@ class kk
             ○ sleep 150
             
         if args.info    ➜ ○ kk.info()
-        if args.clean   ➜ ○ kk.clean()
         if args.knrd    ➜ ○ knrd         args.options, args
         if args.build   ➜ ○ kk.build()
         if args.rebuild ➜ ○ kk.rebuild()                            
         if args.test    ➜ ○ kk.test      args.options
         if args.run     ➜ ○ kk.launch    args.options
+        if args.commit  ➜ ○ kk.commit    args.options
         if args.spawn   ➜ ○ kk.spawn     args.options
         if args.status  ➜ ○ status()
         if args.diff    ➜ ○ status diff:true
@@ -146,6 +146,23 @@ class kk
         appExe = slash.path ◆dir, '../../Contents/MacOS/kakao'
         ○ fs.rm jsDir, recursive:true, force:true 
         ○ fs.unlink appExe
+        
+    #  0000000   0000000   00     00  00     00  000  000000000  
+    # 000       000   000  000   000  000   000  000     000     
+    # 000       000   000  000000000  000000000  000     000     
+    # 000       000   000  000 0 000  000 0 000  000     000     
+    #  0000000   0000000   000   000  000   000  000     000     
+    
+    @commit: args ○->
+
+        msg = args.join ' '
+        msg = 'misc' if empty msg
+        
+        exec = cmd -> log child_process.execSync cmd, encoding:'utf8'
+        
+        exec "git add ." 
+        exec "git commit -m #{msg}" 
+        exec "git push -q 2>&1" 
 
     #  0000000  00000000    0000000   000   000  000   000  
     # 000       000   000  000   000  000 0 000  0000  000  

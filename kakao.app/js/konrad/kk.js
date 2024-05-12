@@ -27,7 +27,7 @@ args = karg(`kk
     watch      watch for file changes         = false
     test       run tests                      = false
     run        launch application executable  = false
-    clean      remove transpilated files      = false 
+    commit     git commit                     = false 
     status     git status                     = false
     diff       git status with diffs          = false 
     spawn      spawn app                      = false -S
@@ -45,10 +45,6 @@ class kk
         if (args.info)
         {
             await kk.info()
-        }
-        if (args.clean)
-        {
-            await kk.clean()
         }
         if (args.knrd)
         {
@@ -69,6 +65,10 @@ class kk
         if (args.run)
         {
             await kk.launch(args.options)
+        }
+        if (args.commit)
+        {
+            await kk.commit(args.options)
         }
         if (args.spawn)
         {
@@ -169,6 +169,24 @@ class kk
         appExe = slash.path(_k_.dir(),'../../Contents/MacOS/kakao')
         await fs.rm(jsDir,{recursive:true,force:true})
         return await fs.unlink(appExe)
+    }
+
+    static async commit (args)
+    {
+        var exec, msg
+
+        msg = args.join(' ')
+        if (_k_.empty(msg))
+        {
+            msg = 'misc'
+        }
+        exec = function (cmd)
+        {
+            console.log(child_process.execSync(cmd,{encoding:'utf8'}))
+        }
+        exec("git add .")
+        exec(`git commit -m ${msg}`)
+        return exec("git push -q 2>&1")
     }
 
     static spawn (args)

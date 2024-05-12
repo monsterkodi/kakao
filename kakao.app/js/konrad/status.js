@@ -57,16 +57,16 @@ pretty = {path:function (p, c = klor.yellow)
                         return klor.white(s)
                     }
 
-                case 'comment':
-                    return function (s)
-                    {
-                        return klor.w1(s)
-                    }
-
                 case 'text require string':
                     return function (s)
                     {
                         return klor.gray(klor.bold(s))
+                    }
+
+                case 'comment':
+                    return function (s)
+                    {
+                        return klor.w1(s)
                     }
 
                 case 'punct comment':
