@@ -151,8 +151,9 @@ export (opt={}) ○->
         child_process.exec 'git rev-parse --show-toplevel' shopt, (err, gitDir, stderr) -> 
 
             if err
-                error 'ERROR' err
-                ⮐ reject()
+                # error 'ERROR' err
+                # ⮐ reject()
+                ⮐ resolve()
                 
             else if valid gitDir
 

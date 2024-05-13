@@ -158,8 +158,7 @@ export default async function (opt = {})
         {
             if (err)
             {
-                console.error('ERROR',err)
-                return reject()
+                return resolve()
             }
             else if (!_k_.empty(gitDir))
             {
