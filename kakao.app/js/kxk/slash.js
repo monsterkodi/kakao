@@ -468,7 +468,7 @@ class Slash
     {
         var _318_35_
 
-        return ((_318_35_=globalThis.tmpDir) != null ? _318_35_ : process.env.TMPDIR)
+        return ((_318_35_=globalThis.tmpDir) != null ? _318_35_ : '/tmp')
     }
 
     static tmpfile (ext)
