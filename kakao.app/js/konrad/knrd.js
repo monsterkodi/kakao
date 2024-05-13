@@ -1,16 +1,17 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isArr: function (o) {return Array.isArray(o)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g2=_k_.k.F256(_k_.k.g(2));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.m3=_k_.k.F256(_k_.k.m(3));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w4=_k_.k.F256(_k_.k.w(4));_k_.w5=_k_.k.F256(_k_.k.w(5))
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isArr: function (o) {return Array.isArray(o)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g2=_k_.k.F256(_k_.k.g(2));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.m3=_k_.k.F256(_k_.k.m(3));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w4=_k_.k.F256(_k_.k.w(4));_k_.w5=_k_.k.F256(_k_.k.w(5))
 
-var bundleDir, bundlePath, gatherFiles, knrd, rules, srcForFile, tgtForSrc
+var bump, bundleDir, bundlePath, gatherFiles, knrd, rules, srcForFile, tgtForSrc
 
 import kode from "../kode/kode.js"
 
-import slash from "../kxk/slash.js"
-let tilde = slash.tilde
-
+import nfs from "../kxk/nfs.js"
 import fs from "../kxk/fs.js"
+import slash from "../kxk/slash.js"
 import pug from "../kxk/pug.js"
 import styl from "../kxk/styl.js"
 import noon from "../kxk/noon.js"
+
+import version from "./version.js"
 
 rules = {kode:{tgtExt:'js',srcDir:'kode',tgtDir:'js',compile:function (srcText, srcFile)
 {
@@ -28,37 +29,6 @@ rules = {kode:{tgtExt:'js',srcDir:'kode',tgtDir:'js',compile:function (srcText, 
 {
     return JSON.stringify(noon.parse(srcText),null,'  ')
 }},ignore:['kolor/lang.noon','ko/help.noon']}
-
-gatherFiles = async function ()
-{
-    var files, list
-
-    list = await fs.list(bundlePath('kode'))
-    list = list.concat(await fs.list(bundlePath('pyg')))
-    list = list.filter(function (item)
-    {
-        return item.type === 'file'
-    })
-    files = list.map(function (item)
-    {
-        return item.path
-    })
-    return files = files.filter(function (file)
-    {
-        var ignore
-
-        var list1 = _k_.list(rules.ignore)
-        for (var _63_19_ = 0; _63_19_ < list1.length; _63_19_++)
-        {
-            ignore = list1[_63_19_]
-            if (file.endsWith(ignore))
-            {
-                return false
-            }
-        }
-        return true
-    })
-}
 
 srcForFile = function (file)
 {
@@ -98,9 +68,46 @@ bundleDir = function ()
     return slash.path(_k_.dir(),'../..')
 }
 
+bump = async function ()
+{
+    await nfs.write(bundlePath('kode/konrad/version.kode'),`export ${version + 1}\n`)
+    return await nfs.write(bundlePath('js/konrad/version.js'),`export default ${version + 1};`)
+}
+
+gatherFiles = async function ()
+{
+    var files, list
+
+    list = await fs.list(bundlePath('kode'))
+    list = list.concat(await fs.list(bundlePath('pyg')))
+    list = list.filter(function (item)
+    {
+        return item.type === 'file'
+    })
+    files = list.map(function (item)
+    {
+        return item.path
+    })
+    return files = files.filter(function (file)
+    {
+        var ignore
+
+        var list1 = _k_.list(rules.ignore)
+        for (var _95_19_ = 0; _95_19_ < list1.length; _95_19_++)
+        {
+            ignore = list1[_95_19_]
+            if (file.endsWith(ignore))
+            {
+                return false
+            }
+        }
+        return true
+    })
+}
+
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, icon, ignore, rule, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _107_23_
+    var compText, file, icon, ignore, rule, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _117_23_
 
     if (_k_.isStr(files))
     {
@@ -120,7 +127,7 @@ knrd = async function (files = [], opt = {})
             files = []
         }
     }
-    opt.verbose = ((_107_23_=opt.verbose) != null ? _107_23_ : opt.debug)
+    opt.verbose = ((_117_23_=opt.verbose) != null ? _117_23_ : opt.debug)
     if (opt.debug)
     {
         console.log('opt',opt)
@@ -140,19 +147,19 @@ knrd = async function (files = [], opt = {})
     }
     transpiled = 0
     var list = _k_.list(files)
-    for (var _121_13_ = 0; _121_13_ < list.length; _121_13_++)
+    for (var _131_13_ = 0; _131_13_ < list.length; _131_13_++)
     {
-        file = list[_121_13_]
+        file = list[_131_13_]
         skip = false
         var list1 = _k_.list(rules.ignore)
-        for (var _124_19_ = 0; _124_19_ < list1.length; _124_19_++)
+        for (var _134_19_ = 0; _134_19_ < list1.length; _134_19_++)
         {
-            ignore = list1[_124_19_]
+            ignore = list1[_134_19_]
             if (file.endsWith(ignore))
             {
                 if (opt.verbose)
                 {
-                    console.log(_k_.w2('✘  '),_k_.w3(tilde(file)))
+                    console.log(_k_.w2('✘  '),_k_.w3(slash.tilde(file)))
                 }
                 skip = true
                 break
@@ -179,13 +186,13 @@ knrd = async function (files = [], opt = {})
             }
             if (_k_.empty(compText))
             {
-                console.log(_k_.y5('✘ '),_k_.r5(tilde(srcFile)),_k_.r4('transpiles to empty!'))
+                console.log(_k_.y5('✘ '),_k_.r5(slash.tilde(srcFile)),_k_.r4('transpiles to empty!'))
             }
             else
             {
                 if (opt.verbose)
                 {
-                    console.log(_k_.g2('🔧'),_k_.m3(tilde(srcFile)))
+                    console.log(_k_.g2('🔧'),_k_.m3(slash.tilde(srcFile)))
                 }
                 if (tgtText !== compText)
                 {
@@ -194,10 +201,14 @@ knrd = async function (files = [], opt = {})
                     {
                         await fs.write(tgtFile,compText)
                     }
-                    console.log(_k_.b5('✔ '),_k_.g5(tilde(tgtFile)))
+                    console.log(_k_.b5('✔ '),_k_.g5(slash.tilde(tgtFile)))
                 }
             }
         }
+    }
+    if (transpiled && !opt.dryrun)
+    {
+        await bump()
     }
     return transpiled
 }

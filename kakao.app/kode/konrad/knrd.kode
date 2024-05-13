@@ -8,9 +8,9 @@
     transpiles kode, noon, styl and pug files
 ###
 
-use ../kode/kode
-use ../kxk/slash ▪ tilde
-use ../kxk ◆ fs pug styl noon
+use ../kode ◆ kode
+use ../kxk  ◆ nfs fs slash pug styl noon
+use         ◆ version
 
 # 00000000   000   000  000      00000000   0000000  
 # 000   000  000   000  000      000       000       
@@ -44,27 +44,14 @@ rules =
     ignore: [
         'kolor/lang.noon'
         'ko/help.noon'
-    ]
-    
-#  0000000    0000000   000000000  000   000  00000000  00000000   
-# 000        000   000     000     000   000  000       000   000  
-# 000  0000  000000000     000     000000000  0000000   0000000    
-# 000   000  000   000     000     000   000  000       000   000  
-#  0000000   000   000     000     000   000  00000000  000   000  
-
-gatherFiles = ○->
-    
-    list  =○ fs.list bundlePath 'kode'
-    list  = list.concat ○ fs.list bundlePath 'pyg'
-    list  = list.filter (item) -> item.type == 'file'
-    
-    files = list.map (item) -> item.path
-    files = files.filter (file) -> 
-        for ignore in rules.ignore
-            if file.endsWith ignore
-                return false
-        true
+        ]
         
+# 000   000  000000000  000  000        
+# 000   000     000     000  000        
+# 000   000     000     000  000        
+# 000   000     000     000  000        
+#  0000000      000     000  0000000    
+            
 srcForFile = file ->
     
     srcFile = file
@@ -85,6 +72,29 @@ bundleDir = ->
         ⮐ d if slash.ext(d) == 'app'
         d = slash.dir d
     slash.path ◆dir '../..'
+  
+bump = ○->
+    
+    ○ nfs.write bundlePath('kode/konrad/version.kode'), "export #{version+1}\n"
+    ○ nfs.write bundlePath('js/konrad/version.js'), "export default #{version+1};"
+    
+#  0000000    0000000   000000000  000   000  00000000  00000000   
+# 000        000   000     000     000   000  000       000   000  
+# 000  0000  000000000     000     000000000  0000000   0000000    
+# 000   000  000   000     000     000   000  000       000   000  
+#  0000000   000   000     000     000   000  00000000  000   000  
+
+gatherFiles = ○->
+    
+    list  =○ fs.list bundlePath 'kode'
+    list  = list.concat ○ fs.list bundlePath 'pyg'
+    list  = list.filter (item) -> item.type == 'file'
+    
+    files = list.map (item) -> item.path
+    files = files.filter (file) -> 
+        for ignore in rules.ignore
+            ⮐ false if file.endsWith ignore
+        true
     
 # 000   000  000   000  00000000   0000000    
 # 000  000   0000  000  000   000  000   000  
@@ -123,7 +133,7 @@ knrd = files=[] opt={} ○->
         skip = false
         for ignore in rules.ignore
             if file.endsWith ignore
-                log w2('✘  '), w3 tilde file if opt.verbose
+                log w2('✘  '), w3 slash.tilde file if opt.verbose
                 skip = true
                 break
                 
@@ -131,25 +141,27 @@ knrd = files=[] opt={} ○->
         
         if rule = rules[slash.ext file]
             
-            srcFile = srcForFile file
-            tgtFile = tgtForSrc  srcFile, rule
-            
-            srcText =○ fs.read srcFile
-            tgtText =○ fs.read tgtFile
+            srcFile  = srcForFile file
+            tgtFile  = tgtForSrc  srcFile, rule
+                     
+            srcText  =○ fs.read srcFile
+            tgtText  =○ fs.read tgtFile
             compText = rule.compile srcText, srcFile
             
             log 'tgtText'  tgtFile, tgtText if opt.debug and opt.verbose
             log 'compText' compText         if opt.debug and opt.verbose
                 
             if empty compText
-                log y5('✘ '), r5(tilde srcFile), r4('transpiles to empty!')
+                log y5('✘ '), r5(slash.tilde srcFile), r4('transpiles to empty!')
             else
-                log g2('🔧'), m3 tilde srcFile if opt.verbose
+                log g2('🔧'), m3 slash.tilde srcFile if opt.verbose
                 if tgtText != compText
                     transpiled++
-                    
                     ○ fs.write tgtFile, compText if not opt.dryrun
-                    log b5('✔ '), g5 tilde tgtFile
+                    log b5('✔ '), g5 slash.tilde tgtFile
+                    
+    ○ bump() if transpiled and not opt.dryrun
+    
     transpiled
         
 knrd.bundlePath = bundlePath

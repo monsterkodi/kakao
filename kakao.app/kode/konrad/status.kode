@@ -16,7 +16,7 @@ use child_process
 # 000   000  000       000        000   000  000   000     000     
 # 000   000  00000000  000         0000000   000   000     000     
 
-report = status opt={} ○-> 
+report = status opt={} ○->
 
     changes = []
     
@@ -81,16 +81,17 @@ report = status opt={} ○->
     relPath = '.' if relPath == ''
     gitPath = pretty.filePath relPath, klor.w5
     
-    aheadBehind = ->
-        if status.ahead or status.behind
-            st = ''
-            if status.ahead
-                st += w3 "▲ #{status.ahead}"
-            if status.behind
-                st += r5 "▼ #{status.behind}"
-            st = rpad 4 st
-        else
-            ''
+    #aheadBehind = -> 
+    #    
+    #    if status.ahead or status.behind
+    #        st = ''
+    #        if status.ahead
+    #            st += w3 "▲ #{status.ahead}"
+    #        if status.behind
+    #            st += r5 "▼ #{status.behind}"
+    #        st = rpad 4 st
+    #    else
+    #        ''
             
     log B5('    ' + gitPath + ' ') + ' '
     for c in changes
