@@ -87,7 +87,6 @@ Window = (function ()
 
     Window.prototype["onWindowWithoutStash"] = async function ()
     {
-        console.log('onWindowWithoutStash!')
         if (_k_.empty(window.tabs.tabs))
         {
             console.log('new empty tab!')

@@ -12,7 +12,7 @@ use                ◆ Split Info Tabs Menu QuickMenu Navigate FileHandler Termi
 use ../tools       ◆ FileWatch Projects Indexer Git Unicode fps
 use ../editor      ◆ Kore Editor Syntax FileEditor
 use ../commands    ◆ Macro
-use ../commandline ◆ CommandLine 
+use ../commandline ◆ CommandLine
 
 # 000   000  000  000   000  0000000     0000000   000   000  
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000  
@@ -42,7 +42,7 @@ function Window extends win.Delegate
         
     onWindowWithoutStash: ○->
         
-        log 'onWindowWithoutStash!'
+        # log 'onWindowWithoutStash!'
         
         if empty window.tabs.tabs ➜ log 'new empty tab!'; post.emit 'newEmptyTab'
             

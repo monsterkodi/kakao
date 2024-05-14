@@ -235,7 +235,6 @@ class Keys
 
     keyUp (info)
     {
-        console.log('up',info)
         if (info.key === 'shift')
         {
             if (this.shiftFunctions)

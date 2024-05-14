@@ -128,9 +128,9 @@ class Projects
         {
             this.projects[prjPath] = {dir:prjPath,files:result.files}
             var list = _k_.list(result.files)
-            for (var _100_21_ = 0; _100_21_ < list.length; _100_21_++)
+            for (var _99_21_ = 0; _99_21_ < list.length; _99_21_++)
             {
-                file = list[_100_21_]
+                file = list[_99_21_]
                 this.allFiles[file] = prjPath
             }
             console.log('Projects indexed',prjPath,this.projects)

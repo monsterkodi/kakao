@@ -41,14 +41,15 @@ function Win
         @saveStashOnClose = true
         @delegate ?= new Delegate
         
-        post.on 'window.blur'  @onWindowBlur
-        post.on 'window.focus' @onWindowFocus
-        post.on 'window.close' @onWindowClose
-        post.on 'window.frame' @onWindowFrame
+        post.on 'window.blur'       @onWindowBlur
+        post.on 'window.focus'      @onWindowFocus
+        post.on 'window.close'      @onWindowClose
+        post.on 'window.frame'      @onWindowFrame
+        post.on 'menuAction'        @onMenuAction
+        post.on 'stashLoaded'       @onStashLoaded
+        post.on 'saveStash'         @saveStash
+        post.on 'window.willReload' @saveStash
         post.on 'window.willResize' @onWindowWillResize
-        post.on 'menuAction'   @onMenuAction
-        post.on 'stashLoaded'  @onStashLoaded
-        post.on 'saveStash'    @saveStash
         post.on 'menu.init'    (template) => @delegate?.onWindowMenuTemplate? @, template
         
         menuIcon = @delegate.menuIcon ? kakao.bundle.img 'menu_kakao.png'
@@ -109,7 +110,7 @@ function Win
                     
     saveStash: ->
         
-        log 'saveStash'
+        # log 'saveStash'
      
         post.emit 'saveChanges' 
         post.emit 'stash'

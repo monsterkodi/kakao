@@ -829,17 +829,17 @@ span.macro.macro,
 }
 
 
-.filelist-item:active,
-.funclist-item:active
-{
-        background-color: #222;
-}
-
-
 .filelist-item.visible,
 .funclist-item.visible
 {
         background-color: #111111;
+}
+
+
+.filelist-item:hover,
+.funclist-item:hover
+{
+        background-color: #222;
 }
 
 
