@@ -178,7 +178,6 @@ class GitInfo
         {
             p = list[_162_14_]
             path = slash.path(gitDir,p.srcfile.slice(2))
-            console.log('doLog',path)
             if (_k_.in(slash.ext(path),IGNORE_FILE_EXTS))
             {
                 continue

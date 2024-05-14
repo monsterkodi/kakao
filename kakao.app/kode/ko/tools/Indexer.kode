@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ pickBy pullIf deleteBy sds matchr slash post ffs 
 
-use ◆ Walker IndexHpp IndexJS IndexMM
+use ◆ Walker IndexHpp IndexJS IndexMM IndexStyl
 
 class Indexer
 
@@ -78,7 +78,6 @@ class Indexer
     
     @: ->
         
-        # post.onGet 'indexer' @onGet
         # post.on 'sourceInfoForFile' @onSourceInfoForFile
         
         post.on 'index' (file) => @indexFile file
@@ -99,7 +98,7 @@ class Indexer
     # 000   000  000  0000  000   000  000          000     
     #  0000000   000   000   0000000   00000000     000     
     
-    onGet: (key, filter...) =>
+    onGet: (key, filter...) => # not used anymore?
         
         switch key
             'counts'
@@ -140,6 +139,7 @@ class Indexer
         
         if not funcName
             log "addFuncInfo #{funcName}" funcInfo
+            ⮐ 
         
         if funcName.length > 1 and funcName.startsWith '@'
             funcName = funcName.slice 1
@@ -266,9 +266,10 @@ class Indexer
             
             if 
                 
-                isHpp or isCpp  ➜ @applyIndexer file, fileInfo, text, IndexHpp
-                isJS            ➜ @applyIndexer file, fileInfo, text, IndexJS
-                fileExt == 'mm' ➜ @applyIndexer file, fileInfo, text, IndexMM
+                isHpp or isCpp    ➜ @applyIndexer file, fileInfo, text, IndexHpp
+                isJS              ➜ @applyIndexer file, fileInfo, text, IndexJS
+                fileExt == 'mm'   ➜ @applyIndexer file, fileInfo, text, IndexMM
+                fileExt == 'styl' ➜ @applyIndexer file, fileInfo, text, IndexStyl
                 ➜
                     # this is essentially the kode indexer. shouldn't that get split off like cpp and js indexers?
                     

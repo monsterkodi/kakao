@@ -76,7 +76,7 @@ class Navigate
 
             'backward'
                 
-                log 'Navigate backward' @navlist
+                # log 'Navigate backward' @navlist
                 ⮐ if not @navlist.length
                 @currentIndex = clamp 0 Math.max(0 @navlist.length-2), @currentIndex-1
                 @navigating = true

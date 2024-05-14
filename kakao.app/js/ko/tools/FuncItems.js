@@ -26,6 +26,11 @@ FuncItems = (function ()
         for (var _21_17_ = 0; _21_17_ < list1.length; _21_17_++)
         {
             func = list1[_21_17_]
+            if (_k_.empty(func))
+            {
+                console.log('empty func',funcs)
+                continue
+            }
             type = 'func'
             arr = (func.bound ? '=> ' : '-> ')
             if (func.test)

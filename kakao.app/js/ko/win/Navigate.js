@@ -73,7 +73,6 @@ class Navigate
                 return this.currentIndex = -1
 
             case 'backward':
-                console.log('Navigate backward',this.navlist)
                 if (!this.navlist.length)
                 {
                     return

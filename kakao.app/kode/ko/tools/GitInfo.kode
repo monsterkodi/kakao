@@ -163,7 +163,7 @@ class GitInfo
             
             path = slash.path gitDir, p.srcfile[2..]
             
-            log 'doLog' path
+            # log 'doLog' path
             
             continue if slash.ext(path) in IGNORE_FILE_EXTS
             

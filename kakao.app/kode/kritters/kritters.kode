@@ -1,0 +1,69 @@
+###
+000   000  00000000   000  000000000  000000000  00000000  00000000    0000000  
+000  000   000   000  000     000        000     000       000   000  000       
+0000000    0000000    000     000        000     0000000   0000000    0000000   
+000  000   000   000  000     000        000     000       000   000       000  
+000   000  000   000  000     000        000     00000000  000   000  0000000   
+###
+
+use ../kakao
+use ../kxk ▪ $ win post stopEvent
+
+window.WIN_MIN_WIDTH  = 200
+window.WIN_MIN_HEIGHT = 200
+
+function Delegate extends win.Delegate
+    
+    @: ->
+        
+        post.on 'menuAction' @onMenuAction
+        
+    onWindowWillShow: ->
+    
+        document.body.style.display = 'inherit'
+
+    onWindowWithoutStash: ->  
+        
+        kakao 'win.setSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
+        kakao 'win.center'
+        
+    onWindowCreated: =>
+        
+        kakao 'win.setMinSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
+        
+    onWindowResize: => post.emit 'resize'
+        
+    # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
+    # 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
+    # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
+    # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
+
+    onMenuAction: action args =>
+
+        switch action
+            
+            'Cut'   ➜ ⮐ @cut()
+            'Copy'  ➜ ⮐ @cpy()
+            'Paste' ➜ ⮐ @paste()
+
+        # log 'onMenuAction' action, args
+        'unhandled'
+            
+    # 000   000  00000000  000   000        0000000     0000000   000   000  000   000  
+    # 000  000   000        000 000         000   000  000   000  000 0 000  0000  000  
+    # 0000000    0000000     00000          000   000  000   000  000000000  000 0 000  
+    # 000  000   000          000           000   000  000   000  000   000  000  0000  
+    # 000   000  00000000     000           0000000     0000000   00     00  000   000  
+    
+    onWindowKeyDown: win info =>
+    onWindowKeyUp:   win info =>
+        
+    onWindowBlur:  win =>
+    onWindowFocus: win =>
+    
+kakao.init ->
+    
+    new win new Delegate
+    @
+    
