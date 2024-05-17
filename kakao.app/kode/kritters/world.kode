@@ -1,0 +1,266 @@
+###
+000   000   0000000   00000000   000      0000000  
+000 0 000  000   000  000   000  000      000   000
+000000000  000   000  0000000    000      000   000
+000   000  000   000  000   000  000      000   000
+00     00   0000000   000   000  0000000  0000000  
+###
+
+use ../kxk ▪ $ randInt randIntRange elem prefs post
+
+function world
+
+    @: -> 
+        
+        @pause         = false
+        @cellSize      = prefs.get 'cellSize' 20
+        @width         = 230
+        @height        = 130
+        @stepsPerFrame = 1
+                        
+        @canvas = elem 'canvas' class:'gridCanvas' 
+        
+        main =$ 'main'
+        main.insertBefore @canvas, main.firstChild
+        
+        @container =$ 'scrollContainer'
+        @content   =$ 'scrollContent'
+        
+        @start()
+        
+        @updateCellSize()
+        
+        post.on 'resize' @resize
+        
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    start: =>
+        
+        @count  = '':0 '':0 '✣':0 '':0 '':0
+        @cells = {}
+        
+        for x in 0..@width
+            for y in 0..@height
+                r = randInt 1000
+                if 
+                    r < 3 
+                        t = ''; fg = "#ff0"; e = 500+randInt(1200); xd = randIntRange -1 1; yd = randIntRange -1 1; a = randInt(5000)
+                    r < 10
+                        switch randInt 4
+                            0 ➜ xd =  1; yd =  0
+                            1 ➜ xd = -1; yd =  0
+                            2 ➜ xd =  0; yd =  1
+                            3 ➜ xd =  0; yd = -1
+                        
+                        t = '✣'; fg = "#00f"; e = 500+randInt(5200); a = randInt(5000)
+                    ➜ continue
+                      
+                @setCell x, y, fg:fg, t:t, xd:xd, yd:yd, e:e, a:a, o:0
+
+    resize: =>
+        
+        br = @container.getBoundingClientRect()
+        cr = @content.getBoundingClientRect()
+        sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
+        sy = clamp 0 @height, parseInt @container.scrollTop / @cellSize
+        lx = clamp 0 @width,  parseInt sx + br.width / @cellSize
+        ly = clamp 0 @height, parseInt sy + br.height / @cellSize
+        
+        ox = max 0 cr.x - br.x
+        if cr.height < br.height
+            oy = (br.height - cr.height)/2
+        else
+            oy = max 0 cr.y - br.y
+                
+        @canvas.style.left = "#{ox}px"
+        @canvas.style.top  = "#{oy}px"
+        @canvas.width  = min br.width  , cr.width
+        @canvas.height = min br.height , cr.height
+                
+    togglePause: => @pause = not @pause; post.emit 'pause'
+    zoom:  delta -> @cellSize += delta; @cellSize = clamp 3 60 @cellSize; prefs.set 'cellSize' @cellSize; @updateCellSize()
+    
+    updateCellSize: ->
+        
+        @content.style.width  = "#{@cellSize*@width}px"
+        @content.style.height = "#{@cellSize*@height}px"
+        
+        @resize()
+        
+    newAt:   x y   -> @newCells[(x+@width)%@width]?[(y+@height)%@height]
+    cellAt:  x y   -> @cells[(x+@width)%@width]?[(y+@height)%@height]
+    setCell: x y o -> @cells[(x+@width)%@width] ?= {}; @cells[(x+@width)%@width][(y+@height)%@height] = o
+    newCell: x y o -> @newCells[(x+@width)%@width] ?= {}; @newCells[(x+@width)%@width][(y+@height)%@height] = o
+    
+    #  0000000  000  00     00   0000000  00000000  000      000      
+    # 000       000  000   000  000       000       000      000      
+    # 0000000   000  000000000  000       0000000   000      000      
+    #      000  000  000 0 000  000       000       000      000      
+    # 0000000   000  000   000   0000000  00000000  0000000  0000000  
+    
+    simCell: x y cell ->
+        
+        if cell.t in ''
+                        
+            if not @newAt x, y
+                @newCell x, y, cell
+            ⮐ 
+        
+        cell.e = cell.e - 1
+        ⮐ if cell.e <= 0
+        
+        cell.a = cell.a + 1        
+        
+        switch cell.t
+            
+            '' 
+                if cell.a == 1000
+                    cell.fg = '#f00'
+                else if cell.a == 5000
+                    cell.fg = '#ff0'
+            
+                if forward = @cellAt x+cell.xd, y+cell.yd
+                    if forward.t == ''
+                        cell.e = cell.e + 50
+                        cell.e = min 1000 cell.e
+                        @newCell x+cell.xd, y+cell.yd, cell
+                        ⮐ 
+                    if forward.t == ''
+                        cell.e = cell.e + 100
+                        cell.e = min 1000 cell.e
+                        @newCell x+cell.xd, y+cell.yd, cell
+                        ⮐ 
+                    if cell.a > 1000 and forward != cell and forward.t == '' and forward.a > 1000
+                        for d in [[-1 0] [1 0] [0 -1] [0 1]]
+                            if not @newAt x+d[0], y+d[1]
+                                cell.o += 1
+                                e = parseInt cell.e/2
+                                cell.e = e
+                                @newCell x, y, cell
+                                @newCell x+cell.xd, y+cell.yd, t:'' fg:'#800' a:0 o:0 e:e, xd:randIntRange(-1 1), yd:randIntRange(-1 1)
+                            ⮐ 
+                else if randInt(10) < 6
+                    if not @newAt x+cell.xd, y+cell.yd
+                        @newCell x+cell.xd, y+cell.yd, cell
+                        ⮐
+                        
+                if randInt(5) <= 1
+                    cell.xd = randIntRange -1 1
+                    cell.yd = randIntRange -1 1
+                
+            '✣'
+                   
+                switch cell.a
+                    2500 ➜ cell.fg ='#11f'
+                    5000 ➜ cell.fg ='#33f'
+                    7500 ➜ cell.fg ='#44f'
+                         ➜ 
+                            if cell.a > 10000
+                                @newCell x, y, t:'' fg:'#a04' e:20000 a:0
+                                ⮐ 
+                stems = 0
+                for d in [[-1 0] [1 0] [0 -1] [0 1]]
+                    if neighbor = @cellAt x+d[0], y+d[1] 
+                        if neighbor.t == ''
+                            cell.e = cell.e + 1
+                        else if neighbor.t == '✣'
+                            stems++
+                            
+                if stems == 1
+                    cell.e = cell.e + 1
+            
+                if randInt(10) < 4
+                    if not @cellAt(x+cell.xd, y+cell.yd) and not @newAt x+cell.xd, y+cell.yd
+                        if randInt(200) <= 1
+                            @newCell x+cell.xd, y+cell.yd, t:'' fg:'#800' e:0
+                        else if stems <= 1 and randInt(@count['✣']) <= 4
+                            @newCell x+cell.xd, y+cell.yd, t:'✣' fg:'#00f' e:50+randInt(200), a:0
+                    else
+                        switch randInt 4
+                            0 ➜ cell.xd =  1; cell.yd =  0
+                            1 ➜ cell.xd = -1; cell.yd =  0
+                            2 ➜ cell.xd =  0; cell.yd =  1
+                            3 ➜ cell.xd =  0; cell.yd = -1
+                                                
+        if not @newAt x, y
+            @newCell x, y, cell
+    
+    #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
+    # 000       000  000   000  000   000  000      000   000     000     000       
+    # 0000000   000  000000000  000   000  000      000000000     000     0000000   
+    #      000  000  000 0 000  000   000  000      000   000     000     000       
+    # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
+    
+    simulate: ->
+        
+        ⮐ if @pause and not @oneStep
+        
+        delete @oneStep
+        # ● simulate
+        
+        @newCells = {}
+        
+        for x in 0...@width
+            for y in 0...@height
+                if cell = @cellAt x, y
+                    @simCell x, y, cell
+                      
+        @cells = @newCells
+        
+    # 000000000  000   0000000  000   000  
+    #    000     000  000       000  000   
+    #    000     000  000       0000000    
+    #    000     000  000       000  000   
+    #    000     000   0000000  000   000  
+    
+    faster:     => @stepsPerFrame *= 4; @stepsPerFrame = min 64 @stepsPerFrame
+    slower:     => @stepsPerFrame /= 4; @stepsPerFrame = max 1  @stepsPerFrame
+    singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
+    
+    tick: tickInfo ->
+        
+        for i in 0...@stepsPerFrame
+            @simulate()
+        
+        for t in '✣'
+            @count[t] = 0
+        for x in 0...@width
+            for y in 0...@height
+                if cell = @cellAt x, y
+                    @count[cell.t] += 1
+              
+        if @count['']
+            @count[''] += @stepsPerFrame
+            
+        br = @container.getBoundingClientRect()
+        sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
+        sy = clamp 0 @height, parseInt @container.scrollTop / @cellSize
+        lx = clamp 0 @width,  parseInt sx + br.width / @cellSize
+        ly = clamp 0 @height, parseInt sy + br.height / @cellSize
+        
+        @canvas.width = @canvas.width
+        ctx = @canvas.getContext '2d'
+        ctx.font = "#{@cellSize}px fontMono"
+        # ctx.fillStyle = "rgba(0,0,0,0.2)"
+        # ctx.fillRect 0, 0, @canvas.width, @canvas.height
+        
+        for x in sx..lx
+            for y in sy..ly
+                if cell = @cellAt x, y
+                    cx = (x-sx)*@cellSize
+                    cy = (y-sy)*@cellSize
+                    # ctx.fillStyle = "rgb(0, #{cell.bg+randInt(10)}, 0)"
+                    # ctx.fillRect cx, cy, @cellSize, @cellSize
+                    
+                    if cell.t
+                        ctx.fillStyle = cell.fg
+                        if @cellSize > 10
+                            ctx.fillText cell.t, cx, cy
+                        else
+                            ctx.fillRect cx, cy, @cellSize/2, @cellSize/2
+                    
+export world

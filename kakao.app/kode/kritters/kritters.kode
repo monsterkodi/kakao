@@ -7,21 +7,63 @@
 ###
 
 use ../kakao
-use ../kxk ▪ $ win post stopEvent
+use ../kxk ▪ $ win fps post elem stopEvent
+use ◆ world
 
-window.WIN_MIN_WIDTH  = 200
-window.WIN_MIN_HEIGHT = 200
+window.WIN_MIN_WIDTH  = 400
+window.WIN_MIN_HEIGHT = 400
 
 function Delegate extends win.Delegate
     
     @: ->
-        
+
+        @menuNoon = kakao.bundle.res 'menu_kritters.noon'
+                        
         post.on 'menuAction' @onMenuAction
         
+    onWindowAnimationTick: win tickInfo => 
+        
+        @world.tick tickInfo
+        
+        s = ''
+        for k,v of @world.count
+            s += '&nbsp;' + k + '&nbsp;' + v + '&nbsp;'
+            
+        title =$ 'title'
+        title.innerHTML = s
+                
     onWindowWillShow: ->
-    
+        
+        window.world = @world = new world
+        
+        main =$ 'main'
+        @fps = new fps main, topDown:true
+        # @fps.elem.style.display = 'flex'
+        #⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭ 
+        @quiq = elem class:'quiq' children: [
+            elem text:'累' class:'quiq-item quiq-resart' click:@world.start,       dblclick: (e) -> stopEvent e  
+        ,                                                                                   
+            elem text:'⏸' class:'quiq-item quiq-pause'  click:@world.togglePause, dblclick: (e) -> stopEvent e  
+        ,                                                                                   
+            elem text:'⏯' class:'quiq-item quiq-step'   click:@world.singleStep,  dblclick: (e) -> stopEvent e  
+        ,                                                                                   
+            elem text:'⏮' class:'quiq-item quiq-slower' click:@world.slower,      dblclick: (e) -> stopEvent e  
+        ,                                                                                   
+            elem text:'⏭' class:'quiq-item quiq-faster' click:@world.faster,      dblclick: (e) -> stopEvent e  
+        ]
+        
+        title =$ 'title'
+        title.parentElement.insertBefore @quiq, title.nextSibling
+        
+        post.on 'pause' @onPause
+        
         document.body.style.display = 'inherit'
 
+    onPause: =>
+        
+        pause =$ '.quiq-pause'
+        pause.innerHTML = @world.pause ? '⏵' : '⏸'
+        
     onWindowWithoutStash: ->  
         
         kakao 'win.setSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
@@ -43,10 +85,10 @@ function Delegate extends win.Delegate
 
         switch action
             
-            'Cut'   ➜ ⮐ @cut()
-            'Copy'  ➜ ⮐ @cpy()
-            'Paste' ➜ ⮐ @paste()
-
+            'Zoom In'  ➜ ⮐ @world.zoom 1
+            'Zoom Out' ➜ ⮐ @world.zoom -1
+            'Pause'    ➜ ⮐ @world.togglePause()
+            
         # log 'onMenuAction' action, args
         'unhandled'
             

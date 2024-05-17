@@ -273,5 +273,26 @@ util = {isEqual:function (a, b)
         return setTimeout(r,ms)
     }).bind(this))
     return true
+},rad2deg:function (r)
+{
+    return 180 * r / Math.PI
+},deg2rad:function (d)
+{
+    return Math.PI * d / 180
+},randInt:function (r)
+{
+    return Math.floor(Math.random() * r)
+},randIntRange:function (l, h)
+{
+    return Math.floor(l + Math.random() * (h - l + 1))
+},randRange:function (l, h)
+{
+    return l + Math.random() * (h - l)
+},absMax:function (a, b)
+{
+    return ((Math.abs(a) >= Math.abs(b)) ? a : b)
+},absMin:function (a, b)
+{
+    return ((Math.abs(a) < Math.abs(b)) ? a : b)
 }}
 export default util;

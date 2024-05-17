@@ -113,8 +113,7 @@ function Win
         # log 'saveStash'
      
         post.emit 'saveChanges' 
-        post.emit 'stash'
-        window.prefs.save()
+        post.emit 'stash'        
         window.stash.save()
             
     animate: =>
@@ -134,7 +133,7 @@ function Win
     onResize:     event => @delegate?.onWindowResize? @, event#; log 'resize' event.target.innerWidth, event.target.innerHeight
     onWindowFocus:      => @delegate?.onWindowFocus?  @
     onWindowBlur:       => @delegate?.onWindowBlur?   @
-    onWindowClose:      => post.emit 'saveStash' if @saveStashOnClose; @delegate?.onWindowClose?  @
+    onWindowClose:      => post.emit 'saveStash' if @saveStashOnClose; window.prefs.save(); @delegate?.onWindowClose?  @
     onWindowFrame: info => window.stash.set 'frame' info.frame#; log 'window.frame' info.frame.w, info.frame.h
     onWindowWillResize: info newSize => #log 'window.willResize' info.frame.w, info.frame.h, newSize
     onStashLoaded: => 

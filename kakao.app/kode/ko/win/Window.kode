@@ -7,9 +7,9 @@
 ###
 
 use ../../kakao
-use ../../kxk      ▪ win scheme stash post prefs store stopEvent
+use ../../kxk      ▪ win scheme fps stash post prefs store stopEvent $
 use                ◆ Split Info Tabs Menu QuickMenu Navigate FileHandler Terminal Viewer
-use ../tools       ◆ FileWatch Projects Indexer Git Unicode fps
+use ../tools       ◆ FileWatch Projects Indexer Git Unicode
 use ../editor      ◆ Kore Editor Syntax FileEditor
 use ../commands    ◆ Macro
 use ../commandline ◆ CommandLine
@@ -67,7 +67,7 @@ function Window extends win.Delegate
         @editor      = window.editor      = new FileEditor 'editor'
         @commandline = window.commandline = new CommandLine 'commandline-editor'
         @info        = window.info        = new Info @editor
-        @fps         = window.fps         = new fps()
+        @fps         = window.fps         = new fps $ 'commandline-span'
         @indexer     = window.indexer     = new Indexer()
         @viewer      = window.viewer      = new Viewer 'editor'
         

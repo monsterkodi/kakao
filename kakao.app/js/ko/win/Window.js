@@ -7,11 +7,13 @@ import kakao from "../../kakao.js"
 import kxk from "../../kxk.js"
 let win = kxk.win
 let scheme = kxk.scheme
+let fps = kxk.fps
 let stash = kxk.stash
 let post = kxk.post
 let prefs = kxk.prefs
 let store = kxk.store
 let stopEvent = kxk.stopEvent
+let $ = kxk.$
 
 import Split from "./Split.js"
 import Info from "./Info.js"
@@ -28,7 +30,6 @@ import Projects from "../tools/Projects.js"
 import Indexer from "../tools/Indexer.js"
 import Git from "../tools/Git.js"
 import Unicode from "../tools/Unicode.js"
-import fps from "../tools/fps.js"
 
 import Kore from "../editor/Kore.js"
 import Editor from "../editor/Editor.js"
@@ -112,7 +113,7 @@ Window = (function ()
         this.editor = window.editor = new FileEditor('editor')
         this.commandline = window.commandline = new CommandLine('commandline-editor')
         this.info = window.info = new Info(this.editor)
-        this.fps = window.fps = new fps()
+        this.fps = window.fps = new fps($('commandline-span'))
         this.indexer = window.indexer = new Indexer()
         this.viewer = window.viewer = new Viewer('editor')
         window.textEditor = window.focusEditor = this.editor

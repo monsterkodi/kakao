@@ -7,11 +7,15 @@ import kakao from "../kakao.js"
 import kxk from "../kxk.js"
 let $ = kxk.$
 let win = kxk.win
+let fps = kxk.fps
 let post = kxk.post
+let elem = kxk.elem
 let stopEvent = kxk.stopEvent
 
-window.WIN_MIN_WIDTH = 200
-window.WIN_MIN_HEIGHT = 200
+import world from "./world.js"
+
+window.WIN_MIN_WIDTH = 400
+window.WIN_MIN_HEIGHT = 400
 
 Delegate = (function ()
 {
@@ -25,13 +29,63 @@ Delegate = (function ()
         this["onMenuAction"] = this["onMenuAction"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
+        this["onPause"] = this["onPause"].bind(this)
+        this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
+        this.menuNoon = kakao.bundle.res('menu_kritters.noon')
         post.on('menuAction',this.onMenuAction)
         return Delegate.__super__.constructor.apply(this, arguments)
     }
 
+    Delegate.prototype["onWindowAnimationTick"] = function (win, tickInfo)
+    {
+        var k, s, title, v
+
+        this.world.tick(tickInfo)
+        s = ''
+        for (k in this.world.count)
+        {
+            v = this.world.count[k]
+            s += '&nbsp;' + k + '&nbsp;' + v + '&nbsp;'
+        }
+        title = $('title')
+        return title.innerHTML = s
+    }
+
     Delegate.prototype["onWindowWillShow"] = function ()
     {
+        var main, title
+
+        window.world = this.world = new world
+        main = $('main')
+        this.fps = new fps(main,{topDown:true})
+        this.quiq = elem({class:'quiq',children:[elem({text:'累',class:'quiq-item quiq-resart',click:this.world.start,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }}),elem({text:'⏸',class:'quiq-item quiq-pause',click:this.world.togglePause,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }}),elem({text:'⏯',class:'quiq-item quiq-step',click:this.world.singleStep,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }}),elem({text:'⏮',class:'quiq-item quiq-slower',click:this.world.slower,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }}),elem({text:'⏭',class:'quiq-item quiq-faster',click:this.world.faster,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }})]})
+        title = $('title')
+        title.parentElement.insertBefore(this.quiq,title.nextSibling)
+        post.on('pause',this.onPause)
         return document.body.style.display = 'inherit'
+    }
+
+    Delegate.prototype["onPause"] = function ()
+    {
+        var pause
+
+        pause = $('.quiq-pause')
+        return pause.innerHTML = (this.world.pause ? '⏵' : '⏸')
     }
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
@@ -54,14 +108,14 @@ Delegate = (function ()
     {
         switch (action)
         {
-            case 'Cut':
-                return this.cut()
+            case 'Zoom In':
+                return this.world.zoom(1)
 
-            case 'Copy':
-                return this.cpy()
+            case 'Zoom Out':
+                return this.world.zoom(-1)
 
-            case 'Paste':
-                return this.paste()
+            case 'Pause':
+                return this.world.togglePause()
 
         }
 
