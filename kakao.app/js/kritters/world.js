@@ -9,6 +9,7 @@ let randIntRange = kxk.randIntRange
 let elem = kxk.elem
 let prefs = kxk.prefs
 let post = kxk.post
+let plot = kxk.plot
 
 
 world = (function ()
@@ -28,8 +29,11 @@ world = (function ()
         this.width = 230
         this.height = 130
         this.stepsPerFrame = 1
+        this.nextPlot = 0
         this.canvas = elem('canvas',{class:'gridCanvas'})
         main = $('main')
+        this.plot = new plot({scale:{'':0.1,'✣':0.1,'':0.1,'':3},color:{'':"#a00",'':"#ff0",'✣':'#88f','':"#f04"}})
+        main.insertBefore(this.plot.elem,main.firstChild)
         main.insertBefore(this.canvas,main.firstChild)
         this.container = $('scrollContainer')
         this.content = $('scrollContent')
@@ -44,9 +48,9 @@ world = (function ()
 
         this.count = {'':0,'':0,'✣':0,'':0,'':0}
         this.cells = {}
-        for (var _46_17_ = x = 0, _46_20_ = this.width; (_46_17_ <= _46_20_ ? x <= this.width : x >= this.width); (_46_17_ <= _46_20_ ? ++x : --x))
+        for (var _50_17_ = x = 0, _50_20_ = this.width; (_50_17_ <= _50_20_ ? x <= this.width : x >= this.width); (_50_17_ <= _50_20_ ? ++x : --x))
         {
-            for (var _47_21_ = y = 0, _47_24_ = this.height; (_47_21_ <= _47_24_ ? y <= this.height : y >= this.height); (_47_21_ <= _47_24_ ? ++y : --y))
+            for (var _51_21_ = y = 0, _51_24_ = this.height; (_51_21_ <= _51_24_ ? y <= this.height : y >= this.height); (_51_21_ <= _51_24_ ? ++y : --y))
             {
                 r = randInt(1000)
                 if (r < 3)
@@ -152,17 +156,17 @@ world = (function ()
 
     world.prototype["setCell"] = function (x, y, o)
     {
-        var _96_48_
+        var _100_48_
 
-        this.cells[(x + this.width) % this.width] = ((_96_48_=this.cells[(x + this.width) % this.width]) != null ? _96_48_ : {})
+        this.cells[(x + this.width) % this.width] = ((_100_48_=this.cells[(x + this.width) % this.width]) != null ? _100_48_ : {})
         return this.cells[(x + this.width) % this.width][(y + this.height) % this.height] = o
     }
 
     world.prototype["newCell"] = function (x, y, o)
     {
-        var _97_51_
+        var _101_51_
 
-        this.newCells[(x + this.width) % this.width] = ((_97_51_=this.newCells[(x + this.width) % this.width]) != null ? _97_51_ : {})
+        this.newCells[(x + this.width) % this.width] = ((_101_51_=this.newCells[(x + this.width) % this.width]) != null ? _101_51_ : {})
         return this.newCells[(x + this.width) % this.width][(y + this.height) % this.height] = o
     }
 
@@ -214,9 +218,9 @@ world = (function ()
                     if (cell.a > 1000 && forward !== cell && forward.t === '' && forward.a > 1000)
                     {
                         var list = [[-1,0],[1,0],[0,-1],[0,1]]
-                        for (var _138_30_ = 0; _138_30_ < list.length; _138_30_++)
+                        for (var _142_30_ = 0; _142_30_ < list.length; _142_30_++)
                         {
-                            d = list[_138_30_]
+                            d = list[_142_30_]
                             if (!this.newAt(x + d[0],y + d[1]))
                             {
                                 cell.o += 1
@@ -265,9 +269,9 @@ world = (function ()
 
                 stems = 0
                 var list1 = [[-1,0],[1,0],[0,-1],[0,1]]
-                for (var _166_22_ = 0; _166_22_ < list1.length; _166_22_++)
+                for (var _170_22_ = 0; _170_22_ < list1.length; _170_22_++)
                 {
-                    d = list1[_166_22_]
+                    d = list1[_170_22_]
                     if (neighbor = this.cellAt(x + d[0],y + d[1]))
                     {
                         if (neighbor.t === '')
@@ -280,9 +284,9 @@ world = (function ()
                         }
                     }
                 }
-                if (stems === 1)
+                if (stems > 1)
                 {
-                    cell.e = cell.e + 1
+                    cell.e = cell.e - 1
                 }
                 if (randInt(10) < 4)
                 {
@@ -340,9 +344,9 @@ world = (function ()
         }
         delete this.oneStep
         this.newCells = {}
-        for (var _207_17_ = x = 0, _207_21_ = this.width; (_207_17_ <= _207_21_ ? x < this.width : x > this.width); (_207_17_ <= _207_21_ ? ++x : --x))
+        for (var _211_17_ = x = 0, _211_21_ = this.width; (_211_17_ <= _211_21_ ? x < this.width : x > this.width); (_211_17_ <= _211_21_ ? ++x : --x))
         {
-            for (var _208_21_ = y = 0, _208_25_ = this.height; (_208_21_ <= _208_25_ ? y < this.height : y > this.height); (_208_21_ <= _208_25_ ? ++y : --y))
+            for (var _212_21_ = y = 0, _212_25_ = this.height; (_212_21_ <= _212_25_ ? y < this.height : y > this.height); (_212_21_ <= _212_25_ ? ++y : --y))
             {
                 if (cell = this.cellAt(x,y))
                 {
@@ -374,21 +378,23 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var br, cell, ctx, cx, cy, i, lx, ly, sx, sy, t, x, y
+        var br, cell, ctx, cx, cy, i, lx, ly, sample, sx, sy, t, v, x, y
 
-        for (var _226_17_ = i = 0, _226_21_ = this.stepsPerFrame; (_226_17_ <= _226_21_ ? i < this.stepsPerFrame : i > this.stepsPerFrame); (_226_17_ <= _226_21_ ? ++i : --i))
+        for (var _230_17_ = i = 0, _230_21_ = this.stepsPerFrame; (_230_17_ <= _230_21_ ? i < this.stepsPerFrame : i > this.stepsPerFrame); (_230_17_ <= _230_21_ ? ++i : --i))
         {
             this.simulate()
         }
+        sample = {}
         var list = _k_.list('✣')
-        for (var _229_14_ = 0; _229_14_ < list.length; _229_14_++)
+        for (var _234_14_ = 0; _234_14_ < list.length; _234_14_++)
         {
-            t = list[_229_14_]
+            t = list[_234_14_]
             this.count[t] = 0
+            sample[t] = 0
         }
-        for (var _231_17_ = x = 0, _231_21_ = this.width; (_231_17_ <= _231_21_ ? x < this.width : x > this.width); (_231_17_ <= _231_21_ ? ++x : --x))
+        for (var _238_17_ = x = 0, _238_21_ = this.width; (_238_17_ <= _238_21_ ? x < this.width : x > this.width); (_238_17_ <= _238_21_ ? ++x : --x))
         {
-            for (var _232_21_ = y = 0, _232_25_ = this.height; (_232_21_ <= _232_25_ ? y < this.height : y > this.height); (_232_21_ <= _232_25_ ? ++y : --y))
+            for (var _239_21_ = y = 0, _239_25_ = this.height; (_239_21_ <= _239_25_ ? y < this.height : y > this.height); (_239_21_ <= _239_25_ ? ++y : --y))
             {
                 if (cell = this.cellAt(x,y))
                 {
@@ -400,6 +406,16 @@ world = (function ()
         {
             this.count[''] += this.stepsPerFrame
         }
+        if (this.count[''] > this.nextPlot)
+        {
+            this.nextPlot += 100
+            for (t in sample)
+            {
+                v = sample[t]
+                sample[t] = this.count[t]
+            }
+            this.plot.add(sample)
+        }
         br = this.container.getBoundingClientRect()
         sx = _k_.clamp(0,this.width,parseInt(this.container.scrollLeft / this.cellSize))
         sy = _k_.clamp(0,this.height,parseInt(this.container.scrollTop / this.cellSize))
@@ -408,9 +424,9 @@ world = (function ()
         this.canvas.width = this.canvas.width
         ctx = this.canvas.getContext('2d')
         ctx.font = `${this.cellSize}px fontMono`
-        for (var _251_17_ = x = sx, _251_21_ = lx; (_251_17_ <= _251_21_ ? x <= lx : x >= lx); (_251_17_ <= _251_21_ ? ++x : --x))
+        for (var _263_17_ = x = sx, _263_21_ = lx; (_263_17_ <= _263_21_ ? x <= lx : x >= lx); (_263_17_ <= _263_21_ ? ++x : --x))
         {
-            for (var _252_21_ = y = sy, _252_25_ = ly; (_252_21_ <= _252_25_ ? y <= ly : y >= ly); (_252_21_ <= _252_25_ ? ++y : --y))
+            for (var _264_21_ = y = sy, _264_25_ = ly; (_264_21_ <= _264_25_ ? y <= ly : y >= ly); (_264_21_ <= _264_25_ ? ++y : --y))
             {
                 if (cell = this.cellAt(x,y))
                 {

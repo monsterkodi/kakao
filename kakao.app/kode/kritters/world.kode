@@ -6,7 +6,7 @@
 00     00   0000000   000   000  0000000  0000000  
 ###
 
-use ../kxk ▪ $ randInt randIntRange elem prefs post
+use ../kxk ▪ $ randInt randIntRange elem prefs post plot
 
 function world
 
@@ -17,11 +17,15 @@ function world
         @width         = 230
         @height        = 130
         @stepsPerFrame = 1
+        @nextPlot      = 0
                         
         @canvas = elem 'canvas' class:'gridCanvas' 
         
         main =$ 'main'
-        main.insertBefore @canvas, main.firstChild
+        
+        @plot = new plot scale:{'':0.1 '✣':0.1 '':0.1 '':3} color:{'':"#a00" '':"#ff0" '✣':'#88f' '':"#f04"}
+        main.insertBefore @plot.elem, main.firstChild
+        main.insertBefore @canvas,    main.firstChild
         
         @container =$ 'scrollContainer'
         @content   =$ 'scrollContent'
@@ -170,8 +174,8 @@ function world
                         else if neighbor.t == '✣'
                             stems++
                             
-                if stems == 1
-                    cell.e = cell.e + 1
+                if stems > 1
+                    cell.e = cell.e - 1
             
                 if randInt(10) < 4
                     if not @cellAt(x+cell.xd, y+cell.yd) and not @newAt x+cell.xd, y+cell.yd
@@ -226,8 +230,11 @@ function world
         for i in 0...@stepsPerFrame
             @simulate()
         
+        sample = {}
         for t in '✣'
             @count[t] = 0
+            sample[t] = 0
+            
         for x in 0...@width
             for y in 0...@height
                 if cell = @cellAt x, y
@@ -235,6 +242,11 @@ function world
               
         if @count['']
             @count[''] += @stepsPerFrame
+        
+        if @count[''] > @nextPlot
+            @nextPlot += 100
+            for t,v of sample ➜ sample[t] = @count[t]
+            @plot.add sample
             
         br = @container.getBoundingClientRect()
         sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
