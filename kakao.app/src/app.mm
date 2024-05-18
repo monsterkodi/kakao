@@ -83,6 +83,36 @@
     [[NSApplication sharedApplication] run]; // does not return
 }
 
+//  0000000   00000000   00000000  000   000  00000000  000  000      00000000  
+// 000   000  000   000  000       0000  000  000       000  000      000       
+// 000   000  00000000   0000000   000 0 000  000000    000  000      0000000   
+// 000   000  000        000       000  0000  000       000  000      000       
+//  0000000   000        00000000  000   000  000       000  0000000  00000000  
+
+- (BOOL) application:(NSApplication*)sender openFile:(NSString*)filename
+{
+    NSLog(@"should open file %@", filename);
+    
+    NSMutableDictionary* msg = [NSMutableDictionary dictionary];
+    NSArray* args = [NSArray arrayWithObject:filename];
+    [msg setObject:@"loadFile" forKey:@"name"];
+    [msg setObject:args forKey:@"args"];
+    
+    [Route emit:msg];
+    
+    return YES;
+}
+
+- (void) application:(NSApplication*)sender openFiles:(NSArray*)files
+{
+    NSMutableDictionary* msg = [NSMutableDictionary dictionary];
+    [msg setObject:@"loadFiles" forKey:@"name"];
+    NSArray* args = [NSArray arrayWithObject:files];
+    [msg setObject:args forKey:@"args"];
+    
+    [Route emit:msg];
+}
+
 // 000   000  000  000   000   0000000
 // 000 0 000  000  0000  000  000
 // 000000000  000  000 0 000  0000000
@@ -471,6 +501,12 @@
 
     return task;
 }
+
+//  0000000   0000000  00000000   000  00000000   000000000  
+// 000       000       000   000  000  000   000     000     
+// 0000000   000       0000000    000  00000000      000     
+//      000  000       000   000  000  000           000     
+// 0000000    0000000  000   000  000  000           000     
 
 - (NSString*) executeShellScript:(NSArray*)args callback:(Callback)callback
 {
