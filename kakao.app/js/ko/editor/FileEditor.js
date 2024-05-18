@@ -11,6 +11,7 @@ let post = kxk.post
 let popup = kxk.popup
 let slash = kxk.slash
 let stopEvent = kxk.stopEvent
+let elem = kxk.elem
 let setStyle = kxk.setStyle
 let kstr = kxk.kstr
 
@@ -528,24 +529,14 @@ FileEditor = (function ()
 
     FileEditor.prototype["showContextMenu"] = function (absPos)
     {
-        var f, fileMenu, fileSpan, getMenu, opt, recent, RecentMenu, template
+        var act, bi, f, fileMenu, fileSpan, getMenu, opt, pup, quiq, recent, RecentMenu, ti
 
         if (!(absPos != null))
         {
             absPos = kpos(this.view.getBoundingClientRect().left,this.view.getBoundingClientRect().top)
         }
-        opt = {items:[{text:'Browse',combo:'command+.',cb:function ()
-        {
-            return window.commandline.startCommand('browse')
-        }},{text:'Back',combo:'command+1',cb:function ()
-        {
-            return post.emit('menuAction','Navigate Backward')
-        }},{text:''},{text:'Maximize',combo:'command+,',cb:function ()
-        {
-            return window.split.maximizeEditor()
-        }},{text:''},{text:'DevTools',combo:'alt+cmdctrl+i'},{text:''}]}
-        template = _k_.clone(kakao.menuTemplate)
-        opt.items = opt.items.concat(template)
+        opt = {}
+        opt.items = _k_.clone(kakao.menuTemplate)
         RecentMenu = []
         fileSpan = function (f)
         {
@@ -561,9 +552,9 @@ FileEditor = (function ()
         recent = window.stash.get('recentFiles',[])
         recent = (recent != null ? recent : [])
         var list = _k_.list(recent)
-        for (var _484_14_ = 0; _484_14_ < list.length; _484_14_++)
+        for (var _461_14_ = 0; _461_14_ < list.length; _461_14_++)
         {
-            f = list[_484_14_]
+            f = list[_461_14_]
             RecentMenu.unshift({html:fileSpan(f),arg:f,cb:function (arg)
             {
                 return post.emit('loadFile',arg)
@@ -574,9 +565,9 @@ FileEditor = (function ()
             var item
 
             var list1 = _k_.list(template)
-            for (var _491_21_ = 0; _491_21_ < list1.length; _491_21_++)
+            for (var _468_21_ = 0; _468_21_ < list1.length; _468_21_++)
             {
-                item = list1[_491_21_]
+                item = list1[_468_21_]
                 if (item.text === name)
                 {
                     return item
@@ -592,7 +583,55 @@ FileEditor = (function ()
         }
         opt.x = absPos.x
         opt.y = absPos.y
-        return popup.menu(opt)
+        opt.selectFirstItem = false
+        pup = popup.menu(opt)
+        act = function (event, fnc)
+        {
+            stopEvent(event)
+            fnc()
+            return pup.close({all:true,focus:true})
+        }
+        ti = (split.terminalVisible() ? '' : '')
+        bi = (split.browserVisible() ? '' : '')
+        quiq = elem({class:'quickmenu',children:[elem({text:bi,class:'quickmenu-item quickmenu-browser',mouseup:(function (e)
+        {
+            return act(e,window.quickMenu.onBrowser)
+        })}),elem({text:ti,class:'quickmenu-item quickmenu-terminal',mouseup:(function (e)
+        {
+            return act(e,window.quickMenu.onTerminal)
+        })}),elem({text:'',class:'quickmenu-item quickmenu-devtools',mouseup:(function (e)
+        {
+            return act(e,window.quickMenu.onDevTools)
+        })}),elem({text:'',class:'quickmenu-item quickmenu-kalk',mouseup:(function (e)
+        {
+            return act(e,window.quickMenu.onKalk)
+        })}),elem({text:'',class:'quickmenu-item quickmenu-list',mouseup:(function (e)
+        {
+            return act(e,window.quickMenu.onList)
+        })})]})
+        if (window.navigate.canNavigateBack())
+        {
+            quiq.appendChild(elem({text:'',class:'quickmenu-item quickmenu-navigate',mouseup:function (e)
+            {
+                return act(e,function ()
+                {
+                    return post.emit('menuAction','Navigate Backward')
+                })
+            }}))
+        }
+        if (window.navigate.canNavigateForward())
+        {
+            quiq.appendChild(elem({text:'',class:'quickmenu-item quickmenu-navigate',mouseup:function (e)
+            {
+                return act(e,function ()
+                {
+                    return post.emit('menuAction','Navigate Forward')
+                })
+            }}))
+        }
+        pup.items.insertBefore(quiq,pup.items.firstChild)
+        pup.select(quiq)
+        return pup
     }
 
     FileEditor.prototype["clickAtPos"] = function (p, event)

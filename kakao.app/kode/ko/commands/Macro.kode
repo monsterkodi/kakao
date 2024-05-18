@@ -6,14 +6,14 @@
 000   000  000   000   0000000  000   000   0000000
 ###
 
-use ../../kxk      ▪ reversed uniq clippo slash prefs post ffs
+use ../../kxk      ▪ reversed uniq clippo scooter slash prefs post ffs
 use ../tools       ◆ salt req GitInfo
 use ../editor      ◆ Syntax Editor
 use ../commandline ◆ Command
 
 function Macro extends Command
 
-    @macroNames: ['clean' 'help' 'class' 'inv' 'blink' 'color' 'fps' 'status' 'diff' 'history' 'count' 'sort' 'case' 'lower' 'upper']
+    @macroNames: ['clean' 'help' 'class' 'unicode' 'clippo' 'inv' 'blink' 'color' 'fps' 'status' 'diff' 'history' 'count' 'sort' 'case' 'lower' 'upper']
 
     @: commandline ->
 
@@ -346,6 +346,13 @@ function Macro extends Command
                 if transform.transformNames and cmmd in transform.transformNames
                     window.textEditor.transform.do.apply window.textEditor.transform, [cmmd].concat cmds
                 else
+                    try
+                        result = scooter cmmd
+                        kakao 'clipboard.set' result
+                        ⮐ select:true text:result
+                    catch err
+                        log "scooter can't calculate" cmmd
+                    
                     error 'unhandled macro', cmmd, transform.transformNames
                     if last(@history) == command.trim()
                         @history.pop()

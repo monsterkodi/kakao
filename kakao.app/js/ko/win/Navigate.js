@@ -14,6 +14,8 @@ class Navigate
         this.main = main
     
         this.navigate = this.navigate.bind(this)
+        this.canNavigateForward = this.canNavigateForward.bind(this)
+        this.canNavigateBack = this.canNavigateBack.bind(this)
         post.on('navigate',this.navigate)
         this.navlist = stash.get('navigate',[])
         this.currentIndex = -1
@@ -62,9 +64,19 @@ class Navigate
         return stash.set('navigate',this.navlist)
     }
 
+    canNavigateBack ()
+    {
+        return this.navlist.length && this.currentIndex > 0
+    }
+
+    canNavigateForward ()
+    {
+        return this.navlist.length && this.currentIndex < this.navlist.length - 1
+    }
+
     navigate (opt)
     {
-        var hasFile, _103_39_, _94_30_, _94_45_
+        var hasFile, _105_39_, _96_30_, _96_45_
 
         switch (opt.action)
         {
@@ -91,7 +103,7 @@ class Navigate
                 return this.loadFilePos(this.navlist[this.currentIndex])
 
             case 'delFilePos':
-                opt.item.line = ((_94_30_=opt.item.line) != null ? _94_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
+                opt.item.line = ((_96_30_=opt.item.line) != null ? _96_30_ : (opt.item.pos != null ? opt.item.pos[1] : undefined) + 1)
                 this.navlist = this.navlist.filter(function (f)
                 {
                     var splitPos
@@ -102,7 +114,7 @@ class Navigate
                 return this.currentIndex = _k_.clamp(0,this.navlist.length - 1,this.currentIndex)
 
             case 'addFilePos':
-                if (!(opt != null ? (_103_39_=opt.file) != null ? _103_39_.length : undefined : undefined))
+                if (!(opt != null ? (_105_39_=opt.file) != null ? _105_39_.length : undefined : undefined))
                 {
                     return
                 }

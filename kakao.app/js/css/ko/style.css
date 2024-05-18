@@ -888,6 +888,17 @@ body
     padding-top: 2px;
 }
 
+.popup .quickmenu-item
+{
+    width: 29.5px;
+    padding-top: 3px;
+}
+
+.popup .quickmenu-item:active
+{
+    padding-top: 5px;
+}
+
 #browser
 {
     font-family: titlebarFont;

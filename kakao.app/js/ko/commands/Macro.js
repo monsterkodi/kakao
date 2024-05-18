@@ -6,6 +6,7 @@ import kxk from "../../kxk.js"
 let reversed = kxk.reversed
 let uniq = kxk.uniq
 let clippo = kxk.clippo
+let scooter = kxk.scooter
 let slash = kxk.slash
 let prefs = kxk.prefs
 let post = kxk.post
@@ -24,7 +25,7 @@ import Command from "../commandline/Command.js"
 Macro = (function ()
 {
     _k_.extend(Macro, Command)
-    Macro["macroNames"] = ['clean','help','class','inv','blink','color','fps','status','diff','history','count','sort','case','lower','upper']
+    Macro["macroNames"] = ['clean','help','class','unicode','clippo','inv','blink','color','fps','status','diff','history','count','sort','case','lower','upper']
     function Macro (commandline)
     {
         Macro.__super__.constructor.call(this,commandline)
@@ -58,7 +59,7 @@ Macro = (function ()
 
     Macro.prototype["execute"] = function (command, trail)
     {
-        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, i, indent, insert, l, li, line, lines, lst, num, s, step, t, text, ti, transform, words, wordsInArgsOrCursorsOrSelection, _126_35_, _274_42_
+        var cleaned, clss, cmds, cmmd, cp, dir, editor, file, helpFile, i, indent, insert, l, li, line, lines, lst, num, result, s, step, t, text, ti, transform, words, wordsInArgsOrCursorsOrSelection, _126_35_, _274_42_
 
         if (_k_.empty(command))
         {
@@ -296,6 +297,16 @@ export ${clss}
             }
             else
             {
+                try
+                {
+                    result = scooter(cmmd)
+                    kakao('clipboard.set',result)
+                    return {select:true,text:result}
+                }
+                catch (err)
+                {
+                    console.log("scooter can't calculate",cmmd)
+                }
                 console.error('unhandled macro',cmmd,transform.transformNames)
                 if (_k_.last(this.history) === command.trim())
                 {
