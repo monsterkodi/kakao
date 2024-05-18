@@ -365,7 +365,6 @@ class GitInfo
                 return
             }
         }
-        console.log('GitInfo.status dir',opt.prjDir)
         return Git.status(opt.prjDir).then(async function (status)
         {
             var change, changeInfo, file, line, lines, logFile, text

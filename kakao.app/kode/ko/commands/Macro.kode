@@ -6,7 +6,7 @@
 000   000  000   000   0000000  000   000   0000000
 ###
 
-use ../../kxk      ▪ reversed uniq slash prefs post ffs
+use ../../kxk      ▪ reversed uniq clippo slash prefs post ffs
 use ../tools       ◆ salt req GitInfo
 use ../editor      ◆ Syntax Editor
 use ../commandline ◆ Command
@@ -150,6 +150,36 @@ function Macro extends Command
             'commit'
             'ci'        ➜ post.emit 'git.commit' cmds
             
+            #  0000000  000      000  00000000   00000000    0000000   
+            # 000       000      000  000   000  000   000  000   000  
+            # 000       000      000  00000000   00000000   000   000  
+            # 000       000      000  000        000        000   000  
+            #  0000000  0000000  000  000        000         0000000   
+            
+            'pb'
+            'paste'
+            'clippo'
+                
+                window.split.raise 'terminal'
+                window.terminal.clear()
+                
+                for t in reversed clippo.history
+                    
+                    window.terminal.queueMeta text:'' line:'&nbsp;'
+                    
+                    for l,i in t.split '\n'
+                        
+                        window.terminal.queueMeta
+                            diss:  Syntax.dissForTextAndSyntax l, 'kode'
+                            text:  l
+                            clss:  'clippoResult'
+                            click: ((t) -> -> kakao 'clipboard.set' t) t
+                            line:  i+1
+                            
+                window.terminal.queueMeta text:'' line:'&nbsp;'
+                 
+                ⮐ focus:'terminal'
+            
             # 000   000  000   000  000   0000000   0000000   0000000    00000000  
             # 000   000  0000  000  000  000       000   000  000   000  000       
             # 000   000  000 0 000  000  000       000   000  000   000  0000000   
@@ -242,7 +272,6 @@ function Macro extends Command
                 clss ?= 'Class'
                 
                 dir   = editor.currentFile? and slash.dir(editor.currentFile) or kakao.bundle.app('kode')
-                # file  = slash.path dir, clss.toLowerCase() + '.kode'
                 file  = slash.path dir, clss + '.kode'
                 
                 text  = "###\n"
@@ -252,7 +281,7 @@ function Macro extends Command
 
                 function #{clss}
 
-                    @: () ->
+                    @: ->
 
                 export #{clss}
 

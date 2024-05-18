@@ -695,6 +695,8 @@ span.macro.macro,
     background-color: #222;
 }
 
+
+.meta.clippoResult,
 .meta.gitInfoFile
 {
     background: #222;
@@ -717,6 +719,11 @@ span.macro.macro,
 .meta.searchResult:hover
 {
     background: #444;
+}
+
+.meta.clippoResult:hover
+{
+    background: #808;
 }
 
 .meta.gitInfoChange

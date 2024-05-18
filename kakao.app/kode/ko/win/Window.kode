@@ -7,7 +7,7 @@
 ###
 
 use ../../kakao
-use ../../kxk      ▪ win scheme fps stash post prefs store stopEvent $
+use ../../kxk      ▪ win scheme fps clippo stash post prefs store stopEvent $
 use                ◆ Split Info Tabs Menu QuickMenu Navigate FileHandler Terminal Viewer
 use ../tools       ◆ FileWatch Projects Indexer Git Unicode
 use ../editor      ◆ Kore Editor Syntax FileEditor
@@ -58,6 +58,8 @@ function Window extends win.Delegate
         new Projects
         new Unicode
         new Git
+        
+        clippo.watch()
         
         @tabs        = window.tabs        = new Tabs()
         @quickMenu   = window.quickMenu   = new QuickMenu()

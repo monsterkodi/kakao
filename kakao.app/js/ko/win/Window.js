@@ -8,6 +8,7 @@ import kxk from "../../kxk.js"
 let win = kxk.win
 let scheme = kxk.scheme
 let fps = kxk.fps
+let clippo = kxk.clippo
 let stash = kxk.stash
 let post = kxk.post
 let prefs = kxk.prefs
@@ -105,6 +106,7 @@ Window = (function ()
         new Projects
         new Unicode
         new Git
+        clippo.watch()
         this.tabs = window.tabs = new Tabs()
         this.quickMenu = window.quickMenu = new QuickMenu()
         this.navigate = window.navigate = new Navigate()
@@ -154,7 +156,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _116_25_
+        var action, _118_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -338,7 +340,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _208_14_
+    var _210_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)
