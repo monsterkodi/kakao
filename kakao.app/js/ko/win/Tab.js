@@ -103,9 +103,9 @@ class Tab
             {
                 tabs = this.tabs.fileTabsForPath(this.path)
                 var list = _k_.list(tabs)
-                for (var _79_24_ = 0; _79_24_ < list.length; _79_24_++)
+                for (var _a_ = 0; _a_ < list.length; _a_++)
                 {
-                    tab = list[_79_24_]
+                    tab = list[_a_]
                     dot = elem('span',{class:'prjdot',text:'■'})
                     this.div.appendChild(dot)
                     if (tab.active)

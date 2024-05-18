@@ -178,9 +178,9 @@ class Indexer
                     var cn, lc
 
                     var list = _k_.list(names)
-                    for (var _126_27_ = 0; _126_27_ < list.length; _126_27_++)
+                    for (var _a_ = 0; _a_ < list.length; _a_++)
                     {
-                        cn = list[_126_27_]
+                        cn = list[_a_]
                         lc = key.toLowerCase()
                         if (cn.length > 1 && lc.indexOf(cn) >= 0 || lc.startsWith(cn))
                         {
@@ -262,17 +262,17 @@ class Indexer
         parsed = indexer.parse(text)
         funcAdded = !_k_.empty((parsed.classes)) || !_k_.empty((parsed.funcs))
         var list = _k_.list(parsed.classes)
-        for (var _204_17_ = 0; _204_17_ < list.length; _204_17_++)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            clss = list[_204_17_]
+            clss = list[_a_]
             sds.set(this.classes,`${clss.name}.file`,file)
             sds.set(this.classes,`${clss.name}.line`,clss.line + 1)
             fileInfo.classes.push({name:clss.name,line:clss.line + 1})
         }
         var list1 = _k_.list(parsed.funcs)
-        for (var _213_17_ = 0; _213_17_ < list1.length; _213_17_++)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
-            func = list1[_213_17_]
+            func = list1[_b_]
             if (func.method)
             {
                 funcInfo = this.addMethod(func.class,func.method,file,func.line,func.async,func.bound,func.static)
@@ -340,7 +340,7 @@ class Indexer
             }
             else
             {
-                for (var _276_30_ = li = 0, _276_34_ = lines.length; (_276_30_ <= _276_34_ ? li < lines.length : li > lines.length); (_276_30_ <= _276_34_ ? ++li : --li))
+                for (var _a_ = li = 0, _b_ = lines.length; (_a_ <= _b_ ? li < lines.length : li > lines.length); (_a_ <= _b_ ? ++li : --li))
                 {
                     line = lines[li]
                     if (line.trim().length)
@@ -391,9 +391,9 @@ class Indexer
                     }
                     words = line.split(Indexer.splitRegExp)
                     var list = _k_.list(words)
-                    for (var _342_33_ = 0; _342_33_ < list.length; _342_33_++)
+                    for (var _c_ = 0; _c_ < list.length; _c_++)
                     {
-                        word = list[_342_33_]
+                        word = list[_c_]
                         if (Indexer.testWord(word))
                         {
                             cnt = ((_345_51_=this.words[word]) != null ? _345_51_ : 0)

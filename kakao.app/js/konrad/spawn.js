@@ -43,17 +43,17 @@ export default async function (args)
     {
         remove = ['js/ko','kode/ko','pyg/ko','pyg/ko.pug','js/css/ko','Contents/Resources/img/ko.icns','Contents/Resources/img/ko.png','Contents/Resources/img/ko.pxm','Contents/Resources/img/menu_ko.png','Contents/Resources/menu_ko.noon','Contents/Resources/font/Lilex-Bold.woff2','Contents/Resources/font/devopicons.woff2','Contents/Resources/font/fa-regular-400.woff2','Contents/Resources/font/fa-solid-900.woff2','Contents/Resources/font/file-icons.woff2','Contents/Resources/font/fontawesome.woff2','Contents/Resources/font/mfixx.woff2','Contents/Resources/font/octicons.woff2']
         var list = _k_.list(remove)
-        for (var _72_14_ = 0; _72_14_ < list.length; _72_14_++)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            f = list[_72_14_]
+            f = list[_a_]
             await nfs.remove(slash.path(tgt,f))
         }
     }
     remove = ['.stash','Contents/Resources/img/zen.png']
     var list1 = _k_.list(remove)
-    for (var _80_10_ = 0; _80_10_ < list1.length; _80_10_++)
+    for (var _b_ = 0; _b_ < list1.length; _b_++)
     {
-        f = list1[_80_10_]
+        f = list1[_b_]
         await nfs.remove(slash.path(tgt,f))
     }
     return await nfs.move(tmp,slash.path(tgt,'.stash'))

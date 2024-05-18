@@ -163,9 +163,9 @@ pretty = (function ()
         result = ''
         plain = ''
         var list = _k_.list(rgs)
-        for (var _144_16_ = 0; _144_16_ < list.length; _144_16_++)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            rng = list[_144_16_]
+            rng = list[_a_]
             while (plain.length < rng.start)
             {
                 plain += ' '

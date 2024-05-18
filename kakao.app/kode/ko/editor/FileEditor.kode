@@ -179,7 +179,7 @@ function FileEditor extends TextEditor
 
             posScroll = cursor.split(' ').map (c) -> parseInt c
             @singleCursorAtPos posScroll
-            # @scroll.cursorInitView()
+
             if posScroll.length == 3
                 @scroll.scroll = 0
                 @scroll.by last posScroll

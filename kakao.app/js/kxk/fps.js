@@ -43,7 +43,7 @@ class FPS
         }
         this.canvas.height = this.canvas.height
         ctx = this.canvas.getContext('2d')
-        for (var _53_17_ = i = 0, _53_21_ = this.history.length; (_53_17_ <= _53_21_ ? i < this.history.length : i > this.history.length); (_53_17_ <= _53_21_ ? ++i : --i))
+        for (var _a_ = i = 0, _b_ = this.history.length; (_a_ <= _b_ ? i < this.history.length : i > this.history.length); (_a_ <= _b_ ? ++i : --i))
         {
             ms = Math.max(0,this.history[i] - 34)
             red = parseInt(32 + 223 * _k_.clamp(0,1,(ms - 16) / 16))

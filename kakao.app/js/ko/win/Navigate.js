@@ -33,7 +33,7 @@ class Navigate
         pos = (pos != null ? pos : [0,0])
         if (!pos[0] && !pos[1] && this.navlist.length)
         {
-            for (var _39_21_ = i = this.navlist.length - 1, _39_40_ = 0; (_39_21_ <= _39_40_ ? i <= 0 : i >= 0); (_39_21_ <= _39_40_ ? ++i : --i))
+            for (var _a_ = i = this.navlist.length - 1, _b_ = 0; (_a_ <= _b_ ? i <= 0 : i >= 0); (_a_ <= _b_ ? ++i : --i))
             {
                 fp = this.navlist[i]
                 if (slash.samePath(fp.file,file))

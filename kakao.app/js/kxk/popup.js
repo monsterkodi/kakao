@@ -35,9 +35,9 @@ Popup = (function ()
             this.items.classList.add(opt.class)
         }
         var list = _k_.list(opt.items)
-        for (var _24_17_ = 0; _24_17_ < list.length; _24_17_++)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            item = list[_24_17_]
+            item = list[_a_]
             if (item.hide)
             {
                 continue
@@ -66,9 +66,9 @@ Popup = (function ()
                     if (item.children)
                     {
                         var list1 = _k_.list(item.children)
-                        for (var _38_34_ = 0; _38_34_ < list1.length; _38_34_++)
+                        for (var _b_ = 0; _b_ < list1.length; _b_++)
                         {
-                            child = list1[_38_34_]
+                            child = list1[_b_]
                             div.appendChild(child)
                         }
                     }

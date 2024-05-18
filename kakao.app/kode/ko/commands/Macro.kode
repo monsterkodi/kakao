@@ -141,7 +141,7 @@ function Macro extends Command
 
             'd'
             'kd'
-            'diff'      ➜ post.emit 'git.diff' cmds
+            'diff'      ➜ post.emit 'git.diff' cmds; ⮐ select:false
                 
             'log'       ➜ post.emit 'git.log' cmds
             

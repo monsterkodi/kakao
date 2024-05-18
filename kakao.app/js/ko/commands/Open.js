@@ -73,7 +73,7 @@ Open = (function ()
         var file, items, pos
 
         cmmd = cmmd.trim()
-        var _60_20_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _60_20_[0]; pos = _60_20_[1]
+        var _a_ = slash.splitFilePos((cmmd != null ? cmmd : this.getText().trim())); file = _a_[0]; pos = _a_[1]
 
         items = this.listItems({currentText:cmmd,maxItems:10000})
         if (!_k_.empty(cmmd) && !_k_.empty(items))
@@ -126,9 +126,9 @@ Open = (function ()
         {
             projects = Projects.projects
             var list = _k_.list(Object.keys(projects).sort())
-            for (var _103_18_ = 0; _103_18_ < list.length; _103_18_++)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
             {
-                p = list[_103_18_]
+                p = list[_a_]
                 if (p.startsWith(this.getText()))
                 {
                     pdir = projects[p].dir
@@ -261,9 +261,9 @@ Open = (function ()
         if (!_k_.empty(this.files))
         {
             var list = _k_.list(this.files)
-            for (var _212_21_ = 0; _212_21_ < list.length; _212_21_++)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
             {
-                file = list[_212_21_]
+                file = list[_a_]
                 rel = relative(file,this.dir)
                 if (rel.length)
                 {
@@ -290,9 +290,9 @@ Open = (function ()
         {
             items = []
             var list = _k_.list(this.history)
-            for (var _243_18_ = 0; _243_18_ < list.length; _243_18_++)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
             {
-                f = list[_243_18_]
+                f = list[_a_]
                 item = {}
                 item.text = relative(f,this.dir)
                 item.file = f
@@ -404,7 +404,7 @@ Open = (function ()
         this.hideList()
         if (!_k_.empty(path))
         {
-            var _347_24_ = slash.splitFilePos(command); file = _347_24_[0]; pos = _347_24_[1]
+            var _a_ = slash.splitFilePos(command); file = _a_[0]; pos = _a_[1]
 
             file = this.resolvedPath(path)
             file = slash.joinFilePos(file,pos)
