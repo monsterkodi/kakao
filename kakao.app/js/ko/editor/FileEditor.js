@@ -529,7 +529,7 @@ FileEditor = (function ()
 
     FileEditor.prototype["showContextMenu"] = function (absPos)
     {
-        var act, bi, f, fileMenu, fileSpan, getMenu, opt, pup, quiq, recent, RecentMenu, ti
+        var act, bi, f, fileMenu, fileSpan, getMenu, opt, pup, qiq, quiq, recent, RecentMenu, ti
 
         if (!(absPos != null))
         {
@@ -593,6 +593,7 @@ FileEditor = (function ()
         }
         ti = (split.terminalVisible() ? '' : '')
         bi = (split.browserVisible() ? '' : '')
+        qiq = (prefs.get('list|active') ? '' : ' quickmenu-inactive')
         quiq = elem({class:'quickmenu',children:[elem({text:bi,class:'quickmenu-item quickmenu-browser',mouseup:(function (e)
         {
             return act(e,window.quickMenu.onBrowser)
@@ -605,7 +606,7 @@ FileEditor = (function ()
         })}),elem({text:'',class:'quickmenu-item quickmenu-kalk',mouseup:(function (e)
         {
             return act(e,window.quickMenu.onKalk)
-        })}),elem({text:'',class:'quickmenu-item quickmenu-list',mouseup:(function (e)
+        })}),elem({text:'',class:`quickmenu-item quickmenu-list${qiq}`,mouseup:(function (e)
         {
             return act(e,window.quickMenu.onList)
         })})]})

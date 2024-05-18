@@ -481,15 +481,16 @@ function FileEditor extends TextEditor
         pup = popup.menu opt
         act = event fnc -> stopEvent event; fnc(); pup.close all:true focus:true
         
-        ti = split.terminalVisible() ? '' : ''
-        bi = split.browserVisible()  ? '' : ''
+        ti  = split.terminalVisible() ? '' : ''
+        bi  = split.browserVisible()  ? '' : ''
+        qiq = prefs.get('list|active') ? '' : ' quickmenu-inactive'
         
         quiq = elem class:'quickmenu' children: [
-                elem { text:bi, class:'quickmenu-item quickmenu-browser'  mouseup:( (e) -> act e, window.quickMenu.onBrowser  )},
-                elem { text:ti, class:'quickmenu-item quickmenu-terminal' mouseup:( (e) -> act e, window.quickMenu.onTerminal )},
-                elem { text:'' class:'quickmenu-item quickmenu-devtools' mouseup:( (e) -> act e, window.quickMenu.onDevTools )},
-                elem { text:'' class:'quickmenu-item quickmenu-kalk'     mouseup:( (e) -> act e, window.quickMenu.onKalk     )},
-                elem { text:'' class:'quickmenu-item quickmenu-list'     mouseup:( (e) -> act e, window.quickMenu.onList     )}                
+                elem { text:bi, class:'quickmenu-item quickmenu-browser'    mouseup:( (e) -> act e, window.quickMenu.onBrowser  )},
+                elem { text:ti, class:'quickmenu-item quickmenu-terminal'   mouseup:( (e) -> act e, window.quickMenu.onTerminal )},
+                elem { text:'' class:'quickmenu-item quickmenu-devtools'   mouseup:( (e) -> act e, window.quickMenu.onDevTools )},
+                elem { text:'' class:'quickmenu-item quickmenu-kalk'       mouseup:( (e) -> act e, window.quickMenu.onKalk     )},
+                elem { text:'' class:"quickmenu-item quickmenu-list#{qiq}" mouseup:( (e) -> act e, window.quickMenu.onList     )}                
             ]
         
         if window.navigate.canNavigateBack()

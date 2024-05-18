@@ -4,6 +4,8 @@ var addToShelf, changeFontSize, changeZoom, resetFontSize, resetZoom, setFontSiz
 
 import kakao from "../../kakao.js"
 
+import version from "../../konrad/version.js"
+
 import kxk from "../../kxk.js"
 let win = kxk.win
 let scheme = kxk.scheme
@@ -79,6 +81,8 @@ Window = (function ()
         this.menuIcon = kakao.bundle.img('menu_ko.png')
         this.menuNoon = kakao.bundle.res('menu_ko.noon')
         this.aboutImage = kakao.bundle.img('about_ko.png')
+        this.aboutVersion = `${version}`
+        this.aboutURL = "https://github.com/monsterkodi/ko"
         post.on('menuAction',this.onMenuAction)
         post.on('stash',function ()
         {
@@ -156,7 +160,7 @@ Window = (function ()
 
     Window.prototype["onMenuAction"] = function (name, trail)
     {
-        var action, _118_25_
+        var action, _122_25_
 
         if (action = Editor.actionWithName(name))
         {
@@ -340,7 +344,7 @@ window.editorWithName = function (n)
 
 window.onresize = function ()
 {
-    var _210_14_
+    var _214_14_
 
     window.split.resized()
     ;(window.win != null ? window.win.onMoved(window.win.getBounds()) : undefined)

@@ -10,8 +10,9 @@
     calls methods on its delegate
 ###
 
-use ./dom ▪ $ stopEvent
-use ◆ ffs elem post prefs slash stash keyinfo title
+use ../konrad ◆ version
+use ./dom     ▪ $ stopEvent
+use           ◆ ffs elem post prefs slash stash keyinfo title
 
 function Delegate
     
@@ -171,13 +172,17 @@ function Win
                 ffs.list(kakao.bundle.app '.stash/win').then (list) =>
                     if list.length > 1              # if not the last window
                         window.stash.clear()        #   remove the stash file
-                        @saveStashOnClose = false   #   and prevent saving it 
+                        @saveStashOnClose = false   #   and prevent saving it
                     kakao 'window.close'
-            'about'          
+            'about'
+            
+                vrs = " window.aboutVersion = \"#{@delegate.aboutVersion ? @delegate.aboutVersion : version}\";"
+                url = @delegate.aboutURL ? " window.aboutURL = \"#{@delegate.aboutURL}\";" : ''
+            
                 if @delegate.aboutImage
-                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{@delegate.aboutImage}\";"
+                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{@delegate.aboutImage}\";#{vrs}#{url}"
                 else
-                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{kakao.bundle.img 'about_kakao.png'}\";"
+                    kakao 'window.new' 'about.html' "window.aboutImage = \"#{kakao.bundle.img 'about_kakao.png'}\";#{vrs}#{url}"
         0
         
     # 000   000  00000000  000   000

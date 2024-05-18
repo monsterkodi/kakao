@@ -508,6 +508,11 @@ span.macro.macro,
     color: #666;
 }
 
+.quickmenu-inactive
+{
+    color: #444;
+}
+
 #browser
 {
     background: #181818;
