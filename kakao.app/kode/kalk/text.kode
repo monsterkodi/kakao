@@ -69,8 +69,13 @@ class Text
         
         ⮐ popped if txt == '∞'
         
-        if @endsWith(txt, ['0']) and not (@endsWith(popped, ['.']) or @endsWithNumber(popped) or @endsWithHex(popped))
-            popped 
+        if @endsWith(txt, ['0']) and not (
+            @endsWith(popped, ['.']) or 
+            @endsWithNumber(popped) or 
+            @endsWithHex(popped) or 
+            @endsWithOct(popped) or 
+            @endsWithBin(popped))
+                popped 
         else
             txt
             

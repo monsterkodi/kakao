@@ -147,7 +147,7 @@ class Text
         {
             return popped
         }
-        if (this.endsWith(txt,['0']) && !(this.endsWith(popped,['.']) || this.endsWithNumber(popped) || this.endsWithHex(popped)))
+        if (this.endsWith(txt,['0']) && !(this.endsWith(popped,['.']) || this.endsWithNumber(popped) || this.endsWithHex(popped) || this.endsWithOct(popped) || this.endsWithBin(popped)))
         {
             return popped
         }

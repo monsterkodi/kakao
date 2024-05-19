@@ -42,16 +42,20 @@ class Calc
                 return !cOnst && !deg2rad && !dot
 
             case '1':
+            case '0':
+                return !cOnst && !deg2rad
+
             case '2':
             case '3':
             case '4':
             case '5':
             case '6':
             case '7':
+                return !cOnst && !deg2rad && !bin
+
             case '8':
             case '9':
-            case '0':
-                return !cOnst && !deg2rad
+                return !cOnst && !deg2rad && !bin && !oct
 
             case 'x':
                 return txt.slice(-1)[0] === '0' && !float && !hex && !bin && !oct
