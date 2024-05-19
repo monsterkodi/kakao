@@ -19,6 +19,7 @@
 @property (readwrite,retain) Watch* watchHome;
 @property (readwrite,retain) Watch* watch;
 @property (readwrite,assign) BOOL isBuildingApp;
+@property (readwrite,retain) NSString* fileToLoad;
 
 + (void) moveStashWins;
 
@@ -89,15 +90,26 @@
 // 000   000  000        000       000  0000  000       000  000      000       
 //  0000000   000        00000000  000   000  000       000  0000000  00000000  
 
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    if (self.fileToLoad)
+    {
+        NSMutableDictionary* msg = [NSMutableDictionary dictionary];
+        NSArray* args = [NSArray arrayWithObject:self.fileToLoad];
+        [msg setObject:@"loadFile" forKey:@"name"];
+        [msg setObject:args forKey:@"args"];
+        [Route emit:msg];
+    }
+}
+
 - (BOOL) application:(NSApplication*)sender openFile:(NSString*)filename
 {
-    NSLog(@"should open file %@", filename);
+    self.fileToLoad = filename;
     
     NSMutableDictionary* msg = [NSMutableDictionary dictionary];
     NSArray* args = [NSArray arrayWithObject:filename];
     [msg setObject:@"loadFile" forKey:@"name"];
     [msg setObject:args forKey:@"args"];
-    
     [Route emit:msg];
     
     return YES;

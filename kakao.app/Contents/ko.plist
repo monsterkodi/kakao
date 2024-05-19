@@ -2,12 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleDisplayName</key> <string>kakao</string>
+    <key>CFBundleDisplayName</key> <string>ko</string>
     <key>CFBundleExecutable</key> <string>kakao</string>
     <key>CFBundleIconFile</key> <string>img/app.icns</string>
-    <key>CFBundleIdentifier</key> <string>app.kakao</string>
+    <key>CFBundleIdentifier</key> <string>app.ko</string>
     <key>CFBundleInfoDictionaryVersion</key> <string>6.0</string>
-    <key>CFBundleName</key> <string>kakao.app</string>
+    <key>CFBundleName</key> <string>ko.app</string>
     <key>CFBundlePackageType</key> <string>APPL</string>
     <key>CFBundleShortVersionString</key> <string>1.1.0</string>
     <key>CFBundleVersion</key> <string>1.1.0</string>
@@ -15,10 +15,7 @@
     <key>LSMinimumSystemVersion</key> <string>10.15</string>
     <key>NSAllowsArbitraryLoadsInWebContent</key> <true/>
     <key>NSDesktopFolderUsageDescription</key> <string>gimmi axxess! no trust me? :)</string>
-    <key>LSItemContentTypes</key>
-    <array>
-        <string>public.text</string>
-    </array>
+    <key>LSItemContentTypes</key> <array> <string>public.text</string> </array>
     <key>CFBundleDocumentTypes</key>
     <array>
         <dict>
@@ -32,10 +29,15 @@
                 <string>h</string>
                 <string>cpp</string>
                 <string>c</string>
+                <string>css</string>
+                <string>pug</string>
+                <string>styl</string>
                 <string>json</string>
                 <string>js</string>
                 <string>jsm</string>
             </array>
+            <key>CFBundleTypeIconFile</key>
+            <string>img/ko.icns</string>
         </dict>
         <dict>
             <key>CFBundleTypeName</key>
@@ -48,23 +50,57 @@
             <array>
                 <string>public.text</string>
             </array>
-            <key>CFBundleTypeIconFile</key><string>ko</string>
+            <key>CFBundleTypeIconFile</key><string>img/ko.icns</string>
+        </dict>
+        <dict>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>h</string>
+                <string>mm</string>
+                <string>cpp</string>
+                <string>kode</string>
+                <string>styl</string>
+                <string>pug</string>
+                <string>noon</string>
+            </array>
+            <key>CFBundleTypeIconFile</key>
+            <string>img/ko.icns</string>
+            <key>CFBundleTypeName</key>
+            <string>ko file</string>
+            <key>CFBundleTypeOSTypes</key>
+            <array>
+                <string>TEXT</string>
+                <string>utxt</string>
+                <string>TUTX</string>
+                <string>****</string>
+            </array>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
         </dict>
     </array>
     <key>UTImportedTypeDeclarations</key>
     <array>
         <dict>
             <key>UTTypeIdentifier</key>
-            <string>net.monsterkodi.kakao</string>
+            <string>net.monsterkodi.ko</string>
             <key>UTTypeTagSpecification</key>
             <dict>
                 <key>public.filename-extension</key>
                 <array>
-                    <string>kode</string>
-                    <string>noon</string>
-                    <string>json</string>
                     <string>txt</string>
+                    <string>noon</string>
+                    <string>kode</string>
+                    <string>coffee</string>
+                    <string>mm</string>
+                    <string>h</string>
+                    <string>cpp</string>
+                    <string>c</string>
+                    <string>css</string>
+                    <string>pug</string>
+                    <string>styl</string>
+                    <string>json</string>
                     <string>js</string>
+                    <string>jsm</string>
                 </array>
             </dict>
             <key>UTTypeConformsTo</key>
@@ -84,16 +120,16 @@
                 <key>NSTemporaryExceptionAllowsInsecureHTTPSLoads</key> <true/>
                 <key>NSTemporaryExceptionMinimumTLSVersion</key> <string>1.0</string>
                 <key>NSTemporaryExceptionRequiresForwardSecrecy</key> <false/>
-			</dict>
+            </dict>
             <key>localhost</key> <dict>
                 <key>NSIncludesSubdomains</key> <false/>
                 <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key> <true/>
                 <key>NSTemporaryExceptionAllowsInsecureHTTPSLoads</key> <true/>
                 <key>NSTemporaryExceptionMinimumTLSVersion</key> <string>1.0</string>
                 <key>NSTemporaryExceptionRequiresForwardSecrecy</key> <false/>
-			</dict>
-		</dict>
-	</dict>
+            </dict>
+        </dict>
+    </dict>
     <key>NSHighResolutionCapable</key> <true/>
     <key>NSHumanReadableCopyright</key> <string>Copyright © 2024</string>
     <key>NSSupportsAutomaticGraphicsSwitching</key> <true/>
