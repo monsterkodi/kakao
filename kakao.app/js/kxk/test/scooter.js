@@ -148,6 +148,8 @@ toExport["scooter"] = function ()
         compare(scooter('0xff'),'255')
         compare(scooter('hex(16.5)'),'0x10')
         compare(scooter('hex(sqrt(257))'),'0x10')
+        compare(scooter('hex(-16.5)'),'-0x10')
+        compare(scooter('hex(10-100)'),'-0x5a')
     })
 }
 toExport["scooter"]._section_ = true

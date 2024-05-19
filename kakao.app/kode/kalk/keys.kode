@@ -143,9 +143,9 @@ class Keys
                     @key '='                'tall bottom equals'
                 ]
             @row [
-                    @key ''                 'bracket'
+                    @key symbol.oct,        'op1 oct'
                     @key '0'                'hex digit'
-                    @key ''                 'bracket'
+                    @key symbol.bin,        'op1 bin'
                 ]
             ]
         

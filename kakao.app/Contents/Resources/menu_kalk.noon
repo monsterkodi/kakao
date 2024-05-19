@@ -41,7 +41,9 @@ Edit
         Log                     shift+l
         Exp                     shift+x
         Deg2Rad                 shift+d
-        Hex                     # shift+3
+        Hex                     # shift+3 h shift+h
+        Bin                     shift+b
+        Oct                     o shift+o
     Const
         E                       shift+e
         PI                      shift+p

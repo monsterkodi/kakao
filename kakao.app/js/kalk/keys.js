@@ -40,7 +40,7 @@ class Keys
 
     hexKeys ()
     {
-        return this.setKeys('hex',[this.row([this.key(symbol.clear,'tall clear'),this.key('a','hex letter'),this.key('b','hex letter'),this.key('c','hex letter'),this.key('d','hex letter')]),this.row([this.key('7','hex digit'),this.key('8','hex digit'),this.key('9','hex digit'),this.key('e','hex letter')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','hex digit'),this.key('5','hex digit'),this.key('6','hex digit'),this.key('f','hex letter')]),this.row([this.key(symbol.numbers,'tall bottom numbers'),this.key('1','hex digit'),this.key('2','hex digit'),this.key('3','hex digit'),this.key('=','tall bottom equals')]),this.row([this.key('','bracket'),this.key('0','hex digit'),this.key('','bracket')])])
+        return this.setKeys('hex',[this.row([this.key(symbol.clear,'tall clear'),this.key('a','hex letter'),this.key('b','hex letter'),this.key('c','hex letter'),this.key('d','hex letter')]),this.row([this.key('7','hex digit'),this.key('8','hex digit'),this.key('9','hex digit'),this.key('e','hex letter')]),this.row([this.key(symbol.backspace,'backspace'),this.key('4','hex digit'),this.key('5','hex digit'),this.key('6','hex digit'),this.key('f','hex letter')]),this.row([this.key(symbol.numbers,'tall bottom numbers'),this.key('1','hex digit'),this.key('2','hex digit'),this.key('3','hex digit'),this.key('=','tall bottom equals')]),this.row([this.key(symbol.oct,'op1 oct'),this.key('0','hex digit'),this.key(symbol.bin,'op1 bin')])])
     }
 
     onKeys (action)

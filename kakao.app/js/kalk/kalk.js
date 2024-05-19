@@ -7,7 +7,9 @@ import kakao from "../kakao.js"
 import kxk from "../kxk.js"
 let $ = kxk.$
 let win = kxk.win
+let kpos = kxk.kpos
 let post = kxk.post
+let popup = kxk.popup
 let stopEvent = kxk.stopEvent
 
 import symbol from "./symbol.js"
@@ -23,6 +25,8 @@ Delegate = (function ()
     _k_.extend(Delegate, win.Delegate)
     function Delegate ()
     {
+        var main
+
         this["cut"] = this["cut"].bind(this)
         this["cpy"] = this["cpy"].bind(this)
         this["currentSelection"] = this["currentSelection"].bind(this)
@@ -31,6 +35,8 @@ Delegate = (function ()
         this["onWindowKeyUp"] = this["onWindowKeyUp"].bind(this)
         this["onWindowKeyDown"] = this["onWindowKeyDown"].bind(this)
         this["onMenuAction"] = this["onMenuAction"].bind(this)
+        this["showContextMenu"] = this["showContextMenu"].bind(this)
+        this["onContextMenu"] = this["onContextMenu"].bind(this)
         this["onCalc"] = this["onCalc"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
@@ -38,6 +44,8 @@ Delegate = (function ()
         this.menuNoon = kakao.bundle.res('menu_kalk.noon')
         this.aboutImage = kakao.bundle.img('about_kalk.png')
         this.aboutURL = "https://github.com/monsterkodi/kalk"
+        main = $('main')
+        main.addEventListener('contextmenu',this.onContextMenu)
         post.on('menuAction',this.onMenuAction)
         post.on('calc',this.onCalc)
         return Delegate.__super__.constructor.apply(this, arguments)
@@ -69,6 +77,25 @@ Delegate = (function ()
     {
         window.input.setText(calc)
         return post.emit('button','=')
+    }
+
+    Delegate.prototype["onContextMenu"] = function (event)
+    {
+        return stopEvent(event,this.showContextMenu(kpos(event)))
+    }
+
+    Delegate.prototype["showContextMenu"] = function (pos)
+    {
+        var items, main, opt
+
+        if (!(pos != null))
+        {
+            main = $('main')
+            pos = kpos(main.getBoundingClientRect().left,main.getBoundingClientRect().top)
+        }
+        items = [{text:'Clear Log',combo:'k'},{text:'Clear & Close Log',combo:'cmdctrl+k'}]
+        opt = {x:pos.x,y:pos.y,items:items}
+        return popup.menu(opt)
     }
 
     Delegate.prototype["onMenuAction"] = function (action, args)
@@ -105,6 +132,12 @@ Delegate = (function ()
 
             case 'Hex':
                 return post.emit('button',symbol.hex)
+
+            case 'Bin':
+                return post.emit('button',symbol.bin)
+
+            case 'Oct':
+                return post.emit('button',symbol.oct)
 
             case 'Deg2Rad':
                 return post.emit('button',symbol.deg2rad)

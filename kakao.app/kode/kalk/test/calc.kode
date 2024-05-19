@@ -55,8 +55,8 @@ use .. ◆ symbol calc
             [[             '1+2'        '9/10+12' '8/5'                ] [ symbol.close                 ]]
             [['' '-'  '+'  '1*' '2/' '3^' '4-'  '5+'                   ] [ symbol.open                  ]]
             [[   'NaN' '+'  '1*' '2.0' '3.' '4-'  'sin('               ] [ symbol.backspace, symbol.clear           ]]
-            [[''      '1'  '2+'  '2*' '5.5'                 symbol.phi ] [ symbol.hex                   ]]
-            [['0'     '2+0' '0xf+0'                                    ] [ 'x'                          ]]
+            [[''      '1'  '2+'  '2*' '5.5'                 symbol.phi ] [ symbol.hex, symbol.bin, symbol.oct       ]]
+            [['0'     '2+0' '0xf+0'                                    ] [ 'x' symbol.bin, symbol.oct               ]]
             [[''      '1'  '2+'  '2*' '0x' '0xf'                       ] [ 'a''c''f'                    ]]
         ]
         for l in list
@@ -152,7 +152,7 @@ use .. ◆ symbol calc
             'NaN':      '✘':''    '1':'1'     'sin':'sin('  '¹⧸ₓ':'1/'   '𝒆ˣ':'𝒆^'
             '1/':       '𝒆ˣ':'1/𝒆^'
             '1/':       '¹⧸ₓ':'1/1/'
-            '':         '⌗':'0x'
+            '':         '⌗':'0x' '𝒷': '0b'
             '16^2':     '⌗':'0x100'
             '64^2':     '⌗':'0x1000'
             '256^2':    '⌗':'0x10000'
@@ -163,6 +163,7 @@ use .. ◆ symbol calc
             '':         'f':'0xf'
             '8':        'f':'0x8f'
             '2+':       'f':'2+0xf'
+            '0x':       '𝒷': '0b' '𝓸': '0o'
 
         for t,keyResult of dict
             for key,result of keyResult

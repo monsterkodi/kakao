@@ -6,7 +6,7 @@
  0000000  000   000  0000000   0000000
 ###
 
-use ../kxk ▪ scooter kstr post
+use ../kxk ▪ scooter fromPairs kstr post
 use ◆ text
 
 class Calc
@@ -24,9 +24,11 @@ class Calc
         value   = text.endsWithValue      txt
         float   = text.endsWithFloat      txt
         hex     = text.endsWithHex        txt
+        oct     = text.endsWithOct        txt
+        bin     = text.endsWithBin        txt
         num     = text.endsWithNumber     txt
         unfin   = text.endsWithUnfinished txt
-        int     = num and not float
+        int     = num and not float and not oct and not bin
         open    = txt[-1] == symbol.open
         close   = txt[-1] == symbol.close
         deg2rad = txt[-1] == symbol.deg2rad
@@ -46,7 +48,7 @@ class Calc
             '1''2''3''4''5'
             '6''7''8''9''0'  ➜ ⮐ not cOnst and not deg2rad
             
-            'x'              ➜ ⮐ (txt[-1] == '0' and not float and not hex) #or (unfin and not dot)
+            'x'              ➜ ⮐ txt[-1] == '0' and not float and not hex and not bin and not oct
             'a''b''c'
             'd''e''f'        ➜ ⮐ clean or hex or int or (unfin and not dot)
             
@@ -63,6 +65,8 @@ class Calc
             symbol.pow     ➜ ⮐ apply
             symbol.exp     
             symbol.oneoverx
+            symbol.bin
+            symbol.oct
             symbol.hex
             symbol.sqrt    ➜ ⮐ open or apply or clean or (unfin and not dot)
             
@@ -85,7 +89,7 @@ class Calc
                 ⮐ true
                 
             ➜
-                # log 'ever come here?' txt, key
+                log 'ever come here?' txt, key
                 if key in text.unfinished
                     ⮐ apply
                     
@@ -150,8 +154,23 @@ class Calc
                 else if not text.endsWith(txt, ['.'])
                     txt += key + '('
                     
-            symbol.exp      ➜ if open or clean ➜ txt += symbol.euler+'^' else txt = @calc symbol.euler+'^(' + txt + ')'
-            symbol.hex      ➜ if open or clean or unfin ➜ txt += '0x' else txt = @calc 'hex(' + txt + ')'
+            symbol.exp  ➜ if open or clean ➜ txt += symbol.euler+'^' else txt = @calc symbol.euler+'^(' + txt + ')'
+            
+            symbol.bin      
+            symbol.oct      
+            symbol.hex      
+                
+                switch key
+                    symbol.bin ➜ prfx ='0b'; func = 'bin'
+                    symbol.oct ➜ prfx ='0o'; func = 'oct'
+                    symbol.hex ➜ prfx ='0x'; func = 'hex'
+                
+                for p in ['0b''0o''0x']
+                    if p != prfx and txt.endsWith p
+                        ⮐ txt[0...-2] + prfx
+                
+                if open or clean or unfin ➜ txt += prfx else txt = @calc func+'(' + txt + ')'
+                    
             symbol.oneoverx ➜ if open or clean or unfin ➜ txt += '1/' else txt = @calc '1/(' + txt + ')'
             symbol.rad2deg  ➜ txt = @calc '∡(' + txt + ')'
             symbol.euler
@@ -161,7 +180,7 @@ class Calc
             '+' '-' '.'
             symbol.open     
             symbol.deg2rad
-            symbol.close    ➜ txt += key 
+            symbol.close    ➜ txt += key
             ➜
                 # log 'switch else key' key
                 if key in text.unfinished
@@ -174,7 +193,6 @@ class Calc
                         txt = text.removeZeroInfinity txt
                         
                     if key in 'abcdef'
-                        
                         txt = text.makeTrailingHex txt
                         
                     txt = txt + key

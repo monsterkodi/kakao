@@ -2,6 +2,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 import kxk from "../kxk.js"
 let scooter = kxk.scooter
+let fromPairs = kxk.fromPairs
 let kstr = kxk.kstr
 let post = kxk.post
 
@@ -11,16 +12,18 @@ class Calc
 {
     static activeKey (txt, key)
     {
-        var apply, clean, close, cOnst, deg2rad, dot, float, hex, int, num, op, open, rad2deg, unfin, value
+        var apply, bin, clean, close, cOnst, deg2rad, dot, float, hex, int, num, oct, op, open, rad2deg, unfin, value
 
         clean = _k_.empty(txt)
         cOnst = text.endsWithConstant(txt)
         value = text.endsWithValue(txt)
         float = text.endsWithFloat(txt)
         hex = text.endsWithHex(txt)
+        oct = text.endsWithOct(txt)
+        bin = text.endsWithBin(txt)
         num = text.endsWithNumber(txt)
         unfin = text.endsWithUnfinished(txt)
-        int = num && !float
+        int = num && !float && !oct && !bin
         open = txt.slice(-1)[0] === symbol.open
         close = txt.slice(-1)[0] === symbol.close
         deg2rad = txt.slice(-1)[0] === symbol.deg2rad
@@ -51,7 +54,7 @@ class Calc
                 return !cOnst && !deg2rad
 
             case 'x':
-                return (txt.slice(-1)[0] === '0' && !float && !hex)
+                return txt.slice(-1)[0] === '0' && !float && !hex && !bin && !oct
 
             case 'a':
             case 'b':
@@ -86,6 +89,8 @@ class Calc
 
             case symbol.exp:
             case symbol.oneoverx:
+            case symbol.bin:
+            case symbol.oct:
             case symbol.hex:
             case symbol.sqrt:
                 return open || apply || clean || (unfin && !dot)
@@ -132,6 +137,7 @@ class Calc
                 return true
 
             default:
+                console.log('ever come here?',txt,key)
                 if (_k_.in(key,text.unfinished))
             {
                 return apply
@@ -159,7 +165,7 @@ class Calc
 
     static textKey (txt, key)
     {
-        var clean, cOnst, f, float, num, open, unfin, value
+        var clean, cOnst, f, float, func, num, open, p, prfx, unfin, value
 
         if (!this.activeKey(txt,key))
         {
@@ -214,8 +220,35 @@ class Calc
             case symbol.exp:
                 open || clean ? txt += symbol.euler + '^' : txt = this.calc(symbol.euler + '^(' + txt + ')')
                 break
+            case symbol.bin:
+            case symbol.oct:
             case symbol.hex:
-                open || clean || unfin ? txt += '0x' : txt = this.calc('hex(' + txt + ')')
+                switch (key)
+                {
+                    case symbol.bin:
+                        prfx = '0b'
+                        func = 'bin'
+                        break
+                    case symbol.oct:
+                        prfx = '0o'
+                        func = 'oct'
+                        break
+                    case symbol.hex:
+                        prfx = '0x'
+                        func = 'hex'
+                        break
+                }
+
+                var list1 = ['0b','0o','0x']
+                for (var _b_ = 0; _b_ < list1.length; _b_++)
+                {
+                    p = list1[_b_]
+                    if (p !== prfx && txt.endsWith(p))
+                    {
+                        return txt.slice(0, -2) + prfx
+                    }
+                }
+                open || clean || unfin ? txt += prfx : txt = this.calc(func + '(' + txt + ')')
                 break
             case symbol.oneoverx:
                 open || clean || unfin ? txt += '1/' : txt = this.calc('1/(' + txt + ')')

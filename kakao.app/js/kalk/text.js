@@ -57,7 +57,7 @@ class Text
 
     static ops = ['+','-','/','*','^','(']
 
-    static unfinished = ['.','+','-','/','*','^','(','0x']
+    static unfinished = ['.','+','-','/','*','^','(','0x','0b','0o']
 
     static endsWith (txt, chars)
     {
@@ -96,6 +96,16 @@ class Text
     static endsWithHex (txt)
     {
         return /0x[\dabcdef]*$/.test(txt)
+    }
+
+    static endsWithOct (txt)
+    {
+        return /0o[0-7]*$/.test(txt)
+    }
+
+    static endsWithBin (txt)
+    {
+        return /0b[01]*$/.test(txt)
     }
 
     static endsWithFloat (txt)
