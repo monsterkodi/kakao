@@ -57,6 +57,7 @@ class Calc
             symbol.pow     ➜ ⮐ apply
             symbol.exp     
             symbol.oneoverx
+            symbol.hex
             symbol.sqrt    ➜ ⮐ open or apply or clean or (unfin and not dot)
             
             symbol.rad2deg ➜ ⮐ apply and not rad2deg
@@ -78,11 +79,11 @@ class Calc
                 ⮐ true
                 
             ➜
-                log 'ever come here?' txt, key
+                # log 'ever come here?' txt, key
                 if key in text.unfinished
                     ⮐ apply
                     
-        log 'fallthrough false?' txt, key
+        log 'activeKey' txt, key
         false
 
     #  0000000   0000000   000       0000000  
@@ -144,6 +145,7 @@ class Calc
                     txt += key + '('
                     
             symbol.exp      ➜ if open or clean ➜ txt += symbol.euler+'^' else txt = @calc symbol.euler+'^(' + txt + ')'
+            symbol.hex      ➜ if open or clean ➜ txt += '0x' else txt = @calc 'hex(' + txt + ')'
             '°'             ➜ txt += key 
             '='             ➜ txt = @calc txt
             symbol.oneoverx ➜ if open or clean or unfin ➜ txt += '1/' else txt = @calc '1/(' + txt + ')'

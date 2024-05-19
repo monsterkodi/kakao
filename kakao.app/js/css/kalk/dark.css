@@ -121,12 +121,16 @@
 .input-text span.dot,
 .sheet-line span.dot,
 
+.input-text span.hex,
+.sheet-line span.hex,
+
 .input-text span.exponent,
 .sheet-line span.exponent,
 
 .input-text span.complex,
 .sheet-line span.complex,
 .key.dot,
+.key.hex,
 .key.exponent,
 .key.complex
 {

@@ -24,6 +24,7 @@ symbol =
     close:      ')'
     pow:        '^'
     dot:        '.'
+    hex:        '⌗'
 
 globalThis.symbol = symbol # 
 

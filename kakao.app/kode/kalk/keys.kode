@@ -7,7 +7,7 @@
 ###
 
 use ../kxk ▪ $ elem post stopEvent
-use ◆ calc
+use ◆ calc text
 
 class Keys
 
@@ -31,13 +31,22 @@ class Keys
         
     update: -> @onInputText window.input.plain
             
-    onInputText: text =>
+    #  0000000   000   000        000000000  00000000  000   000  000000000  
+    # 000   000  0000  000           000     000        000 000      000     
+    # 000   000  000 0 000           000     0000000     00000       000     
+    # 000   000  000  0000           000     000        000 000      000     
+    #  0000000   000   000           000     00000000  000   000     000     
+    
+    onInputText: txt =>
         
-        log 'onInputText' text
+        log 'onInputText' txt
+        
+        if text.endsWithHex txt
+            log 'hexMode!!'
         
         wraps = document.querySelectorAll('.key-wrap')
         for wrap in wraps
-            active = calc.activeKey text, wrap.innerHTML
+            active = calc.activeKey txt, wrap.innerHTML
             # log 'wrap' wrap.innerHTML, active
             wrap.parentElement.classList.toggle 'inactive' not active
             wrap.classList.toggle 'inactive' not active
@@ -56,18 +65,24 @@ class Keys
         
     row: children => elem 'tr' class:'key-row' children:children
     
-    key: text clss='' => 
+    key: txt clss='' => 
         
-        if text == '_' 
+        if txt == '_' 
             elem 'td' class:'key hidden'
         else
-            cfg = class:'key '+ clss, click:@onButton, child: elem class:'key-wrap' text:text
+            cfg = class:'key '+ clss, click:@onButton, child: elem class:'key-wrap' text:txt
             if clss.indexOf('wide') >= 0
                 cfg.colSpan = 2
             if clss.indexOf('tall') >= 0
                 cfg.rowSpan = 2
             elem 'td' cfg
         
+    # 000   000  000   000  00     00  
+    # 0000  000  000   000  000   000  
+    # 000 0 000  000   000  000000000  
+    # 000  0000  000   000  000 0 000  
+    # 000   000   0000000   000   000  
+    
     numberKeys: ->
                 
         @setKeys 'numbers' [ # ▾ style
@@ -104,12 +119,18 @@ class Keys
                 ]
             ]
     
+    # 00000000  000   000  000   000   0000000  
+    # 000       000   000  0000  000  000       
+    # 000000    000   000  000 0 000  000       
+    # 000       000   000  000  0000  000       
+    # 000        0000000   000   000   0000000  
+    
     functionKeys: ->
         
         @setKeys 'functions' [ # ▾ style
             @row [
                     @key 'c'                'tall clear'
-                    @key symbol.sqrt,       'op1 sqrt'
+                    @key symbol.hex,        'op1 hex'
                     @key symbol.exp,        'op1 exp'
                     @key symbol.oneoverx,   'op1 oneoverx'
                     @key '*'                'dot multiply'
@@ -118,14 +139,14 @@ class Keys
                     @key 'sin'              'function sin'
                     @key 'cos'              'function cos'
                     @key 'π'                'constant pi'    
-                    @key '-'                'dot'
+                    @key '-'                'op2'
                 ]
             @row [
                     @key symbol.backspace,  'backspace'
                     @key 'tan'              'function tan'
                     @key 'log'              'function log'
                     @key symbol.euler,      'constant euler'
-                    @key '+'                'dot'
+                    @key '+'                'op2'
                 ]
             @row [
                     @key symbol.numbers,    'tall bottom numbers'
@@ -141,6 +162,49 @@ class Keys
                 ]
             ]
 
+    # 000   000  00000000  000   000  
+    # 000   000  000        000 000   
+    # 000000000  0000000     00000    
+    # 000   000  000        000 000   
+    # 000   000  00000000  000   000  
+    
+    hexKeys: ->
+        
+        @setKeys 'hex' [ # ▾ style
+            @row [
+                    @key 'c'                'tall clear'
+                    @key symbol.hex,        'op1 hex'
+                    @key symbol.exp,        'op1 exp'
+                    @key symbol.oneoverx,   'op1 oneoverx'
+                    @key '*'                'dot multiply'
+                ]
+            @row [
+                    @key '7'                'digit'
+                    @key '8'                'digit'
+                    @key '9'                'digit'
+                    @key '-'                'op2'
+                ]
+            @row [
+                    @key symbol.backspace,  'backspace'
+                    @key '4'                'digit'
+                    @key '5'                'digit'
+                    @key '6'                'digit'
+                    @key '+'                'op2'
+                ]
+            @row [
+                    @key symbol.func,       'tall bottom func'
+                    @key '1'                'digit'
+                    @key '2'                'digit'
+                    @key '3'                'digit'
+                    @key '='                'tall bottom equals'
+                ]
+            @row [
+                    @key '('                'bracket'
+                    @key '°'                'digit deg2rad'
+                    @key ')'                'bracket'
+                ]
+            ]
+            
     onButton: event => post.emit 'button' event.target.firstChild.innerHTML.trim()
     
     toggleKeys: -> @keys == 'numbers' ? @functionKeys() : @numberKeys()        

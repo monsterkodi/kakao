@@ -131,6 +131,7 @@ scooter = function (str, opt)
     b = `{PI, E, sqrt, pow, exp, cos, sin, tan, acos, asin, atan} = Math
 rad = d -> PI*d/180.0
 deg = r -> r*180.0/PI
+hex = v -> '0x'+parseInt(v).toString 16
 PHI = (1+sqrt(5))/2
 `
     b += '(' + build(str) + ')'

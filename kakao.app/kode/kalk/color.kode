@@ -13,6 +13,8 @@ class Color
     @: ->
         
         cfg = 
+            '0x':   'hex'
+            '[abcdef]': 'digit'
             '=': 'equals'
             'e[-+]': 'exponent'
             '[\\.]': 'dot'
@@ -20,12 +22,12 @@ class Color
             '\\d+': 'digit' 
             '°': 'digit' 
             'i': 'complex'
-            '(sin|cos|a?tan|exp|log)': 'function'
+            '(sin|cos|a?tan|exp|log|hex)': 'function'
             'NaN': 'nan'
-            '[πx∞ϕ]': 'constant'
+            '[π∞ϕ]': 'constant'
             '[∡√^]': 'op0'
             '[*/]': 'op1'
-            '[+-]': 'dot'
+            '[+-]': 'op2'
             
         cfg[symbol.euler] = 'constant'
             

@@ -53,7 +53,7 @@ class Text
 
     static numbers = ['0','1','2','3','4','5','6','7','8','9']
 
-    static constants = [symbol.euler,'π','ϕ','°']
+    static constants = [symbol.euler,symbol.pi,symbol.phi,symbol.deg2rad]
 
     static ops = ['+','-','/','*','^','(']
 
@@ -91,6 +91,11 @@ class Text
     static isInteger (txt)
     {
         return /\d+/.test(txt)
+    }
+
+    static endsWithHex (txt)
+    {
+        return /\.0x\d+$/.test(txt)
     }
 
     static endsWithFloat (txt)

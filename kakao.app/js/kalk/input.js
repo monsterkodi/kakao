@@ -17,7 +17,7 @@ class Input
         this.onButton = this.onButton.bind(this)
         this.onResize = this.onResize.bind(this)
         this.clear = this.clear.bind(this)
-        this.view = $("#input")
+        this.view = $('#input')
         this.plain = ''
         post.on('resize',this.onResize)
         post.on('button',this.onButton)

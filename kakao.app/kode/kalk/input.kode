@@ -13,7 +13,7 @@ class Input
 
     @: ->
         
-        @view = $ "#input"
+        @view =$ '#input'
         @plain = ''
         
         post.on 'resize' @onResize

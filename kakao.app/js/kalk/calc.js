@@ -73,6 +73,7 @@ class Calc
 
             case symbol.exp:
             case symbol.oneoverx:
+            case symbol.hex:
             case symbol.sqrt:
                 return open || apply || clean || (unfin && !dot)
 
@@ -118,14 +119,13 @@ class Calc
                 return true
 
             default:
-                console.log('ever come here?',txt,key)
                 if (_k_.in(key,text.unfinished))
             {
                 return apply
             }
         }
 
-        console.log('fallthrough false?',txt,key)
+        console.log('activeKey',txt,key)
         return false
     }
 
@@ -200,6 +200,9 @@ class Calc
                 break
             case symbol.exp:
                 open || clean ? txt += symbol.euler + '^' : txt = this.calc(symbol.euler + '^(' + txt + ')')
+                break
+            case symbol.hex:
+                open || clean ? txt += '0x' : txt = this.calc('hex(' + txt + ')')
                 break
             case '°':
                 txt += key
