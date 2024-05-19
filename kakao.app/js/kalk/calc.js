@@ -11,14 +11,16 @@ class Calc
 {
     static activeKey (txt, key)
     {
-        var apply, clean, close, cOnst, deg2rad, dot, float, nuber, op, open, rad2deg, unfin, value
+        var apply, clean, close, cOnst, deg2rad, dot, float, hex, int, num, op, open, rad2deg, unfin, value
 
         clean = _k_.empty(txt)
         cOnst = text.endsWithConstant(txt)
         value = text.endsWithValue(txt)
         float = text.endsWithFloat(txt)
-        nuber = text.endsWithNumber(txt)
+        hex = text.endsWithHex(txt)
+        num = text.endsWithNumber(txt)
         unfin = text.endsWithUnfinished(txt)
+        int = num && !float
         open = txt.slice(-1)[0] === symbol.open
         close = txt.slice(-1)[0] === symbol.close
         deg2rad = txt.slice(-1)[0] === symbol.deg2rad
@@ -48,7 +50,18 @@ class Calc
             case '0':
                 return !cOnst && !deg2rad
 
+            case 'x':
+                return (txt.slice(-1)[0] === '0' && !float && !hex)
+
+            case 'a':
+            case 'b':
             case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+                return clean || hex || int || (unfin && !dot)
+
+            case symbol.clear:
             case symbol.backspace:
                 return !clean
 
@@ -88,7 +101,7 @@ class Calc
                 return !text.endsWith(txt,['+','-','.'])
 
             case '.':
-                return nuber && !float
+                return int
 
             case symbol.open:
                 return !dot && !open && !cOnst && !close && !value
@@ -146,7 +159,7 @@ class Calc
 
     static textKey (txt, key)
     {
-        var clean, cOnst, f, float, nuber, open, unfin, value
+        var clean, cOnst, f, float, num, open, unfin, value
 
         if (!this.activeKey(txt,key))
         {
@@ -160,7 +173,7 @@ class Calc
         cOnst = text.endsWithConstant(txt)
         value = text.endsWithValue(txt)
         float = text.endsWithFloat(txt)
-        nuber = text.endsWithNumber(txt)
+        num = text.endsWithNumber(txt)
         unfin = text.endsWithUnfinished(txt)
         open = txt.slice(-1)[0] === symbol.open
         switch (key)
@@ -202,26 +215,13 @@ class Calc
                 open || clean ? txt += symbol.euler + '^' : txt = this.calc(symbol.euler + '^(' + txt + ')')
                 break
             case symbol.hex:
-                open || clean ? txt += '0x' : txt = this.calc('hex(' + txt + ')')
-                break
-            case '°':
-                txt += key
-                break
-            case '=':
-                txt = this.calc(txt)
+                open || clean || unfin ? txt += '0x' : txt = this.calc('hex(' + txt + ')')
                 break
             case symbol.oneoverx:
                 open || clean || unfin ? txt += '1/' : txt = this.calc('1/(' + txt + ')')
                 break
-            case '∡':
+            case symbol.rad2deg:
                 txt = this.calc('∡(' + txt + ')')
-                break
-            case '+':
-            case '-':
-                txt += key
-                break
-            case '.':
-                txt += key
                 break
             case symbol.euler:
             case symbol.phi:
@@ -232,10 +232,15 @@ class Calc
                 }
                 txt += key
                 break
-            case '(':
-                txt += key
+            case '=':
+                txt = this.calc(txt)
                 break
-            case ')':
+            case '+':
+            case '-':
+            case '.':
+            case symbol.open:
+            case symbol.deg2rad:
+            case symbol.close:
                 txt += key
                 break
             default:
@@ -251,7 +256,15 @@ class Calc
             }
             else if (!text.endsWithConstant(txt))
             {
-                txt = text.removeZeroInfinity(txt) + key
+                if (key !== 'x')
+                {
+                    txt = text.removeZeroInfinity(txt)
+                }
+                if (_k_.in(key,'abcdef'))
+                {
+                    txt = text.makeTrailingHex(txt)
+                }
+                txt = txt + key
             }
         }
 

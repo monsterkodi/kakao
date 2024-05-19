@@ -57,7 +57,7 @@ class Text
 
     static ops = ['+','-','/','*','^','(']
 
-    static unfinished = ['.','+','-','/','*','^','(']
+    static unfinished = ['.','+','-','/','*','^','(','0x']
 
     static endsWith (txt, chars)
     {
@@ -95,7 +95,7 @@ class Text
 
     static endsWithHex (txt)
     {
-        return /\.0x\d+$/.test(txt)
+        return /0x[\dabcdef]*$/.test(txt)
     }
 
     static endsWithFloat (txt)
@@ -137,7 +137,7 @@ class Text
         {
             return popped
         }
-        if (this.endsWith(txt,['0']) && !(this.endsWith(popped,['.']) || this.endsWithNumber(popped)))
+        if (this.endsWith(txt,['0']) && !(this.endsWith(popped,['.']) || this.endsWithNumber(popped) || this.endsWithHex(popped)))
         {
             return popped
         }
@@ -145,6 +145,31 @@ class Text
         {
             return txt
         }
+    }
+
+    static makeTrailingHex (txt)
+    {
+        var num
+
+        if (Text.endsWithHex(txt))
+        {
+            return txt
+        }
+        if (Text.endsWithNumber(txt))
+        {
+            num = ''
+            while (Text.endsWithNumber(txt))
+            {
+                num += txt.slice(-1)[0]
+                txt = this.popChar(txt)
+            }
+            txt += '0x' + num
+        }
+        else
+        {
+            txt += '0x'
+        }
+        return txt
     }
 }
 

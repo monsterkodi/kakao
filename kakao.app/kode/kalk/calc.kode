@@ -23,8 +23,10 @@ class Calc
         cOnst   = text.endsWithConstant   txt
         value   = text.endsWithValue      txt
         float   = text.endsWithFloat      txt
-        nuber   = text.endsWithNumber     txt
+        hex     = text.endsWithHex        txt
+        num     = text.endsWithNumber     txt
         unfin   = text.endsWithUnfinished txt
+        int     = num and not float
         open    = txt[-1] == symbol.open
         close   = txt[-1] == symbol.close
         deg2rad = txt[-1] == symbol.deg2rad
@@ -44,7 +46,11 @@ class Calc
             '1''2''3''4''5'
             '6''7''8''9''0'  ➜ ⮐ not cOnst and not deg2rad
             
-            'c'
+            'x'              ➜ ⮐ (txt[-1] == '0' and not float and not hex) #or (unfin and not dot)
+            'a''b''c'
+            'd''e''f'        ➜ ⮐ clean or hex or int or (unfin and not dot)
+            
+            symbol.clear
             symbol.backspace ➜ ⮐ not clean
             
             'sin' 'cos' 'tan' 'atan' 'deg' 'rad' 'log' 
@@ -64,7 +70,7 @@ class Calc
             symbol.deg2rad ➜ ⮐ apply and not deg2rad
             
             '+' '-'        ➜ ⮐ not text.endsWith txt, ['+' '-' '.']
-            '.'            ➜ ⮐ nuber and not float
+            '.'            ➜ ⮐ int
             symbol.open    ➜ ⮐ not dot and not open and not cOnst and not close and not value
             symbol.close
                 
@@ -121,7 +127,7 @@ class Calc
         cOnst = text.endsWithConstant   txt
         value = text.endsWithValue      txt
         float = text.endsWithFloat      txt
-        nuber = text.endsWithNumber     txt
+        num   = text.endsWithNumber     txt
         unfin = text.endsWithUnfinished txt
         open  = txt[-1] == symbol.open
         
@@ -145,26 +151,33 @@ class Calc
                     txt += key + '('
                     
             symbol.exp      ➜ if open or clean ➜ txt += symbol.euler+'^' else txt = @calc symbol.euler+'^(' + txt + ')'
-            symbol.hex      ➜ if open or clean ➜ txt += '0x' else txt = @calc 'hex(' + txt + ')'
-            '°'             ➜ txt += key 
-            '='             ➜ txt = @calc txt
+            symbol.hex      ➜ if open or clean or unfin ➜ txt += '0x' else txt = @calc 'hex(' + txt + ')'
             symbol.oneoverx ➜ if open or clean or unfin ➜ txt += '1/' else txt = @calc '1/(' + txt + ')'
-            '∡'             ➜ txt = @calc '∡(' + txt + ')'
-            '+' '-'         ➜ txt += key 
-            '.'             ➜ txt += key 
+            symbol.rad2deg  ➜ txt = @calc '∡(' + txt + ')'
             symbol.euler
             symbol.phi
             symbol.pi       ➜ txt += '*' if value; txt += key
-            
-            '('             ➜ txt += key 
-            ')'             ➜ txt += key 
+            '='             ➜ txt = @calc txt
+            '+' '-' '.'
+            symbol.open     
+            symbol.deg2rad
+            symbol.close    ➜ txt += key 
             ➜
+                # log 'switch else key' key
                 if key in text.unfinished
                     if not empty txt
                         if not text.endsWithUnfinished(txt)
                             txt += key
                 else if not text.endsWithConstant(txt)
-                    txt = text.removeZeroInfinity(txt) + key
+                    # log "add key #{key}"
+                    if key != 'x'
+                        txt = text.removeZeroInfinity txt
+                        
+                    if key in 'abcdef'
+                        
+                        txt = text.makeTrailingHex txt
+                        
+                    txt = txt + key
                     
         # log 'txtKey' txt, key
         txt

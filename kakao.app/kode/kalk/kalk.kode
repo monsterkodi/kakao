@@ -60,14 +60,16 @@ function Delegate extends win.Delegate
             'Cut'       ➜ ⮐ @cut()
             'Copy'      ➜ ⮐ @cpy()
             'Paste'     ➜ ⮐ @paste()
-            'Clear All' ➜ ⮐ post.emit('sheet' 'collapse') and post.emit('menuAction' 'Clear')
-            'Clear Log' ➜ ⮐ post.emit('sheet' 'clear')
-            'Save'      ➜ ⮐ post.toMain 'saveBuffer'
+            
+            'Clear'             ➜ ⮐                                   post.emit 'button' symbol.clear
+            'Clear Log'         ➜ ⮐ post.emit('sheet' 'clear')    and post.emit 'button' symbol.clear
+            'Clear & Close Log' ➜ ⮐ post.emit('sheet' 'collapse') and post.emit 'button' symbol.clear
             
             'Sin' 'Cos' 
             'Tan' 'aTan' 
             'Log'       ➜ ⮐ post.emit 'button' action.toLowerCase()
             'Exp'       ➜ ⮐ post.emit 'button' symbol.exp
+            'Hex'       ➜ ⮐ post.emit 'button' symbol.hex
             'Deg2Rad'   ➜ ⮐ post.emit 'button' symbol.deg2rad
             'E'         ➜ ⮐ post.emit 'button' symbol.euler
             'PI'        ➜ ⮐ post.emit 'button' symbol.pi
