@@ -1,10 +1,25 @@
 
+@font-face
+{
+    font-family: FontAwesomeSolid;
+    font-weight: normal;
+    font-style: normal;
+    src: url("../../../Contents/Resources/font/fa-solid-900.woff2");
+}
+
+@font-face
+{
+    font-family: FontAwesomeRegular;
+    font-weight: normal;
+    font-style: normal;
+    src: url("../../../Contents/Resources/font/fa-regular-400.woff2");
+}
+
 body
 {
     margin: 0px;
     height: 100%;
     overflow: hidden;
-    -webkit-app-region: drag;
     -webkit-user-select: none;
 }
 
@@ -12,7 +27,6 @@ body
 input,
 textarea
 {
-    -webkit-app-region: no-drag;
     outline: none;
 }
 
@@ -46,7 +60,6 @@ a
 .main-input
 {
     -webkit-transition: all 0.4s ease-in-out;
-    -webkit-app-region: no-drag;
     border-radius: 2px;
     font-size: 24px;
     padding-left: 6px;
@@ -114,6 +127,7 @@ a
 .lock,
 #lock
 {
+    font-family: FontAwesomeSolid;
     top: 14px;
     opacity: 0;
 }
@@ -141,17 +155,8 @@ a
     opacity: 1;
 }
 
-#floppy
-{
-    font-size: 19px;
-    top: 15px;
-    text-align: right;
-    padding-right: 20px;
-}
-
 .border
 {
-    -webkit-app-region: no-drag;
     -webkit-transition: all 0.4s ease-in-out;
     position: relative;
     padding: 10px;
@@ -175,7 +180,6 @@ a
 
 #turtle
 {
-    -webkit-app-region: no-drag;
     -webkit-transition: box-shadow 0.1s ease-in-out;
     margin: 12px;
     width: 340px;
@@ -188,7 +192,6 @@ a
 #bubble
 {
     -webkit-transition: all 0.5s ease-in-out;
-    -webkit-app-region: no-drag;
     position: absolute;
     top: 170px;
     right: 27px;
@@ -298,7 +301,6 @@ a
 
 .button-border
 {
-    -webkit-app-region: drag;
     -webkit-transition: all 0.4s ease-in-out;
     pointer-events: all;
     display: inline-block;
@@ -312,7 +314,6 @@ a
 
 .button
 {
-    -webkit-app-region: no-drag;
     -webkit-transition-property: box-shadow, border;
     -webkit-transition-duration: 0.4s;
     -webkit-transition-timing-function: ease-in-out;
@@ -323,17 +324,23 @@ a
     width: 35px;
 }
 
-.button-icon
+#floppy
 {
-    pointer-events: none;
-    position: absolute;
-    left: 21px;
-    top: 19px;
+    font-family: fontMono;
+    font-size: 24px;
+    text-align: right;
+    padding-right: 20px;
 }
 
-#vault-border .button-icon
+.button-icon
 {
-    left: 20px;
+    font-family: fontMono;
+    font-size: 32px;
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .list
@@ -368,7 +375,6 @@ a
 
 .vault-item
 {
-    -webkit-app-region: no-drag;
     font-size: 18px;
     pointer-events: all;
     text-align: left;
@@ -399,7 +405,6 @@ a
 
 .vault-overlay
 {
-    -webkit-app-region: no-drag;
     box-sizing: border-box;
     font-size: 18px;
     pointer-events: all;
@@ -496,7 +501,6 @@ a
 .pref-overlay.int,
 .pref-overlay
 {
-    -webkit-app-region: no-drag;
     box-sizing: border-box;
     pointer-events: all;
     position: absolute;
@@ -528,7 +532,6 @@ a
 
 #info
 {
-    -webkit-app-region: no-drag;
     text-align: center;
     position: relative;
     top: 150px;

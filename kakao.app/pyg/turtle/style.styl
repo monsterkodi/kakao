@@ -5,11 +5,6 @@
 //    000     000   000  000   000     000     000      000         
 //    000      0000000   000   000     000     0000000  00000000    
 
-drag()
-    -webkit-app-region  drag
-nodrag()
-    -webkit-app-region  no-drag
-
 input-transition()
     -webkit-transition all 0.4s ease-in-out
 ghost-transition()
@@ -20,17 +15,33 @@ bubble-transition()
     -webkit-transition   all 0.5s ease-in-out    
 no-transition()
     -webkit-transition  none
+    
+center-xy()
+    position            absolute
+    left                50%
+    top                 50%
+    transform           translate(-50%, -50%)
+    
+@font-face
+    font-family            FontAwesomeSolid
+    font-weight            normal
+    font-style             normal
+    src                    url("../../../Contents/Resources/font/fa-solid-900.woff2")
 
+@font-face
+    font-family            FontAwesomeRegular
+    font-weight            normal
+    font-style             normal
+    src                    url("../../../Contents/Resources/font/fa-regular-400.woff2")
+    
 body
     margin              0px
     height              100%
     overflow            hidden
-    drag()
     -webkit-user-select none
 
 input 
 textarea
-    nodrag()
     outline             none
     
 #password
@@ -50,7 +61,6 @@ a
 
 .main-input
     input-transition()
-    nodrag()
     border-radius       2px
     font-size           24px
     padding-left        6px
@@ -100,6 +110,7 @@ a
     
 .lock    
 #lock
+    font-family     FontAwesomeSolid
     top             14px
     opacity         0    
     &.closed
@@ -113,12 +124,6 @@ a
     &.bool-false
         opacity     1
         opacity     1
-
-#floppy
-    font-size       19px
-    top             15px
-    text-align      right
-    padding-right   20px
     
 // 0000000     0000000   00000000   0000000    00000000  00000000   
 // 000   000  000   000  000   000  000   000  000       000   000  
@@ -127,7 +132,6 @@ a
 // 0000000     0000000   000   000  0000000    00000000  000   000  
 
 .border
-    nodrag()
     input-transition()
     position        relative
     padding         10px
@@ -144,7 +148,6 @@ a
     margin-bottom   12px
 
 #turtle
-    nodrag()
     -webkit-transition box-shadow 0.1s ease-in-out
     margin          12px
     width           340px
@@ -155,7 +158,6 @@ a
 
 #bubble
     bubble-transition()
-    nodrag()
     position        absolute
     top             170px    
     right           27px
@@ -236,7 +238,6 @@ scrollWidth = 6px
     right          0px
 
 .button-border
-    drag()
     input-transition()
     pointer-events        all
     display               inline-block
@@ -248,7 +249,6 @@ scrollWidth = 6px
     height                58px
 
 .button
-    nodrag()
     -webkit-transition-property  box-shadow, border  
     -webkit-transition-duration  0.4s
     -webkit-transition-timing-function  ease-in-out
@@ -258,14 +258,17 @@ scrollWidth = 6px
     height            35px
     width             35px
 
-.button-icon
-    pointer-events  none
-    position        absolute
-    left            21px
-    top             19px
+#floppy
+    font-family     fontMono
+    font-size       24px
+    text-align      right
+    padding-right   20px
 
-#vault-border .button-icon
-    left  20px
+.button-icon
+    font-family     fontMono
+    font-size       32px
+    pointer-events  none
+    center-xy()
 
 .list
     position        absolute
@@ -292,7 +295,6 @@ scrollWidth = 6px
     top             12px
 
 .vault-item
-    nodrag()
     font-size       18px
     pointer-events  all
     text-align      left
@@ -319,7 +321,6 @@ scrollWidth = 6px
     overflow-y      hidden
 
 .vault-overlay 
-    nodrag()
     box-sizing      border-box
     font-size       18px
     pointer-events  all
@@ -379,7 +380,6 @@ scrollWidth = 6px
 .pref-overlay.shortcut
 .pref-overlay.int
 .pref-overlay 
-    nodrag()
     box-sizing      border-box
     pointer-events  all
     position        absolute
@@ -409,7 +409,6 @@ scrollWidth = 6px
 // 000   000  0000000     0000000    0000000      000     
 
 #info
-    nodrag()
     text-align      center
     position        relative
     top             150px

@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
-var addVaultItem, adjustValue, ask, clearInput, closeVaultItem, containsLink, copyAndSavePattern, copyPassword, currentPassword, decrypt, decryptFile, Delegate, deleteStash, editVaultKey, encrypt, encryptFile, extractDomain, extractSite, genHash, hasLock, hideLock, hideSettings, hideSitePassword, initBody, initButtons, initEvents, initInputBorder, lockClosed, lockOpen, logOut, makePassword, masterAnim, masterChanged, masterConfirmed, masterFade, masterSitePassword, masterStart, mstr, onButton, onPrefsKey, onStashKey, onVaultKey, openUrl, openVaultItem, patternChanged, patternConfirmed, prefInfo, readStash, resetStash, resetTimeout, saveBody, savePattern, saveVaultKey, say, setBool, setInput, setSite, setWinHeight, showAbout, showHelp, showPassword, showPrefs, showSettings, showSitePassword, showStash, showVault, siteChanged, startTimeout, stash, stashExists, stashFile, stashLoaded, stopTimeout, timeoutDelay, timeoutInSeconds, timeoutInterval, timeoutLast, timeoutPercent, timeoutTick, toggleAbout, togglePrefs, toggleSettings, toggleStash, toggleVault, toggleVaultItem, unsay, updateFloppy, updateSiteFromClipboard, updateStashButton, vaultArrow, vaultValue, whisper, writeStash
+var addVaultItem, adjustValue, ask, clearInput, clearSitePassword, closeVaultItem, containsLink, copyAndSavePattern, copyPassword, currentPassword, decrypt, decryptFile, Delegate, deleteStash, editVaultKey, encrypt, encryptFile, extractDomain, extractSite, genHash, hasLock, hideLock, hideSettings, hideSitePassword, initBody, initButtons, initEvents, initInputBorder, lockClosed, lockOpen, logOut, makePassword, masterAnim, masterChanged, masterConfirmed, masterFade, masterSitePassword, masterStart, mstr, onButton, onPrefsKey, onStashKey, onVaultKey, openUrl, openVaultItem, patternChanged, patternConfirmed, prefInfo, readStash, resetStash, resetTimeout, saveBody, savePattern, saveVaultKey, say, setBool, setInput, setSite, setWinHeight, showHelp, showPassword, showPrefs, showSettings, showSitePassword, showStash, showVault, siteChanged, startTimeout, stash, stashExists, stashFile, stashLoaded, stopTimeout, timeoutDelay, timeoutInSeconds, timeoutInterval, timeoutLast, timeoutPercent, timeoutTick, togglePrefs, toggleSettings, toggleStash, toggleVault, toggleVaultItem, unsay, updateFloppy, updateSiteFromClipboard, updateStashButton, vaultArrow, vaultValue, whisper, writeStash
 
 import kakao from "../kakao.js"
 
@@ -93,7 +93,7 @@ masterFade = function ()
 
 masterConfirmed = async function ()
 {
-    var _101_35_, _102_35_
+    var _98_35_, _99_35_
 
     if ((mstr != null ? mstr.length : undefined))
     {
@@ -169,12 +169,12 @@ patternChanged = function ()
     return masterSitePassword()
 }
 
-savePattern = function ()
+savePattern = async function ()
 {
     var hash, site
 
     site = $('site').value
-    hash = genHash(site + mstr)
+    hash = await genHash(site + mstr)
     stash.configs[hash].pattern = $('pattern').value
     writeStash()
     return masterSitePassword()
@@ -186,7 +186,7 @@ copyAndSavePattern = async function ()
 
     copyPassword()
     site = $('site').value
-    hash = genHash(site + mstr)
+    hash = await genHash(site + mstr)
     if (!(stash.configs[hash] != null))
     {
         url = await encrypt(site,mstr)
@@ -287,7 +287,7 @@ window.onclose = function (event)
 
 window.onfocus = function (event)
 {
-    var _223_17_, _224_17_, _227_19_
+    var _222_17_, _223_17_, _225_19_
 
     resetTimeout()
     if (stashLoaded)
@@ -367,7 +367,7 @@ resetTimeout = function ()
 
 logOut = function ()
 {
-    var _281_22_
+    var _284_22_
 
     console.log('logout',$('master'),$('bubble'))
     stopTimeout()
@@ -387,7 +387,7 @@ logOut = function ()
 
 saveBody = function ()
 {
-    var savedBody, savedFocus, savedSite, _302_22_, _304_26_
+    var savedBody, savedFocus, savedSite, _305_29_, _307_26_
 
     resetTimeout()
     if (!($('bubble') != null))
@@ -399,7 +399,7 @@ saveBody = function ()
     savedBody = document.body.innerHTML
     return window.restoreBody = function (site)
     {
-        var _320_25_
+        var _323_25_
 
         resetTimeout()
         document.body.innerHTML = savedBody
@@ -462,24 +462,23 @@ initInputBorder = function (inp)
 
 initButtons = function ()
 {
-    var brd, btn, buttons, icn, inp, spn
+    var brd, btn, buttons, icn, icon, inp, spn
 
-    buttons = elem({class:'buttons',id:'buttons'})
-    var list = [['stash','database'],['vault','archive'],['prefs','cog'],['about','info-circle'],['help','question-circle']]
-    for (var _c_ = 0; _c_ < list.length; _c_++)
+    buttons = elem({id:'buttons',class:'buttons app-drag-region'})
+    for (btn in {stash:'',vault:'',prefs:'',help:''})
     {
-        btn = list[_c_]
+        icon = {stash:'',vault:'',prefs:'',help:''}[btn]
+        spn = elem('span')
+        brd = elem({class:'button-border border',id:btn + '-border'})
+        inp = elem('input',{type:'button',class:'button',id:btn})
+        icn = elem('span',{class:'button-icon',text:icon})
+        spn.appendChild(brd)
+        brd.appendChild(inp)
+        brd.appendChild(icn)
+        buttons.appendChild(spn)
+        initInputBorder(inp)
+        inp.addEventListener('click',onButton)
     }
-    spn = elem('span')
-    brd = elem({class:'button-border border',id:btn[0] + '-border'})
-    inp = elem('input',{type:'button',class:'button',id:btn[0]})
-    icn = elem('i',{class:'button-icon fa fa-' + btn[1]})
-    spn.appendChild(brd)
-    brd.appendChild(inp)
-    brd.appendChild(icn)
-    buttons.appendChild(spn)
-    initInputBorder(inp)
-    inp.addEventListener('click',onButton)
     return buttons
 }
 
@@ -495,9 +494,6 @@ onButton = function (event)
 
         case 'prefs':
             return togglePrefs()
-
-        case 'about':
-            return showAbout()
 
         case 'help':
             return showHelp()
@@ -568,7 +564,7 @@ readStash = async function ()
 
 onStashKey = function (event)
 {
-    var char, combo, e, key, mod, _446_50_, _446_63_, _446_75_, _447_50_, _447_67_, _447_79_, _449_20_, _450_46_, _453_51_, _453_63_, _460_38_
+    var char, combo, e, key, mod, _445_50_, _445_63_, _445_75_, _446_50_, _446_67_, _446_79_, _448_20_, _449_46_, _452_51_, _452_63_, _459_38_
 
     mod = keyinfo.forEvent(event).mod
     key = keyinfo.forEvent(event).key
@@ -580,15 +576,15 @@ onStashKey = function (event)
     {
         case 'right':
         case 'down':
-            return (e != null ? (_446_50_=e.parentElement) != null ? (_446_63_=_446_50_.nextSibling) != null ? (_446_75_=_446_63_.firstChild) != null ? _446_75_.focus() : undefined : undefined : undefined : undefined)
+            return (e != null ? (_445_50_=e.parentElement) != null ? (_445_63_=_445_50_.nextSibling) != null ? (_445_75_=_445_63_.firstChild) != null ? _445_75_.focus() : undefined : undefined : undefined : undefined)
 
         case 'left':
         case 'up':
-            return (e != null ? (_447_50_=e.parentElement) != null ? (_447_67_=_447_50_.previousSibling) != null ? (_447_79_=_447_67_.firstChild) != null ? _447_79_.focus() : undefined : undefined : undefined : undefined)
+            return (e != null ? (_446_50_=e.parentElement) != null ? (_446_67_=_446_50_.previousSibling) != null ? (_446_79_=_446_67_.firstChild) != null ? _446_79_.focus() : undefined : undefined : undefined : undefined)
 
         case 'command+backspace':
         case 'ctrl+backspace':
-            if ((e != null ? (_449_20_=e.id) != null ? _449_20_.length : undefined : undefined))
+            if ((e != null ? (_448_20_=e.id) != null ? _448_20_.length : undefined : undefined))
             {
                 if ((e.parentElement.nextSibling != null))
                 {
@@ -596,7 +592,7 @@ onStashKey = function (event)
                 }
                 else
                 {
-                    ;((_453_51_=e.parentElement.previousSibling) != null ? (_453_63_=_453_51_.firstChild) != null ? _453_63_.focus() : undefined : undefined)
+                    ;((_452_51_=e.parentElement.previousSibling) != null ? (_452_63_=_452_51_.firstChild) != null ? _452_63_.focus() : undefined : undefined)
                 }
                 delete stash.configs[e.id]
                 e.parentElement.remove()
@@ -608,7 +604,7 @@ onStashKey = function (event)
             }
             break
         case 'enter':
-            return restoreBody((e != null ? (_460_38_=e.nextSibling) != null ? _460_38_.innerHTML : undefined : undefined))
+            return restoreBody((e != null ? (_459_38_=e.nextSibling) != null ? _459_38_.innerHTML : undefined : undefined))
 
     }
 
@@ -641,11 +637,10 @@ showStash = async function ()
         return
     }
     initBody('stash')
-    var list = _k_.list(Object.keys(stash.configs))
-    for (var _d_ = 0; _d_ < list.length; _d_++)
+    for (hash in stash.configs)
     {
-        hash = list[_d_]
         config = stash.configs[hash]
+        console.log('hash config',hash,config,mstr)
         site = await decrypt(config.url,mstr)
         item = elem({class:'stash-item-border border'})
         item.appendChild(elem('input',{id:hash,type:'button',class:'stash-item'}))
@@ -679,7 +674,7 @@ showStash = async function ()
 
 onVaultKey = function (event)
 {
-    var char, combo, e, hash, key, mod, _520_42_, _520_55_, _520_68_, _520_80_, _521_42_, _521_59_, _521_76_, _521_88_, _525_20_, _529_20_, _530_46_, _530_59_, _533_51_, _533_68_, _533_80_
+    var char, combo, e, hash, key, mod, _523_37_, _523_50_, _523_63_, _523_75_, _524_37_, _524_54_, _524_71_, _524_83_, _529_20_, _535_20_, _536_46_, _536_59_, _539_51_, _539_68_, _539_80_
 
     mod = keyinfo.forEvent(event).mod
     key = keyinfo.forEvent(event).key
@@ -699,10 +694,10 @@ onVaultKey = function (event)
             return editVaultKey(hash)
 
         case 'down':
-            return (e != null ? (_520_42_=e.parentElement) != null ? (_520_55_=_520_42_.nextSibling) != null ? (_520_68_=_520_55_.nextSibling) != null ? (_520_80_=_520_68_.firstChild) != null ? _520_80_.focus() : undefined : undefined : undefined : undefined : undefined)
+            return (e != null ? (_523_37_=e.parentElement) != null ? (_523_50_=_523_37_.nextSibling) != null ? (_523_63_=_523_50_.nextSibling) != null ? (_523_75_=_523_63_.firstChild) != null ? _523_75_.focus() : undefined : undefined : undefined : undefined : undefined)
 
         case 'up':
-            return (e != null ? (_521_42_=e.parentElement) != null ? (_521_59_=_521_42_.previousSibling) != null ? (_521_76_=_521_59_.previousSibling) != null ? (_521_88_=_521_76_.firstChild) != null ? _521_88_.focus() : undefined : undefined : undefined : undefined : undefined)
+            return (e != null ? (_524_37_=e.parentElement) != null ? (_524_54_=_524_37_.previousSibling) != null ? (_524_71_=_524_54_.previousSibling) != null ? (_524_83_=_524_71_.firstChild) != null ? _524_83_.focus() : undefined : undefined : undefined : undefined : undefined)
 
         case 'left':
             return closeVaultItem((e != null ? e.id : undefined))
@@ -719,7 +714,7 @@ onVaultKey = function (event)
             break
         case 'command+backspace':
         case 'ctrl+backspace':
-            if ((e != null ? (_529_20_=e.id) != null ? _529_20_.length : undefined : undefined))
+            if ((e != null ? (_535_20_=e.id) != null ? _535_20_.length : undefined : undefined))
             {
                 if (((e.parentElement.nextSibling != null ? e.parentElement.nextSibling.nextSibling : undefined) != null))
                 {
@@ -727,7 +722,7 @@ onVaultKey = function (event)
                 }
                 else
                 {
-                    ;((_533_51_=e.parentElement.previousSibling) != null ? (_533_68_=_533_51_.previousSibling) != null ? (_533_80_=_533_68_.firstChild) != null ? _533_80_.focus() : undefined : undefined : undefined)
+                    ;((_539_51_=e.parentElement.previousSibling) != null ? (_539_68_=_539_51_.previousSibling) != null ? (_539_80_=_539_68_.firstChild) != null ? _539_80_.focus() : undefined : undefined : undefined)
                 }
                 delete stash.vault[e.id]
                 e.parentElement.nextSibling.remove()
@@ -741,7 +736,7 @@ onVaultKey = function (event)
 
 toggleVault = function ()
 {
-    var _539_34_
+    var _545_34_
 
     if (($('vaultlist') != null))
     {
@@ -815,7 +810,6 @@ editVaultKey = function (hash)
 
     border = $(hash).parentElement
     inp = elem('input',{class:'vault-overlay vault-key',type:'input',value:$('.vault-key',border).value})
-    ipc.send('disableToggle')
     inp.addEventListener('keydown',function (event)
     {
         var input, key
@@ -844,7 +838,6 @@ editVaultKey = function (hash)
     })
     inp.addEventListener('blur',function (event)
     {
-        ipc.send('enableToggle')
         return event.target.remove()
     })
     border.appendChild(inp)
@@ -870,7 +863,7 @@ addVaultItem = function (hash, vaultKey, vaultValue)
     initInputBorder(input)
     item.addEventListener('mouseenter',function (e)
     {
-        var _619_67_
+        var _637_67_
 
         return (e.target.firstChild != null ? e.target.firstChild.focus() : undefined)
     })
@@ -913,7 +906,7 @@ addVaultItem = function (hash, vaultKey, vaultValue)
 
 showVault = function ()
 {
-    var vaultHash, _637_22_
+    var vaultHash, _656_22_
 
     if (!stashLoaded)
     {
@@ -926,18 +919,18 @@ showVault = function ()
         stash.vault[uuid()] = {key:"title",value:"some secret"}
     }
     var list = _k_.list(Object.keys(stash.vault))
-    for (var _e_ = 0; _e_ < list.length; _e_++)
+    for (var _c_ = 0; _c_ < list.length; _c_++)
     {
-        vaultHash = list[_e_]
+        vaultHash = list[_c_]
         addVaultItem(vaultHash,stash.vault[vaultHash].key,stash.vault[vaultHash].value)
     }
     return $('vaultscroll').firstChild.firstChild.focus()
 }
-prefInfo = {shortcut:{type:'shortcut',text:'global shortcut'},timeout:{type:'int',text:'autoclose delay',min:0},mask:{type:'bool',text:'mask locked passwords'},confirm:{type:'bool',text:'confirm changes'},dark:{type:'bool',text:'dark theme'}}
+prefInfo = {timeout:{type:'int',text:'autoclose delay',min:1},mask:{type:'bool',text:'mask locked passwords'},confirm:{type:'bool',text:'confirm changes'}}
 
 togglePrefs = function ()
 {
-    var _664_21_
+    var _681_21_
 
     if (($('prefslist') != null))
     {
@@ -1003,7 +996,7 @@ showPrefs = function ()
                 case 'int':
                     inputChanged = function (event)
                     {
-                        var intValue, prefKey, _717_101_
+                        var intValue, prefKey, _737_101_
 
                         input = $('input.pref-item',event.target.parentElement)
                         prefKey = input.id
@@ -1032,16 +1025,14 @@ showPrefs = function ()
                         intValue = 0
                     }
                     inp = elem('input',{class:'pref-overlay int',value:intValue})
-                    ipc.send('disableToggle')
                     inp.addEventListener('blur',function (event)
                     {
-                        ipc.send('enableToggle')
                         return event.target.remove()
                     })
                     inp.addEventListener('change',inputChanged)
                     inp.addEventListener('keydown',function (event)
                     {
-                        var inc, newValue, prefKey, _747_113_
+                        var inc, newValue, prefKey, _767_113_
 
                         key = keyinfo.keynameForEvent(event)
                         event.stopPropagation()
@@ -1098,7 +1089,6 @@ showPrefs = function ()
                 case 'shortcut':
                     border = event.target.parentElement
                     msg = elem('input',{class:'pref-overlay shortcut',type:'button',value:'press the shortcut'})
-                    ipc.send('disableToggle')
                     msg.addEventListener('keydown',function (event)
                     {
                         var combo, mod, prefKey
@@ -1114,10 +1104,6 @@ showPrefs = function ()
                             $('.shortcut',event.target.parentElement).innerHTML = combo
                             prefKey = input.id
                             prefs.set(prefKey,combo)
-                            if (prefKey === 'shortcut')
-                            {
-                                ipc.send('globalShortcut',combo)
-                            }
                             return input.focus()
                         }
                         else if (!keyinfo.isModifier(key) && key !== '')
@@ -1148,7 +1134,6 @@ showPrefs = function ()
                     })
                     msg.addEventListener('blur',function (event)
                     {
-                        ipc.send('enableToggle')
                         return event.target.remove()
                     })
                     border.appendChild(msg)
@@ -1163,7 +1148,7 @@ showPrefs = function ()
 
 onPrefsKey = function (event)
 {
-    var active, key, _819_50_, _819_63_, _819_80_, _820_36_, _820_49_, _825_40_, _825_57_, _825_69_
+    var active, key, _842_49_, _842_62_, _842_79_, _843_36_, _843_49_, _848_40_, _848_57_, _848_69_
 
     key = keyinfo.keynameForEvent(event)
     if (active = document.activeElement)
@@ -1172,7 +1157,7 @@ onPrefsKey = function (event)
         {
             case 'right':
             case 'down':
-                return (($('input',$(((_819_50_=active.parentElement) != null ? (_819_63_=_819_50_.nextSibling) != null ? _819_63_.firstChild.id : undefined : undefined))) != null) || ((_820_36_=active.parentElement) != null ? (_820_49_=_820_36_.nextSibling) != null ? _820_49_.firstChild : undefined : undefined)).focus()
+                return (($('input',$(((_842_49_=active.parentElement) != null ? (_842_62_=_842_49_.nextSibling) != null ? _842_62_.firstChild.id : undefined : undefined))) != null) || ((_843_36_=active.parentElement) != null ? (_843_49_=_843_36_.nextSibling) != null ? _843_49_.firstChild : undefined : undefined)).focus()
 
             case 'left':
             case 'up':
@@ -1182,49 +1167,11 @@ onPrefsKey = function (event)
                 }
                 else
                 {
-                    return ((_825_40_=active.parentElement) != null ? (_825_57_=_825_40_.previousSibling) != null ? (_825_69_=_825_57_.firstChild) != null ? _825_69_.focus() : undefined : undefined : undefined)
+                    return ((_848_40_=active.parentElement) != null ? (_848_57_=_848_40_.previousSibling) != null ? (_848_69_=_848_57_.firstChild) != null ? _848_69_.focus() : undefined : undefined : undefined)
                 }
                 break
         }
 
-    }
-}
-
-toggleAbout = function ()
-{
-    if ($('about-github'))
-    {
-        return restoreBody()
-    }
-    else
-    {
-        return showAbout()
-    }
-}
-
-showAbout = function ()
-{
-    var about, githubIcon, githubLink, version
-
-    saveBody()
-    version = '1.0'
-    document.body.innerHTML = ""
-    about = elem({id:'info'})
-    about.innerHTML = `<h1 id=\"title\">password-turtle</h1><sub>version ${version}</sub>`
-    document.body.appendChild(about)
-    githubIcon = elem({id:'aboutGithub'})
-    githubLink = elem({id:'githubLink'})
-    about.appendChild(githubLink)
-    githubLink.appendChild(githubIcon)
-    githubIcon.innerHTML = '<svg viewbox="0 0 16 16" width="80px" height="80px" class="kitty-svg"><path class="github-svg" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>'
-    $('title').addEventListener('click',function ()
-    {
-        return restoreBody()
-    })
-    return $('githubLink').onmousedown = function ()
-    {
-        console.log('open',"https://github.com/monsterkodi/password-turtle")
-        return open("https://github.com/monsterkodi/password-turtle")
     }
 }
 
@@ -1273,7 +1220,6 @@ showPassword = async function (config)
 {
     var hash, pass, url
 
-    console.log('showPassword',config,mstr)
     url = await decrypt(config.url,mstr)
     hash = await genHash(url + mstr)
     pass = currentPassword = makePassword(hash,config)
@@ -1286,7 +1232,7 @@ showPassword = async function (config)
 
 masterSitePassword = async function ()
 {
-    var config, hash, site, _923_20_
+    var config, hash, site, _912_20_
 
     site = _k_.trim($("site").value)
     if (!(site != null ? site.length : undefined) || !(mstr != null ? mstr.length : undefined))
@@ -1296,7 +1242,7 @@ masterSitePassword = async function ()
         return ""
     }
     hash = await genHash(site + mstr)
-    console.log('masterSitePassword',site,mstr,hash)
+    console.log('masterSitePassword',site,mstr,hash,stash)
     if (((stash.configs != null ? stash.configs[hash] : undefined) != null))
     {
         console.log('stash.configs!')
@@ -1321,9 +1267,27 @@ masterSitePassword = async function ()
     return showPassword(config)
 }
 
+clearSitePassword = async function ()
+{
+    var hash, site
+
+    site = $('site').value
+    hash = await genHash(site + mstr)
+    if ((stash.configs[hash] != null))
+    {
+        if (ask('Forget <i>' + stash.configs[hash].pattern + '</i>','for <b>' + site + '</b>?'))
+        {
+            delete stash.configs[hash]
+            say('The <b>' + site + '</b>','<i>pattern</i> is forgotten',2000)
+            writeStash()
+            return masterSitePassword()
+        }
+    }
+}
+
 toggleSettings = function ()
 {
-    var _949_22_
+    var _950_22_
 
     resetTimeout()
     if (!($('bubble') != null))
@@ -1352,7 +1316,7 @@ toggleSettings = function ()
 
 showSettings = function ()
 {
-    var _963_16_
+    var _964_16_
 
     ;($('buttons') != null ? $('buttons').remove() : undefined)
     updateFloppy()
@@ -1364,7 +1328,7 @@ showSettings = function ()
 
 hideSettings = function ()
 {
-    var _972_16_
+    var _973_16_
 
     $('settings').style.display = 'none'
     ;($('buttons') != null ? $('buttons').remove() : undefined)
@@ -1391,7 +1355,7 @@ hideSitePassword = function ()
 
 showSitePassword = function ()
 {
-    var _988_34_
+    var _989_34_
 
     if (!($('site-border') != null))
     {
@@ -1435,22 +1399,21 @@ hideLock = function ()
 
 lockClosed = function (e)
 {
-    e.innerHTML = '<span>C</span>'
+    e.innerHTML = '<span></span>'
     e.classList.remove('open')
     return e.classList.add('closed')
 }
 
 lockOpen = function (e)
 {
-    console.log('lockOpen')
-    e.innerHTML = '<span>O</span>'
+    e.innerHTML = '<span></span>'
     e.classList.remove('closed')
     return e.classList.add('open')
 }
 
 setBool = function (e, b)
 {
-    e.innerHTML = b && '<i class="fa fa-check fa-lg"></i>' || '<i class="fa fa-times fa-lg"></i>'
+    e.innerHTML = b && '<span></span>' || '<span></span>'
     e.classList.remove(b && 'bool-false' || 'bool-true')
     return e.classList.add(b && 'bool-true' || 'bool-false')
 }
@@ -1461,6 +1424,7 @@ updateFloppy = function ()
 
     if (floppy = $('floppy'))
     {
+        floppy.innerHTML = ''
         if ((stash != null ? stash.pattern : undefined) !== $("pattern").value || (stash != null ? stash.pattern : undefined) === '')
         {
             return floppy.classList.remove('saved')
@@ -1474,7 +1438,7 @@ updateFloppy = function ()
 
 updateStashButton = function ()
 {
-    var _1039_18_, _1040_25_, _1042_18_, _1043_25_
+    var _1041_18_, _1042_25_, _1044_18_, _1045_25_
 
     if (_k_.empty(stash.configs))
     {
@@ -1590,7 +1554,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (win, keyinfo)
     {
-        var btnames, char, combo, e, hash, key, mod, site, _1145_34_, _1150_25_, _1151_25_, _1152_25_, _1154_31_
+        var btnames, char, combo, e, key, mod, _1147_34_, _1152_25_, _1153_25_, _1154_25_, _1156_31_
 
         mod = keyinfo.mod
         key = keyinfo.key
@@ -1651,18 +1615,7 @@ Delegate = (function ()
             {
                 case 'command+backspace':
                 case 'ctrl+backspace':
-                    site = $('site').value
-                    hash = genHash(site + mstr)
-                    if ((stash.configs[hash] != null))
-                    {
-                        if (ask('Forget <i>' + stash.configs[hash].pattern + '</i>','for <b>' + site + '</b>?'))
-                        {
-                            delete stash.configs[hash]
-                            say('The <b>' + site + '</b>','<i>pattern</i> is forgotten',2000)
-                            writeStash()
-                            masterSitePassword()
-                        }
-                    }
+                    clearSitePassword()
                     return
 
                 case 'left':

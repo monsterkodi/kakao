@@ -15,9 +15,14 @@ html
 `)
     compare(pug(`html
     body
-        input type="submit" name="" value="" id="turtle" disabled`),`<html>
+        input type="submit" name="" value="" id="turtle" disabled
+        span
+            hello`),`<html>
     <body>
         <input type="submit" name="" value="" id="turtle" disabled></input>
+        <span>
+            hello
+        </span>
     </body>
 </html>
 `)

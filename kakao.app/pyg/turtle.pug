@@ -7,7 +7,7 @@ html lang="en"
         link rel="stylesheet" href="./css/dark.css"         type="text/css"
         link rel="stylesheet" href="./css/turtle/style.css" type="text/css"
         link rel="stylesheet" href="./css/turtle/dark.css"  type="text/css"
-    body
+    body class='app-drag-region'
 
         #bubble class='silent'
             #say-tri
@@ -28,16 +28,21 @@ html lang="en"
             #pattern-border class='border'
                 input id='pattern' class='main-input' type='input' name='pattern'
                 span
-                    <div class='ghost' id='floppy'><span><i class='fa fa-floppy-o fa-lg'></i></span></div>
-                    <div class='ghost' id='pattern-ghost'>pattern</div>
+                    #floppy class='ghost'
+                    #pattern-ghost class='ghost'
+                        pattern
+                    
         #site-border class='border'
             input id='site' class='main-input' type='input' name='site' 
             #site-ghost class='ghost'
                 site
+            
         #password-border class='border'
             input id='password' class='main-input' type='button' name='password' 
             
             #lock class='ghost'
+                
             #password-ghost class='ghost' 
+                password
     
     script type="module" src="./turtle/turtle.js"

@@ -51,6 +51,8 @@ render = function (block, text)
             case '#':
                 return `<div id=\"${block.fillet[1].match}\"${args}>`
 
+            default:
+                return unfillet(block.fillet) + '\n'
         }
 
     }).bind(this))()

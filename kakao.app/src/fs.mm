@@ -28,7 +28,7 @@ NSString* typeForNSFileType(NSString* fileType)
 {
     NSString* path = [Bundle path];
     
-    NSLog(@"fs %@", req);
+    // NSLog(@"fs %@", req);
     
     if ([args count] && [[args objectAtIndex:0] isKindOfClass:[NSString class]]) 
     {
