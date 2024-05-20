@@ -39,9 +39,11 @@ render = function (block, text)
 
             case 'meta':
             case 'link':
+            case 'input':
             case 'script':
             case 'head':
             case 'body':
+            case 'div':
             case 'span':
             case 'html':
                 return `<${block.fillet[0].match}${args}>`
@@ -78,7 +80,9 @@ render = function (block, text)
             case 'script':
             case 'head':
             case 'body':
+            case 'div':
             case 'span':
+            case 'input':
             case 'html':
                 return `</${block.fillet[0].match}>\n`
 

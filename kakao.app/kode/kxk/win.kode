@@ -64,11 +64,10 @@ function Win
         
         window.requestAnimationFrame @animate
         
-        main =$ 'main'
-        main.focus()
+        if main =$ 'main'
+            main.focus()
         
         @id = window.winID
-        # log 'winID' @id
                     
         window.stash = new stash "win/#{@id}"
 
@@ -197,7 +196,7 @@ function Win
         info = keyinfo.forEvent event
         info.event = event
         
-        stopEvent event
+        # stopEvent event
         
         if 'unhandled' == window.titlebar.handleKeyInfo info
             

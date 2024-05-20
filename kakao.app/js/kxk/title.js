@@ -35,11 +35,11 @@ Title = (function ()
         this.opt = ((_21_13_=this.opt) != null ? _21_13_ : {})
         pkg = this.opt.pkg
         this.elem = $(((_25_27_=this.opt.elem) != null ? _25_27_ : "#titlebar"))
-        this.elem.classList.add('focus')
         if (!this.elem)
         {
             return
         }
+        this.elem.classList.add('focus')
         post.on('titlebar',this.onTitlebar)
         post.on('menuAction',this.onMenuAction)
         post.on('window.blur',this.onWindowBlur)

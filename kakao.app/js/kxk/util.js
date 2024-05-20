@@ -304,6 +304,9 @@ util = {isEqual:function (a, b)
         return setTimeout(r,ms)
     }).bind(this))
     return true
+},uuid:function ()
+{
+    return crypto.randomUUID()
 },rad2deg:function (r)
 {
     return 180 * r / Math.PI

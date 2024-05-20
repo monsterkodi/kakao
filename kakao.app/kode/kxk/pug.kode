@@ -35,9 +35,11 @@ render = (block, text) ->
         'title' ➜ "<#{block.fillet[0].match}>#{block.fillet[1].match}</#{block.fillet[0].match}>\n"
         'meta'
         'link'
+        'input'
         'script'
         'head'
         'body'
+        'div'
         'span'
         'html' ➜ "<#{block.fillet[0].match}#{args}>"
         '#'    ➜ "<div id=\"#{block.fillet[1].match}\"#{args}>"
@@ -56,7 +58,9 @@ render = (block, text) ->
         'script'
         'head'
         'body'
+        'div'
         'span'
+        'input'
         'html' ➜ "</#{block.fillet[0].match}>\n"
         '#'    ➜ "</div>\n"
         

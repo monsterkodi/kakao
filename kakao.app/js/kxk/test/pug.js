@@ -13,6 +13,14 @@ html
     <body></body>
 </html>
 `)
+    compare(pug(`html
+    body
+        input type="submit" name="" value="" id="turtle" disabled`),`<html>
+    <body>
+        <input type="submit" name="" value="" id="turtle" disabled></input>
+    </body>
+</html>
+`)
     compare(pug(`doctype html
 html lang="en"
     head

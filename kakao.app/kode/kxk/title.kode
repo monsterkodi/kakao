@@ -16,7 +16,7 @@ use ◆ sds menu keyinfo slash post noon
                                 
 function Title
     
-    @: (@opt) ->
+    @: @opt ->
         
         @opt ?= {}
         
@@ -24,9 +24,9 @@ function Title
         
         @elem =$ @opt.elem ? "#titlebar"
         
-        @elem.classList.add 'focus'
-        
         ⮐ if not @elem
+        
+        @elem.classList.add 'focus'
         
         post.on 'titlebar'      @onTitlebar
         post.on 'menuAction'    @onMenuAction

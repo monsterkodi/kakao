@@ -25,7 +25,20 @@ use .. ◆ pug
         </html>
         
         """
-    
+
+    pug """
+        html
+            body
+                input type="submit" name="" value="" id="turtle" disabled
+        """ ▸ """
+        <html>
+            <body>
+                <input type="submit" name="" value="" id="turtle" disabled></input>
+            </body>
+        </html>
+        
+        """
+        
     pug """
         doctype html
         html lang="en"
