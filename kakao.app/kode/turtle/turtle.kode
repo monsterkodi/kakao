@@ -308,18 +308,20 @@ saveBody = ->
     savedBody  = document.body.innerHTML
 
     window.restoreBody = site ->
+        
         resetTimeout()
         document.body.innerHTML = savedBody
         initEvents()
-        setInput 'pattern', stash.pattern
+        setInput 'pattern' stash.pattern
+        
         if site?
             hideSettings()
             showSitePassword()
-            setInput 'site', site
+            setInput 'site' site
             masterSitePassword()
             copyPassword()
         else
-            setInput 'site', savedSite
+            setInput 'site' savedSite
             $(savedFocus)?.focus()
             masterSitePassword()
             updateFloppy()
@@ -331,8 +333,8 @@ saveBody = ->
 initBody = name ->
 
     saveBody()
-    lst = elem class: 'list', id: name+'list'
-    scroll = elem class: 'scroll', id: name+'scroll'
+    lst = elem class: 'list' id:name+'list'
+    scroll = elem class: 'scroll' id:name+'scroll'
     lst.appendChild scroll
     lst.appendChild initButtons()
     document.body.innerHTML = ''
@@ -418,7 +420,7 @@ writeStash = ○->
 readStash = ○->
 
     try
-        log 'readStash' stashFile, mstr
+        # log 'readStash' stashFile, mstr
         json = ○ decryptFile stashFile, mstr
         stashLoaded = true
         stash = JSON.parse json
@@ -874,28 +876,31 @@ setSite = site ->
     siteChanged()
 
 siteChanged = ->
-    
+
     if $("site").value.length == 0
         hideLock()
+        clearInput 'password'
+        ⮐ 
     masterSitePassword()
 
 updateSiteFromClipboard = ○->
     
-    if domain = extractDomain ○ kakao 'clipboard.read'
+    clipboardContent = ○ kakao 'clipboard.get'
+
+    if domain = extractDomain clipboardContent
         setSite domain
 
 makePassword = hash config -> password.make hash, config.pattern
 
 showPassword = config ○->
     
-    # log 'showPassword' config, mstr
-    
     url  = ○ decrypt config.url, mstr
     hash = ○ genHash url + mstr
     pass = currentPassword = makePassword hash, config
     if hasLock() and prefs.get 'mask'
-        pass = pad '' currentPassword.length, '●'
-    setInput 'password' pass
+        pass = rpad currentPassword.length, '' '●'
+    if url  ==  trim $("site").value
+        setInput 'password' pass
 
 masterSitePassword = ○->
     
@@ -907,23 +912,25 @@ masterSitePassword = ○->
         ⮐ ""
 
     hash = ○ genHash site + mstr
-    log 'masterSitePassword' site, mstr, hash, stash
+    # log 'masterSitePassword' site, mstr, hash, stash
 
     if stash.configs?[hash]?
-        log 'stash.configs!'
+
         config = stash.configs[hash]
         if config.pattern == stash.pattern
             lockClosed $('lock')
         else
             lockOpen $('lock')
     else
-        log 'new configs!'
+
         config = {}
         config.url = ○ encrypt site, mstr
         config.pattern = $('pattern').value
         hideLock()
 
-    showPassword config
+    currentSite = trim $("site").value
+    if currentSite == site
+        showPassword config
 
 clearSitePassword = ○->
                     
@@ -931,7 +938,7 @@ clearSitePassword = ○->
     hash = ○ genHash site + mstr
     
     if stash.configs[hash]?
-        if ask 'Forget <i>'+stash.configs[hash].pattern+'</i>', 'for <b>'+site+'</b>?'
+        if ask 'Forget <i>'+stash.configs[hash].pattern+'</i>' 'for <b>'+site+'</b>?'
             delete stash.configs[hash]
             say 'The <b>' + site + '</b>' '<i>pattern</i> is forgotten' 2000
             writeStash()
@@ -974,7 +981,7 @@ hideSettings = ->
     say() if stashExists
     # stashExists = fs.existsSync stashFile
     if $('pattern').value.length == 0 and stash?.pattern
-        setInput 'pattern', stash.pattern
+        setInput 'pattern' stash.pattern
         patternChanged()
 
 hideSitePassword = ->
@@ -999,6 +1006,7 @@ clearInput = input -> setInput input, ''
 
 setInput = input value ->
     
+    # log 'setInput' input, value
     $(input).value = value
     if ghost =$ input+'-ghost'
         ghost.style.opacity = (value.length == 0 and 1 or 0)

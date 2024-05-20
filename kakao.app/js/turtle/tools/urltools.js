@@ -67,7 +67,7 @@ toplevelDomains = ['abb','abbott','abogado','ac','academy','accenture','accounta
 
 extractDomain = function (str)
 {
-    var m, r, s, split
+    var m, r, s, split, tl
 
     r = /(^|\s|(?:http[s]?:\/\/))((?:[\w-]+\.)+\w[\w-]+)(?::[1-9]\d+)?(?:\/[\w\.-~]*)*[\?\w\d\+\-\.,;=&\/#%\$]*(?:\s|$)/
     m = str.match(r)
@@ -79,13 +79,14 @@ extractDomain = function (str)
             s = s.substr(4)
         }
         split = s.split('.')
-        if (_k_.last(_k_.in((split),toplevelDomains)))
+        tl = _k_.last(split)
+        if (_k_.in(tl,toplevelDomains))
         {
             return (split.slice(split.length - 2)).join('.')
         }
         else
         {
-            console.log('not in toplevelDomains:',_k_.last(s.split('.')))
+            console.log('not in toplevelDomains:',tl)
         }
     }
     return undefined
