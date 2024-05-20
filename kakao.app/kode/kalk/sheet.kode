@@ -36,8 +36,6 @@ class Sheet
         
     expand: ○->
         
-        # @view.style.display = 'flex'
-        
         info =○ kakao 'win.frameInfo'
 
         spaceAbove = (info.screen.h + info.screen.y) - (info.frame.h + info.frame.y)
@@ -55,8 +53,6 @@ class Sheet
         @
             
     onSheet: action =>
-        
-        # log 'onSheet action' action, action.text, kstr action.val
         
         if
             action == 'clear'    ➜ ⮐ @clear()
