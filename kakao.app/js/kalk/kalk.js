@@ -27,6 +27,7 @@ Delegate = (function ()
     {
         var main
 
+        this["paste"] = this["paste"].bind(this)
         this["cut"] = this["cut"].bind(this)
         this["cpy"] = this["cpy"].bind(this)
         this["currentSelection"] = this["currentSelection"].bind(this)

@@ -18,8 +18,10 @@
 + (id)   new:(NSString*)indexFile;
 + (App*) get;
 - (void) run; 
+- (void) quit;
 - (void) setIcon:(NSString*) pngFilePath;
 - (int)  executeNodeScript:(NSString*)scriptPath args:(NSArray*)args;
+- (BOOL) shouldWindowSaveStash:(Win*)win;
 - (NSString*) executeShellScript:(NSArray*)args callback:(Callback)callback;
 + (NSArray*) wins;
 - (NSArray*) wins;

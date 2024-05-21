@@ -74,6 +74,7 @@ masterAnim = ->
     setTimeout masterStart, 300
     
 masterFade = ->
+    
     $('turtle').disabled = true
     setWinHeight WIN_MIN_HEIGHT
 
@@ -748,7 +749,7 @@ showPrefs = ->
                     intValue = 0 if isNaN intValue
                     inp = elem 'input', class: 'pref-overlay int', value: intValue
 
-                    inp.addEventListener 'blur'(event) -> event.target.remove()
+                    inp.addEventListener 'blur' (event) -> event.target.remove()
                     inp.addEventListener 'change' inputChanged
                     inp.addEventListener 'keydown' (event) ->
                         key = keyinfo.keynameForEvent event
@@ -1100,8 +1101,6 @@ function Delegate #extends win.Delegate
         
     onWindowWillShow: ->
     
-        # document.body.style.display = 'inherit'
-        
         initEvents()
         
         $("master").blur()
@@ -1112,17 +1111,32 @@ function Delegate #extends win.Delegate
         resetStash()
         
         ffs.exists(stashFile).then (exists) ->
-            log 'stash exists?' stashFile, exists
+            # log 'stash exists?' stashFile, exists
             stashExists = exists
             if not stashExists
                 masterChanged()
 
     onWindowWithoutStash: ->  
         
-        kakao 'win.setSize'    window.WIN_WIDTH, window.WIN_MIN_HEIGHT
+        # log 'onWindowWithoutStash'
+        
+        kakao 'win.setSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.center'
         
+    onWindowRestoreFrameFromStash: win stashFrame -> 
+    
+        frame = copy stashFrame
+        frame.y = frame.y + frame.h - WIN_MIN_HEIGHT
+        frame.h = WIN_MIN_HEIGHT
+        
+        # log 'onWindowRestoreFrameFromStash' frame
+        
+        kakao 'window.setFrame' frame, true
+        true
+        
     onWindowCreated: =>
+        
+        # log 'onWindowCreated'
         
         kakao 'win.setMinSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.setMaxSize' window.WIN_WIDTH, window.WIN_MAX_HEIGHT
@@ -1144,7 +1158,7 @@ function Delegate #extends win.Delegate
         resetTimeout()
     
         switch combo
-            # 'command+w' 'ctrl+w' 'command+h', 'ctrl+h' ➜ ⮐ kakao 'window.hide'
+            'command+w' 'ctrl+w'  ➜ ⮐ kakao 'window.close'
             'command+q' 'ctrl+q'  ➜ ⮐ kakao 'app.quit'
             'command+.' 'ctrl+.'  ➜ ⮐ toggleAbout()
             'alt+i' 'ctrl+i'      ➜ ⮐ toggleStyle()
@@ -1197,12 +1211,14 @@ function Delegate #extends win.Delegate
                     # win.hide()
             'enter'
                 switch e.id
-                    "master"   ➜ masterConfirmed()
-                    "site"     ➜ copyPassword()
-                    "password" ➜ copyAndSavePattern()
-                    "pattern"  ➜ patternConfirmed()
+                    "master"   ➜ ⮐ masterConfirmed()
+                    "site"     ➜ ⮐ copyPassword()
+                    "password" ➜ ⮐ copyAndSavePattern()
+                    "pattern"  ➜ ⮐ patternConfirmed()
+                    
+        'unhandled'
     
-    onWindowKeyUp: win keyinfo ->
+    onWindowKeyUp: win keyinfo -> 'unhandled'
     
 kakao.init ->
     

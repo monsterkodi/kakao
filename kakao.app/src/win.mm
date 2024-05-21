@@ -58,10 +58,19 @@ NSDictionary* dictForSize(NSSize size)
 - (void)  windowDidResignKey: (NSNotification *)notification { [Route send:@"window.blur"  win:(Win*)notification.object]; }
 - (void)  windowDidBecomeMain:(NSNotification *)notification { /*NSLog(@"window.main"); */ }
 - (void)  windowDidResignMain:(NSNotification *)notification { /*NSLog(@"window.resign main"); */ }
-- (void)  windowWillClose:    (NSNotification *)notification { [Route send:@"window.close" win:(Win*)notification.object]; }
-- (BOOL)  windowShouldClose:  (NSWindow*)window 
+- (void)  windowWillClose:    (NSNotification *)notification 
 { 
-    if ([[App wins] count] == 1) // make sure the application closes if the last kakao window closes.
+    BOOL shouldStash = [[App get] shouldWindowSaveStash:notification.object];
+    id msg = [NSMutableDictionary dictionary];
+    [msg setObject:@"window.close" forKey:@"name"];
+    [msg setObject:[NSArray arrayWithObject:[NSNumber numberWithBool:shouldStash]] forKey:@"args"];
+    
+    [Route send:msg win:(Win*)notification.object]; 
+}
+
+- (BOOL) windowShouldClose:(NSWindow*)window 
+{ 
+    if ([[App wins] count] <= 1) // make sure the application closes if the last kakao window closes.
         [[NSApplication sharedApplication] terminate:self]; // don't want to keep it alive with just debugger windows.
     return YES; 
 }
@@ -266,17 +275,31 @@ NSDictionary* dictForSize(NSSize size)
 }
 
 - (void) setFrame:(id)frame
-{
-    // [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
-                                // [[frame objectForKey:@"y"] floatValue], 
-                                // [[frame objectForKey:@"w"] floatValue], 
-                                // [[frame objectForKey:@"h"] floatValue]) display:NO animate:NO];
-                                
+{                                
     [[self delegate] windowShouldZoom:self toFrame:
         CGRectMake([[frame objectForKey:@"x"] floatValue], 
                    [[frame objectForKey:@"y"] floatValue], 
                    [[frame objectForKey:@"w"] floatValue], 
                    [[frame objectForKey:@"h"] floatValue])];
+}
+
+- (void) setFrame:(id)frame immediate:(id)immediate
+{
+    BOOL instant = NO;
+    
+    if (immediate) instant = [immediate boolValue];
+    
+    if (instant)
+    {
+        [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
+                                    [[frame objectForKey:@"y"] floatValue], 
+                                    [[frame objectForKey:@"w"] floatValue], 
+                                    [[frame objectForKey:@"h"] floatValue]) display:NO animate:NO];
+    }
+    else
+    {
+        [self setFrame:frame];
+    }
 }
 
 - (void) setTopLeft:(id)topLeft
@@ -362,7 +385,7 @@ NSDictionary* dictForSize(NSSize size)
 // 000   000  000  0000000    0000000    
 
 
-- (void)framerateDrop:(long)ms
+- (void) framerateDrop:(long)ms
 {
 }
 
@@ -386,7 +409,7 @@ NSDictionary* dictForSize(NSSize size)
             [[WKWebsiteDataStore defaultDataStore] // nuke the cache and then reload 
                 removeDataOfTypes:[WKWebsiteDataStore allWebsiteDataTypes] 
                 modifiedSince:[NSDate dateWithTimeIntervalSince1970:0] 
-                completionHandler:^() { [self.view reload]; } // reloadFromOrigin?
+                completionHandler:^() { [self.view reloadFromOrigin]; [Route send:@"window.didReload" win:self]; } // reloadFromOrigin?
             ];
     });
 }

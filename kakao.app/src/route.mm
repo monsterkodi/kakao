@@ -137,7 +137,7 @@
     if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
     if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }
     if ([req isEqualToString:@"setTopLeft"    ]) { [win setTopLeft:arg0];  return nil; }
-    if ([req isEqualToString:@"setFrame"      ]) { [win setFrame:arg0];    return nil; }
+    if ([req isEqualToString:@"setFrame"      ]) { [win setFrame:arg0 immediate:arg1];    return nil; }
     if ([req isEqualToString:@"setSize"       ]) { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
     if ([req isEqualToString:@"setMinSize"    ]) { [win setContentMinSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
     if ([req isEqualToString:@"setMaxSize"    ]) { [win setContentMaxSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
@@ -218,11 +218,7 @@
     id app = [NSApplication sharedApplication];
     if ([req isEqualToString:@"quit"])
     {
-        for (Win* win in [App wins])
-        {
-            [win close];
-        }
-        [app terminate:nil];
+        [[App get] quit];
     }
     else if ([req isEqualToString:@"sh"])
     {
