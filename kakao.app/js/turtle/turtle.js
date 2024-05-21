@@ -215,6 +215,7 @@ copyPassword = function ()
     {
         kakao('clipboard.write',pw)
         $("password").focus()
+        console.log('currentPassword',currentPassword)
         return whisper('<u>password</u> copied',2000)
     }
 }
@@ -229,21 +230,21 @@ initEvents = function ()
         input = list[_a_]
         input.addEventListener('focus',function (e)
         {
-            var _182_70_
+            var _183_70_
 
             ;($(e.target.id + '-border') != null ? $(e.target.id + '-border').classList.add('focus') : undefined)
             return true
         })
         input.addEventListener('blur',function (e)
         {
-            var _183_70_
+            var _184_70_
 
             ;($(e.target.id + '-border') != null ? $(e.target.id + '-border').classList.remove('focus') : undefined)
             return true
         })
         input.addEventListener('input',function (e)
         {
-            var _185_35_
+            var _186_35_
 
             if (($(e.target.id + '-ghost') != null)) { $(e.target.id + '-ghost').style.opacity = e.target.value.length ? 0 : 1 }
             return true
@@ -527,13 +528,10 @@ writeStash = async function ()
     var str
 
     str = JSON.stringify(stash)
-    console.log('writeStash',stashFile,str,mstr)
     await encryptFile(stashFile,str,mstr)
-    console.log('wroteStash',stashFile,str,mstr)
     updateFloppy()
     if (!stashLoaded)
     {
-        console.log('reread stash')
         stash = ''
         await readStash()
         if (stashLoaded && JSON.stringify(stash) === str)
@@ -563,7 +561,7 @@ readStash = async function ()
 
 onStashKey = function (event)
 {
-    var char, combo, e, key, mod, _447_50_, _447_63_, _447_75_, _448_50_, _448_67_, _448_79_, _450_20_, _451_46_, _454_51_, _454_63_, _461_38_
+    var char, combo, e, key, mod, _447_44_, _447_57_, _447_69_, _448_44_, _448_61_, _448_73_, _449_54_, _452_20_, _453_46_, _456_51_, _456_63_
 
     mod = keyinfo.forEvent(event).mod
     key = keyinfo.forEvent(event).key
@@ -575,15 +573,18 @@ onStashKey = function (event)
     {
         case 'right':
         case 'down':
-            return (e != null ? (_447_50_=e.parentElement) != null ? (_447_63_=_447_50_.nextSibling) != null ? (_447_75_=_447_63_.firstChild) != null ? _447_75_.focus() : undefined : undefined : undefined : undefined)
+            return (e != null ? (_447_44_=e.parentElement) != null ? (_447_57_=_447_44_.nextSibling) != null ? (_447_69_=_447_57_.firstChild) != null ? _447_69_.focus() : undefined : undefined : undefined : undefined)
 
         case 'left':
         case 'up':
-            return (e != null ? (_448_50_=e.parentElement) != null ? (_448_67_=_448_50_.previousSibling) != null ? (_448_79_=_448_67_.firstChild) != null ? _448_79_.focus() : undefined : undefined : undefined : undefined)
+            return (e != null ? (_448_44_=e.parentElement) != null ? (_448_61_=_448_44_.previousSibling) != null ? (_448_73_=_448_61_.firstChild) != null ? _448_73_.focus() : undefined : undefined : undefined : undefined)
+
+        case 'enter':
+            return restoreBody((e != null ? (_449_54_=e.nextSibling) != null ? _449_54_.innerHTML : undefined : undefined))
 
         case 'command+backspace':
         case 'ctrl+backspace':
-            if ((e != null ? (_450_20_=e.id) != null ? _450_20_.length : undefined : undefined))
+            if ((e != null ? (_452_20_=e.id) != null ? _452_20_.length : undefined : undefined))
             {
                 if ((e.parentElement.nextSibling != null))
                 {
@@ -591,7 +592,7 @@ onStashKey = function (event)
                 }
                 else
                 {
-                    ;((_454_51_=e.parentElement.previousSibling) != null ? (_454_63_=_454_51_.firstChild) != null ? _454_63_.focus() : undefined : undefined)
+                    ;((_456_51_=e.parentElement.previousSibling) != null ? (_456_63_=_456_51_.firstChild) != null ? _456_63_.focus() : undefined : undefined)
                 }
                 delete stash.configs[e.id]
                 e.parentElement.remove()
@@ -602,9 +603,6 @@ onStashKey = function (event)
                 }
             }
             break
-        case 'enter':
-            return restoreBody((e != null ? (_461_38_=e.nextSibling) != null ? _461_38_.innerHTML : undefined : undefined))
-
     }
 
 }
@@ -658,7 +656,7 @@ showStash = async function ()
         $('stashscroll').appendChild(item)
         item.addEventListener('mouseenter',function (event)
         {
-            var _493_78_
+            var _493_77_
 
             return (event.target.firstChild != null ? event.target.firstChild.focus() : undefined)
         })
@@ -862,7 +860,7 @@ addVaultItem = function (hash, vaultKey, vaultValue)
     initInputBorder(input)
     item.addEventListener('mouseenter',function (e)
     {
-        var _639_67_
+        var _638_67_
 
         return (e.target.firstChild != null ? e.target.firstChild.focus() : undefined)
     })
@@ -905,7 +903,7 @@ addVaultItem = function (hash, vaultKey, vaultValue)
 
 showVault = function ()
 {
-    var vaultHash, _658_22_
+    var vaultHash, _657_22_
 
     if (!stashLoaded)
     {
@@ -929,7 +927,7 @@ prefInfo = {timeout:{type:'int',text:'autoclose delay',min:1},mask:{type:'bool',
 
 togglePrefs = function ()
 {
-    var _683_21_
+    var _682_21_
 
     if (($('prefslist') != null))
     {
@@ -995,7 +993,7 @@ showPrefs = function ()
                 case 'int':
                     inputChanged = function (event)
                     {
-                        var intValue, prefKey, _739_101_
+                        var intValue, prefKey, _738_101_
 
                         input = $('input.pref-item',event.target.parentElement)
                         prefKey = input.id
@@ -1024,14 +1022,14 @@ showPrefs = function ()
                         intValue = 0
                     }
                     inp = elem('input',{class:'pref-overlay int',value:intValue})
-                    inp.addEventListener('blur',function (event)
+                    inp.addEventListener('blur'(event)(function ()
                     {
                         return event.target.remove()
-                    })
+                    }))
                     inp.addEventListener('change',inputChanged)
                     inp.addEventListener('keydown',function (event)
                     {
-                        var inc, newValue, prefKey, _769_113_
+                        var inc, newValue, prefKey, _766_113_
 
                         key = keyinfo.keynameForEvent(event)
                         event.stopPropagation()
@@ -1147,7 +1145,7 @@ showPrefs = function ()
 
 onPrefsKey = function (event)
 {
-    var active, key, _844_49_, _844_62_, _844_79_, _845_36_, _845_49_, _850_40_, _850_57_, _850_69_
+    var active, key, _841_49_, _841_62_, _841_79_, _842_36_, _842_49_, _847_40_, _847_57_, _847_69_
 
     key = keyinfo.keynameForEvent(event)
     if (active = document.activeElement)
@@ -1156,7 +1154,7 @@ onPrefsKey = function (event)
         {
             case 'right':
             case 'down':
-                return (($('input',$(((_844_49_=active.parentElement) != null ? (_844_62_=_844_49_.nextSibling) != null ? _844_62_.firstChild.id : undefined : undefined))) != null) || ((_845_36_=active.parentElement) != null ? (_845_49_=_845_36_.nextSibling) != null ? _845_49_.firstChild : undefined : undefined)).focus()
+                return (($('input',$(((_841_49_=active.parentElement) != null ? (_841_62_=_841_49_.nextSibling) != null ? _841_62_.firstChild.id : undefined : undefined))) != null) || ((_842_36_=active.parentElement) != null ? (_842_49_=_842_36_.nextSibling) != null ? _842_49_.firstChild : undefined : undefined)).focus()
 
             case 'left':
             case 'up':
@@ -1166,7 +1164,7 @@ onPrefsKey = function (event)
                 }
                 else
                 {
-                    return ((_850_40_=active.parentElement) != null ? (_850_57_=_850_40_.previousSibling) != null ? (_850_69_=_850_57_.firstChild) != null ? _850_69_.focus() : undefined : undefined : undefined)
+                    return ((_847_40_=active.parentElement) != null ? (_847_57_=_847_40_.previousSibling) != null ? (_847_69_=_847_57_.firstChild) != null ? _847_69_.focus() : undefined : undefined : undefined)
                 }
                 break
         }
@@ -1237,7 +1235,7 @@ showPassword = async function (config)
 
 masterSitePassword = async function ()
 {
-    var config, currentSite, hash, site, _917_20_
+    var config, currentSite, hash, site, _914_20_
 
     site = _k_.trim($("site").value)
     if (!(site != null ? site.length : undefined) || !(mstr != null ? mstr.length : undefined))
@@ -1293,7 +1291,7 @@ clearSitePassword = async function ()
 
 toggleSettings = function ()
 {
-    var _957_22_
+    var _954_22_
 
     resetTimeout()
     if (!($('bubble') != null))
@@ -1322,7 +1320,7 @@ toggleSettings = function ()
 
 showSettings = function ()
 {
-    var _971_16_
+    var _968_16_
 
     ;($('buttons') != null ? $('buttons').remove() : undefined)
     updateFloppy()
@@ -1334,7 +1332,7 @@ showSettings = function ()
 
 hideSettings = function ()
 {
-    var _980_16_
+    var _977_16_
 
     $('settings').style.display = 'none'
     ;($('buttons') != null ? $('buttons').remove() : undefined)
@@ -1361,7 +1359,7 @@ hideSitePassword = function ()
 
 showSitePassword = function ()
 {
-    var _996_34_
+    var _993_34_
 
     if (!($('site-border') != null))
     {
@@ -1444,7 +1442,7 @@ updateFloppy = function ()
 
 updateStashButton = function ()
 {
-    var _1049_18_, _1050_25_, _1052_18_, _1053_25_
+    var _1046_18_, _1047_25_, _1049_18_, _1050_25_
 
     if (_k_.empty(stash.configs))
     {
@@ -1560,7 +1558,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (win, keyinfo)
     {
-        var btnames, char, combo, e, key, mod, _1155_34_, _1160_25_, _1161_25_, _1162_25_, _1164_31_
+        var btnames, char, combo, e, key, mod, _1152_34_, _1157_25_, _1158_25_, _1159_25_, _1161_31_
 
         mod = keyinfo.mod
         key = keyinfo.key

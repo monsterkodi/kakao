@@ -155,8 +155,8 @@ copyAndSavePattern = ○->
         whisper '<u>password</u> copied and<br></i>pattern</i> remembered' 2000
         savePattern()
     else if stash.configs[hash].pattern != $('pattern').value
-        ⮐ if not ask 'Replace <i>'+stash.configs[hash].pattern+'</i>', 'with <i>'+$('pattern').value+'</i>?'
-        say 'Using <i>'+$('pattern').value+'</i>', 'for <b>'+site+'</b>', 2000
+        ⮐ if not ask 'Replace <i>'+stash.configs[hash].pattern+'</i>' 'with <i>'+$('pattern').value+'</i>?'
+        say 'Using <i>'+$('pattern').value+'</i>' 'for <b>'+site+'</b>' 2000
         savePattern()
 
 copyPassword = ->
@@ -166,6 +166,7 @@ copyPassword = ->
     if pw?.length
         kakao 'clipboard.write' pw
         $("password").focus()
+        log 'currentPassword' currentPassword
         whisper '<u>password</u> copied' 2000
 
 ###
@@ -185,20 +186,19 @@ initEvents = ->
             $(e.target.id+'-ghost')?.style.opacity = if e.target.value.length then 0 else 1
             true
         if input.id != 'master'
-            input.addEventListener 'mouseenter', (e) ->
-                $(e.target).focus()
+            input.addEventListener 'mouseenter' (e) -> $(e.target).focus()
 
     for border in document.querySelectorAll('.border')
         if border.id != 'master-border'
-            border.addEventListener 'mouseenter', (e) ->
+            border.addEventListener 'mouseenter' (e) ->
                 $(e.target.id.substr(0,e.target.id.length-7)).focus()
 
-    $('master'  ).addEventListener 'input', masterChanged
-    $('site'    ).addEventListener 'input', siteChanged
-    $('pattern' ).addEventListener 'input', patternChanged
-    $('turtle'  ).addEventListener 'click', toggleSettings
-    $('password').addEventListener 'mousedown', copyPassword
-    $('turtle'  ).addEventListener 'mouseenter', (e) -> $('turtle').focus()
+    $('master'  ).addEventListener 'input'      masterChanged
+    $('site'    ).addEventListener 'input'      siteChanged
+    $('pattern' ).addEventListener 'input'      patternChanged
+    $('turtle'  ).addEventListener 'click'      toggleSettings
+    $('password').addEventListener 'mousedown'  copyPassword
+    $('turtle'  ).addEventListener 'mouseenter' (e) -> $('turtle').focus()
     true
 
 ###
@@ -281,7 +281,7 @@ logOut = ->
     
     log 'logout' $('master'), $('bubble')
     stopTimeout()
-    if not $('bubble')? then restoreBody()
+    if not $('bubble')? ➜ restoreBody()
     mstr = $('master').value
     setInput 'master' mstr
     $('master').focus()
@@ -406,12 +406,12 @@ deleteStash = ->
 writeStash = ○->
     
     str = JSON.stringify stash
-    log 'writeStash' stashFile, str, mstr
+    # log 'writeStash' stashFile, str, mstr
     ○ encryptFile stashFile, str, mstr
-    log 'wroteStash' stashFile, str, mstr
+    # log 'wroteStash' stashFile, str, mstr
     updateFloppy()
     if not stashLoaded
-        log 'reread stash'
+        # log 'reread stash'
         stash = ''
         ○ readStash()
         if stashLoaded and JSON.stringify(stash) == str
@@ -444,9 +444,11 @@ onStashKey = event ->
 
     e = document.activeElement
     switch combo
-        when 'right', 'down' then e?.parentElement?.nextSibling?.firstChild?.focus()
-        when 'left', 'up'    then e?.parentElement?.previousSibling?.firstChild?.focus()
-        when 'command+backspace', 'ctrl+backspace'
+        'right' 'down' ➜ e?.parentElement?.nextSibling?.firstChild?.focus()
+        'left' 'up'    ➜ e?.parentElement?.previousSibling?.firstChild?.focus()
+        'enter'        ➜ restoreBody e?.nextSibling?.innerHTML
+        'command+backspace' 
+        'ctrl+backspace'
             if e?.id?.length
                 if e.parentElement.nextSibling?
                     e.parentElement.nextSibling.firstChild.focus()
@@ -457,8 +459,6 @@ onStashKey = event ->
                 writeStash()
                 if empty stash.configs
                     restoreBody()
-        when 'enter'
-            restoreBody e?.nextSibling?.innerHTML
 
 toggleStash = ->
     
@@ -490,8 +490,8 @@ showStash = ○->
 
         $('stashscroll').appendChild item
 
-        item.addEventListener 'mouseenter', (event) -> event.target.firstChild?.focus()
-        $(hash).addEventListener 'click',   (event) -> restoreBody event.target.nextSibling.innerHTML
+        item.addEventListener 'mouseenter' (event) -> event.target.firstChild?.focus()
+        $(hash).addEventListener 'click'   (event) -> restoreBody event.target.nextSibling.innerHTML
 
         initInputBorder $(hash)
 
@@ -589,21 +589,20 @@ editVaultKey = hash ->
     inp.addEventListener 'keydown' (event) ->
         key = keyinfo.keynameForEvent event
         switch key
-            when 'esc'
-                input = $('.vault-key', event.target.parentElement)
+            'esc'
+                input = $('.vault-key' event.target.parentElement)
                 event.target.value = input.value
                 event.stopPropagation()
                 input.focus()
-            when 'enter'
-                input = $('.vault-key', event.target.parentElement)
+            'enter'
+                input = $('.vault-key' event.target.parentElement)
                 saveVaultKey event.target
                 input.focus()
                 stopEvent event
 
-    inp.addEventListener 'change', (event) -> saveVaultKey event.target
+    inp.addEventListener 'change' (event) -> saveVaultKey event.target
 
-    inp.addEventListener 'blur' (event) ->
-        event.target.remove()
+    inp.addEventListener 'blur' (event) -> event.target.remove()
 
     border.appendChild inp
     inp.focus()
@@ -636,16 +635,16 @@ addVaultItem = hash vaultKey vaultValue ->
 
     initInputBorder input
     
-    item.addEventListener  'mouseenter', (e) -> e.target.firstChild?.focus()
-    arrow.addEventListener 'click',      (e) -> toggleVaultItem $(e.target).parentElement.firstChild.id
-    input.addEventListener 'click',      (e) -> toggleVaultItem $(e.target).id
-    input.addEventListener 'keydown',    (e) -> if keyinfo.keynameForEvent(e) == 'enter' then editVaultKey $(e.target).id
-    value.addEventListener 'focus',      (e) ->
+    item.addEventListener  'mouseenter'  (e) -> e.target.firstChild?.focus()
+    arrow.addEventListener 'click'       (e) -> toggleVaultItem $(e.target).parentElement.firstChild.id
+    input.addEventListener 'click'       (e) -> toggleVaultItem $(e.target).id
+    input.addEventListener 'keydown'     (e) -> if keyinfo.keynameForEvent(e) == 'enter' then editVaultKey $(e.target).id
+    value.addEventListener 'focus'       (e) ->
         selToEnd = -> @selectionStart = @selectionEnd = @value.length
         setTimeout selToEnd.bind(e.target), 1
-    value.addEventListener 'input',      (e) -> adjustValue e.target
-    value.addEventListener 'change',     (e) ->
-        input = $('.vault-key', e.target.previousSibling)
+    value.addEventListener 'input'       (e) -> adjustValue e.target
+    value.addEventListener 'change'      (e) ->
+        input = $('.vault-key' e.target.previousSibling)
         stash.vault[input.id].value = e.target.value
         writeStash()
 
@@ -694,18 +693,18 @@ showPrefs = ->
     for key, pref of prefInfo
         value = prefs.get key
         item  = elem class: 'pref-item-border border'
-        input = elem 'input', id: key, type: 'button', class: 'pref-item'
+        input = elem 'input' id:key, type:'button' class:'pref-item'
         item.appendChild input
-        item.appendChild elem 'span', class: 'pref', text: pref.text
+        item.appendChild elem 'span' class:'pref' text:pref.text
         switch pref.type
             'bool'
                 bool = elem 'span', class: 'bool'
                 item.appendChild bool
                 setBool bool, value
             'int'
-                item.appendChild elem 'span', class: 'int', text: value and value+' min' or 'never'
+                item.appendChild elem 'span' class:'int' text:value and value+' min' or 'never'
             'shortcut'
-                item.appendChild elem 'span', class: 'shortcut', text: value
+                item.appendChild elem 'span' class:'shortcut' text:value
 
         $('prefsscroll').appendChild item
 
@@ -748,12 +747,10 @@ showPrefs = ->
                     intValue = parseInt $('.int', event.target.parentElement).innerHTML
                     intValue = 0 if isNaN intValue
                     inp = elem 'input', class: 'pref-overlay int', value: intValue
-                    # ipc.send 'disableToggle'
-                    inp.addEventListener 'blur', (event) ->
-                        # ipc.send 'enableToggle'
-                        event.target.remove()
-                    inp.addEventListener 'change', inputChanged
-                    inp.addEventListener 'keydown', (event) ->
+
+                    inp.addEventListener 'blur'(event) -> event.target.remove()
+                    inp.addEventListener 'change' inputChanged
+                    inp.addEventListener 'keydown' (event) ->
                         key = keyinfo.keynameForEvent event
                         event.stopPropagation()
                         if '+' not in key
