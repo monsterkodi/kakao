@@ -197,7 +197,8 @@ initEvents = ->
     $('master'  ).addEventListener 'input'      masterChanged
     $('site'    ).addEventListener 'input'      siteChanged
     $('pattern' ).addEventListener 'input'      patternChanged
-    $('turtle'  ).addEventListener 'click'      toggleSettings
+    # $('turtle'  ).addEventListener 'click'      toggleSettings
+    $('turtle'  ).addEventListener 'click'      toggleStash
     $('password').addEventListener 'mousedown'  copyPassword
     $('turtle'  ).addEventListener 'mouseenter' (e) -> $('turtle').focus()
     true
@@ -335,7 +336,7 @@ initBody = name ->
 
     saveBody()
     lst = elem class: 'list' id:name+'list'
-    scroll = elem class: 'scroll' id:name+'scroll'
+    scroll = elem class:'scroll' id:name+'scroll'
     lst.appendChild scroll
     lst.appendChild initButtons()
     document.body.innerHTML = ''
@@ -359,27 +360,25 @@ initButtons = ->
 
     buttons  = elem id:'buttons' class:'buttons app-drag-region'
     
-    for btn,icon of stash:'' vault:'' prefs:'' help:''
-        spn = elem 'span'
+    for btn,icon of stash:'' vault:'' pttrn:'❇' prefs:'' help:''
+        spn = elem 'span' class:'button-span'
         brd = elem class:'button-border border' id:btn+'-border'
-        inp = elem 'input' type:'button' class:'button' id:btn
-        icn = elem 'span' class:'button-icon' text:icon
+        icn = elem id:btn, class:'button' text:icon
         spn.appendChild brd
-        brd.appendChild inp
         brd.appendChild icn
         buttons.appendChild spn
-        initInputBorder inp
-        inp.addEventListener 'click' onButton
+        icn.addEventListener 'click' onButton
 
     buttons
 
 onButton = event ->
     
     switch event.target.id
-        'stash' ➜ toggleStash()
-        'vault' ➜ toggleVault()
-        'prefs' ➜ togglePrefs()
-        'help'  ➜ showHelp()
+        'stash'   ➜ toggleStash()
+        'vault'   ➜ toggleVault()
+        'pttrn'   ➜ togglePattern()
+        'prefs'   ➜ togglePrefs()
+        'help'    ➜ showHelp()
 
 ###
  0000000  000000000   0000000    0000000  000   000
@@ -476,7 +475,7 @@ showStash = ○->
     initBody 'stash'
 
     for hash,config of stash.configs
-        log 'hash config' hash, config, mstr
+        # log 'hash config' hash, config, mstr
         site = ○ decrypt config.url, mstr
         item =            elem class: 'stash-item-border border'
         item.appendChild  elem 'input', id: hash, type: 'button', class: 'stash-item'
@@ -680,6 +679,7 @@ prefInfo =
     confirm:   type:'bool' text:'confirm changes'       
 
 togglePrefs = ->
+    
     if $('prefslist')?
         restoreBody()
     else
@@ -790,7 +790,6 @@ showPrefs = ->
                         class: 'pref-overlay shortcut'
                         type:  'button'
                         value: 'press the shortcut'
-                    # ipc.send 'disableToggle'
 
                     msg.addEventListener 'keydown' (event) ->
 
@@ -804,8 +803,6 @@ showPrefs = ->
                             $('.shortcut', event.target.parentElement).innerHTML = combo
                             prefKey = input.id
                             prefs.set prefKey, combo
-                            # if prefKey == 'shortcut'
-                                # ipc.send 'globalShortcut', combo
                             input.focus()
                             
                         else if not keyinfo.isModifier(key) and key != ''
@@ -825,7 +822,6 @@ showPrefs = ->
                             event.target.value = keyinfo.modifiersForEvent event
                             
                     msg.addEventListener 'blur' (event) ->
-                        # ipc.send 'enableToggle'
                         event.target.remove()
                         
                     border.appendChild msg
@@ -910,7 +906,6 @@ masterSitePassword = ○->
         ⮐ ""
 
     hash = ○ genHash site + mstr
-    # log 'masterSitePassword' site, mstr, hash, stash
 
     if stash.configs?[hash]?
 
@@ -951,6 +946,7 @@ clearSitePassword = ○->
 ###
 
 toggleSettings = ->
+    
     resetTimeout()
     if not $('bubble')?
         restoreBody()
@@ -966,6 +962,7 @@ toggleSettings = ->
             showSettings()
 
 showSettings = ->
+    
     $('buttons')?.remove()
     updateFloppy()
     $('settings').appendChild initButtons()
@@ -974,15 +971,42 @@ showSettings = ->
     updateStashButton()
 
 hideSettings = ->
+    
     $('settings').style.display = 'none'
     $('buttons')?.remove()
     say() if stashExists
-    # stashExists = fs.existsSync stashFile
+    if $('pattern').value.length == 0 and stash?.pattern
+        setInput 'pattern' stash.pattern
+        patternChanged()     
+        
+togglePattern = ->
+    
+    if $('settings').style.display == 'none'
+       @showPattern() 
+    else
+       @hidePattern()
+        
+showPattern = ->
+    
+    $('buttons')?.remove()
+    updateFloppy()
+    $('settings').appendChild initButtons()
+    $('settings').style.display = 'initial'
+    $('pattern').focus()
+    updateStashButton()
+
+hidePattern = ->
+    
+    $('settings').style.display = 'none'
+    $('buttons')?.remove()
+    say() if stashExists
     if $('pattern').value.length == 0 and stash?.pattern
         setInput 'pattern' stash.pattern
         patternChanged()
-
+        
+        
 hideSitePassword = ->
+    
     $('site-border').style.opacity = 0
     $('site-border').classList.add 'no-pointer'
     $('site').disabled = true
@@ -991,7 +1015,9 @@ hideSitePassword = ->
     $('password').disabled = true
 
 showSitePassword = ->
-    return if not $('site-border')?
+    
+    ⮐ if not $('site-border')?
+    
     $('site-border').style.opacity = 1
     $('site-border').classList.remove 'no-pointer'
     $('site').disabled = false
@@ -1004,7 +1030,6 @@ clearInput = input -> setInput input, ''
 
 setInput = input value ->
     
-    # log 'setInput' input, value
     $(input).value = value
     if ghost =$ input+'-ghost'
         ghost.style.opacity = (value.length == 0 and 1 or 0)
@@ -1111,14 +1136,12 @@ function Delegate #extends win.Delegate
         resetStash()
         
         ffs.exists(stashFile).then (exists) ->
-            # log 'stash exists?' stashFile, exists
+
             stashExists = exists
             if not stashExists
                 masterChanged()
 
     onWindowWithoutStash: ->  
-        
-        # log 'onWindowWithoutStash'
         
         kakao 'win.setSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.center'
@@ -1128,15 +1151,10 @@ function Delegate #extends win.Delegate
         frame = copy stashFrame
         frame.y = frame.y + frame.h - WIN_MIN_HEIGHT
         frame.h = WIN_MIN_HEIGHT
-        
-        # log 'onWindowRestoreFrameFromStash' frame
-        
         kakao 'window.setFrame' frame, true
         true
         
     onWindowCreated: =>
-        
-        # log 'onWindowCreated'
         
         kakao 'win.setMinSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
         kakao 'win.setMaxSize' window.WIN_WIDTH, window.WIN_MAX_HEIGHT
@@ -1199,16 +1217,6 @@ function Delegate #extends win.Delegate
                 'right' 'down' ➜ $(btnames[btnames.indexOf(e.id)+1]).focus()
     
         switch key
-            # when 'esc'
-                # if e == $('pattern') or $('settings').style.display != 'none'
-                    # if $('pattern').value != stash.pattern
-                        # setInput 'pattern', stash.pattern
-                        # patternChanged()
-                        # say()
-                # else
-                    # $('pattern').value = stash.pattern
-                    # patternChanged()
-                    # win.hide()
             'enter'
                 switch e.id
                     "master"   ➜ ⮐ masterConfirmed()

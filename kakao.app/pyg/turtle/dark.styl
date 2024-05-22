@@ -223,28 +223,33 @@ clr.bubble-ask = rgba(0,0,0,0.8)
 // 0000000     0000000      000        000      0000000   000   000
     
 .button
-    border              1px solid clr.background
-    background-color    clr.background
-    &:focus
-        box-shadow        0 0 10px clr.yellow
-        background-color  clr.gray-very-dark
+    // border 1px solid red
+    width                   50px
+    height                  40px
+    padding-top             6px
+    filter                  drop-shadow(0 0 2px rgba(0, 0, 0, 0.4))
+    color                   #444
+    &:hover
+        filter              drop-shadow(0 0 4px #ff0)
+        color               #ff0
     &:active
-        background-color  clr.gray-most-dark
-
+        filter              drop-shadow(0 0 6px #f80)
+        color               #f80
+        
 #about
     &:focus
-        box-shadow  0 0 10px clr.password-bright
+        // box-shadow  0 0 10px clr.password-bright
         color                clr.password-medium
 
 #prefs
     &:focus
-        box-shadow  0 0 10px clr.pattern-bright
+        // box-shadow  0 0 10px clr.pattern-bright
         color                clr.pattern-medium
 
 #stash
 #help
     &:focus
-        box-shadow  0 0 10px clr.site-bright
+        // box-shadow  0 0 10px clr.site-bright
         color                clr.site-medium
     
 .button-border
@@ -253,7 +258,7 @@ clr.bubble-ask = rgba(0,0,0,0.8)
     &.focus
         color             clr.yellow
         background-color  clr.orange        
-        box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
+        // box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
     &.disabled
         opacity           0.5
         color             clr.gray-dark
@@ -262,20 +267,21 @@ clr.bubble-ask = rgba(0,0,0,0.8)
     &.focus
         color             clr.password-bright
         background-color  clr.password
-        box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
+        // box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
 
 #prefs-border
     &.focus
         color             clr.pattern-bright
         background-color  clr.pattern
-        box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
+        // box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
     
+#pattern-border
 #stash-border
 #help-border
     &.focus
         color             clr.site-bright
         background-color  clr.site-medium
-        box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
+        // box-shadow        inset 2px 2px 17px rgba(0, 0, 0, 0.5)
     
 //  0000000  000000000   0000000    0000000  000   000
 // 000          000     000   000  000       000   000

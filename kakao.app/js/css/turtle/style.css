@@ -71,18 +71,11 @@ a
 }
 
 
-
-#master,
 #site,
 #pattern
 {
     padding-top: 0px;
     padding-bottom: 3px;
-}
-
-#master
-{
-    font-size: 38px;
 }
 
 .ghost
@@ -160,8 +153,6 @@ a
     -webkit-transition: all 0.4s ease-in-out;
     position: relative;
     padding: 10px;
-    margin-left: 12px;
-    margin-right: 12px;
     box-sizing: border-box;
     border-radius: 4px;
 }
@@ -176,6 +167,8 @@ a
 {
     height: 55px;
     margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
 }
 
 #turtle
@@ -260,14 +253,6 @@ a
     cursor: pointer;
 }
 
-.scroll
-{
-    overflow-x: hidden;
-    overflow-y: auto;
-    border: 1px solid reds;
-    height: 397px;
-}
-
 ::-webkit-scrollbar
 {
     width: 6px;
@@ -291,25 +276,53 @@ a
     right: 0;
 }
 
+.list
+{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    bottom: 2px;
+    border-radius: 8px;
+}
+
+.scroll
+{
+    width: 100%;
+    flex: 1 1 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
 .buttons
 {
-    position: fixed;
-    bottom: 12px;
-    left: 0px;
-    right: 0px;
+    flex: 0 0 50px;
+    display: flex;
+}
+
+.buttons span
+{
+    flex: 1 1 0;
+    text-align: center;
+    position: relative;
 }
 
 .button-border
 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     -webkit-transition: all 0.4s ease-in-out;
     pointer-events: all;
-    display: inline-block;
-    position: relative;
     border-radius: 4px;
-    padding: 10px;
+    padding: 0px;
     margin: 0px;
-    margin-left: 13px;
-    height: 58px;
+    border: 1px solid yellow;
 }
 
 .button
@@ -319,9 +332,12 @@ a
     -webkit-transition-timing-function: ease-in-out;
     box-sizing: border-box;
     border-radius: 2px;
-    position: static;
-    height: 35px;
-    width: 35px;
+    font-family: fontMono;
+    font-size: 26px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #floppy
@@ -330,31 +346,6 @@ a
     font-size: 24px;
     text-align: right;
     padding-right: 20px;
-}
-
-.button-icon
-{
-    font-family: fontMono;
-    font-size: 32px;
-    pointer-events: none;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.list
-{
-    position: absolute;
-    padding-top: 13px;
-    padding-bottom: 10px;
-    padding-left: 0;
-    padding-right: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: auto;
 }
 
 .vault-item-border

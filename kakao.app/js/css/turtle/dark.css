@@ -265,19 +265,23 @@ body
 
 .button
 {
-    border: 1px solid #222222;
-    background-color: #222222;
+    width: 50px;
+    height: 40px;
+    padding-top: 6px;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.4));
+    color: #444;
 }
 
-.button:focus
+.button:hover
 {
-    box-shadow: 0 0 10px #ffff00;
-    background-color: #282828;
+    filter: drop-shadow(0 0 4px #ff0);
+    color: #ff0;
 }
 
 .button:active
 {
-    background-color: #181818;
+    filter: drop-shadow(0 0 6px #f80);
+    color: #f80;
 }
 
 #about
@@ -286,7 +290,6 @@ body
 
 #about:focus
 {
-    box-shadow: 0 0 10px #aaaaff;
     color: #aaaaff;
 }
 
@@ -296,7 +299,6 @@ body
 
 #prefs:focus
 {
-    box-shadow: 0 0 10px #ffffff;
     color: #ffffff;
 }
 
@@ -309,7 +311,6 @@ body
 #stash: focus,
 #help:focus
 {
-    box-shadow: 0 0 10px #00ff00;
     color: #00aa00;
 }
 
@@ -323,7 +324,6 @@ body
 {
     color: #ffff00;
     background-color: #ff8800;
-    box-shadow: inset 2px 2px 17px rgba(0, 0, 0, 0.5);
 }
 
 .button-border.disabled
@@ -340,7 +340,6 @@ body
 {
     color: #aaaaff;
     background-color: #6666ff;
-    box-shadow: inset 2px 2px 17px rgba(0, 0, 0, 0.5);
 }
 
 #prefs-border
@@ -351,21 +350,22 @@ body
 {
     color: #ffffff;
     background-color: #888888;
-    box-shadow: inset 2px 2px 17px rgba(0, 0, 0, 0.5);
 }
 
 
+
+#pattern-border,
 #stash-border,
 #help-border
 {
 }
 
+#pattern-border.focus,
 #stash-border.focus,
 #help-border.focus
 {
     color: #00ff00;
     background-color: #00aa00;
-    box-shadow: inset 2px 2px 17px rgba(0, 0, 0, 0.5);
 }
 
 .stash-item-border
