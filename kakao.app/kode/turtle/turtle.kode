@@ -14,20 +14,11 @@ window.WIN_WIDTH      = 366
 window.WIN_MIN_HEIGHT = 353
 window.WIN_MAX_HEIGHT = 490
 
-genHash       = cryptools.genHash
-encrypt       = cryptools.encrypt
-decrypt       = cryptools.decrypt
-decryptFile   = cryptools.decryptFile
-encryptFile   = cryptools.encryptFile
-extractSite   = urltools.extractSite
-extractDomain = urltools.extractDomain
-containsLink  = urltools.containsLink
-
-mstr          = undefined
-stashFile     = '~/.turtle'
-stash         = undefined
-stashExists   = false
-stashLoaded   = false
+mstr            = undefined
+stashFile       = '~/.turtle'
+stash           = undefined
+stashExists     = false
+stashLoaded     = false
 currentPassword = undefined
 
 resetStash = ->
@@ -138,7 +129,7 @@ patternChanged = ->
 savePattern = ○->
     
     site = $('site').value
-    hash = ○ genHash site + mstr
+    hash = ○ cryptools.genHash site + mstr
     stash.configs[hash].pattern = $('pattern').value
     writeStash()
     masterSitePassword()
@@ -148,10 +139,10 @@ copyAndSavePattern = ○->
     copyPassword()
 
     site = $('site').value
-    hash = ○ genHash site + mstr
+    hash = ○ cryptools.genHash site + mstr
 
     if not stash.configs[hash]?
-        url = ○ encrypt site, mstr
+        url = ○ cryptools.encrypt site, mstr
         stash.configs[hash] = url:url
         whisper '<u>password</u> copied and<br></i>pattern</i> remembered' 2000
         savePattern()
@@ -304,7 +295,9 @@ logOut = ->
 saveBody = ->
 
     resetTimeout()
+    
     ⮐ if not $('bubble')?
+    
     savedFocus = document.activeElement.id
     savedSite  = $('site')?.value
     savedBody  = document.body.innerHTML
@@ -335,7 +328,7 @@ saveBody = ->
 initBody = name ->
 
     saveBody()
-    lst = elem class: 'list' id:name+'list'
+    lst    = elem class:'list'   id:name+'list'
     scroll = elem class:'scroll' id:name+'scroll'
     lst.appendChild scroll
     lst.appendChild initButtons()
@@ -407,7 +400,7 @@ writeStash = ○->
     
     str = JSON.stringify stash
     # log 'writeStash' stashFile, str, mstr
-    ○ encryptFile stashFile, str, mstr
+    ○ cryptools.encryptFile stashFile, str, mstr
     # log 'wroteStash' stashFile, str, mstr
     updateFloppy()
     if not stashLoaded
@@ -421,7 +414,7 @@ readStash = ○->
 
     try
         # log 'readStash' stashFile, mstr
-        json = ○ decryptFile stashFile, mstr
+        json = ○ cryptools.decryptFile stashFile, mstr
         stashLoaded = true
         stash = JSON.parse json
         setInput 'pattern' stash.pattern
@@ -470,13 +463,15 @@ toggleStash = ->
 showStash = ○->
     
     ⮐ if not stashLoaded
-    ⮐ if empty stash.configs
+    if empty stash.configs
+        showPrefs()
+        ⮐ 
 
     initBody 'stash'
 
     for hash,config of stash.configs
         # log 'hash config' hash, config, mstr
-        site = ○ decrypt config.url, mstr
+        site = ○ cryptools.decrypt config.url, mstr
         item =            elem class: 'stash-item-border border'
         item.appendChild  elem 'input', id: hash, type: 'button', class: 'stash-item'
         siteSpan = item.appendChild elem 'span', class: 'site', text:site
@@ -690,6 +685,24 @@ showPrefs = ->
     ⮐ if not stashLoaded
 
     initBody 'prefs'
+    
+    list    =$ '.list'
+    buttons =$ '.buttons'
+    
+    border  = elem id:'pattern-border' class:'border' children:[
+            elem 'input' id:'pattern' class:'main-input' type:'input' name:'pattern'
+        ,
+            elem 'span' children:[
+                elem id:'floppy' class:'ghost'
+            ,
+                elem id:'pattern-ghost' class:'ghost' text:'pattern'
+            ]
+        ]
+    
+    list.insertBefore border, buttons
+      
+    setInput 'pattern' stash.pattern
+    updateFloppy()
 
     for key, pref of prefInfo
         value = prefs.get key
@@ -769,7 +782,7 @@ showPrefs = ->
                                     event.preventDefault()
                                 'enter'
                                     inputChanged event
-                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enter', 'backspace', 'left', 'right', 'tab'
+                                '0' '1' '2' '3' '4' '5' '6' '7' '8' '9' 'enter' 'backspace' 'left' 'right' 'tab'
                                     1
                                 ➜ 
                                     event.preventDefault()
@@ -881,15 +894,15 @@ updateSiteFromClipboard = ○->
     
     clipboardContent = ○ kakao 'clipboard.get'
 
-    if domain = extractDomain clipboardContent
+    if domain = urltools.extractDomain clipboardContent
         setSite domain
 
 makePassword = hash config -> password.make hash, config.pattern
 
 showPassword = config ○->
     
-    url  = ○ decrypt config.url, mstr
-    hash = ○ genHash url + mstr
+    url  = ○ cryptools.decrypt config.url, mstr
+    hash = ○ cryptools.genHash url + mstr
     pass = currentPassword = makePassword hash, config
     if hasLock() and prefs.get 'mask'
         pass = rpad currentPassword.length, '' '●'
@@ -905,7 +918,7 @@ masterSitePassword = ○->
         hideLock()
         ⮐ ""
 
-    hash = ○ genHash site + mstr
+    hash = ○ cryptools.genHash site + mstr
 
     if stash.configs?[hash]?
 
@@ -917,7 +930,7 @@ masterSitePassword = ○->
     else
 
         config = {}
-        config.url = ○ encrypt site, mstr
+        config.url = ○ cryptools.encrypt site, mstr
         config.pattern = $('pattern').value
         hideLock()
 
@@ -928,7 +941,7 @@ masterSitePassword = ○->
 clearSitePassword = ○->
                     
     site = $('site').value
-    hash = ○ genHash site + mstr
+    hash = ○ cryptools.genHash site + mstr
     
     if stash.configs[hash]?
         if ask 'Forget <i>'+stash.configs[hash].pattern+'</i>' 'for <b>'+site+'</b>?'
@@ -980,11 +993,14 @@ hideSettings = ->
         patternChanged()     
         
 togglePattern = ->
-    
-    if $('settings').style.display == 'none'
-       @showPattern() 
+    log 'tp'
+    restoreBody()
+    settings =$ 'settings'
+    log settings, settings.style.display
+    if settings.style.display != 'none'
+       hidePattern()
     else
-       @hidePattern()
+       showPattern() 
         
 showPattern = ->
     
@@ -1060,7 +1076,7 @@ setBool = (e, b) ->
 
 updateFloppy = ->
     
-    if floppy = $('floppy')
+    if floppy =$ 'floppy'
         floppy.innerHTML = ''
         if stash?.pattern != $("pattern").value or stash?.pattern == ''
             floppy.classList.remove 'saved'
@@ -1171,7 +1187,7 @@ function Delegate #extends win.Delegate
     
         { mod, key, combo, char } = keyinfo
     
-        # log 'onWindowKeyDown' combo, keyinfo
+        log 'onWindowKeyDown' combo, keyinfo
         
         resetTimeout()
     
@@ -1179,6 +1195,7 @@ function Delegate #extends win.Delegate
             'command+w' 'ctrl+w'  ➜ ⮐ kakao 'window.close'
             'command+q' 'ctrl+q'  ➜ ⮐ kakao 'app.quit'
             'command+.' 'ctrl+.'  ➜ ⮐ toggleAbout()
+            'command+alt+i'       ➜ ⮐ kakao 'window.toggleInspector'
             'alt+i' 'ctrl+i'      ➜ ⮐ toggleStyle()
             'esc'
                 if not $('bubble')? ➜ ⮐ restoreBody()
