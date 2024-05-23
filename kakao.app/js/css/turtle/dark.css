@@ -178,6 +178,11 @@ body
     color: #ffffff;
 }
 
+.focus .bool.bool-false
+{
+    color: #555555;
+}
+
 #floppy
 {
     color: #ffffff;
@@ -272,25 +277,38 @@ body
     color: #444;
 }
 
+.button.current
+{
+    filter: drop-shadow(0 0 3px rgba(200,200,200,0.2));
+    color: #aaa;
+}
+
 .button:hover
 {
-    filter: drop-shadow(0 0 4px #ff0);
-    color: #ff0;
+    filter: drop-shadow(0 0 4px #fff);
+    color: #fff;
 }
 
 .button:active
 {
-    filter: drop-shadow(0 0 6px #f80);
-    color: #f80;
+    filter: drop-shadow(0 0 4px rgba(255,255,0,0.5));
+    color: #ff0;
 }
 
-#about
+#help
 {
 }
 
-#about:focus
+#help:hover
 {
-    color: #aaaaff;
+    filter: drop-shadow(0 0 4px rgba(100,100,255,0.5));
+    color: #88f;
+}
+
+#help:active
+{
+    filter: drop-shadow(0 0 6px #888);
+    color: #fff;
 }
 
 #prefs
@@ -332,40 +350,16 @@ body
     color: #333333;
 }
 
-#about-border
+
+#vaultscroll,
+#stashscroll
 {
+    background: #282828;
 }
 
-#about-border.focus
+#stashscroll
 {
-    color: #aaaaff;
-    background-color: #6666ff;
-}
-
-#prefs-border
-{
-}
-
-#prefs-border.focus
-{
-    color: #ffffff;
-    background-color: #888888;
-}
-
-
-
-#pattern-border,
-#stash-border,
-#help-border
-{
-}
-
-#pattern-border.focus,
-#stash-border.focus,
-#help-border.focus
-{
-    color: #00ff00;
-    background-color: #00aa00;
+    font-size: 18px;
 }
 
 .stash-item-border

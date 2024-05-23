@@ -113,7 +113,10 @@ a
     &.open
         opacity     1
 
-.bool    
+.bool
+    padding         10px
+    margin          -10px
+    font-family     fontMono
     top             14px
     opacity         0    
     &.bool-true
@@ -241,6 +244,8 @@ scrollWidth = 6px
 .buttons
     flex           0 0 50px
     display        flex
+    font-family     fontMono
+    font-size       26px
     
 .buttons span
     flex           1 1 0
@@ -249,25 +254,12 @@ scrollWidth = 6px
 
 .button-border
     center-xy()
-    input-transition()
-    pointer-events        all
-    border-radius         4px
-    padding               0px
-    margin                0px
-    border              1px solid yellow
 
 .button
-    -webkit-transition-property  box-shadow, border  
-    -webkit-transition-duration  0.4s
-    -webkit-transition-timing-function  ease-in-out
+    center-xy()
+    input-transition()
     box-sizing        border-box
     border-radius     2px
-    // height            35px
-    // width             35px
-    // border           1px solid red
-    font-family     fontMono
-    font-size       26px
-    center-xy()
 
 #floppy
     font-family     fontMono

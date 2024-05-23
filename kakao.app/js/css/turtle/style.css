@@ -136,6 +136,9 @@ a
 
 .bool
 {
+    padding: 10px;
+    margin: -10px;
+    font-family: fontMono;
     top: 14px;
     opacity: 0;
 }
@@ -302,6 +305,8 @@ a
 {
     flex: 0 0 50px;
     display: flex;
+    font-family: fontMono;
+    font-size: 26px;
 }
 
 .buttons span
@@ -317,27 +322,17 @@ a
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    -webkit-transition: all 0.4s ease-in-out;
-    pointer-events: all;
-    border-radius: 4px;
-    padding: 0px;
-    margin: 0px;
-    border: 1px solid yellow;
 }
 
 .button
 {
-    -webkit-transition-property: box-shadow, border;
-    -webkit-transition-duration: 0.4s;
-    -webkit-transition-timing-function: ease-in-out;
-    box-sizing: border-box;
-    border-radius: 2px;
-    font-family: fontMono;
-    font-size: 26px;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    -webkit-transition: all 0.4s ease-in-out;
+    box-sizing: border-box;
+    border-radius: 2px;
 }
 
 #floppy
