@@ -107,8 +107,13 @@ toplevelDomains = [
 ]
 
 extractDomain = str ->
+    
+    ⮐ if empty str
+    ⮐ if not str is str
+    
     r = /(^|\s|(?:http[s]?:\/\/))((?:[\w-]+\.)+\w[\w-]+)(?::[1-9]\d+)?(?:\/[\w\.-~]*)*[\?\w\d\+\-\.,;=&\/#%\$]*(?:\s|$)/
     m = str.match r
+    
     if m? and m.length > 2
         s = m[2]
         s = s.substr(4) if s.startsWith 'www.'

@@ -416,15 +416,13 @@ readStash = ○->
 0000000  000  0000000      000
 ###
 
-onStashKey = event ->
-
-    { mod, key, combo, char} = keyinfo.forEvent event
+onStashKey = info ->
 
     e = document.activeElement
-    switch combo
-        'right' 'down' ➜ e?.parentElement?.nextSibling?.firstChild?.focus()
-        'left' 'up'    ➜ e?.parentElement?.previousSibling?.firstChild?.focus()
-        'enter'        ➜ restoreBody e?.nextSibling?.innerHTML
+    switch info.combo
+        'right' 'down' ➜ ⮐ e?.parentElement?.nextSibling?.firstChild?.focus()
+        'left' 'up'    ➜ ⮐ e?.parentElement?.previousSibling?.firstChild?.focus()
+        'enter'        ➜ ⮐ restoreBody e?.nextSibling?.innerHTML
         'command+backspace' 
         'ctrl+backspace'
             if e?.id?.length
@@ -437,6 +435,9 @@ onStashKey = event ->
                 writeStash()
                 if empty stash.configs
                     restoreBody()
+            ⮐ 
+                    
+    'unhandled'
 
 toggleStash = ->
     
@@ -485,13 +486,11 @@ showStash = ○->
     0      000   000   0000000   0000000     000
 ###
 
-onVaultKey = event ->
-
-    { mod, key, combo, char } = keyinfo.forEvent event
-
+onVaultKey = info ->
+    
     e = document.activeElement
 
-    switch combo
+    switch info.combo
         
         'command+n' 'ctrl+n'
             
@@ -501,16 +500,18 @@ onVaultKey = event ->
             $(hash).focus()
             toggleVaultItem hash
             editVaultKey hash
+            ⮐ 
             
-        'down'  ➜ e?.parentElement?.nextSibling?.nextSibling?.firstChild?.focus()
-        'up'    ➜ e?.parentElement?.previousSibling?.previousSibling?.firstChild?.focus()
-        'left'  ➜ closeVaultItem  e?.id
-        'right' ➜ openVaultItem   e?.id
+        'down'  ➜ ⮐ e?.parentElement?.nextSibling?.nextSibling?.firstChild?.focus()
+        'up'    ➜ ⮐ e?.parentElement?.previousSibling?.previousSibling?.firstChild?.focus()
+        'left'  ➜ ⮐ closeVaultItem  e?.id
+        'right' ➜ ⮐ openVaultItem   e?.id
         'space'
             
             if e?.id?
                 toggleVaultItem e.id
                 event.preventDefault()
+            ⮐ 
                 
         'command+backspace' 'ctrl+backspace'
             
@@ -523,8 +524,11 @@ onVaultKey = event ->
                 e.parentElement.nextSibling.remove()
                 e.parentElement.remove()
                 writeStash()
+            ⮐ 
+                
+    'unhandled'
 
-toggleVault = -> if $('vaultlist')? then restoreBody() else showVault()
+toggleVault = -> $('vaultlist')? ? restoreBody() : showVault()
 
 adjustValue = value ->
     
@@ -533,23 +537,31 @@ adjustValue = value ->
     if value.scrollHeight < 46
         value.style.height = '28px'
 
-vaultValue     = hash -> $(hash).parentElement.nextSibling
-vaultArrow     = hash -> $(hash).nextSibling
+vaultValue     = hash -> $(hash)?.parentElement?.nextSibling
+vaultArrow     = hash -> $(hash)?.nextSibling
 openVaultItem  = hash ->
     
+    ⮐ if not elem.isElement vaultValue hash
+    
     vaultValue(hash).style.display = 'block'
-    vaultArrow(hash).innerHTML = '▼'
+    
+    vaultArrow(hash).innerHTML = '▾'
     vaultArrow(hash).classList.add 'open'
     
-closeVaultItem = (hash) ->
+closeVaultItem = hash ->
+    
+    ⮐ if not elem.isElement vaultValue hash
     
     vaultValue(hash).style.display = 'none'
-    vaultArrow(hash).innerHTML = '►'
+    
+    vaultArrow(hash).innerHTML = '▸'
     vaultArrow(hash).classList.remove 'open'
     
-toggleVaultItem = (hash) ->
+toggleVaultItem = hash ->
     
-    if vaultValue(hash).style.display == 'none' then openVaultItem hash else closeVaultItem hash
+    log 'toggleVaultItem' hash, vaultValue(hash), vaultValue(hash).style.display == 'none'
+    
+    vaultValue(hash).style.display == 'none' ? openVaultItem(hash) : closeVaultItem(hash)
 
 saveVaultKey = event ->
     
@@ -597,7 +609,7 @@ addVaultItem = hash vaultKey vaultValue ->
         id:    hash
         value: vaultKey
         
-    arrow = elem class:'vault-arrow' text:'►'
+    arrow = elem class:'vault-arrow' text:'▸'
     item.appendChild input
     item.appendChild arrow
     $('vaultscroll').appendChild item
@@ -830,28 +842,31 @@ showPrefs = ->
 
     $('prefsscroll').firstChild.firstChild.focus()
 
-onPrefsKey = keyinfo ->
+onPrefsKey = info ->
 
     if active = document.activeElement
         
         if active.id == 'pattern'
-            switch keyinfo.combo
+            switch info.combo
                 'enter' 
                     stash.pattern = $("pattern").value
                     writeStash()
                     ⮐ 
                 ➜ ⮐ 'unhandled' 
         
-        log 'active' active, active.id, active.className
-        switch keyinfo.combo
+        # log 'active' active, active.id, active.className
+        switch info.combo
             'right' 'down'
                 ($('input' $(active.parentElement?.nextSibling?.firstChild.id))? or
                 active.parentElement?.nextSibling?.firstChild).focus()
+                ⮐ 
             'left' 'up'
                 if active.id == 'ok'
                     $('input' active.parentElement.parentElement.previousSibling).focus()
                 else
                     active.parentElement?.previousSibling?.firstChild?.focus()
+                ⮐ 
+    'unhandled'
 
 ###
 000   000  00000000  000      00000000
@@ -1156,11 +1171,11 @@ function Delegate #extends win.Delegate
     000   000  00000000     000     0000000     0000000   00     00  000   000
     ###
     
-    onWindowKeyDown: win keyinfo ->
+    onWindowKeyDown: win info ->
     
-        { mod, key, combo, char } = keyinfo
+        { mod, key, combo, char } = info
     
-        # log 'onWindowKeyDown' combo, keyinfo
+        # log 'onWindowKeyDown' combo, info
         
         resetTimeout()
     
@@ -1175,9 +1190,9 @@ function Delegate #extends win.Delegate
                 else 
                     ⮐ kakao 'window.hide'
     
-        if $('stashlist')? ➜ ⮐ onStashKey event
-        if $('vaultlist')? ➜ ⮐ onVaultKey event
-        if $('prefslist')? ➜ ⮐ onPrefsKey keyinfo
+        if $('stashlist')? ➜ ⮐ onStashKey info
+        if $('vaultlist')? ➜ ⮐ onVaultKey info
+        if $('prefslist')? ➜ ⮐ onPrefsKey info
         
         ⮐ if not $('site')?
             
@@ -1209,7 +1224,7 @@ function Delegate #extends win.Delegate
                     
         'unhandled'
     
-    onWindowKeyUp: win keyinfo -> 'unhandled'
+    onWindowKeyUp: win info -> 'unhandled'
     
 kakao.init ->
     

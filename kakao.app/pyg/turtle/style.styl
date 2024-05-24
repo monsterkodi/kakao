@@ -52,7 +52,7 @@ textarea
 .stash-item
 .pref-item
     cursor              pointer
-        
+
 a
     text-decoration     none
 
@@ -112,12 +112,21 @@ a
     &.closed
     &.open
         opacity     1
-
+        
+#prefslist
+    font-size       18px
+    
+#pref 
+    transform       translateY(-2px)
+        
 .bool
-    padding         10px
-    margin          -10px
+    & span
+        padding     4px
+        margin      -4px
+        display     inline-block
+        transform   translateY(-4pxqw)
     font-family     fontMono
-    top             14px
+    font-size       22px
     opacity         0    
     &.bool-true
     &.bool-false
@@ -275,9 +284,11 @@ scrollWidth = 6px
     pointer-events  all
 
 .vault-arrow
+    font-size       30px
     position        absolute
+    font-family     fontMono
     left            15px
-    top             12px
+    top             1px
 
 .vault-item
     font-size       18px
@@ -291,9 +302,10 @@ scrollWidth = 6px
     box-sizing      border-box
     position        relative
     pointer-events  all
-    left            50px
-    width           296px
-    max-width       296px
+    // left            50px
+    // width           296px
+    // max-width       296px
+    width           100%
     min-height      10px
     text-align      left
     padding-left    8px
@@ -344,6 +356,9 @@ scrollWidth = 6px
     no-transition()
     padding   5px
     & .int
+        position        absolute
+        pointer-events  none
+        top             13px
     & .shortcut
     & .bool
     & .pref    
@@ -351,7 +366,7 @@ scrollWidth = 6px
         pointer-events  none
         top             11px
     & .pref        
-        top             13px
+        top        13px
         left       20px
     & .int
     & .shortcut
@@ -373,6 +388,7 @@ scrollWidth = 6px
     bottom          0
     width           40%
     margin          6px
+    padding-top     4px
 
 .pref-overlay.shortcut
     cursor          cell    

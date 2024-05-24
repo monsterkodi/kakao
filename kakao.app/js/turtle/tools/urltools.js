@@ -1,4 +1,4 @@
-var _k_ = {last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var containsLink, extractDomain, extractSite, re, shortenLink, toplevelDomains
 
@@ -69,6 +69,14 @@ extractDomain = function (str)
 {
     var m, r, s, split, tl
 
+    if (_k_.empty(str))
+    {
+        return
+    }
+    if (!(_k_.isStr(str)))
+    {
+        return
+    }
     r = /(^|\s|(?:http[s]?:\/\/))((?:[\w-]+\.)+\w[\w-]+)(?::[1-9]\d+)?(?:\/[\w\.-~]*)*[\?\w\d\+\-\.,;=&\/#%\$]*(?:\s|$)/
     m = str.match(r)
     if ((m != null) && m.length > 2)
