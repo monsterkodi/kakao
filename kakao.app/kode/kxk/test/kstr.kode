@@ -279,7 +279,6 @@ use .. ◆ kstr
             
         ▸ unfilletBlocks 
         
-            log noon blockFillets
             r = kstr.unfilletBlocks blockFillets
             r ▸ text + '\n'
         
