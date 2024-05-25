@@ -13,6 +13,46 @@ use .. ◆ pug
     pug 'doctype html' ▸ '<!DOCTYPE html>\n'
     
     pug """
+        html
+            head
+                style
+                    body {
+                        color: #ff0;
+                    }
+        """ ▸ """
+        <html>
+            <head>
+                <style>
+                    body {
+                        color: #ff0;
+                    }
+                </style>
+            </head>
+        </html>
+        
+        """
+
+    pug """
+        html
+            head
+                styl
+                    body
+                        color #ff0
+        """ ▸ """
+        <html>
+            <head>
+                <style>
+                    body
+                    {
+                        color: #ff0;
+                    }
+                </style>
+            </head>
+        </html>
+        
+        """
+        
+    pug """
         doctype html
         html
             head
