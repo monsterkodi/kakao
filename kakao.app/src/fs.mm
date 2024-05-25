@@ -7,20 +7,9 @@
 */
 
 #import "fs.h"
+#import "util.h"
 #import "route.h"
 #import "bundle.h"
-
-NSString* typeForNSFileType(NSString* fileType)
-{
-    if ([fileType isEqualToString:NSFileTypeDirectory])
-    {
-        return @"dir";
-    }
-    else
-    {
-        return @"file";
-    }
-}
 
 @implementation FS
 

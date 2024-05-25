@@ -9,26 +9,9 @@
 #import "fs.h"
 #import "win.h"
 #import "app.h"
+#import "util.h"
 #import "route.h"
 #import "bundle.h"
-
-NSDictionary* dictForRect(NSRect rect)
-{
-    id dict = [NSMutableDictionary dictionary];
-    [dict setObject:[NSNumber numberWithFloat:rect.origin.x]    forKey:@"x"];
-    [dict setObject:[NSNumber numberWithFloat:rect.origin.y]    forKey:@"y"];
-    [dict setObject:[NSNumber numberWithFloat:rect.size.width]  forKey:@"w"];
-    [dict setObject:[NSNumber numberWithFloat:rect.size.height] forKey:@"h"];
-    return dict;
-}
-
-NSDictionary* dictForSize(NSSize size)
-{
-    id dict = [NSMutableDictionary dictionary];
-    [dict setObject:[NSNumber numberWithFloat:size.width]  forKey:@"w"];
-    [dict setObject:[NSNumber numberWithFloat:size.height] forKey:@"h"];
-    return dict;
-}
 
 @interface WinDelegate : NSObject <NSWindowDelegate> {}
 @end

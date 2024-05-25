@@ -291,6 +291,14 @@
     }
 }
 
++ (void) emit:(NSString*)name arg:(id)arg
+{
+    NSMutableDictionary* msg = [NSMutableDictionary dictionary];
+    [msg setObject:name forKey:@"name"];
+    [msg setObject:[NSArray arrayWithObject:arg] forKey:@"args"];
+    [Route emit:msg];
+}
+
 //  0000000  00000000  000   000  0000000    
 // 000       000       0000  000  000   000  
 // 0000000   0000000   000 0 000  000   000  

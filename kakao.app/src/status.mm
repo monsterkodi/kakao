@@ -5,6 +5,7 @@
 //      000     000     000   000     000     000   000       000  
 // 0000000      000     000   000     000      0000000   0000000   
 
+#import "util.h"
 #import "view.h"
 #import "route.h"
 #import "status.h"
@@ -19,14 +20,16 @@
         self.item = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
         
         [self.item.button setTarget:self];   
-        [self.item.button setAction:@selector(buttonPress:)];
+        [self.item.button setAction:@selector(click:)];
     }
     return self.item;
 }
 
-- (void) buttonPress:(id)sender
+- (void) click:(NSStatusBarButton*)sender
 {
-    [Route emit:@"status.press"];
+    NSRect buttonRect = [[sender window] convertRectToScreen:[sender bounds]];
+    // NSLog(@"screen %f %f %f %f", buttonRect.origin.x, buttonRect.origin.y, buttonRect.size.width, buttonRect.size.height);
+    [Route emit:@"status.click" arg:dictForRect(buttonRect)];
 }
 
 - (void) snapshot:(View*)view rect:(id)rect

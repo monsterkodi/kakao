@@ -13,6 +13,6 @@
 @property (readwrite,retain) NSStatusItem* item;
 
 - (NSStatusItem*) statusItem;
-- (void) snapshot:(id)rect;
+- (void) snapshot:(View*)view rect:(id)rect;
 
 @end
