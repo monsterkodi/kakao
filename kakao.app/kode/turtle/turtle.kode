@@ -760,7 +760,7 @@ showPrefs = ->
                     border = event.target.parentElement
                     intValue = parseInt $('.int', event.target.parentElement).innerHTML
                     intValue = 0 if isNaN intValue
-                    inp = elem 'input', class: 'pref-overlay int', value: intValue
+                    inp = elem 'input' class:'pref-overlay int' value: intValue
 
                     inp.addEventListener 'blur' (event) -> event.target.remove()
                     inp.addEventListener 'change' inputChanged
@@ -770,11 +770,11 @@ showPrefs = ->
                         if '+' not in key
                             switch key
                                 'esc'
-                                    event.target.value = $('.int', event.target.parentElement)
+                                    event.target.value = $('.int' event.target.parentElement)
                                     event.preventDefault()
-                                    $('input', event.target.parentElement).focus()
-                                'up', 'down'
-                                    prefKey = $('input', event.target.parentElement).id
+                                    $('input' event.target.parentElement).focus()
+                                'up' 'down'
+                                    prefKey = $('input' event.target.parentElement).id
                                     inc = prefInfo[prefKey].inc or 1
                                     newValue = parseInt(event.target.value) + (key == 'up' and inc or -inc)
                                     newValue = Math.max(newValue, prefInfo[prefKey].min) if prefInfo[prefKey].min?
