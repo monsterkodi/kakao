@@ -78,7 +78,7 @@ class Win
 
         # @restoreFromStash()
         
-        # kakao 'win.setMinSize' 250 125
+        # kakao 'window.setMinSize' 250 125
         
         # elem class:'test' text:"○○" parent:main
         # elem class:'test' text:"#{id}" parent:main

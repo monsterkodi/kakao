@@ -16,11 +16,11 @@
 
 @interface App ()
 
-@property (readwrite,retain) Watch* watchHome;
-@property (readwrite,retain) Watch* watch;
-@property (readwrite,assign) BOOL isBuildingApp;
-@property (readwrite,assign) BOOL isQuitting;
-@property (readwrite,retain) NSString* fileToLoad;
+@property (readwrite,retain) Watch*     watchHome;
+@property (readwrite,retain) Watch*     watch;
+@property (readwrite,retain) NSString*  fileToLoad;
+@property (readwrite,assign) BOOL       isBuildingApp;
+@property (readwrite,assign) BOOL       isQuitting;
 
 + (void) moveStashWins;
 
@@ -101,6 +101,9 @@
         [msg setObject:args forKey:@"args"];
         [Route emit:msg];
     }
+    
+    self.status = [[Status alloc] init];
+    // [self.status statusItem];
 }
 
 - (BOOL) application:(NSApplication*)sender openFile:(NSString*)filename

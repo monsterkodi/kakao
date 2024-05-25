@@ -35,9 +35,10 @@
     else if ([route isEqualToString:@"finder" ]) { reply = [Route finder:[args objectAtIndex:0]]; }
     else if ([route hasPrefix:@"bundle."      ]) { reply = [Route bundle:     [route substringFromIndex:7]    args:args win:win]; }
     else if ([route hasPrefix:@"window."      ]) { reply = [Route window:     [route substringFromIndex:7]    args:args win:win]; }
+    // else if ([route hasPrefix:@"win."         ]) { reply = [Route window:     [route substringFromIndex:4]    args:args win:win]; }
     else if ([route hasPrefix:@"clipboard."   ]) { reply = [Route clipboard:  [route substringFromIndex:10]   args:args win:win]; }
-    else if ([route hasPrefix:@"win."         ]) { reply = [Route window:     [route substringFromIndex:4]    args:args win:win]; }
     else if ([route hasPrefix:@"app."         ]) {         [Route app:        [route substringFromIndex:4]    args:args win:win callback:callback]; return; }
+    else if ([route hasPrefix:@"status."      ]) { reply = [Route status:     [route substringFromIndex:7]    args:args win:win]; }
     else if ([route hasPrefix:@"fs."          ]) { reply = [FS    fs:         [route substringFromIndex:3]    args:args win:win]; }
     else if ([route hasPrefix:@"js."          ]) { reply = [JS    js:         [route substringFromIndex:3]    args:args        ]; }
     else if ([route hasPrefix:@"test."        ]) { reply = [Route test:       [route substringFromIndex:5]    args:args        ]; }
@@ -171,6 +172,22 @@
         return nil; 
     }
     
+    return nil;
+}
+
+//  0000000  000000000   0000000   000000000  000   000   0000000  
+// 000          000     000   000     000     000   000  000       
+// 0000000      000     000000000     000     000   000  0000000   
+//      000     000     000   000     000     000   000       000  
+// 0000000      000     000   000     000      0000000   0000000   
+
++ (id) status:(NSString*)req args:(NSArray*)args win:(Win*)win
+{
+    if ([req isEqualToString:@"icon"])
+    {
+        [[[App get] status] snapshot:win.view rect:[args objectAtIndex:0]];
+    }
+
     return nil;
 }
 

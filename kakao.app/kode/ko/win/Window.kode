@@ -50,8 +50,8 @@ function Window extends win.Delegate
         
         if empty window.tabs.tabs ➜ log 'new empty tab!'; post.emit 'newEmptyTab'
             
-        ○ kakao 'win.setSize' 1000 1000
-        ○ kakao 'win.center' 
+        ○ kakao 'window.setSize' 1000 1000
+        ○ kakao 'window.center' 
         
     onWindowCreated: win =>
         

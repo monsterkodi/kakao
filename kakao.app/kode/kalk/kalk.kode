@@ -35,13 +35,13 @@ function Delegate extends win.Delegate
 
     onWindowWithoutStash: ->  
         
-        kakao 'win.setSize'    window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
-        kakao 'win.center'
+        kakao 'window.setSize'    window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
+        kakao 'window.center'
         
     onWindowCreated: =>
         
-        kakao 'win.setMinSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
-        kakao 'win.setMaxSize' window.WIN_MIN_WIDTH, 6666
+        kakao 'window.setMinSize' window.WIN_MIN_WIDTH, window.WIN_MIN_HEIGHT
+        kakao 'window.setMaxSize' window.WIN_MIN_WIDTH, 6666
         
     onWindowResize: => post.emit 'resize'
         

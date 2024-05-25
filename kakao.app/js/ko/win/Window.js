@@ -98,8 +98,8 @@ Window = (function ()
             console.log('new empty tab!')
             post.emit('newEmptyTab')
         }
-        await kakao('win.setSize',1000,1000)
-        return await kakao('win.center')
+        await kakao('window.setSize',1000,1000)
+        return await kakao('window.center')
     }
 
     Window.prototype["onWindowCreated"] = function (win)

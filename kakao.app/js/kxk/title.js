@@ -302,11 +302,14 @@ Title = (function ()
 
     Title.prototype["hideMenu"] = function ()
     {
-        var _219_25_
+        var _219_25_, _219_69_
 
         ;(this.menu != null ? this.menu.close() : undefined)
-        this.menu.elem.style.display = 'none'
-        return prefs.set('menu',false)
+        prefs.set('menu',false)
+        if (((this.menu != null ? this.menu.elem : undefined)))
+        {
+            return this.menu.elem.style.display = 'none'
+        }
     }
 
     Title.prototype["toggleMenu"] = function ()

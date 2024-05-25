@@ -34,8 +34,8 @@ resetStash = ->
         
 setWinHeight = h ○-> 
     
-    info =○ kakao 'win.frameInfo'
-    kakao 'win.setFrame' x:info.frame.x, y:info.frame.y+info.frame.h-h, w:info.frame.w, h:h
+    info =○ kakao 'window.frameInfo'
+    kakao 'window.setFrame' x:info.frame.x, y:info.frame.y+info.frame.h-h, w:info.frame.w, h:h
 
 ###
  0000000   000   000  000  00     00
@@ -1147,8 +1147,8 @@ function Delegate #extends win.Delegate
 
     onWindowWithoutStash: ->  
         
-        kakao 'win.setSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
-        kakao 'win.center'
+        kakao 'window.setSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
+        kakao 'window.center'
         
     onWindowRestoreFrameFromStash: win stashFrame -> 
     
@@ -1160,8 +1160,8 @@ function Delegate #extends win.Delegate
         
     onWindowCreated: =>
         
-        kakao 'win.setMinSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
-        kakao 'win.setMaxSize' window.WIN_WIDTH, window.WIN_MAX_HEIGHT
+        kakao 'window.setMinSize' window.WIN_WIDTH, window.WIN_MIN_HEIGHT
+        kakao 'window.setMaxSize' window.WIN_WIDTH, window.WIN_MAX_HEIGHT
         
     ###
     000   000  00000000  000   000  0000000     0000000   000   000  000   000

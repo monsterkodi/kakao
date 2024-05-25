@@ -46,8 +46,8 @@ setWinHeight = async function (h)
 {
     var info
 
-    info = await kakao('win.frameInfo')
-    return kakao('win.setFrame',{x:info.frame.x,y:info.frame.y + info.frame.h - h,w:info.frame.w,h:h})
+    info = await kakao('window.frameInfo')
+    return kakao('window.setFrame',{x:info.frame.x,y:info.frame.y + info.frame.h - h,w:info.frame.w,h:h})
 }
 
 masterStart = function ()
@@ -1530,8 +1530,8 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
     {
-        kakao('win.setSize',window.WIN_WIDTH,window.WIN_MIN_HEIGHT)
-        return kakao('win.center')
+        kakao('window.setSize',window.WIN_WIDTH,window.WIN_MIN_HEIGHT)
+        return kakao('window.center')
     }
 
     Delegate.prototype["onWindowRestoreFrameFromStash"] = function (win, stashFrame)
@@ -1547,8 +1547,8 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowCreated"] = function ()
     {
-        kakao('win.setMinSize',window.WIN_WIDTH,window.WIN_MIN_HEIGHT)
-        return kakao('win.setMaxSize',window.WIN_WIDTH,window.WIN_MAX_HEIGHT)
+        kakao('window.setMinSize',window.WIN_WIDTH,window.WIN_MIN_HEIGHT)
+        return kakao('window.setMaxSize',window.WIN_WIDTH,window.WIN_MAX_HEIGHT)
     }
 
     Delegate.prototype["onWindowKeyDown"] = function (win, info)

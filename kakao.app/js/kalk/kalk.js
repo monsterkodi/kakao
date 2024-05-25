@@ -59,14 +59,14 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
     {
-        kakao('win.setSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
-        return kakao('win.center')
+        kakao('window.setSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
+        return kakao('window.center')
     }
 
     Delegate.prototype["onWindowCreated"] = function ()
     {
-        kakao('win.setMinSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
-        return kakao('win.setMaxSize',window.WIN_MIN_WIDTH,6666)
+        kakao('window.setMinSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
+        return kakao('window.setMaxSize',window.WIN_MIN_WIDTH,6666)
     }
 
     Delegate.prototype["onWindowResize"] = function ()
