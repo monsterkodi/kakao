@@ -16,6 +16,14 @@ NSDictionary* dictForRect(NSRect rect)
     return dict;
 }
 
+NSRect rectForDict(NSDictionary* dict)
+{
+    return CGRectMake( [[dict objectForKey:@"x"] floatValue], 
+                       [[dict objectForKey:@"y"] floatValue], 
+                       [[dict objectForKey:@"w"] floatValue], 
+                       [[dict objectForKey:@"h"] floatValue]);
+}
+
 NSDictionary* dictForSize(NSSize size)
 {
     id dict = [NSMutableDictionary dictionary];

@@ -95,7 +95,6 @@ Window = (function ()
     {
         if (_k_.empty(window.tabs.tabs))
         {
-            console.log('new empty tab!')
             post.emit('newEmptyTab')
         }
         await kakao('window.setSize',1000,1000)

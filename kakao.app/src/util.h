@@ -8,4 +8,5 @@
 
 NSDictionary* dictForRect(NSRect rect);
 NSDictionary* dictForSize(NSSize size);
+NSRect rectForDict(NSDictionary* dict);
 NSString* typeForNSFileType(NSString* fileType);

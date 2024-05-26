@@ -19,6 +19,6 @@ kakao.init ->
         icon = kakao.bundle.img 'menu_kakao.png'
         document.body.appendChild elem 'img' src:icon, width:'22px' height:'22px'
         
-        requestAnimationFrame -> kakao 'status.icon' x:0 y:-8, w:22 h:38
+        requestAnimationFrame -> kakao 'status.icon' x:0 y:-8 w:22 h:38
         
         # post.on 'status.click' (rect) -> log 'status click' rect; kakao 'window.setFrame' rect

@@ -95,38 +95,24 @@
 {
     if (self.fileToLoad)
     {
-        NSMutableDictionary* msg = [NSMutableDictionary dictionary];
-        NSArray* args = [NSArray arrayWithObject:self.fileToLoad];
-        [msg setObject:@"loadFile" forKey:@"name"];
-        [msg setObject:args forKey:@"args"];
-        [Route emit:msg];
+        [Route emit:@"loadFile" arg:self.fileToLoad];
     }
     
     self.status = [[Status alloc] init];
-    // [self.status statusItem];
 }
 
 - (BOOL) application:(NSApplication*)sender openFile:(NSString*)filename
 {
     self.fileToLoad = filename;
     
-    NSMutableDictionary* msg = [NSMutableDictionary dictionary];
-    NSArray* args = [NSArray arrayWithObject:filename];
-    [msg setObject:@"loadFile" forKey:@"name"];
-    [msg setObject:args forKey:@"args"];
-    [Route emit:msg];
+    [Route emit:@"loadFile" arg:filename];
     
     return YES;
 }
 
 - (void) application:(NSApplication*)sender openFiles:(NSArray*)files
 {
-    NSMutableDictionary* msg = [NSMutableDictionary dictionary];
-    [msg setObject:@"loadFiles" forKey:@"name"];
-    NSArray* args = [NSArray arrayWithObject:files];
-    [msg setObject:args forKey:@"args"];
-    
-    [Route emit:msg];
+    [Route emit:@"loadFiles" arg:files];
 }
 
 // 000   000  000  000   000   0000000
@@ -223,10 +209,7 @@
             
             // NSLog(@"%@ %@", type, change.path);
             
-            [msg setObject:@"fs.change" forKey:@"name"];
-            [msg setObject:args forKey:@"args"];
-
-            [Route emit:msg];
+            [Route emit:@"fs.change" args:args];
         }
 
         return;

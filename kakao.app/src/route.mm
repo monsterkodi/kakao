@@ -293,9 +293,14 @@
 
 + (void) emit:(NSString*)name arg:(id)arg
 {
+    [Route emit:name args:[NSArray arrayWithObject:arg]];
+}
+
++ (void) emit:(NSString*)name args:(NSArray*)args
+{
     NSMutableDictionary* msg = [NSMutableDictionary dictionary];
     [msg setObject:name forKey:@"name"];
-    [msg setObject:[NSArray arrayWithObject:arg] forKey:@"args"];
+    [msg setObject:args forKey:@"args"];
     [Route emit:msg];
 }
 

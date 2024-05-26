@@ -48,7 +48,7 @@ function Window extends win.Delegate
         
         # log 'onWindowWithoutStash!'
         
-        if empty window.tabs.tabs ➜ log 'new empty tab!'; post.emit 'newEmptyTab'
+        if empty window.tabs.tabs ➜ post.emit 'newEmptyTab'
             
         ○ kakao 'window.setSize' 1000 1000
         ○ kakao 'window.center' 

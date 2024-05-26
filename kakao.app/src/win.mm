@@ -259,11 +259,7 @@
 
 - (void) setFrame:(id)frame
 {                                
-    [[self delegate] windowShouldZoom:self toFrame:
-        CGRectMake([[frame objectForKey:@"x"] floatValue], 
-                   [[frame objectForKey:@"y"] floatValue], 
-                   [[frame objectForKey:@"w"] floatValue], 
-                   [[frame objectForKey:@"h"] floatValue])];
+    [[self delegate] windowShouldZoom:self toFrame:rectForDict(frame)];
 }
 
 - (void) setFrame:(id)frame immediate:(id)immediate
@@ -274,10 +270,7 @@
     
     if (instant)
     {
-        [self setFrame:CGRectMake(  [[frame objectForKey:@"x"] floatValue], 
-                                    [[frame objectForKey:@"y"] floatValue], 
-                                    [[frame objectForKey:@"w"] floatValue], 
-                                    [[frame objectForKey:@"h"] floatValue]) display:NO animate:NO];
+        [self setFrame:rectForDict(frame) display:NO animate:NO];
     }
     else
     {
