@@ -43,6 +43,9 @@ function SysDish
     
     @: ->
         
+        @dataDelay = 500
+        @animFrames = 30
+        
         @div = elem class:"sysmon" parent:document.body
         
         @dskrOld = @dskrNow = @dskrNew = 0
@@ -110,17 +113,9 @@ function SysDish
         
     onWindowWillShow: ->
             
-            # frame = x:-300 y:0 w:400 h:40
-            # kakao 'window.setFrame' frame, true
-            @updateDish()
-            requestAnimationFrame @animDish
-            @requestData()
-            
-            # post.on 'status.click' @onStatusClick
-            
-    # onStatusClick: -> 
-#         
-        # kakao 'window.new' 'syswin'
+        @updateDish()
+        requestAnimationFrame @animDish
+        @requestData()
             
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  
@@ -201,7 +196,7 @@ function SysDish
         
         @updateDish()
         
-        ○ sleep 500
+        ○ sleep @dataDelay
         @requestData()
         
     pie180: pie radius angle start=0 ->
@@ -211,8 +206,6 @@ function SysDish
         sy = -radius * Math.cos deg2rad start+angle
         ex =  radius * Math.sin deg2rad start
         ey = -radius * Math.cos deg2rad start
-        
-        # log sx, sy
         
         pie.setAttribute 'd' "M 0 0 L #{sx} #{sy} A #{radius} #{radius} #{start} 0 0 #{ex} #{ey} z"
     
@@ -248,11 +241,11 @@ function SysDish
         @netrNew = 180*@data.net.in
         @nettNew = 180*@data.net.out
          
-        @sysOld = @sysNow
-        @usrOld = @usrNow
-
-        @sysNew = 360*@data.cpu.sys
-        @usrNew = 360*(@data.cpu.sys+@data.cpu.usr)
+        @sysOld  = @sysNow
+        @usrOld  = @usrNow
+                 
+        @sysNew  = 360*@data.cpu.sys
+        @usrNew  = 360*(@data.cpu.sys+@data.cpu.usr)
 
         @memuOld = @memuNow
         @memaOld = @memaNow
@@ -268,7 +261,7 @@ function SysDish
     
     animDish: =>
         
-        steps = 30
+        steps = @animFrames
         @animCount += 1
         
         if @animCount <= steps
@@ -297,8 +290,6 @@ function SysDish
             @pie360 @memuPie, R_MEM, @memuNow
             @pie360 @memaPie, R_MEM, @memaNow
          
-        #kakao 'status.icon' x:0 y:0, w:22, h:38
-        
         requestAnimationFrame @animDish
         
 export SysDish

@@ -6,12 +6,27 @@
 # 0000000      000     0000000   00     00  000  000   000  
 
 use ../kakao
-use ../kxk ▪ win
+use ../kxk ▪ win post
 use ◆ sysdish
 
 function SysWin extends sysdish
 
     @: ->
+        
+    onWindowWillShow: ->
+            
+        super()
+        
+        post.on 'window.frame' @onWindowFrame
+        
+    onWindowFrame: info -> 
+        
+        frame = info.frame
+        
+        if frame.w != frame.h
+            size = max frame.w, frame.h
+            frame.w = frame.h = size
+            kakao 'window.setFrame' frame, true
 
 kakao.init ->
     

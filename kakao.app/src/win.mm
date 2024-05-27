@@ -20,18 +20,12 @@
 
 - (void) sendFrame:(Win*)win
 { 
-    id msg = [NSMutableDictionary dictionary];
-    [msg setObject:@"window.frame" forKey:@"name"];
-    [msg setObject:[NSArray arrayWithObject:[win frameInfo]] forKey:@"args"];
-    [Route send:msg win:win];
+    [Route send:@"window.frame" arg:[win frameInfo] win:win];
 }
 
 - (void) sendWillResize:(Win*)win newSize:(NSSize)newSize
 {
-    id msg = [NSMutableDictionary dictionary];
-    [msg setObject:@"window.willResize" forKey:@"name"];        
-    [msg setObject:[NSArray arrayWithObjects:[win frameInfo], dictForSize(newSize), nil] forKey:@"args"];
-    [Route send:msg win:win];
+    [Route send:@"window.willResize" args:[NSArray arrayWithObjects:[win frameInfo], dictForSize(newSize), nil] win:win];
 }
 
 - (NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize { [self sendWillResize:(Win*)sender newSize:frameSize]; return frameSize; }
@@ -44,11 +38,7 @@
 - (void)  windowWillClose:    (NSNotification *)notification 
 { 
     BOOL shouldStash = [[App get] shouldWindowSaveStash:notification.object];
-    id msg = [NSMutableDictionary dictionary];
-    [msg setObject:@"window.close" forKey:@"name"];
-    [msg setObject:[NSArray arrayWithObject:[NSNumber numberWithBool:shouldStash]] forKey:@"args"];
-    
-    [Route send:msg win:(Win*)notification.object];
+    [Route send:@"window.close" arg:[NSNumber numberWithBool:shouldStash] win:(Win*)notification.object];
 }
 
 - (BOOL) windowShouldClose:(NSWindow*)window 

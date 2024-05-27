@@ -66,6 +66,8 @@ SysDish = (function ()
     function SysDish ()
     {
         this["animDish"] = this["animDish"].bind(this)
+        this.dataDelay = 500
+        this.animFrames = 30
         this.div = elem({class:"sysmon",parent:document.body})
         this.dskrOld = this.dskrNow = this.dskrNew = 0
         this.dskwOld = this.dskwNow = this.dskwNew = 0
@@ -175,7 +177,7 @@ SysDish = (function ()
             this.dskOut = obytes
         }
         this.updateDish()
-        await sleep(500)
+        await sleep(this.dataDelay)
         return this.requestData()
     }
 
@@ -229,7 +231,7 @@ SysDish = (function ()
     {
         var steps
 
-        steps = 30
+        steps = this.animFrames
         this.animCount += 1
         if (this.animCount <= steps)
         {

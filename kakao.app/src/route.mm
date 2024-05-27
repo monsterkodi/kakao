@@ -331,4 +331,17 @@
     [win.view evaluateJavaScript:script completionHandler:nil];
 }
 
++ (void) send:(NSString*)name arg:(id)arg win:(Win*)win
+{
+    [Route send:name args:[NSArray arrayWithObject:arg] win:win];
+}
+
++ (void) send:(NSString*)name args:(NSArray*)args win:(Win*)win
+{
+    NSMutableDictionary* msg = [NSMutableDictionary dictionary];
+    [msg setObject:name forKey:@"name"];
+    [msg setObject:args forKey:@"args"];
+    [Route send:msg win:win];
+}
+
 @end
