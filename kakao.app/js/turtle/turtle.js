@@ -1556,7 +1556,7 @@ Delegate = (function ()
         return kakao('window.setMaxSize',window.WIN_WIDTH,window.WIN_MAX_HEIGHT)
     }
 
-    Delegate.prototype["onWindowKeyDown"] = function (win, info)
+    Delegate.prototype["onWindowKeyDown"] = function (info)
     {
         var char, combo, e, key, mod, _1191_34_, _1196_25_, _1197_25_, _1198_25_, _1200_31_
 
@@ -1670,7 +1670,7 @@ Delegate = (function ()
         return 'unhandled'
     }
 
-    Delegate.prototype["onWindowKeyUp"] = function (win, info)
+    Delegate.prototype["onWindowKeyUp"] = function (info)
     {
         return 'unhandled'
     }

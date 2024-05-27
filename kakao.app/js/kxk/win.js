@@ -67,7 +67,7 @@ Delegate = (function ()
         console.log("onWindowBlur")
     }
 
-    Delegate.prototype["onWindowKeyDown"] = function (win, keyInfo)
+    Delegate.prototype["onWindowKeyDown"] = function (keyInfo)
     {
         if (!_k_.empty(keyInfo.combo))
         {
@@ -76,7 +76,7 @@ Delegate = (function ()
         return 'unhandled'
     }
 
-    Delegate.prototype["onWindowKeyUp"] = function (win, keyInfo)
+    Delegate.prototype["onWindowKeyUp"] = function (keyInfo)
     {
         if (!_k_.empty(keyInfo.combo))
         {
@@ -247,9 +247,8 @@ class Win
 
     animate ()
     {
-        var delta, fps, now, _169_17_, _169_40_
+        var delta, fps, now, _167_37_, _167_60_
 
-        window.requestAnimationFrame(this.animate)
         now = window.performance.now()
         delta = (now - this.lastAnimationTime)
         this.lastAnimationTime = now
@@ -258,7 +257,11 @@ class Win
         {
             kakao("window.framerateDrop",fps)
         }
-        return ((_169_17_=this.delegate) != null ? typeof (_169_40_=_169_17_.onWindowAnimationTick) === "function" ? _169_40_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined)
+        if ('stop' === ((_167_37_=this.delegate) != null ? typeof (_167_60_=_167_37_.onWindowAnimationTick) === "function" ? _167_60_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined))
+        {
+            return
+        }
+        return window.requestAnimationFrame(this.animate)
     }
 
     onResize (event)
@@ -384,7 +387,7 @@ class Win
         }
         if (_k_.isFunc((this.delegate != null ? this.delegate.onWindowKeyDown : undefined)))
         {
-            if ('unhandled' !== ((_238_62_=this.delegate) != null ? typeof (_238_79_=_238_62_.onWindowKeyDown) === "function" ? _238_79_(this,info) : undefined : undefined))
+            if ('unhandled' !== ((_238_62_=this.delegate) != null ? typeof (_238_79_=_238_62_.onWindowKeyDown) === "function" ? _238_79_(info) : undefined : undefined))
             {
                 return stopEvent(event)
             }
@@ -399,7 +402,7 @@ class Win
         info.event = event
         if (_k_.isFunc((this.delegate != null ? this.delegate.onWindowKeyUp : undefined)))
         {
-            if ('unhandled' !== ((_246_46_=this.delegate) != null ? typeof (_246_61_=_246_46_.onWindowKeyUp) === "function" ? _246_61_(this,info) : undefined : undefined))
+            if ('unhandled' !== ((_246_46_=this.delegate) != null ? typeof (_246_61_=_246_46_.onWindowKeyUp) === "function" ? _246_61_(info) : undefined : undefined))
             {
                 return
             }

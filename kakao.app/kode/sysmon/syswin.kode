@@ -13,6 +13,11 @@ function SysWin extends sysdish
 
     @: ->
         
+        super()
+        
+        @dataDelay = 100
+        @animFrames = 20
+        
     onWindowWillShow: ->
             
         super()
@@ -27,6 +32,13 @@ function SysWin extends sysdish
             size = max frame.w, frame.h
             frame.w = frame.h = size
             kakao 'window.setFrame' frame, true
+            
+    onWindowKeyDown: info ->
+        
+        switch info.combo
+            'command+q'     ➜ kakao 'app.quit'
+            'w' 'command+w' ➜ kakao 'window.close'
+            'command+alt+i' ➜ kakao 'window.toggleInspector'
 
 kakao.init ->
     

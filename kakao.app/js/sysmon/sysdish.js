@@ -1,6 +1,6 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var R_DISK, R_LOAD, R_MEM, R_NET, SysDish
+var digger, R_DISK, R_LOAD, R_MEM, R_NET, SysDish
 
 import kakao from "../kakao.js"
 
@@ -15,57 +15,19 @@ let $ = kxk.$
 
 import utils from "./utils.js"
 
+digger = utils.digger
 R_DISK = 50
 R_NET = 46
 R_LOAD = 42
 R_MEM = 20
-class digger
-{
-    static ints (str, ...ints)
-    {
-        var idx, int, r, val
-
-        r = {}
-        var list = _k_.list(ints)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            int = list[_a_]
-            idx = str.search(/\d+/)
-            str = str.slice(idx)
-            val = parseInt(str)
-            r[int] = val
-            idx = str.search(/[^\d]/)
-            str = str.slice(idx)
-        }
-        return r
-    }
-
-    static floats (str, ...floats)
-    {
-        var float, idx, r, val
-
-        r = {}
-        var list = _k_.list(floats)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            float = list[_a_]
-            idx = str.search(/\d+\.\d+/)
-            str = str.slice(idx)
-            val = parseFloat(str)
-            r[float] = val
-            idx = str.search(/[^\d\.]/)
-            str = str.slice(idx)
-        }
-        return r
-    }
-}
-
 
 SysDish = (function ()
 {
     function SysDish ()
     {
         this["animDish"] = this["animDish"].bind(this)
+        this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
+        this["onWindowClose"] = this["onWindowClose"].bind(this)
         this.dataDelay = 500
         this.animFrames = 30
         this.div = elem({class:"sysmon",parent:document.body})
@@ -82,6 +44,7 @@ SysDish = (function ()
         this.dskIn = this.maxDskIn = 0
         this.dskOut = this.maxDskOut = 0
         this.data = {cpu:{sys:0,usr:0},mem:{used:0,active:0},dsk:{in:0,out:0},net:{in:0,out:0}}
+        post.on('window.close',this.onWindowClose)
         this.initDish()
     }
 
@@ -109,8 +72,21 @@ SysDish = (function ()
     SysDish.prototype["onWindowWillShow"] = function ()
     {
         this.updateDish()
-        requestAnimationFrame(this.animDish)
         return this.requestData()
+    }
+
+    SysDish.prototype["onWindowClose"] = function (save)
+    {
+        return this.stop = true
+    }
+
+    SysDish.prototype["onWindowAnimationTick"] = function ()
+    {
+        if (this.stop)
+        {
+            return 'stop'
+        }
+        return this.animDish()
     }
 
     SysDish.prototype["requestData"] = async function ()
@@ -252,7 +228,7 @@ SysDish = (function ()
             this.pie360(this.memuPie,R_MEM,this.memuNow)
             this.pie360(this.memaPie,R_MEM,this.memaNow)
         }
-        return requestAnimationFrame(this.animDish)
+        return this
     }
 
     return SysDish

@@ -23,13 +23,13 @@ use ../commandline ◆ CommandLine
 
 function Window extends win.Delegate
 
-    onWindowWillShow:       win          -> #log "onWindowWillShow"      win.id
-    onWindowAnimationTick:  win tickInfo -> #log 'onWindowAnimationTick' win.id
-    onWindowResize:         win event    -> #log 'onWindowResize'        win.id
-    onWindowFocus:          win          -> #log 'onWindowFocus'         win.id
-    onWindowBlur:           win          -> #log 'onWindowBlur'          win.id
-    onWindowKeyDown:        win keyInfo  -> #log 'onWindowKeyDown'       win.id, keyInfo
-    onWindowKeyUp:          win keyInfo  -> #log 'onWindowKeyUp'         win.id, keyInfo
+    onWindowWillShow:       win          -> #log "onWindowWillShow"      
+    onWindowAnimationTick:  win tickInfo -> #log 'onWindowAnimationTick' 
+    onWindowResize:         win event    -> #log 'onWindowResize'        
+    onWindowFocus:          win          -> #log 'onWindowFocus'         
+    onWindowBlur:           win          -> #log 'onWindowBlur'          
+    onWindowKeyDown:        keyInfo      -> #log 'onWindowKeyDown'       keyInfo
+    onWindowKeyUp:          keyInfo      -> #log 'onWindowKeyUp'         keyInfo
     onWindowMenuTemplate:   win template -> kakao.menuTemplate = Menu template
     
     @: ->

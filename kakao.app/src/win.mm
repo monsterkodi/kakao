@@ -38,6 +38,7 @@
 - (void)  windowWillClose:    (NSNotification *)notification 
 { 
     BOOL shouldStash = [[App get] shouldWindowSaveStash:notification.object];
+    NSLog(@"windowWillClose %d", shouldStash);
     [Route send:@"window.close" arg:[NSNumber numberWithBool:shouldStash] win:(Win*)notification.object];
 }
 

@@ -8,36 +8,14 @@
 
 use ../kakao
 use ../kxk ▪ kermit sleep win deg2rad elem post $
-use ◆ utils
+use ◆ utils 
+
+digger = utils.digger
 
 R_DISK = 50
 R_NET  = 46
 R_LOAD = 42
 R_MEM  = 20
-
-class digger
-    
-    @ints: str ints... ->
-        r = {}
-        for int in ints
-            idx = str.search /\d+/
-            str = str[idx..]
-            val = parseInt str
-            r[int] = val
-            idx = str.search /[^\d]/
-            str = str[idx..]
-        r
-        
-    @floats: str floats... ->
-        r = {}
-        for float in floats
-            idx = str.search /\d+\.\d+/
-            str = str[idx..]
-            val = parseFloat str
-            r[float] = val
-            idx = str.search /[^\d\.]/
-            str = str[idx..]
-        r
 
 function SysDish
     
@@ -80,6 +58,8 @@ function SysDish
                 in:  0
                 out: 0
 
+        post.on 'window.close' @onWindowClose
+        
         @initDish()
     
     # 000  000   000  000  000000000  0000000    000   0000000  000   000  
@@ -114,8 +94,19 @@ function SysDish
     onWindowWillShow: ->
             
         @updateDish()
-        requestAnimationFrame @animDish
         @requestData()
+        
+    onWindowClose: save =>
+        
+        # kakao 'log' 'close'
+        
+        @stop = true
+        
+    onWindowAnimationTick: =>
+        
+        ⮐ 'stop' if @stop
+        
+        @animDish()
             
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  
@@ -290,7 +281,8 @@ function SysDish
             @pie360 @memuPie, R_MEM, @memuNow
             @pie360 @memaPie, R_MEM, @memaNow
          
-        requestAnimationFrame @animDish
+        # requestAnimationFrame @animDish if not @stop
+        @
         
 export SysDish
     

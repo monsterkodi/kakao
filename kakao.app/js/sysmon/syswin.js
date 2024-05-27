@@ -16,7 +16,10 @@ SysWin = (function ()
     _k_.extend(SysWin, sysdish)
     function SysWin ()
     {
-        return SysWin.__super__.constructor.apply(this, arguments)
+        SysWin.__super__.constructor.call(this)
+    
+        this.dataDelay = 100
+        this.animFrames = 20
     }
 
     SysWin.prototype["onWindowWillShow"] = function ()
@@ -37,6 +40,24 @@ SysWin = (function ()
             frame.w = frame.h = size
             return kakao('window.setFrame',frame,true)
         }
+    }
+
+    SysWin.prototype["onWindowKeyDown"] = function (info)
+    {
+        switch (info.combo)
+        {
+            case 'command+q':
+                return kakao('app.quit')
+
+            case 'w':
+            case 'command+w':
+                return kakao('window.close')
+
+            case 'command+alt+i':
+                return kakao('window.toggleInspector')
+
+        }
+
     }
 
     return SysWin

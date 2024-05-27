@@ -15,6 +15,7 @@ function SysMon extends sysdish
     animDish: =>
         
         super()
+        
         kakao 'status.icon' x:0 y:0, w:22, h:38
         
     onWindowWillShow: ->

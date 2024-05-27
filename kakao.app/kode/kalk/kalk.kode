@@ -128,7 +128,7 @@ function Delegate extends win.Delegate
     # 000  000   000          000           000   000  000   000  000   000  000  0000  
     # 000   000  00000000     000           0000000     0000000   00     00  000   000  
     
-    onWindowKeyDown: win info =>
+    onWindowKeyDown: info =>
         
         ⮐ stopEvent(info.event) if 'unhandled' != window.keys.keyDown info
         
@@ -138,7 +138,7 @@ function Delegate extends win.Delegate
             'ctrl+c' ➜ ⮐ @cpy()
             'ctrl+x' ➜ ⮐ @cut()
             
-    onWindowKeyUp: win info =>
+    onWindowKeyUp: info =>
         
         window.keys.keyUp info
         

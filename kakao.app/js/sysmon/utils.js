@@ -79,4 +79,46 @@ Utils = (function ()
     return Utils
 })()
 
+class digger
+{
+    static ints (str, ...ints)
+    {
+        var idx, int, r, val
+
+        r = {}
+        var list = _k_.list(ints)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            int = list[_a_]
+            idx = str.search(/\d+/)
+            str = str.slice(idx)
+            val = parseInt(str)
+            r[int] = val
+            idx = str.search(/[^\d]/)
+            str = str.slice(idx)
+        }
+        return r
+    }
+
+    static floats (str, ...floats)
+    {
+        var float, idx, r, val
+
+        r = {}
+        var list = _k_.list(floats)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            float = list[_a_]
+            idx = str.search(/\d+\.\d+/)
+            str = str.slice(idx)
+            val = parseFloat(str)
+            r[float] = val
+            idx = str.search(/[^\d\.]/)
+            str = str.slice(idx)
+        }
+        return r
+    }
+}
+
+Utils.digger = digger
 export default Utils;

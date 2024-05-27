@@ -1174,7 +1174,7 @@ function Delegate #extends win.Delegate
     000   000  00000000     000     0000000     0000000   00     00  000   000
     ###
     
-    onWindowKeyDown: win info ->
+    onWindowKeyDown: info ->
     
         { mod, key, combo, char } = info
     
@@ -1227,7 +1227,7 @@ function Delegate #extends win.Delegate
                     
         'unhandled'
     
-    onWindowKeyUp: win info -> 'unhandled'
+    onWindowKeyUp: info -> 'unhandled'
     
 kakao.init ->
     

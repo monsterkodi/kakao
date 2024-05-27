@@ -47,4 +47,36 @@ function Utils
         g    = @append svg, 'g'
         pie  = @append g, 'path' class:clss
         
+# 0000000    000   0000000    0000000   00000000  00000000   
+# 000   000  000  000        000        000       000   000  
+# 000   000  000  000  0000  000  0000  0000000   0000000    
+# 000   000  000  000   000  000   000  000       000   000  
+# 0000000    000   0000000    0000000   00000000  000   000  
+
+class digger
+    
+    @ints: str ints... ->
+        r = {}
+        for int in ints
+            idx = str.search /\d+/
+            str = str[idx..]
+            val = parseInt str
+            r[int] = val
+            idx = str.search /[^\d]/
+            str = str[idx..]
+        r
+        
+    @floats: str floats... ->
+        r = {}
+        for float in floats
+            idx = str.search /\d+\.\d+/
+            str = str[idx..]
+            val = parseFloat str
+            r[float] = val
+            idx = str.search /[^\d\.]/
+            str = str[idx..]
+        r
+
+Utils.digger = digger
+        
 export Utils

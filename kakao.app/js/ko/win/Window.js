@@ -62,10 +62,10 @@ Window = (function ()
     Window.prototype["onWindowBlur"] = function (win)
     {}
 
-    Window.prototype["onWindowKeyDown"] = function (win, keyInfo)
+    Window.prototype["onWindowKeyDown"] = function (keyInfo)
     {}
 
-    Window.prototype["onWindowKeyUp"] = function (win, keyInfo)
+    Window.prototype["onWindowKeyUp"] = function (keyInfo)
     {}
 
     Window.prototype["onWindowMenuTemplate"] = function (win, template)

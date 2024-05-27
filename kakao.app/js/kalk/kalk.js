@@ -190,7 +190,7 @@ Delegate = (function ()
         return 'unhandled'
     }
 
-    Delegate.prototype["onWindowKeyDown"] = function (win, info)
+    Delegate.prototype["onWindowKeyDown"] = function (info)
     {
         if ('unhandled' !== window.keys.keyDown(info))
         {
@@ -211,7 +211,7 @@ Delegate = (function ()
 
     }
 
-    Delegate.prototype["onWindowKeyUp"] = function (win, info)
+    Delegate.prototype["onWindowKeyUp"] = function (info)
     {
         return window.keys.keyUp(info)
     }
