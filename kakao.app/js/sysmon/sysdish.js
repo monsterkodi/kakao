@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var R_DISK, R_LOAD, R_MEM, R_NET
+var R_DISK, R_LOAD, R_MEM, R_NET, SysDish
 
 import kakao from "../kakao.js"
 
@@ -60,11 +60,12 @@ class digger
     }
 }
 
-class Sysmon
+
+SysDish = (function ()
 {
-    constructor ()
+    function SysDish ()
     {
-        this.animDish = this.animDish.bind(this)
+        this["animDish"] = this["animDish"].bind(this)
         this.div = elem({class:"sysmon",parent:document.body})
         this.dskrOld = this.dskrNow = this.dskrNew = 0
         this.dskwOld = this.dskwNow = this.dskwNew = 0
@@ -82,7 +83,7 @@ class Sysmon
         this.initDish()
     }
 
-    initDish ()
+    SysDish.prototype["initDish"] = function ()
     {
         var svg
 
@@ -103,20 +104,14 @@ class Sysmon
         return this.memaPie = utils.pie('sysdish_mem_active',svg)
     }
 
-    onWindowWillShow ()
+    SysDish.prototype["onWindowWillShow"] = function ()
     {
         this.updateDish()
         requestAnimationFrame(this.animDish)
-        this.requestData()
-        return post.on('status.click',this.onStatusClick)
+        return this.requestData()
     }
 
-    onStatusClick ()
-    {
-        return kakao('window.new','syswin')
-    }
-
-    async requestData ()
+    SysDish.prototype["requestData"] = async function ()
     {
         var active, cpu, dskstr, gb, ibytes, idiff, idx, linesplit, netlines, netstr, obytes, odiff, pages, pgb, top, toplines, total, used, vmstat
 
@@ -184,7 +179,7 @@ class Sysmon
         return this.requestData()
     }
 
-    pie180 (pie, radius, angle, start = 0)
+    SysDish.prototype["pie180"] = function (pie, radius, angle, start = 0)
     {
         var ex, ey, sx, sy
 
@@ -193,11 +188,10 @@ class Sysmon
         sy = -radius * Math.cos(deg2rad(start + angle))
         ex = radius * Math.sin(deg2rad(start))
         ey = -radius * Math.cos(deg2rad(start))
-        console.log(sx,sy)
         return pie.setAttribute('d',`M 0 0 L ${sx} ${sy} A ${radius} ${radius} ${start} 0 0 ${ex} ${ey} z`)
     }
 
-    pie360 (pie, radius, angle)
+    SysDish.prototype["pie360"] = function (pie, radius, angle)
     {
         var ex, ey, f, sx, sy
 
@@ -210,7 +204,7 @@ class Sysmon
         return pie.setAttribute('d',`M 0 0 L ${sx} ${sy} A ${radius} ${radius} 0 ${f} ${ex} ${ey} z`)
     }
 
-    updateDish ()
+    SysDish.prototype["updateDish"] = function ()
     {
         this.animCount = 0
         this.dskrOld = this.dskrNow
@@ -231,7 +225,7 @@ class Sysmon
         return this.memaNew = 360 * this.data.mem.active
     }
 
-    animDish ()
+    SysDish.prototype["animDish"] = function ()
     {
         var steps
 
@@ -256,12 +250,10 @@ class Sysmon
             this.pie360(this.memuPie,R_MEM,this.memuNow)
             this.pie360(this.memaPie,R_MEM,this.memaNow)
         }
-        kakao('status.icon',{x:0,y:0,w:22,h:38})
         return requestAnimationFrame(this.animDish)
     }
-}
 
-kakao.init(function ()
-{
-    return new win(new Sysmon)
-})
+    return SysDish
+})()
+
+export default SysDish;
