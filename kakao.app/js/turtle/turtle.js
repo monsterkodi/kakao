@@ -1518,6 +1518,11 @@ Delegate = (function ()
         hideSitePassword()
         hideSettings()
         resetStash()
+        kakao('window.new','icon','window.statusIcon = "turtletrans.png"; window.statusIconSize = 30; window.statusIconOffset = -3')
+        post.on('status.click',function ()
+        {
+            return kakao('window.raise')
+        })
         return ffs.exists(stashFile).then(function (exists)
         {
             stashExists = exists
@@ -1553,7 +1558,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (win, info)
     {
-        var char, combo, e, key, mod, _1188_34_, _1193_25_, _1194_25_, _1195_25_, _1197_31_
+        var char, combo, e, key, mod, _1191_34_, _1196_25_, _1197_25_, _1198_25_, _1200_31_
 
         mod = info.mod
         key = info.key

@@ -134,6 +134,7 @@
     if ([req isEqualToString:@"snapshot"      ]) { return [win snapshot:arg0]; }
     if ([req isEqualToString:@"close"         ]) { [win performClose:nil]; return nil; }
     if ([req isEqualToString:@"reload"        ]) { [win reload];           return nil; }
+    if ([req isEqualToString:@"raise"         ]) { [[NSApplication sharedApplication] activate]; [win orderFrontRegardless]; [win makeKeyAndOrderFront:nil]; NSLog(@"raise"); return nil; }
     if ([req isEqualToString:@"maximize"      ]) { [win zoom:nil];         return nil; }
     if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
     if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }

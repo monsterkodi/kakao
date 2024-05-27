@@ -1139,6 +1139,9 @@ function Delegate #extends win.Delegate
         hideSettings()
         resetStash()
         
+        kakao 'window.new' 'icon' 'window.statusIcon = "turtletrans.png"; window.statusIconSize = 30; window.statusIconOffset = -3'
+        post.on 'status.click' -> kakao 'window.raise'
+        
         ffs.exists(stashFile).then (exists) ->
 
             stashExists = exists

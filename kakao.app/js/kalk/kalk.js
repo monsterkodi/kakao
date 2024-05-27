@@ -48,6 +48,10 @@ Delegate = (function ()
         main = $('main')
         main.addEventListener('contextmenu',this.onContextMenu)
         post.on('menuAction',this.onMenuAction)
+        post.on('status.click',function ()
+        {
+            return kakao('window.raise')
+        })
         post.on('calc',this.onCalc)
         return Delegate.__super__.constructor.apply(this, arguments)
     }
@@ -66,7 +70,8 @@ Delegate = (function ()
     Delegate.prototype["onWindowCreated"] = function ()
     {
         kakao('window.setMinSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
-        return kakao('window.setMaxSize',window.WIN_MIN_WIDTH,6666)
+        kakao('window.setMaxSize',window.WIN_MIN_WIDTH,6666)
+        return kakao('window.new','icon','window.statusIcon = "menu_kalk.png"')
     }
 
     Delegate.prototype["onWindowResize"] = function ()

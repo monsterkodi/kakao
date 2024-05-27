@@ -48,7 +48,7 @@
     [msg setObject:@"window.close" forKey:@"name"];
     [msg setObject:[NSArray arrayWithObject:[NSNumber numberWithBool:shouldStash]] forKey:@"args"];
     
-    [Route send:msg win:(Win*)notification.object]; 
+    [Route send:msg win:(Win*)notification.object];
 }
 
 - (BOOL) windowShouldClose:(NSWindow*)window 
@@ -124,6 +124,10 @@
     }
     else
     {
+        if (![urlString hasSuffix:@".html"])
+        {
+            urlString = [urlString stringByAppendingString:@".html"];
+        }
         url = [Bundle jsURL:urlString];
     }
     

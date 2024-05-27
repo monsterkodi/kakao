@@ -150,7 +150,8 @@ class Win
         # log 'saveStash'
      
         post.emit 'saveChanges' 
-        post.emit 'stash'        
+        post.emit 'stash'
+        
         window.stash.save()
             
     animate: =>
