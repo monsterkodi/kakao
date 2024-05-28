@@ -14,13 +14,29 @@
 #import "bundle.h"
 
 @interface WinDelegate : NSObject <NSWindowDelegate> {}
+
+@property (readwrite, retain) NSDictionary* previousFrame;
+
 @end
 
 @implementation WinDelegate
 
 - (void) sendFrame:(Win*)win
 { 
-    [Route send:@"window.frame" arg:[win frameInfo] win:win];
+    NSMutableDictionary* frameInfo = [win frameInfo];
+    
+    [frameInfo setObject:dictForPoint([NSEvent mouseLocation]) forKey:@"mouse"];
+    
+    if (self.previousFrame)
+    {
+        [frameInfo setObject:self.previousFrame forKey:@"previous"];
+        self.previousFrame = nil;
+        
+        [frameInfo setObject:cornerForRectAndPoint([win frame], [NSEvent mouseLocation]) forKey:@"corner"];
+        // NSLog(@"frameInfo %@", frameInfo);
+    }
+    
+    [Route send:@"window.frame" arg:frameInfo win:win];
 }
 
 - (void) sendWillResize:(Win*)win newSize:(NSSize)newSize
@@ -28,7 +44,13 @@
     [Route send:@"window.willResize" args:[NSArray arrayWithObjects:[win frameInfo], dictForSize(newSize), nil] win:win];
 }
 
-- (NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize { [self sendWillResize:(Win*)sender newSize:frameSize]; return frameSize; }
+- (NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize 
+{ 
+    [self sendWillResize:(Win*)sender newSize:frameSize];
+    self.previousFrame = dictForRect([sender frame]);
+        
+    return frameSize; 
+}
 - (void)  windowDidResize:    (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
 - (void)  windowDidMove:      (NSNotification *)notification { [self sendFrame:(Win*)notification.object]; }
 - (void)  windowDidBecomeKey: (NSNotification *)notification { [Route send:@"window.focus" win:(Win*)notification.object]; }
@@ -38,7 +60,7 @@
 - (void)  windowWillClose:    (NSNotification *)notification 
 { 
     BOOL shouldStash = [[App get] shouldWindowSaveStash:notification.object];
-    NSLog(@"windowWillClose %d", shouldStash);
+    // NSLog(@"windowWillClose %d", shouldStash);
     [Route send:@"window.close" arg:[NSNumber numberWithBool:shouldStash] win:(Win*)notification.object];
 }
 
@@ -286,7 +308,7 @@
     [self setFrame:CGRectMake(0, 0, width, height) display:YES];
 }
 
-- (NSDictionary*) frameInfo
+- (NSMutableDictionary*) frameInfo
 {
     NSMutableDictionary* info = [NSMutableDictionary dictionary];
     

@@ -9,6 +9,7 @@ let kermit = kxk.kermit
 let sleep = kxk.sleep
 let win = kxk.win
 let deg2rad = kxk.deg2rad
+let prefs = kxk.prefs
 let elem = kxk.elem
 let post = kxk.post
 let $ = kxk.$
@@ -39,10 +40,12 @@ SysDish = (function ()
         this.usrOld = this.usrNow = this.usrNew = 0
         this.memuOld = this.memuNow = this.memuNew = 0
         this.memaOld = this.memaNow = this.memaNew = 0
-        this.netIn = this.maxNetIn = 0
-        this.netOut = this.maxNetOut = 0
-        this.dskIn = this.maxDskIn = 0
-        this.dskOut = this.maxDskOut = 0
+        this.netIn = this.netOut = 0
+        this.dskIn = this.dskOut = 0
+        this.maxNetIn = prefs.get('dish|maxNetIn',0)
+        this.maxNetOut = prefs.get('dish|maxNetOut',0)
+        this.maxDskIn = prefs.get('dish|maxDskIn',0)
+        this.maxDskOut = prefs.get('dish|maxDskOut',0)
         this.data = {cpu:{sys:0,usr:0},mem:{used:0,active:0},dsk:{in:0,out:0},net:{in:0,out:0}}
         post.on('window.close',this.onWindowClose)
         this.initDish()

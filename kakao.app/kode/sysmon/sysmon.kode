@@ -7,7 +7,7 @@
 ###
 
 use ../kakao
-use ../kxk ▪ sleep win post
+use ../kxk ▪ sleep win post prefs 
 use ◆ sysdish utils 
 
 digger = utils.digger
@@ -26,14 +26,10 @@ function SysMon extends sysdish
         frame = x:-99 y:0 w:100 h:40 # move window offscreen
         kakao 'window.setFrame' frame, true
 
-        post.on 'status.click' @onStatusClick
+        post.on 'status.right_click' -> kakao 'window.new' 'syswin'
         
         @requestData()
             
-    onStatusClick: ->
-        
-        kakao 'window.new' 'syswin'
-        
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  
     # 000   000  000000000     000     000000000  
@@ -120,8 +116,14 @@ function SysMon extends sysdish
         
         post.toWins 'dishData' @data
         
-        ○ sleep @dataDelay
+        prefs.set 'dish',
+            maxDskIn:  @maxDskIn
+            maxDskOut: @maxDskOut
+            maxNetIn:  @maxNetIn
+            maxNetOut: @maxNetOut
         
+        ○ sleep @dataDelay
+                
         @requestData()
 
 kakao.init ->

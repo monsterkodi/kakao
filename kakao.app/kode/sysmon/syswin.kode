@@ -6,29 +6,23 @@
 # 0000000      000     0000000   00     00  000  000   000  
 
 use ../kakao
-use ../kxk ▪ win post
+use ../kxk ▪ absMax win post
 use ◆ sysdish
 
 function SysWin extends sysdish
 
     onWindowWillShow: ->
+        
+        kakao 'window.setAspectRatio' 1 1
             
         post.on 'window.frame' @onWindowFrame
         post.on 'dishData'     @onDishData
+        post.on 'status.down'  -> kakao 'window.raise'
         
     onDishData: @data =>
         
         @updateDish()
-        
-    onWindowFrame: info -> 
-        
-        frame = info.frame
-        
-        if frame.w != frame.h
-            size = max frame.w, frame.h
-            frame.w = frame.h = size
-            kakao 'window.setFrame' frame, true
-            
+                    
     onWindowKeyDown: info ->
         
         switch info.combo

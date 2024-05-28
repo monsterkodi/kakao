@@ -29,6 +29,6 @@ typedef void (^Callback)(id, NSString*);
 - (void) setTopLeft:(id)topLeft;
 - (void) setWidth:(unsigned int)width height:(unsigned int)height;
 - (NSString*) snapshot:(NSString*)pngFilePath;
-- (NSDictionary*) frameInfo;
+- (NSMutableDictionary*) frameInfo;
 
 @end

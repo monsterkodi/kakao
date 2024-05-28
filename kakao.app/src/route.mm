@@ -134,12 +134,13 @@
     if ([req isEqualToString:@"snapshot"      ]) { return [win snapshot:arg0]; }
     if ([req isEqualToString:@"close"         ]) { [win performClose:nil]; return nil; }
     if ([req isEqualToString:@"reload"        ]) { [win reload];           return nil; }
-    if ([req isEqualToString:@"raise"         ]) { [[NSApplication sharedApplication] activate]; [win orderFrontRegardless]; [win makeKeyAndOrderFront:nil]; NSLog(@"raise"); return nil; }
+    if ([req isEqualToString:@"raise"         ]) { [[NSApplication sharedApplication] activate]; [win orderFrontRegardless]; [win makeKeyAndOrderFront:nil]; return nil; }
     if ([req isEqualToString:@"maximize"      ]) { [win zoom:nil];         return nil; }
     if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
     if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }
     if ([req isEqualToString:@"setTopLeft"    ]) { [win setTopLeft:arg0];  return nil; }
     if ([req isEqualToString:@"setFrame"      ]) { [win setFrame:arg0 immediate:arg1];    return nil; }
+    if ([req isEqualToString:@"setAspectRatio"]) { [win setAspectRatio:NSMakeSize([arg0 longValue],[arg1 longValue])];  return nil; }
     if ([req isEqualToString:@"setSize"       ]) { [win setWidth:[arg0 longValue] height:[arg1 longValue]];  return nil; }
     if ([req isEqualToString:@"setMinSize"    ]) { [win setContentMinSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
     if ([req isEqualToString:@"setMaxSize"    ]) { [win setContentMaxSize:CGSizeMake([arg0 longValue], [arg1 longValue])]; return nil; }
@@ -156,9 +157,16 @@
             for (id arg in eventArgs)
             {
                 // NSLog(@"serialize to json %@", arg);
-                NSData*  jsonData = [NSJSONSerialization dataWithJSONObject:arg options:NSJSONWritingPrettyPrinted error:nil];    
-                NSString* jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                payload = [payload stringByAppendingString:[NSString stringWithFormat:@", %@", jsonStr]];
+                if ([arg isKindOfClass:[NSString class]])
+                {
+                    payload = [payload stringByAppendingString:[NSString stringWithFormat:@", \"%@\"", arg]];
+                }
+                else
+                {
+                    NSData*  jsonData = [NSJSONSerialization dataWithJSONObject:arg options:NSJSONWritingPrettyPrinted error:nil];    
+                    NSString* jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                    payload = [payload stringByAppendingString:[NSString stringWithFormat:@", %@", jsonStr]];
+                }
             }
         }
                 

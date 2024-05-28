@@ -8,6 +8,7 @@ import kxk from "../kxk.js"
 let sleep = kxk.sleep
 let win = kxk.win
 let post = kxk.post
+let prefs = kxk.prefs
 
 import sysdish from "./sysdish.js"
 import utils from "./utils.js"
@@ -38,13 +39,11 @@ SysMon = (function ()
 
         frame = {x:-99,y:0,w:100,h:40}
         kakao('window.setFrame',frame,true)
-        post.on('status.click',this.onStatusClick)
+        post.on('status.right_click',function ()
+        {
+            return kakao('window.new','syswin')
+        })
         return this.requestData()
-    }
-
-    SysMon.prototype["onStatusClick"] = function ()
-    {
-        return kakao('window.new','syswin')
     }
 
     SysMon.prototype["requestData"] = async function ()
@@ -124,6 +123,7 @@ SysMon = (function ()
         }
         this.updateDish()
         post.toWins('dishData',this.data)
+        prefs.set('dish',{maxDskIn:this.maxDskIn,maxDskOut:this.maxDskOut,maxNetIn:this.maxNetIn,maxNetOut:this.maxNetOut})
         await sleep(this.dataDelay)
         return this.requestData()
     }
