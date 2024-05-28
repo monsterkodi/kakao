@@ -155,18 +155,20 @@
         {
             for (id arg in eventArgs)
             {
-                payload = [payload stringByAppendingString:[NSString stringWithFormat:@", \"%@\"", arg]];
+                // NSLog(@"serialize to json %@", arg);
+                NSData*  jsonData = [NSJSONSerialization dataWithJSONObject:arg options:NSJSONWritingPrettyPrinted error:nil];    
+                NSString* jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                payload = [payload stringByAppendingString:[NSString stringWithFormat:@", %@", jsonStr]];
             }
         }
-        id script = [NSString stringWithFormat:@"post.emit(%@);", payload];
-        
-        // NSLog(@"post from win %d %@", (long)[NSNumber numberWithLong:win.windowNumber], script);
+                
+        id script = [NSString stringWithFormat:@"kakao.post.emit(%@);", payload];
         
         for (Win* w in [App wins])
         {
             if (w == win) continue;
                         
-            NSLog(@"run script in win %ld %@", (long)[NSNumber numberWithLong:w.windowNumber], script);
+            // NSLog(@"run script in win %lu\n%@", (long)w.windowNumber, script);
             [w.view evaluateJavaScript:script completionHandler:nil];
         }
         

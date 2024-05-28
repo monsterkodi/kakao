@@ -53,6 +53,7 @@ Kakao = (function ()
 
     Kakao["bundle"] = bundle
     Kakao["ffs"] = ffs
+    Kakao["post"] = post
     return Kakao
 })()
 

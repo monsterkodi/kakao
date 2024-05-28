@@ -11,18 +11,14 @@ use ◆ sysdish
 
 function SysWin extends sysdish
 
-    @: ->
-        
-        super()
-        
-        @dataDelay = 100
-        @animFrames = 20
-        
     onWindowWillShow: ->
             
-        super()
-        
         post.on 'window.frame' @onWindowFrame
+        post.on 'dishData'     @onDishData
+        
+    onDishData: @data =>
+        
+        @updateDish()
         
     onWindowFrame: info -> 
         

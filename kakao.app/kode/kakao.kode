@@ -49,6 +49,7 @@ function Kakao
             
     @bundle: bundle  # provides paths and urls relative to the application folder
     @ffs:    ffs     # fake fs
+    @post:   post    # needed for post.toWins
 
 # this is slightly evil: instead of exporting Kakao only the request function is exported
 # with the other functions attached to it. makes requesting stuff a bit more convenient.

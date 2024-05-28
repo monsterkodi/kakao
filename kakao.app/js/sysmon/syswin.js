@@ -16,17 +16,21 @@ SysWin = (function ()
     _k_.extend(SysWin, sysdish)
     function SysWin ()
     {
-        SysWin.__super__.constructor.call(this)
-    
-        this.dataDelay = 100
-        this.animFrames = 20
+        this["onDishData"] = this["onDishData"].bind(this)
+        return SysWin.__super__.constructor.apply(this, arguments)
     }
 
     SysWin.prototype["onWindowWillShow"] = function ()
     {
-        SysWin.__super__.onWindowWillShow.call(this)
+        post.on('window.frame',this.onWindowFrame)
+        return post.on('dishData',this.onDishData)
+    }
+
+    SysWin.prototype["onDishData"] = function (data)
+    {
+        this.data = data
     
-        return post.on('window.frame',this.onWindowFrame)
+        return this.updateDish()
     }
 
     SysWin.prototype["onWindowFrame"] = function (info)
