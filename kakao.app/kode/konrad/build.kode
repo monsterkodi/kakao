@@ -8,7 +8,7 @@
     builds the application executable
 ###
 
-CMD = "zig c++" # is awesome!
+CMD = "zig c++"
 
 OUT = "../../Contents/MacOS/kakao"
 
@@ -36,8 +36,7 @@ export ○->
     
     # log cmd
     
-    cwd = srcDir
-    opt = shell:true cwd:cwd # build inside the kokoa.app/src folder
+    opt = shell:true cwd:srcDir # build inside the kokoa.app/src folder
     
     new Promise (resolve, reject) ->
     

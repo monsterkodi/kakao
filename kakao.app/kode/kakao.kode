@@ -7,8 +7,6 @@
 
     handles application initialization
     sends and receives messages from the application process
-    provides shortcuts to internal modules
-    sets itself in the global window scope
 ###
 
 use ./kxk ▪ sleep post ffs
@@ -19,7 +17,7 @@ function Kakao
     @init: cb ○->
                 
         while not window.bundlePath # wait for valid bundle path
-            ○ sleep 100
+            ○ sleep 50
         bundle.path = window.bundlePath
         ○ window.kakao.preInit() if window.kakao.preInit is func # preload modules if necessary
         cb bundle.path # ... the application is ready to run

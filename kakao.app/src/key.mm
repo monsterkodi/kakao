@@ -28,7 +28,7 @@
     return [[self alloc] initWithKeyCode:code modifierFlags:flags];
 }
 
-+ (id)shortcutWithEvent:(NSEvent *)event
++ (id)shortcutWithEvent:(NSEvent*)event
 {
     return [[self alloc] initWithKeyCode:event.keyCode modifierFlags:event.modifierFlags];
 }
@@ -43,9 +43,8 @@
     return CarbonModifiersFromCocoaModifiers(self.modifierFlags);
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone*)zone
 {
-    NSLog(@"COPY WITH ZONE");
     return [[self class] shortcutWithKeyCode:_keyCode modifierFlags:_modifierFlags];
 }
 

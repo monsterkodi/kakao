@@ -4,6 +4,8 @@
     0000000      00000    0000000  
     000  000    000 000   000  000 
     000   000  000   000  000   000
+    
+    collection of utility functions and helper classes
 ###
 
 kxk = {}
