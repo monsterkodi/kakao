@@ -53,6 +53,10 @@ Delegate = (function ()
             return kakao('window.raise')
         })
         post.on('calc',this.onCalc)
+        post.on('key.snatched',function ()
+        {
+            console.log('keySnatched!')
+        })
         return Delegate.__super__.constructor.apply(this, arguments)
     }
 

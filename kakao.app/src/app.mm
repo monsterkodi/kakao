@@ -11,6 +11,7 @@
 #import "bundle.h"
 #import "watch.h"
 #import "route.h"
+#import "key.h"
 
 #define OK 0
 
@@ -65,7 +66,7 @@
 
     id indexURL = [Bundle jsURL:indexHTML];
     id win = [Win withURL:indexURL script:nil];
-
+    
     return app;
 }
 
@@ -99,6 +100,9 @@
     }
     
     self.status = [[Status alloc] init];
+    
+    Shortcut* shortcut = [Shortcut shortcutWithKeyCode:kVK_F1 modifierFlags:0];
+    [[ShortcutMonitor sharedMonitor] registerShortcut:shortcut withAction:^() { NSLog(@"shortcut!"); }];
 }
 
 - (BOOL) application:(NSApplication*)sender openFile:(NSString*)filename
