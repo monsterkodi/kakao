@@ -303,6 +303,14 @@
     [self setFrameTopLeftPoint:CGPointMake(x, y)];
 }
 
+- (void) moveBy:(id)delta
+{
+    float x = [[delta objectForKey:@"x"] floatValue];
+    float y = [[delta objectForKey:@"y"] floatValue];
+    NSRect frame = [self frame];
+    [self setFrame:CGRectMake(frame.origin.x+x, frame.origin.y+y, frame.size.width, frame.size.height) display:NO animate:YES];
+}
+
 - (void) setWidth:(unsigned int)width height:(unsigned int)height
 {
     [self setFrame:CGRectMake(0, 0, width, height) display:YES];

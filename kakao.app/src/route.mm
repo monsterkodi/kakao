@@ -129,6 +129,7 @@
 
     if ([req isEqualToString:@"focusNext"     ]) { return [win focusNext]; }
     if ([req isEqualToString:@"focusPrev"     ]) { return [win focusPrev]; }
+    if ([req isEqualToString:@"frame"         ]) { return [win frameInfo]; }
     if ([req isEqualToString:@"frameInfo"     ]) { return [win frameInfo]; }
     if ([req isEqualToString:@"new"           ]) { return [NSNumber numberWithLong:[win new:arg0 script:arg1].windowNumber]; }
     if ([req isEqualToString:@"snapshot"      ]) { return [win snapshot:arg0]; }
@@ -138,6 +139,7 @@
     if ([req isEqualToString:@"maximize"      ]) { [win zoom:nil];         return nil; }
     if ([req isEqualToString:@"minimize"      ]) { [win miniaturize:nil];  return nil; }
     if ([req isEqualToString:@"center"        ]) { [win center];           return nil; }
+    if ([req isEqualToString:@"moveBy"        ]) { [win moveBy:arg0];      return nil; }
     if ([req isEqualToString:@"setTopLeft"    ]) { [win setTopLeft:arg0];  return nil; }
     if ([req isEqualToString:@"setFrame"      ]) { [win setFrame:arg0 immediate:arg1];    return nil; }
     if ([req isEqualToString:@"setAspectRatio"]) { [win setAspectRatio:NSMakeSize([arg0 longValue],[arg1 longValue])];  return nil; }

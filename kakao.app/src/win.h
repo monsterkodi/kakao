@@ -27,6 +27,7 @@ typedef void (^Callback)(id, NSString*);
 - (void) setFrame:(id)frame;
 - (void) setFrame:(id)frame immediate:(id)immediate;
 - (void) setTopLeft:(id)topLeft;
+- (void) moveBy:(id)delta;
 - (void) setWidth:(unsigned int)width height:(unsigned int)height;
 - (NSString*) snapshot:(NSString*)pngFilePath;
 - (NSMutableDictionary*) frameInfo;
