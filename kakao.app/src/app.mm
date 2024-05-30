@@ -248,7 +248,6 @@
         }
 
         if ([relPath hasPrefix:@"pyg/"] || ([relPath hasPrefix:@"kode/"] && ![relPath hasPrefix:@"kode/kode/"]))
-        // if ([relPath hasPrefix:@"pyg/"] || [relPath hasPrefix:@"kode/ko"] || ([relPath hasPrefix:@"kode/kxk"]))
         {
             NSString* ext = [change.path pathExtension];
             

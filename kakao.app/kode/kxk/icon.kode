@@ -7,7 +7,7 @@
 ###
 
 use ../kakao
-use ../kxk ▪ win elem post $
+use ../kxk ▪ win slash elem post $
     
 kakao.init ->
     
@@ -16,9 +16,9 @@ kakao.init ->
         frame = x:-300 y:0 w:400 h:40
         kakao 'window.setFrame' frame, true
 
-        size = window.statusIconSize ? 22
+        size   = window.statusIconSize ? 22
         offset = window.statusIconOffset ? -8
-        icon = kakao.bundle.img window.statusIcon ? 'menu_kakao.png'
+        icon   = kakao.bundle.img window.statusIcon ? "menu_#{slash.name kakao.bundle.path}.png"
         document.body.appendChild elem 'img' src:icon, width:"#{size}px", height:"#{size}px"
         
         requestAnimationFrame -> 

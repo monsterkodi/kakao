@@ -156,13 +156,17 @@
         {
             for (id arg in eventArgs)
             {
-                // NSLog(@"serialize to json %@", arg);
                 if ([arg isKindOfClass:[NSString class]])
                 {
                     payload = [payload stringByAppendingString:[NSString stringWithFormat:@", \"%@\"", arg]];
                 }
+                else if ([arg isKindOfClass:[NSNumber class]])
+                {
+                    payload = [payload stringByAppendingString:[NSString stringWithFormat:@", %@", arg]];
+                }
                 else
                 {
+                    //NSLog(@"serialize to json %@ %@", arg, args);                    
                     NSData*  jsonData = [NSJSONSerialization dataWithJSONObject:arg options:NSJSONWritingPrettyPrinted error:nil];    
                     NSString* jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                     payload = [payload stringByAppendingString:[NSString stringWithFormat:@", %@", jsonStr]];
