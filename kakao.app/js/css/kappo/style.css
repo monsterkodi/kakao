@@ -13,7 +13,7 @@ body
     top: 0;
     margin: 0;
     overflow: hidden;
-    font-family: font;
+    font-family: titlebarFont;
     font-size: 16px;
     -webkit-user-select: none;
 }

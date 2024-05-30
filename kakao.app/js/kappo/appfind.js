@@ -29,7 +29,7 @@ post.on('findApps',function ()
 
 findApps = async function ()
 {
-    var appFolder, appFolders, root, walk
+    var appFolder, appFolders, root
 
     console.log('findApps')
     apps = {}
@@ -39,9 +39,8 @@ findApps = async function ()
     for (var _a_ = 0; _a_ < list.length; _a_++)
     {
         appFolder = list[_a_]
-        console.log('scanning appFolder',appFolder)
         root = slash.untilde(appFolder)
-        walk = await walkdir({root:root,dir:function (p)
+        await walkdir({root:root,dir:function (p)
         {
             var e
 
@@ -53,14 +52,13 @@ findApps = async function ()
             }
             return true
         }})
-        console.log('apps',apps)
     }
     allKeys = Object.keys(apps).concat(Object.keys(scripts))
     allKeys.sort(function (a, b)
     {
         return a.toLowerCase().localeCompare(b.toLowerCase())
     })
-    return post.emit('appsFound')
+    return post.emit('appsFound',{apps:apps,scripts:scripts,allKeys:allKeys})
 }
 appName = null
 activeApp = null
@@ -68,7 +66,7 @@ activeWin = null
 
 getActiveApp = function ()
 {
-    var top, wxw, _91_20_
+    var top, wxw, _88_20_
 
     if (slash.win())
     {

@@ -27,7 +27,6 @@ class walkdir
         var dir, ext, file, item, items, listDir, p, toWalk, _57_31_, _78_17_
 
         dir = this.cfg.root
-        console.log('walkdir.start',dir)
         toWalk = [dir]
         while (!_k_.empty(toWalk))
         {

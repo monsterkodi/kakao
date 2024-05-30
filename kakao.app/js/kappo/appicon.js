@@ -1,91 +1,82 @@
 var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }}
 
+import kxk from "../kxk.js"
+let slash = kxk.slash
+let ffs = kxk.ffs
+
 class AppIcon
 {
     static cache = {}
 
     static pngPath (opt)
     {
-        return slash.path(opt.iconDir,slash.base(opt.appPath) + ".png")
+        return slash.path(opt.iconDir,slash.name(opt.appPath) + ".png")
     }
 
-    static get (opt)
+    static async get (opt)
     {
-        var pngPath
+        var pngPath, _25_20_
 
+        opt.iconDir = ((_25_20_=opt.iconDir) != null ? _25_20_ : kakao.bundle.app('.stash/appIcons'))
         pngPath = AppIcon.pngPath(opt)
         if (AppIcon.cache[pngPath])
         {
-            return opt.cb(pngPath,opt.cbArg)
+            return pngPath
         }
         else
         {
-            return fs.stat(pngPath,function (err, stat)
+            if (await ffs.fileExists(pngPath))
             {
-                if (!(err != null) && stat.isFile())
-                {
-                    AppIcon.cache[pngPath] = true
-                    return opt.cb(pngPath,opt.cbArg)
-                }
-                else
-                {
-                    return AppIcon.getIcon(opt)
-                }
-            })
-        }
-    }
-
-    static getIcon (opt)
-    {
-        var appPath, infoPath
-
-        appPath = opt.appPath
-        infoPath = slash.join(appPath,'Contents','Info.plist')
-        return plist.readFile(infoPath,function (err, obj)
-        {
-            var icnsPath
-
-            if (!(err != null))
-            {
-                if ((obj['CFBundleIconFile'] != null))
-                {
-                    icnsPath = slash.join(slash.dirname(infoPath),'Resources',obj['CFBundleIconFile'])
-                    if (!icnsPath.endsWith('.icns'))
-                    {
-                        icnsPath += ".icns"
-                    }
-                    return AppIcon.saveIcon(icnsPath,opt)
-                }
-                else
-                {
-                    return AppIcon.brokenIcon(opt)
-                }
+                AppIcon.cache[pngPath] = true
+                return pngPath
             }
             else
             {
-                console.error(`getIcon: ${err}`)
-                return AppIcon.brokenIcon(opt)
+                return await AppIcon.getIcon(opt)
             }
-        })
+        }
     }
 
-    static saveIcon (icnsPath, opt)
+    static async getIcon (opt)
+    {
+        var appPath, close, icnsPath, idx, infoPath, open, text
+
+        appPath = opt.appPath
+        infoPath = slash.path(appPath,'Contents','Info.plist')
+        text = await ffs.read(infoPath)
+        idx = text.indexOf('CFBundleIconFile')
+        if (idx > 0)
+        {
+            text = text.slice(idx)
+            open = text.indexOf('<string>')
+            close = text.indexOf('</string>')
+            text = text.slice(open + 8, typeof close === 'number' ? close : -1)
+            console.log(text)
+            icnsPath = slash.path(slash.dir(infoPath),'Resources',text)
+            if (!icnsPath.endsWith('.icns'))
+            {
+                icnsPath += ".icns"
+            }
+            console.log('icnsPath',icnsPath)
+            if (await ffs.fileExists(icnsPath))
+            {
+                return await AppIcon.saveIcon(icnsPath,opt)
+            }
+        }
+        else
+        {
+            return AppIcon.brokenIcon(opt)
+        }
+    }
+
+    static async saveIcon (icnsPath, opt)
     {
         var pngPath
 
         pngPath = AppIcon.pngPath(opt)
-        return childp.exec(`/usr/bin/sips -Z ${opt.size} -s format png \"${icnsPath}\" --out \"${pngPath}\"`,function (err)
-        {
-            if (!(err != null))
-            {
-                return opt.cb(pngPath,opt.cbArg)
-            }
-            else
-            {
-                console.error(`saveIcon: ${err}`)
-                return AppIcon.brokenIcon(opt)
-            }
-        })
+        console.log('saveIcon',icnsPath,pngPath)
+        await kakao('app.sh','/usr/bin/sips',{arg:`-Z ${opt.size} -s format png \"${icnsPath}\" --out \"${pngPath}\"`})
+        return pngPath
     }
 
     static brokenIcon (opt)

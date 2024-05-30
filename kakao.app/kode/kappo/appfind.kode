@@ -48,30 +48,27 @@ findApps = ○->
         "/System/Applications/Utilities"
         "~/s"
         ]
-    # appFolders  = appFolders.concat prefs.get 'dirs', []
     
     for appFolder in appFolders
-        log 'scanning appFolder' appFolder
+        # log 'scanning appFolder' appFolder
         root = slash.untilde appFolder
-        walk = ○ walkdir root:root, dir: (p) -> 
+        ○ walkdir root:root, dir: (p) -> 
             e = slash.ext(p)
             if e == 'app' 
                 apps[slash.name p] = p
                 ⮐ false 
             true
-        # log 'result' walk
-        log 'apps' apps
 
         # if slash.ext(dir) == 'app' 
             # if not /(Helper$|NP$|EH$)/.test slash.base dir
                 # name = slash.base dir
                 # apps[name] = dir
 
+    # log 'apps' apps
     allKeys = Object.keys(apps).concat Object.keys(scripts)
     allKeys.sort (a,b) -> a.toLowerCase().localeCompare b.toLowerCase()
     
-    post.emit 'appsFound'
-    
+    post.emit 'appsFound' apps:apps, scripts:scripts, allKeys:allKeys
             
 # 0000000    0000000  000000000  000  000   000  00000000
 #000   000  000          000     000  000   000  000

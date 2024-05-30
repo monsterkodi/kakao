@@ -7,10 +7,9 @@
 ###
 
 use ../kakao
-use ../kxk ▪ win post popup args childIndex setStyle stopEvent keyinfo prefs elem ffs slash kpos $
-use ◆ appfind
-#iconDir      = slash.resolve "#{post.get('userData')}/icons"
-    
+use ../kxk ▪ win krzl childIndex post popup args setStyle stopEvent keyinfo prefs elem ffs slash kpos $
+use ◆ appfind appicon
+
 appHist      = null
 results      = []
 apps         = {}
@@ -20,7 +19,10 @@ search       = ''
 currentName  = ''
 currentIndex = 0
 
-post.on 'appsFound' -> log 'appsFound' #{ apps, scripts, allKeys } = post.get 'apps'
+post.on 'appsFound' (info) -> 
+    # log 'appsFound' info
+    { apps, scripts, allKeys } = info
+    info
 
 # 0000000    00000000  000      00000000   0000000    0000000   000000000  00000000  
 # 000   000  000       000      000       000        000   000     000     000       
@@ -80,7 +82,7 @@ function Delegate
     
         switch combo
             'f1'                                       ➜ preventKeyRepeat()
-            'delete'                                   ➜ blacklist()
+            # 'delete'                                   ➜ blacklist()
             'backspace'                                ➜ backspace()
             'command+backspace'       'ctrl+backspace' ➜ doSearch ''
             'esc'                                      ➜ cancelSearchOrClose()
@@ -206,7 +208,9 @@ toggleDoubleActivation = ->
 # 000   000  000  0000000      000      0000000   000   000     000
 
 listHistory = (offset=0) ->
+    
     log "listHistory #{offset}" appHist.list
+    
     results = []
     if valid appHist
         for h in appHist.list
@@ -220,9 +224,9 @@ listHistory = (offset=0) ->
 
 addToHistory = ->
     
-    return if empty results[currentIndex]
+    ⮐ if empty results[currentIndex]
     
-    result = _.clone results[currentIndex]
+    result = clone results[currentIndex]
     delete result.string
     appHist.add result
     prefs.set 'history' appHist.list
@@ -263,20 +267,13 @@ post.on 'clearSearch'  clearSearch
 
 getScriptIcon = (scriptName) -> setIcon scripts[scriptName].img
 
-getAppIcon = (appName) ->
+getAppIcon = (appName) ○->
 
-    if slash.win()
-        appIcon = require './exeicon'
-    else
-        appIcon = require './appicon'
-
-    appIcon.get
+    iconPath = ○ appicon.get
         appPath: apps[appName]
-        iconDir: iconDir
         size:    512
-        cb:      setIcon
 
-setIcon = (iconPath) ->
+    log 'getAppIcon' appName, iconPath
     
     $('appicon').style.backgroundImage = "url(\"#{slash.fileUrl iconPath}\")"
 
@@ -317,7 +314,7 @@ showDots = ->
     dots =$ 'appdots'
     dots.innerHTML = ''
 
-    # winWidth = sw()
+    winWidth = $('main').getBoundingClientRect().width
     # setStyle '#appname' 'font-size' "#{parseInt 10+2*(winWidth-100)/100}px"
 
     ⮐ if results.length < 2
@@ -344,24 +341,24 @@ showDots = ->
 # 000   000  000      000   000  000       000  000   000      000       000     000     
 # 0000000    0000000  000   000   0000000  000   000  0000000  000  0000000      000     
 
-blacklist = ->
-
-    ignore = prefs.get 'ignore', []
-    
-    _.pull ignore, apps[currentName]
-    _.pull ignore, null
-    if valid apps[currentName]
-        ignore.push apps[currentName]
-    else
-        log "can't ignore '#{currentName}'"
-    
-    prefs.set 'ignore', ignore
-    
-    delete apps[currentName]
-    
-    results.splice currentIndex, 1
-    
-    select currentIndex
+#blacklist = ->
+#
+#    ignore = prefs.get 'ignore', []
+#    
+#    _.pull ignore, apps[currentName]
+#    _.pull ignore, null
+#    if valid apps[currentName]
+#        ignore.push apps[currentName]
+#    else
+#        log "can't ignore '#{currentName}'"
+#    
+#    prefs.set 'ignore', ignore
+#    
+#    delete apps[currentName]
+#    
+#    results.splice currentIndex, 1
+#    
+#    select currentIndex
     
 #  0000000  00000000   0000000   00000000    0000000  000   000
 # 000       000       000   000  000   000  000       000   000
@@ -375,27 +372,28 @@ doSearch = s ->
     names   = allKeys
     
     log 'doSearch' s, names
-    ⮐ 
     
-    fuzzied = fuzzy.filter search, names, pre: '<b>', post: '</b>'
-    fuzzied = _.sortBy fuzzied, (o) -> 2 - fuzzaldrin.score o.original, search
+    fuzz = new krzl names
+    fuzzied = fuzz.filter s
+    
+    log 'fuzzied' fuzzied
+    
+    #fuzzied = fuzzy.filter search, names, pre: '<b>', post: '</b>'
+    #fuzzied = _.sortBy fuzzied, (o) -> 2 - fuzzaldrin.score o.original, search
 
-    if search.length
-        if ps = prefs.get "search:#{search}"
-            fuzzied = _.sortBy fuzzied, (o) -> Number.MAX_SAFE_INTEGER - (ps[o.original] ? 0)
+    # if search.length
+        # if ps = prefs.get "search:#{search}"
+            # fuzzied = _.sortBy fuzzied, (o) -> Number.MAX_SAFE_INTEGER - (ps[o.original] ? 0)
 
     results = []
     for f in fuzzied
-        r = name: f.original, string: f.string
-        r.script = scripts[r.name] if scripts[r.name]
+        r = name:f, string:s
+        r.script = scripts[f] if scripts[f]
         results.push r
 
     if valid results
         if s == ''
-            if slash.win()
-                selectName 'terminal'
-            else
-                selectName 'Finder'
+            selectName 'Finder'
         else
             select 0
         showDots()
@@ -442,6 +440,7 @@ window.onwheel  = (event) ->
 # 0000000   000  0000000  00000000
 
 clampFrame = f ->
+    
     f.w = clamp 200, 600, f.w
     f.h = clamp 200, 600, f.h
     f

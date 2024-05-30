@@ -1,15 +1,16 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var addToHistory, allKeys, appHist, apps, backspace, biggerWindow, blacklist, cancelSearchOrClose, clampFrame, clearSearch, clickID, complete, currentApp, currentIndex, currentIsApp, currentIsScript, currentName, Delegate, doSearch, downID, getAppIcon, getScriptIcon, listHistory, moveWindow, openCurrent, openInFinder, results, scripts, search, select, selectName, setIcon, showDots, sizeWindow, smallerWindow, toggleAppToggle, toggleDoubleActivation, wheelAccu, winHide
+var addToHistory, allKeys, appHist, apps, backspace, biggerWindow, cancelSearchOrClose, clampFrame, clearSearch, clickID, complete, currentApp, currentIndex, currentIsApp, currentIsScript, currentName, Delegate, doSearch, downID, getAppIcon, getScriptIcon, listHistory, moveWindow, openCurrent, openInFinder, results, scripts, search, select, selectName, showDots, sizeWindow, smallerWindow, toggleAppToggle, toggleDoubleActivation, wheelAccu, winHide
 
 import kakao from "../kakao.js"
 
 import kxk from "../kxk.js"
 let win = kxk.win
+let krzl = kxk.krzl
+let childIndex = kxk.childIndex
 let post = kxk.post
 let popup = kxk.popup
 let args = kxk.args
-let childIndex = kxk.childIndex
 let setStyle = kxk.setStyle
 let stopEvent = kxk.stopEvent
 let keyinfo = kxk.keyinfo
@@ -21,6 +22,7 @@ let kpos = kxk.kpos
 let $ = kxk.$
 
 import appfind from "./appfind.js"
+import appicon from "./appicon.js"
 
 appHist = null
 results = []
@@ -30,9 +32,13 @@ allKeys = []
 search = ''
 currentName = ''
 currentIndex = 0
-post.on('appsFound',function ()
+post.on('appsFound',function (info)
 {
-    console.log('appsFound')
+    apps = info.apps
+    scripts = info.scripts
+    allKeys = info.allKeys
+
+    return info
 })
 
 Delegate = (function ()
@@ -48,7 +54,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (info)
     {
-        var combo, _77_20_
+        var combo, _79_20_
 
         combo = info.combo
         console.log('onWindowKeyDown',combo)
@@ -61,9 +67,6 @@ Delegate = (function ()
         {
             case 'f1':
                 return preventKeyRepeat()
-
-            case 'delete':
-                return blacklist()
 
             case 'backspace':
                 return backspace()
@@ -161,7 +164,7 @@ winHide = function ()
 
 openCurrent = function ()
 {
-    var exe, _130_42_, _145_36_
+    var exe, _132_42_, _147_36_
 
     if (currentIndex > 0 && search.length)
     {
@@ -194,7 +197,7 @@ post.on('openCurrent',openCurrent)
 
 currentApp = function (appName)
 {
-    var lastMatches, name, scriptMatches, _168_52_
+    var lastMatches, name, scriptMatches, _170_52_
 
     if (_k_.empty(currentName))
     {
@@ -234,7 +237,7 @@ currentIsApp = (function ()
 
 currentIsScript = function ()
 {
-    var _186_50_
+    var _188_50_
 
     return ((results[currentIndex] != null ? results[currentIndex].script : undefined) != null)
 }
@@ -251,7 +254,7 @@ toggleDoubleActivation = function ()
 
 listHistory = function (offset = 0)
 {
-    var h, index, result, _214_26_
+    var h, index, result, _218_26_
 
     console.log(`listHistory ${offset}`,appHist.list)
     results = []
@@ -262,7 +265,7 @@ listHistory = function (offset = 0)
         {
             h = list[_a_]
             result = _.clone(h)
-            result.string = ((_214_26_=result.string) != null ? _214_26_ : result.name)
+            result.string = ((_218_26_=result.string) != null ? _218_26_ : result.name)
             results.push(result)
         }
     }
@@ -280,7 +283,7 @@ addToHistory = function ()
     {
         return
     }
-    result = _.clone(results[currentIndex])
+    result = _k_.clone(results[currentIndex])
     delete result.string
     appHist.add(result)
     return prefs.set('history',appHist.list)
@@ -314,29 +317,18 @@ getScriptIcon = function (scriptName)
     return setIcon(scripts[scriptName].img)
 }
 
-getAppIcon = function (appName)
+getAppIcon = async function (appName)
 {
-    var appIcon
+    var iconPath
 
-    if (slash.win())
-    {
-        appIcon = require('./exeicon')
-    }
-    else
-    {
-        appIcon = require('./appicon')
-    }
-    return appIcon.get({appPath:apps[appName],iconDir:iconDir,size:512,cb:setIcon})
-}
-
-setIcon = function (iconPath)
-{
+    iconPath = await appicon.get({appPath:apps[appName],size:512})
+    console.log('getAppIcon',appName,iconPath)
     return $('appicon').style.backgroundImage = `url(\"${slash.fileUrl(iconPath)}\")`
 }
 
 select = (function (index)
 {
-    var _296_17_, _297_28_
+    var _293_17_, _294_28_
 
     currentIndex = (index + results.length) % results.length
     if (_k_.empty(results[currentIndex]))
@@ -372,10 +364,11 @@ selectName = function (name)
 
 showDots = function ()
 {
-    var dot, dotr, dots, i, s
+    var dot, dotr, dots, i, s, winWidth
 
     dots = $('appdots')
     dots.innerHTML = ''
+    winWidth = $('main').getBoundingClientRect().width
     if (results.length < 2)
     {
         return
@@ -398,61 +391,25 @@ showDots = function ()
     }
 }
 
-blacklist = function ()
-{
-    var ignore
-
-    ignore = prefs.get('ignore',[])
-    _.pull(ignore,apps[currentName])
-    _.pull(ignore,null)
-    if (!_k_.empty(apps[currentName]))
-    {
-        ignore.push(apps[currentName])
-    }
-    else
-    {
-        console.log(`can't ignore '${currentName}'`)
-    }
-    prefs.set('ignore',ignore)
-    delete apps[currentName]
-    results.splice(currentIndex,1)
-    return select(currentIndex)
-}
-
 doSearch = function (s)
 {
-    var f, fuzzied, names, ps, r
+    var f, fuzz, fuzzied, names, r
 
     search = s
     names = allKeys
     console.log('doSearch',s,names)
-    return
-    fuzzied = fuzzy.filter(search,names,{pre:'<b>',post:'</b>'})
-    fuzzied = _.sortBy(fuzzied,function (o)
-    {
-        return 2 - fuzzaldrin.score(o.original,search)
-    })
-    if (search.length)
-    {
-        if (ps = prefs.get(`search:${search}`))
-        {
-            fuzzied = _.sortBy(fuzzied,function (o)
-            {
-                var _385_89_
-
-                return Number.MAX_SAFE_INTEGER - (((_385_89_=ps[o.original]) != null ? _385_89_ : 0))
-            })
-        }
-    }
+    fuzz = new krzl(names)
+    fuzzied = fuzz.filter(s)
+    console.log('fuzzied',fuzzied)
     results = []
     var list = _k_.list(fuzzied)
     for (var _d_ = 0; _d_ < list.length; _d_++)
     {
         f = list[_d_]
-        r = {name:f.original,string:f.string}
-        if (scripts[r.name])
+        r = {name:f,string:s}
+        if (scripts[f])
         {
-            r.script = scripts[r.name]
+            r.script = scripts[f]
         }
         results.push(r)
     }
@@ -460,14 +417,7 @@ doSearch = function (s)
     {
         if (s === '')
         {
-            if (slash.win())
-            {
-                selectName('terminal')
-            }
-            else
-            {
-                selectName('Finder')
-            }
+            selectName('Finder')
         }
         else
         {

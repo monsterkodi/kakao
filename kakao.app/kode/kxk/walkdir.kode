@@ -33,7 +33,7 @@ class walkdir
         
         dir = @cfg.root
         
-        log 'walkdir.start' dir
+        # log 'walkdir.start' dir
         
         toWalk = [dir]
         
