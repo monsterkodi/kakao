@@ -123,37 +123,13 @@ openCurrent = ->
 
         addToHistory()
         
-        log 'openCurrent' currentName
-        #childp.exec "open -a \"#{apps[currentName]}\"" (err) ->
-        #    if err? then log "[ERROR] can't open #{apps[currentName]} #{err}"
+        kakao 'app.sh' '/usr/bin/open' arg:"-a #{apps[currentName]}"
                 
-    else if scripts[currentName]?
-        
-        if scripts[currentName].foreground?
-            
-            exe = slash.file scripts[currentName].foreground
-            addToHistory()
-            
-            #if slash.win()
-            #    wxw = require 'wxw'
-            #    info = wxw('info' exe)?[0]
-            #    if info
-            #        winHide()
-            #        wxw 'show'  exe
-            #        wxw 'raise' exe
-            #        wxw 'focus' exe
-            #        return
-        
-        if scripts[currentName].exec?
-            
-            log currentName, scripts[currentName]
-            #childp.exec scripts[currentName].exec, (err) ->
-            #    if err? then log "[ERROR] can't execute script #{scripts[currentName]}: #{err}"
+    else if scripts[currentName]?.exec?
                 
-        else
-            post.toMain 'runScript' currentName
-            winHide()
-
+        log currentName, scripts[currentName].exec
+        kakao 'app.sh' scripts[currentName].exec
+                
 post.on 'openCurrent'  openCurrent
 
 #  0000000  000   000  00000000   00000000   00000000  000   000  000000000
@@ -167,13 +143,12 @@ currentApp = (appName) ->
     currentName   = 'kappo' if empty currentName
     appName       = 'kappo' if empty appName
     lastMatches   = currentName.toLowerCase() == appName.toLowerCase()
-    scriptMatches = scripts[currentName]?.foreground? and slash.base(scripts[currentName].foreground).toLowerCase() == appName.toLowerCase()
         
-    if (lastMatches or scriptMatches) and appHist.previous() and prefs.get 'appToggle' true
+    if lastMatches and appHist.previous() and prefs.get 'appToggle' true
         listHistory 1
         search = ''
     else
-        log "currentApp #{appName} -> #{currentName}" lastMatches, scriptMatches
+        log "currentApp #{appName} -> #{currentName}" lastMatches
         name = currentName
         doSearch ''
         selectName name if not empty name
@@ -224,12 +199,14 @@ listHistory = (offset=0) ->
 
 addToHistory = ->
     
-    ⮐ if empty results[currentIndex]
+    log 'addToHistory' results[currentIndex]
     
-    result = clone results[currentIndex]
-    delete result.string
-    appHist.add result
-    prefs.set 'history' appHist.list
+    # ⮐ if empty results[currentIndex]
+
+    # result = clone results[currentIndex]
+    # delete result.string
+    # appHist.add result
+    # prefs.set 'history' appHist.list
     
 openInFinder = () ->
     
@@ -265,15 +242,14 @@ post.on 'clearSearch'  clearSearch
 # 000  000       000   000  000  0000
 # 000   0000000   0000000   000   000
 
-getScriptIcon = (scriptName) -> setIcon scripts[scriptName].img
+getIcon = appName ○->
+    
+    if scripts[appName]?.img
+        iconPath = scripts[appName].img
+    else
+        iconPath = ○ appicon.get appPath:apps[appName], size:512
 
-getAppIcon = (appName) ○->
-
-    iconPath = ○ appicon.get
-        appPath: apps[appName]
-        size:    512
-
-    log 'getAppIcon' appName, iconPath
+    # log 'getAppIcon' appName, iconPath
     
     $('appicon').style.backgroundImage = "url(\"#{slash.fileUrl iconPath}\")"
 
@@ -283,7 +259,8 @@ getAppIcon = (appName) ○->
 #      000  000       000      000       000          000
 # 0000000   00000000  0000000  00000000   0000000     000
 
-select = (index) =>
+select = index =>
+    
     currentIndex = (index + results.length) % results.length
     if empty results[currentIndex]
         log 'dafuk? index:', index, 'results:', results
@@ -292,10 +269,8 @@ select = (index) =>
     $('appname').innerHTML = results[currentIndex].string
     $('.current')?.classList.remove 'current'
     $("dot_#{currentIndex}")?.classList.add 'current'
-    if currentIsApp()
-        getAppIcon currentName
-    else
-        getScriptIcon currentName
+
+    getIcon currentName
 
 selectName = (name) ->
     

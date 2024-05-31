@@ -6,11 +6,7 @@
 000   000  000        000        000   0000000   0000000   000   000  
 ###
 
-# { childp, fs, slash, error, log } = require 'kxk'
-
 use ../kxk ▪ slash ffs
-
-# plist = require 'simple-plist'
 
 class AppIcon
     
@@ -23,6 +19,8 @@ class AppIcon
     @get: opt ○->
         
         opt.iconDir ?= kakao.bundle.app '.stash/appIcons'
+        
+        ○ ffs.mkdir opt.iconDir
         
         pngPath = AppIcon.pngPath opt
         if AppIcon.cache[pngPath]
@@ -45,7 +43,6 @@ class AppIcon
             open  = text.indexOf '<string>'
             close = text.indexOf '</string>'
             text  = text[open+8...close]
-            log text
             
             icnsPath = slash.path slash.dir(infoPath), 'Resources' text
             icnsPath += ".icns" if not icnsPath.endsWith '.icns'
@@ -58,8 +55,11 @@ class AppIcon
     @saveIcon: icnsPath opt ○->
         
         pngPath = AppIcon.pngPath opt
-        log 'saveIcon' icnsPath, pngPath
-        ○ kakao 'app.sh' '/usr/bin/sips' arg:"-Z #{opt.size} -s format png \"#{icnsPath}\" --out \"#{pngPath}\""
+        log 'saveIcon' icnsPath, pngPath, opt
+        arg = "-Z #{opt.size} -s format png #{icnsPath} --out #{pngPath}"
+        log "/usr/bin/sips " + arg
+        sips = ○ kakao 'app.sh' '/usr/bin/sips' arg:arg
+        log 'sips' sips
         pngPath
         # AppIcon.brokenIcon opt
      

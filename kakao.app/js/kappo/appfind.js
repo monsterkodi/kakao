@@ -1,4 +1,4 @@
-var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }}
 
 var activateApp, activeApp, activeWin, allKeys, appName, apps, findApps, getActiveApp, scripts
 
@@ -9,7 +9,7 @@ let walkdir = kxk.walkdir
 
 apps = {}
 allKeys = []
-scripts = {sleep:{exec:"pmset sleepnow",img:`${_k_.dir()}/../scripts/sleep.png`},shutdown:{exec:"osascript -e 'tell app \"System Events\" to shut down'",img:`${_k_.dir()}/../scripts/shutdown.png`},restart:{exec:"osascript -e 'tell app \"System Events\" to restart'",img:`${_k_.dir()}/../scripts/restart.png`}}
+scripts = {sleep:{exec:"pmset sleepnow",img:kakao.bundle.img('sleep.png')},shutdown:{exec:"osascript -e 'tell app \"System Events\" to shut down'",img:kakao.bundle.img('shutdown.png')},restart:{exec:"osascript -e 'tell app \"System Events\" to restart'",img:kakao.bundle.img('restart.png')}}
 post.on('runScript',function (name)
 {
     return scripts[name].cb()
@@ -31,7 +31,6 @@ findApps = async function ()
 {
     var appFolder, appFolders, root
 
-    console.log('findApps')
     apps = {}
     apps['Finder'] = "/System/Library/CoreServices/Finder.app"
     appFolders = ["/Applications","/Applications/Utilities","/System/Applications","/System/Applications/Utilities","~/s"]
@@ -66,7 +65,7 @@ activeWin = null
 
 getActiveApp = function ()
 {
-    var top, wxw, _88_20_
+    var top, wxw, _77_20_
 
     if (slash.win())
     {

@@ -15,9 +15,10 @@ class AppIcon
 
     static async get (opt)
     {
-        var pngPath, _25_20_
+        var pngPath, _21_20_
 
-        opt.iconDir = ((_25_20_=opt.iconDir) != null ? _25_20_ : kakao.bundle.app('.stash/appIcons'))
+        opt.iconDir = ((_21_20_=opt.iconDir) != null ? _21_20_ : kakao.bundle.app('.stash/appIcons'))
+        await ffs.mkdir(opt.iconDir)
         pngPath = AppIcon.pngPath(opt)
         if (AppIcon.cache[pngPath])
         {
@@ -51,7 +52,6 @@ class AppIcon
             open = text.indexOf('<string>')
             close = text.indexOf('</string>')
             text = text.slice(open + 8, typeof close === 'number' ? close : -1)
-            console.log(text)
             icnsPath = slash.path(slash.dir(infoPath),'Resources',text)
             if (!icnsPath.endsWith('.icns'))
             {
@@ -71,11 +71,14 @@ class AppIcon
 
     static async saveIcon (icnsPath, opt)
     {
-        var pngPath
+        var arg, pngPath, sips
 
         pngPath = AppIcon.pngPath(opt)
-        console.log('saveIcon',icnsPath,pngPath)
-        await kakao('app.sh','/usr/bin/sips',{arg:`-Z ${opt.size} -s format png \"${icnsPath}\" --out \"${pngPath}\"`})
+        console.log('saveIcon',icnsPath,pngPath,opt)
+        arg = `-Z ${opt.size} -s format png ${icnsPath} --out ${pngPath}`
+        console.log("/usr/bin/sips " + arg)
+        sips = await kakao('app.sh','/usr/bin/sips',{arg:arg})
+        console.log('sips',sips)
         return pngPath
     }
 
