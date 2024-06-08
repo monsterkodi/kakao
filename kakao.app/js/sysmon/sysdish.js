@@ -95,6 +95,7 @@ SysDish = (function ()
         sy = -radius * Math.cos(deg2rad(start + angle))
         ex = radius * Math.sin(deg2rad(start))
         ey = -radius * Math.cos(deg2rad(start))
+        sx = sx.toFixed(2)
         return pie.setAttribute('d',`M 0 0 L ${sx} ${sy} A ${radius} ${radius} ${start} 0 0 ${ex} ${ey} z`)
     }
 

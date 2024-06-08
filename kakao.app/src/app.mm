@@ -507,7 +507,7 @@
 
 - (NSString*) executeShellScript:(NSArray*)args callback:(Callback)callback
 {
-    NSLog(@"executeShellScript %@ %lu", args, [args count]);
+    //NSLog(@"executeShellScript %@ %lu", args, [args count]);
 
     NSRange range; range.location = 1; range.length = [args count]-1;
     NSTask* task = [self taskForCommand:[args objectAtIndex:0] args:[args subarrayWithRange:range]];

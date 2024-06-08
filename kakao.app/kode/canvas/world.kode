@@ -1,0 +1,214 @@
+###
+000   000   0000000   00000000   000      0000000  
+000 0 000  000   000  000   000  000      000   000
+000000000  000   000  0000000    000      000   000
+000   000  000   000  000   000  000      000   000
+00     00   0000000   000   000  0000000  0000000  
+###
+
+use ../kxk ▪ $ randInt randIntRange elem prefs post
+
+function world
+
+    @: -> 
+        
+        @pause         = false
+        @cellSize      = prefs.get 'cellSize' 20
+        @width         = 300
+        @height        = 300
+        @types         = 24
+        @stepsPerFrame = 1
+        
+        @rMax           = 0.05
+        @num            = 2000
+        @forceFactor    = 4
+        @frictionFactor = 0.7
+                        
+        @canvas = elem 'canvas' class:'gridCanvas' 
+        
+        main =$ 'main'
+        main.insertBefore @canvas, main.firstChild
+        
+        @container =$ 'scrollContainer'
+        @content   =$ 'scrollContent'
+        
+        @start()
+        
+        @updateCellSize()
+        
+        post.on 'resize' @resize
+        
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    start: =>
+        
+        @matrix = @randomMatrix @types
+        
+        @colors         = new Int32Array   @num
+        @positionsX     = new Float32Array @num
+        @positionsY     = new Float32Array @num
+        @velocitiesX    = new Float32Array @num
+        @velocitiesY    = new Float32Array @num
+        
+        for i in 0...@num
+            @colors[i] = randInt @types
+            @positionsX[i] = Math.random()
+            @positionsY[i] = Math.random()
+            @velocitiesX[i] = 0
+            @velocitiesY[i] = 0
+        
+    randomMatrix: n ->
+        
+        rows = []
+        for i in 0...n
+            row = []
+            for j in 0...n
+                row.push Math.random()*2-1
+            rows.push row
+        rows
+
+    resize: =>
+        
+        br = @container.getBoundingClientRect()
+        cr = @content.getBoundingClientRect()
+        sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
+        sy = clamp 0 @height, parseInt @container.scrollTop / @cellSize
+        lx = clamp 0 @width,  parseInt sx + br.width / @cellSize
+        ly = clamp 0 @height, parseInt sy + br.height / @cellSize
+        
+        ox = max 0 cr.x - br.x
+        if cr.height < br.height
+            oy = (br.height - cr.height)/2
+        else
+            oy = max 0 cr.y - br.y
+                
+        @canvas.style.left = "#{ox}px"
+        @canvas.style.top  = "#{oy}px"
+        @canvas.width  = min br.width  , cr.width
+        @canvas.height = min br.height , cr.height
+                
+    togglePause: => @pause = not @pause; post.emit 'pause'
+    zoom: delta -> @cellSize += delta; @cellSize = clamp 3 60 @cellSize; prefs.set 'cellSize' @cellSize; @updateCellSize()
+    
+    updateCellSize: ->
+        
+        @content.style.width  = "#{@cellSize*@width}px"
+        @content.style.height = "#{@cellSize*@height}px"
+        
+        @resize()
+        
+    # 00000000   0000000   00000000    0000000  00000000  
+    # 000       000   000  000   000  000       000       
+    # 000000    000   000  0000000    000       0000000   
+    # 000       000   000  000   000  000       000       
+    # 000        0000000   000   000   0000000  00000000  
+    
+    force: r a ->
+        
+        beta = 0.3
+        if r < beta     ➜ ⮐ r / beta - 1
+        if beta < r < 1 ➜ ⮐ a * (1 - Math.abs(2*r-1-beta)/(1-beta))
+        0
+    
+    #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
+    # 000       000  000   000  000   000  000      000   000     000     000       
+    # 0000000   000  000000000  000   000  000      000000000     000     0000000   
+    #      000  000  000 0 000  000   000  000      000   000     000     000       
+    # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
+    
+    simulate: dt ->
+        
+        ⮐ if @pause and not @oneStep
+        
+        delete @oneStep
+        # ● simulate
+        
+        for i in 0...@num
+            
+            totalForceX = 0
+            totalForceY = 0
+            
+            for j in 0...@num
+                
+                continue if i == j
+                
+                rx = @positionsX[j] - @positionsX[i]
+                ry = @positionsY[j] - @positionsY[i]
+                
+                rx = rx - 1 if rx > 0.5
+                ry = ry - 1 if ry > 0.5
+                
+                rx = rx + 1 if rx < -0.5
+                ry = ry + 1 if ry < -0.5
+                
+                r = Math.hypot rx, ry
+                
+                if r > 0 and r < @rMax
+                    f = @force r/@rMax, @matrix[@colors[i]][@colors[j]]
+                    totalForceX += rx / r * f
+                    totalForceY += ry / r * f
+        
+            totalForceX *= @rMax * @forceFactor
+            totalForceY *= @rMax * @forceFactor
+            
+            @velocitiesX[i] *= @frictionFactor
+            @velocitiesY[i] *= @frictionFactor
+            
+            @velocitiesX[i] += totalForceX * dt
+            @velocitiesY[i] += totalForceY * dt
+        
+        for i in 0...@num
+            
+            @positionsX[i] += @velocitiesX[i] * dt
+            @positionsY[i] += @velocitiesY[i] * dt
+            
+            @positionsX[i] += 1 if @positionsX[i] < 0 
+            @positionsY[i] += 1 if @positionsY[i] < 0 
+            
+            @positionsX[i] -= 1 if @positionsX[i] > 1 
+            @positionsY[i] -= 1 if @positionsY[i] > 1 
+               
+    # 000000000  000   0000000  000   000  
+    #    000     000  000       000  000   
+    #    000     000  000       0000000    
+    #    000     000  000       000  000   
+    #    000     000   0000000  000   000  
+    
+    faster:     => @stepsPerFrame *= 4; @stepsPerFrame = min 64 @stepsPerFrame
+    slower:     => @stepsPerFrame /= 4; @stepsPerFrame = max 1  @stepsPerFrame
+    singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
+    
+    tick: tickInfo ->
+        
+        for i in 0...@stepsPerFrame
+            @simulate tickInfo.delta/1000
+        
+        br = @container.getBoundingClientRect()
+        sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
+        sy = clamp 0 @height, parseInt @container.scrollTop / @cellSize
+        lx = clamp 0 @width,  parseInt sx + br.width / @cellSize
+        ly = clamp 0 @height, parseInt sy + br.height / @cellSize
+        
+        @canvas.width = @canvas.width
+        ctx = @canvas.getContext '2d'
+ 
+        ctx.strokeStyle = "#111"
+        ctx.strokeWidth = 1
+        ctx.strokeRect 0 0 @canvas.width, @canvas.height
+        
+        ctx.fillStyle = "#ff0"
+                    
+        for i in 0...@num
+            ctx.beginPath()
+            screenX = @positionsX[i] * @canvas.width
+            screenY = @positionsY[i] * @canvas.height
+
+            ctx.arc screenX, screenY, 2 0 2*Math.PI
+            ctx.fillStyle = "hsl(#{360*@colors[i]/@types},100%,50%)"
+            ctx.fill()
+                    
+export world

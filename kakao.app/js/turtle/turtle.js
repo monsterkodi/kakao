@@ -103,7 +103,7 @@ masterConfirmed = async function ()
             }
             else
             {
-                whisper(['oops?','what?','...?','nope!'][randInt(3)],2000)
+                whisper(['oops?','what?','...?','nope!','wtf?'][randInt(6)],2000)
             }
         }
         else

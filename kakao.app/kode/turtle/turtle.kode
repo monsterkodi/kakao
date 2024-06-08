@@ -90,7 +90,7 @@ masterConfirmed = ○->
                 $('master-timeout')?.style.width = '100%'
                 $('master-timeout')?.style.left = '0%'
             else
-                whisper ['oops?' 'what?' '...?' 'nope!'][randInt 3], 2000
+                whisper ['oops?' 'what?' '...?' 'nope!' 'wtf?'][randInt 6], 2000
         else
             say ['Well chosen!' 'Nice one!' 'Good choice!'][randInt 2],
                 'And your <span class="open" onclick="showHelp();">password pattern?</span>'
