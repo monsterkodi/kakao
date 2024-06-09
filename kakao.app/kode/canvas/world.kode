@@ -14,17 +14,19 @@ function world
 
     @: -> 
         
-        @pause         = false
-        @types         = 12
-        @stepsPerFrame = 1
+        @pause          = false
+        @types          = 12
+        @stepsPerFrame  = 1
         
+        @dt             = 0.05
+        @beta           = 0.3
         @num            = 1200
-        @forceFactor    = 2
-        @frictionFactor = 0.4
-        @maxVelocity    = 1
+        @forceFactor    = 0.5
+        @friction       = 0.5
+        @maxVelocity    = 0.5
         
-        @minRadius      = 0.025 
-        @maxRadius      = 0.075
+        @minRadius      = 0.005
+        @maxRadius      = 0.125
                         
         @canvas = elem 'canvas' class:'canvas'
         
@@ -37,11 +39,15 @@ function world
         
         @tweaky.init 
             
-            types:       min:2 max:32   step:1     value:@types,          cb: (@types)          => @start()
-            friction:    min:0 max:0.9  step:0.05  value:@frictionFactor, cb: (@frictionFactor) =>
-            maxVelocity: min:0 max:1    steps:100  value:@maxVelocity,    cb: (@maxVelocity)    =>
-            minRadius:   min:0 max:1    steps:100  value:@minRadius,      cb: (@minRadius)      => @start()
-            maxRadius:   min:0 max:1    steps:100  value:@maxRadius,      cb: (@maxRadius)      => @start()
+            num:         min:1000   max:2000  step:100   value:@num,         cb: (@num)         => @start()
+            types:       min:2      max:32    step:1     value:@types,       cb: (@types)       => @start()
+            beta:        min:0.01   max:1.0   step:0.01  value:@beta,        cb: (@beta)        =>
+            delta:       min:0.001  max:0.1   step:0.001 value:@dt,          cb: (@dt)          =>
+            force:       min:0      max:1     step:0.01  value:@forceFactor, cb: (@forceFactor) =>
+            friction:    min:0.1    max:0.7   step:0.05  value:@friction,    cb: (@friction)    =>
+            maxVelocity: min:0.1    max:1     step:0.01  value:@maxVelocity, cb: (@maxVelocity) =>   
+            minRadius:   min:0.001  max:0.1   step:0.001 value:@minRadius,   cb: (@minRadius)   =>
+            maxRadius:   min:0.1    max:0.5   step:0.01  value:@maxRadius,   cb: (@maxRadius)   =>
         
         post.on 'resize' @resize
         
@@ -78,7 +84,7 @@ function world
             @hsl[i]         = "hsl(#{360*@colors[i]/@types},100%,50%)"
             
         @valgrid.init @matrix
-        @valgrrd.init @radii, min:@minRadius, max:@maxRadius, colors:@hsl
+        @valgrrd.init @radii, min:0 max:1 colors:@hsl
         
     randomMatrix: n ->
         
@@ -96,7 +102,7 @@ function world
         for i in 0...n
             row = []
             for j in 0...n
-                row.push randRange @minRadius, @maxRadius
+                row.push Math.random()
             rows.push row
         rows
         
@@ -120,9 +126,8 @@ function world
     
     force: r a ->
         
-        beta = 0.3
-        if r < beta     ➜ ⮐ r / beta - 1
-        if beta < r < 1 ➜ ⮐ a * (1 - Math.abs(2*r-1-beta)/(1-beta))
+        if r < @beta     ➜ ⮐ r / @beta - 1
+        if @beta < r < 1 ➜ ⮐ a * (1 - Math.abs(2*r-1-@beta)/(1-@beta))
         0
     
     #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
@@ -131,9 +136,11 @@ function world
     #      000  000  000 0 000  000   000  000      000   000     000     000       
     # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
     
-    simulate: dt ->
+    simulate: ->
         
         ⮐ if @pause and not @oneStep
+        
+        ● simulate
         
         delete @oneStep
         
@@ -157,20 +164,14 @@ function world
                 
                 r = Math.hypot rx, ry
 
-                rMax = @radii[@colors[i]][@colors[j]]
+                rMax = @minRadius + @radii[@colors[i]][@colors[j]] * (@maxRadius - @minRadius)
                 if r > 0 and r < rMax
                     f = @force r/rMax, @matrix[@colors[i]][@colors[j]]
                     totalForceX += rx / r * f
                     totalForceY += ry / r * f
-        
-            totalForceX *= 0.1 * @forceFactor
-            totalForceY *= 0.1 * @forceFactor
-            
-            @velocitiesX[i] *= @frictionFactor
-            @velocitiesY[i] *= @frictionFactor
-            
-            @velocitiesX[i] += totalForceX * dt
-            @velocitiesY[i] += totalForceY * dt
+                                
+            @velocitiesX[i] += @forceFactor * totalForceX * @dt
+            @velocitiesY[i] += @forceFactor * totalForceY * @dt
                         
             if Math.abs(@velocitiesX[i]) < 0.001 and Math.abs(@velocitiesY[i]) < 0.001
                 @ages[i] += 0.01
@@ -184,11 +185,14 @@ function world
             
         for i in 0...@num
           
+            @velocitiesX[i] *= @friction
+            @velocitiesY[i] *= @friction
+            
             @velocitiesX[i] = clamp -@maxVelocity, @maxVelocity, @velocitiesX[i]
             @velocitiesY[i] = clamp -@maxVelocity, @maxVelocity, @velocitiesY[i]
             
-            @positionsX[i] += @velocitiesX[i] * dt
-            @positionsY[i] += @velocitiesY[i] * dt
+            @positionsX[i] += @velocitiesX[i] * @dt
+            @positionsY[i] += @velocitiesY[i] * @dt
             
             @positionsX[i] += 1 if @positionsX[i] < 0 
             @positionsY[i] += 1 if @positionsY[i] < 0 
@@ -209,8 +213,7 @@ function world
     tick: tickInfo ->
         
         for i in 0...@stepsPerFrame
-            dt = 0.05
-            @simulate dt
+            @simulate()
         
         @canvas.width = @canvas.width
         ctx = @canvas.getContext '2d'
@@ -222,12 +225,13 @@ function world
         ctx.fillStyle = "#ff0"
                     
         for i in 0...@num
-            ctx.beginPath()
+            #ctx.beginPath()
             screenX = @positionsX[i] * @canvas.width
             screenY = @positionsY[i] * @canvas.height
-
-            ctx.arc screenX, screenY, 2 0 2*Math.PI
-            ctx.fillStyle = @hsl[i]
-            ctx.fill()
+            #
+            #ctx.arc screenX, screenY, 2 0 2*Math.PI
+            ctx.fillStyle = @hsl[@colors[i]]
+            #ctx.fill()
+            ctx.fillRect screenX, screenY, 4 4
                     
 export world

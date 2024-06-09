@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var world
 
@@ -28,39 +28,51 @@ world = (function ()
         this.pause = false
         this.types = 12
         this.stepsPerFrame = 1
+        this.dt = 0.05
+        this.beta = 0.3
         this.num = 1200
-        this.forceFactor = 2
-        this.frictionFactor = 0.4
-        this.maxVelocity = 1
-        this.minRadius = 0.025
-        this.maxRadius = 0.075
+        this.forceFactor = 0.5
+        this.friction = 0.5
+        this.maxVelocity = 0.5
+        this.minRadius = 0.005
+        this.maxRadius = 0.125
         this.canvas = elem('canvas',{class:'canvas'})
         this.main = $('main')
         this.main.appendChild(this.canvas)
         this.tweaky = new tweaky(this.main)
         this.valgrid = new valgrid(this.main)
         this.valgrrd = new valgrid(this.main)
-        this.tweaky.init({types:{min:2,max:32,step:1,value:this.types,cb:(function (types)
+        this.tweaky.init({num:{min:1000,max:2000,step:100,value:this.num,cb:(function (num)
+        {
+            this.num = num
+        
+            return this.start()
+        }).bind(this)},types:{min:2,max:32,step:1,value:this.types,cb:(function (types)
         {
             this.types = types
         
             return this.start()
-        }).bind(this)},friction:{min:0,max:0.9,step:0.05,value:this.frictionFactor,cb:(function (frictionFactor)
+        }).bind(this)},beta:{min:0.01,max:1.0,step:0.01,value:this.beta,cb:(function (beta)
         {
-            this.frictionFactor = frictionFactor
-        }).bind(this)},maxVelocity:{min:0,max:1,steps:100,value:this.maxVelocity,cb:(function (maxVelocity)
+            this.beta = beta
+        }).bind(this)},delta:{min:0.001,max:0.1,step:0.001,value:this.dt,cb:(function (dt)
+        {
+            this.dt = dt
+        }).bind(this)},force:{min:0,max:1,step:0.01,value:this.forceFactor,cb:(function (forceFactor)
+        {
+            this.forceFactor = forceFactor
+        }).bind(this)},friction:{min:0.1,max:0.7,step:0.05,value:this.friction,cb:(function (friction)
+        {
+            this.friction = friction
+        }).bind(this)},maxVelocity:{min:0.1,max:1,step:0.01,value:this.maxVelocity,cb:(function (maxVelocity)
         {
             this.maxVelocity = maxVelocity
-        }).bind(this)},minRadius:{min:0,max:1,steps:100,value:this.minRadius,cb:(function (minRadius)
+        }).bind(this)},minRadius:{min:0.001,max:0.1,step:0.001,value:this.minRadius,cb:(function (minRadius)
         {
             this.minRadius = minRadius
-        
-            return this.start()
-        }).bind(this)},maxRadius:{min:0,max:1,steps:100,value:this.maxRadius,cb:(function (maxRadius)
+        }).bind(this)},maxRadius:{min:0.1,max:0.5,step:0.01,value:this.maxRadius,cb:(function (maxRadius)
         {
             this.maxRadius = maxRadius
-        
-            return this.start()
         }).bind(this)}})
         post.on('resize',this.resize)
         this.resize()
@@ -91,7 +103,7 @@ world = (function ()
             this.hsl[i] = `hsl(${360 * this.colors[i] / this.types},100%,50%)`
         }
         this.valgrid.init(this.matrix)
-        return this.valgrrd.init(this.radii,{min:this.minRadius,max:this.maxRadius,colors:this.hsl})
+        return this.valgrrd.init(this.radii,{min:0,max:1,colors:this.hsl})
     }
 
     world.prototype["randomMatrix"] = function (n)
@@ -121,7 +133,7 @@ world = (function ()
             row = []
             for (var _c_ = j = 0, _d_ = n; (_c_ <= _d_ ? j < n : j > n); (_c_ <= _d_ ? ++j : --j))
             {
-                row.push(randRange(this.minRadius,this.maxRadius))
+                row.push(Math.random())
             }
             rows.push(row)
         }
@@ -148,21 +160,18 @@ world = (function ()
 
     world.prototype["force"] = function (r, a)
     {
-        var beta
-
-        beta = 0.3
-        if (r < beta)
+        if (r < this.beta)
         {
-            return r / beta - 1
+            return r / this.beta - 1
         }
-        if ((beta < r && r < 1))
+        if ((this.beta < r && r < 1))
         {
-            return a * (1 - Math.abs(2 * r - 1 - beta) / (1 - beta))
+            return a * (1 - Math.abs(2 * r - 1 - this.beta) / (1 - this.beta))
         }
         return 0
     }
 
-    world.prototype["simulate"] = function (dt)
+    world.prototype["simulate"] = function ()
     {
         var f, i, j, r, rMax, rx, ry, totalForceX, totalForceY
 
@@ -170,6 +179,7 @@ world = (function ()
         {
             return
         }
+        _k_.profile('simulate')
         delete this.oneStep
         for (var _a_ = i = 0, _b_ = this.num; (_a_ <= _b_ ? i < this.num : i > this.num); (_a_ <= _b_ ? ++i : --i))
         {
@@ -200,7 +210,7 @@ world = (function ()
                     ry = ry + 1
                 }
                 r = Math.hypot(rx,ry)
-                rMax = this.radii[this.colors[i]][this.colors[j]]
+                rMax = this.minRadius + this.radii[this.colors[i]][this.colors[j]] * (this.maxRadius - this.minRadius)
                 if (r > 0 && r < rMax)
                 {
                     f = this.force(r / rMax,this.matrix[this.colors[i]][this.colors[j]])
@@ -208,12 +218,8 @@ world = (function ()
                     totalForceY += ry / r * f
                 }
             }
-            totalForceX *= 0.1 * this.forceFactor
-            totalForceY *= 0.1 * this.forceFactor
-            this.velocitiesX[i] *= this.frictionFactor
-            this.velocitiesY[i] *= this.frictionFactor
-            this.velocitiesX[i] += totalForceX * dt
-            this.velocitiesY[i] += totalForceY * dt
+            this.velocitiesX[i] += this.forceFactor * totalForceX * this.dt
+            this.velocitiesY[i] += this.forceFactor * totalForceY * this.dt
             if (Math.abs(this.velocitiesX[i]) < 0.001 && Math.abs(this.velocitiesY[i]) < 0.001)
             {
                 this.ages[i] += 0.01
@@ -230,10 +236,12 @@ world = (function ()
         }
         for (var _e_ = i = 0, _f_ = this.num; (_e_ <= _f_ ? i < this.num : i > this.num); (_e_ <= _f_ ? ++i : --i))
         {
+            this.velocitiesX[i] *= this.friction
+            this.velocitiesY[i] *= this.friction
             this.velocitiesX[i] = _k_.clamp(-this.maxVelocity,this.maxVelocity,this.velocitiesX[i])
             this.velocitiesY[i] = _k_.clamp(-this.maxVelocity,this.maxVelocity,this.velocitiesY[i])
-            this.positionsX[i] += this.velocitiesX[i] * dt
-            this.positionsY[i] += this.velocitiesY[i] * dt
+            this.positionsX[i] += this.velocitiesX[i] * this.dt
+            this.positionsY[i] += this.velocitiesY[i] * this.dt
             if (this.positionsX[i] < 0)
             {
                 this.positionsX[i] += 1
@@ -251,6 +259,7 @@ world = (function ()
                 this.positionsY[i] -= 1
             }
         }
+        _k_.profilend('simulate')
     }
 
     world.prototype["faster"] = function ()
@@ -274,12 +283,11 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var ctx, dt, i, screenX, screenY
+        var ctx, i, screenX, screenY
 
         for (var _a_ = i = 0, _b_ = this.stepsPerFrame; (_a_ <= _b_ ? i < this.stepsPerFrame : i > this.stepsPerFrame); (_a_ <= _b_ ? ++i : --i))
         {
-            dt = 0.05
-            this.simulate(dt)
+            this.simulate()
         }
         this.canvas.width = this.canvas.width
         ctx = this.canvas.getContext('2d')
@@ -289,12 +297,10 @@ world = (function ()
         ctx.fillStyle = "#ff0"
         for (var _c_ = i = 0, _d_ = this.num; (_c_ <= _d_ ? i < this.num : i > this.num); (_c_ <= _d_ ? ++i : --i))
         {
-            ctx.beginPath()
             screenX = this.positionsX[i] * this.canvas.width
             screenY = this.positionsY[i] * this.canvas.height
-            ctx.arc(screenX,screenY,2,0,2 * Math.PI)
-            ctx.fillStyle = this.hsl[i]
-            ctx.fill()
+            ctx.fillStyle = this.hsl[this.colors[i]]
+            ctx.fillRect(screenX,screenY,4,4)
         }
     }
 
