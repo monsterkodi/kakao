@@ -40,22 +40,17 @@ function Delegate extends win.Delegate
         
         main =$ 'main'
         @fps = new fps main, topDown:true
-        # @fps.elem.style.display = 'flex'
+
         #⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭ 
         @quiq = elem class:'quiq' children: [
-            elem text:' ' class:'quiq-item quiq-resart' click:@world.start,       dblclick: (e) -> stopEvent e  
-        ,                                                                                   
-            elem text:'⏸' class:'quiq-item quiq-pause'  click:@world.togglePause, dblclick: (e) -> stopEvent e  
-        ,                                                                                   
-            elem text:'⏯' class:'quiq-item quiq-step'   click:@world.singleStep,  dblclick: (e) -> stopEvent e  
-        ,                                                                                   
-            elem text:'⏮' class:'quiq-item quiq-slower' click:@world.slower,      dblclick: (e) -> stopEvent e  
-        ,                                                                                   
-            elem text:'⏭' class:'quiq-item quiq-faster' click:@world.faster,      dblclick: (e) -> stopEvent e  
+            elem(text:'V' class:'quiq-item quiq-values'  click:@world.toggleValues, dblclick: (e) -> stopEvent e),                                                                                   
+            elem(text:' ' class:'quiq-item quiq-resart' click:@world.start,        dblclick: (e) -> stopEvent e),                                                                                   
+            elem(text:'⏸' class:'quiq-item quiq-pause'   click:@world.togglePause,  dblclick: (e) -> stopEvent e),                                                                                   
+            elem(text:'⏯' class:'quiq-item quiq-step'    click:@world.singleStep,   dblclick: (e) -> stopEvent e)  
         ]
         
         title =$ 'title'
-        title.parentElement.insertBefore @quiq, title.nextSibling
+        title.parentElement.insertBefore @quiq, title
         
         post.on 'pause' @onPause
         

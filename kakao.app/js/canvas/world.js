@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var world
 
@@ -20,59 +20,62 @@ world = (function ()
     function world ()
     {
         this["singleStep"] = this["singleStep"].bind(this)
-        this["slower"] = this["slower"].bind(this)
-        this["faster"] = this["faster"].bind(this)
+        this["toggleValues"] = this["toggleValues"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this["resize"] = this["resize"].bind(this)
         this["start"] = this["start"].bind(this)
         this.pause = false
         this.types = 12
         this.stepsPerFrame = 1
-        this.dt = 0.05
+        this.dt = 0.025
         this.beta = 0.3
-        this.num = 1200
-        this.forceFactor = 0.5
+        this.num = 1000
         this.friction = 0.5
         this.maxVelocity = 0.5
-        this.minRadius = 0.005
-        this.maxRadius = 0.125
+        this.ageVel = 0.005
+        this.showAge = false
+        this.minRadius = 0.025
+        this.maxRadius = 0.1
         this.canvas = elem('canvas',{class:'canvas'})
         this.main = $('main')
         this.main.appendChild(this.canvas)
         this.tweaky = new tweaky(this.main)
         this.valgrid = new valgrid(this.main)
         this.valgrrd = new valgrid(this.main)
-        this.tweaky.init({num:{min:1000,max:2000,step:100,value:this.num,cb:(function (num)
+        this.tweaky.init({num:{min:500,max:2000,step:100,value:this.num,cb:(function (num)
         {
             this.num = num
         
             return this.start()
-        }).bind(this)},types:{min:2,max:32,step:1,value:this.types,cb:(function (types)
+        }).bind(this)},types:{min:2,max:16,step:1,value:this.types,cb:(function (types)
         {
             this.types = types
         
             return this.start()
-        }).bind(this)},beta:{min:0.01,max:1.0,step:0.01,value:this.beta,cb:(function (beta)
-        {
-            this.beta = beta
-        }).bind(this)},delta:{min:0.001,max:0.1,step:0.001,value:this.dt,cb:(function (dt)
+        }).bind(this)},delta:{min:0.01,max:0.1,step:0.001,value:this.dt,cb:(function (dt)
         {
             this.dt = dt
-        }).bind(this)},force:{min:0,max:1,step:0.01,value:this.forceFactor,cb:(function (forceFactor)
-        {
-            this.forceFactor = forceFactor
-        }).bind(this)},friction:{min:0.1,max:0.7,step:0.05,value:this.friction,cb:(function (friction)
+        }).bind(this)},friction:{min:0.1,max:0.7,step:0.01,value:this.friction,cb:(function (friction)
         {
             this.friction = friction
+        }).bind(this)},beta:{min:0.1,max:0.6,step:0.01,value:this.beta,cb:(function (beta)
+        {
+            this.beta = beta
         }).bind(this)},maxVelocity:{min:0.1,max:1,step:0.01,value:this.maxVelocity,cb:(function (maxVelocity)
         {
             this.maxVelocity = maxVelocity
-        }).bind(this)},minRadius:{min:0.001,max:0.1,step:0.001,value:this.minRadius,cb:(function (minRadius)
+        }).bind(this)},minRadius:{min:0.001,max:0.05,step:0.001,value:this.minRadius,cb:(function (minRadius)
         {
             this.minRadius = minRadius
-        }).bind(this)},maxRadius:{min:0.1,max:0.5,step:0.01,value:this.maxRadius,cb:(function (maxRadius)
+        }).bind(this)},maxRadius:{min:0.05,max:0.5,step:0.01,value:this.maxRadius,cb:(function (maxRadius)
         {
             this.maxRadius = maxRadius
+        }).bind(this)},ageVel:{min:0.001,max:0.1,step:0.001,value:this.ageVel,cb:(function (ageVel)
+        {
+            this.ageVel = ageVel
+        }).bind(this)},showAge:{value:this.showAge,cb:(function (showAge)
+        {
+            this.showAge = showAge
         }).bind(this)}})
         post.on('resize',this.resize)
         this.resize()
@@ -100,7 +103,7 @@ world = (function ()
             this.velocitiesX[i] = 0
             this.velocitiesY[i] = 0
             this.ages[i] = 0
-            this.hsl[i] = `hsl(${360 * this.colors[i] / this.types},100%,50%)`
+            this.hsl[i] = `hsl(${360 * i / this.types},100%,50%)`
         }
         this.valgrid.init(this.matrix)
         return this.valgrrd.init(this.radii,{min:0,max:1,colors:this.hsl})
@@ -158,6 +161,13 @@ world = (function ()
         return post.emit('pause')
     }
 
+    world.prototype["toggleValues"] = function ()
+    {
+        this.tweaky.div.style.display = (this.tweaky.div.style.display === 'none' ? 'block' : 'none')
+        this.valgrid.div.style.display = (this.valgrid.div.style.display === 'none' ? 'block' : 'none')
+        return this.valgrrd.div.style.display = (this.valgrrd.div.style.display === 'none' ? 'block' : 'none')
+    }
+
     world.prototype["force"] = function (r, a)
     {
         if (r < this.beta)
@@ -179,7 +189,6 @@ world = (function ()
         {
             return
         }
-        _k_.profile('simulate')
         delete this.oneStep
         for (var _a_ = i = 0, _b_ = this.num; (_a_ <= _b_ ? i < this.num : i > this.num); (_a_ <= _b_ ? ++i : --i))
         {
@@ -218,9 +227,9 @@ world = (function ()
                     totalForceY += ry / r * f
                 }
             }
-            this.velocitiesX[i] += this.forceFactor * totalForceX * this.dt
-            this.velocitiesY[i] += this.forceFactor * totalForceY * this.dt
-            if (Math.abs(this.velocitiesX[i]) < 0.001 && Math.abs(this.velocitiesY[i]) < 0.001)
+            this.velocitiesX[i] += totalForceX * this.dt
+            this.velocitiesY[i] += totalForceY * this.dt
+            if (Math.abs(this.velocitiesX[i]) < this.ageVel && Math.abs(this.velocitiesY[i]) < this.ageVel)
             {
                 this.ages[i] += 0.01
                 if (this.ages[i] > 1)
@@ -228,10 +237,14 @@ world = (function ()
                     this.colors[i] = randInt(this.types)
                     this.positionsX[i] = Math.random()
                     this.positionsY[i] = Math.random()
-                    this.velocitiesX[i] = 0.1 * Math.random() - 0.05
-                    this.velocitiesY[i] = 0.1 * Math.random() - 0.05
+                    this.velocitiesX[i] = 2 * (2 * Math.random() * this.ageVel - this.ageVel)
+                    this.velocitiesY[i] = 2 * (2 * Math.random() * this.ageVel - this.ageVel)
                     this.ages[i] = 0
                 }
+            }
+            else
+            {
+                this.ages[i] = 0
             }
         }
         for (var _e_ = i = 0, _f_ = this.num; (_e_ <= _f_ ? i < this.num : i > this.num); (_e_ <= _f_ ? ++i : --i))
@@ -259,19 +272,6 @@ world = (function ()
                 this.positionsY[i] -= 1
             }
         }
-        _k_.profilend('simulate')
-    }
-
-    world.prototype["faster"] = function ()
-    {
-        this.forceFactor *= 2
-        return this.forceFactor = _k_.min(16,this.forceFactor)
-    }
-
-    world.prototype["slower"] = function ()
-    {
-        this.forceFactor /= 2
-        return this.forceFactor = _k_.max(1,this.forceFactor)
     }
 
     world.prototype["singleStep"] = function ()
@@ -283,7 +283,7 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var ctx, i, screenX, screenY
+        var ctx, i, radius, screenX, screenY
 
         for (var _a_ = i = 0, _b_ = this.stepsPerFrame; (_a_ <= _b_ ? i < this.stepsPerFrame : i > this.stepsPerFrame); (_a_ <= _b_ ? ++i : --i))
         {
@@ -291,16 +291,29 @@ world = (function ()
         }
         this.canvas.width = this.canvas.width
         ctx = this.canvas.getContext('2d')
-        ctx.strokeStyle = "#111"
-        ctx.strokeWidth = 1
-        ctx.strokeRect(0,0,this.canvas.width,this.canvas.height)
-        ctx.fillStyle = "#ff0"
         for (var _c_ = i = 0, _d_ = this.num; (_c_ <= _d_ ? i < this.num : i > this.num); (_c_ <= _d_ ? ++i : --i))
         {
             screenX = this.positionsX[i] * this.canvas.width
             screenY = this.positionsY[i] * this.canvas.height
-            ctx.fillStyle = this.hsl[this.colors[i]]
-            ctx.fillRect(screenX,screenY,4,4)
+            if (this.showAge)
+            {
+                ctx.fillStyle = `hsl(${360 * this.ages[i]},100%,50%)`
+            }
+            else
+            {
+                ctx.fillStyle = this.hsl[this.colors[i]]
+            }
+            if (this.num <= 1000)
+            {
+                radius = 6 * 500 / this.num
+                ctx.beginPath()
+                ctx.arc(screenX,screenY,radius,0,2 * Math.PI)
+                ctx.fill()
+            }
+            else
+            {
+                ctx.fillRect(screenX,screenY,4,4)
+            }
         }
     }
 

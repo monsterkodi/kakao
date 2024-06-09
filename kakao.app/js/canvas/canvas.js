@@ -60,7 +60,10 @@ Delegate = (function ()
         window.world = this.world = new world
         main = $('main')
         this.fps = new fps(main,{topDown:true})
-        this.quiq = elem({class:'quiq',children:[elem({text:' ',class:'quiq-item quiq-resart',click:this.world.start,dblclick:function (e)
+        this.quiq = elem({class:'quiq',children:[elem({text:'V',class:'quiq-item quiq-values',click:this.world.toggleValues,dblclick:function (e)
+        {
+            return stopEvent(e)
+        }}),elem({text:' ',class:'quiq-item quiq-resart',click:this.world.start,dblclick:function (e)
         {
             return stopEvent(e)
         }}),elem({text:'⏸',class:'quiq-item quiq-pause',click:this.world.togglePause,dblclick:function (e)
@@ -69,15 +72,9 @@ Delegate = (function ()
         }}),elem({text:'⏯',class:'quiq-item quiq-step',click:this.world.singleStep,dblclick:function (e)
         {
             return stopEvent(e)
-        }}),elem({text:'⏮',class:'quiq-item quiq-slower',click:this.world.slower,dblclick:function (e)
-        {
-            return stopEvent(e)
-        }}),elem({text:'⏭',class:'quiq-item quiq-faster',click:this.world.faster,dblclick:function (e)
-        {
-            return stopEvent(e)
         }})]})
         title = $('title')
-        title.parentElement.insertBefore(this.quiq,title.nextSibling)
+        title.parentElement.insertBefore(this.quiq,title)
         post.on('pause',this.onPause)
         return document.body.style.display = 'inherit'
     }
