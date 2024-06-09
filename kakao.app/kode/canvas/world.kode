@@ -6,36 +6,47 @@
 00     00   0000000   000   000  0000000  0000000  
 ###
 
-use ../kxk ▪ $ randInt randIntRange elem prefs post
+use ../kxk ▪ $ randInt randRange randIntRange elem prefs post
+
+use ◆ tweaky valgrid
 
 function world
 
     @: -> 
         
         @pause         = false
-        @cellSize      = prefs.get 'cellSize' 20
-        @width         = 300
-        @height        = 300
-        @types         = 16
+        @types         = 12
         @stepsPerFrame = 1
         
         @num            = 1200
         @forceFactor    = 2
-        @frictionFactor = 0.7
+        @frictionFactor = 0.4
+        @maxVelocity    = 1
+        
+        @minRadius      = 0.025 
+        @maxRadius      = 0.075
                         
-        @canvas = elem 'canvas' class:'gridCanvas' 
+        @canvas = elem 'canvas' class:'canvas'
         
-        main =$ 'main'
-        main.insertBefore @canvas, main.firstChild
+        @main =$ 'main'
+        @main.appendChild @canvas
+                
+        @tweaky  = new tweaky  @main
+        @valgrid = new valgrid @main
+        @valgrrd = new valgrid @main
         
-        @container =$ 'scrollContainer'
-        @content   =$ 'scrollContent'
-        
-        @start()
-        
-        @updateCellSize()
+        @tweaky.init 
+            
+            types:       min:2 max:32   step:1     value:@types,          cb: (@types)          => @start()
+            friction:    min:0 max:0.9  step:0.05  value:@frictionFactor, cb: (@frictionFactor) =>
+            maxVelocity: min:0 max:1    steps:100  value:@maxVelocity,    cb: (@maxVelocity)    =>
+            minRadius:   min:0 max:1    steps:100  value:@minRadius,      cb: (@minRadius)      => @start()
+            maxRadius:   min:0 max:1    steps:100  value:@maxRadius,      cb: (@maxRadius)      => @start()
         
         post.on 'resize' @resize
+        
+        @resize()
+        @start()
         
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
@@ -47,13 +58,15 @@ function world
         
         @matrix = @randomMatrix @types
         @radii  = @randomRadii  @types
-        
+                
         @colors         = new Int32Array   @num
         @ages           = new Float32Array @num
         @positionsX     = new Float32Array @num
         @positionsY     = new Float32Array @num
         @velocitiesX    = new Float32Array @num
         @velocitiesY    = new Float32Array @num
+        
+        @hsl            = []
         
         for i in 0...@num
             @colors[i]      = randInt @types
@@ -62,6 +75,10 @@ function world
             @velocitiesX[i] = 0
             @velocitiesY[i] = 0
             @ages[i]        = 0
+            @hsl[i]         = "hsl(#{360*@colors[i]/@types},100%,50%)"
+            
+        @valgrid.init @matrix
+        @valgrrd.init @radii, min:@minRadius, max:@maxRadius, colors:@hsl
         
     randomMatrix: n ->
         
@@ -79,40 +96,22 @@ function world
         for i in 0...n
             row = []
             for j in 0...n
-                row.push 0.05 + Math.random()*0.025
+                row.push randRange @minRadius, @maxRadius
             rows.push row
         rows
         
     resize: =>
         
-        br = @container.getBoundingClientRect()
-        cr = @content.getBoundingClientRect()
-        sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
-        sy = clamp 0 @height, parseInt @container.scrollTop / @cellSize
-        lx = clamp 0 @width,  parseInt sx + br.width / @cellSize
-        ly = clamp 0 @height, parseInt sy + br.height / @cellSize
+        br = @main.getBoundingClientRect()
+        @size = min br.width, br.height
+        @canvas.width  = @size
+        @canvas.height = @size
         
-        ox = max 0 cr.x - br.x
-        if cr.height < br.height
-            oy = (br.height - cr.height)/2
-        else
-            oy = max 0 cr.y - br.y
-                
-        @canvas.style.left = "#{ox}px"
-        @canvas.style.top  = "#{oy}px"
-        @canvas.width  = min br.width  , cr.width
-        @canvas.height = min br.height , cr.height
+        @canvas.style.left = "#{(max 0 br.width-@size)/2}px"
+        @canvas.style.top  = "#{(max 0 br.height-@size)/2}px"
                 
     togglePause: => @pause = not @pause; post.emit 'pause'
-    zoom: delta -> @cellSize += delta; @cellSize = clamp 3 60 @cellSize; prefs.set 'cellSize' @cellSize; @updateCellSize()
     
-    updateCellSize: ->
-        
-        @content.style.width  = "#{@cellSize*@width}px"
-        @content.style.height = "#{@cellSize*@height}px"
-        
-        @resize()
-        
     # 00000000   0000000   00000000    0000000  00000000  
     # 000       000   000  000   000  000       000       
     # 000000    000   000  0000000    000       0000000   
@@ -172,7 +171,7 @@ function world
             
             @velocitiesX[i] += totalForceX * dt
             @velocitiesY[i] += totalForceY * dt
-            
+                        
             if Math.abs(@velocitiesX[i]) < 0.001 and Math.abs(@velocitiesY[i]) < 0.001
                 @ages[i] += 0.01
                 if @ages[i] > 1
@@ -184,6 +183,9 @@ function world
                     @ages[i]        = 0
             
         for i in 0...@num
+          
+            @velocitiesX[i] = clamp -@maxVelocity, @maxVelocity, @velocitiesX[i]
+            @velocitiesY[i] = clamp -@maxVelocity, @maxVelocity, @velocitiesY[i]
             
             @positionsX[i] += @velocitiesX[i] * dt
             @positionsY[i] += @velocitiesY[i] * dt
@@ -210,12 +212,6 @@ function world
             dt = 0.05
             @simulate dt
         
-        br = @container.getBoundingClientRect()
-        sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
-        sy = clamp 0 @height, parseInt @container.scrollTop / @cellSize
-        lx = clamp 0 @width,  parseInt sx + br.width / @cellSize
-        ly = clamp 0 @height, parseInt sy + br.height / @cellSize
-        
         @canvas.width = @canvas.width
         ctx = @canvas.getContext '2d'
  
@@ -231,7 +227,7 @@ function world
             screenY = @positionsY[i] * @canvas.height
 
             ctx.arc screenX, screenY, 2 0 2*Math.PI
-            ctx.fillStyle = "hsl(#{360*@colors[i]/@types},100%,50%)"
+            ctx.fillStyle = @hsl[i]
             ctx.fill()
                     
 export world

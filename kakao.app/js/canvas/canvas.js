@@ -24,8 +24,6 @@ Delegate = (function ()
     {
         this["onWindowFocus"] = this["onWindowFocus"].bind(this)
         this["onWindowBlur"] = this["onWindowBlur"].bind(this)
-        this["onWindowKeyUp"] = this["onWindowKeyUp"].bind(this)
-        this["onWindowKeyDown"] = this["onWindowKeyDown"].bind(this)
         this["onMenuAction"] = this["onMenuAction"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
@@ -125,12 +123,6 @@ Delegate = (function ()
 
         return 'unhandled'
     }
-
-    Delegate.prototype["onWindowKeyDown"] = function (win, info)
-    {}
-
-    Delegate.prototype["onWindowKeyUp"] = function (win, info)
-    {}
 
     Delegate.prototype["onWindowBlur"] = function (win)
     {}

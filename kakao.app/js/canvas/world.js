@@ -1,22 +1,24 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
 let randInt = kxk.randInt
+let randRange = kxk.randRange
 let randIntRange = kxk.randIntRange
 let elem = kxk.elem
 let prefs = kxk.prefs
 let post = kxk.post
+
+import tweaky from "./tweaky.js"
+import valgrid from "./valgrid.js"
 
 
 world = (function ()
 {
     function world ()
     {
-        var main
-
         this["singleStep"] = this["singleStep"].bind(this)
         this["slower"] = this["slower"].bind(this)
         this["faster"] = this["faster"].bind(this)
@@ -24,22 +26,45 @@ world = (function ()
         this["resize"] = this["resize"].bind(this)
         this["start"] = this["start"].bind(this)
         this.pause = false
-        this.cellSize = prefs.get('cellSize',20)
-        this.width = 300
-        this.height = 300
-        this.types = 16
+        this.types = 12
         this.stepsPerFrame = 1
         this.num = 1200
         this.forceFactor = 2
-        this.frictionFactor = 0.7
-        this.canvas = elem('canvas',{class:'gridCanvas'})
-        main = $('main')
-        main.insertBefore(this.canvas,main.firstChild)
-        this.container = $('scrollContainer')
-        this.content = $('scrollContent')
-        this.start()
-        this.updateCellSize()
+        this.frictionFactor = 0.4
+        this.maxVelocity = 1
+        this.minRadius = 0.025
+        this.maxRadius = 0.075
+        this.canvas = elem('canvas',{class:'canvas'})
+        this.main = $('main')
+        this.main.appendChild(this.canvas)
+        this.tweaky = new tweaky(this.main)
+        this.valgrid = new valgrid(this.main)
+        this.valgrrd = new valgrid(this.main)
+        this.tweaky.init({types:{min:2,max:32,step:1,value:this.types,cb:(function (types)
+        {
+            this.types = types
+        
+            return this.start()
+        }).bind(this)},friction:{min:0,max:0.9,step:0.05,value:this.frictionFactor,cb:(function (frictionFactor)
+        {
+            this.frictionFactor = frictionFactor
+        }).bind(this)},maxVelocity:{min:0,max:1,steps:100,value:this.maxVelocity,cb:(function (maxVelocity)
+        {
+            this.maxVelocity = maxVelocity
+        }).bind(this)},minRadius:{min:0,max:1,steps:100,value:this.minRadius,cb:(function (minRadius)
+        {
+            this.minRadius = minRadius
+        
+            return this.start()
+        }).bind(this)},maxRadius:{min:0,max:1,steps:100,value:this.maxRadius,cb:(function (maxRadius)
+        {
+            this.maxRadius = maxRadius
+        
+            return this.start()
+        }).bind(this)}})
         post.on('resize',this.resize)
+        this.resize()
+        this.start()
     }
 
     world.prototype["start"] = function ()
@@ -54,6 +79,7 @@ world = (function ()
         this.positionsY = new Float32Array(this.num)
         this.velocitiesX = new Float32Array(this.num)
         this.velocitiesY = new Float32Array(this.num)
+        this.hsl = []
         for (var _a_ = i = 0, _b_ = this.num; (_a_ <= _b_ ? i < this.num : i > this.num); (_a_ <= _b_ ? ++i : --i))
         {
             this.colors[i] = randInt(this.types)
@@ -62,7 +88,10 @@ world = (function ()
             this.velocitiesX[i] = 0
             this.velocitiesY[i] = 0
             this.ages[i] = 0
+            this.hsl[i] = `hsl(${360 * this.colors[i] / this.types},100%,50%)`
         }
+        this.valgrid.init(this.matrix)
+        return this.valgrrd.init(this.radii,{min:this.minRadius,max:this.maxRadius,colors:this.hsl})
     }
 
     world.prototype["randomMatrix"] = function (n)
@@ -92,7 +121,7 @@ world = (function ()
             row = []
             for (var _c_ = j = 0, _d_ = n; (_c_ <= _d_ ? j < n : j > n); (_c_ <= _d_ ? ++j : --j))
             {
-                row.push(0.05 + Math.random() * 0.025)
+                row.push(randRange(this.minRadius,this.maxRadius))
             }
             rows.push(row)
         }
@@ -101,48 +130,20 @@ world = (function ()
 
     world.prototype["resize"] = function ()
     {
-        var br, cr, lx, ly, ox, oy, sx, sy
+        var br
 
-        br = this.container.getBoundingClientRect()
-        cr = this.content.getBoundingClientRect()
-        sx = _k_.clamp(0,this.width,parseInt(this.container.scrollLeft / this.cellSize))
-        sy = _k_.clamp(0,this.height,parseInt(this.container.scrollTop / this.cellSize))
-        lx = _k_.clamp(0,this.width,parseInt(sx + br.width / this.cellSize))
-        ly = _k_.clamp(0,this.height,parseInt(sy + br.height / this.cellSize))
-        ox = _k_.max(0,cr.x - br.x)
-        if (cr.height < br.height)
-        {
-            oy = (br.height - cr.height) / 2
-        }
-        else
-        {
-            oy = _k_.max(0,cr.y - br.y)
-        }
-        this.canvas.style.left = `${ox}px`
-        this.canvas.style.top = `${oy}px`
-        this.canvas.width = _k_.min(br.width,cr.width)
-        return this.canvas.height = _k_.min(br.height,cr.height)
+        br = this.main.getBoundingClientRect()
+        this.size = _k_.min(br.width,br.height)
+        this.canvas.width = this.size
+        this.canvas.height = this.size
+        this.canvas.style.left = `${(_k_.max(0,br.width - this.size)) / 2}px`
+        return this.canvas.style.top = `${(_k_.max(0,br.height - this.size)) / 2}px`
     }
 
     world.prototype["togglePause"] = function ()
     {
         this.pause = !this.pause
         return post.emit('pause')
-    }
-
-    world.prototype["zoom"] = function (delta)
-    {
-        this.cellSize += delta
-        this.cellSize = _k_.clamp(3,60,this.cellSize)
-        prefs.set('cellSize',this.cellSize)
-        return this.updateCellSize()
-    }
-
-    world.prototype["updateCellSize"] = function ()
-    {
-        this.content.style.width = `${this.cellSize * this.width}px`
-        this.content.style.height = `${this.cellSize * this.height}px`
-        return this.resize()
     }
 
     world.prototype["force"] = function (r, a)
@@ -218,7 +219,6 @@ world = (function ()
                 this.ages[i] += 0.01
                 if (this.ages[i] > 1)
                 {
-                    console.log('respawn!')
                     this.colors[i] = randInt(this.types)
                     this.positionsX[i] = Math.random()
                     this.positionsY[i] = Math.random()
@@ -230,6 +230,8 @@ world = (function ()
         }
         for (var _e_ = i = 0, _f_ = this.num; (_e_ <= _f_ ? i < this.num : i > this.num); (_e_ <= _f_ ? ++i : --i))
         {
+            this.velocitiesX[i] = _k_.clamp(-this.maxVelocity,this.maxVelocity,this.velocitiesX[i])
+            this.velocitiesY[i] = _k_.clamp(-this.maxVelocity,this.maxVelocity,this.velocitiesY[i])
             this.positionsX[i] += this.velocitiesX[i] * dt
             this.positionsY[i] += this.velocitiesY[i] * dt
             if (this.positionsX[i] < 0)
@@ -272,18 +274,13 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var br, ctx, dt, i, lx, ly, screenX, screenY, sx, sy
+        var ctx, dt, i, screenX, screenY
 
         for (var _a_ = i = 0, _b_ = this.stepsPerFrame; (_a_ <= _b_ ? i < this.stepsPerFrame : i > this.stepsPerFrame); (_a_ <= _b_ ? ++i : --i))
         {
             dt = 0.05
             this.simulate(dt)
         }
-        br = this.container.getBoundingClientRect()
-        sx = _k_.clamp(0,this.width,parseInt(this.container.scrollLeft / this.cellSize))
-        sy = _k_.clamp(0,this.height,parseInt(this.container.scrollTop / this.cellSize))
-        lx = _k_.clamp(0,this.width,parseInt(sx + br.width / this.cellSize))
-        ly = _k_.clamp(0,this.height,parseInt(sy + br.height / this.cellSize))
         this.canvas.width = this.canvas.width
         ctx = this.canvas.getContext('2d')
         ctx.strokeStyle = "#111"
@@ -296,7 +293,7 @@ world = (function ()
             screenX = this.positionsX[i] * this.canvas.width
             screenY = this.positionsY[i] * this.canvas.height
             ctx.arc(screenX,screenY,2,0,2 * Math.PI)
-            ctx.fillStyle = `hsl(${360 * this.colors[i] / this.types},100%,50%)`
+            ctx.fillStyle = this.hsl[i]
             ctx.fill()
         }
     }
