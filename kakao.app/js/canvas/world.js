@@ -27,11 +27,10 @@ world = (function ()
         this.cellSize = prefs.get('cellSize',20)
         this.width = 300
         this.height = 300
-        this.types = 24
+        this.types = 16
         this.stepsPerFrame = 1
-        this.rMax = 0.05
-        this.num = 2000
-        this.forceFactor = 4
+        this.num = 1200
+        this.forceFactor = 2
         this.frictionFactor = 0.7
         this.canvas = elem('canvas',{class:'gridCanvas'})
         main = $('main')
@@ -48,7 +47,9 @@ world = (function ()
         var i
 
         this.matrix = this.randomMatrix(this.types)
+        this.radii = this.randomRadii(this.types)
         this.colors = new Int32Array(this.num)
+        this.ages = new Float32Array(this.num)
         this.positionsX = new Float32Array(this.num)
         this.positionsY = new Float32Array(this.num)
         this.velocitiesX = new Float32Array(this.num)
@@ -60,6 +61,7 @@ world = (function ()
             this.positionsY[i] = Math.random()
             this.velocitiesX[i] = 0
             this.velocitiesY[i] = 0
+            this.ages[i] = 0
         }
     }
 
@@ -74,6 +76,23 @@ world = (function ()
             for (var _c_ = j = 0, _d_ = n; (_c_ <= _d_ ? j < n : j > n); (_c_ <= _d_ ? ++j : --j))
             {
                 row.push(Math.random() * 2 - 1)
+            }
+            rows.push(row)
+        }
+        return rows
+    }
+
+    world.prototype["randomRadii"] = function (n)
+    {
+        var i, j, row, rows
+
+        rows = []
+        for (var _a_ = i = 0, _b_ = n; (_a_ <= _b_ ? i < n : i > n); (_a_ <= _b_ ? ++i : --i))
+        {
+            row = []
+            for (var _c_ = j = 0, _d_ = n; (_c_ <= _d_ ? j < n : j > n); (_c_ <= _d_ ? ++j : --j))
+            {
+                row.push(0.05 + Math.random() * 0.025)
             }
             rows.push(row)
         }
@@ -144,7 +163,7 @@ world = (function ()
 
     world.prototype["simulate"] = function (dt)
     {
-        var f, i, j, r, rx, ry, totalForceX, totalForceY
+        var f, i, j, r, rMax, rx, ry, totalForceX, totalForceY
 
         if (this.pause && !this.oneStep)
         {
@@ -180,19 +199,34 @@ world = (function ()
                     ry = ry + 1
                 }
                 r = Math.hypot(rx,ry)
-                if (r > 0 && r < this.rMax)
+                rMax = this.radii[this.colors[i]][this.colors[j]]
+                if (r > 0 && r < rMax)
                 {
-                    f = this.force(r / this.rMax,this.matrix[this.colors[i]][this.colors[j]])
+                    f = this.force(r / rMax,this.matrix[this.colors[i]][this.colors[j]])
                     totalForceX += rx / r * f
                     totalForceY += ry / r * f
                 }
             }
-            totalForceX *= this.rMax * this.forceFactor
-            totalForceY *= this.rMax * this.forceFactor
+            totalForceX *= 0.1 * this.forceFactor
+            totalForceY *= 0.1 * this.forceFactor
             this.velocitiesX[i] *= this.frictionFactor
             this.velocitiesY[i] *= this.frictionFactor
             this.velocitiesX[i] += totalForceX * dt
             this.velocitiesY[i] += totalForceY * dt
+            if (Math.abs(this.velocitiesX[i]) < 0.001 && Math.abs(this.velocitiesY[i]) < 0.001)
+            {
+                this.ages[i] += 0.01
+                if (this.ages[i] > 1)
+                {
+                    console.log('respawn!')
+                    this.colors[i] = randInt(this.types)
+                    this.positionsX[i] = Math.random()
+                    this.positionsY[i] = Math.random()
+                    this.velocitiesX[i] = 0.1 * Math.random() - 0.05
+                    this.velocitiesY[i] = 0.1 * Math.random() - 0.05
+                    this.ages[i] = 0
+                }
+            }
         }
         for (var _e_ = i = 0, _f_ = this.num; (_e_ <= _f_ ? i < this.num : i > this.num); (_e_ <= _f_ ? ++i : --i))
         {
@@ -219,14 +253,14 @@ world = (function ()
 
     world.prototype["faster"] = function ()
     {
-        this.stepsPerFrame *= 4
-        return this.stepsPerFrame = _k_.min(64,this.stepsPerFrame)
+        this.forceFactor *= 2
+        return this.forceFactor = _k_.min(16,this.forceFactor)
     }
 
     world.prototype["slower"] = function ()
     {
-        this.stepsPerFrame /= 4
-        return this.stepsPerFrame = _k_.max(1,this.stepsPerFrame)
+        this.forceFactor /= 2
+        return this.forceFactor = _k_.max(1,this.forceFactor)
     }
 
     world.prototype["singleStep"] = function ()
@@ -238,11 +272,12 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var br, ctx, i, lx, ly, screenX, screenY, sx, sy
+        var br, ctx, dt, i, lx, ly, screenX, screenY, sx, sy
 
         for (var _a_ = i = 0, _b_ = this.stepsPerFrame; (_a_ <= _b_ ? i < this.stepsPerFrame : i > this.stepsPerFrame); (_a_ <= _b_ ? ++i : --i))
         {
-            this.simulate(tickInfo.delta / 1000)
+            dt = 0.05
+            this.simulate(dt)
         }
         br = this.container.getBoundingClientRect()
         sx = _k_.clamp(0,this.width,parseInt(this.container.scrollLeft / this.cellSize))

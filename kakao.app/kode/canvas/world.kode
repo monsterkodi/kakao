@@ -16,12 +16,11 @@ function world
         @cellSize      = prefs.get 'cellSize' 20
         @width         = 300
         @height        = 300
-        @types         = 24
+        @types         = 16
         @stepsPerFrame = 1
         
-        @rMax           = 0.05
-        @num            = 2000
-        @forceFactor    = 4
+        @num            = 1200
+        @forceFactor    = 2
         @frictionFactor = 0.7
                         
         @canvas = elem 'canvas' class:'gridCanvas' 
@@ -47,19 +46,22 @@ function world
     start: =>
         
         @matrix = @randomMatrix @types
+        @radii  = @randomRadii  @types
         
         @colors         = new Int32Array   @num
+        @ages           = new Float32Array @num
         @positionsX     = new Float32Array @num
         @positionsY     = new Float32Array @num
         @velocitiesX    = new Float32Array @num
         @velocitiesY    = new Float32Array @num
         
         for i in 0...@num
-            @colors[i] = randInt @types
-            @positionsX[i] = Math.random()
-            @positionsY[i] = Math.random()
+            @colors[i]      = randInt @types
+            @positionsX[i]  = Math.random()
+            @positionsY[i]  = Math.random()
             @velocitiesX[i] = 0
             @velocitiesY[i] = 0
+            @ages[i]        = 0
         
     randomMatrix: n ->
         
@@ -71,6 +73,16 @@ function world
             rows.push row
         rows
 
+    randomRadii: n ->
+        
+        rows = []
+        for i in 0...n
+            row = []
+            for j in 0...n
+                row.push 0.05 + Math.random()*0.025
+            rows.push row
+        rows
+        
     resize: =>
         
         br = @container.getBoundingClientRect()
@@ -125,7 +137,6 @@ function world
         ⮐ if @pause and not @oneStep
         
         delete @oneStep
-        # ● simulate
         
         for i in 0...@num
             
@@ -146,21 +157,32 @@ function world
                 ry = ry + 1 if ry < -0.5
                 
                 r = Math.hypot rx, ry
-                
-                if r > 0 and r < @rMax
-                    f = @force r/@rMax, @matrix[@colors[i]][@colors[j]]
+
+                rMax = @radii[@colors[i]][@colors[j]]
+                if r > 0 and r < rMax
+                    f = @force r/rMax, @matrix[@colors[i]][@colors[j]]
                     totalForceX += rx / r * f
                     totalForceY += ry / r * f
         
-            totalForceX *= @rMax * @forceFactor
-            totalForceY *= @rMax * @forceFactor
+            totalForceX *= 0.1 * @forceFactor
+            totalForceY *= 0.1 * @forceFactor
             
             @velocitiesX[i] *= @frictionFactor
             @velocitiesY[i] *= @frictionFactor
             
             @velocitiesX[i] += totalForceX * dt
             @velocitiesY[i] += totalForceY * dt
-        
+            
+            if Math.abs(@velocitiesX[i]) < 0.001 and Math.abs(@velocitiesY[i]) < 0.001
+                @ages[i] += 0.01
+                if @ages[i] > 1
+                    @colors[i]      = randInt @types
+                    @positionsX[i]  = Math.random()
+                    @positionsY[i]  = Math.random()
+                    @velocitiesX[i] = 0.1*Math.random()-0.05
+                    @velocitiesY[i] = 0.1*Math.random()-0.05
+                    @ages[i]        = 0
+            
         for i in 0...@num
             
             @positionsX[i] += @velocitiesX[i] * dt
@@ -178,14 +200,15 @@ function world
     #    000     000  000       000  000   
     #    000     000   0000000  000   000  
     
-    faster:     => @stepsPerFrame *= 4; @stepsPerFrame = min 64 @stepsPerFrame
-    slower:     => @stepsPerFrame /= 4; @stepsPerFrame = max 1  @stepsPerFrame
+    faster:     => @forceFactor *= 2; @forceFactor = min 16 @forceFactor
+    slower:     => @forceFactor /= 2; @forceFactor = max 1  @forceFactor
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
     
     tick: tickInfo ->
         
         for i in 0...@stepsPerFrame
-            @simulate tickInfo.delta/1000
+            dt = 0.05
+            @simulate dt
         
         br = @container.getBoundingClientRect()
         sx = clamp 0 @width,  parseInt @container.scrollLeft / @cellSize
