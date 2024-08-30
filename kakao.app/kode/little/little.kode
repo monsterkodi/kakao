@@ -40,7 +40,7 @@ function Delegate extends win.Delegate
         window.world = @world = new world
         
         main =$ 'main'
-        @fps = new fps main, topDown:true
+        # @fps = new fps main, topDown:true
 
         #⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭ 
         @quiq = elem class:'quiq' children: [

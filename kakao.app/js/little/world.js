@@ -21,22 +21,24 @@ world = (function ()
         this["togglePause"] = this["togglePause"].bind(this)
         this["clearCanvas"] = this["clearCanvas"].bind(this)
         this["resize"] = this["resize"].bind(this)
+        this["loaded"] = this["loaded"].bind(this)
         this["start"] = this["start"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["setNum"] = this["setNum"].bind(this)
         this["setSide"] = this["setSide"].bind(this)
         this.main = $('main')
         this.pause = false
+        this.textureInfos = []
         this.canvas = elem('canvas',{class:'canvas'})
         this.main.appendChild(this.canvas)
         this.initWebGL()
         this.resize()
         this.tweaky = new tweaky(this.main)
-        this.setSide(100)
+        this.setSide(10)
         this.camPosX = 0
         this.camPosY = 0
-        this.camScale = 0.02
-        this.tweaky.init({side:{min:1,max:100,step:1,value:this.side,cb:this.setSide},camPosX:{min:-10,max:10,step:0.001,value:this.camPosX,cb:(function (camPosX)
+        this.camScale = 0.2
+        this.tweaky.init({side:{min:10,max:200,step:1,value:this.side,cb:this.setSide},camPosX:{min:-10,max:10,step:0.001,value:this.camPosX,cb:(function (camPosX)
         {
             this.camPosX = camPosX
         
@@ -46,7 +48,7 @@ world = (function ()
             this.camPosY = camPosY
         
             return this.draw()
-        }).bind(this)},camScale:{min:0.02,max:1,step:0.00001,value:this.camScale,cb:(function (camScale)
+        }).bind(this)},camScale:{min:0.02,max:0.2,step:0.00001,value:this.camScale,cb:(function (camScale)
         {
             this.camScale = camScale
         
@@ -61,26 +63,39 @@ world = (function ()
         var fragmentShader, fsSource, loadShader, r, vertexShader, vsSource
 
         this.gl = this.canvas.getContext('webgl2')
-        vsSource = `attribute vec2 aQuadVertex;
-attribute vec2 aQuadScale;
-attribute vec2 aQuadPosition;
-attribute vec4 aQuadColor;
+        vsSource = `#version 300 es
+precision mediump float;
+in vec2  aQuadVertex;
+in vec2  aQuadPosition;
+in vec2  aQuadScale;
+in vec4  aQuadColor;
+in vec4  aQuadUV;
+in float aQuadRot;
 uniform vec2 uCamPos;
 uniform vec2 uCamScale;
-varying vec4 vColor;
+out vec4 vColor;
+out vec2 vUV;
 
 void main(void) {
-    vec2 pos = uCamScale * (aQuadVertex * aQuadScale + aQuadPosition) - uCamPos;
+    vec2 vertex = aQuadVertex * aQuadScale;
+    //vec2 rotated = (aQuadRot == 0.0) ? vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot) : vertex;
+    vec2 rotated = vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot);
+    vec2 pos = uCamScale * (rotated + aQuadPosition) - uCamPos;
     gl_Position = vec4(pos.x, pos.y, 0, 1);
     vColor = aQuadColor;
+    vUV = mix(aQuadUV.xw,aQuadUV.zy,aQuadVertex+vec2(0.5, 0.5));
 }
 `
-        fsSource = `
+        fsSource = `#version 300 es
 precision mediump float;
-varying vec4 vColor;
+in vec4 vColor;
+in vec2 vUV;
+uniform sampler2D uSampler;
+out vec4 fragColor;
 
 void main(void) {
-    gl_FragColor = vColor;
+    //fragColor = vColor;
+    fragColor = texture(uSampler,vUV)*vColor;
 }`
         loadShader = (function (type, source)
         {
@@ -118,11 +133,12 @@ void main(void) {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.quadBuffer)
         this.gl.vertexAttribPointer(this.quadVertexLoc,2,this.gl.FLOAT,false,0,0)
         this.gl.enableVertexAttribArray(this.quadVertexLoc)
-        this.poscalBuffer = this.gl.createBuffer()
-        this.colorBuffer = this.gl.createBuffer()
+        this.dataBuffer = this.gl.createBuffer()
         this.positionLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadPosition')
         this.scaleLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadScale')
-        return this.colorLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadColor')
+        this.colorLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadColor')
+        this.uvLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadUV')
+        return this.rotLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadRot')
     }
 
     world.prototype["setSide"] = function (side)
@@ -136,13 +152,12 @@ void main(void) {
     {
         this.num = num
     
-        this.poscal = new Float32Array(this.num * 4)
-        return this.colors = new Float32Array(this.num * 4)
+        return this.data = new Float32Array(this.num * 13)
     }
 
     world.prototype["draw"] = function ()
     {
-        var a, aspect, b, c, camPos, camScale, g, i, p, px, py, r, sq, sq2, sx, sy
+        var a, aspect, attrib, b, camPos, camScale, cv, g, i, offset, p, px, py, r, sq, sq2, stride, sx, sy, u0, u1, v0, v1
 
         sq = Math.ceil(Math.sqrt(this.num))
         sq2 = sq / 2
@@ -152,35 +167,52 @@ void main(void) {
             py = Math.floor(i / sq)
             sx = 1
             sy = 1
-            p = i * 4
-            this.poscal[p++] = px
-            this.poscal[p++] = py
-            this.poscal[p++] = (1.2 + Math.sin(this.tickInfo.time / 1000)) * 0.5
-            this.poscal[p++] = (1.2 + Math.cos(this.tickInfo.time / 1000)) * 0.5
-            r = i / sq / sq + randRange(-0.05,0.05)
-            b = (i % sq) / sq + randRange(-0.05,0.05)
-            g = (r + b) / 2 + randRange(-0.05,0.05)
+            p = i * 13
+            this.data[p++] = px
+            this.data[p++] = py
+            this.data[p++] = sx
+            this.data[p++] = sy
+            cv = 0.05
+            r = 1
+            b = 1
+            g = 1
             a = 1
-            c = i * 4
-            this.colors[c++] = r
-            this.colors[c++] = g
-            this.colors[c++] = b
-            this.colors[c++] = a
+            this.data[p++] = r
+            this.data[p++] = g
+            this.data[p++] = b
+            this.data[p++] = a
+            u0 = 0
+            v0 = 0
+            u1 = 196 / 4096
+            v1 = 196 / 4096
+            this.data[p++] = u0
+            this.data[p++] = v0
+            this.data[p++] = u1
+            this.data[p++] = v1
+            this.data[p++] = (px - py) * this.tickInfo.time / 10000
         }
         this.gl.useProgram(this.shaderProgram)
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.poscalBuffer)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.poscal,this.gl.STATIC_DRAW)
-        this.gl.vertexAttribPointer(this.positionLoc,2,this.gl.FLOAT,false,16,0)
-        this.gl.vertexAttribDivisor(this.positionLoc,1)
-        this.gl.vertexAttribPointer(this.scaleLoc,2,this.gl.FLOAT,false,16,8)
-        this.gl.vertexAttribDivisor(this.scaleLoc,1)
-        this.gl.enableVertexAttribArray(this.positionLoc)
-        this.gl.enableVertexAttribArray(this.scaleLoc)
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.colorBuffer)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.colors,this.gl.STATIC_DRAW)
-        this.gl.vertexAttribPointer(this.colorLoc,4,this.gl.FLOAT,false,0,0)
-        this.gl.vertexAttribDivisor(this.colorLoc,1)
-        this.gl.enableVertexAttribArray(this.colorLoc)
+        if ((this.textureInfos[0] != null ? this.textureInfos[0].glTexture : undefined))
+        {
+            this.gl.activeTexture(this.gl.TEXTURE0)
+            this.gl.bindTexture(this.gl.TEXTURE_2D,this.textureInfos[0].glTexture)
+        }
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.dataBuffer)
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.data,this.gl.STATIC_DRAW)
+        stride = 13 * 4
+        offset = 0
+        attrib = (function (loc, cnt)
+        {
+            this.gl.vertexAttribPointer(loc,cnt,this.gl.FLOAT,false,stride,offset)
+            this.gl.vertexAttribDivisor(loc,1)
+            this.gl.enableVertexAttribArray(loc)
+            return offset += 4 * cnt
+        }).bind(this)
+        attrib(this.positionLoc,2)
+        attrib(this.scaleLoc,2)
+        attrib(this.colorLoc,4)
+        attrib(this.uvLoc,4)
+        attrib(this.rotLoc,1)
         aspect = this.canvas.height / this.canvas.width
         sx = this.camScale * aspect
         sy = this.camScale
@@ -192,8 +224,49 @@ void main(void) {
         return this.gl.drawArraysInstanced(this.gl.TRIANGLE_FAN,0,4,this.num)
     }
 
+    world.prototype["createTexture"] = function (image)
+    {
+        var texture
+
+        if (!image)
+        {
+            return
+        }
+        texture = this.gl.createTexture()
+        this.gl.bindTexture(this.gl.TEXTURE_2D,texture)
+        this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,this.gl.RGBA,this.gl.UNSIGNED_BYTE,image)
+        this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MIN_FILTER,this.gl.LINEAR)
+        this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MAG_FILTER,this.gl.LINEAR)
+        return texture
+    }
+
     world.prototype["start"] = function ()
-    {}
+    {
+        var imageSources, promises
+
+        imageSources = ['./tiles.png']
+        promises = imageSources.map((function (src, textureIndex)
+        {
+            return new Promise((function (resolve)
+            {
+                var image
+
+                image = new Image
+                image.onerror = image.onload = (function ()
+                {
+                    this.textureInfos[textureIndex] = {image:image,size:[image.width,image.height],width:image.width,height:image.height,glTexture:this.createTexture(image)}
+                    return resolve()
+                }).bind(this)
+                return image.src = src
+            }).bind(this))
+        }).bind(this))
+        return Promise.all(promises).then(this.loaded)
+    }
+
+    world.prototype["loaded"] = function ()
+    {
+        console.log('loaded',this.textureInfos)
+    }
 
     world.prototype["resize"] = function ()
     {

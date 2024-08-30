@@ -17,6 +17,8 @@ function world
         @main =$ 'main'
         @pause = false
         
+        @textureInfos = []
+        
         @canvas = elem 'canvas' class:'canvas'
         @main.appendChild @canvas
         
@@ -25,17 +27,17 @@ function world
                 
         @tweaky = new tweaky @main
         
-        @setSide 100
+        @setSide 10
         @camPosX = 0
         @camPosY = 0
-        @camScale = 0.02
+        @camScale = 0.2
 
         @tweaky.init 
              
-            side:      min: 1     max:100    step:1           value:@side,     cb: @setSide
+            side:      min: 10    max:200    step:1           value:@side,     cb: @setSide
             camPosX:   min:-10    max:10     step:0.001       value:@camPosX,  cb: (@camPosX)  => @draw()
             camPosY:   min:-10    max:10     step:0.001       value:@camPosY,  cb: (@camPosY)  => @draw()
-            camScale:  min:0.02   max:1      step:0.00001     value:@camScale, cb: (@camScale) => @draw()
+            camScale:  min:0.02   max:0.2    step:0.00001     value:@camScale, cb: (@camScale) => @draw()
             
         post.on 'resize' @resize
         
@@ -46,29 +48,42 @@ function world
         @gl = @canvas.getContext 'webgl2'
         
         vsSource = """
-            attribute vec2 aQuadVertex;
-            attribute vec2 aQuadScale;
-            attribute vec2 aQuadPosition;
-            attribute vec4 aQuadColor;
+            #version 300 es
+            precision mediump float;
+            in vec2  aQuadVertex;
+            in vec2  aQuadPosition;
+            in vec2  aQuadScale;
+            in vec4  aQuadColor;
+            in vec4  aQuadUV;
+            in float aQuadRot;
             uniform vec2 uCamPos;
             uniform vec2 uCamScale;
-            varying vec4 vColor;
+            out vec4 vColor;
+            out vec2 vUV;
             
             void main(void) {
-                vec2 pos = uCamScale * (aQuadVertex * aQuadScale + aQuadPosition) - uCamPos;
+                vec2 vertex = aQuadVertex * aQuadScale;
+                //vec2 rotated = (aQuadRot == 0.0) ? vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot) : vertex;
+                vec2 rotated = vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot);
+                vec2 pos = uCamScale * (rotated + aQuadPosition) - uCamPos;
                 gl_Position = vec4(pos.x, pos.y, 0, 1);
                 vColor = aQuadColor;
+                vUV = mix(aQuadUV.xw,aQuadUV.zy,aQuadVertex+vec2(0.5, 0.5));
             }
             
             """
             
         fsSource = """
-            
+            #version 300 es
             precision mediump float;
-            varying vec4 vColor;
+            in vec4 vColor;
+            in vec2 vUV;
+            uniform sampler2D uSampler;
+            out vec4 fragColor;
         
             void main(void) {
-                gl_FragColor = vColor;
+                //fragColor = vColor;
+                fragColor = texture(uSampler,vUV)*vColor;
             }
             """
             
@@ -100,11 +115,8 @@ function world
         @gl.blendFuncSeparate @gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA, @gl.ONE, @gl.ONE_MINUS_SRC_ALPHA
         @gl.enable @gl.BLEND
         
-        # @vao = @gl.createVertexArray()
-        # @gl.bindVertexArray @vao
-        
         r = 0.5
-        @quad = new Float32Array [-r, -r, r, -r, r, r, -r, r]
+        @quad = new Float32Array [ -r, -r, r, -r, r, r, -r, r ]
         
         @quadBuffer = @gl.createBuffer()
         @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
@@ -115,19 +127,19 @@ function world
         @gl.vertexAttribPointer @quadVertexLoc, 2, @gl.FLOAT, false, 0, 0
         @gl.enableVertexAttribArray @quadVertexLoc
         
-        @poscalBuffer = @gl.createBuffer()
-        @colorBuffer  = @gl.createBuffer()
-        
+        @dataBuffer = @gl.createBuffer()
+
         @positionLoc  = @gl.getAttribLocation @shaderProgram, 'aQuadPosition'
         @scaleLoc     = @gl.getAttribLocation @shaderProgram, 'aQuadScale'
-        @colorLoc = @gl.getAttribLocation @shaderProgram, 'aQuadColor'
+        @colorLoc     = @gl.getAttribLocation @shaderProgram, 'aQuadColor'
+        @uvLoc        = @gl.getAttribLocation @shaderProgram, 'aQuadUV'
+        @rotLoc       = @gl.getAttribLocation @shaderProgram, 'aQuadRot'
                             
     setSide: @side => @setNum @side*@side
         
     setNum: @num =>
         
-        @poscal = new Float32Array @num*4
-        @colors = new Float32Array @num*4
+        @data   = new Float32Array @num*13
                                                         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -148,47 +160,62 @@ function world
             sx = 1 #- Math.abs (px - @side/2) / (@side/2)
             sy = 1 #- Math.abs (py - @side/2) / (@side/2)
             
-            p = i*4
-            @poscal[p++]  = px
-            @poscal[p++]  = py
-            @poscal[p++]  = (1.2 + Math.sin @tickInfo.time/1000) * 0.5
-            @poscal[p++]  = (1.2 + Math.cos @tickInfo.time/1000) * 0.5
+            p = i*13
+            @data[p++]  = px                                          # position
+            @data[p++]  = py
+            @data[p++]  = sx #(1.2 + Math.sin @tickInfo.time/1000) * 0.5  # scale
+            @data[p++]  = sy #(1.2 + Math.cos @tickInfo.time/1000) * 0.5
             
-            r = i / sq / sq + randRange -0.05 0.05
-            b = (i%sq)/sq   + randRange -0.05 0.05
-            g = (r + b) / 2 + randRange -0.05 0.05
+            cv = 0.05
+            r = 1 # i / sq / sq + cv * Math.sin px*@tickInfo.time/10000   # color
+            b = 1 # (i%sq)/sq   + cv * Math.sin py*@tickInfo.time/5000
+            g = 1 #               cv * Math.cos Math.min(px,py)*@tickInfo.time/30000
             a = 1
+            
+            @data[p++]  = r
+            @data[p++]  = g
+            @data[p++]  = b
+            @data[p++]  = a
 
-            c = i*4
-            @colors[c++] = r
-            @colors[c++] = g
-            @colors[c++] = b
-            @colors[c++] = a
-                
+            u0 = 0 
+            v0 = 0
+            u1 = 196/4096
+            v1 = 196/4096
+            
+            @data[p++]  = u0                                          # uv
+            @data[p++]  = v0
+            @data[p++]  = u1
+            @data[p++]  = v1
+            
+            @data[p++]  = (px-py)*@tickInfo.time/10000               # rotation
+                            
         @gl.useProgram @shaderProgram
         
-        # @gl.bindVertexArray @vao
-        
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @poscalBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @poscal, @gl.STATIC_DRAW
-        
-        @gl.vertexAttribPointer @positionLoc, 2, @gl.FLOAT, false, 16, 0
-        @gl.vertexAttribDivisor @positionLoc, 1
-        
-        @gl.vertexAttribPointer @scaleLoc, 2, @gl.FLOAT, false, 16, 8
-        @gl.vertexAttribDivisor @scaleLoc, 1
+        if @textureInfos[0]?.glTexture
+            @gl.activeTexture @gl.TEXTURE0
+            @gl.bindTexture @gl.TEXTURE_2D, @textureInfos[0].glTexture
         
         
-        @gl.enableVertexAttribArray @positionLoc
-        @gl.enableVertexAttribArray @scaleLoc
+        @gl.bindBuffer @gl.ARRAY_BUFFER, @dataBuffer
+        @gl.bufferData @gl.ARRAY_BUFFER, @data, @gl.STATIC_DRAW
         
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @colorBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @colors, @gl.STATIC_DRAW
-
-        @gl.vertexAttribPointer @colorLoc, 4, @gl.FLOAT, false, 0, 0
-        @gl.vertexAttribDivisor @colorLoc, 1
-        @gl.enableVertexAttribArray @colorLoc
-                                        
+        stride = 13*4
+        offset = 0
+        
+        attrib = loc cnt =>
+            
+            @gl.vertexAttribPointer loc, cnt, @gl.FLOAT, false, stride, offset
+            @gl.vertexAttribDivisor loc, 1
+            @gl.enableVertexAttribArray loc
+            
+            offset += 4 * cnt
+            
+        attrib @positionLoc, 2
+        attrib @scaleLoc,    2
+        attrib @colorLoc,    4
+        attrib @uvLoc,       4
+        attrib @rotLoc,      1
+                
         aspect = @canvas.height / @canvas.width
         sx = @camScale * aspect
         sy = @camScale
@@ -209,7 +236,39 @@ function world
     #      000     000     000   000  000   000     000     
     # 0000000      000     000   000  000   000     000     
     
+    createTexture: (image) ->
+    
+        ⮐ if not image
+        texture = @gl.createTexture()
+        @gl.bindTexture @gl.TEXTURE_2D, texture
+        @gl.texImage2D @gl.TEXTURE_2D, 0, @gl.RGBA, @gl.RGBA, @gl.UNSIGNED_BYTE, image
+        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MIN_FILTER, @gl.LINEAR
+        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MAG_FILTER, @gl.LINEAR
+        texture
+    
     start:  =>
+        
+        imageSources = ['./tiles.png']
+        
+        promises = imageSources.map (src, textureIndex) =>
+            new Promise (resolve) => 
+                image = new Image
+                image.onerror = image.onload = () => 
+                    
+                    @textureInfos[textureIndex] = 
+                        image:      image
+                        size:       [image.width, image.height]
+                        width:      image.width
+                        height:     image.height
+                        glTexture:  @createTexture image
+                        
+                    resolve()
+                image.src = src
+                
+        Promise.all(promises).then @loaded
+        
+    loaded: => log 'loaded' @textureInfos
+        
     resize: =>
         
         br = @main.getBoundingClientRect()

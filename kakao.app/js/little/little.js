@@ -50,7 +50,6 @@ Delegate = (function ()
 
         window.world = this.world = new world
         main = $('main')
-        this.fps = new fps(main,{topDown:true})
         this.quiq = elem({class:'quiq',children:[elem({text:' ',class:'quiq-item quiq-resart',click:this.world.start,dblclick:function (e)
         {
             return stopEvent(e)
