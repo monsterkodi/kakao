@@ -6,9 +6,9 @@
 00     00   0000000   000   000  0000000  0000000  
 ###
 
-use ../kxk ▪ $ randInt randRange randIntRange elem prefs post
+use ../kxk ▪ $ drag stopEvent randInt randRange randIntRange elem prefs post
 
-use ◆ tweaky
+use ◆ tweaky gee
 
 function world
 
@@ -17,272 +17,56 @@ function world
         @main =$ 'main'
         @pause = false
         
-        @textureInfos = []
+        @g = new gee @main
         
-        @canvas = elem 'canvas' class:'canvas'
-        @main.appendChild @canvas
-        
-        @initWebGL()
-        @resize()
-                
         @tweaky = new tweaky @main
         
-        @setSide 10
-        @camPosX = 0
-        @camPosY = 0
-        @camScale = 0.2
-
         @tweaky.init 
-             
-            side:      min: 10    max:200    step:1           value:@side,     cb: @setSide
-            camPosX:   min:-10    max:10     step:0.001       value:@camPosX,  cb: (@camPosX)  => @draw()
-            camPosY:   min:-10    max:10     step:0.001       value:@camPosY,  cb: (@camPosY)  => @draw()
-            camScale:  min:0.02   max:0.2    step:0.00001     value:@camScale, cb: (@camScale) => @draw()
+            side:      min: 10    max:200    step:1           value:@g.side,     cb: @g.setSide
             
-        post.on 'resize' @resize
+        window.addEventListener 'wheel' @onWheel
+        @main.addEventListener 'contextmenu' @onContextMenu
+        @g.canvas.addEventListener 'touchstart' @onTouchStart
+        @g.canvas.addEventListener 'touchmove' @onTouchMove
         
-        @start()
+        @drag = new drag 
+            target:  @g.canvas
+            onMove:  @onDrag
+            cursor: 'pointer'
         
-    initWebGL: ->
-        
-        @gl = @canvas.getContext 'webgl2'
-        
-        vsSource = """
-            #version 300 es
-            precision mediump float;
-            in vec2  aQuadVertex;
-            in vec2  aQuadPosition;
-            in vec2  aQuadScale;
-            in vec4  aQuadColor;
-            in vec4  aQuadUV;
-            in float aQuadRot;
-            uniform vec2 uCamPos;
-            uniform vec2 uCamScale;
-            out vec4 vColor;
-            out vec2 vUV;
-            
-            void main(void) {
-                vec2 vertex = aQuadVertex * aQuadScale;
-                //vec2 rotated = (aQuadRot == 0.0) ? vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot) : vertex;
-                vec2 rotated = vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot);
-                vec2 pos = uCamScale * (rotated + aQuadPosition) - uCamPos;
-                gl_Position = vec4(pos.x, pos.y, 0, 1);
-                vColor = aQuadColor;
-                vUV = mix(aQuadUV.xw,aQuadUV.zy,aQuadVertex+vec2(0.5, 0.5));
-            }
-            
-            """
-            
-        fsSource = """
-            #version 300 es
-            precision mediump float;
-            in vec4 vColor;
-            in vec2 vUV;
-            uniform sampler2D uSampler;
-            out vec4 fragColor;
-        
-            void main(void) {
-                //fragColor = vColor;
-                fragColor = texture(uSampler,vUV)*vColor;
-            }
-            """
-            
-        loadShader = type source =>
-            
-            shader = @gl.createShader type
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event =>
 
-            @gl.shaderSource shader, source
-            @gl.compileShader shader
-
-            if not @gl.getShaderParameter shader, @gl.COMPILE_STATUS
-                error 'An error occurred compiling the shader:' @gl.getShaderInfoLog shader
-                @gl.deleteShader shader
-                ⮐ null
-
-            shader
-
-        vertexShader   = loadShader @gl.VERTEX_SHADER,   vsSource
-        fragmentShader = loadShader @gl.FRAGMENT_SHADER, fsSource
-
-        @shaderProgram = @gl.createProgram()
-        @gl.attachShader @shaderProgram, vertexShader
-        @gl.attachShader @shaderProgram, fragmentShader
-        @gl.linkProgram  @shaderProgram
+        if event.ctrlKey
         
-        if not @gl.getProgramParameter @shaderProgram, @gl.LINK_STATUS
-            error 'Unable to initialize the shader program:' @gl.getProgramInfoLog @shaderProgram
+            @g.camScale -= event.deltaY/1000 
+            @g.camScale = clamp 0.01 0.2 @g.camScale
             
-        @gl.blendFuncSeparate @gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA, @gl.ONE, @gl.ONE_MINUS_SRC_ALPHA
-        @gl.enable @gl.BLEND
+        else
+            
+            @g.camPosX += event.deltaX/4000 
+            @g.camPosY -= event.deltaY/4000 
+            
+        @g.camPosX = clamp -@g.side*@g.aspect/2*@g.camScale, @g.side*@g.aspect/2*@g.camScale, @g.camPosX
+        @g.camPosY = clamp -@g.side/2*@g.camScale, @g.side/2*@g.camScale, @g.camPosY
+            
         
-        r = 0.5
-        @quad = new Float32Array [ -r, -r, r, -r, r, r, -r, r ]
-        
-        @quadBuffer = @gl.createBuffer()
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @quad, @gl.STATIC_DRAW
-        
-        @quadVertexLoc = @gl.getAttribLocation @shaderProgram, 'aQuadVertex'
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
-        @gl.vertexAttribPointer @quadVertexLoc, 2, @gl.FLOAT, false, 0, 0
-        @gl.enableVertexAttribArray @quadVertexLoc
-        
-        @dataBuffer = @gl.createBuffer()
-
-        @positionLoc  = @gl.getAttribLocation @shaderProgram, 'aQuadPosition'
-        @scaleLoc     = @gl.getAttribLocation @shaderProgram, 'aQuadScale'
-        @colorLoc     = @gl.getAttribLocation @shaderProgram, 'aQuadColor'
-        @uvLoc        = @gl.getAttribLocation @shaderProgram, 'aQuadUV'
-        @rotLoc       = @gl.getAttribLocation @shaderProgram, 'aQuadRot'
-                            
-    setSide: @side => @setNum @side*@side
-        
-    setNum: @num =>
-        
-        @data   = new Float32Array @num*13
-                                                        
-    # 0000000    00000000    0000000   000   000  
-    # 000   000  000   000  000   000  000 0 000  
-    # 000   000  0000000    000000000  000000000  
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
     # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000  00     00  
+    # 0000000    000   000  000   000   0000000   
     
-    draw: =>
-         
-        sq = Math.ceil Math.sqrt @num
-        sq2 = sq/2
+    onDrag: drag event =>
         
-        for i in 0...@num
+        # log 'drag' drag.delta, drag.button, event, event.button, event.buttons
             
-            px = i % sq
-            py = Math.floor i/sq
-
-            sx = 1 #- Math.abs (px - @side/2) / (@side/2)
-            sy = 1 #- Math.abs (py - @side/2) / (@side/2)
-            
-            p = i*13
-            @data[p++]  = px                                          # position
-            @data[p++]  = py
-            @data[p++]  = sx #(1.2 + Math.sin @tickInfo.time/1000) * 0.5  # scale
-            @data[p++]  = sy #(1.2 + Math.cos @tickInfo.time/1000) * 0.5
-            
-            cv = 0.05
-            r = 1 # i / sq / sq + cv * Math.sin px*@tickInfo.time/10000   # color
-            b = 1 # (i%sq)/sq   + cv * Math.sin py*@tickInfo.time/5000
-            g = 1 #               cv * Math.cos Math.min(px,py)*@tickInfo.time/30000
-            a = 1
-            
-            @data[p++]  = r
-            @data[p++]  = g
-            @data[p++]  = b
-            @data[p++]  = a
-
-            u0 = 0 
-            v0 = 0
-            u1 = 196/4096
-            v1 = 196/4096
-            
-            @data[p++]  = u0                                          # uv
-            @data[p++]  = v0
-            @data[p++]  = u1
-            @data[p++]  = v1
-            
-            @data[p++]  = (px-py)*@tickInfo.time/10000               # rotation
-                            
-        @gl.useProgram @shaderProgram
-        
-        if @textureInfos[0]?.glTexture
-            @gl.activeTexture @gl.TEXTURE0
-            @gl.bindTexture @gl.TEXTURE_2D, @textureInfos[0].glTexture
-        
-        
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @dataBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @data, @gl.STATIC_DRAW
-        
-        stride = 13*4
-        offset = 0
-        
-        attrib = loc cnt =>
-            
-            @gl.vertexAttribPointer loc, cnt, @gl.FLOAT, false, stride, offset
-            @gl.vertexAttribDivisor loc, 1
-            @gl.enableVertexAttribArray loc
-            
-            offset += 4 * cnt
-            
-        attrib @positionLoc, 2
-        attrib @scaleLoc,    2
-        attrib @colorLoc,    4
-        attrib @uvLoc,       4
-        attrib @rotLoc,      1
-                
-        aspect = @canvas.height / @canvas.width
-        sx = @camScale * aspect
-        sy = @camScale
-        
-        camScale = new Float32Array [ sx, sy ]
-        @gl.uniform2fv @gl.getUniformLocation(@shaderProgram, 'uCamScale'), camScale
-        
-        camPos = new Float32Array [ (sq2-0.5)*@camScale*aspect+@camPosX, (sq2-0.5)*@camScale+@camPosY ]
-        @gl.uniform2fv @gl.getUniformLocation(@shaderProgram, 'uCamPos'), camPos
-        
-        @clearCanvas()
-                
-        @gl.drawArraysInstanced @gl.TRIANGLE_FAN, 0, 4, @num
-            
-    #  0000000  000000000   0000000   00000000   000000000  
-    # 000          000     000   000  000   000     000     
-    # 0000000      000     000000000  0000000       000     
-    #      000     000     000   000  000   000     000     
-    # 0000000      000     000   000  000   000     000     
-    
-    createTexture: (image) ->
-    
-        ⮐ if not image
-        texture = @gl.createTexture()
-        @gl.bindTexture @gl.TEXTURE_2D, texture
-        @gl.texImage2D @gl.TEXTURE_2D, 0, @gl.RGBA, @gl.RGBA, @gl.UNSIGNED_BYTE, image
-        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MIN_FILTER, @gl.LINEAR
-        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MAG_FILTER, @gl.LINEAR
-        texture
-    
-    start:  =>
-        
-        imageSources = ['./tiles.png']
-        
-        promises = imageSources.map (src, textureIndex) =>
-            new Promise (resolve) => 
-                image = new Image
-                image.onerror = image.onload = () => 
-                    
-                    @textureInfos[textureIndex] = 
-                        image:      image
-                        size:       [image.width, image.height]
-                        width:      image.width
-                        height:     image.height
-                        glTexture:  @createTexture image
-                        
-                    resolve()
-                image.src = src
-                
-        Promise.all(promises).then @loaded
-        
-    loaded: => log 'loaded' @textureInfos
-        
-    resize: =>
-        
-        br = @main.getBoundingClientRect()
-        @canvas.width  = br.width
-        @canvas.height = br.height
-
-        # log @gl.getParameter @gl.MAX_VIEWPORT_DIMS
-        # log @canvas.width, @canvas.height
-        @gl.viewport 0 0 @canvas.width, @canvas.height
-        
-    clearCanvas: =>
-            
-        @gl.clearColor 0.1 0.1 0.1 1.0
-        @gl.clear @gl.COLOR_BUFFER_BIT
+    onContextMenu: (event) => stopEvent event
         
     togglePause:  => @pause = not @pause; post.emit 'pause'
     toggleValues: => 
@@ -310,7 +94,7 @@ function world
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
     
     tick: @tickInfo -> 
-        # log @tickInfo
-        @draw()
+
+        @g.draw @tickInfo.time
         
 export world
