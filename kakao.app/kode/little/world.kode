@@ -1,0 +1,257 @@
+###
+000   000   0000000   00000000   000      0000000  
+000 0 000  000   000  000   000  000      000   000
+000000000  000   000  0000000    000      000   000
+000   000  000   000  000   000  000      000   000
+00     00   0000000   000   000  0000000  0000000  
+###
+
+use ../kxk ▪ $ randInt randRange randIntRange elem prefs post
+
+use ◆ tweaky
+
+function world
+
+    @: -> 
+        
+        @main =$ 'main'
+        @pause = false
+        
+        @canvas = elem 'canvas' class:'canvas'
+        @main.appendChild @canvas
+        
+        @initWebGL()
+        @resize()
+                
+        @tweaky = new tweaky @main
+        
+        @setSide 100
+        @camPosX = 0
+        @camPosY = 0
+        @camScale = 0.02
+
+        @tweaky.init 
+             
+            side:      min: 1     max:100    step:1           value:@side,     cb: @setSide
+            camPosX:   min:-10    max:10     step:0.001       value:@camPosX,  cb: (@camPosX)  => @draw()
+            camPosY:   min:-10    max:10     step:0.001       value:@camPosY,  cb: (@camPosY)  => @draw()
+            camScale:  min:0.02   max:1      step:0.00001     value:@camScale, cb: (@camScale) => @draw()
+            
+        post.on 'resize' @resize
+        
+        @start()
+        
+    initWebGL: ->
+        
+        @gl = @canvas.getContext 'webgl2'
+        
+        vsSource = """
+            attribute vec2 aQuadVertex;
+            attribute vec2 aQuadScale;
+            attribute vec2 aQuadPosition;
+            attribute vec4 aQuadColor;
+            uniform vec2 uCamPos;
+            uniform vec2 uCamScale;
+            varying vec4 vColor;
+            
+            void main(void) {
+                vec2 pos = uCamScale * (aQuadVertex * aQuadScale + aQuadPosition) - uCamPos;
+                gl_Position = vec4(pos.x, pos.y, 0, 1);
+                vColor = aQuadColor;
+            }
+            
+            """
+            
+        fsSource = """
+            
+            precision mediump float;
+            varying vec4 vColor;
+        
+            void main(void) {
+                gl_FragColor = vColor;
+            }
+            """
+            
+        loadShader = type source =>
+            
+            shader = @gl.createShader type
+
+            @gl.shaderSource shader, source
+            @gl.compileShader shader
+
+            if not @gl.getShaderParameter shader, @gl.COMPILE_STATUS
+                error 'An error occurred compiling the shader:' @gl.getShaderInfoLog shader
+                @gl.deleteShader shader
+                ⮐ null
+
+            shader
+
+        vertexShader   = loadShader @gl.VERTEX_SHADER,   vsSource
+        fragmentShader = loadShader @gl.FRAGMENT_SHADER, fsSource
+
+        @shaderProgram = @gl.createProgram()
+        @gl.attachShader @shaderProgram, vertexShader
+        @gl.attachShader @shaderProgram, fragmentShader
+        @gl.linkProgram  @shaderProgram
+        
+        if not @gl.getProgramParameter @shaderProgram, @gl.LINK_STATUS
+            error 'Unable to initialize the shader program:' @gl.getProgramInfoLog @shaderProgram
+            
+        @gl.blendFuncSeparate @gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA, @gl.ONE, @gl.ONE_MINUS_SRC_ALPHA
+        @gl.enable @gl.BLEND
+        
+        # @vao = @gl.createVertexArray()
+        # @gl.bindVertexArray @vao
+        
+        r = 0.5
+        @quad = new Float32Array [-r, -r, r, -r, r, r, -r, r]
+        
+        @quadBuffer = @gl.createBuffer()
+        @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
+        @gl.bufferData @gl.ARRAY_BUFFER, @quad, @gl.STATIC_DRAW
+        
+        @quadVertexLoc = @gl.getAttribLocation @shaderProgram, 'aQuadVertex'
+        @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
+        @gl.vertexAttribPointer @quadVertexLoc, 2, @gl.FLOAT, false, 0, 0
+        @gl.enableVertexAttribArray @quadVertexLoc
+        
+        @poscalBuffer = @gl.createBuffer()
+        @colorBuffer  = @gl.createBuffer()
+        
+        @positionLoc  = @gl.getAttribLocation @shaderProgram, 'aQuadPosition'
+        @scaleLoc     = @gl.getAttribLocation @shaderProgram, 'aQuadScale'
+        @colorLoc = @gl.getAttribLocation @shaderProgram, 'aQuadColor'
+                            
+    setSide: @side => @setNum @side*@side
+        
+    setNum: @num =>
+        
+        @poscal = new Float32Array @num*4
+        @colors = new Float32Array @num*4
+                                                        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: =>
+         
+        sq = Math.ceil Math.sqrt @num
+        sq2 = sq/2
+        
+        for i in 0...@num
+            
+            px = i % sq
+            py = Math.floor i/sq
+
+            sx = 1 #- Math.abs (px - @side/2) / (@side/2)
+            sy = 1 #- Math.abs (py - @side/2) / (@side/2)
+            
+            p = i*4
+            @poscal[p++]  = px
+            @poscal[p++]  = py
+            @poscal[p++]  = (1.2 + Math.sin @tickInfo.time/1000) * 0.5
+            @poscal[p++]  = (1.2 + Math.cos @tickInfo.time/1000) * 0.5
+            
+            r = i / sq / sq + randRange -0.05 0.05
+            b = (i%sq)/sq   + randRange -0.05 0.05
+            g = (r + b) / 2 + randRange -0.05 0.05
+            a = 1
+
+            c = i*4
+            @colors[c++] = r
+            @colors[c++] = g
+            @colors[c++] = b
+            @colors[c++] = a
+                
+        @gl.useProgram @shaderProgram
+        
+        # @gl.bindVertexArray @vao
+        
+        @gl.bindBuffer @gl.ARRAY_BUFFER, @poscalBuffer
+        @gl.bufferData @gl.ARRAY_BUFFER, @poscal, @gl.STATIC_DRAW
+        
+        @gl.vertexAttribPointer @positionLoc, 2, @gl.FLOAT, false, 16, 0
+        @gl.vertexAttribDivisor @positionLoc, 1
+        
+        @gl.vertexAttribPointer @scaleLoc, 2, @gl.FLOAT, false, 16, 8
+        @gl.vertexAttribDivisor @scaleLoc, 1
+        
+        
+        @gl.enableVertexAttribArray @positionLoc
+        @gl.enableVertexAttribArray @scaleLoc
+        
+        @gl.bindBuffer @gl.ARRAY_BUFFER, @colorBuffer
+        @gl.bufferData @gl.ARRAY_BUFFER, @colors, @gl.STATIC_DRAW
+
+        @gl.vertexAttribPointer @colorLoc, 4, @gl.FLOAT, false, 0, 0
+        @gl.vertexAttribDivisor @colorLoc, 1
+        @gl.enableVertexAttribArray @colorLoc
+                                        
+        aspect = @canvas.height / @canvas.width
+        sx = @camScale * aspect
+        sy = @camScale
+        
+        camScale = new Float32Array [ sx, sy ]
+        @gl.uniform2fv @gl.getUniformLocation(@shaderProgram, 'uCamScale'), camScale
+        
+        camPos = new Float32Array [ (sq2-0.5)*@camScale*aspect+@camPosX, (sq2-0.5)*@camScale+@camPosY ]
+        @gl.uniform2fv @gl.getUniformLocation(@shaderProgram, 'uCamPos'), camPos
+        
+        @clearCanvas()
+                
+        @gl.drawArraysInstanced @gl.TRIANGLE_FAN, 0, 4, @num
+            
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    start:  =>
+    resize: =>
+        
+        br = @main.getBoundingClientRect()
+        @canvas.width  = br.width
+        @canvas.height = br.height
+
+        # log @gl.getParameter @gl.MAX_VIEWPORT_DIMS
+        # log @canvas.width, @canvas.height
+        @gl.viewport 0 0 @canvas.width, @canvas.height
+        
+    clearCanvas: =>
+            
+        @gl.clearColor 0.1 0.1 0.1 1.0
+        @gl.clear @gl.COLOR_BUFFER_BIT
+        
+    togglePause:  => @pause = not @pause; post.emit 'pause'
+    toggleValues: => 
+        
+    #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
+    # 000       000  000   000  000   000  000      000   000     000     000       
+    # 0000000   000  000000000  000   000  000      000000000     000     0000000   
+    #      000  000  000 0 000  000   000  000      000   000     000     000       
+    # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
+    
+    simulate: ->
+        
+        ⮐ if @pause and not @oneStep
+        
+        # ● simulate
+        
+        delete @oneStep
+        
+    # 000000000  000   0000000  000   000  
+    #    000     000  000       000  000   
+    #    000     000  000       0000000    
+    #    000     000  000       000  000   
+    #    000     000   0000000  000   000  
+    
+    singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
+    
+    tick: @tickInfo -> 
+        # log @tickInfo
+        @draw()
+        
+export world
