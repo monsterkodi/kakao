@@ -211,6 +211,8 @@ function gee
         
         @numQuads[0] = 0
         @numQuads[1] = 0
+        
+        @data.fill 0 0 @data.length
                 
     updateCamera: ->
         

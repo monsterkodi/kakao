@@ -180,7 +180,8 @@ void main(void) {
         this.clearCanvas()
         this.gl.drawArraysInstanced(this.gl.TRIANGLE_FAN,0,4,this.maxQuads)
         this.numQuads[0] = 0
-        return this.numQuads[1] = 0
+        this.numQuads[1] = 0
+        return this.data.fill(0,0,this.data.length)
     }
 
     gee.prototype["updateCamera"] = function ()

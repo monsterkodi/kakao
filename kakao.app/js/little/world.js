@@ -87,19 +87,33 @@ world = (function ()
         l = this.dragPath.slice(-1)[0]
         p = this.dragPath.slice(-2,-1)[0]
         g = this.win2Grid(drag.pos)
-        if ((l[0] === p[0] && p[0] === g[0]))
+        if ((g[0] === l[0] && l[0] === p[0]) && (g[1] === l[1] && l[1] === p[1]) && this.dragPath.length > 2)
         {
-            l[1] = g[1]
+            return this.dragPath.pop()
+        }
+        else if ((l[0] === p[0] && p[0] === g[0]))
+        {
+            return l[1] = g[1]
         }
         else if ((l[1] === p[1] && p[1] === g[1]))
         {
-            l[0] = g[0]
+            return l[0] = g[0]
         }
         else
         {
             this.dragPath.push(g)
+            if (l[0] !== g[0] && l[1] !== g[1])
+            {
+                if (l[0] === p[0])
+                {
+                    return l[1] = g[1]
+                }
+                else
+                {
+                    return l[0] = g[0]
+                }
+            }
         }
-        console.log(this.dragPath)
     }
 
     world.prototype["onContextMenu"] = function (event)
@@ -178,26 +192,16 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var e, l, p, pi, s, x, y
+        var e, l, n, p, pi, s, t, x, y
 
         this.tickInfo = tickInfo
     
         this.roundedQuadRect(0,-0.5,8.5,8,[0,0,0,0.15])
         this.roundedQuadRect(-0.25,-0.25,8.25,8.25,[0.15,0.15,0.15,1])
         this.gridQuadRect(0,0,8,8,[0,0,0,0.5],0)
-        this.addTube(0,3,0)
-        this.addTube(1,3,3)
-        this.addTube(1,4,2)
-        this.addTube(1,5,5)
-        this.addTube(2,5,0)
-        this.addTube(3,5,1)
-        this.addTube(3,4,2)
-        this.addTube(3,3,3)
-        this.addTube(2,3,5)
-        this.addTube(2,2,4)
-        this.addTube(3,2,0)
         if (this.dragPath)
         {
+            this.addTube(this.dragPath[0][0],this.dragPath[0][1],(this.dragPath[0][0] === this.dragPath[1][0] ? 2 : 0))
             for (var _a_ = pi = 1, _b_ = this.dragPath.length; (_a_ <= _b_ ? pi < this.dragPath.length : pi > this.dragPath.length); (_a_ <= _b_ ? ++pi : --pi))
             {
                 p = this.dragPath[pi - 1]
@@ -208,7 +212,20 @@ world = (function ()
 
                     if (s < e)
                     {
-                        this.addTube(p[0],p[1],3)
+                        t = 2
+                        if (pi < this.dragPath.length - 1)
+                        {
+                            n = this.dragPath[pi + 1]
+                            if (p[1] < l[1])
+                            {
+                                t = (n[0] > l[0] ? 5 : 1)
+                            }
+                            else
+                            {
+                                t = (n[0] > l[0] ? 4 : 3)
+                            }
+                        }
+                        this.addTube(l[0],l[1],t)
                         for (var _d_ = y = s + 1, _e_ = e; (_d_ <= _e_ ? y < e : y > e); (_d_ <= _e_ ? ++y : --y))
                         {
                             this.addTube(p[0],y,2)
@@ -221,7 +238,20 @@ world = (function ()
 
                     if (s < e)
                     {
-                        this.addTube(p[0],p[1],5)
+                        t = 0
+                        if (pi < this.dragPath.length - 1)
+                        {
+                            n = this.dragPath[pi + 1]
+                            if (p[0] < l[0])
+                            {
+                                t = (n[1] > l[1] ? 3 : 1)
+                            }
+                            else
+                            {
+                                t = (n[1] > l[1] ? 4 : 5)
+                            }
+                        }
+                        this.addTube(l[0],l[1],t)
                         for (var _10_ = x = s + 1, _11_ = e; (_10_ <= _11_ ? x < e : x > e); (_10_ <= _11_ ? ++x : --x))
                         {
                             this.addTube(x,p[1],0)
