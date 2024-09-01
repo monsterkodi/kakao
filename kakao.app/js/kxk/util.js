@@ -117,6 +117,10 @@ util = {isEqual:function (a, b)
             }
         }
     }
+    else
+    {
+        console.log('not an array!?',arr)
+    }
     return [inc,exc]
 },findIf:function (arr, pred)
 {
@@ -255,12 +259,12 @@ util = {isEqual:function (a, b)
     })
 },defaults:function (obj, def)
 {
-    var key, val, _162_21_
+    var key, val, _166_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_162_21_=obj[key]) != null ? _162_21_ : val)
+        obj[key] = ((_166_21_=obj[key]) != null ? _166_21_ : val)
     }
     return obj
 },pickBy:function (obj, pred)

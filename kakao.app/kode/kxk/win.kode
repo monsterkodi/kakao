@@ -102,7 +102,7 @@ class Win
         
         [sameApp, otherApp] = util.splitWith list, (i) -> slash.name(i.path).endsWith '_' + window.name
         
-        # log sameApp, otherApp
+        log 'onStashMissing' list, window.name, "same #{noon sameApp} other #{noon otherApp}" 
         
         if valid sameApp
             
@@ -113,14 +113,14 @@ class Win
             # log 'load old' old.path
             ○ window.stash.load old.path
 
-            if @delegate?.onWindowDidLoadStash is func ➜ ○ @delegate.onWindowDidLoadStash @
+            # if @delegate?.onWindowDidLoadStash is func ➜ ○ @delegate.onWindowDidLoadStash @
             
             ○ ffs.remove old.path
             
         else
             if @delegate?.onWindowWithoutStash is func ➜ ○ @delegate.onWindowWithoutStash @
 
-        @showWindow()
+            @showWindow()
                 
         if valid sameApp
             
@@ -141,7 +141,7 @@ class Win
             
     onWindowDidReload: =>
         
-        log 'window.didReload'
+        # log 'window.didReload'
         
         document.body.style.display = 'inherit'        
         

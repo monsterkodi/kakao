@@ -19,8 +19,6 @@ function Delegate extends win.Delegate
 
         @menuNoon = kakao.bundle.res 'menu_little.noon'
         
-        kakao 'log' 'hello'
-                        
         post.on 'menuAction' @onMenuAction
         
     onWindowAnimationTick: win tickInfo => 
@@ -36,6 +34,8 @@ function Delegate extends win.Delegate
         # title.innerHTML = s
                 
     onWindowWillShow: ->
+        
+        ⮐ if @world
         
         window.world = @world = new world
         
@@ -103,8 +103,6 @@ function Delegate extends win.Delegate
     onWindowFocus: win =>
     
 kakao.init ->
-    
-    kakao 'log' 'little'
     
     new win new Delegate
     @

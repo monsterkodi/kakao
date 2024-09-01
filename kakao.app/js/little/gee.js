@@ -1,3 +1,5 @@
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+
 var gee
 
 import kxk from "../kxk.js"
@@ -11,31 +13,42 @@ gee = (function ()
 {
     function gee (main)
     {
+        var layer
+
         this.main = main
     
         this["clearCanvas"] = this["clearCanvas"].bind(this)
         this["resize"] = this["resize"].bind(this)
         this["loaded"] = this["loaded"].bind(this)
-        this["start"] = this["start"].bind(this)
+        this["loadTiles"] = this["loadTiles"].bind(this)
         this["draw"] = this["draw"].bind(this)
-        this["setNum"] = this["setNum"].bind(this)
-        this["setSide"] = this["setSide"].bind(this)
+        this["addQuad"] = this["addQuad"].bind(this)
         this.textureInfos = []
         this.canvas = elem('canvas',{class:'canvas'})
         this.main.appendChild(this.canvas)
-        this.initWebGL()
-        this.resize()
-        this.setSide(10)
+        this.initGL()
+        this.numLayers = 2
+        this.quadsPerLayer = 1000
+        this.layerStart = []
+        this.numQuads = []
+        for (var _a_ = layer = 0, _b_ = this.numLayers; (_a_ <= _b_ ? layer < this.numLayers : layer > this.numLayers); (_a_ <= _b_ ? ++layer : --layer))
+        {
+            this.layerStart.push(layer * this.quadsPerLayer)
+            this.numQuads.push(0)
+        }
+        this.quadDataLength = 13
+        this.maxQuads = this.quadsPerLayer * this.numLayers
+        this.data = new Float32Array(this.maxQuads * this.quadDataLength)
         this.camPosX = 0
         this.camPosY = 0
         this.camScale = 0.2
         post.on('resize',this.resize)
-        this.start()
+        this.loadTiles()
     }
 
-    gee.prototype["initWebGL"] = function ()
+    gee.prototype["initGL"] = function ()
     {
-        var fragmentShader, fsSource, loadShader, r, vertexShader, vsSource
+        var fsSource, loadShader, r, vsSource
 
         this.gl = this.canvas.getContext('webgl2')
         vsSource = `#version 300 es
@@ -80,100 +93,75 @@ void main(void) {
             this.gl.compileShader(shader)
             if (!this.gl.getShaderParameter(shader,this.gl.COMPILE_STATUS))
             {
-                console.error('An error occurred compiling the shader:',this.gl.getShaderInfoLog(shader))
+                console.error('Shader compilation failed:',this.gl.getShaderInfoLog(shader))
                 this.gl.deleteShader(shader)
                 return null
             }
             return shader
         }).bind(this)
-        vertexShader = loadShader(this.gl.VERTEX_SHADER,vsSource)
-        fragmentShader = loadShader(this.gl.FRAGMENT_SHADER,fsSource)
         this.shaderProgram = this.gl.createProgram()
-        this.gl.attachShader(this.shaderProgram,vertexShader)
-        this.gl.attachShader(this.shaderProgram,fragmentShader)
+        this.gl.attachShader(this.shaderProgram,loadShader(this.gl.VERTEX_SHADER,vsSource))
+        this.gl.attachShader(this.shaderProgram,loadShader(this.gl.FRAGMENT_SHADER,fsSource))
         this.gl.linkProgram(this.shaderProgram)
         if (!this.gl.getProgramParameter(this.shaderProgram,this.gl.LINK_STATUS))
         {
-            console.error('Unable to initialize the shader program:',this.gl.getProgramInfoLog(this.shaderProgram))
+            console.error('Shader linking failed:',this.gl.getProgramInfoLog(this.shaderProgram))
         }
         this.gl.blendFuncSeparate(this.gl.SRC_ALPHA,this.gl.ONE_MINUS_SRC_ALPHA,this.gl.ONE,this.gl.ONE_MINUS_SRC_ALPHA)
         this.gl.enable(this.gl.BLEND)
         r = 0.5
         this.quad = new Float32Array([-r,-r,r,-r,r,r,-r,r])
-        this.quadBuffer = this.gl.createBuffer()
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.quadBuffer)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.quad,this.gl.STATIC_DRAW)
+        this.bufCamScale = new Float32Array(2)
+        this.bufCamPos = new Float32Array(2)
         this.quadVertexLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadVertex')
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.quadBuffer)
-        this.gl.vertexAttribPointer(this.quadVertexLoc,2,this.gl.FLOAT,false,0,0)
-        this.gl.enableVertexAttribArray(this.quadVertexLoc)
-        this.dataBuffer = this.gl.createBuffer()
         this.positionLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadPosition')
         this.scaleLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadScale')
         this.colorLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadColor')
         this.uvLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadUV')
-        return this.rotLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadRot')
+        this.rotLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadRot')
+        this.camScaleLoc = this.gl.getUniformLocation(this.shaderProgram,'uCamScale')
+        this.camPosLoc = this.gl.getUniformLocation(this.shaderProgram,'uCamPos')
+        this.quadBuffer = this.gl.createBuffer()
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.quadBuffer)
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.quad,this.gl.STATIC_DRAW)
+        this.gl.vertexAttribPointer(this.quadVertexLoc,2,this.gl.FLOAT,false,0,0)
+        this.gl.enableVertexAttribArray(this.quadVertexLoc)
+        return this.dataBuffer = this.gl.createBuffer()
     }
 
-    gee.prototype["setSide"] = function (side)
+    gee.prototype["addQuad"] = function (px, py, sx, sy, color, uv, rot = 0, layer = 0)
     {
-        this.side = side
-    
-        return this.setNum(this.side * this.side)
-    }
+        var p
 
-    gee.prototype["setNum"] = function (num)
-    {
-        this.num = num
-    
-        return this.data = new Float32Array(this.num * 13)
+        if (this.numQuads[layer] >= this.quadsPerLayer)
+        {
+            return
+        }
+        p = (this.layerStart[layer] + this.numQuads[layer]) * this.quadDataLength
+        this.data[p++] = px
+        this.data[p++] = py
+        this.data[p++] = sx
+        this.data[p++] = sy
+        this.data[p++] = color[0]
+        this.data[p++] = color[1]
+        this.data[p++] = color[2]
+        this.data[p++] = color[3]
+        this.data[p++] = uv[0]
+        this.data[p++] = uv[1]
+        this.data[p++] = uv[2]
+        this.data[p++] = uv[3]
+        this.data[p++] = rot
+        return this.numQuads[layer]++
     }
 
     gee.prototype["draw"] = function (time)
     {
-        var a, attrib, b, camPos, camScale, cv, g, i, offset, p, px, py, r, sq, sq2, stride, sx, sy, u0, u1, v0, v1
+        var attrib, offset, stride
 
-        sq = Math.ceil(Math.sqrt(this.num))
-        sq2 = sq / 2
-        for (var _a_ = i = 0, _b_ = this.num; (_a_ <= _b_ ? i < this.num : i > this.num); (_a_ <= _b_ ? ++i : --i))
-        {
-            px = i % sq
-            py = Math.floor(i / sq)
-            sx = 1
-            sy = 1
-            p = i * 13
-            this.data[p++] = px
-            this.data[p++] = py
-            this.data[p++] = sx
-            this.data[p++] = sy
-            cv = 0.05
-            r = 1
-            b = 1
-            g = 1
-            a = (1 + Math.cos(Math.min(px,py) * time / 30000)) / 2
-            this.data[p++] = r
-            this.data[p++] = g
-            this.data[p++] = b
-            this.data[p++] = a
-            u0 = 0
-            v0 = 0
-            u1 = 196 / 4096
-            v1 = 196 / 4096
-            this.data[p++] = u0
-            this.data[p++] = v0
-            this.data[p++] = u1
-            this.data[p++] = v1
-            this.data[p++] = (px - py) * time / 10000
-        }
         this.gl.useProgram(this.shaderProgram)
-        if ((this.textureInfos[0] != null ? this.textureInfos[0].glTexture : undefined))
-        {
-            this.gl.activeTexture(this.gl.TEXTURE0)
-            this.gl.bindTexture(this.gl.TEXTURE_2D,this.textureInfos[0].glTexture)
-        }
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.dataBuffer)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.data,this.gl.STATIC_DRAW)
-        stride = 13 * 4
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.data,this.gl.DYNAMIC_DRAW)
+        stride = this.quadDataLength * 4
         offset = 0
         attrib = (function (loc, cnt)
         {
@@ -187,37 +175,27 @@ void main(void) {
         attrib(this.colorLoc,4)
         attrib(this.uvLoc,4)
         attrib(this.rotLoc,1)
-        sx = this.camScale * this.aspect
-        sy = this.camScale
-        camScale = new Float32Array([sx,sy])
-        this.gl.uniform2fv(this.gl.getUniformLocation(this.shaderProgram,'uCamScale'),camScale)
-        camPos = new Float32Array([(sq2 - 0.5) * this.camScale * this.aspect + this.camPosX,(sq2 - 0.5) * this.camScale + this.camPosY])
-        this.gl.uniform2fv(this.gl.getUniformLocation(this.shaderProgram,'uCamPos'),camPos)
+        this.gl.uniform2fv(this.camScaleLoc,this.bufCamScale)
+        this.gl.uniform2fv(this.camPosLoc,this.bufCamPos)
         this.clearCanvas()
-        return this.gl.drawArraysInstanced(this.gl.TRIANGLE_FAN,0,4,this.num)
+        this.gl.drawArraysInstanced(this.gl.TRIANGLE_FAN,0,4,this.maxQuads)
+        this.numQuads[0] = 0
+        return this.numQuads[1] = 0
     }
 
-    gee.prototype["createTexture"] = function (image)
+    gee.prototype["updateCamera"] = function ()
     {
-        var texture
-
-        if (!image)
-        {
-            return
-        }
-        texture = this.gl.createTexture()
-        this.gl.bindTexture(this.gl.TEXTURE_2D,texture)
-        this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,this.gl.RGBA,this.gl.UNSIGNED_BYTE,image)
-        this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MIN_FILTER,this.gl.LINEAR)
-        this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MAG_FILTER,this.gl.LINEAR)
-        return texture
+        this.bufCamScale[0] = this.camScale * this.aspect
+        this.bufCamScale[1] = this.camScale
+        this.bufCamPos[0] = this.camPosX
+        return this.bufCamPos[1] = this.camPosY
     }
 
-    gee.prototype["start"] = function ()
+    gee.prototype["loadTiles"] = function ()
     {
         var imageSources, promises
 
-        imageSources = ['./tiles.png']
+        imageSources = ['./tiles0000.png']
         promises = imageSources.map((function (src, textureIndex)
         {
             return new Promise((function (resolve)
@@ -238,18 +216,44 @@ void main(void) {
 
     gee.prototype["loaded"] = function ()
     {
-        console.log('loaded',this.textureInfos)
+        if ((this.textureInfos[0] != null ? this.textureInfos[0].glTexture : undefined))
+        {
+            this.gl.activeTexture(this.gl.TEXTURE0)
+            this.gl.bindTexture(this.gl.TEXTURE_2D,this.textureInfos[0].glTexture)
+        }
+        return this.resize()
+    }
+
+    gee.prototype["createTexture"] = function (image)
+    {
+        var texture
+
+        if (!image)
+        {
+            return
+        }
+        texture = this.gl.createTexture()
+        this.gl.bindTexture(this.gl.TEXTURE_2D,texture)
+        this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,this.gl.RGBA,this.gl.UNSIGNED_BYTE,image)
+        this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MIN_FILTER,this.gl.LINEAR)
+        this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MAG_FILTER,this.gl.LINEAR)
+        return texture
     }
 
     gee.prototype["resize"] = function ()
     {
-        var br
+        var br, devicePixelRatio, maxDim
 
         br = this.main.getBoundingClientRect()
-        this.canvas.width = br.width
-        this.canvas.height = br.height
+        devicePixelRatio = window.devicePixelRatio || 1
+        this.canvas.width = br.width * devicePixelRatio
+        this.canvas.height = br.height * devicePixelRatio
         this.aspect = this.canvas.height / this.canvas.width
-        return this.gl.viewport(0,0,this.canvas.width,this.canvas.height)
+        maxDim = this.gl.getParameter(this.gl.MAX_VIEWPORT_DIMS)
+        this.canvas.style.width = br.width + "px"
+        this.canvas.style.height = br.height + "px"
+        this.gl.viewport(0,0,_k_.min(this.canvas.width,maxDim),_k_.min(this.canvas.height,maxDim))
+        return this.updateCamera()
     }
 
     gee.prototype["clearCanvas"] = function ()

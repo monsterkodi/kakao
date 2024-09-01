@@ -30,7 +30,6 @@ Delegate = (function ()
         this["onPause"] = this["onPause"].bind(this)
         this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
         this.menuNoon = kakao.bundle.res('menu_little.noon')
-        kakao('log','hello')
         post.on('menuAction',this.onMenuAction)
         return Delegate.__super__.constructor.apply(this, arguments)
     }
@@ -48,6 +47,10 @@ Delegate = (function ()
     {
         var main, title
 
+        if (this.world)
+        {
+            return
+        }
         window.world = this.world = new world
         main = $('main')
         this.quiq = elem({class:'quiq',children:[elem({text:' ',class:'quiq-item quiq-resart',click:this.world.start,dblclick:function (e)
@@ -119,7 +122,6 @@ Delegate = (function ()
 
 kakao.init(function ()
 {
-    kakao('log','little')
     new win(new Delegate)
     return this
 })

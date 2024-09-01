@@ -19,15 +19,32 @@ function world
         
         @g = new gee @main
         
-        @tweaky = new tweaky @main
-        
-        @tweaky.init 
-            side:      min: 10    max:200    step:1           value:@g.side,     cb: @g.setSide
+        # @tweaky = new tweaky @main
+#         
+        # @tweaky.init 
+            # side:      min: 10    max:200    step:1           value:@g.side,     cb: @g.setSide
             
         window.addEventListener 'wheel' @onWheel
         @main.addEventListener 'contextmenu' @onContextMenu
-        @g.canvas.addEventListener 'touchstart' @onTouchStart
-        @g.canvas.addEventListener 'touchmove' @onTouchMove
+        
+        s = 82/4096
+        @tubeUV = [
+            [ s*1 s*2 s*2 s*3 ] # right / left
+            [ s*2 s*0 s*3 s*1 ] # right down / up left
+            [ s*2 s*1 s*3 s*2 ] # down / up
+            [ s*2 s*2 s*3 s*3 ] # down left / right up
+            [ s*0 s*2 s*1 s*3 ] # down right / left up
+            [ s*0 s*0 s*1 s*1 ] # up right / left down
+            ]
+            
+        @quadUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
+        
+        @circleUV = [
+            [ s*3.5, s*0.5, s*4.5, s*1.5 ]
+            [ s*4.5, s*0.5, s*5.5, s*1.5 ]
+            [ s*4.5, s*1.5, s*5.5, s*2.5 ]
+            [ s*3.5, s*1.5, s*4.5, s*2.5 ]
+        ]
         
         @drag = new drag 
             target:  @g.canvas
@@ -54,7 +71,8 @@ function world
             
         @g.camPosX = clamp -@g.side*@g.aspect/2*@g.camScale, @g.side*@g.aspect/2*@g.camScale, @g.camPosX
         @g.camPosY = clamp -@g.side/2*@g.camScale, @g.side/2*@g.camScale, @g.camPosY
-            
+        
+        @g.updateCamera()
         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -93,8 +111,60 @@ function world
     
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
     
-    tick: @tickInfo -> 
+    addTube: x y idx =>
 
+        u = @tubeUV[idx]
+        @g.addQuad x+0.2, y-0.2,  1 1   [0 0 0 0.25], u, 0 0
+        
+        @g.addQuad x, y,  1 1   [1 1 0 1], u, 0 1
+        
+    roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
+        
+        [x0, x1] = [min(x0, x1), max(x0, x1)]
+        [y0, y1] = [min(y0, y1), max(y0, y1)]
+        
+        @g.addQuad x0, y0, 1 1  color, @circleUV[3], 0 layer
+        @g.addQuad x1, y0, 1 1  color, @circleUV[2], 0 layer
+        @g.addQuad x1, y1, 1 1  color, @circleUV[1], 0 layer
+        @g.addQuad x0, y1, 1 1  color, @circleUV[0], 0 layer
+        
+        @g.addQuad (x0+x1)/2, (y0+y1)/2, (x1-x0)-1, (y1-y0)+1, color, @quadUV, 0 layer 
+        @g.addQuad  x0,       (y0+y1)/2, 1,         (y1-y0)-1, color, @quadUV, 0 layer 
+        @g.addQuad  x1,       (y0+y1)/2, 1,         (y1-y0)-1, color, @quadUV, 0 layer 
+        
+    gridQuadRect: x0 y0 x1 y1 color layer=0 w=0.02 =>
+        
+        [x0, x1] = [min(x0, x1), max(x0, x1)]
+        [y0, y1] = [min(y0, y1), max(y0, y1)]
+        
+        sx = x1 - x0
+        sy = y1 - y0
+        
+        for x in 0..sx
+            @g.addQuad x, sx/2, w, sx, [0 0 0 0.15], @quadUV, 0 layer
+
+        for y in 0..sy
+            @g.addQuad sy/2, y, sy, w, [0 0 0 0.15], @quadUV, 0 layer 
+        
+    tick: @tickInfo ->
+        
+        @roundedQuadRect  0 -0.5 8.5 8 [0 0 0 0.15]
+        @roundedQuadRect -0.25 -0.25 8.25 8.25 [0.15 0.15 0.15 1]
+        
+        @gridQuadRect 0 0 8 8 [0 0 0 0.5] 0  
+        
+        @addTube 0 3 0
+        @addTube 1 3 3
+        @addTube 1 4 2
+        @addTube 1 5 5
+        @addTube 2 5 0
+        @addTube 3 5 1
+        @addTube 3 4 2
+        @addTube 3 3 3
+        @addTube 2 3 5
+        @addTube 2 2 4
+        @addTube 3 2 0
+        
         @g.draw @tickInfo.time
         
 export world

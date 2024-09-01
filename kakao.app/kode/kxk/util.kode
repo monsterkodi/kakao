@@ -83,8 +83,12 @@ util =
         
         if valid arr and arr is arr
             for item in arr
-                if pred(item) ➜ inc.push item
-                  else exc.push item
+                if pred item
+                    inc.push item
+                else 
+                    exc.push item
+        else
+            log 'not an array!?' arr
             
         [inc, exc]
     

@@ -29,7 +29,8 @@
     NSString* route = [msg.body valueForKey:@"route"];
     NSArray*  args  = [msg.body valueForKey:@"args"];
 
-         if ([route isEqualToString:@"log"    ]) { NSLog(@"%ld %@ %@", (long)win.windowNumber, msg.name, msg.body); }
+         // if ([route isEqualToString:@"log"    ]) { NSLog(@"%ld %@ %@", (long)win.windowNumber, msg.name, msg.body); }
+         if ([route isEqualToString:@"log"    ]) { NSLog(@"%@", [args componentsJoinedByString:@" "]); }
     else if ([route isEqualToString:@"now"    ]) { reply = [NSNumber numberWithDouble:CFAbsoluteTimeGetCurrent()]; }
     else if ([route isEqualToString:@"open"   ]) { reply = [Route open:[args objectAtIndex:0]]; }
     else if ([route isEqualToString:@"finder" ]) { reply = [Route finder:[args objectAtIndex:0]]; }
