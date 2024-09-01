@@ -59,8 +59,8 @@ function Delegate extends win.Delegate
 
     onPause: =>
         
-        pause =$ '.quiq-pause'
-        pause.innerHTML = @world.pause ? '⏵' : '⏸'
+        # pause =$ '.quiq-pause'
+        # pause.innerHTML = @world.pause ? '⏵' : '⏸'
         
     onWindowWithoutStash: ->  
         

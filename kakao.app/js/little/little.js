@@ -67,12 +67,7 @@ Delegate = (function ()
     }
 
     Delegate.prototype["onPause"] = function ()
-    {
-        var pause
-
-        pause = $('.quiq-pause')
-        return pause.innerHTML = (this.world.pause ? '⏵' : '⏸')
-    }
+    {}
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
     {

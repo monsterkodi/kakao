@@ -1,26 +1,35 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var COL_BG, COL_GRID, COL_SHADOW, COL_TUBE, world
+var COL_BG, COL_CRITTER, COL_EGG, COL_GRID, COL_SHADOW, COL_TUBE, threshMold, world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
 let drag = kxk.drag
 let stopEvent = kxk.stopEvent
-let randInt = kxk.randInt
-let randRange = kxk.randRange
-let randIntRange = kxk.randIntRange
-let elem = kxk.elem
 let prefs = kxk.prefs
 let post = kxk.post
+let fade = kxk.fade
+let randInt = kxk.randInt
 
-import tweaky from "./tweaky.js"
 import gee from "./gee.js"
+import tweaky from "./tweaky.js"
 import tube from "./tube.js"
 
 COL_SHADOW = [0,0,0,0.1]
 COL_BG = [0.15,0.15,0.15,1]
 COL_GRID = [0,0,0,0.5]
 COL_TUBE = [0.5,0.5,0.5,1]
+COL_EGG = [1,1,1,1]
+COL_CRITTER = [1,0.5,0,1]
+
+threshMold = function (p, n, m)
+{
+    var pi, pn
+
+    pi = parseInt(p / m)
+    pn = parseInt(n / m)
+    return pi !== pn
+}
 
 world = (function ()
 {
@@ -30,15 +39,23 @@ world = (function ()
 
         this["gridQuadRect"] = this["gridQuadRect"].bind(this)
         this["roundedQuadRect"] = this["roundedQuadRect"].bind(this)
+        this["drawCritter"] = this["drawCritter"].bind(this)
+        this["drawEgg"] = this["drawEgg"].bind(this)
         this["drawTube"] = this["drawTube"].bind(this)
         this["addTube"] = this["addTube"].bind(this)
+        this["addCritter"] = this["addCritter"].bind(this)
+        this["addEgg"] = this["addEgg"].bind(this)
         this["singleStep"] = this["singleStep"].bind(this)
+        this["simulate"] = this["simulate"].bind(this)
         this["toggleValues"] = this["toggleValues"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this["onContextMenu"] = this["onContextMenu"].bind(this)
         this["onDragStop"] = this["onDragStop"].bind(this)
         this["onDragMove"] = this["onDragMove"].bind(this)
         this["onDragStart"] = this["onDragStart"].bind(this)
+        this["emptyNeighbor"] = this["emptyNeighbor"].bind(this)
+        this["isEmpty"] = this["isEmpty"].bind(this)
+        this["isInWorld"] = this["isInWorld"].bind(this)
         this["mouseInWorld"] = this["mouseInWorld"].bind(this)
         this["win2Grid"] = this["win2Grid"].bind(this)
         this["win2Pos"] = this["win2Pos"].bind(this)
@@ -49,8 +66,14 @@ world = (function ()
         this.pause = false
         this.ws = 10
         this.tubes = []
+        this.eggs = []
+        this.critters = []
+        this.critterMaxAge = 127
+        this.critterEggPeriod = 19
+        this.eggMaxAge = 7
+        this.addEgg(this.ws / 2,this.ws / 2)
         this.g = new gee(this.main)
-        this.g.camScale = 0.1
+        this.g.camScale = 0.08
         this.g.camPosX = 1 / this.g.camScale
         this.g.camPosY = 1 / this.g.camScale
         this.main.addEventListener('mousemove',this.onMouseMove)
@@ -60,6 +83,8 @@ world = (function ()
         s = 82 / 4096
         this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
         this.quadUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
+        this.eggUV = [s * 3.5,s * 0.5,s * 5.5,s * 2.5]
+        this.critterUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
         this.circleUV = [[s * 3.5,s * 0.5,s * 4.5,s * 1.5],[s * 4.5,s * 0.5,s * 5.5,s * 1.5],[s * 4.5,s * 1.5,s * 5.5,s * 2.5],[s * 3.5,s * 1.5,s * 4.5,s * 2.5]]
         this.drag = new drag({target:this.g.canvas,onStart:this.onDragStart,onMove:this.onDragMove,onStop:this.onDragStop,cursor:'pointer'})
     }
@@ -116,10 +141,63 @@ world = (function ()
 
     world.prototype["mouseInWorld"] = function ()
     {
-        var m
+        return this.isInWorld(this.mouse.pos)
+    }
 
-        m = this.mouse.pos
-        return m[0] >= -0.75 && m[1] >= -0.25 && m[0] < this.ws - 0.25 && m[1] < this.ws - 0.25
+    world.prototype["isInWorld"] = function (p)
+    {
+        return p[0] >= 0 && p[1] >= 0 && p[0] < this.ws && p[1] < this.ws
+    }
+
+    world.prototype["isEmpty"] = function (p)
+    {
+        var c, e
+
+        var list = _k_.list(this.critters)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            c = list[_a_]
+            if (c.x === p[0] && c.y === p[1])
+            {
+                return false
+            }
+        }
+        var list1 = _k_.list(this.eggs)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            e = list1[_b_]
+            if (c.x === p[0] && c.y === p[1])
+            {
+                return false
+            }
+        }
+        return true
+    }
+
+    world.prototype["emptyNeighbor"] = function (c)
+    {
+        var x, y
+
+        for (x = -1; x <= 1; x++)
+        {
+            for (y = -1; y <= 1; y++)
+            {
+                if ((x === y && y === 0))
+                {
+                    continue
+                }
+                c = [c.x + x,c.y + y]
+                if (!this.isInWorld(c))
+                {
+                    continue
+                }
+                if (this.isEmpty(c))
+                {
+                    return {x:c[0],y:c[1]}
+                }
+            }
+        }
+        return null
     }
 
     world.prototype["onDragStart"] = function (drag, event)
@@ -195,13 +273,55 @@ world = (function ()
     world.prototype["toggleValues"] = function ()
     {}
 
-    world.prototype["simulate"] = function ()
+    world.prototype["simulate"] = function (tickInfo)
     {
+        var c, e, moveTarget, n, sec
+
         if (this.pause && !this.oneStep)
         {
             return
         }
-        return delete this.oneStep
+        delete this.oneStep
+        sec = tickInfo.delta / 1000
+        var list = _k_.list(this.eggs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            e = list[_a_]
+            e.age += sec
+            if (e.age > this.eggMaxAge)
+            {
+                this.eggs.splice(this.eggs.indexOf(e),1)
+                this.addCritter(e.x,e.y)
+            }
+        }
+        var list1 = _k_.list(this.critters)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            c = list1[_b_]
+            c.age += sec
+            if (c.age > this.critterMaxAge)
+            {
+                this.critters.splice(this.critters.indexOf(c),1)
+                continue
+            }
+            if (threshMold(c.age - sec,c.age,this.critterEggPeriod))
+            {
+                if (n = this.emptyNeighbor(c))
+                {
+                    this.addEgg(n.x,n.y)
+                }
+                else
+                {
+                    console.log('no place for egg')
+                }
+            }
+            moveTarget = [c.x + randInt(3) - 1,c.y + randInt(3) - 1]
+            if (this.isInWorld(moveTarget) && this.isEmpty(moveTarget))
+            {
+                c.x = moveTarget[0]
+                c.y = moveTarget[1]
+            }
+        }
     }
 
     world.prototype["singleStep"] = function ()
@@ -209,6 +329,16 @@ world = (function ()
         this.oneStep = true
         this.pause = true
         return post.emit('pause')
+    }
+
+    world.prototype["addEgg"] = function (x, y)
+    {
+        return this.eggs.push({x:x,y:y,age:0})
+    }
+
+    world.prototype["addCritter"] = function (x, y)
+    {
+        return this.critters.push({x:x,y:y,age:0})
     }
 
     world.prototype["addTube"] = function (x, y, idx)
@@ -220,6 +350,22 @@ world = (function ()
     {
         this.g.addQuad(x + 0.2,y - 0.2,1,1,COL_SHADOW,this.tubeUV[idx],0,0)
         return this.g.addQuad(x,y,1,1,COL_TUBE,this.tubeUV[idx],0,1)
+    }
+
+    world.prototype["drawEgg"] = function (e)
+    {
+        var s
+
+        s = fade(0.2,1,e.age / this.eggMaxAge)
+        return this.g.addQuad(e.x,e.y,s,s,COL_EGG,this.eggUV,0,1)
+    }
+
+    world.prototype["drawCritter"] = function (c)
+    {
+        var s
+
+        s = fade(0.2,1,c.age / this.critterMaxAge)
+        return this.g.addQuad(c.x,c.y,s,s,COL_CRITTER,this.critterUV,0,1)
     }
 
     world.prototype["roundedQuadRect"] = function (x0, y0, x1, y1, color, layer = 0)
@@ -259,10 +405,11 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var t
+        var c, e, t
 
         this.tickInfo = tickInfo
     
+        this.simulate(this.tickInfo)
         this.roundedQuadRect(0,-0.5,this.ws - 0.5,this.ws - 1,COL_SHADOW)
         this.roundedQuadRect(-0.25,-0.25,this.ws - 0.75,this.ws - 0.75,COL_BG)
         this.gridQuadRect(0,0,this.ws - 1,this.ws - 1,COL_GRID)
@@ -275,6 +422,18 @@ world = (function ()
         {
             t = list[_a_]
             this.drawTube(t[0],t[1],t[2])
+        }
+        var list1 = _k_.list(this.critters)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            c = list1[_b_]
+            this.drawCritter(c)
+        }
+        var list2 = _k_.list(this.eggs)
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            e = list2[_c_]
+            this.drawEgg(e)
         }
         return this.g.draw(this.tickInfo.time)
     }

@@ -6,14 +6,23 @@
 00     00   0000000   000   000  0000000  0000000  
 ###
 
-use ../kxk ▪ $ drag stopEvent randInt randRange randIntRange elem prefs post
+use ../kxk ▪ $ drag stopEvent prefs post fade randInt
 
-use ◆ tweaky gee tube
+use ◆ gee tweaky tube
 
-COL_SHADOW = [0 0 0 0.1]
-COL_BG     = [0.15 0.15 0.15 1]
-COL_GRID   = [0 0 0 0.5]
-COL_TUBE   = [0.5 0.5 0.5 1]
+COL_SHADOW  = [0 0 0 0.1]
+COL_BG      = [0.15 0.15 0.15 1]
+COL_GRID    = [0 0 0 0.5]
+COL_TUBE    = [0.5 0.5 0.5 1]
+COL_EGG     = [1 1 1 1]
+COL_CRITTER = [1 0.5 0 1]
+
+threshMold  = p n m ->
+    
+    pi = parseInt p/m
+    pn = parseInt n/m
+    
+    pi != pn
 
 function world
 
@@ -24,11 +33,19 @@ function world
         
         @ws = 10
         
-        @tubes = []
+        @tubes    = []
+        @eggs     = []
+        @critters = []
+        
+        @critterMaxAge    = 127
+        @critterEggPeriod = 19
+        @eggMaxAge        = 7
+        
+        @addEgg @ws/2 @ws/2
         
         @g = new gee @main
         
-        @g.camScale = 0.1
+        @g.camScale = 0.08
         @g.camPosX  = 1 / @g.camScale
         @g.camPosY  = 1 / @g.camScale
         
@@ -54,7 +71,10 @@ function world
             [ s*0 s*0 s*1 s*1 ] # up right / left down
             ]
             
-        @quadUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
+        @quadUV    = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
+        
+        @eggUV     = [ s*3.5, s*0.5, s*5.5, s*2.5 ]
+        @critterUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
         
         @circleUV = [
             [ s*3.5, s*0.5, s*4.5, s*1.5 ]
@@ -132,10 +152,28 @@ function world
         
         [x,y]
         
-    mouseInWorld: =>
+    mouseInWorld: => @isInWorld @mouse.pos
         
-        m = @mouse.pos
-        m[0] >= -0.75 and m[1] >= -0.25 and m[0] < @ws-0.25 and m[1] < @ws-0.25
+    isInWorld: p => p[0] >= 0 and p[1] >= 0 and p[0] < @ws and p[1] < @ws
+    isEmpty:   p =>
+        
+        for c in @critters
+            ⮐ false if c.x == p[0] and c.y == p[1] 
+        for e in @eggs 
+            ⮐ false if c.x == p[0] and c.y == p[1] 
+            
+        true
+        
+    emptyNeighbor: c =>
+        
+        for x in -1..1
+            for y in -1..1
+                continue if x == y == 0
+                c = [c.x+x, c.y+y]
+                continue if not @isInWorld c
+                if @isEmpty c
+                    ⮐ x:c[0], y:c[1]
+        null
     
     onDragStart: drag event =>
         
@@ -184,15 +222,46 @@ function world
     #      000  000  000 0 000  000   000  000      000   000     000     000       
     # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
     
-    simulate: ->
+    simulate: tickInfo =>
         
         ⮐ if @pause and not @oneStep
         
         # ● simulate
         
         delete @oneStep
-            
+        
+        sec = tickInfo.delta / 1000
+        
+        # log sec
+        
+        for e in @eggs
+            e.age += sec
+            if e.age > @eggMaxAge
+                @eggs.splice @eggs.indexOf(e), 1
+                @addCritter e.x, e.y
+                
+        for c in @critters
+            c.age += sec
+            if c.age > @critterMaxAge
+                @critters.splice @critters.indexOf(c), 1
+                continue
+                
+            if threshMold c.age-sec, c.age, @critterEggPeriod
+                if n = @emptyNeighbor c
+                    @addEgg n.x, n.y
+                else
+                    log 'no place for egg'
+
+            moveTarget = [c.x + randInt(3)-1, c.y + randInt(3)-1]
+            if @isInWorld(moveTarget) and @isEmpty(moveTarget)
+                c.x = moveTarget[0]
+                c.y = moveTarget[1]
+                
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
+    
+    addEgg: x y => @eggs.push x:x, y:y, age:0
+    
+    addCritter: x y => @critters.push x:x, y:y, age:0
     
     # 000000000  000   000  0000000    00000000  
     #    000     000   000  000   000  000       
@@ -208,6 +277,16 @@ function world
 
         @g.addQuad x+0.2, y-0.2,  1 1   COL_SHADOW, @tubeUV[idx], 0 0
         @g.addQuad x,     y,      1 1   COL_TUBE,   @tubeUV[idx], 0 1
+        
+    drawEgg: e =>
+        
+        s = fade 0.2 1 e.age / @eggMaxAge
+        @g.addQuad e.x, e.y, s, s, COL_EGG, @eggUV, 0 1
+
+    drawCritter: c =>
+        
+        s = fade 0.2 1 c.age / @critterMaxAge
+        @g.addQuad c.x, c.y, s, s, COL_CRITTER, @critterUV, 0 1
         
     roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
         
@@ -244,14 +323,18 @@ function world
     #    000     000   0000000  000   000  
     
     tick: @tickInfo ->
+        
+        @simulate @tickInfo
                 
-        @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,     COL_SHADOW
+        @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,   COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
         @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
                 
         if @dragPath ➜ tube.path @dragPath, @drawTube
             
-        for t in @tubes ➜ @drawTube t[0], t[1], t[2]
+        for t in @tubes    ➜ @drawTube t[0], t[1], t[2]
+        for c in @critters ➜ @drawCritter c
+        for e in @eggs     ➜ @drawEgg e
                     
         @g.draw @tickInfo.time
         

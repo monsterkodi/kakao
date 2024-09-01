@@ -225,4 +225,6 @@ util =
     absMax:       a b -> (Math.abs(a) >= Math.abs(b)) ? a : b
     absMin:       a b -> (Math.abs(a)  < Math.abs(b)) ? a : b
     
+    fade:         a b v -> c = clamp 0 1 v; a * (1-c) + b * c 
+    
 export util
