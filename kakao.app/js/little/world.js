@@ -31,6 +31,8 @@ world = (function ()
         this["togglePause"] = this["togglePause"].bind(this)
         this["onContextMenu"] = this["onContextMenu"].bind(this)
         this["onDrag"] = this["onDrag"].bind(this)
+        this["onDragStart"] = this["onDragStart"].bind(this)
+        this["win2Grid"] = this["win2Grid"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this.main = $('main')
         this.pause = false
@@ -41,7 +43,7 @@ world = (function ()
         this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
         this.quadUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
         this.circleUV = [[s * 3.5,s * 0.5,s * 4.5,s * 1.5],[s * 4.5,s * 0.5,s * 5.5,s * 1.5],[s * 4.5,s * 1.5,s * 5.5,s * 2.5],[s * 3.5,s * 1.5,s * 4.5,s * 2.5]]
-        this.drag = new drag({target:this.g.canvas,onMove:this.onDrag,cursor:'pointer'})
+        this.drag = new drag({target:this.g.canvas,onStart:this.onDragStart,onMove:this.onDrag,cursor:'pointer'})
     }
 
     world.prototype["onWheel"] = function (event)
@@ -61,8 +63,44 @@ world = (function ()
         return this.g.updateCamera()
     }
 
+    world.prototype["win2Grid"] = function (pos)
+    {
+        var x, y
+
+        x = (((pos.x - this.g.br.left) / this.g.br.width - 0.5) * 2 + this.g.camPosX) / (this.g.camScale * this.g.aspect)
+        y = (((pos.y - this.g.br.top) / this.g.br.height - 0.5) * -2 + this.g.camPosY) / this.g.camScale
+        x = Math.round(x)
+        y = Math.round(y)
+        return [x,y]
+    }
+
+    world.prototype["onDragStart"] = function (drag, event)
+    {
+        this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
+        console.log(this.dragPath)
+    }
+
     world.prototype["onDrag"] = function (drag, event)
-    {}
+    {
+        var g, l, p
+
+        l = this.dragPath.slice(-1)[0]
+        p = this.dragPath.slice(-2,-1)[0]
+        g = this.win2Grid(drag.pos)
+        if ((l[0] === p[0] && p[0] === g[0]))
+        {
+            l[1] = g[1]
+        }
+        else if ((l[1] === p[1] && p[1] === g[1]))
+        {
+            l[0] = g[0]
+        }
+        else
+        {
+            this.dragPath.push(g)
+        }
+        console.log(this.dragPath)
+    }
 
     world.prototype["onContextMenu"] = function (event)
     {
@@ -140,6 +178,8 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
+        var e, l, p, pi, s, x, y
+
         this.tickInfo = tickInfo
     
         this.roundedQuadRect(0,-0.5,8.5,8,[0,0,0,0.15])
@@ -156,6 +196,40 @@ world = (function ()
         this.addTube(2,3,5)
         this.addTube(2,2,4)
         this.addTube(3,2,0)
+        if (this.dragPath)
+        {
+            for (var _a_ = pi = 1, _b_ = this.dragPath.length; (_a_ <= _b_ ? pi < this.dragPath.length : pi > this.dragPath.length); (_a_ <= _b_ ? ++pi : --pi))
+            {
+                p = this.dragPath[pi - 1]
+                l = this.dragPath[pi]
+                if (p[0] === l[0])
+                {
+                    var _c_ = [_k_.min(p[1],l[1]),_k_.max(p[1],l[1])]; s = _c_[0]; e = _c_[1]
+
+                    if (s < e)
+                    {
+                        this.addTube(p[0],p[1],3)
+                        for (var _d_ = y = s + 1, _e_ = e; (_d_ <= _e_ ? y < e : y > e); (_d_ <= _e_ ? ++y : --y))
+                        {
+                            this.addTube(p[0],y,2)
+                        }
+                    }
+                }
+                else
+                {
+                    var _f_ = [_k_.min(p[0],l[0]),_k_.max(p[0],l[0])]; s = _f_[0]; e = _f_[1]
+
+                    if (s < e)
+                    {
+                        this.addTube(p[0],p[1],5)
+                        for (var _10_ = x = s + 1, _11_ = e; (_10_ <= _11_ ? x < e : x > e); (_10_ <= _11_ ? ++x : --x))
+                        {
+                            this.addTube(x,p[1],0)
+                        }
+                    }
+                }
+            }
+        }
         return this.g.draw(this.tickInfo.time)
     }
 

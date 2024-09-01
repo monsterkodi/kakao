@@ -273,17 +273,19 @@ function gee
     
     resize: =>
         
-        br = @main.getBoundingClientRect()
+        @br = @main.getBoundingClientRect()
+        
+        log @br.left, @br.top
         
         devicePixelRatio = window.devicePixelRatio or 1
         
-        @canvas.width  = br.width * devicePixelRatio
-        @canvas.height = br.height * devicePixelRatio
+        @canvas.width  = @br.width  * devicePixelRatio
+        @canvas.height = @br.height * devicePixelRatio
         @aspect = @canvas.height / @canvas.width
         maxDim = @gl.getParameter @gl.MAX_VIEWPORT_DIMS
         
-        @canvas.style.width  = br.width + "px"
-        @canvas.style.height = br.height + "px"
+        @canvas.style.width  = @br.width + "px"
+        @canvas.style.height = @br.height + "px"
         
         @gl.viewport 0 0 min(@canvas.width, maxDim), min(@canvas.height, maxDim)
         

@@ -70,8 +70,6 @@ function Drag
             @lastPos = p
             @button = event.button
             
-            log @button, event.buttons
-                    
             if @stopEvent != false
                 stopEvent event
     

@@ -242,16 +242,17 @@ void main(void) {
 
     gee.prototype["resize"] = function ()
     {
-        var br, devicePixelRatio, maxDim
+        var devicePixelRatio, maxDim
 
-        br = this.main.getBoundingClientRect()
+        this.br = this.main.getBoundingClientRect()
+        console.log(this.br.left,this.br.top)
         devicePixelRatio = window.devicePixelRatio || 1
-        this.canvas.width = br.width * devicePixelRatio
-        this.canvas.height = br.height * devicePixelRatio
+        this.canvas.width = this.br.width * devicePixelRatio
+        this.canvas.height = this.br.height * devicePixelRatio
         this.aspect = this.canvas.height / this.canvas.width
         maxDim = this.gl.getParameter(this.gl.MAX_VIEWPORT_DIMS)
-        this.canvas.style.width = br.width + "px"
-        this.canvas.style.height = br.height + "px"
+        this.canvas.style.width = this.br.width + "px"
+        this.canvas.style.height = this.br.height + "px"
         this.gl.viewport(0,0,_k_.min(this.canvas.width,maxDim),_k_.min(this.canvas.height,maxDim))
         return this.updateCamera()
     }
