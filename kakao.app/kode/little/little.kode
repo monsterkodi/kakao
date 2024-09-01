@@ -50,12 +50,12 @@ function Delegate extends win.Delegate
             elem(text:'⏯' class:'quiq-item quiq-step'    click:@world.singleStep,   dblclick: (e) -> stopEvent e)  
         ]
         
-        title =$ 'title'
-        title.parentElement.insertBefore @quiq, title
+        # title =$ 'title'
+        # title.parentElement.insertBefore @quiq, title
         
         post.on 'pause' @onPause
         
-        document.body.style.display = 'inherit'
+        # document.body.style.display = 'inherit'
 
     onPause: =>
         

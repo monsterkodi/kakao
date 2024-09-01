@@ -17,7 +17,15 @@ function world
         @main =$ 'main'
         @pause = false
         
+        @ws = 20
+        
         @g = new gee @main
+        
+        @g.camScale = 0.1
+        @g.camPosX  = 1 / @g.camScale
+        @g.camPosY  = 1 / @g.camScale
+        
+        @g.updateCamera()
         
         # @tweaky = new tweaky @main
 #         
@@ -60,20 +68,24 @@ function world
     
     onWheel: event =>
 
-        if event.ctrlKey
+        if event.ctrlKey or event.metaKey
+            
+            # log '●'  @g.camPosX, @g.camPosY
         
-            @g.camScale -= event.deltaY/1000 
+            @g.camScale -= event.deltaY/(event.metaKey ? 40000 : 4000)
             @g.camScale = clamp 0.01 0.2 @g.camScale
             
         else
             
-            @g.camPosX += event.deltaX/4000 
-            @g.camPosY -= event.deltaY/4000 
+            @g.camPosX += event.deltaX / (10000 * @g.camScale) 
+            @g.camPosY -= event.deltaY / (10000 * @g.camScale) 
             
-        @g.camPosX = clamp -@g.side*@g.aspect/2*@g.camScale, @g.side*@g.aspect/2*@g.camScale, @g.camPosX
-        @g.camPosY = clamp -@g.side/2*@g.camScale, @g.side/2*@g.camScale, @g.camPosY
+        @g.camPosX = clamp 0, @ws, @g.camPosX
+        @g.camPosY = clamp 0, @ws, @g.camPosY
         
         @g.updateCamera()
+        
+        # log '◂' @g.camPosX, @g.camPosY
         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -83,19 +95,20 @@ function world
     
     win2Grid: pos =>
         
-        x = (((pos.x - @g.br.left) / @g.br.width - 0.5) * 2 + @g.camPosX) / (@g.camScale * @g.aspect)
-        y = (((pos.y - @g.br.top) / @g.br.height - 0.5) * -2 + @g.camPosY) / @g.camScale
+        x = (((pos.x - @g.br.left) / @g.br.width - 0.5) *  2 ) / (@g.camScale * @g.aspect) + @g.camPosX
+        y = (((pos.y - @g.br.top) / @g.br.height - 0.5) * -2 ) /  @g.camScale + @g.camPosY
         
         x = Math.round x
         y = Math.round y
+        
+        x = clamp 0 @ws, x
+        y = clamp 0 @ws, y
         
         [x,y]
     
     onDragStart: drag event =>
         
         @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
-        
-        log @dragPath
         
     onDrag: drag event =>
         
@@ -116,8 +129,6 @@ function world
                     l[1] = g[1]
                 else
                     l[0] = g[0]
-            
-        # log @dragPath
             
     onContextMenu: (event) => stopEvent event
         
@@ -182,11 +193,11 @@ function world
             @g.addQuad sy/2, y, sy, w, [0 0 0 0.15], @quadUV, 0 layer 
         
     tick: @tickInfo ->
+                
+        @roundedQuadRect  0 -0.5 @ws+0.5 @ws, [0 0 0 0.15]
+        @roundedQuadRect -0.25 -0.25 @ws+0.25 @ws+0.25 [0.15 0.15 0.15 1]
         
-        @roundedQuadRect  0 -0.5 8.5 8 [0 0 0 0.15]
-        @roundedQuadRect -0.25 -0.25 8.25 8.25 [0.15 0.15 0.15 1]
-        
-        @gridQuadRect 0 0 8 8 [0 0 0 0.5] 0  
+        @gridQuadRect 0 0 @ws, @ws, [0 0 0 0.5] 0  
         
         # @addTube 0 3 0
         # @addTube 1 3 3

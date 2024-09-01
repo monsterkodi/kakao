@@ -36,7 +36,12 @@ world = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this.main = $('main')
         this.pause = false
+        this.ws = 20
         this.g = new gee(this.main)
+        this.g.camScale = 0.1
+        this.g.camPosX = 1 / this.g.camScale
+        this.g.camPosY = 1 / this.g.camScale
+        this.g.updateCamera()
         window.addEventListener('wheel',this.onWheel)
         this.main.addEventListener('contextmenu',this.onContextMenu)
         s = 82 / 4096
@@ -48,18 +53,18 @@ world = (function ()
 
     world.prototype["onWheel"] = function (event)
     {
-        if (event.ctrlKey)
+        if (event.ctrlKey || event.metaKey)
         {
-            this.g.camScale -= event.deltaY / 1000
+            this.g.camScale -= event.deltaY / ((event.metaKey ? 40000 : 4000))
             this.g.camScale = _k_.clamp(0.01,0.2,this.g.camScale)
         }
         else
         {
-            this.g.camPosX += event.deltaX / 4000
-            this.g.camPosY -= event.deltaY / 4000
+            this.g.camPosX += event.deltaX / (10000 * this.g.camScale)
+            this.g.camPosY -= event.deltaY / (10000 * this.g.camScale)
         }
-        this.g.camPosX = _k_.clamp(-this.g.side * this.g.aspect / 2 * this.g.camScale,this.g.side * this.g.aspect / 2 * this.g.camScale,this.g.camPosX)
-        this.g.camPosY = _k_.clamp(-this.g.side / 2 * this.g.camScale,this.g.side / 2 * this.g.camScale,this.g.camPosY)
+        this.g.camPosX = _k_.clamp(0,this.ws,this.g.camPosX)
+        this.g.camPosY = _k_.clamp(0,this.ws,this.g.camPosY)
         return this.g.updateCamera()
     }
 
@@ -67,17 +72,18 @@ world = (function ()
     {
         var x, y
 
-        x = (((pos.x - this.g.br.left) / this.g.br.width - 0.5) * 2 + this.g.camPosX) / (this.g.camScale * this.g.aspect)
-        y = (((pos.y - this.g.br.top) / this.g.br.height - 0.5) * -2 + this.g.camPosY) / this.g.camScale
+        x = (((pos.x - this.g.br.left) / this.g.br.width - 0.5) * 2) / (this.g.camScale * this.g.aspect) + this.g.camPosX
+        y = (((pos.y - this.g.br.top) / this.g.br.height - 0.5) * -2) / this.g.camScale + this.g.camPosY
         x = Math.round(x)
         y = Math.round(y)
+        x = _k_.clamp(0,this.ws,x)
+        y = _k_.clamp(0,this.ws,y)
         return [x,y]
     }
 
     world.prototype["onDragStart"] = function (drag, event)
     {
-        this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
-        console.log(this.dragPath)
+        return this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
     }
 
     world.prototype["onDrag"] = function (drag, event)
@@ -196,9 +202,9 @@ world = (function ()
 
         this.tickInfo = tickInfo
     
-        this.roundedQuadRect(0,-0.5,8.5,8,[0,0,0,0.15])
-        this.roundedQuadRect(-0.25,-0.25,8.25,8.25,[0.15,0.15,0.15,1])
-        this.gridQuadRect(0,0,8,8,[0,0,0,0.5],0)
+        this.roundedQuadRect(0,-0.5,this.ws + 0.5,this.ws,[0,0,0,0.15])
+        this.roundedQuadRect(-0.25,-0.25,this.ws + 0.25,this.ws + 0.25,[0.15,0.15,0.15,1])
+        this.gridQuadRect(0,0,this.ws,this.ws,[0,0,0,0.5],0)
         if (this.dragPath)
         {
             this.addTube(this.dragPath[0][0],this.dragPath[0][1],(this.dragPath[0][0] === this.dragPath[1][0] ? 2 : 0))

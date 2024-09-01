@@ -45,7 +45,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowWillShow"] = function ()
     {
-        var main, title
+        var main
 
         if (this.world)
         {
@@ -63,10 +63,7 @@ Delegate = (function ()
         {
             return stopEvent(e)
         }})]})
-        title = $('title')
-        title.parentElement.insertBefore(this.quiq,title)
-        post.on('pause',this.onPause)
-        return document.body.style.display = 'inherit'
+        return post.on('pause',this.onPause)
     }
 
     Delegate.prototype["onPause"] = function ()
