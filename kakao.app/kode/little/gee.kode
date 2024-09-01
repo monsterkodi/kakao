@@ -20,7 +20,7 @@ function gee
         @initGL()
         
         @numLayers = 2
-        @quadsPerLayer = 1000
+        @quadsPerLayer = 10000
             
         @layerStart = []
         @numQuads = []

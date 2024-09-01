@@ -8,14 +8,12 @@
 
 use ../kxk ▪ $ drag stopEvent randInt randRange randIntRange elem prefs post
 
-use ◆ tweaky gee
+use ◆ tweaky gee tube
 
-TUBE_H  = 0
-TUBE_TR = 1
-TUBE_V  = 2
-TUBE_BR = 3
-TUBE_BL = 4
-TUBE_TL = 5
+COL_SHADOW = [0 0 0 0.1]
+COL_BG     = [0.15 0.15 0.15 1]
+COL_GRID   = [0 0 0 0.5]
+COL_TUBE   = [0.5 0.5 0.5 1]
 
 function world
 
@@ -24,7 +22,9 @@ function world
         @main =$ 'main'
         @pause = false
         
-        @ws = 20
+        @ws = 10
+        
+        @tubes = []
         
         @g = new gee @main
         
@@ -41,8 +41,8 @@ function world
         # @tweaky.init 
             # side:      min: 10    max:200    step:1           value:@g.side,     cb: @g.setSide
             
-        window.addEventListener 'wheel' @onWheel
-        @main.addEventListener 'contextmenu' @onContextMenu
+        window.addEventListener 'wheel'       @onWheel
+        @main.addEventListener  'contextmenu' @onContextMenu
         
         s = 82/4096
         @tubeUV = [
@@ -66,7 +66,7 @@ function world
         @drag = new drag 
             target:  @g.canvas
             onStart: @onDragStart
-            onMove:  @onDrag
+            onMove:  @onDragMove
             onStop:  @onDragStop
             cursor: 'pointer'
         
@@ -87,8 +87,8 @@ function world
             
         else
             
-            @g.camPosX += event.deltaX / (10000 * @g.camScale) 
-            @g.camPosY -= event.deltaY / (10000 * @g.camScale) 
+            @g.camPosX += event.deltaX / (4000 * @g.camScale) 
+            @g.camPosY -= event.deltaY / (4000 * @g.camScale) 
             
         @g.camPosX = clamp 0, @ws, @g.camPosX
         @g.camPosY = clamp 0, @ws, @g.camPosY
@@ -127,16 +127,27 @@ function world
         
         [x, y] = @win2Pos winPos
         
-        x = clamp 0 @ws, Math.round x
-        y = clamp 0 @ws, Math.round y
+        x = clamp 0 @ws-1, Math.round x
+        y = clamp 0 @ws-1, Math.round y
         
         [x,y]
+        
+    mouseInWorld: =>
+        
+        m = @mouse.pos
+        m[0] >= -0.75 and m[1] >= -0.25 and m[0] < @ws-0.25 and m[1] < @ws-0.25
     
     onDragStart: drag event =>
         
+        ⮐ if not @mouseInWorld()
+        
+        log @mouse.pos
+        
         @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
         
-    onDrag: drag event =>
+    onDragMove: drag event =>
+        
+        ⮐ if not @dragPath
         
         l = @dragPath[-1]
         p = @dragPath[-2]
@@ -158,9 +169,9 @@ function world
                     
     onDragStop: drag event =>
         
-        log 'dragStop'
-        
-        delete @dragPath
+        if @dragPath
+            tube.path @dragPath, @addTube
+            delete @dragPath
             
     onContextMenu: (event) => stopEvent event
         
@@ -189,12 +200,14 @@ function world
     #    000     000   000  000   000  000       
     #    000      0000000   0000000    00000000  
     
+    addTube: x y idx =>
+        
+        @tubes.push [x, y, idx]
+    
     drawTube: x y idx =>
 
-        u = @tubeUV[idx]
-        @g.addQuad x+0.2, y-0.2,  1 1   [0 0 0 0.25], u, 0 0
-        
-        @g.addQuad x, y,  1 1   [1 1 0 1], u, 0 1
+        @g.addQuad x+0.2, y-0.2,  1 1   COL_SHADOW, @tubeUV[idx], 0 0
+        @g.addQuad x,     y,      1 1   COL_TUBE,   @tubeUV[idx], 0 1
         
     roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
         
@@ -232,46 +245,14 @@ function world
     
     tick: @tickInfo ->
                 
-        @roundedQuadRect  0 -0.5 @ws+0.5 @ws, [0 0 0 0.15]
-        @roundedQuadRect -0.25 -0.25 @ws+0.25 @ws+0.25 [0.15 0.15 0.15 1]
-        
-        @gridQuadRect 0 0 @ws, @ws, [0 0 0 0.5] 0  
+        @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,     COL_SHADOW
+        @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
+        @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
                 
-        if @dragPath
+        if @dragPath ➜ tube.path @dragPath, @drawTube
             
-            @drawTube @dragPath[0][0], @dragPath[0][1], @dragPath[0][0] == @dragPath[1][0] ? TUBE_V : TUBE_H
-            
-            for pi in 1...@dragPath.length
-                p = @dragPath[pi-1]
-                l = @dragPath[pi]
-                
-                if p[0] == l[0]
-                    [s, e] = [min(p[1], l[1]), max(p[1], l[1])]
-                    if s < e
-                        t = TUBE_V
-                        if pi < @dragPath.length - 1
-                            n = @dragPath[pi+1]
-                            if p[1] < l[1]
-                                t = n[0] > l[0] ? TUBE_TL : TUBE_TR
-                            else
-                                t = n[0] > l[0] ? TUBE_BL : TUBE_BR
-                        @drawTube l[0], l[1], t
-                        for y in s+1...e
-                            @drawTube p[0], y, TUBE_V
-                else
-                    [s, e] = [min(p[0], l[0]), max(p[0], l[0])]
-                    if s < e
-                        t = TUBE_H
-                        if pi < @dragPath.length - 1
-                            n = @dragPath[pi+1]
-                            if p[0] < l[0]
-                                t = n[1] > l[1] ? TUBE_BR : TUBE_TR
-                            else
-                                t = n[1] > l[1] ? TUBE_BL : TUBE_TL
-                        @drawTube l[0], l[1], t
-                        for x in s+1...e
-                            @drawTube x, p[1], TUBE_H
-        
+        for t in @tubes ➜ @drawTube t[0], t[1], t[2]
+                    
         @g.draw @tickInfo.time
         
 export world
