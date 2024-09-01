@@ -1,6 +1,6 @@
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var world
+var TUBE_BL, TUBE_BR, TUBE_H, TUBE_TL, TUBE_TR, TUBE_V, world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
@@ -16,6 +16,12 @@ let post = kxk.post
 import tweaky from "./tweaky.js"
 import gee from "./gee.js"
 
+TUBE_H = 0
+TUBE_TR = 1
+TUBE_V = 2
+TUBE_BR = 3
+TUBE_BL = 4
+TUBE_TL = 5
 
 world = (function ()
 {
@@ -25,14 +31,18 @@ world = (function ()
 
         this["gridQuadRect"] = this["gridQuadRect"].bind(this)
         this["roundedQuadRect"] = this["roundedQuadRect"].bind(this)
-        this["addTube"] = this["addTube"].bind(this)
+        this["drawTube"] = this["drawTube"].bind(this)
         this["singleStep"] = this["singleStep"].bind(this)
         this["toggleValues"] = this["toggleValues"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this["onContextMenu"] = this["onContextMenu"].bind(this)
+        this["onDragStop"] = this["onDragStop"].bind(this)
         this["onDrag"] = this["onDrag"].bind(this)
         this["onDragStart"] = this["onDragStart"].bind(this)
         this["win2Grid"] = this["win2Grid"].bind(this)
+        this["win2Pos"] = this["win2Pos"].bind(this)
+        this["onMouseMove"] = this["onMouseMove"].bind(this)
+        this["eventPos"] = this["eventPos"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this.main = $('main')
         this.pause = false
@@ -41,6 +51,7 @@ world = (function ()
         this.g.camScale = 0.1
         this.g.camPosX = 1 / this.g.camScale
         this.g.camPosY = 1 / this.g.camScale
+        this.main.addEventListener('mousemove',this.onMouseMove)
         this.g.updateCamera()
         window.addEventListener('wheel',this.onWheel)
         this.main.addEventListener('contextmenu',this.onContextMenu)
@@ -48,7 +59,7 @@ world = (function ()
         this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
         this.quadUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
         this.circleUV = [[s * 3.5,s * 0.5,s * 4.5,s * 1.5],[s * 4.5,s * 0.5,s * 5.5,s * 1.5],[s * 4.5,s * 1.5,s * 5.5,s * 2.5],[s * 3.5,s * 1.5,s * 4.5,s * 2.5]]
-        this.drag = new drag({target:this.g.canvas,onStart:this.onDragStart,onMove:this.onDrag,cursor:'pointer'})
+        this.drag = new drag({target:this.g.canvas,onStart:this.onDragStart,onMove:this.onDrag,onStop:this.onDragStop,cursor:'pointer'})
     }
 
     world.prototype["onWheel"] = function (event)
@@ -68,16 +79,36 @@ world = (function ()
         return this.g.updateCamera()
     }
 
-    world.prototype["win2Grid"] = function (pos)
+    world.prototype["eventPos"] = function (event)
+    {
+        return {x:event.clientX - this.g.br.left,y:event.clientY - this.g.br.top}
+    }
+
+    world.prototype["onMouseMove"] = function (event)
+    {
+        var winPos
+
+        winPos = this.eventPos(event)
+        return this.mouse = {grid:this.win2Grid(winPos),pos:this.win2Pos(winPos),win:winPos}
+    }
+
+    world.prototype["win2Pos"] = function (winPos)
     {
         var x, y
 
-        x = (((pos.x - this.g.br.left) / this.g.br.width - 0.5) * 2) / (this.g.camScale * this.g.aspect) + this.g.camPosX
-        y = (((pos.y - this.g.br.top) / this.g.br.height - 0.5) * -2) / this.g.camScale + this.g.camPosY
-        x = Math.round(x)
-        y = Math.round(y)
-        x = _k_.clamp(0,this.ws,x)
-        y = _k_.clamp(0,this.ws,y)
+        x = (((winPos.x - this.g.br.left) / this.g.br.width - 0.5) * 2) / (this.g.camScale * this.g.aspect) + this.g.camPosX
+        y = (((winPos.y - this.g.br.top) / this.g.br.height - 0.5) * -2) / this.g.camScale + this.g.camPosY
+        return [x,y]
+    }
+
+    world.prototype["win2Grid"] = function (winPos)
+    {
+        var x, y
+
+        var _a_ = this.win2Pos(winPos); x = _a_[0]; y = _a_[1]
+
+        x = _k_.clamp(0,this.ws,Math.round(x))
+        y = _k_.clamp(0,this.ws,Math.round(y))
         return [x,y]
     }
 
@@ -122,6 +153,12 @@ world = (function ()
         }
     }
 
+    world.prototype["onDragStop"] = function (drag, event)
+    {
+        console.log('dragStop')
+        return delete this.dragPath
+    }
+
     world.prototype["onContextMenu"] = function (event)
     {
         return stopEvent(event)
@@ -152,7 +189,7 @@ world = (function ()
         return post.emit('pause')
     }
 
-    world.prototype["addTube"] = function (x, y, idx)
+    world.prototype["drawTube"] = function (x, y, idx)
     {
         var u
 
@@ -207,7 +244,7 @@ world = (function ()
         this.gridQuadRect(0,0,this.ws,this.ws,[0,0,0,0.5],0)
         if (this.dragPath)
         {
-            this.addTube(this.dragPath[0][0],this.dragPath[0][1],(this.dragPath[0][0] === this.dragPath[1][0] ? 2 : 0))
+            this.drawTube(this.dragPath[0][0],this.dragPath[0][1],(this.dragPath[0][0] === this.dragPath[1][0] ? TUBE_V : TUBE_H))
             for (var _a_ = pi = 1, _b_ = this.dragPath.length; (_a_ <= _b_ ? pi < this.dragPath.length : pi > this.dragPath.length); (_a_ <= _b_ ? ++pi : --pi))
             {
                 p = this.dragPath[pi - 1]
@@ -218,23 +255,23 @@ world = (function ()
 
                     if (s < e)
                     {
-                        t = 2
+                        t = TUBE_V
                         if (pi < this.dragPath.length - 1)
                         {
                             n = this.dragPath[pi + 1]
                             if (p[1] < l[1])
                             {
-                                t = (n[0] > l[0] ? 5 : 1)
+                                t = (n[0] > l[0] ? TUBE_TL : TUBE_TR)
                             }
                             else
                             {
-                                t = (n[0] > l[0] ? 4 : 3)
+                                t = (n[0] > l[0] ? TUBE_BL : TUBE_BR)
                             }
                         }
-                        this.addTube(l[0],l[1],t)
+                        this.drawTube(l[0],l[1],t)
                         for (var _d_ = y = s + 1, _e_ = e; (_d_ <= _e_ ? y < e : y > e); (_d_ <= _e_ ? ++y : --y))
                         {
-                            this.addTube(p[0],y,2)
+                            this.drawTube(p[0],y,TUBE_V)
                         }
                     }
                 }
@@ -244,23 +281,23 @@ world = (function ()
 
                     if (s < e)
                     {
-                        t = 0
+                        t = TUBE_H
                         if (pi < this.dragPath.length - 1)
                         {
                             n = this.dragPath[pi + 1]
                             if (p[0] < l[0])
                             {
-                                t = (n[1] > l[1] ? 3 : 1)
+                                t = (n[1] > l[1] ? TUBE_BR : TUBE_TR)
                             }
                             else
                             {
-                                t = (n[1] > l[1] ? 4 : 5)
+                                t = (n[1] > l[1] ? TUBE_BL : TUBE_TL)
                             }
                         }
-                        this.addTube(l[0],l[1],t)
+                        this.drawTube(l[0],l[1],t)
                         for (var _10_ = x = s + 1, _11_ = e; (_10_ <= _11_ ? x < e : x > e); (_10_ <= _11_ ? ++x : --x))
                         {
-                            this.addTube(x,p[1],0)
+                            this.drawTube(x,p[1],TUBE_H)
                         }
                     }
                 }
