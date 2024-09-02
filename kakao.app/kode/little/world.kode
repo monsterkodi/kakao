@@ -10,12 +10,18 @@ use ../kxk ▪ $ drag stopEvent prefs post fade randRange randInt randIntRange
 
 use ◆ gee tweaky tube
 
+{cos, sin, PI} = Math
+TAU = 2*PI
+
 COL_SHADOW  = [0 0 0 0.1]
 COL_BG      = [0.15 0.15 0.15 1]
 COL_GRID    = [0 0 0 0.5]
 COL_TUBE    = [0.5 0.5 0.5 1]
+COL_PLANT   = [0 0.5 0 1]
+COL_LEAF    = [0 0.5 0 1]
 COL_EGG     = [1 1 1 1]
 COL_CRITTER = [1 0.5 0 1]
+COL_STARVE  = [0.25 0.25 0.25 1]
 COL_EGG_DOT = [0 0 0 0.5]
 
 CRIT_MOVE_TIME = 4.0
@@ -36,13 +42,21 @@ function world
         
         @main.focus()
         
+        @plants   = []
         @tubes    = []
         @eggs     = []
         @critters = []
         
-        @critterMaxAge = 127
-        @critterEggs   = 3
-        @eggMaxAge     = 17
+        @numLeaves      = 6
+        @critterMaxAge  = 1024*1024
+        @critterEggTime = 137
+        @eggMaxAge      = 27
+        @leafMaxAge     = 17
+        
+        @critterEatTime    = 9
+        @critterStarveTime = 13
+        
+        # @leavesForFood = []
         
         @addEgg @ws/2 @ws/2
         
@@ -163,17 +177,74 @@ function world
         
         for o in @critters ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
         for o in @eggs     ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
+        for o in @plants   ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
         true
         
-    emptyNeighbor: c =>
+    buildingAtPos: p =>
+        
+        for o in @plants   ➜ ⮐ true if o.x == p[0] and o.y == p[1] 
+        false
+        
+    emptyNeighbor: o =>
+        
+        en = []
         
         for x in -1..1
             for y in -1..1
                 continue if x == y == 0
-                c = [c.x+x, c.y+y]
+                c = [o.x+x, o.y+y]
                 continue if not @isInWorld c
                 if @isEmpty c
-                    ⮐ x:c[0], y:c[1]
+                    en.push x:c[0], y:c[1]
+                    
+        if en.length
+            ⮐ en[randInt(en.length)]
+        null
+    
+    validNeighbors: o =>
+        
+        vn = []
+        for x in -1..1
+            for y in -1..1
+                continue if x == y == 0
+                c = [o.x+x, o.y+y]
+                if @isInWorld c
+                    vn.push c
+        vn
+        
+    neighbors: o =>
+        
+        n = [] 
+        for x in -1..1
+            for y in -1..1
+                continue if x == y == 0
+                n.push [o.x+x, o.y+y]
+        n
+        
+    plantAt: p =>
+        
+        for pl in @plants
+            if pl.x == p[0] and pl.y == p[1]
+                ⮐ pl
+        null
+        
+    leafToEatAt: p =>
+        
+        if pl = @plantAt p
+            for l in pl.leaves
+                if l.age > @leafMaxAge
+                    ⮐ l
+        null
+                        
+    neighborLeaf: o =>
+        
+        nl = []
+        for vn in @neighbors o
+            if l = @leafToEatAt vn
+                nl.push l
+                    
+        if nl.length
+            ⮐ nl[randInt(nl.length)]
         null
         
     randomOffset: c =>
@@ -190,11 +261,19 @@ function world
         
         ⮐ if not @mouseInWorld()
         
-        # log @mouse.pos
-        
-        @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
+        if 1
+            p = @win2Grid drag.pos
+            ⮐ if @buildingAtPos p
+            @addPlant p[0], p[1]
+        else
+            @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
         
     onDragMove: drag event =>
+        
+        if 1
+            p = @win2Grid drag.pos
+            ⮐ if @buildingAtPos p
+            @addPlant p[0], p[1]
         
         ⮐ if not @dragPath
         
@@ -239,9 +318,7 @@ function world
         ⮐ if isNaN tickInfo.delta
         
         # ● simulate
-        
-        delete @oneStep
-        
+                
         sec = @speed * tickInfo.delta / 1000
         
         # log sec, @eggs
@@ -259,21 +336,25 @@ function world
         for c in @critters
             
             c.age += sec
-
-            if c.age > @critterMaxAge
+            c.eat -= sec
+                        
+            if c.age > @critterMaxAge or c.eat < -@critterStarveTime
                 c.df ?= 0
                 c.df += sec / CRIT_DIE_TIME
                 if c.df > 1
                     @critters.splice @critters.indexOf(c), 1
                 continue
+                
+            if c.eat < 0
+                if l = @neighborLeaf c
+                    c.eat = @critterEatTime
+                    l.age = 0
+                continue
             
-            if Math.floor(c.age / (@critterMaxAge/(@critterEggs+1))) > c.eggs
+            if Math.floor(c.age / @critterEggTime) > c.eggs
                 if n = @emptyNeighbor c
-                    # log 'egg' c.age-sec, c.age, c
                     @addEgg n.x, n.y
                     c.eggs++
-                # else
-                    # log 'no place for egg'
 
             if c.sf > 0
                 c.sf -= sec/CRIT_MOVE_TIME
@@ -296,21 +377,59 @@ function world
                 c.x = n[0]
                 c.y = n[1]
                 
+        for p in @plants
+                        
+            for l in p.leaves
+                
+                l.age += sec
+                
+                # if l.age > @leafMaxAge and l.age-sec <= @leafMaxAge
+#                     
+                    # @leavesForFood.push l
+                    
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
+    
+    #  0000000   0000000    0000000      
+    # 000   000  000   000  000   000    
+    # 000000000  000   000  000   000    
+    # 000   000  000   000  000   000    
+    # 000   000  0000000    0000000      
     
     addEgg: x y => @eggs.push x:x, y:y, age:0
     
-    addCritter: x y => @critters.push x:x, y:y, age:0, sx:0, sy:0, sf:0, eggs:0
-    
-    # 000000000  000   000  0000000    00000000  
-    #    000     000   000  000   000  000       
-    #    000     000   000  0000000    0000000   
-    #    000     000   000  000   000  000       
-    #    000      0000000   0000000    00000000  
+    addCritter: x y => @critters.push x:x, y:y, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatTime
     
     addTube: x y idx =>
         
         @tubes.push [x, y, idx]
+        
+    addPlant: x y =>
+        
+        leaves = []
+        for l in 0...@numLeaves
+            leaves.push age:-l*@leafMaxAge/@numLeaves
+        
+        @plants.push x:x, y:y, leaves:leaves
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    drawPlant: p =>
+        
+        s = 0.25
+        @g.addQuad p.x, p.y, s, s, COL_PLANT, @circleUV, 0 0
+        
+        s = 0.15
+        r = 0.4
+        for li in 0...p.leaves.length
+            l = p.leaves[li]
+            af = l.age/@leafMaxAge
+            ls = s*clamp 0 1 af
+            col = [((af>1) ? 1 : 0), ((af>1) ? 1 : COL_LEAF[1]), COL_LEAF[2], COL_LEAF[3]]
+            @g.addQuad p.x+cos(-li*TAU/@numLeaves+PI)*r, p.y+sin(-li*TAU/@numLeaves+PI)*r, ls, ls, col, @circleUV, 0 1
     
     drawTube: x y idx =>
 
@@ -330,9 +449,20 @@ function world
         
         sx = sy = fade 0.2 1 c.age / @critterMaxAge
         
+        col = COL_CRITTER
+        
         if c.df
-            sx = 1 - c.df
-            sy = 1 - c.df
+            sx *= 1 - c.df
+            sy *= 1 - c.df
+            col = COL_STARVE
+            
+        else if c.eat < 0
+            h = clamp 0 1 -c.eat / @critterStarveTime
+            col = [
+                fade(COL_CRITTER[0], COL_STARVE[0], h), 
+                fade(COL_CRITTER[1], COL_STARVE[1], h),
+                fade(COL_CRITTER[2], COL_STARVE[2], h), 1
+                ]
         
         if c.sf > 0
             cx = c.tx
@@ -341,12 +471,12 @@ function world
             cx = c.x
             cy = c.y
             
-        @g.addQuad cx, cy+0.25*sy, sx, sy*(1/2), COL_CRITTER, @circleTopUV, 0 1
+        @g.addQuad cx, cy+0.25*sy, sx, sy*(1/2), col, @circleTopUV, 0 1
         
-        @g.addQuad cx-(1/4)*sx,  cy-0.0*sy, 0.5*sx, 0.5*sy, COL_CRITTER, @circleUV, 0 1    
-        @g.addQuad cx+(1/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, COL_CRITTER, @circleUV, 0 1    
-        @g.addQuad cx+(3/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, COL_CRITTER, @circleUV, 0 1    
-        @g.addQuad cx+(5/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, COL_CRITTER, @circleUV, 0 1    
+        @g.addQuad cx-(1/4)*sx,  cy-0.0*sy, 0.5*sx, 0.5*sy, col, @circleUV, 0 1    
+        @g.addQuad cx+(1/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0 1    
+        @g.addQuad cx+(3/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0 1    
+        @g.addQuad cx+(5/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0 1    
             
         thrd = 1/3
         se = 0.6
@@ -390,7 +520,7 @@ function world
     tick: @tickInfo ->
         
         @simulate @tickInfo
-                
+        
         @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,   COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
         @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
@@ -398,9 +528,12 @@ function world
         if @dragPath ➜ tube.path @dragPath, @drawTube
             
         for t in @tubes    ➜ @drawTube t[0], t[1], t[2]
+        for p in @plants   ➜ @drawPlant p
         for c in @critters ➜ @drawCritter c
         for e in @eggs     ➜ @drawEgg e
                     
         @g.draw @tickInfo.time
+        
+        delete @oneStep
         
 export world

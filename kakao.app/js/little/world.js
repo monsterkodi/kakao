@@ -1,6 +1,6 @@
 var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var COL_BG, COL_CRITTER, COL_EGG, COL_EGG_DOT, COL_GRID, COL_SHADOW, COL_TUBE, CRIT_DIE_TIME, CRIT_MOVE_TIME, EGG_FADE_TIME, threshMold, world
+var COL_BG, COL_CRITTER, COL_EGG, COL_EGG_DOT, COL_GRID, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, CRIT_DIE_TIME, CRIT_MOVE_TIME, EGG_FADE_TIME, PI, sin, TAU, threshMold, world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
@@ -17,12 +17,20 @@ import gee from "./gee.js"
 import tweaky from "./tweaky.js"
 import tube from "./tube.js"
 
+cos = Math.cos
+sin = Math.sin
+PI = Math.PI
+
+TAU = 2 * PI
 COL_SHADOW = [0,0,0,0.1]
 COL_BG = [0.15,0.15,0.15,1]
 COL_GRID = [0,0,0,0.5]
 COL_TUBE = [0.5,0.5,0.5,1]
+COL_PLANT = [0,0.5,0,1]
+COL_LEAF = [0,0.5,0,1]
 COL_EGG = [1,1,1,1]
 COL_CRITTER = [1,0.5,0,1]
+COL_STARVE = [0.25,0.25,0.25,1]
 COL_EGG_DOT = [0,0,0,0.5]
 CRIT_MOVE_TIME = 4.0
 CRIT_DIE_TIME = 2.3
@@ -44,6 +52,8 @@ world = (function ()
         this["drawCritter"] = this["drawCritter"].bind(this)
         this["drawEgg"] = this["drawEgg"].bind(this)
         this["drawTube"] = this["drawTube"].bind(this)
+        this["drawPlant"] = this["drawPlant"].bind(this)
+        this["addPlant"] = this["addPlant"].bind(this)
         this["addTube"] = this["addTube"].bind(this)
         this["addCritter"] = this["addCritter"].bind(this)
         this["addEgg"] = this["addEgg"].bind(this)
@@ -56,7 +66,13 @@ world = (function ()
         this["onDragStart"] = this["onDragStart"].bind(this)
         this["randomOffsetCross"] = this["randomOffsetCross"].bind(this)
         this["randomOffset"] = this["randomOffset"].bind(this)
+        this["neighborLeaf"] = this["neighborLeaf"].bind(this)
+        this["leafToEatAt"] = this["leafToEatAt"].bind(this)
+        this["plantAt"] = this["plantAt"].bind(this)
+        this["neighbors"] = this["neighbors"].bind(this)
+        this["validNeighbors"] = this["validNeighbors"].bind(this)
         this["emptyNeighbor"] = this["emptyNeighbor"].bind(this)
+        this["buildingAtPos"] = this["buildingAtPos"].bind(this)
         this["isEmpty"] = this["isEmpty"].bind(this)
         this["isInWorld"] = this["isInWorld"].bind(this)
         this["mouseInWorld"] = this["mouseInWorld"].bind(this)
@@ -70,12 +86,17 @@ world = (function ()
         this.speed = 1
         this.ws = 30
         this.main.focus()
+        this.plants = []
         this.tubes = []
         this.eggs = []
         this.critters = []
-        this.critterMaxAge = 127
-        this.critterEggs = 3
-        this.eggMaxAge = 17
+        this.numLeaves = 6
+        this.critterMaxAge = 1024 * 1024
+        this.critterEggTime = 137
+        this.eggMaxAge = 27
+        this.leafMaxAge = 17
+        this.critterEatTime = 9
+        this.critterStarveTime = 13
         this.addEgg(this.ws / 2,this.ws / 2)
         this.g = new gee(this.main)
         this.g.camScale = 0.08
@@ -183,13 +204,39 @@ world = (function ()
                 return false
             }
         }
+        var list2 = _k_.list(this.plants)
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            o = list2[_c_]
+            if (o.x === p[0] && o.y === p[1])
+            {
+                return false
+            }
+        }
         return true
     }
 
-    world.prototype["emptyNeighbor"] = function (c)
+    world.prototype["buildingAtPos"] = function (p)
     {
-        var x, y
+        var o
 
+        var list = _k_.list(this.plants)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            o = list[_a_]
+            if (o.x === p[0] && o.y === p[1])
+            {
+                return true
+            }
+        }
+        return false
+    }
+
+    world.prototype["emptyNeighbor"] = function (o)
+    {
+        var c, en, x, y
+
+        en = []
         for (x = -1; x <= 1; x++)
         {
             for (y = -1; y <= 1; y++)
@@ -198,16 +245,118 @@ world = (function ()
                 {
                     continue
                 }
-                c = [c.x + x,c.y + y]
+                c = [o.x + x,o.y + y]
                 if (!this.isInWorld(c))
                 {
                     continue
                 }
                 if (this.isEmpty(c))
                 {
-                    return {x:c[0],y:c[1]}
+                    en.push({x:c[0],y:c[1]})
                 }
             }
+        }
+        if (en.length)
+        {
+            return en[randInt(en.length)]
+        }
+        return null
+    }
+
+    world.prototype["validNeighbors"] = function (o)
+    {
+        var c, vn, x, y
+
+        vn = []
+        for (x = -1; x <= 1; x++)
+        {
+            for (y = -1; y <= 1; y++)
+            {
+                if ((x === y && y === 0))
+                {
+                    continue
+                }
+                c = [o.x + x,o.y + y]
+                if (this.isInWorld(c))
+                {
+                    vn.push(c)
+                }
+            }
+        }
+        return vn
+    }
+
+    world.prototype["neighbors"] = function (o)
+    {
+        var n, x, y
+
+        n = []
+        for (x = -1; x <= 1; x++)
+        {
+            for (y = -1; y <= 1; y++)
+            {
+                if ((x === y && y === 0))
+                {
+                    continue
+                }
+                n.push([o.x + x,o.y + y])
+            }
+        }
+        return n
+    }
+
+    world.prototype["plantAt"] = function (p)
+    {
+        var pl
+
+        var list = _k_.list(this.plants)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pl = list[_a_]
+            if (pl.x === p[0] && pl.y === p[1])
+            {
+                return pl
+            }
+        }
+        return null
+    }
+
+    world.prototype["leafToEatAt"] = function (p)
+    {
+        var l, pl
+
+        if (pl = this.plantAt(p))
+        {
+            var list = _k_.list(pl.leaves)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
+            {
+                l = list[_a_]
+                if (l.age > this.leafMaxAge)
+                {
+                    return l
+                }
+            }
+        }
+        return null
+    }
+
+    world.prototype["neighborLeaf"] = function (o)
+    {
+        var l, nl, vn
+
+        nl = []
+        var list = _k_.list(this.neighbors(o))
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            vn = list[_a_]
+            if (l = this.leafToEatAt(vn))
+            {
+                nl.push(l)
+            }
+        }
+        if (nl.length)
+        {
+            return nl[randInt(nl.length)]
         }
         return null
     }
@@ -230,17 +379,40 @@ world = (function ()
 
     world.prototype["onDragStart"] = function (drag, event)
     {
+        var p
+
         if (!this.mouseInWorld())
         {
             return
         }
-        return this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
+        if (1)
+        {
+            p = this.win2Grid(drag.pos)
+            if (this.buildingAtPos(p))
+            {
+                return
+            }
+            return this.addPlant(p[0],p[1])
+        }
+        else
+        {
+            return this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
+        }
     }
 
     world.prototype["onDragMove"] = function (drag, event)
     {
         var g, l, p
 
+        if (1)
+        {
+            p = this.win2Grid(drag.pos)
+            if (this.buildingAtPos(p))
+            {
+                return
+            }
+            this.addPlant(p[0],p[1])
+        }
         if (!this.dragPath)
         {
             return
@@ -302,7 +474,7 @@ world = (function ()
 
     world.prototype["simulate"] = function (tickInfo)
     {
-        var c, e, n, sec, _264_21_
+        var c, e, l, n, p, sec, _342_21_
 
         if (this.pause && !this.oneStep)
         {
@@ -312,7 +484,6 @@ world = (function ()
         {
             return
         }
-        delete this.oneStep
         sec = this.speed * tickInfo.delta / 1000
         var list = _k_.list(this.eggs)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -333,9 +504,10 @@ world = (function ()
         {
             c = list1[_b_]
             c.age += sec
-            if (c.age > this.critterMaxAge)
+            c.eat -= sec
+            if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_264_21_=c.df) != null ? _264_21_ : 0)
+                c.df = ((_342_21_=c.df) != null ? _342_21_ : 0)
                 c.df += sec / CRIT_DIE_TIME
                 if (c.df > 1)
                 {
@@ -343,7 +515,16 @@ world = (function ()
                 }
                 continue
             }
-            if (Math.floor(c.age / (this.critterMaxAge / (this.critterEggs + 1))) > c.eggs)
+            if (c.eat < 0)
+            {
+                if (l = this.neighborLeaf(c))
+                {
+                    c.eat = this.critterEatTime
+                    l.age = 0
+                }
+                continue
+            }
+            if (Math.floor(c.age / this.critterEggTime) > c.eggs)
             {
                 if (n = this.emptyNeighbor(c))
                 {
@@ -376,6 +557,17 @@ world = (function ()
                 c.y = n[1]
             }
         }
+        var list2 = _k_.list(this.plants)
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            p = list2[_c_]
+            var list3 = _k_.list(p.leaves)
+            for (var _d_ = 0; _d_ < list3.length; _d_++)
+            {
+                l = list3[_d_]
+                l.age += sec
+            }
+        }
     }
 
     world.prototype["singleStep"] = function ()
@@ -392,12 +584,42 @@ world = (function ()
 
     world.prototype["addCritter"] = function (x, y)
     {
-        return this.critters.push({x:x,y:y,age:0,sx:0,sy:0,sf:0,eggs:0})
+        return this.critters.push({x:x,y:y,age:0,sx:0,sy:0,sf:0,eggs:0,eat:this.critterEatTime})
     }
 
     world.prototype["addTube"] = function (x, y, idx)
     {
         return this.tubes.push([x,y,idx])
+    }
+
+    world.prototype["addPlant"] = function (x, y)
+    {
+        var l, leaves
+
+        leaves = []
+        for (var _a_ = l = 0, _b_ = this.numLeaves; (_a_ <= _b_ ? l < this.numLeaves : l > this.numLeaves); (_a_ <= _b_ ? ++l : --l))
+        {
+            leaves.push({age:-l * this.leafMaxAge / this.numLeaves})
+        }
+        return this.plants.push({x:x,y:y,leaves:leaves})
+    }
+
+    world.prototype["drawPlant"] = function (p)
+    {
+        var af, col, l, li, ls, r, s
+
+        s = 0.25
+        this.g.addQuad(p.x,p.y,s,s,COL_PLANT,this.circleUV,0,0)
+        s = 0.15
+        r = 0.4
+        for (var _a_ = li = 0, _b_ = p.leaves.length; (_a_ <= _b_ ? li < p.leaves.length : li > p.leaves.length); (_a_ <= _b_ ? ++li : --li))
+        {
+            l = p.leaves[li]
+            af = l.age / this.leafMaxAge
+            ls = s * _k_.clamp(0,1,af)
+            col = [(((af > 1) ? 1 : 0)),(((af > 1) ? 1 : COL_LEAF[1])),COL_LEAF[2],COL_LEAF[3]]
+            this.g.addQuad(p.x + cos(-li * TAU / this.numLeaves + PI) * r,p.y + sin(-li * TAU / this.numLeaves + PI) * r,ls,ls,col,this.circleUV,0,1)
+        }
     }
 
     world.prototype["drawTube"] = function (x, y, idx)
@@ -422,13 +644,20 @@ world = (function ()
 
     world.prototype["drawCritter"] = function (c)
     {
-        var cx, cy, e, se, sx, sy, thrd
+        var col, cx, cy, e, h, se, sx, sy, thrd
 
         sx = sy = fade(0.2,1,c.age / this.critterMaxAge)
+        col = COL_CRITTER
         if (c.df)
         {
-            sx = 1 - c.df
-            sy = 1 - c.df
+            sx *= 1 - c.df
+            sy *= 1 - c.df
+            col = COL_STARVE
+        }
+        else if (c.eat < 0)
+        {
+            h = _k_.clamp(0,1,-c.eat / this.critterStarveTime)
+            col = [fade(COL_CRITTER[0],COL_STARVE[0],h),fade(COL_CRITTER[1],COL_STARVE[1],h),fade(COL_CRITTER[2],COL_STARVE[2],h),1]
         }
         if (c.sf > 0)
         {
@@ -440,11 +669,11 @@ world = (function ()
             cx = c.x
             cy = c.y
         }
-        this.g.addQuad(cx,cy + 0.25 * sy,sx,sy * (1 / 2),COL_CRITTER,this.circleTopUV,0,1)
-        this.g.addQuad(cx - (1 / 4) * sx,cy - 0.0 * sy,0.5 * sx,0.5 * sy,COL_CRITTER,this.circleUV,0,1)
-        this.g.addQuad(cx + (1 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,COL_CRITTER,this.circleUV,0,1)
-        this.g.addQuad(cx + (3 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,COL_CRITTER,this.circleUV,0,1)
-        this.g.addQuad(cx + (5 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,COL_CRITTER,this.circleUV,0,1)
+        this.g.addQuad(cx,cy + 0.25 * sy,sx,sy * (1 / 2),col,this.circleTopUV,0,1)
+        this.g.addQuad(cx - (1 / 4) * sx,cy - 0.0 * sy,0.5 * sx,0.5 * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx + (1 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx + (3 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx + (5 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
         thrd = 1 / 3
         se = 0.6
         for (var _a_ = e = 0, _b_ = c.eggs; (_a_ <= _b_ ? e < c.eggs : e > c.eggs); (_a_ <= _b_ ? ++e : --e))
@@ -490,7 +719,7 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var c, e, t
+        var c, e, p, t
 
         this.tickInfo = tickInfo
     
@@ -508,19 +737,26 @@ world = (function ()
             t = list[_a_]
             this.drawTube(t[0],t[1],t[2])
         }
-        var list1 = _k_.list(this.critters)
+        var list1 = _k_.list(this.plants)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
-            c = list1[_b_]
-            this.drawCritter(c)
+            p = list1[_b_]
+            this.drawPlant(p)
         }
-        var list2 = _k_.list(this.eggs)
+        var list2 = _k_.list(this.critters)
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
-            e = list2[_c_]
+            c = list2[_c_]
+            this.drawCritter(c)
+        }
+        var list3 = _k_.list(this.eggs)
+        for (var _d_ = 0; _d_ < list3.length; _d_++)
+        {
+            e = list3[_d_]
             this.drawEgg(e)
         }
-        return this.g.draw(this.tickInfo.time)
+        this.g.draw(this.tickInfo.time)
+        return delete this.oneStep
     }
 
     return world
