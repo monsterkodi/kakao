@@ -6,7 +6,7 @@
 00     00   0000000   000   000  0000000  0000000  
 ###
 
-use ../kxk ▪ $ drag stopEvent prefs post fade randInt
+use ../kxk ▪ $ drag stopEvent prefs post fade randRange randInt randIntRange
 
 use ◆ gee tweaky tube
 
@@ -14,15 +14,15 @@ COL_SHADOW  = [0 0 0 0.1]
 COL_BG      = [0.15 0.15 0.15 1]
 COL_GRID    = [0 0 0 0.5]
 COL_TUBE    = [0.5 0.5 0.5 1]
-COL_EGG     = [1 1 1 0.5]
-COL_CRITTER = [1 0.5 0 0.5]
+COL_EGG     = [1 1 1 1]
+COL_CRITTER = [1 0.5 0 1]
+COL_EGG_DOT = [0 0 0 0.5]
 
-threshMold  = p n m ->
-    
-    pi = parseInt p/m
-    pn = parseInt n/m
-    
-    pi != pn
+CRIT_MOVE_TIME = 4.0
+CRIT_DIE_TIME  = 2.3
+EGG_FADE_TIME  = 6.0
+
+threshMold  = p n m -> parseInt(p/m) != parseInt(n/m)
 
 function world
 
@@ -30,8 +30,9 @@ function world
         
         @main =$ 'main'
         @pause = false
+        @speed = 1
         
-        @ws = 10
+        @ws = 30
         
         @main.focus()
         
@@ -39,9 +40,9 @@ function world
         @eggs     = []
         @critters = []
         
-        @critterMaxAge    = 127
-        @critterEggPeriod = 19
-        @eggMaxAge        = 7
+        @critterMaxAge = 127
+        @critterEggs   = 3
+        @eggMaxAge     = 17
         
         @addEgg @ws/2 @ws/2
         
@@ -55,10 +56,10 @@ function world
         
         @g.updateCamera()
         
-        # @tweaky = new tweaky @main
-#         
-        # @tweaky.init 
-            # side:      min: 10    max:200    step:1           value:@g.side,     cb: @g.setSide
+        @tweaky = new tweaky @main
+         
+        @tweaky.init 
+            speed:      min: 1    max:100    step:1      value:@speed,     cb: (@speed) =>
             
         window.addEventListener 'wheel'       @onWheel
         @main.addEventListener  'contextmenu' @onContextMenu
@@ -73,17 +74,18 @@ function world
             [ s*0 s*0 s*1 s*1 ] # up right / left down
             ]
             
-        @quadUV    = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
-        
-        @eggUV     = [ s*3.5, s*0.5, s*5.5, s*2.5 ]
-        @critterUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
-        
-        @circleUV = [
+        @quadUV   = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
+        @circleUV = [ s*3.5, s*0.5, s*5.5, s*2.5 ]
+        @circleTopUV = [ s*3.5, s*0.5, s*5.5, s*1.5 ]
+        @pieUV = [
             [ s*3.5, s*0.5, s*4.5, s*1.5 ]
             [ s*4.5, s*0.5, s*5.5, s*1.5 ]
             [ s*4.5, s*1.5, s*5.5, s*2.5 ]
             [ s*3.5, s*1.5, s*4.5, s*2.5 ]
         ]
+        
+        @critterUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
+        @eggUV     = @circleUV
                 
         @drag = new drag 
             target:  @g.canvas
@@ -173,12 +175,22 @@ function world
                 if @isEmpty c
                     ⮐ x:c[0], y:c[1]
         null
-    
+        
+    randomOffset: c =>
+        
+        o = [[-1 1], [0, 1], [1, 1], [-1 0], [1 0], [-1 -1], [0, -1], [1, -1]][randInt 8]
+        [c.x+o[0], c.y+o[1]]
+
+    randomOffsetCross: c =>
+        
+        o = [[0, 1], [-1 0], [1 0], [0, -1]][randInt 4]
+        [c.x+o[0], c.y+o[1]]
+        
     onDragStart: drag event =>
         
         ⮐ if not @mouseInWorld()
         
-        log @mouse.pos
+        # log @mouse.pos
         
         @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
         
@@ -230,38 +242,65 @@ function world
         
         delete @oneStep
         
-        sec = tickInfo.delta / 1000
+        sec = @speed * tickInfo.delta / 1000
         
         # log sec, @eggs
         
         for e in @eggs
+            
             e.age += sec
-            if e.age > @eggMaxAge
-                @eggs.splice @eggs.indexOf(e), 1
+            
+            if e.age > @eggMaxAge and e.age-sec <= @eggMaxAge
                 @addCritter e.x, e.y
                 
+            if e.age > @eggMaxAge+EGG_FADE_TIME
+                @eggs.splice @eggs.indexOf(e), 1
+                
         for c in @critters
+            
             c.age += sec
+
             if c.age > @critterMaxAge
-                @critters.splice @critters.indexOf(c), 1
+                c.df ?= 0
+                c.df += sec / CRIT_DIE_TIME
+                if c.df > 1
+                    @critters.splice @critters.indexOf(c), 1
+                continue
+            
+            if Math.floor(c.age / (@critterMaxAge/(@critterEggs+1))) > c.eggs
+                if n = @emptyNeighbor c
+                    # log 'egg' c.age-sec, c.age, c
+                    @addEgg n.x, n.y
+                    c.eggs++
+                # else
+                    # log 'no place for egg'
+
+            if c.sf > 0
+                c.sf -= sec/CRIT_MOVE_TIME
+                c.sf  = max 0 c.sf
+                c.tx = fade c.x, c.sx, c.sf
+                c.ty = fade c.y, c.sy, c.sf
+                continue
+                          
+            if randInt(3) == 0 or c.age < 1
+                c.sx = c.x
+                c.sy = c.y
+                c.sf = 0.5
                 continue
                 
-            if threshMold c.age-sec, c.age, @critterEggPeriod
-                if n = @emptyNeighbor c
-                    @addEgg n.x, n.y
-                else
-                    log 'no place for egg'
-
-            moveTarget = [c.x + randInt(3)-1, c.y + randInt(3)-1]
-            if @isInWorld(moveTarget) and @isEmpty(moveTarget)
-                c.x = moveTarget[0]
-                c.y = moveTarget[1]
+            n = @randomOffsetCross c
+            if @isInWorld(n) and @isEmpty n
+                c.sx = c.x
+                c.sy = c.y
+                c.sf = 1
+                c.x = n[0]
+                c.y = n[1]
                 
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
     
     addEgg: x y => @eggs.push x:x, y:y, age:0
     
-    addCritter: x y => @critters.push x:x, y:y, age:0
+    addCritter: x y => @critters.push x:x, y:y, age:0, sx:0, sy:0, sf:0, eggs:0
     
     # 000000000  000   000  0000000    00000000  
     #    000     000   000  000   000  000       
@@ -280,23 +319,49 @@ function world
         
     drawEgg: e =>
         
-        s = fade 0.2 1 e.age / @eggMaxAge
-        @g.addQuad e.x, e.y, s, s, COL_EGG, @eggUV, 0 1
+        ageFac = e.age / @eggMaxAge
+        s = fade 0.02 0.3 ageFac
+        a = 1
+        if e.age > @eggMaxAge
+            a = fade 1.0 0.0 (e.age-@eggMaxAge)/EGG_FADE_TIME
+        @g.addQuad e.x, e.y, s, s, [COL_EGG[0], COL_EGG[1], COL_EGG[2], a], @eggUV, 0 1
 
     drawCritter: c =>
         
-        s = fade 0.2 1 c.age / @critterMaxAge
-        @g.addQuad c.x, c.y, s, s, COL_CRITTER, @critterUV, 0 1
+        sx = sy = fade 0.2 1 c.age / @critterMaxAge
+        
+        if c.df
+            sx = 1 - c.df
+            sy = 1 - c.df
+        
+        if c.sf > 0
+            cx = c.tx
+            cy = c.ty
+        else
+            cx = c.x
+            cy = c.y
+            
+        @g.addQuad cx, cy+0.25*sy, sx, sy*(1/2), COL_CRITTER, @circleTopUV, 0 1
+        
+        @g.addQuad cx-(1/4)*sx,  cy-0.0*sy, 0.5*sx, 0.5*sy, COL_CRITTER, @circleUV, 0 1    
+        @g.addQuad cx+(1/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, COL_CRITTER, @circleUV, 0 1    
+        @g.addQuad cx+(3/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, COL_CRITTER, @circleUV, 0 1    
+        @g.addQuad cx+(5/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, COL_CRITTER, @circleUV, 0 1    
+            
+        thrd = 1/3
+        se = 0.6
+        for e in 0...c.eggs
+            @g.addQuad cx+[-thrd, 0, thrd][e]*se*sx, cy+[0.15, 0.25, 0.15][e]*sx, [1, 1.25, 1][e]*thrd*sx*se, [1, 1.25, 1][e]*thrd*se*sy, COL_EGG_DOT, @circleUV, 0 1    
         
     roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
         
         [x0, x1] = [min(x0, x1), max(x0, x1)]
         [y0, y1] = [min(y0, y1), max(y0, y1)]
         
-        @g.addQuad x0, y0, 1 1  color, @circleUV[3], 0 layer
-        @g.addQuad x1, y0, 1 1  color, @circleUV[2], 0 layer
-        @g.addQuad x1, y1, 1 1  color, @circleUV[1], 0 layer
-        @g.addQuad x0, y1, 1 1  color, @circleUV[0], 0 layer
+        @g.addQuad x0, y0, 1 1  color, @pieUV[3], 0 layer
+        @g.addQuad x1, y0, 1 1  color, @pieUV[2], 0 layer
+        @g.addQuad x1, y1, 1 1  color, @pieUV[1], 0 layer
+        @g.addQuad x0, y1, 1 1  color, @pieUV[0], 0 layer
         
         @g.addQuad (x0+x1)/2, (y0+y1)/2, (x1-x0)-1, (y1-y0)+1, color, @quadUV, 0 layer 
         @g.addQuad  x0,       (y0+y1)/2, 1,         (y1-y0)-1, color, @quadUV, 0 layer 
