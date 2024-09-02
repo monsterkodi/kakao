@@ -86,6 +86,7 @@ function Delegate extends win.Delegate
             'Zoom In'  ➜ ⮐ @world.zoom 1
             'Zoom Out' ➜ ⮐ @world.zoom -1
             'Pause'    ➜ ⮐ @world.togglePause()
+            'Step'     ➜ ⮐ @world.singleStep()
             
         # log 'onMenuAction' action, args
         'unhandled'

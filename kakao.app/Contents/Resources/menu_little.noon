@@ -8,6 +8,7 @@ Little
     New Window              cmdctrl+n
     -
     Pause                   space
+    Step                    right
     Zoom In                 cmdctrl+= =
     Zoom Out                cmdctrl+- -
     --

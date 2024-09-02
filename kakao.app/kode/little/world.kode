@@ -14,8 +14,8 @@ COL_SHADOW  = [0 0 0 0.1]
 COL_BG      = [0.15 0.15 0.15 1]
 COL_GRID    = [0 0 0 0.5]
 COL_TUBE    = [0.5 0.5 0.5 1]
-COL_EGG     = [1 1 1 1]
-COL_CRITTER = [1 0.5 0 1]
+COL_EGG     = [1 1 1 0.5]
+COL_CRITTER = [1 0.5 0 0.5]
 
 threshMold  = p n m ->
     
@@ -32,6 +32,8 @@ function world
         @pause = false
         
         @ws = 10
+        
+        @main.focus()
         
         @tubes    = []
         @eggs     = []
@@ -157,11 +159,8 @@ function world
     isInWorld: p => p[0] >= 0 and p[1] >= 0 and p[0] < @ws and p[1] < @ws
     isEmpty:   p =>
         
-        for c in @critters
-            ⮐ false if c.x == p[0] and c.y == p[1] 
-        for e in @eggs 
-            ⮐ false if c.x == p[0] and c.y == p[1] 
-            
+        for o in @critters ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
+        for o in @eggs     ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
         true
         
     emptyNeighbor: c =>
@@ -222,9 +221,10 @@ function world
     #      000  000  000 0 000  000   000  000      000   000     000     000       
     # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
     
-    simulate: tickInfo =>
+    simulate: tickInfo ->
         
         ⮐ if @pause and not @oneStep
+        ⮐ if isNaN tickInfo.delta
         
         # ● simulate
         
@@ -232,7 +232,7 @@ function world
         
         sec = tickInfo.delta / 1000
         
-        # log sec
+        # log sec, @eggs
         
         for e in @eggs
             e.age += sec

@@ -98,6 +98,9 @@ Delegate = (function ()
             case 'Pause':
                 return this.world.togglePause()
 
+            case 'Step':
+                return this.world.singleStep()
+
         }
 
         return 'unhandled'

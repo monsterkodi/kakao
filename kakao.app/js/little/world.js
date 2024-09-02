@@ -19,8 +19,8 @@ COL_SHADOW = [0,0,0,0.1]
 COL_BG = [0.15,0.15,0.15,1]
 COL_GRID = [0,0,0,0.5]
 COL_TUBE = [0.5,0.5,0.5,1]
-COL_EGG = [1,1,1,1]
-COL_CRITTER = [1,0.5,0,1]
+COL_EGG = [1,1,1,0.5]
+COL_CRITTER = [1,0.5,0,0.5]
 
 threshMold = function (p, n, m)
 {
@@ -46,7 +46,6 @@ world = (function ()
         this["addCritter"] = this["addCritter"].bind(this)
         this["addEgg"] = this["addEgg"].bind(this)
         this["singleStep"] = this["singleStep"].bind(this)
-        this["simulate"] = this["simulate"].bind(this)
         this["toggleValues"] = this["toggleValues"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this["onContextMenu"] = this["onContextMenu"].bind(this)
@@ -65,6 +64,7 @@ world = (function ()
         this.main = $('main')
         this.pause = false
         this.ws = 10
+        this.main.focus()
         this.tubes = []
         this.eggs = []
         this.critters = []
@@ -151,13 +151,13 @@ world = (function ()
 
     world.prototype["isEmpty"] = function (p)
     {
-        var c, e
+        var o
 
         var list = _k_.list(this.critters)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            c = list[_a_]
-            if (c.x === p[0] && c.y === p[1])
+            o = list[_a_]
+            if (o.x === p[0] && o.y === p[1])
             {
                 return false
             }
@@ -165,8 +165,8 @@ world = (function ()
         var list1 = _k_.list(this.eggs)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
-            e = list1[_b_]
-            if (c.x === p[0] && c.y === p[1])
+            o = list1[_b_]
+            if (o.x === p[0] && o.y === p[1])
             {
                 return false
             }
@@ -278,6 +278,10 @@ world = (function ()
         var c, e, moveTarget, n, sec
 
         if (this.pause && !this.oneStep)
+        {
+            return
+        }
+        if (isNaN(tickInfo.delta))
         {
             return
         }
