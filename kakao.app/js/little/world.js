@@ -29,7 +29,7 @@ COL_TUBE = [0.5,0.5,0.5,1]
 COL_PLANT = [0,0.5,0,1]
 COL_LEAF = [0,0.5,0,1]
 COL_EGG = [1,1,1,1]
-COL_CRITTER = [1,0.5,0,1]
+COL_CRITTER = [0.5,0.5,1,1]
 COL_STARVE = [0.25,0.25,0.25,1]
 COL_EGG_DOT = [0,0,0,0.5]
 CRIT_MOVE_TIME = 4.0
@@ -81,23 +81,19 @@ world = (function ()
         this["onMouseMove"] = this["onMouseMove"].bind(this)
         this["eventPos"] = this["eventPos"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
+        this["start"] = this["start"].bind(this)
         this.main = $('main')
         this.pause = false
-        this.speed = 1
-        this.ws = 30
+        this.speed = 10
+        this.ws = 40
         this.main.focus()
-        this.plants = []
-        this.tubes = []
-        this.eggs = []
-        this.critters = []
         this.numLeaves = 6
-        this.critterMaxAge = 1024 * 1024
-        this.critterEggTime = 137
-        this.eggMaxAge = 27
-        this.leafMaxAge = 17
-        this.critterEatTime = 9
-        this.critterStarveTime = 13
-        this.addEgg(this.ws / 2,this.ws / 2)
+        this.critterMaxAge = 1000
+        this.critterEggTime = 500
+        this.eggMaxAge = 50
+        this.leafMaxAge = 100
+        this.critterEatTime = 50
+        this.critterStarveTime = 50
         this.g = new gee(this.main)
         this.g.camScale = 0.08
         this.g.camPosX = 1 / this.g.camScale
@@ -108,6 +104,24 @@ world = (function ()
         this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
         {
             this.speed = speed
+        }).bind(this)},maxAge:{min:1000,max:4000,step:100,value:this.critterMaxAge,cb:(function (critterMaxAge)
+        {
+            this.critterMaxAge = critterMaxAge
+        }).bind(this)},leaves:{min:4,max:12,step:1,value:this.numLeaves,cb:(function (numLeaves)
+        {
+            this.numLeaves = numLeaves
+        }).bind(this)},leafMaxAge:{min:1,max:100,step:1,value:this.leafMaxAge,cb:(function (leafMaxAge)
+        {
+            this.leafMaxAge = leafMaxAge
+        }).bind(this)},eatTime:{min:1,max:100,step:1,value:this.critterEatTime,cb:(function (critterEatTime)
+        {
+            this.critterEatTime = critterEatTime
+        }).bind(this)},starveTime:{min:5,max:100,step:1,value:this.critterStarveTime,cb:(function (critterStarveTime)
+        {
+            this.critterStarveTime = critterStarveTime
+        }).bind(this)},eggTime:{min:100,max:500,step:10,value:this.critterEggTime,cb:(function (critterEggTime)
+        {
+            this.critterEggTime = critterEggTime
         }).bind(this)}})
         window.addEventListener('wheel',this.onWheel)
         this.main.addEventListener('contextmenu',this.onContextMenu)
@@ -120,6 +134,25 @@ world = (function ()
         this.critterUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
         this.eggUV = this.circleUV
         this.drag = new drag({target:this.g.canvas,onStart:this.onDragStart,onMove:this.onDragMove,onStop:this.onDragStop,cursor:'pointer'})
+        this.start()
+    }
+
+    world.prototype["start"] = function ()
+    {
+        var x, y
+
+        this.plants = []
+        this.tubes = []
+        this.eggs = []
+        this.critters = []
+        this.addEgg(this.ws / 2,this.ws / 2)
+        for (var _a_ = x = 0, _b_ = this.ws / 3; (_a_ <= _b_ ? x <= this.ws / 3 : x >= this.ws / 3); (_a_ <= _b_ ? ++x : --x))
+        {
+            for (var _c_ = y = 0, _d_ = this.ws / 3; (_c_ <= _d_ ? y <= this.ws / 3 : y >= this.ws / 3); (_c_ <= _d_ ? ++y : --y))
+            {
+                this.addPlant(x * 3,y * 3)
+            }
+        }
     }
 
     world.prototype["onWheel"] = function (event)
@@ -474,7 +507,7 @@ world = (function ()
 
     world.prototype["simulate"] = function (tickInfo)
     {
-        var c, e, l, n, p, sec, _342_21_
+        var c, e, l, n, p, sec, _353_21_
 
         if (this.pause && !this.oneStep)
         {
@@ -507,7 +540,7 @@ world = (function ()
             c.eat -= sec
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_342_21_=c.df) != null ? _342_21_ : 0)
+                c.df = ((_353_21_=c.df) != null ? _353_21_ : 0)
                 c.df += sec / CRIT_DIE_TIME
                 if (c.df > 1)
                 {
@@ -547,7 +580,7 @@ world = (function ()
                 c.sf = 0.5
                 continue
             }
-            n = this.randomOffsetCross(c)
+            n = this.randomOffset(c)
             if (this.isInWorld(n) && this.isEmpty(n))
             {
                 c.sx = c.x
@@ -579,16 +612,22 @@ world = (function ()
 
     world.prototype["addEgg"] = function (x, y)
     {
+        x = parseInt(x)
+        y = parseInt(y)
         return this.eggs.push({x:x,y:y,age:0})
     }
 
     world.prototype["addCritter"] = function (x, y)
     {
+        x = parseInt(x)
+        y = parseInt(y)
         return this.critters.push({x:x,y:y,age:0,sx:0,sy:0,sf:0,eggs:0,eat:this.critterEatTime})
     }
 
     world.prototype["addTube"] = function (x, y, idx)
     {
+        x = parseInt(x)
+        y = parseInt(y)
         return this.tubes.push([x,y,idx])
     }
 
@@ -596,10 +635,12 @@ world = (function ()
     {
         var l, leaves
 
+        x = parseInt(x)
+        y = parseInt(y)
         leaves = []
         for (var _a_ = l = 0, _b_ = this.numLeaves; (_a_ <= _b_ ? l < this.numLeaves : l > this.numLeaves); (_a_ <= _b_ ? ++l : --l))
         {
-            leaves.push({age:-l * this.leafMaxAge / this.numLeaves})
+            leaves.push({age:l * this.leafMaxAge / this.numLeaves})
         }
         return this.plants.push({x:x,y:y,leaves:leaves})
     }
@@ -611,7 +652,7 @@ world = (function ()
         s = 0.25
         this.g.addQuad(p.x,p.y,s,s,COL_PLANT,this.circleUV,0,0)
         s = 0.15
-        r = 0.4
+        r = 0.2
         for (var _a_ = li = 0, _b_ = p.leaves.length; (_a_ <= _b_ ? li < p.leaves.length : li > p.leaves.length); (_a_ <= _b_ ? ++li : --li))
         {
             l = p.leaves[li]

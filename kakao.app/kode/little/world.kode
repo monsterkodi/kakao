@@ -20,7 +20,7 @@ COL_TUBE    = [0.5 0.5 0.5 1]
 COL_PLANT   = [0 0.5 0 1]
 COL_LEAF    = [0 0.5 0 1]
 COL_EGG     = [1 1 1 1]
-COL_CRITTER = [1 0.5 0 1]
+COL_CRITTER = [0.5 0.5 1 1]
 COL_STARVE  = [0.25 0.25 0.25 1]
 COL_EGG_DOT = [0 0 0 0.5]
 
@@ -36,30 +36,20 @@ function world
         
         @main =$ 'main'
         @pause = false
-        @speed = 1
+        @speed = 10
         
-        @ws = 30
+        @ws = 40
         
         @main.focus()
-        
-        @plants   = []
-        @tubes    = []
-        @eggs     = []
-        @critters = []
-        
-        @numLeaves      = 6
-        @critterMaxAge  = 1024*1024
-        @critterEggTime = 137
-        @eggMaxAge      = 27
-        @leafMaxAge     = 17
-        
-        @critterEatTime    = 9
-        @critterStarveTime = 13
-        
-        # @leavesForFood = []
-        
-        @addEgg @ws/2 @ws/2
-        
+                
+        @numLeaves         = 6
+        @critterMaxAge     = 1000
+        @critterEggTime    = 500
+        @eggMaxAge         = 50
+        @leafMaxAge        = 100
+        @critterEatTime    = 50
+        @critterStarveTime = 50
+                
         @g = new gee @main
         
         @g.camScale = 0.08
@@ -72,8 +62,14 @@ function world
         
         @tweaky = new tweaky @main
          
-        @tweaky.init 
-            speed:      min: 1    max:100    step:1      value:@speed,     cb: (@speed) =>
+        @tweaky.init                                                        
+            speed:      min: 1    max:100    step:1      value:@speed,              cb: (@speed) =>
+            maxAge:     min:1000  max:4000   step:100    value:@critterMaxAge,      cb: (@critterMaxAge) =>
+            leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
+            leafMaxAge: min: 1    max:100    step:1      value:@leafMaxAge,         cb: (@leafMaxAge) =>
+            eatTime:    min: 1    max:100    step:1      value:@critterEatTime,     cb: (@critterEatTime) =>
+            starveTime: min: 5    max:100    step:1      value:@critterStarveTime,  cb: (@critterStarveTime) =>
+            eggTime:    min: 100  max:500    step:10     value:@critterEggTime,     cb: (@critterEggTime) =>
             
         window.addEventListener 'wheel'       @onWheel
         @main.addEventListener  'contextmenu' @onContextMenu
@@ -107,6 +103,21 @@ function world
             onMove:  @onDragMove
             onStop:  @onDragStop
             cursor: 'pointer'
+            
+        @start()
+            
+    start: =>
+        
+        @plants   = []
+        @tubes    = []
+        @eggs     = []
+        @critters = []
+        
+        @addEgg @ws/2 @ws/2
+        
+        for x in 0..@ws/3
+            for y in 0..@ws/3
+                @addPlant x*3 y*3
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -369,7 +380,7 @@ function world
                 c.sf = 0.5
                 continue
                 
-            n = @randomOffsetCross c
+            n = @randomOffset c
             if @isInWorld(n) and @isEmpty n
                 c.sx = c.x
                 c.sy = c.y
@@ -383,10 +394,6 @@ function world
                 
                 l.age += sec
                 
-                # if l.age > @leafMaxAge and l.age-sec <= @leafMaxAge
-#                     
-                    # @leavesForFood.push l
-                    
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
     
     #  0000000   0000000    0000000      
@@ -395,19 +402,35 @@ function world
     # 000   000  000   000  000   000    
     # 000   000  0000000    0000000      
     
-    addEgg: x y => @eggs.push x:x, y:y, age:0
+    addEgg: x y => 
     
-    addCritter: x y => @critters.push x:x, y:y, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatTime
+        x = parseInt x
+        y = parseInt y
+    
+        @eggs.push x:x, y:y, age:0
+    
+    addCritter: x y => 
+    
+        x = parseInt x
+        y = parseInt y
+        
+        @critters.push x:x, y:y, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatTime
     
     addTube: x y idx =>
+        
+        x = parseInt x
+        y = parseInt y
         
         @tubes.push [x, y, idx]
         
     addPlant: x y =>
         
-        leaves = []
+        x = parseInt x
+        y = parseInt y
+            
+        leaves = [] 
         for l in 0...@numLeaves
-            leaves.push age:-l*@leafMaxAge/@numLeaves
+            leaves.push age:l*@leafMaxAge/@numLeaves
         
         @plants.push x:x, y:y, leaves:leaves
         
@@ -423,7 +446,7 @@ function world
         @g.addQuad p.x, p.y, s, s, COL_PLANT, @circleUV, 0 0
         
         s = 0.15
-        r = 0.4
+        r = 0.2
         for li in 0...p.leaves.length
             l = p.leaves[li]
             af = l.age/@leafMaxAge

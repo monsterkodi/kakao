@@ -28,7 +28,7 @@ gee = (function ()
         this.main.appendChild(this.canvas)
         this.initGL()
         this.numLayers = 2
-        this.quadsPerLayer = 10000
+        this.quadsPerLayer = 100000
         this.layerStart = []
         this.numQuads = []
         for (var _a_ = layer = 0, _b_ = this.numLayers; (_a_ <= _b_ ? layer < this.numLayers : layer > this.numLayers); (_a_ <= _b_ ? ++layer : --layer))

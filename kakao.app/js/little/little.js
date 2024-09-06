@@ -101,6 +101,9 @@ Delegate = (function ()
             case 'Step':
                 return this.world.singleStep()
 
+            case 'Restart':
+                return this.world.start()
+
         }
 
         return 'unhandled'
