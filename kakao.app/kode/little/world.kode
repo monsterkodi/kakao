@@ -36,18 +36,18 @@ function world
         
         @main =$ 'main'
         @pause = false
-        @speed = 10
+        @speed = 100
         
         @ws = 40
         
         @main.focus()
                 
-        @numLeaves         = 6
-        @critterMaxAge     = 1000
+        @numLeaves         = 7
+        @critterMaxAge     = 3000
         @critterEggTime    = 500
         @eggMaxAge         = 50
         @leafMaxAge        = 100
-        @critterEatTime    = 50
+        @critterEatTime    = 90
         @critterStarveTime = 50
                 
         @g = new gee @main
@@ -97,6 +97,8 @@ function world
         @critterUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
         @eggUV     = @circleUV
                 
+        @mouse = pos: [0 0]
+        
         @drag = new drag 
             target:  @g.canvas
             onStart: @onDragStart
@@ -157,14 +159,6 @@ function world
             pos:  @win2Pos winPos
             win:  winPos
         
-        # log @mouse
-        
-    # 0000000    00000000    0000000    0000000   
-    # 000   000  000   000  000   000  000        
-    # 000   000  0000000    000000000  000  0000  
-    # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000   0000000   
-    
     win2Pos: winPos =>
         
         x = (((winPos.x - @g.br.left) / @g.br.width - 0.5) *  2 ) / (@g.camScale * @g.aspect) + @g.camPosX
@@ -238,6 +232,13 @@ function world
             if pl.x == p[0] and pl.y == p[1]
                 ⮐ pl
         null
+
+    tubeAt: p =>
+        
+        for tb in @tubes
+            if tb.x == p[0] and tb.y == p[1]
+                ⮐ tb
+        null
         
     leafToEatAt: p =>
         
@@ -267,44 +268,59 @@ function world
         
         o = [[0, 1], [-1 0], [1 0], [0, -1]][randInt 4]
         [c.x+o[0], c.y+o[1]]
-        
+
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
     onDragStart: drag event =>
         
         ⮐ if not @mouseInWorld()
         
-        if 1
-            p = @win2Grid drag.pos
+        p = @win2Grid drag.pos
+        
+        if event.button == 2
+            @delAt p
+            ⮐ 
+        
+        if not event.metaKey
             ⮐ if @buildingAtPos p
             @addPlant p[0], p[1]
         else
             @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
         
     onDragMove: drag event =>
+
+        p = @win2Grid drag.pos
         
-        if 1
-            p = @win2Grid drag.pos
+        if event.button == 2
+            @delAt p
+            ⮐ 
+        
+        if not event.metaKey
             ⮐ if @buildingAtPos p
             @addPlant p[0], p[1]
         
         ⮐ if not @dragPath
         
         l = @dragPath[-1]
-        p = @dragPath[-2]
-        g = @win2Grid drag.pos
+        k = @dragPath[-2]
         
-        if g[0] == l[0] == p[0] and g[1] == l[1] == p[1] and @dragPath.length > 2
+        if k[0] == l[0] == p[0] and k[1] == l[1] == p[1] and @dragPath.length > 2
             @dragPath.pop()
-        else if l[0] == p[0] == g[0]
-            l[1] = g[1]
-        else if l[1] == p[1] == g[1]
-            l[0] = g[0]
+        else if k[0] == l[0] == p[0]
+            l[1] = p[1]
+        else if k[1] == l[1] == p[1]
+            l[0] = p[0]
         else
-            @dragPath.push g
-            if l[0] != g[0] and l[1] != g[1]
-                if l[0] == p[0]
-                    l[1] = g[1]
+            @dragPath.push p
+            if l[0] != k[0] and l[1] != k[1]
+                if l[0] == k[0]
+                    l[1] = p[1]
                 else
-                    l[0] = g[0]
+                    l[0] = p[0]
                     
     onDragStop: drag event =>
         
@@ -421,7 +437,7 @@ function world
         x = parseInt x
         y = parseInt y
         
-        @tubes.push [x, y, idx]
+        @tubes.push x:x, y:y, idx:idx
         
     addPlant: x y =>
         
@@ -433,6 +449,17 @@ function world
             leaves.push age:l*@leafMaxAge/@numLeaves
         
         @plants.push x:x, y:y, leaves:leaves
+
+    delAt: p =>
+        
+        if pl = @plantAt p
+            @plants.splice @plants.indexOf(pl), 1
+            ⮐ 
+            
+        if tb = @tubeAt p
+            @tubes.splice @tubes.indexOf(tb), 1
+            ⮐ 
+    
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -455,7 +482,13 @@ function world
             @g.addQuad p.x+cos(-li*TAU/@numLeaves+PI)*r, p.y+sin(-li*TAU/@numLeaves+PI)*r, ls, ls, col, @circleUV, 0 1
     
     drawTube: x y idx =>
-
+        
+        if empty y
+            t = x
+            x = t.x
+            y = t.y
+            idx = t.idx
+        
         @g.addQuad x+0.2, y-0.2,  1 1   COL_SHADOW, @tubeUV[idx], 0 0
         @g.addQuad x,     y,      1 1   COL_TUBE,   @tubeUV[idx], 0 1
         
@@ -550,7 +583,7 @@ function world
                 
         if @dragPath ➜ tube.path @dragPath, @drawTube
             
-        for t in @tubes    ➜ @drawTube t[0], t[1], t[2]
+        for t in @tubes    ➜ @drawTube t
         for p in @plants   ➜ @drawPlant p
         for c in @critters ➜ @drawCritter c
         for e in @eggs     ➜ @drawEgg e

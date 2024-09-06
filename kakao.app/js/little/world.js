@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var COL_BG, COL_CRITTER, COL_EGG, COL_EGG_DOT, COL_GRID, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, CRIT_DIE_TIME, CRIT_MOVE_TIME, EGG_FADE_TIME, PI, sin, TAU, threshMold, world
 
@@ -53,6 +53,7 @@ world = (function ()
         this["drawEgg"] = this["drawEgg"].bind(this)
         this["drawTube"] = this["drawTube"].bind(this)
         this["drawPlant"] = this["drawPlant"].bind(this)
+        this["delAt"] = this["delAt"].bind(this)
         this["addPlant"] = this["addPlant"].bind(this)
         this["addTube"] = this["addTube"].bind(this)
         this["addCritter"] = this["addCritter"].bind(this)
@@ -68,6 +69,7 @@ world = (function ()
         this["randomOffset"] = this["randomOffset"].bind(this)
         this["neighborLeaf"] = this["neighborLeaf"].bind(this)
         this["leafToEatAt"] = this["leafToEatAt"].bind(this)
+        this["tubeAt"] = this["tubeAt"].bind(this)
         this["plantAt"] = this["plantAt"].bind(this)
         this["neighbors"] = this["neighbors"].bind(this)
         this["validNeighbors"] = this["validNeighbors"].bind(this)
@@ -84,15 +86,15 @@ world = (function ()
         this["start"] = this["start"].bind(this)
         this.main = $('main')
         this.pause = false
-        this.speed = 10
+        this.speed = 100
         this.ws = 40
         this.main.focus()
-        this.numLeaves = 6
-        this.critterMaxAge = 1000
+        this.numLeaves = 7
+        this.critterMaxAge = 3000
         this.critterEggTime = 500
         this.eggMaxAge = 50
         this.leafMaxAge = 100
-        this.critterEatTime = 50
+        this.critterEatTime = 90
         this.critterStarveTime = 50
         this.g = new gee(this.main)
         this.g.camScale = 0.08
@@ -133,6 +135,7 @@ world = (function ()
         this.pieUV = [[s * 3.5,s * 0.5,s * 4.5,s * 1.5],[s * 4.5,s * 0.5,s * 5.5,s * 1.5],[s * 4.5,s * 1.5,s * 5.5,s * 2.5],[s * 3.5,s * 1.5,s * 4.5,s * 2.5]]
         this.critterUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
         this.eggUV = this.circleUV
+        this.mouse = {pos:[0,0]}
         this.drag = new drag({target:this.g.canvas,onStart:this.onDragStart,onMove:this.onDragMove,onStop:this.onDragStop,cursor:'pointer'})
         this.start()
     }
@@ -354,6 +357,22 @@ world = (function ()
         return null
     }
 
+    world.prototype["tubeAt"] = function (p)
+    {
+        var tb
+
+        var list = _k_.list(this.tubes)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            tb = list[_a_]
+            if (tb.x === p[0] && tb.y === p[1])
+            {
+                return tb
+            }
+        }
+        return null
+    }
+
     world.prototype["leafToEatAt"] = function (p)
     {
         var l, pl
@@ -418,9 +437,14 @@ world = (function ()
         {
             return
         }
-        if (1)
+        p = this.win2Grid(drag.pos)
+        if (event.button === 2)
         {
-            p = this.win2Grid(drag.pos)
+            this.delAt(p)
+            return
+        }
+        if (!event.metaKey)
+        {
             if (this.buildingAtPos(p))
             {
                 return
@@ -435,11 +459,16 @@ world = (function ()
 
     world.prototype["onDragMove"] = function (drag, event)
     {
-        var g, l, p
+        var k, l, p
 
-        if (1)
+        p = this.win2Grid(drag.pos)
+        if (event.button === 2)
         {
-            p = this.win2Grid(drag.pos)
+            this.delAt(p)
+            return
+        }
+        if (!event.metaKey)
+        {
             if (this.buildingAtPos(p))
             {
                 return
@@ -451,32 +480,31 @@ world = (function ()
             return
         }
         l = this.dragPath.slice(-1)[0]
-        p = this.dragPath.slice(-2,-1)[0]
-        g = this.win2Grid(drag.pos)
-        if ((g[0] === l[0] && l[0] === p[0]) && (g[1] === l[1] && l[1] === p[1]) && this.dragPath.length > 2)
+        k = this.dragPath.slice(-2,-1)[0]
+        if ((k[0] === l[0] && l[0] === p[0]) && (k[1] === l[1] && l[1] === p[1]) && this.dragPath.length > 2)
         {
             return this.dragPath.pop()
         }
-        else if ((l[0] === p[0] && p[0] === g[0]))
+        else if ((k[0] === l[0] && l[0] === p[0]))
         {
-            return l[1] = g[1]
+            return l[1] = p[1]
         }
-        else if ((l[1] === p[1] && p[1] === g[1]))
+        else if ((k[1] === l[1] && l[1] === p[1]))
         {
-            return l[0] = g[0]
+            return l[0] = p[0]
         }
         else
         {
-            this.dragPath.push(g)
-            if (l[0] !== g[0] && l[1] !== g[1])
+            this.dragPath.push(p)
+            if (l[0] !== k[0] && l[1] !== k[1])
             {
-                if (l[0] === p[0])
+                if (l[0] === k[0])
                 {
-                    return l[1] = g[1]
+                    return l[1] = p[1]
                 }
                 else
                 {
-                    return l[0] = g[0]
+                    return l[0] = p[0]
                 }
             }
         }
@@ -507,7 +535,7 @@ world = (function ()
 
     world.prototype["simulate"] = function (tickInfo)
     {
-        var c, e, l, n, p, sec, _353_21_
+        var c, e, l, n, p, sec, _369_21_
 
         if (this.pause && !this.oneStep)
         {
@@ -540,7 +568,7 @@ world = (function ()
             c.eat -= sec
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_353_21_=c.df) != null ? _353_21_ : 0)
+                c.df = ((_369_21_=c.df) != null ? _369_21_ : 0)
                 c.df += sec / CRIT_DIE_TIME
                 if (c.df > 1)
                 {
@@ -628,7 +656,7 @@ world = (function ()
     {
         x = parseInt(x)
         y = parseInt(y)
-        return this.tubes.push([x,y,idx])
+        return this.tubes.push({x:x,y:y,idx:idx})
     }
 
     world.prototype["addPlant"] = function (x, y)
@@ -643,6 +671,22 @@ world = (function ()
             leaves.push({age:l * this.leafMaxAge / this.numLeaves})
         }
         return this.plants.push({x:x,y:y,leaves:leaves})
+    }
+
+    world.prototype["delAt"] = function (p)
+    {
+        var pl, tb
+
+        if (pl = this.plantAt(p))
+        {
+            this.plants.splice(this.plants.indexOf(pl),1)
+            return
+        }
+        if (tb = this.tubeAt(p))
+        {
+            this.tubes.splice(this.tubes.indexOf(tb),1)
+            return
+        }
     }
 
     world.prototype["drawPlant"] = function (p)
@@ -665,6 +709,15 @@ world = (function ()
 
     world.prototype["drawTube"] = function (x, y, idx)
     {
+        var t
+
+        if (_k_.empty(y))
+        {
+            t = x
+            x = t.x
+            y = t.y
+            idx = t.idx
+        }
         this.g.addQuad(x + 0.2,y - 0.2,1,1,COL_SHADOW,this.tubeUV[idx],0,0)
         return this.g.addQuad(x,y,1,1,COL_TUBE,this.tubeUV[idx],0,1)
     }
@@ -776,7 +829,7 @@ world = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             t = list[_a_]
-            this.drawTube(t[0],t[1],t[2])
+            this.drawTube(t)
         }
         var list1 = _k_.list(this.plants)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
