@@ -11,7 +11,15 @@ use ../kxk ▪ fade randRange randInt randIntRange
 function matrix
 
     @: ->
+
+        @PLANT             = 0
+        @EGG               = 1
+        @CRITTER           = 2
+        @TUBE              = 3
+        @NUM_TYPES         = 4
         
+        @ws = 40
+                
         @eggFadeTime       = 6.0
         @critMoveTime      = 4.0 
         @critDieTime       = 2.3
@@ -34,11 +42,23 @@ function matrix
     
     start: =>
         
-        @plants   = []
-        @tubes    = []
-        @eggs     = []
-        @critters = []
+        @grid  = []
+        @types = []
         
+        for t in 0...@NUM_TYPES
+            @types.push []
+            
+        @eggs     = @types[@EGG]
+        @critters = @types[@CRITTER]
+        @plants   = @types[@PLANT]
+        @tubes    = @types[@TUBE]
+        
+        for x in 0...@ws
+            column = []
+            for y in 0...@ws
+                column.push null
+            @grid.push column
+            
         @addEgg @ws/2 @ws/2
         
         for x in 0..@ws/3
@@ -61,7 +81,7 @@ function matrix
                 @addCritter e.x, e.y
                 
             if e.age > @eggMaxAge+@eggFadeTime
-                @eggs.splice @eggs.indexOf(e), 1
+                @delAt [e.x, e.y]
                 
         for c in @critters
             
@@ -72,7 +92,7 @@ function matrix
                 c.df ?= 0
                 c.df += sec / @critDieTime
                 if c.df > 1
-                    @critters.splice @critters.indexOf(c), 1
+                    @delAt [c.x, c.y]
                 continue
                 
             if c.eat < 0
@@ -104,8 +124,10 @@ function matrix
                 c.sx = c.x
                 c.sy = c.y
                 c.sf = 1
+                @grid[c.x][c.y] = null
                 c.x = n[0]
                 c.y = n[1]
+                @grid[c.x][c.y] = c
                 
         for p in @plants
                         
@@ -119,37 +141,26 @@ function matrix
     # 000   000  000   000  000   000    
     # 000   000  0000000    0000000      
     
-    addEgg: x y => 
-    
-        x = parseInt x
-        y = parseInt y
-    
-        @eggs.push x:x, y:y, age:0
-    
-    addCritter: x y => 
-    
-        x = parseInt x
-        y = parseInt y
+    addObject: x y o =>
         
-        @critters.push x:x, y:y, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatTime
+        @delAt [x, y]
     
-    addTube: x y idx =>
+        o.x = parseInt x
+        o.y = parseInt y
         
-        x = parseInt x
-        y = parseInt y
-        
-        @tubes.push x:x, y:y, idx:idx
-        
-    addPlant: x y =>
-        
-        x = parseInt x
-        y = parseInt y
-            
+        @grid[o.x][o.y] = o
+        @types[o.type].push o
+                
+    addEgg:     x y     => @addObject x, y, type:@EGG,     age:0
+    addCritter: x y     => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatTime
+    addTube:    x y idx => @addObject x, y, type:@TUBE,    idx:idx
+    addPlant:   x y     => 
+    
         leaves = [] 
         for l in 0...@numLeaves
             leaves.push age:l*@leafMaxAge/@numLeaves
         
-        @plants.push x:x, y:y, leaves:leaves
+        @addObject x, y, type:@PLANT, leaves:leaves
 
     # 0000000    00000000  000      
     # 000   000  000       000      
@@ -159,13 +170,9 @@ function matrix
     
     delAt: p =>
         
-        if pl = @plantAt p
-            @plants.splice @plants.indexOf(pl), 1
-            ⮐ 
-            
-        if tb = @tubeAt p
-            @tubes.splice @tubes.indexOf(tb), 1
-            ⮐ 
+        if o = @objectAt p
+            @types[o.type].splice @types[o.type].indexOf(o), 1
+            @grid[o.x][o.y] = null
 
     # 00000000    0000000    0000000    
     # 000   000  000   000  000         
@@ -173,17 +180,14 @@ function matrix
     # 000        000   000       000    
     # 000         0000000   0000000     
     
+    objectAt:  p => if @isInWorld p ➜ ⮐ @grid[p[0]][p[1]]
     isInWorld: p => p[0] >= 0 and p[1] >= 0 and p[0] < @ws and p[1] < @ws
-    isEmpty:   p =>
+    isEmpty:   p => not @objectAt p
+                
+    buildingAt: p =>
         
-        for o in @critters ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
-        for o in @eggs     ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
-        for o in @plants   ➜ ⮐ false if o.x == p[0] and o.y == p[1] 
-        true
-        
-    buildingAtPos: p =>
-        
-        for o in @plants   ➜ ⮐ true if o.x == p[0] and o.y == p[1] 
+        if o = @objectAt p
+            ⮐ o.type in [@PLANT]
         false
         
     emptyNeighbor: o =>
@@ -222,20 +226,15 @@ function matrix
                 n.push [o.x+x, o.y+y]
         n
         
-    plantAt: p =>
+    objectOfTypeAt: type p =>
         
-        for pl in @plants
-            if pl.x == p[0] and pl.y == p[1]
-                ⮐ pl
-        null
-
-    tubeAt: p =>
+        if o = @objectAt p
+            ⮐ null if o.type != type
+        o
         
-        for tb in @tubes
-            if tb.x == p[0] and tb.y == p[1]
-                ⮐ tb
-        null
-        
+    plantAt: p => @objectOfTypeAt @PLANT, p
+    tubeAt:  p => @objectOfTypeAt @TUBE, p
+                
     leafToEatAt: p =>
         
         if pl = @plantAt p

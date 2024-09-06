@@ -33,9 +33,7 @@ function world extends matrix
         @main =$ 'main'
         @pause = false
         @speed = 100
-        
-        @ws = 40
-        
+                
         super()
         
         @main.focus()
@@ -170,7 +168,7 @@ function world extends matrix
             ⮐ 
         
         if not event.metaKey
-            ⮐ if @buildingAtPos p
+            ⮐ if @buildingAt p
             @addPlant p[0], p[1]
         else
             @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
@@ -184,7 +182,7 @@ function world extends matrix
             ⮐ 
         
         if not event.metaKey
-            ⮐ if @buildingAtPos p
+            ⮐ if @buildingAt p
             @addPlant p[0], p[1]
         
         ⮐ if not @dragPath
@@ -241,12 +239,11 @@ function world extends matrix
         
         if empty y
             t = x
-            x = t.x
+            x = t.x 
             y = t.y
             idx = t.idx
         
-        @g.addQuad x+0.2, y-0.2,  1 1   COL_SHADOW, @tubeUV[idx], 0 0
-        @g.addQuad x,     y,      1 1   COL_TUBE,   @tubeUV[idx], 0 1
+        @g.addQuad x, y, 1 1 COL_TUBE, @tubeUV[idx], 0 1
         
     drawEgg: e =>
         
@@ -335,14 +332,14 @@ function world extends matrix
         
         @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,   COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
-        @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
+        #   @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
                 
         if @dragPath ➜ tube.path @dragPath, @drawTube
             
-        for t in @tubes    ➜ @drawTube t
-        for p in @plants   ➜ @drawPlant p
-        for c in @critters ➜ @drawCritter c
-        for e in @eggs     ➜ @drawEgg e
+        for t in @types[@TUBE]    ➜ @drawTube t
+        for p in @types[@PLANT]   ➜ @drawPlant p
+        for c in @types[@CRITTER] ➜ @drawCritter c
+        for e in @types[@EGG]     ➜ @drawEgg e
                     
         @g.draw @tickInfo.time
         

@@ -68,7 +68,6 @@ world = (function ()
         this.main = $('main')
         this.pause = false
         this.speed = 100
-        this.ws = 40
         world.__super__.constructor.call(this)
         this.main.focus()
         this.g = new gee(this.main)
@@ -185,7 +184,7 @@ world = (function ()
         }
         if (!event.metaKey)
         {
-            if (this.buildingAtPos(p))
+            if (this.buildingAt(p))
             {
                 return
             }
@@ -209,7 +208,7 @@ world = (function ()
         }
         if (!event.metaKey)
         {
-            if (this.buildingAtPos(p))
+            if (this.buildingAt(p))
             {
                 return
             }
@@ -302,7 +301,6 @@ world = (function ()
             y = t.y
             idx = t.idx
         }
-        this.g.addQuad(x + 0.2,y - 0.2,1,1,COL_SHADOW,this.tubeUV[idx],0,0)
         return this.g.addQuad(x,y,1,1,COL_TUBE,this.tubeUV[idx],0,1)
     }
 
@@ -404,30 +402,29 @@ world = (function ()
         this.simulate(this.tickInfo)
         this.roundedQuadRect(0,-0.5,this.ws - 0.5,this.ws - 1,COL_SHADOW)
         this.roundedQuadRect(-0.25,-0.25,this.ws - 0.75,this.ws - 0.75,COL_BG)
-        this.gridQuadRect(0,0,this.ws - 1,this.ws - 1,COL_GRID)
         if (this.dragPath)
         {
             tube.path(this.dragPath,this.drawTube)
         }
-        var list = _k_.list(this.tubes)
+        var list = _k_.list(this.types[this.TUBE])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             t = list[_a_]
             this.drawTube(t)
         }
-        var list1 = _k_.list(this.plants)
+        var list1 = _k_.list(this.types[this.PLANT])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             p = list1[_b_]
             this.drawPlant(p)
         }
-        var list2 = _k_.list(this.critters)
+        var list2 = _k_.list(this.types[this.CRITTER])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             c = list2[_c_]
             this.drawCritter(c)
         }
-        var list3 = _k_.list(this.eggs)
+        var list3 = _k_.list(this.types[this.EGG])
         for (var _d_ = 0; _d_ < list3.length; _d_++)
         {
             e = list3[_d_]
