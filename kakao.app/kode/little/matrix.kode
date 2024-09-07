@@ -20,10 +20,11 @@ function matrix
         
         @ws = 40
                 
-        @eggFadeTime       = 6.0
-        @eggMoveTime       = 3.0
-        @critMoveTime      = 4.0 
-        @critDieTime       = 4.0
+        @eggFadeTime       = 6
+        @eggMoveTime       = 3
+        @critMoveTime      = 4 
+        @critDieTime       = 4
+        @leafEatTime       = 4
         
         @numLeaves         = 8
         @setCritterAge     600
@@ -113,7 +114,8 @@ function matrix
             if c.eat < 0
                 if l = @neighborLeaf c
                     c.eat = @critterEatPeriod
-                    l.age = 0
+                    l.age = -@leafEatTime
+                    @moveLeafTo l, c, @leafEatTime
                 # continue
                 
             continue if c.p
@@ -122,11 +124,12 @@ function matrix
             if Math.floor((c.age-@critterAdultAge) / @critterEggPeriod(c)) > c.eggs
                 if n = @emptyNeighbor c
                     e = @addEgg n.x, n.y
-                    @moveObjectFrom e, c, @eggMoveTime
+                    @moveObjectFrom e, @critterWombPos(c), @eggMoveTime
                     @anim c, 'p' 1 0 2
                 c.eggs++
                     
             continue if @critterEggFactor(c) > 0.9
+            continue if c.age / @critterMaxAge > 0.98
                     
             n = @randomOffset c
             if @isInWorld(n) and @isEmpty n
@@ -182,7 +185,12 @@ function matrix
     moveObjectFrom: o s d=1 =>
         
         @anim o, 'ox' s.x-o.x, 0 d
-        @anim o, 'oy' s.y-o.y, 0 d 
+        @anim o, 'oy' s.y-o.y, 0 d
+
+    moveLeafTo: l t d=1 =>
+
+        l.c = t
+        @anim l, 'ef' 1, 0, d
         
     anim: o m s t d =>
         

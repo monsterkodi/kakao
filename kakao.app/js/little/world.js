@@ -50,6 +50,7 @@ world = (function ()
         this["singleStep"] = this["singleStep"].bind(this)
         this["gridQuadRect"] = this["gridQuadRect"].bind(this)
         this["roundedQuadRect"] = this["roundedQuadRect"].bind(this)
+        this["critterWombPos"] = this["critterWombPos"].bind(this)
         this["drawCritter"] = this["drawCritter"].bind(this)
         this["drawEgg"] = this["drawEgg"].bind(this)
         this["drawTube"] = this["drawTube"].bind(this)
@@ -253,7 +254,7 @@ world = (function ()
 
     world.prototype["drawPlant"] = function (p)
     {
-        var af, col, l, li, ls, r, s
+        var af, col, l, li, ls, lx, ly, r, s
 
         s = 0.25
         this.g.addQuad(p.x,p.y,s,s,COL_PLANT,this.circleUV,0,0)
@@ -265,7 +266,16 @@ world = (function ()
             af = l.age / this.leafMaxAge
             ls = s * _k_.clamp(0,1,af)
             col = [(((af > 1) ? 1 : 0)),(((af > 1) ? 1 : COL_LEAF[1])),COL_LEAF[2],COL_LEAF[3]]
-            this.g.addQuad(p.x + cos(-li * TAU / this.numLeaves + PI) * r,p.y + sin(-li * TAU / this.numLeaves + PI) * r,ls,ls,col,this.circleUV,0,1)
+            lx = p.x + cos(-li * TAU / this.numLeaves + PI) * r
+            ly = p.y + sin(-li * TAU / this.numLeaves + PI) * r
+            if (l.ef)
+            {
+                lx = fade(l.c.x + l.c.ox - 0.25,lx,l.ef)
+                ly = fade(l.c.y + l.c.oy,ly,l.ef)
+                ls = s
+                col = [1,1,0,1]
+            }
+            this.g.addQuad(lx,ly,ls,ls,col,this.circleUV,0,1)
         }
     }
 
@@ -285,7 +295,7 @@ world = (function ()
 
     world.prototype["drawEgg"] = function (e)
     {
-        var a, ageFac, ox, oy, s, _249_18_, _250_18_
+        var a, ageFac, ox, oy, s, _259_18_, _260_18_
 
         ageFac = e.age / this.eggMaxAge
         s = fade(0.1,0.3,ageFac)
@@ -294,36 +304,35 @@ world = (function ()
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        ox = ((_249_18_=e.ox) != null ? _249_18_ : 0)
-        oy = ((_250_18_=e.oy) != null ? _250_18_ : 0)
+        ox = ((_259_18_=e.ox) != null ? _259_18_ : 0)
+        oy = ((_260_18_=e.oy) != null ? _260_18_ : 0)
         return this.g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
     world.prototype["drawCritter"] = function (c)
     {
-        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, xo, yo, _283_18_, _284_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _293_18_, _294_18_
 
         sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
-        col = COL_CRITTER
         rot = 0
         rcos = 1
         rsin = 0
+        col = COL_CRITTER
+        if (c.eat < 0)
+        {
+            h = _k_.clamp(0,1,-c.eat / this.critterStarveTime)
+            col = [fade(col[0],COL_STARVE[0],h),fade(col[1],COL_STARVE[1],h),fade(col[2],COL_STARVE[2],h),1]
+        }
         if (c.df)
         {
-            col = COL_DEAD
             rot = _k_.min(PI,c.df * PI)
             rcos = cos(rot)
             rsin = sin(rot)
             h = _k_.clamp(0,1,c.df)
-            col = [fade(COL_CRITTER[0],COL_DEAD[0],h),fade(COL_CRITTER[1],COL_DEAD[1],h),fade(COL_CRITTER[2],COL_DEAD[2],h),1]
+            col = [fade(col[0],COL_DEAD[0],h),fade(col[1],COL_DEAD[1],h),fade(col[2],COL_DEAD[2],h),1]
         }
-        else if (c.eat < 0)
-        {
-            h = _k_.clamp(0,1,-c.eat / this.critterStarveTime)
-            col = [fade(COL_CRITTER[0],COL_STARVE[0],h),fade(COL_CRITTER[1],COL_STARVE[1],h),fade(COL_CRITTER[2],COL_STARVE[2],h),1]
-        }
-        ox = ((_283_18_=c.ox) != null ? _283_18_ : 0)
-        oy = ((_284_18_=c.oy) != null ? _284_18_ : 0)
+        ox = ((_293_18_=c.ox) != null ? _293_18_ : 0)
+        oy = ((_294_18_=c.oy) != null ? _294_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
         this.g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
@@ -341,15 +350,23 @@ world = (function ()
             ryo = rsin * xo + rcos * yo
             this.g.addQuad(cx + rxo,cy + ryo,[1,1.25,1][e] * thrd * sx * se,[1,1.25,1][e] * thrd * se * sy,COL_EGG_DOT,this.circleUV,0,1)
         }
-        if (c.age > this.critterAdultAge)
+        if (c.age > this.critterAdultAge && !c.df)
         {
-            e = c.eggs % 3
-            f = this.critterEggFactor(c)
-            f = _k_.min(1,f)
-            xo = [-thrd,0,thrd][e] * se * sx
-            yo = [0.15,0.25,0.15][e] * sx
-            return this.g.addQuad(cx + xo,cy + yo,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
+            f = _k_.min(1,this.critterEggFactor(c))
+            wp = this.critterWombPos(c)
+            return this.g.addQuad(wp.x,wp.y,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
         }
+    }
+
+    world.prototype["critterWombPos"] = function (c, e = c.eggs)
+    {
+        var cx, cy, xo, yo, _324_25_, _325_25_
+
+        cx = c.x + (((_324_25_=c.ox) != null ? _324_25_ : 0))
+        cy = c.y + (((_325_25_=c.oy) != null ? _325_25_ : 0))
+        xo = [-0.2,0,0.2][e]
+        yo = [0.15,0.25,0.15][e]
+        return {x:cx + xo,y:cy + yo}
     }
 
     world.prototype["roundedQuadRect"] = function (x0, y0, x1, y1, color, layer = 0)

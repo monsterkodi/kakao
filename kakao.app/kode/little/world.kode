@@ -222,11 +222,21 @@ function world extends matrix
         s = 0.15
         r = 0.2
         for li in 0...p.leaves.length
-            l = p.leaves[li]
-            af = l.age/@leafMaxAge
-            ls = s*clamp 0 1 af
+            l   = p.leaves[li]
+            af  = l.age/@leafMaxAge
+            ls  = s*clamp 0 1 af
             col = [((af>1) ? 1 : 0), ((af>1) ? 1 : COL_LEAF[1]), COL_LEAF[2], COL_LEAF[3]]
-            @g.addQuad p.x+cos(-li*TAU/@numLeaves+PI)*r, p.y+sin(-li*TAU/@numLeaves+PI)*r, ls, ls, col, @circleUV, 0 1
+            
+            lx = p.x+cos(-li*TAU/@numLeaves+PI)*r
+            ly = p.y+sin(-li*TAU/@numLeaves+PI)*r
+            
+            if l.ef
+                lx = fade l.c.x + l.c.ox - 0.25, lx, l.ef
+                ly = fade l.c.y + l.c.oy, ly, l.ef
+                ls = s
+                col = [1 1 0 1]
+                
+            @g.addQuad lx, ly, ls, ls, col, @circleUV, 0 1
     
     drawTube: x y idx =>
         
@@ -255,31 +265,31 @@ function world extends matrix
         
         sx = sy = fade 0.2 1 c.age / @critterAdultAge
         
-        col = COL_CRITTER
-        rot = 0
+        rot  = 0
         rcos = 1
         rsin = 0
         
+        col = COL_CRITTER
+        
+        if c.eat < 0
+            h = clamp 0 1 -c.eat / @critterStarveTime
+            col = [
+                fade(col[0], COL_STARVE[0], h), 
+                fade(col[1], COL_STARVE[1], h),
+                fade(col[2], COL_STARVE[2], h), 1
+                ]
+        
         if c.df
-            col = COL_DEAD
             rot = min PI, c.df * PI
             rcos = cos rot
             rsin = sin rot
             h = clamp 0 1 c.df
             col = [
-                fade(COL_CRITTER[0], COL_DEAD[0], h), 
-                fade(COL_CRITTER[1], COL_DEAD[1], h),
-                fade(COL_CRITTER[2], COL_DEAD[2], h), 1
+                fade(col[0], COL_DEAD[0], h), 
+                fade(col[1], COL_DEAD[1], h),
+                fade(col[2], COL_DEAD[2], h), 1
                 ]
-            
-        else if c.eat < 0
-            h = clamp 0 1 -c.eat / @critterStarveTime
-            col = [
-                fade(COL_CRITTER[0], COL_STARVE[0], h), 
-                fade(COL_CRITTER[1], COL_STARVE[1], h),
-                fade(COL_CRITTER[2], COL_STARVE[2], h), 1
-                ]
-   
+               
         ox = c.ox ? 0
         oy = c.oy ? 0
                 
@@ -304,13 +314,19 @@ function world extends matrix
             
             @g.addQuad cx+rxo, cy+ryo, [1, 1.25, 1][e]*thrd*sx*se, [1, 1.25, 1][e]*thrd*se*sy, COL_EGG_DOT, @circleUV, 0 1    
             
-        if c.age > @critterAdultAge
-            e = c.eggs % 3
-            f = @critterEggFactor c
-            f = min 1 f
-            xo = [-thrd, 0, thrd][e]*se*sx
-            yo = [0.15, 0.25, 0.15][e]*sx
-            @g.addQuad cx+xo, cy+yo, [1, 1.25, 1][e]*thrd*sx*se*f, [1, 1.25, 1][e]*thrd*se*sy*f, COL_EGG, @circleUV, 0 1    
+        if c.age > @critterAdultAge and not c.df
+            f = min 1 @critterEggFactor c
+            wp = @critterWombPos c
+            @g.addQuad wp.x, wp.y, [1, 1.25, 1][e]*thrd*sx*se*f, [1, 1.25, 1][e]*thrd*se*sy*f, COL_EGG, @circleUV, 0 1    
+            
+    critterWombPos: c e=c.eggs =>
+        
+        cx = c.x + (c.ox ? 0)
+        cy = c.y + (c.oy ? 0)
+        
+        xo = [-0.2, 0, 0.2][e]
+        yo = [0.15, 0.25, 0.15][e]
+        x:cx+xo, y:cy+yo
         
     roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
         

@@ -35,6 +35,7 @@ matrix = (function ()
         this["addEgg"] = this["addEgg"].bind(this)
         this["addObject"] = this["addObject"].bind(this)
         this["anim"] = this["anim"].bind(this)
+        this["moveLeafTo"] = this["moveLeafTo"].bind(this)
         this["moveObjectFrom"] = this["moveObjectFrom"].bind(this)
         this["animate"] = this["animate"].bind(this)
         this["critterEggPeriod"] = this["critterEggPeriod"].bind(this)
@@ -48,10 +49,11 @@ matrix = (function ()
         this.TUBE = 3
         this.NUM_TYPES = 4
         this.ws = 40
-        this.eggFadeTime = 6.0
-        this.eggMoveTime = 3.0
-        this.critMoveTime = 4.0
-        this.critDieTime = 4.0
+        this.eggFadeTime = 6
+        this.eggMoveTime = 3
+        this.critMoveTime = 4
+        this.critDieTime = 4
+        this.leafEatTime = 4
         this.numLeaves = 8
         this.setCritterAge(600)
         this.critterNumEggs = 3
@@ -124,7 +126,7 @@ matrix = (function ()
 
     matrix.prototype["advance"] = function (sec)
     {
-        var c, e, l, n, op, p, _107_21_
+        var c, e, l, n, op, p, _108_21_
 
         var list = _k_.list(this.eggs)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -148,7 +150,7 @@ matrix = (function ()
             c.eat -= sec
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_107_21_=c.df) != null ? _107_21_ : 0)
+                c.df = ((_108_21_=c.df) != null ? _108_21_ : 0)
                 c.df += sec / this.critDieTime
                 continue
             }
@@ -157,7 +159,8 @@ matrix = (function ()
                 if (l = this.neighborLeaf(c))
                 {
                     c.eat = this.critterEatPeriod
-                    l.age = 0
+                    l.age = -this.leafEatTime
+                    this.moveLeafTo(l,c,this.leafEatTime)
                 }
             }
             if (c.p)
@@ -173,12 +176,16 @@ matrix = (function ()
                 if (n = this.emptyNeighbor(c))
                 {
                     e = this.addEgg(n.x,n.y)
-                    this.moveObjectFrom(e,c,this.eggMoveTime)
+                    this.moveObjectFrom(e,this.critterWombPos(c),this.eggMoveTime)
                     this.anim(c,'p',1,0,2)
                 }
                 c.eggs++
             }
             if (this.critterEggFactor(c) > 0.9)
+            {
+                continue
+            }
+            if (c.age / this.critterMaxAge > 0.98)
             {
                 continue
             }
@@ -250,6 +257,12 @@ matrix = (function ()
     {
         this.anim(o,'ox',s.x - o.x,0,d)
         return this.anim(o,'oy',s.y - o.y,0,d)
+    }
+
+    matrix.prototype["moveLeafTo"] = function (l, t, d = 1)
+    {
+        l.c = t
+        return this.anim(l,'ef',1,0,d)
     }
 
     matrix.prototype["anim"] = function (o, m, s, t, d)
