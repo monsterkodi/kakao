@@ -29,6 +29,8 @@ gee = (function ()
         this.initGL()
         this.numLayers = 2
         this.quadsPerLayer = 100000
+        this.camCenter = 'center'
+        this.clearColor = [0.1,0.1,0.1,1.0]
         this.layerStart = []
         this.numQuads = []
         for (var _a_ = layer = 0, _b_ = this.numLayers; (_a_ <= _b_ ? layer < this.numLayers : layer > this.numLayers); (_a_ <= _b_ ? ++layer : --layer))
@@ -188,8 +190,18 @@ void main(void) {
     {
         this.bufCamScale[0] = this.camScale * this.aspect
         this.bufCamScale[1] = this.camScale
-        this.bufCamPos[0] = this.camPosX
-        return this.bufCamPos[1] = this.camPosY
+        switch (this.camCenter)
+        {
+            case 'center':
+                this.bufCamPos[0] = this.camPosX
+                return this.bufCamPos[1] = this.camPosY
+
+            case 'topleft':
+                this.bufCamPos[0] = this.camPosX + 1 / this.bufCamScale[0]
+                return this.bufCamPos[1] = this.camPosY - 1 / this.bufCamScale[1]
+
+        }
+
     }
 
     gee.prototype["loadTiles"] = function ()
@@ -246,7 +258,6 @@ void main(void) {
         var devicePixelRatio, maxDim
 
         this.br = this.main.getBoundingClientRect()
-        console.log(this.br.left,this.br.top)
         devicePixelRatio = window.devicePixelRatio || 1
         this.canvas.width = this.br.width * devicePixelRatio
         this.canvas.height = this.br.height * devicePixelRatio
@@ -260,7 +271,7 @@ void main(void) {
 
     gee.prototype["clearCanvas"] = function ()
     {
-        this.gl.clearColor(0.1,0.1,0.1,1.0)
+        this.gl.clearColor(this.clearColor[0],this.clearColor[1],this.clearColor[2],this.clearColor[3])
         return this.gl.clear(this.gl.COLOR_BUFFER_BIT)
     }
 

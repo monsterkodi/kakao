@@ -76,12 +76,21 @@ world = (function ()
         world.__super__.constructor.call(this)
         this.main.focus()
         this.g = new gee(this.main)
+        this.h = new gee(this.main)
         this.g.camScale = 0.08
         this.g.camPosX = 1 / this.g.camScale
         this.g.camPosY = 1 / this.g.camScale
-        this.main.addEventListener('mousemove',this.onMouseMove)
         this.g.updateCamera()
+        this.h.camCenter = 'topleft'
+        this.h.clearColor = [0,0,0,0]
+        this.h.canvas.style.pointerEvents = 'none'
+        this.hudGridY = 10
+        this.h.camScale = 2 / this.hudGridY
+        this.h.camPosX = -0.5
+        this.h.camPosY = 0.5
+        this.h.updateCamera()
         window.addEventListener('wheel',this.onWheel)
+        this.main.addEventListener('mousemove',this.onMouseMove)
         this.main.addEventListener('contextmenu',this.onContextMenu)
         s = 82 / 4096
         this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
@@ -306,7 +315,7 @@ world = (function ()
 
     world.prototype["drawEgg"] = function (e)
     {
-        var a, ageFac, ox, oy, s, _264_18_, _265_18_
+        var a, ageFac, ox, oy, s, _272_18_, _273_18_
 
         ageFac = e.age / this.eggMaxAge
         s = fade(0.1,0.3,ageFac)
@@ -315,8 +324,8 @@ world = (function ()
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        ox = ((_264_18_=e.ox) != null ? _264_18_ : 0)
-        oy = ((_265_18_=e.oy) != null ? _265_18_ : 0)
+        ox = ((_272_18_=e.ox) != null ? _272_18_ : 0)
+        oy = ((_273_18_=e.oy) != null ? _273_18_ : 0)
         return this.g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
@@ -338,7 +347,7 @@ world = (function ()
 
     world.prototype["drawCritter"] = function (c)
     {
-        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _311_18_, _312_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _319_18_, _320_18_
 
         sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
         rot = 0
@@ -358,8 +367,8 @@ world = (function ()
             h = _k_.clamp(0,1,c.df)
             col = [fade(col[0],COL_DEAD[0],h),fade(col[1],COL_DEAD[1],h),fade(col[2],COL_DEAD[2],h),1]
         }
-        ox = ((_311_18_=c.ox) != null ? _311_18_ : 0)
-        oy = ((_312_18_=c.oy) != null ? _312_18_ : 0)
+        ox = ((_319_18_=c.ox) != null ? _319_18_ : 0)
+        oy = ((_320_18_=c.oy) != null ? _320_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
         this.g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
@@ -387,10 +396,10 @@ world = (function ()
 
     world.prototype["critterWombPos"] = function (c, e = c.eggs)
     {
-        var cx, cy, xo, yo, _342_25_, _343_25_
+        var cx, cy, xo, yo, _350_25_, _351_25_
 
-        cx = c.x + (((_342_25_=c.ox) != null ? _342_25_ : 0))
-        cy = c.y + (((_343_25_=c.oy) != null ? _343_25_ : 0))
+        cx = c.x + (((_350_25_=c.ox) != null ? _350_25_ : 0))
+        cy = c.y + (((_351_25_=c.oy) != null ? _351_25_ : 0))
         xo = [-0.2,0,0.2][e]
         yo = [0.15,0.25,0.15][e]
         return {x:cx + xo,y:cy + yo}
@@ -476,6 +485,9 @@ world = (function ()
             this.drawGrinder(g)
         }
         this.g.draw(this.tickInfo.time)
+        this.h.addQuad(0,0,1,1,COL_EGG,this.quadUV,0,0)
+        this.h.addQuad(1,-1,1,1,COL_CRITTER,this.quadUV,0,0)
+        this.h.draw(this.tickInfo.time)
         return delete this.oneStep
     }
 

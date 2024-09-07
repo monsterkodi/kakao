@@ -44,16 +44,24 @@ function world extends matrix
         @main.focus()
                                 
         @g = new gee @main
+        @h = new gee @main
         
         @g.camScale = 0.08
         @g.camPosX  = 1 / @g.camScale
         @g.camPosY  = 1 / @g.camScale
-        
-        @main.addEventListener 'mousemove' @onMouseMove
-        
         @g.updateCamera()
+
+        @h.camCenter  = 'topleft'
+        @h.clearColor = [0 0 0 0]
+        @h.canvas.style.pointerEvents = 'none'
+        @hudGridY     = 10
+        @h.camScale   = 2 / @hudGridY
+        @h.camPosX    = -0.5
+        @h.camPosY    =  0.5
+        @h.updateCamera()
                     
         window.addEventListener 'wheel'       @onWheel
+        @main.addEventListener  'mousemove'   @onMouseMove
         @main.addEventListener  'contextmenu' @onContextMenu
         
         s = 82/4096
@@ -387,7 +395,7 @@ function world extends matrix
         
         @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,   COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
-        #   @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
+        # @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
                 
         if @dragPath ➜ tube.path @dragPath, @drawTube
             
@@ -398,6 +406,11 @@ function world extends matrix
         for g in @types[@GRINDER] ➜ @drawGrinder g
                     
         @g.draw @tickInfo.time
+        
+        @h.addQuad 0  0 1 1 COL_EGG,     @quadUV, 0 0
+        @h.addQuad 1 -1 1 1 COL_CRITTER, @quadUV, 0 0
+        
+        @h.draw @tickInfo.time
         
         delete @oneStep
         

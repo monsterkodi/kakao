@@ -21,6 +21,10 @@ function gee
         
         @numLayers = 2
         @quadsPerLayer = 100000
+        
+        @camCenter = 'center'
+        
+        @clearColor = [0.1 0.1 0.1 1.0]
             
         @layerStart = []
         @numQuads = []
@@ -216,11 +220,16 @@ function gee
                 
     updateCamera: ->
         
-        @bufCamScale[0] = @camScale * @aspect 
+        @bufCamScale[0] = @camScale * @aspect
         @bufCamScale[1] = @camScale
-                        
-        @bufCamPos[0] = @camPosX
-        @bufCamPos[1] = @camPosY 
+                  
+        switch @camCenter 
+            'center'
+                @bufCamPos[0] = @camPosX
+                @bufCamPos[1] = @camPosY 
+            'topleft'
+                @bufCamPos[0] = @camPosX + 1/@bufCamScale[0]
+                @bufCamPos[1] = @camPosY - 1/@bufCamScale[1]
             
     # 000000000  000  000      00000000   0000000    
     #    000     000  000      000       000         
@@ -277,7 +286,7 @@ function gee
         
         @br = @main.getBoundingClientRect()
         
-        log @br.left, @br.top
+        # log @br.left, @br.top
         
         devicePixelRatio = window.devicePixelRatio or 1
         
@@ -295,7 +304,7 @@ function gee
         
     clearCanvas: =>
             
-        @gl.clearColor 0.1 0.1 0.1 1.0
+        @gl.clearColor @clearColor[0], @clearColor[1], @clearColor[2], @clearColor[3]
         @gl.clear @gl.COLOR_BUFFER_BIT
         
 export gee
