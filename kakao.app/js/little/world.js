@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var COL_BG, COL_CRITTER, COL_EGG, COL_EGG_DOT, COL_GRID, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, PI, sin, TAU, threshMold, world
+var COL_BG, COL_CRITTER, COL_DEAD, COL_EGG, COL_EGG_DOT, COL_GRID, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, PI, sin, TAU, threshMold, world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
@@ -32,6 +32,7 @@ COL_LEAF = [0,0.5,0,1]
 COL_EGG = [1,1,1,1]
 COL_CRITTER = [0.5,0.5,1,1]
 COL_STARVE = [0.25,0.25,0.25,1]
+COL_DEAD = [0.1,0.1,0.1,1]
 COL_EGG_DOT = [0,0,0,0.5]
 
 threshMold = function (p, n, m)
@@ -284,7 +285,7 @@ world = (function ()
 
     world.prototype["drawEgg"] = function (e)
     {
-        var a, ageFac, ox, oy, s, _248_18_, _249_18_
+        var a, ageFac, ox, oy, s, _249_18_, _250_18_
 
         ageFac = e.age / this.eggMaxAge
         s = fade(0.1,0.3,ageFac)
@@ -293,49 +294,61 @@ world = (function ()
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        ox = ((_248_18_=e.ox) != null ? _248_18_ : 0)
-        oy = ((_249_18_=e.oy) != null ? _249_18_ : 0)
+        ox = ((_249_18_=e.ox) != null ? _249_18_ : 0)
+        oy = ((_250_18_=e.oy) != null ? _250_18_ : 0)
         return this.g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
     world.prototype["drawCritter"] = function (c)
     {
-        var col, cx, cy, e, f, h, ox, oy, se, sx, sy, thrd, _272_18_, _273_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, xo, yo, _283_18_, _284_18_
 
         sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
         col = COL_CRITTER
+        rot = 0
+        rcos = 1
+        rsin = 0
         if (c.df)
         {
-            sx *= 1 - c.df
-            sy *= 1 - c.df
-            col = COL_STARVE
+            col = COL_DEAD
+            rot = _k_.min(PI,c.df * PI)
+            rcos = cos(rot)
+            rsin = sin(rot)
+            h = _k_.clamp(0,1,c.df)
+            col = [fade(COL_CRITTER[0],COL_DEAD[0],h),fade(COL_CRITTER[1],COL_DEAD[1],h),fade(COL_CRITTER[2],COL_DEAD[2],h),1]
         }
         else if (c.eat < 0)
         {
             h = _k_.clamp(0,1,-c.eat / this.critterStarveTime)
             col = [fade(COL_CRITTER[0],COL_STARVE[0],h),fade(COL_CRITTER[1],COL_STARVE[1],h),fade(COL_CRITTER[2],COL_STARVE[2],h),1]
         }
-        ox = ((_272_18_=c.ox) != null ? _272_18_ : 0)
-        oy = ((_273_18_=c.oy) != null ? _273_18_ : 0)
+        ox = ((_283_18_=c.ox) != null ? _283_18_ : 0)
+        oy = ((_284_18_=c.oy) != null ? _284_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
-        this.g.addQuad(cx,cy + 0.25 * sy,sx,sy * (1 / 2),col,this.circleTopUV,0,1)
-        this.g.addQuad(cx - (1 / 4) * sx,cy - 0.0 * sy,0.5 * sx,0.5 * sy,col,this.circleUV,0,1)
-        this.g.addQuad(cx + (1 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
-        this.g.addQuad(cx + (3 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
-        this.g.addQuad(cx + (5 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
+        this.g.addQuad(cx - rcos * (1 / 4) * sx,cy - rsin * (1 / 4) * sy,0.5 * sx,0.5 * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx + rcos * (1 / 12) * sx,cy + rsin * (1 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx + rcos * (3 / 12) * sx,cy + rsin * (3 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        this.g.addQuad(cx + rcos * (5 / 12) * sx,cy + rsin * (5 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
         thrd = 1 / 3
         se = 0.6
         for (var _a_ = e = 0, _b_ = c.eggs; (_a_ <= _b_ ? e < c.eggs : e > c.eggs); (_a_ <= _b_ ? ++e : --e))
         {
-            this.g.addQuad(cx + [-thrd,0,thrd][e] * se * sx,cy + [0.15,0.25,0.15][e] * sx,[1,1.25,1][e] * thrd * sx * se,[1,1.25,1][e] * thrd * se * sy,COL_EGG_DOT,this.circleUV,0,1)
+            xo = [-thrd,0,thrd][e] * se * sx
+            yo = [0.15,0.25,0.15][e] * sy
+            rxo = rcos * xo - rsin * yo
+            ryo = rsin * xo + rcos * yo
+            this.g.addQuad(cx + rxo,cy + ryo,[1,1.25,1][e] * thrd * sx * se,[1,1.25,1][e] * thrd * se * sy,COL_EGG_DOT,this.circleUV,0,1)
         }
         if (c.age > this.critterAdultAge)
         {
             e = c.eggs % 3
             f = this.critterEggFactor(c)
             f = _k_.min(1,f)
-            return this.g.addQuad(cx + [-thrd,0,thrd][e] * se * sx,cy + [0.15,0.25,0.15][e] * sx,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
+            xo = [-thrd,0,thrd][e] * se * sx
+            yo = [0.15,0.25,0.15][e] * sx
+            return this.g.addQuad(cx + xo,cy + yo,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
         }
     }
 

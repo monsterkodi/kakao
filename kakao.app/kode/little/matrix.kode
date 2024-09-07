@@ -23,7 +23,7 @@ function matrix
         @eggFadeTime       = 6.0
         @eggMoveTime       = 3.0
         @critMoveTime      = 4.0 
-        @critDieTime       = 2.3
+        @critDieTime       = 4.0
         
         @numLeaves         = 8
         @setCritterAge     600
@@ -34,7 +34,7 @@ function matrix
         @critterStarveTime = 50
         
         @tweaky.init                                                        
-            speed:      min: 10   max:100    step:1      value:@speed,              cb: (@speed) =>
+            speed:      min: 1    max:100    step:1      value:@speed,              cb: (@speed) =>
             leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
             leafAge:    min: 1    max:100    step:1      value:@leafMaxAge,         cb: (@leafMaxAge) =>
             eggAge:     min: 10   max:200    step:10     value:@eggMaxAge,          cb: (@eggMaxAge) =>
@@ -106,15 +106,15 @@ function matrix
             if c.age > @critterMaxAge or c.eat < -@critterStarveTime
                 c.df ?= 0
                 c.df += sec / @critDieTime
-                if c.df > 1
-                    @del c
+                # if c.df > 1
+                    # @del c
                 continue
                 
             if c.eat < 0
                 if l = @neighborLeaf c
                     c.eat = @critterEatPeriod
                     l.age = 0
-                continue
+                # continue
                 
             continue if c.p
             continue if c.ox or c.oy
@@ -123,8 +123,8 @@ function matrix
                 if n = @emptyNeighbor c
                     e = @addEgg n.x, n.y
                     @moveObjectFrom e, c, @eggMoveTime
-                    c.eggs++
                     @anim c, 'p' 1 0 2
+                c.eggs++
                     
             continue if @critterEggFactor(c) > 0.9
                     

@@ -66,7 +66,7 @@ out vec2 vUV;
 
 void main(void) {
     vec2 vertex = aQuadVertex * aQuadScale;
-    vec2 rotated = vertex*cos(aQuadRot)-vec2(-vertex.y,vertex.x)*sin(aQuadRot);
+    vec2 rotated = vertex*cos(aQuadRot)+vec2(-vertex.y,vertex.x)*sin(aQuadRot);
     vec2 pos = uCamScale * (rotated + aQuadPosition) - uCamPos * uCamScale;
     gl_Position = vec4(pos.x, pos.y, 0, 1);
     vColor = aQuadColor;

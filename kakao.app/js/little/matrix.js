@@ -51,7 +51,7 @@ matrix = (function ()
         this.eggFadeTime = 6.0
         this.eggMoveTime = 3.0
         this.critMoveTime = 4.0
-        this.critDieTime = 2.3
+        this.critDieTime = 4.0
         this.numLeaves = 8
         this.setCritterAge(600)
         this.critterNumEggs = 3
@@ -59,7 +59,7 @@ matrix = (function ()
         this.leafMaxAge = 50
         this.critterEatPeriod = 50
         this.critterStarveTime = 50
-        this.tweaky.init({speed:{min:10,max:100,step:1,value:this.speed,cb:(function (speed)
+        this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
         {
             this.speed = speed
         }).bind(this)},leaves:{min:4,max:12,step:1,value:this.numLeaves,cb:(function (numLeaves)
@@ -150,10 +150,6 @@ matrix = (function ()
             {
                 c.df = ((_107_21_=c.df) != null ? _107_21_ : 0)
                 c.df += sec / this.critDieTime
-                if (c.df > 1)
-                {
-                    this.del(c)
-                }
                 continue
             }
             if (c.eat < 0)
@@ -163,7 +159,6 @@ matrix = (function ()
                     c.eat = this.critterEatPeriod
                     l.age = 0
                 }
-                continue
             }
             if (c.p)
             {
@@ -179,9 +174,9 @@ matrix = (function ()
                 {
                     e = this.addEgg(n.x,n.y)
                     this.moveObjectFrom(e,c,this.eggMoveTime)
-                    c.eggs++
                     this.anim(c,'p',1,0,2)
                 }
+                c.eggs++
             }
             if (this.critterEggFactor(c) > 0.9)
             {
