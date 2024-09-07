@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var COL_BG, COL_CRITTER, COL_DEAD, COL_EGG, COL_EGG_DOT, COL_GRID, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, PI, sin, TAU, threshMold, world
+var COL_BG, COL_CRITTER, COL_DEAD, COL_EGG, COL_EGG_DOT, COL_GRID, COL_GRINDER, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, PI, sin, TAU, threshMold, world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
@@ -34,6 +34,7 @@ COL_CRITTER = [0.5,0.5,1,1]
 COL_STARVE = [0.25,0.25,0.25,1]
 COL_DEAD = [0.1,0.1,0.1,1]
 COL_EGG_DOT = [0,0,0,0.5]
+COL_GRINDER = [1,0,0,1]
 
 threshMold = function (p, n, m)
 {
@@ -52,6 +53,7 @@ world = (function ()
         this["roundedQuadRect"] = this["roundedQuadRect"].bind(this)
         this["critterWombPos"] = this["critterWombPos"].bind(this)
         this["drawCritter"] = this["drawCritter"].bind(this)
+        this["drawGrinder"] = this["drawGrinder"].bind(this)
         this["drawEgg"] = this["drawEgg"].bind(this)
         this["drawTube"] = this["drawTube"].bind(this)
         this["drawPlant"] = this["drawPlant"].bind(this)
@@ -83,6 +85,7 @@ world = (function ()
         this.main.addEventListener('contextmenu',this.onContextMenu)
         s = 82 / 4096
         this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
+        this.tubeSquareUV = [s * 0,s * 0,s * 3,s * 3]
         this.quadUV = [(4096 - 80) / 4096,(4096 - 80) / 4096,(4096 - 2) / 4096,(4096 - 2) / 4096]
         this.circleUV = [s * 3.5,s * 0.5,s * 5.5,s * 2.5]
         this.circleTopUV = [s * 3.5,s * 0.5,s * 5.5,s * 1.5]
@@ -162,17 +165,21 @@ world = (function ()
             this.delAt(p)
             return
         }
-        if (!event.metaKey)
+        if (event.metaKey)
+        {
+            return this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
+        }
+        else if (event.shiftKey)
+        {
+            return this.addGrinder(p[0],p[1])
+        }
+        else
         {
             if (this.buildingAt(p))
             {
                 return
             }
             return this.addPlant(p[0],p[1])
-        }
-        else
-        {
-            return this.dragPath = [this.win2Grid(drag.pos),this.win2Grid(drag.pos)]
         }
     }
 
@@ -184,6 +191,10 @@ world = (function ()
         if (event.button === 2)
         {
             this.delAt(p)
+            return
+        }
+        if (event.shiftKey)
+        {
             return
         }
         if (!event.metaKey)
@@ -295,7 +306,7 @@ world = (function ()
 
     world.prototype["drawEgg"] = function (e)
     {
-        var a, ageFac, ox, oy, s, _259_18_, _260_18_
+        var a, ageFac, ox, oy, s, _264_18_, _265_18_
 
         ageFac = e.age / this.eggMaxAge
         s = fade(0.1,0.3,ageFac)
@@ -304,14 +315,30 @@ world = (function ()
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        ox = ((_259_18_=e.ox) != null ? _259_18_ : 0)
-        oy = ((_260_18_=e.oy) != null ? _260_18_ : 0)
+        ox = ((_264_18_=e.ox) != null ? _264_18_ : 0)
+        oy = ((_265_18_=e.oy) != null ? _265_18_ : 0)
         return this.g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
+    }
+
+    world.prototype["drawGrinder"] = function (g)
+    {
+        this.g.addQuad(g.x,g.y,3,3,COL_GRINDER,this.tubeSquareUV,0,1)
+        if (g.bot.mf)
+        {
+            g.bot.x = fade(g.bot.c.x,g.x,g.bot.mf)
+            g.bot.y = fade(g.bot.c.y,g.y,g.bot.mf)
+        }
+        else if (g.bot.rf)
+        {
+            g.bot.x = fade(g.x,g.bot.s.x,g.bot.rf)
+            g.bot.y = fade(g.y,g.bot.s.y,g.bot.rf)
+        }
+        return this.g.addQuad(g.bot.x,g.bot.y,1,1,COL_GRINDER,this.circleTopUV,0,1)
     }
 
     world.prototype["drawCritter"] = function (c)
     {
-        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _293_18_, _294_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _311_18_, _312_18_
 
         sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
         rot = 0
@@ -331,8 +358,8 @@ world = (function ()
             h = _k_.clamp(0,1,c.df)
             col = [fade(col[0],COL_DEAD[0],h),fade(col[1],COL_DEAD[1],h),fade(col[2],COL_DEAD[2],h),1]
         }
-        ox = ((_293_18_=c.ox) != null ? _293_18_ : 0)
-        oy = ((_294_18_=c.oy) != null ? _294_18_ : 0)
+        ox = ((_311_18_=c.ox) != null ? _311_18_ : 0)
+        oy = ((_312_18_=c.oy) != null ? _312_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
         this.g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
@@ -360,10 +387,10 @@ world = (function ()
 
     world.prototype["critterWombPos"] = function (c, e = c.eggs)
     {
-        var cx, cy, xo, yo, _324_25_, _325_25_
+        var cx, cy, xo, yo, _342_25_, _343_25_
 
-        cx = c.x + (((_324_25_=c.ox) != null ? _324_25_ : 0))
-        cy = c.y + (((_325_25_=c.oy) != null ? _325_25_ : 0))
+        cx = c.x + (((_342_25_=c.ox) != null ? _342_25_ : 0))
+        cy = c.y + (((_343_25_=c.oy) != null ? _343_25_ : 0))
         xo = [-0.2,0,0.2][e]
         yo = [0.15,0.25,0.15][e]
         return {x:cx + xo,y:cy + yo}
@@ -406,11 +433,12 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var c, e, p, t
+        var c, e, g, p, t
 
         this.tickInfo = tickInfo
     
         this.simulate(this.tickInfo)
+        this.tweaky.update()
         this.roundedQuadRect(0,-0.5,this.ws - 0.5,this.ws - 1,COL_SHADOW)
         this.roundedQuadRect(-0.25,-0.25,this.ws - 0.75,this.ws - 0.75,COL_BG)
         if (this.dragPath)
@@ -440,6 +468,12 @@ world = (function ()
         {
             e = list3[_d_]
             this.drawEgg(e)
+        }
+        var list4 = _k_.list(this.types[this.GRINDER])
+        for (var _e_ = 0; _e_ < list4.length; _e_++)
+        {
+            g = list4[_e_]
+            this.drawGrinder(g)
         }
         this.g.draw(this.tickInfo.time)
         return delete this.oneStep

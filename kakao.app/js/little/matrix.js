@@ -19,6 +19,7 @@ matrix = (function ()
         this["leafToEatAt"] = this["leafToEatAt"].bind(this)
         this["tubeAt"] = this["tubeAt"].bind(this)
         this["plantAt"] = this["plantAt"].bind(this)
+        this["critterAt"] = this["critterAt"].bind(this)
         this["objectOfTypeAt"] = this["objectOfTypeAt"].bind(this)
         this["neighbors"] = this["neighbors"].bind(this)
         this["validNeighbors"] = this["validNeighbors"].bind(this)
@@ -33,13 +34,18 @@ matrix = (function ()
         this["addTube"] = this["addTube"].bind(this)
         this["addCritter"] = this["addCritter"].bind(this)
         this["addEgg"] = this["addEgg"].bind(this)
+        this["addGrinder"] = this["addGrinder"].bind(this)
         this["addObject"] = this["addObject"].bind(this)
         this["anim"] = this["anim"].bind(this)
+        this["returnBot"] = this["returnBot"].bind(this)
+        this["moveBotTo"] = this["moveBotTo"].bind(this)
         this["moveLeafTo"] = this["moveLeafTo"].bind(this)
         this["moveObjectFrom"] = this["moveObjectFrom"].bind(this)
         this["animate"] = this["animate"].bind(this)
         this["critterEggPeriod"] = this["critterEggPeriod"].bind(this)
         this["critterEggFactor"] = this["critterEggFactor"].bind(this)
+        this["deadCritterForGrinder"] = this["deadCritterForGrinder"].bind(this)
+        this["neighborsAtDistance"] = this["neighborsAtDistance"].bind(this)
         this["advance"] = this["advance"].bind(this)
         this["start"] = this["start"].bind(this)
         this["setCritterAge"] = this["setCritterAge"].bind(this)
@@ -47,20 +53,23 @@ matrix = (function ()
         this.EGG = 1
         this.CRITTER = 2
         this.TUBE = 3
-        this.NUM_TYPES = 4
+        this.GRINDER = 4
+        this.NUM_TYPES = 5
         this.ws = 40
         this.eggFadeTime = 6
         this.eggMoveTime = 3
         this.critMoveTime = 4
         this.critDieTime = 4
         this.leafEatTime = 4
+        this.botDelta = 1
         this.numLeaves = 8
-        this.setCritterAge(600)
-        this.critterNumEggs = 3
+        this.setCritterAge(2400)
+        this.critterNumEggs = 2
         this.eggMaxAge = 200
         this.leafMaxAge = 50
         this.critterEatPeriod = 50
         this.critterStarveTime = 50
+        this.start()
         this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
         {
             this.speed = speed
@@ -73,14 +82,31 @@ matrix = (function ()
         }).bind(this)},eggAge:{min:10,max:200,step:10,value:this.eggMaxAge,cb:(function (eggMaxAge)
         {
             this.eggMaxAge = eggMaxAge
-        }).bind(this)},critterAge:{min:60,max:600,step:10,value:this.critterMaxAge,cb:this.setCritterAge},eatPeriod:{min:1,max:100,step:1,value:this.critterEatPeriod,cb:(function (critterEatPeriod)
+        }).bind(this)},critterAge:{min:100,max:2400,step:100,value:this.critterMaxAge,cb:this.setCritterAge},eatPeriod:{min:1,max:100,step:1,value:this.critterEatPeriod,cb:(function (critterEatPeriod)
         {
             this.critterEatPeriod = critterEatPeriod
         }).bind(this)},starveTime:{min:1,max:100,step:1,value:this.critterStarveTime,cb:(function (critterStarveTime)
         {
             this.critterStarveTime = critterStarveTime
+        }).bind(this)},botDelta:{min:1,max:10,step:0.1,value:this.botDelta,cb:(function (botDelta)
+        {
+            this.botDelta = botDelta
+        }).bind(this)},anims:{info:(function ()
+        {
+            return this.anims.length
+        }).bind(this)},critters:{info:(function ()
+        {
+            return this.critters.length
+        }).bind(this)},corpses:{info:(function ()
+        {
+            return this.critters.filter(function (c)
+            {
+                return c.df >= 1
+            }).length
+        }).bind(this)},plants:{info:(function ()
+        {
+            return this.plants.length
         }).bind(this)}})
-        this.start()
     }
 
     matrix.prototype["setCritterAge"] = function (critterMaxAge)
@@ -105,6 +131,7 @@ matrix = (function ()
         this.critters = this.types[this.CRITTER]
         this.plants = this.types[this.PLANT]
         this.tubes = this.types[this.TUBE]
+        this.grinders = this.types[this.GRINDER]
         for (var _c_ = x = 0, _d_ = this.ws; (_c_ <= _d_ ? x < this.ws : x > this.ws); (_c_ <= _d_ ? ++x : --x))
         {
             column = []
@@ -126,7 +153,7 @@ matrix = (function ()
 
     matrix.prototype["advance"] = function (sec)
     {
-        var c, e, l, n, op, p, _108_21_
+        var c, e, g, l, n, op, p, _116_21_
 
         var list = _k_.list(this.eggs)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -150,7 +177,7 @@ matrix = (function ()
             c.eat -= sec
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_108_21_=c.df) != null ? _108_21_ : 0)
+                c.df = ((_116_21_=c.df) != null ? _116_21_ : 0)
                 c.df += sec / this.critDieTime
                 continue
             }
@@ -211,7 +238,90 @@ matrix = (function ()
                 l.age += sec
             }
         }
+        var list4 = _k_.list(this.grinders)
+        for (var _e_ = 0; _e_ < list4.length; _e_++)
+        {
+            g = list4[_e_]
+            if (!g.bot.c)
+            {
+                if (c = this.deadCritterForGrinder(g))
+                {
+                    c.bot = g.bot
+                    this.moveBotTo(g.bot,c)
+                }
+            }
+            else
+            {
+                if (g.bot.mf <= 0)
+                {
+                    g.bot.x = g.bot.c.x
+                    g.bot.y = g.bot.c.y
+                    this.del(g.bot.c)
+                    delete g.bot.mf
+                    this.returnBot(g.bot,g)
+                }
+                else if (g.bot.rf <= 0)
+                {
+                    delete g.bot.rf
+                    delete g.bot.s
+                    delete g.bot.c
+                    g.bot.x = g.x
+                    g.bot.y = g.y
+                }
+            }
+        }
         return this.animate(sec)
+    }
+
+    matrix.prototype["neighborsAtDistance"] = function (d)
+    {
+        var x, y, _179_12_
+
+        this.nd = ((_179_12_=this.nd) != null ? _179_12_ : [])
+        if (this.nd[d])
+        {
+            return this.nd[d]
+        }
+        this.nd[d] = []
+        for (var _a_ = x = -d, _b_ = d; (_a_ <= _b_ ? x < d : x > d); (_a_ <= _b_ ? ++x : --x))
+        {
+            this.nd[d].push([x,-d])
+        }
+        for (var _c_ = y = -d, _d_ = d; (_c_ <= _d_ ? y < d : y > d); (_c_ <= _d_ ? ++y : --y))
+        {
+            this.nd[d].push([d,y])
+        }
+        for (var _e_ = x = d, _f_ = -d; (_e_ <= _f_ ? x < -d : x > -d); (_e_ <= _f_ ? ++x : --x))
+        {
+            this.nd[d].push([x,d])
+        }
+        for (var _10_ = y = d, _11_ = -d; (_10_ <= _11_ ? y < -d : y > -d); (_10_ <= _11_ ? ++y : --y))
+        {
+            this.nd[d].push([-d,y])
+        }
+        return this.nd[d]
+    }
+
+    matrix.prototype["deadCritterForGrinder"] = function (g)
+    {
+        var c, d, n
+
+        for (var _a_ = d = 1, _b_ = parseInt(this.ws / 2); (_a_ <= _b_ ? d < parseInt(this.ws / 2) : d > parseInt(this.ws / 2)); (_a_ <= _b_ ? ++d : --d))
+        {
+            var list = _k_.list(this.neighborsAtDistance(d))
+            for (var _c_ = 0; _c_ < list.length; _c_++)
+            {
+                n = list[_c_]
+                if (c = this.critterAt([g.x + n[0],g.y + n[1]]))
+                {
+                    if (c.df >= 1 && !c.bot)
+                    {
+                        return c
+                    }
+                }
+            }
+        }
+        return null
     }
 
     matrix.prototype["critterEggFactor"] = function (c)
@@ -245,7 +355,7 @@ matrix = (function ()
             a = this.anims[ai]
             d = (sec / a.d) * (a.t - a.s)
             a.o[a.m] += d
-            if ((d > 0 && a.o[a.m] > a.t) || (d < 0 && a.o[a.m] < a.t))
+            if ((d > 0 && a.o[a.m] >= a.t) || (d < 0 && a.o[a.m] <= a.t))
             {
                 a.o[a.m] = a.t
                 this.anims.splice(ai,1)
@@ -265,6 +375,26 @@ matrix = (function ()
         return this.anim(l,'ef',1,0,d)
     }
 
+    matrix.prototype["moveBotTo"] = function (b, t)
+    {
+        var d
+
+        b.c = t
+        d = Math.sqrt((b.x - t.x) * (b.x - t.x) + (b.y - t.y) * (b.y - t.y))
+        d /= this.botDelta
+        return this.anim(b,'mf',1,0,d)
+    }
+
+    matrix.prototype["returnBot"] = function (b, g)
+    {
+        var d
+
+        b.s = {x:b.x,y:b.y}
+        d = Math.sqrt((b.x - g.x) * (b.x - g.x) + (b.y - g.y) * (b.y - g.y))
+        d /= this.botDelta
+        return this.anim(b,'rf',1,0,d)
+    }
+
     matrix.prototype["anim"] = function (o, m, s, t, d)
     {
         if (d <= 0)
@@ -281,12 +411,29 @@ matrix = (function ()
 
     matrix.prototype["addObject"] = function (x, y, o)
     {
-        this.delAt([x,y])
+        var n
+
         o.x = parseInt(x)
         o.y = parseInt(y)
+        this.delAt([o.x,o.y])
+        if (o.type === this.GRINDER)
+        {
+            var list = _k_.list(this.validNeighbors(o))
+            for (var _a_ = 0; _a_ < list.length; _a_++)
+            {
+                n = list[_a_]
+                this.delAt(n)
+                this.grid[n[0]][n[1]] = o
+            }
+        }
         this.grid[o.x][o.y] = o
         this.types[o.type].push(o)
         return o
+    }
+
+    matrix.prototype["addGrinder"] = function (x, y)
+    {
+        return this.addObject(x,y,{type:this.GRINDER,bot:{x:x,y:y}})
     }
 
     matrix.prototype["addEgg"] = function (x, y)
@@ -311,7 +458,7 @@ matrix = (function ()
         leaves = []
         for (var _a_ = l = 0, _b_ = this.numLeaves; (_a_ <= _b_ ? l < this.numLeaves : l > this.numLeaves); (_a_ <= _b_ ? ++l : --l))
         {
-            leaves.push({age:l * this.leafMaxAge / this.numLeaves})
+            leaves.push({age:-l * this.leafMaxAge / this.numLeaves})
         }
         return this.addObject(x,y,{type:this.PLANT,leaves:leaves})
     }
@@ -328,8 +475,19 @@ matrix = (function ()
 
     matrix.prototype["del"] = function (o)
     {
+        var n
+
         this.types[o.type].splice(this.types[o.type].indexOf(o),1)
-        return this.grid[o.x][o.y] = null
+        this.grid[o.x][o.y] = null
+        if (o.type === this.GRINDER)
+        {
+            var list = _k_.list(this.validNeighbors(o))
+            for (var _a_ = 0; _a_ < list.length; _a_++)
+            {
+                n = list[_a_]
+                this.grid[n[0]][n[1]] = null
+            }
+        }
     }
 
     matrix.prototype["objectAt"] = function (p)
@@ -446,6 +604,11 @@ matrix = (function ()
             }
         }
         return o
+    }
+
+    matrix.prototype["critterAt"] = function (p)
+    {
+        return this.objectOfTypeAt(this.CRITTER,p)
     }
 
     matrix.prototype["plantAt"] = function (p)

@@ -16,8 +16,11 @@ function tweaky
     
     init: obj ->
         
+        log noon obj
         for k,v of obj
-            if v.max
+            if valid v.info
+                @info k, v
+            else if v.max
                 @slider k, v
             else
                 @checkbox k, v
@@ -58,5 +61,21 @@ function tweaky
             ]
         
         @div.appendChild row
-    
+        
+    info: name opt ->
+
+        info = elem class:'tweaky-info'  text:opt.info()
+        row = elem class:'tweaky-row' children: [
+            elem(class:'tweaky-name'  text:name),
+            info,
+            ]
+        @infos ?= []
+        @infos.push elem:info, info:opt.info
+        @div.appendChild row
+        
+    update: ->
+        
+        for ie in @infos
+            ie.elem.innerHTML = ie.info()
+        
 export tweaky
