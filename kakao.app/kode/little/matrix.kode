@@ -26,26 +26,27 @@ function matrix
         @critDieTime       = 2.3
         
         @numLeaves         = 8
-        @critterMaxAge     = 600
-        @critterEggPeriod  = 100
+        @setCritterAge     600
+        @critterNumEggs    = 3
         @eggMaxAge         = 200
         @leafMaxAge        = 50
-        @critterAdultAge   = 100
         @critterEatPeriod  = 50
         @critterStarveTime = 50
         
         @tweaky.init                                                        
-            speed:      min: 1    max:100    step:1      value:@speed,              cb: (@speed) =>
+            speed:      min: 10   max:100    step:1      value:@speed,              cb: (@speed) =>
             leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
             leafAge:    min: 1    max:100    step:1      value:@leafMaxAge,         cb: (@leafMaxAge) =>
             eggAge:     min: 10   max:200    step:10     value:@eggMaxAge,          cb: (@eggMaxAge) =>
-            critterAge: min: 60   max:600    step:10     value:@critterMaxAge,      cb: (@critterMaxAge) =>
-            adultAge:   min: 10   max:200    step:5      value:@critterAdultAge,    cb: (@critterAdultAge) =>
-            eggPeriod:  min: 2    max:200    step:2      value:@critterEggPeriod,   cb: (@critterEggPeriod) =>
+            critterAge: min: 60   max:600    step:10     value:@critterMaxAge,      cb: @setCritterAge
             eatPeriod:  min: 1    max:100    step:1      value:@critterEatPeriod,   cb: (@critterEatPeriod) =>
             starveTime: min: 1    max:100    step:1      value:@critterStarveTime,  cb: (@critterStarveTime) =>
         
         @start()
+        
+    setCritterAge: (@critterMaxAge) =>
+        
+        @critterAdultAge = parseInt @critterMaxAge/3
         
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
@@ -118,7 +119,7 @@ function matrix
             continue if c.p
             continue if c.ox or c.oy
             
-            if Math.floor((c.age-@critterAdultAge) / @critterEggPeriod) > c.eggs
+            if Math.floor((c.age-@critterAdultAge) / @critterEggPeriod(c)) > c.eggs
                 if n = @emptyNeighbor c
                     e = @addEgg n.x, n.y
                     @moveObjectFrom e, c, @eggMoveTime
@@ -147,10 +148,14 @@ function matrix
     critterEggFactor: c =>
         
         f = 0
-        if c.age > @critterAdultAge
-            f = (c.age - @critterAdultAge) / @critterEggPeriod
+        if c.age > @critterAdultAge and c.eggs < @critterNumEggs
+            f = (c.age - @critterAdultAge) / @critterEggPeriod(c)
             f -= c.eggs
         f
+        
+    critterEggPeriod: c =>
+        
+        (@critterMaxAge - @critterAdultAge) / (@critterNumEggs + 1)
                 
     #  0000000   000   000  000  00     00   0000000   000000000  00000000  
     # 000   000  0000  000  000  000   000  000   000     000     000       

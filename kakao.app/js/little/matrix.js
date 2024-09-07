@@ -37,9 +37,11 @@ matrix = (function ()
         this["anim"] = this["anim"].bind(this)
         this["moveObjectFrom"] = this["moveObjectFrom"].bind(this)
         this["animate"] = this["animate"].bind(this)
+        this["critterEggPeriod"] = this["critterEggPeriod"].bind(this)
         this["critterEggFactor"] = this["critterEggFactor"].bind(this)
         this["advance"] = this["advance"].bind(this)
         this["start"] = this["start"].bind(this)
+        this["setCritterAge"] = this["setCritterAge"].bind(this)
         this.PLANT = 0
         this.EGG = 1
         this.CRITTER = 2
@@ -51,14 +53,13 @@ matrix = (function ()
         this.critMoveTime = 4.0
         this.critDieTime = 2.3
         this.numLeaves = 8
-        this.critterMaxAge = 600
-        this.critterEggPeriod = 100
+        this.setCritterAge(600)
+        this.critterNumEggs = 3
         this.eggMaxAge = 200
         this.leafMaxAge = 50
-        this.critterAdultAge = 100
         this.critterEatPeriod = 50
         this.critterStarveTime = 50
-        this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
+        this.tweaky.init({speed:{min:10,max:100,step:1,value:this.speed,cb:(function (speed)
         {
             this.speed = speed
         }).bind(this)},leaves:{min:4,max:12,step:1,value:this.numLeaves,cb:(function (numLeaves)
@@ -70,16 +71,7 @@ matrix = (function ()
         }).bind(this)},eggAge:{min:10,max:200,step:10,value:this.eggMaxAge,cb:(function (eggMaxAge)
         {
             this.eggMaxAge = eggMaxAge
-        }).bind(this)},critterAge:{min:60,max:600,step:10,value:this.critterMaxAge,cb:(function (critterMaxAge)
-        {
-            this.critterMaxAge = critterMaxAge
-        }).bind(this)},adultAge:{min:10,max:200,step:5,value:this.critterAdultAge,cb:(function (critterAdultAge)
-        {
-            this.critterAdultAge = critterAdultAge
-        }).bind(this)},eggPeriod:{min:2,max:200,step:2,value:this.critterEggPeriod,cb:(function (critterEggPeriod)
-        {
-            this.critterEggPeriod = critterEggPeriod
-        }).bind(this)},eatPeriod:{min:1,max:100,step:1,value:this.critterEatPeriod,cb:(function (critterEatPeriod)
+        }).bind(this)},critterAge:{min:60,max:600,step:10,value:this.critterMaxAge,cb:this.setCritterAge},eatPeriod:{min:1,max:100,step:1,value:this.critterEatPeriod,cb:(function (critterEatPeriod)
         {
             this.critterEatPeriod = critterEatPeriod
         }).bind(this)},starveTime:{min:1,max:100,step:1,value:this.critterStarveTime,cb:(function (critterStarveTime)
@@ -87,6 +79,13 @@ matrix = (function ()
             this.critterStarveTime = critterStarveTime
         }).bind(this)}})
         this.start()
+    }
+
+    matrix.prototype["setCritterAge"] = function (critterMaxAge)
+    {
+        this.critterMaxAge = critterMaxAge
+    
+        return this.critterAdultAge = parseInt(this.critterMaxAge / 3)
     }
 
     matrix.prototype["start"] = function ()
@@ -125,7 +124,7 @@ matrix = (function ()
 
     matrix.prototype["advance"] = function (sec)
     {
-        var c, e, l, n, op, p, _106_21_
+        var c, e, l, n, op, p, _107_21_
 
         var list = _k_.list(this.eggs)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -149,7 +148,7 @@ matrix = (function ()
             c.eat -= sec
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_106_21_=c.df) != null ? _106_21_ : 0)
+                c.df = ((_107_21_=c.df) != null ? _107_21_ : 0)
                 c.df += sec / this.critDieTime
                 if (c.df > 1)
                 {
@@ -174,7 +173,7 @@ matrix = (function ()
             {
                 continue
             }
-            if (Math.floor((c.age - this.critterAdultAge) / this.critterEggPeriod) > c.eggs)
+            if (Math.floor((c.age - this.critterAdultAge) / this.critterEggPeriod(c)) > c.eggs)
             {
                 if (n = this.emptyNeighbor(c))
                 {
@@ -218,12 +217,17 @@ matrix = (function ()
         var f
 
         f = 0
-        if (c.age > this.critterAdultAge)
+        if (c.age > this.critterAdultAge && c.eggs < this.critterNumEggs)
         {
-            f = (c.age - this.critterAdultAge) / this.critterEggPeriod
+            f = (c.age - this.critterAdultAge) / this.critterEggPeriod(c)
             f -= c.eggs
         }
         return f
+    }
+
+    matrix.prototype["critterEggPeriod"] = function (c)
+    {
+        return (this.critterMaxAge - this.critterAdultAge) / (this.critterNumEggs + 1)
     }
 
     matrix.prototype["animate"] = function (sec)
