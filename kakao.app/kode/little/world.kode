@@ -32,8 +32,11 @@ function world extends matrix
         
         @main =$ 'main'
         @pause = false
-        @speed = 100
+        
+        @speed = 10
                 
+        @tweaky = new tweaky @main
+        
         super()
         
         @main.focus()
@@ -47,18 +50,7 @@ function world extends matrix
         @main.addEventListener 'mousemove' @onMouseMove
         
         @g.updateCamera()
-        
-        @tweaky = new tweaky @main
-         
-        @tweaky.init                                                        
-            speed:      min: 10   max:100    step:1      value:@speed,              cb: (@speed) =>
-            maxAge:     min:1000  max:4000   step:100    value:@critterMaxAge,      cb: (@critterMaxAge) =>
-            leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
-            leafMaxAge: min: 1    max:100    step:1      value:@leafMaxAge,         cb: (@leafMaxAge) =>
-            eatTime:    min: 1    max:100    step:1      value:@critterEatTime,     cb: (@critterEatTime) =>
-            starveTime: min: 5    max:100    step:1      value:@critterStarveTime,  cb: (@critterStarveTime) =>
-            eggTime:    min: 100  max:500    step:10     value:@critterEggTime,     cb: (@critterEggTime) =>
-            
+                    
         window.addEventListener 'wheel'       @onWheel
         @main.addEventListener  'contextmenu' @onContextMenu
         
@@ -104,7 +96,7 @@ function world extends matrix
 
         if event.ctrlKey or event.metaKey
             
-            @g.camScale -= event.deltaY/(event.metaKey ? 40000 : 4000)
+            @g.camScale -= event.deltaY/(event.metaKey ? 20000 : 4000)
             @g.camScale = clamp 0.01 0.2 @g.camScale
             
         else
@@ -248,15 +240,19 @@ function world extends matrix
     drawEgg: e =>
         
         ageFac = e.age / @eggMaxAge
-        s = fade 0.02 0.3 ageFac
+        s = fade 0.1 0.3 ageFac
         a = 1
         if e.age > @eggMaxAge
             a = fade 1.0 0.0 (e.age-@eggMaxAge)/@eggFadeTime
-        @g.addQuad e.x, e.y, s, s, [COL_EGG[0], COL_EGG[1], COL_EGG[2], a], @eggUV, 0 1
+            
+        ox = e.ox ? 0
+        oy = e.oy ? 0
+        
+        @g.addQuad e.x+ox, e.y+oy, s, s, [COL_EGG[0], COL_EGG[1], COL_EGG[2], a], @eggUV, 0 1
 
     drawCritter: c =>
         
-        sx = sy = fade 0.2 1 c.age / @critterMaxAge
+        sx = sy = fade 0.2 1 c.age / @critterAdultAge
         
         col = COL_CRITTER
         
@@ -272,17 +268,16 @@ function world extends matrix
                 fade(COL_CRITTER[1], COL_STARVE[1], h),
                 fade(COL_CRITTER[2], COL_STARVE[2], h), 1
                 ]
-        
-        if c.sf > 0
-            cx = c.tx
-            cy = c.ty
-        else
-            cx = c.x
-            cy = c.y
-            
+   
+        ox = c.ox ? 0
+        oy = c.oy ? 0
+                
+        cx = c.x + ox 
+        cy = c.y + oy 
+
         @g.addQuad cx, cy+0.25*sy, sx, sy*(1/2), col, @circleTopUV, 0 1
         
-        @g.addQuad cx-(1/4)*sx,  cy-0.0*sy, 0.5*sx, 0.5*sy, col, @circleUV, 0 1    
+        @g.addQuad cx-(1/4)*sx,  cy-0.0*sy,   0.5*sx,   0.5*sy, col, @circleUV, 0 1    
         @g.addQuad cx+(1/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0 1    
         @g.addQuad cx+(3/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0 1    
         @g.addQuad cx+(5/12)*sx, cy-0.0*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0 1    
@@ -291,6 +286,12 @@ function world extends matrix
         se = 0.6
         for e in 0...c.eggs
             @g.addQuad cx+[-thrd, 0, thrd][e]*se*sx, cy+[0.15, 0.25, 0.15][e]*sx, [1, 1.25, 1][e]*thrd*sx*se, [1, 1.25, 1][e]*thrd*se*sy, COL_EGG_DOT, @circleUV, 0 1    
+            
+        if c.age > @critterAdultAge
+            e = c.eggs % 3
+            f = @critterEggFactor c
+            f = min 1 f
+            @g.addQuad cx+[-thrd, 0, thrd][e]*se*sx, cy+[0.15, 0.25, 0.15][e]*sx, [1, 1.25, 1][e]*thrd*sx*se*f, [1, 1.25, 1][e]*thrd*se*sy*f, COL_EGG, @circleUV, 0 1    
         
     roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
         

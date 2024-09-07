@@ -21,16 +21,29 @@ function matrix
         @ws = 40
                 
         @eggFadeTime       = 6.0
+        @eggMoveTime       = 3.0
         @critMoveTime      = 4.0 
         @critDieTime       = 2.3
         
-        @numLeaves         = 7
-        @critterMaxAge     = 3000
-        @critterEggTime    = 500
-        @eggMaxAge         = 50
-        @leafMaxAge        = 100
-        @critterEatTime    = 90
+        @numLeaves         = 8
+        @critterMaxAge     = 600
+        @critterEggPeriod  = 100
+        @eggMaxAge         = 200
+        @leafMaxAge        = 50
+        @critterAdultAge   = 100
+        @critterEatPeriod  = 50
         @critterStarveTime = 50
+        
+        @tweaky.init                                                        
+            speed:      min: 1    max:100    step:1      value:@speed,              cb: (@speed) =>
+            leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
+            leafAge:    min: 1    max:100    step:1      value:@leafMaxAge,         cb: (@leafMaxAge) =>
+            eggAge:     min: 10   max:200    step:10     value:@eggMaxAge,          cb: (@eggMaxAge) =>
+            critterAge: min: 60   max:600    step:10     value:@critterMaxAge,      cb: (@critterMaxAge) =>
+            adultAge:   min: 10   max:200    step:5      value:@critterAdultAge,    cb: (@critterAdultAge) =>
+            eggPeriod:  min: 2    max:200    step:2      value:@critterEggPeriod,   cb: (@critterEggPeriod) =>
+            eatPeriod:  min: 1    max:100    step:1      value:@critterEatPeriod,   cb: (@critterEatPeriod) =>
+            starveTime: min: 1    max:100    step:1      value:@critterStarveTime,  cb: (@critterStarveTime) =>
         
         @start()
         
@@ -42,6 +55,7 @@ function matrix
     
     start: =>
         
+        @anims = []
         @grid  = []
         @types = []
         
@@ -81,59 +95,98 @@ function matrix
                 @addCritter e.x, e.y
                 
             if e.age > @eggMaxAge+@eggFadeTime
-                @delAt [e.x, e.y]
+                @del e
                 
         for c in @critters
             
             c.age += sec
             c.eat -= sec
-                        
+                                    
             if c.age > @critterMaxAge or c.eat < -@critterStarveTime
                 c.df ?= 0
                 c.df += sec / @critDieTime
                 if c.df > 1
-                    @delAt [c.x, c.y]
+                    @del c
                 continue
                 
             if c.eat < 0
                 if l = @neighborLeaf c
-                    c.eat = @critterEatTime
+                    c.eat = @critterEatPeriod
                     l.age = 0
                 continue
-            
-            if Math.floor(c.age / @critterEggTime) > c.eggs
-                if n = @emptyNeighbor c
-                    @addEgg n.x, n.y
-                    c.eggs++
-
-            if c.sf > 0
-                c.sf -= sec / @critMoveTime
-                c.sf  = max 0 c.sf
-                c.tx = fade c.x, c.sx, c.sf
-                c.ty = fade c.y, c.sy, c.sf
-                continue
-                          
-            if randInt(3) == 0 or c.age < 1
-                c.sx = c.x
-                c.sy = c.y
-                c.sf = 0.5
-                continue
                 
+            continue if c.p
+            continue if c.ox or c.oy
+            
+            if Math.floor((c.age-@critterAdultAge) / @critterEggPeriod) > c.eggs
+                if n = @emptyNeighbor c
+                    e = @addEgg n.x, n.y
+                    @moveObjectFrom e, c, @eggMoveTime
+                    c.eggs++
+                    @anim c, 'p' 1 0 2
+                    
+            continue if @critterEggFactor(c) > 0.9
+                    
             n = @randomOffset c
             if @isInWorld(n) and @isEmpty n
-                c.sx = c.x
-                c.sy = c.y
-                c.sf = 1
+                op = x:c.x, y:c.y
                 @grid[c.x][c.y] = null
                 c.x = n[0]
                 c.y = n[1]
                 @grid[c.x][c.y] = c
+                @moveObjectFrom c, op, @critMoveTime
                 
         for p in @plants
                         
             for l in p.leaves
                 
                 l.age += sec
+                
+        @animate sec
+
+    critterEggFactor: c =>
+        
+        f = 0
+        if c.age > @critterAdultAge
+            f = (c.age - @critterAdultAge) / @critterEggPeriod
+            f -= c.eggs
+        f
+                
+    #  0000000   000   000  000  00     00   0000000   000000000  00000000  
+    # 000   000  0000  000  000  000   000  000   000     000     000       
+    # 000000000  000 0 000  000  000000000  000000000     000     0000000   
+    # 000   000  000  0000  000  000 0 000  000   000     000     000       
+    # 000   000  000   000  000  000   000  000   000     000     00000000  
+    
+    animate: sec =>
+        
+        ⮐ if empty @anims
+                
+        for ai in @anims.length-1..0
+            
+            a = @anims[ai]
+
+            d = (sec / a.d) * (a.t - a.s)
+            
+            a.o[a.m] += d
+            
+            if (d > 0 and a.o[a.m] > a.t) or (d < 0 and a.o[a.m] < a.t)
+                a.o[a.m] = a.t
+                @anims.splice ai, 1
+                
+    moveObjectFrom: o s d=1 =>
+        
+        @anim o, 'ox' s.x-o.x, 0 d
+        @anim o, 'oy' s.y-o.y, 0 d 
+        
+    anim: o m s t d =>
+        
+        ⮐ if d <= 0
+        ⮐ if s == t
+        
+        o[m] = s
+        
+        @anims.push o:o, m:m, s:s, t:t, d:d
                 
     #  0000000   0000000    0000000      
     # 000   000  000   000  000   000    
@@ -150,9 +203,10 @@ function matrix
         
         @grid[o.x][o.y] = o
         @types[o.type].push o
+        o
                 
     addEgg:     x y     => @addObject x, y, type:@EGG,     age:0
-    addCritter: x y     => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatTime
+    addCritter: x y     => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
     addTube:    x y idx => @addObject x, y, type:@TUBE,    idx:idx
     addPlant:   x y     => 
     
@@ -171,9 +225,13 @@ function matrix
     delAt: p =>
         
         if o = @objectAt p
-            @types[o.type].splice @types[o.type].indexOf(o), 1
-            @grid[o.x][o.y] = null
-
+            @del o
+            
+    del: o =>
+        
+        @types[o.type].splice @types[o.type].indexOf(o), 1
+        @grid[o.x][o.y] = null
+            
     # 00000000    0000000    0000000    
     # 000   000  000   000  000         
     # 00000000   000   000  0000000     

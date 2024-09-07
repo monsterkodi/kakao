@@ -67,7 +67,8 @@ world = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this.main = $('main')
         this.pause = false
-        this.speed = 100
+        this.speed = 10
+        this.tweaky = new tweaky(this.main)
         world.__super__.constructor.call(this)
         this.main.focus()
         this.g = new gee(this.main)
@@ -76,29 +77,6 @@ world = (function ()
         this.g.camPosY = 1 / this.g.camScale
         this.main.addEventListener('mousemove',this.onMouseMove)
         this.g.updateCamera()
-        this.tweaky = new tweaky(this.main)
-        this.tweaky.init({speed:{min:10,max:100,step:1,value:this.speed,cb:(function (speed)
-        {
-            this.speed = speed
-        }).bind(this)},maxAge:{min:1000,max:4000,step:100,value:this.critterMaxAge,cb:(function (critterMaxAge)
-        {
-            this.critterMaxAge = critterMaxAge
-        }).bind(this)},leaves:{min:4,max:12,step:1,value:this.numLeaves,cb:(function (numLeaves)
-        {
-            this.numLeaves = numLeaves
-        }).bind(this)},leafMaxAge:{min:1,max:100,step:1,value:this.leafMaxAge,cb:(function (leafMaxAge)
-        {
-            this.leafMaxAge = leafMaxAge
-        }).bind(this)},eatTime:{min:1,max:100,step:1,value:this.critterEatTime,cb:(function (critterEatTime)
-        {
-            this.critterEatTime = critterEatTime
-        }).bind(this)},starveTime:{min:5,max:100,step:1,value:this.critterStarveTime,cb:(function (critterStarveTime)
-        {
-            this.critterStarveTime = critterStarveTime
-        }).bind(this)},eggTime:{min:100,max:500,step:10,value:this.critterEggTime,cb:(function (critterEggTime)
-        {
-            this.critterEggTime = critterEggTime
-        }).bind(this)}})
         window.addEventListener('wheel',this.onWheel)
         this.main.addEventListener('contextmenu',this.onContextMenu)
         s = 82 / 4096
@@ -117,7 +95,7 @@ world = (function ()
     {
         if (event.ctrlKey || event.metaKey)
         {
-            this.g.camScale -= event.deltaY / ((event.metaKey ? 40000 : 4000))
+            this.g.camScale -= event.deltaY / ((event.metaKey ? 20000 : 4000))
             this.g.camScale = _k_.clamp(0.01,0.2,this.g.camScale)
         }
         else
@@ -306,23 +284,25 @@ world = (function ()
 
     world.prototype["drawEgg"] = function (e)
     {
-        var a, ageFac, s
+        var a, ageFac, ox, oy, s, _248_18_, _249_18_
 
         ageFac = e.age / this.eggMaxAge
-        s = fade(0.02,0.3,ageFac)
+        s = fade(0.1,0.3,ageFac)
         a = 1
         if (e.age > this.eggMaxAge)
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        return this.g.addQuad(e.x,e.y,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
+        ox = ((_248_18_=e.ox) != null ? _248_18_ : 0)
+        oy = ((_249_18_=e.oy) != null ? _249_18_ : 0)
+        return this.g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
     world.prototype["drawCritter"] = function (c)
     {
-        var col, cx, cy, e, h, se, sx, sy, thrd
+        var col, cx, cy, e, f, h, ox, oy, se, sx, sy, thrd, _272_18_, _273_18_
 
-        sx = sy = fade(0.2,1,c.age / this.critterMaxAge)
+        sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
         col = COL_CRITTER
         if (c.df)
         {
@@ -335,16 +315,10 @@ world = (function ()
             h = _k_.clamp(0,1,-c.eat / this.critterStarveTime)
             col = [fade(COL_CRITTER[0],COL_STARVE[0],h),fade(COL_CRITTER[1],COL_STARVE[1],h),fade(COL_CRITTER[2],COL_STARVE[2],h),1]
         }
-        if (c.sf > 0)
-        {
-            cx = c.tx
-            cy = c.ty
-        }
-        else
-        {
-            cx = c.x
-            cy = c.y
-        }
+        ox = ((_272_18_=c.ox) != null ? _272_18_ : 0)
+        oy = ((_273_18_=c.oy) != null ? _273_18_ : 0)
+        cx = c.x + ox
+        cy = c.y + oy
         this.g.addQuad(cx,cy + 0.25 * sy,sx,sy * (1 / 2),col,this.circleTopUV,0,1)
         this.g.addQuad(cx - (1 / 4) * sx,cy - 0.0 * sy,0.5 * sx,0.5 * sy,col,this.circleUV,0,1)
         this.g.addQuad(cx + (1 / 12) * sx,cy - 0.0 * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
@@ -355,6 +329,13 @@ world = (function ()
         for (var _a_ = e = 0, _b_ = c.eggs; (_a_ <= _b_ ? e < c.eggs : e > c.eggs); (_a_ <= _b_ ? ++e : --e))
         {
             this.g.addQuad(cx + [-thrd,0,thrd][e] * se * sx,cy + [0.15,0.25,0.15][e] * sx,[1,1.25,1][e] * thrd * sx * se,[1,1.25,1][e] * thrd * se * sy,COL_EGG_DOT,this.circleUV,0,1)
+        }
+        if (c.age > this.critterAdultAge)
+        {
+            e = c.eggs % 3
+            f = this.critterEggFactor(c)
+            f = _k_.min(1,f)
+            return this.g.addQuad(cx + [-thrd,0,thrd][e] * se * sx,cy + [0.15,0.25,0.15][e] * sx,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
         }
     }
 
