@@ -1,4 +1,4 @@
-###
+ ###
 000   000   0000000   00000000   000      0000000  
 000 0 000  000   000  000   000  000      000   000
 000000000  000   000  0000000    000      000   000
@@ -64,7 +64,7 @@ function world extends matrix
         @main.addEventListener  'mousemove'   @onMouseMove
         @main.addEventListener  'contextmenu' @onContextMenu
         
-        s = 82/4096
+        s = 40.96/2048
         @tubeUV = [
             [ s*1 s*2 s*2 s*3 ] # right / left
             [ s*2 s*0 s*3 s*1 ] # right down / up left
@@ -73,18 +73,24 @@ function world extends matrix
             [ s*0 s*2 s*1 s*3 ] # down right / left up
             [ s*0 s*0 s*1 s*1 ] # up right / left down
             ]
-        @tubeSquareUV = [ s*0 s*0 s*3 s*3 ]
-        @quadUV   = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
-        @circleUV = [ s*3.5, s*0.5, s*5.5, s*2.5 ]
-        @circleTopUV = [ s*3.5, s*0.5, s*5.5, s*1.5 ]
+            
+        uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
+
+        @ringUV = []
+        for ri in 0..8
+            @ringUV.push uv ri*4 (ri+1)*4 8 12
+        
+        @tubeSquareUV = uv 0   3 0  3
+        @quadUV       = uv 37 39 9 11 
+        @circleUV     = uv 36 40 8 12 
+        @circleTopUV  = uv 36 40 8 10 
         @pieUV = [
-            [ s*3.5, s*0.5, s*4.5, s*1.5 ]
-            [ s*4.5, s*0.5, s*5.5, s*1.5 ]
-            [ s*4.5, s*1.5, s*5.5, s*2.5 ]
-            [ s*3.5, s*1.5, s*4.5, s*2.5 ]
+            uv 36 38  8 10 
+            uv 38 40  8 10 
+            uv 38 40 10 12 
+            uv 36 38 10 12 
         ]
         
-        @critterUV = [ (4096-80)/4096, (4096-80)/4096, (4096-2)/4096, (4096-2)/4096 ]
         @eggUV     = @circleUV
         
         @mouse = pos: [0 0]
@@ -407,12 +413,36 @@ function world extends matrix
                     
         @g.draw @tickInfo.time
         
-        @h.addQuad 0  0 1 1 COL_EGG,     @quadUV, 0 0
+        @h.addQuad 0 -1 1 1 COL_EGG,     @quadUV, 0 0
         @h.addQuad 1 -1 1 1 COL_CRITTER, @quadUV, 0 0
+        
+        @drawSpeedGauge 0 0 0.5
         
         @h.draw @tickInfo.time
         
         delete @oneStep
+            
+    drawSpeedGauge: x y s=1 =>
+        
+        bc = [0.2 0.2 0.2 1]
+        
+        @h.addPipe x, y, x+1, y, 0.25, bc
+        
+        @h.addPipe x+0.3125, y, x+1, y, 0.125, [0.1 0.1 0.1 1]
+        
+        @h.addCircle x+fade(0.3125 1 @speed/100), y, 0.125, [0.5 0.5 0.5 1]
+        
+        @h.addCircle x, y, s, bc
+        
+        wave = hz ph=0 => sin hz*ph*TAU + hz*TAU*(@speed/60)*@tickInfo.time/1000
+        @h.addQuad x, y, s, s, [0 0 0 1], @ringUV[4], 0 1
+        pc = @pause ? [1 0 0 1] : [0 0 0 0]
+        @h.addCircle x, y, s/4, pc, 1
+        ⮐ if @pause
+        sz = fade s/8 s/4 @speed/100
+        for ri in 0..8
+            phs = (@speed/60)*(ri/16)
+            @h.addQuad x+wave(1, phs)*s/4, y-wave(1, phs-0.25)*s/4, sz, sz, [ri/8 ri/8 ri/8 1], @circleUV, 0 1
         
     #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
     # 000       000  000   000  000   000  000      000   000     000     000       

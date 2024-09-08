@@ -18,6 +18,7 @@ function gee
         @main.appendChild @canvas
         
         @initGL()
+        @initUV()
         
         @numLayers = 2
         @quadsPerLayer = 100000
@@ -46,6 +47,41 @@ function gee
         # log @numLayers, @layerStart, @numQuads, @quadsPerLayer, @maxQuads, @quadDataLength
         
         @loadTiles()
+        
+    # 000  000   000  000  000000000  000   000  000   000  
+    # 000  0000  000  000     000     000   000  000   000  
+    # 000  000 0 000  000     000     000   000   000 000   
+    # 000  000  0000  000     000     000   000     000     
+    # 000  000   000  000     000      0000000       0      
+    
+    initUV: ->
+        
+        s = 40.96/2048
+        @tubeUV = [
+            [ s*1 s*2 s*2 s*3 ] # right / left
+            [ s*2 s*0 s*3 s*1 ] # right down / up left
+            [ s*2 s*1 s*3 s*2 ] # down / up
+            [ s*2 s*2 s*3 s*3 ] # down left / right up
+            [ s*0 s*2 s*1 s*3 ] # down right / left up
+            [ s*0 s*0 s*1 s*1 ] # up right / left down
+            ]
+            
+        uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
+
+        @ringUV = []
+        for ri in 0..8
+            @ringUV.push uv ri*4 (ri+1)*4 8 12
+        
+        @tubeSquareUV = uv 0   3 0  3
+        @quadUV       = uv 37 39 9 11 
+        @circleUV     = uv 36 40 8 12 
+        @circleTopUV  = uv 36 40 8 10 
+        @pieUV = [
+            uv 36 38  8 10 
+            uv 38 40  8 10 
+            uv 38 40 10 12 
+            uv 36 38 10 12 
+        ]
         
     # 000  000   000  000  000000000   0000000   000      
     # 000  0000  000  000     000     000        000      
@@ -144,7 +180,29 @@ function gee
         @gl.enableVertexAttribArray @quadVertexLoc
         
         @dataBuffer = @gl.createBuffer()
-                                    
+        
+    addPipe: x1 y1 x2 y2 sz color layer=0 =>
+        
+        @addCircle x1, y1, sz, color, layer
+        @addCircle x2, y2, sz, color, layer
+        if y1 == y2
+            @addRect x1, y1-sz/2, x2, y2+sz/2, color, layer
+                
+    addRect: x1 y1 x2 y2 color layer=0 =>
+        
+        [x1, x2] = [min(x1, x2), max(x1, x2)]
+        [y1, y2] = [min(y1, y2), max(y1, y2)]
+        cx = (x1+x2)/2
+        cy = (y1+y2)/2
+        sx = x2-x1
+        sy = y2-y1
+        
+        @addQuad cx, cy, sx, sy, color, @quadUV, 0 layer
+
+    addCircle: px py sz color layer=0 =>     
+        
+        @addQuad px, py, sz, sz, color, @circleUV, 0 layer
+
     addQuad: px py sx sy color uv rot=0 layer=0 => 
         
         ⮐ if @numQuads[layer] >= @quadsPerLayer

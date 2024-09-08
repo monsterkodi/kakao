@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var gee
 
@@ -23,10 +23,14 @@ gee = (function ()
         this["loadTiles"] = this["loadTiles"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["addQuad"] = this["addQuad"].bind(this)
+        this["addCircle"] = this["addCircle"].bind(this)
+        this["addRect"] = this["addRect"].bind(this)
+        this["addPipe"] = this["addPipe"].bind(this)
         this.textureInfos = []
         this.canvas = elem('canvas',{class:'canvas'})
         this.main.appendChild(this.canvas)
         this.initGL()
+        this.initUV()
         this.numLayers = 2
         this.quadsPerLayer = 100000
         this.camCenter = 'center'
@@ -46,6 +50,28 @@ gee = (function ()
         this.camScale = 0.2
         post.on('resize',this.resize)
         this.loadTiles()
+    }
+
+    gee.prototype["initUV"] = function ()
+    {
+        var ri, s, uv
+
+        s = 40.96 / 2048
+        this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
+        uv = function (u, uu, v, vv)
+        {
+            return [s * u,s * v,s * uu,s * vv]
+        }
+        this.ringUV = []
+        for (ri = 0; ri <= 8; ri++)
+        {
+            this.ringUV.push(uv(ri * 4,(ri + 1) * 4,8,12))
+        }
+        this.tubeSquareUV = uv(0,3,0,3)
+        this.quadUV = uv(37,39,9,11)
+        this.circleUV = uv(36,40,8,12)
+        this.circleTopUV = uv(36,40,8,10)
+        return this.pieUV = [uv(36,38,8,10),uv(38,40,8,10),uv(38,40,10,12),uv(36,38,10,12)]
     }
 
     gee.prototype["initGL"] = function ()
@@ -129,6 +155,36 @@ void main(void) {
         this.gl.vertexAttribPointer(this.quadVertexLoc,2,this.gl.FLOAT,false,0,0)
         this.gl.enableVertexAttribArray(this.quadVertexLoc)
         return this.dataBuffer = this.gl.createBuffer()
+    }
+
+    gee.prototype["addPipe"] = function (x1, y1, x2, y2, sz, color, layer = 0)
+    {
+        this.addCircle(x1,y1,sz,color,layer)
+        this.addCircle(x2,y2,sz,color,layer)
+        if (y1 === y2)
+        {
+            return this.addRect(x1,y1 - sz / 2,x2,y2 + sz / 2,color,layer)
+        }
+    }
+
+    gee.prototype["addRect"] = function (x1, y1, x2, y2, color, layer = 0)
+    {
+        var cx, cy, sx, sy
+
+        var _a_ = [_k_.min(x1,x2),_k_.max(x1,x2)]; x1 = _a_[0]; x2 = _a_[1]
+
+        var _b_ = [_k_.min(y1,y2),_k_.max(y1,y2)]; y1 = _b_[0]; y2 = _b_[1]
+
+        cx = (x1 + x2) / 2
+        cy = (y1 + y2) / 2
+        sx = x2 - x1
+        sy = y2 - y1
+        return this.addQuad(cx,cy,sx,sy,color,this.quadUV,0,layer)
+    }
+
+    gee.prototype["addCircle"] = function (px, py, sz, color, layer = 0)
+    {
+        return this.addQuad(px,py,sz,sz,color,this.circleUV,0,layer)
     }
 
     gee.prototype["addQuad"] = function (px, py, sx, sy, color, uv, rot = 0, layer = 0)
