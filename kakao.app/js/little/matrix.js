@@ -483,6 +483,13 @@ matrix = (function ()
     {
         var n
 
+        switch (o.type)
+        {
+            case this.PLANT:
+                this.slots[o.type].num++
+                break
+        }
+
         this.types[o.type].splice(this.types[o.type].indexOf(o),1)
         this.grid[o.x][o.y] = null
         if (o.type === this.GRINDER)

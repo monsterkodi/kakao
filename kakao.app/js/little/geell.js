@@ -11,10 +11,12 @@ let post = kxk.post
 
 geell = (function ()
 {
-    function geell ()
+    function geell (main)
     {
         var layer
 
+        this.main = main
+    
         this["clearCanvas"] = this["clearCanvas"].bind(this)
         this["resize"] = this["resize"].bind(this)
         this["loaded"] = this["loaded"].bind(this)
@@ -150,7 +152,7 @@ void main(void) {
         this.gl.blendFuncSeparate(this.gl.SRC_ALPHA,this.gl.ONE_MINUS_SRC_ALPHA,this.gl.ONE,this.gl.ONE_MINUS_SRC_ALPHA)
         this.gl.enable(this.gl.BLEND)
         r = 0.5
-        this.quad = new Float32Array([-r,-r,r,-r,r,r,-r,r])
+        this.quadVertices = new Float32Array([-r,-r,r,-r,r,r,-r,r])
         this.bufCamScale = new Float32Array(2)
         this.bufCamPos = new Float32Array(2)
         this.quadVertexLoc = this.gl.getAttribLocation(this.shaderProgram,'aQuadVertex')
@@ -163,7 +165,7 @@ void main(void) {
         this.camPosLoc = this.gl.getUniformLocation(this.shaderProgram,'uCamPos')
         this.quadBuffer = this.gl.createBuffer()
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.quadBuffer)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.quad,this.gl.STATIC_DRAW)
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.quadVertices,this.gl.STATIC_DRAW)
         this.gl.vertexAttribPointer(this.quadVertexLoc,2,this.gl.FLOAT,false,0,0)
         this.gl.enableVertexAttribArray(this.quadVertexLoc)
         return this.dataBuffer = this.gl.createBuffer()

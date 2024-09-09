@@ -319,6 +319,10 @@ function matrix
             
     del: o =>
         
+        switch o.type
+            
+            @PLANT ➜ @slots[o.type].num++
+        
         @types[o.type].splice @types[o.type].indexOf(o), 1
         @grid[o.x][o.y] = null
         

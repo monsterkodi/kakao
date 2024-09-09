@@ -92,7 +92,7 @@ function Drag
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    dragMove: (event) =>
+    dragMove: event =>
 
         if @dragging
             @pos      = @eventPos event
@@ -110,7 +110,7 @@ function Drag
             @lastPos = @pos
         @
                 
-    dragUp: (event) => 
+    dragUp: event => 
         
         delete @constrain
         @dragStop event

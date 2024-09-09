@@ -10,7 +10,7 @@ use ../kxk ▪ randInt randRange elem post
 
 function geell
 
-    @: ->
+    @: @main ->
         
         @textureInfos   = []
         @quadDataLength = 13
@@ -168,9 +168,9 @@ function geell
         @gl.enable @gl.BLEND
         
         r = 0.5
-        @quad        = new Float32Array [ -r, -r, r, -r, r, r, -r, r ]
-        @bufCamScale = new Float32Array 2
-        @bufCamPos   = new Float32Array 2
+        @quadVertices = new Float32Array [ -r, -r, r, -r, r, r, -r, r ]
+        @bufCamScale  = new Float32Array 2
+        @bufCamPos    = new Float32Array 2
         
         @quadVertexLoc = @gl.getAttribLocation @shaderProgram, 'aQuadVertex'
         @positionLoc   = @gl.getAttribLocation @shaderProgram, 'aQuadPosition'
@@ -184,7 +184,7 @@ function geell
         
         @quadBuffer = @gl.createBuffer()
         @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @quad, @gl.STATIC_DRAW
+        @gl.bufferData @gl.ARRAY_BUFFER, @quadVertices, @gl.STATIC_DRAW
         @gl.vertexAttribPointer @quadVertexLoc, 2, @gl.FLOAT, false, 0, 0
         @gl.enableVertexAttribArray @quadVertexLoc
         
