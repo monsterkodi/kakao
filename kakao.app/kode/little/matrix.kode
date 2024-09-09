@@ -333,7 +333,7 @@ function matrix
     # 000         0000000   0000000     
     
     objectAt:  p => if @isInWorld p ➜ ⮐ @grid[p[0]][p[1]]
-    isInWorld: p => p[0] >= 0 and p[1] >= 0 and p[0] < @ws and p[1] < @ws
+    isInWorld: p => p[0] >= -0.75 and p[1] >= -0.25 and p[0] < @ws-0.25 and p[1] < @ws+0.25
     isEmpty:   p => not @objectAt p
                 
     buildingAt: p =>

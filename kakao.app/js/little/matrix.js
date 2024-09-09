@@ -506,7 +506,7 @@ matrix = (function ()
 
     matrix.prototype["isInWorld"] = function (p)
     {
-        return p[0] >= 0 && p[1] >= 0 && p[0] < this.ws && p[1] < this.ws
+        return p[0] >= -0.75 && p[1] >= -0.25 && p[0] < this.ws - 0.25 && p[1] < this.ws + 0.25
     }
 
     matrix.prototype["isEmpty"] = function (p)

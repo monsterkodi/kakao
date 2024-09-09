@@ -7,187 +7,17 @@
 ###
 
 use ../kxk ▪ randInt randRange elem post
+use ./geell
 
-function gee
+function gee extends geell
 
     @: @main ->
         
-        @textureInfos = []
+    addNumber: px py sz number color=[1 1 1 1] layer=0 =>
         
-        @canvas = elem 'canvas' class:'canvas'
-        @main.appendChild @canvas
-        
-        @initGL()
-        @initUV()
-        
-        @numLayers = 2
-        @quadsPerLayer = 100000
-        
-        @camCenter = 'center'
-        
-        @clearColor = [0.1 0.1 0.1 1.0]
-            
-        @layerStart = []
-        @numQuads = []
-        for layer in 0...@numLayers
-            @layerStart.push layer*@quadsPerLayer
-            @numQuads.push 0
-            
-        @quadDataLength = 13
-                
-        @maxQuads = @quadsPerLayer*@numLayers
-        @data = new Float32Array @maxQuads*@quadDataLength
-        
-        @camPosX  = 0
-        @camPosY  = 0
-        @camScale = 0.2
-        
-        post.on 'resize' @resize
-        
-        # log @numLayers, @layerStart, @numQuads, @quadsPerLayer, @maxQuads, @quadDataLength
-        
-        @loadTiles()
-
-    win2Pos: winPos =>
-        
-        x = (((winPos.x - @br.left) / @br.width  - 0.5) *  2 ) / (@camScale * @aspect) + @bufCamPos[0]
-        y = (((winPos.y - @br.top)  / @br.height - 0.5) * -2 ) /  @camScale            + @bufCamPos[1]
-        
-        [x,y]
-                
-    # 000  000   000  000  000000000  000   000  000   000  
-    # 000  0000  000  000     000     000   000  000   000  
-    # 000  000 0 000  000     000     000   000   000 000   
-    # 000  000  0000  000     000     000   000     000     
-    # 000  000   000  000     000      0000000       0      
-    
-    initUV: ->
-        
-        s = 40.96/2048
-        uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
-        
-        @tubeUV = []
-        for ti in 0..8
-            @tubeUV.push [
-                uv ti*4+2 ti*4+2  8 10  # right / left
-                uv ti*4+2 ti*4+4  8 10  # right down / up left
-                uv ti*4+2 ti*4+4 10 10  # down / up
-                uv ti*4+2 ti*4+4 10 12  # down left / right up
-                uv ti*4 ti*4+2   10 12  # down right / left up
-                uv ti*4 ti*4+2    8 10  # up right / left down
-                ]            
-
-        @ringUV = []
-        for ri in 0..8
-            @ringUV.push uv ri*4 (ri+1)*4 8 12
-        
-        @quadUV       = uv 37 39 9 11 
-        @circleUV     = uv 36 40 8 12 
-        @circleTopUV  = uv 36 40 8 10 
-        @pieUV = [
-            uv 36 38  8 10 
-            uv 38 40  8 10 
-            uv 38 40 10 12 
-            uv 36 38 10 12 
-        ]
-        
-    # 000  000   000  000  000000000   0000000   000      
-    # 000  0000  000  000     000     000        000      
-    # 000  000 0 000  000     000     000  0000  000      
-    # 000  000  0000  000     000     000   000  000      
-    # 000  000   000  000     000      0000000   0000000  
-    
-    initGL: ->
-        
-        @gl = @canvas.getContext 'webgl2'
-        
-        vsSource = """
-            #version 300 es
-            precision mediump float;
-            in vec2  aQuadVertex;
-            in vec2  aQuadPosition;
-            in vec2  aQuadScale;
-            in vec4  aQuadColor;
-            in vec4  aQuadUV;
-            in float aQuadRot;
-            uniform vec2 uCamPos;
-            uniform vec2 uCamScale;
-            out vec4 vColor;
-            out vec2 vUV;
-            
-            void main(void) {
-                vec2 vertex = aQuadVertex * aQuadScale;
-                vec2 rotated = vertex*cos(aQuadRot)+vec2(-vertex.y,vertex.x)*sin(aQuadRot);
-                vec2 pos = uCamScale * (rotated + aQuadPosition) - uCamPos * uCamScale;
-                gl_Position = vec4(pos.x, pos.y, 0, 1);
-                vColor = aQuadColor;
-                vUV = mix(aQuadUV.xw,aQuadUV.zy,aQuadVertex+vec2(0.5, 0.5));
-            }
-            
-            """
-            
-        fsSource = """
-            #version 300 es
-            precision mediump float;
-            in vec4 vColor;
-            in vec2 vUV;
-            uniform sampler2D uSampler;
-            out vec4 fragColor;
-        
-            void main(void) {
-                //fragColor = vColor;
-                fragColor = texture(uSampler,vUV)*vColor;
-            }
-            """
-            
-        loadShader = type source =>
-            
-            shader = @gl.createShader type
-
-            @gl.shaderSource shader, source
-            @gl.compileShader shader
-
-            if not @gl.getShaderParameter shader, @gl.COMPILE_STATUS
-                error 'Shader compilation failed:' @gl.getShaderInfoLog shader
-                @gl.deleteShader shader
-                ⮐ null
-
-            shader
-
-        @shaderProgram = @gl.createProgram()
-        
-        @gl.attachShader @shaderProgram, loadShader @gl.VERTEX_SHADER,   vsSource
-        @gl.attachShader @shaderProgram, loadShader @gl.FRAGMENT_SHADER, fsSource
-        @gl.linkProgram  @shaderProgram
-        
-        if not @gl.getProgramParameter @shaderProgram, @gl.LINK_STATUS
-            error 'Shader linking failed:' @gl.getProgramInfoLog @shaderProgram
-            
-        @gl.blendFuncSeparate @gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA, @gl.ONE, @gl.ONE_MINUS_SRC_ALPHA
-        @gl.enable @gl.BLEND
-        
-        r = 0.5
-        @quad        = new Float32Array [ -r, -r, r, -r, r, r, -r, r ]
-        @bufCamScale = new Float32Array 2
-        @bufCamPos   = new Float32Array 2
-        
-        @quadVertexLoc = @gl.getAttribLocation @shaderProgram, 'aQuadVertex'
-        @positionLoc   = @gl.getAttribLocation @shaderProgram, 'aQuadPosition'
-        @scaleLoc      = @gl.getAttribLocation @shaderProgram, 'aQuadScale'
-        @colorLoc      = @gl.getAttribLocation @shaderProgram, 'aQuadColor'
-        @uvLoc         = @gl.getAttribLocation @shaderProgram, 'aQuadUV'
-        @rotLoc        = @gl.getAttribLocation @shaderProgram, 'aQuadRot'
-        
-        @camScaleLoc   = @gl.getUniformLocation @shaderProgram, 'uCamScale'
-        @camPosLoc     = @gl.getUniformLocation @shaderProgram, 'uCamPos'
-        
-        @quadBuffer = @gl.createBuffer()
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @quad, @gl.STATIC_DRAW
-        @gl.vertexAttribPointer @quadVertexLoc, 2, @gl.FLOAT, false, 0, 0
-        @gl.enableVertexAttribArray @quadVertexLoc
-        
-        @dataBuffer = @gl.createBuffer()
+        n = Math.ceil Math.log10 number
+        for ni in 0..n
+            @addQuad px+ni*sz, py, 1, 1, color, @numberUV[1], 0 layer, sz
         
     addPipe: x1 y1 x2 y2 sz color layer=0 =>
         
@@ -196,9 +26,9 @@ function gee
         if y1 == y2
             @addRect x1, y1-sz/2, x2, y2+sz/2, color, layer
             
-    addTube: px py ti tt color layer=0 =>
+    addTube: px py ti tt color layer=0 scale=1 =>
         
-        @addQuad px, py, 1 1 color, @tubeUV[ti][tt], 0 layer
+        @addQuad px, py, 1 1 color, @tubeUV[ti][tt], 0 layer, scale
             
     addTubeRect: x1 y1 x2 y2 ti color layer=0 =>
         
@@ -216,6 +46,24 @@ function gee
         @addQuad x1, (y1+y2)/2 1 y2-y1-1 color, @tubeUV[ti][2], 0 layer
         @addQuad x2, (y1+y2)/2 1 y2-y1-1 color, @tubeUV[ti][2], 0 layer
         
+    addRoundedFrame: x1 y1 x2 y2 color layer=0 radius=1 ti=4 =>
+        
+        scale = 1/radius
+        
+        [x1, x2] = [min(x1, x2), max(x1, x2)]
+        [y1, y2] = [min(y1, y2), max(y1, y2)]
+        
+        @addTube x2, y2, ti, 1 color, layer, radius
+        @addTube x2, y1, ti, 3 color, layer, radius
+        @addTube x1, y1, ti, 4 color, layer, radius
+        @addTube x1, y2, ti, 5 color, layer, radius
+        
+        @addQuad (x1+x2)/2 y1, (x2-x1-radius)*scale, 1 color, @tubeUV[ti][0], 0 layer, radius
+        @addQuad (x1+x2)/2 y2, (x2-x1-radius)*scale, 1 color, @tubeUV[ti][0], 0 layer, radius
+
+        @addQuad x1, (y1+y2)/2 1 (y2-y1-radius)*scale, color, @tubeUV[ti][2], 0 layer, radius
+        @addQuad x2, (y1+y2)/2 1 (y2-y1-radius)*scale, color, @tubeUV[ti][2], 0 layer, radius
+        
     addRect: x1 y1 x2 y2 color layer=0 =>
         
         [x1, x2] = [min(x1, x2), max(x1, x2)]
@@ -231,7 +79,7 @@ function gee
         
         @addQuad px, py, sz, sz, color, @circleUV, 0 layer
 
-    addQuad: px py sx sy color uv rot=0 layer=0 => 
+    addQuad: px py sx sy color uv rot=0 layer=0 scale=1 => 
         
         ⮐ if @numQuads[layer] >= @quadsPerLayer
         
@@ -239,8 +87,8 @@ function gee
         
         @data[p++]  = px # position
         @data[p++]  = py
-        @data[p++]  = sx # scale 
-        @data[p++]  = sy 
+        @data[p++]  = scale*sx # scale 
+        @data[p++]  = scale*sy 
                 
         @data[p++]  = color[0]  # color
         @data[p++]  = color[1]
@@ -257,140 +105,5 @@ function gee
         @numQuads[layer]++
         
         # log @numQuads, px, py, sx, sy, r, g, b, a, u0, v0, u1, v1, rot
-                                                                
-    # 0000000    00000000    0000000   000   000  
-    # 000   000  000   000  000   000  000 0 000  
-    # 000   000  0000000    000000000  000000000  
-    # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000  00     00  
-    
-    draw: time =>
-         
-        @gl.useProgram @shaderProgram
-        
-        # if @textureInfos[0]?.glTexture
-            # @gl.activeTexture @gl.TEXTURE0
-            # @gl.bindTexture @gl.TEXTURE_2D, @textureInfos[0].glTexture
-        
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @dataBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @data, @gl.DYNAMIC_DRAW
-        
-        stride = @quadDataLength*4
-        offset = 0
-        
-        attrib = loc cnt =>
-            
-            @gl.vertexAttribPointer loc, cnt, @gl.FLOAT, false, stride, offset
-            @gl.vertexAttribDivisor loc, 1
-            @gl.enableVertexAttribArray loc
-            
-            offset += 4 * cnt
-            
-        attrib @positionLoc, 2
-        attrib @scaleLoc,    2
-        attrib @colorLoc,    4
-        attrib @uvLoc,       4
-        attrib @rotLoc,      1
-                        
-        @gl.uniform2fv @camScaleLoc, @bufCamScale
-        @gl.uniform2fv @camPosLoc,   @bufCamPos
-                
-        @clearCanvas()
-                
-        @gl.drawArraysInstanced @gl.TRIANGLE_FAN, 0 4 @maxQuads
-        
-        @numQuads[0] = 0
-        @numQuads[1] = 0
-        
-        @data.fill 0 0 @data.length
-                
-    updateCamera: ->
-        
-        @bufCamScale[0] = @camScale * @aspect
-        @bufCamScale[1] = @camScale
-                  
-        switch @camCenter 
-            'center'
-                @bufCamPos[0] = @camPosX
-                @bufCamPos[1] = @camPosY 
-            'topleft'
-                @bufCamPos[0] = @camPosX + 1/@bufCamScale[0]
-                @bufCamPos[1] = @camPosY - 1/@bufCamScale[1]
-            
-    # 000000000  000  000      00000000   0000000    
-    #    000     000  000      000       000         
-    #    000     000  000      0000000   0000000     
-    #    000     000  000      000            000    
-    #    000     000  0000000  00000000  0000000     
-        
-    loadTiles:  =>
-        
-        imageSources = ['./tiles0000.png']
-        
-        promises = imageSources.map (src, textureIndex) =>
-            new Promise (resolve) => 
-                image = new Image
-                image.onerror = image.onload = () => 
-                    
-                    @textureInfos[textureIndex] = 
-                        image:      image
-                        size:       [image.width, image.height]
-                        width:      image.width
-                        height:     image.height
-                        glTexture:  @createTexture image
-                        
-                    resolve()
-                image.src = src
-                
-        Promise.all(promises).then @loaded
-        
-    loaded: => 
-    
-        if @textureInfos[0]?.glTexture
-            @gl.activeTexture @gl.TEXTURE0
-            @gl.bindTexture @gl.TEXTURE_2D, @textureInfos[0].glTexture
-        
-        @resize()
-    
-    createTexture: (image) ->
-    
-        ⮐ if not image
-        texture = @gl.createTexture()
-        @gl.bindTexture   @gl.TEXTURE_2D, texture
-        @gl.texImage2D    @gl.TEXTURE_2D, 0, @gl.RGBA, @gl.RGBA, @gl.UNSIGNED_BYTE, image
-        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MIN_FILTER, @gl.LINEAR
-        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MAG_FILTER, @gl.LINEAR
-        texture
-        
-    # 00000000   00000000   0000000  000  0000000  00000000  
-    # 000   000  000       000       000     000   000       
-    # 0000000    0000000   0000000   000    000    0000000   
-    # 000   000  000            000  000   000     000       
-    # 000   000  00000000  0000000   000  0000000  00000000  
-    
-    resize: =>
-        
-        @br = @main.getBoundingClientRect()
-        
-        # log @br.left, @br.top
-        
-        devicePixelRatio = window.devicePixelRatio or 1
-        
-        @canvas.width  = @br.width  * devicePixelRatio
-        @canvas.height = @br.height * devicePixelRatio
-        @aspect = @canvas.height / @canvas.width
-        maxDim = @gl.getParameter @gl.MAX_VIEWPORT_DIMS
-        
-        @canvas.style.width  = @br.width + "px"
-        @canvas.style.height = @br.height + "px"
-        
-        @gl.viewport 0 0 min(@canvas.width, maxDim), min(@canvas.height, maxDim)
-        
-        @updateCamera()
-        
-    clearCanvas: =>
-            
-        @gl.clearColor @clearColor[0], @clearColor[1], @clearColor[2], @clearColor[3]
-        @gl.clear @gl.COLOR_BUFFER_BIT
-        
+                                                                        
 export gee

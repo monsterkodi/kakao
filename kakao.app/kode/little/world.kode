@@ -26,6 +26,8 @@ COL_DEAD    = [0.1 0.1 0.1 1]
 COL_EGG_DOT = [0 0 0 0.5]
 COL_GRINDER = [1 0 0 1]
 
+clr = r g b a=10 -> [r/10 g/10 b/10 a/10]
+
 threshMold  = p n m -> parseInt(p/m) != parseInt(n/m)
 sort        = a b => [min(a,b), max(a,b)]
 posInCircle = p cx cy cr => (cx - cr) <= p[0] <= (cx + cr) and (cy - cr) <= p[1] <= (cy + cr)
@@ -46,7 +48,7 @@ function world extends matrix
         
         super()
         
-        @inventory  = x:0  y:-1 s:1 slots:[{type:@CRITTER, num:0}, {type:@EGG, num:0}, {type:@PLANT, num:0}] 
+        @inventory  = x:0  y:-1 s:0.5 slots:[{type:@CRITTER, num:0}, {type:@EGG, num:0}, {type:@PLANT, num:0}] 
         @speedGauge = x:0  y:0  s:0.5 sx:0.3125 sw:1 sr:0.125
         
         @main.focus()
@@ -207,6 +209,8 @@ function world extends matrix
 
         p = @win2Grid drag.pos
         
+        ⮐ if not @mouseInWorld()
+                
         if event.button == 2
             @delAt p
             ⮐ 
@@ -253,13 +257,13 @@ function world extends matrix
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    drawPlant: p g=@g =>
+    drawPlant: p g=@g scale=1 =>
         
-        s = 0.25
+        s = scale * 0.25
         g.addQuad p.x, p.y, s, s, COL_PLANT, @circleUV, 0 0
         
-        s = 0.15
-        r = 0.2
+        s = scale * 0.15
+        r = scale * 0.2
         for li in 0...p.leaves.length
             l   = p.leaves[li]
             af  = l.age/@leafMaxAge
@@ -287,10 +291,10 @@ function world extends matrix
         
         @g.addQuad x, y, 1 1 COL_TUBE, @tubeUV[2][idx], 0 1
         
-    drawEgg: e g=@g =>
+    drawEgg: e g=@g scale=1 =>
         
         ageFac = e.age / @eggMaxAge
-        s = fade 0.1 0.3 ageFac
+        s = scale * fade 0.1 0.3 ageFac
         a = 1
         if e.age > @eggMaxAge
             a = fade 1.0 0.0 (e.age-@eggMaxAge)/@eggFadeTime
@@ -315,9 +319,9 @@ function world extends matrix
         
         @g.addQuad bot.x, bot.y, 1 1 COL_GRINDER, @circleTopUV, 0 1 
 
-    drawCritter: c g=@g =>
+    drawCritter: c g=@g scale=1 ccl=null =>
         
-        sx = sy = fade 0.2 1 c.age / @critterAdultAge
+        sx = sy = scale * fade 0.2 1 c.age / @critterAdultAge
         
         rot  = 0
         rcos = 1
@@ -343,6 +347,8 @@ function world extends matrix
                 fade(col[1], COL_DEAD[1], h),
                 fade(col[2], COL_DEAD[2], h), 1
                 ]
+                
+        col = ccl if ccl
                
         ox = c.ox ? 0
         oy = c.oy ? 0
@@ -482,6 +488,8 @@ function world extends matrix
             phs = (@speed/60)*(ri/16)
             @h.addQuad x+wave(1, phs)*s/4, y-wave(1, phs-0.25)*s/4, sz, sz, [ri/8 ri/8 ri/8 1], @circleUV, 0 1
             
+        @h.addNumber x, y, s/4, @speed
+            
     # 000  000   000  000   000  00000000  000   000  000000000   0000000   00000000   000   000  
     # 000  0000  000  000   000  000       0000  000     000     000   000  000   000   000 000   
     # 000  000 0 000   000 000   0000000   000 0 000     000     000   000  0000000      00000    
@@ -495,16 +503,19 @@ function world extends matrix
         s = @inventory.s
         sh = s/2
         
+        fr = s/4
+        @h.addRoundedFrame x-sh, y-sh, x+s*@inventory.slots.length-sh, y+sh, clr(2 2 2), 1, fr, 4
+        
         for slot,si in @inventory.slots
             
             sx = x+s*si
-            @h.addRect sx-sh, y-sh, sx+sh, y+sh, [1 0.1 0.1 1] 0
+            @h.addRect sx-sh, y-sh, sx+sh, y+sh, clr(1 1 1), 0
             
             switch slot.type
                 
-                @CRITTER ➜ @drawCritter {x:sx, y:y, age:@critterAdultAge/2, df:1}, @h   
-                @EGG     ➜ @drawEgg     {x:sx, y:y, age:@eggMaxAge}, @h    
-                @PLANT   ➜ @drawPlant   @makePlant(sx, y, 8, @leafMaxAge+1), @h    
+                @CRITTER ➜ @drawCritter {x:sx, y:y, age:@critterAdultAge/2, df:1}, @h, s, clr(5 5 5)
+                @EGG     ➜ @drawEgg     {x:sx, y:y, age:@eggMaxAge}, @h, s*1.5
+                @PLANT   ➜ @drawPlant   @makePlant(sx, y, 8, @leafMaxAge+1), @h, s
         
     #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
     # 000       000  000   000  000   000  000      000   000     000     000       
