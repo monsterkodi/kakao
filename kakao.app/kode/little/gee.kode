@@ -64,22 +64,23 @@ function gee
     initUV: ->
         
         s = 40.96/2048
-        @tubeUV = [
-            [ s*1 s*2 s*2 s*3 ] # right / left
-            [ s*2 s*0 s*3 s*1 ] # right down / up left
-            [ s*2 s*1 s*3 s*2 ] # down / up
-            [ s*2 s*2 s*3 s*3 ] # down left / right up
-            [ s*0 s*2 s*1 s*3 ] # down right / left up
-            [ s*0 s*0 s*1 s*1 ] # up right / left down
-            ]
-            
         uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
+        
+        @tubeUV = []
+        for ti in 0..8
+            @tubeUV.push [
+                uv ti*4+2 ti*4+2  8 10  # right / left
+                uv ti*4+2 ti*4+4  8 10  # right down / up left
+                uv ti*4+2 ti*4+4 10 10  # down / up
+                uv ti*4+2 ti*4+4 10 12  # down left / right up
+                uv ti*4 ti*4+2   10 12  # down right / left up
+                uv ti*4 ti*4+2    8 10  # up right / left down
+                ]            
 
         @ringUV = []
         for ri in 0..8
             @ringUV.push uv ri*4 (ri+1)*4 8 12
         
-        @tubeSquareUV = uv 0   3 0  3
         @quadUV       = uv 37 39 9 11 
         @circleUV     = uv 36 40 8 12 
         @circleTopUV  = uv 36 40 8 10 
@@ -194,7 +195,27 @@ function gee
         @addCircle x2, y2, sz, color, layer
         if y1 == y2
             @addRect x1, y1-sz/2, x2, y2+sz/2, color, layer
-                
+            
+    addTube: px py ti tt color layer=0 =>
+        
+        @addQuad px, py, 1 1 color, @tubeUV[ti][tt], 0 layer
+            
+    addTubeRect: x1 y1 x2 y2 ti color layer=0 =>
+        
+        [x1, x2] = [min(x1, x2), max(x1, x2)]
+        [y1, y2] = [min(y1, y2), max(y1, y2)]
+        
+        @addTube x2, y2, ti, 1 color, layer
+        @addTube x2, y1, ti, 3 color, layer
+        @addTube x1, y1, ti, 4 color, layer
+        @addTube x1, y2, ti, 5 color, layer
+        
+        @addQuad (x1+x2)/2 y1, x2-x1-1 1 color, @tubeUV[ti][0], 0 layer
+        @addQuad (x1+x2)/2 y2, x2-x1-1 1 color, @tubeUV[ti][0], 0 layer
+
+        @addQuad x1, (y1+y2)/2 1 y2-y1-1 color, @tubeUV[ti][2], 0 layer
+        @addQuad x2, (y1+y2)/2 1 y2-y1-1 color, @tubeUV[ti][2], 0 layer
+        
     addRect: x1 y1 x2 y2 color layer=0 =>
         
         [x1, x2] = [min(x1, x2), max(x1, x2)]

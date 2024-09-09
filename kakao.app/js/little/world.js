@@ -78,7 +78,7 @@ world = (function ()
     _k_.extend(world, matrix)
     function world ()
     {
-        var ri, s, uv
+        var ri, s, ti, uv
 
         this["singleStep"] = this["singleStep"].bind(this)
         this["drawInventory"] = this["drawInventory"].bind(this)
@@ -129,17 +129,20 @@ world = (function ()
         this.main.addEventListener('mousemove',this.onMouseMove)
         this.main.addEventListener('contextmenu',this.onContextMenu)
         s = 40.96 / 2048
-        this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
         uv = function (u, uu, v, vv)
         {
             return [s * u,s * v,s * uu,s * vv]
+        }
+        this.tubeUV = []
+        for (ti = 0; ti <= 8; ti++)
+        {
+            this.tubeUV.push([uv(ti * 4 + 2,ti * 4 + 2,8,10),uv(ti * 4 + 2,ti * 4 + 4,8,10),uv(ti * 4 + 2,ti * 4 + 4,10,10),uv(ti * 4 + 2,ti * 4 + 4,10,12),uv(ti * 4,ti * 4 + 2,10,12),uv(ti * 4,ti * 4 + 2,8,10)])
         }
         this.ringUV = []
         for (ri = 0; ri <= 8; ri++)
         {
             this.ringUV.push(uv(ri * 4,(ri + 1) * 4,8,12))
         }
-        this.tubeSquareUV = uv(0,3,0,3)
         this.quadUV = uv(37,39,9,11)
         this.circleUV = uv(36,40,8,12)
         this.circleTopUV = uv(36,40,8,10)
@@ -367,7 +370,7 @@ world = (function ()
             y = t.y
             idx = t.idx
         }
-        return this.g.addQuad(x,y,1,1,COL_TUBE,this.tubeUV[idx],0,1)
+        return this.g.addQuad(x,y,1,1,COL_TUBE,this.tubeUV[2][idx],0,1)
     }
 
     world.prototype["drawEgg"] = function (e, g = this.g)
@@ -386,25 +389,29 @@ world = (function ()
         return g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
-    world.prototype["drawGrinder"] = function (g)
+    world.prototype["drawGrinder"] = function (gr)
     {
-        this.g.addQuad(g.x,g.y,3,3,COL_GRINDER,this.tubeSquareUV,0,1)
-        if (g.bot.mf)
+        var bot, gs
+
+        gs = 1.25
+        this.g.addTubeRect(gr.x - gs,gr.y - gs,gr.x + gs,gr.y + gs,2,COL_GRINDER,1)
+        bot = gr.bot
+        if (bot.mf)
         {
-            g.bot.x = fade(g.bot.c.x,g.x,g.bot.mf)
-            g.bot.y = fade(g.bot.c.y,g.y,g.bot.mf)
+            bot.x = fade(bot.c.x,gr.x,bot.mf)
+            bot.y = fade(bot.c.y,gr.y,bot.mf)
         }
-        else if (g.bot.rf)
+        else if (bot.rf)
         {
-            g.bot.x = fade(g.x,g.bot.s.x,g.bot.rf)
-            g.bot.y = fade(g.y,g.bot.s.y,g.bot.rf)
+            bot.x = fade(gr.x,bot.s.x,bot.rf)
+            bot.y = fade(gr.y,bot.s.y,bot.rf)
         }
-        return this.g.addQuad(g.bot.x,g.bot.y,1,1,COL_GRINDER,this.circleTopUV,0,1)
+        return this.g.addQuad(bot.x,bot.y,1,1,COL_GRINDER,this.circleTopUV,0,1)
     }
 
     world.prototype["drawCritter"] = function (c, g = this.g)
     {
-        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _345_18_, _346_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _347_18_, _348_18_
 
         sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
         rot = 0
@@ -424,8 +431,8 @@ world = (function ()
             h = _k_.clamp(0,1,c.df)
             col = [fade(col[0],COL_DEAD[0],h),fade(col[1],COL_DEAD[1],h),fade(col[2],COL_DEAD[2],h),1]
         }
-        ox = ((_345_18_=c.ox) != null ? _345_18_ : 0)
-        oy = ((_346_18_=c.oy) != null ? _346_18_ : 0)
+        ox = ((_347_18_=c.ox) != null ? _347_18_ : 0)
+        oy = ((_348_18_=c.oy) != null ? _348_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
         g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
@@ -453,10 +460,10 @@ world = (function ()
 
     world.prototype["critterWombPos"] = function (c, e = c.eggs)
     {
-        var cx, cy, xo, yo, _376_25_, _377_25_
+        var cx, cy, xo, yo, _378_25_, _379_25_
 
-        cx = c.x + (((_376_25_=c.ox) != null ? _376_25_ : 0))
-        cy = c.y + (((_377_25_=c.oy) != null ? _377_25_ : 0))
+        cx = c.x + (((_378_25_=c.ox) != null ? _378_25_ : 0))
+        cy = c.y + (((_379_25_=c.oy) != null ? _379_25_ : 0))
         xo = [-0.2,0,0.2][e]
         yo = [0.15,0.25,0.15][e]
         return {x:cx + xo,y:cy + yo}

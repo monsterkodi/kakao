@@ -27,7 +27,6 @@ COL_EGG_DOT = [0 0 0 0.5]
 COL_GRINDER = [1 0 0 1]
 
 threshMold  = p n m -> parseInt(p/m) != parseInt(n/m)
-
 sort        = a b => [min(a,b), max(a,b)]
 posInCircle = p cx cy cr => (cx - cr) <= p[0] <= (cx + cr) and (cy - cr) <= p[1] <= (cy + cr)
 posInRect   = p x1 y1 x2 y2 => [x1,x2] = sort(x1,x2); [y1,y2] = sort(y1,y2); x1 <= p[0] <= x2 and y1 <= p[1] <= y2
@@ -74,22 +73,23 @@ function world extends matrix
         @main.addEventListener  'contextmenu' @onContextMenu
         
         s = 40.96/2048
-        @tubeUV = [
-            [ s*1 s*2 s*2 s*3 ] # right / left
-            [ s*2 s*0 s*3 s*1 ] # right down / up left
-            [ s*2 s*1 s*3 s*2 ] # down / up
-            [ s*2 s*2 s*3 s*3 ] # down left / right up
-            [ s*0 s*2 s*1 s*3 ] # down right / left up
-            [ s*0 s*0 s*1 s*1 ] # up right / left down
-            ]
-            
         uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
+        
+        @tubeUV = []
+        for ti in 0..8
+            @tubeUV.push [
+                uv ti*4+2 ti*4+2  8 10  # right / left
+                uv ti*4+2 ti*4+4  8 10  # right down / up left
+                uv ti*4+2 ti*4+4 10 10  # down / up
+                uv ti*4+2 ti*4+4 10 12  # down left / right up
+                uv ti*4 ti*4+2   10 12  # down right / left up
+                uv ti*4 ti*4+2    8 10  # up right / left down
+                ]
 
         @ringUV = []
         for ri in 0..8
             @ringUV.push uv ri*4 (ri+1)*4 8 12
         
-        @tubeSquareUV = uv 0   3 0  3
         @quadUV       = uv 37 39 9 11 
         @circleUV     = uv 36 40 8 12 
         @circleTopUV  = uv 36 40 8 10 
@@ -280,12 +280,12 @@ function world extends matrix
     drawTube: x y idx =>
         
         if empty y
-            t = x
-            x = t.x 
-            y = t.y
+            t   = x
+            x   = t.x 
+            y   = t.y
             idx = t.idx
         
-        @g.addQuad x, y, 1 1 COL_TUBE, @tubeUV[idx], 0 1
+        @g.addQuad x, y, 1 1 COL_TUBE, @tubeUV[2][idx], 0 1
         
     drawEgg: e g=@g =>
         
@@ -300,18 +300,20 @@ function world extends matrix
         
         g.addQuad e.x+ox, e.y+oy, s, s, [COL_EGG[0], COL_EGG[1], COL_EGG[2], a], @eggUV, 0 1
         
-    drawGrinder: g =>
+    drawGrinder: gr =>
         
-        @g.addQuad g.x, g.y, 3 3 COL_GRINDER, @tubeSquareUV, 0 1
+        gs = 1.25
+        @g.addTubeRect gr.x-gs, gr.y-gs, gr.x+gs, gr.y+gs, 2 COL_GRINDER, 1
         
-        if g.bot.mf
-            g.bot.x = fade g.bot.c.x, g.x, g.bot.mf
-            g.bot.y = fade g.bot.c.y, g.y, g.bot.mf
-        else if g.bot.rf
-            g.bot.x = fade g.x, g.bot.s.x, g.bot.rf
-            g.bot.y = fade g.y, g.bot.s.y, g.bot.rf
+        bot = gr.bot
+        if bot.mf
+            bot.x = fade bot.c.x, gr.x, bot.mf
+            bot.y = fade bot.c.y, gr.y, bot.mf
+        else if bot.rf
+            bot.x = fade gr.x, bot.s.x, bot.rf
+            bot.y = fade gr.y, bot.s.y, bot.rf
         
-        @g.addQuad g.bot.x, g.bot.y, 1 1 COL_GRINDER, @circleTopUV, 0 1 
+        @g.addQuad bot.x, bot.y, 1 1 COL_GRINDER, @circleTopUV, 0 1 
 
     drawCritter: c g=@g =>
         
@@ -500,7 +502,7 @@ function world extends matrix
             
             switch slot.type
                 
-                @CRITTER ➜ @drawCritter {x:sx, y:y, age:@critterAdultAge/2, df:1}, @h    
+                @CRITTER ➜ @drawCritter {x:sx, y:y, age:@critterAdultAge/2, df:1}, @h   
                 @EGG     ➜ @drawEgg     {x:sx, y:y, age:@eggMaxAge}, @h    
                 @PLANT   ➜ @drawPlant   @makePlant(sx, y, 8, @leafMaxAge+1), @h    
         

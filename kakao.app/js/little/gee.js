@@ -25,6 +25,8 @@ gee = (function ()
         this["addQuad"] = this["addQuad"].bind(this)
         this["addCircle"] = this["addCircle"].bind(this)
         this["addRect"] = this["addRect"].bind(this)
+        this["addTubeRect"] = this["addTubeRect"].bind(this)
+        this["addTube"] = this["addTube"].bind(this)
         this["addPipe"] = this["addPipe"].bind(this)
         this["win2Pos"] = this["win2Pos"].bind(this)
         this.textureInfos = []
@@ -64,20 +66,23 @@ gee = (function ()
 
     gee.prototype["initUV"] = function ()
     {
-        var ri, s, uv
+        var ri, s, ti, uv
 
         s = 40.96 / 2048
-        this.tubeUV = [[s * 1,s * 2,s * 2,s * 3],[s * 2,s * 0,s * 3,s * 1],[s * 2,s * 1,s * 3,s * 2],[s * 2,s * 2,s * 3,s * 3],[s * 0,s * 2,s * 1,s * 3],[s * 0,s * 0,s * 1,s * 1]]
         uv = function (u, uu, v, vv)
         {
             return [s * u,s * v,s * uu,s * vv]
+        }
+        this.tubeUV = []
+        for (ti = 0; ti <= 8; ti++)
+        {
+            this.tubeUV.push([uv(ti * 4 + 2,ti * 4 + 2,8,10),uv(ti * 4 + 2,ti * 4 + 4,8,10),uv(ti * 4 + 2,ti * 4 + 4,10,10),uv(ti * 4 + 2,ti * 4 + 4,10,12),uv(ti * 4,ti * 4 + 2,10,12),uv(ti * 4,ti * 4 + 2,8,10)])
         }
         this.ringUV = []
         for (ri = 0; ri <= 8; ri++)
         {
             this.ringUV.push(uv(ri * 4,(ri + 1) * 4,8,12))
         }
-        this.tubeSquareUV = uv(0,3,0,3)
         this.quadUV = uv(37,39,9,11)
         this.circleUV = uv(36,40,8,12)
         this.circleTopUV = uv(36,40,8,10)
@@ -175,6 +180,27 @@ void main(void) {
         {
             return this.addRect(x1,y1 - sz / 2,x2,y2 + sz / 2,color,layer)
         }
+    }
+
+    gee.prototype["addTube"] = function (px, py, ti, tt, color, layer = 0)
+    {
+        return this.addQuad(px,py,1,1,color,this.tubeUV[ti][tt],0,layer)
+    }
+
+    gee.prototype["addTubeRect"] = function (x1, y1, x2, y2, ti, color, layer = 0)
+    {
+        var _a_ = [_k_.min(x1,x2),_k_.max(x1,x2)]; x1 = _a_[0]; x2 = _a_[1]
+
+        var _b_ = [_k_.min(y1,y2),_k_.max(y1,y2)]; y1 = _b_[0]; y2 = _b_[1]
+
+        this.addTube(x2,y2,ti,1,color,layer)
+        this.addTube(x2,y1,ti,3,color,layer)
+        this.addTube(x1,y1,ti,4,color,layer)
+        this.addTube(x1,y2,ti,5,color,layer)
+        this.addQuad((x1 + x2) / 2,y1,x2 - x1 - 1,1,color,this.tubeUV[ti][0],0,layer)
+        this.addQuad((x1 + x2) / 2,y2,x2 - x1 - 1,1,color,this.tubeUV[ti][0],0,layer)
+        this.addQuad(x1,(y1 + y2) / 2,1,y2 - y1 - 1,color,this.tubeUV[ti][2],0,layer)
+        return this.addQuad(x2,(y1 + y2) / 2,1,y2 - y1 - 1,color,this.tubeUV[ti][2],0,layer)
     }
 
     gee.prototype["addRect"] = function (x1, y1, x2, y2, color, layer = 0)
