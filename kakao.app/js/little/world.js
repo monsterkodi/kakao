@@ -81,6 +81,7 @@ world = (function ()
         var ri, s, uv
 
         this["singleStep"] = this["singleStep"].bind(this)
+        this["drawInventory"] = this["drawInventory"].bind(this)
         this["drawSpeedGauge"] = this["drawSpeedGauge"].bind(this)
         this["gridQuadRect"] = this["gridQuadRect"].bind(this)
         this["roundedQuadRect"] = this["roundedQuadRect"].bind(this)
@@ -106,8 +107,9 @@ world = (function ()
         this.pause = false
         this.speed = 10
         this.tweaky = new tweaky(this.main)
-        this.speedGauge = {x:0,y:0,s:0.5,sx:0.3125,sw:1,sr:0.125}
         world.__super__.constructor.call(this)
+        this.inventory = {x:0,y:-1,s:1,slots:[{type:this.CRITTER,num:0},{type:this.EGG,num:0},{type:this.PLANT,num:0}]}
+        this.speedGauge = {x:0,y:0,s:0.5,sx:0.3125,sw:1,sr:0.125}
         this.main.focus()
         this.g = new gee(this.main)
         this.h = new gee(this.main)
@@ -327,12 +329,12 @@ world = (function ()
     world.prototype["toggleValues"] = function ()
     {}
 
-    world.prototype["drawPlant"] = function (p)
+    world.prototype["drawPlant"] = function (p, g = this.g)
     {
         var af, col, l, li, ls, lx, ly, r, s
 
         s = 0.25
-        this.g.addQuad(p.x,p.y,s,s,COL_PLANT,this.circleUV,0,0)
+        g.addQuad(p.x,p.y,s,s,COL_PLANT,this.circleUV,0,0)
         s = 0.15
         r = 0.2
         for (var _a_ = li = 0, _b_ = p.leaves.length; (_a_ <= _b_ ? li < p.leaves.length : li > p.leaves.length); (_a_ <= _b_ ? ++li : --li))
@@ -350,7 +352,7 @@ world = (function ()
                 ls = s
                 col = [1,1,0,1]
             }
-            this.g.addQuad(lx,ly,ls,ls,col,this.circleUV,0,1)
+            g.addQuad(lx,ly,ls,ls,col,this.circleUV,0,1)
         }
     }
 
@@ -368,9 +370,9 @@ world = (function ()
         return this.g.addQuad(x,y,1,1,COL_TUBE,this.tubeUV[idx],0,1)
     }
 
-    world.prototype["drawEgg"] = function (e)
+    world.prototype["drawEgg"] = function (e, g = this.g)
     {
-        var a, ageFac, ox, oy, s, _297_18_, _298_18_
+        var a, ageFac, ox, oy, s, _298_18_, _299_18_
 
         ageFac = e.age / this.eggMaxAge
         s = fade(0.1,0.3,ageFac)
@@ -379,9 +381,9 @@ world = (function ()
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        ox = ((_297_18_=e.ox) != null ? _297_18_ : 0)
-        oy = ((_298_18_=e.oy) != null ? _298_18_ : 0)
-        return this.g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
+        ox = ((_298_18_=e.ox) != null ? _298_18_ : 0)
+        oy = ((_299_18_=e.oy) != null ? _299_18_ : 0)
+        return g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
     world.prototype["drawGrinder"] = function (g)
@@ -400,9 +402,9 @@ world = (function ()
         return this.g.addQuad(g.bot.x,g.bot.y,1,1,COL_GRINDER,this.circleTopUV,0,1)
     }
 
-    world.prototype["drawCritter"] = function (c)
+    world.prototype["drawCritter"] = function (c, g = this.g)
     {
-        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _344_18_, _345_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _345_18_, _346_18_
 
         sx = sy = fade(0.2,1,c.age / this.critterAdultAge)
         rot = 0
@@ -422,15 +424,15 @@ world = (function ()
             h = _k_.clamp(0,1,c.df)
             col = [fade(col[0],COL_DEAD[0],h),fade(col[1],COL_DEAD[1],h),fade(col[2],COL_DEAD[2],h),1]
         }
-        ox = ((_344_18_=c.ox) != null ? _344_18_ : 0)
-        oy = ((_345_18_=c.oy) != null ? _345_18_ : 0)
+        ox = ((_345_18_=c.ox) != null ? _345_18_ : 0)
+        oy = ((_346_18_=c.oy) != null ? _346_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
-        this.g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
-        this.g.addQuad(cx - rcos * (1 / 4) * sx,cy - rsin * (1 / 4) * sy,0.5 * sx,0.5 * sy,col,this.circleUV,0,1)
-        this.g.addQuad(cx + rcos * (1 / 12) * sx,cy + rsin * (1 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
-        this.g.addQuad(cx + rcos * (3 / 12) * sx,cy + rsin * (3 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
-        this.g.addQuad(cx + rcos * (5 / 12) * sx,cy + rsin * (5 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
+        g.addQuad(cx - rcos * (1 / 4) * sx,cy - rsin * (1 / 4) * sy,0.5 * sx,0.5 * sy,col,this.circleUV,0,1)
+        g.addQuad(cx + rcos * (1 / 12) * sx,cy + rsin * (1 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        g.addQuad(cx + rcos * (3 / 12) * sx,cy + rsin * (3 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
+        g.addQuad(cx + rcos * (5 / 12) * sx,cy + rsin * (5 / 12) * sy,(1 / 6) * sx,(1 / 6) * sy,col,this.circleUV,0,1)
         thrd = 1 / 3
         se = 0.6
         for (var _a_ = e = 0, _b_ = c.eggs; (_a_ <= _b_ ? e < c.eggs : e > c.eggs); (_a_ <= _b_ ? ++e : --e))
@@ -439,22 +441,22 @@ world = (function ()
             yo = [0.15,0.25,0.15][e] * sy
             rxo = rcos * xo - rsin * yo
             ryo = rsin * xo + rcos * yo
-            this.g.addQuad(cx + rxo,cy + ryo,[1,1.25,1][e] * thrd * sx * se,[1,1.25,1][e] * thrd * se * sy,COL_EGG_DOT,this.circleUV,0,1)
+            g.addQuad(cx + rxo,cy + ryo,[1,1.25,1][e] * thrd * sx * se,[1,1.25,1][e] * thrd * se * sy,COL_EGG_DOT,this.circleUV,0,1)
         }
         if (c.age > this.critterAdultAge && !c.df)
         {
             f = _k_.min(1,this.critterEggFactor(c))
             wp = this.critterWombPos(c)
-            return this.g.addQuad(wp.x,wp.y,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
+            return g.addQuad(wp.x,wp.y,[1,1.25,1][e] * thrd * sx * se * f,[1,1.25,1][e] * thrd * se * sy * f,COL_EGG,this.circleUV,0,1)
         }
     }
 
     world.prototype["critterWombPos"] = function (c, e = c.eggs)
     {
-        var cx, cy, xo, yo, _375_25_, _376_25_
+        var cx, cy, xo, yo, _376_25_, _377_25_
 
-        cx = c.x + (((_375_25_=c.ox) != null ? _375_25_ : 0))
-        cy = c.y + (((_376_25_=c.oy) != null ? _376_25_ : 0))
+        cx = c.x + (((_376_25_=c.ox) != null ? _376_25_ : 0))
+        cy = c.y + (((_377_25_=c.oy) != null ? _377_25_ : 0))
         xo = [-0.2,0,0.2][e]
         yo = [0.15,0.25,0.15][e]
         return {x:cx + xo,y:cy + yo}
@@ -541,6 +543,7 @@ world = (function ()
         }
         this.g.draw(this.tickInfo.time)
         this.drawSpeedGauge()
+        this.drawInventory()
         this.h.draw(this.tickInfo.time)
         return delete this.oneStep
     }
@@ -576,6 +579,36 @@ world = (function ()
         {
             phs = (this.speed / 60) * (ri / 16)
             this.h.addQuad(x + wave(1,phs) * s / 4,y - wave(1,phs - 0.25) * s / 4,sz,sz,[ri / 8,ri / 8,ri / 8,1],this.circleUV,0,1)
+        }
+    }
+
+    world.prototype["drawInventory"] = function ()
+    {
+        var s, sh, si, slot, sx, x, y
+
+        x = this.inventory.x
+        y = this.inventory.y
+        s = this.inventory.s
+        sh = s / 2
+        var list = _k_.list(this.inventory.slots)
+        for (si = 0; si < list.length; si++)
+        {
+            slot = list[si]
+            sx = x + s * si
+            this.h.addRect(sx - sh,y - sh,sx + sh,y + sh,[1,0.1,0.1,1],0)
+            switch (slot.type)
+            {
+                case this.CRITTER:
+                    this.drawCritter({x:sx,y:y,age:this.critterAdultAge / 2,df:1},this.h)
+                    break
+                case this.EGG:
+                    this.drawEgg({x:sx,y:y,age:this.eggMaxAge},this.h)
+                    break
+                case this.PLANT:
+                    this.drawPlant(this.makePlant(sx,y,8,this.leafMaxAge + 1),this.h)
+                    break
+            }
+
         }
     }
 

@@ -293,17 +293,18 @@ function matrix
         @types[o.type].push o
         o
            
-    addGrinder: x y     => @addObject x, y, type:@GRINDER, bot: x:x, y:y
-    addEgg:     x y     => @addObject x, y, type:@EGG,     age:0
-    addCritter: x y     => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
-    addTube:    x y idx => @addObject x, y, type:@TUBE,    idx:idx
-    addPlant:   x y     => 
-    
-        leaves = [] 
-        for l in 0...@numLeaves
-            leaves.push age:-l*@leafMaxAge/@numLeaves
+    addGrinder: x y      => @addObject x, y, type:@GRINDER, bot: x:x, y:y
+    addEgg:     x y      => @addObject x, y, type:@EGG,     age:0
+    addCritter: x y      => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
+    addTube:    x y idx  => @addObject x, y, type:@TUBE,    idx:idx
+    addPlant:   x y      => @addObject x, y, @makePlant x, y, @numLeaves        
+    makePlant: x y numLeaves leafAge =>
         
-        @addObject x, y, type:@PLANT, leaves:leaves
+        leaves = [] 
+        for l in 0...numLeaves
+            leaves.push age:leafAge ? -l*@leafMaxAge/@numLeaves
+        
+        x:x, y:y, type:@PLANT, leaves:leaves
 
     # 0000000    00000000  000      
     # 000   000  000       000      

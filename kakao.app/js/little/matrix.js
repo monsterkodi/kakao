@@ -30,6 +30,7 @@ matrix = (function ()
         this["objectAt"] = this["objectAt"].bind(this)
         this["del"] = this["del"].bind(this)
         this["delAt"] = this["delAt"].bind(this)
+        this["makePlant"] = this["makePlant"].bind(this)
         this["addPlant"] = this["addPlant"].bind(this)
         this["addTube"] = this["addTube"].bind(this)
         this["addCritter"] = this["addCritter"].bind(this)
@@ -453,14 +454,19 @@ matrix = (function ()
 
     matrix.prototype["addPlant"] = function (x, y)
     {
+        return this.addObject(x,y,this.makePlant(x,y,this.numLeaves))
+    }
+
+    matrix.prototype["makePlant"] = function (x, y, numLeaves, leafAge)
+    {
         var l, leaves
 
         leaves = []
-        for (var _a_ = l = 0, _b_ = this.numLeaves; (_a_ <= _b_ ? l < this.numLeaves : l > this.numLeaves); (_a_ <= _b_ ? ++l : --l))
+        for (var _a_ = l = 0, _b_ = numLeaves; (_a_ <= _b_ ? l < numLeaves : l > numLeaves); (_a_ <= _b_ ? ++l : --l))
         {
-            leaves.push({age:-l * this.leafMaxAge / this.numLeaves})
+            leaves.push({age:(leafAge != null ? leafAge : -l * this.leafMaxAge / this.numLeaves)})
         }
-        return this.addObject(x,y,{type:this.PLANT,leaves:leaves})
+        return {x:x,y:y,type:this.PLANT,leaves:leaves}
     }
 
     matrix.prototype["delAt"] = function (p)
