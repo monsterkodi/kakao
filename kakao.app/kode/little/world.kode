@@ -28,9 +28,15 @@ COL_GRINDER = [1 0 0 1]
 
 threshMold  = p n m -> parseInt(p/m) != parseInt(n/m)
 
+sort        = a b => [min(a,b), max(a,b)]
+posInCircle = p cx cy cr => (cx - cr) <= p[0] <= (cx + cr) and (cy - cr) <= p[1] <= (cy + cr)
+posInRect   = p x1 y1 x2 y2 => [x1,x2] = sort(x1,x2); [y1,y2] = sort(y1,y2); x1 <= p[0] <= x2 and y1 <= p[1] <= y2
+posInPipeH  = p x y w r => posInCircle(p, x, y, r) or posInCircle(p, x+w, y, r) or posInRect(p, x, y-r, x+w, y+r)
+valuePipeH  = p x y w r => if posInPipeH(p, x, y, w, r) ➜ (p[0] - x) / w 
+
 function world extends matrix
 
-    @: -> 
+    @: ->
         
         @main =$ 'main'
         @pause = false
@@ -38,6 +44,8 @@ function world extends matrix
         @speed = 10
                 
         @tweaky = new tweaky @main
+        
+        @speedGauge = x:0 y:0 s:0.5 sx:0.3125 sw:1 sr:0.125
         
         super()
         
@@ -140,13 +148,8 @@ function world extends matrix
             pos:  @win2Pos winPos
             win:  winPos
         
-    win2Pos: winPos =>
-        
-        x = (((winPos.x - @g.br.left) / @g.br.width - 0.5) *  2 ) / (@g.camScale * @g.aspect) + @g.camPosX
-        y = (((winPos.y - @g.br.top) / @g.br.height - 0.5) * -2 ) /  @g.camScale + @g.camPosY
-        
-        [x,y]
-    
+    win2Pos: winPos => @g.win2Pos winPos
+            
     win2Grid: winPos =>
         
         [x, y] = @win2Pos winPos
@@ -164,12 +167,22 @@ function world extends matrix
     # 000   000  0000000    000000000  000  0000  
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000   0000000   
-    
+        
     onDragStart: drag event =>
+        
+        hp = @h.win2Pos drag.pos
+        
+        if posInCircle hp, @speedGauge.x, @speedGauge.y, @speedGauge.s/2
+            @togglePause()
+            ⮐ 
+            
+        if v = valuePipeH hp, @speedGauge.sx, @speedGauge.y, @speedGauge.sw, @speedGauge.sr
+            @speed = fade 1 100 v
+            ⮐ 
         
         ⮐ if not @mouseInWorld()
         
-        p = @win2Grid drag.pos
+        p  = @win2Grid drag.pos
         
         if event.button == 2
             @delAt p
@@ -184,6 +197,12 @@ function world extends matrix
             @addPlant p[0], p[1]
         
     onDragMove: drag event =>
+        
+        hp = @h.win2Pos drag.pos
+                
+        if v = valuePipeH hp, @speedGauge.sx, @speedGauge.y, @speedGauge.sw, 2.5*@speedGauge.sr
+            @speed = fade 1 100 v
+            ⮐ 
 
         p = @win2Grid drag.pos
         
@@ -413,29 +432,38 @@ function world extends matrix
                     
         @g.draw @tickInfo.time
         
-        @h.addQuad 0 -1 1 1 COL_EGG,     @quadUV, 0 0
-        @h.addQuad 1 -1 1 1 COL_CRITTER, @quadUV, 0 0
+        # @h.addQuad 0 -1 1 1 COL_EGG,     @quadUV, 0 0
+        # @h.addQuad 1 -1 1 1 COL_CRITTER, @quadUV, 0 0
         
-        @drawSpeedGauge 0 0 0.5
+        @drawSpeedGauge()
         
         @h.draw @tickInfo.time
         
         delete @oneStep
             
-    drawSpeedGauge: x y s=1 =>
+    drawSpeedGauge: =>
+        
+        x = @speedGauge.x
+        y = @speedGauge.y
+        s = @speedGauge.s
+        sx = @speedGauge.sx
+        sr = @speedGauge.sr
+        sw = @speedGauge.sw
         
         bc = [0.2 0.2 0.2 1]
         
-        @h.addPipe x, y, x+1, y, 0.25, bc
+        @h.addPipe x, y, sx+sw, y, 0.25, bc
         
-        @h.addPipe x+0.3125, y, x+1, y, 0.125, [0.1 0.1 0.1 1]
+        @h.addPipe sx, y, sx+sw, y, sr, [0.1 0.1 0.1 1]
         
-        @h.addCircle x+fade(0.3125 1 @speed/100), y, 0.125, [0.5 0.5 0.5 1]
+        @h.addCircle x+fade(sx, sx+sw, @speed/100), y, sr, [0.5 0.5 0.5 1]
         
         @h.addCircle x, y, s, bc
         
         wave = hz ph=0 => sin hz*ph*TAU + hz*TAU*(@speed/60)*@tickInfo.time/1000
+        
         @h.addQuad x, y, s, s, [0 0 0 1], @ringUV[4], 0 1
+        
         pc = @pause ? [1 0 0 1] : [0 0 0 0]
         @h.addCircle x, y, s/4, pc, 1
         ⮐ if @pause

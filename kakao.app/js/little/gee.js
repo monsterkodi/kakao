@@ -26,6 +26,7 @@ gee = (function ()
         this["addCircle"] = this["addCircle"].bind(this)
         this["addRect"] = this["addRect"].bind(this)
         this["addPipe"] = this["addPipe"].bind(this)
+        this["win2Pos"] = this["win2Pos"].bind(this)
         this.textureInfos = []
         this.canvas = elem('canvas',{class:'canvas'})
         this.main.appendChild(this.canvas)
@@ -50,6 +51,15 @@ gee = (function ()
         this.camScale = 0.2
         post.on('resize',this.resize)
         this.loadTiles()
+    }
+
+    gee.prototype["win2Pos"] = function (winPos)
+    {
+        var x, y
+
+        x = (((winPos.x - this.br.left) / this.br.width - 0.5) * 2) / (this.camScale * this.aspect) + this.bufCamPos[0]
+        y = (((winPos.y - this.br.top) / this.br.height - 0.5) * -2) / this.camScale + this.bufCamPos[1]
+        return [x,y]
     }
 
     gee.prototype["initUV"] = function ()

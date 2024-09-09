@@ -47,7 +47,14 @@ function gee
         # log @numLayers, @layerStart, @numQuads, @quadsPerLayer, @maxQuads, @quadDataLength
         
         @loadTiles()
+
+    win2Pos: winPos =>
         
+        x = (((winPos.x - @br.left) / @br.width  - 0.5) *  2 ) / (@camScale * @aspect) + @bufCamPos[0]
+        y = (((winPos.y - @br.top)  / @br.height - 0.5) * -2 ) /  @camScale            + @bufCamPos[1]
+        
+        [x,y]
+                
     # 000  000   000  000  000000000  000   000  000   000  
     # 000  0000  000  000     000     000   000  000   000  
     # 000  000 0 000  000     000     000   000   000 000   
