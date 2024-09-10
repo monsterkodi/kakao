@@ -15,11 +15,24 @@ function matrix
         @PLANT             = 0
         @EGG               = 1
         @CRITTER           = 2
-        @TUBE              = 3
+        @CORPSE            = 3
         @GRINDER           = 4
-        @NUM_TYPES         = 5
+        @TUBE              = 5
+        @NUM_TYPES         = 6
         
-        @ws = 40
+        @anims    = []
+        @eggs     = []
+        @critters = []
+        @plants   = []
+        @tubes    = []
+        @grinders = []
+        
+        @types = []
+        
+        for t in 0...@NUM_TYPES
+            @types.push []
+        
+        @ws = 5
                 
         @eggFadeTime       = 6
         @eggMoveTime       = 3
@@ -29,15 +42,13 @@ function matrix
         @botDelta          = 1
         
         @numLeaves         = 8
-        @setCritterAge     2400
+        @setCritterAge     1000
         @critterNumEggs    = 2
-        @eggMaxAge         = 200
+        @eggMaxAge         = 100
         @leafMaxAge        = 50
         @critterEatPeriod  = 50
         @critterStarveTime = 50
-        
-        @start()
-        
+                       
         @tweaky.init                                                    
             speed:      min: 1    max:100    step:1      value:@speed,              cb: (@speed) =>
             leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
@@ -51,7 +62,7 @@ function matrix
             critters:   info: => @critters.length
             corpses:    info: => @critters.filter((c) -> c.df >= 1).length
             plants:     info: => @plants.length
-        
+                
     setCritterAge: (@critterMaxAge) =>
         
         @critterAdultAge = parseInt @critterMaxAge/3
@@ -83,11 +94,16 @@ function matrix
                 column.push null
             @grid.push column
             
-        @addEgg @ws/2 @ws/2
-        
-        for x in 0..@ws/3
-            for y in 0..@ws/3
-                @addPlant x*3 y*3
+        @slots[@CORPSE].num = 0
+        @slots[@PLANT].num = 1
+        @slots[@EGG].num = 1
+
+        if 0
+            @addEgg @ws/2 @ws/2
+            
+            for x in 0..@ws/3
+                for y in 0..@ws/3
+                    @addPlant x*3 y*3
         
     #  0000000   0000000    000   000   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000   000  0000  000  000       000       
@@ -276,6 +292,24 @@ function matrix
     # 000000000  000   000  000   000    
     # 000   000  000   000  000   000    
     # 000   000  0000000    0000000      
+
+    placeObjectOfType: p type =>
+        
+        x = parseInt p[0]
+        y = parseInt p[1]
+        
+        @takeAt [x, y]
+        
+        o = switch type
+            @GRINDER ➜ bot: x:x, y:y
+            @EGG     ➜ age:0
+            @CRITTER ➜ age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
+            @CORPSE  ➜ age:2*@critterMaxAge, sx:1, sy:1, df:1, eggs:0
+            @PLANT   ➜ @makePlant x, y, @numLeaves
+            
+        o.type = type == @CORPSE ? @CRITTER : type
+            
+        @addObject x, y, o
     
     addObject: x y o =>
     
@@ -296,6 +330,7 @@ function matrix
     addGrinder: x y      => @addObject x, y, type:@GRINDER, bot: x:x, y:y
     addEgg:     x y      => @addObject x, y, type:@EGG,     age:0
     addCritter: x y      => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
+    addCorpse:  x y      => @addObject x, y, type:@CRITTER, age:2*@critterMaxAge, sx:1, sy:1, df:1, eggs:0
     addTube:    x y idx  => @addObject x, y, type:@TUBE,    idx:idx
     addPlant:   x y      => @addObject x, y, @makePlant x, y, @numLeaves        
     makePlant: x y numLeaves leafAge =>
@@ -312,17 +347,24 @@ function matrix
     # 000   000  000       000      
     # 0000000    00000000  0000000  
     
+    takeAt: p =>
+        
+        if o = @objectAt p
+            
+            if @slots[o.type]
+                @slots[o.type].num++
+            else if o.type == @CRITTER
+                @slots[@CORPSE].num++
+            
+            @del o
+    
     delAt: p =>
         
         if o = @objectAt p
             @del o
-            
+                        
     del: o =>
-        
-        switch o.type
-            
-            @PLANT ➜ @slots[o.type].num++
-        
+                
         @types[o.type].splice @types[o.type].indexOf(o), 1
         @grid[o.x][o.y] = null
         
@@ -337,7 +379,7 @@ function matrix
     # 000         0000000   0000000     
     
     objectAt:  p => if @isInWorld p ➜ ⮐ @grid[p[0]][p[1]]
-    isInWorld: p => p[0] >= -0.75 and p[1] >= -0.25 and p[0] < @ws-0.25 and p[1] < @ws+0.25
+    isInWorld: p => p[0] >= 0 and p[1] >= 0 and p[0] < @ws and p[1] < @ws
     isEmpty:   p => not @objectAt p
                 
     buildingAt: p =>

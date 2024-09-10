@@ -12,6 +12,7 @@ use ◆ gee tweaky tube matrix
 
 {cos, sin, PI} = Math
 TAU = 2*PI
+PHI = 1.618
 
 COL_SHADOW  = [0 0 0 0.1]
 COL_BG      = [0.15 0.15 0.15 1]
@@ -30,8 +31,9 @@ clr = r g b a=10 -> [r/10 g/10 b/10 a/10]
 
 threshMold  = p n m -> parseInt(p/m) != parseInt(n/m)
 sort        = a b => [min(a,b), max(a,b)]
-posInCircle = p cx cy cr => (cx - cr) <= p[0] <= (cx + cr) and (cy - cr) <= p[1] <= (cy + cr)
+posInCircle = p cx cy cr => (p[0]-cx)*(p[0]-cx)+(p[1]-cy)*(p[1]-cy) < cr*cr
 posInRect   = p x1 y1 x2 y2 => [x1,x2] = sort(x1,x2); [y1,y2] = sort(y1,y2); x1 <= p[0] <= x2 and y1 <= p[1] <= y2
+posInCRect  = p cx cy w h => (cx-w/2) <= p[0] <= (cx+w/2) and (cy-h/2) <= p[1] <= (cy+h/2)
 posInPipeH  = p x y w r => posInCircle(p, x, y, r) or posInCircle(p, x+w, y, r) or posInRect(p, x, y-r, x+w, y+r)
 valuePipeH  = p x y w r => if posInPipeH(p, x, y, w, r) ➜ (p[0] - x) / w 
 
@@ -47,13 +49,19 @@ function world extends matrix
         @tweaky = new tweaky @main
         
         super()
-        
-        @inventory  = x:0  y:-1 s:0.5 slots:[{type:@CRITTER, num:0}, {type:@EGG, num:1}, {type:@PLANT, num:1}] 
+                
+        @inventory  = x:0  y:-1 s:0.5 slots:[{type:@CORPSE, num:0}, {type:@EGG, num:1}, {type:@PLANT, num:1}] 
         @speedGauge = x:0  y:0  s:0.5 sx:0.3125 sw:1 sh:0.125 sb:0.25
         
         @slots = {}
-        for slot in @inventory.slots
+        for slot,si in @inventory.slots
             @slots[slot.type] = slot
+            slot.x = @inventory.x+@inventory.s*si
+            slot.y = @inventory.y
+            slot.w = @inventory.s
+            slot.h = @inventory.s
+                        
+        @activeSlot = @slots[@PLANT]
         
         @main.focus()
                                 
@@ -67,7 +75,6 @@ function world extends matrix
 
         @h.camCenter  = 'topleft'
         @h.clearColor = [0 0 0 0]
-        @h.canvas.style.pointerEvents = 'none'
         @hudGridY     = 10
         @h.camScale   = 2 / @hudGridY
         @h.camPosX    = -0.5
@@ -111,11 +118,14 @@ function world extends matrix
         @mouse = pos: [0 0]
         
         @drag = new drag 
-            target:  @main # @g.canvas
-            onStart: @onDragStart
-            onMove:  @onDragMove
-            onStop:  @onDragStop
-            cursor: 'pointer'
+            target:     @main
+            onStart:    @onDragStart
+            onMove:     @onDragMove
+            onStop:     @onDragStop
+            cursor:     'pointer'
+            stopEvent:  false
+            
+        @start()
             
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -152,10 +162,16 @@ function world extends matrix
         
         @mouse = 
             grid: @win2Grid winPos
-            pos:  @win2Pos winPos
+            pos:  @win2Pos  winPos
             win:  winPos
             
         hp = @h.win2Pos winPos
+
+        @hoverSlot = null
+        for slot in @inventory.slots
+            if posInCRect hp, slot.x, slot.y, slot.w, slot.h
+                @hoverSlot = slot
+                ⮐ 
 
         if posInCircle hp, @speedGauge.x, @speedGauge.y, @speedGauge.s/2
             @speedGauge.hover = 'gauge'
@@ -188,6 +204,10 @@ function world extends matrix
         
         hp = @h.win2Pos drag.pos
         
+        if @hoverSlot
+            @activeSlot = @hoverSlot
+            ⮐ 
+        
         if posInCircle hp, @speedGauge.x, @speedGauge.y, @speedGauge.s/2
             @togglePause()
             ⮐ 
@@ -198,10 +218,10 @@ function world extends matrix
         
         ⮐ if not @mouseInWorld()
         
-        p  = @win2Grid drag.pos
+        p = @win2Grid drag.pos
         
         if event.button == 2
-            @delAt p
+            @takeAt p
             ⮐ 
         
         if event.metaKey
@@ -209,11 +229,18 @@ function world extends matrix
         else if event.shiftKey
             @addGrinder p[0], p[1]
         else
-            ⮐ if @buildingAt p
-            if @slots[@PLANT].num
-                @slots[@PLANT].num--
-                @addPlant p[0], p[1]
+            @placeActiveSlotObject p
+            
+    placeActiveSlotObject: p =>
         
+        ⮐ if not @activeSlot
+        ⮐ if @slots[@activeSlot.type].num <= 0
+        ⮐ if @buildingAt p
+        
+        @slots[@activeSlot.type].num--
+        
+        @placeObjectOfType p, @activeSlot.type 
+                
     onDragMove: drag event =>
         
         hp = @h.win2Pos drag.pos
@@ -227,16 +254,13 @@ function world extends matrix
         ⮐ if not @mouseInWorld()
                 
         if event.button == 2
-            @delAt p
+            @takeAt p
             ⮐ 
             
         ⮐ if event.shiftKey
         
         if not event.metaKey
-            ⮐ if @buildingAt p
-            if @slots[@PLANT].num
-                @slots[@PLANT].num--
-                @addPlant p[0], p[1]
+            @placeActiveSlotObject p 
         
         ⮐ if not @dragPath
         
@@ -446,7 +470,7 @@ function world extends matrix
         
         @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,   COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
-        # @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
+        @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
                 
         if @dragPath ➜ tube.path @dragPath, @drawTube
             
@@ -526,19 +550,24 @@ function world extends matrix
         sh = s/2
         fr = s/4
         
-        @h.addRoundedFrame x-sh, y-sh, x+s*@inventory.slots.length-sh, y+sh, clr(2 2 2), 1, fr, 4
+        frcol = clr(2 2 2)
+        
+        @h.addRoundedFrame x-sh, y-PHI*sh, x+s*@inventory.slots.length-sh, y+sh, frcol, 1, fr, 4
         
         for slot,si in @inventory.slots
             
             sx = x+s*si
-            @h.crect  sx, y-s/2, sx:s*0.75 sy:s*0.75 layer:0 color:clr(2 2 2)
-            @h.addRect sx-sh, y-sh, sx+sh, y+sh, clr(1 1 1), 0
-            @h.crect  sx, y-s/2, sx:s/2 sy:s/2 layer:1 color:clr(1 1 1)
-            @h.number sx, y-s/2, slot.num, scale:s/4 layer:1 color:clr(10 10 10)
+            
+            # bgcol = (slot == @activeSlot) ? clr(2 2 2) : (slot == @hoverSlot) ? clr(0 0 0 ) : clr(1 1 1)
+            bgcol = (slot == @activeSlot) ? clr(0 0 0) : (slot == @hoverSlot) ? clr(1 1 1) : clr(1.6 1.6 1.6)
+            
+            @h.crect  slot.x, slot.y, sx:s, sy:s,           layer:0 color:bgcol
+            @h.crect  slot.x, slot.y-s*0.6, sx:s, sy:s*0.3, layer:0 color:bgcol
+            @h.number slot.x, slot.y-s*0.57, slot.num, scale:s/4 layer:1 color:clr(10 10 10)
             
             switch slot.type
                 
-                @CRITTER ➜ @drawCritter {x:sx, y:y+s/12, age:@critterAdultAge/2, df:1}, @h, s, clr(5 5 5)
+                @CORPSE  ➜ @drawCritter {x:sx, y:y+s/12, age:@critterAdultAge/2, df:1}, @h, s, clr(5 5 5)
                 @EGG     ➜ @drawEgg     {x:sx, y:y, age:@eggMaxAge}, @h, s*1.5
                 @PLANT   ➜ @drawPlant   @makePlant(sx, y, 8, @leafMaxAge+1), @h, s
         

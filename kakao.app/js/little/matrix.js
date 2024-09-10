@@ -13,6 +13,8 @@ matrix = (function ()
 {
     function matrix ()
     {
+        var t
+
         this["randomOffsetCross"] = this["randomOffsetCross"].bind(this)
         this["randomOffset"] = this["randomOffset"].bind(this)
         this["neighborLeaf"] = this["neighborLeaf"].bind(this)
@@ -30,13 +32,16 @@ matrix = (function ()
         this["objectAt"] = this["objectAt"].bind(this)
         this["del"] = this["del"].bind(this)
         this["delAt"] = this["delAt"].bind(this)
+        this["takeAt"] = this["takeAt"].bind(this)
         this["makePlant"] = this["makePlant"].bind(this)
         this["addPlant"] = this["addPlant"].bind(this)
         this["addTube"] = this["addTube"].bind(this)
+        this["addCorpse"] = this["addCorpse"].bind(this)
         this["addCritter"] = this["addCritter"].bind(this)
         this["addEgg"] = this["addEgg"].bind(this)
         this["addGrinder"] = this["addGrinder"].bind(this)
         this["addObject"] = this["addObject"].bind(this)
+        this["placeObjectOfType"] = this["placeObjectOfType"].bind(this)
         this["anim"] = this["anim"].bind(this)
         this["returnBot"] = this["returnBot"].bind(this)
         this["moveBotTo"] = this["moveBotTo"].bind(this)
@@ -53,10 +58,22 @@ matrix = (function ()
         this.PLANT = 0
         this.EGG = 1
         this.CRITTER = 2
-        this.TUBE = 3
+        this.CORPSE = 3
         this.GRINDER = 4
-        this.NUM_TYPES = 5
-        this.ws = 40
+        this.TUBE = 5
+        this.NUM_TYPES = 6
+        this.anims = []
+        this.eggs = []
+        this.critters = []
+        this.plants = []
+        this.tubes = []
+        this.grinders = []
+        this.types = []
+        for (var _a_ = t = 0, _b_ = this.NUM_TYPES; (_a_ <= _b_ ? t < this.NUM_TYPES : t > this.NUM_TYPES); (_a_ <= _b_ ? ++t : --t))
+        {
+            this.types.push([])
+        }
+        this.ws = 5
         this.eggFadeTime = 6
         this.eggMoveTime = 3
         this.critMoveTime = 4
@@ -64,13 +81,12 @@ matrix = (function ()
         this.leafEatTime = 4
         this.botDelta = 1
         this.numLeaves = 8
-        this.setCritterAge(2400)
+        this.setCritterAge(1000)
         this.critterNumEggs = 2
-        this.eggMaxAge = 200
+        this.eggMaxAge = 100
         this.leafMaxAge = 50
         this.critterEatPeriod = 50
         this.critterStarveTime = 50
-        this.start()
         this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
         {
             this.speed = speed
@@ -142,19 +158,25 @@ matrix = (function ()
             }
             this.grid.push(column)
         }
-        this.addEgg(this.ws / 2,this.ws / 2)
-        for (var _10_ = x = 0, _11_ = this.ws / 3; (_10_ <= _11_ ? x <= this.ws / 3 : x >= this.ws / 3); (_10_ <= _11_ ? ++x : --x))
+        this.slots[this.CORPSE].num = 0
+        this.slots[this.PLANT].num = 1
+        this.slots[this.EGG].num = 1
+        if (0)
         {
-            for (var _12_ = y = 0, _13_ = this.ws / 3; (_12_ <= _13_ ? y <= this.ws / 3 : y >= this.ws / 3); (_12_ <= _13_ ? ++y : --y))
+            this.addEgg(this.ws / 2,this.ws / 2)
+            for (var _10_ = x = 0, _11_ = this.ws / 3; (_10_ <= _11_ ? x <= this.ws / 3 : x >= this.ws / 3); (_10_ <= _11_ ? ++x : --x))
             {
-                this.addPlant(x * 3,y * 3)
+                for (var _12_ = y = 0, _13_ = this.ws / 3; (_12_ <= _13_ ? y <= this.ws / 3 : y >= this.ws / 3); (_12_ <= _13_ ? ++y : --y))
+                {
+                    this.addPlant(x * 3,y * 3)
+                }
             }
         }
     }
 
     matrix.prototype["advance"] = function (sec)
     {
-        var c, e, g, l, n, op, p, _116_21_
+        var c, e, g, l, n, op, p, _132_21_
 
         var list = _k_.list(this.eggs)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -178,7 +200,7 @@ matrix = (function ()
             c.eat -= sec
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_116_21_=c.df) != null ? _116_21_ : 0)
+                c.df = ((_132_21_=c.df) != null ? _132_21_ : 0)
                 c.df += sec / this.critDieTime
                 continue
             }
@@ -276,9 +298,9 @@ matrix = (function ()
 
     matrix.prototype["neighborsAtDistance"] = function (d)
     {
-        var x, y, _179_12_
+        var x, y, _195_12_
 
-        this.nd = ((_179_12_=this.nd) != null ? _179_12_ : [])
+        this.nd = ((_195_12_=this.nd) != null ? _195_12_ : [])
         if (this.nd[d])
         {
             return this.nd[d]
@@ -410,6 +432,39 @@ matrix = (function ()
         return this.anims.push({o:o,m:m,s:s,t:t,d:d})
     }
 
+    matrix.prototype["placeObjectOfType"] = function (p, type)
+    {
+        var o, x, y
+
+        x = parseInt(p[0])
+        y = parseInt(p[1])
+        this.takeAt([x,y])
+        o = ((function ()
+        {
+            switch (type)
+            {
+                case this.GRINDER:
+                    return {bot:{x:x,y:y}}
+
+                case this.EGG:
+                    return {age:0}
+
+                case this.CRITTER:
+                    return {age:0,sx:0,sy:0,sf:0,eggs:0,eat:this.critterEatPeriod}
+
+                case this.CORPSE:
+                    return {age:2 * this.critterMaxAge,sx:1,sy:1,df:1,eggs:0}
+
+                case this.PLANT:
+                    return this.makePlant(x,y,this.numLeaves)
+
+            }
+
+        }).bind(this))()
+        o.type = (type === this.CORPSE ? this.CRITTER : type)
+        return this.addObject(x,y,o)
+    }
+
     matrix.prototype["addObject"] = function (x, y, o)
     {
         var n
@@ -447,6 +502,11 @@ matrix = (function ()
         return this.addObject(x,y,{type:this.CRITTER,age:0,sx:0,sy:0,sf:0,eggs:0,eat:this.critterEatPeriod})
     }
 
+    matrix.prototype["addCorpse"] = function (x, y)
+    {
+        return this.addObject(x,y,{type:this.CRITTER,age:2 * this.critterMaxAge,sx:1,sy:1,df:1,eggs:0})
+    }
+
     matrix.prototype["addTube"] = function (x, y, idx)
     {
         return this.addObject(x,y,{type:this.TUBE,idx:idx})
@@ -469,6 +529,24 @@ matrix = (function ()
         return {x:x,y:y,type:this.PLANT,leaves:leaves}
     }
 
+    matrix.prototype["takeAt"] = function (p)
+    {
+        var o
+
+        if (o = this.objectAt(p))
+        {
+            if (this.slots[o.type])
+            {
+                this.slots[o.type].num++
+            }
+            else if (o.type === this.CRITTER)
+            {
+                this.slots[this.CORPSE].num++
+            }
+            return this.del(o)
+        }
+    }
+
     matrix.prototype["delAt"] = function (p)
     {
         var o
@@ -482,13 +560,6 @@ matrix = (function ()
     matrix.prototype["del"] = function (o)
     {
         var n
-
-        switch (o.type)
-        {
-            case this.PLANT:
-                this.slots[o.type].num++
-                break
-        }
 
         this.types[o.type].splice(this.types[o.type].indexOf(o),1)
         this.grid[o.x][o.y] = null
@@ -513,7 +584,7 @@ matrix = (function ()
 
     matrix.prototype["isInWorld"] = function (p)
     {
-        return p[0] >= -0.75 && p[1] >= -0.25 && p[0] < this.ws - 0.25 && p[1] < this.ws + 0.25
+        return p[0] >= 0 && p[1] >= 0 && p[0] < this.ws && p[1] < this.ws
     }
 
     matrix.prototype["isEmpty"] = function (p)

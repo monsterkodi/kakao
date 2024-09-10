@@ -1,6 +1,6 @@
 var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var clr, COL_BG, COL_CRITTER, COL_DEAD, COL_EGG, COL_EGG_DOT, COL_GRID, COL_GRINDER, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, PI, posInCircle, posInPipeH, posInRect, sin, sort, TAU, threshMold, valuePipeH, world
+var clr, COL_BG, COL_CRITTER, COL_DEAD, COL_EGG, COL_EGG_DOT, COL_GRID, COL_GRINDER, COL_LEAF, COL_PLANT, COL_SHADOW, COL_STARVE, COL_TUBE, cos, PHI, PI, posInCircle, posInCRect, posInPipeH, posInRect, sin, sort, TAU, threshMold, valuePipeH, world
 
 import kxk from "../kxk.js"
 let $ = kxk.$
@@ -24,6 +24,7 @@ sin = Math.sin
 PI = Math.PI
 
 TAU = 2 * PI
+PHI = 1.618
 COL_SHADOW = [0,0,0,0.1]
 COL_BG = [0.15,0.15,0.15,1]
 COL_GRID = [0,0,0,0.5]
@@ -54,7 +55,7 @@ sort = (function (a, b)
 
 posInCircle = (function (p, cx, cy, cr)
 {
-    return ((cx - cr) <= p[0] && p[0] <= (cx + cr)) && ((cy - cr) <= p[1] && p[1] <= (cy + cr))
+    return (p[0] - cx) * (p[0] - cx) + (p[1] - cy) * (p[1] - cy) < cr * cr
 }).bind(this)
 
 posInRect = (function (p, x1, y1, x2, y2)
@@ -64,6 +65,11 @@ posInRect = (function (p, x1, y1, x2, y2)
     var _b_ = sort(y1,y2); y1 = _b_[0]; y2 = _b_[1]
 
     return (x1 <= p[0] && p[0] <= x2) && (y1 <= p[1] && p[1] <= y2)
+}).bind(this)
+
+posInCRect = (function (p, cx, cy, w, h)
+{
+    return ((cx - w / 2) <= p[0] && p[0] <= (cx + w / 2)) && ((cy - h / 2) <= p[1] && p[1] <= (cy + h / 2))
 }).bind(this)
 
 posInPipeH = (function (p, x, y, w, r)
@@ -84,7 +90,7 @@ world = (function ()
     _k_.extend(world, matrix)
     function world ()
     {
-        var ri, s, slot, ti, uv
+        var ri, s, si, slot, ti, uv
 
         this["singleStep"] = this["singleStep"].bind(this)
         this["drawInventory"] = this["drawInventory"].bind(this)
@@ -102,6 +108,7 @@ world = (function ()
         this["onContextMenu"] = this["onContextMenu"].bind(this)
         this["onDragStop"] = this["onDragStop"].bind(this)
         this["onDragMove"] = this["onDragMove"].bind(this)
+        this["placeActiveSlotObject"] = this["placeActiveSlotObject"].bind(this)
         this["onDragStart"] = this["onDragStart"].bind(this)
         this["mouseInWorld"] = this["mouseInWorld"].bind(this)
         this["eventPos"] = this["eventPos"].bind(this)
@@ -114,15 +121,20 @@ world = (function ()
         this.speed = 10
         this.tweaky = new tweaky(this.main)
         world.__super__.constructor.call(this)
-        this.inventory = {x:0,y:-1,s:0.5,slots:[{type:this.CRITTER,num:0},{type:this.EGG,num:1},{type:this.PLANT,num:1}]}
+        this.inventory = {x:0,y:-1,s:0.5,slots:[{type:this.CORPSE,num:0},{type:this.EGG,num:1},{type:this.PLANT,num:1}]}
         this.speedGauge = {x:0,y:0,s:0.5,sx:0.3125,sw:1,sh:0.125,sb:0.25}
         this.slots = {}
         var list = _k_.list(this.inventory.slots)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
+        for (si = 0; si < list.length; si++)
         {
-            slot = list[_a_]
+            slot = list[si]
             this.slots[slot.type] = slot
+            slot.x = this.inventory.x + this.inventory.s * si
+            slot.y = this.inventory.y
+            slot.w = this.inventory.s
+            slot.h = this.inventory.s
         }
+        this.activeSlot = this.slots[this.PLANT]
         this.main.focus()
         this.g = new gee(this.main)
         this.h = new gee(this.main)
@@ -132,7 +144,6 @@ world = (function ()
         this.g.updateCamera()
         this.h.camCenter = 'topleft'
         this.h.clearColor = [0,0,0,0]
-        this.h.canvas.style.pointerEvents = 'none'
         this.hudGridY = 10
         this.h.camScale = 2 / this.hudGridY
         this.h.camPosX = -0.5
@@ -162,7 +173,8 @@ world = (function ()
         this.pieUV = [uv(36,38,8,10),uv(38,40,8,10),uv(38,40,10,12),uv(36,38,10,12)]
         this.eggUV = this.circleUV
         this.mouse = {pos:[0,0]}
-        this.drag = new drag({target:this.main,onStart:this.onDragStart,onMove:this.onDragMove,onStop:this.onDragStop,cursor:'pointer'})
+        this.drag = new drag({target:this.main,onStart:this.onDragStart,onMove:this.onDragMove,onStop:this.onDragStop,cursor:'pointer',stopEvent:false})
+        this.start()
     }
 
     world.prototype["onWheel"] = function (event)
@@ -184,11 +196,22 @@ world = (function ()
 
     world.prototype["onMouseMove"] = function (event)
     {
-        var hp, winPos
+        var hp, slot, winPos
 
         winPos = this.eventPos(event)
         this.mouse = {grid:this.win2Grid(winPos),pos:this.win2Pos(winPos),win:winPos}
         hp = this.h.win2Pos(winPos)
+        this.hoverSlot = null
+        var list = _k_.list(this.inventory.slots)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            slot = list[_a_]
+            if (posInCRect(hp,slot.x,slot.y,slot.w,slot.h))
+            {
+                this.hoverSlot = slot
+                return
+            }
+        }
         if (posInCircle(hp,this.speedGauge.x,this.speedGauge.y,this.speedGauge.s / 2))
         {
             return this.speedGauge.hover = 'gauge'
@@ -234,6 +257,11 @@ world = (function ()
         var hp, p, v
 
         hp = this.h.win2Pos(drag.pos)
+        if (this.hoverSlot)
+        {
+            this.activeSlot = this.hoverSlot
+            return
+        }
         if (posInCircle(hp,this.speedGauge.x,this.speedGauge.y,this.speedGauge.s / 2))
         {
             this.togglePause()
@@ -251,7 +279,7 @@ world = (function ()
         p = this.win2Grid(drag.pos)
         if (event.button === 2)
         {
-            this.delAt(p)
+            this.takeAt(p)
             return
         }
         if (event.metaKey)
@@ -264,16 +292,26 @@ world = (function ()
         }
         else
         {
-            if (this.buildingAt(p))
-            {
-                return
-            }
-            if (this.slots[this.PLANT].num)
-            {
-                this.slots[this.PLANT].num--
-                return this.addPlant(p[0],p[1])
-            }
+            return this.placeActiveSlotObject(p)
         }
+    }
+
+    world.prototype["placeActiveSlotObject"] = function (p)
+    {
+        if (!this.activeSlot)
+        {
+            return
+        }
+        if (this.slots[this.activeSlot.type].num <= 0)
+        {
+            return
+        }
+        if (this.buildingAt(p))
+        {
+            return
+        }
+        this.slots[this.activeSlot.type].num--
+        return this.placeObjectOfType(p,this.activeSlot.type)
     }
 
     world.prototype["onDragMove"] = function (drag, event)
@@ -293,7 +331,7 @@ world = (function ()
         }
         if (event.button === 2)
         {
-            this.delAt(p)
+            this.takeAt(p)
             return
         }
         if (event.shiftKey)
@@ -302,15 +340,7 @@ world = (function ()
         }
         if (!event.metaKey)
         {
-            if (this.buildingAt(p))
-            {
-                return
-            }
-            if (this.slots[this.PLANT].num)
-            {
-                this.slots[this.PLANT].num--
-                this.addPlant(p[0],p[1])
-            }
+            this.placeActiveSlotObject(p)
         }
         if (!this.dragPath)
         {
@@ -413,7 +443,7 @@ world = (function ()
 
     world.prototype["drawEgg"] = function (e, g = this.g, scale = 1)
     {
-        var a, ageFac, ox, oy, s, _319_18_, _320_18_
+        var a, ageFac, ox, oy, s, _343_18_, _344_18_
 
         ageFac = e.age / this.eggMaxAge
         s = scale * fade(0.1,0.3,ageFac)
@@ -422,8 +452,8 @@ world = (function ()
         {
             a = fade(1.0,0.0,(e.age - this.eggMaxAge) / this.eggFadeTime)
         }
-        ox = ((_319_18_=e.ox) != null ? _319_18_ : 0)
-        oy = ((_320_18_=e.oy) != null ? _320_18_ : 0)
+        ox = ((_343_18_=e.ox) != null ? _343_18_ : 0)
+        oy = ((_344_18_=e.oy) != null ? _344_18_ : 0)
         return g.addQuad(e.x + ox,e.y + oy,s,s,[COL_EGG[0],COL_EGG[1],COL_EGG[2],a],this.eggUV,0,1)
     }
 
@@ -449,7 +479,7 @@ world = (function ()
 
     world.prototype["drawCritter"] = function (c, g = this.g, scale = 1, ccl = null)
     {
-        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _370_18_, _371_18_
+        var col, cx, cy, e, f, h, ox, oy, rcos, rot, rsin, rxo, ryo, se, sx, sy, thrd, wp, xo, yo, _394_18_, _395_18_
 
         sx = sy = scale * fade(0.2,1,c.age / this.critterAdultAge)
         rot = 0
@@ -473,8 +503,8 @@ world = (function ()
         {
             col = ccl
         }
-        ox = ((_370_18_=c.ox) != null ? _370_18_ : 0)
-        oy = ((_371_18_=c.oy) != null ? _371_18_ : 0)
+        ox = ((_394_18_=c.ox) != null ? _394_18_ : 0)
+        oy = ((_395_18_=c.oy) != null ? _395_18_ : 0)
         cx = c.x + ox
         cy = c.y + oy
         g.addQuad(cx - rsin * 0.25 * sx,cy + rcos * 0.25 * sy,sx,sy * 0.5,col,this.circleTopUV,rot,1)
@@ -502,10 +532,10 @@ world = (function ()
 
     world.prototype["critterWombPos"] = function (c, e = c.eggs)
     {
-        var cx, cy, xo, yo, _401_25_, _402_25_
+        var cx, cy, xo, yo, _425_25_, _426_25_
 
-        cx = c.x + (((_401_25_=c.ox) != null ? _401_25_ : 0))
-        cy = c.y + (((_402_25_=c.oy) != null ? _402_25_ : 0))
+        cx = c.x + (((_425_25_=c.ox) != null ? _425_25_ : 0))
+        cy = c.y + (((_426_25_=c.oy) != null ? _426_25_ : 0))
         xo = [-0.2,0,0.2][e]
         yo = [0.15,0.25,0.15][e]
         return {x:cx + xo,y:cy + yo}
@@ -556,6 +586,7 @@ world = (function ()
         this.tweaky.update()
         this.roundedQuadRect(0,-0.5,this.ws - 0.5,this.ws - 1,COL_SHADOW)
         this.roundedQuadRect(-0.25,-0.25,this.ws - 0.75,this.ws - 0.75,COL_BG)
+        this.gridQuadRect(0,0,this.ws - 1,this.ws - 1,COL_GRID)
         if (this.dragPath)
         {
             tube.path(this.dragPath,this.drawTube)
@@ -639,26 +670,27 @@ world = (function ()
 
     world.prototype["drawInventory"] = function ()
     {
-        var fr, s, sh, si, slot, sx, x, y
+        var bgcol, fr, frcol, s, sh, si, slot, sx, x, y
 
         x = this.inventory.x
         y = this.inventory.y
         s = this.inventory.s
         sh = s / 2
         fr = s / 4
-        this.h.addRoundedFrame(x - sh,y - sh,x + s * this.inventory.slots.length - sh,y + sh,clr(2,2,2),1,fr,4)
+        frcol = clr(2,2,2)
+        this.h.addRoundedFrame(x - sh,y - PHI * sh,x + s * this.inventory.slots.length - sh,y + sh,frcol,1,fr,4)
         var list = _k_.list(this.inventory.slots)
         for (si = 0; si < list.length; si++)
         {
             slot = list[si]
             sx = x + s * si
-            this.h.crect(sx,y - s / 2,{sx:s * 0.75,sy:s * 0.75,layer:0,color:clr(2,2,2)})
-            this.h.addRect(sx - sh,y - sh,sx + sh,y + sh,clr(1,1,1),0)
-            this.h.crect(sx,y - s / 2,{sx:s / 2,sy:s / 2,layer:1,color:clr(1,1,1)})
-            this.h.number(sx,y - s / 2,slot.num,{scale:s / 4,layer:1,color:clr(10,10,10)})
+            bgcol = ((slot === this.activeSlot) ? clr(0,0,0) : ((slot === this.hoverSlot) ? clr(1,1,1) : clr(1.6,1.6,1.6)))
+            this.h.crect(slot.x,slot.y,{sx:s,sy:s,layer:0,color:bgcol})
+            this.h.crect(slot.x,slot.y - s * 0.6,{sx:s,sy:s * 0.3,layer:0,color:bgcol})
+            this.h.number(slot.x,slot.y - s * 0.57,slot.num,{scale:s / 4,layer:1,color:clr(10,10,10)})
             switch (slot.type)
             {
-                case this.CRITTER:
+                case this.CORPSE:
                     this.drawCritter({x:sx,y:y + s / 12,age:this.critterAdultAge / 2,df:1},this.h,s,clr(5,5,5))
                     break
                 case this.EGG:
