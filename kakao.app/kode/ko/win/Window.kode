@@ -89,13 +89,13 @@ function Window extends win.Delegate
                 else
                     window.navigate.addFilePos file: window.editor.currentFile, pos: window.editor.cursorPos()
 
-        post.on 'prefsLoaded' => scheme.set prefs.get 'scheme' 'dark'
+        post.on 'prefsLoaded' => scheme.set prefs.get('scheme' 'dark')
         post.on 'stashLoaded' => 
 
-            @editor.setFontSize window.stash.get 'fontSize' 19
+            @editor.setFontSize window.stash.get('fontSize' 19)
             @editor.centerText  window.stash.get('centerText'), 0
             
-            post.emit 'loadFile' kore.get 'editor|file'
+            post.emit 'loadFile' kore.get('editor|file')
     
         window.split.resized()
         window.info.reload()
@@ -142,7 +142,7 @@ function Window extends win.Delegate
             'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!"
             'Toggle Scheme'         ➜ ⮐ scheme.toggle()
             'Toggle Center Text'    ➜ ⮐ toggleCenterText()
-            'Toggle Func List'      ➜ ⮐ [prefs.toggle('list|active'), post.emit 'list.toggle']
+            'Toggle Func List'      ➜ ⮐ [prefs.toggle('list|active'), post.emit('list.toggle')]
             'Toggle Tab Pinned'     ➜ ⮐ toggleTabPinned()
             'Toggle Tab Extensions' ➜ ⮐ tabs.toggleExtension()
             'Increase'              ➜ ⮐ changeFontSize +1
@@ -161,7 +161,7 @@ function Window extends win.Delegate
             'Save'                  ➜ ⮐ post.emit 'saveFile'
             'Save All'              ➜ ⮐ post.emit 'saveAll'
             'Save As ...'           ➜ ⮐ post.emit 'saveFileAs'
-            'Revert'                ➜ ⮐ post.emit 'reloadFile' kore.get 'editor|file'
+            'Revert'                ➜ ⮐ post.emit 'reloadFile' kore.get('editor|file')
             'Close Tab'             ➜ ⮐ post.emit 'closeTab'
             'Close Other Tabs'      ➜ ⮐ post.emit 'closeOtherTabs'
             'Close Other Windows'   ➜ ⮐ post.toWins 'closeWindow'

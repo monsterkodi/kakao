@@ -743,8 +743,8 @@ TextEditor = (function ()
         br = this.view.getBoundingClientRect()
         lx = _k_.clamp(0,this.layers.offsetWidth,x - br.left - this.size.offsetX + this.size.charWidth / 3)
         ly = _k_.clamp(0,this.layers.offsetHeight,y - br.top)
-        px = parseInt(Math.floor((Math.max(0,sl + lx)) / this.size.charWidth))
-        py = parseInt(Math.floor((Math.max(0,st + ly)) / this.size.lineHeight)) + this.scroll.top
+        px = parseInt(Math.floor(Math.max(0,sl + lx) / this.size.charWidth))
+        py = parseInt(Math.floor(Math.max(0,st + ly) / this.size.lineHeight)) + this.scroll.top
         p = [px,Math.min(this.numLines() - 1,py)]
         return p
     }

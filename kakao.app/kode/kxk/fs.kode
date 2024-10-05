@@ -130,9 +130,9 @@ class FS
             
             while p.length and slash.removeDrive(p) not in ['.', '/', '']
                 
-                if  FS.dirExists  slash.path p, '.git'         or
-                    FS.fileExists slash.path p, 'package.noon' or
-                    FS.fileExists slash.path p, 'package.json' ➜ return slash.path p
+                if  FS.dirExists( slash.path(p, '.git'))         or
+                    FS.fileExists(slash.path(p, 'package.noon')) or
+                    FS.fileExists(slash.path(p, 'package.json')) ➜ return slash.path(p)
                 p = slash.dir p
         null
 
@@ -142,13 +142,13 @@ class FS
             
             if cb is 'function'
                 FS.dirExists slash.path(p, '.git'), (stat) -> 
-                    if stat then cb slash.path p
+                    if stat then cb slash.path(p)
                     else if FS.removeDrive(p) not in ['.' '/' '']
                         FS.git slash.dir(p), cb
             else
                 while p.length and FS.removeDrive(p) not in ['.' '/' '']
                     
-                    if FS.dirExists slash.path p, '.git' then return slash.path p
+                    if FS.dirExists(slash.path(p, '.git')) then return slash.path(p)
                     p = slash.dir p
         null
         
@@ -165,7 +165,7 @@ class FS
                 if not p?
                     cb() 
                     return
-                p = slash.path slash.removeLinePos p
+                p = slash.path slash.removeLinePos(p)
                 fs.access p, (fs.R_OK | fs.F_OK), (err) ->
                     if err?
                         cb() 
@@ -180,7 +180,7 @@ class FS
         else
             if p?
                 try
-                    p = slash.path slash.removeLinePos p
+                    p = slash.path slash.removeLinePos(p)
                     if stat = fs.statSync(p)
                         fs.accessSync p, fs.R_OK
                         return stat

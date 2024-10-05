@@ -8,18 +8,18 @@
 
 use ../kxk ▪ post slash walkdir
                     
-apps          = {}
-allKeys       = []
+apps    = {}
+allKeys = []
 scripts =
     sleep:
         exec:   "pmset sleepnow"
-        img:    kakao.bundle.img 'sleep.png'
+        img:    kakao.bundle.img('sleep.png')
     shutdown:
         exec:   "osascript -e 'tell app \"System Events\" to shut down'"
-        img:    kakao.bundle.img 'shutdown.png'
+        img:    kakao.bundle.img('shutdown.png')
     restart:
         exec:   "osascript -e 'tell app \"System Events\" to restart'"
-        img:    kakao.bundle.img 'restart.png'
+        img:    kakao.bundle.img('restart.png')
 
 post.on 'runScript' (name) -> scripts[name].cb()
 post.on 'hideWin'  -> win?.hide()
@@ -57,7 +57,7 @@ findApps = ○->
     allKeys = Object.keys(apps).concat Object.keys(scripts)
     allKeys.sort (a,b) -> a.toLowerCase().localeCompare b.toLowerCase()
     
-    post.emit 'appsFound' apps:apps, scripts:scripts, allKeys:allKeys
+    post.emit 'appsFound' apps:apps scripts:scripts allKeys:allKeys
             
 # 0000000    0000000  000000000  000  000   000  00000000
 #000   000  000          000     000  000   000  000

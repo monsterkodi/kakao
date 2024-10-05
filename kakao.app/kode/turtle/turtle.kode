@@ -47,7 +47,7 @@ setWinHeight = h ○->
 
 masterStart = ->
 
-    startTimeout prefs.get 'timeout' 1    
+    startTimeout prefs.get('timeout' 1)
     if stashExists
         $('turtle').disabled = false
         updateSiteFromClipboard()
@@ -326,7 +326,7 @@ initBody = name ->
     lst    = elem class:'list'   id:name+'list'
     scroll = elem class:'scroll' id:name+'scroll'
     lst.appendChild scroll
-    lst.appendChild initButtons name
+    lst.appendChild initButtons(name)
     document.body.innerHTML = ''
     document.body.appendChild lst
 
@@ -459,15 +459,15 @@ showStash = ○->
         # log 'hash config' hash, config, mstr
         site = ○ cryptools.decrypt config.url, mstr
         item =            elem class: 'stash-item-border border'
-        item.appendChild  elem 'input', id: hash, type: 'button', class: 'stash-item'
-        siteSpan = item.appendChild elem 'span', class: 'site', text:site
+        item.appendChild  elem('input', id: hash, type: 'button', class: 'stash-item')
+        siteSpan = item.appendChild elem('span', class: 'site', text:site)
         lock = elem 'span' class: 'lock'
         item.appendChild lock
         if config.pattern == stash.pattern
             lockClosed lock
         else
             lockOpen lock
-            item.appendChild elem 'span', class:'pattern', text:config.pattern
+            item.appendChild elem('span', class:'pattern', text:config.pattern)
 
         $('stashscroll').appendChild item
 
@@ -541,7 +541,7 @@ vaultValue     = hash -> $(hash)?.parentElement?.nextSibling
 vaultArrow     = hash -> $(hash)?.nextSibling
 openVaultItem  = hash ->
     
-    ⮐ if not elem.isElement vaultValue hash
+    ⮐ if not elem.isElement vaultValue(hash)
     
     vaultValue(hash).style.display = 'block'
     
@@ -550,7 +550,7 @@ openVaultItem  = hash ->
     
 closeVaultItem = hash ->
     
-    ⮐ if not elem.isElement vaultValue hash
+    ⮐ if not elem.isElement vaultValue(hash)
     
     vaultValue(hash).style.display = 'none'
     
@@ -683,14 +683,12 @@ showPrefs = ->
 
     initBody 'prefs'
     
-    border  = elem id:'pattern-border' class:'border' children:
-        [
-            elem 'input' id:'pattern' class:'main-input' type:'input' name:'pattern'
-        ,   elem 'span' children:
-            [
-                elem id:'floppy' class:'ghost'
-            ,   elem id:'pattern-ghost' class:'ghost' text:'pattern'
-            ]
+    border = elem id:'pattern-border' class:'border' children: [
+            elem('input' id:'pattern' class:'main-input' type:'input' name:'pattern')
+            elem('span' children: [
+                elem(id:'floppy' class:'ghost')
+                elem(id:'pattern-ghost' class:'ghost' text:'pattern')
+            ])
         ]
     
     $('.list').insertBefore border, $('buttons')
@@ -708,7 +706,7 @@ showPrefs = ->
         input = elem 'input' id:key, type:'button' class:'pref-item'
         
         item.appendChild input
-        item.appendChild elem 'span' class:'pref' text:pref.text
+        item.appendChild elem('span' class:'pref' text:pref.text)
         
         switch pref.type
             'bool'
@@ -716,9 +714,9 @@ showPrefs = ->
                 item.appendChild bool
                 setBool bool, value
             'int'
-                item.appendChild elem 'span' class:'int' text:value ? value+' min' : 'never'
+                item.appendChild elem('span' class:'int' text:value ? value+' min' : 'never')
             'shortcut'
-                item.appendChild elem 'span' class:'shortcut' text:value
+                item.appendChild elem('span' class:'shortcut' text:value)
 
         $('prefsscroll').appendChild item
 
@@ -732,9 +730,9 @@ showPrefs = ->
                 
                 'bool'
                     
-                    prefs.set key, not prefs.get key
+                    prefs.set key, not prefs.get(key)
                     bool =$ '.bool' event.target.parentElement
-                    setBool bool, prefs.get key
+                    setBool bool, prefs.get(key)
                     
                 'int'
 

@@ -99,8 +99,8 @@ function Parser extends parse
         if not e
             tokens = subbs.shift()
             e = if:
-                    cond:   @exp tokens
-                    then:   @then 'if' tokens
+                    cond: @exp(tokens)
+                    then: @then('if' tokens)
         
         while subbs.length
             tokens = subbs.shift()
@@ -130,7 +130,7 @@ function Parser extends parse
     ifTail: (e, tok, tokens) ->
         
         if:
-            cond: @exp tokens
+            cond: @exp(tokens)
             then: [e]
             
     # 00000000   0000000   00000000   
@@ -174,7 +174,7 @@ function Parser extends parse
         each:
             lhs:    e
             each:   ech
-            fnc:    @exp tokens 
+            fnc:    @exp(tokens)
             
     # 00000000   0000000   00000000   000000000   0000000   000  000      
     # 000       000   000  000   000     000     000   000  000  000      
@@ -275,7 +275,7 @@ function Parser extends parse
                     e.switch.else = @block 'else' tokens
                     break
                     
-                whens.push @when null, tokens
+                whens.push @when(null, tokens)
                     
                 if whens[-2]? and empty whens[-2].when.then 
                     whens[-1].when.vals = whens[-2].when.vals.concat whens[-1].when.vals
@@ -283,8 +283,9 @@ function Parser extends parse
         else
             
             while tokens[0]?.text == 'when'
+                
                 lastWhen = tokens[0]
-                whens.push @exp tokens
+                whens.push @exp(tokens)
                 @shiftNewlineTok 'switch after when' tokens, lastWhen, tokens[1]?.text in ['when' 'else']
                         
             if tokens[0]?.text == 'else'
@@ -310,7 +311,8 @@ function Parser extends parse
         vals = []
         
         while (tokens[0]? and (tokens[0].type not in ['block''nl']) and tokens[0].text != 'then')
-            vals.push @exp tokens
+            
+            vals.push @exp(tokens)
         
         thn = @then 'when' tokens
         
@@ -347,7 +349,7 @@ function Parser extends parse
         
             ctch = 
                 errr: errr
-                exps: @block 'body' tokens
+                exps: @block('body' tokens)
         
             @pop  'catch'
 
@@ -526,7 +528,8 @@ function Parser extends parse
     main: (tok, tokens) ->
         
         tokens.shift()
-        main: @block 'main' tokens
+        
+        main: @block('main' tokens)
             
     #  0000000  000       0000000    0000000   0000000
     # 000       000      000   000  000       000
@@ -571,7 +574,7 @@ function Parser extends parse
 
         @push 'func'
         
-        body = @scope @block 'body' tokens
+        body = @scope @block('body' tokens)
         
         @pop 'func'
         
@@ -607,7 +610,7 @@ function Parser extends parse
     
     await: (tok, tokens) ->
         
-        e = await: exp: @exp tokens
+        e = await: exp: @exp(tokens)
         e
         
     #  0000000   0000000   000      000
@@ -634,7 +637,7 @@ function Parser extends parse
         else
             if tok.text in ['typeof' 'new']
                 @push '▸arg'
-                args = [@exp tokens]
+                args = [@exp(tokens)]
                 @pop  '▸arg'
             else
                 args = @block 'args' tokens
@@ -650,7 +653,7 @@ function Parser extends parse
 
         @pop 'call'
         
-        args[0] = @prepareCallAssign args[0] if valid args
+        args[0] = @prepareCallAssign(args[0]) if valid args
                 
         e = call: callee: tok
         e.call.open  = open  if open
@@ -900,33 +903,36 @@ function Parser extends parse
 
         first = firstLineCol key
         
-        exps = [@keyval key, tokens]
+        exps = [@keyval(key, tokens)]
         
         literals = @kode.atoms.concat ['keyword''op']
         
         while tokens.length
-
+            
             if tokens[0]?.type == 'nl'
                 break if tokens[1]?.type not in literals
                 break if tokens[2]?.text not in ': ' # ◂ the space checks for newline!
                 
                 if tokens[1]?.col >= first.col and tokens[1].text not in '])'
                     @shiftNewline 'continue implicit object on nl...' tokens
-                    exps.push @exp tokens
+                    exps.push @exp(tokens)
                     continue
                 break
             else if tokens[0]?.type == 'block'
                 if tokens[0].col >= first.col or @stack[-1] == '{' and 'section' in @stack
                     block = tokens.shift()
                     tokens = block.tokens
-                    exps = exps.concat @exps 'object' block.tokens
+                    exps = exps.concat @exps('object' block.tokens)
                 break
             else if tokens[0]?.line == first.line and tokens[0].text not in '])};'
-                exps = exps.concat @exps 'object' tokens, ';'
+                exps = exps.concat @exps('object' tokens, ';')
                 break
             else
                 break if tokens[0].text in '])};'
                 break if tokens[0].type not in literals
+                
+                log 'object ... exps?' key, tokens
+                break
                 
         @pop '{'
 
@@ -965,9 +971,9 @@ function Parser extends parse
             
             {line, col} = firstLineCol key
             text = @kode.renderer.node key
-            if text?.startsWith 'this'
+            if text?.startsWith('this')
                 if text == 'this' then text = '@'
-                else if text.startsWith 'this.' then text = '@' + text[5..]
+                else if text.startsWith('this.') then text = '@' + text[5..]
 
             k.text = text
             k.line = line
@@ -1108,7 +1114,7 @@ function Parser extends parse
         
         compare:
             lhs: lhs
-            rhs: @exp tokens
+            rhs: @exp(tokens)
 
     error: (o, tokens) ->
         

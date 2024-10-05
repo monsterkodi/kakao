@@ -104,7 +104,7 @@ class Scroller
             vh           = Math.min (@visRows() * @rowHeight()), @height()
             scrollTop    = parseInt (@target.scrollTop / bh) * vh
             scrollHeight = parseInt ((@visRows() * @rowHeight()) / bh) * vh
-            scrollHeight = Math.max scrollHeight, parseInt @rowHeight()/4
+            scrollHeight = Math.max scrollHeight, parseInt(@rowHeight()/4)
             scrollTop    = Math.min scrollTop, @height()-scrollHeight
             scrollTop    = Math.max 0, scrollTop
 

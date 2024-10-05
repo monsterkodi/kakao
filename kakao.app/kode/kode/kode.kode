@@ -115,11 +115,11 @@ export Kode
     args = kode.args
 
     if args.compile
-        log kode.compile args.compile
+        log kode.compile(args.compile)
         process.exit 0
         
     if args.eval
-        log kode.eval args.eval, 'eval' global
+        log kode.eval(args.eval, 'eval' global)
         process.exit 0
 
     fs =○ import('../kxk/fs.js')
@@ -128,20 +128,20 @@ export Kode
     for file in args.files
 
         file = slash.path file
-        log gray file if args.verbose
+        log gray(file) if args.verbose
 
         text =○ fs.read file
 
-        if empty text then error Y4 r2 "can't read #{R3 y5 file}"; continue
+        if empty text then error Y4(r2("can't read #{R3(y5(file))}")); continue
 
         if
             args.outdir
                             js  = kode.compile text, file
-                            out = slash.swapExt slash.path(args.outdir, slash.file file), 'js'
+                            out = slash.swapExt slash.path(args.outdir, slash.file(file)), 'js'
                             log out if args.verbose
-                            if not ○ fs.write out, js then error R2 y3 "can't write #{R3 y6 out}"
-            args.js    ➜    log kode.compile text, file
-            args.run   ➜    log kode.eval text, file, global
-                       ➜    log kode.compile text, file
+                            if not ○ fs.write out, js then error R2(y3("can't write #{R3(y6(out))}"))
+            args.js    ➜    log kode.compile(text, file)
+            args.run   ➜    log kode.eval(text, file, global)
+                       ➜    log kode.compile(text, file)
     
     

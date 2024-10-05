@@ -226,7 +226,7 @@ clearSearch = ->
 
     if results.length
         search = ''
-        results = [results[Math.min currentIndex, results.length-1]]
+        results = [results[Math.min(currentIndex, results.length-1)]]
         results[0].string = currentName
         $('appname').innerHTML = currentName
         currentIndex = 0
@@ -275,8 +275,8 @@ select = index =>
 selectName = (name) ->
     
     return if empty name
-    select results.findIndex (r) ->
-        r?.name.toLowerCase() == name.toLowerCase()
+    select results.findIndex((r) ->
+        r?.name.toLowerCase() == name.toLowerCase())
 
 #   0000000     0000000   000000000   0000000
 #   000   000  000   000     000     000
@@ -377,7 +377,7 @@ doSearch = s ->
         $('appname').innerHTML = "<b>#{search}</b>"
 
 complete  = (key) -> doSearch search + key
-backspace =       -> doSearch search.substr 0, search.length-1
+backspace =       -> doSearch search.substr(0, search.length-1)
 
 cancelSearchOrClose = ->
     

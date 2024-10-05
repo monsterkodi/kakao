@@ -203,20 +203,20 @@ class Renderer
 
     atom: (exp) ->
 
-        @fixAsserts @node exp
+        @fixAsserts @node(exp)
         
     qmrkop: (p) ->
         
         if p.lhs.type == 'var' or not p.qmrk
             lhs = @atom p.lhs
-            "(#{lhs} != null ? #{lhs} : #{@atom p.rhs})"
+            "(#{lhs} != null ? #{lhs} : #{@atom(p.rhs)})"
         else
             vn = @lineVar p.qmrk
-            "((#{vn}=#{@atom p.lhs}) != null ? #{vn} : #{@atom p.rhs})"
+            "((#{vn}=#{@atom(p.lhs)}) != null ? #{vn} : #{@atom(p.rhs)})"
 
     qmrkcolon: (p) ->
         
-        "(#{@atom p.lhs} ? #{@atom p.mid} : #{@atom p.rhs})"
+        "(#{@atom(p.lhs)} ? #{@atom(p.mid)} : #{@atom(p.rhs)})"
         
     # 00000000  000  000   000   0000000    0000000   0000000  00000000  00000000   000000000   0000000
     # 000       000   000 000   000   000  000       000       000       000   000     000     000
@@ -246,7 +246,7 @@ class Renderer
             if (n = s.indexOf '\n' i) > i
                 return s[...i] + @fixAsserts(s[i+1...n]) + @fixAsserts(s[n..])
             else
-                return s[...i] + @fixAsserts s[i+1..]
+                return s[...i] + @fixAsserts(s[i+1..])
         
         splt = s.split /▸\d+_\d+◂/
         mtch = s.match /▸\d+_\d+◂/g
@@ -905,7 +905,7 @@ class Renderer
             if n.else.length == 1
                 s += @atom n.else[0]
             else
-                s += '(' + (@atom e for e in n.else).join(', ') + ')'
+                s += '(' + (@atom(e) for e in n.else).join(', ') + ')'
         else if not dontClose
             s += ' : undefined'
         s
@@ -1368,7 +1368,7 @@ class Renderer
                     
                 if op.lhs and @containsAssert op.lhs
                     # dbg op.lhs
-                    s = "if (" + @atom(@pruneAssert op.lhs) + ") { #{@node(@clearAsserts op.lhs)} = " + @atom(op.rhs) + " }"
+                    s = "if (" + @atom(@pruneAssert(op.lhs)) + ") { #{@node(@clearAsserts(op.lhs))} = " + @atom(op.rhs) + " }"
                     return s
         
             o == '!'
@@ -1581,7 +1581,7 @@ class Renderer
             upto = parseInt p.upto.text
             if upto-from <= 10
                 if p.dots.text == '...' then upto--
-                '['+((x for x in [from..upto]).join ',')+']'
+                '['+((x for x in [from..upto]).join(','))+']'
             else
                 o = if p.dots.text == '...' then '<' else '<='
                 "(function() { var r = []; for (var i = #{from}; i #{o} #{upto}; i++){ r.push(i); } return r; }).apply(this)"

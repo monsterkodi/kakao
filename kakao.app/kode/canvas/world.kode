@@ -115,8 +115,8 @@ function world
         @canvas.width  = @size
         @canvas.height = @size
         
-        @canvas.style.left = "#{(max 0 br.width-@size)/2}px"
-        @canvas.style.top  = "#{(max 0 br.height-@size)/2}px"
+        @canvas.style.left = "#{(max(0 br.width-@size))/2}px"
+        @canvas.style.top  = "#{(max(0 br.height-@size))/2}px"
                 
     togglePause:  => @pause = not @pause; post.emit 'pause'
     toggleValues: => 

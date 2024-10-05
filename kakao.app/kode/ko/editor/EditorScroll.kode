@@ -79,7 +79,7 @@ class EditorScroll extends events
 
         scroll = @scroll
         delta = 0 if Number.isNaN delta
-        @scroll = parseInt clamp 0 @scrollMax, @scroll+delta
+        @scroll = parseInt clamp(0 @scrollMax, @scroll+delta)
         top = parseInt @scroll / @lineHeight
         @offsetSmooth = @scroll - top * @lineHeight
 
@@ -209,7 +209,7 @@ class EditorScroll extends events
 
         if cp[1] - @top > topDist
 
-            rg = [@top, Math.max 0, cp[1]-1]
+            rg = [@top, Math.max(0, cp[1]-1)]
 
             sl = @editor.selectionsInLineIndexRange rg
             hl = @editor.highlightsInLineIndexRange rg

@@ -83,7 +83,7 @@ function ParseUtils
     
     shiftNewline: (rule, tokens) ->
         
-        if @debug then log M3 y5 " ◂ #{w1 rule}" 
+        if @debug then log M3(y5(" ◂ #{w1(rule)}" ))
         tokens.shift()
         
     shiftNewlineTok: (rule, tokens, tok, cond) ->
@@ -347,7 +347,7 @@ function ParseUtils
             error "unexpected pop!" p, n
             
         if @debug
-            print.stack @stack, p, (s) -> W1 w1 s
+            print.stack @stack, p, (s) -> W1(w1(s))
 
     verb: -> if @debug then console.log.apply console.log, arguments 
 

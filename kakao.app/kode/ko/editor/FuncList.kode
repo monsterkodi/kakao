@@ -106,7 +106,7 @@ function FuncList
             @elem.innerHTML = ''
             
             for item in items
-                e = elem class:'funclist-item' parent:@elem, html:Syntax.spanForTextAndSyntax item.text, 'browser'
+                e = elem class:'funclist-item' parent:@elem, html:Syntax.spanForTextAndSyntax(item.text, 'browser')
                 e.item = item
 
 export FuncList

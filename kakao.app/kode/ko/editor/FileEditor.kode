@@ -347,8 +347,8 @@ function FileEditor extends TextEditor
 
         for ext in counterparts[currext] ? []
             
-            if ○ ffs.fileExists slash.swapExt @currentFile, ext
-                post.emit 'loadFile' slash.swapExt @currentFile, ext
+            if ○ ffs.fileExists slash.swapExt(@currentFile, ext)
+                post.emit 'loadFile' slash.swapExt(@currentFile, ext)
                 ⮐ true
 
         for ext in counterparts[currext] ? []
@@ -438,7 +438,7 @@ function FileEditor extends TextEditor
     # 000        000   000  000        000   000  000
     # 000         0000000   000         0000000   000
 
-    onContextMenu: event => stopEvent event, @showContextMenu kpos event
+    onContextMenu: event => stopEvent event, @showContextMenu(kpos(event))
 
     showContextMenu: absPos =>
 
@@ -460,7 +460,7 @@ function FileEditor extends TextEditor
         recent ?= []
         for f in recent
             RecentMenu.unshift
-                html: fileSpan f
+                html: fileSpan(f)
                 arg: f
                 cb: (arg) -> post.emit 'loadFile' arg
 
@@ -486,18 +486,18 @@ function FileEditor extends TextEditor
         qiq = prefs.get('list|active') ? '' : ' quickmenu-inactive'
         
         quiq = elem class:'quickmenu' children: [
-                elem { text:bi, class:'quickmenu-item quickmenu-browser'    mouseup:( (e) -> act e, window.quickMenu.onBrowser  )},
-                elem { text:ti, class:'quickmenu-item quickmenu-terminal'   mouseup:( (e) -> act e, window.quickMenu.onTerminal )},
-                elem { text:'' class:'quickmenu-item quickmenu-devtools'   mouseup:( (e) -> act e, window.quickMenu.onDevTools )},
-                elem { text:'' class:'quickmenu-item quickmenu-kalk'       mouseup:( (e) -> act e, window.quickMenu.onKalk     )},
-                elem { text:'' class:"quickmenu-item quickmenu-list#{qiq}" mouseup:( (e) -> act e, window.quickMenu.onList     )}                
+                elem( text:bi, class:'quickmenu-item quickmenu-browser'    mouseup:( (e) -> act(e, window.quickMenu.onBrowser ) ) ),
+                elem( text:ti, class:'quickmenu-item quickmenu-terminal'   mouseup:( (e) -> act(e, window.quickMenu.onTerminal) ) ),
+                elem( text:'' class:'quickmenu-item quickmenu-devtools'   mouseup:( (e) -> act(e, window.quickMenu.onDevTools) ) ),
+                elem( text:'' class:'quickmenu-item quickmenu-kalk'       mouseup:( (e) -> act(e, window.quickMenu.onKalk    ) ) ),
+                elem( text:'' class:"quickmenu-item quickmenu-list#{qiq}" mouseup:( (e) -> act(e, window.quickMenu.onList    ) ) )
             ]
         
         if window.navigate.canNavigateBack()
-            quiq.appendChild elem text:'' class:'quickmenu-item quickmenu-navigate'  mouseup:(e) -> act e, -> post.emit 'menuAction' 'Navigate Backward'
+            quiq.appendChild elem(text:'' class:'quickmenu-item quickmenu-navigate'  mouseup:(e) -> act(e, -> post.emit 'menuAction' 'Navigate Backward'))
 
         if window.navigate.canNavigateForward()
-            quiq.appendChild elem text:'' class:'quickmenu-item quickmenu-navigate'  mouseup:(e) -> act e, -> post.emit 'menuAction' 'Navigate Forward'
+            quiq.appendChild elem(text:'' class:'quickmenu-item quickmenu-navigate'  mouseup:(e) -> act(e, -> post.emit 'menuAction' 'Navigate Forward'))
                         
         pup.items.insertBefore quiq, pup.items.firstChild
         pup.select quiq

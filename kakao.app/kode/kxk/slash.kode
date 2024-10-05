@@ -257,7 +257,7 @@ class Slash
             if comp.length == 1 and comp[0] == ''
                 list.unshift Slash.sep
             else
-                list.unshift comp.join Slash.sep
+                list.unshift comp.join(Slash.sep)
             
         list
         

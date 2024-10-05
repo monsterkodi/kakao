@@ -229,7 +229,7 @@ merge = (dssA, dssB) ->
             result.push
                 start: A.start
                 clss:  A.clss
-                match: A.match.slice 0, d
+                match: A.match.slice(0, d)
             A.start += d
             A.match = A.match.slice d
             continue
@@ -239,7 +239,7 @@ merge = (dssA, dssB) ->
             result.push
                 start: B.start
                 clss:  B.clss
-                match: B.match.slice 0, d
+                match: B.match.slice(0, d)
             B.start += d
             B.match = B.match.slice d
             continue

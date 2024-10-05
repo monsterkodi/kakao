@@ -41,7 +41,7 @@ function Kakao
         if msg is str
             post.emit msg
         else if msg is obj
-            post.emit.apply null, [msg.name].concat msg.args
+            post.emit.apply null, [msg.name].concat(msg.args)
             
     # some redirections to make working with kakao modules a little simpler ...
             

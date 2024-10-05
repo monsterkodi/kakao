@@ -449,7 +449,7 @@ FileBrowser = (function ()
 
     FileBrowser.prototype["loadDirItems"] = function (item, items, col, opt)
     {
-        var cols, lastColumn, row, _378_52_, _382_85_, _386_14_
+        var cols, lastColumn, row, _378_53_, _382_85_, _386_14_
 
         this.updateColumnScrolls()
         if (this.skipOnDblClick && col > 0)

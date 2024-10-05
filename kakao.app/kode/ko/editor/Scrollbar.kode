@@ -120,7 +120,7 @@ class Scrollbar
             vh           = Math.min (@editor.scroll.viewLines * @editor.scroll.lineHeight), @editor.viewHeight()
             scrollTop    = parseInt (@editor.scroll.scroll / bh) * vh
             scrollHeight = parseInt ((@editor.scroll.viewLines * @editor.scroll.lineHeight) / bh) * vh
-            scrollHeight = Math.max scrollHeight, parseInt @editor.size.lineHeight/4
+            scrollHeight = Math.max scrollHeight, parseInt(@editor.size.lineHeight/4)
             scrollTop    = Math.min scrollTop, @editor.viewHeight()-scrollHeight
             scrollTop    = Math.max 0, scrollTop
 

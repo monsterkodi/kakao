@@ -199,11 +199,11 @@ class AutoComplete extends events
 
         sp = spanInfo.span
         inner = sp.innerHTML
-        @clones.push sp.cloneNode true
-        @clones.push sp.cloneNode true
+        @clones.push sp.cloneNode(true)
+        @clones.push sp.cloneNode(true)
         @cloned.push sp
 
-        ws = @word.slice @word.search /\w/
+        ws = @word.slice @word.search(/\w/)
         wi = ws.length
 
         @clones[0].innerHTML = inner.slice 0 spanInfo.offsetChar + 1
@@ -211,7 +211,7 @@ class AutoComplete extends events
 
         sibling = sp
         while sibling = sibling.nextSibling
-            @clones.push sibling.cloneNode true
+            @clones.push sibling.cloneNode(true)
             @cloned.push sibling
 
         sp.parentElement.appendChild @span
@@ -313,7 +313,7 @@ class AutoComplete extends events
     navigate: delta ->
 
         ⮐ if not @list
-        @select clamp -1, @matchList.length-1, @selected+delta
+        @select clamp(-1, @matchList.length-1, @selected+delta)
 
     select: index ->
         
@@ -366,7 +366,7 @@ class AutoComplete extends events
 
         delay = (l, o) => => @parseLines l, o
         if lines.length > 1
-            setTimeout (delay lines, opt), 200
+            setTimeout delay(lines, opt), 200
 
     parseLines: lines opt ->
 

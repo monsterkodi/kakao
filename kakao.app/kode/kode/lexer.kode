@@ -103,13 +103,13 @@ class Lexer
             
             if 
                 pat is 'string'
-                    @regs.push [key, new RegExp pat]
+                    @regs.push [key, new RegExp(pat)]
                     
                 pat is Array
                     
                     pat = pat.map (p) -> kstr.escapeRegexp "#{p}"
                     reg = '\\b(' + pat.join('|') + ')\\b'
-                    @regs.push [key, new RegExp reg]
+                    @regs.push [key, new RegExp(reg)]
 
     # 000000000   0000000   000   000  00000000  000   000  000  0000000  00000000
     #    000     000   000  000  000   000       0000  000  000     000   000
@@ -231,7 +231,7 @@ class Lexer
                         splt.pop()   if trim(splt[-1]) == ''
                         if splt.length == 1 then tok.text = '"""' + kstr.lstrip(splt[0]) + '"""'
                         else
-                            minind = Math.min.apply 0 splt.map (s) -> if empty(trim(s)) then Infinity else kstr.lcnt s, ' '
+                            minind = Math.min.apply 0 splt.map((s) -> if empty(trim(s)) then Infinity else kstr.lcnt s, ' ')
                             if Infinity > minind > 0 then splt = splt.map (s) -> s[minind..]
                             tok.text = '"""' + splt.join('\n') + '"""'
         tokens

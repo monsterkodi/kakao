@@ -19,7 +19,7 @@ kakao.init ->
         size   = window.statusIconSize ? 22
         offset = window.statusIconOffset ? -8
         icon   = kakao.bundle.img window.statusIcon ? "menu_#{slash.name kakao.bundle.path}.png"
-        document.body.appendChild elem 'img' src:icon, width:"#{size}px", height:"#{size}px"
+        document.body.appendChild elem('img' src:icon, width:"#{size}px", height:"#{size}px")
         
         requestAnimationFrame -> 
             kakao 'status.icon' x:0 y:offset, w:size, h:38

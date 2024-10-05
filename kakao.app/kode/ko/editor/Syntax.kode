@@ -24,7 +24,7 @@ class Syntax
 
     newDiss: (li) ->
         
-        kolor.dissect([@getLine li], @name)[0]
+        kolor.dissect([@getLine(li)], @name)[0]
 
     getDiss: (li) ->
 
@@ -59,7 +59,7 @@ class Syntax
             switch ch
                 'changed'  ➜ @diss[di] = @newDiss di
                 'deleted'  ➜ @diss.splice di, 1
-                'inserted' ➜ @diss.splice di, 0, @newDiss di
+                'inserted' ➜ @diss.splice di, 0, @newDiss(di)
 
     #  0000000   0000000   000       0000000   00000000
     # 000       000   000  000      000   000  000   000
@@ -138,7 +138,7 @@ class Syntax
         else
             if not n? or not Syntax.matchrConfigs[n]?
                 return error "no syntax? #{n}"
-            result = matchr.dissect matchr.ranges Syntax.matchrConfigs[n], text
+            result = matchr.dissect matchr.ranges(Syntax.matchrConfigs[n], text)
         result
 
     @lineForDiss: (dss) ->
@@ -181,7 +181,7 @@ class Syntax
 
             syntaxName = slash.name syntaxFile.path
             
-            patterns = JSON.parse ○ ffs.read syntaxFile.path
+            patterns = JSON.parse ○ ffs.read(syntaxFile.path)
             
             patterns['\\w+']       = 'text'   # this ensures that all ...
             patterns['[^\\w\\s]+'] = 'syntax' # non-space characters match

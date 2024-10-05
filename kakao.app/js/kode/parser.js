@@ -759,6 +759,8 @@ Parser = (function ()
                 {
                     break
                 }
+                console.log('object ... exps?',key,tokens)
+                break
             }
         }
         this.pop('{')

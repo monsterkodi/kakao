@@ -106,18 +106,18 @@ function SysDish
     pie180: pie radius angle start=0 ->
         
         angle = clamp 0, 180, angle
-        sx =  radius * Math.sin deg2rad start+angle
-        sy = -radius * Math.cos deg2rad start+angle
-        ex =  radius * Math.sin deg2rad start
-        ey = -radius * Math.cos deg2rad start
+        sx =  radius * Math.sin deg2rad(start+angle)
+        sy = -radius * Math.cos deg2rad(start+angle)
+        ex =  radius * Math.sin deg2rad(start)
+        ey = -radius * Math.cos deg2rad(start)
         sx = sx.toFixed 2
         pie.setAttribute 'd' "M 0 0 L #{sx} #{sy} A #{radius} #{radius} #{start} 0 0 #{ex} #{ey} z"
     
     pie360: pie radius angle ->
         
         angle = clamp 0, 359, angle
-        sx =  radius * Math.sin deg2rad angle
-        sy = -radius * Math.cos deg2rad angle
+        sx =  radius * Math.sin deg2rad(angle)
+        sy = -radius * Math.cos deg2rad(angle)
         ex =  0
         ey = -radius
         f = angle <= 180 and '0 0' or '1 0'

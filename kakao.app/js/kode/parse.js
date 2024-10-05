@@ -260,7 +260,7 @@ Parse = (function ()
 
     Parse.prototype["exp"] = function (tokens)
     {
-        var block, e, numTokens, paren, tok, _286_34_, _297_45_, _360_33_
+        var block, e, numTokens, paren, tok, _289_34_, _300_45_, _363_33_
 
         if (_k_.empty(tokens))
         {
@@ -371,7 +371,7 @@ Parse = (function ()
 
         }
 
-        this.sheapPush('exp',((_286_34_=tok.text) != null ? _286_34_ : tok.type))
+        this.sheapPush('exp',((_289_34_=tok.text) != null ? _289_34_ : tok.type))
         if (tok.type !== 'paren' && !(_k_.in('○rgs',this.stack)))
         {
             if (this.stack.slice(-1)[0] === ':' && this.stack.slice(-2,-1)[0] === 'class' || this.stack.slice(-1)[0] === 'op=' && !this.blockAssign || this.stack.slice(-1)[0] === ':' && this.stack.slice(-2,-1)[0] === '{' && !(_k_.in('▸args',this.stack)))
@@ -379,7 +379,7 @@ Parse = (function ()
                 if (this.funcAhead(tokens))
                 {
                     paren = this.argsWithoutParens(tok,tokens)
-                    this.sheapPop('exp',((_297_45_=tok.text) != null ? _297_45_ : tok.type))
+                    this.sheapPop('exp',((_300_45_=tok.text) != null ? _300_45_ : tok.type))
                     return this.lhs(paren,tokens)
                 }
             }
@@ -464,13 +464,13 @@ Parse = (function ()
             this.verb(`exp cleanup ${this.stack.slice(-1)[0]}`)
             this.pop(this.stack.slice(-1)[0])
         }
-        this.sheapPop('exp',((_360_33_=tok.text) != null ? _360_33_ : tok.type))
+        this.sheapPop('exp',((_363_33_=tok.text) != null ? _363_33_ : tok.type))
         return e
     }
 
     Parse.prototype["rhs"] = function (e, tokens)
     {
-        var llc, numTokens, nxt, spaced, unspaced, _421_22_
+        var llc, numTokens, nxt, spaced, unspaced, _424_22_
 
         this.sheapPush('rhs','rhs')
         while (nxt = tokens[0])
@@ -800,7 +800,6 @@ Parse = (function ()
             }
             if (numTokens === tokens.length)
             {
-                console.error('lhs no token consumed?')
                 break
             }
         }

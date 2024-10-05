@@ -40,9 +40,9 @@ util =
     zip: args... ->
         
         result = []
-        maxLen = max args.map (a) -> a.length
+        maxLen = max args.map((a) -> a.length)
         for i in 0...maxLen
-            result.push args.map (a) -> a[i]
+            result.push args.map((a) -> a[i])
         result
         
     fold: l a ->
@@ -50,7 +50,7 @@ util =
         result = []
         i = 0
         while i <= a.length-l
-            result.push a.slice i,i+l
+            result.push a.slice(i,i+l)
             i += l
         result
     

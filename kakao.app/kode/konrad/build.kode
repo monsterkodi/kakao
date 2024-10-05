@@ -22,7 +22,7 @@ export ○->
     
     srcDir = slash.path ◆dir, '../../src'
     
-    ○ fs.mkdir slash.dir slash.path ◆dir, OUT
+    ○ fs.mkdir slash.dir(slash.path(◆dir, OUT))
     
     srcFiles =○ fs.list srcDir
     srcFiles = srcFiles.filter (f) -> slash.ext(f.path) in ['cpp''mm']

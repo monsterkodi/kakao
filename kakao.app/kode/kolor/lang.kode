@@ -18,8 +18,8 @@ use ../kxk/fs
 noonFile    = slash.path ◆dir, '..' '..' 'kode' 'kolor' 'lang.noon'
 extlangFile = slash.path ◆dir, 'extlang.js'
 
-log Gg3(' input:  '), g3 noonFile
-log Gg2(' output: '), g2 extlangFile
+log Gg3(' input:  '), g3(noonFile)
+log Gg2(' output: '), g2(extlangFile)
 
 lang = {}
 exts = ['txt''log']
@@ -38,9 +38,9 @@ json = JSON.stringify {exts:exts, lang:lang}, null, 4
 extlang = "export default #{json}"
     
 if ○ fs.write extlangFile, extlang
-    log Gg1 ' ok ' 
+    log Gg1(' ok ')
 else
-    log Rr1 ' fail '
+    log Rr1(' fail ')
     
     
     

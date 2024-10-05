@@ -50,7 +50,7 @@ class FileHandler
             @addToRecent file
             
             if editor.currentFile and editor.currentFile != kore.get 'editor|file'
-                log 'WTF!?' editor.currentFile, kore.get 'editor|file'
+                log 'WTF!?' editor.currentFile, kore.get('editor|file')
                 
             post.emit 'storeState' kore.get('editor|file'), editor.do.tabState() if not opt.reload
 
@@ -160,7 +160,7 @@ class FileHandler
             recent.pop()
 
         window.stash.set 'recentFiles' recent
-        window.commandline.commands.open.setHistory reversed recent
+        window.commandline.commands.open.setHistory reversed(recent)
 
     #  0000000   0000000   000   000  00000000         0000000  000   000   0000000   000   000   0000000   00000000   0000000
     # 000       000   000  000   000  000             000       000   000  000   000  0000  000  000        000       000
@@ -180,7 +180,7 @@ class FileHandler
     #      000  000   000     000     000             000       000  000      000             000   000       000  
     # 0000000   000   000      0      00000000        000       000  0000000  00000000        000   000  0000000   
     
-    saveFileAs: => kakao 'fs.saveDialog' slash.dir kore.get 'editor|file'
+    saveFileAs: => kakao 'fs.saveDialog' slash.dir(kore.get('editor|file'))
         
     onSaveDialog: file =>
         

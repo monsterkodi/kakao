@@ -177,6 +177,6 @@ class Brackets
 
     clear: ->
 
-        @editor.setHighlights @editor.highlights().filter (h) -> h[2]?.clss != 'bracketmatch'
+        @editor.setHighlights @editor.highlights().filter((h) -> h[2]?.clss != 'bracketmatch')
 
 export Brackets

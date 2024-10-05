@@ -86,6 +86,6 @@ class Strings
         @editor.renderHighlights()
         
     clear: ->
-        @editor.setHighlights @editor.highlights().filter (h) -> not h[2]?.clss?.startsWith 'stringmatch'
+        @editor.setHighlights @editor.highlights().filter((h) -> not h[2]?.clss?.startsWith('stringmatch'))
 
 export Strings

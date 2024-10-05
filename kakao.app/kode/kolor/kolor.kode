@@ -1489,7 +1489,7 @@ ligatures = (lines) -> # => == != === ... .. // << <= >= >>
 # 000        000   000  000   000       000  000       
 # 000        000   000  000   000  0000000   00000000  
 
-parse = (lines, ext='kode') -> ligatures blocked chunked lines, ext
+parse = (lines, ext='kode') -> ligatures(blocked(chunked(lines, ext)))
 
 # 000   000   0000000   000       0000000   00000000   000  0000000  00000000  
 # 000  000   000   000  000      000   000  000   000  000     000   000       
@@ -1514,12 +1514,12 @@ kolorize = (chunk) ->
         w3 chunk.match
     else if chunk.clss.startsWith 'punct'
         if LI.test chunk.clss
-            kolorize match:chunk.match, clss:chunk.clss.replace LI, ' '
+            kolorize match:chunk.match, clss:chunk.clss.replace(LI, ' ')
         else
             w2 chunk.match
     else
         if LI.test chunk.clss
-            kolorize match:chunk.match, clss:chunk.clss.replace LI, ' '
+            kolorize match:chunk.match, clss:chunk.clss.replace(LI, ' ')
         else
             chunk.match
 
@@ -1559,7 +1559,7 @@ syntax = (arg) ->
         line = lines[index]
         if ext == 'js' and line.startsWith '//# source'
             continue
-        clines.push kolorizeChunks rngs[index], numbers and index+1
+        clines.push kolorizeChunks(rngs[index], numbers and index+1)
     clines.join '\n'
 
 # 00000000  000   000  00000000    0000000   00000000   000000000   0000000  

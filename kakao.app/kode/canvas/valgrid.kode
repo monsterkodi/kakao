@@ -23,7 +23,7 @@ function valgrid
             rowDiv = elem class:'valgrid-row'
             @div.appendChild rowDiv
             for i in 0...array[0].length
-                rowDiv.appendChild elem class:'valgrid-header' style:"background:#{opt.colors[i]};"
+                rowDiv.appendChild elem(class:'valgrid-header' style:"background:#{opt.colors[i]};")
         
         for row in array
             rowDiv = elem class:'valgrid-row'
@@ -35,6 +35,6 @@ function valgrid
                     r = 255*(rval-0.5)*2
                 else 
                     b = 255*rval*2
-                rowDiv.appendChild elem class:'valgrid-cell' style:"background:rgb(#{r},#{g},#{b});"
+                rowDiv.appendChild elem(class:'valgrid-cell' style:"background:rgb(#{r},#{g},#{b});")
 
 export valgrid

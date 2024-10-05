@@ -184,7 +184,7 @@ class Do extends events
             switch opt.main
                 'first'   ➜ mainIndex = 0
                 'last'    ➜ mainIndex = newCursors.length-1
-                'closest' ➜ mainIndex = newCursors.indexOf posClosestToPosInPositions @state.mainCursor(), newCursors
+                'closest' ➜ mainIndex = newCursors.indexOf posClosestToPosInPositions(@state.mainCursor(), newCursors)
                           ➜
                             mainIndex = newCursors.indexOf opt.main
                             mainIndex = parseInt opt.main if mainIndex < 0
@@ -193,7 +193,7 @@ class Do extends events
 
         mainCursor = newCursors[mainIndex]
         @cleanCursors newCursors
-        mainIndex = newCursors.indexOf posClosestToPosInPositions mainCursor, newCursors
+        mainIndex = newCursors.indexOf posClosestToPosInPositions(mainCursor, newCursors)
 
         @state.setCursors newCursors
         @state.setMain mainIndex

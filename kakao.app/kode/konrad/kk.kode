@@ -32,6 +32,7 @@ args = karg """
         spawn      spawn app                      = false -S
         quiet      log nothing                    = false
         debug      log debug                      = false -D
+        verbose    log verbose                    = false -V
         version    log version                    = false
     """
 
@@ -48,7 +49,7 @@ class kk
         while not os.loaded # todo: move this check somewhere else!
             ○ sleep 150
             
-        if args.version ➜ ○ log version, slash.name slash.path ◆dir, '../../'
+        if args.version ➜ ○ log version, slash.name(slash.path(◆dir, '../../'))
         if args.info    ➜ ○ kk.info()
         if args.knrd    ➜ ○ knrd         args.options, args
         if args.build   ➜ ○ kk.build()
@@ -97,14 +98,14 @@ class kk
     
     @watch: ○->
         
-        log '👁 ' w5 kk.appPath()
+        log '👁 ' w5(kk.appPath())
         
         watch.watch kk.appPath(), recursive:true, cb: (watcher) ->
             watcher.on 'change' (info) ○-> 
 
                 ⮐ if slash.contains info.path, '.stash'
                 
-                log b5('🔧'), w3 info.path
+                log b5('🔧'), w3(info.path)
                 
                 if slash.ext(info.path) in ['kode' 'pug' 'styl' 'noon']
                     ○ knrd info.path
@@ -157,7 +158,7 @@ class kk
         msg = args.join ' '
         msg = 'misc' if empty msg
         
-        exec = cmd -> log child_process.execSync cmd, encoding:'utf8'
+        exec = cmd -> log child_process.execSync(cmd encoding:'utf8')
         
         exec "git add ." 
         exec "git commit -m #{msg}" 

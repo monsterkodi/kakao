@@ -19,7 +19,7 @@ function Utils
     @append: p t o ->
         
         e = document.createElementNS 'http://www.w3.org/2000/svg' t
-        p.appendChild @opt e, o
+        p.appendChild @opt(e, o)
         e
         
     @svg: width height clss ->

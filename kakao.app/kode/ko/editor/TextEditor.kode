@@ -45,7 +45,7 @@ function TextEditor extends Editor
 
         @config.lineHeight ?= 1.2
 
-        @setFontSize prefs.get "#{@name}FontSize" @config.fontSize ? 19
+        @setFontSize prefs.get("#{@name}FontSize" @config.fontSize ? 19)
         @scroll = new EditorScroll @
         @scroll.on 'shiftLines' @shiftLines
         @scroll.on 'showLines'  @showLines
@@ -209,7 +209,7 @@ function TextEditor extends Editor
         for li in appended
             @emit 'lineAppended',
                 lineIndex:  li
-                text: @line li
+                text: @line(li)
 
         @emit 'linesAppended' ls
         @emit 'numLines' @numLines()
@@ -347,7 +347,7 @@ function TextEditor extends Editor
     appendLine: (li) ->
 
         @lineDivs[li] = elem class: 'line'
-        @lineDivs[li].appendChild @cachedSpan li
+        @lineDivs[li].appendChild @cachedSpan(li)
         @elem.appendChild @lineDivs[li]
 
     #  0000000  000   000  000  00000000  000000000     000      000  000   000  00000000   0000000
@@ -459,7 +459,7 @@ function TextEditor extends Editor
                 return if mc[1] < 0
 
                 if mc[1] > @numLines()-1
-                    return error "#{@name}.renderCursors mainCursor DAFUK?", @numLines(), str @mainCursor()
+                    return error "#{@name}.renderCursors mainCursor DAFUK?", @numLines(), str(@mainCursor())
 
                 ri = mc[1]-@scroll.top
                 cursorLine = @do.line(mc[1]) # not @line(mc[1]) ???
@@ -628,9 +628,9 @@ function TextEditor extends Editor
         
         lx = clamp 0 @layers.offsetWidth,  x - br.left - @size.offsetX + @size.charWidth/3
         ly = clamp 0 @layers.offsetHeight, y - br.top
-        px = parseInt Math.floor (Math.max 0 sl + lx)/@size.charWidth
-        py = parseInt(Math.floor((Math.max 0 st + ly)/@size.lineHeight)) + @scroll.top
-        p  = [px, Math.min @numLines()-1 py]
+        px = parseInt(Math.floor(Math.max(0 sl + lx)/@size.charWidth))
+        py = parseInt(Math.floor(Math.max(0 st + ly)/@size.lineHeight)) + @scroll.top
+        p  = [px, Math.min(@numLines()-1 py)]
         p
 
     posForEvent: (event) -> @posAtXY event.clientX, event.clientY
@@ -648,7 +648,7 @@ function TextEditor extends Editor
                 br = e.getBoundingClientRect()
                 if br.left <= x <= br.left+br.width
                     offset = x-br.left
-                    return span:e, offsetLeft:offset, offsetChar:parseInt offset/@size.charWidth
+                    return span:e, offsetLeft:offset, offsetChar:parseInt(offset/@size.charWidth)
         null
 
     numFullLines: -> @scroll.fullLines
@@ -823,6 +823,6 @@ function TextEditor extends Editor
 
     log: ->
         return if @name != 'editor'
-        console.log.apply null, [].splice.call arguments, 0
+        console.log.apply null, [].splice.call(arguments, 0)
 
 export TextEditor

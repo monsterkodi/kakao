@@ -73,7 +73,7 @@ parse = (s) ->
         ld += l
 
         if p < sl
-            t = undense sd, s.substring p
+            t = undense sd, s.substring(p)
             t.unshift ld
             t
         else
@@ -168,11 +168,11 @@ parse = (s) ->
                 if last(t.o) == '.' == k
                     t.o.pop()
                     t.o.push []
-                t.o.push value k
+                t.o.push value(k)
             else
-                makeObject(t)[key k] = value v
+                makeObject(t)[key(k)] = value(v)
         else
-            t.o[key k] = value v
+            t.o[key(k)] = value(v)
             t.l = key k
 
     # 000  000   000  0000000    00000000  000   000  000000000
@@ -197,9 +197,9 @@ parse = (s) ->
             t.o[t.l] = o
 
         if v?
-            o[key k] = value v
+            o[key(k)] = value(v)
         else
-            o.push value k
+            o.push value(k)
         o
 
     #  0000000   0000000    0000000    000      000  000   000  00000000
@@ -215,7 +215,7 @@ parse = (s) ->
             t.undensed = false
             if d > t.d and not undensed
                 stack.push
-                    o: indent t, k, v
+                    o: indent(t, k, v)
                     d: d
             else if d < t.d
                 if isArray(t.o) and last(t.o) == '.'
@@ -484,7 +484,7 @@ stringify = (obj, options={}) ->
                 k += '|'
             
             if opt.align
-                ks = pad k, Math.max maxKey, k.length+2
+                ks = pad k, Math.max(maxKey, k.length+2)
                 i  = pad ind+indstr, maxKey
             else
                 ks = pad k, k.length+2
@@ -501,12 +501,12 @@ stringify = (obj, options={}) ->
 
         if opt.sort
             for k in Object.keys(o).sort()
-                l.push keyValue k, o[k]
+                l.push keyValue(k, o[k])
         else
             for k,v of o
                 # if o.hasOwnProperty k
                 if true
-                    l.push keyValue k, v
+                    l.push keyValue(k, v)
             
         l.join '\n'
 
@@ -605,7 +605,7 @@ save = (p, data, strOpt, cb) ->
     else
         strOpt ?= {}
 
-    str = stringify data, Object.assign ext:slash.ext(p), strOpt
+    str = stringify data, Object.assign(ext:slash.ext(p), strOpt)
 
     if cb is func
 

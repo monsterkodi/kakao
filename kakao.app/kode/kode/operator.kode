@@ -194,17 +194,17 @@ class Operator
         s = ''
         rndr = (n) => 
             try
-                w2 @kode.renderer.node n
+                w2 @kode.renderer.node(n)
             catch e
                 print.noon e, n
         s += chain.map((i) => 
                 if i.operation
-                    (rndr i.operation.lhs) + ' ' + w3(i.operation.operator.text) + ' ' + b6(precedence i)
+                    rndr(i.operation.lhs) + ' ' + w3(i.operation.operator.text) + ' ' + b6(precedence(i))
                 else
-                    (rndr i.qmrkcolon.lhs) + ' ? ' + (rndr i.qmrkcolon.mid) + ' ' 
+                    rndr(i.qmrkcolon.lhs) + ' ? ' + rndr(i.qmrkcolon.mid) + ' ' 
             ).join ' '
         s += ' ' + rndr(chain[-1].operation?.rhs) ? '...'
-        log w4('▪'), s, g3 p
+        log w4('▪'), s, g3(p)
         
     verb: -> if @debug then console.log.apply console.log, arguments 
 

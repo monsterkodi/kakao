@@ -63,15 +63,15 @@ report = status opt={} ○->
 
                             diff += "\n "
                             start++
-                            rgs = kolor.ranges ls.substr(1), slash.ext gitFile
+                            rgs = kolor.ranges ls.substr(1), slash.ext(gitFile)
                             if valid rgs
                                 diff += pretty.ranges rgs
                             else
-                                diff += w8 ls.substr 1
+                                diff += w8(ls.substr(1))
 
                         ls[0] == '-'
                             
-                            diff += "\n " + w3 ls.substr 1
+                            diff += "\n " + w3(ls.substr(1))
                             
                 if diff.length ➜ change += diff + "\n" + w2 '●'
                     
@@ -118,7 +118,7 @@ parseStatus = gitStatus gitDir ->
     while line = lines.shift()
 
         rel = line.slice 3
-        file = slash.path gitDir, line.slice 3
+        file = slash.path gitDir, line.slice(3)
         while (rel = slash.dir(rel)) != ''
             dirSet.add(rel)
 

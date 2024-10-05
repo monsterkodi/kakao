@@ -58,7 +58,7 @@ function gee extends geell
             
     addNumber: px py sz number color=[1 1 1 1] layer=0 =>
         
-        n = Math.ceil Math.log10 number
+        n = Math.ceil Math.log10(number)
         for ni in 0..n
             @addQuad px+ni*sz, py, 1, 1, color, @numberUV[1], 0 layer, sz
         

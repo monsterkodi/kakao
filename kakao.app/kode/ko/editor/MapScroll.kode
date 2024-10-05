@@ -101,7 +101,7 @@ class MapScroll extends events
 
         scroll = @scroll
         delta = 0 if Number.isNaN delta
-        @scroll = parseInt clamp 0, @scrollMax, @scroll+delta
+        @scroll = parseInt clamp(0, @scrollMax, @scroll+delta)
         top = parseInt @scroll / @lineHeight
         @offsetSmooth = @scroll - top * @lineHeight
 
@@ -143,7 +143,7 @@ class MapScroll extends events
 
         if @top < @exposeTop
             oldTop = @exposeTop
-            @exposeTop = Math.max 0, @top - (Math.min @viewLines, @exposeNum - @viewLines)
+            @exposeTop = Math.max 0, @top - Math.min(@viewLines, @exposeNum - @viewLines)
             num = oldTop - @exposeTop
             if num > 0
                 @emit 'exposeLines' top:@exposeTop, bot:oldTop-1, num: num
