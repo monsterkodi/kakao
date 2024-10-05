@@ -74,6 +74,7 @@ matrix = (function ()
             this.types.push([])
         }
         this.ws = 5
+        this.cycles = 0
         this.eggFadeTime = 6
         this.eggMoveTime = 3
         this.critMoveTime = 4
@@ -123,6 +124,9 @@ matrix = (function ()
         }).bind(this)},plants:{info:(function ()
         {
             return this.plants.length
+        }).bind(this)},cycles:{info:(function ()
+        {
+            return this.cycles.toFixed(2)
         }).bind(this)}})
     }
 
@@ -137,6 +141,7 @@ matrix = (function ()
     {
         var column, t, x, y
 
+        this.cycles = 0
         this.anims = []
         this.grid = []
         this.types = []
@@ -176,8 +181,9 @@ matrix = (function ()
 
     matrix.prototype["advance"] = function (sec)
     {
-        var c, e, g, l, n, op, p, _132_21_
+        var c, e, g, l, n, op, p, _139_21_
 
+        this.cycles += sec / 60
         var list = _k_.list(this.eggs)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -196,11 +202,14 @@ matrix = (function ()
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             c = list1[_b_]
-            c.age += sec
             c.eat -= sec
+            if (!c.df)
+            {
+                c.age += sec
+            }
             if (c.age > this.critterMaxAge || c.eat < -this.critterStarveTime)
             {
-                c.df = ((_132_21_=c.df) != null ? _132_21_ : 0)
+                c.df = ((_139_21_=c.df) != null ? _139_21_ : 0)
                 c.df += sec / this.critDieTime
                 continue
             }
@@ -298,9 +307,9 @@ matrix = (function ()
 
     matrix.prototype["neighborsAtDistance"] = function (d)
     {
-        var x, y, _195_12_
+        var x, y, _202_12_
 
-        this.nd = ((_195_12_=this.nd) != null ? _195_12_ : [])
+        this.nd = ((_202_12_=this.nd) != null ? _202_12_ : [])
         if (this.nd[d])
         {
             return this.nd[d]

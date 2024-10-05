@@ -138,13 +138,20 @@ use ./utils ▪ kc ke
         kc  '[[[][]]]'          ▸ ';[[[],[]]]'
         kc  '[[[1]], 1]'        ▸ ';[[[1]],1]'
         kc  '[b(c)]'            ▸ ';[b(c)]'
-        kc  '[b c]'             ▸ ';[b(c)]'
+        # kc  '[b c]'             ▸ ';[b(c)]'
+        kc  '[b c]'             ▸ ';[b,c]'
         
         kc  "['1' , a, true, false, null, undefined]" ▸
             ";['1',a,true,false,null,undefined]"
+
+        kc  "['1' a true false null undefined]" ▸
+            ";['1',a,true,false,null,undefined]"
             
+        # kc  "a = [1 2 - 3 x 4 + 5 'a' b 'c']" ▸
+            # "a = [1,2 - 3,x(4 + 5,'a',b('c'))]"
+
         kc  "a = [1 2 - 3 x 4 + 5 'a' b 'c']" ▸
-            "a = [1,2 - 3,x(4 + 5,'a',b('c'))]"
+            "a = [1,2 - 3,x,4 + 5,'a',b,'c']"
             
         kc  """['1' "2" 3 4.5 [] {} true false null undefined NaN Infinity yes no]""" ▸
             """;['1',"2",3,4.5,[],{},true,false,null,undefined,NaN,Infinity,true,false]"""

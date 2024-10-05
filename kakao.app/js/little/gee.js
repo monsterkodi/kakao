@@ -25,6 +25,7 @@ gee = (function ()
         this["addPipe"] = this["addPipe"].bind(this)
         this["addNumber"] = this["addNumber"].bind(this)
         this["quad"] = this["quad"].bind(this)
+        this["circle"] = this["circle"].bind(this)
         this["rect"] = this["rect"].bind(this)
         this["crect"] = this["crect"].bind(this)
         this["int"] = this["int"].bind(this)
@@ -46,11 +47,13 @@ gee = (function ()
 
     gee.prototype["int"] = function (px, py, number, prop = {})
     {
-        var n, ni, ns, xoff, xs, _25_25_
+        var n, ni, ns, xoff, xs, _25_16_, _27_25_
 
         ns = `${number}`
         n = ns.length - 1
-        xs = (((_25_25_=prop.scale) != null ? _25_25_ : 1)) * 3 / 4
+        prop.sx = ((_25_16_=prop.sx) != null ? _25_16_ : 1)
+        prop.sx *= 3 / 4
+        xs = (((_27_25_=prop.scale) != null ? _27_25_ : 1)) * prop.sx * 0.8
         xoff = ((function ()
         {
             switch (prop.align)
@@ -82,16 +85,21 @@ gee = (function ()
         return this.quad((x1 + x2) / 2,(y1 + y2) / 2,this.quadUV,prop)
     }
 
+    gee.prototype["circle"] = function (px, py, prop)
+    {
+        return this.quad(px,py,this.circleUV,prop)
+    }
+
     gee.prototype["quad"] = function (px, py, uv, prop = {})
     {
-        var color, layer, rot, scale, sx, sy, _44_24_, _45_24_, _46_27_, _47_27_, _48_27_, _49_25_
+        var color, layer, rot, scale, sx, sy, _50_24_, _51_24_, _52_27_, _53_27_, _54_27_, _55_25_
 
-        sx = ((_44_24_=prop.sx) != null ? _44_24_ : 1)
-        sy = ((_45_24_=prop.sy) != null ? _45_24_ : 1)
-        color = ((_46_27_=prop.color) != null ? _46_27_ : [1,1,1,1])
-        scale = ((_47_27_=prop.scale) != null ? _47_27_ : 1)
-        layer = ((_48_27_=prop.layer) != null ? _48_27_ : 0)
-        rot = ((_49_25_=prop.rot) != null ? _49_25_ : 0)
+        sx = ((_50_24_=prop.sx) != null ? _50_24_ : 1)
+        sy = ((_51_24_=prop.sy) != null ? _51_24_ : 1)
+        color = ((_52_27_=prop.color) != null ? _52_27_ : [1,1,1,1])
+        scale = ((_53_27_=prop.scale) != null ? _53_27_ : 1)
+        layer = ((_54_27_=prop.layer) != null ? _54_27_ : 0)
+        rot = ((_55_25_=prop.rot) != null ? _55_25_ : 0)
         return this.addQuad(px,py,sx,sy,color,uv,rot,layer,scale)
     }
 

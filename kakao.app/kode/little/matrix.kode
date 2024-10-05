@@ -33,7 +33,9 @@ function matrix
             @types.push []
         
         @ws = 5
-                
+           
+        @cycles            = 0
+        
         @eggFadeTime       = 6
         @eggMoveTime       = 3
         @critMoveTime      = 4 
@@ -62,6 +64,7 @@ function matrix
             critters:   info: => @critters.length
             corpses:    info: => @critters.filter((c) -> c.df >= 1).length
             plants:     info: => @plants.length
+            cycles:     info: => @cycles.toFixed 2
                 
     setCritterAge: (@critterMaxAge) =>
         
@@ -74,6 +77,8 @@ function matrix
     # 0000000      000     000   000  000   000     000     
     
     start: =>
+        
+        @cycles = 0
         
         @anims = []
         @grid  = []
@@ -113,6 +118,8 @@ function matrix
     
     advance: sec =>
         
+        @cycles += sec/60
+        
         for e in @eggs
             
             e.age += sec
@@ -125,8 +132,8 @@ function matrix
                 
         for c in @critters
             
-            c.age += sec
             c.eat -= sec
+            c.age += sec if not c.df
                                     
             if c.age > @critterMaxAge or c.eat < -@critterStarveTime
                 c.df ?= 0
@@ -333,7 +340,7 @@ function matrix
     addCorpse:  x y      => @addObject x, y, type:@CRITTER, age:2*@critterMaxAge, sx:1, sy:1, df:1, eggs:0
     addTube:    x y idx  => @addObject x, y, type:@TUBE,    idx:idx
     addPlant:   x y      => @addObject x, y, @makePlant x, y, @numLeaves        
-    makePlant: x y numLeaves leafAge =>
+    makePlant:  x y numLeaves leafAge =>
         
         leaves = [] 
         for l in 0...numLeaves
