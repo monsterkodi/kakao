@@ -179,6 +179,9 @@ use ./utils ▪ kc
         ▸ binary
         
             kc "f a|b, x | y, c|d | e| f" ▸ 'f(a | b,x | y,c | d | e | f)'
+            kc "f a|b x | y c|d | e| f"   ▸ 'f(a | b,x | y,c | d | e | f)'
+            kc "f a&b, x & y, c&d & e& f" ▸ 'f(a & b,x & y,c & d & e & f)'
+            kc "f a&b x & y c&d & e& f"   ▸ 'f(a & b,x & y,c & d & e & f)'
             
             kc 'a ^= b' 'a ^= b'
             

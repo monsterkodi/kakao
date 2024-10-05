@@ -585,8 +585,11 @@ function Parse extends parseutils
                 (   spaced and 
                     (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if''when'])) and
                     '○rgs' not in @stack and
+                    '[' not in @stack and
+                    @stack[-1] not in ['(' 'call' 'args(' 'op|' 'op&'] and
+                    (@stack[-1] not in ['▸args' ':'] or (nxt.line > last.line and nxt.col > first.col)) and
                     nxt.text not in ['then' 'when' 'else' 'break' 'continue' 'in' 'of' 'for' 'while'] and
-                    (nxt.text not in ['if'] or not @noThenAhead tokens) and
+                    (nxt.text not in ['if'] or not @noThenAhead(tokens)) and
                     nxt.text not in ',.;:)}]' and
                     nxt.type not in ['nl'] and
                     (nxt.type != 'op' or nxt.text in ['++''--''noon''new''not'] or nxt.text in ['+''-'] and tokens[1].col == nxt.col+1) and
@@ -605,7 +608,7 @@ function Parse extends parseutils
                     @verb 'lhs is lhs of +- op' e, nxt
                     e = @operation e, tokens.shift(), tokens
                                 
-                ➜                
+                ➜             
                     print.tokens "lhs no nxt match? break! stack:#{@stack} nxt:" [nxt] if @debug
                     print.ast "lhs no nxt match? break! stack:#{@stack}" e if @debug
                     if nxt.type == 'block' 

@@ -9,13 +9,23 @@ toExport["call"] = function ()
     {
         compare(kc('a(b)'),'a(b)')
         compare(kc('a(b,c)'),'a(b,c)')
+        compare(kc('a(b c)'),'a(b,c)')
+        compare(kc('a b c'),'a(b,c)')
         compare(kc('a(1,null,"2")'),'a(1,null,"2")')
+        compare(kc('a(1 null "2")'),'a(1,null,"2")')
+        compare(kc('a 1 null "2"'),'a(1,null,"2")')
         compare(kc('a[1](b)'),'a[1](b)')
         compare(kc("f 'b', (a) ->"),"f('b',function (a)\n{})")
+        compare(kc("f 'b' (a) ->"),"f('b',function (a)\n{})")
         compare(kc("a('1' 2 3.4 true false null undefined NaN Infinity)"),"a('1',2,3.4,true,false,null,undefined,NaN,Infinity)")
+        compare(kc("a '1' 2 3.4 true false null undefined NaN Infinity"),"a('1',2,3.4,true,false,null,undefined,NaN,Infinity)")
         compare(kc("cb not err"),"cb(!err)")
         compare(kc(`a b:c[1], d:2`),`a({b:c[1],d:2})`)
+        compare(kc(`a b:c[1] d:2`),`a({b:c[1],d:2})`)
         compare(kc(`a b:c[2], d:3
+4`),`a({b:c[2],d:3})
+4`)
+        compare(kc(`a b:c[2] d:3
 4`),`a({b:c[2],d:3})
 4`)
         compare(kc(`a '1'
@@ -26,8 +36,8 @@ b(2)
 c(3.4)
 d(true)`)
         compare(kc(`a b 1
-c d 2`),`a(b(1))
-c(d(2))`)
+c d 2`),`a(b,1)
+c(d,2)`)
         compare(kc("a 'b' -> c"),`a('b',function ()
 {
     return c
@@ -60,6 +70,14 @@ x = y`)
     return 2
 })`)
         compare(kc(`j k:1, (l) -> 3`),`j({k:1},function (l)
+{
+    return 3
+})`)
+        compare(kc(`g h:1 -> 2`),`g({h:1},function ()
+{
+    return 2
+})`)
+        compare(kc(`j k:1 (l) -> 3`),`j({k:1},function (l)
 {
     return 3
 })`)
@@ -199,10 +217,10 @@ f = function ()
     x({c:1,d:2})
 }`)
         compare(kc(`for y in [1..10]
-    x   c:1
-        d:2`),`for (y = 1; y <= 10; y++)
+    x   c:3
+        d:4`),`for (y = 1; y <= 10; y++)
 {
-    x({c:1,d:2})
+    x({c:3,d:4})
 }`)
         compare(kc(`for y in [1..10]
     x   c:a
