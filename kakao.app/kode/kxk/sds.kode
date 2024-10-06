@@ -130,10 +130,10 @@ function find
 # accepts an object and a keypath as a list or string and a value
 # returns the value at keypath or undefined
 
-get = (object, keypath, defaultValue) ->
+get = object keypath defaultValue ->
 
-    return defaultValue if not object
-    return defaultValue if not keypath?.length
+    ⮐ defaultValue if not object
+    ⮐ defaultValue if not keypath?.length
 
     keypath = keypath.split '.' if typeof(keypath) == 'string'
 
@@ -141,7 +141,7 @@ get = (object, keypath, defaultValue) ->
 
     while kp.length
         object = object[kp.shift()]
-        return defaultValue if not object?
+        ⮐ defaultValue if not object?
 
     object
     
@@ -154,7 +154,7 @@ get = (object, keypath, defaultValue) ->
 # accepts an object, a keypath as an array or string and a value
 # returns the object with value set at keypath
 
-set = (object, keypath, value) ->
+set = object keypath value ->
     
     keypath = keypath.split '.' if keypath is str
     throw "invalid keypath: #{JSON.stringify keypath}" if not keypath is arr
@@ -195,7 +195,7 @@ set = (object, keypath, value) ->
 # accepts an object and a keypath as an array or string
 # returns the object with value removed at keypath
 
-del = (object, keypath) ->
+del = object keypath ->
     
     keypath = keypath.split '.' if typeof(keypath) == 'string'
     throw "invalid keypath: #{JSON.stringify keypath}" if not (keypath instanceof Array)

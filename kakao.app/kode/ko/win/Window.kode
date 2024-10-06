@@ -23,14 +23,21 @@ use ../commandline ◆ CommandLine
 
 function Window extends win.Delegate
 
-    onWindowWillShow:       win          -> #log "onWindowWillShow"      
-    onWindowAnimationTick:  win tickInfo -> #log 'onWindowAnimationTick' 
-    onWindowResize:         win event    -> #log 'onWindowResize'        
-    onWindowFocus:          win          -> #log 'onWindowFocus'         
+    onWindowWillShow:       win          -> window.split.resized(); kakao 'window.focus'
+    onWindowAnimationTick:  win tickInfo -> #log 'onWindowAnimationTick'
+    onWindowFocus:          win          -> log 'onWindowFocus'         
     onWindowBlur:           win          -> #log 'onWindowBlur'          
     onWindowKeyDown:        keyInfo      -> #log 'onWindowKeyDown'       keyInfo
     onWindowKeyUp:          keyInfo      -> #log 'onWindowKeyUp'         keyInfo
     onWindowMenuTemplate:   win template -> kakao.menuTemplate = Menu template
+    onWindowDidLoadStash:   win          -> log 'onLoadStash' 
+    onWindowResize:         win event    ->
+        
+        window.split.resized()
+        window.win?.onMoved window.win.getBounds()
+        if window.stash.get 'centerText' false
+            window.editor.centerText true 200
+    
     
     @: ->
         
@@ -97,7 +104,6 @@ function Window extends win.Delegate
             
             post.emit 'loadFile' kore.get('editor|file')
     
-        window.split.resized()
         window.info.reload()
         
         # if empty window.tabs.tabs ➜ log 'not tab! empty tab!'; post.emit 'newEmptyTab'
@@ -142,7 +148,7 @@ function Window extends win.Delegate
             'Arrange Windows'       ➜ ⮐ log "ko.window #{name} unimplemented!"
             'Toggle Scheme'         ➜ ⮐ scheme.toggle()
             'Toggle Center Text'    ➜ ⮐ toggleCenterText()
-            'Toggle Func List'      ➜ ⮐ [prefs.toggle('list|active'), post.emit('list.toggle')]
+            'Toggle Func List'      ➜ ⮐ [prefs.toggle('list|active') post.emit('list.toggle')]
             'Toggle Tab Pinned'     ➜ ⮐ toggleTabPinned()
             'Toggle Tab Extensions' ➜ ⮐ tabs.toggleExtension()
             'Increase'              ➜ ⮐ changeFontSize +1
@@ -211,13 +217,6 @@ window.editorWithName = n ->
  # 000   000  000            000  000   000     000       
  # 000   000  00000000  0000000   000  0000000  00000000  
  
-window.onresize = ->
-
-    window.split.resized()
-    window.win?.onMoved window.win.getBounds()
-    if window.stash.get 'centerText' false
-        window.editor.centerText true, 200
-
 post.on 'split' (s) ->
 
     filebrowser?.resized()

@@ -130,6 +130,7 @@
 
     if ([req isEqualToString:@"focusNext"     ]) { return [win focusNext]; }
     if ([req isEqualToString:@"focusPrev"     ]) { return [win focusPrev]; }
+    if ([req isEqualToString:@"focus"         ]) { return [win focus];     }
     if ([req isEqualToString:@"frame"         ]) { return [win frameInfo]; }
     if ([req isEqualToString:@"frameInfo"     ]) { return [win frameInfo]; }
     if ([req isEqualToString:@"new"           ]) { return [NSNumber numberWithLong:[win new:arg0 script:arg1].windowNumber]; }

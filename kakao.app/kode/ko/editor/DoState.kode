@@ -100,7 +100,7 @@ function DoState
         ⮐ if i < 0 and -i > @s.numLines
         
         lines = @lines()
-        lines.splice i, 1
+        lines.splice i 1
         @s = @s.set 'lines' @dictFromLines(lines)
         @s = @s.set 'numLines' lines.length
         
@@ -131,7 +131,6 @@ function DoState
     numSelections: -> @s.selections.length
     numHighlights: -> @s.highlights.length
     mainCursor:    -> @s.cursors[@s.main].asMutable()
-
     # modify:
         
     setSelections: s -> @s = @s.set 'selections' s

@@ -153,14 +153,13 @@ function FileEditor extends TextEditor
 
         if not filePositions is obj ➜ filePositions = {}
 
-        cursor = @mainCursor()
-        if cursor[0] or cursor[1]
+        if cursor = @hasMainCursor()
             filePositions[@currentFile] = "#{cursor[0]} #{cursor[1]} #{@scroll.scroll}"
         else
             delete filePositions[@currentFile]
 
-        deleteBy filePositions, (f,fp) -> fp.startsWith '0 0 '
-
+        deleteBy filePositions (f fp) -> fp.startsWith '0 0 '
+        
         window.stash.set 'filePositions' filePositions
 
     # 00000000   00000000   0000000  000000000   0000000   00000000   00000000
@@ -185,7 +184,8 @@ function FileEditor extends TextEditor
                 @scroll.by last posScroll
             
         else
-            @singleCursorAtPos [0,0]
+            
+            @singleCursorAtPos [0 0]
             @scroll.top = 0 if @mainCursor()[1] == 0
             @scroll.bot = @scroll.top-1
             @scroll.to 0
@@ -219,7 +219,6 @@ function FileEditor extends TextEditor
             # kore.set 'view|file' opt.path
             ⮐ 
 
-        # log 'jumpToFile' opt, window.lastFocus
         if window.lastFocus == 'editor'
 
             [file, fpos] = slash.splitFilePos opt.path
@@ -233,15 +232,11 @@ function FileEditor extends TextEditor
 
             opt.file ?= opt.path
 
-            # log 'jumpToFile navigate.gotoFilePos' opt
-
             window.navigate.gotoFilePos opt
             
         else
 
             file = slash.joinFileLine opt.path, opt.line, opt.col
-
-            # log 'jumpToFile post loadFile' file
 
             post.emit 'loadFile' file
 
@@ -467,7 +462,7 @@ function FileEditor extends TextEditor
         getMenu = template name ->
             for item in template
                 if item.text == name
-                    return item
+                    ⮐ item
 
         if RecentMenu.length
             if fileMenu = getMenu opt.items 'File'

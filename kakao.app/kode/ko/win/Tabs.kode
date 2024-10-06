@@ -292,7 +292,7 @@ class Tabs
         
         file ?= kore.get 'editor|file'
         tabs = @koreTabs()
-        if tab = @koreTabForPath file, tabs
+        if tab = @koreTabForPath file tabs
             delete tab.dirty
             @cleanTabs tabs
             

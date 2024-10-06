@@ -21,6 +21,7 @@ typedef void (^Callback)(id, NSString*);
 - (Win*) new:(NSString*)urlString script:(NSString*)script;
 - (Win*) focusNext;
 - (Win*) focusPrev;
+- (Win*) focus;
 - (void) reload;
 - (void) framerateDrop:(long)ms;
 - (void) center;

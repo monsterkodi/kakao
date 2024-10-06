@@ -41,7 +41,7 @@ str.fillet = s wordCharacterSet='' ->
     
     fillets = []
     
-    return fillets if not s is str
+    ⮐ fillets if not s is str
     
     for ci in 0...s.length
         
@@ -211,7 +211,7 @@ str.rtrim = str.rstrip
 str.lcnt = s c ->
     s ?= ''
     if typeof s == 'number' and Number.isFinite s then s = String s
-    return 0 if typeof s != 'string'
+    ⮐ 0 if typeof s != 'string'
     c ?= ''
     i = -1
     while s[++i] in c then
@@ -220,7 +220,7 @@ str.lcnt = s c ->
 str.rcnt = s c ->
     s ?= ''
     if typeof s == 'number' and Number.isFinite s then s = String s
-    return 0 if typeof s != 'string'
+    ⮐ 0 if typeof s != 'string'
     c ?= ''
     i = -1
     while s[s.length-(++i)-1] in c then
@@ -284,7 +284,7 @@ str.time = t ->
                 f *= o[k]
                 if k == 'year' or t < f
                     k += 's' if k != 'ms' and num != 1
-                    return '' + num + ' ' + k
+                    ⮐ '' + num + ' ' + k
         'bigint'
             
             thsnd = BigInt 1000
@@ -293,7 +293,7 @@ str.time = t ->
                 if k == 'seconds' or t < f
                     num = parseInt thsnd * t / f
                     k += 's' if k == 'second' and num != 1
-                    return '' + num + ' ' + k
+                    ⮐ '' + num + ' ' + k
                 f *= thsnd
         ➜
             String t

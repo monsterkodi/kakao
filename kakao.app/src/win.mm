@@ -252,6 +252,7 @@
 
 - (Win*) focusNext { return [self focusSibling:+1]; }
 - (Win*) focusPrev { return [self focusSibling:-1]; }
+- (Win*) focus     { [self makeKeyAndOrderFront:self]; return self; }
 - (Win*) focusSibling:(int)offset
 {
     NSArray* windows = [App wins];

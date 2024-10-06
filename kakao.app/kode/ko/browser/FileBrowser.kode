@@ -57,9 +57,6 @@ function FileBrowser extends Browser
 
     dropAction: action sources target ->
 
-        # if slash.isFile target
-            # target = slash.dir target
-
         for source in sources
 
             if action == 'move'
@@ -70,8 +67,8 @@ function FileBrowser extends Browser
         for source in sources
 
             switch action
-                'move' ➜ File.rename source, target
-                'copy' ➜ File.copy source, target
+                'move' ➜ File.rename source target
+                'copy' ➜ File.copy source target
 
     columnForFile: file ->
 
@@ -200,8 +197,8 @@ function FileBrowser extends Browser
     onFileBrowser: action item arg =>
 
         switch action
-            'loadItem'     ➜ @loadItem     item, arg
-            'activateItem' ➜ @activateItem item, arg
+            'loadItem'     ➜ @loadItem     item arg
+            'activateItem' ➜ @activateItem item arg
 
     loadDir: path -> @loadItem type:'dir' path:path
 

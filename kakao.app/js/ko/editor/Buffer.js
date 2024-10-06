@@ -51,6 +51,17 @@ Buffer = (function ()
         return this.do.mainCursor()
     }
 
+    Buffer.prototype["hasMainCursor"] = function ()
+    {
+        var c
+
+        c = this.mainCursor()
+        if (c[0] || c[1])
+        {
+            return c
+        }
+    }
+
     Buffer.prototype["line"] = function (i)
     {
         return this.do.line(i)
@@ -277,10 +288,10 @@ Buffer = (function ()
 
     Buffer.prototype["wordRangesInLineAtIndex"] = function (li, opt = {})
     {
-        var mtch, r, _142_19_, _143_89_
+        var mtch, r, _144_19_, _145_89_
 
-        opt.regExp = ((_142_19_=opt.regExp) != null ? _142_19_ : this.wordRegExp)
-        if ((opt != null ? (_143_89_=opt.include) != null ? _143_89_.length : undefined : undefined))
+        opt.regExp = ((_144_19_=opt.regExp) != null ? _144_19_ : this.wordRegExp)
+        if ((opt != null ? (_145_89_=opt.include) != null ? _145_89_.length : undefined : undefined))
         {
             opt.regExp = new RegExp(`(\\s+|[\\w${opt.include}]+|[^\\s])`,'g')
         }
@@ -409,7 +420,7 @@ Buffer = (function ()
 
     Buffer.prototype["textInRange"] = function (rg)
     {
-        var _223_58_
+        var _225_58_
 
         return (!_k_.empty((rg)) ? (typeof this.line(rg[0]).slice === "function" ? this.line(rg[0]).slice(rg[1][0],rg[1][1]) : undefined) : '')
     }
@@ -514,7 +525,7 @@ Buffer = (function ()
 
     Buffer.prototype["isRangeInString"] = function (r)
     {
-        var _288_59_
+        var _290_59_
 
         return (this.rangeOfStringSurroundingRange(r) != null)
     }
@@ -633,14 +644,14 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForText"] = function (t, opt)
     {
-        var li, r, _363_43_
+        var li, r, _366_43_
 
         t = t.split('\n')[0]
         r = []
         for (var _a_ = li = 0, _b_ = this.numLines(); (_a_ <= _b_ ? li < this.numLines() : li > this.numLines()); (_a_ <= _b_ ? ++li : --li))
         {
             r = r.concat(this.rangesForTextInLineAtIndex(t,li,opt))
-            if (r.length >= (((_363_43_=(opt != null ? opt.max : undefined)) != null ? _363_43_ : 999)))
+            if (r.length >= (((_366_43_=(opt != null ? opt.max : undefined)) != null ? _366_43_ : 999)))
             {
                 break
             }
@@ -650,10 +661,10 @@ Buffer = (function ()
 
     Buffer.prototype["rangesForTextInLineAtIndex"] = function (t, i, opt)
     {
-        var r, rng, rngs, type, _368_25_
+        var r, rng, rngs, type, _372_25_
 
         r = []
-        type = ((_368_25_=(opt != null ? opt.type : undefined)) != null ? _368_25_ : 'str')
+        type = ((_372_25_=(opt != null ? opt.type : undefined)) != null ? _372_25_ : 'str')
         if (_k_.in(type,['str','Str']))
         {
             t = kstr.escapeRegExp(t)
