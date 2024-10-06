@@ -20,9 +20,9 @@ use ../kxk ◆ slash fs
 
 export ○->
     
-    srcDir = slash.path ◆dir, '../../src'
+    srcDir = slash.path ◆dir '../../src'
     
-    ○ fs.mkdir slash.dir(slash.path(◆dir, OUT))
+    ○ fs.mkdir slash.dir(slash.path(◆dir OUT))
     
     srcFiles =○ fs.list srcDir
     srcFiles = srcFiles.filter (f) -> slash.ext(f.path) in ['cpp''mm']
@@ -38,9 +38,9 @@ export ○->
     
     opt = shell:true cwd:srcDir # build inside the kokoa.app/src folder
     
-    new Promise (resolve, reject) ->
+    new Promise (resolve reject) ->
     
-        child_process.exec cmd, opt, (err, stdout, stderr) -> 
+        child_process.exec cmd opt (err stdout stderr) -> 
         
             if err 
                 error 'ERROR' err
