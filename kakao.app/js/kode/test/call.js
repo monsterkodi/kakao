@@ -62,6 +62,9 @@ c(d,2)`)
         compare(kc(`a.b c:2
 x = y`),`a.b({c:2})
 x = y`)
+        compare(kc(`func c/d w*k`),`func(c / d,w * k)`)
+        compare(kc(`func i++ j--`),`func(i++,j--)`)
+        compare(kc(`func a+b c-d`),`func(a + b,c - d)`)
     })
     section("obj, func", function ()
     {

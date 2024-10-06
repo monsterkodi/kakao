@@ -597,7 +597,7 @@ function Parse extends parseutils
                     nxt.type not in ['nl'] and
                     (nxt.type != 'op' or nxt.text in ['++''--''noon''new''not'] or nxt.text in ['+''-'] and tokens[1].col == nxt.col+1) and
                     @isSuitableForImplicitCall(e) )
-                    
+
                     @verb 'lhs is lhs of implicit call! e' e, @stack[-1]
                     @verb '    is lhs of implicit call! nxt' nxt
                     @verb '    is lhs first' first 

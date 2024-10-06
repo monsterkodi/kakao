@@ -622,7 +622,7 @@ function Parser extends parse
     call: (tok, tokens, qmrk) ->
 
         @push 'call'
-
+        
         tok = tok.token if tok.token
                         
         last = lastLineCol tok

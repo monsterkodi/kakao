@@ -71,7 +71,7 @@ gee = (function ()
         }).bind(this))()
         for (var _a_ = ni = 0, _b_ = n; (_a_ <= _b_ ? ni <= n : ni >= n); (_a_ <= _b_ ? ++ni : --ni))
         {
-            this.quad(xoff + px + ni * xs,py,this.numberUV[ns[ni]],prop)
+            this.quad(xoff + px + ni * xs(py,this.numberUV[ns[ni]],prop))
         }
     }
 
@@ -110,7 +110,7 @@ gee = (function ()
         n = Math.ceil(Math.log10(number))
         for (var _a_ = ni = 0, _b_ = n; (_a_ <= _b_ ? ni <= n : ni >= n); (_a_ <= _b_ ? ++ni : --ni))
         {
-            this.addQuad(px + ni * sz,py,1,1,color,this.numberUV[1],0,layer,sz)
+            this.addQuad(px + ni * sz(py,1,1,color,this.numberUV[1],0,layer,sz))
         }
     }
 
@@ -158,10 +158,10 @@ gee = (function ()
         this.addTube(x2,y1,ti,3,color,layer,radius)
         this.addTube(x1,y1,ti,4,color,layer,radius)
         this.addTube(x1,y2,ti,5,color,layer,radius)
-        this.addQuad((x1 + x2) / 2,y1,(x2 - x1 - radius) * scale,1,color,this.tubeUV[ti][0],0,layer,radius)
-        this.addQuad((x1 + x2) / 2,y2,(x2 - x1 - radius) * scale,1,color,this.tubeUV[ti][0],0,layer,radius)
-        this.addQuad(x1,(y1 + y2) / 2,1,(y2 - y1 - radius) * scale,color,this.tubeUV[ti][2],0,layer,radius)
-        return this.addQuad(x2,(y1 + y2) / 2,1,(y2 - y1 - radius) * scale,color,this.tubeUV[ti][2],0,layer,radius)
+        this.addQuad((x1 + x2) / 2,y1,scale * (x2 - x1 - radius),1,color,this.tubeUV[ti][0],0,layer,radius)
+        this.addQuad((x1 + x2) / 2,y2,scale * (x2 - x1 - radius),1,color,this.tubeUV[ti][0],0,layer,radius)
+        this.addQuad(x1,(y1 + y2) / 2,1,scale * (y2 - y1 - radius),color,this.tubeUV[ti][2],0,layer,radius)
+        return this.addQuad(x2,(y1 + y2) / 2,1,scale * (y2 - y1 - radius),color,this.tubeUV[ti][2],0,layer,radius)
     }
 
     gee.prototype["addRect"] = function (x1, y1, x2, y2, color, layer = 0)

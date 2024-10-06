@@ -142,7 +142,28 @@ use ./utils ▪ kc ke
             a.b({c:2})
             x = y
             """
+            
+        kc  """
+            func c/d w*k
+            """ ▸
+            """
+            func(c / d,w * k)
+            """
 
+        kc  """
+            func i++ j--
+            """ ▸
+            """
+            func(i++,j--)
+            """
+
+        kc  """
+            func a+b c-d
+            """ ▸
+            """
+            func(a + b,c - d)
+            """
+            
     ▸ obj, func
       
         kc  """

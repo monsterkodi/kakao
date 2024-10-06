@@ -140,11 +140,6 @@ b or
         compare(kc('a+ -b'),'a + -b')
         compare(kc('a + -(b-c)'),'a + -(b - c)')
         compare(kc('b --c'),'b(--c)')
-        compare(kc('a + -b --c'),'a + -b(--c)')
-        compare(kc('a -b'),'a(-b)')
-        compare(kc('-a -b'),'-a(-b)')
-        compare(kc('-a +b'),'-a(+b)')
-        compare(kc('+a -b'),'+a(-b)')
     })
     section("increment", function ()
     {

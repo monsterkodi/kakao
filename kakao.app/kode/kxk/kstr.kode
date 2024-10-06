@@ -138,7 +138,7 @@ str.unfilletBlocks = blocks ->
     
     s = ''
     for b in blocks
-        s += rpad(b.indent, '') + str.unfilletBlock b
+        s += rpad(b.indent, '') + str.unfilletBlock(b)
     s
     
 #  0000000  00000000   000      000   0000000  00000000

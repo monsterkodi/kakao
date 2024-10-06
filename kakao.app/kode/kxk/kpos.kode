@@ -103,7 +103,7 @@ function Pos
             return 0 if @dot(o) > 0
             return 180
         s = d > 0 and -1 or 1
-        s * @angle o
+        s * @angle(o)
             
     check: ->
         newPos = @clone()
