@@ -28,7 +28,7 @@ class Tester
     #      000  000       000          000     000  000   000  000  0000  
     # 0000000   00000000   0000000     000     000   0000000   000   000  
     
-    section: (t, f) =>
+    section: t f =>
 
         stack.push t
         comps = 0
@@ -53,7 +53,7 @@ class Tester
     # 000       000   000  000 0 000  000        000   000  000   000  000       
     #  0000000   0000000   000   000  000        000   000  000   000  00000000  
     
-    sameObjects: (a, b, keystack) ->
+    sameObjects: a b keystack ->
         
         if 
             Object.is a, b # simple types
@@ -90,7 +90,7 @@ class Tester
         
         a == b
     
-    compare: (a, b) =>
+    compare: a b =>
         
         comps++
                         
@@ -119,7 +119,7 @@ class Tester
     #    000     000            000     000     
     #    000     00000000  0000000      000     
     
-    test: (testModule) =>
+    test: testModule =>
         
         # return if not /\n\s*▸\s\w+/gm.test text
         ⮐ if testModule?._test_ != true
@@ -162,10 +162,10 @@ class Tester
     #      000  000   000  000 0 000  000 0 000  000   000  000   000  000   000     000       
     # 0000000    0000000   000   000  000   000  000   000  000   000  000  0000000  00000000  
     
-    showSpace: (s) ->
+    showSpace: s ->
         
         if not s is str
-            return noon s
+            ⮐ noon s
         s.split('\n').map((l) -> l+w2('◂')).join '\n'
     
     summarize: ->
@@ -198,9 +198,9 @@ class Tester
     #      000  000   000  000   000  000   000     000     
     # 0000000   000   000   0000000   000   000     000     
     
-    short: (s) ->
+    short: s ->
         
-        return s if empty s
+        ⮐ s if empty s
         
         split = (''+s).split '\n'
         
