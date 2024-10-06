@@ -151,6 +151,13 @@ use ./utils ▪ kc ke
             """
 
         kc  """
+            func w*k c/d 
+            """ ▸
+            """
+            func(w * k,c / d)
+            """
+            
+        kc  """
             func i++ j--
             """ ▸
             """

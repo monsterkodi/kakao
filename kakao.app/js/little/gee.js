@@ -71,7 +71,7 @@ gee = (function ()
         }).bind(this))()
         for (var _a_ = ni = 0, _b_ = n; (_a_ <= _b_ ? ni <= n : ni >= n); (_a_ <= _b_ ? ++ni : --ni))
         {
-            this.quad(xoff + px + ni * xs(py,this.numberUV[ns[ni]],prop))
+            this.quad(xoff + px + ni * xs,py,this.numberUV[ns[ni]],prop)
         }
     }
 
@@ -110,7 +110,7 @@ gee = (function ()
         n = Math.ceil(Math.log10(number))
         for (var _a_ = ni = 0, _b_ = n; (_a_ <= _b_ ? ni <= n : ni >= n); (_a_ <= _b_ ? ++ni : --ni))
         {
-            this.addQuad(px + ni * sz(py,1,1,color,this.numberUV[1],0,layer,sz))
+            this.addQuad(px + ni * sz,py,1,1,color,this.numberUV[1],0,layer,sz)
         }
     }
 

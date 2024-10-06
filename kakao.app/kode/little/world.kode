@@ -326,7 +326,7 @@ function world extends matrix
         for li in 0...p.leaves.length
             l   = p.leaves[li]
             af  = l.age/@leafMaxAge
-            ls  = s*clamp 0 1 af
+            ls  = s*clamp(0 1 af)
             col = [((af>1) ? 1 : 0), ((af>1) ? 1 : COL_LEAF[1]), COL_LEAF[2], COL_LEAF[3]]
             
             lx = p.x+cos(-li*TAU/@numLeaves+PI)*r
@@ -353,7 +353,7 @@ function world extends matrix
     drawEgg: e g=@g scale=1 =>
         
         ageFac = e.age / @eggMaxAge
-        s = scale * fade 0.1 0.3 ageFac
+        s = scale * fade(0.1 0.3 ageFac)
         a = 1
         if e.age > @eggMaxAge
             a = fade 1.0 0.0 (e.age-@eggMaxAge)/@eggFadeTime
@@ -386,7 +386,7 @@ function world extends matrix
 
     drawCritter: c g=@g scale=1 ccl=null =>
         
-        sx = sy = scale * fade 0.2 1 c.age / @critterAdultAge
+        sx = sy = scale * fade(0.2 1 c.age / @critterAdultAge)
         
         rot  = 0
         rcos = 1
@@ -534,7 +534,7 @@ function world extends matrix
         
         bc = [0.2 0.2 0.2 1]
         
-        knobX = x + fade sx, sx+sw, (@speed-1)/99
+        knobX = x + fade(sx, sx+sw, (@speed-1)/99)
         
         @h.addPipe  x, y, sx+sw, y, sb, bc
         
@@ -552,7 +552,7 @@ function world extends matrix
         
         if not @pause
             wave = hz ph=0 => sin hz*ph*TAU + hz*TAU*@cycles
-            sz = s * fade 0.125 0.28 @speed/100
+            sz = s * fade(0.125 0.28 @speed/100)
             for ri in 0..8
                 phs = (@speed/60)*(ri/16)
                 gv = ri/32

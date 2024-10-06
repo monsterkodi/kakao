@@ -37,7 +37,7 @@ function CommandList extends TextEditor
         @clear()
         index = 0
 
-        viewHeight = @size.lineHeight * Math.min @maxLines, items.length
+        viewHeight = @size.lineHeight * Math.min(@maxLines, items.length)
         @view.style.height = "#{viewHeight}px"
         if viewHeight != @scroll.viewHeight
             @resized()

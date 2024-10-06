@@ -589,7 +589,7 @@ function Parse extends parseutils
                     (nxt.line == last.line or (nxt.col > first.col and @stack[-1] not in ['if''when'])) and
                     '○rgs' not in @stack and
                     '[' not in @stack and
-                    @stack[-1] not in ['(' 'call' 'args(' 'op|' 'op&'] and
+                    @stack[-1] not in ['(' 'call' 'args(' 'op|' 'op&' 'op/' 'op*'] and
                     (@stack[-1] not in ['▸args' ':'] or (nxt.line > last.line and nxt.col > first.col)) and
                     nxt.text not in ['then' 'when' 'else' 'break' 'continue' 'in' 'of' 'for' 'while'] and
                     (nxt.text not in ['if'] or not @noThenAhead(tokens)) and
