@@ -50,7 +50,7 @@ class Print
 
     @stack: (stack, node, color=W4) ->
 
-        log W2(stack.join(' ') + ' ') + color node ? ''
+        log W2(stack.join(' ') + ' ') + color(node ? '')
         
     @sheap: (sheap, popped) ->
         

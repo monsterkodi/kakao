@@ -120,7 +120,7 @@ class kk
     @test: options ○->
                 
         cmd = "node js/test.js"
-        cmd += ' ' + options.join ' ' if valid options
+        cmd += ' ' + options.join(' ') if valid options
         opt = shell:true cwd:kk.appPath() # run tests inside the .app folder
         
         new Promise (resolve, reject) ->

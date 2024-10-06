@@ -88,7 +88,7 @@ ranges = (regexes, text, flags) ->
                         clss:  arg
                         index: r
                     
-                i += match.index + Math.max 1, match[0].length
+                i += match.index + Math.max(1, match[0].length)
                 s = text.slice i
                 
             else

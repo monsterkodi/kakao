@@ -85,7 +85,7 @@ render = (block, text, amps=[]) ->
             while assign = listAssign.shift()
                 text += '\n' + unfillet(assign) + ','
                 
-        text += '\n' + idt + unfillet block.fillet
+        text += '\n' + idt + unfillet(block.fillet)
         text += '\n' + idt + '{'
         for b in childBlocks
             text += render b, ''

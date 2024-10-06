@@ -34,7 +34,7 @@ class Tester
         comps = 0
         depth = stack.length
         if @logSections != false
-            log W1(lpad(depth*3-1) + ' ' + global["g#{max(1, 8-2*depth)}"] rpad(34-depth*3 t) + ' ')
+            log W1(lpad(depth*3-1) + ' ' + global["g#{max(1, 8-2*depth)}"](rpad(34-depth*3 t) + ' '))
         try
             f()
         catch err

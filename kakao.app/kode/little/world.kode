@@ -32,12 +32,12 @@ COL_GRINDER = clr 10 0 0
 COL_HOOVER  = clr 10 6 0
 
 threshMold  = p n m -> parseInt(p/m) != parseInt(n/m)
-sort        = a b => [min(a,b), max(a,b)]
+sort        = a b => [min(a b) max(a b)]
 posInCircle = p cx cy cr => (p[0]-cx)*(p[0]-cx)+(p[1]-cy)*(p[1]-cy) < cr*cr
-posInRect   = p x1 y1 x2 y2 => [x1,x2] = sort(x1,x2); [y1,y2] = sort(y1,y2); x1 <= p[0] <= x2 and y1 <= p[1] <= y2
+posInRect   = p x1 y1 x2 y2 => [x1 x2] = sort(x1 x2); [y1 y2] = sort(y1 y2); x1 <= p[0] <= x2 and y1 <= p[1] <= y2
 posInCRect  = p cx cy w h => (cx-w/2) <= p[0] <= (cx+w/2) and (cy-h/2) <= p[1] <= (cy+h/2)
-posInPipeH  = p x y w r => posInCircle(p, x, y, r) or posInCircle(p, x+w, y, r) or posInRect(p, x, y-r, x+w, y+r)
-valuePipeH  = p x y w r => if posInPipeH(p, x, y, w, r) ➜ (p[0] - x) / w 
+posInPipeH  = p x y w r => posInCircle(p x y r) or posInCircle(p x+w y r) or posInRect(p x y-r x+w y+r)
+valuePipeH  = p x y w r => if posInPipeH(p x y w r) ➜ (p[0] - x) / w 
 
 function world extends matrix
 
@@ -53,10 +53,10 @@ function world extends matrix
         super()
                 
         @inventory  = x:0  y:-1 s:0.5 slots:[
-            {type:@CORPSE, num:0}, 
-            {type:@EGG,    num:1}, 
-            {type:@PLANT,  num:1}, 
-            {type:@HOOVER, tool:true} ] 
+            {type:@CORPSE num:0} 
+            {type:@EGG    num:1} 
+            {type:@PLANT  num:1} 
+            {type:@HOOVER tool:true} ] 
         @speedGauge = x:0  y:0  s:0.5 sx:0.3125 sw:1 sh:0.125 sb:0.25
         
         @slots = {}
@@ -92,7 +92,7 @@ function world extends matrix
         @main.addEventListener  'contextmenu' @onContextMenu
         
         s = 40.96/2048
-        uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
+        uv = u uu v vv -> [ s*u s*v s*uu s*vv ]
         
         @tubeUV = []
         for ti in 0..8
@@ -151,8 +151,8 @@ function world extends matrix
             @g.camPosX += event.deltaX / (4000 * @g.camScale) 
             @g.camPosY -= event.deltaY / (4000 * @g.camScale) 
             
-        @g.camPosX = clamp 0, @ws, @g.camPosX
-        @g.camPosY = clamp 0, @ws, @g.camPosY
+        @g.camPosX = clamp 0 @ws @g.camPosX
+        @g.camPosY = clamp 0 @ws @g.camPosY
         
         @g.updateCamera()
         
@@ -175,13 +175,13 @@ function world extends matrix
 
         @hoverSlot = null
         for slot in @inventory.slots
-            if posInCRect hp, slot.x, slot.y, slot.w, slot.h
+            if posInCRect hp slot.x slot.y slot.w slot.h
                 @hoverSlot = slot
                 ⮐ 
 
-        if posInCircle hp, @speedGauge.x, @speedGauge.y, @speedGauge.s/2
+        if posInCircle hp @speedGauge.x @speedGauge.y @speedGauge.s/2
             @speedGauge.hover = 'gauge'
-        else if posInPipeH hp, @speedGauge.sx, @speedGauge.y, @speedGauge.sw, @speedGauge.sb/2
+        else if posInPipeH hp @speedGauge.sx @speedGauge.y @speedGauge.sw @speedGauge.sb/2
             @speedGauge.hover = 'slider'
         else
             delete @speedGauge.hover
@@ -190,14 +190,14 @@ function world extends matrix
             
     win2Grid: winPos =>
         
-        [x, y] = @win2Pos winPos
+        [x y] = @win2Pos winPos
         
-        x = clamp 0 @ws-1, Math.round(x)
-        y = clamp 0 @ws-1, Math.round(y)
+        x = clamp 0 @ws-1 Math.round(x)
+        y = clamp 0 @ws-1 Math.round(y)
         
-        [x,y]
+        [x y]
     
-    eventPos: event => kpos event #x:event.clientX - @g.br.left, y:event.clientY - @g.br.top
+    eventPos: event => kpos event
     mouseInWorld: => @isInWorld @mouse.pos
         
     # 0000000    00000000    0000000    0000000   
@@ -214,11 +214,11 @@ function world extends matrix
             @activeSlot = @hoverSlot
             ⮐ 
         
-        if posInCircle hp, @speedGauge.x, @speedGauge.y, @speedGauge.s/2
+        if posInCircle hp @speedGauge.x @speedGauge.y @speedGauge.s/2
             @togglePause()
             ⮐ 
             
-        if v = valuePipeH hp, @speedGauge.sx, @speedGauge.y, @speedGauge.sw, @speedGauge.sb/2
+        if v = valuePipeH hp @speedGauge.sx @speedGauge.y @speedGauge.sw @speedGauge.sb/2
             @speed = fade 1 100 v
             ⮐ 
         
@@ -231,9 +231,9 @@ function world extends matrix
             ⮐ 
         
         if event.metaKey
-            @dragPath = [@win2Grid(drag.pos), @win2Grid(drag.pos)]
+            @dragPath = [@win2Grid(drag.pos) @win2Grid(drag.pos)]
         else if event.shiftKey
-            @addGrinder p[0], p[1]
+            @addGrinder p[0] p[1]
         else
             @placeActiveSlotObject p
             
@@ -251,7 +251,7 @@ function world extends matrix
         
         @slots[@activeSlot.type].num--
         
-        @placeObjectOfType p, @activeSlot.type
+        @placeObjectOfType p @activeSlot.type
         
         if @activeSlot.type == @PLANT and @slots[@activeSlot.type].num == 0
             if @slots[@EGG].num ➜ @activeSlot = @slots[@EGG]
@@ -263,7 +263,7 @@ function world extends matrix
         
         hp = @h.win2Pos drag.pos
                 
-        if v = valuePipeH hp, @speedGauge.sx, @speedGauge.y, @speedGauge.sw, @speedGauge.sb/2
+        if v = valuePipeH hp @speedGauge.sx @speedGauge.y @speedGauge.sw @speedGauge.sb/2
             @speed = fade 1 100 v
             ⮐ 
 
@@ -302,7 +302,7 @@ function world extends matrix
     onDragStop: drag event =>
         
         if @dragPath
-            tube.path @dragPath, @addTube
+            tube.path @dragPath @addTube
             delete @dragPath
             
     onContextMenu: (event) => stopEvent event
@@ -319,7 +319,7 @@ function world extends matrix
     drawPlant: p g=@g scale=1 =>
         
         s = scale * 0.25
-        g.addQuad p.x, p.y, s, s, COL_PLANT, @circleUV, 0 0
+        g.addQuad p.x p.y s s COL_PLANT @circleUV 0 0
         
         s = scale * 0.15
         r = scale * 0.2
@@ -327,18 +327,18 @@ function world extends matrix
             l   = p.leaves[li]
             af  = l.age/@leafMaxAge
             ls  = s*clamp(0 1 af)
-            col = [((af>1) ? 1 : 0), ((af>1) ? 1 : COL_LEAF[1]), COL_LEAF[2], COL_LEAF[3]]
+            col = [((af>1) ? 1 : 0) ((af>1) ? 1 : COL_LEAF[1]) COL_LEAF[2] COL_LEAF[3]]
             
             lx = p.x+cos(-li*TAU/@numLeaves+PI)*r
             ly = p.y+sin(-li*TAU/@numLeaves+PI)*r
             
             if l.ef
-                lx = fade l.c.x + l.c.ox - 0.25, lx, l.ef
-                ly = fade l.c.y + l.c.oy, ly, l.ef
+                lx = fade l.c.x + l.c.ox - 0.25 lx l.ef
+                ly = fade l.c.y + l.c.oy ly l.ef
                 ls = s
                 col = [1 1 0 1]
                 
-            g.addQuad lx, ly, ls, ls, col, @circleUV, 0 1
+            g.addQuad lx ly ls ls col @circleUV 0 1
     
     drawTube: x y idx =>
         
@@ -348,7 +348,7 @@ function world extends matrix
             y   = t.y
             idx = t.idx
         
-        @g.addQuad x, y, 1 1 COL_TUBE, @tubeUV[2][idx], 0 1
+        @g.addQuad x y 1 1 COL_TUBE @tubeUV[2][idx] 0 1
         
     drawEgg: e g=@g scale=1 =>
         
@@ -361,28 +361,28 @@ function world extends matrix
         ox = e.ox ? 0
         oy = e.oy ? 0
         
-        g.addQuad e.x+ox, e.y+oy, s, s, [COL_EGG[0], COL_EGG[1], COL_EGG[2], a], @eggUV, 0 1
+        g.addQuad e.x+ox e.y+oy s s [COL_EGG[0] COL_EGG[1] COL_EGG[2] a] @eggUV 0 1
         
     drawGrinder: gr =>
         
         gs = 1.25
-        @g.addTubeRect gr.x-gs, gr.y-gs, gr.x+gs, gr.y+gs, 2 COL_GRINDER, 1
+        @g.addTubeRect gr.x-gs gr.y-gs gr.x+gs gr.y+gs 2 COL_GRINDER 1
         
         bot = gr.bot
         if bot.mf
-            bot.x = fade bot.c.x, gr.x, bot.mf
-            bot.y = fade bot.c.y, gr.y, bot.mf
+            bot.x = fade bot.c.x gr.x bot.mf
+            bot.y = fade bot.c.y gr.y bot.mf
         else if bot.rf
-            bot.x = fade gr.x, bot.s.x, bot.rf
-            bot.y = fade gr.y, bot.s.y, bot.rf
+            bot.x = fade gr.x bot.s.x bot.rf
+            bot.y = fade gr.y bot.s.y bot.rf
         
-        @g.addQuad bot.x, bot.y, 1 1 COL_GRINDER, @circleTopUV, 0 1 
+        @g.addQuad bot.x bot.y 1 1 COL_GRINDER @circleTopUV 0 1 
         
     drawHoover: hv g=@g scale=1 =>
         
         s = scale * 0.7
-        g.quad hv.x-s*0.2, hv.y+s*0.1, @circleTopUV, color:COL_HOOVER, scale:s, sy:0.5 rot:PI*0.3
-        g.quad hv.x+s*0.2, hv.y+s*0.1, @circleTopUV, color:COL_HOOVER, scale:s, sy:0.5 rot:-PI*0.3
+        g.quad hv.x-s*0.2 hv.y+s*0.1 @circleTopUV color:COL_HOOVER scale:s sy:0.5 rot:PI*0.3
+        g.quad hv.x+s*0.2 hv.y+s*0.1 @circleTopUV color:COL_HOOVER scale:s sy:0.5 rot:-PI*0.3
 
     drawCritter: c g=@g scale=1 ccl=null =>
         
@@ -397,20 +397,20 @@ function world extends matrix
         if c.eat < 0
             h = clamp 0 1 -c.eat / @critterStarveTime
             col = [
-                fade(col[0], COL_STARVE[0], h), 
-                fade(col[1], COL_STARVE[1], h),
-                fade(col[2], COL_STARVE[2], h), 1
+                fade(col[0] COL_STARVE[0] h) 
+                fade(col[1] COL_STARVE[1] h)
+                fade(col[2] COL_STARVE[2] h) 1
                 ]
         
         if c.df
-            rot = min PI, c.df * PI
+            rot = min PI c.df * PI
             rcos = cos rot
             rsin = sin rot
             h = clamp 0 1 c.df
             col = [
-                fade(col[0], COL_DEAD[0], h), 
-                fade(col[1], COL_DEAD[1], h),
-                fade(col[2], COL_DEAD[2], h), 1
+                fade(col[0] COL_DEAD[0] h) 
+                fade(col[1] COL_DEAD[1] h)
+                fade(col[2] COL_DEAD[2] h) 1
                 ]
                 
         col = ccl if ccl
@@ -421,65 +421,65 @@ function world extends matrix
         cx = c.x + ox 
         cy = c.y + oy 
 
-        g.addQuad cx-rsin*0.25*sx, cy+rcos*0.25*sy, sx, sy*0.5, col, @circleTopUV, rot, 1
+        g.addQuad cx-rsin*0.25*sx cy+rcos*0.25*sy sx sy*0.5 col @circleTopUV rot 1
         
-        g.addQuad cx-rcos*(1/4 )*sx, cy-rsin*(1/4 )*sy,   0.5*sx,   0.5*sy, col, @circleUV, 0, 1    
-        g.addQuad cx+rcos*(1/12)*sx, cy+rsin*(1/12)*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0, 1    
-        g.addQuad cx+rcos*(3/12)*sx, cy+rsin*(3/12)*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0, 1    
-        g.addQuad cx+rcos*(5/12)*sx, cy+rsin*(5/12)*sy, (1/6)*sx, (1/6)*sy, col, @circleUV, 0, 1    
+        g.addQuad cx-rcos*(1/4 )*sx cy-rsin*(1/4 )*sy   0.5*sx   0.5*sy col @circleUV 0 1    
+        g.addQuad cx+rcos*(1/12)*sx cy+rsin*(1/12)*sy (1/6)*sx (1/6)*sy col @circleUV 0 1    
+        g.addQuad cx+rcos*(3/12)*sx cy+rsin*(3/12)*sy (1/6)*sx (1/6)*sy col @circleUV 0 1    
+        g.addQuad cx+rcos*(5/12)*sx cy+rsin*(5/12)*sy (1/6)*sx (1/6)*sy col @circleUV 0 1    
             
         thrd = 1/3
         se = 0.6
         for e in 0...c.eggs
-            xo = [-thrd, 0, thrd][e]*se*sx
-            yo = [0.15, 0.25, 0.15][e]*sy
+            xo = [-thrd 0 thrd][e]*se*sx
+            yo = [0.15 0.25 0.15][e]*sy
             
             rxo = rcos*xo-rsin*yo
             ryo = rsin*xo+rcos*yo
             
-            g.addQuad cx+rxo, cy+ryo, [1, 1.25, 1][e]*thrd*sx*se, [1, 1.25, 1][e]*thrd*se*sy, COL_EGG_DOT, @circleUV, 0 1    
+            g.addQuad cx+rxo cy+ryo [1 1.25 1][e]*thrd*sx*se [1 1.25 1][e]*thrd*se*sy COL_EGG_DOT @circleUV 0 1    
             
         if c.age > @critterAdultAge and not c.df
             f = min 1 @critterEggFactor(c)
             wp = @critterWombPos c
-            g.addQuad wp.x, wp.y, [1, 1.25, 1][e]*thrd*sx*se*f, [1, 1.25, 1][e]*thrd*se*sy*f, COL_EGG, @circleUV, 0 1    
+            g.addQuad wp.x wp.y [1 1.25 1][e]*thrd*sx*se*f [1 1.25 1][e]*thrd*se*sy*f COL_EGG @circleUV 0 1    
             
     critterWombPos: c e=c.eggs =>
         
         cx = c.x + (c.ox ? 0)
         cy = c.y + (c.oy ? 0)
         
-        xo = [-0.2, 0, 0.2][e]
-        yo = [0.15, 0.25, 0.15][e]
-        x:cx+xo, y:cy+yo
+        xo = [-0.2 0 0.2][e]
+        yo = [0.15 0.25 0.15][e]
+        x:cx+xo y:cy+yo
         
     roundedQuadRect: x0 y0 x1 y1 color layer=0 =>
         
-        [x0, x1] = [min(x0, x1), max(x0, x1)]
-        [y0, y1] = [min(y0, y1), max(y0, y1)]
+        [x0 x1] = [min(x0 x1) max(x0 x1)]
+        [y0 y1] = [min(y0 y1) max(y0 y1)]
         
-        @g.addQuad x0, y0, 1 1  color, @pieUV[3], 0 layer
-        @g.addQuad x1, y0, 1 1  color, @pieUV[2], 0 layer
-        @g.addQuad x1, y1, 1 1  color, @pieUV[1], 0 layer
-        @g.addQuad x0, y1, 1 1  color, @pieUV[0], 0 layer
+        @g.addQuad x0 y0 1 1  color @pieUV[3] 0 layer
+        @g.addQuad x1 y0 1 1  color @pieUV[2] 0 layer
+        @g.addQuad x1 y1 1 1  color @pieUV[1] 0 layer
+        @g.addQuad x0 y1 1 1  color @pieUV[0] 0 layer
         
-        @g.addQuad (x0+x1)/2, (y0+y1)/2, (x1-x0)-1, (y1-y0)+1, color, @quadUV, 0 layer 
-        @g.addQuad  x0,       (y0+y1)/2, 1,         (y1-y0)-1, color, @quadUV, 0 layer 
-        @g.addQuad  x1,       (y0+y1)/2, 1,         (y1-y0)-1, color, @quadUV, 0 layer 
+        @g.addQuad (x0+x1)/2 (y0+y1)/2 (x1-x0)-1 (y1-y0)+1 color @quadUV 0 layer 
+        @g.addQuad  x0       (y0+y1)/2 1         (y1-y0)-1 color @quadUV 0 layer 
+        @g.addQuad  x1       (y0+y1)/2 1         (y1-y0)-1 color @quadUV 0 layer 
         
     gridQuadRect: x0 y0 x1 y1 color layer=0 w=0.02 =>
         
-        [x0, x1] = [min(x0, x1), max(x0, x1)]
-        [y0, y1] = [min(y0, y1), max(y0, y1)]
+        [x0 x1] = [min(x0 x1) max(x0 x1)]
+        [y0 y1] = [min(y0 y1) max(y0 y1)]
         
         sx = x1 - x0
         sy = y1 - y0
         
         for x in 0..sx
-            @g.addQuad x, sx/2, w, sx, [0 0 0 0.15], @quadUV, 0 layer
+            @g.addQuad x sx/2 w sx [0 0 0 0.15] @quadUV 0 layer
 
         for y in 0..sy
-            @g.addQuad sy/2, y, sy, w, [0 0 0 0.15], @quadUV, 0 layer 
+            @g.addQuad sy/2 y sy w [0 0 0 0.15] @quadUV 0 layer 
         
     # 000000000  000   0000000  000   000  
     #    000     000  000       000  000   
@@ -492,11 +492,11 @@ function world extends matrix
         @simulate @tickInfo
         @tweaky.update()
         
-        @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1,   COL_SHADOW
+        @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1    COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
-        @gridQuadRect     0     0    @ws-1,   @ws-1,   COL_GRID
+        @gridQuadRect     0     0    @ws-1    @ws-1    COL_GRID
                 
-        if @dragPath ➜ tube.path @dragPath, @drawTube
+        if @dragPath ➜ tube.path @dragPath @drawTube
             
         for t in @types[@TUBE]    ➜ @drawTube t
         for p in @types[@PLANT]   ➜ @drawPlant p
@@ -506,8 +506,8 @@ function world extends matrix
                     
         @g.draw @tickInfo.time
         
-        # @h.addQuad 0 -1 1 1 COL_EGG,     @quadUV, 0 0
-        # @h.addQuad 1 -1 1 1 COL_CRITTER, @quadUV, 0 0
+        # @h.addQuad 0 -1 1 1 COL_EGG     @quadUV 0 0
+        # @h.addQuad 1 -1 1 1 COL_CRITTER @quadUV 0 0
         
         @drawSpeedGauge()
         @drawInventory()
@@ -534,21 +534,21 @@ function world extends matrix
         
         bc = [0.2 0.2 0.2 1]
         
-        knobX = x + fade(sx, sx+sw, (@speed-1)/99)
+        knobX = x + fade(sx sx+sw (@speed-1)/99)
         
-        @h.addPipe  x, y, sx+sw, y, sb, bc
+        @h.addPipe  x y sx+sw y sb bc
         
-        @h.addPipe sx, y, sx+sw, y, sh, [0.1 0.1 0.1 1]
+        @h.addPipe sx y sx+sw y sh [0.1 0.1 0.1 1]
         
-        @h.addCircle knobX, y, sh, [0.5 0.5 0.5 1]
+        @h.addCircle knobX y sh [0.5 0.5 0.5 1]
         
-        @h.addCircle x, y, s, bc
+        @h.addCircle x y s bc
                 
         gc = @speedGauge.hover == 'gauge' ? clr(1 1 1) : clr(0 0 0)
-        @h.addQuad x, y, s, s, gc, @ringUV[4], 0 1
+        @h.addQuad x y s s gc @ringUV[4] 0 1
         
         pc = @pause ? [1 0 0 1] : [0 0 0 0]
-        @h.addCircle x, y, s/4, pc, 1
+        @h.addCircle x y s/4 pc 1
         
         if not @pause
             wave = hz ph=0 => sin hz*ph*TAU + hz*TAU*@cycles
@@ -556,10 +556,10 @@ function world extends matrix
             for ri in 0..8
                 phs = (@speed/60)*(ri/16)
                 gv = ri/32
-                @h.addQuad x+wave(1, phs)*s/4, y-wave(1, phs-0.25)*s/4, sz, sz, [gv, gv, gv, 1], @circleUV, 0 1
+                @h.addQuad x+wave(1 phs)*s/4 y-wave(1 phs-0.25)*s/4 sz sz [gv gv gv 1] @circleUV 0 1
            
         if @speedGauge.hover == 'slider'
-            @h.number knobX, y+sb*0.85, @speed, scale:s/3.5 layer:1 color:clr(5 5 5)
+            @h.number knobX y+sb*0.85 @speed scale:s/3.5 layer:1 color:clr(5 5 5)
             
     # 000  000   000  000   000  00000000  000   000  000000000   0000000   00000000   000   000  
     # 000  0000  000  000   000  000       0000  000     000     000   000  000   000   000 000   
@@ -577,7 +577,7 @@ function world extends matrix
         
         frcol = clr(2 2 2)
         
-        @h.addRoundedFrame x-sh, y-PHI*sh, x+s*@inventory.slots.length-sh, y+sh, frcol, 1, fr, 4
+        @h.addRoundedFrame x-sh y-PHI*sh x+s*@inventory.slots.length-sh y+sh frcol 1 fr 4
         
         for slot,si in @inventory.slots
             
@@ -586,18 +586,18 @@ function world extends matrix
             # bgcol = (slot == @activeSlot) ? clr(2 2 2) : (slot == @hoverSlot) ? clr(0 0 0 ) : clr(1 1 1)
             bgcol = (slot == @activeSlot) ? gry(0) : (slot == @hoverSlot) ? gry(1) : gry(1.6)
             
-            @h.crect  slot.x, slot.y, sx:s, sy:s,           layer:0 color:bgcol
-            @h.crect  slot.x, slot.y-s*0.6, sx:s, sy:s*0.3, layer:0 color:bgcol
+            @h.crect  slot.x slot.y sx:s sy:s           layer:0 color:bgcol
+            @h.crect  slot.x slot.y-s*0.6 sx:s sy:s*0.3 layer:0 color:bgcol
             
             if not slot.tool
-                @h.number slot.x, slot.y-s*0.57, slot.num, scale:s/4 layer:1 color:slot.num == 0 ? gry(3) : gry(10)
+                @h.number slot.x slot.y-s*0.57 slot.num scale:s/4 layer:1 color:slot.num == 0 ? gry(3) : gry(10)
             
             switch slot.type
                 
-                @CORPSE  ➜ @drawCritter {x:sx, y:y+s/12, age:@critterAdultAge/2, df:1}, @h, s, gry(5)
-                @EGG     ➜ @drawEgg     {x:sx, y:y, age:@eggMaxAge}, @h, s*1.5
-                @PLANT   ➜ @drawPlant   @makePlant(sx, y, 8, @leafMaxAge+1), @h, s
-                @HOOVER  ➜ @drawHoover  {x:sx, y:y}, @h, s
+                @CORPSE  ➜ @drawCritter {x:sx y:y+s/12 age:@critterAdultAge/2 df:1} @h s gry(5)
+                @EGG     ➜ @drawEgg     {x:sx y:y age:@eggMaxAge} @h s*1.5
+                @PLANT   ➜ @drawPlant   @makePlant(sx y 8 @leafMaxAge+1) @h s
+                @HOOVER  ➜ @drawHoover  {x:sx y:y} @h s
         
     #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
     # 000       000  000   000  000   000  000      000   000     000     000       

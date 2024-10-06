@@ -39,8 +39,6 @@ function geell
         
         post.on 'resize' @resize
         
-        # log @numLayers, @layerStart, @numQuads, @quadsPerLayer, @maxQuads, @quadDataLength
-        
         @initGL()        
         @initUV()
         @loadTiles()
@@ -54,7 +52,7 @@ function geell
     initUV: ->
         
         s = 40.96/2048
-        uv = u uu v vv -> [ s*u, s*v, s*uu, s*vv ]
+        uv = u uu v vv -> [ s*u s*v s*uu s*vv ]
         
         @tubeUV = []
         for ti in 0..8
@@ -90,7 +88,7 @@ function geell
         x = (((winPos.x - @br.left) / @br.width  - 0.5) *  2 ) / (@camScale * @aspect) + @bufCamPos[0]
         y = (((winPos.y - @br.top)  / @br.height - 0.5) * -2 ) /  @camScale            + @bufCamPos[1]
         
-        [x,y]
+        [x y]
         
     # 000  000   000  000  000000000   0000000   000      
     # 000  0000  000  000     000     000        000      
@@ -148,7 +146,7 @@ function geell
             @gl.shaderSource shader, source
             @gl.compileShader shader
 
-            if not @gl.getShaderParameter shader, @gl.COMPILE_STATUS
+            if not @gl.getShaderParameter shader @gl.COMPILE_STATUS
                 error 'Shader compilation failed:' @gl.getShaderInfoLog(shader)
                 @gl.deleteShader shader
                 ⮐ null
@@ -157,35 +155,35 @@ function geell
 
         @shaderProgram = @gl.createProgram()
         
-        @gl.attachShader @shaderProgram, loadShader(@gl.VERTEX_SHADER,   vsSource)
-        @gl.attachShader @shaderProgram, loadShader(@gl.FRAGMENT_SHADER, fsSource)
+        @gl.attachShader @shaderProgram loadShader(@gl.VERTEX_SHADER   vsSource)
+        @gl.attachShader @shaderProgram loadShader(@gl.FRAGMENT_SHADER fsSource)
         @gl.linkProgram  @shaderProgram
         
-        if not @gl.getProgramParameter @shaderProgram, @gl.LINK_STATUS
+        if not @gl.getProgramParameter @shaderProgram @gl.LINK_STATUS
             error 'Shader linking failed:' @gl.getProgramInfoLog(@shaderProgram)
             
-        @gl.blendFuncSeparate @gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA, @gl.ONE, @gl.ONE_MINUS_SRC_ALPHA
+        @gl.blendFuncSeparate @gl.SRC_ALPHA @gl.ONE_MINUS_SRC_ALPHA @gl.ONE @gl.ONE_MINUS_SRC_ALPHA
         @gl.enable @gl.BLEND
         
         r = 0.5
-        @quadVertices = new Float32Array [ -r, -r, r, -r, r, r, -r, r ]
+        @quadVertices = new Float32Array [ -r -r r -r r r -r r ]
         @bufCamScale  = new Float32Array 2
         @bufCamPos    = new Float32Array 2
         
-        @quadVertexLoc = @gl.getAttribLocation @shaderProgram, 'aQuadVertex'
-        @positionLoc   = @gl.getAttribLocation @shaderProgram, 'aQuadPosition'
-        @scaleLoc      = @gl.getAttribLocation @shaderProgram, 'aQuadScale'
-        @colorLoc      = @gl.getAttribLocation @shaderProgram, 'aQuadColor'
-        @uvLoc         = @gl.getAttribLocation @shaderProgram, 'aQuadUV'
-        @rotLoc        = @gl.getAttribLocation @shaderProgram, 'aQuadRot'
+        @quadVertexLoc = @gl.getAttribLocation @shaderProgram 'aQuadVertex'
+        @positionLoc   = @gl.getAttribLocation @shaderProgram 'aQuadPosition'
+        @scaleLoc      = @gl.getAttribLocation @shaderProgram 'aQuadScale'
+        @colorLoc      = @gl.getAttribLocation @shaderProgram 'aQuadColor'
+        @uvLoc         = @gl.getAttribLocation @shaderProgram 'aQuadUV'
+        @rotLoc        = @gl.getAttribLocation @shaderProgram 'aQuadRot'
         
-        @camScaleLoc   = @gl.getUniformLocation @shaderProgram, 'uCamScale'
-        @camPosLoc     = @gl.getUniformLocation @shaderProgram, 'uCamPos'
+        @camScaleLoc   = @gl.getUniformLocation @shaderProgram 'uCamScale'
+        @camPosLoc     = @gl.getUniformLocation @shaderProgram 'uCamPos'
         
         @quadBuffer = @gl.createBuffer()
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @quadBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @quadVertices, @gl.STATIC_DRAW
-        @gl.vertexAttribPointer @quadVertexLoc, 2, @gl.FLOAT, false, 0, 0
+        @gl.bindBuffer @gl.ARRAY_BUFFER @quadBuffer
+        @gl.bufferData @gl.ARRAY_BUFFER @quadVertices @gl.STATIC_DRAW
+        @gl.vertexAttribPointer @quadVertexLoc 2 @gl.FLOAT false 0 0
         @gl.enableVertexAttribArray @quadVertexLoc
         
         @dataBuffer = @gl.createBuffer()
@@ -200,36 +198,32 @@ function geell
          
         @gl.useProgram @shaderProgram
         
-        # if @textureInfos[0]?.glTexture
-            # @gl.activeTexture @gl.TEXTURE0
-            # @gl.bindTexture @gl.TEXTURE_2D, @textureInfos[0].glTexture
-        
-        @gl.bindBuffer @gl.ARRAY_BUFFER, @dataBuffer
-        @gl.bufferData @gl.ARRAY_BUFFER, @data, @gl.DYNAMIC_DRAW
+        @gl.bindBuffer @gl.ARRAY_BUFFER @dataBuffer
+        @gl.bufferData @gl.ARRAY_BUFFER @data @gl.DYNAMIC_DRAW
         
         stride = @quadDataLength*4
         offset = 0
         
         attrib = loc cnt =>
             
-            @gl.vertexAttribPointer loc, cnt, @gl.FLOAT, false, stride, offset
-            @gl.vertexAttribDivisor loc, 1
+            @gl.vertexAttribPointer loc cnt @gl.FLOAT false stride offset
+            @gl.vertexAttribDivisor loc 1
             @gl.enableVertexAttribArray loc
             
             offset += 4 * cnt
             
-        attrib @positionLoc, 2
-        attrib @scaleLoc,    2
-        attrib @colorLoc,    4
-        attrib @uvLoc,       4
-        attrib @rotLoc,      1
+        attrib @positionLoc 2
+        attrib @scaleLoc    2
+        attrib @colorLoc    4
+        attrib @uvLoc       4
+        attrib @rotLoc      1
                         
-        @gl.uniform2fv @camScaleLoc, @bufCamScale
-        @gl.uniform2fv @camPosLoc,   @bufCamPos
+        @gl.uniform2fv @camScaleLoc @bufCamScale
+        @gl.uniform2fv @camPosLoc   @bufCamPos
                 
         @clearCanvas()
                 
-        @gl.drawArraysInstanced @gl.TRIANGLE_FAN, 0 4 @maxQuads
+        @gl.drawArraysInstanced @gl.TRIANGLE_FAN 0 4 @maxQuads
         
         @numQuads[0] = 0
         @numQuads[1] = 0
@@ -259,14 +253,14 @@ function geell
         
         imageSources = ['./tiles0000.png']
         
-        promises = imageSources.map (src, textureIndex) =>
+        promises = imageSources.map (src textureIndex) =>
             new Promise (resolve) => 
                 image = new Image
                 image.onerror = image.onload = () => 
                     
                     @textureInfos[textureIndex] = 
                         image:      image
-                        size:       [image.width, image.height]
+                        size:       [image.width image.height]
                         width:      image.width
                         height:     image.height
                         glTexture:  @createTexture(image)
@@ -280,7 +274,7 @@ function geell
     
         if @textureInfos[0]?.glTexture
             @gl.activeTexture @gl.TEXTURE0
-            @gl.bindTexture   @gl.TEXTURE_2D, @textureInfos[0].glTexture
+            @gl.bindTexture   @gl.TEXTURE_2D @textureInfos[0].glTexture
         
         @resize()
     
@@ -288,10 +282,10 @@ function geell
     
         ⮐ if not image
         texture = @gl.createTexture()
-        @gl.bindTexture   @gl.TEXTURE_2D, texture
-        @gl.texImage2D    @gl.TEXTURE_2D, 0, @gl.RGBA, @gl.RGBA, @gl.UNSIGNED_BYTE, image
-        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MIN_FILTER, @gl.LINEAR
-        @gl.texParameteri @gl.TEXTURE_2D, @gl.TEXTURE_MAG_FILTER, @gl.LINEAR
+        @gl.bindTexture   @gl.TEXTURE_2D texture
+        @gl.texImage2D    @gl.TEXTURE_2D 0 @gl.RGBA @gl.RGBA @gl.UNSIGNED_BYTE image
+        @gl.texParameteri @gl.TEXTURE_2D @gl.TEXTURE_MIN_FILTER @gl.LINEAR
+        @gl.texParameteri @gl.TEXTURE_2D @gl.TEXTURE_MAG_FILTER @gl.LINEAR
         texture
         
     # 00000000   00000000   0000000  000  0000000  00000000  
@@ -314,13 +308,13 @@ function geell
         @canvas.style.width  = @br.width + "px"
         @canvas.style.height = @br.height + "px"
         
-        @gl.viewport 0 0 min(@canvas.width, maxDim), min(@canvas.height, maxDim)
+        @gl.viewport 0 0 min(@canvas.width maxDim) min(@canvas.height maxDim)
         
         @updateCamera()
         
     clearCanvas: =>
             
-        @gl.clearColor @clearColor[0], @clearColor[1], @clearColor[2], @clearColor[3]
+        @gl.clearColor @clearColor[0] @clearColor[1] @clearColor[2] @clearColor[3]
         @gl.clear @gl.COLOR_BUFFER_BIT
 
 export geell

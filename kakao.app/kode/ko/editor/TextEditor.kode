@@ -610,7 +610,7 @@ function TextEditor extends Editor
             else
                 beyond = 0
             
-            ⮐ @size.offsetX + beyond + @widthOfText ln[0...character]
+            ⮐ @size.offsetX + beyond + @widthOfText(ln[0...character])
         
         character * @size.charWidth + @size.offsetX
 

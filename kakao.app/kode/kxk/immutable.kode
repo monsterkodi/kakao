@@ -327,7 +327,7 @@ merge = (other, config) ->
         return @
   
     if (other == null) or (typeof(other) != "object") 
-        throw new TypeError "Immutable#merge can only be invoked with objects or arrays, not " + JSON.stringify other
+        throw new TypeError "Immutable#merge can only be invoked with objects or arrays, not " + JSON.stringify(other)
   
     receivedArray = Array.isArray other
     deep          = config?.deep
@@ -398,7 +398,7 @@ objectReplace = (value, config) ->
         return @
 
   if value == null or typeof(value) != "object"
-        throw new TypeError "Immutable#replace can only be invoked with objects or arrays, not " + JSON.stringify value
+        throw new TypeError "Immutable#replace can only be invoked with objects or arrays, not " + JSON.stringify(value)
 
   Immutable.merge @, value, {deep: deep, mode:'replace'}
 

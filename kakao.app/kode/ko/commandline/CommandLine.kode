@@ -365,7 +365,7 @@ function CommandLine extends TextEditor
         split = window.split
         switch combo
             'enter'                ➜ ⮐ @execute()
-            'command+enter'        ➜ ⮐ @execute() + window.split.do "focus #{@command?.focus}"
+            'command+enter'        ➜ ⮐ @execute() + window.split.do("focus #{@command?.focus}")
             'command+shift+enter'  ➜ ⮐ @focusTerminal()
             'up'                   ➜ ⮐ @command?.selectListItem 'up'
             'down'                 ➜ ⮐ @command?.selectListItem 'down'

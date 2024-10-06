@@ -170,6 +170,13 @@ use ./utils ▪ kc ke
             """
             func(a + b,c - d)
             """
+
+        kc  """
+            func c-d a+b 
+            """ ▸
+            """
+            func(c - d,a + b)
+            """
             
     ▸ obj, func
       

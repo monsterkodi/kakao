@@ -33,7 +33,7 @@ report = status opt={} ○->
             prfx   = b[k] "  "
             prfx  += reset '  '
             lame   = slash.ext(gitFile) in ['js' 'json']
-            change = prfx + pretty.filePath relPath, (lame and l[k] or m[k])
+            change = prfx + pretty.filePath(relPath, (lame and l[k] or m[k]))
             
             if k in ['changed' 'created'] and opt.diff
 
@@ -73,7 +73,7 @@ report = status opt={} ○->
                             
                             diff += "\n " + w3(ls.substr(1))
                             
-                if diff.length ➜ change += diff + "\n" + w2 '●'
+                if diff.length ➜ change += diff + "\n" + w2('●')
                     
             changes.push change
 

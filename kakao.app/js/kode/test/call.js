@@ -66,6 +66,7 @@ x = y`)
         compare(kc(`func w*k c/d `),`func(w * k,c / d)`)
         compare(kc(`func i++ j--`),`func(i++,j--)`)
         compare(kc(`func a+b c-d`),`func(a + b,c - d)`)
+        compare(kc(`func c-d a+b `),`func(c - d,a + b)`)
     })
     section("obj, func", function ()
     {

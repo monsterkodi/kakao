@@ -29,7 +29,7 @@ function Editor extends Buffer
             continue if slash.ext(actionFile) != 'js'
 
             try
-                moduleJS = './' + slash.relative actionFile, ◆dir
+                moduleJS = './' + slash.relative(actionFile, ◆dir)
                 actions =○ import(moduleJS)
             catch err
                 error "import of #{moduleJS} failed" err

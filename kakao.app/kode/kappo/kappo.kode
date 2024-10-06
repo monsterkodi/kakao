@@ -117,7 +117,7 @@ winHide = -> log 'window.hide'
 openCurrent = ->
 
     if currentIndex > 0 and search.length
-        prefs.set "search:#{search}:#{currentName}", 1 + prefs.get "search:#{search}:#{currentName}" 0
+        prefs.set "search:#{search}:#{currentName}", 1 + prefs.get("search:#{search}:#{currentName}" 0)
 
     if currentIsApp()
 

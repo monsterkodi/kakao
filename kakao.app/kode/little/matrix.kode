@@ -52,14 +52,14 @@ function matrix
         @critterStarveTime = 50
                        
         @tweaky.init                                                    
-            speed:      min: 1    max:100    step:1      value:@speed,              cb: (@speed) =>
-            leaves:     min: 4    max:12     step:1      value:@numLeaves,          cb: (@numLeaves) =>
-            leafAge:    min: 1    max:100    step:1      value:@leafMaxAge,         cb: (@leafMaxAge) =>
-            eggAge:     min: 10   max:200    step:10     value:@eggMaxAge,          cb: (@eggMaxAge) =>
-            critterAge: min: 100  max:2400   step:100    value:@critterMaxAge,      cb: @setCritterAge
-            eatPeriod:  min: 1    max:100    step:1      value:@critterEatPeriod,   cb: (@critterEatPeriod) =>
-            starveTime: min: 1    max:100    step:1      value:@critterStarveTime,  cb: (@critterStarveTime) =>
-            botDelta:   min: 1    max:10     step:0.1    value:@botDelta,           cb: (@botDelta) =>
+            speed:      min: 1    max:100    step:1      value:@speed               cb: (@speed) =>
+            leaves:     min: 4    max:12     step:1      value:@numLeaves           cb: (@numLeaves) =>
+            leafAge:    min: 1    max:100    step:1      value:@leafMaxAge          cb: (@leafMaxAge) =>
+            eggAge:     min: 10   max:200    step:10     value:@eggMaxAge           cb: (@eggMaxAge) =>
+            critterAge: min: 100  max:2400   step:100    value:@critterMaxAge       cb: @setCritterAge
+            eatPeriod:  min: 1    max:100    step:1      value:@critterEatPeriod    cb: (@critterEatPeriod) =>
+            starveTime: min: 1    max:100    step:1      value:@critterStarveTime   cb: (@critterStarveTime) =>
+            botDelta:   min: 1    max:10     step:0.1    value:@botDelta            cb: (@botDelta) =>
             anims:      info: => @anims.length
             critters:   info: => @critters.length
             corpses:    info: => @critters.filter((c) -> c.df >= 1).length
@@ -125,7 +125,7 @@ function matrix
             e.age += sec
             
             if e.age > @eggMaxAge and e.age-sec <= @eggMaxAge
-                @addCritter e.x, e.y
+                @addCritter e.x e.y
                 
             if e.age > @eggMaxAge+@eggFadeTime
                 @del e
@@ -144,7 +144,7 @@ function matrix
                 if l = @neighborLeaf c
                     c.eat = @critterEatPeriod
                     l.age = -@leafEatTime
-                    @moveLeafTo l, c, @leafEatTime
+                    @moveLeafTo l c @leafEatTime
                 # continue
                 
             continue if c.p
@@ -152,9 +152,9 @@ function matrix
             
             if Math.floor((c.age-@critterAdultAge) / @critterEggPeriod(c)) > c.eggs
                 if n = @emptyNeighbor c
-                    e = @addEgg n.x, n.y
-                    @moveObjectFrom e, @critterWombPos(c), @eggMoveTime
-                    @anim c, 'p' 1 0 2
+                    e = @addEgg n.x n.y
+                    @moveObjectFrom e @critterWombPos(c) @eggMoveTime
+                    @anim c 'p' 1 0 2
                 c.eggs++
                     
             continue if @critterEggFactor(c) > 0.9
@@ -162,12 +162,12 @@ function matrix
                     
             n = @randomOffset c
             if @isInWorld(n) and @isEmpty n
-                op = x:c.x, y:c.y
+                op = x:c.x y:c.y
                 @grid[c.x][c.y] = null
                 c.x = n[0]
                 c.y = n[1]
                 @grid[c.x][c.y] = c
-                @moveObjectFrom c, op, @critMoveTime
+                @moveObjectFrom c op @critMoveTime
                 
         for p in @plants
                         
@@ -180,14 +180,14 @@ function matrix
             if not g.bot.c
                 if c = @deadCritterForGrinder g
                     c.bot = g.bot
-                    @moveBotTo g.bot, c
+                    @moveBotTo g.bot c
             else
                 if g.bot.mf <= 0
                     g.bot.x = g.bot.c.x
                     g.bot.y = g.bot.c.y
                     @del g.bot.c
                     delete g.bot.mf
-                    @returnBot g.bot, g
+                    @returnBot g.bot g
                 else if g.bot.rf <= 0
                     delete g.bot.rf
                     delete g.bot.s
@@ -206,10 +206,10 @@ function matrix
             
         @nd[d] = []
         
-        for x in -d...d  ➜ @nd[d].push [ x, -d]
-        for y in -d...d  ➜ @nd[d].push [ d,  y]
-        for x in  d...-d ➜ @nd[d].push [ x,  d]
-        for y in  d...-d ➜ @nd[d].push [-d,  y]
+        for x in -d...d  ➜ @nd[d].push [ x -d]
+        for y in -d...d  ➜ @nd[d].push [ d  y]
+        for x in  d...-d ➜ @nd[d].push [ x  d]
+        for y in  d...-d ➜ @nd[d].push [-d  y]
         
         @nd[d]
         
@@ -217,7 +217,7 @@ function matrix
         
         for d in 1...parseInt @ws/2
             for n in @neighborsAtDistance d
-                if c = @critterAt [g.x+n[0], g.y+n[1]]
+                if c = @critterAt [g.x+n[0] g.y+n[1]]
                     if c.df >= 1 and not c.bot
                         ⮐ c
         null
@@ -255,17 +255,17 @@ function matrix
             if (d > 0 and a.o[a.m] >= a.t) or (d < 0 and a.o[a.m] <= a.t)
                 a.o[a.m] = a.t
                 
-                @anims.splice ai, 1
+                @anims.splice ai 1
                 
     moveObjectFrom: o s d=1 =>
         
-        @anim o, 'ox' s.x-o.x, 0 d
-        @anim o, 'oy' s.y-o.y, 0 d
+        @anim o 'ox' s.x-o.x 0 d
+        @anim o 'oy' s.y-o.y 0 d
 
     moveLeafTo: l t d=1 =>
 
         l.c = t
-        @anim l, 'ef' 1 0 d
+        @anim l 'ef' 1 0 d
         
     moveBotTo: b t =>
         
@@ -274,16 +274,16 @@ function matrix
         d = Math.sqrt (b.x-t.x)*(b.x-t.x) + (b.y-t.y)*(b.y-t.y)
         d /= @botDelta
         
-        @anim b, 'mf' 1 0 d
+        @anim b 'mf' 1 0 d
 
     returnBot: b g =>
         
-        b.s = x:b.x, y:b.y
+        b.s = x:b.x y:b.y
         
         d = Math.sqrt (b.x-g.x)*(b.x-g.x) + (b.y-g.y)*(b.y-g.y)
         d /= @botDelta
         
-        @anim b, 'rf' 1 0 d
+        @anim b 'rf' 1 0 d
         
     anim: o m s t d =>
         
@@ -292,7 +292,7 @@ function matrix
         
         o[m] = s
         
-        @anims.push o:o, m:m, s:s, t:t, d:d
+        @anims.push o:o m:m s:s t:t d:d
                 
     #  0000000   0000000    0000000      
     # 000   000  000   000  000   000    
@@ -305,25 +305,25 @@ function matrix
         x = parseInt p[0]
         y = parseInt p[1]
         
-        @takeAt [x, y]
+        @takeAt [x y]
         
         o = switch type
-            @GRINDER ➜ bot: x:x, y:y
+            @GRINDER ➜ bot: x:x y:y
             @EGG     ➜ age:0
-            @CRITTER ➜ age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
-            @CORPSE  ➜ age:2*@critterMaxAge, sx:1, sy:1, df:1, eggs:0
-            @PLANT   ➜ @makePlant x, y, @numLeaves
+            @CRITTER ➜ age:0 sx:0 sy:0 sf:0 eggs:0 eat:@critterEatPeriod
+            @CORPSE  ➜ age:2*@critterMaxAge sx:1 sy:1 df:1 eggs:0
+            @PLANT   ➜ @makePlant x y @numLeaves
             
         o.type = type == @CORPSE ? @CRITTER : type
             
-        @addObject x, y, o
+        @addObject x y o
     
     addObject: x y o =>
     
         o.x = parseInt x
         o.y = parseInt y
         
-        @delAt [o.x, o.y]
+        @delAt [o.x o.y]
         
         if o.type == @GRINDER
             for n in @validNeighbors o
@@ -334,19 +334,19 @@ function matrix
         @types[o.type].push o
         o
            
-    addGrinder: x y      => @addObject x, y, type:@GRINDER, bot: x:x, y:y
-    addEgg:     x y      => @addObject x, y, type:@EGG,     age:0
-    addCritter: x y      => @addObject x, y, type:@CRITTER, age:0, sx:0, sy:0, sf:0, eggs:0, eat:@critterEatPeriod
-    addCorpse:  x y      => @addObject x, y, type:@CRITTER, age:2*@critterMaxAge, sx:1, sy:1, df:1, eggs:0
-    addTube:    x y idx  => @addObject x, y, type:@TUBE,    idx:idx
-    addPlant:   x y      => @addObject x, y, @makePlant(x, y, @numLeaves)
+    addGrinder: x y      => @addObject x y type:@GRINDER  bot: x:x  y:y
+    addEgg:     x y      => @addObject x y type:@EGG      age:0
+    addCritter: x y      => @addObject x y type:@CRITTER  age:0 sx:0 sy:0 sf:0 eggs:0 eat:@critterEatPeriod
+    addCorpse:  x y      => @addObject x y type:@CRITTER  age:2*@critterMaxAge sx:1 sy:1 df:1 eggs:0
+    addTube:    x y idx  => @addObject x y type:@TUBE     idx:idx
+    addPlant:   x y      => @addObject x y @makePlant(x y @numLeaves)
     makePlant:  x y numLeaves leafAge =>
         
         leaves = [] 
         for l in 0...numLeaves
             leaves.push age:leafAge ? -l*@leafMaxAge/@numLeaves
         
-        x:x, y:y, type:@PLANT, leaves:leaves
+        x:x y:y type:@PLANT leaves:leaves
 
     # 0000000    00000000  000      
     # 000   000  000       000      
@@ -372,7 +372,7 @@ function matrix
                         
     del: o =>
                 
-        @types[o.type].splice @types[o.type].indexOf(o), 1
+        @types[o.type].splice @types[o.type].indexOf(o) 1
         @grid[o.x][o.y] = null
         
         if o.type == @GRINDER
@@ -402,10 +402,10 @@ function matrix
         for x in -1..1
             for y in -1..1
                 continue if x == y == 0
-                c = [o.x+x, o.y+y]
+                c = [o.x+x o.y+y]
                 continue if not @isInWorld c
                 if @isEmpty c
-                    en.push x:c[0], y:c[1]
+                    en.push x:c[0] y:c[1]
                     
         if en.length
             ⮐ en[randInt(en.length)]
@@ -417,7 +417,7 @@ function matrix
         for x in -1..1
             for y in -1..1
                 continue if x == y == 0
-                c = [o.x+x, o.y+y]
+                c = [o.x+x o.y+y]
                 if @isInWorld c
                     vn.push c
         vn
@@ -428,7 +428,7 @@ function matrix
         for x in -1..1
             for y in -1..1
                 continue if x == y == 0
-                n.push [o.x+x, o.y+y]
+                n.push [o.x+x o.y+y]
         n
         
     objectOfTypeAt: type p =>
@@ -437,9 +437,9 @@ function matrix
             ⮐ null if o.type != type
         o
         
-    critterAt: p => @objectOfTypeAt @CRITTER, p
-    plantAt:   p => @objectOfTypeAt @PLANT, p
-    tubeAt:    p => @objectOfTypeAt @TUBE, p
+    critterAt: p => @objectOfTypeAt @CRITTER p
+    plantAt:   p => @objectOfTypeAt @PLANT p
+    tubeAt:    p => @objectOfTypeAt @TUBE p
                 
     leafToEatAt: p =>
         
@@ -462,12 +462,12 @@ function matrix
         
     randomOffset: c =>
         
-        o = [[-1 1], [0, 1], [1, 1], [-1 0], [1 0], [-1 -1], [0, -1], [1, -1]][randInt 8]
-        [c.x+o[0], c.y+o[1]]
+        o = [[-1 1] [0 1] [1 1] [-1 0] [1 0] [-1 -1] [0 -1] [1 -1]][randInt 8]
+        [c.x+o[0] c.y+o[1]]
 
     randomOffsetCross: c =>
         
-        o = [[0, 1], [-1 0], [1 0], [0, -1]][randInt 4]
-        [c.x+o[0], c.y+o[1]]
+        o = [[0  1] [-1 0] [1 0] [0 -1]][randInt 4]
+        [c.x+o[0] c.y+o[1]]
             
 export matrix

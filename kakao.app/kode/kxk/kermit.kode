@@ -89,7 +89,7 @@ lineMatch = (line, pt, splitlist) ->
         ⮐ 
     
     if ci == cpt.length and varName and si < splt.length
-        rslt[varName] += ' ' + splt[si..].join ' '
+        rslt[varName] += ' ' + splt[si..].join(' ')
     
     # log rslt, strongMatch, weakMatch
     ⮐ rslt if strongMatch or weakMatch
@@ -150,7 +150,7 @@ addMatch = (line, ctx) ->
             continue
     
     if ci == cpt.length and varName and si < splt.length
-        rslt[varName] += ' ' + splt[si..].join ' '
+        rslt[varName] += ' ' + splt[si..].join(' ')
 
     if not strongMatch 
         for d in [1 -1]

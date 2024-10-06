@@ -407,7 +407,7 @@ class Renderer
             else 
                 s += '{ ' + a + ' };'
         else 
-            s += 'default ' + @node n.args
+            s += 'default ' + @node(n.args)
             s += ';'
         s
         
@@ -427,7 +427,7 @@ class Renderer
         idt = rpad 4
         s = 'if (((globalThis.process != null ? globalThis.process.argv : undefined) != null) && import.meta.filename === process.argv[1])'
         s += '\n{\n'
-        s += idt + @nodes n, '\n' + idt
+        s += idt + @nodes(n, '\n' + idt)
         s += '\n}'
         s
         
@@ -443,7 +443,7 @@ class Renderer
         s += "class #{n.name.text}"
 
         if n.extends
-            s += " extends " + n.extends.map((e) => @node e).join ', '
+            s += " extends " + n.extends.map((e) => @node e).join(', ')
 
         s += '\n{'
 
@@ -492,7 +492,7 @@ class Renderer
             else
                 "#{p.callee.text}.#{@mthdName}(#{@nodes p.args, ','})"
         else if @fncnName and @fncsName # old style function
-            "#{@fncnName}.__super__.#{@fncsName}.call(this#{valid p.args ? (',' + @nodes p.args, ',') : ''})"
+            "#{@fncnName}.__super__.#{@fncsName}.call(this#{valid p.args ? (',' + @nodes(p.args, ',')) : ''})"
         
     # 00     00  000000000  000   000  0000000
     # 000   000     000     000   000  000   000
@@ -508,11 +508,11 @@ class Renderer
             s  = '\n'
             if n.keyval.val.func?
                 @mthdName = n.keyval.val.func.name.text
-                s += @indent + @func n.keyval.val.func
+                s += @indent + @func(n.keyval.val.func)
                 delete @mthdName
             else
                 if n.keyval.key.text.startsWith '@'
-                    s += @indent + 'static ' + n.keyval.key.text[1..] + ' = ' + @node n.keyval.val
+                    s += @indent + 'static ' + n.keyval.key.text[1..] + ' = ' + @node(n.keyval.val)
                 else
                     log 'what is this?' n
         s
@@ -586,21 +586,21 @@ class Renderer
         if f = n.keyval?.val?.func
             if f.name.text == 'constructor'
                 @fncsName = 'constructor'
-                s = @indent + @func f, 'function ' + className
+                s = @indent + @func(f, 'function ' + className)
                 s += '\n'
             else if f.name.text.startsWith 'static'
                 @fncsName = f.name.text[7..]
-                s = @indent + @func f, "#{className}[\"#{@fncsName}\"] = function"
+                s = @indent + @func(f, "#{className}[\"#{@fncsName}\"] = function")
                 s += '\n'
             else
                 @fncsName = f.name.text
-                s = @indent + @func f, "#{className}.prototype[\"#{@fncsName}\"] = function"
+                s = @indent + @func(f, "#{className}.prototype[\"#{@fncsName}\"] = function")
                 s += '\n'
             delete @fncsName
         else
             if n.keyval?.key?.text?[0] == '@'
                 member = n.keyval.key.text[1..]
-                s = @indent + "#{className}[\"#{member}\"] = " + @node n.keyval.val
+                s = @indent + "#{className}[\"#{member}\"] = " + @node(n.keyval.val)
         s
         
     # 00000000   00000000   00000000  00000000   00     00  00000000  000000000  000   000
@@ -675,7 +675,7 @@ class Renderer
 
         if n.body.exps?[0]?.call?.callee.text == 'super'
             s += '\n'
-            s += @indent + @node n.body.exps.shift()
+            s += @indent + @node(n.body.exps.shift())
             s += '\n' + gi
         
         if valid n.body.vars
@@ -693,7 +693,7 @@ class Renderer
         if valid n.body.exps
 
             s += '\n'
-            s += @indent + @nodes n.body.exps, '\n'+@indent
+            s += @indent + @nodes(n.body.exps, '\n'+@indent)
             s += '\n' + gi
 
         s += '}'
@@ -755,12 +755,12 @@ class Renderer
 
     return: (n) ->
 
-        s = 'return ' + @node n.val
+        s = 'return ' + @node(n.val)
         trim s
 
     await: (n) ->
 
-        s = 'await ' + @node n.exp
+        s = 'await ' + @node(n.exp)
         trim s
         
     #  0000000   0000000   000      000
@@ -920,7 +920,7 @@ class Renderer
         
         numArgs = n.fnc.func.args?.parens.exps.length
         
-        rv = 'r'+@makeVar n.each
+        rv = 'r'+@makeVar(n.each)
         
         i = @indent
         if numArgs == 1
@@ -1163,7 +1163,7 @@ class Renderer
     
     lcomp: (n) ->
 
-        v = 'r'+@makeVar n.for.inof
+        v = 'r'+@makeVar(n.for.inof)
         comp = (f) =>
             switch f.inof.text
                 when 'in' then @for_in f, 'var ' "#{v}.push(" ')' ' '
@@ -1256,21 +1256,21 @@ class Renderer
         gi = @ind()
         s += 'try\n'
         s += gi+'{\n'
-        s += @indent+@nodes n.exps, '\n'+@indent
+        s += @indent+@nodes(n.exps, '\n'+@indent)
         s += '\n'
         s += gi+'}'
         if n.catch
             s += '\n'
             s += gi+"catch (#{@node(n.catch.errr) or 'err'})\n" 
             s += gi+'{\n'
-            s += @indent+@nodes n.catch.exps, '\n'+@indent
+            s += @indent+@nodes(n.catch.exps, '\n'+@indent)
             s += '\n'
             s += gi+'}'
         if n.finally
             s += '\n'
             s += gi+'finally\n'
             s += gi+'{\n'
-            s += @indent+@nodes n.finally, '\n'+@indent
+            s += @indent+@nodes(n.finally, '\n'+@indent)
             s += '\n'
             s += gi+'}'
         @ded()
@@ -1459,7 +1459,7 @@ class Renderer
  
         lhs = if op.lhs then @atom(op.lhs) + sep else ''
         
-        prfx + lhs + o + sep + open + kstr.lstrip @atom(op.rhs) + close
+        prfx + lhs + o + sep + open + kstr.lstrip(@atom(op.rhs) + close)
 
     # 000  000   000   0000000   0000000   000   000  0000000
     # 000  0000  000  000       000   000  0000  000  000   000

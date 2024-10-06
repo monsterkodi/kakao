@@ -29,7 +29,7 @@ render = block text ->
         args += " id=\"#{block.fillet[fromIndex+1].match}\"" 
         fromIndex += 2
     if block.fillet.length > fromIndex        
-        args += ' ' + unfillet block.fillet[fromIndex..]
+        args += ' ' + unfillet(block.fillet[fromIndex..])
     
     tag = block.fillet[0].match
         

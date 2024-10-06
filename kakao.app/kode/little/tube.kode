@@ -17,7 +17,7 @@ function tube
 
     @path: path func ->
 
-        func path[0][0], path[0][1], path[0][0] == path[1][0] ? TUBE_V : TUBE_H
+        func path[0][0] path[0][1] path[0][0] == path[1][0] ? TUBE_V : TUBE_H
         
         for pi in 1...path.length
             
@@ -26,7 +26,7 @@ function tube
             
             if p[0] == l[0]
                 
-                [s, e] = [min(p[1], l[1]), max(p[1], l[1])]
+                [s e] = [min(p[1] l[1]) max(p[1] l[1])]
                 if s < e
                     t = TUBE_V
                     if pi < path.length - 1
@@ -35,12 +35,12 @@ function tube
                             t = n[0] > l[0] ? TUBE_TL : TUBE_TR
                         else
                             t = n[0] > l[0] ? TUBE_BL : TUBE_BR
-                    func l[0], l[1], t
+                    func l[0] l[1] t
                     for y in s+1...e
-                        func p[0], y, TUBE_V
+                        func p[0] y TUBE_V
             else
                 
-                [s, e] = [min(p[0], l[0]), max(p[0], l[0])]
+                [s e] = [min(p[0] l[0]) max(p[0] l[0])]
                 if s < e
                     t = TUBE_H
                     if pi < path.length - 1
@@ -49,8 +49,8 @@ function tube
                             t = n[1] > l[1] ? TUBE_BR : TUBE_TR
                         else
                             t = n[1] > l[1] ? TUBE_BL : TUBE_TL
-                    func l[0], l[1], t
+                    func l[0] l[1] t
                     for x in s+1...e
-                        func x, p[1], TUBE_H
+                        func x p[1] TUBE_H
 
 export tube

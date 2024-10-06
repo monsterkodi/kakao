@@ -215,7 +215,7 @@ class Transform
         if @last not in funcList
             @last = last funcList
 
-        nextIndex = (1 + funcList.indexOf @last) % funcList.length
+        nextIndex = (1 + funcList.indexOf(@last)) % funcList.length
         @do funcList[nextIndex]
 
     # 0000000     0000000

@@ -177,8 +177,8 @@ parse = (config, options={}) ->
                 when false then r5 dim('✘')
                 when true  then g5 bold('✔')
                 else result[k]
-            shtHelp = if sht != '' then "#{w5 '-'}#{sht}" else '  '
-            lngHelp = if lng != '' then "#{w5 '--'}#{kstr.rpad lng, maxLong}" else '  ' + kstr.pad '' maxLong
+            shtHelp = if sht != '' then "#{w5('-')}#{sht}" else '  '
+            lngHelp = if lng != '' then "#{w5('--')}#{kstr.rpad(lng, maxLong)}" else '  ' + kstr.pad('' maxLong)
             optionsText += '\n'
             optionsText += "    #{shtHelp} #{lngHelp}"
             optionsText += w5 bold("  #{kstr.rpad(help[k], maxHelp)}")

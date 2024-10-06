@@ -142,7 +142,7 @@ class AutoComplete extends events
                     matches = toPairs matches
                     for m in matches
                         d = @editor.distanceOfWord m[0]
-                        m[1].distance = 100 - Math.min d, 100
+                        m[1].distance = 100 - Math.min(d, 100)
 
                     matches.sort (a,b) ->
                         (b[1].distance+b[1].count+1/b[0].length) - (a[1].distance+a[1].count+1/a[0].length)

@@ -128,7 +128,7 @@ class Scrollbar
             @handle.style.height = "#{scrollHeight}px"
             @handle.style.width  = "2px"
 
-            cf = 1 - clamp 0, 1, (scrollHeight-10)/200
+            cf = 1 - clamp(0, 1, (scrollHeight-10)/200)
             longColor  = scheme.colorForClass 'scrollbar long'
             shortColor = scheme.colorForClass 'scrollbar short'
             cs = scheme.fadeColor longColor, shortColor, cf

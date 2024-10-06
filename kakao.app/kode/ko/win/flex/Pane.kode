@@ -20,7 +20,7 @@ class Pane
 
         @display ?= @div.style.display if @div?.style?.display?.length
         @display ?= getStyle "##{@div.id}", 'display' if @div?.id?
-        @display ?= getStyle ' .'+@div.className.split(' ').join ' .' if @div?.className?.length
+        @display ?= getStyle ' .'+@div.className.split(' ').join(' .') if @div?.className?.length
         @display ?= 'initial'
         
     update: ->

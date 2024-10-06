@@ -1528,7 +1528,7 @@ kolorizeChunks = (chunks=[], number) ->
     clrzd = ''
     if number
         numstr = String number
-        clrzd += w2(numstr) + rpad 4-numstr.length
+        clrzd += w2(numstr) + rpad(4-numstr.length)
         
     c = 0
     for i in [0...chunks.length]
