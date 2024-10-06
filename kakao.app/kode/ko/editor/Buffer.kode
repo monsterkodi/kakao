@@ -15,8 +15,8 @@ function Buffer extends events
 
         super()
         @newlineCharacters = '\n'
-        @wordRegExp = new RegExp "(\\s+|\\w+|[^\\s])", 'g'
-        @realWordRegExp = new RegExp "(\\w+)", 'g'
+        @wordRegExp = new RegExp "(\\s+|\\w+|[^\\s])" 'g'
+        @realWordRegExp = new RegExp "(\\w+)" 'g'
         @do = new Do()
         @do.on 'changes' @onDoChanges
         
@@ -85,10 +85,10 @@ function Buffer extends events
 
     wordAtCursor: -> @wordAtPos @mainCursor()
     wordAtPos:  c -> @textInRange @rangeForRealWordAtPos(c)
-    wordsAtCursors: (cs=@cursors(), opt) -> (@textInRange(r) for r in @rangesForWordsAtCursors cs, opt)
+    wordsAtCursors: cs=@cursors() opt -> (@textInRange(r) for r in @rangesForWordsAtCursors cs opt)
 
-    rangesForWordsAtCursors: (cs=@cursors(), opt) ->
-        rngs = (@rangeForWordAtPos(c, opt) for c in cs)
+    rangesForWordsAtCursors: cs=@cursors() opt ->
+        rngs = (@rangeForWordAtPos(c opt) for c in cs)
         rngs = cleanRanges rngs
 
     selectionTextOrWordAtCursor: ->
@@ -101,20 +101,20 @@ function Buffer extends events
     rangeForWordAtPos: pos opt ->
 
         p = @clampPos pos
-        wr = @wordRangesInLineAtIndex p[1], opt
-        r = rangeAtPosInRanges p, wr
+        wr = @wordRangesInLineAtIndex p[1] opt
+        r = rangeAtPosInRanges p wr
         r
 
     rangeForRealWordAtPos: pos opt ->
 
         p = @clampPos pos
-        wr = @realWordRangesInLineAtIndex p[1], opt
+        wr = @realWordRangesInLineAtIndex p[1] opt
 
-        r = rangeAtPosInRanges p, wr
+        r = rangeAtPosInRanges p wr
         if not r? or empty @textInRange(r).trim()
-            r = rangeBeforePosInRanges p, wr
+            r = rangeBeforePosInRanges p wr
         if not r? or empty @textInRange(r).trim()
-            r = rangeAfterPosInRanges p, wr
+            r = rangeAfterPosInRanges p wr
         r ?= rangeForPos p
         r
 
@@ -123,7 +123,7 @@ function Buffer extends events
         r = @rangeForWordAtPos c
         if @isCursorAtEndOfLine c
             return c if @isCursorInLastLine c
-            r = @rangeForWordAtPos [0, c[1]+1]
+            r = @rangeForWordAtPos [0 c[1]+1]
         [r[1][1], r[0]]
 
     startOfWordAtPos: c =>
@@ -134,8 +134,8 @@ function Buffer extends events
         else
             r = @rangeForWordAtPos c
             if r[1][0] == c[0]
-                r = @rangeForWordAtPos [c[0]-1, c[1]]
-        [r[1][0], r[0]]
+                r = @rangeForWordAtPos [c[0]-1 c[1]]
+        [r[1][0] r[0]]
 
     wordRangesInLineAtIndex: li opt={} ->
 
@@ -144,14 +144,14 @@ function Buffer extends events
         r = []
         while (mtch = opt.regExp.exec(@line(li))) != null
             r.push [li, [mtch.index, opt.regExp.lastIndex]]
-        r.length and r or [[li, [0,0]]]
+        r.length and r or [[li, [0 0]]]
 
     realWordRangesInLineAtIndex: li opt={} ->
 
         r = []
         while (mtch = @realWordRegExp.exec(@line(li))) != null
             r.push [li, [mtch.index, @realWordRegExp.lastIndex]]
-        r.length and r or [[li, [0,0]]]
+        r.length and r or [[li [0 0]]]
 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000
     # 000   000  000  000        000   000  000      000  000        000   000     000     000
@@ -201,7 +201,7 @@ function Buffer extends events
                 if csr.length and last(csr)[1] == li-1
                     last(csr)[1] = li
                 else
-                    csr.push [li,li]
+                    csr.push [li li]
         csr
 
     isSelectedLineAtIndex: li ->
@@ -256,21 +256,21 @@ function Buffer extends events
 
     clampPos: p ->
 
-        if not @numLines() then return [0,-1]
+        if not @numLines() then return [0 -1]
         l = clamp 0, @numLines()-1,  p[1]
         c = clamp 0, @line(l).length, p[0]
-        [ c, l ]
+        [ c l ]
 
     wordStartPosAfterPos: (p=@cursorPos()) ->
 
         return p if p[0] < @line(p[1]).length and @line(p[1])[p[0]] != ' '
 
         while p[0] < @line(p[1]).length-1
-            return [p[0]+1, p[1]] if @line(p[1])[p[0]+1] != ' '
+            return [p[0]+1 p[1]] if @line(p[1])[p[0]+1] != ' '
             p[0] += 1
 
         if p[1] < @numLines()-1
-            @wordStartPosAfterPos [0, p[1]+1]
+            @wordStartPosAfterPos [0 p[1]+1]
         else
             null
 
@@ -304,8 +304,9 @@ function Buffer extends events
     # 000   000  000       000     000     000   000  000  0000  000       000
     # 0000000    000  0000000      000     000   000  000   000   0000000  00000000
 
-    distanceOfWord: (w, pos=@cursorPos()) ->
+    distanceOfWord: w pos ->
 
+        pos ?= @cursorPos()
         return 0 if @line(pos[1]).indexOf(w) >= 0
         d = 1
         lb = pos[1]-d
@@ -328,9 +329,9 @@ function Buffer extends events
     # 000   000  000   000  000   000   0000000   00000000  0000000
 
     rangesForCursorLines: (cs=@cursors()) -> (@rangeForLineAtIndex(c[1]) for c in cs)
-    rangesForAllLines: -> @rangesForLinesFromTopToBot 0, @numLines()
+    rangesForAllLines: -> @rangesForLinesFromTopToBot 0 @numLines()
 
-    rangesForLinesBetweenPositions: (a, b, extend=false) ->
+    rangesForLinesBetweenPositions: a b extend=false ->
         r = []
         [a,b] = sortPositions [a,b]
         if a[1] == b[1]
@@ -348,7 +349,7 @@ function Buffer extends events
         r = []
         ir = [top,bot]
         
-        endOf = (r) -> r[0] + Math.max(1, r[1]-r[0])
+        endOf = (r) -> r[0] + Math.max(1 r[1]-r[0])
         for li in ir[0]...endOf(ir)
             if 0 <= li < @numLines()
                 r.push @rangeForLineAtIndex(li)
@@ -358,7 +359,7 @@ function Buffer extends events
         t = t.split('\n')[0]
         r = []
         for li in [0...@numLines()]
-            r = r.concat @rangesForTextInLineAtIndex(t, li, opt)
+            r = r.concat @rangesForTextInLineAtIndex(t li opt)
             break if r.length >= (opt?.max ? 999)
         r
 

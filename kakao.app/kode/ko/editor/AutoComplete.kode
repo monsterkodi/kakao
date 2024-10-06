@@ -227,8 +227,8 @@ class AutoComplete extends events
         if @matchList.length
 
             @list = elem class: 'autocomplete-list'
-            @list.addEventListener 'wheel'     @onWheel     , passive:true
-            @list.addEventListener 'mousedown' @onMouseDown , passive:true
+            @list.addEventListener 'wheel'     @onWheel     passive:true
+            @list.addEventListener 'mousedown' @onMouseDown passive:true
 
             index = 0
             for m in @matchList
@@ -291,7 +291,7 @@ class AutoComplete extends events
             @editor.pasteText @selectedCompletion()
 
             c = @editor.mainCursor()
-            if @editor.textInRange([c[1], [c[0], c[0]+1]]) != ' '
+            if @editor.textInRange([c[1] [c[0] c[0]+1]]) != ' '
                 @editor.insertCharacter ' '
         else
             @editor.pasteText @selectedCompletion()
@@ -364,9 +364,9 @@ class AutoComplete extends events
 
     parseLinesDelayed: lines opt ->
 
-        delay = (l, o) => => @parseLines l, o
+        delay = l o => => @parseLines l o
         if lines.length > 1
-            setTimeout delay(lines, opt), 200
+            setTimeout delay(lines opt) 200
 
     parseLines: lines opt ->
 
@@ -377,7 +377,7 @@ class AutoComplete extends events
         cursorWord = @cursorWord()
         for l in lines
             if not l?.split?
-                ⮐ error "AutoComplete.parseLines -- line has no split? action: #{opt.action} line: #{l}", lines
+                ⮐ error "AutoComplete.parseLines -- line has no split? action: #{opt.action} line: #{l}" lines
 
             if l.length > 240
                 # if l.startsWith '//# sourceMapping'
@@ -390,7 +390,7 @@ class AutoComplete extends events
             words = words.filter (w) =>
                 # return false if not Indexer.testWord w
                 ⮐ false if w == cursorWord
-                ⮐ false if @word == w.slice 0, w.length-1
+                ⮐ false if @word == w.slice 0 w.length-1
                 ⮐ false if @headerRegExp.test w
                 true
 
@@ -417,9 +417,9 @@ class AutoComplete extends events
     cursorWords: ->
 
         cp = @editor.cursorPos()
-        words = @editor.wordRangesInLineAtIndex cp[1], regExp: @specialWordRegExp
-        [befor, cursr, after] = rangesSplitAtPosInRanges cp, words
-        [@editor.textsInRanges(befor), @editor.textInRange(cursr), @editor.textsInRanges(after)]
+        words = @editor.wordRangesInLineAtIndex cp[1] regExp:@specialWordRegExp
+        [befor cursr after] = rangesSplitAtPosInRanges cp words
+        [@editor.textsInRanges(befor) @editor.textInRange(cursr) @editor.textsInRanges(after)]
 
     cursorWord: -> @cursorWords()[1]
 
@@ -429,11 +429,11 @@ class AutoComplete extends events
     # 000   000  000  0000
     #  0000000   000   000
 
-    onLinesAppended:  lines  => @parseLines lines, action: 'append'
-    onLineInserted:   li     => @parseLines [@editor.line(li)], action: 'insert'
-    onLineChanged:    li     => @parseLines [@editor.line(li)], action: 'change', count: 0
-    onWillDeleteLine: line   => @parseLines [line], action: 'delete', count: -1
-    onLinesSet:       lines  => @parseLinesDelayed(lines, action:'set') if lines.length
+    onLinesAppended:  lines  => @parseLines lines action: 'append'
+    onLineInserted:   li     => @parseLines [@editor.line(li)] action: 'insert'
+    onLineChanged:    li     => @parseLines [@editor.line(li)] action: 'change' count: 0
+    onWillDeleteLine: line   => @parseLines [line] action:'delete' count: -1
+    onLinesSet:       lines  => @parseLinesDelayed(lines action:'set') if lines.length
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000

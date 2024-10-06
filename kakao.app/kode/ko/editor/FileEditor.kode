@@ -247,7 +247,7 @@ function FileEditor extends TextEditor
 
     jumpTo: word opt =>
 
-        log 'FileEditor jumpTo' word, opt
+        log 'FileEditor jumpTo' word opt
         if typeof(word) == 'object' and not opt?
             opt  = word
             word = opt.word
@@ -284,8 +284,8 @@ function FileEditor extends TextEditor
             
             if infos = funcs[word]
                 log 'direct func infos' infos
-                info  = findIf infos, (info) => info.file == @currentFile
-                info ?= findIf infos, (info) => slash.ext(info.file) == slash.ext @currentFile                    
+                info  = findIf infos (info) => info.file == @currentFile
+                info ?= findIf infos (info) => slash.ext(info.file) == slash.ext @currentFile                    
                 info ?= first infos
                 log 'FileEditor jumpTo jumpToFile direct' info
                 @jumpToFile info
@@ -366,14 +366,14 @@ function FileEditor extends TextEditor
             
             if currext in ['noon']
 
-                file = @swapLastDir counter, 'kode' 'js'
+                file = @swapLastDir counter 'kode' 'js'
                 if ○ ffs.fileExists file
                     post.emit 'loadFile' file
                     ⮐ true
                     
             if currext in ['json']
                 
-                file = @swapLastDir counter, 'js' 'kode'
+                file = @swapLastDir counter 'js' 'kode'
                 if ○ ffs.fileExists file
                     post.emit 'loadFile' file
                     ⮐ true
@@ -404,7 +404,7 @@ function FileEditor extends TextEditor
             br        = @view.getBoundingClientRect()
             visCols   = parseInt br.width / @size.charWidth
             newOffset = parseInt @size.charWidth * (visCols - 100) / 2
-            @size.offsetX = Math.max @size.offsetX, newOffset
+            @size.offsetX = Math.max @size.offsetX newOffset
             @size.centerText = true
         else
             @size.centerText = false
@@ -415,8 +415,8 @@ function FileEditor extends TextEditor
             layers = ['.selections' '.highlights' '.cursors']
             transi = ['.selection'  '.highlight'  '.cursor' ].concat layers
             resetTrans = =>
-                setStyle '.editor .layers '+l, 'transform' "translateX(0)" for l in layers
-                setStyle '.editor .layers '+t, 'transition' "initial" for t in transi
+                setStyle '.editor .layers '+l 'transform' "translateX(0)" for l in layers
+                setStyle '.editor .layers '+t 'transition' "initial" for t in transi
                 @updateLayers()
 
             if center
@@ -426,9 +426,9 @@ function FileEditor extends TextEditor
                 offsetX -= @size.numbersWidth + @size.charWidth/2
                 offsetX *= -1
 
-            setStyle '.editor .layers '+l, 'transform' "translateX(#{offsetX}px)" for l in layers
-            setStyle '.editor .layers '+t, 'transition' "all #{animate/1000}s" for t in transi
-            setTimeout resetTrans, animate
+            setStyle '.editor .layers '+l 'transform' "translateX(#{offsetX}px)" for l in layers
+            setStyle '.editor .layers '+t 'transition' "all #{animate/1000}s" for t in transi
+            setTimeout resetTrans animate
         else
             @updateLayers()
 
@@ -438,12 +438,12 @@ function FileEditor extends TextEditor
     # 000        000   000  000        000   000  000
     # 000         0000000   000         0000000   000
 
-    onContextMenu: event => stopEvent event, @showContextMenu(kpos(event))
+    onContextMenu: event => stopEvent event @showContextMenu(kpos(event))
 
     showContextMenu: absPos =>
 
         if not absPos?
-            absPos = kpos @view.getBoundingClientRect().left, @view.getBoundingClientRect().top
+            absPos = kpos @view.getBoundingClientRect().left @view.getBoundingClientRect().top
 
         opt = {}
         opt.items = clone kakao.menuTemplate
@@ -452,8 +452,8 @@ function FileEditor extends TextEditor
 
         fileSpan = f ->
             if f?
-                span  = Syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)), 'browser'
-                span += Syntax.spanForTextAndSyntax '/' + slash.name(f), 'browser'
+                span  = Syntax.spanForTextAndSyntax slash.tilde(slash.dir(f)) 'browser'
+                span += Syntax.spanForTextAndSyntax '/' + slash.name(f) 'browser'
             span
 
         recent = window.stash.get 'recentFiles' []
@@ -470,8 +470,8 @@ function FileEditor extends TextEditor
                     return item
 
         if RecentMenu.length
-            if fileMenu = getMenu opt.items, 'File'
-                fileMenu.menu = [{text:'Recent' menu:RecentMenu}, {text:''}].concat fileMenu.menu
+            if fileMenu = getMenu opt.items 'File'
+                fileMenu.menu = [{text:'Recent' menu:RecentMenu} {text:''}].concat fileMenu.menu
 
         opt.x = absPos.x
         opt.y = absPos.y
@@ -486,11 +486,11 @@ function FileEditor extends TextEditor
         qiq = prefs.get('list|active') ? '' : ' quickmenu-inactive'
         
         quiq = elem class:'quickmenu' children: [
-                elem( text:bi, class:'quickmenu-item quickmenu-browser'    mouseup:( (e) -> act(e, window.quickMenu.onBrowser ) ) ),
-                elem( text:ti, class:'quickmenu-item quickmenu-terminal'   mouseup:( (e) -> act(e, window.quickMenu.onTerminal) ) ),
-                elem( text:'' class:'quickmenu-item quickmenu-devtools'   mouseup:( (e) -> act(e, window.quickMenu.onDevTools) ) ),
-                elem( text:'' class:'quickmenu-item quickmenu-kalk'       mouseup:( (e) -> act(e, window.quickMenu.onKalk    ) ) ),
-                elem( text:'' class:"quickmenu-item quickmenu-list#{qiq}" mouseup:( (e) -> act(e, window.quickMenu.onList    ) ) )
+                elem( text:bi, class:'quickmenu-item quickmenu-browser'    mouseup:( (e) -> act(e window.quickMenu.onBrowser ) ) )
+                elem( text:ti, class:'quickmenu-item quickmenu-terminal'   mouseup:( (e) -> act(e window.quickMenu.onTerminal) ) )
+                elem( text:'' class:'quickmenu-item quickmenu-devtools'   mouseup:( (e) -> act(e window.quickMenu.onDevTools) ) )
+                elem( text:'' class:'quickmenu-item quickmenu-kalk'       mouseup:( (e) -> act(e window.quickMenu.onKalk    ) ) )
+                elem( text:'' class:"quickmenu-item quickmenu-list#{qiq}" mouseup:( (e) -> act(e window.quickMenu.onList    ) ) )
             ]
         
         if window.navigate.canNavigateBack()
@@ -527,7 +527,7 @@ function FileEditor extends TextEditor
 
     handleModKeyComboCharEvent: mod key combo char event ->
 
-        ⮐ if 'unhandled' != super mod, key, combo, char, event
+        ⮐ if 'unhandled' != super mod key combo char event
         switch combo
             'alt+ctrl+enter'         ➜ ⮐ window.commandline.commands.coffee.executeText @textOfSelectionForClipboard()
             'alt+ctrl+shift+enter'   ➜ ⮐ window.commandline.commands.coffee.executeTextInMain @textOfSelectionForClipboardt()            

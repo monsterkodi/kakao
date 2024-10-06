@@ -806,14 +806,14 @@ showPrefs = ->
 
                         { mod, key, combo } = keyinfo.forEvent event
                         
-                        input = $('input', event.target.parentElement)
+                        input = $('input' event.target.parentElement)
                         
                         if combo.indexOf('+') >= 0 and key != ''
                             
                             stopEvent event
-                            $('.shortcut', event.target.parentElement).innerHTML = combo
+                            $('.shortcut' event.target.parentElement).innerHTML = combo
                             prefKey = input.id
-                            prefs.set prefKey, combo
+                            prefs.set prefKey combo
                             input.focus()
                             
                         else if not keyinfo.isModifier(key) and key != ''
@@ -823,8 +823,8 @@ showPrefs = ->
                                     stopEvent event
                                     input.focus()
                                 'backspace'
-                                    $('.shortcut', event.target.parentElement).innerHTML = ''
-                                    prefs.set prefKey, ''
+                                    $('.shortcut' event.target.parentElement).innerHTML = ''
+                                    prefs.set prefKey ''
                                     input.focus()
                                 ➜ 
                                     event.target.value = 'no modifier'
@@ -911,11 +911,11 @@ makePassword = hash config -> password.make hash, config.pattern
 
 showPassword = config ○->
     
-    url  = ○ cryptools.decrypt config.url, mstr
+    url  = ○ cryptools.decrypt config.url mstr
     hash = ○ cryptools.genHash url + mstr
-    pass = currentPassword = makePassword hash, config
+    pass = currentPassword = makePassword hash config
     if hasLock() and prefs.get 'mask'
-        pass = rpad currentPassword.length, '' '●'
+        pass = rpad currentPassword.length '' '●'
     if url  ==  trim $("site").value
         setInput 'password' pass
 
@@ -1156,7 +1156,7 @@ function Delegate #extends win.Delegate
         frame = copy stashFrame
         frame.y = frame.y + frame.h - WIN_MIN_HEIGHT
         frame.h = WIN_MIN_HEIGHT
-        kakao 'window.setFrame' frame, true
+        kakao 'window.setFrame' frame true
         true
         
     onWindowCreated: =>

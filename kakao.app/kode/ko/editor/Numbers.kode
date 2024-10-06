@@ -157,9 +157,9 @@ class Numbers extends events
         if @lineDivs[li].firstChild? and @lineDivs[li].firstChild.classList.contains 'gitInfoLine'
             return
 
-        si = (s[0] for s in rangesFromTopToBotInRanges li, li, @editor.selections())
-        hi = (s[0] for s in rangesFromTopToBotInRanges li, li, @editor.highlights())
-        ci = (s[0] for s in rangesFromTopToBotInRanges li, li, rangesFromPositions(@editor.cursors()))
+        si = (s[0] for s in rangesFromTopToBotInRanges li li @editor.selections())
+        hi = (s[0] for s in rangesFromTopToBotInRanges li li @editor.highlights())
+        ci = (s[0] for s in rangesFromTopToBotInRanges li li rangesFromPositions(@editor.cursors()))
 
         cls = ''
         if li in ci
