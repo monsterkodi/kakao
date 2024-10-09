@@ -183,8 +183,8 @@ function Window extends win.Delegate
 # 000        000   000       000     000
 # 000         0000000   0000000      000
  
-post.on 'singleCursorAtPos' (pos, opt) -> # browser double click, funclist, newTabWithFile :l:c
-    window.editor.singleCursorAtPos pos, opt 
+post.on 'singleCursorAtPos' (pos opt) -> # browser double click, funclist, newTabWithFile :l:c
+    window.editor.singleCursorAtPos pos opt 
     window.editor.scroll.cursorToTop()
     
 post.on 'focusEditor'  -> window.split.focus 'editor'

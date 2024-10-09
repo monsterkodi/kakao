@@ -152,7 +152,7 @@ Drag = (function ()
 
     Drag.prototype["dragStop"] = function (event)
     {
-        var _129_39_
+        var _129_38_
 
         if (this.dragging)
         {

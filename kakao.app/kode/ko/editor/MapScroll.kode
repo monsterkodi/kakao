@@ -101,7 +101,7 @@ class MapScroll extends events
 
         scroll = @scroll
         delta = 0 if Number.isNaN delta
-        @scroll = parseInt clamp(0, @scrollMax, @scroll+delta)
+        @scroll = parseInt clamp(0 @scrollMax @scroll+delta)
         top = parseInt @scroll / @lineHeight
         @offsetSmooth = @scroll - top * @lineHeight
 
@@ -113,7 +113,7 @@ class MapScroll extends events
 
         if offset != @offsetTop or scroll != @scroll
             @offsetTop = parseInt offset
-            @emit 'scroll', @scroll, @offsetTop
+            @emit 'scroll' @scroll @offsetTop
 
     #  0000000  00000000  000000000  000000000   0000000   00000000
     # 000       000          000        000     000   000  000   000
