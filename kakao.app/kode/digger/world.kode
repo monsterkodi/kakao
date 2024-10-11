@@ -1,0 +1,71 @@
+###
+000   000   0000000   00000000   000      0000000  
+000 0 000  000   000  000   000  000      000   000
+000000000  000   000  0000000    000      000   000
+000   000  000   000  000   000  000      000   000
+00     00   0000000   000   000  0000000  0000000  
+###
+
+use ../kxk ▪ $ drag stopEvent prefs post kpos fade randRange randInt randIntRange
+
+use ◆ tweaky
+
+function world
+
+    @: ->
+        
+        @main =$ 'main'
+        @pause = false
+        
+        @speed = 10
+                
+        @tweaky = new tweaky @main
+
+        @tweaky.init
+            speed:      min: 1    max:100    step:1      value:@speed               cb: (@speed) =>
+                
+        @main.focus()
+        
+        @mouse = pos: [0 0]
+        # @drag = new drag 
+            # target:     @main
+            # onStart:    @onDragStart
+            # onMove:     @onDragMove
+            # onStop:     @onDragStop
+            # cursor:     'pointer'
+            # stopEvent:  false
+            
+    # 000000000  000   0000000  000   000  
+    #    000     000  000       000  000   
+    #    000     000  000       0000000    
+    #    000     000  000       000  000   
+    #    000     000   0000000  000   000  
+    
+    tick: @tickInfo ->
+        
+        @simulate @tickInfo
+        @tweaky?.update()
+                
+    togglePause:  => @pause = not @pause; post.emit 'pause'        
+        
+    #  0000000  000  00     00  000   000  000       0000000   000000000  00000000  
+    # 000       000  000   000  000   000  000      000   000     000     000       
+    # 0000000   000  000000000  000   000  000      000000000     000     0000000   
+    #      000  000  000 0 000  000   000  000      000   000     000     000       
+    # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
+    
+    simulate: tickInfo ->
+        
+        ⮐ if @pause and not @oneStep
+        ⮐ if isNaN tickInfo.delta
+        
+        # ● simulate
+                
+        sec = @speed * tickInfo.delta / 1000
+        
+        # log sec
+        # @advance sec
+                        
+    singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
+
+export world

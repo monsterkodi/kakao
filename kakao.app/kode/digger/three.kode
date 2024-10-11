@@ -1,0 +1,300 @@
+###
+000000000  000   000  00000000   00000000  00000000
+   000     000   000  000   000  000       000
+   000     000000000  0000000    0000000   0000000
+   000     000   000  000   000  000       000
+   000     000   000  000   000  00000000  00000000
+###
+
+use ../kxk ▪ deg2rad randInt randRange
+use ./lib/gridhelper
+use ./noise ▪ perlin3 simplex3
+
+import * as three from 'three'
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js'
+
+function Three
+
+    @: @view ->
+
+        @renderer = new three.WebGLRenderer()
+
+        @renderer.setPixelRatio window.devicePixelRatio
+        @renderer.setSize @view.clientWidth @view.clientHeight
+        @renderer.shadowMap.enabled = true
+        @renderer.shadowMap.type = three.PCFSoftShadowMap
+        
+        @renderer.setClearColor new three.Color 0.0005 0.0005 0.0005
+
+        @view.appendChild @renderer.domElement
+
+        @raycaster = new three.Raycaster()
+        @mouse = new three.Vector2 1 1
+
+        @unitX = new three.Vector3 1 0 0
+        @unitY = new three.Vector3 0 1 0
+        @unitZ = new three.Vector3 0 0 1
+        @vec  = new three.Vector3
+        @quat = new three.Quaternion
+        @matrix = new three.Matrix4
+        @matrixTrans = new three.Matrix4
+        @matrixTrans.makeTranslation 0 0.01 0
+        @color = new three.Color(0.01 0.01 0.01)
+        @colors = [
+            new three.Color(0.2 0 0)
+            new three.Color(0 0 2)
+            new three.Color(5 0.4 0)
+            new three.Color(0.5 0.5 10)
+            ]
+
+        @init()
+
+    init: =>
+
+        amount = 50
+        count = amount * amount * 1
+        
+        @camera = new three.PerspectiveCamera 40 @view.clientWidth / @view.clientHeight 0.1 1000
+        @camera.position.set 0 2*amount 2*amount
+        @camera.lookAt 0 amount/2 0 
+
+        @scene = new three.Scene()
+
+        # light = new three.HemisphereLight 0xffffff 0xffffff 3
+        # light.position.set 50 100 0
+        # @scene.add light
+        
+        @lightIntensityAmbient = 1
+        @lightIntensityPlayer  = 1
+        @lightIntensityShadow  = 10
+        
+        @lightAmbient = new three.AmbientLight 0xffffff @lightIntensityAmbient
+        @scene.add @lightAmbient
+        
+        @lightPlayer = new three.PointLight 0xffffff @lightIntensityPlayer 0 0.5
+        @lightPlayer.position.copy @camera.position
+        @scene.add @lightPlayer
+
+        @lightShadow = new three.DirectionalLight 0xffffff @lightIntensityShadow 
+        @lightShadow.castShadow = true
+        @lightShadow.position.set -10 30 30
+        @lightShadow.target.position.set 0 0 0
+        @lightShadow.shadow.mapSize.width  = 4096
+        @lightShadow.shadow.mapSize.height = 4096
+        @lightShadow.shadow.camera.near    = 0.5
+        @lightShadow.shadow.camera.far     =  50
+        @lightShadow.shadow.camera.left    = -50
+        @lightShadow.shadow.camera.right   =  50
+        @lightShadow.shadow.camera.top     =  50
+        @lightShadow.shadow.camera.bottom  = -50
+        @scene.add @lightShadow
+        
+        @lightShadowHelper = new three.DirectionalLightHelper @lightShadow 5 new three.Color 0xffff00
+        @lightShadowHelper.visible = false
+        @scene.add @lightShadowHelper
+        
+        @shadowCameraHelper = new three.CameraHelper @lightShadow.shadow.camera
+        @shadowCameraHelper.visible = false
+        @scene.add @shadowCameraHelper
+        
+        @axesHelper = new three.AxesHelper 10
+        @axesHelper.position.set 0 0.1 0
+        @axesHelper.visible = false
+        @axesHelper.material.depthWrite = false
+        @axesHelper.material.depthTest = false
+        @axesHelper.material.depthFunc = three.NeverDepth
+        @scene.add @axesHelper
+        
+        @gridHelper = new gridhelper()
+        @gridHelper.visible = false
+        @scene.add @gridHelper
+        
+        geometry = new three.BoxGeometry 1 1 1
+        material = new three.MeshStandardMaterial color:0xffffff metalness:0.5 roughness:0.5 flatShading:true dithering:true
+        
+        @mesh = new three.InstancedMesh geometry material count
+        @mesh.receiveShadow = true
+        @mesh.castShadow = true
+
+        i = 0
+        offset = (amount - 1) / 2
+
+        matrix = new three.Matrix4()
+
+        for x in 0...amount
+            for y in 0...1
+                for z in 0...amount
+
+                    matrix.setPosition offset-x 1+y offset-z 
+    
+                    @mesh.setMatrixAt i matrix 
+                    @mesh.setColorAt i @color 
+    
+                    i++
+
+        # @scene.add @mesh 
+        
+        geom = new three.PlaneGeometry 1500 1500
+        @shadowFloor = new three.Mesh geom new three.ShadowMaterial color:0x000000 opacity:0.2 depthWrite:false
+        @shadowFloor.rotateX deg2rad(-90)
+        @shadowFloor.receiveShadow = true
+        # @scene.add @shadowFloor
+        
+        @resolution = 100
+        # color = new three.Color 0.1 0.1 5
+        color = new three.Color 1 1 1
+        material = new three.MeshLambertMaterial color:color vertexColors:true flatShading:true dithering:true
+        enableUvs = false
+        enableColors = true
+        maxPolyCount = 500000
+        @mc = new MarchingCubes @resolution material enableUvs enableColors maxPolyCount
+        @mc.position.set 0 10 0 
+        @mc.scale.set 50 50 50
+        @mc.receiveShadow = true
+        @mc.castShadow = true
+        
+        @scene.add @mc
+        @metaballs()
+
+        renderScene = new RenderPass @scene @camera
+        
+        size = new three.Vector2 @view.clientWidth @view.clientHeight
+        
+        bloomPass = new UnrealBloomPass size 0.3 0 1.01 # strength radius threshold 
+        
+        outputPass = new OutputPass()
+        
+        if true
+            @controls = new OrbitControls @camera @renderer.domElement
+            @controls.maxPolarAngle = Math.PI * 0.5
+            @controls.minDistance = 13
+            @controls.maxDistance = 300
+            @controls.enableDamping = true
+            @controls.minPolarAngle = -Math.PI
+            @controls.maxPolarAngle = Math.PI
+            @controls.target.set 0 1 0
+        
+        @composer = new EffectComposer @renderer
+        @composer.setPixelRatio window.devicePixelRatio
+        @composer.setSize @view.clientWidth @view.clientHeight
+        @composer.addPass renderScene
+        @composer.addPass bloomPass
+        @composer.addPass outputPass
+        
+        window.addEventListener 'resize' @onWindowResize 
+        document.addEventListener 'mousemove' @onMouseMove
+        
+        @renderer.setAnimationLoop @animate 
+        
+        @renderer.toneMapping = three.ReinhardToneMapping
+        @renderer.toneMappingExposure = Math.pow 1 4.0
+
+    onWindowResize: => 
+
+        @camera.aspect = @view.clientWidth / @view.clientHeight 
+        @camera.updateProjectionMatrix()
+
+        @renderer.setSize @view.clientWidth @view.clientHeight 
+        @composer.setSize @view.clientWidth @view.clientHeight 
+
+    onMouseMove: event =>
+
+        event.preventDefault()
+
+        @mouse.x =  (event.clientX / @view.clientWidth) * 2 - 1
+        @mouse.y = -((event.clientY-30) / @view.clientHeight) * 2 + 1
+        @mouse
+        
+    metaballs: =>
+        
+        @mc.reset()
+        
+        rainbow = [
+            new three.Color( 0xff0000 )
+            new three.Color( 0xffbb00 )
+            new three.Color( 0xffff00 )
+            new three.Color( 0x00ff00 )
+            new three.Color( 0x0000ff )
+            new three.Color( 0x9400bd )
+            new three.Color( 0xc800eb )
+        ]
+        
+        subtract = 12
+        numblobs = 14
+        strength = 1.2 / ( ( Math.sqrt( numblobs ) - 1 ) / 4 + 1 )
+        
+        for x in 0...@resolution
+            for y in 0...@resolution
+                for z in 0...@resolution
+                    if x > 1 and y > 1 and z > 1 and x < @resolution-2 and y < @resolution-2 and z < @resolution-2
+                        ss = 30
+                        @mc.setCell x y z 100*(Math.max(0 simplex3(x/ss y/ss z/ss)+0.3))
+                        
+                    c = v => 0.5*Math.sin(8*Math.PI*v/@resolution)+0.5
+                    yn = y/@resolution 
+                    b = yn * yn * yn * yn
+                    ss = 180
+                    r = 1*Math.max(0 simplex3(x/ss y/ss z/ss)+0.05)
+                    r = r * r * r * r
+                    g = r/2
+                    @mc.setColor x y z r g Math.max(0 b-r)
+            
+        @mc.update()
+
+    animate: =>
+
+        @raycaster.setFromCamera @mouse @camera
+
+        intersection = @raycaster.intersectObject @mesh 
+
+        if intersection.length > 0
+
+            instanceId = intersection[0].instanceId
+
+            r = Math.random()
+            @mesh.setColorAt instanceId @color.set( r*0.5 r*0.5 1+r*10 ) 
+            @mesh.getMatrixAt instanceId @matrix
+            @matrix.multiply @matrixTrans
+            @mesh.setMatrixAt instanceId @matrix
+            # @mesh.setColorAt instanceId @colors[randInt 4]
+
+            @mesh.instanceColor.needsUpdate = true
+            @mesh.instanceMatrix.needsUpdate = true
+            
+        intersection = @raycaster.intersectObject @shadowFloor
+        # if intersection.length > 0
+            # log intersection[0]
+            
+        @lightPlayer.position.copy @camera.position
+        
+        @lightShadow.position.copy @camera.position
+        
+        @quat.copy @camera.quaternion
+        @vec.copy @unitX
+        @vec.applyQuaternion @quat
+        @vec.multiplyScalar -20
+        
+        @lightShadow.position.add @vec
+        
+        @vec.copy @unitY
+        @vec.applyQuaternion @quat
+        @vec.multiplyScalar 10
+        @lightShadow.position.add @vec
+        
+        d = intersection.distance
+        @lightShadow.shadow.camera.far     =  400
+        # @lightShadow.shadow.camera.left    = -d
+        # @lightShadow.shadow.camera.left    = -d
+        # @lightShadow.shadow.camera.right   =  d
+        # @lightShadow.shadow.camera.top     =  d
+        # @lightShadow.shadow.camera.bottom  = -d
+             
+        @controls?.update()
+        @composer.render()
+
+export Three

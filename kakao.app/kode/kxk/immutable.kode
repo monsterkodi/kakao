@@ -428,7 +428,7 @@ objectSetIn = path value config ->
     if @hasOwnProperty(head) and (thisHead == newValue)
         return @
   
-    mutable = quickCopy @, instantiateEmptyObject(@)
+    mutable = quickCopy @ instantiateEmptyObject(@)
     mutable[head] = newValue
     makeImmutableObject mutable
 
@@ -442,7 +442,7 @@ objectSet = property value config ->
         if isEqual @[property], value
             return @
   
-    mutable = quickCopy @, instantiateEmptyObject(@)
+    mutable = quickCopy @ instantiateEmptyObject(@)
     mutable[property] = Immutable value
     makeImmutableObject mutable
 
@@ -478,7 +478,7 @@ getIn = path defaultValue ->
 
 asMutableObject = opts ->
     
-    result = instantiateEmptyObject(@) key
+    result = instantiateEmptyObject(@) # key
   
     for key of @
         if @hasOwnProperty key

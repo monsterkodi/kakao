@@ -183,6 +183,8 @@ function Editor extends Buffer
             if lines[0].endsWith '\r'
                 lines = text.split /\r?\n/
                 @newlineCharacters = '\r\n'
+                
+        lines = lines.map (l) -> kstr.detab l
 
         @setLines lines
 

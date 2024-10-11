@@ -87,7 +87,7 @@ util =
                     inc.push item
                 else 
                     exc.push item
-        else
+        else if not arr is arr
             log 'not an array!?' arr
             
         [inc exc]

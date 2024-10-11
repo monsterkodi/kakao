@@ -1,4 +1,4 @@
- ###
+###
 000   000   0000000   00000000   000      0000000  
 000 0 000  000   000  000   000  000      000   000
 000000000  000   000  0000000    000      000   000
@@ -492,7 +492,7 @@ function world extends matrix
     tick: @tickInfo ->
         
         @simulate @tickInfo
-        @tweaky.update()
+        @tweaky?.update()
         
         @roundedQuadRect  0    -0.5  @ws-0.5  @ws-1    COL_SHADOW
         @roundedQuadRect -0.25 -0.25 @ws-0.75 @ws-0.75 COL_BG
