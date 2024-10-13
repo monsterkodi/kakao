@@ -76,6 +76,52 @@ Delegate = (function ()
         return post.emit('resize')
     }
 
+    Delegate.prototype["onWindowKeyDown"] = function (keyInfo)
+    {
+        var quat, vec
+
+        vec = window.three.vec
+        quat = window.three.quat
+        switch (keyInfo.combo)
+        {
+            case 'w':
+                window.three.forwardSpeed += 0.1
+                break
+            case 's':
+                window.three.forwardSpeed -= 0.1
+                break
+            case 'd':
+                vec.set(0,1,0)
+                quat.setFromAxisAngle(vec,-0.004)
+                window.three.camera.quaternion.multiply(quat)
+                break
+            case 'a':
+                vec.set(0,1,0)
+                quat.setFromAxisAngle(vec,0.004)
+                window.three.camera.quaternion.multiply(quat)
+                break
+            case 'q':
+                vec.set(1,0,0)
+                quat.setFromAxisAngle(vec,-0.004)
+                window.three.camera.quaternion.multiply(quat)
+                break
+            case 'e':
+                vec.set(1,0,0)
+                quat.setFromAxisAngle(vec,0.004)
+                window.three.camera.quaternion.multiply(quat)
+                break
+        }
+
+        stopEvent(keyInfo.event)
+        return 'unhandled'
+    }
+
+    Delegate.prototype["onWindowKeyUp"] = function (keyInfo)
+    {
+        stopEvent(keyInfo.event)
+        return 'unhandled'
+    }
+
     Delegate.prototype["onMenuAction"] = function (action, args)
     {
         switch (action)

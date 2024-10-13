@@ -52,6 +52,50 @@ function Delegate extends win.Delegate
         kakao 'window.setMinSize' window.WIN_MIN_WIDTH window.WIN_MIN_HEIGHT
         
     onWindowResize: => post.emit 'resize'
+    
+    onWindowKeyDown: keyInfo -> 
+        
+        vec = window.three.vec
+        quat = window.three.quat
+        
+        switch keyInfo.combo
+            
+            'w' 
+                window.three.forwardSpeed += 0.1
+
+            's' 
+                window.three.forwardSpeed -= 0.1
+                
+            'd'
+                vec.set 0 1 0
+                quat.setFromAxisAngle vec -0.004
+                window.three.camera.quaternion.multiply quat
+                
+            'a' 
+                vec.set 0 1 0
+                quat.setFromAxisAngle vec 0.004
+                window.three.camera.quaternion.multiply quat
+
+            'q'
+                vec.set 1 0 0
+                quat.setFromAxisAngle vec -0.004
+                window.three.camera.quaternion.multiply quat
+                
+            'e' 
+                vec.set 1 0 0
+                quat.setFromAxisAngle vec 0.004
+                window.three.camera.quaternion.multiply quat
+                
+                
+        stopEvent keyInfo.event
+    
+        'unhandled'
+        
+    onWindowKeyUp: keyInfo -> 
+        
+        stopEvent keyInfo.event
+        
+        'unhandled'
         
     # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
