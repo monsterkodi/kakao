@@ -11,6 +11,8 @@ let randRange = kxk.randRange
 let randInt = kxk.randInt
 let randIntRange = kxk.randIntRange
 
+import noise from "./lib/noise.js"
+
 import tweaky from "./tweaky.js"
 import swarm from "./swarm.js"
 
@@ -26,17 +28,18 @@ world = (function ()
         this["singleStep"] = this["singleStep"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this.pause = false
-        this.speed = 10
         this.tweaky = new tweaky(this.scene.view)
-        this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
+        this.tweaky.init({seed:{min:1,max:100,step:1,value:0,cb:(function (v)
         {
-            this.speed = speed
+            noise.seed(v)
+            return this.start()
         }).bind(this)}})
         this.swarm = new swarm(this.scene)
     }
 
     world.prototype["start"] = function ()
     {
+        this.scene.start()
         this.camera.start()
         this.player.start()
         return this.swarm.spawn(this.swarm.count)

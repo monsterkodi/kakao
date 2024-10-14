@@ -220,4 +220,5 @@ function noise
         # The result is scaled to return values in the interval [-1,1].
         32 * (n0 + n1 + n2 + n3)
     
+noise.seed = seed
 export noise

@@ -17,6 +17,7 @@ Swarm = (function ()
         this.dummy = new three.Object3D()
         this.color = new three.Color()
         this.pos = new three.Vector3()
+        this.norm = new three.Vector3()
         this.rot = new three.Quaternion()
         this.scale = new three.Vector3()
         this.mesh = new three.InstancedMesh(cylinder.geometry,cylinder.material,this.count)
@@ -32,13 +33,24 @@ Swarm = (function ()
         i = 0
         while (i < num)
         {
-            this.dummy.position.set(Math.random() - 0.5,Math.random() - 0.5,Math.random() - 0.5)
-            this.dummy.position.normalize()
-            this.dummy.position.multiplyScalar(40)
+            this.scene.sampler.sample(this.pos,this.norm)
+            this.pos.multiplyScalar(50)
+            if (this.pos.length() < 40)
+            {
+                continue
+            }
+            this.dummy.position.copy(this.pos)
+            this.pos.normalize()
+            if (this.norm.dot(this.pos) < 0.7)
+            {
+                continue
+            }
+            this.norm.multiplyScalar(-1)
+            this.norm.add(this.dummy.position)
             color = this.scene.mc.getColor(parseInt(this.dummy.position.x + this.scene.resolution / 2),parseInt(this.dummy.position.y + this.scene.resolution / 2),parseInt(this.dummy.position.z + this.scene.resolution / 2))
             if (Math.random() < color[0] * 50 + color[2] * 50)
             {
-                this.dummy.lookAt((Math.random() - 0.5) * 8,(Math.random() - 0.5) * 8,(Math.random() - 0.5) * 8)
+                this.dummy.lookAt(this.norm)
                 this.dummy.scale.set(1,1,color[0] * 150)
                 this.dummy.updateMatrix()
                 this.mesh.setMatrixAt(i,this.dummy.matrix)

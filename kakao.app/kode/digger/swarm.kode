@@ -19,6 +19,7 @@ function Swarm
         @dummy = new three.Object3D()
         @color = new three.Color()
         @pos   = new three.Vector3()
+        @norm  = new three.Vector3()
         @rot   = new three.Quaternion()
         @scale = new three.Vector3()
         @mesh = new three.InstancedMesh(cylinder.geometry cylinder.material @count)
@@ -30,12 +31,31 @@ function Swarm
         
         i = 0
         while i < num
-            @dummy.position.set Math.random()-0.5 Math.random()-0.5 Math.random()-0.5
-            @dummy.position.normalize()
-            @dummy.position.multiplyScalar 40
+            
+            @scene.sampler.sample @pos @norm
+            @pos.multiplyScalar 50
+            # log @pos @norm
+            if @pos.length() < 40
+                continue
+                
+            # @dummy.position.set Math.random()-0.5 Math.random()-0.5 Math.random()-0.5
+            # @dummy.position.normalize()
+            # @dummy.position.multiplyScalar 40
+            @dummy.position.copy @pos
+            
+            @pos.normalize()
+            # log @norm.dot(@pos)
+            if @norm.dot(@pos) < 0.7
+                continue
+                
+            @norm.multiplyScalar -1
+            @norm.add @dummy.position
+            
             color = @scene.mc.getColor parseInt(@dummy.position.x+@scene.resolution/2) parseInt(@dummy.position.y+@scene.resolution/2) parseInt(@dummy.position.z+@scene.resolution/2)
             if Math.random() < color[0]*50 + color[2]*50
-                @dummy.lookAt (Math.random()-0.5)*8 (Math.random()-0.5)*8 (Math.random()-0.5)*8
+            # if true
+                # @dummy.lookAt (Math.random()-0.5)*8 (Math.random()-0.5)*8 (Math.random()-0.5)*8
+                @dummy.lookAt @norm
                 @dummy.scale.set 1 1 color[0]*150
                 @dummy.updateMatrix()
                 @mesh.setMatrixAt i @dummy.matrix
@@ -58,6 +78,7 @@ function Swarm
             @color.multiplyScalar f
             @mesh.setColorAt i @color
             @scale.set 1 1 color[0]*(50+(f-2.4)*10)
+            # @scale.set 1 1 color[0]*(10+(f-2.4)*2)
             @dummy.matrix.compose @pos @rot @scale
             @mesh.setMatrixAt i @dummy.matrix
 

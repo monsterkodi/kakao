@@ -17,8 +17,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js'
+import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js'
 import Stats from 'three/addons/libs/stats.module.js'
 
 Scene = (function ()
@@ -34,10 +34,10 @@ Scene = (function ()
         this["onMouseMove"] = this["onMouseMove"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
         this["initLights"] = this["initLights"].bind(this)
-        this["initControls"] = this["initControls"].bind(this)
         this["initComposer"] = this["initComposer"].bind(this)
         this["initCamera"] = this["initCamera"].bind(this)
         this["initRenderer"] = this["initRenderer"].bind(this)
+        this["start"] = this["start"].bind(this)
         this.scene = new three.Scene()
         this.clock = new three.Clock()
         this.raycaster = new three.Raycaster()
@@ -56,6 +56,11 @@ Scene = (function ()
         this.initComposer()
         window.addEventListener('resize',this.onWindowResize)
         document.addEventListener('mousemove',this.onMouseMove)
+    }
+
+    Scene.prototype["start"] = function ()
+    {
+        return this.initGyroidSphere()
     }
 
     Scene.prototype["initRenderer"] = function ()
@@ -93,18 +98,6 @@ Scene = (function ()
         this.composer.addPass(renderScene)
         this.composer.addPass(bloomPass)
         return this.composer.addPass(outputPass)
-    }
-
-    Scene.prototype["initControls"] = function ()
-    {
-        this.controls = new OrbitControls(this.camera,this.renderer.domElement)
-        this.controls.maxPolarAngle = Math.PI * 0.5
-        this.controls.minDistance = 13
-        this.controls.maxDistance = 300
-        this.controls.enableDamping = true
-        this.controls.minPolarAngle = -Math.PI
-        this.controls.maxPolarAngle = Math.PI
-        return this.controls.target.set(0,1,0)
     }
 
     Scene.prototype["initLights"] = function ()
@@ -196,6 +189,7 @@ Scene = (function ()
         this.mc.receiveShadow = true
         this.mc.castShadow = true
         this.scene.add(this.mc)
+        this.sampler = new MeshSurfaceSampler(this.mc)
         return this.initGyroidSphere()
     }
 
@@ -244,12 +238,14 @@ Scene = (function ()
                 }
             }
         }
-        return this.mc.update()
+        this.mc.update()
+        this.sampler.setWeightAttribute(null)
+        return this.sampler.build()
     }
 
     Scene.prototype["animate"] = function ()
     {
-        var _328_17_
+        var _318_17_
 
         this.stats.begin()
         this.lightPlayer.position.copy(this.camera.position)

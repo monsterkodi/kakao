@@ -11,13 +11,13 @@ use ./lib/gridhelper
 use ./lib/noise ▪ simplex3
 
 import * as three from 'three'
-import { EffectComposer }   from 'three/addons/postprocessing/EffectComposer.js'
-import { RenderPass }       from 'three/addons/postprocessing/RenderPass.js'
-import { UnrealBloomPass }  from 'three/addons/postprocessing/UnrealBloomPass.js'
-import { OutputPass }       from 'three/addons/postprocessing/OutputPass.js'
-import { OrbitControls }    from 'three/addons/controls/OrbitControls.js'
-import { MarchingCubes }    from 'three/addons/objects/MarchingCubes.js'
-import Stats                from 'three/addons/libs/stats.module.js'
+import { EffectComposer }       from 'three/addons/postprocessing/EffectComposer.js'
+import { RenderPass }           from 'three/addons/postprocessing/RenderPass.js'
+import { UnrealBloomPass }      from 'three/addons/postprocessing/UnrealBloomPass.js'
+import { OutputPass }           from 'three/addons/postprocessing/OutputPass.js'
+import { MarchingCubes }        from 'three/addons/objects/MarchingCubes.js'
+import { MeshSurfaceSampler }   from 'three/addons/math/MeshSurfaceSampler.js'
+import Stats                    from 'three/addons/libs/stats.module.js'
 
 function Scene
 
@@ -39,11 +39,14 @@ function Scene
         @initLights()
         @initMarchingCubes()
         @initHelpers()
-        # @initControls()
         @initComposer()
         
         window.addEventListener 'resize' @onWindowResize 
         document.addEventListener 'mousemove' @onMouseMove
+        
+    start: =>
+        
+        @initGyroidSphere()
 
     # 00000000   00000000  000   000  0000000    00000000  00000000   00000000  00000000   
     # 000   000  000       0000  000  000   000  000       000   000  000       000   000  
@@ -99,24 +102,7 @@ function Scene
         @composer.addPass renderScene
         @composer.addPass bloomPass
         @composer.addPass outputPass
-        
-    #  0000000   0000000   000   000  000000000  00000000    0000000   000       0000000  
-    # 000       000   000  0000  000     000     000   000  000   000  000      000       
-    # 000       000   000  000 0 000     000     0000000    000   000  000      0000000   
-    # 000       000   000  000  0000     000     000   000  000   000  000           000  
-    #  0000000   0000000   000   000     000     000   000   0000000   0000000  0000000   
-    
-    initControls: =>
-        
-        @controls = new OrbitControls @camera @renderer.domElement
-        @controls.maxPolarAngle = Math.PI * 0.5
-        @controls.minDistance   = 13
-        @controls.maxDistance   = 300
-        @controls.enableDamping = true
-        @controls.minPolarAngle = -Math.PI
-        @controls.maxPolarAngle = Math.PI
-        @controls.target.set 0 1 0
-        
+                
     # 000      000   0000000   000   000  000000000   0000000  
     # 000      000  000        000   000     000     000       
     # 000      000  000  0000  000000000     000     0000000   
@@ -238,6 +224,8 @@ function Scene
         @mc.castShadow = true
         @scene.add @mc
         
+        @sampler = new MeshSurfaceSampler @mc
+        
         @initGyroidSphere()
         
     #  0000000   000   000  00000000    0000000   000  0000000    
@@ -291,6 +279,8 @@ function Scene
                     @mc.setColor x y z r g Math.max(0 b-r)
             
         @mc.update()
+        @sampler.setWeightAttribute null
+        @sampler.build()
 
     #  0000000   000   000  000  00     00   0000000   000000000  00000000  
     # 000   000  0000  000  000  000   000  000   000     000     000       

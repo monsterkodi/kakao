@@ -268,4 +268,5 @@ noise = (function ()
     return noise
 })()
 
+noise.seed = seed
 export default noise;

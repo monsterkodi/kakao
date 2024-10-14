@@ -8,6 +8,7 @@
 
 use ../kxk ▪ drag stopEvent prefs post kpos fade randRange randInt randIntRange
 
+use ./lib/noise
 use ◆ tweaky swarm
 
 function world
@@ -15,18 +16,17 @@ function world
     @: @scene @player @camera ->
         
         @pause = false
-        
-        @speed = 10
-                        
+                                
         @tweaky = new tweaky @scene.view
 
         @tweaky.init
-            speed:      min: 1    max:100    step:1      value:@speed               cb: (@speed) =>
+            seed: min:1 max:100 step:1 value:0  cb: (v) => noise.seed(v); @start()
                 
         @swarm = new swarm @scene
                 
     start: ->
         
+        @scene.start()
         @camera.start()
         @player.start()
         @swarm.spawn @swarm.count
