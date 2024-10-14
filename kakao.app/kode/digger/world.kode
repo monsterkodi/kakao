@@ -6,35 +6,28 @@
 00     00   0000000   000   000  0000000  0000000  
 ###
 
-use ../kxk ▪ $ drag stopEvent prefs post kpos fade randRange randInt randIntRange
+use ../kxk ▪ drag stopEvent prefs post kpos fade randRange randInt randIntRange
 
 use ◆ tweaky
 
 function world
 
-    @: ->
+    @: @scene @player @camera ->
         
-        @main =$ 'main'
         @pause = false
         
         @speed = 10
-                
-        @tweaky = new tweaky @main
+                        
+        @tweaky = new tweaky @scene.view
 
         @tweaky.init
             speed:      min: 1    max:100    step:1      value:@speed               cb: (@speed) =>
                 
-        @main.focus()
+    start: ->
         
-        @mouse = pos: [0 0]
-        # @drag = new drag 
-            # target:     @main
-            # onStart:    @onDragStart
-            # onMove:     @onDragMove
-            # onStop:     @onDragStop
-            # cursor:     'pointer'
-            # stopEvent:  false
-            
+        @camera.start()
+        @player.start()
+                
     # 000000000  000   0000000  000   000  
     #    000     000  000       000  000   
     #    000     000  000       0000000    
@@ -63,9 +56,9 @@ function world
                 
         sec = @speed * tickInfo.delta / 1000
         
-        # log sec
-        # @advance sec
-                        
+        @player.update sec
+        @camera.update sec
+        
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
 
 export world

@@ -1,0 +1,51 @@
+###
+00000000    0000000   000       0000000   00000000 
+000   000  000   000  000      000   000  000   000
+00000000   000   000  000      000000000  0000000  
+000        000   000  000      000   000  000   000
+000         0000000   0000000  000   000  000   000
+###
+
+import * as three from 'three'
+
+use ../../kxk ▪ deg2rad
+use ./quat
+
+vec   = new three.Vector3
+tqt   = new three.Quaternion
+unitX = new three.Vector3 1 0 0
+unitY = new three.Vector3 0 1 0
+unitZ = new three.Vector3 0 0 1
+
+function Polar
+
+    @zero: new Polar()
+    @pole: unitX
+
+    @: cfg={} ->
+        
+        @quat = switch cfg.dir
+            '-x' ➜ new quat new three.Vector3 -1 0 0
+            '-y' ➜ new quat new three.Vector3 0 -1 0
+            '-z' ➜ new quat new three.Vector3 0 0 -1
+            'x'  ➜ new quat new three.Vector3 1 0 0
+            'y'  ➜ new quat new three.Vector3 0 1 0
+                 ➜ new quat new three.Vector3 0 0 1
+
+        @dist = cfg.dist ? 1
+        
+    rotU: deg -> vec.copy unitY; tqt.setFromAxisAngle vec deg2rad(deg); @quat.multiply tqt; @quat.normalize()
+    rotV: deg -> vec.copy unitZ; tqt.setFromAxisAngle vec deg2rad(deg); @quat.multiply tqt; @quat.normalize()
+    
+    slerp: o t -> @quat.slerp o.quat t
+    
+    up: -> vec.copy unitY; vec.applyQuaternion @quat; vec
+        
+    pos: ->
+        
+        vec.copy Polar.pole
+        vec.applyQuaternion @quat
+        vec.multiplyScalar @dist
+        vec
+
+export Polar

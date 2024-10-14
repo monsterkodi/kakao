@@ -7,7 +7,6 @@
 digger
     
     Pause                   space
-    Step                    right
     -
     Restart                 r
     Zoom In                 cmdctrl+= =

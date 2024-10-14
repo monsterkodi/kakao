@@ -1,9 +1,9 @@
 ###
-000000000  000   000  00000000   00000000  00000000
-   000     000   000  000   000  000       000
-   000     000000000  0000000    0000000   0000000
-   000     000   000  000   000  000       000
-   000     000   000  000   000  00000000  00000000
+ 0000000   0000000  00000000  000   000  00000000    
+000       000       000       0000  000  000         
+0000000   000       0000000   000 0 000  0000000     
+     000  000       000       000  0000  000         
+0000000    0000000  00000000  000   000  00000000    
 ###
 
 use ../kxk ▪ deg2rad randInt randRange
@@ -18,10 +18,10 @@ import { OutputPass }       from 'three/addons/postprocessing/OutputPass.js'
 import { OrbitControls }    from 'three/addons/controls/OrbitControls.js'
 import { MarchingCubes }    from 'three/addons/objects/MarchingCubes.js'
 
-function Three
+function Scene
 
     @: @view ->
-
+        
         @scene     = new three.Scene()
         @clock     = new three.Clock()
         @raycaster = new three.Raycaster()
@@ -38,7 +38,7 @@ function Three
         @initLights()
         @initMarchingCubes()
         @initHelpers()
-        @initControls()
+        # @initControls()
         @initComposer()
         
         window.addEventListener 'resize' @onWindowResize 
@@ -223,11 +223,11 @@ function Three
         @resolution = 100
         
         color = new three.Color 1 1 1
-        material = new three.MeshLambertMaterial color:color vertexColors:true flatShading:false dithering:true
+        mat = new three.MeshLambertMaterial color:color vertexColors:true flatShading:false dithering:true
         enableUvs = false
         enableColors = true
         maxPolyCount = 1500000
-        @mc = new MarchingCubes @resolution material enableUvs enableColors maxPolyCount
+        @mc = new MarchingCubes @resolution mat enableUvs enableColors maxPolyCount
         @mc.scale.set 50 50 50
         @mc.receiveShadow = true
         @mc.castShadow = true
@@ -321,4 +321,4 @@ function Three
         @controls?.update @clock.getDelta()
         @composer.render()
 
-export Three
+export Scene

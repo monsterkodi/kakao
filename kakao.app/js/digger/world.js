@@ -1,7 +1,6 @@
 var world
 
 import kxk from "../kxk.js"
-let $ = kxk.$
 let drag = kxk.drag
 let stopEvent = kxk.stopEvent
 let prefs = kxk.prefs
@@ -17,25 +16,32 @@ import tweaky from "./tweaky.js"
 
 world = (function ()
 {
-    function world ()
+    function world (scene, player, camera)
     {
+        this.scene = scene
+        this.player = player
+        this.camera = camera
+    
         this["singleStep"] = this["singleStep"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
-        this.main = $('main')
         this.pause = false
         this.speed = 10
-        this.tweaky = new tweaky(this.main)
+        this.tweaky = new tweaky(this.scene.view)
         this.tweaky.init({speed:{min:1,max:100,step:1,value:this.speed,cb:(function (speed)
         {
             this.speed = speed
         }).bind(this)}})
-        this.main.focus()
-        this.mouse = {pos:[0,0]}
+    }
+
+    world.prototype["start"] = function ()
+    {
+        this.camera.start()
+        return this.player.start()
     }
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var _47_15_
+        var _40_15_
 
         this.tickInfo = tickInfo
     
@@ -61,7 +67,9 @@ world = (function ()
         {
             return
         }
-        return sec = this.speed * tickInfo.delta / 1000
+        sec = this.speed * tickInfo.delta / 1000
+        this.player.update(sec)
+        return this.camera.update(sec)
     }
 
     world.prototype["singleStep"] = function ()

@@ -1,0 +1,104 @@
+###
+00000000   000       0000000   000   000  00000000  00000000 
+000   000  000      000   000   000 000   000       000   000
+00000000   000      000000000    00000    0000000   0000000  
+000        000      000   000     000     000       000   000
+000        0000000  000   000     000     00000000  000   000
+###
+
+import * as three from 'three'
+
+use ../kxk ▪ deg2rad rad2deg fade
+use ./lib/geom
+use ./lib/polar
+use ◆ input
+
+p2 = new three.Vector2
+angle = a b ->
+    
+    p2.x = -a.y
+    p2.y =  a.x
+    r = a.angleTo b
+    p2.dot(b) >= 0 ? r : -r
+    
+fadeAngle = a b f ->
+    
+    if Math.abs(a-b) > Math.PI
+        if a > b 
+            b += 2*Math.PI
+        else
+            b -= 2*Math.PI
+        
+    if a < b 
+        Math.min a+f b
+    else
+        Math.max a-f b
+        
+function Player
+
+    @: @scene ->
+        
+        @input = new input @
+        
+        @maxVel   = 0.5
+        @friction = 0.98
+        @angle    = 0
+        
+        @mesh = geom.pill length:2 radius:1 material:'white'
+        
+        for child in @mesh.children
+            child.castShadow = true
+            
+        @scene.scene.add @mesh
+        
+        @start()
+        
+        @vec = new three.Vector3
+        @v2y = new three.Vector2 0 1
+        @tqt = new three.Quaternion
+        
+        @unitX = new three.Vector3 1 0 0
+        @unitY = new three.Vector3 0 1 0
+        @unitZ = new three.Vector3 0 0 1
+        
+    start: -> 
+
+        @vel   = new three.Vector2
+        @polar = new polar dist:50
+        @mesh.position.copy @polar.pos()
+        
+    startAction: action ->
+        
+    stopAction: action ->
+        
+    update: deltaSec ->
+        
+        deg = deltaSec * 0.5
+        acc = [0 0]
+        
+        if @input.action.moveUp    ➜ acc[1] += deg
+        if @input.action.moveDown  ➜ acc[1] -= deg
+        if @input.action.moveRight ➜ acc[0] += deg
+        if @input.action.moveLeft  ➜ acc[0] -= deg
+       
+        @vel.x += deltaSec * acc[0]
+        @vel.y += deltaSec * acc[1]
+        
+        @vel.x *= @friction
+        @vel.y *= @friction
+        
+        @vel.clampLength 0 @maxVel
+                    
+        @polar.rotU @vel.x
+        @polar.rotV @vel.y
+            
+        @mesh.position.copy @polar.pos()
+        
+        @angle = fadeAngle @angle angle(@v2y @vel) deltaSec
+
+        @tqt.setFromAxisAngle @unitX @angle
+        
+        @mesh.quaternion.copy @polar.quat
+        @mesh.quaternion.multiply @tqt
+                
+export Player

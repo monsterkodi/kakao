@@ -6,12 +6,10 @@
 0000000    000   0000000    0000000   00000000  000   000  
 ###
 
+
 use ../kakao
 use ../kxk ▪ $ win fps post elem stopEvent
-use ◆ world three
-
-window.WIN_MIN_WIDTH  = 400
-window.WIN_MIN_HEIGHT = 400
+use ◆ world scene input player camera
 
 function Delegate extends win.Delegate
     
@@ -21,77 +19,64 @@ function Delegate extends win.Delegate
         
         post.on 'menuAction' @onMenuAction
         
-    onWindowAnimationTick: win tickInfo => 
+    onWindowAnimationTick: win tickInfo =>
         
         ⮐ if not @world
         
         @world.tick tickInfo
         
-    onWindowWillShow: ->
+    onWindowWillShow: =>
         
         ⮐ if @world
         
         main =$ 'main'
+        main.focus()
         
-        window.three = new three main
-        window.world = @world = new world
+        window.titlebar.hideMenu()
+        
+        @scene  = new scene main
+        @player = new player @scene
+        @camera = new camera @scene @player
+        @world  = new world  @scene @player @camera
+            
+        @player.input.init
+            moveLeft:  ['a' 'left' ]
+            moveRight: ['d' 'right']
+            moveUp:    ['w' 'up'   ]
+            moveDown:  ['s' 'down' ]
         
         @fps = new fps main topDown:true
         
-        post.on 'pause' @onPause
-
-    onPause: =>
+        @world.start()
         
-    onWindowWithoutStash: ->
+    onWindowWithoutStash: =>
         
-        kakao 'window.setSize' window.WIN_MIN_WIDTH window.WIN_MIN_HEIGHT
+        kakao 'window.setSize' 1920 1080
         kakao 'window.center'
         
     onWindowCreated: =>
         
-        kakao 'window.setMinSize' window.WIN_MIN_WIDTH window.WIN_MIN_HEIGHT
+        kakao 'window.setMinSize' 400 400
         
     onWindowResize: => post.emit 'resize'
     
-    onWindowKeyDown: keyInfo -> 
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onWindowKeyDown: keyInfo => 
         
-        vec = window.three.vec
-        quat = window.three.quat
-        
-        switch keyInfo.combo
-            
-            'w' 
-                window.three.forwardSpeed += 0.1
-
-            's' 
-                window.three.forwardSpeed -= 0.1
-                
-            'd'
-                vec.set 0 1 0
-                quat.setFromAxisAngle vec -0.004
-                window.three.camera.quaternion.multiply quat
-                
-            'a' 
-                vec.set 0 1 0
-                quat.setFromAxisAngle vec 0.004
-                window.three.camera.quaternion.multiply quat
-
-            'q'
-                vec.set 1 0 0
-                quat.setFromAxisAngle vec -0.004
-                window.three.camera.quaternion.multiply quat
-                
-            'e' 
-                vec.set 1 0 0
-                quat.setFromAxisAngle vec 0.004
-                window.three.camera.quaternion.multiply quat
-                
+        @player.input.onKeyDown keyInfo
                 
         stopEvent keyInfo.event
     
         'unhandled'
         
-    onWindowKeyUp: keyInfo -> 
+    onWindowKeyUp: keyInfo => 
+        
+        @player.input.onKeyUp keyInfo
         
         stopEvent keyInfo.event
         
@@ -115,8 +100,5 @@ function Delegate extends win.Delegate
             
         'unhandled'
 
-kakao.init ->
-    
-    new win new Delegate
-    @
+kakao.init -> new win new Delegate
     

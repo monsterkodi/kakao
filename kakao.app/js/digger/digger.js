@@ -13,10 +13,11 @@ let elem = kxk.elem
 let stopEvent = kxk.stopEvent
 
 import world from "./world.js"
-import three from "./three.js"
+import scene from "./scene.js"
+import input from "./input.js"
+import player from "./player.js"
+import camera from "./camera.js"
 
-window.WIN_MIN_WIDTH = 400
-window.WIN_MIN_HEIGHT = 400
 
 Delegate = (function ()
 {
@@ -24,9 +25,12 @@ Delegate = (function ()
     function Delegate ()
     {
         this["onMenuAction"] = this["onMenuAction"].bind(this)
+        this["onWindowKeyUp"] = this["onWindowKeyUp"].bind(this)
+        this["onWindowKeyDown"] = this["onWindowKeyDown"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
-        this["onPause"] = this["onPause"].bind(this)
+        this["onWindowWithoutStash"] = this["onWindowWithoutStash"].bind(this)
+        this["onWindowWillShow"] = this["onWindowWillShow"].bind(this)
         this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
         this.menuNoon = kakao.bundle.res('menu_digger.noon')
         post.on('menuAction',this.onMenuAction)
@@ -51,24 +55,26 @@ Delegate = (function ()
             return
         }
         main = $('main')
-        window.three = new three(main)
-        window.world = this.world = new world
+        main.focus()
+        window.titlebar.hideMenu()
+        this.scene = new scene(main)
+        this.player = new player(this.scene)
+        this.camera = new camera(this.scene,this.player)
+        this.world = new world(this.scene,this.player,this.camera)
+        this.player.input.init({moveLeft:['a','left'],moveRight:['d','right'],moveUp:['w','up'],moveDown:['s','down']})
         this.fps = new fps(main,{topDown:true})
-        return post.on('pause',this.onPause)
+        return this.world.start()
     }
-
-    Delegate.prototype["onPause"] = function ()
-    {}
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
     {
-        kakao('window.setSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
+        kakao('window.setSize',1920,1080)
         return kakao('window.center')
     }
 
     Delegate.prototype["onWindowCreated"] = function ()
     {
-        return kakao('window.setMinSize',window.WIN_MIN_WIDTH,window.WIN_MIN_HEIGHT)
+        return kakao('window.setMinSize',400,400)
     }
 
     Delegate.prototype["onWindowResize"] = function ()
@@ -78,46 +84,14 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowKeyDown"] = function (keyInfo)
     {
-        var quat, vec
-
-        vec = window.three.vec
-        quat = window.three.quat
-        switch (keyInfo.combo)
-        {
-            case 'w':
-                window.three.forwardSpeed += 0.1
-                break
-            case 's':
-                window.three.forwardSpeed -= 0.1
-                break
-            case 'd':
-                vec.set(0,1,0)
-                quat.setFromAxisAngle(vec,-0.004)
-                window.three.camera.quaternion.multiply(quat)
-                break
-            case 'a':
-                vec.set(0,1,0)
-                quat.setFromAxisAngle(vec,0.004)
-                window.three.camera.quaternion.multiply(quat)
-                break
-            case 'q':
-                vec.set(1,0,0)
-                quat.setFromAxisAngle(vec,-0.004)
-                window.three.camera.quaternion.multiply(quat)
-                break
-            case 'e':
-                vec.set(1,0,0)
-                quat.setFromAxisAngle(vec,0.004)
-                window.three.camera.quaternion.multiply(quat)
-                break
-        }
-
+        this.player.input.onKeyDown(keyInfo)
         stopEvent(keyInfo.event)
         return 'unhandled'
     }
 
     Delegate.prototype["onWindowKeyUp"] = function (keyInfo)
     {
+        this.player.input.onKeyUp(keyInfo)
         stopEvent(keyInfo.event)
         return 'unhandled'
     }
@@ -151,6 +125,5 @@ Delegate = (function ()
 
 kakao.init(function ()
 {
-    new win(new Delegate)
-    return this
+    return new win(new Delegate)
 })
