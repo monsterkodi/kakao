@@ -42,4 +42,32 @@ function Geom
         
         group
 
+    #  0000000  000   000  000      000  000   000  0000000    00000000  00000000   
+    # 000        000 000   000      000  0000  000  000   000  000       000   000  
+    # 000         00000    000      000  000 0 000  000   000  0000000   0000000    
+    # 000          000     000      000  000  0000  000   000  000       000   000  
+    #  0000000     000     0000000  000  000   000  0000000    00000000  000   000  
+    
+    @cylinder: cfg={} ->
+        
+        height = cfg.height ? cfg.length ? 1 
+        radius = cfg.radius ? 0.5 
+        sgmt   = cfg.sgmt ? 24
+        
+        geom = new three.CylinderGeometry radius radius height sgmt
+                    
+        if cfg.length
+            geom.translate 0 -cfg.length/2 0
+            geom.rotateX Math.PI/2
+        
+        mat = cfg.material ? new three.MeshStandardMaterial
+        mat = material[mat] if mat is str
+        
+        mesh = new three.Mesh geom mat
+        if cfg.pos
+            mesh.translateX cfg.pos.x 
+            mesh.translateY cfg.pos.y 
+            mesh.translateZ cfg.pos.z
+        mesh
+
 export Geom

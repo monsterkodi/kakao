@@ -20,10 +20,14 @@ function Camera
         
     update: deltaSec ->
         
-        @polar.slerp @player.polar deltaSec * 0.2
+        @polar.slerp @player.polar deltaSec * 2
         
         @scene.camera.position.copy @polar.pos()
         @scene.camera.up.copy @player.polar.up()
         @scene.camera.lookAt 0 0 0 
+        
+    zoom: delta ->
+        
+        @polar.dist = clamp 80 160 @polar.dist * (1.0 - delta/100)
 
 export Camera

@@ -17,6 +17,7 @@ import { UnrealBloomPass }  from 'three/addons/postprocessing/UnrealBloomPass.js
 import { OutputPass }       from 'three/addons/postprocessing/OutputPass.js'
 import { OrbitControls }    from 'three/addons/controls/OrbitControls.js'
 import { MarchingCubes }    from 'three/addons/objects/MarchingCubes.js'
+import Stats                from 'three/addons/libs/stats.module.js'
 
 function Scene
 
@@ -212,6 +213,10 @@ function Scene
         @gridHelper.visible = false
         @scene.add @gridHelper
         
+        @stats = new Stats()
+        @stats.dom.style.position = 'absolute'
+        @view.appendChild @stats.dom
+        
     # 00     00   0000000   00000000    0000000  000   000  000  000   000   0000000 
     # 000   000  000   000  000   000  000       000   000  000  0000  000  000      
     # 000000000  000000000  0000000    000       000000000  000  000 0 000  000  0000
@@ -301,6 +306,8 @@ function Scene
         # if intersection.length > 0    
             # log intersection[0]
             # instanceId = intersection[0].instanceId
+            
+        @stats.begin()
 
         @lightPlayer.position.copy @camera.position
         
@@ -320,5 +327,7 @@ function Scene
         
         @controls?.update @clock.getDelta()
         @composer.render()
+        
+        @stats.end()
 
 export Scene

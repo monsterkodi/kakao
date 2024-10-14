@@ -12,6 +12,7 @@ let randInt = kxk.randInt
 let randIntRange = kxk.randIntRange
 
 import tweaky from "./tweaky.js"
+import swarm from "./swarm.js"
 
 
 world = (function ()
@@ -31,17 +32,19 @@ world = (function ()
         {
             this.speed = speed
         }).bind(this)}})
+        this.swarm = new swarm(this.scene)
     }
 
     world.prototype["start"] = function ()
     {
         this.camera.start()
-        return this.player.start()
+        this.player.start()
+        return this.swarm.spawn(this.swarm.count)
     }
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var _40_15_
+        var _43_15_
 
         this.tickInfo = tickInfo
     
@@ -67,9 +70,10 @@ world = (function ()
         {
             return
         }
-        sec = this.speed * tickInfo.delta / 1000
+        sec = tickInfo.delta / 1000
         this.player.update(sec)
-        return this.camera.update(sec)
+        this.camera.update(sec)
+        return this.swarm.update(sec,tickInfo)
     }
 
     world.prototype["singleStep"] = function ()

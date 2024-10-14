@@ -95,7 +95,7 @@ Player = (function ()
     {
         var acc, deg
 
-        deg = deltaSec * 0.5
+        deg = 10
         acc = [0,0]
         if (this.input.action.moveUp)
         {
@@ -113,6 +113,11 @@ Player = (function ()
         {
             acc[0] -= deg
         }
+        if (this.dragAccel)
+        {
+            acc[0] += this.dragAccel.x
+            acc[1] -= this.dragAccel.y
+        }
         this.vel.x += deltaSec * acc[0]
         this.vel.y += deltaSec * acc[1]
         this.vel.x *= this.friction
@@ -121,7 +126,7 @@ Player = (function ()
         this.polar.rotU(this.vel.x)
         this.polar.rotV(this.vel.y)
         this.mesh.position.copy(this.polar.pos())
-        this.angle = fadeAngle(this.angle,angle(this.v2y,this.vel),deltaSec)
+        this.angle = fadeAngle(this.angle,angle(this.v2y,this.vel),deltaSec * 10)
         this.tqt.setFromAxisAngle(this.unitX,this.angle)
         this.mesh.quaternion.copy(this.polar.quat)
         return this.mesh.quaternion.multiply(this.tqt)

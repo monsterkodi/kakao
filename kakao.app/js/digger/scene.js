@@ -19,6 +19,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js'
+import Stats from 'three/addons/libs/stats.module.js'
 
 Scene = (function ()
 {
@@ -174,7 +175,10 @@ Scene = (function ()
         this.scene.add(this.axesHelper)
         this.gridHelper = new gridhelper()
         this.gridHelper.visible = false
-        return this.scene.add(this.gridHelper)
+        this.scene.add(this.gridHelper)
+        this.stats = new Stats()
+        this.stats.dom.style.position = 'absolute'
+        return this.view.appendChild(this.stats.dom)
     }
 
     Scene.prototype["initMarchingCubes"] = function ()
@@ -245,8 +249,9 @@ Scene = (function ()
 
     Scene.prototype["animate"] = function ()
     {
-        var _321_17_
+        var _328_17_
 
+        this.stats.begin()
         this.lightPlayer.position.copy(this.camera.position)
         this.lightShadow.position.copy(this.camera.position)
         this.quat.copy(this.camera.quaternion)
@@ -259,7 +264,8 @@ Scene = (function ()
         this.vec.multiplyScalar(10)
         this.lightShadow.position.add(this.vec)
         ;(this.controls != null ? this.controls.update(this.clock.getDelta()) : undefined)
-        return this.composer.render()
+        this.composer.render()
+        return this.stats.end()
     }
 
     return Scene

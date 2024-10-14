@@ -6,9 +6,10 @@
 0000000    000   0000000    0000000   00000000  000   000  
 ###
 
+import * as three from 'three'
 
 use ../kakao
-use ../kxk ▪ $ win fps post elem stopEvent
+use ../kxk ▪ $ win fps drag post elem stopEvent
 use ◆ world scene input player camera
 
 function Delegate extends win.Delegate
@@ -17,8 +18,10 @@ function Delegate extends win.Delegate
 
         @menuNoon = kakao.bundle.res 'menu_digger.noon'
         
-        post.on 'menuAction' @onMenuAction
+        @dragAccel = new three.Vector2
         
+        post.on 'menuAction' @onMenuAction
+                
     onWindowAnimationTick: win tickInfo =>
         
         ⮐ if not @world
@@ -29,12 +32,12 @@ function Delegate extends win.Delegate
         
         ⮐ if @world
         
-        main =$ 'main'
-        main.focus()
-        
+        @main =$ 'main'
+        @main.focus()
+                
         window.titlebar.hideMenu()
         
-        @scene  = new scene main
+        @scene  = new scene  @main
         @player = new player @scene
         @camera = new camera @scene @player
         @world  = new world  @scene @player @camera
@@ -45,9 +48,33 @@ function Delegate extends win.Delegate
             moveUp:    ['w' 'up'   ]
             moveDown:  ['s' 'down' ]
         
-        @fps = new fps main topDown:true
+        @fps = new fps @main topDown:true
         
+        @drag = new drag
+            target:    @main
+            stopEvent: false
+            onStart: @onDragMove
+            onMove:  @onDragMove
+            onStop:  @onDragStop
+        
+        main.addEventListener 'wheel' @onWheel
+            
         @world.start()
+        
+    onWheel: event =>
+        
+        @camera.zoom -event.deltaY/100
+        
+    onDragMove: drag event =>
+        
+        drag.pos.y -= 30
+        @dragAccel.set drag.pos.x - main.clientWidth / 2, drag.pos.y - main.clientHeight / 2
+        @dragAccel.normalize()
+        @player.dragAccel = @dragAccel
+            
+    onDragStop: drag event =>
+        
+        delete @player.dragAccel
         
     onWindowWithoutStash: =>
         
@@ -92,8 +119,8 @@ function Delegate extends win.Delegate
 
         switch action
             
-            'Zoom In'  ➜ ⮐ @world.zoom 1
-            'Zoom Out' ➜ ⮐ @world.zoom -1
+            'Zoom In'  ➜ ⮐ @camera.zoom 1
+            'Zoom Out' ➜ ⮐ @camera.zoom -1
             'Pause'    ➜ ⮐ @world.togglePause()
             'Step'     ➜ ⮐ @world.singleStep()
             'Restart'  ➜ ⮐ @world.start()

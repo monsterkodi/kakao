@@ -757,6 +757,14 @@ class MarchingCubes extends Mesh {
 
         };
 
+        this.getColor = function ( x, y, z ) {
+        
+            const index = 3 * (this.size2 * z + this.size * y + x);
+            return [this.palette[index],
+                    this.palette[index+1],
+                    this.palette[index+2]];
+        };
+        
         this.blur = function ( intensity = 1 ) {
 
             const field = this.field;

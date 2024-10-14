@@ -73,13 +73,17 @@ function Player
         
     update: deltaSec ->
         
-        deg = deltaSec * 0.5
+        deg = 10
         acc = [0 0]
         
         if @input.action.moveUp    ➜ acc[1] += deg
         if @input.action.moveDown  ➜ acc[1] -= deg
         if @input.action.moveRight ➜ acc[0] += deg
         if @input.action.moveLeft  ➜ acc[0] -= deg
+            
+        if @dragAccel
+            acc[0] += @dragAccel.x
+            acc[1] -= @dragAccel.y
        
         @vel.x += deltaSec * acc[0]
         @vel.y += deltaSec * acc[1]
@@ -94,7 +98,7 @@ function Player
             
         @mesh.position.copy @polar.pos()
         
-        @angle = fadeAngle @angle angle(@v2y @vel) deltaSec
+        @angle = fadeAngle @angle angle(@v2y @vel) deltaSec*10
 
         @tqt.setFromAxisAngle @unitX @angle
         

@@ -2,12 +2,14 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var Delegate
 
+import * as three from 'three'
 import kakao from "../kakao.js"
 
 import kxk from "../kxk.js"
 let $ = kxk.$
 let win = kxk.win
 let fps = kxk.fps
+let drag = kxk.drag
 let post = kxk.post
 let elem = kxk.elem
 let stopEvent = kxk.stopEvent
@@ -30,9 +32,13 @@ Delegate = (function ()
         this["onWindowResize"] = this["onWindowResize"].bind(this)
         this["onWindowCreated"] = this["onWindowCreated"].bind(this)
         this["onWindowWithoutStash"] = this["onWindowWithoutStash"].bind(this)
+        this["onDragStop"] = this["onDragStop"].bind(this)
+        this["onDragMove"] = this["onDragMove"].bind(this)
+        this["onWheel"] = this["onWheel"].bind(this)
         this["onWindowWillShow"] = this["onWindowWillShow"].bind(this)
         this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
         this.menuNoon = kakao.bundle.res('menu_digger.noon')
+        this.dragAccel = new three.Vector2
         post.on('menuAction',this.onMenuAction)
         return Delegate.__super__.constructor.apply(this, arguments)
     }
@@ -48,22 +54,40 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowWillShow"] = function ()
     {
-        var main
-
         if (this.world)
         {
             return
         }
-        main = $('main')
-        main.focus()
+        this.main = $('main')
+        this.main.focus()
         window.titlebar.hideMenu()
-        this.scene = new scene(main)
+        this.scene = new scene(this.main)
         this.player = new player(this.scene)
         this.camera = new camera(this.scene,this.player)
         this.world = new world(this.scene,this.player,this.camera)
         this.player.input.init({moveLeft:['a','left'],moveRight:['d','right'],moveUp:['w','up'],moveDown:['s','down']})
-        this.fps = new fps(main,{topDown:true})
+        this.fps = new fps(this.main,{topDown:true})
+        this.drag = new drag({target:this.main,stopEvent:false,onStart:this.onDragMove,onMove:this.onDragMove,onStop:this.onDragStop})
+        main.addEventListener('wheel',this.onWheel)
         return this.world.start()
+    }
+
+    Delegate.prototype["onWheel"] = function (event)
+    {
+        return this.camera.zoom(-event.deltaY / 100)
+    }
+
+    Delegate.prototype["onDragMove"] = function (drag, event)
+    {
+        drag.pos.y -= 30
+        this.dragAccel.set(drag.pos.x - main.clientWidth / 2,drag.pos.y - main.clientHeight / 2)
+        this.dragAccel.normalize()
+        return this.player.dragAccel = this.dragAccel
+    }
+
+    Delegate.prototype["onDragStop"] = function (drag, event)
+    {
+        return delete this.player.dragAccel
     }
 
     Delegate.prototype["onWindowWithoutStash"] = function ()
@@ -101,10 +125,10 @@ Delegate = (function ()
         switch (action)
         {
             case 'Zoom In':
-                return this.world.zoom(1)
+                return this.camera.zoom(1)
 
             case 'Zoom Out':
-                return this.world.zoom(-1)
+                return this.camera.zoom(-1)
 
             case 'Pause':
                 return this.world.togglePause()
