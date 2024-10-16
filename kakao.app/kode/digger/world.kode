@@ -9,7 +9,7 @@
 use ../kxk ▪ drag stopEvent prefs post kpos fade randRange randInt randIntRange
 
 use ./lib/noise
-use ◆ tweaky swarm
+use ◆ tweaky swarm weed
 
 function world
 
@@ -23,13 +23,15 @@ function world
             seed: min:1 max:100 step:1 value:0  cb: (v) => noise.seed(v); @start()
                 
         @swarm = new swarm @scene
+        @weed  = new weed  @scene
                 
     start: ->
         
         @scene.start()
         @camera.start()
         @player.start()
-        @swarm.spawn @swarm.count
+        @weed.spawn()
+        @swarm.spawn()
                 
     # 000000000  000   0000000  000   000  
     #    000     000  000       000  000   
@@ -62,6 +64,7 @@ function world
         @player.update sec
         @camera.update sec
         @swarm.update  sec tickInfo
+        @weed.update   sec tickInfo
         
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
 

@@ -14,54 +14,57 @@ function Swarm
 
     @: @scene ->
         
-        @count = 1000
-        cylinder = geom.cylinder length:4 radius:0.5 sgmt:6 material:'flatwhite'
+        @count = 500
+        sphere = geom.sphere radius:0.5 sgmt:6 material:'shinywhite'
         @dummy = new three.Object3D()
         @color = new three.Color()
         @pos   = new three.Vector3()
         @norm  = new three.Vector3()
+        @orig  = new three.Vector3()
         @rot   = new three.Quaternion()
+        @rotd  = new three.Quaternion()
         @scale = new three.Vector3()
-        @mesh = new three.InstancedMesh(cylinder.geometry cylinder.material @count)
-        @mesh.instanceMatrix.setUsage three.StaticDrawUsage
+        @mesh  = new three.InstancedMesh(sphere.geometry sphere.material @count)
+        @mesh.instanceMatrix.setUsage three.DynamicDrawUsage
         @mesh.castShadow = true
         @scene.scene.add @mesh
         
-    spawn: num ->
+        @rotAxis = []
+        @rotAngle = []
+        for i in 0...@count
+            ra = new three.Vector3 
+            ra.randomDirection()
+            @rotAxis.push ra
+            @rotAngle.push 0.1
+        
+    spawn: ->
+        
+        @scale.set 1 1 1
+        @orig.set 0 0 0
         
         i = 0
-        while i < num
+        while i < @count
             
-            @scene.sampler.sample @pos @norm
-            @pos.multiplyScalar 50
-            # log @pos @norm
-            if @pos.length() < 40
-                continue
-                
-            # @dummy.position.set Math.random()-0.5 Math.random()-0.5 Math.random()-0.5
-            # @dummy.position.normalize()
-            # @dummy.position.multiplyScalar 40
-            @dummy.position.copy @pos
+            # @pos.set Math.random()-0.5 Math.random()-0.5 Math.random()-0.5
+            # @pos.normalize()
+            # @pos.multiplyScalar 50
+            # @dummy.position.copy @pos
+            # 
+            # @dummy.lookAt @orig
             
+            @pos.randomDirection()
+            @pos.projectOnPlane @rotAxis[i]
             @pos.normalize()
-            # log @norm.dot(@pos)
-            if @norm.dot(@pos) < 0.7
-                continue
-                
-            @norm.multiplyScalar -1
-            @norm.add @dummy.position
+            @rot.setFromAxisAngle @pos 0
+            @pos.multiplyScalar 50
+            @dummy.matrix.compose @pos @rot @scale
+
+            @mesh.setMatrixAt i @dummy.matrix
             
-            color = @scene.mc.getColor parseInt(@dummy.position.x+@scene.resolution/2) parseInt(@dummy.position.y+@scene.resolution/2) parseInt(@dummy.position.z+@scene.resolution/2)
-            if Math.random() < color[0]*50 + color[2]*50
-            # if true
-                # @dummy.lookAt (Math.random()-0.5)*8 (Math.random()-0.5)*8 (Math.random()-0.5)*8
-                @dummy.lookAt @norm
-                @dummy.scale.set 1 1 color[0]*150
-                @dummy.updateMatrix()
-                @mesh.setMatrixAt i @dummy.matrix
-                @color.set color[0]*5 color[1]*5 color[2]*5
-                @mesh.setColorAt i @color
-                i++
+            @color.set 0 0 1 #Math.random()
+            @mesh.setColorAt i @color
+            
+            i++
         
         @mesh.instanceMatrix.needsUpdate = true
         @mesh.instanceColor.needsUpdate = true
@@ -72,17 +75,21 @@ function Swarm
             
             @mesh.getMatrixAt i @dummy.matrix
             @dummy.matrix.decompose @pos @rot @scale
-            color = @scene.mc.getColor parseInt(@pos.x+@scene.resolution/2) parseInt(@pos.y+@scene.resolution/2) parseInt(@pos.z+@scene.resolution/2)
-            @color.set color[0] color[1] color[2]
-            f = (Math.sin(tickInfo.time/(2000-(color[0]+color[2])*900))+1.2)*2
-            @color.multiplyScalar f
-            @mesh.setColorAt i @color
-            @scale.set 1 1 color[0]*(50+(f-2.4)*10)
-            # @scale.set 1 1 color[0]*(10+(f-2.4)*2)
+            # color = @scene.mc.getColor parseInt(@pos.x+@scene.resolution/2) parseInt(@pos.y+@scene.resolution/2) parseInt(@pos.z+@scene.resolution/2)
+            # @color.set color[0] color[1] color[2]
+            # f = (Math.sin(tickInfo.time/(2000-(color[0]+color[2])*900))+1.2)*2
+            # @color.multiplyScalar f
+            # @mesh.setColorAt i @color
+            # @scale.set 1 1 color[0]*(50+(f-2.4)*10)
+            
+            @rotd.setFromAxisAngle @rotAxis[i] @rotAngle[i] * deltaSec
+            @pos.applyQuaternion @rotd
+            @rot.multiply @rotd
+            
             @dummy.matrix.compose @pos @rot @scale
             @mesh.setMatrixAt i @dummy.matrix
 
         @mesh.instanceMatrix.needsUpdate = true
-        @mesh.instanceColor.needsUpdate = true
+        # @mesh.instanceColor.needsUpdate = true
             
 export Swarm

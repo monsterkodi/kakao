@@ -32,9 +32,6 @@ function Geom
         group.add new three.Mesh mid mat
         group.add new three.Mesh bot mat
         
-        # if cfg.dir
-            # geom.applyQuaternion Quaternion.unitVectors(unitZ cfg.dir)
-        
         if cfg.pos
             group.translateX cfg.pos.x 
             group.translateY cfg.pos.y 
@@ -59,6 +56,33 @@ function Geom
         if cfg.length
             geom.translate 0 -cfg.length/2 0
             geom.rotateX Math.PI/2
+        
+        Geom.mesh cfg geom
+            
+    #  0000000  00000000   000   000  00000000  00000000   00000000  
+    # 000       000   000  000   000  000       000   000  000       
+    # 0000000   00000000   000000000  0000000   0000000    0000000   
+    #      000  000        000   000  000       000   000  000       
+    # 0000000   000        000   000  00000000  000   000  00000000  
+    
+    @sphere: cfg={} ->
+
+        radius = cfg.radius ? 1
+        sgmt   = cfg.sgmt ? 16
+        
+        geom = new three.SphereGeometry radius sgmt sgmt
+        
+        geom.rotateX Math.PI/2
+        
+        Geom.mesh cfg geom
+        
+    # 00     00  00000000   0000000  000   000  
+    # 000   000  000       000       000   000  
+    # 000000000  0000000   0000000   000000000  
+    # 000 0 000  000            000  000   000  
+    # 000   000  00000000  0000000   000   000  
+    
+    @mesh: cfg geom ->
         
         mat = cfg.material ? new three.MeshStandardMaterial
         mat = material[mat] if mat is str

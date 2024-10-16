@@ -15,6 +15,7 @@ import noise from "./lib/noise.js"
 
 import tweaky from "./tweaky.js"
 import swarm from "./swarm.js"
+import weed from "./weed.js"
 
 
 world = (function ()
@@ -35,6 +36,7 @@ world = (function ()
             return this.start()
         }).bind(this)}})
         this.swarm = new swarm(this.scene)
+        this.weed = new weed(this.scene)
     }
 
     world.prototype["start"] = function ()
@@ -42,12 +44,13 @@ world = (function ()
         this.scene.start()
         this.camera.start()
         this.player.start()
-        return this.swarm.spawn(this.swarm.count)
+        this.weed.spawn()
+        return this.swarm.spawn()
     }
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var _43_15_
+        var _45_15_
 
         this.tickInfo = tickInfo
     
@@ -76,7 +79,8 @@ world = (function ()
         sec = tickInfo.delta / 1000
         this.player.update(sec)
         this.camera.update(sec)
-        return this.swarm.update(sec,tickInfo)
+        this.swarm.update(sec,tickInfo)
+        return this.weed.update(sec,tickInfo)
     }
 
     world.prototype["singleStep"] = function ()
