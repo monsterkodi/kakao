@@ -179,7 +179,7 @@ Scene = (function ()
         this.scene.add(this.gridHelper)
         this.stats = new Stats()
         this.stats.dom.style.position = 'absolute'
-        if (0)
+        if (1)
         {
             this.view.appendChild(this.stats.dom)
         }
@@ -258,7 +258,7 @@ Scene = (function ()
 
     Scene.prototype["animate"] = function ()
     {
-        var _327_17_
+        var _328_17_
 
         this.stats.begin()
         this.lightPlayer.position.copy(this.camera.position)
@@ -272,7 +272,8 @@ Scene = (function ()
         this.vec.applyQuaternion(this.quat)
         this.vec.multiplyScalar(10)
         this.lightShadow.position.add(this.vec)
-        ;(this.controls != null ? this.controls.update(this.clock.getDelta()) : undefined)
+        this.clockDelta = this.clock.getDelta()
+        ;(this.controls != null ? this.controls.update(this.clockDelta) : undefined)
         this.composer.render()
         return this.stats.end()
     }

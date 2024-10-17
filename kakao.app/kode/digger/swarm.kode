@@ -79,6 +79,8 @@ function Swarm
         @playerPos.copy @player.mesh.position
         @playerPos.normalize()
         
+        # log @scene.clockDelta deltaSec @scene.clockDelta-deltaSec
+        
         for i in 0...@count
             
             @mesh.getMatrixAt i @dummy.matrix

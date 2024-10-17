@@ -70,7 +70,7 @@ function Delegate extends win.Delegate
     onDragMove: drag event =>
         
         drag.pos.y -= 30
-        @dragAccel.set drag.pos.x - main.clientWidth / 2, drag.pos.y - main.clientHeight / 2
+        @dragAccel.set drag.pos.x - main.clientWidth / 2 drag.pos.y - main.clientHeight / 2
         # @dragAccel.normalize()
         @dragAccel.multiplyScalar(0.002).clampLength(0 1)
         

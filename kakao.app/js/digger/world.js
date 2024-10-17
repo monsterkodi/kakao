@@ -29,7 +29,7 @@ world = (function ()
         this["singleStep"] = this["singleStep"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this.pause = false
-        if (0)
+        if (1)
         {
             this.tweaky = new tweaky(this.scene.view)
             this.tweaky.init({seed:{min:1,max:100,step:1,value:0,cb:(function (v)
@@ -82,7 +82,11 @@ world = (function ()
         {
             return
         }
-        sec = tickInfo.delta / 1000
+        if (isNaN(this.scene.clockDelta))
+        {
+            return
+        }
+        sec = 1 / 60
         this.player.update(sec)
         this.camera.update(sec)
         this.swarm.update(sec,tickInfo)
