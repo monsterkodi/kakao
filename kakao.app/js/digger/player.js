@@ -58,10 +58,11 @@ Player = (function ()
         this.scene = scene
     
         this.input = new input(this)
+        this.eat = 0
         this.maxVel = 0.5
         this.friction = 0.98
         this.angle = 0
-        this.mesh = geom.pill({length:2,radius:1,material:'white'})
+        this.mesh = geom.pill({length:1,radius:0.5,material:'white'})
         var list = _k_.list(this.mesh.children)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -82,6 +83,7 @@ Player = (function ()
     {
         this.vel = new three.Vector2
         this.polar = new polar({dist:50})
+        this.polar.rotU(-90)
         return this.mesh.position.copy(this.polar.pos())
     }
 

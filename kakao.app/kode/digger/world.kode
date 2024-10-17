@@ -16,13 +16,15 @@ function world
     @: @scene @player @camera ->
         
         @pause = false
-                                
-        @tweaky = new tweaky @scene.view
 
-        @tweaky.init
-            seed: min:1 max:100 step:1 value:0  cb: (v) => noise.seed(v); @start()
+        if 0
+            @tweaky = new tweaky @scene.view
+    
+            @tweaky.init
+                seed: min:1 max:100 step:1 value:0  cb: (v) => noise.seed(v); @start()
+                axes: value:1  cb: (v) => @scene.axesHelper.visible = v
                 
-        @swarm = new swarm @scene
+        @swarm = new swarm @scene @player
         @weed  = new weed  @scene
                 
     start: ->

@@ -17,7 +17,8 @@ Camera = (function ()
 
     Camera.prototype["start"] = function ()
     {
-        return this.polar = new polar({dist:150})
+        this.polar = new polar({dist:150})
+        return this.polar.rotU(-90)
     }
 
     Camera.prototype["update"] = function (deltaSec)

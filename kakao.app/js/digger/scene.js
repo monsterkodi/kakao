@@ -9,6 +9,8 @@ let randRange = kxk.randRange
 
 import gridhelper from "./lib/gridhelper.js"
 
+import geom from "./lib/geom.js"
+
 import noise from "./lib/noise.js"
 let simplex3 = noise.simplex3
 
@@ -33,6 +35,7 @@ Scene = (function ()
         this["initHelpers"] = this["initHelpers"].bind(this)
         this["onMouseMove"] = this["onMouseMove"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
+        this["initFog"] = this["initFog"].bind(this)
         this["initLights"] = this["initLights"].bind(this)
         this["initComposer"] = this["initComposer"].bind(this)
         this["initCamera"] = this["initCamera"].bind(this)
@@ -102,7 +105,7 @@ Scene = (function ()
 
     Scene.prototype["initLights"] = function ()
     {
-        var geom
+        var geo
 
         this.lightIntensityAmbient = 10
         this.lightIntensityPlayer = 10
@@ -127,12 +130,17 @@ Scene = (function ()
         this.scene.add(this.lightShadow)
         if (false)
         {
-            geom = new three.PlaneGeometry(1500,1500)
-            this.shadowFloor = new three.Mesh(geom,new three.ShadowMaterial({color:0x000000,opacity:0.2,depthWrite:false}))
+            geo = new three.PlaneGeometry(1500,1500)
+            this.shadowFloor = new three.Mesh(geo,new three.ShadowMaterial({color:0x000000,opacity:0.2,depthWrite:false}))
             this.shadowFloor.rotateX(deg2rad(-90))
             this.shadowFloor.receiveShadow = true
             return this.scene.add(this.shadowFloor)
         }
+    }
+
+    Scene.prototype["initFog"] = function ()
+    {
+        return this.scene.fog = new three.FogExp2(0x000000,0.01)
     }
 
     Scene.prototype["onWindowResize"] = function ()
@@ -159,9 +167,9 @@ Scene = (function ()
         this.shadowCameraHelper = new three.CameraHelper(this.lightShadow.shadow.camera)
         this.shadowCameraHelper.visible = false
         this.scene.add(this.shadowCameraHelper)
-        this.axesHelper = new three.AxesHelper(10)
+        this.axesHelper = new three.AxesHelper(50)
         this.axesHelper.visible = false
-        this.axesHelper.position.set(0,0.1,0)
+        this.axesHelper.position.set(0,0,0)
         this.axesHelper.material.depthWrite = false
         this.axesHelper.material.depthTest = false
         this.axesHelper.material.depthFunc = three.NeverDepth
@@ -171,7 +179,12 @@ Scene = (function ()
         this.scene.add(this.gridHelper)
         this.stats = new Stats()
         this.stats.dom.style.position = 'absolute'
-        return this.view.appendChild(this.stats.dom)
+        if (0)
+        {
+            this.view.appendChild(this.stats.dom)
+        }
+        this.tgtDot = geom.icosa({radius:0.3,material:'wireframe'})
+        return this.scene.add(this.tgtDot)
     }
 
     Scene.prototype["initMarchingCubes"] = function ()
@@ -245,7 +258,7 @@ Scene = (function ()
 
     Scene.prototype["animate"] = function ()
     {
-        var _318_17_
+        var _327_17_
 
         this.stats.begin()
         this.lightPlayer.position.copy(this.camera.position)

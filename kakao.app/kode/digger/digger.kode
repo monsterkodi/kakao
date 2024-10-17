@@ -16,8 +16,10 @@ function Delegate extends win.Delegate
     
     @: ->
 
-        @menuNoon = kakao.bundle.res 'menu_digger.noon'
+        @menuNoon  = kakao.bundle.res 'menu_digger.noon'
         
+        @pos       = new three.Vector3
+        @pps       = new three.Vector3
         @dragAccel = new three.Vector2
         
         post.on 'menuAction' @onMenuAction
@@ -69,7 +71,26 @@ function Delegate extends win.Delegate
         
         drag.pos.y -= 30
         @dragAccel.set drag.pos.x - main.clientWidth / 2, drag.pos.y - main.clientHeight / 2
-        @dragAccel.normalize()
+        # @dragAccel.normalize()
+        @dragAccel.multiplyScalar(0.002).clampLength(0 1)
+        
+        coords = new three.Vector2
+        wh = main.clientWidth / 2
+        ch = main.clientHeight / 2
+        coords.set (drag.pos.x - wh) / wh (drag.pos.y - ch) / ch
+        ray = new three.Ray 
+        ray.origin.setFromMatrixPosition @scene.camera.matrixWorld
+        ray.direction.set( coords.x, -coords.y, 0.5 ).unproject( @scene.camera ).sub( ray.origin ).normalize()
+        @pps.set 0 0 0
+        sphere = new three.Sphere @pps 50
+        if ray.intersectSphere sphere @pos
+            @scene.tgtDot.position.copy @pos
+            # @pos.project @scene.camera
+            # @pps.copy @player.mesh.position
+            # @pps.project @scene.camera
+            # @pos.sub @pps
+            # @dragAccel.copy @pos
+        
         @player.dragAccel = @dragAccel
             
     onDragStop: drag event =>

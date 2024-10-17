@@ -8,16 +8,19 @@
 
 import * as three from 'three'
 
+use ./hash
 use ./lib/geom
 
 function Swarm
 
-    @: @scene ->
+    @: @scene @player ->
         
         @count = 500
-        sphere = geom.sphere radius:0.5 sgmt:6 material:'shinywhite'
+        # sphere = geom.sphere radius:0.5 sgmt:6 material:'shinywhite'
+        sphere = geom.sphere radius:0.5 sgmt:6 material:'flatwhite'
         @dummy = new three.Object3D()
         @color = new three.Color()
+        @playerPos = new three.Vector3()
         @pos   = new three.Vector3()
         @norm  = new three.Vector3()
         @orig  = new three.Vector3()
@@ -29,6 +32,8 @@ function Swarm
         @mesh.castShadow = true
         @scene.scene.add @mesh
         
+        @hash = new hash @scene
+                        
         @rotAxis = []
         @rotAngle = []
         for i in 0...@count
@@ -45,7 +50,6 @@ function Swarm
         i = 0
         while i < @count
             
-            # @pos.set Math.random()-0.5 Math.random()-0.5 Math.random()-0.5
             # @pos.normalize()
             # @pos.multiplyScalar 50
             # @dummy.position.copy @pos
@@ -61,7 +65,7 @@ function Swarm
 
             @mesh.setMatrixAt i @dummy.matrix
             
-            @color.set 0 0 1 #Math.random()
+            @color.set 0 0 1
             @mesh.setColorAt i @color
             
             i++
@@ -69,27 +73,56 @@ function Swarm
         @mesh.instanceMatrix.needsUpdate = true
         @mesh.instanceColor.needsUpdate = true
         
+                
     update: deltaSec tickInfo ->
+        
+        @playerPos.copy @player.mesh.position
+        @playerPos.normalize()
         
         for i in 0...@count
             
             @mesh.getMatrixAt i @dummy.matrix
             @dummy.matrix.decompose @pos @rot @scale
-            # color = @scene.mc.getColor parseInt(@pos.x+@scene.resolution/2) parseInt(@pos.y+@scene.resolution/2) parseInt(@pos.z+@scene.resolution/2)
-            # @color.set color[0] color[1] color[2]
-            # f = (Math.sin(tickInfo.time/(2000-(color[0]+color[2])*900))+1.2)*2
-            # @color.multiplyScalar f
-            # @mesh.setColorAt i @color
-            # @scale.set 1 1 color[0]*(50+(f-2.4)*10)
             
             @rotd.setFromAxisAngle @rotAxis[i] @rotAngle[i] * deltaSec
             @pos.applyQuaternion @rotd
             @rot.multiply @rotd
+            @rot.normalize()
+                        
+            @norm.copy @pos
+            @norm.normalize()
+            
+            dot = @playerPos.dot @norm
+            
+            dot = Math.max 0 dot - 0.7
+            dot = dot * dot
+            
+            if dot > 0.0897
+                @player.eat++
+                @pos.multiplyScalar -1
+
+            @color.set dot dot 0
+            
+            # if 
+                # dot > 0.99 ➜ @color.set 1 1 0
+                # dot > 0.9  ➜ @color.set 1 0 0
+                # dot > 0.7  ➜ @color.set 0 0 1
+                           # ➜ @color.set 0 0 0
+            
+            # switch hash.normal @norm
+                # 'n' ➜ @color.set 0 1 0
+                # 'e' ➜ @color.set 1 0 0
+                # 'f' ➜ @color.set 0 0 1
+                # 's' ➜ @color.set 0 0.1 0
+                # 'w' ➜ @color.set 0.1 0 0
+                # 'b' ➜ @color.set 0 0 0.1
+
+            @mesh.setColorAt i @color
             
             @dummy.matrix.compose @pos @rot @scale
             @mesh.setMatrixAt i @dummy.matrix
 
         @mesh.instanceMatrix.needsUpdate = true
-        # @mesh.instanceColor.needsUpdate = true
+        @mesh.instanceColor.needsUpdate = true
             
 export Swarm

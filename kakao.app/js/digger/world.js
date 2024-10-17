@@ -29,13 +29,19 @@ world = (function ()
         this["singleStep"] = this["singleStep"].bind(this)
         this["togglePause"] = this["togglePause"].bind(this)
         this.pause = false
-        this.tweaky = new tweaky(this.scene.view)
-        this.tweaky.init({seed:{min:1,max:100,step:1,value:0,cb:(function (v)
+        if (0)
         {
-            noise.seed(v)
-            return this.start()
-        }).bind(this)}})
-        this.swarm = new swarm(this.scene)
+            this.tweaky = new tweaky(this.scene.view)
+            this.tweaky.init({seed:{min:1,max:100,step:1,value:0,cb:(function (v)
+            {
+                noise.seed(v)
+                return this.start()
+            }).bind(this)},axes:{value:1,cb:(function (v)
+            {
+                return this.scene.axesHelper.visible = v
+            }).bind(this)}})
+        }
+        this.swarm = new swarm(this.scene,this.player)
         this.weed = new weed(this.scene)
     }
 
@@ -50,7 +56,7 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var _45_15_
+        var _47_15_
 
         this.tickInfo = tickInfo
     

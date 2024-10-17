@@ -33,18 +33,19 @@ fadeAngle = a b f ->
         Math.min a+f b
     else
         Math.max a-f b
-        
+
 function Player
 
     @: @scene ->
         
         @input = new input @
         
+        @eat      = 0
         @maxVel   = 0.5
         @friction = 0.98
         @angle    = 0
         
-        @mesh = geom.pill length:2 radius:1 material:'white'
+        @mesh = geom.pill length:1 radius:0.5 material:'white'
         
         for child in @mesh.children
             child.castShadow = true
@@ -65,6 +66,7 @@ function Player
 
         @vel   = new three.Vector2
         @polar = new polar dist:50
+        @polar.rotU -90
         @mesh.position.copy @polar.pos()
         
     startAction: action ->

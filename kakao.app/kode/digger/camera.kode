@@ -17,6 +17,7 @@ function Camera
     start: ->
         
         @polar = new polar dist:150
+        @polar.rotU -90
         
     update: deltaSec ->
         

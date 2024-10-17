@@ -68,11 +68,21 @@ Geom = (function ()
         return Geom.mesh(cfg,geom)
     }
 
+    Geom["icosa"] = function (cfg = {})
+    {
+        var detail, geom, radius, _87_28_, _88_28_
+
+        radius = ((_87_28_=cfg.radius) != null ? _87_28_ : 1)
+        detail = ((_88_28_=cfg.detail) != null ? _88_28_ : 1)
+        geom = new three.IcosahedronGeometry(radius,detail)
+        return Geom.mesh(cfg,geom)
+    }
+
     Geom["mesh"] = function (cfg, geom)
     {
-        var mat, mesh, _87_27_
+        var mat, mesh, _104_27_
 
-        mat = ((_87_27_=cfg.material) != null ? _87_27_ : new three.MeshStandardMaterial)
+        mat = ((_104_27_=cfg.material) != null ? _104_27_ : new three.MeshStandardMaterial)
         if (_k_.isStr(mat))
         {
             mat = material[mat]
