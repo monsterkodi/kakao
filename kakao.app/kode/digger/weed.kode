@@ -12,10 +12,10 @@ use ./lib/geom
 
 function Weed
 
-    @: @scene ->
+    @: @scene @gyroid ->
         
         @count = 1000
-        cylinder = geom.cylinder length:4 radius:0.5 sgmt:6 material:'flatwhite'
+        cylinder = geom.cylinder length:4 radius:0.5 sgmt:6 material:'white' # 'flatwhite'
         @dummy = new three.Object3D()
         @color = new three.Color()
         @pos   = new three.Vector3()
@@ -25,6 +25,7 @@ function Weed
         @mesh = new three.InstancedMesh(cylinder.geometry cylinder.material @count)
         @mesh.instanceMatrix.setUsage three.StaticDrawUsage
         @mesh.castShadow = true
+        @mesh.receiveShadow = true
         @scene.scene.add @mesh
         
     spawn: ->
@@ -32,7 +33,7 @@ function Weed
         i = 0
         while i < @count
             
-            @scene.sampler.sample @pos @norm
+            @gyroid.sampler.sample @pos @norm
             @pos.multiplyScalar 50
             if @pos.length() < 40
                 continue
@@ -46,13 +47,12 @@ function Weed
             @norm.multiplyScalar -1
             @norm.add @dummy.position
             
-            color = @scene.mc.getColor parseInt(@dummy.position.x+@scene.resolution/2) parseInt(@dummy.position.y+@scene.resolution/2) parseInt(@dummy.position.z+@scene.resolution/2)
+            color = @gyroid.getColor @dummy.position
             if Math.random() < color[0]*50 + color[2]*50
                 @dummy.lookAt @norm
-                @dummy.scale.set 1 1 color[0]*150
                 @dummy.updateMatrix()
                 @mesh.setMatrixAt i @dummy.matrix
-                @color.set color[0]*5 color[1]*5 color[2]*5
+                @color.set color[0] color[1] color[2]
                 @mesh.setColorAt i @color
                 i++
         
@@ -65,12 +65,12 @@ function Weed
             
             @mesh.getMatrixAt i @dummy.matrix
             @dummy.matrix.decompose @pos @rot @scale
-            color = @scene.mc.getColor parseInt(@pos.x+@scene.resolution/2) parseInt(@pos.y+@scene.resolution/2) parseInt(@pos.z+@scene.resolution/2)
+            color = @gyroid.getColor @pos
             @color.set color[0] color[1] color[2]
-            f = (Math.sin(tickInfo.time/(2000-(color[0]+color[2])*900))+1.2)*2
-            @color.multiplyScalar f
+            f = (Math.sin(tickInfo.time*1000/(2000-(color[0]+color[2])*900))+1.2)*2
+            @color.multiplyScalar 6 * f
             @mesh.setColorAt i @color
-            @scale.set 1 1 color[0]*(50+(f-2.4)*10)
+            @scale.set 1 1 0.1+color[0]*90*f
             @dummy.matrix.compose @pos @rot @scale
             @mesh.setMatrixAt i @dummy.matrix
 

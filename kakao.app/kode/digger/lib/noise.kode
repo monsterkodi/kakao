@@ -67,7 +67,7 @@ seed = seed ->
         perm[i]  = perm[i + 256] = v
         gradP[i] = gradP[i + 256] = grad3[v % 12]
 
-seed 17686
+seed 50
 
 # Skewing and unskewing factors
 

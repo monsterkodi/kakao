@@ -9,42 +9,38 @@
 use ../kxk ▪ drag stopEvent prefs post kpos fade randRange randInt randIntRange
 
 use ./lib/noise
-use ◆ tweaky swarm weed
+use ◆ tweaky swarm weed gyroid
 
 function world
 
     @: @scene @player @camera ->
         
         @pause = false
+        @scene.preRender = @simulate
 
+        @gyroid = new gyroid @scene
+        @swarm  = new swarm  @scene @player
+        @weed   = new weed   @scene @gyroid
+        
         if 1
             @tweaky = new tweaky @scene.view
     
             @tweaky.init
-                seed: min:1 max:100 step:1 value:0  cb: (v) => noise.seed(v); @start()
+                seed: min:1 max:100 step:1 value:50  cb: (v) => noise.seed(v); @start()
+                gyro: min:7 max:14 step:1 value:@gyroid.numGyro  cb: (v) => @gyroid.numGyro = v; @start()
+                skin: min:0.5 max:2 step:0.1 value:@gyroid.skinGyro  cb: (v) => @gyroid.skinGyro = v; @start()
                 axes: value:1  cb: (v) => @scene.axesHelper.visible = v
+                post: value:1  cb: (v) => @scene.doPostProcess = v
                 
-        @swarm = new swarm @scene @player
-        @weed  = new weed  @scene
                 
     start: ->
         
-        @scene.start()
         @camera.start()
         @player.start()
+        @gyroid.start()
+        
         @weed.spawn()
         @swarm.spawn()
-                
-    # 000000000  000   0000000  000   000  
-    #    000     000  000       000  000   
-    #    000     000  000       0000000    
-    #    000     000  000       000  000   
-    #    000     000   0000000  000   000  
-    
-    tick: @tickInfo ->
-        
-        @simulate @tickInfo
-        @tweaky?.update()
                 
     togglePause:  => @pause = not @pause; post.emit 'pause'        
         
@@ -54,23 +50,20 @@ function world
     #      000  000  000 0 000  000   000  000      000   000     000     000       
     # 0000000   000  000   000   0000000   0000000  000   000     000     00000000  
     
-    simulate: tickInfo ->
-        
+    simulate: tickInfo ○=>
+                
         ⮐ if @pause and not @oneStep
         ⮐ if isNaN tickInfo.delta
         ⮐ if isNaN @scene.clockDelta
-        
-        # ● simulate
-                
-        # sec = tickInfo.delta / 1000
-        
-        # sec = @scene.clockDelta
+
         sec = 1/60
         
         @player.update sec
         @camera.update sec
         @swarm.update  sec tickInfo
         @weed.update   sec tickInfo
+        
+        @tweaky?.update()
         
     singleStep: => @oneStep = true; @pause = true; post.emit 'pause'
 

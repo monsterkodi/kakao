@@ -72,7 +72,7 @@ class Win
 
     constructor (delegate)
     {
-        var main, menuIcon, menuNoon, _45_18_, _60_38_, _61_38_, _86_17_, _86_34_
+        var main, menuIcon, menuNoon, _45_18_, _60_38_, _61_38_, _87_17_, _87_34_
 
         this.delegate = delegate
     
@@ -117,7 +117,10 @@ class Win
         window.addEventListener('keydown',this.onKeyDown)
         window.addEventListener('keyup',this.onKeyUp)
         window.addEventListener('resize',this.onResize)
-        window.requestAnimationFrame(this.animate)
+        if (!this.delegate.noAnimation)
+        {
+            window.requestAnimationFrame(this.animate)
+        }
         if (main = $('main'))
         {
             main.focus()
@@ -125,18 +128,18 @@ class Win
         this.id = window.winID
         console.log('stash',`win/${this.id}_${window.name}`)
         window.stash = new stash(`win/${this.id}_${window.name}`)
-        ;((_86_17_=this.delegate) != null ? typeof (_86_34_=_86_17_.onWindowCreated) === "function" ? _86_34_(this) : undefined : undefined)
+        ;((_87_17_=this.delegate) != null ? typeof (_87_34_=_87_17_.onWindowCreated) === "function" ? _87_34_(this) : undefined : undefined)
     }
 
     async onStashLoaded ()
     {
-        var frame, _90_20_, _92_28_, _92_59_
+        var frame, _91_20_, _93_28_, _93_59_
 
         if (_k_.isFunc((this.delegate != null ? this.delegate.onWindowDidLoadStash : undefined)))
         {
             await this.delegate.onWindowDidLoadStash(this)
         }
-        if (true !== ((_92_28_=this.delegate) != null ? typeof (_92_59_=_92_28_.onWindowRestoreFrameFromStash) === "function" ? _92_59_(this,window.stash.get('frame')) : undefined : undefined))
+        if (true !== ((_93_28_=this.delegate) != null ? typeof (_93_59_=_93_28_.onWindowRestoreFrameFromStash) === "function" ? _93_59_(this,window.stash.get('frame')) : undefined : undefined))
         {
             if (frame = window.stash.get('frame'))
             {
@@ -148,7 +151,7 @@ class Win
 
     async onStashMissing ()
     {
-        var list, old, other, otherApp, sameApp, _111_24_, _121_24_
+        var list, old, other, otherApp, sameApp, _112_24_, _122_24_
 
         list = await ffs.list(kakao.bundle.app('.stash/old'))
         var _a_ = util.splitWith(list,function (i)
@@ -188,7 +191,7 @@ class Win
 
     async showWindow ()
     {
-        var _140_20_
+        var _141_20_
 
         document.body.style.display = 'inherit'
         if (_k_.isFunc((this.delegate != null ? this.delegate.onWindowWillShow : undefined)))
@@ -211,7 +214,7 @@ class Win
 
     animate ()
     {
-        var delta, fps, now, _167_37_, _167_60_
+        var delta, fps, now, _168_37_, _168_60_
 
         now = window.performance.now()
         delta = (now - this.lastAnimationTime)
@@ -221,7 +224,7 @@ class Win
         {
             kakao("window.framerateDrop",fps)
         }
-        if ('stop' === ((_167_37_=this.delegate) != null ? typeof (_167_60_=_167_37_.onWindowAnimationTick) === "function" ? _167_60_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined))
+        if ('stop' === ((_168_37_=this.delegate) != null ? typeof (_168_60_=_168_37_.onWindowAnimationTick) === "function" ? _168_60_(this,{delta:delta,fps:fps,time:now}) : undefined : undefined))
         {
             return
         }
@@ -230,23 +233,23 @@ class Win
 
     onResize (event)
     {
-        var _171_36_, _171_52_
+        var _172_36_, _172_52_
 
-        return ((_171_36_=this.delegate) != null ? typeof (_171_52_=_171_36_.onWindowResize) === "function" ? _171_52_(this,event) : undefined : undefined)
+        return ((_172_36_=this.delegate) != null ? typeof (_172_52_=_172_36_.onWindowResize) === "function" ? _172_52_(this,event) : undefined : undefined)
     }
 
     onWindowFocus ()
     {
-        var _172_36_, _172_51_
+        var _173_36_, _173_51_
 
-        return ((_172_36_=this.delegate) != null ? typeof (_172_51_=_172_36_.onWindowFocus) === "function" ? _172_51_(this) : undefined : undefined)
+        return ((_173_36_=this.delegate) != null ? typeof (_173_51_=_173_36_.onWindowFocus) === "function" ? _173_51_(this) : undefined : undefined)
     }
 
     onWindowBlur ()
     {
-        var _173_36_, _173_50_
+        var _174_36_, _174_50_
 
-        return ((_173_36_=this.delegate) != null ? typeof (_173_50_=_173_36_.onWindowBlur) === "function" ? _173_50_(this) : undefined : undefined)
+        return ((_174_36_=this.delegate) != null ? typeof (_174_50_=_174_36_.onWindowBlur) === "function" ? _174_50_(this) : undefined : undefined)
     }
 
     onWindowFrame (info)
@@ -259,7 +262,7 @@ class Win
 
     onWindowClose (save)
     {
-        var _184_17_, _184_32_
+        var _185_17_, _185_32_
 
         if (save)
         {
@@ -270,14 +273,14 @@ class Win
             window.stash.clear()
         }
         window.prefs.save()
-        return ((_184_17_=this.delegate) != null ? typeof (_184_32_=_184_17_.onWindowClose) === "function" ? _184_32_(this) : undefined : undefined)
+        return ((_185_17_=this.delegate) != null ? typeof (_185_32_=_185_17_.onWindowClose) === "function" ? _185_32_(this) : undefined : undefined)
     }
 
     onMenuAction (action)
     {
-        var url, vrs, _196_27_, _196_47_
+        var url, vrs, _197_27_, _197_47_
 
-        if (((_196_27_=this.delegate) != null ? typeof (_196_47_=_196_27_.onWindowMenuAction) === "function" ? _196_47_(this,action) : undefined : undefined))
+        if (((_197_27_=this.delegate) != null ? typeof (_197_47_=_197_27_.onWindowMenuAction) === "function" ? _197_47_(this,action) : undefined : undefined))
         {
             return
         }
@@ -338,7 +341,7 @@ class Win
 
     onKeyDown (event)
     {
-        var info, _234_26_, _237_20_, _238_62_, _238_79_
+        var info, _235_26_, _238_20_, _239_62_, _239_79_
 
         info = keyinfo.forEvent(event)
         info.event = event
@@ -351,7 +354,7 @@ class Win
         }
         if (_k_.isFunc((this.delegate != null ? this.delegate.onWindowKeyDown : undefined)))
         {
-            if ('unhandled' !== ((_238_62_=this.delegate) != null ? typeof (_238_79_=_238_62_.onWindowKeyDown) === "function" ? _238_79_(info) : undefined : undefined))
+            if ('unhandled' !== ((_239_62_=this.delegate) != null ? typeof (_239_79_=_239_62_.onWindowKeyDown) === "function" ? _239_79_(info) : undefined : undefined))
             {
                 return stopEvent(event)
             }
@@ -360,13 +363,13 @@ class Win
 
     onKeyUp (event)
     {
-        var info, _245_20_, _246_46_, _246_61_
+        var info, _246_20_, _247_46_, _247_61_
 
         info = keyinfo.forEvent(event)
         info.event = event
         if (_k_.isFunc((this.delegate != null ? this.delegate.onWindowKeyUp : undefined)))
         {
-            if ('unhandled' !== ((_246_46_=this.delegate) != null ? typeof (_246_61_=_246_46_.onWindowKeyUp) === "function" ? _246_61_(info) : undefined : undefined))
+            if ('unhandled' !== ((_247_46_=this.delegate) != null ? typeof (_247_61_=_247_46_.onWindowKeyUp) === "function" ? _247_61_(info) : undefined : undefined))
             {
                 return
             }

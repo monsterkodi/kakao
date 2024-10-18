@@ -66,7 +66,8 @@ class Win
         window.addEventListener 'keyup'   @onKeyUp
         window.addEventListener 'resize'  @onResize
         
-        window.requestAnimationFrame @animate
+        if not @delegate.noAnimation
+            window.requestAnimationFrame @animate
         
         if main =$ 'main'
             main.focus()

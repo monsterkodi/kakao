@@ -37,6 +37,7 @@ Delegate = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onWindowWillShow"] = this["onWindowWillShow"].bind(this)
         this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
+        this.noAnimation = true
         this.menuNoon = kakao.bundle.res('menu_digger.noon')
         this.pos = new three.Vector3
         this.pps = new three.Vector3
@@ -47,6 +48,7 @@ Delegate = (function ()
 
     Delegate.prototype["onWindowAnimationTick"] = function (win, tickInfo)
     {
+        console.log('tickInfo',tickInfo)
         if (!this.world)
         {
             return
@@ -68,7 +70,10 @@ Delegate = (function ()
         this.camera = new camera(this.scene,this.player)
         this.world = new world(this.scene,this.player,this.camera)
         this.player.input.init({moveLeft:['a','left'],moveRight:['d','right'],moveUp:['w','up'],moveDown:['s','down']})
-        this.fps = new fps(this.main,{topDown:true})
+        if (0)
+        {
+            this.fps = new fps(this.main,{topDown:true})
+        }
         this.drag = new drag({target:this.main,stopEvent:false,onStart:this.onDragMove,onMove:this.onDragMove,onStop:this.onDragStop})
         main.addEventListener('wheel',this.onWheel)
         return this.world.start()

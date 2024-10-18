@@ -74,7 +74,7 @@ function Swarm
         @mesh.instanceColor.needsUpdate = true
         
                 
-    update: deltaSec tickInfo ->
+    update: deltaSec ->
         
         @playerPos.copy @player.mesh.position
         @playerPos.normalize()

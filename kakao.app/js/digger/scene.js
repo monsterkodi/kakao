@@ -1,26 +1,21 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
-
 var Scene
 
 import kxk from "../kxk.js"
 let deg2rad = kxk.deg2rad
-let randInt = kxk.randInt
-let randRange = kxk.randRange
+
+import gyroid from "./gyroid.js"
 
 import gridhelper from "./lib/gridhelper.js"
 
 import geom from "./lib/geom.js"
 
-import noise from "./lib/noise.js"
-let simplex3 = noise.simplex3
+import material from "./lib/material.js"
 
 import * as three from 'three'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
-import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js'
-import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js'
 import Stats from 'three/addons/libs/stats.module.js'
 
 Scene = (function ()
@@ -30,8 +25,6 @@ Scene = (function ()
         this.view = view
     
         this["animate"] = this["animate"].bind(this)
-        this["initGyroidSphere"] = this["initGyroidSphere"].bind(this)
-        this["initMarchingCubes"] = this["initMarchingCubes"].bind(this)
         this["initHelpers"] = this["initHelpers"].bind(this)
         this["onMouseMove"] = this["onMouseMove"].bind(this)
         this["onWindowResize"] = this["onWindowResize"].bind(this)
@@ -40,7 +33,7 @@ Scene = (function ()
         this["initComposer"] = this["initComposer"].bind(this)
         this["initCamera"] = this["initCamera"].bind(this)
         this["initRenderer"] = this["initRenderer"].bind(this)
-        this["start"] = this["start"].bind(this)
+        this.doPostProcess = false
         this.scene = new three.Scene()
         this.clock = new three.Clock()
         this.raycaster = new three.Raycaster()
@@ -54,21 +47,15 @@ Scene = (function ()
         this.initRenderer()
         this.initCamera()
         this.initLights()
-        this.initMarchingCubes()
         this.initHelpers()
         this.initComposer()
         window.addEventListener('resize',this.onWindowResize)
         document.addEventListener('mousemove',this.onMouseMove)
     }
 
-    Scene.prototype["start"] = function ()
-    {
-        return this.initGyroidSphere()
-    }
-
     Scene.prototype["initRenderer"] = function ()
     {
-        this.renderer = new three.WebGLRenderer()
+        this.renderer = new three.WebGLRenderer
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(this.view.clientWidth,this.view.clientHeight)
         this.renderer.shadowMap.enabled = true
@@ -76,6 +63,7 @@ Scene = (function ()
         this.renderer.setClearColor(new three.Color(0,0,0))
         this.renderer.toneMapping = three.ReinhardToneMapping
         this.renderer.toneMappingExposure = Math.pow(1,4.0)
+        this.renderer.sortObjects = false
         this.view.appendChild(this.renderer.domElement)
         return this.renderer.setAnimationLoop(this.animate)
     }
@@ -92,7 +80,7 @@ Scene = (function ()
         var bloomPass, outputPass, renderScene, size
 
         renderScene = new RenderPass(this.scene,this.camera)
-        size = new three.Vector2(this.view.clientWidth,this.view.clientHeight)
+        size = new three.Vector2(0,0)
         bloomPass = new UnrealBloomPass(size,0.3,0,1.01)
         outputPass = new OutputPass()
         this.composer = new EffectComposer(this.renderer)
@@ -177,90 +165,22 @@ Scene = (function ()
         this.gridHelper = new gridhelper()
         this.gridHelper.visible = false
         this.scene.add(this.gridHelper)
-        this.stats = new Stats()
-        this.stats.dom.style.position = 'absolute'
-        if (1)
+        if (0)
         {
+            this.stats = new Stats()
+            this.stats.dom.style.position = 'absolute'
             this.view.appendChild(this.stats.dom)
         }
         this.tgtDot = geom.icosa({radius:0.3,material:'wireframe'})
         return this.scene.add(this.tgtDot)
     }
 
-    Scene.prototype["initMarchingCubes"] = function ()
-    {
-        var color, enableColors, enableUvs, mat, maxPolyCount
-
-        this.resolution = 100
-        color = new three.Color(1,1,1)
-        mat = new three.MeshLambertMaterial({color:color,vertexColors:true,flatShading:false,dithering:true})
-        enableUvs = false
-        enableColors = true
-        maxPolyCount = 1500000
-        this.mc = new MarchingCubes(this.resolution,mat,enableUvs,enableColors,maxPolyCount)
-        this.mc.scale.set(50,50,50)
-        this.mc.receiveShadow = true
-        this.mc.castShadow = true
-        this.scene.add(this.mc)
-        this.sampler = new MeshSurfaceSampler(this.mc)
-        return this.initGyroidSphere()
-    }
-
-    Scene.prototype["initGyroidSphere"] = function ()
-    {
-        var b, beta, cx, cy, cz, ff, fo, g, gyroid, nx, ny, nz, r, rf, rx, ry, rz, ss, x, y, yn, z
-
-        gyroid = function (x, y, z)
-        {
-            return Math.sin(x) * Math.cos(y) + Math.sin(y) * Math.cos(z) + Math.sin(z) * Math.cos(x)
-        }
-        this.mc.reset()
-        for (var _a_ = x = 0, _b_ = this.resolution; (_a_ <= _b_ ? x < this.resolution : x > this.resolution); (_a_ <= _b_ ? ++x : --x))
-        {
-            for (var _c_ = y = 0, _d_ = this.resolution; (_c_ <= _d_ ? y < this.resolution : y > this.resolution); (_c_ <= _d_ ? ++y : --y))
-            {
-                for (var _e_ = z = 0, _f_ = this.resolution; (_e_ <= _f_ ? z < this.resolution : z > this.resolution); (_e_ <= _f_ ? ++z : --z))
-                {
-                    ss = this.resolution / (Math.PI * 12)
-                    rf = Math.sqrt((x / this.resolution - 0.5) * (x / this.resolution - 0.5) + (y / this.resolution - 0.5) * (y / this.resolution - 0.5) + (z / this.resolution - 0.5) * (z / this.resolution - 0.5))
-                    ff = 1 - 1.41 * rf
-                    nx = x / ss
-                    ny = y / ss
-                    nz = z / ss
-                    cx = nx - 0.5
-                    cy = ny - 0.5
-                    cz = nz - 0.5
-                    fo = Math.sqrt(cx * cx + cz * cz)
-                    beta = fo * 0.01
-                    rx = cx * Math.cos(beta) - cz * Math.sin(beta)
-                    ry = cy
-                    rz = cx * Math.sin(beta) + cz * Math.cos(beta)
-                    nx = rx + 0.5
-                    ny = ry + 0.5
-                    nz = rz + 0.5
-                    this.mc.setCell(x,y,z,Math.max(0,ff * 100 * (gyroid(nx,ny,nz) + 1)))
-                    yn = y / this.resolution
-                    b = ff * ff
-                    b = b * b * b
-                    b = _k_.clamp(0,1,b)
-                    ss = 0.8 * this.resolution
-                    r = 4 * Math.max(0,simplex3(x / ss,y / ss,z / ss) + 0.05)
-                    r = r * r * b
-                    g = r / 2
-                    this.mc.setColor(x,y,z,r,g,Math.max(0,b - r))
-                }
-            }
-        }
-        this.mc.update()
-        this.sampler.setWeightAttribute(null)
-        return this.sampler.build()
-    }
-
     Scene.prototype["animate"] = function ()
     {
-        var _328_17_
+        var _231_14_, _248_17_, _255_14_, _257_18_
 
-        this.stats.begin()
+        this.clockDelta = this.clock.getDelta()
+        ;(this.stats != null ? this.stats.begin() : undefined)
         this.lightPlayer.position.copy(this.camera.position)
         this.lightShadow.position.copy(this.camera.position)
         this.quat.copy(this.camera.quaternion)
@@ -272,10 +192,17 @@ Scene = (function ()
         this.vec.applyQuaternion(this.quat)
         this.vec.multiplyScalar(10)
         this.lightShadow.position.add(this.vec)
-        this.clockDelta = this.clock.getDelta()
         ;(this.controls != null ? this.controls.update(this.clockDelta) : undefined)
-        this.composer.render()
-        return this.stats.end()
+        if (this.doPostProcess)
+        {
+            this.composer.render()
+        }
+        else
+        {
+            this.renderer.render(this.scene,this.camera)
+        }
+        ;(this.stats != null ? this.stats.end() : undefined)
+        return (typeof this.preRender === "function" ? this.preRender({delta:this.clockDelta,time:this.clock.elapsedTime}) : undefined)
     }
 
     return Scene

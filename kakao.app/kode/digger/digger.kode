@@ -16,6 +16,7 @@ function Delegate extends win.Delegate
     
     @: ->
 
+        @noAnimation = true
         @menuNoon  = kakao.bundle.res 'menu_digger.noon'
         
         @pos       = new three.Vector3
@@ -25,6 +26,8 @@ function Delegate extends win.Delegate
         post.on 'menuAction' @onMenuAction
                 
     onWindowAnimationTick: win tickInfo =>
+        
+        log 'tickInfo' tickInfo
         
         ⮐ if not @world
         
@@ -50,7 +53,8 @@ function Delegate extends win.Delegate
             moveUp:    ['w' 'up'   ]
             moveDown:  ['s' 'down' ]
         
-        @fps = new fps @main topDown:true
+        if 0
+            @fps = new fps @main topDown:true
         
         @drag = new drag
             target:    @main

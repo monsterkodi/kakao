@@ -66,7 +66,7 @@ Swarm = (function ()
         return this.mesh.instanceColor.needsUpdate = true
     }
 
-    Swarm.prototype["update"] = function (deltaSec, tickInfo)
+    Swarm.prototype["update"] = function (deltaSec)
     {
         var dot, i
 

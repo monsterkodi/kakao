@@ -55,7 +55,7 @@ seed = function (seed)
         gradP[i] = gradP[i + 256] = grad3[v % 12]
     }
 }
-seed(17686)
+seed(50)
 F2 = 0.5 * (Math.sqrt(3) - 1)
 G2 = (3 - Math.sqrt(3)) / 6
 F3 = 1 / 3

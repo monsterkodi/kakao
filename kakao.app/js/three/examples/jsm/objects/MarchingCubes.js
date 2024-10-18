@@ -820,16 +820,11 @@ class MarchingCubes extends Mesh {
 
         this.reset = function () {
 
-            // wipe the normal cache
-
             for ( let i = 0; i < this.size3; i ++ ) {
 
-                this.normal_cache[ i * 3 ] = 0.0;
+                this.normal_cache[ i * 3 ] = this.normal_cache[ i * 3 + 1 ] = this.normal_cache[ i * 3 + 2] = 0.0;
                 this.field[ i ] = 0.0;
-                this.palette[ i * 3 ] = this.palette[ i * 3 + 1 ] = this.palette[
-                    i * 3 + 2
-                ] = 0.0;
-
+                this.palette[ i * 3 ] = this.palette[ i * 3 + 1 ] = this.palette[ i * 3 + 2 ] = 0.0; 
             }
 
         };
