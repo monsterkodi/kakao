@@ -161,6 +161,12 @@ Delegate = (function ()
             case 'Restart':
                 return this.world.start()
 
+            case 'Tweaky':
+                return post.emit('tweaky.toggle')
+
+            case 'FPS':
+                return post.emit('fps.toggle')
+
         }
 
         return 'unhandled'

@@ -149,6 +149,8 @@ function Delegate extends win.Delegate
             'Pause'    ➜ ⮐ @world.togglePause()
             'Step'     ➜ ⮐ @world.singleStep()
             'Restart'  ➜ ⮐ @world.start()
+            'Tweaky'   ➜ ⮐ post.emit 'tweaky.toggle'
+            'FPS'      ➜ ⮐ post.emit 'fps.toggle'
             
         'unhandled'
 

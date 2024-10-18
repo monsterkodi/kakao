@@ -23,8 +23,8 @@ Gyroid = (function ()
         this["initGyroidSphere"] = this["initGyroidSphere"].bind(this)
         this["initMarchingCubes"] = this["initMarchingCubes"].bind(this)
         this["start"] = this["start"].bind(this)
-        this.numGyro = 7
-        this.skinGyro = 1
+        this.num = 11
+        this.skin = 0.7
         this.resolution = 80
         this.initMarchingCubes()
     }
@@ -73,7 +73,7 @@ Gyroid = (function ()
                 {
                     rf = Math.sqrt((x / this.resolution - 0.5) * (x / this.resolution - 0.5) + (y / this.resolution - 0.5) * (y / this.resolution - 0.5) + (z / this.resolution - 0.5) * (z / this.resolution - 0.5))
                     ff = 1 - 1.41 * rf
-                    ss = this.resolution / (Math.PI * this.numGyro)
+                    ss = this.resolution / (Math.PI * this.num)
                     nx = x / ss
                     ny = y / ss
                     nz = z / ss
@@ -92,7 +92,7 @@ Gyroid = (function ()
                     {
                         fo = 0.08
                         fv = fade(1,0,_k_.max(0,rf - (0.5 - fo)) / fo)
-                        this.mc.setCell(x,y,z,Math.max(0,fv * this.skinGyro * (gyroid(nx,ny,nz) + 1)))
+                        this.mc.setCell(x,y,z,Math.max(0,fv * this.skin * (gyroid(nx,ny,nz) + 1)))
                     }
                     else
                     {

@@ -42,13 +42,13 @@ world = (function ()
             {
                 noise.seed(v)
                 return this.start()
-            }).bind(this)},gyro:{min:7,max:14,step:1,value:this.gyroid.numGyro,cb:(function (v)
+            }).bind(this)},gyro:{min:7,max:14,step:1,value:this.gyroid.num,cb:(function (v)
             {
-                this.gyroid.numGyro = v
+                this.gyroid.num = v
                 return this.start()
-            }).bind(this)},skin:{min:0.5,max:2,step:0.1,value:this.gyroid.skinGyro,cb:(function (v)
+            }).bind(this)},skin:{min:0.5,max:2,step:0.1,value:this.gyroid.skin,cb:(function (v)
             {
-                this.gyroid.skinGyro = v
+                this.gyroid.skin = v
                 return this.start()
             }).bind(this)},axes:{value:1,cb:(function (v)
             {

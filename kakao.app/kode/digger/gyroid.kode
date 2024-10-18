@@ -18,8 +18,8 @@ function Gyroid
 
     @: @scene ->
         
-        @numGyro    = 7
-        @skinGyro   = 1        
+        @num    = 11
+        @skin   = 0.7        
         @resolution = 80
         
         @initMarchingCubes()
@@ -72,7 +72,7 @@ function Gyroid
                     rf = Math.sqrt((x/@resolution-0.5)*(x/@resolution-0.5) + (y/@resolution-0.5)*(y/@resolution-0.5) + (z/@resolution-0.5)*(z/@resolution-0.5))
                     ff = 1-1.41*rf
                     
-                    ss = @resolution/(Math.PI*@numGyro)
+                    ss = @resolution/(Math.PI*@num)
                     nx = x/ss
                     ny = y/ss
                     nz = z/ss
@@ -94,7 +94,7 @@ function Gyroid
                     if rf < 0.5
                         fo = 0.08
                         fv = fade 1 0 max(0 rf - (0.5-fo))/fo
-                        @mc.setCell x y z Math.max(0 fv*@skinGyro*(gyroid(nx ny nz)+1))
+                        @mc.setCell x y z Math.max(0 fv*@skin*(gyroid(nx ny nz)+1))
                     else
                         @mc.setCell x y z 0
                         

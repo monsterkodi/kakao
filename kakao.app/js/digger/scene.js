@@ -2,6 +2,7 @@ var Scene
 
 import kxk from "../kxk.js"
 let deg2rad = kxk.deg2rad
+let post = kxk.post
 
 import gyroid from "./gyroid.js"
 
@@ -49,6 +50,10 @@ Scene = (function ()
         this.initLights()
         this.initHelpers()
         this.initComposer()
+        post.on('fps.toggle',(function ()
+        {
+            return this.stats.dom.style.display = (this.stats.dom.style.display === 'none' ? 'inherit' : 'none')
+        }).bind(this))
         window.addEventListener('resize',this.onWindowResize)
         document.addEventListener('mousemove',this.onMouseMove)
     }
@@ -165,22 +170,19 @@ Scene = (function ()
         this.gridHelper = new gridhelper()
         this.gridHelper.visible = false
         this.scene.add(this.gridHelper)
-        if (0)
-        {
-            this.stats = new Stats()
-            this.stats.dom.style.position = 'absolute'
-            this.view.appendChild(this.stats.dom)
-        }
+        this.stats = new Stats()
+        this.stats.dom.style.position = 'absolute'
+        this.view.appendChild(this.stats.dom)
         this.tgtDot = geom.icosa({radius:0.3,material:'wireframe'})
         return this.scene.add(this.tgtDot)
     }
 
     Scene.prototype["animate"] = function ()
     {
-        var _231_14_, _248_17_, _255_14_, _257_18_
+        var _256_18_
 
         this.clockDelta = this.clock.getDelta()
-        ;(this.stats != null ? this.stats.begin() : undefined)
+        this.stats.begin()
         this.lightPlayer.position.copy(this.camera.position)
         this.lightShadow.position.copy(this.camera.position)
         this.quat.copy(this.camera.quaternion)
@@ -192,7 +194,6 @@ Scene = (function ()
         this.vec.applyQuaternion(this.quat)
         this.vec.multiplyScalar(10)
         this.lightShadow.position.add(this.vec)
-        ;(this.controls != null ? this.controls.update(this.clockDelta) : undefined)
         if (this.doPostProcess)
         {
             this.composer.render()
@@ -201,7 +202,7 @@ Scene = (function ()
         {
             this.renderer.render(this.scene,this.camera)
         }
-        ;(this.stats != null ? this.stats.end() : undefined)
+        this.stats.end()
         return (typeof this.preRender === "function" ? this.preRender({delta:this.clockDelta,time:this.clock.elapsedTime}) : undefined)
     }
 

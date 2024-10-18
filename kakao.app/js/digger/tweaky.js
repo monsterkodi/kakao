@@ -4,6 +4,7 @@ var tweaky
 
 import kxk from "../kxk.js"
 let elem = kxk.elem
+let post = kxk.post
 
 
 tweaky = (function ()
@@ -12,6 +13,10 @@ tweaky = (function ()
     {
         this.div = elem({class:'tweaky'})
         parent.appendChild(this.div)
+        post.on('tweaky.toggle',(function ()
+        {
+            return this.div.style.display = (this.div.style.display === 'none' ? 'inherit' : 'none')
+        }).bind(this))
     }
 
     tweaky.prototype["init"] = function (obj)
@@ -80,11 +85,11 @@ tweaky = (function ()
 
     tweaky.prototype["info"] = function (name, opt)
     {
-        var info, row, _72_15_
+        var info, row, _74_15_
 
         info = elem({class:'tweaky-info',text:opt.info()})
         row = elem({class:'tweaky-row',children:[elem({class:'tweaky-name',text:name}),info]})
-        this.infos = ((_72_15_=this.infos) != null ? _72_15_ : [])
+        this.infos = ((_74_15_=this.infos) != null ? _74_15_ : [])
         this.infos.push({elem:info,info:opt.info})
         return this.div.appendChild(row)
     }

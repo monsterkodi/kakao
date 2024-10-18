@@ -4,7 +4,7 @@
 #    000     000   000  000       000   000  000  000      000     
 #    000     00     00  00000000  000   000  000   000     000     
 
-use ../kxk ▪ elem
+use ../kxk ▪ elem post
 
 function tweaky
 
@@ -13,6 +13,8 @@ function tweaky
         @div = elem class:'tweaky'
         
         parent.appendChild @div
+        
+        post.on 'tweaky.toggle' => @div.style.display = @div.style.display == 'none' ? 'inherit' : 'none'
     
     init: obj ->
         
