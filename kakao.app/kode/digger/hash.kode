@@ -17,17 +17,10 @@ function Hash
 
     @: @scene ->
         
-        # icosa = geom.icosa radius:50 material:'debugred' detail:1
-        # @scene.scene.add icosa
-        # icosa.renderOrder = 100
-
         icosa = geom.icosa radius:50 material:'debugblue' detail:0
-        # @scene.scene.add icosa
         icosa.renderOrder = 100
         
         posattr = icosa.geometry.getAttribute 'position'
-        
-        # log posattr
         
         ctr = new three.Vector3
         
@@ -51,9 +44,7 @@ function Hash
             quat.set pc.x pc.y pc.z 0 
             quat.normalize()
             eul = new three.Euler
-            # eul.setFromVector3 pc
             eul.setFromQuaternion quat
-            # log eul quat
             eulers.push eul
             
         points = []
@@ -63,20 +54,15 @@ function Hash
                 euler.set 0 (u/8) * Math.PI * 2 ((v-1)/4) * Math.PI 'XYZ'
                 pc = new three.Vector3 50 0 0
                 pc.applyEuler euler
-                # pc.multiplyScalar 50
-                # log euler pc
                 points.push ctr
                 points.push pc
             
         mat = material['linered']
         geo = new three.BufferGeometry
         
-        # log eulers
-                
         geo.setFromPoints points
         lines = new three.LineSegments geo mat
         lines.renderOrder = 1000
-        # @scene.scene.add lines
         
     @normal: n -> 
         

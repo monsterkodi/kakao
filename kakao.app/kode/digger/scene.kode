@@ -96,7 +96,7 @@ function Scene
         # size = new three.Vector2 @view.clientWidth/16 @view.clientHeight/16
         size = new three.Vector2 0 0
         
-        bloomPass  = new UnrealBloomPass size 0.3 0 1.01 # strength radius threshold 
+        bloomPass  = new UnrealBloomPass {x:0 y:0} 0.3 0 1.01 # strength radius threshold 
         outputPass = new OutputPass()
                 
         @composer = new EffectComposer @renderer
@@ -206,6 +206,7 @@ function Scene
         @axesHelper.material.depthWrite = false
         @axesHelper.material.depthTest = false
         @axesHelper.material.depthFunc = three.NeverDepth
+        @axesHelper.renderOrder = 1000
         @scene.add @axesHelper
         
         @gridHelper = new gridhelper()
@@ -215,10 +216,7 @@ function Scene
         @stats = new Stats()
         @stats.dom.style.position = 'absolute'
         @view.appendChild @stats.dom
-        
-        @tgtDot = geom.icosa radius:0.3 material:'wireframe'
-        @scene.add @tgtDot
-                
+                        
     #  0000000   000   000  000  00     00   0000000   000000000  00000000  
     # 000   000  0000  000  000  000   000  000   000     000     000       
     # 000000000  000 0 000  000  000000000  000000000     000     0000000   

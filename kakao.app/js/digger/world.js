@@ -38,7 +38,10 @@ world = (function ()
         if (1)
         {
             this.tweaky = new tweaky(this.scene.view)
-            this.tweaky.init({seed:{min:1,max:100,step:1,value:50,cb:(function (v)
+            this.tweaky.init({speed:{min:0.5,max:2,step:0.1,value:1,cb:(function (v)
+            {
+                return this.player.speed = v
+            }).bind(this)},seed:{min:1,max:100,step:1,value:50,cb:(function (v)
             {
                 noise.seed(v)
                 return this.start()
@@ -50,7 +53,7 @@ world = (function ()
             {
                 this.gyroid.skin = v
                 return this.start()
-            }).bind(this)},axes:{value:1,cb:(function (v)
+            }).bind(this)},axes:{value:0,cb:(function (v)
             {
                 return this.scene.axesHelper.visible = v
             }).bind(this)},post:{value:1,cb:(function (v)
@@ -77,7 +80,7 @@ world = (function ()
 
     world.prototype["simulate"] = async function (tickInfo)
     {
-        var sec, _66_15_
+        var sec, _67_15_
 
         if (this.pause && !this.oneStep)
         {

@@ -50,12 +50,6 @@ function Swarm
         i = 0
         while i < @count
             
-            # @pos.normalize()
-            # @pos.multiplyScalar 50
-            # @dummy.position.copy @pos
-            # 
-            # @dummy.lookAt @orig
-            
             @pos.randomDirection()
             @pos.projectOnPlane @rotAxis[i]
             @pos.normalize()
@@ -79,8 +73,6 @@ function Swarm
         @playerPos.copy @player.mesh.position
         @playerPos.normalize()
         
-        # log @scene.clockDelta deltaSec @scene.clockDelta-deltaSec
-        
         for i in 0...@count
             
             @mesh.getMatrixAt i @dummy.matrix
@@ -94,11 +86,15 @@ function Swarm
             @norm.copy @pos
             @norm.normalize()
             
-            dot = @playerPos.dot @norm
+            dtn = @playerPos.dot @norm
+                        
+            if dtn > 0.95
+                @rotAxis[i].lerp @norm.cross(@playerPos) dtn * dtn 
+                @rotAxis[i].normalize()
             
-            dot = Math.max 0 dot - 0.7
+            dot = Math.max 0 dtn - 0.7
             dot = dot * dot
-            
+                
             if dot > 0.0897
                 @player.eat++
                 @pos.multiplyScalar -1

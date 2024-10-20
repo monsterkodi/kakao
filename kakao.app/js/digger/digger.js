@@ -39,9 +39,6 @@ Delegate = (function ()
         this["onWindowAnimationTick"] = this["onWindowAnimationTick"].bind(this)
         this.noAnimation = true
         this.menuNoon = kakao.bundle.res('menu_digger.noon')
-        this.pos = new three.Vector3
-        this.pps = new three.Vector3
-        this.dragAccel = new three.Vector2
         post.on('menuAction',this.onMenuAction)
         return Delegate.__super__.constructor.apply(this, arguments)
     }
@@ -86,30 +83,17 @@ Delegate = (function ()
 
     Delegate.prototype["onDragMove"] = function (drag, event)
     {
-        var ch, coords, ray, sphere, wh
+        var ch, wh, _74_27_
 
-        drag.pos.y -= 30
-        this.dragAccel.set(drag.pos.x - main.clientWidth / 2,drag.pos.y - main.clientHeight / 2)
-        this.dragAccel.multiplyScalar(0.002).clampLength(0,1)
-        coords = new three.Vector2
         wh = main.clientWidth / 2
         ch = main.clientHeight / 2
-        coords.set((drag.pos.x - wh) / wh,(drag.pos.y - ch) / ch)
-        ray = new three.Ray
-        ray.origin.setFromMatrixPosition(this.scene.camera.matrixWorld)
-        ray.direction.set(coords.x,-coords.y,0.5).unproject(this.scene.camera).sub(ray.origin).normalize()
-        this.pps.set(0,0,0)
-        sphere = new three.Sphere(this.pps,50)
-        if (ray.intersectSphere(sphere,this.pos))
-        {
-            this.scene.tgtDot.position.copy(this.pos)
-        }
-        return this.player.dragAccel = this.dragAccel
+        this.player.dragScreen = ((_74_27_=this.player.dragScreen) != null ? _74_27_ : new three.Vector2)
+        return this.player.dragScreen.set((drag.pos.x - wh) / wh,(drag.pos.y - 30 - ch) / ch)
     }
 
     Delegate.prototype["onDragStop"] = function (drag, event)
     {
-        return delete this.player.dragAccel
+        return delete this.player.dragScreen
     }
 
     Delegate.prototype["onWindowWithoutStash"] = function ()

@@ -8,10 +8,14 @@
 
 import * as three from 'three'
 
-use ../../kxk ▪ deg2rad
+use ../../kxk ▪ deg2rad rad2deg
 use ./quat
 
 vec   = new three.Vector3
+v0    = new three.Vector3
+v1    = new three.Vector3
+v2    = new three.Vector3
+v3    = new three.Vector3
 tqt   = new three.Quaternion
 unitX = new three.Vector3 1 0 0
 unitY = new three.Vector3 0 1 0
@@ -33,19 +37,56 @@ function Polar
                  ➜ new quat new three.Vector3 0 0 1
 
         @dist = cfg.dist ? 1
+        @tgt  = new three.Vector3
         
-    rotU: deg -> vec.copy unitY; tqt.setFromAxisAngle vec deg2rad(deg); @quat.multiply tqt; @quat.normalize()
-    rotV: deg -> vec.copy unitZ; tqt.setFromAxisAngle vec deg2rad(deg); @quat.multiply tqt; @quat.normalize()
+    rotAxis: deg axis -> 
     
-    slerp: o t -> @quat.slerp o.quat t
+        tqt.setFromAxisAngle axis deg2rad(deg) 
+        @quat.multiply tqt 
+        @quat.normalize()
+        
+    rotU: deg -> @rotAxis deg unitY
+    rotV: deg -> @rotAxis deg unitZ
     
-    up: -> vec.copy unitY; vec.applyQuaternion @quat; vec
+    slerp: o t -> 
+        
+        @quat.slerp o.quat t
+        # @tgt.lerp o.tgt t
+    
+    target: p deltaSec -> 
+        
+        @tgt.copy p
+        
+        v0.copy(p).normalize()
+        tqt.setFromUnitVectors unitX v0
+        
+        angle = @quat.angleTo tqt
+        angle = Math.max 1 angle
+        
+        @quat.slerp tqt deltaSec / angle
+        
+    orient: q -> 
+        
+        p = @pos()
+        v1.subVectors(@tgt p).normalize()
+        p.normalize()
+        v0.crossVectors p v1
+        v0.normalize()
+        v1.crossVectors v0 p
+        
+        q.setFromUnitVectors unitY v1
+        q.normalize()
+    
+    up: -> 
+        
+        v2.copy(unitY).applyQuaternion @quat
+        v2
         
     pos: ->
         
-        vec.copy Polar.pole
-        vec.applyQuaternion @quat
-        vec.multiplyScalar @dist
-        vec
+        v3.copy Polar.pole
+        v3.applyQuaternion @quat
+        v3.multiplyScalar @dist
+        v3
 
 export Polar

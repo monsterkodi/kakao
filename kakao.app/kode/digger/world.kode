@@ -26,10 +26,11 @@ function world
             @tweaky = new tweaky @scene.view
     
             @tweaky.init
+                speed: min:0.5 max:2 step:0.1 value:1  cb: (v) => @player.speed = v
                 seed: min:1 max:100 step:1 value:50  cb: (v) => noise.seed(v); @start()
                 gyro: min:7 max:14 step:1 value:@gyroid.num  cb: (v) => @gyroid.num = v; @start()
                 skin: min:0.5 max:2 step:0.1 value:@gyroid.skin  cb: (v) => @gyroid.skin = v; @start()
-                axes: value:1  cb: (v) => @scene.axesHelper.visible = v
+                axes: value:0  cb: (v) => @scene.axesHelper.visible = v
                 post: value:1  cb: (v) => @scene.doPostProcess = v
                 
                 

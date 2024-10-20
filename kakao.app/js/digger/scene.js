@@ -86,7 +86,7 @@ Scene = (function ()
 
         renderScene = new RenderPass(this.scene,this.camera)
         size = new three.Vector2(0,0)
-        bloomPass = new UnrealBloomPass(size,0.3,0,1.01)
+        bloomPass = new UnrealBloomPass({x:0,y:0},0.3,0,1.01)
         outputPass = new OutputPass()
         this.composer = new EffectComposer(this.renderer)
         this.composer.setPixelRatio(window.devicePixelRatio)
@@ -166,20 +166,19 @@ Scene = (function ()
         this.axesHelper.material.depthWrite = false
         this.axesHelper.material.depthTest = false
         this.axesHelper.material.depthFunc = three.NeverDepth
+        this.axesHelper.renderOrder = 1000
         this.scene.add(this.axesHelper)
         this.gridHelper = new gridhelper()
         this.gridHelper.visible = false
         this.scene.add(this.gridHelper)
         this.stats = new Stats()
         this.stats.dom.style.position = 'absolute'
-        this.view.appendChild(this.stats.dom)
-        this.tgtDot = geom.icosa({radius:0.3,material:'wireframe'})
-        return this.scene.add(this.tgtDot)
+        return this.view.appendChild(this.stats.dom)
     }
 
     Scene.prototype["animate"] = function ()
     {
-        var _256_18_
+        var _254_18_
 
         this.clockDelta = this.clock.getDelta()
         this.stats.begin()

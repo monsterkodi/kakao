@@ -6,7 +6,13 @@
  0000000  000   000  000   000  00000000  000   000  000   000
 ###
 
+import * as three from 'three'
+
+use ../kxk ▪ deg2rad
 use ./lib/polar
+
+np = new three.Vector3()
+rv = new three.Vector3()
 
 function Camera
 
@@ -17,14 +23,26 @@ function Camera
     start: ->
         
         @polar = new polar dist:150
-        @polar.rotU -90
+        @scene.camera.up.set 0 1 0
         
     update: deltaSec ->
         
-        @polar.slerp @player.polar deltaSec * 2
+        @polar.slerp @player.polar @player.speed * deltaSec
         
         @scene.camera.position.copy @polar.pos()
-        @scene.camera.up.copy @player.polar.up()
+
+        if 1
+            np.copy(@scene.camera.position).normalize()
+            rv.crossVectors @scene.camera.up np
+            rv.normalize()
+            @scene.camera.up.crossVectors np rv
+        else
+            rv.set(0 1 0).applyMatrix4 @scene.camera.matrixWorld
+            rv.normalize()
+            @scene.camera.up.lerp rv @player.speed * deltaSec
+        
+        @scene.camera.up.normalize()
+        
         @scene.camera.lookAt 0 0 0 
         
     zoom: delta ->

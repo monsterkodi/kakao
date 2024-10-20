@@ -68,7 +68,7 @@ Swarm = (function ()
 
     Swarm.prototype["update"] = function (deltaSec)
     {
-        var dot, i
+        var dot, dtn, i
 
         this.playerPos.copy(this.player.mesh.position)
         this.playerPos.normalize()
@@ -82,8 +82,13 @@ Swarm = (function ()
             this.rot.normalize()
             this.norm.copy(this.pos)
             this.norm.normalize()
-            dot = this.playerPos.dot(this.norm)
-            dot = Math.max(0,dot - 0.7)
+            dtn = this.playerPos.dot(this.norm)
+            if (dtn > 0.95)
+            {
+                this.rotAxis[i].lerp(this.norm.cross(this.playerPos),dtn * dtn)
+                this.rotAxis[i].normalize()
+            }
+            dot = Math.max(0,dtn - 0.7)
             dot = dot * dot
             if (dot > 0.0897)
             {
