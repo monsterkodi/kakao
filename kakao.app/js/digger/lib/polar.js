@@ -1,4 +1,4 @@
-var Polar, tqt, unitX, unitY, unitZ, v0, v1, v2, v3, vec
+var Polar, tqt, unitX, unitY, unitZ, v0, v1, v2, v3, v4, v5, v6, vec
 
 import * as three from 'three'
 import kxk from "../../kxk.js"
@@ -12,6 +12,9 @@ v0 = new three.Vector3
 v1 = new three.Vector3
 v2 = new three.Vector3
 v3 = new three.Vector3
+v4 = new three.Vector3
+v5 = new three.Vector3
+v6 = new three.Vector3
 tqt = new three.Quaternion
 unitX = new three.Vector3(1,0,0)
 unitY = new three.Vector3(0,1,0)
@@ -23,7 +26,7 @@ Polar = (function ()
     Polar["pole"] = unitX
     function Polar (cfg = {})
     {
-        var _39_25_
+        var _42_25_
 
         this.quat = ((function ()
         {
@@ -49,7 +52,7 @@ Polar = (function ()
             }
 
         }).bind(this))()
-        this.dist = ((_39_25_=cfg.dist) != null ? _39_25_ : 1)
+        this.dist = ((_42_25_=cfg.dist) != null ? _42_25_ : 1)
         this.tgt = new three.Vector3
     }
 
@@ -77,14 +80,18 @@ Polar = (function ()
 
     Polar.prototype["target"] = function (p, deltaSec)
     {
-        var angle
-
         this.tgt.copy(p)
-        v0.copy(p).normalize()
-        tqt.setFromUnitVectors(unitX,v0)
-        angle = this.quat.angleTo(tqt)
-        angle = Math.max(1,angle)
-        return this.quat.slerp(tqt,deltaSec / angle)
+        v4.copy(p).normalize()
+        v5.copy(this.pos()).normalize()
+        v6.crossVectors(v5,v4)
+        if (v6.length() < 0.00001)
+        {
+            return
+        }
+        v6.normalize()
+        tqt.setFromAxisAngle(v6,deltaSec * 0.4)
+        this.quat.premultiply(tqt)
+        return this.quat.normalize()
     }
 
     Polar.prototype["orient"] = function (q)

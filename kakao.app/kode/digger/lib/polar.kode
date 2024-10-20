@@ -16,6 +16,9 @@ v0    = new three.Vector3
 v1    = new three.Vector3
 v2    = new three.Vector3
 v3    = new three.Vector3
+v4    = new three.Vector3
+v5    = new three.Vector3
+v6    = new three.Vector3
 tqt   = new three.Quaternion
 unitX = new three.Vector3 1 0 0
 unitY = new three.Vector3 0 1 0
@@ -56,14 +59,15 @@ function Polar
     target: p deltaSec -> 
         
         @tgt.copy p
-        
-        v0.copy(p).normalize()
-        tqt.setFromUnitVectors unitX v0
-        
-        angle = @quat.angleTo tqt
-        angle = Math.max 1 angle
-        
-        @quat.slerp tqt deltaSec / angle
+
+        v4.copy(p).normalize()
+        v5.copy(@pos()).normalize()
+        v6.crossVectors v5 v4
+        ⮐ if v6.length() < 0.00001
+        v6.normalize()
+        tqt.setFromAxisAngle v6 deltaSec*0.4
+        @quat.premultiply tqt
+        @quat.normalize()
         
     orient: q -> 
         
