@@ -101,6 +101,7 @@ Swarm = (function ()
             {
                 this.player.eat++
                 this.pos.multiplyScalar(-1)
+                this.scale.set(0,0,0)
             }
             if (dtn > 0.98)
             {

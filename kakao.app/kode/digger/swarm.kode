@@ -92,7 +92,7 @@ function Swarm
             if dtn > 0.98
                 @rotAxis[i].lerp @norm.cross(@playerPos) dtn * dtn * dtn
                 @rotAxis[i].normalize()
-                
+                 
                 @rotd.setFromAxisAngle @rotAxis[i] deltaSec * 0.5
                 @pos.applyQuaternion @rotd
                 @rot.multiply @rotd
@@ -104,6 +104,7 @@ function Swarm
             if dot > 0.0897
                 @player.eat++
                 @pos.multiplyScalar -1
+                @scale.set 0 0 0 
 
             if dtn > 0.98
                 @color.set 0.36 0.36 0

@@ -64,7 +64,7 @@ Weed = (function ()
         return this.mesh.instanceColor.needsUpdate = true
     }
 
-    Weed.prototype["update"] = function (deltaSec, tickInfo)
+    Weed.prototype["update"] = function (deltaSec, timeMs)
     {
         var color, f, i
 
@@ -74,7 +74,7 @@ Weed = (function ()
             this.dummy.matrix.decompose(this.pos,this.rot,this.scale)
             color = this.gyroid.getColor(this.pos)
             this.color.set(color[0],color[1],color[2])
-            f = (Math.sin(tickInfo.time * 1000 / (2000 - (color[0] + color[2]) * 900)) + 1.2) * 2
+            f = (Math.sin(timeMs * 1000 / (2000 - (color[0] + color[2]) * 900)) + 1.2) * 2
             this.color.multiplyScalar(6 * f)
             this.mesh.setColorAt(i,this.color)
             this.scale.set(1,1,0.1 + color[0] * 90 * f)

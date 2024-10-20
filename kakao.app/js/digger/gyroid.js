@@ -114,6 +114,15 @@ Gyroid = (function ()
         return this.sampler.build()
     }
 
+    Gyroid.prototype["color"] = function (pos, color)
+    {
+        var c
+
+        c = this.getColor(pos)
+        color.set(c[0],c[1],c[2])
+        return color
+    }
+
     Gyroid.prototype["getColor"] = function (pos)
     {
         var b, c1, c2, cx, cy, cz, g, lerp, r, x, y, z

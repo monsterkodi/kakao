@@ -113,6 +113,12 @@ function Gyroid
         
         @sampler.build()
         
+    color: pos color -> 
+        
+        c = @getColor pos
+        color.set c[0] c[1] c[2]
+        color
+        
     getColor: pos ->
         
         cx = pos.x+@resolution/2

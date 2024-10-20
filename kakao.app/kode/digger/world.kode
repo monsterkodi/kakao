@@ -9,7 +9,7 @@
 use ../kxk ▪ drag stopEvent prefs post kpos fade randRange randInt randIntRange
 
 use ./lib/noise
-use ◆ tweaky swarm weed gyroid
+use ◆ tweaky swarm weed gyroid boids
 
 function world
 
@@ -21,6 +21,7 @@ function world
         @gyroid = new gyroid @scene
         @swarm  = new swarm  @scene @player
         @weed   = new weed   @scene @gyroid
+        @boids  = new boids  @scene @player @gyroid
         
         if 1
             @tweaky = new tweaky @scene.view
@@ -33,7 +34,6 @@ function world
                 axes: value:0  cb: (v) => @scene.axesHelper.visible = v
                 post: value:1  cb: (v) => @scene.doPostProcess = v
                 
-                
     start: ->
         
         @camera.start()
@@ -42,6 +42,7 @@ function world
         
         @weed.spawn()
         @swarm.spawn()
+        @boids.spawn()
                 
     togglePause:  => @pause = not @pause; post.emit 'pause'        
         
@@ -54,15 +55,14 @@ function world
     simulate: tickInfo ○=>
                 
         ⮐ if @pause and not @oneStep
-        ⮐ if isNaN tickInfo.delta
-        ⮐ if isNaN @scene.clockDelta
 
         sec = 1/60
         
         @player.update sec
         @camera.update sec
-        @swarm.update  sec tickInfo
-        @weed.update   sec tickInfo
+        @swarm.update  sec
+        @weed.update   sec tickInfo.time
+        @boids.update  sec tickInfo.time
         
         @tweaky?.update()
         

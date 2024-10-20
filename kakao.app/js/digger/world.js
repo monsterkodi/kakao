@@ -17,6 +17,7 @@ import tweaky from "./tweaky.js"
 import swarm from "./swarm.js"
 import weed from "./weed.js"
 import gyroid from "./gyroid.js"
+import boids from "./boids.js"
 
 
 world = (function ()
@@ -35,6 +36,7 @@ world = (function ()
         this.gyroid = new gyroid(this.scene)
         this.swarm = new swarm(this.scene,this.player)
         this.weed = new weed(this.scene,this.gyroid)
+        this.boids = new boids(this.scene,this.player,this.gyroid)
         if (1)
         {
             this.tweaky = new tweaky(this.scene.view)
@@ -69,7 +71,8 @@ world = (function ()
         this.player.start()
         this.gyroid.start()
         this.weed.spawn()
-        return this.swarm.spawn()
+        this.swarm.spawn()
+        return this.boids.spawn()
     }
 
     world.prototype["togglePause"] = function ()
@@ -86,19 +89,12 @@ world = (function ()
         {
             return
         }
-        if (isNaN(tickInfo.delta))
-        {
-            return
-        }
-        if (isNaN(this.scene.clockDelta))
-        {
-            return
-        }
         sec = 1 / 60
         this.player.update(sec)
         this.camera.update(sec)
-        this.swarm.update(sec,tickInfo)
-        this.weed.update(sec,tickInfo)
+        this.swarm.update(sec)
+        this.weed.update(sec,tickInfo.time)
+        this.boids.update(sec,tickInfo.time)
         return (this.tweaky != null ? this.tweaky.update() : undefined)
     }
 
