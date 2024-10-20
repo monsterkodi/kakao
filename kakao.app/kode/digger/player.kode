@@ -48,7 +48,7 @@ function Player
         @steer  = new three.Vector2
         
         @tgtDot = geom.icosa radius:0.3 material:'wireframe'
-        # @tgtDot.scale.set 0 0 0
+        @tgtDot.scale.set 0 0 0
         @tgtDot.position.set 0 0 50
         @scene.scene.add @tgtDot
         

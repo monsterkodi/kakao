@@ -40,7 +40,7 @@ function Swarm
             ra = new three.Vector3 
             ra.randomDirection()
             @rotAxis.push ra
-            @rotAngle.push 0.1
+            @rotAngle.push 0.01+Math.random()*0.05
         
     spawn: ->
         
@@ -78,19 +78,25 @@ function Swarm
             @mesh.getMatrixAt i @dummy.matrix
             @dummy.matrix.decompose @pos @rot @scale
             
-            @rotd.setFromAxisAngle @rotAxis[i] @rotAngle[i] * deltaSec
-            @pos.applyQuaternion @rotd
-            @rot.multiply @rotd
-            @rot.normalize()
+            if 1
+                @rotd.setFromAxisAngle @rotAxis[i] @rotAngle[i] * deltaSec
+                @pos.applyQuaternion @rotd
+                @rot.multiply @rotd
+                @rot.normalize()
                         
             @norm.copy @pos
             @norm.normalize()
             
             dtn = @playerPos.dot @norm
                         
-            if dtn > 0.95
-                @rotAxis[i].lerp @norm.cross(@playerPos) dtn * dtn 
+            if dtn > 0.98
+                @rotAxis[i].lerp @norm.cross(@playerPos) dtn * dtn * dtn
                 @rotAxis[i].normalize()
+                
+                @rotd.setFromAxisAngle @rotAxis[i] deltaSec * 0.5
+                @pos.applyQuaternion @rotd
+                @rot.multiply @rotd
+                @rot.normalize()
             
             dot = Math.max 0 dtn - 0.7
             dot = dot * dot
@@ -99,7 +105,10 @@ function Swarm
                 @player.eat++
                 @pos.multiplyScalar -1
 
-            @color.set dot dot 0
+            if dtn > 0.98
+                @color.set 0.36 0.36 0
+            else
+                @color.set dot dot 0
             
             # if 
                 # dot > 0.99 ➜ @color.set 1 1 0

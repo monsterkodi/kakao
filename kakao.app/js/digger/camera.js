@@ -31,19 +31,13 @@ Camera = (function ()
     {
         this.polar.slerp(this.player.polar,this.player.speed * deltaSec)
         this.scene.camera.position.copy(this.polar.pos())
-        if (1)
-        {
-            np.copy(this.scene.camera.position).normalize()
-            rv.crossVectors(this.scene.camera.up,np)
-            rv.normalize()
-            this.scene.camera.up.crossVectors(np,rv)
-        }
-        else
-        {
-            rv.set(0,1,0).applyMatrix4(this.scene.camera.matrixWorld)
-            rv.normalize()
-            this.scene.camera.up.lerp(rv,this.player.speed * deltaSec)
-        }
+        np.copy(this.scene.camera.position).normalize()
+        rv.crossVectors(this.scene.camera.up,np)
+        rv.normalize()
+        this.scene.camera.up.crossVectors(np,rv)
+        rv.set(0,1,0).applyMatrix4(this.scene.camera.matrixWorld)
+        rv.normalize()
+        this.scene.camera.up.lerp(rv,this.player.speed * deltaSec)
         this.scene.camera.up.normalize()
         return this.scene.camera.lookAt(0,0,0)
     }

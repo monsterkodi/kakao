@@ -49,6 +49,7 @@ Player = (function ()
         this.unitZ = new three.Vector3(0,0,1)
         this.steer = new three.Vector2
         this.tgtDot = geom.icosa({radius:0.3,material:'wireframe'})
+        this.tgtDot.scale.set(0,0,0)
         this.tgtDot.position.set(0,0,50)
         this.scene.scene.add(this.tgtDot)
     }

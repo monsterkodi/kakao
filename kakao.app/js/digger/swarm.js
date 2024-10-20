@@ -38,7 +38,7 @@ Swarm = (function ()
             ra = new three.Vector3
             ra.randomDirection()
             this.rotAxis.push(ra)
-            this.rotAngle.push(0.1)
+            this.rotAngle.push(0.01 + Math.random() * 0.05)
         }
     }
 
@@ -76,17 +76,24 @@ Swarm = (function ()
         {
             this.mesh.getMatrixAt(i,this.dummy.matrix)
             this.dummy.matrix.decompose(this.pos,this.rot,this.scale)
-            this.rotd.setFromAxisAngle(this.rotAxis[i],this.rotAngle[i] * deltaSec)
-            this.pos.applyQuaternion(this.rotd)
-            this.rot.multiply(this.rotd)
-            this.rot.normalize()
+            if (1)
+            {
+                this.rotd.setFromAxisAngle(this.rotAxis[i],this.rotAngle[i] * deltaSec)
+                this.pos.applyQuaternion(this.rotd)
+                this.rot.multiply(this.rotd)
+                this.rot.normalize()
+            }
             this.norm.copy(this.pos)
             this.norm.normalize()
             dtn = this.playerPos.dot(this.norm)
-            if (dtn > 0.95)
+            if (dtn > 0.98)
             {
-                this.rotAxis[i].lerp(this.norm.cross(this.playerPos),dtn * dtn)
+                this.rotAxis[i].lerp(this.norm.cross(this.playerPos),dtn * dtn * dtn)
                 this.rotAxis[i].normalize()
+                this.rotd.setFromAxisAngle(this.rotAxis[i],deltaSec * 0.5)
+                this.pos.applyQuaternion(this.rotd)
+                this.rot.multiply(this.rotd)
+                this.rot.normalize()
             }
             dot = Math.max(0,dtn - 0.7)
             dot = dot * dot
@@ -95,7 +102,14 @@ Swarm = (function ()
                 this.player.eat++
                 this.pos.multiplyScalar(-1)
             }
-            this.color.set(dot,dot,0)
+            if (dtn > 0.98)
+            {
+                this.color.set(0.36,0.36,0)
+            }
+            else
+            {
+                this.color.set(dot,dot,0)
+            }
             this.mesh.setColorAt(i,this.color)
             this.dummy.matrix.compose(this.pos,this.rot,this.scale)
             this.mesh.setMatrixAt(i,this.dummy.matrix)

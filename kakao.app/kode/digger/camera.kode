@@ -31,15 +31,14 @@ function Camera
         
         @scene.camera.position.copy @polar.pos()
 
-        if 1
-            np.copy(@scene.camera.position).normalize()
-            rv.crossVectors @scene.camera.up np
-            rv.normalize()
-            @scene.camera.up.crossVectors np rv
-        else
-            rv.set(0 1 0).applyMatrix4 @scene.camera.matrixWorld
-            rv.normalize()
-            @scene.camera.up.lerp rv @player.speed * deltaSec
+        np.copy(@scene.camera.position).normalize()
+        rv.crossVectors @scene.camera.up np
+        rv.normalize()
+        @scene.camera.up.crossVectors np rv
+
+        rv.set(0 1 0).applyMatrix4 @scene.camera.matrixWorld
+        rv.normalize()
+        @scene.camera.up.lerp rv @player.speed * deltaSec
         
         @scene.camera.up.normalize()
         
