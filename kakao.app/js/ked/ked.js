@@ -33,6 +33,7 @@ KED = (function ()
             console.log('0.0.1')
             process.exit(0)
         }
+        this.t.clear()
         if (!_k_.empty(args.options))
         {
             console.log('file(s):',args.options)
@@ -60,16 +61,10 @@ KED = (function ()
         switch (dir)
         {
             case 'up':
-                return this.t.write('\x1b[A')
-
             case 'down':
-                return this.t.write('\x1b[B')
-
             case 'left':
-                return this.t.write('\x1b[D')
-
             case 'right':
-                return this.t.write('\x1b[C')
+                return this.t.moveCursor(dir)
 
         }
 
@@ -80,18 +75,39 @@ KED = (function ()
         switch (key)
         {
             case 'up':
-                return this.t.write('\x1b[A')
-
             case 'down':
-                return this.t.write('\x1b[B')
-
             case 'left':
-                return this.t.write('\x1b[D')
-
             case 'right':
-                return this.t.write('\x1b[C')
+                return this.t.moveCursor(key)
+
+            case 'ctrl+a':
+                return this.t.write('\x1b[0G')
+
+            case 'ctrl+e':
+                return this.t.write(`\x1b[${this.t.cols()}G`)
+
+            case 'ctrl+h':
+                return this.t.write('\x1b[H')
+
+            case 'ctrl+k':
+                return this.t.write('\x1b[0K')
+
+            case 'return':
+                return this.t.write('\n')
+
+            case 'space':
+                return this.t.write(' ')
+
+            case 'delete':
+                return this.t.write('\x1b[D\x1b[P')
+
+            case 'tab':
+                return this.t.write('    ')
 
             case 'ctrl+c':
+                return process.exit(0)
+
+            case 'ctrl+q':
                 return process.exit(0)
 
         }

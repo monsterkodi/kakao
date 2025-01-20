@@ -12,6 +12,10 @@ TTIO = (function ()
     {
         this["onData"] = this["onData"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["moveCursor"] = this["moveCursor"].bind(this)
+        this["rows"] = this["rows"].bind(this)
+        this["cols"] = this["cols"].bind(this)
+        this["clear"] = this["clear"].bind(this)
         this["write"] = this["write"].bind(this)
         if (process.stdin.isTTY)
         {
@@ -33,9 +37,45 @@ TTIO = (function ()
         return process.stdout.write(str)
     }
 
+    TTIO.prototype["clear"] = function ()
+    {
+        this.write('\x1b[2J')
+        return this.write('\x1b[H')
+    }
+
+    TTIO.prototype["cols"] = function ()
+    {
+        return process.stdout.columns
+    }
+
+    TTIO.prototype["rows"] = function ()
+    {
+        return process.stdout.rows
+    }
+
+    TTIO.prototype["moveCursor"] = function (dir)
+    {
+        switch (dir)
+        {
+            case 'up':
+                return this.write('\x1b[A')
+
+            case 'down':
+                return this.write('\x1b[B')
+
+            case 'left':
+                return this.write('\x1b[D')
+
+            case 'right':
+                return this.write('\x1b[C')
+
+        }
+
+    }
+
     TTIO.prototype["onResize"] = function ()
     {
-        return this.emit('resize',process.stdout.columns,process.stdout.rows)
+        return this.emit('resize',this.cols(),this.rows())
     }
 
     TTIO.prototype["onData"] = function (data)
@@ -145,31 +185,34 @@ TTIO = (function ()
             switch (data[0])
             {
                 case 0x01:
-                    return this.write('\x1b[0G')
-
-                case 0x05:
-                    return this.write(`\x1b[${process.stdout.columns}G`)
+                    return this.emit('key','ctrl+a')
 
                 case 0x03:
                     return this.emit('key','ctrl+c')
 
+                case 0x05:
+                    return this.emit('key','ctrl+e')
+
+                case 0x11:
+                    return this.emit('key','ctrl+q')
+
                 case 0x08:
-                    return this.write('\x1b[H')
+                    return this.emit('key','ctrl+h')
 
                 case 0x0b:
-                    return this.write('\x1b[0K')
+                    return this.emit('key','ctrl+k')
 
                 case 0x0d:
-                    return this.write('\n')
+                    return this.emit('key','return')
 
                 case 0x7f:
-                    return this.write('\x1b[D\x1b[P')
+                    return this.emit('key','delete')
 
                 case 0x20:
-                    return this.write(' ')
+                    return this.emit('key','space')
 
                 case 0x09:
-                    return this.write('\x1b[I')
+                    return this.emit('key','tab')
 
             }
 

@@ -20,12 +20,14 @@ function KED
         @t.on 'resize' @onResize
         @t.on 'focus'  -> 
         @t.on 'blur'   -> 
-        
+            
         if args.version ➜ log '0.0.1'; process.exit 0
+            
+        @t.clear()
             
         if valid args.options
             log 'file(s):' args.options
-        
+            
     @run: -> new KED()
     
     onMouse: event col row button =>
@@ -38,19 +40,28 @@ function KED
     onWheel: dir =>
         
         switch dir
-            'up'        ➜ ⮐ @t.write '\x1b[A'
-            'down'      ➜ ⮐ @t.write '\x1b[B'
-            'left'      ➜ ⮐ @t.write '\x1b[D'
-            'right'     ➜ ⮐ @t.write '\x1b[C'
+            'up'        
+            'down'      
+            'left'      
+            'right'     ➜ ⮐ @t.moveCursor dir
     
     onKey: key => 
         
         switch key
-            'up'        ➜ ⮐ @t.write '\x1b[A'
-            'down'      ➜ ⮐ @t.write '\x1b[B'
-            'left'      ➜ ⮐ @t.write '\x1b[D'
-            'right'     ➜ ⮐ @t.write '\x1b[C'
+            'up'        
+            'down'      
+            'left'      
+            'right'     ➜ ⮐ @t.moveCursor key
+            'ctrl+a'    ➜ ⮐ @t.write '\x1b[0G'
+            'ctrl+e'    ➜ ⮐ @t.write "\x1b[#{@t.cols()}G"
+            'ctrl+h'    ➜ ⮐ @t.write '\x1b[H'
+            'ctrl+k'    ➜ ⮐ @t.write '\x1b[0K'
+            'return'    ➜ ⮐ @t.write '\n'
+            'space'     ➜ ⮐ @t.write ' '
+            'delete'    ➜ ⮐ @t.write '\x1b[D\x1b[P'
+            'tab'       ➜ ⮐ @t.write '    '
             'ctrl+c'    ➜ ⮐ process.exit 0
+            'ctrl+q'    ➜ ⮐ process.exit 0
     
         @t.write key
         

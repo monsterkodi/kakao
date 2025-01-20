@@ -5,24 +5,36 @@ function TTIO extends events
 
     @: ->
         
-        if process.stdin.isTTY
-            process.stdin.setRawMode true
+        if process.stdin.isTTY ➜ process.stdin.setRawMode true
 
-        # log "size" process.stdout.columns process.stdout.rows
-
-        @write '\x1b[?1000h'   # mouse events
-        @write '\x1b[?1001h'   # highlight tracking
-        @write '\x1b[?1003h'   # mouse move events
-        @write '\x1b[?1004h'   # focus
-        @write '\x1b[?1006h'   # mouse SGR mode
-        @write '\x1b[>4;2m'    # modify other keys
+        @write '\x1b[?1000h' # mouse events
+        @write '\x1b[?1001h' # highlight tracking
+        @write '\x1b[?1003h' # mouse move events
+        @write '\x1b[?1004h' # focus
+        @write '\x1b[?1006h' # mouse SGR mode
+        @write '\x1b[>4;2m'  # modify other keys
         
         process.stdout.on 'resize' @onResize
         process.stdin.on  'data'   @onData
         
     write: str => process.stdout.write str
+    
+    clear: =>
+        @write '\x1b[2J' # clear screen
+        @write '\x1b[H'  # cursor home
         
-    onResize: => @emit 'resize' process.stdout.columns process.stdout.rows
+    cols: => process.stdout.columns
+    rows: => process.stdout.rows
+    
+    moveCursor: dir => 
+        
+        switch dir
+            'up'    ➜ ⮐ @write '\x1b[A'
+            'down'  ➜ ⮐ @write '\x1b[B'
+            'left'  ➜ ⮐ @write '\x1b[D'
+            'right' ➜ ⮐ @write '\x1b[C'
+        
+    onResize: => @emit 'resize' @cols() @rows()
         
     onData: data =>
         
@@ -38,8 +50,8 @@ function TTIO extends events
                         32 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  
                         34 ➜ ⮐ @emit 'mouse' 'drag'  col row 'right' 
                         35 ➜ ⮐ @emit 'mouse' 'move'  col row ''
-                        64 ➜ ⮐ @emit 'wheel' 'up'   #@write '\x1b[T'; 
-                        65 ➜ ⮐ @emit 'wheel' 'down' #@write '\x1b[S'; 
+                        64 ➜ ⮐ @emit 'wheel' 'up'   
+                        65 ➜ ⮐ @emit 'wheel' 'down' 
                         66 ➜ ⮐ @emit 'wheel' 'left' 
                         67 ➜ ⮐ @emit 'wheel' 'right'
                     log 'mouse press?' seq
@@ -66,15 +78,16 @@ function TTIO extends events
                 log 'seq?' seq, data
         else
             switch data[0]
-                0x01 ➜ ⮐ @write '\x1b[0G'
-                0x05 ➜ ⮐ @write "\x1b[#{process.stdout.columns}G"
+                0x01 ➜ ⮐ @emit 'key' 'ctrl+a'
                 0x03 ➜ ⮐ @emit 'key' 'ctrl+c'
-                0x08 ➜ ⮐ @write '\x1b[H'
-                0x0b ➜ ⮐ @write '\x1b[0K'
-                0x0d ➜ ⮐ @write '\n'
-                0x7f ➜ ⮐ @write '\x1b[D\x1b[P'
-                0x20 ➜ ⮐ @write ' '
-                0x09 ➜ ⮐ @write '\x1b[I'
+                0x05 ➜ ⮐ @emit 'key' 'ctrl+e'
+                0x11 ➜ ⮐ @emit 'key' 'ctrl+q'
+                0x08 ➜ ⮐ @emit 'key' 'ctrl+h'
+                0x0b ➜ ⮐ @emit 'key' 'ctrl+k' 
+                0x0d ➜ ⮐ @emit 'key' 'return' 
+                0x7f ➜ ⮐ @emit 'key' 'delete' 
+                0x20 ➜ ⮐ @emit 'key' 'space'
+                0x09 ➜ ⮐ @emit 'key' 'tab'
                 
             key = data.toString 'utf8'
                 
