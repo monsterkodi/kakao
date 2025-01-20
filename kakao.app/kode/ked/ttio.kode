@@ -1,0 +1,86 @@
+
+use ../kxk ◆ events
+
+function TTIO extends events
+
+    @: ->
+        
+        if process.stdin.isTTY
+            process.stdin.setRawMode true
+
+        # log "size" process.stdout.columns process.stdout.rows
+
+        @write '\x1b[?1000h'   # mouse events
+        @write '\x1b[?1001h'   # highlight tracking
+        @write '\x1b[?1003h'   # mouse move events
+        @write '\x1b[?1004h'   # focus
+        @write '\x1b[?1006h'   # mouse SGR mode
+        @write '\x1b[>4;2m'    # modify other keys
+        
+        process.stdout.on 'resize' @onResize
+        process.stdin.on  'data'   @onData
+        
+    write: str => process.stdout.write str
+        
+    onResize: => @emit 'resize' process.stdout.columns process.stdout.rows
+        
+    onData: data =>
+        
+        if data[0] == 0x1b
+            seq = data[1..].toString 'utf8'
+            
+            if seq.startsWith '[<'
+                [code col row] = seq[2..-2].split(';').map (s) -> parseInt s
+                if seq.endsWith 'M'
+                    switch code
+                        0  ➜ ⮐ @emit 'mouse' 'press' col row 'left' 
+                        2  ➜ ⮐ @emit 'mouse' 'press' col row 'right'
+                        32 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  
+                        34 ➜ ⮐ @emit 'mouse' 'drag'  col row 'right' 
+                        35 ➜ ⮐ @emit 'mouse' 'move'  col row ''
+                        64 ➜ ⮐ @emit 'wheel' 'up'   #@write '\x1b[T'; 
+                        65 ➜ ⮐ @emit 'wheel' 'down' #@write '\x1b[S'; 
+                        66 ➜ ⮐ @emit 'wheel' 'left' 
+                        67 ➜ ⮐ @emit 'wheel' 'right'
+                    log 'mouse press?' seq
+                    ⮐ 
+                else if seq.endsWith 'm'
+                    switch code
+                        0  ➜ ⮐ @emit 'mouse' 'release' col row 'left'
+                        2  ➜ ⮐ @emit 'mouse' 'release' col row 'right'
+                    log 'mouse release?' seq
+                    ⮐ 
+            else if seq.startsWith '['
+                switch seq[1]
+                    'O' ➜ ⮐ @emit 'blur'
+                    'I' ➜ ⮐ @emit 'focus'
+                    'A' ➜ ⮐ @emit 'key' 'up'    
+                    'B' ➜ ⮐ @emit 'key' 'down'  
+                    'D' ➜ ⮐ @emit 'key' 'left'  
+                    'C' ➜ ⮐ @emit 'key' 'right' 
+                log 'DATA' data, seq
+                ⮐ 
+            else if data.length == 1
+                ⮐ emit 'key' 'esc'  
+            else
+                log 'seq?' seq, data
+        else
+            switch data[0]
+                0x01 ➜ ⮐ @write '\x1b[0G'
+                0x05 ➜ ⮐ @write "\x1b[#{process.stdout.columns}G"
+                0x03 ➜ ⮐ @emit 'key' 'ctrl+c'
+                0x08 ➜ ⮐ @write '\x1b[H'
+                0x0b ➜ ⮐ @write '\x1b[0K'
+                0x0d ➜ ⮐ @write '\n'
+                0x7f ➜ ⮐ @write '\x1b[D\x1b[P'
+                0x20 ➜ ⮐ @write ' '
+                0x09 ➜ ⮐ @write '\x1b[I'
+                
+            key = data.toString 'utf8'
+                
+            if key and data[0] >= 0x21
+                @emit 'key' key
+            else
+                log 'key>' key, data, data.length, data[0]
+                
+export TTIO

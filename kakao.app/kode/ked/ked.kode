@@ -1,0 +1,60 @@
+
+use ◆ ttio
+use ../kxk ▪ karg
+
+args = karg """
+    ked [file]
+        options                                   **
+        version    log version                    = false
+    """
+
+function KED
+
+    @: ->
+
+        @t = new ttio
+        
+        @t.on 'key'    @onKey
+        @t.on 'mouse'  @onMouse
+        @t.on 'wheel'  @onWheel
+        @t.on 'resize' @onResize
+        @t.on 'focus'  -> 
+        @t.on 'blur'   -> 
+        
+        if args.version ➜ log '0.0.1'; process.exit 0
+            
+        if valid args.options
+            log 'file(s):' args.options
+        
+    @run: -> new KED()
+    
+    onMouse: event col row button =>
+        
+        switch event
+            'press' ➜ ⮐ @t.write "\x1b[#{row};#{col}H"
+        
+        # log 'mouse' event col row button
+        
+    onWheel: dir =>
+        
+        switch dir
+            'up'        ➜ ⮐ @t.write '\x1b[A'
+            'down'      ➜ ⮐ @t.write '\x1b[B'
+            'left'      ➜ ⮐ @t.write '\x1b[D'
+            'right'     ➜ ⮐ @t.write '\x1b[C'
+    
+    onKey: key => 
+        
+        switch key
+            'up'        ➜ ⮐ @t.write '\x1b[A'
+            'down'      ➜ ⮐ @t.write '\x1b[B'
+            'left'      ➜ ⮐ @t.write '\x1b[D'
+            'right'     ➜ ⮐ @t.write '\x1b[C'
+            'ctrl+c'    ➜ ⮐ process.exit 0
+    
+        @t.write key
+        
+    onResize: cols rows => #log 'resize:' cols rows
+        
+export KED.run
+

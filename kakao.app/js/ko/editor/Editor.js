@@ -197,6 +197,7 @@ Editor = (function ()
 
                 case 'styl':
                 case 'cpp':
+                case 'zig':
                 case 'mm':
                 case 'c':
                 case 'h':
@@ -231,6 +232,7 @@ Editor = (function ()
 
                 case 'styl':
                 case 'cpp':
+                case 'zig':
                 case 'mm':
                 case 'c':
                 case 'h':
