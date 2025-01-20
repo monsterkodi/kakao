@@ -12,21 +12,29 @@ TTIO = (function ()
     {
         this["onData"] = this["onData"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
+        this["restore"] = this["restore"].bind(this)
+        this["store"] = this["store"].bind(this)
         this["rows"] = this["rows"].bind(this)
         this["cols"] = this["cols"].bind(this)
+        this["showCursor"] = this["showCursor"].bind(this)
+        this["hideCursor"] = this["hideCursor"].bind(this)
         this["clear"] = this["clear"].bind(this)
         this["write"] = this["write"].bind(this)
         if (process.stdin.isTTY)
         {
             process.stdin.setRawMode(true)
         }
+        this.write('\x1b[?45h')
         this.write('\x1b[?1000h')
         this.write('\x1b[?1001h')
         this.write('\x1b[?1003h')
         this.write('\x1b[?1004h')
         this.write('\x1b[?1006h')
+        this.write('\x1b[?1049h')
         this.write('\x1b[>4;2m')
+        this.write('\x1b[5 q')
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
         return TTIO.__super__.constructor.apply(this, arguments)
@@ -43,6 +51,16 @@ TTIO = (function ()
         return this.write('\x1b[H')
     }
 
+    TTIO.prototype["hideCursor"] = function ()
+    {
+        return this.write('\x1b[?25l')
+    }
+
+    TTIO.prototype["showCursor"] = function ()
+    {
+        return this.write('\x1b[?25h')
+    }
+
     TTIO.prototype["cols"] = function ()
     {
         return process.stdout.columns
@@ -51,6 +69,16 @@ TTIO = (function ()
     TTIO.prototype["rows"] = function ()
     {
         return process.stdout.rows
+    }
+
+    TTIO.prototype["store"] = function ()
+    {
+        return this.write('\x1b7')
+    }
+
+    TTIO.prototype["restore"] = function ()
+    {
+        return this.write('\x1b8')
     }
 
     TTIO.prototype["moveCursor"] = function (dir)
@@ -71,6 +99,11 @@ TTIO = (function ()
 
         }
 
+    }
+
+    TTIO.prototype["setCursor"] = function (x, y)
+    {
+        return this.write(`\x1b[${y + 1};${x + 1}H`)
     }
 
     TTIO.prototype["onResize"] = function ()
@@ -168,7 +201,104 @@ TTIO = (function ()
 
                 }
 
-                console.log('DATA',data,seq)
+                switch (seq.slice(0))
+                {
+                    case '[1;3A':
+                        return this.emit('key','alt+up')
+
+                    case '[1;3B':
+                        return this.emit('key','alt+down')
+
+                    case '[1;2A':
+                        return this.emit('key','shift+up')
+
+                    case '[1;2B':
+                        return this.emit('key','shift+down')
+
+                    case '[1;2C':
+                        return this.emit('key','shift+right')
+
+                    case '[1;2D':
+                        return this.emit('key','shift+left')
+
+                    case '[1;4A':
+                        return this.emit('key','shift+alt+up')
+
+                    case '[1;4B':
+                        return this.emit('key','shift+alt+down')
+
+                    case '[1;4C':
+                        return this.emit('key','shift+alt+right')
+
+                    case '[1;4D':
+                        return this.emit('key','shift+alt+left')
+
+                    case '[1;5A':
+                        return this.emit('key','ctrl+up')
+
+                    case '[1;5B':
+                        return this.emit('key','ctrl+down')
+
+                    case '[1;5C':
+                        return this.emit('key','ctrl+right')
+
+                    case '[1;5D':
+                        return this.emit('key','ctrl+left')
+
+                    case '[1;6A':
+                        return this.emit('key','shift+ctrl+up')
+
+                    case '[1;6B':
+                        return this.emit('key','shift+ctrl+down')
+
+                    case '[1;6C':
+                        return this.emit('key','shift+ctrl+right')
+
+                    case '[1;6D':
+                        return this.emit('key','shift+ctrl+left')
+
+                    case '[1;7A':
+                        return this.emit('key','ctrl+alt+up')
+
+                    case '[1;7B':
+                        return this.emit('key','ctrl+alt+down')
+
+                    case '[1;7C':
+                        return this.emit('key','ctrl+alt+right')
+
+                    case '[1;7D':
+                        return this.emit('key','ctrl+alt+left')
+
+                    case '[1;8A':
+                        return this.emit('key','shift+ctrl+alt+up')
+
+                    case '[1;8B':
+                        return this.emit('key','shift+ctrl+alt+down')
+
+                    case '[1;8C':
+                        return this.emit('key','shift+ctrl+alt+right')
+
+                    case '[1;8D':
+                        return this.emit('key','shift+ctrl+alt+left')
+
+                    case '[1;15A':
+                        return this.emit('key','ctrl+alt+cmd+up')
+
+                    case '[1;15B':
+                        return this.emit('key','ctrl+alt+cmd+down')
+
+                    case '[1;15C':
+                        return this.emit('key','ctrl+alt+cmd+right')
+
+                    case '[1;15D':
+                        return this.emit('key','ctrl+alt+cmd+left')
+
+                    case '[27;9;122~':
+                        return this.emit('key','cmd+z')
+
+                }
+
+                console.log('DATA',data,seq,seq.slice(1))
                 return
             }
             else if (data.length === 1)
@@ -177,6 +307,16 @@ TTIO = (function ()
             }
             else
             {
+                switch (seq[0])
+                {
+                    case 'b':
+                        return this.emit('key','alt+left')
+
+                    case 'f':
+                        return this.emit('key','alt+right')
+
+                }
+
                 console.log('seq?',seq,data)
             }
         }

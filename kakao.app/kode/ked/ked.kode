@@ -1,5 +1,12 @@
+###
+000   000  00000000  0000000    
+000  000   000       000   000  
+0000000    0000000   000   000  
+000  000   000       000   000  
+000   000  00000000  0000000    
+###
 
-use ◆ ttio
+use ◆ ttio linenr cells
 use ../kxk ▪ karg
 
 args = karg """
@@ -14,6 +21,9 @@ function KED
 
         @t = new ttio
         
+        @cells  = new cells @t
+        @linenr = new linenr @cells
+        
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
         @t.on 'wheel'  @onWheel
@@ -22,12 +32,13 @@ function KED
         @t.on 'blur'   -> 
             
         if args.version ➜ log '0.0.1'; process.exit 0
-            
-        @t.clear()
-            
+                        
         if valid args.options
             log 'file(s):' args.options
             
+        @t.setCursor 4 0
+        @onResize @t.cols() @t.rows()
+        
     @run: -> new KED()
     
     onMouse: event col row button =>
@@ -62,10 +73,16 @@ function KED
             'tab'       ➜ ⮐ @t.write '    '
             'ctrl+c'    ➜ ⮐ process.exit 0
             'ctrl+q'    ➜ ⮐ process.exit 0
-    
+            
         @t.write key
         
-    onResize: cols rows => #log 'resize:' cols rows
+    onResize: cols rows =>
+        
+        @t.hideCursor()
+        @cells.init()
+        @linenr.draw()
+        @cells.render()
+        @t.showCursor()
         
 export KED.run
 

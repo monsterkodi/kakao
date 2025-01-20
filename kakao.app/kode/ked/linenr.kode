@@ -1,0 +1,26 @@
+###
+000      000  000   000  00000000  000   000  00000000   
+000      000  0000  000  000       0000  000  000   000  
+000      000  000 0 000  0000000   000 0 000  0000000    
+000      000  000  0000  000       000  0000  000   000  
+0000000  000  000   000  00000000  000   000  000   000  
+###
+
+function linenr
+
+    @: @cells ->
+        
+        @draw()
+    
+    draw: ->
+        
+        @cells.bg_rect 1 1  4 -1 '0a0a0a'
+        @cells.bg_rect 5 1 -1 -1 '0c0c0c'
+        
+        for y in 0...@cells.t.rows()
+            lineno = lpad 3 y
+            for c,i in lineno
+                @cells.c[y][i].fg = '1a1a1a'
+                @cells.c[y][i].char = c
+
+export linenr
