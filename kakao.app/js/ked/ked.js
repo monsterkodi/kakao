@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var args, KED
 
@@ -89,38 +89,65 @@ KED = (function ()
         }
     }
 
-    KED.prototype["onMouse"] = function (event, col, row, button, mods)
+    KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
-        var redraw, x, y
+        var redraw, start, x, y
 
         switch (event)
         {
             case 'press':
-                x = col + this.state.s.view[0] - this.state.s.gutter - 1
-                y = row + this.state.s.view[1] - 1
-                this.dragStart = [x,y]
-                redraw = this.state.deselect()
-                redraw |= this.state.setCursor(x,y)
-                if (redraw)
+                if (count > 1)
                 {
+                    this.state.deselect()
+                    x = col + this.state.s.view[0] - this.state.s.gutter
+                    y = row + this.state.s.view[1]
+                    if (count === 2)
+                    {
+                        this.state.selectLine(y)
+                    }
+                    else
+                    {
+                        this.state.selectLine(y)
+                    }
+                    this.dragStart = _k_.copy(this.state.s.selections[0])
                     return this.redraw()
+                }
+                else
+                {
+                    x = col + this.state.s.view[0] - this.state.s.gutter
+                    y = row + this.state.s.view[1]
+                    this.dragStart = [x,y,x]
+                    redraw = this.state.deselect()
+                    redraw |= this.state.setCursor(x,y)
+                    if (redraw)
+                    {
+                        return this.redraw()
+                    }
                 }
                 break
             case 'drag':
-                x = col + this.state.s.view[0] - this.state.s.gutter - 1
-                y = row + this.state.s.view[1] - 1
-                if (this.state.select(this.dragStart,[x,y]))
+                x = col + this.state.s.view[0] - this.state.s.gutter
+                y = row + this.state.s.view[1]
+                start = [this.dragStart[0],this.dragStart[1]]
+                if (y < this.dragStart[1])
+                {
+                    start = [this.dragStart[2],this.dragStart[1]]
+                }
+                if (this.state.select(start,[x,y]))
                 {
                     return this.redraw()
                 }
                 break
+            case 'release':
+                return delete this.dragStart
+
         }
 
     }
 
     KED.prototype["onWheel"] = function (dir, mods)
     {
-        var steps
+        var start, steps, x, y
 
         steps = ((function ()
         {
@@ -149,6 +176,39 @@ KED = (function ()
             }
 
         }).bind(this))()
+        if (this.dragStart)
+        {
+            x = this.state.s.cursor[0]
+            y = this.state.s.cursor[1]
+            switch (dir)
+            {
+                case 'up':
+                    y -= steps
+                    break
+                case 'down':
+                    y += steps
+                    break
+                case 'left':
+                    x -= 1
+                    break
+                case 'right':
+                    x += 1
+                    break
+            }
+
+            y = _k_.clamp(0,this.state.s.lines.length - 1,y)
+            x = _k_.clamp(0,this.state.s.lines[y].length - 1,x)
+            start = [this.dragStart[0],this.dragStart[1]]
+            if (y < this.dragStart[1])
+            {
+                start = [this.dragStart[2],this.dragStart[1]]
+            }
+            if (this.state.select(start,[x,y]))
+            {
+                this.redraw()
+            }
+            return
+        }
         switch (dir)
         {
             case 'up':

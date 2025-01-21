@@ -77,11 +77,16 @@ function state
         
         selections = []
         
+        @setCursor to[0] to[1]
+        
         if from[1] > to[1]
+            [from to] = [to from]
+        else if from[1] == to[1] and from[0] > to[0]
             [from to] = [to from]
 
         for y in from[1]..to[1]
-            ll = max 0 @s.lines[y].length-1
+            
+            ll = max 0 @s.lines[y].length
             if y == from[1]
                 x1 = clamp 0 ll from[0]
             else
@@ -90,13 +95,19 @@ function state
                 x2 = clamp 0 ll to[0]
             else
                 x2 = ll
-            selections.push [x1 y x2]
+                
+            if x1 < x2
+                selections.push [x1 y x2]
         
         @s = @s.set 'selections' selections
         
-        @setCursor to[0]+1 to[1]
-        
         true
+        
+    selectWord: x y =>
+        
+    selectLine: y =>
+        
+        @select [0 y] [@s.lines.length-1 y]
         
     deselect: =>
         
@@ -124,7 +135,7 @@ function state
             li = selection[1]
             y  = li-@s.view[1]
             if @s.view[1] <= li < @s.view[1] + @cells.t.rows()
-                for x in selection[0]..selection[2]
+                for x in selection[0]...selection[2]
                     if x+@s.gutter < @cells.t.cols()
                         @cells.c[y][x+@s.gutter].bg = '444488'
 

@@ -13,6 +13,8 @@ state = (function ()
     
         this["draw"] = this["draw"].bind(this)
         this["deselect"] = this["deselect"].bind(this)
+        this["selectLine"] = this["selectLine"].bind(this)
+        this["selectWord"] = this["selectWord"].bind(this)
         this["select"] = this["select"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
@@ -85,14 +87,20 @@ state = (function ()
         var ll, selections, x1, x2, y
 
         selections = []
+        this.setCursor(to[0],to[1])
         if (from[1] > to[1])
         {
             var _a_ = [to,from]; from = _a_[0]; to = _a_[1]
 
         }
-        for (var _b_ = y = from[1], _c_ = to[1]; (_b_ <= _c_ ? y <= to[1] : y >= to[1]); (_b_ <= _c_ ? ++y : --y))
+        else if (from[1] === to[1] && from[0] > to[0])
         {
-            ll = _k_.max(0,this.s.lines[y].length - 1)
+            var _b_ = [to,from]; from = _b_[0]; to = _b_[1]
+
+        }
+        for (var _c_ = y = from[1], _d_ = to[1]; (_c_ <= _d_ ? y <= to[1] : y >= to[1]); (_c_ <= _d_ ? ++y : --y))
+        {
+            ll = _k_.max(0,this.s.lines[y].length)
             if (y === from[1])
             {
                 x1 = _k_.clamp(0,ll,from[0])
@@ -109,11 +117,21 @@ state = (function ()
             {
                 x2 = ll
             }
-            selections.push([x1,y,x2])
+            if (x1 < x2)
+            {
+                selections.push([x1,y,x2])
+            }
         }
         this.s = this.s.set('selections',selections)
-        this.setCursor(to[0] + 1,to[1])
         return true
+    }
+
+    state.prototype["selectWord"] = function (x, y)
+    {}
+
+    state.prototype["selectLine"] = function (y)
+    {
+        return this.select([0,y],[this.s.lines.length - 1,y])
     }
 
     state.prototype["deselect"] = function ()
@@ -150,7 +168,7 @@ state = (function ()
             y = li - this.s.view[1]
             if ((this.s.view[1] <= li && li < this.s.view[1] + this.cells.t.rows()))
             {
-                for (var _f_ = x = selection[0], _10_ = selection[2]; (_f_ <= _10_ ? x <= selection[2] : x >= selection[2]); (_f_ <= _10_ ? ++x : --x))
+                for (var _f_ = x = selection[0], _10_ = selection[2]; (_f_ <= _10_ ? x < selection[2] : x > selection[2]); (_f_ <= _10_ ? ++x : --x))
                 {
                     if (x + this.s.gutter < this.cells.t.cols())
                     {

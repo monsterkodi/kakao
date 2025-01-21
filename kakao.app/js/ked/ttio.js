@@ -11,6 +11,7 @@ TTIO = (function ()
     function TTIO ()
     {
         this["onData"] = this["onData"].bind(this)
+        this["emitMousePress"] = this["emitMousePress"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["restore"] = this["restore"].bind(this)
@@ -33,8 +34,7 @@ TTIO = (function ()
         this.write('\x1b[?1006h')
         this.write('\x1b[?1049h')
         this.write('\x1b[>4;2m')
-        this.write('\x1b[5 q')
-        this.write('\x1b[<u')
+        this.write('\x1b[6 q')
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
         return TTIO.__super__.constructor.apply(this, arguments)
@@ -91,9 +91,37 @@ TTIO = (function ()
         return this.emit('resize',this.cols(),this.rows())
     }
 
+    TTIO.prototype["emitMousePress"] = function (col, row, button, mods = '')
+    {
+        var diff, _51_19_
+
+        this.lastClick = ((_51_19_=this.lastClick) != null ? _51_19_ : {row:row,col:col,count:0,time:process.hrtime()})
+        if (this.lastClick.col === col && this.lastClick.row === row)
+        {
+            diff = process.hrtime(this.lastClick.time)
+            this.lastClick.time = process.hrtime()
+            if (diff[0] < 1 && diff[1] < 500000000)
+            {
+                this.lastClick.count += 1
+            }
+            else
+            {
+                this.lastClick.count = 1
+            }
+        }
+        else
+        {
+            this.lastClick.col = col
+            this.lastClick.row = row
+            this.lastClick.count = 1
+            this.lastClick.time = process.hrtime()
+        }
+        return this.emit('mouse','press',col,row,button,mods,this.lastClick.count)
+    }
+
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, row, seq
+        var code, col, key, row, seq, x, y
 
         if (data[0] === 0x1b)
         {
@@ -105,66 +133,68 @@ TTIO = (function ()
                     return parseInt(s)
                 }); code = _a_[0]; col = _a_[1]; row = _a_[2]
 
+                x = col - 1
+                y = row - 1
                 if (seq.endsWith('M'))
                 {
                     switch (code)
                     {
                         case 0:
-                            return this.emit('mouse','press',col,row,'left')
+                            return this.emitMousePress(x,y,'left')
 
                         case 2:
-                            return this.emit('mouse','press',col,row,'right')
+                            return this.emitMousePress(x,y,'right')
 
                         case 4:
-                            return this.emit('mouse','press',col,row,'left','shift')
+                            return this.emitMousePress(x,y,'left','shift')
 
                         case 8:
-                            return this.emit('mouse','press',col,row,'left','alt')
+                            return this.emitMousePress(x,y,'left','alt')
 
                         case 16:
-                            return this.emit('mouse','press',col,row,'left','ctrl')
+                            return this.emitMousePress(x,y,'left','ctrl')
 
                         case 24:
-                            return this.emit('mouse','press',col,row,'left','ctrl+alt')
+                            return this.emitMousePress(x,y,'left','ctrl+alt')
 
                         case 32:
-                            return this.emit('mouse','drag',col,row,'left')
+                            return this.emit('mouse','drag',x,y,'left')
 
                         case 34:
-                            return this.emit('mouse','drag',col,row,'right')
+                            return this.emit('mouse','drag',x,y,'right')
 
                         case 36:
-                            return this.emit('mouse','drag',col,row,'left','shift')
+                            return this.emit('mouse','drag',x,y,'left','shift')
 
                         case 40:
-                            return this.emit('mouse','drag',col,row,'left','alt')
+                            return this.emit('mouse','drag',x,y,'left','alt')
 
                         case 48:
-                            return this.emit('mouse','drag',col,row,'left','ctrl')
+                            return this.emit('mouse','drag',x,y,'left','ctrl')
 
                         case 35:
-                            return this.emit('mouse','move',col,row,'')
+                            return this.emit('mouse','move',x,y,'')
 
                         case 39:
-                            return this.emit('mouse','move',col,row,'','shift')
+                            return this.emit('mouse','move',x,y,'','shift')
 
                         case 51:
-                            return this.emit('mouse','move',col,row,'','ctrl')
+                            return this.emit('mouse','move',x,y,'','ctrl')
 
                         case 43:
-                            return this.emit('mouse','move',col,row,'','alt')
+                            return this.emit('mouse','move',x,y,'','alt')
 
                         case 47:
-                            return this.emit('mouse','move',col,row,'','shift+alt')
+                            return this.emit('mouse','move',x,y,'','shift+alt')
 
                         case 55:
-                            return this.emit('mouse','move',col,row,'','shift+ctrl')
+                            return this.emit('mouse','move',x,y,'','shift+ctrl')
 
                         case 59:
-                            return this.emit('mouse','move',col,row,'','ctrl+alt')
+                            return this.emit('mouse','move',x,y,'','ctrl+alt')
 
                         case 63:
-                            return this.emit('mouse','move',col,row,'','shift+ctrl+alt')
+                            return this.emit('mouse','move',x,y,'','shift+ctrl+alt')
 
                         case 64:
                             return this.emit('wheel','up')
@@ -260,22 +290,22 @@ TTIO = (function ()
                     switch (code)
                     {
                         case 0:
-                            return this.emit('mouse','release',col,row,'left')
+                            return this.emit('mouse','release',x,y,'left')
 
                         case 2:
-                            return this.emit('mouse','release',col,row,'right')
+                            return this.emit('mouse','release',x,y,'right')
 
                         case 4:
-                            return this.emit('mouse','release',col,row,'left','shift')
+                            return this.emit('mouse','release',x,y,'left','shift')
 
                         case 8:
-                            return this.emit('mouse','release',col,row,'left','alt')
+                            return this.emit('mouse','release',x,y,'left','alt')
 
                         case 16:
-                            return this.emit('mouse','release',col,row,'left','ctrl')
+                            return this.emit('mouse','release',x,y,'left','ctrl')
 
                         case 24:
-                            return this.emit('mouse','release',col,row,'left','ctrl+alt')
+                            return this.emit('mouse','release',x,y,'left','ctrl+alt')
 
                     }
 
