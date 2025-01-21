@@ -24,6 +24,8 @@ function TTIO extends events
         @write '\x1b[>4;2m'  # modify other keys
         @write '\x1b[5 q'    # cursor blinking bar
         
+        @write '\x1b[<u'     # disable selection?
+        
         process.stdout.on 'resize' @onResize
         process.stdin.on  'data'   @onData
         
@@ -59,16 +61,25 @@ function TTIO extends events
                     switch code
                         0  ➜ ⮐ @emit 'mouse' 'press' col row 'left' 
                         2  ➜ ⮐ @emit 'mouse' 'press' col row 'right'
+                        4  ➜ ⮐ @emit 'mouse' 'press' col row 'left' 'shift'
+                        8  ➜ ⮐ @emit 'mouse' 'press' col row 'left' 'alt'
+                        16 ➜ ⮐ @emit 'mouse' 'press' col row 'left' 'ctrl'
+                        24 ➜ ⮐ @emit 'mouse' 'press' col row 'left' 'ctrl+alt'
+                        
                         32 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  
                         34 ➜ ⮐ @emit 'mouse' 'drag'  col row 'right' 
-                        35
-                        39
-                        43
-                        45
-                        47
-                        51 
-                        59 
-                        63 ➜ ⮐ @emit 'mouse' 'move'  col row ''
+                        36 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  'shift'
+                        40 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  'alt'
+                        48 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  'ctrl'
+                        
+                        35 ➜ ⮐ @emit 'mouse' 'move'  col row '' 
+                        39 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'shift'
+                        51 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'ctrl'
+                        43 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'alt'
+                        47 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'shift+alt'
+                        55 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'shift+ctrl'
+                        59 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'ctrl+alt'
+                        63 ➜ ⮐ @emit 'mouse' 'move'  col row '' 'shift+ctrl+alt'
                         
                         64 ➜ ⮐ @emit 'wheel' 'up'   
                         68 ➜ ⮐ @emit 'wheel' 'up' 'shift'  
@@ -108,6 +119,10 @@ function TTIO extends events
                     switch code
                         0  ➜ ⮐ @emit 'mouse' 'release' col row 'left'
                         2  ➜ ⮐ @emit 'mouse' 'release' col row 'right'
+                        4  ➜ ⮐ @emit 'mouse' 'release' col row 'left' 'shift'
+                        8  ➜ ⮐ @emit 'mouse' 'release' col row 'left' 'alt'
+                        16 ➜ ⮐ @emit 'mouse' 'release' col row 'left' 'ctrl'
+                        24 ➜ ⮐ @emit 'mouse' 'release' col row 'left' 'ctrl+alt'
                     log 'mouse release?' seq
                     ⮐ 
                     

@@ -59,9 +59,15 @@ cells = (function ()
         }
         for (var _a_ = row = y1, _b_ = y2; (_a_ <= _b_ ? row <= y2 : row >= y2); (_a_ <= _b_ ? ++row : --row))
         {
-            for (var _c_ = col = x1, _d_ = x2; (_c_ <= _d_ ? col <= x2 : col >= x2); (_c_ <= _d_ ? ++col : --col))
+            if (row < this.t.rows())
             {
-                this.c[row][col].bg = c
+                for (var _c_ = col = x1, _d_ = x2; (_c_ <= _d_ ? col <= x2 : col >= x2); (_c_ <= _d_ ? ++col : --col))
+                {
+                    if (col < this.t.cols())
+                    {
+                        this.c[row][col].bg = c
+                    }
+                }
             }
         }
     }

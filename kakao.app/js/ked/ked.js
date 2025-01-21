@@ -24,9 +24,9 @@ KED = (function ()
         this["onResize"] = this["onResize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
-        this["onMouse"] = this["onMouse"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
         this.cells = new cells(this.t)
@@ -73,20 +73,6 @@ KED = (function ()
         return this.redraw()
     }
 
-    KED.prototype["onMouse"] = function (event, col, row, button)
-    {
-        switch (event)
-        {
-            case 'press':
-                if (this.state.setCursor(col - this.state.s.view[0] - 5,row - this.state.s.view[1] - 1))
-                {
-                    return this.redraw()
-                }
-                break
-        }
-
-    }
-
     KED.prototype["moveCursor"] = function (dir, steps)
     {
         if (this.state.moveCursor(dir,steps))
@@ -101,6 +87,35 @@ KED = (function ()
         {
             return this.redraw()
         }
+    }
+
+    KED.prototype["onMouse"] = function (event, col, row, button, mods)
+    {
+        var redraw, x, y
+
+        switch (event)
+        {
+            case 'press':
+                x = col + this.state.s.view[0] - this.state.s.gutter - 1
+                y = row + this.state.s.view[1] - 1
+                this.dragStart = [x,y]
+                redraw = this.state.deselect()
+                redraw |= this.state.setCursor(x,y)
+                if (redraw)
+                {
+                    return this.redraw()
+                }
+                break
+            case 'drag':
+                x = col + this.state.s.view[0] - this.state.s.gutter - 1
+                y = row + this.state.s.view[1] - 1
+                if (this.state.select(this.dragStart,[x,y]))
+                {
+                    return this.redraw()
+                }
+                break
+        }
+
     }
 
     KED.prototype["onWheel"] = function (dir, mods)

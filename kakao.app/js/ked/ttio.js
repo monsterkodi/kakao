@@ -34,6 +34,7 @@ TTIO = (function ()
         this.write('\x1b[?1049h')
         this.write('\x1b[>4;2m')
         this.write('\x1b[5 q')
+        this.write('\x1b[<u')
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
         return TTIO.__super__.constructor.apply(this, arguments)
@@ -114,21 +115,56 @@ TTIO = (function ()
                         case 2:
                             return this.emit('mouse','press',col,row,'right')
 
+                        case 4:
+                            return this.emit('mouse','press',col,row,'left','shift')
+
+                        case 8:
+                            return this.emit('mouse','press',col,row,'left','alt')
+
+                        case 16:
+                            return this.emit('mouse','press',col,row,'left','ctrl')
+
+                        case 24:
+                            return this.emit('mouse','press',col,row,'left','ctrl+alt')
+
                         case 32:
                             return this.emit('mouse','drag',col,row,'left')
 
                         case 34:
                             return this.emit('mouse','drag',col,row,'right')
 
+                        case 36:
+                            return this.emit('mouse','drag',col,row,'left','shift')
+
+                        case 40:
+                            return this.emit('mouse','drag',col,row,'left','alt')
+
+                        case 48:
+                            return this.emit('mouse','drag',col,row,'left','ctrl')
+
                         case 35:
-                        case 39:
-                        case 43:
-                        case 45:
-                        case 47:
-                        case 51:
-                        case 59:
-                        case 63:
                             return this.emit('mouse','move',col,row,'')
+
+                        case 39:
+                            return this.emit('mouse','move',col,row,'','shift')
+
+                        case 51:
+                            return this.emit('mouse','move',col,row,'','ctrl')
+
+                        case 43:
+                            return this.emit('mouse','move',col,row,'','alt')
+
+                        case 47:
+                            return this.emit('mouse','move',col,row,'','shift+alt')
+
+                        case 55:
+                            return this.emit('mouse','move',col,row,'','shift+ctrl')
+
+                        case 59:
+                            return this.emit('mouse','move',col,row,'','ctrl+alt')
+
+                        case 63:
+                            return this.emit('mouse','move',col,row,'','shift+ctrl+alt')
 
                         case 64:
                             return this.emit('wheel','up')
@@ -228,6 +264,18 @@ TTIO = (function ()
 
                         case 2:
                             return this.emit('mouse','release',col,row,'right')
+
+                        case 4:
+                            return this.emit('mouse','release',col,row,'left','shift')
+
+                        case 8:
+                            return this.emit('mouse','release',col,row,'left','alt')
+
+                        case 16:
+                            return this.emit('mouse','release',col,row,'left','ctrl')
+
+                        case 24:
+                            return this.emit('mouse','release',col,row,'left','ctrl+alt')
 
                     }
 

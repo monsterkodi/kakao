@@ -45,22 +45,25 @@ function KED
         
     @run: -> new KED()
     
+    # 000       0000000    0000000   0000000    
+    # 000      000   000  000   000  000   000  
+    # 000      000   000  000000000  000   000  
+    # 000      000   000  000   000  000   000  
+    # 0000000   0000000   000   000  0000000    
+    
     loadFile: p ○=>
         
         text =○ nfs.read p
         lines = text.split /\r?\n/
         @state.init lines
         @redraw()
+        
+    #  0000000  000   000  00000000    0000000   0000000   00000000   
+    # 000       000   000  000   000  000       000   000  000   000  
+    # 000       000   000  0000000    0000000   000   000  0000000    
+    # 000       000   000  000   000       000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  
     
-    onMouse: event col row button =>
-        
-        switch event
-            'press'
-                if @state.setCursor col - @state.s.view[0] - 5 row - @state.s.view[1] - 1
-                    @redraw()
-        
-        # log 'mouse' event col row button
-        
     moveCursor: dir steps =>
         
         if @state.moveCursor dir steps
@@ -70,7 +73,44 @@ function KED
         
         if @state.setCursor x y
             @redraw()
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event col row button mods =>
         
+        switch event
+            
+            'press'
+                
+                x = col + @state.s.view[0] - @state.s.gutter - 1
+                y = row + @state.s.view[1] - 1
+                
+                @dragStart = [x y]
+                
+                redraw  = @state.deselect()
+                redraw |= @state.setCursor(x y)
+                if redraw ➜ @redraw()
+                    
+            'drag'
+            
+                x = col + @state.s.view[0] - @state.s.gutter - 1
+                y = row + @state.s.view[1] - 1
+                
+                if @state.select @dragStart [x y]
+                    @redraw()
+        
+        # log 'mouse' event col row button
+                
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
     onWheel: dir mods =>
         
         steps = switch mods
@@ -88,6 +128,12 @@ function KED
             'down'      
             'left'      
             'right'     ➜ ⮐ @moveCursor dir steps
+    
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
     
     onKey: key => 
         
@@ -130,6 +176,12 @@ function KED
         @t.write key
         
     onResize: cols rows => @redraw()
+    
+    # 00000000   00000000  0000000    00000000    0000000   000   000  
+    # 000   000  000       000   000  000   000  000   000  000 0 000  
+    # 0000000    0000000   000   000  0000000    000000000  000000000  
+    # 000   000  000       000   000  000   000  000   000  000   000  
+    # 000   000  00000000  0000000    000   000  000   000  00     00  
     
     redraw: =>
         

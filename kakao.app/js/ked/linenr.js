@@ -26,8 +26,11 @@ linenr = (function ()
             for (i = 0; i < list.length; i++)
             {
                 c = list[i]
-                this.cells.c[y][i + 1].fg = '1a1a1a'
-                this.cells.c[y][i + 1].char = c
+                if (i + 1 < this.cells.t.cols())
+                {
+                    this.cells.c[y][i + 1].fg = '1a1a1a'
+                    this.cells.c[y][i + 1].char = c
+                }
             }
         }
     }
