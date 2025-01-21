@@ -16,11 +16,11 @@ function TTIO extends events
 
         @write '\x1b[?45h'   # origin mode (no wrap?)
         @write '\x1b[?1000h' # mouse events
-        @write '\x1b[?1001h' # highlight tracking
+        @write '\x1b[?1002h' # cell motion tracking
         @write '\x1b[?1003h' # mouse move events
         @write '\x1b[?1004h' # focus
         @write '\x1b[?1006h' # mouse SGR mode
-        @write '\x1b[?1049h' # aletrnate screen buffer
+        @write '\x1b[?1049h' # alternate screen buffer
         @write '\x1b[>4;2m'  # modify other keys
         @write '\x1b[5 q'    # cursor blinking bar
         
@@ -42,13 +42,13 @@ function TTIO extends events
     store:   => @write '\x1b7'
     restore: => @write '\x1b8'
     
-    moveCursor: dir =>
-        
-        switch dir
-            'up'    ➜ ⮐ @write '\x1b[A'
-            'down'  ➜ ⮐ @write '\x1b[B'
-            'left'  ➜ ⮐ @write '\x1b[D'
-            'right' ➜ ⮐ @write '\x1b[C'
+    # moveCursor: dir =>
+#         
+        # switch dir
+            # 'up'    ➜ ⮐ @write '\x1b[A'
+            # 'down'  ➜ ⮐ @write '\x1b[B'
+            # 'left'  ➜ ⮐ @write '\x1b[D'
+            # 'right' ➜ ⮐ @write '\x1b[C'
             
     setCursor: x y => @write "\x1b[#{y+1};#{x+1}H"
         
@@ -60,18 +60,56 @@ function TTIO extends events
             seq = data[1..].toString 'utf8'
             
             if seq.startsWith '[<'
+                
                 [code col row] = seq[2..-2].split(';').map (s) -> parseInt s
                 if seq.endsWith 'M'
+                    # log code
                     switch code
                         0  ➜ ⮐ @emit 'mouse' 'press' col row 'left' 
                         2  ➜ ⮐ @emit 'mouse' 'press' col row 'right'
                         32 ➜ ⮐ @emit 'mouse' 'drag'  col row 'left'  
                         34 ➜ ⮐ @emit 'mouse' 'drag'  col row 'right' 
-                        35 ➜ ⮐ @emit 'mouse' 'move'  col row ''
+                        35
+                        39
+                        43
+                        45
+                        47
+                        51 
+                        59 
+                        63 ➜ ⮐ @emit 'mouse' 'move'  col row ''
+                        
                         64 ➜ ⮐ @emit 'wheel' 'up'   
+                        68 ➜ ⮐ @emit 'wheel' 'up' 'shift'  
+                        72 ➜ ⮐ @emit 'wheel' 'up' 'alt'  
+                        76 ➜ ⮐ @emit 'wheel' 'up' 'shift+alt'  
+                        84 ➜ ⮐ @emit 'wheel' 'up' 'shift+ctrl'  
+                        88 ➜ ⮐ @emit 'wheel' 'up' 'ctrl+alt'  
+                        92 ➜ ⮐ @emit 'wheel' 'up' 'shift+ctrl+alt'
+                        
                         65 ➜ ⮐ @emit 'wheel' 'down' 
+                        69 ➜ ⮐ @emit 'wheel' 'down' 'shift'  
+                        73 ➜ ⮐ @emit 'wheel' 'down' 'alt'  
+                        77 ➜ ⮐ @emit 'wheel' 'down' 'shift+alt'  
+                        85 ➜ ⮐ @emit 'wheel' 'down' 'shift+ctrl'  
+                        89 ➜ ⮐ @emit 'wheel' 'down' 'ctrl+alt'  
+                        93 ➜ ⮐ @emit 'wheel' 'down' 'shift+ctrl+alt'
+                        
                         66 ➜ ⮐ @emit 'wheel' 'left' 
+                        70 ➜ ⮐ @emit 'wheel' 'left' 'shift'  
+                        74 ➜ ⮐ @emit 'wheel' 'left' 'alt'  
+                        78 ➜ ⮐ @emit 'wheel' 'left' 'shift+alt'  
+                        86 ➜ ⮐ @emit 'wheel' 'left' 'shift+ctrl'  
+                        90 ➜ ⮐ @emit 'wheel' 'left' 'ctrl+alt'  
+                        94 ➜ ⮐ @emit 'wheel' 'left' 'shift+ctrl+alt'
+                        
                         67 ➜ ⮐ @emit 'wheel' 'right'
+                        71 ➜ ⮐ @emit 'wheel' 'right' 'shift'  
+                        75 ➜ ⮐ @emit 'wheel' 'right' 'alt'   
+                        79 ➜ ⮐ @emit 'wheel' 'right' 'shift+alt'   
+                        87 ➜ ⮐ @emit 'wheel' 'right' 'shift+ctrl'   
+                        91 ➜ ⮐ @emit 'wheel' 'right' 'ctrl+alt'  
+                        95 ➜ ⮐ @emit 'wheel' 'right' 'shift+ctrl+alt'
+                        
                     log 'mouse press?' seq
                     ⮐ 
                 else if seq.endsWith 'm'
@@ -80,6 +118,7 @@ function TTIO extends events
                         2  ➜ ⮐ @emit 'mouse' 'release' col row 'right'
                     log 'mouse release?' seq
                     ⮐ 
+                    
             else if seq.startsWith '['
                 
                 switch seq[1]
@@ -91,37 +130,39 @@ function TTIO extends events
                     'C' ➜ ⮐ @emit 'key' 'right' 
                     
                 switch seq[0..]
-                    '[1;3A' ➜ ⮐ @emit 'key' 'alt+up'
-                    '[1;3B' ➜ ⮐ @emit 'key' 'alt+down'
-                    '[1;2A' ➜ ⮐ @emit 'key' 'shift+up'
-                    '[1;2B' ➜ ⮐ @emit 'key' 'shift+down'
-                    '[1;2C' ➜ ⮐ @emit 'key' 'shift+right'
-                    '[1;2D' ➜ ⮐ @emit 'key' 'shift+left'
-                    '[1;4A' ➜ ⮐ @emit 'key' 'shift+alt+up'
-                    '[1;4B' ➜ ⮐ @emit 'key' 'shift+alt+down'
-                    '[1;4C' ➜ ⮐ @emit 'key' 'shift+alt+right'
-                    '[1;4D' ➜ ⮐ @emit 'key' 'shift+alt+left'
-                    '[1;5A' ➜ ⮐ @emit 'key' 'ctrl+up'
-                    '[1;5B' ➜ ⮐ @emit 'key' 'ctrl+down'
-                    '[1;5C' ➜ ⮐ @emit 'key' 'ctrl+right'
-                    '[1;5D' ➜ ⮐ @emit 'key' 'ctrl+left'
-                    '[1;6A' ➜ ⮐ @emit 'key' 'shift+ctrl+up'
-                    '[1;6B' ➜ ⮐ @emit 'key' 'shift+ctrl+down'
-                    '[1;6C' ➜ ⮐ @emit 'key' 'shift+ctrl+right'
-                    '[1;6D' ➜ ⮐ @emit 'key' 'shift+ctrl+left'
-                    '[1;7A' ➜ ⮐ @emit 'key' 'ctrl+alt+up'
-                    '[1;7B' ➜ ⮐ @emit 'key' 'ctrl+alt+down'
-                    '[1;7C' ➜ ⮐ @emit 'key' 'ctrl+alt+right'
-                    '[1;7D' ➜ ⮐ @emit 'key' 'ctrl+alt+left'
-                    '[1;8A' ➜ ⮐ @emit 'key' 'shift+ctrl+alt+up'
-                    '[1;8B' ➜ ⮐ @emit 'key' 'shift+ctrl+alt+down'
-                    '[1;8C' ➜ ⮐ @emit 'key' 'shift+ctrl+alt+right'
-                    '[1;8D' ➜ ⮐ @emit 'key' 'shift+ctrl+alt+left'
-                    '[1;15A' ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+up'
-                    '[1;15B' ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+down'
-                    '[1;15C' ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+right'
-                    '[1;15D' ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+left'
-                    '[27;9;122~' ➜ ⮐ @emit 'key' 'cmd+z'
+                    '[1;3A'         ➜ ⮐ @emit 'key' 'alt+up'
+                    '[1;3B'         ➜ ⮐ @emit 'key' 'alt+down'
+                    '[1;2A'         ➜ ⮐ @emit 'key' 'shift+up'
+                    '[1;2B'         ➜ ⮐ @emit 'key' 'shift+down'
+                    '[1;2C'         ➜ ⮐ @emit 'key' 'shift+right'
+                    '[1;2D'         ➜ ⮐ @emit 'key' 'shift+left'
+                    '[1;4A'         ➜ ⮐ @emit 'key' 'shift+alt+up'
+                    '[1;4B'         ➜ ⮐ @emit 'key' 'shift+alt+down'
+                    '[1;4C'         ➜ ⮐ @emit 'key' 'shift+alt+right'
+                    '[1;4D'         ➜ ⮐ @emit 'key' 'shift+alt+left'
+                    '[1;5A'         ➜ ⮐ @emit 'key' 'ctrl+up'
+                    '[1;5B'         ➜ ⮐ @emit 'key' 'ctrl+down'
+                    '[1;5C'         ➜ ⮐ @emit 'key' 'ctrl+right'
+                    '[1;5D'         ➜ ⮐ @emit 'key' 'ctrl+left'
+                    '[1;6A'         ➜ ⮐ @emit 'key' 'shift+ctrl+up'
+                    '[1;6B'         ➜ ⮐ @emit 'key' 'shift+ctrl+down'
+                    '[1;6C'         ➜ ⮐ @emit 'key' 'shift+ctrl+right'
+                    '[1;6D'         ➜ ⮐ @emit 'key' 'shift+ctrl+left'
+                    '[1;7A'         ➜ ⮐ @emit 'key' 'ctrl+alt+up'
+                    '[1;7B'         ➜ ⮐ @emit 'key' 'ctrl+alt+down'
+                    '[1;7C'         ➜ ⮐ @emit 'key' 'ctrl+alt+right'
+                    '[1;7D'         ➜ ⮐ @emit 'key' 'ctrl+alt+left'
+                    '[1;8A'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+up'
+                    '[1;8B'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+down'
+                    '[1;8C'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+right'
+                    '[1;8D'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+left'
+                    '[1;15A'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+up'
+                    '[1;15B'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+down'
+                    '[1;15C'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+right'
+                    '[1;15D'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+left'
+                    '[27;9;120~'    ➜ ⮐ @emit 'key' 'cmd+x'
+                    '[27;9;121~'    ➜ ⮐ @emit 'key' 'cmd+y'
+                    '[27;9;122~'    ➜ ⮐ @emit 'key' 'cmd+z'
                     
                 log 'DATA' data, seq, seq[1..]
                 ⮐ 

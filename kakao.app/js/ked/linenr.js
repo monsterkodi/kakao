@@ -5,9 +5,10 @@ var linenr
 
 linenr = (function ()
 {
-    function linenr (cells)
+    function linenr (cells, state)
     {
         this.cells = cells
+        this.state = state
     
         this.draw()
     }
@@ -20,7 +21,7 @@ linenr = (function ()
         this.cells.bg_rect(5,1,-1,-1,'0c0c0c')
         for (var _a_ = y = 0, _b_ = this.cells.t.rows(); (_a_ <= _b_ ? y < this.cells.t.rows() : y > this.cells.t.rows()); (_a_ <= _b_ ? ++y : --y))
         {
-            lineno = _k_.lpad(3,y)
+            lineno = _k_.lpad(3,this.state.s.view[1] + y + 1)
             var list = _k_.list(lineno)
             for (i = 0; i < list.length; i++)
             {

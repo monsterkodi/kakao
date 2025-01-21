@@ -6,8 +6,9 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio linenr cells
+use ◆ ttio linenr cells state
 use ../kxk ▪ karg
+use ../kxk/nfs
 
 args = karg """
     ked [file]
@@ -22,7 +23,8 @@ function KED
         @t = new ttio
         
         @cells  = new cells @t
-        @linenr = new linenr @cells
+        @state  = new state  @cells
+        @linenr = new linenr @cells @state
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -35,26 +37,53 @@ function KED
                         
         if valid args.options
             log 'file(s):' args.options
-            
-        @t.setCursor 4 0
-        @onResize @t.cols() @t.rows()
+            @loadFile args.options[0]
+        else
+            @state.init ['']
+            @t.setCursor 4 0
+            @onResize @t.cols() @t.rows()
         
     @run: -> new KED()
+    
+    loadFile: p ○=>
+        
+        text =○ nfs.read p
+        lines = text.split /\r?\n/
+        log 'lines' lines
+        @state.init lines
+        @onResize @t.cols() @t.rows()
     
     onMouse: event col row button =>
         
         switch event
-            'press' ➜ ⮐ @t.write "\x1b[#{row};#{col}H"
+            'press'
+                if @state.setCursor col - @state.s.view[0] - 5 row - @state.s.view[1] - 1
+                    @redraw()
         
         # log 'mouse' event col row button
         
-    onWheel: dir =>
+    moveCursor: dir steps =>
+        
+        if @state.moveCursor dir steps
+            @redraw()
+        
+    onWheel: dir mods =>
+        
+        steps = switch mods
+            
+            'shift'          ➜ 2
+            'shift+ctrl'     ➜ 4
+            'alt'            ➜ 8
+            'shift+alt'      ➜ 16
+            'ctrl+alt'       ➜ 32
+            'shift+ctrl+alt' ➜ 64
+            ➜ 1
         
         switch dir
             'up'        
             'down'      
             'left'      
-            'right'     ➜ ⮐ @t.moveCursor dir
+            'right'     ➜ ⮐ @moveCursor dir steps
     
     onKey: key => 
         
@@ -62,7 +91,7 @@ function KED
             'up'        
             'down'      
             'left'      
-            'right'     ➜ ⮐ @t.moveCursor key
+            'right'     ➜ ⮐ @moveCursor key
             'ctrl+a'    ➜ ⮐ @t.write '\x1b[0G'
             'ctrl+e'    ➜ ⮐ @t.write "\x1b[#{@t.cols()}G"
             'ctrl+h'    ➜ ⮐ @t.write '\x1b[H'
@@ -76,11 +105,14 @@ function KED
             
         @t.write key
         
-    onResize: cols rows =>
+    onResize: cols rows => @redraw()
+    
+    redraw: =>
         
         @t.hideCursor()
         @cells.init()
         @linenr.draw()
+        @state.draw()
         @cells.render()
         @t.showCursor()
         

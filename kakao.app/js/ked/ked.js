@@ -5,9 +5,12 @@ var args, KED
 import ttio from "./ttio.js"
 import linenr from "./linenr.js"
 import cells from "./cells.js"
+import state from "./state.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg
+
+import nfs from "../kxk/nfs.js"
 
 args = karg(`ked [file]
     options                                   **
@@ -17,13 +20,17 @@ KED = (function ()
 {
     function KED ()
     {
+        this["redraw"] = this["redraw"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
+        this["moveCursor"] = this["moveCursor"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
         this.cells = new cells(this.t)
-        this.linenr = new linenr(this.cells)
+        this.state = new state(this.cells)
+        this.linenr = new linenr(this.cells,this.state)
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -40,9 +47,14 @@ KED = (function ()
         if (!_k_.empty(args.options))
         {
             console.log('file(s):',args.options)
+            this.loadFile(args.options[0])
         }
-        this.t.setCursor(4,0)
-        this.onResize(this.t.cols(),this.t.rows())
+        else
+        {
+            this.state.init([''])
+            this.t.setCursor(4,0)
+            this.onResize(this.t.cols(),this.t.rows())
+        }
     }
 
     KED["run"] = function ()
@@ -50,26 +62,77 @@ KED = (function ()
         return new KED()
     }
 
+    KED.prototype["loadFile"] = async function (p)
+    {
+        var lines, text
+
+        text = await nfs.read(p)
+        lines = text.split(/\r?\n/)
+        console.log('lines',lines)
+        this.state.init(lines)
+        return this.onResize(this.t.cols(),this.t.rows())
+    }
+
     KED.prototype["onMouse"] = function (event, col, row, button)
     {
         switch (event)
         {
             case 'press':
-                return this.t.write(`\x1b[${row};${col}H`)
-
+                if (this.state.setCursor(col - this.state.s.view[0] - 5,row - this.state.s.view[1] - 1))
+                {
+                    return this.redraw()
+                }
+                break
         }
 
     }
 
-    KED.prototype["onWheel"] = function (dir)
+    KED.prototype["moveCursor"] = function (dir, steps)
     {
+        if (this.state.moveCursor(dir,steps))
+        {
+            return this.redraw()
+        }
+    }
+
+    KED.prototype["onWheel"] = function (dir, mods)
+    {
+        var steps
+
+        steps = ((function ()
+        {
+            switch (mods)
+            {
+                case 'shift':
+                    return 2
+
+                case 'shift+ctrl':
+                    return 4
+
+                case 'alt':
+                    return 8
+
+                case 'shift+alt':
+                    return 16
+
+                case 'ctrl+alt':
+                    return 32
+
+                case 'shift+ctrl+alt':
+                    return 64
+
+                default:
+                    return 1
+            }
+
+        }).bind(this))()
         switch (dir)
         {
             case 'up':
             case 'down':
             case 'left':
             case 'right':
-                return this.t.moveCursor(dir)
+                return this.moveCursor(dir,steps)
 
         }
 
@@ -83,7 +146,7 @@ KED = (function ()
             case 'down':
             case 'left':
             case 'right':
-                return this.t.moveCursor(key)
+                return this.moveCursor(key)
 
             case 'ctrl+a':
                 return this.t.write('\x1b[0G')
@@ -122,9 +185,15 @@ KED = (function ()
 
     KED.prototype["onResize"] = function (cols, rows)
     {
+        return this.redraw()
+    }
+
+    KED.prototype["redraw"] = function ()
+    {
         this.t.hideCursor()
         this.cells.init()
         this.linenr.draw()
+        this.state.draw()
         this.cells.render()
         return this.t.showCursor()
     }

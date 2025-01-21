@@ -1,0 +1,89 @@
+###
+ 0000000  000000000   0000000   000000000  00000000  
+000          000     000   000     000     000       
+0000000      000     000000000     000     0000000   
+     000     000     000   000     000     000       
+0000000      000     000   000     000     00000000  
+###
+
+use ../kxk ◆ immutable
+
+function state
+
+    @: @cells -> @init ['']
+    
+    init: lines ->
+        
+        @s = immutable
+            lines:       lines
+            selections:  []
+            cursor:      [0 0]
+            view:        [0 0]
+            
+    setCursor: x y =>
+        
+        c = @s.cursor.asMutable() 
+        
+        c[0] = x
+        c[1] = y
+        
+        c[1] = clamp 0 @s.lines.length-1 c[1]
+        c[0] = clamp 0 @s.lines[c[1]].length c[0]
+                        
+        @s = @s.set 'cursor' c
+        
+        if c[1] > @s.view[1] + @cells.t.rows()
+            view = @s.view.asMutable()
+            view[1] = c[1] - @cells.t.rows()
+            @s = @s.set 'view' view
+            doRedraw = true
+        else if c[1] < @s.view[1]
+            view = @s.view.asMutable()
+            view[1] = c[1]
+            @s = @s.set 'view' view
+            doRedraw = true
+            
+        @cells.t.setCursor c[0]+4 c[1]-@s.view[1]
+        
+        doRedraw
+            
+    moveCursor: dir steps =>
+        
+        c = @s.cursor.asMutable() 
+        
+        switch dir
+            'left'  ➜ c[0] -= 1
+            'right' ➜ c[0] += 1
+            'up'    ➜ c[1] -= steps 
+            'down'  ➜ c[1] += steps 
+            
+        c[1] = clamp 0 @s.lines.length-1 c[1]
+        c[0] = clamp 0 @s.lines[c[1]].length c[0]
+        
+        @s = @s.set 'cursor' c
+        
+        if c[1] > @s.view[1] + @cells.t.rows()
+            view = @s.view.asMutable()
+            view[1] = c[1] - @cells.t.rows()
+            @s = @s.set 'view' view
+            doRedraw = true
+        else if c[1] < @s.view[1]
+            view = @s.view.asMutable()
+            view[1] = c[1]
+            @s = @s.set 'view' view
+            doRedraw = true
+            
+        @cells.t.setCursor c[0]+4 c[1]-@s.view[1]
+        
+        doRedraw
+            
+    draw: ->
+        
+        for y in 0...@cells.t.rows()
+            li = y+@s.view[1]
+            line = @s.lines[li]
+            for x in 0...min(line.length @cells.t.cols()-4)
+                @cells.c[y][x+4].fg = 'ffffff'
+                @cells.c[y][x+4].char = line[x]
+
+export state

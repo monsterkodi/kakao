@@ -8,7 +8,7 @@
 
 function linenr
 
-    @: @cells ->
+    @: @cells @state ->
         
         @draw()
     
@@ -18,7 +18,7 @@ function linenr
         @cells.bg_rect 5 1 -1 -1 '0c0c0c'
         
         for y in 0...@cells.t.rows()
-            lineno = lpad 3 y
+            lineno = lpad 3 @state.s.view[1] + y + 1
             for c,i in lineno
                 @cells.c[y][i].fg = '1a1a1a'
                 @cells.c[y][i].char = c
