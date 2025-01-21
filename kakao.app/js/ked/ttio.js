@@ -406,6 +406,9 @@ TTIO = (function ()
                 case 0x08:
                     return this.emit('key','ctrl+h')
 
+                case 0x0a:
+                    return this.emit('key','ctrl+j')
+
                 case 0x0b:
                     return this.emit('key','ctrl+k')
 

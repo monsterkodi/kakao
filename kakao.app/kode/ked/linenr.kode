@@ -14,13 +14,14 @@ function linenr
     
     draw: ->
         
-        @cells.bg_rect 1 1  4 -1 '0a0a0a'
-        @cells.bg_rect 5 1 -1 -1 '0c0c0c'
+        @cells.bg_rect 0 0 @state.s.gutter-1 -1 '0a0a0a'
+        # @cells.bg_rect @state.s.gutter 0 -1 -1 '0c0c0c'
+        @cells.bg_rect @state.s.gutter 0 -1 -1 '080808'
         
         for y in 0...@cells.t.rows()
-            lineno = lpad 3 @state.s.view[1] + y + 1
+            lineno = lpad @state.s.gutter-2 @state.s.view[1] + y + 1
             for c,i in lineno
-                @cells.c[y][i].fg = '1a1a1a'
-                @cells.c[y][i].char = c
+                @cells.c[y][i+1].fg = '1a1a1a'
+                @cells.c[y][i+1].char = c
 
 export linenr

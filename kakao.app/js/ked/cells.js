@@ -43,25 +43,25 @@ cells = (function ()
 
         if (x1 < 0)
         {
-            x1 = this.t.cols() + x1 + 1
+            x1 = this.t.cols() + x1
         }
         if (x2 < 0)
         {
-            x2 = this.t.cols() + x2 + 1
+            x2 = this.t.cols() + x2
         }
         if (y1 < 0)
         {
-            y1 = this.t.rows() + y1 + 1
+            y1 = this.t.rows() + y1
         }
         if (y2 < 0)
         {
-            y2 = this.t.rows() + y2 + 1
+            y2 = this.t.rows() + y2
         }
         for (var _a_ = row = y1, _b_ = y2; (_a_ <= _b_ ? row <= y2 : row >= y2); (_a_ <= _b_ ? ++row : --row))
         {
             for (var _c_ = col = x1, _d_ = x2; (_c_ <= _d_ ? col <= x2 : col >= x2); (_c_ <= _d_ ? ++col : --col))
             {
-                this.c[row - 1][col - 1].bg = c
+                this.c[row][col].bg = c
             }
         }
     }

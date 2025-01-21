@@ -11,14 +11,22 @@ state = (function ()
     {
         this.cells = cells
     
+        this["draw"] = this["draw"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
+        this["calcGutter"] = this["calcGutter"].bind(this)
         this.init([''])
     }
 
     state.prototype["init"] = function (lines)
     {
-        return this.s = immutable({lines:lines,selections:[],cursor:[0,0],view:[0,0]})
+        this.s = immutable({lines:lines,selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(lines.length)})
+        return this.setCursor(0,0)
+    }
+
+    state.prototype["calcGutter"] = function (numLines)
+    {
+        return 2 + Math.ceil(Math.log10(numLines))
     }
 
     state.prototype["setCursor"] = function (x, y)
@@ -42,7 +50,7 @@ state = (function ()
             this.s = this.s.set('view',view)
             doRedraw = true
         }
-        this.cells.t.setCursor(x + 4,y - this.s.view[1])
+        this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
         return doRedraw
     }
 
@@ -78,10 +86,10 @@ state = (function ()
         {
             li = y + this.s.view[1]
             line = this.s.lines[li]
-            for (var _c_ = x = 0, _d_ = _k_.min(line.length,this.cells.t.cols() - 4); (_c_ <= _d_ ? x < _k_.min(line.length,this.cells.t.cols() - 4) : x > _k_.min(line.length,this.cells.t.cols() - 4)); (_c_ <= _d_ ? ++x : --x))
+            for (var _c_ = x = 0, _d_ = _k_.min(line.length,this.cells.t.cols() - this.s.gutter); (_c_ <= _d_ ? x < _k_.min(line.length,this.cells.t.cols() - this.s.gutter) : x > _k_.min(line.length,this.cells.t.cols() - this.s.gutter)); (_c_ <= _d_ ? ++x : --x))
             {
-                this.cells.c[y][x + 4].fg = 'ffffff'
-                this.cells.c[y][x + 4].char = line[x]
+                this.cells.c[y][x + this.s.gutter].fg = 'ffffff'
+                this.cells.c[y][x + this.s.gutter].char = line[x]
             }
         }
     }

@@ -174,6 +174,7 @@ function TTIO extends events
                 0x05 ➜ ⮐ @emit 'key' 'ctrl+e'
                 0x11 ➜ ⮐ @emit 'key' 'ctrl+q'
                 0x08 ➜ ⮐ @emit 'key' 'ctrl+h'
+                0x0a ➜ ⮐ @emit 'key' 'ctrl+j'
                 0x0b ➜ ⮐ @emit 'key' 'ctrl+k' 
                 0x0d ➜ ⮐ @emit 'key' 'return' 
                 0x7f ➜ ⮐ @emit 'key' 'delete' 

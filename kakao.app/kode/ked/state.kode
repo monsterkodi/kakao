@@ -19,6 +19,13 @@ function state
             selections:  []
             cursor:      [0 0]
             view:        [0 0]
+            gutter:      @calcGutter(lines.length)
+
+        @setCursor 0 0
+        
+    calcGutter: numLines =>
+        
+        2 + Math.ceil(Math.log10(numLines))
             
     setCursor: x y =>
         
@@ -38,7 +45,7 @@ function state
             @s = @s.set 'view' view
             doRedraw = true
             
-        @cells.t.setCursor x+4 y-@s.view[1]
+        @cells.t.setCursor x+@s.gutter y-@s.view[1]
         
         doRedraw
             
@@ -54,13 +61,13 @@ function state
             
         @setCursor c[0] c[1]
             
-    draw: ->
+    draw: =>
         
         for y in 0...@cells.t.rows()
             li = y+@s.view[1]
             line = @s.lines[li]
-            for x in 0...min(line.length @cells.t.cols()-4)
-                @cells.c[y][x+4].fg = 'ffffff'
-                @cells.c[y][x+4].char = line[x]
+            for x in 0...min(line.length @cells.t.cols()-@s.gutter)
+                @cells.c[y][x+@s.gutter].fg = 'ffffff'
+                @cells.c[y][x+@s.gutter].char = line[x]
 
 export state

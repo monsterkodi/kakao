@@ -49,9 +49,8 @@ function KED
         
         text =○ nfs.read p
         lines = text.split /\r?\n/
-        log 'lines' lines
         @state.init lines
-        @onResize @t.cols() @t.rows()
+        @redraw()
     
     onMouse: event col row button =>
         
@@ -117,6 +116,7 @@ function KED
             'ctrl+a'        ➜ ⮐ @setCursor 0 @state.s.cursor[1]
             'ctrl+e'        ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
             'ctrl+h'        ➜ ⮐ @setCursor 0 0
+            'ctrl+j'
             'shift+ctrl+h'  ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
             
             'ctrl+k'    ➜ ⮐ @t.write '\x1b[0K'

@@ -69,9 +69,8 @@ KED = (function ()
 
         text = await nfs.read(p)
         lines = text.split(/\r?\n/)
-        console.log('lines',lines)
         this.state.init(lines)
-        return this.onResize(this.t.cols(),this.t.rows())
+        return this.redraw()
     }
 
     KED.prototype["onMouse"] = function (event, col, row, button)
@@ -202,6 +201,7 @@ KED = (function ()
             case 'ctrl+h':
                 return this.setCursor(0,0)
 
+            case 'ctrl+j':
             case 'shift+ctrl+h':
                 return this.setCursor(this.state.s.lines.slice(-1)[0].length,this.state.s.lines.length - 1)
 
