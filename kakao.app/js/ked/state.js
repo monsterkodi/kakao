@@ -23,35 +23,32 @@ state = (function ()
 
     state.prototype["setCursor"] = function (x, y)
     {
-        var c, doRedraw, view
+        var doRedraw, view
 
-        c = this.s.cursor.asMutable()
-        c[0] = x
-        c[1] = y
-        c[1] = _k_.clamp(0,this.s.lines.length - 1,c[1])
-        c[0] = _k_.clamp(0,this.s.lines[c[1]].length,c[0])
-        this.s = this.s.set('cursor',c)
-        if (c[1] > this.s.view[1] + this.cells.t.rows())
+        y = _k_.clamp(0,this.s.lines.length - 1,y)
+        x = _k_.clamp(0,this.s.lines[y].length,x)
+        this.s = this.s.set('cursor',[x,y])
+        if (y > this.s.view[1] + this.cells.t.rows())
         {
             view = this.s.view.asMutable()
-            view[1] = c[1] - this.cells.t.rows()
+            view[1] = y - this.cells.t.rows()
             this.s = this.s.set('view',view)
             doRedraw = true
         }
-        else if (c[1] < this.s.view[1])
+        else if (y < this.s.view[1])
         {
             view = this.s.view.asMutable()
-            view[1] = c[1]
+            view[1] = y
             this.s = this.s.set('view',view)
             doRedraw = true
         }
-        this.cells.t.setCursor(c[0] + 4,c[1] - this.s.view[1])
+        this.cells.t.setCursor(x + 4,y - this.s.view[1])
         return doRedraw
     }
 
-    state.prototype["moveCursor"] = function (dir, steps)
+    state.prototype["moveCursor"] = function (dir, steps = 1)
     {
-        var c, doRedraw, view
+        var c
 
         c = this.s.cursor.asMutable()
         switch (dir)
@@ -70,25 +67,7 @@ state = (function ()
                 break
         }
 
-        c[1] = _k_.clamp(0,this.s.lines.length - 1,c[1])
-        c[0] = _k_.clamp(0,this.s.lines[c[1]].length,c[0])
-        this.s = this.s.set('cursor',c)
-        if (c[1] > this.s.view[1] + this.cells.t.rows())
-        {
-            view = this.s.view.asMutable()
-            view[1] = c[1] - this.cells.t.rows()
-            this.s = this.s.set('view',view)
-            doRedraw = true
-        }
-        else if (c[1] < this.s.view[1])
-        {
-            view = this.s.view.asMutable()
-            view[1] = c[1]
-            this.s = this.s.set('view',view)
-            doRedraw = true
-        }
-        this.cells.t.setCursor(c[0] + 4,c[1] - this.s.view[1])
-        return doRedraw
+        return this.setCursor(c[0],c[1])
     }
 
     state.prototype["draw"] = function ()

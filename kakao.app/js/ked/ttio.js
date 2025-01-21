@@ -360,6 +360,9 @@ TTIO = (function ()
                     case '[27;9;122~':
                         return this.emit('key','cmd+z')
 
+                    case '[27;5;72~':
+                        return this.emit('key','shift+ctrl+h')
+
                 }
 
                 console.log('DATA',data,seq,seq.slice(1))

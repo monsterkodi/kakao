@@ -24,6 +24,7 @@ KED = (function ()
         this["onResize"] = this["onResize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
+        this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
@@ -95,6 +96,14 @@ KED = (function ()
         }
     }
 
+    KED.prototype["setCursor"] = function (x, y)
+    {
+        if (this.state.setCursor(x,y))
+        {
+            return this.redraw()
+        }
+    }
+
     KED.prototype["onWheel"] = function (dir, mods)
     {
         var steps
@@ -148,14 +157,53 @@ KED = (function ()
             case 'right':
                 return this.moveCursor(key)
 
+            case 'ctrl+up':
+                return this.moveCursor('up',4)
+
+            case 'ctrl+down':
+                return this.moveCursor('down',4)
+
+            case 'ctrl+left':
+                return this.moveCursor('left',4)
+
+            case 'ctrl+right':
+                return this.moveCursor('right',4)
+
+            case 'ctrl+alt+up':
+                return this.moveCursor('up',8)
+
+            case 'ctrl+alt+down':
+                return this.moveCursor('down',8)
+
+            case 'ctrl+alt+left':
+                return this.moveCursor('left',8)
+
+            case 'ctrl+alt+right':
+                return this.moveCursor('right',8)
+
+            case 'shift+ctrl+alt+up':
+                return this.moveCursor('up',16)
+
+            case 'shift+ctrl+alt+down':
+                return this.moveCursor('down',16)
+
+            case 'shift+ctrl+alt+left':
+                return this.moveCursor('left',16)
+
+            case 'shift+ctrl+alt+right':
+                return this.moveCursor('right',16)
+
             case 'ctrl+a':
-                return this.t.write('\x1b[0G')
+                return this.setCursor(0,this.state.s.cursor[1])
 
             case 'ctrl+e':
-                return this.t.write(`\x1b[${this.t.cols()}G`)
+                return this.setCursor(this.state.s.lines[this.state.s.cursor[1]].length,this.state.s.cursor[1])
 
             case 'ctrl+h':
-                return this.t.write('\x1b[H')
+                return this.setCursor(0,0)
+
+            case 'shift+ctrl+h':
+                return this.setCursor(this.state.s.lines.slice(-1)[0].length,this.state.s.lines.length - 1)
 
             case 'ctrl+k':
                 return this.t.write('\x1b[0K')

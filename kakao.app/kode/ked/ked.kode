@@ -66,6 +66,11 @@ function KED
         
         if @state.moveCursor dir steps
             @redraw()
+            
+    setCursor: x y =>
+        
+        if @state.setCursor x y
+            @redraw()
         
     onWheel: dir mods =>
         
@@ -88,13 +93,32 @@ function KED
     onKey: key => 
         
         switch key
+            
             'up'        
             'down'      
             'left'      
-            'right'     ➜ ⮐ @moveCursor key
-            'ctrl+a'    ➜ ⮐ @t.write '\x1b[0G'
-            'ctrl+e'    ➜ ⮐ @t.write "\x1b[#{@t.cols()}G"
-            'ctrl+h'    ➜ ⮐ @t.write '\x1b[H'
+            'right'                 ➜ ⮐ @moveCursor key
+            
+            'ctrl+up'               ➜ ⮐ @moveCursor 'up'    4
+            'ctrl+down'             ➜ ⮐ @moveCursor 'down'  4
+            'ctrl+left'             ➜ ⮐ @moveCursor 'left'  4
+            'ctrl+right'            ➜ ⮐ @moveCursor 'right' 4
+                   
+            'ctrl+alt+up'           ➜ ⮐ @moveCursor 'up'    8
+            'ctrl+alt+down'         ➜ ⮐ @moveCursor 'down'  8
+            'ctrl+alt+left'         ➜ ⮐ @moveCursor 'left'  8
+            'ctrl+alt+right'        ➜ ⮐ @moveCursor 'right' 8
+
+            'shift+ctrl+alt+up'     ➜ ⮐ @moveCursor 'up'    16
+            'shift+ctrl+alt+down'   ➜ ⮐ @moveCursor 'down'  16
+            'shift+ctrl+alt+left'   ➜ ⮐ @moveCursor 'left'  16
+            'shift+ctrl+alt+right'  ➜ ⮐ @moveCursor 'right' 16
+            
+            'ctrl+a'        ➜ ⮐ @setCursor 0 @state.s.cursor[1]
+            'ctrl+e'        ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
+            'ctrl+h'        ➜ ⮐ @setCursor 0 0
+            'shift+ctrl+h'  ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
+            
             'ctrl+k'    ➜ ⮐ @t.write '\x1b[0K'
             'return'    ➜ ⮐ @t.write '\n'
             'space'     ➜ ⮐ @t.write ' '
