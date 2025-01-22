@@ -17,7 +17,6 @@ function gutter
     draw: ->
         
         @cells.bg_rect 0 0 @state.s.gutter-1 -1 color.gutter
-        @cells.bg_rect @state.s.gutter 0 -1 -1 '080808'
         
         for row in 0...@cells.t.rows()
             
@@ -26,14 +25,26 @@ function gutter
             
             for c,i in lineno
                 
-                if i+1 < @cells.t.cols()
+                col = i+1
+                if col < @cells.t.cols()
                     
+                    if y < @state.s.lines.length
+                        linel = @state.s.lines[y].length - @state.s.view[0]
+                        if y == @state.s.cursor[1]
+                            if linel > 0
+                                @cells.bg_rect @state.s.gutter row @state.s.gutter+linel row color.cursor_main
+                            @cells.bg_rect max(@state.s.gutter @state.s.gutter+linel) row -1 row color.cursor_empty
+                        else
+                            if linel > 0
+                                @cells.bg_rect @state.s.gutter row @state.s.gutter+linel row color.editor
+                            @cells.bg_rect max(@state.s.gutter @state.s.gutter+linel) row -1 row color.editor_empty
+                        
                     clr = if
                         y == @state.s.cursor[1] ➜ color.cursor
                         @state.isSelectedLine y ➜ color.selection
                                                 ➜ color.linenr
                     
-                    @cells.c[row][i+1].fg = clr
-                    @cells.c[row][i+1].char = c
+                    @cells.c[row][col].fg = clr
+                    @cells.c[row][col].char = c
 
 export gutter

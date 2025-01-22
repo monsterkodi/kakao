@@ -37,18 +37,20 @@ function state
     setCursor: x y =>
         
         y = clamp 0 @s.lines.length-1 y
-        x = clamp 0 @s.lines[y].length x
+        x = max 0 x
                         
         @s = @s.set 'cursor' [x y]
         
-        if y >= @s.view[1] + @cells.t.rows()
-            view = @s.view.asMutable()
+        view = @s.view.asMutable()
+        
+        if y >= view[1] + @cells.t.rows()
             view[1] = y - @cells.t.rows() + 1
-            @s = @s.set 'view' view
-        else if y < @s.view[1]
-            view = @s.view.asMutable()
+        else if y < view[1]
             view[1] = y
-            @s = @s.set 'view' view
+
+        view[0] = max 0 x - @cells.t.cols() + @s.gutter + 1
+            
+        @s = @s.set 'view' view
             
         @cells.t.setCursor x+@s.gutter y-@s.view[1]
         
@@ -62,7 +64,7 @@ function state
             'up'    ➜ c[1] -= steps
             'down'  ➜ c[1] += steps 
         
-        @deselect()
+        # @deselect()
         @setCursor c[0] c[1]
         
     moveCursorAndSelect: dir =>
@@ -167,10 +169,10 @@ function state
         for y in 0...@cells.t.rows()
             li = y+@s.view[1]
             line = @s.lines[li]
-            for x in 0...min(line.length @cells.t.cols()-@s.gutter)
-                if x+@s.gutter < @cells.t.cols()
-                    @cells.c[y][x+@s.gutter].fg   = 'ffffff'
-                    @cells.c[y][x+@s.gutter].char = line[x]
+            for x in 0...@cells.t.cols()-@s.gutter
+                if x+@s.gutter < @cells.t.cols() and x+@s.view[0] < line.length
+                    @cells.c[y][x+@s.gutter].fg   = color.text
+                    @cells.c[y][x+@s.gutter].char = line[x+@s.view[0]]
                     
         for selection in @s.selections
             for li in selection[1]..selection[3]
@@ -188,7 +190,7 @@ function state
                         xe = @s.lines[li].length
                         
                     for x in xs...xe
-                        if x+@s.gutter < @cells.t.cols()
-                            @cells.c[y][x+@s.gutter].bg = color.selection
+                        if @s.gutter <= x-@s.view[0]+@s.gutter < @cells.t.cols()
+                            @cells.c[y][x-@s.view[0]+@s.gutter].bg = color.selection
 
 export state

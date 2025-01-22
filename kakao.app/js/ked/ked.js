@@ -306,10 +306,9 @@ KED = (function ()
                 return this.t.write('    ')
 
             case 'ctrl+c':
-                return process.exit(0)
-
+            case 'ctrl+d':
             case 'ctrl+q':
-                return process.exit(0)
+                return this.t.quit()
 
             case 'shift+up':
                 return this.moveCursorAndSelect('up')

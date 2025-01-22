@@ -229,8 +229,9 @@ function KED
             'space'     ➜ ⮐ @t.write ' '
             'delete'    ➜ ⮐ @t.write '\x1b[D\x1b[P'
             'tab'       ➜ ⮐ @t.write '    '
-            'ctrl+c'    ➜ ⮐ process.exit 0
-            'ctrl+q'    ➜ ⮐ process.exit 0
+            'ctrl+c' 
+            'ctrl+d' 
+            'ctrl+q'    ➜ ⮐ @t.quit()
             
             'shift+up'    ➜ ⮐ @moveCursorAndSelect 'up'
             'shift+down'  ➜ ⮐ @moveCursorAndSelect 'down'

@@ -29,6 +29,12 @@ function TTIO extends events
         
     write: str => process.stdout.write str
     
+    quit: =>
+        
+        @clear()
+        @write '\x1b[?1049l' # scrollback screen buffer
+        process.exit 0
+    
     clear: =>
         @write '\x1b[2J' # clear screen
         @write '\x1b[H'  # cursor home
@@ -209,6 +215,7 @@ function TTIO extends events
             switch data[0]
                 0x01 ➜ ⮐ @emit 'key' 'ctrl+a'
                 0x03 ➜ ⮐ @emit 'key' 'ctrl+c'
+                0x04 ➜ ⮐ @emit 'key' 'ctrl+d'
                 0x05 ➜ ⮐ @emit 'key' 'ctrl+e'
                 0x11 ➜ ⮐ @emit 'key' 'ctrl+q'
                 0x08 ➜ ⮐ @emit 'key' 'ctrl+h'
@@ -224,6 +231,6 @@ function TTIO extends events
             if key and data[0] >= 0x21
                 @emit 'key' key
             else
-                log 'key>' key, data, data.length, data[0]
+                log 'key?' key, data, data.length, data[0]
                 
 export TTIO

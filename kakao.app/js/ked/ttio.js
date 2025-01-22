@@ -21,6 +21,7 @@ TTIO = (function ()
         this["showCursor"] = this["showCursor"].bind(this)
         this["hideCursor"] = this["hideCursor"].bind(this)
         this["clear"] = this["clear"].bind(this)
+        this["quit"] = this["quit"].bind(this)
         this["write"] = this["write"].bind(this)
         if (process.stdin.isTTY)
         {
@@ -43,6 +44,13 @@ TTIO = (function ()
     TTIO.prototype["write"] = function (str)
     {
         return process.stdout.write(str)
+    }
+
+    TTIO.prototype["quit"] = function ()
+    {
+        this.clear()
+        this.write('\x1b[?1049l')
+        return process.exit(0)
     }
 
     TTIO.prototype["clear"] = function ()
@@ -93,9 +101,9 @@ TTIO = (function ()
 
     TTIO.prototype["emitMousePress"] = function (col, row, button, mods = '')
     {
-        var diff, _51_19_
+        var diff, _57_19_
 
-        this.lastClick = ((_51_19_=this.lastClick) != null ? _51_19_ : {row:row,col:col,count:0,time:process.hrtime()})
+        this.lastClick = ((_57_19_=this.lastClick) != null ? _57_19_ : {row:row,col:col,count:0,time:process.hrtime()})
         if (this.lastClick.col === col && this.lastClick.row === row)
         {
             diff = process.hrtime(this.lastClick.time)
@@ -475,6 +483,9 @@ TTIO = (function ()
                 case 0x03:
                     return this.emit('key','ctrl+c')
 
+                case 0x04:
+                    return this.emit('key','ctrl+d')
+
                 case 0x05:
                     return this.emit('key','ctrl+e')
 
@@ -511,7 +522,7 @@ TTIO = (function ()
             }
             else
             {
-                console.log('key>',key,data,data.length,data[0])
+                console.log('key?',key,data,data.length,data[0])
             }
         }
     }

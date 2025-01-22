@@ -47,6 +47,16 @@ class color
     static linenr = '1a1a1a'
 
     static gutter = '0a0a0a'
+
+    static editor = '181818'
+
+    static text = 'ffffff'
+
+    static cursor_main = '2f2f2f'
+
+    static editor_empty = '0a0a0a'
+
+    static cursor_empty = '000000'
 }
 
 export default color;

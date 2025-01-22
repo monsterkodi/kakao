@@ -38,9 +38,14 @@ class color
     
         "\x1b[38;2;#{r};#{g};#{b}m" 
         
-    @selection: '444488'
-    @cursor:    'ffff00'
-    @linenr:    '1a1a1a'
-    @gutter:    '0a0a0a'
+    @selection:     '444488' # #444488
+    @cursor:        'ffff00' # #ffff00
+    @linenr:        '1a1a1a' # #1a1a1a
+    @gutter:        '0a0a0a' # #0a0a0a
+    @editor:        '181818' # #181818
+    @text:          'ffffff' # #ffffff
+    @cursor_main:   '2f2f2f' # #2f2f2f
+    @editor_empty:  '0a0a0a' # #0a0a0a
+    @cursor_empty:  '000000' # #000000
         
 export color

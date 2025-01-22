@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -44,20 +44,19 @@ state = (function ()
         var view
 
         y = _k_.clamp(0,this.s.lines.length - 1,y)
-        x = _k_.clamp(0,this.s.lines[y].length,x)
+        x = _k_.max(0,x)
         this.s = this.s.set('cursor',[x,y])
-        if (y >= this.s.view[1] + this.cells.t.rows())
+        view = this.s.view.asMutable()
+        if (y >= view[1] + this.cells.t.rows())
         {
-            view = this.s.view.asMutable()
             view[1] = y - this.cells.t.rows() + 1
-            this.s = this.s.set('view',view)
         }
-        else if (y < this.s.view[1])
+        else if (y < view[1])
         {
-            view = this.s.view.asMutable()
             view[1] = y
-            this.s = this.s.set('view',view)
         }
+        view[0] = _k_.max(0,x - this.cells.t.cols() + this.s.gutter + 1)
+        this.s = this.s.set('view',view)
         return this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
     }
 
@@ -82,7 +81,6 @@ state = (function ()
                 break
         }
 
-        this.deselect()
         return this.setCursor(c[0],c[1])
     }
 
@@ -234,12 +232,12 @@ state = (function ()
         {
             li = y + this.s.view[1]
             line = this.s.lines[li]
-            for (var _c_ = x = 0, _d_ = _k_.min(line.length,this.cells.t.cols() - this.s.gutter); (_c_ <= _d_ ? x < _k_.min(line.length,this.cells.t.cols() - this.s.gutter) : x > _k_.min(line.length,this.cells.t.cols() - this.s.gutter)); (_c_ <= _d_ ? ++x : --x))
+            for (var _c_ = x = 0, _d_ = this.cells.t.cols() - this.s.gutter; (_c_ <= _d_ ? x < this.cells.t.cols() - this.s.gutter : x > this.cells.t.cols() - this.s.gutter); (_c_ <= _d_ ? ++x : --x))
             {
-                if (x + this.s.gutter < this.cells.t.cols())
+                if (x + this.s.gutter < this.cells.t.cols() && x + this.s.view[0] < line.length)
                 {
-                    this.cells.c[y][x + this.s.gutter].fg = 'ffffff'
-                    this.cells.c[y][x + this.s.gutter].char = line[x]
+                    this.cells.c[y][x + this.s.gutter].fg = color.text
+                    this.cells.c[y][x + this.s.gutter].char = line[x + this.s.view[0]]
                 }
             }
         }
@@ -270,9 +268,9 @@ state = (function ()
                     }
                     for (var _11_ = x = xs, _12_ = xe; (_11_ <= _12_ ? x < xe : x > xe); (_11_ <= _12_ ? ++x : --x))
                     {
-                        if (x + this.s.gutter < this.cells.t.cols())
+                        if ((this.s.gutter <= x - this.s.view[0] + this.s.gutter && x - this.s.view[0] + this.s.gutter < this.cells.t.cols()))
                         {
-                            this.cells.c[y][x + this.s.gutter].bg = color.selection
+                            this.cells.c[y][x - this.s.view[0] + this.s.gutter].bg = color.selection
                         }
                     }
                 }
