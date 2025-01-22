@@ -591,24 +591,26 @@ class Tabs
             # log 'tab::' tab
             if tab.dirty
                 if tab.active
+                    log 'save' tab.path window.editor.currentFile
                     post.emit 'saveFile'
                 else
                     continue if tab.path.startsWith 'untitled'
                     tabStates = kore.get 'tabStates'
                     if state = tabStates[tab.path]
-                        # log 'inactive tab::' tab state
+                        
+                        log '1 unsaved tab:' tab.path
+                        unsavedTabPath = tab.path
                         
                         ffs.read(tab.path).then (textOnDisk) =>
                             
-                            # log 'textOnDisk::' textOnDisk
-                            
                             textWithChangesApplied = Do.applyStateToText state textOnDisk
                             
-                            log 'changesApplied::' tab.path textWithChangesApplied
-                                                
-                            File.save tab.path, textWithChangesApplied, (file) =>
+                            log '2 changesApplied:' unsavedTabPath textWithChangesApplied
+                                           
+                            ffs.write(tab.path textWithChangesApplied).then (file) =>
+                            # File.save tab.path, textWithChangesApplied, (file) =>
                                 
-                                log 'tab saved' file
+                                log '3 tab saved:' file
                                 
                                 ⮐ error "Tabs.onSaveAll failed to save #{file}" if not file
                                 tabs = @koreTabs()

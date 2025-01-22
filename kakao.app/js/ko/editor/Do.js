@@ -507,7 +507,7 @@ class Do extends events
 
     textInRange (r)
     {
-        var _380_39_
+        var _386_39_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }

@@ -869,7 +869,7 @@ class Tabs
 
     onSaveAll ()
     {
-        var state, tab, tabStates
+        var state, tab, tabStates, unsavedTabPath
 
         var list = _k_.list(this.koreTabs())
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -879,6 +879,7 @@ class Tabs
             {
                 if (tab.active)
                 {
+                    console.log('save',tab.path,window.editor.currentFile)
                     post.emit('saveFile')
                 }
                 else
@@ -890,17 +891,19 @@ class Tabs
                     tabStates = kore.get('tabStates')
                     if (state = tabStates[tab.path])
                     {
+                        console.log('1 unsaved tab:',tab.path)
+                        unsavedTabPath = tab.path
                         ffs.read(tab.path).then((function (textOnDisk)
                         {
                             var textWithChangesApplied
 
                             textWithChangesApplied = Do.applyStateToText(state,textOnDisk)
-                            console.log('changesApplied::',tab.path,textWithChangesApplied)
-                            return File.save(tab.path,textWithChangesApplied,(function (file)
+                            console.log('2 changesApplied:',unsavedTabPath,textWithChangesApplied)
+                            return ffs.write(tab.path,textWithChangesApplied).then((function (file)
                             {
                                 var tabs
 
-                                console.log('tab saved',file)
+                                console.log('3 tab saved:',file)
                                 if (!file)
                                 {
                                     return console.error(`Tabs.onSaveAll failed to save ${file}`)
