@@ -879,7 +879,6 @@ class Tabs
             {
                 if (tab.active)
                 {
-                    console.log('save',tab.path,window.editor.currentFile)
                     post.emit('saveFile')
                 }
                 else
@@ -891,19 +890,16 @@ class Tabs
                     tabStates = kore.get('tabStates')
                     if (state = tabStates[tab.path])
                     {
-                        console.log('1 unsaved tab:',tab.path)
                         unsavedTabPath = tab.path
                         ffs.read(tab.path).then((function (textOnDisk)
                         {
                             var textWithChangesApplied
 
                             textWithChangesApplied = Do.applyStateToText(state,textOnDisk)
-                            console.log('2 changesApplied:',unsavedTabPath,textWithChangesApplied)
-                            return ffs.write(tab.path,textWithChangesApplied).then((function (file)
+                            return ffs.write(unsavedTabPath,textWithChangesApplied).then((function (file)
                             {
                                 var tabs
 
-                                console.log('3 tab saved:',file)
                                 if (!file)
                                 {
                                     return console.error(`Tabs.onSaveAll failed to save ${file}`)
