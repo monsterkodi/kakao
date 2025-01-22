@@ -3,7 +3,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 var args, KED
 
 import ttio from "./ttio.js"
-import linenr from "./linenr.js"
+import gutter from "./gutter.js"
 import cells from "./cells.js"
 import state from "./state.js"
 
@@ -32,7 +32,7 @@ KED = (function ()
         this.t = new ttio
         this.cells = new cells(this.t)
         this.state = new state(this.cells)
-        this.linenr = new linenr(this.cells,this.state)
+        this.gutter = new gutter(this.cells,this.state)
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -337,7 +337,7 @@ KED = (function ()
     {
         this.t.hideCursor()
         this.cells.init()
-        this.linenr.draw()
+        this.gutter.draw()
         this.state.draw()
         this.cells.render()
         return this.t.showCursor()

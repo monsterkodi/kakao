@@ -39,6 +39,14 @@ class color
 
         return `\x1b[38;2;${r};${g};${b}m`
     }
+
+    static selection = '444488'
+
+    static cursor = 'ffff00'
+
+    static linenr = '1a1a1a'
+
+    static gutter = '0a0a0a'
 }
 
 export default color;

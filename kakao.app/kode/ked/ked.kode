@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio linenr cells state
+use ◆ ttio gutter cells state
 use ../kxk ▪ karg
 use ../kxk/nfs
 
@@ -24,7 +24,7 @@ function KED
         
         @cells  = new cells @t
         @state  = new state  @cells
-        @linenr = new linenr @cells @state
+        @gutter = new gutter @cells @state
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -251,7 +251,7 @@ function KED
         
         @t.hideCursor()
         @cells.init()
-        @linenr.draw()
+        @gutter.draw()
         @state.draw()
         @cells.render()
         @t.showCursor()

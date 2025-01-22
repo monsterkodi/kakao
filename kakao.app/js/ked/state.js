@@ -5,6 +5,8 @@ var state
 import immutable from "../kxk/immutable.js"
 import kstr from "../kxk/kstr.js"
 
+import color from "./color.js"
+
 
 state = (function ()
 {
@@ -15,6 +17,7 @@ state = (function ()
         this["draw"] = this["draw"].bind(this)
         this["deselect"] = this["deselect"].bind(this)
         this["selectLine"] = this["selectLine"].bind(this)
+        this["isSelectedLine"] = this["isSelectedLine"].bind(this)
         this["selectWord"] = this["selectWord"].bind(this)
         this["selectChunk"] = this["selectChunk"].bind(this)
         this["select"] = this["select"].bind(this)
@@ -43,10 +46,10 @@ state = (function ()
         y = _k_.clamp(0,this.s.lines.length - 1,y)
         x = _k_.clamp(0,this.s.lines[y].length,x)
         this.s = this.s.set('cursor',[x,y])
-        if (y > this.s.view[1] + this.cells.t.rows())
+        if (y >= this.s.view[1] + this.cells.t.rows())
         {
             view = this.s.view.asMutable()
-            view[1] = y - this.cells.t.rows()
+            view[1] = y - this.cells.t.rows() + 1
             this.s = this.s.set('view',view)
         }
         else if (y < this.s.view[1])
@@ -193,6 +196,22 @@ state = (function ()
         }
     }
 
+    state.prototype["isSelectedLine"] = function (y)
+    {
+        var selection
+
+        var list = _k_.list(this.s.selections)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            selection = list[_a_]
+            if ((selection[1] <= y && y <= selection[3]))
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     state.prototype["selectLine"] = function (y)
     {
         return this.select([0,y],[this.s.lines.length - 1,y])
@@ -253,7 +272,7 @@ state = (function ()
                     {
                         if (x + this.s.gutter < this.cells.t.cols())
                         {
-                            this.cells.c[y][x + this.s.gutter].bg = '444488'
+                            this.cells.c[y][x + this.s.gutter].bg = color.selection
                         }
                     }
                 }
