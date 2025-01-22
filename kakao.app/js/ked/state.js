@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -60,7 +60,7 @@ state = (function ()
         return this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
     }
 
-    state.prototype["moveCursor"] = function (dir, steps = 1)
+    state.prototype["moveCursor"] = function (dir, steps = 1, merge = true)
     {
         var c
 
@@ -81,6 +81,10 @@ state = (function ()
                 break
         }
 
+        if (merge)
+        {
+            this.s = this.s.set('selections',this.mergeSelections(this.s.selections.asMutable()))
+        }
         return this.setCursor(c[0],c[1])
     }
 
@@ -88,61 +92,106 @@ state = (function ()
     {
         var cpos, selection, selections
 
-        if (_k_.empty(this.s.selections))
+        cpos = -1
+        selections = this.s.selections.asMutable()
+        selection = [this.s.cursor[0],this.s.cursor[1],this.s.cursor[0],this.s.cursor[1]]
+        selections.push(selection)
+        switch (dir)
         {
-            selections = [[this.s.cursor[0],this.s.cursor[1],this.s.cursor[0],this.s.cursor[1]]]
-            selection = selections[0]
-            switch (dir)
-            {
-                case 'up':
-                case 'left':
-                    cpos = 0
-                    break
-                case 'down':
-                case 'right':
-                    cpos = 2
-                    break
-            }
+            case 'up':
+            case 'left':
+                cpos = 0
+                break
+            case 'down':
+            case 'right':
+                cpos = 2
+                break
+        }
 
-        }
-        else
-        {
-            selections = this.s.selections.asMutable()
-            var list = _k_.list(selections)
-            for (var _a_ = 0; _a_ < list.length; _a_++)
-            {
-                selection = list[_a_]
-                if (this.s.cursor[0] === selection[0] && this.s.cursor[1] === selection[1])
-                {
-                    cpos = 0
-                    break
-                }
-                else if (this.s.cursor[0] === selection[2] && this.s.cursor[1] === selection[3])
-                {
-                    cpos = 2
-                    break
-                }
-            }
-        }
-        this.moveCursor(dir)
+        this.moveCursor(dir,1,false)
         switch (dir)
         {
             case 'left':
-                selection[cpos] = _k_.max(0,selection[cpos] - 1)
+                selection[cpos] = selection[cpos] - 1
                 break
             case 'right':
-                selection[cpos] = _k_.min(this.s.lines[selection[cpos + 1]].length,selection[cpos] + 1)
+                selection[cpos] = selection[cpos] + 1
                 break
             case 'up':
                 selection[cpos + 1] = _k_.max(0,selection[cpos + 1] - 1)
                 break
             case 'down':
-                selection[cpos + 1] = _k_.min(this.s.lines.length,selection[cpos + 1] + 1)
+                selection[cpos + 1] = _k_.min(this.s.lines.length - 1,selection[cpos + 1] + 1)
                 break
         }
 
+        selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
+        selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
         this.s = this.s.set('selections',selections)
         return true
+    }
+
+    state.prototype["mergeSelections"] = function (sels)
+    {
+        var i, mrgd, s
+
+        if (_k_.empty(sels))
+        {
+            return []
+        }
+        sels = sels.map(function (a)
+        {
+            if (a[1] > a[3])
+            {
+                return [a[2],a[3],a[0],a[1]]
+            }
+            else
+            {
+                return a
+            }
+        })
+        sels = sels.map(function (a)
+        {
+            if (a[1] === a[3] && a[0] > a[2])
+            {
+                return [a[2],a[1],a[0],a[3]]
+            }
+            else
+            {
+                return a
+            }
+        })
+        sels.sort(function (a, b)
+        {
+            if (a[1] === b[1])
+            {
+                return a[0] - b[0]
+            }
+            else
+            {
+                return a[1] - b[1]
+            }
+        })
+        sels = sels.filter(function (a)
+        {
+            return a[0] !== a[2] || a[1] !== a[3]
+        })
+        mrgd = []
+        var list = _k_.list(sels)
+        for (i = 0; i < list.length; i++)
+        {
+            s = list[i]
+            if (_k_.empty(mrgd) || s[1] > mrgd[mrgd.length - 1][3] || s[0] > mrgd[mrgd.length - 1][2])
+            {
+                mrgd.push(s)
+            }
+            else if (s[3] > mrgd[mrgd.length - 1][3] || s[2] > mrgd[mrgd.length - 1][2])
+            {
+                mrgd[mrgd.length - 1][2] = s[2]
+                mrgd[mrgd.length - 1][3] = s[3]
+            }
+        }
+        return mrgd
     }
 
     state.prototype["select"] = function (from, to)

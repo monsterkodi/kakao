@@ -182,7 +182,7 @@ KED = (function ()
                     return 128
 
                 default:
-                    return 2
+                    return 1
             }
 
         }).bind(this))()
@@ -321,6 +321,11 @@ KED = (function ()
 
             case 'shift+right':
                 return this.moveCursorAndSelect('right')
+
+            case 'esc':
+                this.state.deselect()
+                this.redraw()
+                return
 
         }
 

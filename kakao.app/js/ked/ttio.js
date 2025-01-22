@@ -456,7 +456,7 @@ TTIO = (function ()
             }
             else if (data.length === 1)
             {
-                return emit('key','esc')
+                return this.emit('key','esc')
             }
             else
             {

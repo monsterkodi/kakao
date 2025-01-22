@@ -156,7 +156,7 @@ function KED
             'shift+alt'      ➜ 32
             'ctrl+alt'       ➜ 64
             'shift+ctrl+alt' ➜ 128
-            ➜ 2
+            ➜ 1
         
         if @dragStart
             
@@ -237,6 +237,8 @@ function KED
             'shift+down'  ➜ ⮐ @moveCursorAndSelect 'down'
             'shift+left'  ➜ ⮐ @moveCursorAndSelect 'left'
             'shift+right' ➜ ⮐ @moveCursorAndSelect 'right'
+            
+            'esc'         ➜ @state.deselect(); @redraw(); ⮐ 
             
         @t.write key
         
