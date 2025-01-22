@@ -63,16 +63,21 @@ function KED
     # 000       000   000  0000000    0000000   000   000  0000000    
     # 000       000   000  000   000       000  000   000  000   000  
     #  0000000   0000000   000   000  0000000    0000000   000   000  
+
+    moveCursorAndSelect: dir =>
+        
+        @state.moveCursorAndSelect dir
+        @redraw()
     
     moveCursor: dir steps =>
         
-        if @state.moveCursor dir steps
-            @redraw()
+        @state.moveCursor dir steps
+        @redraw()
             
     setCursor: x y =>
         
-        if @state.setCursor x y
-            @redraw()
+        @state.setCursor x y
+        @redraw()
     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -94,8 +99,10 @@ function KED
                     y = row + @state.s.view[1]
                     
                     if count == 2
-                        # @state.selectWord x y
-                        @state.selectLine y
+                        if mods == 'alt'
+                            @state.selectChunk x y
+                        else
+                            @state.selectWord x y
                     else
                         @state.selectLine y
                         
@@ -143,13 +150,13 @@ function KED
         
         steps = switch mods
             
-            'shift'          ➜ 2
-            'shift+ctrl'     ➜ 4
-            'alt'            ➜ 8
-            'shift+alt'      ➜ 16
-            'ctrl+alt'       ➜ 32
-            'shift+ctrl+alt' ➜ 64
-            ➜ 1
+            'shift'          ➜ 4
+            'shift+ctrl'     ➜ 8
+            'alt'            ➜ 16
+            'shift+alt'      ➜ 32
+            'ctrl+alt'       ➜ 64
+            'shift+ctrl+alt' ➜ 128
+            ➜ 2
         
         if @dragStart
             
@@ -224,6 +231,11 @@ function KED
             'tab'       ➜ ⮐ @t.write '    '
             'ctrl+c'    ➜ ⮐ process.exit 0
             'ctrl+q'    ➜ ⮐ process.exit 0
+            
+            'shift+up'    ➜ ⮐ @moveCursorAndSelect 'up'
+            'shift+down'  ➜ ⮐ @moveCursorAndSelect 'down'
+            'shift+left'  ➜ ⮐ @moveCursorAndSelect 'left'
+            'shift+right' ➜ ⮐ @moveCursorAndSelect 'right'
             
         @t.write key
         

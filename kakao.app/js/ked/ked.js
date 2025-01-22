@@ -27,6 +27,7 @@ KED = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
+        this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
         this.cells = new cells(this.t)
@@ -73,20 +74,22 @@ KED = (function ()
         return this.redraw()
     }
 
+    KED.prototype["moveCursorAndSelect"] = function (dir)
+    {
+        this.state.moveCursorAndSelect(dir)
+        return this.redraw()
+    }
+
     KED.prototype["moveCursor"] = function (dir, steps)
     {
-        if (this.state.moveCursor(dir,steps))
-        {
-            return this.redraw()
-        }
+        this.state.moveCursor(dir,steps)
+        return this.redraw()
     }
 
     KED.prototype["setCursor"] = function (x, y)
     {
-        if (this.state.setCursor(x,y))
-        {
-            return this.redraw()
-        }
+        this.state.setCursor(x,y)
+        return this.redraw()
     }
 
     KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
@@ -103,7 +106,14 @@ KED = (function ()
                     y = row + this.state.s.view[1]
                     if (count === 2)
                     {
-                        this.state.selectLine(y)
+                        if (mods === 'alt')
+                        {
+                            this.state.selectChunk(x,y)
+                        }
+                        else
+                        {
+                            this.state.selectWord(x,y)
+                        }
                     }
                     else
                     {
@@ -154,25 +164,25 @@ KED = (function ()
             switch (mods)
             {
                 case 'shift':
-                    return 2
-
-                case 'shift+ctrl':
                     return 4
 
-                case 'alt':
+                case 'shift+ctrl':
                     return 8
 
-                case 'shift+alt':
+                case 'alt':
                     return 16
 
-                case 'ctrl+alt':
+                case 'shift+alt':
                     return 32
 
-                case 'shift+ctrl+alt':
+                case 'ctrl+alt':
                     return 64
 
+                case 'shift+ctrl+alt':
+                    return 128
+
                 default:
-                    return 1
+                    return 2
             }
 
         }).bind(this))()
@@ -300,6 +310,18 @@ KED = (function ()
 
             case 'ctrl+q':
                 return process.exit(0)
+
+            case 'shift+up':
+                return this.moveCursorAndSelect('up')
+
+            case 'shift+down':
+                return this.moveCursorAndSelect('down')
+
+            case 'shift+left':
+                return this.moveCursorAndSelect('left')
+
+            case 'shift+right':
+                return this.moveCursorAndSelect('right')
 
         }
 

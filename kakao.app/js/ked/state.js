@@ -1,8 +1,9 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
 import immutable from "../kxk/immutable.js"
+import kstr from "../kxk/kstr.js"
 
 
 state = (function ()
@@ -15,7 +16,9 @@ state = (function ()
         this["deselect"] = this["deselect"].bind(this)
         this["selectLine"] = this["selectLine"].bind(this)
         this["selectWord"] = this["selectWord"].bind(this)
+        this["selectChunk"] = this["selectChunk"].bind(this)
         this["select"] = this["select"].bind(this)
+        this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
@@ -35,7 +38,7 @@ state = (function ()
 
     state.prototype["setCursor"] = function (x, y)
     {
-        var doRedraw, view
+        var view
 
         y = _k_.clamp(0,this.s.lines.length - 1,y)
         x = _k_.clamp(0,this.s.lines[y].length,x)
@@ -45,17 +48,14 @@ state = (function ()
             view = this.s.view.asMutable()
             view[1] = y - this.cells.t.rows()
             this.s = this.s.set('view',view)
-            doRedraw = true
         }
         else if (y < this.s.view[1])
         {
             view = this.s.view.asMutable()
             view[1] = y
             this.s = this.s.set('view',view)
-            doRedraw = true
         }
-        this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
-        return doRedraw
+        return this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
     }
 
     state.prototype["moveCursor"] = function (dir, steps = 1)
@@ -79,12 +79,74 @@ state = (function ()
                 break
         }
 
+        this.deselect()
         return this.setCursor(c[0],c[1])
+    }
+
+    state.prototype["moveCursorAndSelect"] = function (dir)
+    {
+        var cpos, selection, selections
+
+        if (_k_.empty(this.s.selections))
+        {
+            selections = [[this.s.cursor[0],this.s.cursor[1],this.s.cursor[0],this.s.cursor[1]]]
+            selection = selections[0]
+            switch (dir)
+            {
+                case 'up':
+                case 'left':
+                    cpos = 0
+                    break
+                case 'down':
+                case 'right':
+                    cpos = 2
+                    break
+            }
+
+        }
+        else
+        {
+            selections = this.s.selections.asMutable()
+            var list = _k_.list(selections)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
+            {
+                selection = list[_a_]
+                if (this.s.cursor[0] === selection[0] && this.s.cursor[1] === selection[1])
+                {
+                    cpos = 0
+                    break
+                }
+                else if (this.s.cursor[0] === selection[2] && this.s.cursor[1] === selection[3])
+                {
+                    cpos = 2
+                    break
+                }
+            }
+        }
+        this.moveCursor(dir)
+        switch (dir)
+        {
+            case 'left':
+                selection[cpos] = _k_.max(0,selection[cpos] - 1)
+                break
+            case 'right':
+                selection[cpos] = _k_.min(this.s.lines[selection[cpos + 1]].length,selection[cpos] + 1)
+                break
+            case 'up':
+                selection[cpos + 1] = _k_.max(0,selection[cpos + 1] - 1)
+                break
+            case 'down':
+                selection[cpos + 1] = _k_.min(this.s.lines.length,selection[cpos + 1] + 1)
+                break
+        }
+
+        this.s = this.s.set('selections',selections)
+        return true
     }
 
     state.prototype["select"] = function (from, to)
     {
-        var ll, selections, x1, x2, y
+        var selections
 
         selections = []
         this.setCursor(to[0],to[1])
@@ -98,36 +160,38 @@ state = (function ()
             var _b_ = [to,from]; from = _b_[0]; to = _b_[1]
 
         }
-        for (var _c_ = y = from[1], _d_ = to[1]; (_c_ <= _d_ ? y <= to[1] : y >= to[1]); (_c_ <= _d_ ? ++y : --y))
-        {
-            ll = _k_.max(0,this.s.lines[y].length)
-            if (y === from[1])
-            {
-                x1 = _k_.clamp(0,ll,from[0])
-            }
-            else
-            {
-                x1 = 0
-            }
-            if (y === to[1])
-            {
-                x2 = _k_.clamp(0,ll,to[0])
-            }
-            else
-            {
-                x2 = ll
-            }
-            if (x1 < x2)
-            {
-                selections.push([x1,y,x2])
-            }
-        }
+        to[0] = _k_.clamp(0,this.s.lines[to[1]].length,to[0])
+        from[0] = _k_.clamp(0,this.s.lines[from[1]].length,from[0])
+        selections.push([from[0],from[1],to[0],to[1]])
         this.s = this.s.set('selections',selections)
         return true
     }
 
+    state.prototype["selectChunk"] = function (x, y)
+    {
+        var line, re, rs
+
+        line = this.s.lines[y]
+        var _a_ = kstr.rangeOfClosestChunk(line,x); rs = _a_[0]; re = _a_[1]
+
+        if (rs >= 0 && re >= 0)
+        {
+            return this.select([rs,y],[re + 1,y])
+        }
+    }
+
     state.prototype["selectWord"] = function (x, y)
-    {}
+    {
+        var line, re, rs
+
+        line = this.s.lines[y]
+        var _a_ = kstr.rangeOfClosestWord(line,x); rs = _a_[0]; re = _a_[1]
+
+        if (rs >= 0 && re >= 0)
+        {
+            return this.select([rs,y],[re + 1,y])
+        }
+    }
 
     state.prototype["selectLine"] = function (y)
     {
@@ -145,7 +209,7 @@ state = (function ()
 
     state.prototype["draw"] = function ()
     {
-        var li, line, selection, x, y
+        var li, line, selection, x, xe, xs, y
 
         for (var _a_ = y = 0, _b_ = this.cells.t.rows(); (_a_ <= _b_ ? y < this.cells.t.rows() : y > this.cells.t.rows()); (_a_ <= _b_ ? ++y : --y))
         {
@@ -164,15 +228,33 @@ state = (function ()
         for (var _e_ = 0; _e_ < list.length; _e_++)
         {
             selection = list[_e_]
-            li = selection[1]
-            y = li - this.s.view[1]
-            if ((this.s.view[1] <= li && li < this.s.view[1] + this.cells.t.rows()))
+            for (var _f_ = li = selection[1], _10_ = selection[3]; (_f_ <= _10_ ? li <= selection[3] : li >= selection[3]); (_f_ <= _10_ ? ++li : --li))
             {
-                for (var _f_ = x = selection[0], _10_ = selection[2]; (_f_ <= _10_ ? x < selection[2] : x > selection[2]); (_f_ <= _10_ ? ++x : --x))
+                y = li - this.s.view[1]
+                if ((this.s.view[1] <= li && li < this.s.view[1] + this.cells.t.rows()))
                 {
-                    if (x + this.s.gutter < this.cells.t.cols())
+                    if (li === selection[1])
                     {
-                        this.cells.c[y][x + this.s.gutter].bg = '444488'
+                        xs = selection[0]
+                    }
+                    else
+                    {
+                        xs = 0
+                    }
+                    if (li === selection[3])
+                    {
+                        xe = selection[2]
+                    }
+                    else
+                    {
+                        xe = this.s.lines[li].length
+                    }
+                    for (var _11_ = x = xs, _12_ = xe; (_11_ <= _12_ ? x < xe : x > xe); (_11_ <= _12_ ? ++x : --x))
+                    {
+                        if (x + this.s.gutter < this.cells.t.cols())
+                        {
+                            this.cells.c[y][x + this.s.gutter].bg = '444488'
+                        }
                     }
                 }
             }

@@ -6,7 +6,7 @@
 0000000      000     000   000     000     00000000  
 ###
 
-use ../kxk ◆ immutable
+use ../kxk ◆ immutable kstr
 
 function state
 
@@ -44,17 +44,13 @@ function state
             view = @s.view.asMutable()
             view[1] = y - @cells.t.rows()
             @s = @s.set 'view' view
-            doRedraw = true
         else if y < @s.view[1]
             view = @s.view.asMutable()
             view[1] = y
             @s = @s.set 'view' view
-            doRedraw = true
             
         @cells.t.setCursor x+@s.gutter y-@s.view[1]
         
-        doRedraw
-            
     moveCursor: dir steps=1 =>
         
         c = @s.cursor.asMutable() 
@@ -64,8 +60,41 @@ function state
             'right' ➜ c[0] += 1
             'up'    ➜ c[1] -= steps
             'down'  ➜ c[1] += steps 
-            
+        
+        @deselect()
         @setCursor c[0] c[1]
+        
+    moveCursorAndSelect: dir =>
+        
+        if empty @s.selections
+            selections = [[@s.cursor[0] @s.cursor[1] @s.cursor[0] @s.cursor[1]]] 
+            selection = selections[0]
+            switch dir
+                'up'
+                'left'  ➜ cpos = 0
+                'down'
+                'right' ➜ cpos = 2
+        else 
+            selections = @s.selections.asMutable()
+            for selection in selections
+                if @s.cursor[0] == selection[0] and @s.cursor[1] == selection[1]
+                    cpos = 0
+                    break
+                else if @s.cursor[0] == selection[2] and @s.cursor[1] == selection[3]
+                    cpos = 2
+                    break
+
+        @moveCursor dir
+        
+        switch dir
+            'left'  ➜ selection[cpos] = max 0 selection[cpos]-1 
+            'right' ➜ selection[cpos] = min @s.lines[selection[cpos+1]].length selection[cpos]+1  
+            'up'    ➜ selection[cpos+1] = max 0 selection[cpos+1]-1
+            'down'  ➜ selection[cpos+1] = min @s.lines.length selection[cpos+1]+1
+            
+        @s = @s.set 'selections' selections
+            
+        true
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -84,27 +113,31 @@ function state
         else if from[1] == to[1] and from[0] > to[0]
             [from to] = [to from]
 
-        for y in from[1]..to[1]
-            
-            ll = max 0 @s.lines[y].length
-            if y == from[1]
-                x1 = clamp 0 ll from[0]
-            else
-                x1 = 0
-            if y == to[1]
-                x2 = clamp 0 ll to[0]
-            else
-                x2 = ll
+        to[0] = clamp 0 @s.lines[to[1]].length to[0]
+        from[0] = clamp 0 @s.lines[from[1]].length from[0]
                 
-            if x1 < x2
-                selections.push [x1 y x2]
+        selections.push [from[0] from[1] to[0] to[1]]
         
         @s = @s.set 'selections' selections
         
         true
         
+    selectChunk: x y =>
+        
+        line = @s.lines[y]
+        
+        [rs re] = kstr.rangeOfClosestChunk line x
+        if rs >= 0 and re >= 0
+            @select [rs y] [re+1 y]
+
     selectWord: x y =>
         
+        line = @s.lines[y]
+        
+        [rs re] = kstr.rangeOfClosestWord line x
+        if rs >= 0 and re >= 0
+            @select [rs y] [re+1 y]
+            
     selectLine: y =>
         
         @select [0 y] [@s.lines.length-1 y]
@@ -114,7 +147,7 @@ function state
         if valid @s.selections
             @s = @s.set 'selections' []
             ⮐ true
-            
+                        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -132,11 +165,22 @@ function state
                     @cells.c[y][x+@s.gutter].char = line[x]
                     
         for selection in @s.selections
-            li = selection[1]
-            y  = li-@s.view[1]
-            if @s.view[1] <= li < @s.view[1] + @cells.t.rows()
-                for x in selection[0]...selection[2]
-                    if x+@s.gutter < @cells.t.cols()
-                        @cells.c[y][x+@s.gutter].bg = '444488'
+            for li in selection[1]..selection[3]
+                y  = li-@s.view[1]
+                if @s.view[1] <= li < @s.view[1] + @cells.t.rows()
+                    
+                    if li == selection[1]
+                        xs = selection[0]
+                    else
+                        xs = 0
+                        
+                    if li == selection[3]
+                        xe = selection[2]
+                    else
+                        xe = @s.lines[li].length
+                        
+                    for x in xs...xe
+                        if x+@s.gutter < @cells.t.cols()
+                            @cells.c[y][x+@s.gutter].bg = '444488'
 
 export state
