@@ -7,13 +7,17 @@
 ###
 
 use ../kxk ◆ immutable kstr
-use ◆ color
+use ◆ color syntax
 
 function state
 
-    @: @cells -> @init ['']
+    @: @cells -> 
+        
+        @syntax = new syntax
     
-    init: lines ->
+        @init ['']
+    
+    init: lines ext ->
         
         @s = immutable
             lines:       lines
@@ -22,6 +26,8 @@ function state
             view:        [0 0]
             gutter:      @calcGutter(lines.length)
 
+        @syntax.setLines lines ext
+            
         @setCursor 0 0
         
     calcGutter: numLines =>
@@ -200,11 +206,16 @@ function state
             break if y >= @s.lines.length
             line = @s.lines[y]
             
+            # text
+            
             for x in 0...@cells.t.cols()-@s.gutter
                 if x+@s.gutter < @cells.t.cols() and x+@s.view[0] < line.length
-                    @cells.c[row][x+@s.gutter].fg   = color.text
-                    @cells.c[row][x+@s.gutter].char = line[x+@s.view[0]]
+                    # @cells.c[row][x+@s.gutter].fg   = color.text
+                    @cells.c[row][x+@s.gutter].fg   = @syntax.getColor x+@s.view[0] y
+                    @cells.c[row][x+@s.gutter].char = @syntax.getChar  x+@s.view[0] y line[x+@s.view[0]]
 
+            # empty
+                    
             if y < @s.lines.length
                 linel = line.length - @s.view[0]
                 if y == @s.cursor[1]

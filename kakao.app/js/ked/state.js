@@ -6,6 +6,7 @@ import immutable from "../kxk/immutable.js"
 import kstr from "../kxk/kstr.js"
 
 import color from "./color.js"
+import syntax from "./syntax.js"
 
 
 state = (function ()
@@ -25,12 +26,14 @@ state = (function ()
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
+        this.syntax = new syntax
         this.init([''])
     }
 
-    state.prototype["init"] = function (lines)
+    state.prototype["init"] = function (lines, ext)
     {
         this.s = immutable({lines:lines,selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(lines.length)})
+        this.syntax.setLines(lines,ext)
         return this.setCursor(0,0)
     }
 
@@ -293,8 +296,8 @@ state = (function ()
             {
                 if (x + this.s.gutter < this.cells.t.cols() && x + this.s.view[0] < line.length)
                 {
-                    this.cells.c[row][x + this.s.gutter].fg = color.text
-                    this.cells.c[row][x + this.s.gutter].char = line[x + this.s.view[0]]
+                    this.cells.c[row][x + this.s.gutter].fg = this.syntax.getColor(x + this.s.view[0],y)
+                    this.cells.c[row][x + this.s.gutter].char = this.syntax.getChar(x + this.s.view[0],y,line[x + this.s.view[0]])
                 }
             }
             if (y < this.s.lines.length)

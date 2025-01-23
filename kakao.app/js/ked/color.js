@@ -44,7 +44,7 @@ class color
         return `\x1b[38;2;${r};${g};${b}m`
     }
 
-    static selection = '#444488'
+    static selection = '#333333'
 
     static cursor = '#ffff00'
 
@@ -66,17 +66,19 @@ class color
 
     static status = '#222222'
 
-    static status_fg = "#888888"
+    static status_fg = '#888888'
 
-    static editor = '#181818'
-
-    static text = '#ffffff'
-
-    static cursor_main = '#2f2f2f'
+    static editor = '#0d0d0d'
 
     static editor_empty = '#0a0a0a'
 
+    static text = '#ffffff'
+
+    static cursor_main = '#202020'
+
     static cursor_empty = '#000000'
+
+    static syntax = {'punct property':'#444400','property':'#aa8800','function call':'#ffee00','text':'#ffffff','punct':'#555555','number':'#aaaaff','punct string single':'#006600','string single':'#00aa00','keyword':'#aaaaff','text  this':'#ffaa66','punct this':'#aa5533','punct compare':'#6666ff','punct comment triple':'#004400','comment triple header':'#00aa00','punct comment':'#003300','comment header':'#006600','punct range ligature':'#3333aa','function call':'#ff8800','keyword require':'#333333','punct require':'#333333','text require string':'#00aa00','function':'#ffaa44','punct function':'#884400','function argument':'#00aa00','punct function tail ligature':'#8888ff','punct function bound tail ligature':'#ff8888','dictionary key':'#ffff88','punct dictionary':'#00aa00','class':'#ffff44','obj':'#ffbb00','method':'#ffff88','punct method':'#aa6600','punct method class':'#aa6600','method class':'#ffff88'}
 }
 
 export default color;

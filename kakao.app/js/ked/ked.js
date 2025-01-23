@@ -13,6 +13,7 @@ import scroll from "./scroll.js"
 import kxk from "../kxk.js"
 let karg = kxk.karg
 let kstr = kxk.kstr
+let slash = kxk.slash
 
 import nfs from "../kxk/nfs.js"
 
@@ -79,7 +80,7 @@ KED = (function ()
 
         text = await nfs.read(p)
         lines = text.split(/\r?\n/)
-        this.state.init(lines)
+        this.state.init(lines,slash.ext(p))
         return this.redraw()
     }
 
@@ -375,8 +376,7 @@ KED = (function ()
         this.t.showCursor()
         this.t.restore()
         drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        this.status.text = `▸ ${drawTime}`
-        return global.lf.write(this.status.text)
+        return this.status.text = `▸ ${drawTime}`
     }
 
     return KED

@@ -64,7 +64,6 @@ scroll = (function ()
         var view, viewY
 
         viewY = parseInt(floor(row * (this.state.s.lines.length - this.cells.t.rows() + 1) / (this.cells.t.rows() - 2)))
-        lf.write(`scrollTo ${row} ${viewY} ${this.state.s.view[1]}`)
         view = this.state.s.view.asMutable()
         view[1] = _k_.clamp(0,this.state.s.lines.length - this.cells.t.rows() + 1,viewY)
         this.state.s = this.state.s.set('view',view)

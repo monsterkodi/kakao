@@ -7,7 +7,7 @@
 ###
 
 use ◆ ttio gutter status cells state logfile scroll
-use ../kxk ▪ karg kstr
+use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
 
 args = karg """
@@ -63,7 +63,7 @@ function KED
         
         text =○ nfs.read p
         lines = text.split /\r?\n/
-        @state.init lines
+        @state.init lines slash.ext(p)
         @redraw()
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
@@ -282,7 +282,7 @@ function KED
         
         @status.text = "▸ #{drawTime}"
         
-        global.lf.write @status.text
+        # lf.write @status.text
         
 export KED.run
 
