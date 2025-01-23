@@ -8,24 +8,85 @@
 
 use ◆ color
 
+{floor, pow} = Math
+
 function scroll
 
     @: @cells @state ->
         
-    setHover: @hover =>
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event col row button mods count =>
+            
+        switch event
+            
+            'press'
+            
+                if col == 0
+                    @doDrag = true
+                    ⮐ @scrollTo row
+                    
+            'drag'
+            
+                if @doDrag
+                    ⮐ @scrollTo row
+                
+            'release'
+            
+                if @doDrag
+                    delete @doDrag
+                    ⮐ true
+            
+            'move'
+            
+                hover = col == 0
+                if @hover != hover
+                    @hover = hover
+                    ⮐ true
+                    
+        false
         
+    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
+    # 000       000       000   000  000   000  000      000         000     000   000  
+    # 0000000   000       0000000    000   000  000      000         000     000   000  
+    #      000  000       000   000  000   000  000      000         000     000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
+    
+    scrollTo: row =>
+        
+        viewY = parseInt floor(row * (@state.s.lines.length - @cells.t.rows() + 1)  / (@cells.t.rows()-2))
+        
+        lf.write "scrollTo #{row} #{viewY} #{@state.s.view[1]}"
+        view = @state.s.view.asMutable()
+        
+        view[1] = clamp 0 @state.s.lines.length - @cells.t.rows() + 1 viewY
+        
+        @state.s = @state.s.set 'view' view
+        
+        true
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
     draw: =>
         
-        kh = parseInt Math.floor(Math.pow((@cells.t.rows() - 1) 2) / @state.s.lines.length)
-        kp = parseInt Math.floor((@cells.t.rows()-kh-2) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 1 ))
-        nc = parseInt Math.floor((@cells.t.rows()-1) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 2))
-        nc = parseInt Math.floor((@cells.t.rows()-2) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 1))
+        rows = @cells.t.rows()
+        lnum = @state.s.lines.length
+        
+        kh = parseInt floor(pow((rows-1) 2) / lnum)
+        kp = parseInt floor((rows-kh-2) * @state.s.view[1] / (lnum-rows+1))
+        nc = parseInt floor((rows-2)    * @state.s.view[1] / (lnum-rows+1))
         ns = kp
         ne = kp+kh
         
-        lf.write "#{ns} #{nc} #{ne}"
-        
-        for row in 0...@cells.t.rows()-1
+        for row in 0...rows-1
             
             bg = if
                 row == nc ➜ @hover ? color.scroll_doth : color.scroll_dot

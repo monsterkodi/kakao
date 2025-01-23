@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var args, KED
 
@@ -41,6 +41,7 @@ KED = (function ()
         this.gutter = new gutter(this.cells,this.state)
         this.scroll = new scroll(this.cells,this.state)
         this.status = new status(this.cells,this.state)
+        this.mouseHandlers = [this.scroll]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -102,8 +103,18 @@ KED = (function ()
 
     KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
-        var hover, redraw, start, x, y
+        var handler, redraw, start, x, y
 
+        var list = _k_.list(this.mouseHandlers)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            handler = list[_a_]
+            if (handler.onMouse(event,col,row,button,mods,count))
+            {
+                this.redraw()
+                return
+            }
+        }
         switch (event)
         {
             case 'press':
@@ -162,14 +173,6 @@ KED = (function ()
             case 'release':
                 return delete this.dragStart
 
-            case 'move':
-                hover = col === 0
-                if (this.scroll.hover !== hover)
-                {
-                    this.scroll.setHover(hover)
-                    return this.redraw()
-                }
-                break
         }
 
     }
