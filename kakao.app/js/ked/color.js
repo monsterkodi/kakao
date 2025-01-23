@@ -54,7 +54,7 @@ class color
 
     static scroll = '#222222'
 
-    static scroll_dot = '#333333'
+    static scroll_dot = '#444444'
 
     static scroll_knob = '#4444ff'
 
@@ -78,7 +78,7 @@ class color
 
     static cursor_empty = '#000000'
 
-    static syntax = {'punct property':'#444400','property':'#aa8800','function call':'#ffee00','text':'#ffffff','punct':'#555555','number':'#aaaaff','punct string single':'#006600','string single':'#00aa00','keyword':'#aaaaff','text  this':'#ffaa66','punct this':'#aa5533','punct compare':'#6666ff','punct comment triple':'#004400','comment triple header':'#00aa00','punct comment':'#003300','comment header':'#006600','punct range ligature':'#3333aa','function call':'#ff8800','keyword require':'#333333','punct require':'#333333','text require string':'#00aa00','function':'#ffaa44','punct function':'#884400','function argument':'#00aa00','punct function tail ligature':'#8888ff','punct function bound tail ligature':'#ff8888','dictionary key':'#ffff88','punct dictionary':'#00aa00','class':'#ffff44','obj':'#ffbb00','method':'#ffff88','punct method':'#aa6600','punct method class':'#aa6600','method class':'#ffff88'}
+    static syntax = {'punct property':'#444400','property':'#aa8800','function call':'#ffee00','text':'#ffffff','punct':'#555555','punct minor':'#444444','number':'#aaaaff','punct string single':'#004400','string single':'#00aa00','keyword':'#aaaaff','text this':'#ffaa66','punct this':'#aa5533','punct compare':'#6666ff','punct compare ligature':'#6666ff','punct comment triple':'#004400','comment triple header':'#00aa00','punct comment':'#003300','comment header':'#006600','punct range ligature':'#3333aa','punct keyword return':'#4444aa','function call':'#ff8800','keyword require':'#444444','punct require':'#444444','text require string':'#00aa00','function':'#ffaa44','punct function':'#884400','function argument':'#00aa00','punct function tail ligature':'#8888ff','punct function bound tail ligature':'#ff8888','dictionary key':'#ffff88','punct dictionary':'#00aa00','class':'#ffff44','obj':'#ffbb00','method':'#ffff88','punct method':'#aa6600','punct method class':'#aa6600','method class':'#ffff88','punct keyword':'#4444aa'}
 }
 
 export default color;
