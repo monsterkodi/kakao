@@ -196,6 +196,8 @@ function state
         for row in 0...@cells.t.rows()-1
             
             y = row+@s.view[1]
+            
+            break if y >= @s.lines.length
             line = @s.lines[y]
             
             for x in 0...@cells.t.cols()-@s.gutter

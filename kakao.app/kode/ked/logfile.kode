@@ -12,17 +12,10 @@ function logfile
 
     @: ->
         
-        @stream = fs.createWriteStream "log.txt" flags:'a'
+        @stream = fs.createWriteStream 'ked.log' flags:'a'
         
     write: txt ->
 
         @stream.write txt + '\n'
         
-        # [...Array(10000)].forEach( function (item,index) {
-            # stream.write(index + "\n");
-        # });
-        
-        # stream.end()
-        
-
 export logfile

@@ -284,6 +284,10 @@ state = (function ()
         for (var _a_ = row = 0, _b_ = this.cells.t.rows() - 1; (_a_ <= _b_ ? row < this.cells.t.rows() - 1 : row > this.cells.t.rows() - 1); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + this.s.view[1]
+            if (y >= this.s.lines.length)
+            {
+                break
+            }
             line = this.s.lines[y]
             for (var _c_ = x = 0, _d_ = this.cells.t.cols() - this.s.gutter; (_c_ <= _d_ ? x < this.cells.t.cols() - this.s.gutter : x > this.cells.t.cols() - this.s.gutter); (_c_ <= _d_ ? ++x : --x))
             {

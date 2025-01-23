@@ -54,7 +54,11 @@ class color
 
     static scroll = '#222222'
 
-    static scroll_knob = '#8888ff'
+    static scroll_dot = '#333333'
+
+    static scroll_knob = '#4444ff'
+
+    static scroll_doth = '#8888ff'
 
     static column = '#222222'
 

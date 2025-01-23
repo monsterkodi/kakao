@@ -21,15 +21,18 @@ scroll = (function ()
 
     scroll.prototype["draw"] = function ()
     {
-        var bg, knob, ne, ns, row
+        var bg, kh, kp, nc, ne, ns, row
 
-        ns = parseInt(Math.floor((this.cells.t.rows() - 1) * this.state.s.view[1] / (this.state.s.lines.length - this.cells.t.rows() + 2)))
-        ne = ns
-        lf.write(ns)
-        knob = [ns,ne]
+        kh = parseInt(Math.floor(Math.pow((this.cells.t.rows() - 1),2) / this.state.s.lines.length))
+        kp = parseInt(Math.floor((this.cells.t.rows() - kh - 2) * this.state.s.view[1] / (this.state.s.lines.length - this.cells.t.rows() + 1)))
+        nc = parseInt(Math.floor((this.cells.t.rows() - 1) * this.state.s.view[1] / (this.state.s.lines.length - this.cells.t.rows() + 2)))
+        nc = parseInt(Math.floor((this.cells.t.rows() - 2) * this.state.s.view[1] / (this.state.s.lines.length - this.cells.t.rows() + 1)))
+        ns = kp
+        ne = kp + kh
+        lf.write(`${ns} ${nc} ${ne}`)
         for (var _a_ = row = 0, _b_ = this.cells.t.rows() - 1; (_a_ <= _b_ ? row < this.cells.t.rows() - 1 : row > this.cells.t.rows() - 1); (_a_ <= _b_ ? ++row : --row))
         {
-            bg = (knob[0] <= row && row <= knob[1]) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.scroll : color.gutter
+            bg = row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.scroll : color.gutter
             this.cells.c[row][0].bg = bg
             this.cells.c[row][0].char = ' '
         }

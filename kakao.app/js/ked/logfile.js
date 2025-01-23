@@ -7,7 +7,7 @@ logfile = (function ()
 {
     function logfile ()
     {
-        this.stream = fs.createWriteStream("log.txt",{flags:'a'})
+        this.stream = fs.createWriteStream('ked.log',{flags:'a'})
     }
 
     logfile.prototype["write"] = function (txt)

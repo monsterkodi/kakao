@@ -16,17 +16,20 @@ function scroll
         
     draw: =>
         
-        ns = parseInt Math.floor((@cells.t.rows()-1) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 2))
-        ne = ns
+        kh = parseInt Math.floor(Math.pow((@cells.t.rows() - 1) 2) / @state.s.lines.length)
+        kp = parseInt Math.floor((@cells.t.rows()-kh-2) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 1 ))
+        nc = parseInt Math.floor((@cells.t.rows()-1) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 2))
+        nc = parseInt Math.floor((@cells.t.rows()-2) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 1))
+        ns = kp
+        ne = kp+kh
         
-        lf.write ns
-        
-        knob = [ns ne]
+        lf.write "#{ns} #{nc} #{ne}"
         
         for row in 0...@cells.t.rows()-1
             
             bg = if
-                knob[0] <= row <= knob[1] ➜ @hover ? color.scroll_knob : color.scroll
+                row == nc ➜ @hover ? color.scroll_doth : color.scroll_dot
+                ns <= row <= ne ➜ @hover ? color.scroll_knob : color.scroll
                 @hover ➜ color.scroll
                        ➜ color.gutter
                         
