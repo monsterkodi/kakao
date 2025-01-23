@@ -121,6 +121,7 @@ function state
                 mrgd[mrgd.length-1][2] = s[2] 
                 mrgd[mrgd.length-1][3] = s[3] 
 
+        # lf.write noon mrgd
         mrgd
         
     #  0000000  00000000  000      00000000   0000000  000000000  
@@ -168,6 +169,8 @@ function state
     isSelectedLine: y =>
         
         for selection in @s.selections
+            if selection[3] == y and selection[2] == 0
+                continue
             if selection[1] <= y <= selection[3]
                 ⮐ true
         false

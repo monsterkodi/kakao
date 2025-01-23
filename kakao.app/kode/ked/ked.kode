@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter status cells state
+use ◆ ttio gutter status cells state logfile
 use ../kxk ▪ karg kstr
 use ../kxk/nfs
 
@@ -21,6 +21,10 @@ function KED
     @: ->
 
         @t = new ttio
+        
+        @log = new logfile
+        
+        global.lf = @log
         
         @cells  = new cells @t
         @state  = new state  @cells
@@ -269,6 +273,8 @@ function KED
         drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         
         @status.text = "▸ #{drawTime}"
+        
+        global.lf.write @status.text
         
 export KED.run
 

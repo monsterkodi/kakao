@@ -7,6 +7,7 @@ import gutter from "./gutter.js"
 import status from "./status.js"
 import cells from "./cells.js"
 import state from "./state.js"
+import logfile from "./logfile.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg
@@ -32,6 +33,8 @@ KED = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
+        this.log = new logfile
+        global.lf = this.log
         this.cells = new cells(this.t)
         this.state = new state(this.cells)
         this.gutter = new gutter(this.cells,this.state)
@@ -358,7 +361,8 @@ KED = (function ()
         this.t.showCursor()
         this.t.restore()
         drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        return this.status.text = `▸ ${drawTime}`
+        this.status.text = `▸ ${drawTime}`
+        return global.lf.write(this.status.text)
     }
 
     return KED

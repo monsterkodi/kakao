@@ -48,9 +48,19 @@ function cells
         
         @t.setCursor 0 0
         s = ''
+        pbg = ''
+        pfg = ''
         for y in 0...@t.rows()
             for x in 0...@t.cols()
-                s += color.bg_rgb(@c[y][x].bg) + color.fg_rgb(@c[y][x].fg) + @c[y][x].char
+                bg = color.bg_rgb @c[y][x].bg
+                if bg != pbg
+                    s += bg
+                    pbg = bg
+                fg = color.fg_rgb @c[y][x].fg
+                if fg != pfg
+                    s += fg
+                    pfg = fg
+                s +=  @c[y][x].char
             s += '\n'
         @t.write s[0..-2]
         

@@ -251,6 +251,10 @@ state = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             selection = list[_a_]
+            if (selection[3] === y && selection[2] === 0)
+            {
+                continue
+            }
             if ((selection[1] <= y && y <= selection[3]))
             {
                 return true

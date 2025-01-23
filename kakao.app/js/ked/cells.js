@@ -74,15 +74,29 @@ cells = (function ()
 
     cells.prototype["render"] = function ()
     {
-        var s, x, y
+        var bg, fg, pbg, pfg, s, x, y
 
         this.t.setCursor(0,0)
         s = ''
+        pbg = ''
+        pfg = ''
         for (var _a_ = y = 0, _b_ = this.t.rows(); (_a_ <= _b_ ? y < this.t.rows() : y > this.t.rows()); (_a_ <= _b_ ? ++y : --y))
         {
             for (var _c_ = x = 0, _d_ = this.t.cols(); (_c_ <= _d_ ? x < this.t.cols() : x > this.t.cols()); (_c_ <= _d_ ? ++x : --x))
             {
-                s += color.bg_rgb(this.c[y][x].bg) + color.fg_rgb(this.c[y][x].fg) + this.c[y][x].char
+                bg = color.bg_rgb(this.c[y][x].bg)
+                if (bg !== pbg)
+                {
+                    s += bg
+                    pbg = bg
+                }
+                fg = color.fg_rgb(this.c[y][x].fg)
+                if (fg !== pfg)
+                {
+                    s += fg
+                    pfg = fg
+                }
+                s += this.c[y][x].char
             }
             s += '\n'
         }

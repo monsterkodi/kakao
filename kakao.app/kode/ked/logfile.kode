@@ -1,0 +1,28 @@
+###
+000       0000000    0000000   00000000  000  000      00000000
+000      000   000  000        000       000  000      000     
+000      000   000  000  0000  000000    000  000      0000000 
+000      000   000  000   000  000       000  000      000     
+0000000   0000000    0000000   000       000  0000000  00000000
+###
+
+use fs
+
+function logfile
+
+    @: ->
+        
+        @stream = fs.createWriteStream "log.txt" flags:'a'
+        
+    write: txt ->
+
+        @stream.write txt + '\n'
+        
+        # [...Array(10000)].forEach( function (item,index) {
+            # stream.write(index + "\n");
+        # });
+        
+        # stream.end()
+        
+
+export logfile
