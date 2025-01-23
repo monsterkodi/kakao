@@ -4,11 +4,13 @@ var args, KED
 
 import ttio from "./ttio.js"
 import gutter from "./gutter.js"
+import status from "./status.js"
 import cells from "./cells.js"
 import state from "./state.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg
+let kstr = kxk.kstr
 
 import nfs from "../kxk/nfs.js"
 
@@ -33,6 +35,7 @@ KED = (function ()
         this.cells = new cells(this.t)
         this.state = new state(this.cells)
         this.gutter = new gutter(this.cells,this.state)
+        this.status = new status(this.cells,this.state)
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -136,16 +139,19 @@ KED = (function ()
                 }
                 break
             case 'drag':
-                x = col + this.state.s.view[0] - this.state.s.gutter
-                y = row + this.state.s.view[1]
-                start = [this.dragStart[0],this.dragStart[1]]
-                if (y < this.dragStart[1])
+                if (this.dragStart)
                 {
-                    start = [this.dragStart[2],this.dragStart[1]]
-                }
-                if (this.state.select(start,[x,y]))
-                {
-                    return this.redraw()
+                    x = col + this.state.s.view[0] - this.state.s.gutter
+                    y = row + this.state.s.view[1]
+                    start = [this.dragStart[0],this.dragStart[1]]
+                    if (y < this.dragStart[1])
+                    {
+                        start = [this.dragStart[2],this.dragStart[1]]
+                    }
+                    if (this.state.select(start,[x,y]))
+                    {
+                        return this.redraw()
+                    }
                 }
                 break
             case 'release':
@@ -339,12 +345,20 @@ KED = (function ()
 
     KED.prototype["redraw"] = function ()
     {
+        var drawTime, start
+
+        start = process.hrtime()
+        this.t.store()
         this.t.hideCursor()
         this.cells.init()
         this.gutter.draw()
+        this.status.draw()
         this.state.draw()
         this.cells.render()
-        return this.t.showCursor()
+        this.t.showCursor()
+        this.t.restore()
+        drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        return this.status.text = `▸ ${drawTime}`
     }
 
     return KED

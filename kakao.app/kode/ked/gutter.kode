@@ -16,9 +16,11 @@ function gutter
     
     draw: ->
         
-        @cells.bg_rect 0 0 @state.s.gutter-1 -1 color.gutter
-        
-        for row in 0...@cells.t.rows()
+        for row in 0...@cells.t.rows()-1
+                        
+            @cells.c[row][0].bg = color.gutter
+            if @state.s.gutter-1 < @cells.t.cols()
+                @cells.c[row][@state.s.gutter-1].bg = color.gutter
             
             y = @state.s.view[1] + row
             lineno = lpad @state.s.gutter-2 y + 1
@@ -28,22 +30,12 @@ function gutter
                 col = i+1
                 if col < @cells.t.cols()
                     
-                    if y < @state.s.lines.length
-                        linel = @state.s.lines[y].length - @state.s.view[0]
-                        if y == @state.s.cursor[1]
-                            if linel > 0
-                                @cells.bg_rect @state.s.gutter row @state.s.gutter+linel row color.cursor_main
-                            @cells.bg_rect max(@state.s.gutter @state.s.gutter+linel) row -1 row color.cursor_empty
-                        else
-                            if linel > 0
-                                @cells.bg_rect @state.s.gutter row @state.s.gutter+linel row color.editor
-                            @cells.bg_rect max(@state.s.gutter @state.s.gutter+linel) row -1 row color.editor_empty
-                        
                     clr = if
                         y == @state.s.cursor[1] ➜ color.cursor
                         @state.isSelectedLine y ➜ color.selection
                                                 ➜ color.linenr
                     
+                    @cells.c[row][col].bg = color.gutter
                     @cells.c[row][col].fg = clr
                     @cells.c[row][col].char = c
 

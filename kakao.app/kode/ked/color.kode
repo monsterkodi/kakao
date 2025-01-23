@@ -12,6 +12,10 @@ class color
         
         if c is str
             
+            if c.length == 7
+                
+                c = c[1..]
+            
             if c.length == 6
                 
                 ⮐ [Number.parseInt(c[0..1], 16) Number.parseInt(c[2..3], 16) Number.parseInt(c[4..5], 16)]
@@ -38,14 +42,18 @@ class color
     
         "\x1b[38;2;#{r};#{g};#{b}m" 
         
-    @selection:     '444488' # #444488
-    @cursor:        'ffff00' # #ffff00
-    @linenr:        '1a1a1a' # #1a1a1a
-    @gutter:        '0a0a0a' # #0a0a0a
-    @editor:        '181818' # #181818
-    @text:          'ffffff' # #ffffff
-    @cursor_main:   '2f2f2f' # #2f2f2f
-    @editor_empty:  '0a0a0a' # #0a0a0a
-    @cursor_empty:  '000000' # #000000
+    @selection:     '#444488'  
+    @cursor:        '#ffff00'  
+    @linenr:        '#1a1a1a'  
+    @gutter:        '#0a0a0a'  
+    @column:        '#222222'  
+    @column_fg:     '#000000'  
+    @status:        '#222222'  
+    @status_fg:     "#888888"  
+    @editor:        '#181818'  
+    @text:          '#ffffff'  
+    @cursor_main:   '#2f2f2f'  
+    @editor_empty:  '#0a0a0a'  
+    @cursor_empty:  '#000000'  
         
 export color

@@ -47,9 +47,9 @@ state = (function ()
         x = _k_.max(0,x)
         this.s = this.s.set('cursor',[x,y])
         view = this.s.view.asMutable()
-        if (y >= view[1] + this.cells.t.rows())
+        if (y >= view[1] + this.cells.t.rows() - 1)
         {
-            view[1] = y - this.cells.t.rows() + 1
+            view[1] = y - this.cells.t.rows() + 2
         }
         else if (y < view[1])
         {
@@ -261,7 +261,7 @@ state = (function ()
 
     state.prototype["selectLine"] = function (y)
     {
-        return this.select([0,y],[this.s.lines.length - 1,y])
+        return this.select([0,y],[this.s.lines[y].length,y])
     }
 
     state.prototype["deselect"] = function ()
@@ -275,18 +275,38 @@ state = (function ()
 
     state.prototype["draw"] = function ()
     {
-        var li, line, selection, x, xe, xs, y
+        var li, line, linel, row, selection, x, xe, xs, y
 
-        for (var _a_ = y = 0, _b_ = this.cells.t.rows(); (_a_ <= _b_ ? y < this.cells.t.rows() : y > this.cells.t.rows()); (_a_ <= _b_ ? ++y : --y))
+        for (var _a_ = row = 0, _b_ = this.cells.t.rows() - 1; (_a_ <= _b_ ? row < this.cells.t.rows() - 1 : row > this.cells.t.rows() - 1); (_a_ <= _b_ ? ++row : --row))
         {
-            li = y + this.s.view[1]
-            line = this.s.lines[li]
+            y = row + this.s.view[1]
+            line = this.s.lines[y]
             for (var _c_ = x = 0, _d_ = this.cells.t.cols() - this.s.gutter; (_c_ <= _d_ ? x < this.cells.t.cols() - this.s.gutter : x > this.cells.t.cols() - this.s.gutter); (_c_ <= _d_ ? ++x : --x))
             {
                 if (x + this.s.gutter < this.cells.t.cols() && x + this.s.view[0] < line.length)
                 {
-                    this.cells.c[y][x + this.s.gutter].fg = color.text
-                    this.cells.c[y][x + this.s.gutter].char = line[x + this.s.view[0]]
+                    this.cells.c[row][x + this.s.gutter].fg = color.text
+                    this.cells.c[row][x + this.s.gutter].char = line[x + this.s.view[0]]
+                }
+            }
+            if (y < this.s.lines.length)
+            {
+                linel = line.length - this.s.view[0]
+                if (y === this.s.cursor[1])
+                {
+                    if (linel > 0)
+                    {
+                        this.cells.bg_rect(this.s.gutter,row,this.s.gutter + linel,row,color.cursor_main)
+                    }
+                    this.cells.bg_rect(_k_.max(this.s.gutter,this.s.gutter + linel),row,-1,row,color.cursor_empty)
+                }
+                else
+                {
+                    if (linel > 0)
+                    {
+                        this.cells.bg_rect(this.s.gutter,row,this.s.gutter + linel,row,color.editor)
+                    }
+                    this.cells.bg_rect(_k_.max(this.s.gutter,this.s.gutter + linel),row,-1,row,color.editor_empty)
                 }
             }
         }
@@ -297,7 +317,7 @@ state = (function ()
             for (var _f_ = li = selection[1], _10_ = selection[3]; (_f_ <= _10_ ? li <= selection[3] : li >= selection[3]); (_f_ <= _10_ ? ++li : --li))
             {
                 y = li - this.s.view[1]
-                if ((this.s.view[1] <= li && li < this.s.view[1] + this.cells.t.rows()))
+                if ((this.s.view[1] <= li && li < this.s.view[1] + this.cells.t.rows() - 1))
                 {
                     if (li === selection[1])
                     {

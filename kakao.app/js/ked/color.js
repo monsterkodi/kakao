@@ -6,6 +6,10 @@ class color
     {
         if (_k_.isStr(c))
         {
+            if (c.length === 7)
+            {
+                c = c.slice(1)
+            }
             if (c.length === 6)
             {
                 return [Number.parseInt(c.slice(0, 2),16),Number.parseInt(c.slice(2, 4),16),Number.parseInt(c.slice(4, 6),16)]
@@ -40,23 +44,31 @@ class color
         return `\x1b[38;2;${r};${g};${b}m`
     }
 
-    static selection = '444488'
+    static selection = '#444488'
 
-    static cursor = 'ffff00'
+    static cursor = '#ffff00'
 
-    static linenr = '1a1a1a'
+    static linenr = '#1a1a1a'
 
-    static gutter = '0a0a0a'
+    static gutter = '#0a0a0a'
 
-    static editor = '181818'
+    static column = '#222222'
 
-    static text = 'ffffff'
+    static column_fg = '#000000'
 
-    static cursor_main = '2f2f2f'
+    static status = '#222222'
 
-    static editor_empty = '0a0a0a'
+    static status_fg = "#888888"
 
-    static cursor_empty = '000000'
+    static editor = '#181818'
+
+    static text = '#ffffff'
+
+    static cursor_main = '#2f2f2f'
+
+    static editor_empty = '#0a0a0a'
+
+    static cursor_empty = '#000000'
 }
 
 export default color;

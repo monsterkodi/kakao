@@ -6,8 +6,8 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter cells state
-use ../kxk ▪ karg
+use ◆ ttio gutter status cells state
+use ../kxk ▪ karg kstr
 use ../kxk/nfs
 
 args = karg """
@@ -25,6 +25,7 @@ function KED
         @cells  = new cells @t
         @state  = new state  @cells
         @gutter = new gutter @cells @state
+        @status = new status @cells @state
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -123,16 +124,17 @@ function KED
                     
             'drag'
             
-                x = col + @state.s.view[0] - @state.s.gutter
-                y = row + @state.s.view[1]
-                
-                start = [@dragStart[0] @dragStart[1]]
-                
-                if y < @dragStart[1] 
-                    start = [@dragStart[2] @dragStart[1]]
-                
-                if @state.select start [x y]
-                    @redraw()
+                if @dragStart
+                    x = col + @state.s.view[0] - @state.s.gutter
+                    y = row + @state.s.view[1]
+                    
+                    start = [@dragStart[0] @dragStart[1]]
+                    
+                    if y < @dragStart[1] 
+                        start = [@dragStart[2] @dragStart[1]]
+                    
+                    if @state.select start [x y]
+                        @redraw()
                     
             'release'
             
@@ -252,12 +254,21 @@ function KED
     
     redraw: =>
         
+        start = process.hrtime()
+        
+        @t.store()                
         @t.hideCursor()
         @cells.init()
         @gutter.draw()
+        @status.draw()
         @state.draw()
         @cells.render()
         @t.showCursor()
+        @t.restore()
+        
+        drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        
+        @status.text = "▸ #{drawTime}"
         
 export KED.run
 

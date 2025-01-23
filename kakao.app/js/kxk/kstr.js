@@ -547,9 +547,11 @@ str.time = function (t)
                 }
                 f *= thsnd
             }
-            break
+            return 'big:' + String
+
         default:
-            return String(t)
+            'time:' + String
+            return t
     }
 
 }
@@ -565,7 +567,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _462_13_
+    var _463_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

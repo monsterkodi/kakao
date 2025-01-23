@@ -43,8 +43,8 @@ function state
         
         view = @s.view.asMutable()
         
-        if y >= view[1] + @cells.t.rows()
-            view[1] = y - @cells.t.rows() + 1
+        if y >= view[1] + @cells.t.rows() - 1
+            view[1] = y - @cells.t.rows() + 2
         else if y < view[1]
             view[1] = y
 
@@ -174,7 +174,7 @@ function state
             
     selectLine: y =>
         
-        @select [0 y] [@s.lines.length-1 y]
+        @select [0 y] [@s.lines[y].length y]
         
     deselect: =>
         
@@ -190,18 +190,34 @@ function state
     
     draw: =>
         
-        for y in 0...@cells.t.rows()
-            li = y+@s.view[1]
-            line = @s.lines[li]
+        for row in 0...@cells.t.rows()-1
+            
+            y = row+@s.view[1]
+            line = @s.lines[y]
+            
             for x in 0...@cells.t.cols()-@s.gutter
                 if x+@s.gutter < @cells.t.cols() and x+@s.view[0] < line.length
-                    @cells.c[y][x+@s.gutter].fg   = color.text
-                    @cells.c[y][x+@s.gutter].char = line[x+@s.view[0]]
+                    @cells.c[row][x+@s.gutter].fg   = color.text
+                    @cells.c[row][x+@s.gutter].char = line[x+@s.view[0]]
+
+            if y < @s.lines.length
+                linel = line.length - @s.view[0]
+                if y == @s.cursor[1]
+                    if linel > 0
+                        @cells.bg_rect @s.gutter row @s.gutter+linel row color.cursor_main
+                    @cells.bg_rect max(@s.gutter @s.gutter+linel) row -1 row color.cursor_empty
+                else
+                    if linel > 0
+                        @cells.bg_rect @s.gutter row @s.gutter+linel row color.editor
+                    @cells.bg_rect max(@s.gutter @s.gutter+linel) row -1 row color.editor_empty
                     
         for selection in @s.selections
+            
             for li in selection[1]..selection[3]
+                
                 y  = li-@s.view[1]
-                if @s.view[1] <= li < @s.view[1] + @cells.t.rows()
+                
+                if @s.view[1] <= li < @s.view[1] + @cells.t.rows() - 1
                     
                     if li == selection[1]
                         xs = selection[0]
