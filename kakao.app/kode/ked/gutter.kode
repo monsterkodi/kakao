@@ -18,7 +18,7 @@ function gutter
         
         for row in 0...@cells.t.rows()-1
                         
-            @cells.c[row][0].bg = color.gutter
+            # @cells.c[row][0].bg = color.gutter
             if @state.s.gutter-1 < @cells.t.cols()
                 @cells.c[row][@state.s.gutter-1].bg = color.gutter
             

@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter status cells state logfile
+use ◆ ttio gutter status cells state logfile scroll
 use ../kxk ▪ karg kstr
 use ../kxk/nfs
 
@@ -29,6 +29,7 @@ function KED
         @cells  = new cells @t
         @state  = new state  @cells
         @gutter = new gutter @cells @state
+        @scroll = new scroll @cells @state
         @status = new status @cells @state
         
         @t.on 'key'    @onKey
@@ -143,9 +144,14 @@ function KED
             'release'
             
                 delete @dragStart
-        
-        # log 'mouse' event col row button
                 
+            'move'
+            
+                hover = col == 0
+                if @scroll.hover != hover
+                    @scroll.setHover hover
+                    @redraw()
+        
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
     # 000000000  000000000  0000000   0000000   000      
@@ -264,6 +270,7 @@ function KED
         @t.hideCursor()
         @cells.init()
         @gutter.draw()
+        @scroll.draw()
         @status.draw()
         @state.draw()
         @cells.render()

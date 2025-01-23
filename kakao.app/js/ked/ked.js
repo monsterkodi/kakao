@@ -8,6 +8,7 @@ import status from "./status.js"
 import cells from "./cells.js"
 import state from "./state.js"
 import logfile from "./logfile.js"
+import scroll from "./scroll.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg
@@ -38,6 +39,7 @@ KED = (function ()
         this.cells = new cells(this.t)
         this.state = new state(this.cells)
         this.gutter = new gutter(this.cells,this.state)
+        this.scroll = new scroll(this.cells,this.state)
         this.status = new status(this.cells,this.state)
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
@@ -100,7 +102,7 @@ KED = (function ()
 
     KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
-        var redraw, start, x, y
+        var hover, redraw, start, x, y
 
         switch (event)
         {
@@ -160,6 +162,14 @@ KED = (function ()
             case 'release':
                 return delete this.dragStart
 
+            case 'move':
+                hover = col === 0
+                if (this.scroll.hover !== hover)
+                {
+                    this.scroll.setHover(hover)
+                    return this.redraw()
+                }
+                break
         }
 
     }
@@ -355,6 +365,7 @@ KED = (function ()
         this.t.hideCursor()
         this.cells.init()
         this.gutter.draw()
+        this.scroll.draw()
         this.status.draw()
         this.state.draw()
         this.cells.render()

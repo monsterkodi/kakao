@@ -21,7 +21,6 @@ gutter = (function ()
 
         for (var _a_ = row = 0, _b_ = this.cells.t.rows() - 1; (_a_ <= _b_ ? row < this.cells.t.rows() - 1 : row > this.cells.t.rows() - 1); (_a_ <= _b_ ? ++row : --row))
         {
-            this.cells.c[row][0].bg = color.gutter
             if (this.state.s.gutter - 1 < this.cells.t.cols())
             {
                 this.cells.c[row][this.state.s.gutter - 1].bg = color.gutter

@@ -1,0 +1,36 @@
+###
+ 0000000   0000000  00000000    0000000   000      000    
+000       000       000   000  000   000  000      000    
+0000000   000       0000000    000   000  000      000    
+     000  000       000   000  000   000  000      000    
+0000000    0000000  000   000   0000000   0000000  0000000
+###
+
+use ◆ color
+
+function scroll
+
+    @: @cells @state ->
+        
+    setHover: @hover =>
+        
+    draw: =>
+        
+        ns = parseInt Math.floor((@cells.t.rows()-1) * @state.s.view[1] / (@state.s.lines.length - @cells.t.rows() + 2))
+        ne = ns
+        
+        lf.write ns
+        
+        knob = [ns ne]
+        
+        for row in 0...@cells.t.rows()-1
+            
+            bg = if
+                knob[0] <= row <= knob[1] ➜ @hover ? color.scroll_knob : color.scroll
+                @hover ➜ color.scroll
+                       ➜ color.gutter
+                        
+            @cells.c[row][0].bg = bg
+            @cells.c[row][0].char = ' '
+
+export scroll

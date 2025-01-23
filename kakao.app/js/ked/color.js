@@ -52,6 +52,10 @@ class color
 
     static gutter = '#0a0a0a'
 
+    static scroll = '#222222'
+
+    static scroll_knob = '#8888ff'
+
     static column = '#222222'
 
     static column_fg = '#000000'
