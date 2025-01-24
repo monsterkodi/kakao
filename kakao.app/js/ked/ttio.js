@@ -425,6 +425,12 @@ TTIO = (function ()
                     case '[1;8D':
                         return this.emit('key','shift+ctrl+alt+left')
 
+                    case '[1;10C':
+                        return this.emit('key','shift+cmd+right')
+
+                    case '[1;10D':
+                        return this.emit('key','shift+cmd+left')
+
                     case '[1;15A':
                         return this.emit('key','ctrl+alt+cmd+up')
 

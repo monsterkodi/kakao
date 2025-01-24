@@ -19,7 +19,8 @@ function syntax
         start = process.hrtime()
         
         @diss = kolor.dissect lines ext
-        lf.write ext + ' ' + noon(@diss)
+         
+        # lf.write '@diss: ' + ext + ' ' + noon(@diss)
         
         dissTime  = kstr.time(BigInt(process.hrtime(start)[1]))
         

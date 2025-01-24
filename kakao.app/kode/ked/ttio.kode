@@ -192,6 +192,8 @@ function TTIO extends events
                     '[1;8B'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+down'
                     '[1;8C'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+right'
                     '[1;8D'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+left'
+                    '[1;10C'        ➜ ⮐ @emit 'key' 'shift+cmd+right'
+                    '[1;10D'        ➜ ⮐ @emit 'key' 'shift+cmd+left'
                     '[1;15A'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+up'
                     '[1;15B'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+down'
                     '[1;15C'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+right'

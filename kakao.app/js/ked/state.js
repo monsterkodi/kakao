@@ -82,6 +82,12 @@ state = (function ()
             case 'down':
                 c[1] += steps
                 break
+            case 'eol':
+                c[0] = this.s.lines[c[1]].length
+                break
+            case 'bol':
+                c[0] = 0
+                break
         }
 
         if (merge)
@@ -93,38 +99,31 @@ state = (function ()
 
     state.prototype["moveCursorAndSelect"] = function (dir)
     {
-        var cpos, selection, selections
+        var selection, selections
 
-        cpos = -1
         selections = this.s.selections.asMutable()
         selection = [this.s.cursor[0],this.s.cursor[1],this.s.cursor[0],this.s.cursor[1]]
         selections.push(selection)
-        switch (dir)
-        {
-            case 'up':
-            case 'left':
-                cpos = 0
-                break
-            case 'down':
-            case 'right':
-                cpos = 2
-                break
-        }
-
         this.moveCursor(dir,1,false)
         switch (dir)
         {
             case 'left':
-                selection[cpos] = selection[cpos] - 1
+                selection[0] = selection[0] - 1
                 break
             case 'right':
-                selection[cpos] = selection[cpos] + 1
+                selection[2] = selection[2] + 1
                 break
             case 'up':
-                selection[cpos + 1] = _k_.max(0,selection[cpos + 1] - 1)
+                selection[1] = _k_.max(0,selection[1] - 1)
                 break
             case 'down':
-                selection[cpos + 1] = _k_.min(this.s.lines.length - 1,selection[cpos + 1] + 1)
+                selection[3] = _k_.min(this.s.lines.length - 1,selection[3] + 1)
+                break
+            case 'eol':
+                selection[2] = Infinity
+                break
+            case 'bol':
+                selection[0] = 0
                 break
         }
 

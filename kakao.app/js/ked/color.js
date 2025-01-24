@@ -52,14 +52,6 @@ class color
 
     static gutter = '#0a0a0a'
 
-    static scroll = '#222222'
-
-    static scroll_dot = '#444444'
-
-    static scroll_knob = '#4444ff'
-
-    static scroll_doth = '#8888ff'
-
     static column = '#222222'
 
     static column_fg = '#000000'
@@ -67,6 +59,14 @@ class color
     static status = '#222222'
 
     static status_dark = '#1a1a1a'
+
+    static scroll = '#1a1a1a'
+
+    static scroll_dot = '#444444'
+
+    static scroll_knob = '#4444ff'
+
+    static scroll_doth = '#8888ff'
 
     static status_fg = '#888888'
 

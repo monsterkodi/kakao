@@ -13,6 +13,7 @@ function status
     @: @cells @state ->
         
         @file = ''
+        @drawTime = ''
         
     draw: =>
         
@@ -26,11 +27,6 @@ function status
                 @cells.c[y][x].fg = color.column_fg
                 @cells.c[y][x].char = x < colno.length ? colno[x] : ' '
                 
-        # x = @state.s.gutter-1
-        # if x < @cells.t.cols()
-            # @cells.c[y][x].bg = color.status_dark
-            # @cells.c[y][x].char = ' '
-        
         x = @state.s.gutter
         if x < @cells.t.cols()
             @cells.c[y][x].bg = color.status_dark
@@ -49,15 +45,37 @@ function status
             @cells.c[y][x].fg = color.status
             @cells.c[y][x].char = ''
 
-        # x = @state.s.gutter+2+@file.length
-        # if x < @cells.t.cols()
-            # @cells.c[y][x].bg = color.status
-            # @cells.c[y][x].fg = color.status_dark
-            # @cells.c[y][x].char = ''
-            
-        for x in @state.s.gutter+2+@file.length...@cells.t.cols()
+        for x in @state.s.gutter+2+@file.length...@cells.t.cols()-1
             if x < @cells.t.cols()
                 @cells.c[y][x].bg = color.status_dark
                 @cells.c[y][x].char = ' '
+                
+        @cells.c[y][@cells.t.cols()-1].bg = color.status_dark
+                
+        if valid @drawTime and @cells.t.cols()-@state.s.gutter+2+@file.length > @drawTime.length+1
+            
+            x = @cells.t.cols()-@drawTime.length-2
+            @cells.c[y][x].bg = color.status_dark
+            @cells.c[y][x].fg = color.status
+            @cells.c[y][x].char = ''
+            
+            for i in 0...@drawTime.length
+                x = @cells.t.cols()-@drawTime.length+i-1
+                if x < @cells.t.cols()
+                    @cells.c[y][x].bg = color.status
+                    @cells.c[y][x].fg = color.status_fg
+                    @cells.c[y][x].char = @drawTime[i]
+        
+        else
+            x = @cells.t.cols()-2
+            @cells.c[y][x].bg = color.status_dark
+            @cells.c[y][x].fg = color.status
+            @cells.c[y][x].char = ''
+                
+        x = @cells.t.cols()-1
+            @cells.c[y][x].bg = color.editor_empty
+            @cells.c[y][x].fg = color.status
+            @cells.c[y][x].char = ''
             
 export status
+

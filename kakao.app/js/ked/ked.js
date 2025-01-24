@@ -76,20 +76,21 @@ KED = (function ()
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var absPath, lines, text
+        var lines, start, text
 
+        start = process.hrtime()
         if (slash.isAbsolute(p))
         {
-            absPath = slash.path(p)
+            this.status.file = slash.tilde(p)
         }
         else
         {
-            absPath = slash.path(process.cwd(),p)
+            this.status.file = slash.normalize(p)
         }
-        this.status.file = slash.tilde(absPath)
         text = await nfs.read(p)
         lines = text.split(/\r?\n/)
         this.state.init(lines,slash.ext(p))
+        this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         return this.redraw()
     }
 
@@ -113,7 +114,7 @@ KED = (function ()
 
     KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
-        var handler, redraw, start, x, y
+        var handler, start, x, y
 
         var list = _k_.list(this.mouseHandlers)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -156,12 +157,12 @@ KED = (function ()
                     x = col + this.state.s.view[0] - this.state.s.gutter
                     y = row + this.state.s.view[1]
                     this.dragStart = [x,y,x]
-                    redraw = this.state.deselect()
-                    redraw |= this.state.setCursor(x,y)
-                    if (redraw)
+                    if (mods !== 'ctrl')
                     {
-                        return this.redraw()
+                        this.state.deselect()
                     }
+                    this.state.setCursor(x,y)
+                    return this.redraw()
                 }
                 break
             case 'drag':
@@ -354,6 +355,12 @@ KED = (function ()
             case 'shift+right':
                 return this.moveCursorAndSelect('right')
 
+            case 'shift+cmd+right':
+                return this.moveCursorAndSelect('eol')
+
+            case 'shift+cmd+left':
+                return this.moveCursorAndSelect('bol')
+
             case 'esc':
                 this.state.deselect()
                 this.redraw()
@@ -371,7 +378,7 @@ KED = (function ()
 
     KED.prototype["redraw"] = function ()
     {
-        var drawTime, start
+        var start
 
         start = process.hrtime()
         this.t.store()
@@ -384,7 +391,7 @@ KED = (function ()
         this.cells.render()
         this.t.showCursor()
         this.t.restore()
-        return drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }
 
     return KED

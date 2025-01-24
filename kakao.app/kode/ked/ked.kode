@@ -44,7 +44,6 @@ function KED
         if args.version ➜ log '0.0.1'; process.exit 0
                         
         if valid args.options
-            # log 'file(s):' args.options
             @loadFile args.options[0]
         else
             @state.init ['']
@@ -61,14 +60,21 @@ function KED
     
     loadFile: p ○=>
         
+        start = process.hrtime()
+                
         if slash.isAbsolute p
-            absPath = slash.path p
+            @status.file = slash.tilde  p
         else
-            absPath = slash.path process.cwd() p
-        @status.file = slash.tilde absPath
+            # absPath = slash.path process.cwd() p
+            @status.file = slash.normalize p
+        # @status.file = slash.tilde absPath
+
         text =○ nfs.read p
         lines = text.split /\r?\n/
         @state.init lines slash.ext(p)
+        
+        @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        
         @redraw()
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
@@ -135,9 +141,9 @@ function KED
                     
                     @dragStart = [x y x]
                                     
-                    redraw  = @state.deselect()
-                    redraw |= @state.setCursor(x y)
-                    if redraw ➜ @redraw()
+                    @state.deselect() if mods != 'ctrl'
+                    @state.setCursor(x y)
+                    @redraw()
                     
             'drag'
             
@@ -240,7 +246,7 @@ function KED
             'ctrl+e'        ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
             'ctrl+h'        ➜ ⮐ @setCursor 0 0
             'ctrl+j'
-            'shift+ctrl+h'  ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
+            'shift+ctrl+h'    ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
             
             'ctrl+k'    ➜ ⮐ @t.write '\x1b[0K'
             'return'    ➜ ⮐ @t.write '\n'
@@ -251,10 +257,12 @@ function KED
             'ctrl+d' 
             'ctrl+q'    ➜ ⮐ @t.quit()
             
-            'shift+up'    ➜ ⮐ @moveCursorAndSelect 'up'
-            'shift+down'  ➜ ⮐ @moveCursorAndSelect 'down'
-            'shift+left'  ➜ ⮐ @moveCursorAndSelect 'left'
-            'shift+right' ➜ ⮐ @moveCursorAndSelect 'right'
+            'shift+up'          ➜ ⮐ @moveCursorAndSelect 'up'
+            'shift+down'        ➜ ⮐ @moveCursorAndSelect 'down'
+            'shift+left'        ➜ ⮐ @moveCursorAndSelect 'left'
+            'shift+right'       ➜ ⮐ @moveCursorAndSelect 'right'
+            'shift+cmd+right'   ➜ ⮐ @moveCursorAndSelect 'eol'
+            'shift+cmd+left'    ➜ ⮐ @moveCursorAndSelect 'bol'
             
             'esc'         ➜ @state.deselect(); @redraw(); ⮐ 
             
@@ -283,7 +291,7 @@ function KED
         @t.showCursor()
         @t.restore()
         
-        drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
                         
 export KED.run
 
