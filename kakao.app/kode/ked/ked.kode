@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter status cells state logfile scroll
+use ◆ ttio gutter status cells state logfile scroll color
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
 
@@ -44,7 +44,7 @@ function KED
         if args.version ➜ log '0.0.1'; process.exit 0
                         
         if valid args.options
-            log 'file(s):' args.options
+            # log 'file(s):' args.options
             @loadFile args.options[0]
         else
             @state.init ['']
@@ -61,6 +61,11 @@ function KED
     
     loadFile: p ○=>
         
+        if slash.isAbsolute p
+            absPath = slash.path p
+        else
+            absPath = slash.path process.cwd() p
+        @status.file = slash.tilde absPath
         text =○ nfs.read p
         lines = text.split /\r?\n/
         @state.init lines slash.ext(p)
@@ -279,10 +284,6 @@ function KED
         @t.restore()
         
         drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        
-        @status.text = "▸ #{drawTime}"
-        
-        # lf.write @status.text
-        
+                        
 export KED.run
 

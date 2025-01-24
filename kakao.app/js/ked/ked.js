@@ -9,6 +9,7 @@ import cells from "./cells.js"
 import state from "./state.js"
 import logfile from "./logfile.js"
 import scroll from "./scroll.js"
+import color from "./color.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg
@@ -58,7 +59,6 @@ KED = (function ()
         }
         if (!_k_.empty(args.options))
         {
-            console.log('file(s):',args.options)
             this.loadFile(args.options[0])
         }
         else
@@ -76,8 +76,17 @@ KED = (function ()
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, text
+        var absPath, lines, text
 
+        if (slash.isAbsolute(p))
+        {
+            absPath = slash.path(p)
+        }
+        else
+        {
+            absPath = slash.path(process.cwd(),p)
+        }
+        this.status.file = slash.tilde(absPath)
         text = await nfs.read(p)
         lines = text.split(/\r?\n/)
         this.state.init(lines,slash.ext(p))
@@ -375,8 +384,7 @@ KED = (function ()
         this.cells.render()
         this.t.showCursor()
         this.t.restore()
-        drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        return this.status.text = `▸ ${drawTime}`
+        return drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }
 
     return KED

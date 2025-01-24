@@ -12,24 +12,52 @@ function status
 
     @: @cells @state ->
         
-        @text = ''
+        @file = ''
         
     draw: =>
         
         y = @cells.t.rows()-1
         
-        colno = rpad @state.s.gutter-2 @state.s.cursor[0] + 1
+        colno = rpad @state.s.gutter-1 @state.s.cursor[0] + 1
 
-        for x in 0...@state.s.gutter-1
+        for x in 0...@state.s.gutter
             if x < @cells.t.cols()
-                @cells.c[y][x].bg = color.column
+                @cells.c[y][x].bg = color.status_dark
                 @cells.c[y][x].fg = color.column_fg
                 @cells.c[y][x].char = x < colno.length ? colno[x] : ' '
                 
-        for x in @state.s.gutter...@cells.t.cols()
-            if x < @cells.t.cols()            
+        # x = @state.s.gutter-1
+        # if x < @cells.t.cols()
+            # @cells.c[y][x].bg = color.status_dark
+            # @cells.c[y][x].char = ' '
+        
+        x = @state.s.gutter
+        if x < @cells.t.cols()
+            @cells.c[y][x].bg = color.status_dark
+            @cells.c[y][x].fg = color.status
+            @cells.c[y][x].char = ''
+                
+        for x in @state.s.gutter+1...@state.s.gutter+1+@file.length
+            if x < @cells.t.cols()
                 @cells.c[y][x].bg = color.status
                 @cells.c[y][x].fg = color.status_fg
-                @cells.c[y][x].char = (x-@state.s.gutter < @text.length) ? @text[x-@state.s.gutter] : ' '
+                @cells.c[y][x].char = (x-@state.s.gutter-1 < @file.length) ? @file[x-@state.s.gutter-1] : ' '
+                
+        x = @state.s.gutter+1+@file.length
+        if x < @cells.t.cols()
+            @cells.c[y][x].bg = color.status_dark
+            @cells.c[y][x].fg = color.status
+            @cells.c[y][x].char = ''
 
+        # x = @state.s.gutter+2+@file.length
+        # if x < @cells.t.cols()
+            # @cells.c[y][x].bg = color.status
+            # @cells.c[y][x].fg = color.status_dark
+            # @cells.c[y][x].char = ''
+            
+        for x in @state.s.gutter+2+@file.length...@cells.t.cols()
+            if x < @cells.t.cols()
+                @cells.c[y][x].bg = color.status_dark
+                @cells.c[y][x].char = ' '
+            
 export status

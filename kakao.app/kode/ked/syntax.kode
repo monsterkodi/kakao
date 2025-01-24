@@ -6,6 +6,7 @@
 0000000      000     000   000     000     000   000  000   000
 ###
 
+use ../kxk ◆ kstr
 use ../kolor/kolor
 use ◆ color
 
@@ -15,9 +16,14 @@ function syntax
         
     setLines: lines ext='txt' =>
         
-        @diss = kolor.dissect lines ext
+        start = process.hrtime()
         
+        @diss = kolor.dissect lines ext
         lf.write ext + ' ' + noon(@diss)
+        
+        dissTime  = kstr.time(BigInt(process.hrtime(start)[1]))
+        
+        lf.write 'syntax: ' + dissTime
                 
     getClass: x y =>
         

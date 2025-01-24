@@ -2,6 +2,8 @@ var _k_ = {noon: function (obj) { var pad = function (s, l) { while (s.length < 
 
 var syntax
 
+import kstr from "../kxk/kstr.js"
+
 import kolor from "../kolor/kolor.js"
 
 import color from "./color.js"
@@ -19,8 +21,13 @@ syntax = (function ()
 
     syntax.prototype["setLines"] = function (lines, ext = 'txt')
     {
+        var dissTime, start
+
+        start = process.hrtime()
         this.diss = kolor.dissect(lines,ext)
-        return lf.write(ext + ' ' + _k_.noon((this.diss)))
+        lf.write(ext + ' ' + _k_.noon((this.diss)))
+        dissTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        return lf.write('syntax: ' + dissTime)
     }
 
     syntax.prototype["getClass"] = function (x, y)
@@ -41,9 +48,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _31_36_
+        var _37_36_
 
-        return ((_31_36_=color.syntax[this.getClass(x,y)]) != null ? _31_36_ : '#ff0000')
+        return ((_37_36_=color.syntax[this.getClass(x,y)]) != null ? _37_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)
