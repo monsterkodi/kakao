@@ -22,60 +22,46 @@ function status
         colno = rpad @state.s.gutter-1 @state.s.cursor[0] + 1
 
         for x in 0...@state.s.gutter
-            if x < @cells.t.cols()
-                @cells.c[y][x].bg = color.status_dark
-                @cells.c[y][x].fg = color.column_fg
-                @cells.c[y][x].char = x < colno.length ? colno[x] : ' '
+            @cells.set x y (x < colno.length ? colno[x] : ' ') color.column_fg color.status_dark
                 
         x = @state.s.gutter
-        if x < @cells.t.cols()
-            @cells.c[y][x].bg = color.status_dark
-            @cells.c[y][x].fg = color.status
-            @cells.c[y][x].char = ''
+        @cells.set x y '' color.status color.status_dark
                 
         for x in @state.s.gutter+1...@state.s.gutter+1+@file.length
-            if x < @cells.t.cols()
-                @cells.c[y][x].bg = color.status
-                @cells.c[y][x].fg = color.status_fg
-                @cells.c[y][x].char = (x-@state.s.gutter-1 < @file.length) ? @file[x-@state.s.gutter-1] : ' '
+            char = (x-@state.s.gutter-1 < @file.length) ? @file[x-@state.s.gutter-1] : ' '
+            @cells.set x y char color.status_fg color.status
                 
         x = @state.s.gutter+1+@file.length
-        if x < @cells.t.cols()
-            @cells.c[y][x].bg = color.status_dark
-            @cells.c[y][x].fg = color.status
-            @cells.c[y][x].char = ''
+        @cells.set x y '' color.status color.status_dark
 
         for x in @state.s.gutter+2+@file.length...@cells.t.cols()-1
-            if x < @cells.t.cols()
-                @cells.c[y][x].bg = color.status_dark
-                @cells.c[y][x].char = ' '
+            @cells.set x y ' ' null color.status_dark
                 
         @cells.c[y][@cells.t.cols()-1].bg = color.status_dark
                 
         if valid @drawTime and @cells.t.cols()-@state.s.gutter+2+@file.length > @drawTime.length+1
             
             x = @cells.t.cols()-@drawTime.length-2
-            @cells.c[y][x].bg = color.status_dark
-            @cells.c[y][x].fg = color.status
-            @cells.c[y][x].char = ''
+            @cells.set x y '' color.status color.status_dark
             
             for i in 0...@drawTime.length
                 x = @cells.t.cols()-@drawTime.length+i-1
-                if x < @cells.t.cols()
-                    @cells.c[y][x].bg = color.status
-                    @cells.c[y][x].fg = color.status_fg
-                    @cells.c[y][x].char = @drawTime[i]
+                @cells.set x y @drawTime[i] color.status_fg color.status
         
         else
             x = @cells.t.cols()-2
-            @cells.c[y][x].bg = color.status_dark
-            @cells.c[y][x].fg = color.status
-            @cells.c[y][x].char = ''
+            @cells.set x y '' color.status color.status_dark
                 
         x = @cells.t.cols()-1
-            @cells.c[y][x].bg = color.editor_empty
-            @cells.c[y][x].fg = color.status
-            @cells.c[y][x].char = ''
+        @cells.set x y '' color.status color.editor_empty
+            
+        if @state.s.selections.length
+
+            sel = "#{@state.s.selections.length} sel"
+             
+            for i in 0...sel.length
+                x = @cells.t.cols()-@drawTime.length+i-3-sel.length
+                @cells.set x y sel[i] color.status_fg color.status
             
 export status
 

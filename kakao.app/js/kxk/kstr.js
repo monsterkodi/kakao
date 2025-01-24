@@ -547,11 +547,10 @@ str.time = function (t)
                 }
                 f *= thsnd
             }
-            return 'big:' + String
+            return 'big:' + String(t)
 
         default:
-            'time:' + String
-            return t
+            return 'time:' + String(t)
     }
 
 }

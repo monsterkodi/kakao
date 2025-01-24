@@ -22,21 +22,38 @@ function cells
 
     @: @t -> @init()
     
-    init: => @c = makeCells @t.rows() @t.cols()
+    init: => 
+    
+        @rows = @t.rows()
+        @cols = @t.cols()
+        @c = makeCells @rows @cols
         
     bg_rect: x1 y1 x2 y2 c =>
     
-        x1 = @t.cols() + x1 if x1 < 0
-        x2 = @t.cols() + x2 if x2 < 0
+        x1 = @cols + x1 if x1 < 0
+        x2 = @cols + x2 if x2 < 0
 
-        y1 = @t.rows() + y1 if y1 < 0
-        y2 = @t.rows() + y2 if y2 < 0
+        y1 = @rows + y1 if y1 < 0
+        y2 = @rows + y2 if y2 < 0
         
         for row in y1..y2
-            if row < @t.rows()
+            if row < @rows
                 for col in x1..x2
-                    if col < @t.cols()
+                    if col < @cols
                         @c[row][col].bg = c
+                        
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: x y char fg bg =>
+        
+        if x < @cols and y < @rows
+            @c[y][x].char = char
+            @c[y][x].fg = fg if valid fg
+            @c[y][x].bg = bg if valid bg
         
     # 00000000   00000000  000   000  0000000    00000000  00000000   
     # 000   000  000       0000  000  000   000  000       000   000  
@@ -50,8 +67,8 @@ function cells
         s = ''
         pbg = ''
         pfg = ''
-        for y in 0...@t.rows()
-            for x in 0...@t.cols()
+        for y in 0...@rows
+            for x in 0...@cols
                 bg = color.bg_rgb @c[y][x].bg
                 if bg != pbg
                     s += bg
