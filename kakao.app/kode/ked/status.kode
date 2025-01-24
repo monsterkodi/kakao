@@ -19,10 +19,14 @@ function status
         
         y = @cells.t.rows()-1
         
+        @cells.set 0 y '' color.status_dark color.gutter
+        
         colno = rpad @state.s.gutter-1 @state.s.cursor[0] + 1
-
-        for x in 0...@state.s.gutter
-            @cells.set x y (x < colno.length ? colno[x] : ' ') color.column_fg color.status_dark
+        for x in 1...@state.s.gutter
+            fg = @state.s.cursor[0] ? color.status_fg : color.column_fg
+            if @state.s.cursor[0] > @state.s.lines[@state.s.cursor[1]].length
+                fg = color.status_empty
+            @cells.set x y (x < colno.length ? colno[x-1] : ' ') fg color.status_dark
                 
         x = @state.s.gutter
         @cells.set x y '' color.status color.status_dark
@@ -61,7 +65,7 @@ function status
              
             for i in 0...sel.length
                 x = @cells.t.cols()-@drawTime.length+i-3-sel.length
-                @cells.set x y sel[i] color.status_fg color.status
+                @cells.set x y sel[i] color.status_sel color.status
             
 export status
 

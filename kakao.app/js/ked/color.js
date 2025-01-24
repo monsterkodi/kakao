@@ -70,6 +70,10 @@ class color
 
     static status_fg = '#888888'
 
+    static status_empty = '#ff8844'
+
+    static status_sel = '#ff00ff'
+
     static editor = '#0d0d0d'
 
     static editor_empty = '#0a0a0a'

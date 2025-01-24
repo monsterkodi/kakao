@@ -19,13 +19,19 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var char, colno, i, sel, x, y
+        var char, colno, fg, i, sel, x, y
 
         y = this.cells.t.rows() - 1
+        this.cells.set(0,y,'',color.status_dark,color.gutter)
         colno = _k_.rpad(this.state.s.gutter - 1,this.state.s.cursor[0] + 1)
-        for (var _a_ = x = 0, _b_ = this.state.s.gutter; (_a_ <= _b_ ? x < this.state.s.gutter : x > this.state.s.gutter); (_a_ <= _b_ ? ++x : --x))
+        for (var _a_ = x = 1, _b_ = this.state.s.gutter; (_a_ <= _b_ ? x < this.state.s.gutter : x > this.state.s.gutter); (_a_ <= _b_ ? ++x : --x))
         {
-            this.cells.set(x,y,((x < colno.length ? colno[x] : ' ')),color.column_fg,color.status_dark)
+            fg = (this.state.s.cursor[0] ? color.status_fg : color.column_fg)
+            if (this.state.s.cursor[0] > this.state.s.lines[this.state.s.cursor[1]].length)
+            {
+                fg = color.status_empty
+            }
+            this.cells.set(x,y,((x < colno.length ? colno[x - 1] : ' ')),fg,color.status_dark)
         }
         x = this.state.s.gutter
         this.cells.set(x,y,'',color.status,color.status_dark)
@@ -64,7 +70,7 @@ status = (function ()
             for (var _12_ = i = 0, _13_ = sel.length; (_12_ <= _13_ ? i < sel.length : i > sel.length); (_12_ <= _13_ ? ++i : --i))
             {
                 x = this.cells.t.cols() - this.drawTime.length + i - 3 - sel.length
-                this.cells.set(x,y,sel[i],color.status_fg,color.status)
+                this.cells.set(x,y,sel[i],color.status_sel,color.status)
             }
         }
     }
