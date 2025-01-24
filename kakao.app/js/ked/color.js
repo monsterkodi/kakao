@@ -74,6 +74,8 @@ class color
 
     static status_sel = '#ff00ff'
 
+    static status_fg_dim = '#333333'
+
     static editor = '#0d0d0d'
 
     static editor_empty = '#0a0a0a'

@@ -54,7 +54,8 @@ status = (function ()
             for (var _10_ = i = 0, _11_ = this.drawTime.length; (_10_ <= _11_ ? i < this.drawTime.length : i > this.drawTime.length); (_10_ <= _11_ ? ++i : --i))
             {
                 x = this.cells.t.cols() - this.drawTime.length + i - 1
-                this.cells.set(x,y,this.drawTime[i],color.status_fg,color.status)
+                fg = (i < this.drawTime.length - 3 ? color.status_fg : color.status_fg_dim)
+                this.cells.set(x,y,this.drawTime[i],fg,color.status)
             }
         }
         else
@@ -69,8 +70,9 @@ status = (function ()
             sel = `${this.state.s.selections.length} sel`
             for (var _12_ = i = 0, _13_ = sel.length; (_12_ <= _13_ ? i < sel.length : i > sel.length); (_12_ <= _13_ ? ++i : --i))
             {
-                x = this.cells.t.cols() - this.drawTime.length + i - 3 - sel.length
-                this.cells.set(x,y,sel[i],color.status_sel,color.status)
+                x = this.cells.t.cols() - this.drawTime.length + i - sel.length - 3
+                fg = (i < sel.length - 4 ? color.status_sel : color.status_fg_dim)
+                this.cells.set(x,y,sel[i],fg,color.status_dark)
             }
         }
     }

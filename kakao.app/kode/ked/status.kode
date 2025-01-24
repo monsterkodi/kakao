@@ -50,7 +50,8 @@ function status
             
             for i in 0...@drawTime.length
                 x = @cells.t.cols()-@drawTime.length+i-1
-                @cells.set x y @drawTime[i] color.status_fg color.status
+                fg = i < @drawTime.length-3 ? color.status_fg : color.status_fg_dim
+                @cells.set x y @drawTime[i] fg color.status
         
         else
             x = @cells.t.cols()-2
@@ -64,8 +65,9 @@ function status
             sel = "#{@state.s.selections.length} sel"
              
             for i in 0...sel.length
-                x = @cells.t.cols()-@drawTime.length+i-3-sel.length
-                @cells.set x y sel[i] color.status_sel color.status
+                x = @cells.t.cols()-@drawTime.length+i-sel.length-3
+                fg = i < sel.length-4 ? color.status_sel : color.status_fg_dim
+                @cells.set x y sel[i] fg color.status_dark
             
 export status
 
