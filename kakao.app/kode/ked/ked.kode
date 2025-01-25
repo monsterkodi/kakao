@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter status cells state logfile scroll color
+use ◆ ttio gutter status cells state draw logfile scroll color
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
 
@@ -28,6 +28,7 @@ function KED
         
         @cells  = new cells @t
         @state  = new state  @cells
+        @draw   = new draw   @cells
         @gutter = new gutter @cells @state
         @scroll = new scroll @cells @state
         @status = new status @cells @state
@@ -286,7 +287,7 @@ function KED
         @gutter.draw()
         @scroll.draw()
         @status.draw()
-        @state.draw()
+        @draw.state @state
         @cells.render()
         @t.showCursor()
         @t.restore()

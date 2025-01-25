@@ -7,6 +7,7 @@ import gutter from "./gutter.js"
 import status from "./status.js"
 import cells from "./cells.js"
 import state from "./state.js"
+import draw from "./draw.js"
 import logfile from "./logfile.js"
 import scroll from "./scroll.js"
 import color from "./color.js"
@@ -40,6 +41,7 @@ KED = (function ()
         global.lf = this.log
         this.cells = new cells(this.t)
         this.state = new state(this.cells)
+        this.draw = new draw(this.cells)
         this.gutter = new gutter(this.cells,this.state)
         this.scroll = new scroll(this.cells,this.state)
         this.status = new status(this.cells,this.state)
@@ -387,7 +389,7 @@ KED = (function ()
         this.gutter.draw()
         this.scroll.draw()
         this.status.draw()
-        this.state.draw()
+        this.draw.state(this.state)
         this.cells.render()
         this.t.showCursor()
         this.t.restore()

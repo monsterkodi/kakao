@@ -6,24 +6,64 @@
 0000000    000   000  000   000  00     00  
 ###
 
+use ◆ color
+
 class draw
-
-    @bg_rect: t x1 y1 x2 y2 c ->
     
-        x1 = t.cols() + x1 + 1 if x1 < 0
-        x2 = t.cols() + x2 + 1 if x2 < 0
+    @: @cells ->
 
-        y1 = t.rows() + y1 + 1 if y1 < 0
-        y2 = t.rows() + y2 + 1 if y2 < 0
+    state: state =>
         
-        t.store()
+        @s = state.s
+        @syntax = state.syntax
         
-        for y in y1..y2
-        
-            t.setCursor x1 y
-            t.write color.bg_rgb(c)
-            t.write rpad(x2-x1+1 ' ')
-        
-        t.restore()
+        for row in 0...@cells.t.rows()-1
+            
+            y = row+@s.view[1]
+            
+            break if y >= @s.lines.length
+            line = @s.lines[y]
+            
+            # text
+            
+            for x in 0...@cells.cols-@s.gutter
+                if x+@s.gutter < @cells.cols and x+@s.view[0] < line.length
+                    @cells.c[row][x+@s.gutter].fg   = @syntax.getColor x+@s.view[0] y
+                    @cells.c[row][x+@s.gutter].char = @syntax.getChar  x+@s.view[0] y line[x+@s.view[0]]
 
+            # empty
+                    
+            if y < @s.lines.length
+                linel = line.length - @s.view[0]
+                if y == @s.cursor[1]
+                    if linel > 0
+                        @cells.bg_rect @s.gutter row @s.gutter+linel row color.cursor_main
+                    @cells.bg_rect max(@s.gutter @s.gutter+linel) row -1 row color.cursor_empty
+                else
+                    if linel > 0
+                        @cells.bg_rect @s.gutter row @s.gutter+linel row color.editor
+                    @cells.bg_rect max(@s.gutter @s.gutter+linel) row -1 row color.editor_empty
+                    
+        for selection in @s.selections
+            
+            for li in selection[1]..selection[3]
+                
+                y  = li-@s.view[1]
+                
+                if @s.view[1] <= li < @s.view[1] + @cells.rows - 1
+                    
+                    if li == selection[1]
+                        xs = selection[0]
+                    else
+                        xs = 0
+                        
+                    if li == selection[3]
+                        xe = selection[2]
+                    else
+                        xe = @s.lines[li].length
+                        
+                    for x in xs...xe
+                        if @s.gutter <= x-@s.view[0]+@s.gutter < @cells.cols
+                            @cells.c[y][x-@s.view[0]+@s.gutter].bg = color.selection
+                            
 export draw
