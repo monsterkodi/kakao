@@ -21,6 +21,7 @@ function TTIO extends events
         @write '\x1b[?1004h' # focus
         @write '\x1b[?1006h' # mouse SGR mode
         @write '\x1b[?1049h' # alternate screen buffer
+        @write '\x1b[?2004h' # bracketed paste mode
         @write '\x1b[>4;2m'  # modify other keys
         @write '\x1b[6 q'    # cursor solid bar
         
@@ -221,26 +222,86 @@ function TTIO extends events
                     
                 log 'seq?' seq, data
         else
+            
+            text = data.toString 'utf8'
+            
+            if text.length > 1
+                lf 'paste?' text.length text
+                ⮐ @emit 'paste' text
                         
-            # if
-                # 0x1 <= data[0] <= 0x1a ➜ ⮐ @emit 'key' "ctrl+#{String.fromCodePoint 96+data[0]}"
-#                 
-            # switch data[0]
-                # 0x0d ➜ ⮐ @emit 'key' 'return' 
-                # 0x7f ➜ ⮐ @emit 'key' 'delete' 
-                # 0x20 ➜ ⮐ @emit 'key' 'space'
-                # 0x09 ➜ ⮐ @emit 'key' 'tab'
+            switch data[0]
+                0x0d ➜ ⮐ @emit 'key' '\n' 
+                0x7f ➜ ⮐ @emit 'key' 'delete' 
+                0x20 ➜ ⮐ @emit 'key' 'space'
+                0x09 ➜ ⮐ @emit 'key' 'tab'
                 
-            key = data.toString 'utf8'
+            key = if
+                0x1 <= data[0] <= 0x1a ➜ "ctrl+#{String.fromCodePoint 96+data[0]}"
+                ➜ data.toString 'utf8'
             
-            switch key
-                '\n' ➜ lf 'return!'
-            
+            key = switch key
+                
+                'å' ➜ 'alt+a'
+                '∫' ➜ 'alt+b'
+                'ç' ➜ 'alt+c'
+                '∂' ➜ 'alt+d'
+                '´' ➜ 'alt+e'
+                'ƒ' ➜ 'alt+f'
+                '©' ➜ 'alt+g'
+                '˙' ➜ 'alt+h'
+                'ˆ' ➜ 'alt+i'
+                '∆' ➜ 'alt+j'
+                '˚' ➜ 'alt+k'
+                '¬' ➜ 'alt+l'
+                'µ' ➜ 'alt+m'
+                '˜' ➜ 'alt+n'
+                'ø' ➜ 'alt+o'
+                'π' ➜ 'alt+π'
+                'œ' ➜ 'alt+q'
+                '®' ➜ 'alt+r'
+                'ß' ➜ 'alt+s'
+                '†' ➜ 'alt+t'
+                '¨' ➜ 'alt+u'
+                '√' ➜ 'alt+v'
+                '∑' ➜ 'alt+w'
+                '≈' ➜ 'alt+x'
+                '¥' ➜ 'alt+y'
+                'Ω' ➜ 'alt+z'
+                    
+                'Å' ➜ 'shift+alt+a'  
+                'ı' ➜ 'shift+alt+b'  
+                'Ç' ➜ 'shift+alt+c'  
+                'Î' ➜ 'shift+alt+d'  
+                '´' ➜ 'shift+alt+e'  #alt+e
+                'Ï' ➜ 'shift+alt+f'  
+                '˝' ➜ 'shift+alt+g'  
+                'Ó' ➜ 'shift+alt+h'  
+                'ˆ' ➜ 'shift+alt+i'  #alt+i
+                'Ô' ➜ 'shift+alt+j'  
+                '' ➜ 'shift+alt+k'  
+                'Ò' ➜ 'shift+alt+l'  
+                'Â' ➜ 'shift+alt+m'  
+                '˜' ➜ 'shift+alt+n'  #alt+n
+                'Ø' ➜ 'shift+alt+o'  
+                '∏' ➜ 'shift+alt+p'  
+                'Œ' ➜ 'shift+alt+q'  
+                '‰' ➜ 'shift+alt+r'  
+                'Í' ➜ 'shift+alt+s'  
+                'ˇ' ➜ 'shift+alt+t'  
+                '¨' ➜ 'shift+alt+u'  #alt+u
+                '◊' ➜ 'shift+alt+v'  
+                '„' ➜ 'shift+alt+w'  
+                '˛' ➜ 'shift+alt+x'  
+                'Á' ➜ 'shift+alt+y'  
+                '¸' ➜ 'shift+alt+z'  
+                
+                    ➜ key
+                            
             lf 'KEY' data.length data key
                         
-            if key and data.length == 1
+            if key 
                 @emit 'key' key
             else
-                log 'key?' key, data, data.length, data[0]
+                lf 'key?' key data data.length data[0]
                 
 export TTIO

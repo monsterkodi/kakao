@@ -36,6 +36,7 @@ function KED
         @mouseHandlers = [@scroll]
         
         @t.on 'key'    @onKey
+        @t.on 'paste'  @onPaste
         @t.on 'mouse'  @onMouse
         @t.on 'wheel'  @onWheel
         @t.on 'resize' @onResize
@@ -58,7 +59,7 @@ function KED
     # 000      000   000  000000000  000   000  
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
-    
+        
     loadFile: p ○=>
         
         start = process.hrtime()
@@ -77,6 +78,10 @@ function KED
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         
         @redraw()
+    
+    reloadFile: =>
+        
+        @loadFile @status.file
         
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
@@ -270,6 +275,7 @@ function KED
             'tab'               ➜ ⮐ @insert '    '
             'ctrl+k'            ➜ ⮐ @delete 'eol'
             'delete'            ➜ ⮐ @delete 'back'
+            'alt+q'         
             'ctrl+c'         
             'ctrl+d'         
             'ctrl+q'            ➜ ⮐ @t.quit()
@@ -281,12 +287,18 @@ function KED
             'shift+cmd+right'   ➜ ⮐ @moveCursorAndSelect 'eol'
             'shift+cmd+left'    ➜ ⮐ @moveCursorAndSelect 'bol'
             
+            'alt+r'
             'ctrl+r'
-            'cmd+r'             ➜ ⮐ @loadFile @status.file
+            'cmd+r'             ➜ ⮐ @reloadFile()
             
             'esc'               ➜ @state.deselect(); @redraw(); ⮐ 
             
         @insert key
+        
+    onPaste: text =>
+        
+        lf 'onPaste' text
+        @insert text
         
     onResize: cols rows => @redraw()
     

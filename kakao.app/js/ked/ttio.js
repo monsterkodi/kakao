@@ -34,6 +34,7 @@ TTIO = (function ()
         this.write('\x1b[?1004h')
         this.write('\x1b[?1006h')
         this.write('\x1b[?1049h')
+        this.write('\x1b[?2004h')
         this.write('\x1b[>4;2m')
         this.write('\x1b[6 q')
         process.stdout.on('resize',this.onResize)
@@ -101,9 +102,9 @@ TTIO = (function ()
 
     TTIO.prototype["emitMousePress"] = function (col, row, button, mods = '')
     {
-        var diff, _57_19_
+        var diff, _58_19_
 
-        this.lastClick = ((_57_19_=this.lastClick) != null ? _57_19_ : {row:row,col:col,count:0,time:process.hrtime()})
+        this.lastClick = ((_58_19_=this.lastClick) != null ? _58_19_ : {row:row,col:col,count:0,time:process.hrtime()})
         if (this.lastClick.col === col && this.lastClick.row === row)
         {
             diff = process.hrtime(this.lastClick.time)
@@ -129,7 +130,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, row, seq, x, y
+        var code, col, key, row, seq, text, x, y
 
         if (data[0] === 0x1b)
         {
@@ -479,22 +480,202 @@ TTIO = (function ()
         }
         else
         {
-            key = data.toString('utf8')
-            switch (key)
+            text = data.toString('utf8')
+            if (text.length > 1)
             {
-                case '\n':
-                    lf('return!')
-                    break
+                lf('paste?',text.length,text)
+                return this.emit('paste',text)
+            }
+            switch (data[0])
+            {
+                case 0x0d:
+                    return this.emit('key','\n')
+
+                case 0x7f:
+                    return this.emit('key','delete')
+
+                case 0x20:
+                    return this.emit('key','space')
+
+                case 0x09:
+                    return this.emit('key','tab')
+
             }
 
+            key = (0x1 <= data[0] && data[0] <= 0x1a) ? `ctrl+${String.fromCodePoint(96 + data[0])}` : data.toString('utf8')
+            key = ((function ()
+            {
+                switch (key)
+                {
+                    case 'å':
+                        return 'alt+a'
+
+                    case '∫':
+                        return 'alt+b'
+
+                    case 'ç':
+                        return 'alt+c'
+
+                    case '∂':
+                        return 'alt+d'
+
+                    case '´':
+                        return 'alt+e'
+
+                    case 'ƒ':
+                        return 'alt+f'
+
+                    case '©':
+                        return 'alt+g'
+
+                    case '˙':
+                        return 'alt+h'
+
+                    case 'ˆ':
+                        return 'alt+i'
+
+                    case '∆':
+                        return 'alt+j'
+
+                    case '˚':
+                        return 'alt+k'
+
+                    case '¬':
+                        return 'alt+l'
+
+                    case 'µ':
+                        return 'alt+m'
+
+                    case '˜':
+                        return 'alt+n'
+
+                    case 'ø':
+                        return 'alt+o'
+
+                    case 'π':
+                        return 'alt+π'
+
+                    case 'œ':
+                        return 'alt+q'
+
+                    case '®':
+                        return 'alt+r'
+
+                    case 'ß':
+                        return 'alt+s'
+
+                    case '†':
+                        return 'alt+t'
+
+                    case '¨':
+                        return 'alt+u'
+
+                    case '√':
+                        return 'alt+v'
+
+                    case '∑':
+                        return 'alt+w'
+
+                    case '≈':
+                        return 'alt+x'
+
+                    case '¥':
+                        return 'alt+y'
+
+                    case 'Ω':
+                        return 'alt+z'
+
+                    case 'Å':
+                        return 'shift+alt+a'
+
+                    case 'ı':
+                        return 'shift+alt+b'
+
+                    case 'Ç':
+                        return 'shift+alt+c'
+
+                    case 'Î':
+                        return 'shift+alt+d'
+
+                    case '´':
+                        return 'shift+alt+e'
+
+                    case 'Ï':
+                        return 'shift+alt+f'
+
+                    case '˝':
+                        return 'shift+alt+g'
+
+                    case 'Ó':
+                        return 'shift+alt+h'
+
+                    case 'ˆ':
+                        return 'shift+alt+i'
+
+                    case 'Ô':
+                        return 'shift+alt+j'
+
+                    case '':
+                        return 'shift+alt+k'
+
+                    case 'Ò':
+                        return 'shift+alt+l'
+
+                    case 'Â':
+                        return 'shift+alt+m'
+
+                    case '˜':
+                        return 'shift+alt+n'
+
+                    case 'Ø':
+                        return 'shift+alt+o'
+
+                    case '∏':
+                        return 'shift+alt+p'
+
+                    case 'Œ':
+                        return 'shift+alt+q'
+
+                    case '‰':
+                        return 'shift+alt+r'
+
+                    case 'Í':
+                        return 'shift+alt+s'
+
+                    case 'ˇ':
+                        return 'shift+alt+t'
+
+                    case '¨':
+                        return 'shift+alt+u'
+
+                    case '◊':
+                        return 'shift+alt+v'
+
+                    case '„':
+                        return 'shift+alt+w'
+
+                    case '˛':
+                        return 'shift+alt+x'
+
+                    case 'Á':
+                        return 'shift+alt+y'
+
+                    case '¸':
+                        return 'shift+alt+z'
+
+                    default:
+                        return key
+                }
+
+            }).bind(this))()
             lf('KEY',data.length,data,key)
-            if (key && data.length === 1)
+            if (key)
             {
                 return this.emit('key',key)
             }
             else
             {
-                console.log('key?',key,data,data.length,data[0])
+                return lf('key?',key,data,data.length,data[0])
             }
         }
     }

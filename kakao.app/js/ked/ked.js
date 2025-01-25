@@ -29,6 +29,7 @@ KED = (function ()
     {
         this["redraw"] = this["redraw"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["onPaste"] = this["onPaste"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -37,6 +38,7 @@ KED = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["delete"] = this["delete"].bind(this)
         this["insert"] = this["insert"].bind(this)
+        this["reloadFile"] = this["reloadFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
         this.log = new logfile
@@ -55,6 +57,7 @@ KED = (function ()
         this.status = new status(this.cells,this.state)
         this.mouseHandlers = [this.scroll]
         this.t.on('key',this.onKey)
+        this.t.on('paste',this.onPaste)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
         this.t.on('resize',this.onResize)
@@ -102,6 +105,11 @@ KED = (function ()
         this.state.init(lines,slash.ext(p))
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         return this.redraw()
+    }
+
+    KED.prototype["reloadFile"] = function ()
+    {
+        return this.loadFile(this.status.file)
     }
 
     KED.prototype["insert"] = function (text)
@@ -360,6 +368,7 @@ KED = (function ()
             case 'delete':
                 return this.delete('back')
 
+            case 'alt+q':
             case 'ctrl+c':
             case 'ctrl+d':
             case 'ctrl+q':
@@ -383,9 +392,10 @@ KED = (function ()
             case 'shift+cmd+left':
                 return this.moveCursorAndSelect('bol')
 
+            case 'alt+r':
             case 'ctrl+r':
             case 'cmd+r':
-                return this.loadFile(this.status.file)
+                return this.reloadFile()
 
             case 'esc':
                 this.state.deselect()
@@ -395,6 +405,12 @@ KED = (function ()
         }
 
         return this.insert(key)
+    }
+
+    KED.prototype["onPaste"] = function (text)
+    {
+        lf('onPaste',text)
+        return this.insert(text)
     }
 
     KED.prototype["onResize"] = function (cols, rows)

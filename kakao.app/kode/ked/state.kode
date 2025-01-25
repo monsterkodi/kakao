@@ -42,6 +42,16 @@ function state
     
     insert: text =>
         
+        # lf "insert >>>#{text}<<<" 
+        
+        split = text.split /\r?\n/
+        if split.length > 1
+            for s,i in split
+                @insert s
+                if i < split.length-1
+                    @insertNewline()            
+            ⮐ 
+        
         x = @s.cursor[0]
         y = @s.cursor[1]
     
@@ -55,6 +65,27 @@ function state
         @s = @s.set 'lines' lines
         
         x += text.length
+        
+        @setCursor x y
+        
+    insertNewline: =>
+        
+        x = @s.cursor[0]
+        y = @s.cursor[1]
+    
+        lines = @s.lines.asMutable()
+        line  = lines[y]
+        
+        before = line[0...x]
+        after  = line[x..]
+        
+        lines.splice y 1 before
+        lines.splice y+1 0 after
+                
+        @s = @s.set 'lines' lines
+        
+        y = y + 1
+        x = 0
         
         @setCursor x y
         

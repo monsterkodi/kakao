@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -25,6 +25,7 @@ state = (function ()
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["delete"] = this["delete"].bind(this)
+        this["insertNewline"] = this["insertNewline"].bind(this)
         this["insert"] = this["insert"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
         this.syntax = new syntax
@@ -45,8 +46,23 @@ state = (function ()
 
     state.prototype["insert"] = function (text)
     {
-        var line, lines, x, y
+        var i, line, lines, s, split, x, y
 
+        split = text.split(/\r?\n/)
+        if (split.length > 1)
+        {
+            var list = _k_.list(split)
+            for (i = 0; i < list.length; i++)
+            {
+                s = list[i]
+                this.insert(s)
+                if (i < split.length - 1)
+                {
+                    this.insertNewline()
+                }
+            }
+            return
+        }
         x = this.s.cursor[0]
         y = this.s.cursor[1]
         lines = this.s.lines.asMutable()
@@ -55,6 +71,24 @@ state = (function ()
         lines.splice(y,1,line)
         this.s = this.s.set('lines',lines)
         x += text.length
+        return this.setCursor(x,y)
+    }
+
+    state.prototype["insertNewline"] = function ()
+    {
+        var after, before, line, lines, x, y
+
+        x = this.s.cursor[0]
+        y = this.s.cursor[1]
+        lines = this.s.lines.asMutable()
+        line = lines[y]
+        before = line.slice(0, typeof x === 'number' ? x : -1)
+        after = line.slice(x)
+        lines.splice(y,1,before)
+        lines.splice(y + 1,0,after)
+        this.s = this.s.set('lines',lines)
+        y = y + 1
+        x = 0
         return this.setCursor(x,y)
     }
 
