@@ -291,7 +291,7 @@ str.rangeOfClosestChunk = s x ->
 
 # like array splice, but not in place
 
-str.splice = s i c r='' -> s.slice(0, i) + r + s.slice(i + Math.abs(c))
+str.splice = s i c r='' -> s.slice(0 i) + r + s.slice(i + Math.abs(c))
 
 # 00000000  000   000   0000000   0000000   0000000    00000000
 # 000       0000  000  000       000   000  000   000  000

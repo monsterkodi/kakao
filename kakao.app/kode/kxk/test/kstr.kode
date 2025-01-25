@@ -64,6 +64,18 @@ use .. ◆ kstr
         kstr.ltrim(' yxy ' ' y')            ▸ 'xy '
         kstr.rtrim('   y' 'y')              ▸ '   '
         
+    ▸ splice
+    
+        kstr.splice 'hello' 0  1        ▸ 'ello' 
+        kstr.splice 'hello' 0  3        ▸ 'lo' 
+        kstr.splice 'hello' 0  3 'o'    ▸ 'olo'
+        kstr.splice ''      0  0 'new'  ▸ 'new'
+        kstr.splice 'abc'   3  0 'd'    ▸ 'abcd'
+        kstr.splice 'abc'   2  0 'd'    ▸ 'abdc'
+        kstr.splice 'abc'  -1  0 'd'    ▸ 'abdc'
+        kstr.splice 'abc'  -2  0 'd'    ▸ 'adbc'
+        kstr.splice 'abc'   1 -2 '23'   ▸ 'a23'
+        
     # 000       0000000  000   000  000000000  
     # 000      000       0000  000     000     
     # 000      000       000 0 000     000     

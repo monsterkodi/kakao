@@ -55,6 +55,18 @@ toExport["kstr"] = function ()
         compare(kstr.ltrim(' yxy ',' y'),'xy ')
         compare(kstr.rtrim('   y','y'),'   ')
     })
+    section("splice", function ()
+    {
+        compare(kstr.splice('hello',0,1),'ello')
+        compare(kstr.splice('hello',0,3),'lo')
+        compare(kstr.splice('hello',0,3,'o'),'olo')
+        compare(kstr.splice('',0,0,'new'),'new')
+        compare(kstr.splice('abc',3,0,'d'),'abcd')
+        compare(kstr.splice('abc',2,0,'d'),'abdc')
+        compare(kstr.splice('abc',-1,0,'d'),'abdc')
+        compare(kstr.splice('abc',-2,0,'d'),'adbc')
+        compare(kstr.splice('abc',1,-2,'23'),'a23')
+    })
     section("lcnt", function ()
     {
         s = 'abc'

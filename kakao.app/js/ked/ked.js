@@ -35,10 +35,18 @@ KED = (function ()
         this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
+        this["delete"] = this["delete"].bind(this)
+        this["insert"] = this["insert"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
         this.log = new logfile
-        global.lf = this.log
+        global.lf = (function (...args)
+        {
+            return this.log.write(args.map(function (a)
+            {
+                return `${a}`
+            }).join(' '))
+        }).bind(this)
         this.cells = new cells(this.t)
         this.state = new state(this.cells)
         this.draw = new draw(this.cells)
@@ -93,6 +101,18 @@ KED = (function ()
         lines = text.split(/\r?\n/)
         this.state.init(lines,slash.ext(p))
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        return this.redraw()
+    }
+
+    KED.prototype["insert"] = function (text)
+    {
+        this.state.insert(text)
+        return this.redraw()
+    }
+
+    KED.prototype["delete"] = function (type)
+    {
+        this.state.delete(type)
         return this.redraw()
     }
 
@@ -325,20 +345,20 @@ KED = (function ()
             case 'shift+ctrl+h':
                 return this.setCursor(this.state.s.lines.slice(-1)[0].length,this.state.s.lines.length - 1)
 
-            case 'ctrl+k':
-                return this.t.write('\x1b[0K')
-
             case 'return':
-                return this.t.write('\n')
+                return this.insert('\n')
 
             case 'space':
-                return this.t.write(' ')
-
-            case 'delete':
-                return this.t.write('\x1b[D\x1b[P')
+                return this.insert(' ')
 
             case 'tab':
-                return this.t.write('    ')
+                return this.insert('    ')
+
+            case 'ctrl+k':
+                return this.delete('eol')
+
+            case 'delete':
+                return this.delete('back')
 
             case 'ctrl+c':
             case 'ctrl+d':
@@ -363,6 +383,10 @@ KED = (function ()
             case 'shift+cmd+left':
                 return this.moveCursorAndSelect('bol')
 
+            case 'ctrl+r':
+            case 'cmd+r':
+                return this.loadFile(this.status.file)
+
             case 'esc':
                 this.state.deselect()
                 this.redraw()
@@ -370,7 +394,7 @@ KED = (function ()
 
         }
 
-        return this.t.write(key)
+        return this.insert(key)
     }
 
     KED.prototype["onResize"] = function (cols, rows)

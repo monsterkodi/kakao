@@ -26,7 +26,7 @@ syntax = (function ()
         start = process.hrtime()
         this.diss = kolor.dissect(lines,ext)
         dissTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        return lf.write('syntax: ' + dissTime)
+        return lf('syntax:',dissTime)
     }
 
     syntax.prototype["getClass"] = function (x, y)

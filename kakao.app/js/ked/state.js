@@ -24,6 +24,8 @@ state = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
+        this["delete"] = this["delete"].bind(this)
+        this["insert"] = this["insert"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
         this.syntax = new syntax
         this.init([''])
@@ -39,6 +41,51 @@ state = (function ()
     state.prototype["calcGutter"] = function (numLines)
     {
         return 2 + Math.ceil(Math.log10(numLines))
+    }
+
+    state.prototype["insert"] = function (text)
+    {
+        var line, lines, x, y
+
+        x = this.s.cursor[0]
+        y = this.s.cursor[1]
+        lines = this.s.lines.asMutable()
+        line = lines[y]
+        line = kstr.splice(line,x,0,text)
+        lines.splice(y,1,line)
+        this.s = this.s.set('lines',lines)
+        x += text.length
+        return this.setCursor(x,y)
+    }
+
+    state.prototype["delete"] = function (type)
+    {
+        var line, lines, x, y
+
+        x = this.s.cursor[0]
+        y = this.s.cursor[1]
+        lines = this.s.lines.asMutable()
+        line = lines[y]
+        switch (type)
+        {
+            case 'eol':
+                line = line.slice(0, typeof x === 'number' ? x : -1)
+                break
+            case 'back':
+                line = kstr.splice(line,x - 1,1)
+                break
+        }
+
+        lines.splice(y,1,line)
+        this.s = this.s.set('lines',lines)
+        switch (type)
+        {
+            case 'back':
+                x -= 1
+                return this.setCursor(x,y)
+
+        }
+
     }
 
     state.prototype["setCursor"] = function (x, y)

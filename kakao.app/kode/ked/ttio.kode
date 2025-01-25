@@ -152,9 +152,20 @@ function TTIO extends events
                         8  ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'alt'
                         16 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl'
                         24 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl+alt'
+                        
                     log 'mouse release?' seq
                     ⮐ 
                     
+            else if seq.startsWith('[27;9;') and seq.endsWith('~')
+                
+                code = parseInt seq.split(';')[-1]
+                @emit 'key' "cmd+#{String.fromCodePoint code}"
+
+            else if seq.startsWith('[27;5;') and seq.endsWith('~')
+                
+                code = 32 + parseInt(seq.split(';')[-1])
+                @emit 'key' "shift+ctrl+#{String.fromCodePoint code}"
+                
             else if seq.startsWith '['
                 
                 switch seq[1]
@@ -198,10 +209,6 @@ function TTIO extends events
                     '[1;15B'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+down'
                     '[1;15C'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+right'
                     '[1;15D'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+left'
-                    '[27;9;120~'    ➜ ⮐ @emit 'key' 'cmd+x'
-                    '[27;9;121~'    ➜ ⮐ @emit 'key' 'cmd+y'
-                    '[27;9;122~'    ➜ ⮐ @emit 'key' 'cmd+z'
-                    '[27;5;72~'     ➜ ⮐ @emit 'key' 'shift+ctrl+h'
                     
                 log 'DATA' data, seq, seq[1..]
                 ⮐ 
@@ -214,23 +221,24 @@ function TTIO extends events
                     
                 log 'seq?' seq, data
         else
-            switch data[0]
-                0x01 ➜ ⮐ @emit 'key' 'ctrl+a'
-                0x03 ➜ ⮐ @emit 'key' 'ctrl+c'
-                0x04 ➜ ⮐ @emit 'key' 'ctrl+d'
-                0x05 ➜ ⮐ @emit 'key' 'ctrl+e'
-                0x11 ➜ ⮐ @emit 'key' 'ctrl+q'
-                0x08 ➜ ⮐ @emit 'key' 'ctrl+h'
-                0x0a ➜ ⮐ @emit 'key' 'ctrl+j'
-                0x0b ➜ ⮐ @emit 'key' 'ctrl+k' 
-                0x0d ➜ ⮐ @emit 'key' 'return' 
-                0x7f ➜ ⮐ @emit 'key' 'delete' 
-                0x20 ➜ ⮐ @emit 'key' 'space'
-                0x09 ➜ ⮐ @emit 'key' 'tab'
+                        
+            # if
+                # 0x1 <= data[0] <= 0x1a ➜ ⮐ @emit 'key' "ctrl+#{String.fromCodePoint 96+data[0]}"
+#                 
+            # switch data[0]
+                # 0x0d ➜ ⮐ @emit 'key' 'return' 
+                # 0x7f ➜ ⮐ @emit 'key' 'delete' 
+                # 0x20 ➜ ⮐ @emit 'key' 'space'
+                # 0x09 ➜ ⮐ @emit 'key' 'tab'
                 
             key = data.toString 'utf8'
-                
-            if key and data[0] >= 0x21
+            
+            switch key
+                '\n' ➜ lf 'return!'
+            
+            lf 'KEY' data.length data key
+                        
+            if key and data.length == 1
                 @emit 'key' key
             else
                 log 'key?' key, data, data.length, data[0]

@@ -321,6 +321,16 @@ TTIO = (function ()
                     return
                 }
             }
+            else if (seq.startsWith('[27;9;') && seq.endsWith('~'))
+            {
+                code = parseInt(seq.split(';').slice(-1)[0])
+                return this.emit('key',`cmd+${String.fromCodePoint(code)}`)
+            }
+            else if (seq.startsWith('[27;5;') && seq.endsWith('~'))
+            {
+                code = 32 + parseInt(seq.split(';').slice(-1)[0])
+                return this.emit('key',`shift+ctrl+${String.fromCodePoint(code)}`)
+            }
             else if (seq.startsWith('['))
             {
                 switch (seq[1])
@@ -443,18 +453,6 @@ TTIO = (function ()
                     case '[1;15D':
                         return this.emit('key','ctrl+alt+cmd+left')
 
-                    case '[27;9;120~':
-                        return this.emit('key','cmd+x')
-
-                    case '[27;9;121~':
-                        return this.emit('key','cmd+y')
-
-                    case '[27;9;122~':
-                        return this.emit('key','cmd+z')
-
-                    case '[27;5;72~':
-                        return this.emit('key','shift+ctrl+h')
-
                 }
 
                 console.log('DATA',data,seq,seq.slice(1))
@@ -481,48 +479,16 @@ TTIO = (function ()
         }
         else
         {
-            switch (data[0])
+            key = data.toString('utf8')
+            switch (key)
             {
-                case 0x01:
-                    return this.emit('key','ctrl+a')
-
-                case 0x03:
-                    return this.emit('key','ctrl+c')
-
-                case 0x04:
-                    return this.emit('key','ctrl+d')
-
-                case 0x05:
-                    return this.emit('key','ctrl+e')
-
-                case 0x11:
-                    return this.emit('key','ctrl+q')
-
-                case 0x08:
-                    return this.emit('key','ctrl+h')
-
-                case 0x0a:
-                    return this.emit('key','ctrl+j')
-
-                case 0x0b:
-                    return this.emit('key','ctrl+k')
-
-                case 0x0d:
-                    return this.emit('key','return')
-
-                case 0x7f:
-                    return this.emit('key','delete')
-
-                case 0x20:
-                    return this.emit('key','space')
-
-                case 0x09:
-                    return this.emit('key','tab')
-
+                case '\n':
+                    lf('return!')
+                    break
             }
 
-            key = data.toString('utf8')
-            if (key && data[0] >= 0x21)
+            lf('KEY',data.length,data,key)
+            if (key && data.length === 1)
             {
                 return this.emit('key',key)
             }

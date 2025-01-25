@@ -24,7 +24,7 @@ function KED
         
         @log = new logfile
         
-        global.lf = @log
+        global.lf = args... => @log.write args.map((a) -> "#{a}").join(' ')
         
         @cells  = new cells @t
         @state  = new state  @cells
@@ -78,6 +78,22 @@ function KED
         
         @redraw()
         
+    # 000  000   000   0000000  00000000  00000000   000000000  
+    # 000  0000  000  000       000       000   000     000     
+    # 000  000 0 000  0000000   0000000   0000000       000     
+    # 000  000  0000       000  000       000   000     000     
+    # 000  000   000  0000000   00000000  000   000     000     
+    
+    insert: text =>
+        
+        @state.insert text
+        @redraw()
+        
+    delete: type =>
+        
+        @state.delete type
+        @redraw()
+        
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
     # 000       000   000  0000000    0000000   000   000  0000000    
@@ -98,7 +114,7 @@ function KED
         
         @state.setCursor x y
         @redraw()
-    
+            
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
@@ -243,20 +259,20 @@ function KED
             'shift+ctrl+alt+left'   ➜ ⮐ @moveCursor 'left'  16
             'shift+ctrl+alt+right'  ➜ ⮐ @moveCursor 'right' 16
             
-            'ctrl+a'        ➜ ⮐ @setCursor 0 @state.s.cursor[1]
-            'ctrl+e'        ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
-            'ctrl+h'        ➜ ⮐ @setCursor 0 0
+            'ctrl+a'            ➜ ⮐ @setCursor 0 @state.s.cursor[1]
+            'ctrl+e'            ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
+            'ctrl+h'            ➜ ⮐ @setCursor 0 0
             'ctrl+j'
-            'shift+ctrl+h'    ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
+            'shift+ctrl+h'      ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
             
-            'ctrl+k'    ➜ ⮐ @t.write '\x1b[0K'
-            'return'    ➜ ⮐ @t.write '\n'
-            'space'     ➜ ⮐ @t.write ' '
-            'delete'    ➜ ⮐ @t.write '\x1b[D\x1b[P'
-            'tab'       ➜ ⮐ @t.write '    '
-            'ctrl+c' 
-            'ctrl+d' 
-            'ctrl+q'    ➜ ⮐ @t.quit()
+            'return'            ➜ ⮐ @insert '\n'
+            'space'             ➜ ⮐ @insert ' '
+            'tab'               ➜ ⮐ @insert '    '
+            'ctrl+k'            ➜ ⮐ @delete 'eol'
+            'delete'            ➜ ⮐ @delete 'back'
+            'ctrl+c'         
+            'ctrl+d'         
+            'ctrl+q'            ➜ ⮐ @t.quit()
             
             'shift+up'          ➜ ⮐ @moveCursorAndSelect 'up'
             'shift+down'        ➜ ⮐ @moveCursorAndSelect 'down'
@@ -265,9 +281,12 @@ function KED
             'shift+cmd+right'   ➜ ⮐ @moveCursorAndSelect 'eol'
             'shift+cmd+left'    ➜ ⮐ @moveCursorAndSelect 'bol'
             
-            'esc'         ➜ @state.deselect(); @redraw(); ⮐ 
+            'ctrl+r'
+            'cmd+r'             ➜ ⮐ @loadFile @status.file
             
-        @t.write key
+            'esc'               ➜ @state.deselect(); @redraw(); ⮐ 
+            
+        @insert key
         
     onResize: cols rows => @redraw()
     
