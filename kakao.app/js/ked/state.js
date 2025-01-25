@@ -56,7 +56,7 @@ state = (function ()
             {
                 s = list[i]
                 this.insert(s)
-                if (i < split.length - 1)
+                if (i < split.length - 1 || text !== '\n')
                 {
                     this.insertNewline()
                 }

@@ -78,8 +78,24 @@ function TTIO extends events
         
     onData: data =>
         
+        if @pasteBuffer?
+            
+            @pasteBuffer += data.toString 'utf8'
+            
+            if @pasteBuffer.endsWith '\x1b[201~'
+                
+                @pasteBuffer = @pasteBuffer[0..-6]
+                @emit 'paste' @pasteBuffer
+                delete @pasteBuffer
+            ⮐ 
+        
         if data[0] == 0x1b
+            
             seq = data[1..].toString 'utf8'
+            
+            if seq == '[200~'
+                @pasteBuffer = ''
+                ⮐ 
             
             if seq.startsWith '[<'
                 
@@ -166,7 +182,7 @@ function TTIO extends events
                 
                 code = 32 + parseInt(seq.split(';')[-1])
                 @emit 'key' "shift+ctrl+#{String.fromCodePoint code}"
-                
+                                
             else if seq.startsWith '['
                 
                 switch seq[1]

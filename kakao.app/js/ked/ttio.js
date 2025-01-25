@@ -130,11 +130,27 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, row, seq, text, x, y
+        var code, col, key, row, seq, text, x, y, _81_23_
 
+        if ((this.pasteBuffer != null))
+        {
+            this.pasteBuffer += data.toString('utf8')
+            if (this.pasteBuffer.endsWith('\x1b[201~'))
+            {
+                this.pasteBuffer = this.pasteBuffer.slice(0, -5)
+                this.emit('paste',this.pasteBuffer)
+                delete this.pasteBuffer
+            }
+            return
+        }
         if (data[0] === 0x1b)
         {
             seq = data.slice(1).toString('utf8')
+            if (seq === '[200~')
+            {
+                this.pasteBuffer = ''
+                return
+            }
             if (seq.startsWith('[<'))
             {
                 var _a_ = seq.slice(2, -1).split(';').map(function (s)
