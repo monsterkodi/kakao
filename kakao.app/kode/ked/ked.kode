@@ -83,6 +83,20 @@ function KED
         
         @loadFile @status.file
         
+    cut: =>
+        
+        @state.cut()
+        @redraw()
+        
+    copy: =>
+        
+        @state.copy()
+        
+    paste: =>
+        
+        @state.paste()
+        @redraw()
+        
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
     # 000  000 0 000  0000000   0000000   0000000       000     
@@ -275,10 +289,22 @@ function KED
             'tab'               ➜ ⮐ @insert '    '
             'ctrl+k'            ➜ ⮐ @delete 'eol'
             'delete'            ➜ ⮐ @delete 'back'
+            
             'alt+q'         
-            'ctrl+c'         
             'ctrl+d'         
             'ctrl+q'            ➜ ⮐ @t.quit()
+                        
+            'alt+c'
+            'cmd+c'
+            'ctrl+c'            ➜ ⮐ @copy()        
+
+            'alt+x'
+            'cmd+x'
+            'ctrl+x'            ➜ ⮐ @cut()        
+            
+            'alt+v'
+            'cmd+v'
+            'ctrl+v'            ➜ ⮐ @paste()
             
             'shift+up'          ➜ ⮐ @moveCursorAndSelect 'up'
             'shift+down'        ➜ ⮐ @moveCursorAndSelect 'down'
@@ -297,7 +323,7 @@ function KED
         
     onPaste: text =>
         
-        lf 'onPaste' text
+        lf "onPaste #{text.length} >>>#{text}<<<" 
         @insert text
         
     onResize: cols rows => @redraw()

@@ -137,7 +137,7 @@ TTIO = (function ()
             this.pasteBuffer += data.toString('utf8')
             if (this.pasteBuffer.endsWith('\x1b[201~'))
             {
-                this.pasteBuffer = this.pasteBuffer.slice(0, -5)
+                this.pasteBuffer = this.pasteBuffer.slice(0, -6)
                 this.emit('paste',this.pasteBuffer)
                 delete this.pasteBuffer
             }

@@ -38,6 +38,9 @@ KED = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["delete"] = this["delete"].bind(this)
         this["insert"] = this["insert"].bind(this)
+        this["paste"] = this["paste"].bind(this)
+        this["copy"] = this["copy"].bind(this)
+        this["cut"] = this["cut"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
@@ -110,6 +113,23 @@ KED = (function ()
     KED.prototype["reloadFile"] = function ()
     {
         return this.loadFile(this.status.file)
+    }
+
+    KED.prototype["cut"] = function ()
+    {
+        this.state.cut()
+        return this.redraw()
+    }
+
+    KED.prototype["copy"] = function ()
+    {
+        return this.state.copy()
+    }
+
+    KED.prototype["paste"] = function ()
+    {
+        this.state.paste()
+        return this.redraw()
     }
 
     KED.prototype["insert"] = function (text)
@@ -369,10 +389,24 @@ KED = (function ()
                 return this.delete('back')
 
             case 'alt+q':
-            case 'ctrl+c':
             case 'ctrl+d':
             case 'ctrl+q':
                 return this.t.quit()
+
+            case 'alt+c':
+            case 'cmd+c':
+            case 'ctrl+c':
+                return this.copy()
+
+            case 'alt+x':
+            case 'cmd+x':
+            case 'ctrl+x':
+                return this.cut()
+
+            case 'alt+v':
+            case 'cmd+v':
+            case 'ctrl+v':
+                return this.paste()
 
             case 'shift+up':
                 return this.moveCursorAndSelect('up')
@@ -409,7 +443,7 @@ KED = (function ()
 
     KED.prototype["onPaste"] = function (text)
     {
-        lf('onPaste',text)
+        lf(`onPaste ${text.length} >>>${text}<<<`)
         return this.insert(text)
     }
 

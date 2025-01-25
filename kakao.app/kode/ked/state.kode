@@ -8,6 +8,7 @@
 
 use ../kxk ◆ immutable kstr
 use ◆ color syntax
+use child_process
 
 function state
 
@@ -33,6 +34,45 @@ function state
     calcGutter: numLines =>
         
         2 + Math.ceil(Math.log10(numLines))
+        
+    #  0000000  000   000  000000000  
+    # 000       000   000     000     
+    # 000       000   000     000     
+    # 000       000   000     000     
+    #  0000000   0000000      000     
+    
+    cut: =>
+        
+        if empty @s.selections
+            @selectLine()
+            @cut()
+            ⮐ 
+        lf 'cut' @s.selections        
+        
+    #  0000000   0000000   00000000   000   000  
+    # 000       000   000  000   000   000 000   
+    # 000       000   000  00000000     00000    
+    # 000       000   000  000           000     
+    #  0000000   0000000   000           000     
+    
+    copy: =>
+        
+        ⮐ if empty @s.selections
+            
+        proc = child_process.spawn 'pbcopy'
+        proc.stdin.write @textForSelection()
+        proc.stdin.end()
+            
+    # 00000000    0000000    0000000  000000000  00000000  
+    # 000   000  000   000  000          000     000       
+    # 00000000   000000000  0000000      000     0000000   
+    # 000        000   000       000     000     000       
+    # 000        000   000  0000000      000     00000000  
+    
+    paste: =>
+        
+        text = child_process.execSync('pbpaste').toString("utf8")
+        @insert text
         
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
@@ -270,5 +310,39 @@ function state
         if valid @s.selections
             @s = @s.set 'selections' []
             ⮐ true
+            
+    # 000000000  00000000  000   000  000000000     00000000   0000000   00000000 
+    #    000     000        000 000      000        000       000   000  000   000
+    #    000     0000000     00000       000        000000    000   000  0000000  
+    #    000     000        000 000      000        000       000   000  000   000
+    #    000     00000000  000   000     000        000        0000000   000   000
+    
+    textForRange: r =>
+        
+        lines = @s.lines.asMutable()
+        
+        l = []
+        
+        for y in r[1]..r[3]
+            if 0 <= y < lines.length
+                if y == r[1]
+                    if y == r[3]
+                        l.push lines[y][r[0]...r[2]]
+                    else
+                        l.push lines[y][r[0]..]
+                else if y == r[3]
+                    l.push lines[y][0...r[2]]
+                else
+                    l.push lines[y]
+        
+        l.join '\n'
+    
+    textForSelection: =>
+        
+        text = ''
+        for s in @s.selections
+            text += @textForRange s
+            text += '\n'
+        text[0...-1]
                             
 export state

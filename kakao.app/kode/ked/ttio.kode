@@ -84,7 +84,7 @@ function TTIO extends events
             
             if @pasteBuffer.endsWith '\x1b[201~'
                 
-                @pasteBuffer = @pasteBuffer[0..-6]
+                @pasteBuffer = @pasteBuffer[0...-6]
                 @emit 'paste' @pasteBuffer
                 delete @pasteBuffer
             ⮐ 

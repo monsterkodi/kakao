@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -8,6 +8,8 @@ import kstr from "../kxk/kstr.js"
 import color from "./color.js"
 import syntax from "./syntax.js"
 
+import child_process from "child_process"
+
 
 state = (function ()
 {
@@ -15,6 +17,8 @@ state = (function ()
     {
         this.cells = cells
     
+        this["textForSelection"] = this["textForSelection"].bind(this)
+        this["textForRange"] = this["textForRange"].bind(this)
         this["deselect"] = this["deselect"].bind(this)
         this["selectLine"] = this["selectLine"].bind(this)
         this["isSelectedLine"] = this["isSelectedLine"].bind(this)
@@ -27,6 +31,9 @@ state = (function ()
         this["delete"] = this["delete"].bind(this)
         this["insertNewline"] = this["insertNewline"].bind(this)
         this["insert"] = this["insert"].bind(this)
+        this["paste"] = this["paste"].bind(this)
+        this["copy"] = this["copy"].bind(this)
+        this["cut"] = this["cut"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
         this.syntax = new syntax
         this.init([''])
@@ -42,6 +49,38 @@ state = (function ()
     state.prototype["calcGutter"] = function (numLines)
     {
         return 2 + Math.ceil(Math.log10(numLines))
+    }
+
+    state.prototype["cut"] = function ()
+    {
+        if (_k_.empty(this.s.selections))
+        {
+            this.selectLine()
+            this.cut()
+            return
+        }
+        return lf('cut',this.s.selections)
+    }
+
+    state.prototype["copy"] = function ()
+    {
+        var proc
+
+        if (_k_.empty(this.s.selections))
+        {
+            return
+        }
+        proc = child_process.spawn('pbcopy')
+        proc.stdin.write(this.textForSelection())
+        return proc.stdin.end()
+    }
+
+    state.prototype["paste"] = function ()
+    {
+        var text
+
+        text = child_process.execSync('pbpaste').toString("utf8")
+        return this.insert(text)
     }
 
     state.prototype["insert"] = function (text)
@@ -358,6 +397,55 @@ state = (function ()
             this.s = this.s.set('selections',[])
             return true
         }
+    }
+
+    state.prototype["textForRange"] = function (r)
+    {
+        var l, lines, y
+
+        lines = this.s.lines.asMutable()
+        l = []
+        for (var _a_ = y = r[1], _b_ = r[3]; (_a_ <= _b_ ? y <= r[3] : y >= r[3]); (_a_ <= _b_ ? ++y : --y))
+        {
+            if ((0 <= y && y < lines.length))
+            {
+                if (y === r[1])
+                {
+                    if (y === r[3])
+                    {
+                        l.push(lines[y].slice(r[0], typeof r[2] === 'number' ? r[2] : -1))
+                    }
+                    else
+                    {
+                        l.push(lines[y].slice(r[0]))
+                    }
+                }
+                else if (y === r[3])
+                {
+                    l.push(lines[y].slice(0, typeof r[2] === 'number' ? r[2] : -1))
+                }
+                else
+                {
+                    l.push(lines[y])
+                }
+            }
+        }
+        return l.join('\n')
+    }
+
+    state.prototype["textForSelection"] = function ()
+    {
+        var s, text
+
+        text = ''
+        var list = _k_.list(this.s.selections)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            s = list[_a_]
+            text += this.textForRange(s)
+            text += '\n'
+        }
+        return text.slice(0, -1)
     }
 
     return state
