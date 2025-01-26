@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var floor, pow, scroll
 
@@ -61,11 +61,17 @@ scroll = (function ()
 
     scroll.prototype["scrollTo"] = function (row)
     {
-        var view, viewY
+        var maxY, view
 
-        viewY = parseInt(floor(row * (this.state.s.lines.length - this.cells.t.rows() + 1) / (this.cells.t.rows() - 2)))
         view = this.state.s.view.asMutable()
-        view[1] = _k_.clamp(0,this.state.s.lines.length - this.cells.t.rows() + 1,viewY)
+        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 2)))
+        maxY = this.state.s.lines.length - this.cells.rows + 1
+        if (maxY > 0)
+        {
+            view[1] = _k_.min(maxY,view[1])
+        }
+        view[1] = _k_.max(0,view[1])
+        lf('scrollTo',view)
         this.state.s = this.state.s.set('view',view)
         return true
     }
@@ -74,7 +80,7 @@ scroll = (function ()
     {
         var bg, kh, kp, lnum, nc, ne, ns, row, rows
 
-        rows = this.cells.t.rows()
+        rows = this.cells.rows
         lnum = this.state.s.lines.length
         kh = parseInt(floor(pow((rows - 1),2) / lnum))
         kp = parseInt(floor((rows - kh - 2) * this.state.s.view[1] / (lnum - rows + 1)))
@@ -83,7 +89,7 @@ scroll = (function ()
         ne = kp + kh
         for (var _a_ = row = 0, _b_ = rows - 1; (_a_ <= _b_ ? row < rows - 1 : row > rows - 1); (_a_ <= _b_ ? ++row : --row))
         {
-            bg = row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.scroll : color.gutter
+            bg = lnum < rows ? color.gutter : row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.scroll : color.gutter
             this.cells.c[row][0].bg = bg
             this.cells.c[row][0].char = ' '
         }

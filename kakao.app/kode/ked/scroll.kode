@@ -58,11 +58,16 @@ function scroll
     
     scrollTo: row =>
         
-        viewY = parseInt floor(row * (@state.s.lines.length - @cells.t.rows() + 1)  / (@cells.t.rows()-2))
-        
         view = @state.s.view.asMutable()
         
-        view[1] = clamp 0 @state.s.lines.length - @cells.t.rows() + 1 viewY
+        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-2))
+        
+        maxY = @state.s.lines.length - @cells.rows + 1
+        
+        view[1] = min maxY view[1] if maxY > 0
+        view[1] = max 0 view[1]
+        
+        lf 'scrollTo' view
         
         @state.s = @state.s.set 'view' view
         
@@ -76,7 +81,7 @@ function scroll
     
     draw: =>
         
-        rows = @cells.t.rows()
+        rows = @cells.rows
         lnum = @state.s.lines.length
         
         kh = parseInt floor(pow((rows-1) 2) / lnum)
@@ -88,6 +93,7 @@ function scroll
         for row in 0...rows-1
             
             bg = if
+                lnum < rows     ➜ color.gutter
                 row == nc       ➜ @hover ? color.scroll_doth : color.scroll_dot
                 ns <= row <= ne ➜ @hover ? color.scroll_knob : color.scroll
                 @hover          ➜ color.scroll

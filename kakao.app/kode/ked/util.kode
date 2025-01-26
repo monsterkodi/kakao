@@ -1,0 +1,119 @@
+###
+000   000  000000000  000  000    
+000   000     000     000  000    
+000   000     000     000  000    
+000   000     000     000  000    
+ 0000000      000     000  0000000
+###
+
+class util
+    
+    # 00000000    0000000    0000000            00000000    0000000   000   000   0000000   00000000    
+    # 000   000  000   000  000          00     000   000  000   000  0000  000  000        000         
+    # 00000000   000   000  0000000    000000   0000000    000000000  000 0 000  000  0000  0000000     
+    # 000        000   000       000     00     000   000  000   000  000  0000  000   000  000         
+    # 000         0000000   0000000             000   000  000   000  000   000   0000000   00000000    
+    
+    @isPosInsideRange: pos rng ->
+        
+        ⮐ false if util.isPosBeforeRange pos rng 
+        ⮐ false if util.isPosAfterRange pos rng 
+        true
+
+    @isPosBeforeRange: pos rng ->
+    
+        pos[1] < rng[1] or (pos[1] == rng[1] and pos[0] < rng[0])
+    
+    @isPosAfterRange:  pos rng ->
+    
+        pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] > rng[2])
+        
+    # 00000000    0000000   000   000   0000000   00000000   0000000  
+    # 000   000  000   000  0000  000  000        000       000       
+    # 0000000    000000000  000 0 000  000  0000  0000000   0000000   
+    # 000   000  000   000  000  0000  000   000  000            000  
+    # 000   000  000   000  000   000   0000000   00000000  0000000   
+    
+    @numFullLinesInRange: lines rng ->
+        
+        d = rng[3] - rng[1]
+        
+        if d == 0 
+            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
+        
+        n = 0
+        n += 1   if rng[0] == 0 
+        n += d-2 if d > 1
+        n += 1   if rng[2] == lines[rng[3]].length
+        n
+            
+    @normalizeRanges: rngs ->
+        
+        ⮐ [] if empty rngs
+        
+        rngs = rngs.map (a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a
+        rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
+        rngs.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
+        rngs = rngs.filter (a) -> a[0] != a[2] or a[1] != a[3]
+        
+    # 00     00  00000000  00000000    0000000   00000000  
+    # 000   000  000       000   000  000        000       
+    # 000000000  0000000   0000000    000  0000  0000000   
+    # 000 0 000  000       000   000  000   000  000       
+    # 000   000  00000000  000   000   0000000   00000000  
+    
+    @mergeRanges: rngs ->
+        
+        ⮐ [] if empty rngs
+        
+        rngs = util.normalizeRanges rngs
+        
+        mrgd = []
+        for s,i in rngs
+            lastmrgd = valid mrgd ? mrgd[mrgd.length-1] : []
+            if empty mrgd or s[1] > lastmrgd[3] or s[1] == lastmrgd[3] and s[0] > lastmrgd[2]
+                mrgd.push s
+            else if s[3] > lastmrgd[3] or s[3] == lastmrgd[3] and s[2] > lastmrgd[2]
+                lastmrgd[2] = s[2] 
+                lastmrgd[3] = s[3]
+
+        mrgd
+
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
+    @textForLinesRange: lines rng =>
+        
+        ⮐ '' if empty lines
+        ⮐ '' if empty rng
+        
+        l = []
+        
+        for y in rng[1]..rng[3]
+            if 0 <= y < lines.length
+                if y == rng[1]
+                    if y == rng[3]
+                        l.push lines[y][rng[0]...rng[2]]
+                    else
+                        l.push lines[y][rng[0]..]
+                else if y == rng[3]
+                    l.push lines[y][0...rng[2]]
+                else
+                    l.push lines[y]
+        
+        l.join '\n'
+        
+    @textForLinesRanges: lines rngs =>
+        
+        ⮐ '' if empty lines
+        
+        text = ''
+        for rng in rngs
+            text += util.textForLinesRange lines rng
+            text += '\n'
+        text[0...-1]
+        
+export util

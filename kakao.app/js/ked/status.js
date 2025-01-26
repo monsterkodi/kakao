@@ -27,9 +27,12 @@ status = (function ()
         for (var _a_ = x = 1, _b_ = this.state.s.gutter; (_a_ <= _b_ ? x < this.state.s.gutter : x > this.state.s.gutter); (_a_ <= _b_ ? ++x : --x))
         {
             fg = (this.state.s.cursor[0] ? color.status_fg : color.column_fg)
-            if (this.state.s.cursor[0] > this.state.s.lines[this.state.s.cursor[1]].length)
+            if (this.state.s.cursor[1] < this.state.s.lines.length)
             {
-                fg = color.status_empty
+                if (this.state.s.cursor[0] > this.state.s.lines[this.state.s.cursor[1]].length)
+                {
+                    fg = color.status_empty
+                }
             }
             this.cells.set(x,y,((x < colno.length ? colno[x - 1] : ' ')),fg,color.status_dark)
         }

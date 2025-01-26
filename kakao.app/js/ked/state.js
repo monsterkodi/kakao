@@ -7,6 +7,7 @@ import kstr from "../kxk/kstr.js"
 
 import color from "./color.js"
 import syntax from "./syntax.js"
+import util from "./util.js"
 
 import child_process from "child_process"
 
@@ -17,9 +18,6 @@ state = (function ()
     {
         this.cells = cells
     
-        this["fullySelectedLineIndices"] = this["fullySelectedLineIndices"].bind(this)
-        this["textForSelection"] = this["textForSelection"].bind(this)
-        this["textForRange"] = this["textForRange"].bind(this)
         this["deselect"] = this["deselect"].bind(this)
         this["isSelectedLine"] = this["isSelectedLine"].bind(this)
         this["selectLine"] = this["selectLine"].bind(this)
@@ -79,7 +77,7 @@ state = (function ()
             return
         }
         proc = child_process.spawn('pbcopy')
-        proc.stdin.write(this.textForSelection())
+        proc.stdin.write(util.textForLinesRanges(this.s.lines.asMutable(),this.s.selections.asMutable()))
         return proc.stdin.end()
     }
 
@@ -118,6 +116,7 @@ state = (function ()
         lines.splice(y,1,line)
         this.s = this.s.set('lines',lines)
         x += text.length
+        this.syntax.updateLines(lines,[y])
         return this.setCursor(x,y)
     }
 
@@ -159,6 +158,7 @@ state = (function ()
 
         lines.splice(y,1,line)
         this.s = this.s.set('lines',lines)
+        this.syntax.updateLines(lines,[y])
         switch (type)
         {
             case 'back':
@@ -179,11 +179,11 @@ state = (function ()
         for (var _a_ = si = this.s.selections.length - 1, _b_ = 0; (_a_ <= _b_ ? si <= 0 : si >= 0); (_a_ <= _b_ ? ++si : --si))
         {
             sel = this.s.selections[si]
-            if (this.isPosInsideRange(cursor,sel))
+            if (util.isPosInsideRange(cursor,sel))
             {
                 cursor = [sel[0],sel[1]]
             }
-            else if (this.isPosAfterRange(cursor,sel))
+            else if (util.isPosAfterRange(cursor,sel))
             {
                 if (cursor[1] === sel[3])
                 {
@@ -198,7 +198,7 @@ state = (function ()
                 }
                 else
                 {
-                    cursor[1] -= this.numFullLinesInRange(lines,sel)
+                    cursor[1] -= util.numFullLinesInRange(lines,sel)
                 }
             }
             if (sel[1] === sel[3])
@@ -242,54 +242,6 @@ state = (function ()
         return this
     }
 
-    state.prototype["isPosInsideRange"] = function (pos, rng)
-    {
-        if (this.isPosBeforeRange(pos,rng))
-        {
-            return false
-        }
-        if (this.isPosAfterRange(pos,rng))
-        {
-            return false
-        }
-        return true
-    }
-
-    state.prototype["isPosBeforeRange"] = function (pos, rng)
-    {
-        return pos[1] < rng[1] || (pos[1] === rng[1] && pos[0] < rng[0])
-    }
-
-    state.prototype["isPosAfterRange"] = function (pos, rng)
-    {
-        return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] >= rng[2])
-    }
-
-    state.prototype["numFullLinesInRange"] = function (lines, rng)
-    {
-        var d, n
-
-        d = rng[3] - rng[1]
-        if (d === 0)
-        {
-            return rng[0] === 0 && (rng[2] === lines[rng[1]].length ? 1 : 0)
-        }
-        n = 0
-        if (rng[0] === 0)
-        {
-            n += 1
-        }
-        if (d > 1)
-        {
-            n += d - 2
-        }
-        if (rng[2] === lines[rng[3]].length)
-        {
-            n += 1
-        }
-        return n
-    }
-
     state.prototype["setCursor"] = function (x, y)
     {
         var view
@@ -305,6 +257,10 @@ state = (function ()
         else if (y < view[1])
         {
             view[1] = y
+        }
+        if (view[1] > 0 && this.s.lines.length < this.cells.rows)
+        {
+            view[1] = 0
         }
         view[0] = _k_.max(0,x - this.cells.cols + this.s.gutter + 1)
         this.s = this.s.set('view',view)
@@ -340,7 +296,7 @@ state = (function ()
 
         if (merge)
         {
-            this.s = this.s.set('selections',this.mergeSelections(this.s.selections.asMutable()))
+            this.s = this.s.set('selections',util.mergeRanges(this.s.selections.asMutable()))
         }
         return this.setCursor(c[0],c[1])
     }
@@ -373,76 +329,20 @@ state = (function ()
             case 'bol':
                 selection[0] = 0
                 break
+            case 'bof':
+                selection[1] = 0
+                selection[0] = 0
+                break
+            case 'eof':
+                selection[3] = this.s.lines.length - 1
+                selection[2] = this.s.lines[this.s.lines.length - 1].length
+                break
         }
 
         selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
         selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
-        this.s = this.s.set('selections',this.mergeSelections(selections))
+        this.s = this.s.set('selections',util.mergeRanges(selections))
         return true
-    }
-
-    state.prototype["mergeSelections"] = function (sels)
-    {
-        var i, lastmrgd, mrgd, s
-
-        if (_k_.empty(sels))
-        {
-            return []
-        }
-        sels = sels.map(function (a)
-        {
-            if (a[1] > a[3])
-            {
-                return [a[2],a[3],a[0],a[1]]
-            }
-            else
-            {
-                return a
-            }
-        })
-        sels = sels.map(function (a)
-        {
-            if (a[1] === a[3] && a[0] > a[2])
-            {
-                return [a[2],a[1],a[0],a[3]]
-            }
-            else
-            {
-                return a
-            }
-        })
-        sels.sort(function (a, b)
-        {
-            if (a[1] === b[1])
-            {
-                return a[0] - b[0]
-            }
-            else
-            {
-                return a[1] - b[1]
-            }
-        })
-        sels = sels.filter(function (a)
-        {
-            return a[0] !== a[2] || a[1] !== a[3]
-        })
-        mrgd = []
-        var list = _k_.list(sels)
-        for (i = 0; i < list.length; i++)
-        {
-            s = list[i]
-            lastmrgd = (!_k_.empty(mrgd) ? mrgd[mrgd.length - 1] : [])
-            if (_k_.empty(mrgd) || s[1] > lastmrgd[3] || s[1] === lastmrgd[3] && s[0] > lastmrgd[2])
-            {
-                mrgd.push(s)
-            }
-            else if (s[3] > lastmrgd[3] || s[3] === lastmrgd[3] && s[2] > lastmrgd[2])
-            {
-                lastmrgd[2] = s[2]
-                lastmrgd[3] = s[3]
-            }
-        }
-        return mrgd
     }
 
     state.prototype["select"] = function (from, to)
@@ -530,87 +430,6 @@ state = (function ()
             return true
         }
         return false
-    }
-
-    state.prototype["textForRange"] = function (r)
-    {
-        var l, lines, y
-
-        lines = this.s.lines.asMutable()
-        l = []
-        for (var _a_ = y = r[1], _b_ = r[3]; (_a_ <= _b_ ? y <= r[3] : y >= r[3]); (_a_ <= _b_ ? ++y : --y))
-        {
-            if ((0 <= y && y < lines.length))
-            {
-                if (y === r[1])
-                {
-                    if (y === r[3])
-                    {
-                        l.push(lines[y].slice(r[0], typeof r[2] === 'number' ? r[2] : -1))
-                    }
-                    else
-                    {
-                        l.push(lines[y].slice(r[0]))
-                    }
-                }
-                else if (y === r[3])
-                {
-                    l.push(lines[y].slice(0, typeof r[2] === 'number' ? r[2] : -1))
-                }
-                else
-                {
-                    l.push(lines[y])
-                }
-            }
-        }
-        return l.join('\n')
-    }
-
-    state.prototype["textForSelection"] = function ()
-    {
-        var s, text
-
-        text = ''
-        var list = _k_.list(this.s.selections)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            s = list[_a_]
-            text += this.textForRange(s)
-            text += '\n'
-        }
-        return text.slice(0, -1)
-    }
-
-    state.prototype["fullySelectedLineIndices"] = function ()
-    {
-        var i, l, s
-
-        l = []
-        var list = _k_.list(this.s.selections)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            s = list[_a_]
-            if (s[1] === s[3] && s[0] === 0 && s[2] === this.s.lines[s[1]].length)
-            {
-                l.push(s[1])
-            }
-            else if (s[1] < s[3])
-            {
-                if (s[0] === 0)
-                {
-                    l.push(s[1])
-                }
-                for (var _b_ = i = s[1] + 1, _c_ = s[3]; (_b_ <= _c_ ? i < s[3] : i > s[3]); (_b_ <= _c_ ? ++i : --i))
-                {
-                    l.push(i)
-                }
-                if (s[2] === this.s.lines[s[3]].length)
-                {
-                    l.push(s[3])
-                }
-            }
-        }
-        return l
     }
 
     return state

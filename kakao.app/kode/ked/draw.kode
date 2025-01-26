@@ -14,43 +14,51 @@ class draw
 
     state: state =>
         
-        @s = state.s
-        @syntax = state.syntax
+        s      = state.s
+        syntax = state.syntax
+        view   = s.view.asMutable()
+        lines  = s.lines.asMutable()
+        gutter = s.gutter
         
-        for row in 0...@cells.t.rows()-1
+        for row in 0...@cells.rows-1
             
-            y = row+@s.view[1]
+            y = row+view[1]
             
-            break if y >= @s.lines.length
-            line = @s.lines[y]
+            break if y >= lines.length
+            line = lines[y]
+            
+            if not line?
+                lf 'empty line?', noon(lines), y, row, view[1]
+                lf 'empty line?' lines.length y
+                lf '???'
             
             # text
             
-            for x in 0...@cells.cols-@s.gutter
-                if x+@s.gutter < @cells.cols and x+@s.view[0] < line.length
-                    @cells.c[row][x+@s.gutter].fg   = @syntax.getColor x+@s.view[0] y
-                    @cells.c[row][x+@s.gutter].char = @syntax.getChar  x+@s.view[0] y line[x+@s.view[0]]
+            for x in 0...@cells.cols-gutter
+                if x+gutter < @cells.cols and x+view[0] < line.length
+                    @cells.c[row][x+gutter].fg   = syntax.getColor x+view[0] y
+                    @cells.c[row][x+gutter].char = syntax.getChar  x+view[0] y line[x+view[0]]
 
             # empty
                     
-            if y < @s.lines.length
-                linel = line.length - @s.view[0]
-                if y == @s.cursor[1]
+            if y < lines.length
+                linel = line.length - view[0]
+                if y == s.cursor[1]
                     if linel > 0
-                        @cells.bg_rect @s.gutter row @s.gutter+linel row color.cursor_main
-                    @cells.bg_rect max(@s.gutter @s.gutter+linel) row -1 row color.cursor_empty
+                        @cells.bg_rect gutter row gutter+linel row color.cursor_main
+                    @cells.bg_rect max(gutter gutter+linel) row -1 row color.cursor_empty
                 else
                     if linel > 0
-                        @cells.bg_rect @s.gutter row @s.gutter+linel row color.editor
-                    @cells.bg_rect max(@s.gutter @s.gutter+linel) row -1 row color.editor_empty
+                        @cells.bg_rect gutter row gutter+linel row color.editor
+                    @cells.bg_rect max(gutter gutter+linel) row -1 row color.editor_empty
                     
-        for selection in @s.selections
+        for selection in s.selections
             
             for li in selection[1]..selection[3]
                 
-                y  = li-@s.view[1]
+                y  = li-view[1]
                 
-                if @s.view[1] <= li < @s.view[1] + @cells.rows - 1
+                if view[1] <= li < view[1] + @cells.rows - 1
                     
                     if li == selection[1]
                         xs = selection[0]
@@ -60,10 +68,10 @@ class draw
                     if li == selection[3]
                         xe = selection[2]
                     else
-                        xe = @s.lines[li].length
+                        xe = lines[li].length
                         
                     for x in xs...xe
-                        if @s.gutter <= x-@s.view[0]+@s.gutter < @cells.cols
-                            @cells.c[y][x-@s.view[0]+@s.gutter].bg = color.selection
+                        if gutter <= x-view[0]+gutter < @cells.cols
+                            @cells.c[y][x-view[0]+gutter].bg = color.selection
                             
 export draw

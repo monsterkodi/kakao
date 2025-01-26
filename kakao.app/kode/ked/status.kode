@@ -24,8 +24,9 @@ function status
         colno = rpad @state.s.gutter-1 @state.s.cursor[0] + 1
         for x in 1...@state.s.gutter
             fg = @state.s.cursor[0] ? color.status_fg : color.column_fg
-            if @state.s.cursor[0] > @state.s.lines[@state.s.cursor[1]].length
-                fg = color.status_empty
+            if @state.s.cursor[1] < @state.s.lines.length
+                if @state.s.cursor[0] > @state.s.lines[@state.s.cursor[1]].length
+                    fg = color.status_empty
             @cells.set x y (x < colno.length ? colno[x-1] : ' ') fg color.status_dark
                 
         x = @state.s.gutter

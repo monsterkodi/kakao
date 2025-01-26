@@ -63,13 +63,14 @@ function KED
     loadFile: p ○=>
         
         start = process.hrtime()
-                
+        
         if slash.isAbsolute p
             @status.file = slash.tilde  p
         else
             @status.file = slash.normalize p
 
-        text =○ nfs.read p
+        text =○ nfs.read slash.untilde(p)
+        
         lines = text.split /\r?\n/
         
         @state.syntax.ext = slash.ext p
@@ -282,7 +283,8 @@ function KED
             'ctrl+e'            ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
             'ctrl+h'            ➜ ⮐ @setCursor 0 0
             'ctrl+j'
-            'shift+ctrl+h'      ➜ ⮐ @setCursor @state.s.lines[-1].length @state.s.lines.length-1
+            'shift+ctrl+h'      ➜ ⮐ @moveCursorAndSelect 'bof'
+            'shift+ctrl+j'      ➜ ⮐ @moveCursorAndSelect 'eof'
             
             'return'            ➜ ⮐ @insert '\n'
             'space'             ➜ ⮐ @insert ' '

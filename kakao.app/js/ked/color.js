@@ -82,7 +82,7 @@ class color
 
     static text = '#ffffff'
 
-    static cursor_main = '#202020'
+    static cursor_main = '#101010'
 
     static cursor_empty = '#000000'
 

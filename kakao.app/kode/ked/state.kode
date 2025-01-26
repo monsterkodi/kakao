@@ -7,7 +7,7 @@
 ###
 
 use ../kxk ◆ immutable kstr
-use ◆ color syntax
+use ◆ color syntax util
 use child_process
 
 function state
@@ -67,7 +67,7 @@ function state
         ⮐ if empty @s.selections
             
         proc = child_process.spawn 'pbcopy'
-        proc.stdin.write @textForSelection()
+        proc.stdin.write util.textForLinesRanges(@s.lines.asMutable() @s.selections.asMutable())
         proc.stdin.end()
             
     # 00000000    0000000    0000000  000000000  00000000  
@@ -110,6 +110,8 @@ function state
         @s = @s.set 'lines' lines
         
         x += text.length
+        
+        @syntax.updateLines lines [y]
         
         @setCursor x y
         
@@ -155,6 +157,8 @@ function state
         lines.splice y 1 line
             
         @s = @s.set 'lines' lines
+        
+        @syntax.updateLines lines [y]
 
         switch type
             'back' 
@@ -169,16 +173,16 @@ function state
         for si in @s.selections.length-1..0
             sel = @s.selections[si]
             
-            if @isPosInsideRange cursor sel
+            if util.isPosInsideRange cursor sel
                 cursor = [sel[0] sel[1]]
-            else if @isPosAfterRange cursor sel
+            else if util.isPosAfterRange cursor sel
                 if cursor[1] == sel[3]
                     if sel[1] == sel[3]
                         cursor[0] = sel[0]
                     else
                         cursor[0] = 0
                 else
-                    cursor[1] -= @numFullLinesInRange lines sel
+                    cursor[1] -= util.numFullLinesInRange lines sel
             
             if sel[1] == sel[3]
                 if sel[0] == 0 and sel[2] == lines[sel[1]].length
@@ -203,42 +207,7 @@ function state
         @setLines lines
         @setCursor cursor[0] cursor[1]
         @
-        
-    isPosInsideRange: pos rng ->
-                
-        ⮐ false if @isPosBeforeRange pos rng 
-        ⮐ false if @isPosAfterRange pos rng 
-        true
-
-    isPosBeforeRange:  pos rng ->
-        
-        # ⮐ true if pos[1] < rng[1]
-        # ⮐ true if pos[1] == rng[1] and pos[0] < rng[0]
-        # false
-        
-        pos[1] < rng[1] or (pos[1] == rng[1] and pos[0] < rng[0])
-        
-    isPosAfterRange:  pos rng ->
-        
-        # ⮐ true if pos[1] > rng[3]
-        # ⮐ true if pos[1] == rng[3] and pos[0] > rng[2]
-        # false
-        
-        pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
-        
-    numFullLinesInRange: lines rng -> 
-        
-        d = rng[3] - rng[1]
-        
-        if d == 0 
-            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
-        
-        n = 0
-        n += 1   if rng[0] == 0 
-        n += d-2 if d > 1
-        n += 1   if rng[2] == lines[rng[3]].length
-        n
-            
+                    
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
     # 000       000   000  0000000    0000000   000   000  0000000    
@@ -258,6 +227,9 @@ function state
             view[1] = y - @cells.rows + 2
         else if y < view[1]
             view[1] = y
+            
+        if view[1] > 0 and @s.lines.length < @cells.rows
+            view[1] = 0
 
         view[0] = max 0 x - @cells.cols + @s.gutter + 1
             
@@ -278,7 +250,7 @@ function state
             'bol'   ➜ c[0] = 0
         
         if merge
-            @s = @s.set 'selections' @mergeSelections(@s.selections.asMutable())
+            @s = @s.set 'selections' util.mergeRanges(@s.selections.asMutable())
         
         @setCursor c[0] c[1]
         
@@ -297,42 +269,16 @@ function state
             'down'  ➜ selection[3] = min @s.lines.length-1 selection[3]+1
             'eol'   ➜ selection[2] = Infinity
             'bol'   ➜ selection[0] = 0
+            'bof'   ➜ selection[1] = 0; selection[0] = 0
+            'eof'   ➜ selection[3] = @s.lines.length-1; selection[2] = @s.lines[@s.lines.length-1].length
             
         selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
         selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
         
-        # @s = @s.set 'selections' selections
-        @s = @s.set 'selections' @mergeSelections(selections)
+        @s = @s.set 'selections' util.mergeRanges(selections)
                     
         true
-        
-    # 00     00  00000000  00000000    0000000   00000000  
-    # 000   000  000       000   000  000        000       
-    # 000000000  0000000   0000000    000  0000  0000000   
-    # 000 0 000  000       000   000  000   000  000       
-    # 000   000  00000000  000   000   0000000   00000000  
-    
-    mergeSelections: sels ->
-        
-        ⮐ [] if empty sels
-        
-        sels = sels.map (a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a
-        sels = sels.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
-        sels.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
-        sels = sels.filter (a) -> a[0] != a[2] or a[1] != a[3]
-        
-        mrgd = []
-        for s,i in sels
-            lastmrgd = valid mrgd ? mrgd[mrgd.length-1] : []
-            if empty mrgd or s[1] > lastmrgd[3] or s[1] == lastmrgd[3] and s[0] > lastmrgd[2]
-                mrgd.push s
-            else if s[3] > lastmrgd[3] or s[3] == lastmrgd[3] and s[2] > lastmrgd[2]
-                lastmrgd[2] = s[2] 
-                lastmrgd[3] = s[3]
-
-        # lf 'mrgd' noon(mrgd)
-        mrgd
-        
+                
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
     # 0000000   0000000   000      0000000   000          000     
@@ -401,54 +347,5 @@ function state
             @s = @s.set 'selections' []
             ⮐ true
         false
-            
-    # 000000000  00000000  000   000  000000000     00000000   0000000   00000000 
-    #    000     000        000 000      000        000       000   000  000   000
-    #    000     0000000     00000       000        000000    000   000  0000000  
-    #    000     000        000 000      000        000       000   000  000   000
-    #    000     00000000  000   000     000        000        0000000   000   000
-    
-    textForRange: r =>
-        
-        lines = @s.lines.asMutable()
-        
-        l = []
-        
-        for y in r[1]..r[3]
-            if 0 <= y < lines.length
-                if y == r[1]
-                    if y == r[3]
-                        l.push lines[y][r[0]...r[2]]
-                    else
-                        l.push lines[y][r[0]..]
-                else if y == r[3]
-                    l.push lines[y][0...r[2]]
-                else
-                    l.push lines[y]
-        
-        l.join '\n'
-    
-    textForSelection: =>
-        
-        text = ''
-        for s in @s.selections
-            text += @textForRange s
-            text += '\n'
-        text[0...-1]
-        
-    fullySelectedLineIndices: =>
-        
-        l = []
-        for s in @s.selections
-            if s[1] == s[3] and s[0] == 0 and s[2] == @s.lines[s[1]].length
-                l.push s[1]
-            else if s[1] < s[3]
-                if s[0] == 0
-                    l.push s[1]
-                for i in s[1]+1...s[3]
-                    l.push i
-                if s[2] == @s.lines[s[3]].length
-                    l.push s[3]
-        l
-                            
+                    
 export state

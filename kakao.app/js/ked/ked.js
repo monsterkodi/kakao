@@ -103,7 +103,7 @@ KED = (function ()
         {
             this.status.file = slash.normalize(p)
         }
-        text = await nfs.read(p)
+        text = await nfs.read(slash.untilde(p))
         lines = text.split(/\r?\n/)
         this.state.syntax.ext = slash.ext(p)
         this.state.setLines(lines)
@@ -372,7 +372,10 @@ KED = (function ()
 
             case 'ctrl+j':
             case 'shift+ctrl+h':
-                return this.setCursor(this.state.s.lines.slice(-1)[0].length,this.state.s.lines.length - 1)
+                return this.moveCursorAndSelect('bof')
+
+            case 'shift+ctrl+j':
+                return this.moveCursorAndSelect('eof')
 
             case 'return':
                 return this.insert('\n')

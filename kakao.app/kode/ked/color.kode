@@ -61,7 +61,7 @@ class color
     @editor:            '#0d0d0d'  
     @editor_empty:      '#0a0a0a'  
     @text:              '#ffffff'  
-    @cursor_main:       '#202020'  
+    @cursor_main:       '#101010'  
     @cursor_empty:      '#000000'  
     
     @syntax: 

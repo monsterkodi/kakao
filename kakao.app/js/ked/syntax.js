@@ -16,6 +16,7 @@ syntax = (function ()
         this["getChar"] = this["getChar"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
+        this["updateLines"] = this["updateLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["setExt"] = this["setExt"].bind(this)
         this.ext = 'txt'
@@ -28,11 +29,12 @@ syntax = (function ()
 
     syntax.prototype["setLines"] = function (lines)
     {
-        var dissTime, start
+        return this.diss = kolor.dissect(lines,this.ext)
+    }
 
-        start = process.hrtime()
-        this.diss = kolor.dissect(lines,this.ext)
-        return dissTime = kstr.time(BigInt(process.hrtime(start)[1]))
+    syntax.prototype["updateLines"] = function (lines, changedLineIndices)
+    {
+        return this.setLines(lines)
     }
 
     syntax.prototype["getClass"] = function (x, y)
