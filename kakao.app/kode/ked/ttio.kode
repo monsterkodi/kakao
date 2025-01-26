@@ -39,18 +39,27 @@ function TTIO extends events
     clear: =>
         @write '\x1b[2J' # clear screen
         @write '\x1b[H'  # cursor home
-        
-    hideCursor: => @write '\x1b[?25l'
-    showCursor: => @write '\x1b[?25h'
-        
+
     cols: => process.stdout.columns
     rows: => process.stdout.rows
-    
-    store:   => @write '\x1b7'
-    restore: => @write '\x1b8'
+        
+    #  0000000  000   000  00000000    0000000   0000000   00000000   
+    # 000       000   000  000   000  000       000   000  000   000  
+    # 000       000   000  0000000    0000000   000   000  0000000    
+    # 000       000   000  000   000       000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  
     
     setCursor: x y => @write "\x1b[#{y+1};#{x+1}H"
-        
+    hideCursor: => @write '\x1b[?25l'
+    showCursor: show=true => 
+        if show
+            @write '\x1b[?25h'
+        else
+            @hideCursor()
+            
+    store:   => @write '\x1b7'
+    restore: => @write '\x1b8'
+
     onResize: => @emit 'resize' @cols() @rows()
     
     emitMousePress: col row button mods='' =>
@@ -76,6 +85,12 @@ function TTIO extends events
                 
         @emit 'mouse' 'press' col row button mods @lastClick.count
         
+    # 0000000     0000000   000000000   0000000   
+    # 000   000  000   000     000     000   000  
+    # 000   000  000000000     000     000000000  
+    # 000   000  000   000     000     000   000  
+    # 0000000    000   000     000     000   000  
+    
     onData: data =>
         
         if @pasteBuffer?

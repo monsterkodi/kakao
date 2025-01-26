@@ -11,6 +11,7 @@ import draw from "./draw.js"
 import logfile from "./logfile.js"
 import scroll from "./scroll.js"
 import color from "./color.js"
+import util from "./util.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg
@@ -33,6 +34,8 @@ KED = (function ()
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["scrollView"] = this["scrollView"].bind(this)
+        this["showCursorIfInView"] = this["showCursorIfInView"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
@@ -160,6 +163,24 @@ KED = (function ()
     KED.prototype["setCursor"] = function (x, y)
     {
         this.state.setCursor(x,y)
+        return this.redraw()
+    }
+
+    KED.prototype["showCursorIfInView"] = function ()
+    {
+        var show
+
+        show = util.isPosInsideRange(this.state.s.cursor,this.state.rangeForVisibleLines())
+        if (this.state.s.cursor[0] < this.state.s.view[0])
+        {
+            show = false
+        }
+        return this.t.showCursor(show)
+    }
+
+    KED.prototype["scrollView"] = function (dir, steps)
+    {
+        this.state.scrollView(dir,steps)
         return this.redraw()
     }
 
@@ -309,7 +330,7 @@ KED = (function ()
             case 'down':
             case 'left':
             case 'right':
-                return this.moveCursor(dir,steps)
+                return this.scrollView(dir,steps)
 
         }
 
@@ -469,7 +490,7 @@ KED = (function ()
         this.status.draw()
         this.draw.state(this.state)
         this.cells.render()
-        this.t.showCursor()
+        this.showCursorIfInView()
         this.t.restore()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }

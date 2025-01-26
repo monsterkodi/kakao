@@ -13,13 +13,13 @@ TTIO = (function ()
         this["onData"] = this["onData"].bind(this)
         this["emitMousePress"] = this["emitMousePress"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
-        this["setCursor"] = this["setCursor"].bind(this)
         this["restore"] = this["restore"].bind(this)
         this["store"] = this["store"].bind(this)
-        this["rows"] = this["rows"].bind(this)
-        this["cols"] = this["cols"].bind(this)
         this["showCursor"] = this["showCursor"].bind(this)
         this["hideCursor"] = this["hideCursor"].bind(this)
+        this["setCursor"] = this["setCursor"].bind(this)
+        this["rows"] = this["rows"].bind(this)
+        this["cols"] = this["cols"].bind(this)
         this["clear"] = this["clear"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["write"] = this["write"].bind(this)
@@ -60,16 +60,6 @@ TTIO = (function ()
         return this.write('\x1b[H')
     }
 
-    TTIO.prototype["hideCursor"] = function ()
-    {
-        return this.write('\x1b[?25l')
-    }
-
-    TTIO.prototype["showCursor"] = function ()
-    {
-        return this.write('\x1b[?25h')
-    }
-
     TTIO.prototype["cols"] = function ()
     {
         return process.stdout.columns
@@ -78,6 +68,28 @@ TTIO = (function ()
     TTIO.prototype["rows"] = function ()
     {
         return process.stdout.rows
+    }
+
+    TTIO.prototype["setCursor"] = function (x, y)
+    {
+        return this.write(`\x1b[${y + 1};${x + 1}H`)
+    }
+
+    TTIO.prototype["hideCursor"] = function ()
+    {
+        return this.write('\x1b[?25l')
+    }
+
+    TTIO.prototype["showCursor"] = function (show = true)
+    {
+        if (show)
+        {
+            return this.write('\x1b[?25h')
+        }
+        else
+        {
+            return this.hideCursor()
+        }
     }
 
     TTIO.prototype["store"] = function ()
@@ -90,11 +102,6 @@ TTIO = (function ()
         return this.write('\x1b8')
     }
 
-    TTIO.prototype["setCursor"] = function (x, y)
-    {
-        return this.write(`\x1b[${y + 1};${x + 1}H`)
-    }
-
     TTIO.prototype["onResize"] = function ()
     {
         return this.emit('resize',this.cols(),this.rows())
@@ -102,9 +109,9 @@ TTIO = (function ()
 
     TTIO.prototype["emitMousePress"] = function (col, row, button, mods = '')
     {
-        var diff, _58_19_
+        var diff, _67_19_
 
-        this.lastClick = ((_58_19_=this.lastClick) != null ? _58_19_ : {row:row,col:col,count:0,time:process.hrtime()})
+        this.lastClick = ((_67_19_=this.lastClick) != null ? _67_19_ : {row:row,col:col,count:0,time:process.hrtime()})
         if (this.lastClick.col === col && this.lastClick.row === row)
         {
             diff = process.hrtime(this.lastClick.time)
@@ -130,7 +137,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, row, seq, text, x, y, _81_23_
+        var code, col, key, row, seq, text, x, y, _96_23_
 
         if ((this.pasteBuffer != null))
         {

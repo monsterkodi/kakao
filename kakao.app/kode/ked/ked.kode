@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter status cells state draw logfile scroll color
+use ◆ ttio gutter status cells state draw logfile scroll color util
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
 
@@ -129,10 +129,27 @@ function KED
         
         @state.moveCursor dir steps
         @redraw()
-            
+                    
     setCursor: x y =>
         
         @state.setCursor x y
+        @redraw()
+        
+    showCursorIfInView: =>
+        
+        show = util.isPosInsideRange @state.s.cursor @state.rangeForVisibleLines()
+        if @state.s.cursor[0] < @state.s.view[0] ➜ show = false
+        @t.showCursor show
+        
+    #  0000000   0000000  00000000    0000000   000      000      
+    # 000       000       000   000  000   000  000      000      
+    # 0000000   000       0000000    000   000  000      000      
+    #      000  000       000   000  000   000  000      000      
+    # 0000000    0000000  000   000   0000000   0000000  0000000  
+    
+    scrollView: dir steps =>
+        
+        @state.scrollView dir steps
         @redraw()
             
     # 00     00   0000000   000   000   0000000  00000000  
@@ -247,7 +264,7 @@ function KED
             'up'        
             'down'      
             'left'      
-            'right'     ➜ ⮐ @moveCursor dir steps
+            'right'     ➜ ⮐ @scrollView dir steps
     
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -348,7 +365,7 @@ function KED
         @status.draw()
         @draw.state @state
         @cells.render()
-        @t.showCursor()
+        @showCursorIfInView() 
         @t.restore()
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))

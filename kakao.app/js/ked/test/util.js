@@ -37,7 +37,7 @@ toExport["util"] = function ()
         compare(util.mergeRanges([[4,0,6,0],[6,0,10,0]]),[[4,0,10,0]])
         compare(util.mergeRanges([[4,0,6,0],[5,0,10,0]]),[[4,0,10,0]])
     })
-    section("deleteLinesRangesAndAdjustCursor", function ()
+    section("deleteRangesAndAdjustCursor", function ()
     {
         lines = ['1234567890','abcdefghij']
         compare(util.deleteLinesRangesAndAdjustCursor(lines,[[5,0,5,0]],[5,1]),[lines,[5,1]])

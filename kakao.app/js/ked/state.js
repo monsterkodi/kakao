@@ -24,6 +24,9 @@ state = (function ()
         this["selectWord"] = this["selectWord"].bind(this)
         this["selectChunk"] = this["selectChunk"].bind(this)
         this["select"] = this["select"].bind(this)
+        this["rangeForVisibleLines"] = this["rangeForVisibleLines"].bind(this)
+        this["setView"] = this["setView"].bind(this)
+        this["scrollView"] = this["scrollView"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
@@ -114,7 +117,7 @@ state = (function ()
         line = lines[y]
         line = kstr.splice(line,x,0,text)
         lines.splice(y,1,line)
-        this.s = this.s.set('lines',lines)
+        this.setLines(lines)
         x += text.length
         this.syntax.updateLines(lines,[y])
         return this.setCursor(x,y)
@@ -132,7 +135,7 @@ state = (function ()
         after = line.slice(x)
         lines.splice(y,1,before)
         lines.splice(y + 1,0,after)
-        this.s = this.s.set('lines',lines)
+        this.setLines(lines)
         y = y + 1
         x = 0
         return this.setCursor(x,y)
@@ -157,8 +160,7 @@ state = (function ()
         }
 
         lines.splice(y,1,line)
-        this.s = this.s.set('lines',lines)
-        this.syntax.updateLines(lines,[y])
+        this.setLines(lines)
         switch (type)
         {
             case 'back':
@@ -206,11 +208,11 @@ state = (function ()
             view[1] = 0
         }
         view[0] = _k_.max(0,x - this.cells.cols + this.s.gutter + 1)
-        this.s = this.s.set('view',view)
+        this.setView(view)
         return this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
     }
 
-    state.prototype["moveCursor"] = function (dir, steps = 1, merge = true)
+    state.prototype["moveCursor"] = function (dir, steps = 1)
     {
         var c
 
@@ -237,10 +239,6 @@ state = (function ()
                 break
         }
 
-        if (merge)
-        {
-            this.s = this.s.set('selections',util.mergeRanges(this.s.selections.asMutable()))
-        }
         return this.setCursor(c[0],c[1])
     }
 
@@ -286,6 +284,46 @@ state = (function ()
         selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
         this.s = this.s.set('selections',util.mergeRanges(selections))
         return true
+    }
+
+    state.prototype["scrollView"] = function (dir, steps)
+    {
+        var sx, sy, view
+
+        sx = sy = 0
+        switch (dir)
+        {
+            case 'left':
+                sx = -1
+                break
+            case 'right':
+                sx = 1
+                break
+            case 'up':
+                sy = -steps
+                break
+            case 'down':
+                sy = steps
+                break
+        }
+
+        view = this.s.view.asMutable()
+        view[0] += sx
+        view[1] += sy
+        view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows + 1),view[1])
+        view[0] = _k_.max(0,view[0])
+        this.setView(view)
+        return this.cells.t.setCursor(this.s.cursor[0] + this.s.gutter - this.s.view[0],this.s.cursor[1] - this.s.view[1])
+    }
+
+    state.prototype["setView"] = function (view)
+    {
+        return this.s = this.s.set('view',view)
+    }
+
+    state.prototype["rangeForVisibleLines"] = function ()
+    {
+        return [this.s.view[0],this.s.view[1],this.s.view[0] + this.cells.cols - 1,this.s.view[1] + this.cells.rows - 1]
     }
 
     state.prototype["select"] = function (from, to)

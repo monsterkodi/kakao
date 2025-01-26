@@ -107,7 +107,7 @@ function state
         
         lines.splice y 1 line
                 
-        @s = @s.set 'lines' lines
+        @setLines lines
         
         x += text.length
         
@@ -129,7 +129,7 @@ function state
         lines.splice y 1 before
         lines.splice y+1 0 after
                 
-        @s = @s.set 'lines' lines
+        @setLines lines
         
         y = y + 1
         x = 0
@@ -151,15 +151,13 @@ function state
         line  = lines[y]
         
         switch type
-            'eol'       ➜ line = line[0...x]
-            'back'      ➜ line = kstr.splice line x-1 1
+            'eol'  ➜ line = line[0...x]
+            'back' ➜ line = kstr.splice line x-1 1
             
         lines.splice y 1 line
             
-        @s = @s.set 'lines' lines
+        @setLines lines
         
-        @syntax.updateLines lines [y]
-
         switch type
             'back' 
                 x -= 1
@@ -204,11 +202,11 @@ function state
 
         view[0] = max 0 x - @cells.cols + @s.gutter + 1
             
-        @s = @s.set 'view' view
+        @setView view
             
         @cells.t.setCursor x+@s.gutter y-@s.view[1]
         
-    moveCursor: dir steps=1 merge=true =>
+    moveCursor: dir steps=1 =>
         
         c = @s.cursor.asMutable() 
         
@@ -219,9 +217,6 @@ function state
             'down'  ➜ c[1] += steps 
             'eol'   ➜ c[0] = @s.lines[c[1]].length
             'bol'   ➜ c[0] = 0
-        
-        if merge
-            @s = @s.set 'selections' util.mergeRanges(@s.selections.asMutable())
         
         @setCursor c[0] c[1]
         
@@ -249,6 +244,43 @@ function state
         @s = @s.set 'selections' util.mergeRanges(selections)
                     
         true
+        
+    #  0000000   0000000  00000000    0000000   000      000      
+    # 000       000       000   000  000   000  000      000      
+    # 0000000   000       0000000    000   000  000      000      
+    #      000  000       000   000  000   000  000      000      
+    # 0000000    0000000  000   000   0000000   0000000  0000000  
+    
+    scrollView: dir steps =>
+        
+        sx = sy = 0
+        
+        switch dir
+            'left'  ➜ sx = -1
+            'right' ➜ sx =  1
+            'up'    ➜ sy = -steps
+            'down'  ➜ sy =  steps 
+        
+        view = @s.view.asMutable()
+        
+        view[0] += sx
+        view[1] += sy
+        
+        view[1] = clamp 0 max(0 @s.lines.length-@cells.rows+1) view[1]
+        
+        view[0] = max 0 view[0]
+            
+        @setView view
+        
+        @cells.t.setCursor @s.cursor[0]+@s.gutter-@s.view[0] @s.cursor[1]-@s.view[1]
+        
+    setView: view =>
+                
+        @s = @s.set 'view' view
+                
+    rangeForVisibleLines: =>
+        
+        [@s.view[0] @s.view[1] @s.view[0]+@cells.cols-1 @s.view[1]+@cells.rows-1]
                 
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -267,7 +299,7 @@ function state
         else if from[1] == to[1] and from[0] > to[0]
             [from to] = [to from]
 
-        to[0] = clamp 0 @s.lines[to[1]].length to[0]
+        to[0]   = clamp 0 @s.lines[to[1]].length to[0]
         from[0] = clamp 0 @s.lines[from[1]].length from[0]
                 
         selections.push [from[0] from[1] to[0] to[1]]

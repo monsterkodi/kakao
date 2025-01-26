@@ -45,7 +45,7 @@ use ../util
         util.mergeRanges [[4 0 6 0] [6 0 10 0]] ▸ [[4 0 10 0]]
         util.mergeRanges [[4 0 6 0] [5 0 10 0]] ▸ [[4 0 10 0]]
 
-    ▸ deleteLinesRangesAndAdjustCursor
+    ▸ deleteRangesAndAdjustCursor
     
         lines = ['1234567890' 'abcdefghij']
     
