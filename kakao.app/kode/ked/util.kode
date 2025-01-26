@@ -126,42 +126,42 @@ class util
     
     @deleteLinesRangesAndAdjustCursor: lines rngs cursor ->
         
-        for si in rngs.length-1..0
-            sel = rngs[si]
+        for ri in rngs.length-1..0
+            rng = rngs[ri]
             
-            if util.isPosInsideRange cursor sel
-                cursor = [sel[0] sel[1]]
-            else if util.isPosAfterRange cursor sel
-                if cursor[1] == sel[3]
-                    if sel[1] == sel[3]
-                        cursor[0] = sel[0]
+            if util.isPosInsideRange cursor rng
+                cursor = [rng[0] rng[1]]
+            else if util.isPosAfterRange cursor rng
+                if cursor[1] == rng[3]
+                    if rng[1] == rng[3]
+                        cursor[0] = rng[0]
                     else
                         cursor[0] = 0
                 else
-                    cursor[1] -= util.numFullLinesInRange lines sel
+                    cursor[1] -= util.numFullLinesInRange lines rng
             
-            if sel[1] == sel[3]
-                if sel[0] == 0 and sel[2] == lines[sel[1]].length
-                    lines.splice sel[1] 1
+            if rng[1] == rng[3]
+                if rng[0] == 0 and rng[2] == lines[rng[1]].length
+                    lines.splice rng[1] 1
                 else
-                    lines.splice sel[1] 1 kstr.splice(lines[sel[1]] sel[0] sel[2]-sel[0])
+                    lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
             else
-                if sel[2] == lines[sel[3]].length
-                    lines.splice sel[3] 1
+                if rng[2] == lines[rng[3]].length
+                    lines.splice rng[3] 1
                 else
-                    lines.splice sel[3] 1 lines[sel[3]][sel[2]..]
+                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]
                     partialFirst = true
                     
-                if sel[3]-sel[1] > 1
-                    lines.splice sel[1]+1 sel[3]-sel[1]-1
+                if rng[3]-rng[1] > 1
+                    lines.splice rng[1]+1 rng[3]-rng[1]-1
                     
-                if sel[0] == 0
-                    lines.splice sel[1] 1
+                if rng[0] == 0
+                    lines.splice rng[1] 1
                 else
-                    lines.splice sel[1] 1 lines[sel[1]][0...sel[0]]
+                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
                     
                     if partialFirst
-                        lines.splice sel[1] 2 lines[sel[1]] + lines[sel[1]+1]
+                        lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
                     
         [lines cursor]
         

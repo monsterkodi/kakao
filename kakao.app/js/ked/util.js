@@ -188,22 +188,22 @@ class util
 
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
     {
-        var partialFirst, sel, si
+        var partialFirst, ri, rng
 
-        for (var _a_ = si = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? si <= 0 : si >= 0); (_a_ <= _b_ ? ++si : --si))
+        for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
-            sel = rngs[si]
-            if (util.isPosInsideRange(cursor,sel))
+            rng = rngs[ri]
+            if (util.isPosInsideRange(cursor,rng))
             {
-                cursor = [sel[0],sel[1]]
+                cursor = [rng[0],rng[1]]
             }
-            else if (util.isPosAfterRange(cursor,sel))
+            else if (util.isPosAfterRange(cursor,rng))
             {
-                if (cursor[1] === sel[3])
+                if (cursor[1] === rng[3])
                 {
-                    if (sel[1] === sel[3])
+                    if (rng[1] === rng[3])
                     {
-                        cursor[0] = sel[0]
+                        cursor[0] = rng[0]
                     }
                     else
                     {
@@ -212,45 +212,45 @@ class util
                 }
                 else
                 {
-                    cursor[1] -= util.numFullLinesInRange(lines,sel)
+                    cursor[1] -= util.numFullLinesInRange(lines,rng)
                 }
             }
-            if (sel[1] === sel[3])
+            if (rng[1] === rng[3])
             {
-                if (sel[0] === 0 && sel[2] === lines[sel[1]].length)
+                if (rng[0] === 0 && rng[2] === lines[rng[1]].length)
                 {
-                    lines.splice(sel[1],1)
+                    lines.splice(rng[1],1)
                 }
                 else
                 {
-                    lines.splice(sel[1],1,kstr.splice(lines[sel[1]],sel[0],sel[2] - sel[0]))
+                    lines.splice(rng[1],1,kstr.splice(lines[rng[1]],rng[0],rng[2] - rng[0]))
                 }
             }
             else
             {
-                if (sel[2] === lines[sel[3]].length)
+                if (rng[2] === lines[rng[3]].length)
                 {
-                    lines.splice(sel[3],1)
+                    lines.splice(rng[3],1)
                 }
                 else
                 {
-                    lines.splice(sel[3],1,lines[sel[3]].slice(sel[2]))
+                    lines.splice(rng[3],1,lines[rng[3]].slice(rng[2]))
                     partialFirst = true
                 }
-                if (sel[3] - sel[1] > 1)
+                if (rng[3] - rng[1] > 1)
                 {
-                    lines.splice(sel[1] + 1,sel[3] - sel[1] - 1)
+                    lines.splice(rng[1] + 1,rng[3] - rng[1] - 1)
                 }
-                if (sel[0] === 0)
+                if (rng[0] === 0)
                 {
-                    lines.splice(sel[1],1)
+                    lines.splice(rng[1],1)
                 }
                 else
                 {
-                    lines.splice(sel[1],1,lines[sel[1]].slice(0, typeof sel[0] === 'number' ? sel[0] : -1))
+                    lines.splice(rng[1],1,lines[rng[1]].slice(0, typeof rng[0] === 'number' ? rng[0] : -1))
                     if (partialFirst)
                     {
-                        lines.splice(sel[1],2,lines[sel[1]] + lines[sel[1] + 1])
+                        lines.splice(rng[1],2,lines[rng[1]] + lines[rng[1] + 1])
                     }
                 }
             }
