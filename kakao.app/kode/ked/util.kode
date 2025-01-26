@@ -6,6 +6,8 @@
  0000000      000     000  0000000
 ###
 
+use ../kxk ▪ kstr
+
 class util
     
     # 00000000    0000000    0000000            00000000    0000000   000   000   0000000   00000000    
@@ -116,6 +118,12 @@ class util
             text += '\n'
         text[0...-1]
         
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
     @deleteLinesRangesAndAdjustCursor: lines rngs cursor ->
         
         for si in rngs.length-1..0
@@ -142,6 +150,7 @@ class util
                     lines.splice sel[3] 1
                 else
                     lines.splice sel[3] 1 lines[sel[3]][sel[2]..]
+                    partialFirst = true
                     
                 if sel[3]-sel[1] > 1
                     lines.splice sel[1]+1 sel[3]-sel[1]-1
@@ -150,6 +159,9 @@ class util
                     lines.splice sel[1] 1
                 else
                     lines.splice sel[1] 1 lines[sel[1]][0...sel[0]]
+                    
+                    if partialFirst
+                        lines.splice sel[1] 2 lines[sel[1]] + lines[sel[1]+1]
                     
         [lines cursor]
         

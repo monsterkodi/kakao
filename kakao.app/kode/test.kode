@@ -9,7 +9,7 @@
 use ./kxk  ◆ fs slash
 use ./kode ◆ tester
 
-mods = ['kxk' 'kode' 'kolor' 'ko' 'kalk']
+mods = ['kxk' 'kode' 'kolor' 'ko' 'kalk' 'ked']
 
 lastArg = process.argv[-1]
 

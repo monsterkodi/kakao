@@ -1,5 +1,8 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
+import kxk from "../kxk.js"
+let kstr = kxk.kstr
+
 class util
 {
     static isPosInsideRange (pos, rng)
@@ -185,7 +188,7 @@ class util
 
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
     {
-        var sel, si
+        var partialFirst, sel, si
 
         for (var _a_ = si = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? si <= 0 : si >= 0); (_a_ <= _b_ ? ++si : --si))
         {
@@ -232,6 +235,7 @@ class util
                 else
                 {
                     lines.splice(sel[3],1,lines[sel[3]].slice(sel[2]))
+                    partialFirst = true
                 }
                 if (sel[3] - sel[1] > 1)
                 {
@@ -244,6 +248,10 @@ class util
                 else
                 {
                     lines.splice(sel[1],1,lines[sel[1]].slice(0, typeof sel[0] === 'number' ? sel[0] : -1))
+                    if (partialFirst)
+                    {
+                        lines.splice(sel[1],2,lines[sel[1]] + lines[sel[1] + 1])
+                    }
                 }
             }
         }

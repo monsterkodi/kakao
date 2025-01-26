@@ -7,7 +7,7 @@ import slash from "./kxk/slash.js"
 
 import tester from "./kode/tester.js"
 
-mods = ['kxk','kode','kolor','ko','kalk']
+mods = ['kxk','kode','kolor','ko','kalk','ked']
 lastArg = process.argv.slice(-1)[0]
 if (lastArg === 'help')
 {

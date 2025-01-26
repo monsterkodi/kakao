@@ -1,0 +1,57 @@
+
+# 000   000  000000000  000  000      
+# 000   000     000     000  000      
+# 000   000     000     000  000      
+# 000   000     000     000  000      
+#  0000000      000     000  0000000  
+
+use ../util
+
+▸ util
+
+    ▸ isPosInsideRange
+    
+        util.isPosInsideRange [0 0]  [0 0  1 0] ▸ true
+        util.isPosInsideRange [0 1]  [0 0  1 0] ▸ false
+    
+        util.isPosInsideRange [7 1]  [5 2 10 2] ▸ false
+        util.isPosInsideRange [7 2]  [5 2 10 2] ▸ true
+        util.isPosInsideRange [5 2]  [5 2 10 2] ▸ true
+        util.isPosInsideRange [10 2] [5 2 10 2] ▸ true
+        util.isPosInsideRange [4 2]  [5 2 10 2] ▸ false
+        util.isPosInsideRange [11 2] [5 2 10 2] ▸ false
+        util.isPosInsideRange [7 3]  [5 2 10 2] ▸ false
+        
+    ▸ normalizeRanges
+    
+        util.normalizeRanges [] ▸ []
+        
+        util.normalizeRanges [[0 1 3 4]] ▸ [[0 1 3 4]]
+        util.normalizeRanges [[0 4 3 1]] ▸ [[3 1 0 4]]
+        util.normalizeRanges [[3 1 0 4]] ▸ [[3 1 0 4]]
+        util.normalizeRanges [[3 4 2 4]] ▸ [[2 4 3 4]]
+        
+        util.normalizeRanges [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9] [1 1 2 2]]
+        util.normalizeRanges [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9] [1 1 2 2]]
+        
+    ▸ mergeRanges
+    
+        util.mergeRanges [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9]]
+        util.mergeRanges [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9]]
+        util.mergeRanges [[1 1 2 2] [0 0 9 9] [0 0 10 0] [0 8 9 9]] ▸ [[0 0 9 9]]
+        
+        util.mergeRanges [[4 0 6 0] [8 0 10 0]] ▸ [[4 0 6 0] [8 0 10 0]]
+        util.mergeRanges [[4 0 6 0] [7 0 10 0]] ▸ [[4 0 6 0] [7 0 10 0]]
+        util.mergeRanges [[4 0 6 0] [6 0 10 0]] ▸ [[4 0 10 0]]
+        util.mergeRanges [[4 0 6 0] [5 0 10 0]] ▸ [[4 0 10 0]]
+
+    ▸ deleteLinesRangesAndAdjustCursor
+    
+        lines = ['1234567890' 'abcdefghij']
+    
+        util.deleteLinesRangesAndAdjustCursor lines [[5 0 5 0]] [5 1] ▸ [lines [5 1]]
+        util.deleteLinesRangesAndAdjustCursor lines [[5 0 6 0]] [5 1] ▸ [['123457890''abcdefghij'] [5 1]]
+        util.deleteLinesRangesAndAdjustCursor lines [[5 0 5 1]] [5 1] ▸ [['12345fghij'] [5 0]]
+
+
+
