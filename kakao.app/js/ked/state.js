@@ -172,70 +172,13 @@ state = (function ()
 
     state.prototype["deleteSelection"] = function ()
     {
-        var cursor, lines, sel, si
+        var cursor, lines, selections
 
         cursor = this.s.cursor.asMutable()
         lines = this.s.lines.asMutable()
-        for (var _a_ = si = this.s.selections.length - 1, _b_ = 0; (_a_ <= _b_ ? si <= 0 : si >= 0); (_a_ <= _b_ ? ++si : --si))
-        {
-            sel = this.s.selections[si]
-            if (util.isPosInsideRange(cursor,sel))
-            {
-                cursor = [sel[0],sel[1]]
-            }
-            else if (util.isPosAfterRange(cursor,sel))
-            {
-                if (cursor[1] === sel[3])
-                {
-                    if (sel[1] === sel[3])
-                    {
-                        cursor[0] = sel[0]
-                    }
-                    else
-                    {
-                        cursor[0] = 0
-                    }
-                }
-                else
-                {
-                    cursor[1] -= util.numFullLinesInRange(lines,sel)
-                }
-            }
-            if (sel[1] === sel[3])
-            {
-                if (sel[0] === 0 && sel[2] === lines[sel[1]].length)
-                {
-                    lines.splice(sel[1],1)
-                }
-                else
-                {
-                    lines.splice(sel[1],1,kstr.splice(lines[sel[1]],sel[0],sel[2] - sel[0]))
-                }
-            }
-            else
-            {
-                if (sel[2] === lines[sel[3]].length)
-                {
-                    lines.splice(sel[3],1)
-                }
-                else
-                {
-                    lines.splice(sel[3],1,lines[sel[3]].slice(sel[2]))
-                }
-                if (sel[3] - sel[1] > 1)
-                {
-                    lines.splice(sel[1] + 1,sel[3] - sel[1] - 1)
-                }
-                if (sel[0] === 0)
-                {
-                    lines.splice(sel[1],1)
-                }
-                else
-                {
-                    lines.splice(sel[1],1,lines[sel[1]].slice(0, typeof sel[0] === 'number' ? sel[0] : -1))
-                }
-            }
-        }
+        selections = this.s.selections.asMutable()
+        var _a_ = util.deleteLinesRangesAndAdjustCursor(lines,selections,cursor); lines = _a_[0]; cursor = _a_[1]
+
         this.s = this.s.set('selections',[])
         this.setLines(lines)
         this.setCursor(cursor[0],cursor[1])

@@ -182,6 +182,73 @@ class util
         }
         return text.slice(0, -1)
     }
+
+    static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
+    {
+        var sel, si
+
+        for (var _a_ = si = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? si <= 0 : si >= 0); (_a_ <= _b_ ? ++si : --si))
+        {
+            sel = rngs[si]
+            if (util.isPosInsideRange(cursor,sel))
+            {
+                cursor = [sel[0],sel[1]]
+            }
+            else if (util.isPosAfterRange(cursor,sel))
+            {
+                if (cursor[1] === sel[3])
+                {
+                    if (sel[1] === sel[3])
+                    {
+                        cursor[0] = sel[0]
+                    }
+                    else
+                    {
+                        cursor[0] = 0
+                    }
+                }
+                else
+                {
+                    cursor[1] -= util.numFullLinesInRange(lines,sel)
+                }
+            }
+            if (sel[1] === sel[3])
+            {
+                if (sel[0] === 0 && sel[2] === lines[sel[1]].length)
+                {
+                    lines.splice(sel[1],1)
+                }
+                else
+                {
+                    lines.splice(sel[1],1,kstr.splice(lines[sel[1]],sel[0],sel[2] - sel[0]))
+                }
+            }
+            else
+            {
+                if (sel[2] === lines[sel[3]].length)
+                {
+                    lines.splice(sel[3],1)
+                }
+                else
+                {
+                    lines.splice(sel[3],1,lines[sel[3]].slice(sel[2]))
+                }
+                if (sel[3] - sel[1] > 1)
+                {
+                    lines.splice(sel[1] + 1,sel[3] - sel[1] - 1)
+                }
+                if (sel[0] === 0)
+                {
+                    lines.splice(sel[1],1)
+                }
+                else
+                {
+                    lines.splice(sel[1],1,lines[sel[1]].slice(0, typeof sel[0] === 'number' ? sel[0] : -1))
+                }
+            }
+        }
+        return [lines,cursor]
+    }
 }
 
 export default util;
