@@ -12,19 +12,21 @@ use ◆ color
 
 function syntax
 
-    @: ->
+    @: -> @ext = 'txt'
         
-    setLines: lines ext='txt' =>
+    setExt: @ext =>
+        
+    setLines: lines =>
         
         start = process.hrtime()
         
-        @diss = kolor.dissect lines ext
+        @diss = kolor.dissect lines @ext
          
         # lf '@diss:' ext noon(@diss)
         
         dissTime  = kstr.time(BigInt(process.hrtime(start)[1]))
         
-        lf 'syntax:' dissTime
+        # lf 'syntax:' dissTime
                 
     getClass: x y =>
         

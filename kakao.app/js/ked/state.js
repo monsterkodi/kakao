@@ -17,17 +17,19 @@ state = (function ()
     {
         this.cells = cells
     
+        this["fullySelectedLineIndices"] = this["fullySelectedLineIndices"].bind(this)
         this["textForSelection"] = this["textForSelection"].bind(this)
         this["textForRange"] = this["textForRange"].bind(this)
         this["deselect"] = this["deselect"].bind(this)
-        this["selectLine"] = this["selectLine"].bind(this)
         this["isSelectedLine"] = this["isSelectedLine"].bind(this)
+        this["selectLine"] = this["selectLine"].bind(this)
         this["selectWord"] = this["selectWord"].bind(this)
         this["selectChunk"] = this["selectChunk"].bind(this)
         this["select"] = this["select"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
+        this["deleteSelection"] = this["deleteSelection"].bind(this)
         this["delete"] = this["delete"].bind(this)
         this["insertNewline"] = this["insertNewline"].bind(this)
         this["insert"] = this["insert"].bind(this)
@@ -35,15 +37,17 @@ state = (function ()
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
+        this["setLines"] = this["setLines"].bind(this)
         this.syntax = new syntax
-        this.init([''])
+        this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
+        this.setCursor(0,0)
     }
 
-    state.prototype["init"] = function (lines, ext)
+    state.prototype["setLines"] = function (lines)
     {
-        this.s = immutable({lines:lines,selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(lines.length)})
-        this.syntax.setLines(lines,ext)
-        return this.setCursor(0,0)
+        this.syntax.setLines(lines)
+        this.s = this.s.set('gutter',this.calcGutter(lines.length))
+        return this.s = this.s.set('lines',lines)
     }
 
     state.prototype["calcGutter"] = function (numLines)
@@ -56,10 +60,14 @@ state = (function ()
         if (_k_.empty(this.s.selections))
         {
             this.selectLine()
-            this.cut()
+            if (!_k_.empty(this.s.selections))
+            {
+                this.cut()
+            }
             return
         }
-        return lf('cut',this.s.selections)
+        this.copy()
+        return this.deleteSelection()
     }
 
     state.prototype["copy"] = function ()
@@ -155,10 +163,131 @@ state = (function ()
         {
             case 'back':
                 x -= 1
-                return this.setCursor(x,y)
-
+                this.setCursor(x,y)
+                break
         }
 
+        return this
+    }
+
+    state.prototype["deleteSelection"] = function ()
+    {
+        var cursor, lines, sel, si
+
+        cursor = this.s.cursor.asMutable()
+        lines = this.s.lines.asMutable()
+        for (var _a_ = si = this.s.selections.length - 1, _b_ = 0; (_a_ <= _b_ ? si <= 0 : si >= 0); (_a_ <= _b_ ? ++si : --si))
+        {
+            sel = this.s.selections[si]
+            if (this.isPosInsideRange(cursor,sel))
+            {
+                cursor = [sel[0],sel[1]]
+            }
+            else if (this.isPosAfterRange(cursor,sel))
+            {
+                if (cursor[1] === sel[3])
+                {
+                    if (sel[1] === sel[3])
+                    {
+                        cursor[0] = sel[0]
+                    }
+                    else
+                    {
+                        cursor[0] = 0
+                    }
+                }
+                else
+                {
+                    cursor[1] -= this.numFullLinesInRange(lines,sel)
+                }
+            }
+            if (sel[1] === sel[3])
+            {
+                if (sel[0] === 0 && sel[2] === lines[sel[1]].length)
+                {
+                    lines.splice(sel[1],1)
+                }
+                else
+                {
+                    lines.splice(sel[1],1,kstr.splice(lines[sel[1]],sel[0],sel[2] - sel[0]))
+                }
+            }
+            else
+            {
+                if (sel[2] === lines[sel[3]].length)
+                {
+                    lines.splice(sel[3],1)
+                }
+                else
+                {
+                    lines.splice(sel[3],1,lines[sel[3]].slice(sel[2]))
+                }
+                if (sel[3] - sel[1] > 1)
+                {
+                    lines.splice(sel[1] + 1,sel[3] - sel[1] - 1)
+                }
+                if (sel[0] === 0)
+                {
+                    lines.splice(sel[1],1)
+                }
+                else
+                {
+                    lines.splice(sel[1],1,lines[sel[1]].slice(0, typeof sel[0] === 'number' ? sel[0] : -1))
+                }
+            }
+        }
+        this.s = this.s.set('selections',[])
+        this.setLines(lines)
+        this.setCursor(cursor[0],cursor[1])
+        return this
+    }
+
+    state.prototype["isPosInsideRange"] = function (pos, rng)
+    {
+        if (this.isPosBeforeRange(pos,rng))
+        {
+            return false
+        }
+        if (this.isPosAfterRange(pos,rng))
+        {
+            return false
+        }
+        return true
+    }
+
+    state.prototype["isPosBeforeRange"] = function (pos, rng)
+    {
+        return pos[1] < rng[1] || (pos[1] === rng[1] && pos[0] < rng[0])
+    }
+
+    state.prototype["isPosAfterRange"] = function (pos, rng)
+    {
+        return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] >= rng[2])
+    }
+
+    state.prototype["numFullLinesInRange"] = function (lines, rng)
+    {
+        var d, n
+
+        d = rng[3] - rng[1]
+        if (d === 0)
+        {
+            return rng[0] === 0 && (rng[2] === lines[rng[1]].length ? 1 : 0)
+        }
+        n = 0
+        if (rng[0] === 0)
+        {
+            n += 1
+        }
+        if (d > 1)
+        {
+            n += d - 2
+        }
+        if (rng[2] === lines[rng[3]].length)
+        {
+            n += 1
+        }
+        return n
     }
 
     state.prototype["setCursor"] = function (x, y)
@@ -169,15 +298,15 @@ state = (function ()
         x = _k_.max(0,x)
         this.s = this.s.set('cursor',[x,y])
         view = this.s.view.asMutable()
-        if (y >= view[1] + this.cells.t.rows() - 1)
+        if (y >= view[1] + this.cells.rows - 1)
         {
-            view[1] = y - this.cells.t.rows() + 2
+            view[1] = y - this.cells.rows + 2
         }
         else if (y < view[1])
         {
             view[1] = y
         }
-        view[0] = _k_.max(0,x - this.cells.t.cols() + this.s.gutter + 1)
+        view[0] = _k_.max(0,x - this.cells.cols + this.s.gutter + 1)
         this.s = this.s.set('view',view)
         return this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
     }
@@ -365,6 +494,14 @@ state = (function ()
         }
     }
 
+    state.prototype["selectLine"] = function (y = this.s.cursor[1])
+    {
+        if ((0 <= y && y < this.s.lines.length))
+        {
+            return this.select([0,y],[this.s.lines[y].length,y])
+        }
+    }
+
     state.prototype["isSelectedLine"] = function (y)
     {
         var selection
@@ -385,11 +522,6 @@ state = (function ()
         return false
     }
 
-    state.prototype["selectLine"] = function (y)
-    {
-        return this.select([0,y],[this.s.lines[y].length,y])
-    }
-
     state.prototype["deselect"] = function ()
     {
         if (!_k_.empty(this.s.selections))
@@ -397,6 +529,7 @@ state = (function ()
             this.s = this.s.set('selections',[])
             return true
         }
+        return false
     }
 
     state.prototype["textForRange"] = function (r)
@@ -446,6 +579,38 @@ state = (function ()
             text += '\n'
         }
         return text.slice(0, -1)
+    }
+
+    state.prototype["fullySelectedLineIndices"] = function ()
+    {
+        var i, l, s
+
+        l = []
+        var list = _k_.list(this.s.selections)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            s = list[_a_]
+            if (s[1] === s[3] && s[0] === 0 && s[2] === this.s.lines[s[1]].length)
+            {
+                l.push(s[1])
+            }
+            else if (s[1] < s[3])
+            {
+                if (s[0] === 0)
+                {
+                    l.push(s[1])
+                }
+                for (var _b_ = i = s[1] + 1, _c_ = s[3]; (_b_ <= _c_ ? i < s[3] : i > s[3]); (_b_ <= _c_ ? ++i : --i))
+                {
+                    l.push(i)
+                }
+                if (s[2] === this.s.lines[s[3]].length)
+                {
+                    l.push(s[3])
+                }
+            }
+        }
+        return l
     }
 
     return state

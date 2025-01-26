@@ -105,7 +105,8 @@ KED = (function ()
         }
         text = await nfs.read(p)
         lines = text.split(/\r?\n/)
-        this.state.init(lines,slash.ext(p))
+        this.state.syntax.ext = slash.ext(p)
+        this.state.setLines(lines)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         return this.redraw()
     }

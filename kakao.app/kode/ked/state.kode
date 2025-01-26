@@ -16,20 +16,26 @@ function state
         
         @syntax = new syntax
     
-        @init ['']
-    
-    init: lines ext ->
-        
         @s = immutable
-            lines:       lines
+            lines:       ['']
             selections:  []
             cursor:      [0 0]
             view:        [0 0]
-            gutter:      @calcGutter(lines.length)
-
-        @syntax.setLines lines ext
+            gutter:      @calcGutter(1)
             
         @setCursor 0 0
+    
+    #  0000000  00000000  000000000  000      000  000   000  00000000   0000000  
+    # 000       000          000     000      000  0000  000  000       000       
+    # 0000000   0000000      000     000      000  000 0 000  0000000   0000000   
+    #      000  000          000     000      000  000  0000  000            000  
+    # 0000000   00000000     000     0000000  000  000   000  00000000  0000000   
+    
+    setLines: lines =>
+        
+        @syntax.setLines lines
+        @s = @s.set 'gutter' @calcGutter(lines.length)
+        @s = @s.set 'lines' lines        
         
     calcGutter: numLines =>
         
@@ -45,9 +51,10 @@ function state
         
         if empty @s.selections
             @selectLine()
-            @cut()
+            @cut() if valid @s.selections
             ⮐ 
-        lf 'cut' @s.selections        
+        @copy()
+        @deleteSelection()
         
     #  0000000   0000000   00000000   000   000  
     # 000       000   000  000   000   000 000   
@@ -82,8 +89,6 @@ function state
     
     insert: text =>
         
-        # lf "insert >>>#{text}<<<" 
-                
         split = text.split /\r?\n/
         if split.length > 1
             for s,i in split
@@ -144,8 +149,8 @@ function state
         line  = lines[y]
         
         switch type
-            'eol'  ➜ line = line[0...x]
-            'back' ➜ line = kstr.splice line x-1 1
+            'eol'       ➜ line = line[0...x]
+            'back'      ➜ line = kstr.splice line x-1 1
             
         lines.splice y 1 line
             
@@ -155,6 +160,84 @@ function state
             'back' 
                 x -= 1
                 @setCursor x y
+        @
+                
+    deleteSelection: =>
+        
+        cursor = @s.cursor.asMutable()
+        lines = @s.lines.asMutable()
+        for si in @s.selections.length-1..0
+            sel = @s.selections[si]
+            
+            if @isPosInsideRange cursor sel
+                cursor = [sel[0] sel[1]]
+            else if @isPosAfterRange cursor sel
+                if cursor[1] == sel[3]
+                    if sel[1] == sel[3]
+                        cursor[0] = sel[0]
+                    else
+                        cursor[0] = 0
+                else
+                    cursor[1] -= @numFullLinesInRange lines sel
+            
+            if sel[1] == sel[3]
+                if sel[0] == 0 and sel[2] == lines[sel[1]].length
+                    lines.splice sel[1] 1
+                else
+                    lines.splice sel[1] 1 kstr.splice(lines[sel[1]] sel[0] sel[2]-sel[0])
+            else
+                if sel[2] == lines[sel[3]].length
+                    lines.splice sel[3] 1
+                else
+                    lines.splice sel[3] 1 lines[sel[3]][sel[2]..]
+                    
+                if sel[3]-sel[1] > 1
+                    lines.splice sel[1]+1 sel[3]-sel[1]-1
+                    
+                if sel[0] == 0
+                    lines.splice sel[1] 1
+                else
+                    lines.splice sel[1] 1 lines[sel[1]][0...sel[0]]
+        
+        @s = @s.set 'selections' []
+        @setLines lines
+        @setCursor cursor[0] cursor[1]
+        @
+        
+    isPosInsideRange: pos rng ->
+                
+        ⮐ false if @isPosBeforeRange pos rng 
+        ⮐ false if @isPosAfterRange pos rng 
+        true
+
+    isPosBeforeRange:  pos rng ->
+        
+        # ⮐ true if pos[1] < rng[1]
+        # ⮐ true if pos[1] == rng[1] and pos[0] < rng[0]
+        # false
+        
+        pos[1] < rng[1] or (pos[1] == rng[1] and pos[0] < rng[0])
+        
+    isPosAfterRange:  pos rng ->
+        
+        # ⮐ true if pos[1] > rng[3]
+        # ⮐ true if pos[1] == rng[3] and pos[0] > rng[2]
+        # false
+        
+        pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
+        
+    numFullLinesInRange: lines rng -> 
+        
+        d = rng[3] - rng[1]
+        
+        if d == 0 
+            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
+        
+        n = 0
+        n += 1   if rng[0] == 0 
+        n += d-2 if d > 1
+        n += 1   if rng[2] == lines[rng[3]].length
+        n
             
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
@@ -171,12 +254,12 @@ function state
         
         view = @s.view.asMutable()
         
-        if y >= view[1] + @cells.t.rows() - 1
-            view[1] = y - @cells.t.rows() + 2
+        if y >= view[1] + @cells.rows - 1
+            view[1] = y - @cells.rows + 2
         else if y < view[1]
             view[1] = y
 
-        view[0] = max 0 x - @cells.t.cols() + @s.gutter + 1
+        view[0] = max 0 x - @cells.cols + @s.gutter + 1
             
         @s = @s.set 'view' view
             
@@ -291,7 +374,12 @@ function state
         [rs re] = kstr.rangeOfClosestWord line x
         if rs >= 0 and re >= 0
             @select [rs y] [re+1 y]
-            
+                        
+    selectLine: y=@s.cursor[1] =>
+        
+        if 0 <= y < @s.lines.length
+            @select [0 y] [@s.lines[y].length y]
+
     isSelectedLine: y =>
         
         for selection in @s.selections
@@ -301,15 +389,18 @@ function state
                 ⮐ true
         false
             
-    selectLine: y =>
-        
-        @select [0 y] [@s.lines[y].length y]
-        
+    # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  
+    # 000   000  000       000       000       000      000       000          000     
+    # 000   000  0000000   0000000   0000000   000      0000000   000          000     
+    # 000   000  000            000  000       000      000       000          000     
+    # 0000000    00000000  0000000   00000000  0000000  00000000   0000000     000     
+    
     deselect: =>
         
         if valid @s.selections
             @s = @s.set 'selections' []
             ⮐ true
+        false
             
     # 000000000  00000000  000   000  000000000     00000000   0000000   00000000 
     #    000     000        000 000      000        000       000   000  000   000
@@ -344,5 +435,20 @@ function state
             text += @textForRange s
             text += '\n'
         text[0...-1]
+        
+    fullySelectedLineIndices: =>
+        
+        l = []
+        for s in @s.selections
+            if s[1] == s[3] and s[0] == 0 and s[2] == @s.lines[s[1]].length
+                l.push s[1]
+            else if s[1] < s[3]
+                if s[0] == 0
+                    l.push s[1]
+                for i in s[1]+1...s[3]
+                    l.push i
+                if s[2] == @s.lines[s[3]].length
+                    l.push s[3]
+        l
                             
 export state

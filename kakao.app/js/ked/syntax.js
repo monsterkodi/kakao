@@ -17,16 +17,22 @@ syntax = (function ()
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
+        this["setExt"] = this["setExt"].bind(this)
+        this.ext = 'txt'
     }
 
-    syntax.prototype["setLines"] = function (lines, ext = 'txt')
+    syntax.prototype["setExt"] = function (ext)
+    {
+        this.ext = ext
+    }
+
+    syntax.prototype["setLines"] = function (lines)
     {
         var dissTime, start
 
         start = process.hrtime()
-        this.diss = kolor.dissect(lines,ext)
-        dissTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        return lf('syntax:',dissTime)
+        this.diss = kolor.dissect(lines,this.ext)
+        return dissTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }
 
     syntax.prototype["getClass"] = function (x, y)
@@ -47,9 +53,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _38_36_
+        var _40_36_
 
-        return ((_38_36_=color.syntax[this.getClass(x,y)]) != null ? _38_36_ : '#ff0000')
+        return ((_40_36_=color.syntax[this.getClass(x,y)]) != null ? _40_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

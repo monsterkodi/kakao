@@ -67,13 +67,13 @@ function KED
         if slash.isAbsolute p
             @status.file = slash.tilde  p
         else
-            # absPath = slash.path process.cwd() p
             @status.file = slash.normalize p
-        # @status.file = slash.tilde absPath
 
         text =○ nfs.read p
         lines = text.split /\r?\n/
-        @state.init lines slash.ext(p)
+        
+        @state.syntax.ext = slash.ext p
+        @state.setLines lines
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         
