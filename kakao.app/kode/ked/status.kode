@@ -18,7 +18,7 @@ function status
     draw: =>
         
         y      = @cells.rows-1
-        gutter = @state.s.gutter
+        gtr    = @state.s.gutter
         cursor = @state.s.cursor
         cols   = @cells.cols
         
@@ -26,60 +26,56 @@ function status
         
         # draw the left edge of the status bar
         
-        sc 0 '' 'status_dark' 'gutter'
+        sc 0 '' 'status_dark' 'gtr'
         
         # draw the column number
         
-        colno = rpad gutter-1 cursor[0] + 1
-        for x in 1...gutter
+        colno = rpad gtr-1 cursor[0] + 1
+        for x in 1...gtr
             fg = cursor[0] ? 'status_fg' : 'column_fg'
             fg = 'status_empty' if cursor[1] < @state.s.lines.length and cursor[0] > @state.s.lines[cursor[1]].length
             sc x (x < colno.length ? colno[x-1] : ' ') fg 'status_dark'
 
         # draw the separator after the column number
             
-        sc gutter '' 'status' 'status_dark'
+        sc gtr '' 'status' 'status_dark'
               
         # draw the dirty indicator
         
         dirtyChar  = @state.isDirty() ? '' : ''
         dirtyColor = @state.isDirty() ? 'status_fg' : 'status_dark'
-        sc gutter+1 dirtyChar dirtyColor 'status'
+        sc gtr+1 dirtyChar dirtyColor 'status'
         
         # draw the file name
         
-        sc gutter+2 ' ' 'status_fg' 'status'
+        sc gtr+2 ' ' 'status_fg' 'status'
             
-        for x in gutter+3...gutter+1+@file.length+2
-            char = (x-gutter-3 < @file.length) ? @file[x-gutter-3] : ' '
+        for x in gtr+3...gtr+1+@file.length+2
+            char = (x-gtr-3 < @file.length) ? @file[x-gtr-3] : ' '
             sc x char 'status_fg' 'status'
              
         # draw the right edge of the file name section
         
-        sc gutter+3+@file.length '' 'status' 'status_dark'
+        sc gtr+3+@file.length '' 'status' 'status_dark'
 
         # fill the remaining space
         
-        for x in gutter+4+@file.length...cols-1
+        for x in gtr+4+@file.length...cols-1
             sc x ' ' null 'status_dark'
                 
-        @cells.c[y][cols-1].bg = 'status_dark'
-        
         # draw the time if there's enough space
                 
-        if valid @drawTime and cols-gutter+2+@file.length > @drawTime.length+1
+        dt = @drawTime
+        if cols-gtr+2+@file.length > dt.length+1
             
-            x = cols-@drawTime.length-2
-            sc x '' 'status' 'status_dark'
+            sc cols-dt.length-2 '' 'status' 'status_dark'
             
-            for i in 0...@drawTime.length
-                x = cols-@drawTime.length+i-1
-                fg = i < @drawTime.length-3 ? 'status_fg' : 'status_fg_dim'
-                sc x @drawTime[i] fg 'status'
+            for i in 0...dt.length
+                fg = i < dt.length-3 ? 'status_fg' : 'status_fg_dim'
+                sc cols-dt.length+i-1 dt[i] fg 'status'
         
         else
-            x = cols-2
-            sc x '' 'status' 'status_dark'
+            sc cols-2 '' 'status' 'status_dark'
 
         # draw the final edge of the status bar
         
@@ -92,9 +88,8 @@ function status
             sel = "#{@state.s.selections.length} sel"
              
             for i in 0...sel.length
-                x = cols-@drawTime.length+i-sel.length-3
                 fg = i < sel.length-4 ? 'status_sel' : 'status_fg_dim'
-                sc x sel[i] fg 'status_dark'
+                sc cols-dt.length+i-sel.length-3 sel[i] fg 'status_dark'
             
 export status
 
