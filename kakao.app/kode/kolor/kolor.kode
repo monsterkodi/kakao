@@ -22,6 +22,8 @@ for ext in exts
 SPACE   = /\s/
 HEADER  = /^0+$/
 PUNCT   = /\W+/gu
+# PUNCT = /\W+/gu
+PUNCT   =  /[^\wäöüßÄÖÜáéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãõÃÕåÅæÆœŒøØłŁđĐ]+/gu
 NUMBER  = /^\d+$/
 FLOAT   = /^\d+f$/
 HEXNUM  = /^0x[a-fA-F\d]+$/

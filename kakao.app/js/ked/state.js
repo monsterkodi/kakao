@@ -252,7 +252,7 @@ state = (function ()
 
     state.prototype["delete"] = function (type, mods)
     {
-        var line, lines, x, y
+        var line, lines, remove, x, y
 
         if (type === 'back' && !_k_.empty(this.s.selections))
         {
@@ -263,33 +263,43 @@ state = (function ()
 
         lines = this.s.lines.asMutable()
         line = lines[y]
+        remove = 1
         switch (type)
         {
             case 'eol':
                 line = line.slice(0, typeof x === 'number' ? x : -1)
                 break
             case 'back':
-                if (mods === 'cmd')
+                if (x === 0)
                 {
-                    line = kstr.splice(line,x - 1,1)
+                    if (y <= 0)
+                    {
+                        return
+                    }
+                    y -= 1
+                    x = lines[y].length
+                    remove = 2
+                    line = lines[y] + line
                 }
                 else
                 {
-                    line = kstr.splice(line,x - 1,1)
+                    x -= 1
+                    if (mods === 'cmd')
+                    {
+                        lf('todo: cmd+delete delete words or whitespaces')
+                        line = kstr.splice(line,x,1)
+                    }
+                    else
+                    {
+                        line = kstr.splice(line,x,1)
+                    }
                 }
                 break
         }
 
-        lines.splice(y,1,line)
+        lines.splice(y,remove,line)
         this.setLines(lines)
-        switch (type)
-        {
-            case 'back':
-                x -= 1
-                this.setCursor(x,y)
-                break
-        }
-
+        this.setCursor(x,y)
         return this
     }
 
