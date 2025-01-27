@@ -6,7 +6,7 @@
 0000000      000     000   000     000      0000000   0000000   
 ###
 
-use ◆ color
+use ◆ color util
 
 function status
 
@@ -21,6 +21,10 @@ function status
         gtr    = @state.s.gutter
         cursor = @state.s.cursor
         cols   = @cells.cols
+        fnl    = @file.length
+        dt     = @drawTime
+        dtl    = dt.length
+        dty    = @state.isDirty()
         
         sc = x char fg bg => @cells.set x y char color[fg] color[bg]
         
@@ -33,7 +37,7 @@ function status
         colno = rpad gtr-1 cursor[0] + 1
         for x in 1...gtr
             fg = cursor[0] ? 'status_fg' : 'column_fg'
-            fg = 'status_empty' if cursor[1] < @state.s.lines.length and cursor[0] > @state.s.lines[cursor[1]].length
+            fg = 'status_empty' if util.isPosOutsideLines cursor @state.s.lines 
             sc x (x < colno.length ? colno[x-1] : ' ') fg 'status_dark'
 
         # draw the separator after the column number
@@ -42,37 +46,34 @@ function status
               
         # draw the dirty indicator
         
-        dirtyChar  = @state.isDirty() ? '' : ''
-        dirtyColor = @state.isDirty() ? 'status_fg' : 'status_dark'
-        sc gtr+1 dirtyChar dirtyColor 'status'
+        sc gtr+1 dty ? '' : '' dty ? 'status_fg' : 'status_dark' 'status'
         
         # draw the file name
         
         sc gtr+2 ' ' 'status_fg' 'status'
             
-        for x in gtr+3...gtr+1+@file.length+2
-            char = (x-gtr-3 < @file.length) ? @file[x-gtr-3] : ' '
+        for x in gtr+3...gtr+1+fnl+2
+            char = (x-gtr-3 < fnl) ? @file[x-gtr-3] : ' '
             sc x char 'status_fg' 'status'
              
         # draw the right edge of the file name section
         
-        sc gtr+3+@file.length '' 'status' 'status_dark'
+        sc gtr+3+fnl '' 'status' 'status_dark'
 
         # fill the remaining space
         
-        for x in gtr+4+@file.length...cols-1
+        for x in gtr+4+fnl...cols-1
             sc x ' ' null 'status_dark'
                 
         # draw the time if there's enough space
                 
-        dt = @drawTime
-        if cols-gtr+2+@file.length > dt.length+1
+        if cols-gtr+2+fnl > dtl+1
             
-            sc cols-dt.length-2 '' 'status' 'status_dark'
+            sc cols-dtl-2 '' 'status' 'status_dark'
             
-            for i in 0...dt.length
-                fg = i < dt.length-3 ? 'status_fg' : 'status_fg_dim'
-                sc cols-dt.length+i-1 dt[i] fg 'status'
+            for i in 0...dtl
+                fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
+                sc cols-dtl+i-1 dt[i] fg 'status'
         
         else
             sc cols-2 '' 'status' 'status_dark'
@@ -89,7 +90,7 @@ function status
              
             for i in 0...sel.length
                 fg = i < sel.length-4 ? 'status_sel' : 'status_fg_dim'
-                sc cols-dt.length+i-sel.length-3 sel[i] fg 'status_dark'
+                sc cols-dtl+i-sel.length-3 sel[i] fg 'status_dark'
             
 export status
 

@@ -186,6 +186,16 @@ class util
         return text.slice(0, -1)
     }
 
+    static isPosInsideLines (pos, lines)
+    {
+        return pos[1] < lines.length && (0 <= pos[0] && pos[0] <= lines[pos[1]].length)
+    }
+
+    static isPosOutsideLines (pos, lines)
+    {
+        return !util.isPosInsideLines(pos,lines)
+    }
+
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
     {
         var partialFirst, ri, rng

@@ -118,6 +118,9 @@ class util
             text += '\n'
         text[0...-1]
         
+    @isPosInsideLines:  pos lines -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
+    @isPosOutsideLines: pos lines -> not util.isPosInsideLines pos lines
+        
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
