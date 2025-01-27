@@ -24,6 +24,7 @@ function status
         fnl    = @file.length
         dt     = @drawTime
         dtl    = dt.length
+        rdo    = @state.hasRedo()
         dty    = @state.isDirty()
         
         sc = x char fg bg => @cells.set x y char color[fg] color[bg]
@@ -52,17 +53,22 @@ function status
         
         sc gtr+2 ' ' 'status_fg' 'status'
             
-        for x in gtr+3...gtr+1+fnl+2
+        for x in gtr+3...gtr+fnl+3
             char = (x-gtr-3 < fnl) ? @file[x-gtr-3] : ' '
             sc x char 'status_fg' 'status'
+            
+        # draw the redo indicator
+        
+        sc gtr+fnl+3 ' ' 'status_fg' 'status'
+        sc gtr+fnl+4 rdo ? '' : '' rdo ? 'status_fg' : 'status_dark' 'status'
              
         # draw the right edge of the file name section
         
-        sc gtr+3+fnl '' 'status' 'status_dark'
+        sc gtr+5+fnl '' 'status' 'status_dark'
 
         # fill the remaining space
         
-        for x in gtr+4+fnl...cols-1
+        for x in gtr+6+fnl...cols-1
             sc x ' ' null 'status_dark'
                 
         # draw the time if there's enough space

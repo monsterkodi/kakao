@@ -348,6 +348,13 @@ TTIO = (function ()
             else if (seq.startsWith('[27;9;') && seq.endsWith('~'))
             {
                 code = parseInt(seq.split(';').slice(-1)[0])
+                switch (code)
+                {
+                    case 90:
+                        return this.emit('key','shift+cmd+z')
+
+                }
+
                 return this.emit('key',`cmd+${String.fromCodePoint(code)}`)
             }
             else if (seq.startsWith('[27;5;') && seq.endsWith('~'))
@@ -749,7 +756,6 @@ TTIO = (function ()
                 }
 
             }).bind(this))()
-            lf('KEY',data.length,data,key)
             if (key)
             {
                 return this.emit('key',key)

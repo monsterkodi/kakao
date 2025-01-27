@@ -20,7 +20,7 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var char, colno, cols, cursor, dt, dtl, dty, fg, fnl, gtr, i, sc, sel, x, y
+        var char, colno, cols, cursor, dt, dtl, dty, fg, fnl, gtr, i, rdo, sc, sel, x, y
 
         y = this.cells.rows - 1
         gtr = this.state.s.gutter
@@ -29,6 +29,7 @@ status = (function ()
         fnl = this.file.length
         dt = this.drawTime
         dtl = dt.length
+        rdo = this.state.hasRedo()
         dty = this.state.isDirty()
         sc = (function (x, char, fg, bg)
         {
@@ -48,13 +49,15 @@ status = (function ()
         sc(gtr,'','status','status_dark')
         sc(gtr + 1,(dty ? '' : ''),(dty ? 'status_fg' : 'status_dark'),'status')
         sc(gtr + 2,' ','status_fg','status')
-        for (var _c_ = x = gtr + 3, _d_ = gtr + 1 + fnl + 2; (_c_ <= _d_ ? x < gtr + 1 + fnl + 2 : x > gtr + 1 + fnl + 2); (_c_ <= _d_ ? ++x : --x))
+        for (var _c_ = x = gtr + 3, _d_ = gtr + fnl + 3; (_c_ <= _d_ ? x < gtr + fnl + 3 : x > gtr + fnl + 3); (_c_ <= _d_ ? ++x : --x))
         {
             char = ((x - gtr - 3 < fnl) ? this.file[x - gtr - 3] : ' ')
             sc(x,char,'status_fg','status')
         }
-        sc(gtr + 3 + fnl,'','status','status_dark')
-        for (var _e_ = x = gtr + 4 + fnl, _f_ = cols - 1; (_e_ <= _f_ ? x < cols - 1 : x > cols - 1); (_e_ <= _f_ ? ++x : --x))
+        sc(gtr + fnl + 3,' ','status_fg','status')
+        sc(gtr + fnl + 4,(rdo ? '' : ''),(rdo ? 'status_fg' : 'status_dark'),'status')
+        sc(gtr + 5 + fnl,'','status','status_dark')
+        for (var _e_ = x = gtr + 6 + fnl, _f_ = cols - 1; (_e_ <= _f_ ? x < cols - 1 : x > cols - 1); (_e_ <= _f_ ? ++x : --x))
         {
             sc(x,' ',null,'status_dark')
         }

@@ -27,6 +27,13 @@ function state
         @r = []   # redo states
             
         @setCursor 0 0
+        
+    set: item args... =>
+        
+        @s = @s.set.apply @s [item].concat(args)
+        @h.pop()
+        @h.push @s
+        @s
     
     #  0000000  00000000  000000000  000      000  000   000  00000000   0000000  
     # 000       000          000     000      000  0000  000  000       000       
@@ -41,12 +48,49 @@ function state
         @s = @s.set 'gutter' @calcGutter(lines.length)
         @s = @s.set 'lines' lines        
         
+        @r = []
         @h.push @s
         
     loadLines: lines =>
         
+        @r = []
         @h = []
         @setLines lines
+        
+    # 000   000  000   000  0000000     0000000   
+    # 000   000  0000  000  000   000  000   000  
+    # 000   000  000 0 000  000   000  000   000  
+    # 000   000  000  0000  000   000  000   000  
+    #  0000000   000   000  0000000     0000000   
+    
+    undo: =>
+        
+        ⮐ if @h.length <= 1
+        @r.push @h.pop()
+        @s = @h[-1]
+        @syntax.setLines @s.lines.asMutable()
+        @updateCursor()
+        
+    redo: =>
+        
+        ⮐ if empty @r
+        @h.push @r.pop()
+        @s = @h[-1]
+        @syntax.setLines @s.lines.asMutable()
+        @updateCursor()
+        
+    begin: => @beginIndex = @h.length
+        
+    end: => 
+        
+        if valid @beginIndex
+            
+            @h.splice @beginIndex @h.length-@beginIndex-1
+    
+            delete @beginIndex
+        
+    isDirty: => @h.length > 1
+    hasRedo: => @r.length > 0
         
     #       000   0000000   000  000   000  
     #       000  000   000  000  0000  000  
@@ -69,29 +113,7 @@ function state
     calcGutter: numLines =>
         
         max 5 2 + Math.ceil(Math.log10(numLines+1))
-        
-    # 000   000  000   000  0000000     0000000   
-    # 000   000  0000  000  000   000  000   000  
-    # 000   000  000 0 000  000   000  000   000  
-    # 000   000  000  0000  000   000  000   000  
-    #  0000000   000   000  0000000     0000000   
-    
-    undo: =>
-        
-        ⮐ if @h.length <= 1
-        @r.push @h.pop()
-        @s = @h[-1]
-        @syntax.setLines @s.lines.asMutable()
-        
-    redo: =>
-        
-        ⮐ if empty @r
-        @s.push @r.pop()
-        @s = @h[-1]
-        @syntax.setLines @s.lines.asMutable()
-        
-    isDirty: => @h.length > 1
-        
+                
     #  0000000  000   000  000000000  
     # 000       000   000     000     
     # 000       000   000     000     
@@ -145,10 +167,12 @@ function state
         
         split = text.split /\r?\n/
         if split.length > 1
+            @begin()
             for s,i in split
                 @insert s
                 if i < split.length-1 or text != '\n'
                     @insertNewline()            
+            @end()
             ⮐ 
         
         x = @s.cursor[0]
@@ -236,7 +260,7 @@ function state
         
         [lines cursor] = util.deleteLinesRangesAndAdjustCursor lines selections cursor
                 
-        @s = @s.set 'selections' []
+        @deselect()
         @setLines lines
         @setCursor cursor[0] cursor[1]
         @
@@ -247,12 +271,14 @@ function state
     # 000       000   000  000   000       000  000   000  000   000  
     #  0000000   0000000   000   000  0000000    0000000   000   000  
     
+    updateCursor: => @cells.t.setCursor @s.cursor[0]-@s.view[0]+@s.gutter @s.cursor[1]-@s.view[1]
+    
     setCursor: x y =>
         
         y = clamp 0 @s.lines.length-1 y
         x = max 0 x
                         
-        @s = @s.set 'cursor' [x y]
+        @set 'cursor' [x y]
         
         view = @s.view.asMutable()
         
@@ -268,7 +294,7 @@ function state
             
         @setView view
             
-        @cells.t.setCursor x+@s.gutter y-@s.view[1]
+        @updateCursor()
         
     moveCursor: dir steps=1 =>
         
@@ -290,7 +316,7 @@ function state
         selection = [@s.cursor[0] @s.cursor[1] @s.cursor[0] @s.cursor[1]]
         selections.push selection 
         
-        @moveCursor dir 1 false
+        @moveCursor dir 1
         
         switch dir
             'left'  ➜ selection[0] = selection[0]-1
@@ -305,7 +331,7 @@ function state
         selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
         selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
         
-        @s = @s.set 'selections' util.mergeRanges(selections)
+        @set 'selections' util.mergeRanges(selections)
                     
         true
         
@@ -338,9 +364,9 @@ function state
         
         @cells.t.setCursor @s.cursor[0]+@s.gutter-@s.view[0] @s.cursor[1]-@s.view[1]
         
-    setView: view =>
-                
-        @s = @s.set 'view' view
+    setView: view => 
+    
+        @set 'view' view
                 
     rangeForVisibleLines: =>
         
@@ -371,7 +397,7 @@ function state
         
         selections.push [from[0] from[1] to[0] to[1]]
         
-        @s = @s.set 'selections' selections
+        @set 'selections' selections
         
         true
         
@@ -414,8 +440,6 @@ function state
     deselect: =>
         
         if valid @s.selections
-            @s = @s.set 'selections' []
-            ⮐ true
-        false
+            @set 'selections' []
                     
 export state

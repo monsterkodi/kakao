@@ -1,4 +1,4 @@
-var _k_ = {max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -30,6 +30,7 @@ state = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
+        this["updateCursor"] = this["updateCursor"].bind(this)
         this["deleteSelection"] = this["deleteSelection"].bind(this)
         this["delete"] = this["delete"].bind(this)
         this["insertNewline"] = this["insertNewline"].bind(this)
@@ -37,13 +38,17 @@ state = (function ()
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
-        this["isDirty"] = this["isDirty"].bind(this)
-        this["redo"] = this["redo"].bind(this)
-        this["undo"] = this["undo"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
         this["joinLines"] = this["joinLines"].bind(this)
+        this["hasRedo"] = this["hasRedo"].bind(this)
+        this["isDirty"] = this["isDirty"].bind(this)
+        this["end"] = this["end"].bind(this)
+        this["begin"] = this["begin"].bind(this)
+        this["redo"] = this["redo"].bind(this)
+        this["undo"] = this["undo"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
+        this["set"] = this["set"].bind(this)
         this.syntax = new syntax
         this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
         this.h = [this.s]
@@ -51,18 +56,76 @@ state = (function ()
         this.setCursor(0,0)
     }
 
+    state.prototype["set"] = function (item, ...args)
+    {
+        this.s = this.s.set.apply(this.s,[item].concat(args))
+        this.h.pop()
+        this.h.push(this.s)
+        return this.s
+    }
+
     state.prototype["setLines"] = function (lines)
     {
         this.syntax.setLines(lines)
         this.s = this.s.set('gutter',this.calcGutter(lines.length))
         this.s = this.s.set('lines',lines)
+        this.r = []
         return this.h.push(this.s)
     }
 
     state.prototype["loadLines"] = function (lines)
     {
+        this.r = []
         this.h = []
         return this.setLines(lines)
+    }
+
+    state.prototype["undo"] = function ()
+    {
+        if (this.h.length <= 1)
+        {
+            return
+        }
+        this.r.push(this.h.pop())
+        this.s = this.h.slice(-1)[0]
+        this.syntax.setLines(this.s.lines.asMutable())
+        return this.updateCursor()
+    }
+
+    state.prototype["redo"] = function ()
+    {
+        if (_k_.empty(this.r))
+        {
+            return
+        }
+        this.h.push(this.r.pop())
+        this.s = this.h.slice(-1)[0]
+        this.syntax.setLines(this.s.lines.asMutable())
+        return this.updateCursor()
+    }
+
+    state.prototype["begin"] = function ()
+    {
+        return this.beginIndex = this.h.length
+    }
+
+    state.prototype["end"] = function ()
+    {
+        if (!_k_.empty(this.beginIndex))
+        {
+            this.h.splice(this.beginIndex,this.h.length - this.beginIndex - 1)
+            return delete this.beginIndex
+        }
+    }
+
+    state.prototype["isDirty"] = function ()
+    {
+        return this.h.length > 1
+    }
+
+    state.prototype["hasRedo"] = function ()
+    {
+        return this.r.length > 0
     }
 
     state.prototype["joinLines"] = function ()
@@ -82,33 +145,6 @@ state = (function ()
     state.prototype["calcGutter"] = function (numLines)
     {
         return _k_.max(5,2 + Math.ceil(Math.log10(numLines + 1)))
-    }
-
-    state.prototype["undo"] = function ()
-    {
-        if (this.h.length <= 1)
-        {
-            return
-        }
-        this.r.push(this.h.pop())
-        this.s = this.h.slice(-1)[0]
-        return this.syntax.setLines(this.s.lines.asMutable())
-    }
-
-    state.prototype["redo"] = function ()
-    {
-        if (_k_.empty(this.r))
-        {
-            return
-        }
-        this.s.push(this.r.pop())
-        this.s = this.h.slice(-1)[0]
-        return this.syntax.setLines(this.s.lines.asMutable())
-    }
-
-    state.prototype["isDirty"] = function ()
-    {
-        return this.h.length > 1
     }
 
     state.prototype["cut"] = function ()
@@ -158,6 +194,7 @@ state = (function ()
         split = text.split(/\r?\n/)
         if (split.length > 1)
         {
+            this.begin()
             var list = _k_.list(split)
             for (i = 0; i < list.length; i++)
             {
@@ -168,6 +205,7 @@ state = (function ()
                     this.insertNewline()
                 }
             }
+            this.end()
             return
         }
         x = this.s.cursor[0]
@@ -256,10 +294,15 @@ state = (function ()
         selections = this.s.selections.asMutable()
         var _a_ = util.deleteLinesRangesAndAdjustCursor(lines,selections,cursor); lines = _a_[0]; cursor = _a_[1]
 
-        this.s = this.s.set('selections',[])
+        this.deselect()
         this.setLines(lines)
         this.setCursor(cursor[0],cursor[1])
         return this
+    }
+
+    state.prototype["updateCursor"] = function ()
+    {
+        return this.cells.t.setCursor(this.s.cursor[0] - this.s.view[0] + this.s.gutter,this.s.cursor[1] - this.s.view[1])
     }
 
     state.prototype["setCursor"] = function (x, y)
@@ -268,7 +311,7 @@ state = (function ()
 
         y = _k_.clamp(0,this.s.lines.length - 1,y)
         x = _k_.max(0,x)
-        this.s = this.s.set('cursor',[x,y])
+        this.set('cursor',[x,y])
         view = this.s.view.asMutable()
         if (y >= view[1] + this.cells.rows - 1)
         {
@@ -284,7 +327,7 @@ state = (function ()
         }
         view[0] = _k_.max(0,x - this.cells.cols + this.s.gutter + 1)
         this.setView(view)
-        return this.cells.t.setCursor(x + this.s.gutter,y - this.s.view[1])
+        return this.updateCursor()
     }
 
     state.prototype["moveCursor"] = function (dir, steps = 1)
@@ -324,7 +367,7 @@ state = (function ()
         selections = this.s.selections.asMutable()
         selection = [this.s.cursor[0],this.s.cursor[1],this.s.cursor[0],this.s.cursor[1]]
         selections.push(selection)
-        this.moveCursor(dir,1,false)
+        this.moveCursor(dir,1)
         switch (dir)
         {
             case 'left':
@@ -357,7 +400,7 @@ state = (function ()
 
         selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
         selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
-        this.s = this.s.set('selections',util.mergeRanges(selections))
+        this.set('selections',util.mergeRanges(selections))
         return true
     }
 
@@ -393,7 +436,7 @@ state = (function ()
 
     state.prototype["setView"] = function (view)
     {
-        return this.s = this.s.set('view',view)
+        return this.set('view',view)
     }
 
     state.prototype["rangeForVisibleLines"] = function ()
@@ -422,7 +465,7 @@ state = (function ()
         to[0] = _k_.clamp(0,this.s.lines[to[1]].length,to[0])
         from[0] = _k_.clamp(0,this.s.lines[from[1]].length,from[0])
         selections.push([from[0],from[1],to[0],to[1]])
-        this.s = this.s.set('selections',selections)
+        this.set('selections',selections)
         return true
     }
 
@@ -484,10 +527,8 @@ state = (function ()
     {
         if (!_k_.empty(this.s.selections))
         {
-            this.s = this.s.set('selections',[])
-            return true
+            return this.set('selections',[])
         }
-        return false
     }
 
     return state

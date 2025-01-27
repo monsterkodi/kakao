@@ -108,6 +108,8 @@ function TTIO extends events
             
             seq = data[1..].toString 'utf8'
             
+            # lf seq
+            
             if seq == '[200~'
                 @pasteBuffer = ''
                 ⮐
@@ -191,6 +193,10 @@ function TTIO extends events
             else if seq.startsWith('[27;9;') and seq.endsWith('~')
                 
                 code = parseInt seq.split(';')[-1]
+                
+                switch code
+                    90 ➜ ⮐ @emit 'key' 'shift+cmd+z'
+                
                 @emit 'key' "cmd+#{String.fromCodePoint code}"
 
             else if seq.startsWith('[27;5;') and seq.endsWith('~')
@@ -351,7 +357,7 @@ function TTIO extends events
                 
                     ➜ key
                             
-            lf 'KEY' data.length data key
+            # lf 'KEY' data.length data key
                         
             if key 
                 @emit 'key' key
