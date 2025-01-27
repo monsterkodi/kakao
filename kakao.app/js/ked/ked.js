@@ -39,6 +39,7 @@ KED = (function ()
         this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
+        this["joinLines"] = this["joinLines"].bind(this)
         this["delete"] = this["delete"].bind(this)
         this["insert"] = this["insert"].bind(this)
         this["paste"] = this["paste"].bind(this)
@@ -145,6 +146,12 @@ KED = (function ()
     KED.prototype["delete"] = function (type)
     {
         this.state.delete(type)
+        return this.redraw()
+    }
+
+    KED.prototype["joinLines"] = function ()
+    {
+        this.state.joinLines()
         return this.redraw()
     }
 
@@ -398,15 +405,6 @@ KED = (function ()
             case 'shift+ctrl+j':
                 return this.moveCursorAndSelect('eof')
 
-            case 'return':
-                return this.insert('\n')
-
-            case 'space':
-                return this.insert(' ')
-
-            case 'tab':
-                return this.insert('    ')
-
             case 'ctrl+k':
                 return this.delete('eol')
 
@@ -432,6 +430,9 @@ KED = (function ()
             case 'cmd+v':
             case 'ctrl+v':
                 return this.paste()
+
+            case 'cmd+j':
+                return this.joinLines()
 
             case 'shift+up':
                 return this.moveCursorAndSelect('up')

@@ -137,7 +137,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, row, seq, text, x, y, _96_23_
+        var code, col, key, modc, mods, row, seq, text, x, y, _96_23_
 
         if ((this.pasteBuffer != null))
         {
@@ -355,6 +355,54 @@ TTIO = (function ()
                 code = 32 + parseInt(seq.split(';').slice(-1)[0])
                 return this.emit('key',`shift+ctrl+${String.fromCodePoint(code)}`)
             }
+            else if (seq.startsWith('[27;') && seq.endsWith('~'))
+            {
+                code = parseInt(seq.split(';').slice(-1)[0])
+                modc = parseInt(seq.split(';').slice(-2,-1)[0])
+                mods = ((function ()
+                {
+                    switch (modc)
+                    {
+                        case 4:
+                            return 'shift+alt'
+
+                        case 6:
+                            return 'shift+ctrl'
+
+                        case 7:
+                            return 'ctrl+alt'
+
+                        case 8:
+                            return 'shift+ctrl+alt'
+
+                        case 10:
+                            return 'shift+cmd'
+
+                        case 11:
+                            return 'alt+cmd'
+
+                        case 12:
+                            return 'shift+alt+cmd'
+
+                        case 13:
+                            return 'ctrl+cmd'
+
+                        case 14:
+                            return 'shift+ctrl+cmd'
+
+                        default:
+                            return 'alt'
+                    }
+
+                }).bind(this))()
+                switch (code)
+                {
+                    case 127:
+                        return this.emit('key',mods + '+delete')
+
+                }
+
+            }
             else if (seq.startsWith('['))
             {
                 switch (seq[1])
@@ -488,6 +536,16 @@ TTIO = (function ()
             }
             else
             {
+                if (data.length === 2)
+                {
+                    switch (data[1])
+                    {
+                        case 0x15:
+                            return this.emit('key','cmd+delete')
+
+                    }
+
+                }
                 switch (seq[0])
                 {
                     case 'b':
@@ -511,17 +569,17 @@ TTIO = (function ()
             }
             switch (data[0])
             {
+                case 0x09:
+                    return this.emit('key','\t')
+
                 case 0x0d:
                     return this.emit('key','\n')
 
+                case 0x20:
+                    return this.emit('key',' ')
+
                 case 0x7f:
                     return this.emit('key','delete')
-
-                case 0x20:
-                    return this.emit('key','space')
-
-                case 0x09:
-                    return this.emit('key','tab')
 
             }
 

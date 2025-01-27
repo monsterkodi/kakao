@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -38,6 +38,7 @@ state = (function ()
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
+        this["joinLines"] = this["joinLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this.syntax = new syntax
         this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
@@ -51,9 +52,23 @@ state = (function ()
         return this.s = this.s.set('lines',lines)
     }
 
+    state.prototype["joinLines"] = function ()
+    {
+        var lines
+
+        if (this.s.cursor[1] >= this.s.lines.length - 1)
+        {
+            return
+        }
+        lines = this.s.lines.asMutable()
+        this.setCursor(lines[this.s.cursor[1]].length,this.s.cursor[1])
+        lines.splice(this.s.cursor[1],2,lines[this.s.cursor[1]] + lines[this.s.cursor[1] + 1])
+        return this.setLines(lines)
+    }
+
     state.prototype["calcGutter"] = function (numLines)
     {
-        return 2 + Math.ceil(Math.log10(numLines))
+        return _k_.max(4,2 + Math.ceil(Math.log10(numLines + 1)))
     }
 
     state.prototype["cut"] = function ()
@@ -96,6 +111,10 @@ state = (function ()
     {
         var i, line, lines, s, split, x, y
 
+        if (text === '\t')
+        {
+            text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
+        }
         split = text.split(/\r?\n/)
         if (split.length > 1)
         {
@@ -342,6 +361,8 @@ state = (function ()
             var _b_ = [to,from]; from = _b_[0]; to = _b_[1]
 
         }
+        to[1] = _k_.clamp(0,this.s.lines.length - 1,to[1])
+        from[1] = _k_.clamp(0,this.s.lines.length - 1,from[1])
         to[0] = _k_.clamp(0,this.s.lines[to[1]].length,to[0])
         from[0] = _k_.clamp(0,this.s.lines[from[1]].length,from[0])
         selections.push([from[0],from[1],to[0],to[1]])

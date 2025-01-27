@@ -71,8 +71,7 @@ scroll = (function ()
             view[1] = _k_.min(maxY,view[1])
         }
         view[1] = _k_.max(0,view[1])
-        lf('scrollTo',view)
-        this.state.s = this.state.s.set('view',view)
+        this.state.setView(view)
         return true
     }
 
@@ -89,7 +88,7 @@ scroll = (function ()
         ne = kp + kh
         for (var _a_ = row = 0, _b_ = rows - 1; (_a_ <= _b_ ? row < rows - 1 : row > rows - 1); (_a_ <= _b_ ? ++row : --row))
         {
-            bg = lnum < rows ? color.gutter : row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.scroll : color.gutter
+            bg = lnum < rows ? color.gutter : row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.gutter : color.gutter
             this.cells.c[row][0].bg = bg
             this.cells.c[row][0].char = ' '
         }

@@ -67,9 +67,7 @@ function scroll
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
         
-        lf 'scrollTo' view
-        
-        @state.s = @state.s.set 'view' view
+        @state.setView view
         
         true
         
@@ -96,7 +94,7 @@ function scroll
                 lnum < rows     ➜ color.gutter
                 row == nc       ➜ @hover ? color.scroll_doth : color.scroll_dot
                 ns <= row <= ne ➜ @hover ? color.scroll_knob : color.scroll
-                @hover          ➜ color.scroll
+                @hover          ➜ color.gutter
                                 ➜ color.gutter
                         
             @cells.c[row][0].bg = bg

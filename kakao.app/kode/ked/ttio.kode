@@ -110,8 +110,8 @@ function TTIO extends events
             
             if seq == '[200~'
                 @pasteBuffer = ''
-                ⮐ 
-            
+                ⮐
+                            
             if seq.startsWith '[<'
                 
                 [code col row] = seq[2..-2].split(';').map (s) -> parseInt s
@@ -197,6 +197,25 @@ function TTIO extends events
                 
                 code = 32 + parseInt(seq.split(';')[-1])
                 @emit 'key' "shift+ctrl+#{String.fromCodePoint code}"
+                
+            else if seq.startsWith('[27;') and seq.endsWith('~')
+                
+                code = parseInt(seq.split(';')[-1])
+                modc = parseInt(seq.split(';')[-2])
+                mods = switch modc
+                    4   ➜ 'shift+alt'
+                    6   ➜ 'shift+ctrl' 
+                    7   ➜ 'ctrl+alt' 
+                    8   ➜ 'shift+ctrl+alt' 
+                    10  ➜ 'shift+cmd'
+                    11  ➜ 'alt+cmd'
+                    12  ➜ 'shift+alt+cmd'
+                    13  ➜ 'ctrl+cmd'
+                    14  ➜ 'shift+ctrl+cmd'
+                        ➜ 'alt'
+                
+                switch code
+                    127 ➜ ⮐ @emit 'key' mods+'+delete' 
                                 
             else if seq.startsWith '['
                 
@@ -247,6 +266,10 @@ function TTIO extends events
             else if data.length == 1
                 ⮐ @emit 'key' 'esc'  
             else
+                if data.length == 2
+                    switch data[1]
+                        0x15 ➜ ⮐ @emit 'key' 'cmd+delete'
+                        
                 switch seq[0]
                     'b' ➜ ⮐ @emit 'key' 'alt+left'
                     'f' ➜ ⮐ @emit 'key' 'alt+right'
@@ -261,10 +284,10 @@ function TTIO extends events
                 ⮐ @emit 'paste' text
                         
             switch data[0]
+                0x09 ➜ ⮐ @emit 'key' '\t'
                 0x0d ➜ ⮐ @emit 'key' '\n' 
+                0x20 ➜ ⮐ @emit 'key' ' '
                 0x7f ➜ ⮐ @emit 'key' 'delete' 
-                0x20 ➜ ⮐ @emit 'key' 'space'
-                0x09 ➜ ⮐ @emit 'key' 'tab'
                 
             key = if
                 0x1 <= data[0] <= 0x1a ➜ "ctrl+#{String.fromCodePoint 96+data[0]}"

@@ -18,11 +18,9 @@ function syntax
         
     setLines: lines =>
         
-        # start = process.hrtime()
-        
         @diss = kolor.dissect lines @ext
-         
-        # dissTime = kstr.time(BigInt(process.hrtime(start)[1]))
+
+        # lf noon(@diss)
         
     updateLines: lines changedLineIndices =>
 

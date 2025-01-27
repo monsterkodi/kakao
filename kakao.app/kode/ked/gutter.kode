@@ -22,20 +22,25 @@ function gutter
                 @cells.c[row][@state.s.gutter-1].bg = color.gutter
             
             y = @state.s.view[1] + row
-            lineno = lpad @state.s.gutter-2 y + 1
+            lineno = lpad @state.s.gutter-2 y+1
+            lineno += ' '
             
             for c,i in lineno
                 
                 col = i+1
                 if col < @cells.t.cols()
                     
-                    clr = if
+                    fg = if
                         y == @state.s.cursor[1] ➜ color.cursor
                         @state.isSelectedLine y ➜ color.selection
                                                 ➜ color.linenr
+                                                
+                    bg = if 
+                        @state.isSelectedLine y ➜ color.gutter_sel
+                                                ➜ color.gutter
                     
-                    @cells.c[row][col].bg   = color.gutter
-                    @cells.c[row][col].fg   = clr
+                    @cells.c[row][col].bg   = bg
+                    @cells.c[row][col].fg   = fg
                     @cells.c[row][col].char = y < @state.s.lines.length ? c : ' '
 
 export gutter

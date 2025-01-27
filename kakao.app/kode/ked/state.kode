@@ -37,9 +37,21 @@ function state
         @s = @s.set 'gutter' @calcGutter(lines.length)
         @s = @s.set 'lines' lines        
         
+    joinLines: =>
+        
+        ⮐ if @s.cursor[1] >= @s.lines.length-1
+        
+        lines = @s.lines.asMutable()
+        
+        @setCursor lines[@s.cursor[1]].length @s.cursor[1]
+        
+        lines.splice @s.cursor[1] 2 lines[@s.cursor[1]] + lines[@s.cursor[1]+1]
+        
+        @setLines lines
+        
     calcGutter: numLines =>
         
-        2 + Math.ceil(Math.log10(numLines))
+        max 4 2 + Math.ceil(Math.log10(numLines+1))
         
     #  0000000  000   000  000000000  
     # 000       000   000     000     
@@ -88,6 +100,9 @@ function state
     # 000  000   000  0000000   00000000  000   000     000     
     
     insert: text =>
+        
+        if text == '\t'
+            text = lpad 4-@s.cursor[0]%4 ' '
         
         split = text.split /\r?\n/
         if split.length > 1
@@ -299,9 +314,12 @@ function state
         else if from[1] == to[1] and from[0] > to[0]
             [from to] = [to from]
 
+        to[1]   = clamp 0 @s.lines.length-1 to[1]
+        from[1] = clamp 0 @s.lines.length-1 from[1]
+            
         to[0]   = clamp 0 @s.lines[to[1]].length to[0]
         from[0] = clamp 0 @s.lines[from[1]].length from[0]
-                
+        
         selections.push [from[0] from[1] to[0] to[1]]
         
         @s = @s.set 'selections' selections

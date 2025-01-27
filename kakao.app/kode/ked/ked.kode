@@ -84,6 +84,12 @@ function KED
         
         @loadFile @status.file
         
+    #  0000000  000   000  000000000  
+    # 000       000   000     000     
+    # 000       000   000     000     
+    # 000       000   000     000     
+    #  0000000   0000000      000     
+    
     cut: =>
         
         @state.cut()
@@ -109,9 +115,26 @@ function KED
         @state.insert text
         @redraw()
         
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
     delete: type =>
         
         @state.delete type
+        @redraw()
+        
+    #       000   0000000   000  000   000  
+    #       000  000   000  000  0000  000  
+    #       000  000   000  000  000 0 000  
+    # 000   000  000   000  000  000  0000  
+    #  0000000    0000000   000  000   000  
+    
+    joinLines: =>
+        
+        @state.joinLines()
         @redraw()
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
@@ -303,9 +326,7 @@ function KED
             'shift+ctrl+h'      ➜ ⮐ @moveCursorAndSelect 'bof'
             'shift+ctrl+j'      ➜ ⮐ @moveCursorAndSelect 'eof'
             
-            'return'            ➜ ⮐ @insert '\n'
-            'space'             ➜ ⮐ @insert ' '
-            'tab'               ➜ ⮐ @insert '    '
+            # '\t'                ➜ ⮐ @insert '    '
             'ctrl+k'            ➜ ⮐ @delete 'eol'
             'delete'            ➜ ⮐ @delete 'back'
             
@@ -324,6 +345,8 @@ function KED
             'alt+v'
             'cmd+v'
             'ctrl+v'            ➜ ⮐ @paste()
+            
+            'cmd+j'             ➜ ⮐ @joinLines()
             
             'shift+up'          ➜ ⮐ @moveCursorAndSelect 'up'
             'shift+down'        ➜ ⮐ @moveCursorAndSelect 'down'

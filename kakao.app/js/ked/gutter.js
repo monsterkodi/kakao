@@ -17,7 +17,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var c, clr, col, i, lineno, row, y
+        var bg, c, col, fg, i, lineno, row, y
 
         for (var _a_ = row = 0, _b_ = this.cells.t.rows() - 1; (_a_ <= _b_ ? row < this.cells.t.rows() - 1 : row > this.cells.t.rows() - 1); (_a_ <= _b_ ? ++row : --row))
         {
@@ -27,6 +27,7 @@ gutter = (function ()
             }
             y = this.state.s.view[1] + row
             lineno = _k_.lpad(this.state.s.gutter - 2,y + 1)
+            lineno += ' '
             var list = _k_.list(lineno)
             for (i = 0; i < list.length; i++)
             {
@@ -34,9 +35,10 @@ gutter = (function ()
                 col = i + 1
                 if (col < this.cells.t.cols())
                 {
-                    clr = y === this.state.s.cursor[1] ? color.cursor : this.state.isSelectedLine(y) ? color.selection : color.linenr
-                    this.cells.c[row][col].bg = color.gutter
-                    this.cells.c[row][col].fg = clr
+                    fg = y === this.state.s.cursor[1] ? color.cursor : this.state.isSelectedLine(y) ? color.selection : color.linenr
+                    bg = this.state.isSelectedLine(y) ? color.gutter_sel : color.gutter
+                    this.cells.c[row][col].bg = bg
+                    this.cells.c[row][col].fg = fg
                     this.cells.c[row][col].char = (y < this.state.s.lines.length ? c : ' ')
                 }
             }
