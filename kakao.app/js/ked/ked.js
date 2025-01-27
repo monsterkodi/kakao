@@ -411,6 +411,9 @@ KED = (function ()
             case 'delete':
                 return this.delete('back')
 
+            case 'cmd+delete':
+                return this.delete('back','cmd')
+
             case 'alt+q':
             case 'ctrl+d':
             case 'ctrl+q':

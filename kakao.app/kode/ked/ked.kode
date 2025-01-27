@@ -326,9 +326,9 @@ function KED
             'shift+ctrl+h'      ➜ ⮐ @moveCursorAndSelect 'bof'
             'shift+ctrl+j'      ➜ ⮐ @moveCursorAndSelect 'eof'
             
-            # '\t'                ➜ ⮐ @insert '    '
             'ctrl+k'            ➜ ⮐ @delete 'eol'
             'delete'            ➜ ⮐ @delete 'back'
+            'cmd+delete'        ➜ ⮐ @delete 'back' 'cmd'
             
             'alt+q'         
             'ctrl+d'         

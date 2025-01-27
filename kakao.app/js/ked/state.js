@@ -160,10 +160,15 @@ state = (function ()
         return this.setCursor(x,y)
     }
 
-    state.prototype["delete"] = function (type)
+    state.prototype["delete"] = function (type, mods)
     {
         var line, lines, x, y
 
+        if (type === 'back' && !_k_.empty(this.s.selections))
+        {
+            this.deleteSelection()
+            return
+        }
         x = this.s.cursor[0]
         y = this.s.cursor[1]
         lines = this.s.lines.asMutable()
@@ -174,7 +179,14 @@ state = (function ()
                 line = line.slice(0, typeof x === 'number' ? x : -1)
                 break
             case 'back':
-                line = kstr.splice(line,x - 1,1)
+                if (mods === 'cmd')
+                {
+                    line = kstr.splice(line,x - 1,1)
+                }
+                else
+                {
+                    line = kstr.splice(line,x - 1,1)
+                }
                 break
         }
 
@@ -195,6 +207,10 @@ state = (function ()
     {
         var cursor, lines, selections
 
+        if (_k_.empty(this.s.selections))
+        {
+            return
+        }
         cursor = this.s.cursor.asMutable()
         lines = this.s.lines.asMutable()
         selections = this.s.selections.asMutable()

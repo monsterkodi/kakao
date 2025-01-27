@@ -157,7 +157,11 @@ function state
     # 000   000  000       000      000          000     000       
     # 0000000    00000000  0000000  00000000     000     00000000  
     
-    delete: type =>
+    delete: type mods =>
+        
+        if type == 'back' and valid @s.selections
+            @deleteSelection()
+            ⮐ 
 
         x = @s.cursor[0]
         y = @s.cursor[1]
@@ -167,7 +171,11 @@ function state
         
         switch type
             'eol'  ➜ line = line[0...x]
-            'back' ➜ line = kstr.splice line x-1 1
+            'back' 
+                if mods == 'cmd'
+                    line = kstr.splice line x-1 1
+                else
+                    line = kstr.splice line x-1 1
             
         lines.splice y 1 line
             
@@ -180,6 +188,8 @@ function state
         @
                 
     deleteSelection: =>
+        
+        ⮐ if empty @s.selections
         
         cursor      = @s.cursor.asMutable()
         lines       = @s.lines.asMutable()
