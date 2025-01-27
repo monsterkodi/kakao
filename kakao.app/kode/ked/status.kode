@@ -20,57 +20,74 @@ function status
         y = @cells.t.rows()-1
         gutter = @state.s.gutter
         cursor = @state.s.cursor
-        cols = @cells.cols
+        cols   = @cells.cols
         
-        @cells.set 0 y '' color.status_dark color.gutter
+        sc = x char fg bg => @cells.set x y char fg bg
+        
+        # draw the left edge of the status bar
+        
+        sc 0 '' color.status_dark color.gutter
+        
+        # draw the column number
         
         colno = rpad gutter-1 cursor[0] + 1
         for x in 1...gutter
             fg = cursor[0] ? color.status_fg : color.column_fg
-            if cursor[1] < @state.s.lines.length
-                if cursor[0] > @state.s.lines[cursor[1]].length
-                    fg = color.status_empty
-            @cells.set x y (x < colno.length ? colno[x-1] : ' ') fg color.status_dark
-                
-        x = gutter
-        @cells.set x y '' color.status color.status_dark
-                
-        if @state.isDirty()
-            @cells.set gutter+1 y '' color.status_fg color.status
-        else
-            @cells.set gutter+1 y '' color.status_dark color.status
+            if cursor[1] < @state.s.lines.length and cursor[0] > @state.s.lines[cursor[1]].length
+                fg = color.status_empty
+            sc x (x < colno.length ? colno[x-1] : ' ') fg color.status_dark
+
+        # draw the separator after the column number
             
+        sc gutter '' color.status color.status_dark
+              
+        # draw the dirty indicator
+        
+        dirtyChar  = @state.isDirty() ? '' : ''
+        dirtyColor = @state.isDirty() ? color.status_fg : color.status_dark
+        sc gutter+1 dirtyChar dirtyColor color.status
+        
+        # draw the file name
+        
         @cells.set gutter+2 y ' ' color.status_fg color.status
             
         for x in gutter+3...gutter+1+@file.length+2
             char = (x-gutter-3 < @file.length) ? @file[x-gutter-3] : ' '
-            @cells.set x y char color.status_fg color.status
-                
-        x = gutter+3+@file.length
-        @cells.set x y '' color.status color.status_dark
+            sc x char color.status_fg color.status
+             
+        # draw the right edge of the file name section
+        
+        sc gutter+3+@file.length '' color.status color.status_dark
 
+        # fill the remaining space
+        
         for x in gutter+4+@file.length...cols-1
-            @cells.set x y ' ' null color.status_dark
+            sc x ' ' null color.status_dark
                 
         @cells.c[y][cols-1].bg = color.status_dark
+        
+        # draw the time if there's enough space
                 
         if valid @drawTime and cols-gutter+2+@file.length > @drawTime.length+1
             
             x = cols-@drawTime.length-2
-            @cells.set x y '' color.status color.status_dark
+            sc x '' color.status color.status_dark
             
             for i in 0...@drawTime.length
                 x = cols-@drawTime.length+i-1
                 fg = i < @drawTime.length-3 ? color.status_fg : color.status_fg_dim
-                @cells.set x y @drawTime[i] fg color.status
+                sc x @drawTime[i] fg color.status
         
         else
             x = cols-2
-            @cells.set x y '' color.status color.status_dark
-                
-        x = cols-1
-        @cells.set x y '' color.status color.editor_empty
+            sc x '' color.status color.status_dark
+
+        # draw the final edge of the status bar
+        
+        sc cols-1 '' color.status color.editor_empty
             
+        # draw the selection count if there are selections
+        
         if @state.s.selections.length
 
             sel = "#{@state.s.selections.length} sel"
@@ -78,7 +95,7 @@ function status
             for i in 0...sel.length
                 x = cols-@drawTime.length+i-sel.length-3
                 fg = i < sel.length-4 ? color.status_sel : color.status_fg_dim
-                @cells.set x y sel[i] fg color.status_dark
+                sc x sel[i] fg color.status_dark
             
 export status
 
