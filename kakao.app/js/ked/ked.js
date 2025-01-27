@@ -42,6 +42,8 @@ KED = (function ()
         this["joinLines"] = this["joinLines"].bind(this)
         this["delete"] = this["delete"].bind(this)
         this["insert"] = this["insert"].bind(this)
+        this["redo"] = this["redo"].bind(this)
+        this["undo"] = this["undo"].bind(this)
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
@@ -144,6 +146,18 @@ KED = (function ()
     KED.prototype["paste"] = function ()
     {
         this.state.paste()
+        return this.redraw()
+    }
+
+    KED.prototype["undo"] = function ()
+    {
+        this.state.undo()
+        return this.redraw()
+    }
+
+    KED.prototype["redo"] = function ()
+    {
+        this.state.redo()
         return this.redraw()
     }
 
@@ -409,6 +423,8 @@ KED = (function ()
                 return this.setCursor(0,0)
 
             case 'ctrl+j':
+                return this.setCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
+
             case 'shift+ctrl+h':
                 return this.moveCursorAndSelect('bof')
 
@@ -438,6 +454,13 @@ KED = (function ()
             case 'cmd+x':
             case 'ctrl+x':
                 return this.cut()
+
+            case 'cmd+z':
+                return this.undo()
+
+            case 'cmd+y':
+            case 'shift+cmd+z':
+                return this.redo()
 
             case 'alt+v':
             case 'cmd+v':
@@ -486,7 +509,6 @@ KED = (function ()
 
     KED.prototype["onPaste"] = function (text)
     {
-        lf(`onPaste ${text.length} >>>${text}<<<`)
         return this.insert(text)
     }
 

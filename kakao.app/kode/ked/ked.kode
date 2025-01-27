@@ -118,6 +118,16 @@ function KED
         @state.paste()
         @redraw()
         
+    undo: =>
+        
+        @state.undo()
+        @redraw()
+        
+    redo: =>
+        
+        @state.redo()
+        @redraw()
+        
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
     # 000  000 0 000  0000000   0000000   0000000       000     
@@ -336,7 +346,7 @@ function KED
             'ctrl+a'            ➜ ⮐ @setCursor 0 @state.s.cursor[1]
             'ctrl+e'            ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
             'ctrl+h'            ➜ ⮐ @setCursor 0 0
-            'ctrl+j'
+            'ctrl+j'            ➜ ⮐ @setCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             'shift+ctrl+h'      ➜ ⮐ @moveCursorAndSelect 'bof'
             'shift+ctrl+j'      ➜ ⮐ @moveCursorAndSelect 'eof'
             
@@ -354,7 +364,11 @@ function KED
 
             'alt+x'
             'cmd+x'
-            'ctrl+x'            ➜ ⮐ @cut()        
+            'ctrl+x'            ➜ ⮐ @cut()     
+            
+            'cmd+z'             ➜ ⮐ @undo()
+            'cmd+y'
+            'shift+cmd+z'       ➜ ⮐ @redo()
             
             'alt+v'
             'cmd+v'
@@ -382,7 +396,7 @@ function KED
         
     onPaste: text =>
         
-        lf "onPaste #{text.length} >>>#{text}<<<" 
+        # lf "onPaste #{text.length} >>>#{text}<<<" 
         @insert text
         
     onResize: cols rows => @redraw()

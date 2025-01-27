@@ -23,7 +23,8 @@ function state
             view:        [0 0]
             gutter:      @calcGutter(1)
             
-        @h = [@s]
+        @h = [@s] # undo states (history)
+        @r = []   # redo states
             
         @setCursor 0 0
     
@@ -36,6 +37,7 @@ function state
     setLines: lines =>
         
         @syntax.setLines lines
+        
         @s = @s.set 'gutter' @calcGutter(lines.length)
         @s = @s.set 'lines' lines        
         
@@ -46,6 +48,12 @@ function state
         @h = []
         @setLines lines
         
+    #       000   0000000   000  000   000  
+    #       000  000   000  000  0000  000  
+    #       000  000   000  000  000 0 000  
+    # 000   000  000   000  000  000  0000  
+    #  0000000    0000000   000  000   000  
+    
     joinLines: =>
         
         ⮐ if @s.cursor[1] >= @s.lines.length-1
@@ -61,6 +69,26 @@ function state
     calcGutter: numLines =>
         
         max 5 2 + Math.ceil(Math.log10(numLines+1))
+        
+    # 000   000  000   000  0000000     0000000   
+    # 000   000  0000  000  000   000  000   000  
+    # 000   000  000 0 000  000   000  000   000  
+    # 000   000  000  0000  000   000  000   000  
+    #  0000000   000   000  0000000     0000000   
+    
+    undo: =>
+        
+        ⮐ if @h.length <= 1
+        @r.push @h.pop()
+        @s = @h[-1]
+        @syntax.setLines @s.lines.asMutable()
+        
+    redo: =>
+        
+        ⮐ if empty @r
+        @s.push @r.pop()
+        @s = @h[-1]
+        @syntax.setLines @s.lines.asMutable()
         
     isDirty: => @h.length > 1
         

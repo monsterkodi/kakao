@@ -38,6 +38,8 @@ state = (function ()
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
         this["isDirty"] = this["isDirty"].bind(this)
+        this["redo"] = this["redo"].bind(this)
+        this["undo"] = this["undo"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
         this["joinLines"] = this["joinLines"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
@@ -45,6 +47,7 @@ state = (function ()
         this.syntax = new syntax
         this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
         this.h = [this.s]
+        this.r = []
         this.setCursor(0,0)
     }
 
@@ -79,6 +82,28 @@ state = (function ()
     state.prototype["calcGutter"] = function (numLines)
     {
         return _k_.max(5,2 + Math.ceil(Math.log10(numLines + 1)))
+    }
+
+    state.prototype["undo"] = function ()
+    {
+        if (this.h.length <= 1)
+        {
+            return
+        }
+        this.r.push(this.h.pop())
+        this.s = this.h.slice(-1)[0]
+        return this.syntax.setLines(this.s.lines.asMutable())
+    }
+
+    state.prototype["redo"] = function ()
+    {
+        if (_k_.empty(this.r))
+        {
+            return
+        }
+        this.s.push(this.r.pop())
+        this.s = this.h.slice(-1)[0]
+        return this.syntax.setLines(this.s.lines.asMutable())
     }
 
     state.prototype["isDirty"] = function ()

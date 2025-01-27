@@ -20,7 +20,7 @@ function syntax
         
         @diss = kolor.dissect lines @ext
 
-        lf noon(@diss)
+        # lf noon(@diss)
         
     updateLines: lines changedLineIndices =>
 
