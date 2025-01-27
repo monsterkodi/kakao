@@ -23,6 +23,8 @@ function state
             view:        [0 0]
             gutter:      @calcGutter(1)
             
+        @h = [@s]
+            
         @setCursor 0 0
     
     #  0000000  00000000  000000000  000      000  000   000  00000000   0000000  
@@ -36,6 +38,13 @@ function state
         @syntax.setLines lines
         @s = @s.set 'gutter' @calcGutter(lines.length)
         @s = @s.set 'lines' lines        
+        
+        @h.push @s
+        
+    loadLines: lines =>
+        
+        @h = []
+        @setLines lines
         
     joinLines: =>
         
@@ -51,7 +60,9 @@ function state
         
     calcGutter: numLines =>
         
-        max 4 2 + Math.ceil(Math.log10(numLines+1))
+        max 5 2 + Math.ceil(Math.log10(numLines+1))
+        
+    isDirty: => @h.length > 1
         
     #  0000000  000   000  000000000  
     # 000       000   000     000     

@@ -45,6 +45,7 @@ KED = (function ()
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
+        this["saveFile"] = this["saveFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this.t = new ttio
@@ -110,7 +111,7 @@ KED = (function ()
         text = await nfs.read(slash.untilde(p))
         lines = text.split(/\r?\n/)
         this.state.syntax.ext = slash.ext(p)
-        this.state.setLines(lines)
+        this.state.loadLines(lines)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         return this.redraw()
     }
@@ -118,6 +119,15 @@ KED = (function ()
     KED.prototype["reloadFile"] = function ()
     {
         return this.loadFile(this.status.file)
+    }
+
+    KED.prototype["saveFile"] = async function ()
+    {
+        var text
+
+        text = this.state.s.lines.asMutable().join('\n')
+        await nfs.write(slash.untilde(this.status.file),text)
+        return this.reloadFile()
     }
 
     KED.prototype["cut"] = function ()
@@ -459,6 +469,10 @@ KED = (function ()
             case 'ctrl+r':
             case 'cmd+r':
                 return this.reloadFile()
+
+            case 'ctrl+s':
+            case 'cmd+s':
+                return this.saveFile()
 
             case 'esc':
                 this.state.deselect()

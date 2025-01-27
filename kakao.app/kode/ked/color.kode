@@ -107,6 +107,7 @@ class color
         'punct string double triple':           '#00dd00'
         'comment triple header':                '#00cc00'
         'module require string':                '#00cc00'
+        'string double triple':                 '#00cc00'
         'string double':                        '#00bb00'
         'string single':                        '#00aa00'
         'punct dictionary':                     '#009900'
