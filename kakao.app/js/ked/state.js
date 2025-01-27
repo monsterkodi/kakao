@@ -46,6 +46,8 @@ state = (function ()
         this["begin"] = this["begin"].bind(this)
         this["redo"] = this["redo"].bind(this)
         this["undo"] = this["undo"].bind(this)
+        this["isInvalidLineIndex"] = this["isInvalidLineIndex"].bind(this)
+        this["isValidLineIndex"] = this["isValidLineIndex"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
@@ -78,6 +80,16 @@ state = (function ()
         this.r = []
         this.h = []
         return this.setLines(lines)
+    }
+
+    state.prototype["isValidLineIndex"] = function (li)
+    {
+        return (0 <= li && li < this.s.lines.length)
+    }
+
+    state.prototype["isInvalidLineIndex"] = function (li)
+    {
+        return !this.isValidLineIndex(li)
     }
 
     state.prototype["undo"] = function ()
@@ -208,8 +220,8 @@ state = (function ()
             this.end()
             return
         }
-        x = this.s.cursor[0]
-        y = this.s.cursor[1]
+        var _b_ = this.s.cursor; x = _b_[0]; y = _b_[1]
+
         lines = this.s.lines.asMutable()
         line = lines[y]
         line = kstr.splice(line,x,0,text)
@@ -224,8 +236,8 @@ state = (function ()
     {
         var after, before, line, lines, x, y
 
-        x = this.s.cursor[0]
-        y = this.s.cursor[1]
+        var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
+
         lines = this.s.lines.asMutable()
         line = lines[y]
         before = line.slice(0, typeof x === 'number' ? x : -1)
@@ -247,8 +259,8 @@ state = (function ()
             this.deleteSelection()
             return
         }
-        x = this.s.cursor[0]
-        y = this.s.cursor[1]
+        var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
+
         lines = this.s.lines.asMutable()
         line = lines[y]
         switch (type)
@@ -473,6 +485,10 @@ state = (function ()
     {
         var line, re, rs
 
+        if (this.isInvalidLineIndex(y))
+        {
+            return
+        }
         line = this.s.lines[y]
         var _a_ = kstr.rangeOfClosestChunk(line,x); rs = _a_[0]; re = _a_[1]
 
@@ -486,6 +502,10 @@ state = (function ()
     {
         var line, re, rs
 
+        if (this.isInvalidLineIndex(y))
+        {
+            return
+        }
         line = this.s.lines[y]
         var _a_ = kstr.rangeOfClosestWord(line,x); rs = _a_[0]; re = _a_[1]
 

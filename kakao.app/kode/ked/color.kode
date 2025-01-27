@@ -56,6 +56,8 @@ class color
     @scroll_knob:       '#4444ff'  
     @scroll_doth:       '#8888ff'  
     @status_fg:         '#888888'  
+    @status_dirty:      '#ffaa00'  
+    @status_redo:       '#00dd00'  
     @status_empty:      '#ff8844'  
     @status_sel:        '#ff00ff'  
     @status_fg_dim:     '#333333'  

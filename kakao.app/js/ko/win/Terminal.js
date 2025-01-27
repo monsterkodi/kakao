@@ -138,7 +138,7 @@ Terminal = (function ()
         {
             this.appendMeta(meta)
             count += 1
-            if (count > 20)
+            if (count > 10)
             {
                 break
             }

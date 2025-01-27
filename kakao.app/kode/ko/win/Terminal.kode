@@ -61,7 +61,7 @@ function Terminal extends TextEditor
             
                 text = meta.text ? Syntax.lineForDiss meta.diss
             
-                @appendLineDiss text, meta.diss 
+                @appendLineDiss text meta.diss 
                         
             meta.clss == 'salt'
             
@@ -72,21 +72,21 @@ function Terminal extends TextEditor
             
             meta.clss == 'termCommand'
             
-                @appendLineDiss meta.command, Syntax.dissForTextAndSyntax(meta.command, 'term')
+                @appendLineDiss meta.command Syntax.dissForTextAndSyntax(meta.command 'term')
 
             meta.text?
             
                 diss = Syntax.dissForTextAndSyntax meta.text, 'txt'
                 diss.font = meta.font if meta.font
-                @appendLineDiss meta.text, diss
+                @appendLineDiss meta.text diss
             ➜
                 @appendLineDiss ''
 
         if meta.list
             if meta.list is str
-                post.emit 'filelist.add' meta.list, @numLines()
+                post.emit 'filelist.add' meta.list @numLines()
             else
-                post.emit 'filelist.add' meta.text, @numLines()
+                post.emit 'filelist.add' meta.text @numLines()
                 
         for mm in meta.metas
             @meta.appendLineMeta mm
@@ -109,7 +109,7 @@ function Terminal extends TextEditor
         
         @metaQueue.push meta
         clearTimeout @metaTimer
-        @metaTimer = setTimeout @dequeueMeta, 0
+        @metaTimer = setTimeout @dequeueMeta 0
         
     dequeueMeta: =>
         
@@ -117,12 +117,12 @@ function Terminal extends TextEditor
         while meta = @metaQueue.shift()
             @appendMeta meta
             count += 1
-            break if count > 20
+            break if count > 10
             
         clearTimeout @metaTimer
         
         if @metaQueue.length
-            @metaTimer = setTimeout @dequeueMeta, 0 
+            @metaTimer = setTimeout @dequeueMeta 0 
         else
             @do.resetHistory()
         

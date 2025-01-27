@@ -28,6 +28,12 @@ function state
             
         @setCursor 0 0
         
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
     set: item args... =>
         
         @s = @s.set.apply @s [item].concat(args)
@@ -35,11 +41,11 @@ function state
         @h.push @s
         @s
     
-    #  0000000  00000000  000000000  000      000  000   000  00000000   0000000  
-    # 000       000          000     000      000  0000  000  000       000       
-    # 0000000   0000000      000     000      000  000 0 000  0000000   0000000   
-    #      000  000          000     000      000  000  0000  000            000  
-    # 0000000   00000000     000     0000000  000  000   000  00000000  0000000   
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
     
     setLines: lines =>
         
@@ -56,6 +62,9 @@ function state
         @r = []
         @h = []
         @setLines lines
+        
+    isValidLineIndex:   li => 0 <= li < @s.lines.length
+    isInvalidLineIndex: li => not @isValidLineIndex li
         
     # 000   000  000   000  0000000     0000000   
     # 000   000  0000  000  000   000  000   000  
@@ -175,8 +184,7 @@ function state
             @end()
             ⮐ 
         
-        x = @s.cursor[0]
-        y = @s.cursor[1]
+        [x y] = @s.cursor
     
         lines = @s.lines.asMutable()
         line  = lines[y]
@@ -195,9 +203,8 @@ function state
         
     insertNewline: =>
         
-        x = @s.cursor[0]
-        y = @s.cursor[1]
-    
+        [x y] = @s.cursor
+        
         lines = @s.lines.asMutable()
         line  = lines[y]
         
@@ -226,8 +233,7 @@ function state
             @deleteSelection()
             ⮐ 
 
-        x = @s.cursor[0]
-        y = @s.cursor[1]
+        [x y] = @s.cursor
         
         lines = @s.lines.asMutable()
         line  = lines[y]
@@ -403,6 +409,8 @@ function state
         
     selectChunk: x y =>
         
+        ⮐ if @isInvalidLineIndex y
+        
         line = @s.lines[y]
         
         [rs re] = kstr.rangeOfClosestChunk line x
@@ -410,6 +418,8 @@ function state
             @select [rs y] [re+1 y]
 
     selectWord: x y =>
+        
+        ⮐ if @isInvalidLineIndex y
         
         line = @s.lines[y]
         

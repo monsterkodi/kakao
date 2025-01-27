@@ -72,6 +72,10 @@ class color
 
     static status_fg = '#888888'
 
+    static status_dirty = '#ffaa00'
+
+    static status_redo = '#00dd00'
+
     static status_empty = '#ff8844'
 
     static status_sel = '#ff00ff'
