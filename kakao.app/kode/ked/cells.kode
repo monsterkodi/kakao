@@ -10,28 +10,14 @@ use ◆ color util
 
 function cells
 
-    @: @t -> @init()
+    @: @screen -> @init()
     
-    init: =>
+    init: @r =>
     
-        @rows = @t.rows()
-        @cols = @t.cols()
+        @rows = @r.rows
+        @cols = @r.cols
         @c = util.cells @rows @cols
-        
-    bg_rect: x1 y1 x2 y2 c =>
-    
-        x1 = @cols + x1 if x1 < 0
-        x2 = @cols + x2 if x2 < 0
-
-        y1 = @rows + y1 if y1 < 0
-        y2 = @rows + y2 if y2 < 0
-        
-        for row in y1..y2
-            if row < @rows
-                for col in x1..x2
-                    if col < @cols
-                        @c[row][col].bg = c
-                        
+                                
     #  0000000  00000000  000000000  
     # 000       000          000     
     # 0000000   0000000      000     
@@ -40,10 +26,12 @@ function cells
     
     set: x y char fg bg =>
         
-        if x < @cols and y < @rows
-            @c[y][x].char = char
-            @c[y][x].fg = fg if valid fg
-            @c[y][x].bg = bg if valid bg
+        @screen.set @r.x+x @r.y+y char fg bg
+        
+        # if x < @cols and y < @rows
+            # @c[y][x].char = char
+            # @c[y][x].fg = fg if valid fg
+            # @c[y][x].bg = bg if valid bg
         
     # 00000000   00000000  000   000  0000000    00000000  00000000   
     # 000   000  000       0000  000  000   000  000       000   000  
@@ -51,26 +39,26 @@ function cells
     # 000   000  000       000  0000  000   000  000       000   000  
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
-    render: =>
-        
-        @t.setCursor 0 0
-        s = ''
-        pbg = ''
-        pfg = ''
-        for y in 0...@rows
-            for x in 0...@cols
-                if valid @c[y][x].bg
-                    bg = color.bg_rgb @c[y][x].bg
-                    if bg != pbg
-                        s += bg
-                        pbg = bg
-                if valid @c[y][x].fg
-                    fg = color.fg_rgb @c[y][x].fg
-                    if fg != pfg
-                        s += fg
-                        pfg = fg
-                s +=  @c[y][x].char
-            s += '\n'
-        @t.write s[0..-2]
+    # render: =>
+#         
+        # @t.setCursor 0 0
+        # s = ''
+        # pbg = ''
+        # pfg = ''
+        # for y in 0...@rows
+            # for x in 0...@cols
+                # if valid @c[y][x].bg
+                    # bg = color.bg_rgb @c[y][x].bg
+                    # if bg != pbg
+                        # s += bg
+                        # pbg = bg
+                # if valid @c[y][x].fg
+                    # fg = color.fg_rgb @c[y][x].fg
+                    # if fg != pfg
+                        # s += fg
+                        # pfg = fg
+                # s +=  @c[y][x].char
+            # s += '\n'
+        # @t.write s[0..-2]
         
 export cells

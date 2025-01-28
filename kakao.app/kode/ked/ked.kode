@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status cells state draw logfile scroll color util
+use ◆ ttio gutter editor status screen cells state draw logfile scroll color util
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
 
@@ -26,13 +26,13 @@ function KED
         
         global.lf = args... => @log.write args.map((a) -> "#{a}").join(' ')
         
-        @cells  = new cells @t
+        @screen = new screen @t
         
-        @editor = new editor @cells
-        @draw   = new draw   @cells
-        @gutter = new gutter @cells @editor.state
-        @scroll = new scroll @cells @editor.state
-        @status = new status @cells @editor.state
+        @editor = new editor @screen
+        @draw   = new draw   @screen
+        @gutter = new gutter @screen @editor.state
+        @scroll = new scroll @screen @editor.state
+        @status = new status @screen @editor.state
         
         @mouseHandlers = [@scroll @editor]
         @editor.on 'redraw' @redraw
@@ -128,12 +128,12 @@ function KED
         
         @t.store()                
         @t.hideCursor()
-        @cells.init()
+        @screen.init()
         @gutter.draw()
         @scroll.draw()
         @status.draw()
         @draw.state @editor.state
-        @cells.render()
+        @screen.render()
         @editor.showCursorIfInView() 
         @t.restore()
         

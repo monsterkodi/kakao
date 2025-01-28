@@ -6,6 +6,7 @@ import ttio from "./ttio.js"
 import gutter from "./gutter.js"
 import editor from "./editor.js"
 import status from "./status.js"
+import screen from "./screen.js"
 import cells from "./cells.js"
 import state from "./state.js"
 import draw from "./draw.js"
@@ -44,12 +45,12 @@ KED = (function ()
                 return `${a}`
             }).join(' '))
         }).bind(this)
-        this.cells = new cells(this.t)
-        this.editor = new editor(this.cells)
-        this.draw = new draw(this.cells)
-        this.gutter = new gutter(this.cells,this.editor.state)
-        this.scroll = new scroll(this.cells,this.editor.state)
-        this.status = new status(this.cells,this.editor.state)
+        this.screen = new screen(this.t)
+        this.editor = new editor(this.screen)
+        this.draw = new draw(this.screen)
+        this.gutter = new gutter(this.screen,this.editor.state)
+        this.scroll = new scroll(this.screen,this.editor.state)
+        this.status = new status(this.screen,this.editor.state)
         this.mouseHandlers = [this.scroll,this.editor]
         this.editor.on('redraw',this.redraw)
         this.t.on('key',this.onKey)
@@ -159,12 +160,12 @@ KED = (function ()
         start = process.hrtime()
         this.t.store()
         this.t.hideCursor()
-        this.cells.init()
+        this.screen.init()
         this.gutter.draw()
         this.scroll.draw()
         this.status.draw()
         this.draw.state(this.editor.state)
-        this.cells.render()
+        this.screen.render()
         this.editor.showCursorIfInView()
         this.t.restore()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))

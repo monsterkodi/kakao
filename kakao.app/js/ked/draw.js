@@ -4,9 +4,9 @@ import color from "./color.js"
 
 class draw
 {
-    constructor (cells)
+    constructor (screen)
     {
-        this.cells = cells
+        this.screen = screen
     
         this.state = this.state.bind(this)
     }
@@ -20,7 +20,7 @@ class draw
         view = s.view.asMutable()
         lines = s.lines.asMutable()
         gutter = s.gutter
-        for (var _a_ = row = 0, _b_ = this.cells.rows - 1; (_a_ <= _b_ ? row < this.cells.rows - 1 : row > this.cells.rows - 1); (_a_ <= _b_ ? ++row : --row))
+        for (var _a_ = row = 0, _b_ = this.screen.rows - 1; (_a_ <= _b_ ? row < this.screen.rows - 1 : row > this.screen.rows - 1); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
             if (y >= lines.length)
@@ -34,12 +34,12 @@ class draw
                 lf('empty line?',lines.length,y)
                 lf('???')
             }
-            for (var _c_ = x = 0, _d_ = this.cells.cols - gutter; (_c_ <= _d_ ? x < this.cells.cols - gutter : x > this.cells.cols - gutter); (_c_ <= _d_ ? ++x : --x))
+            for (var _c_ = x = 0, _d_ = this.screen.cols - gutter; (_c_ <= _d_ ? x < this.screen.cols - gutter : x > this.screen.cols - gutter); (_c_ <= _d_ ? ++x : --x))
             {
-                if (x + gutter < this.cells.cols && x + view[0] < line.length)
+                if (x + gutter < this.screen.cols && x + view[0] < line.length)
                 {
-                    this.cells.c[row][x + gutter].fg = syntax.getColor(x + view[0],y)
-                    this.cells.c[row][x + gutter].char = syntax.getChar(x + view[0],y,line[x + view[0]])
+                    this.screen.c[row][x + gutter].fg = syntax.getColor(x + view[0],y)
+                    this.screen.c[row][x + gutter].char = syntax.getChar(x + view[0],y,line[x + view[0]])
                 }
             }
             if (y < lines.length)
@@ -49,17 +49,17 @@ class draw
                 {
                     if (linel > 0)
                     {
-                        this.cells.bg_rect(gutter,row,gutter + linel,row,color.cursor_main)
+                        this.screen.bg_rect(gutter,row,gutter + linel,row,color.cursor_main)
                     }
-                    this.cells.bg_rect(_k_.max(gutter,gutter + linel),row,-1,row,color.cursor_empty)
+                    this.screen.bg_rect(_k_.max(gutter,gutter + linel),row,-1,row,color.cursor_empty)
                 }
                 else
                 {
                     if (linel > 0)
                     {
-                        this.cells.bg_rect(gutter,row,gutter + linel,row,color.editor)
+                        this.screen.bg_rect(gutter,row,gutter + linel,row,color.editor)
                     }
-                    this.cells.bg_rect(_k_.max(gutter,gutter + linel),row,-1,row,color.editor_empty)
+                    this.screen.bg_rect(_k_.max(gutter,gutter + linel),row,-1,row,color.editor_empty)
                 }
             }
         }
@@ -70,7 +70,7 @@ class draw
             for (var _f_ = li = selection[1], _10_ = selection[3]; (_f_ <= _10_ ? li <= selection[3] : li >= selection[3]); (_f_ <= _10_ ? ++li : --li))
             {
                 y = li - view[1]
-                if ((view[1] <= li && li < view[1] + this.cells.rows - 1))
+                if ((view[1] <= li && li < view[1] + this.screen.rows - 1))
                 {
                     if (li === selection[1])
                     {
@@ -90,9 +90,9 @@ class draw
                     }
                     for (var _11_ = x = xs, _12_ = xe; (_11_ <= _12_ ? x < xe : x > xe); (_11_ <= _12_ ? ++x : --x))
                     {
-                        if ((gutter <= x - view[0] + gutter && x - view[0] + gutter < this.cells.cols))
+                        if ((gutter <= x - view[0] + gutter && x - view[0] + gutter < this.screen.cols))
                         {
-                            this.cells.c[y][x - view[0] + gutter].bg = color.selection
+                            this.screen.c[y][x - view[0] + gutter].bg = color.selection
                         }
                     }
                 }
