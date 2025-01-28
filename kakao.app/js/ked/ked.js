@@ -167,9 +167,9 @@ KED = (function ()
         return this.redraw()
     }
 
-    KED.prototype["delete"] = function (type)
+    KED.prototype["delete"] = function (type, mods)
     {
-        this.state.delete(type)
+        this.state.delete(type,mods)
         return this.redraw()
     }
 
@@ -439,6 +439,9 @@ KED = (function ()
 
             case 'cmd+delete':
                 return this.delete('back','cmd')
+
+            case 'alt+delete':
+                return this.delete('back','alt')
 
             case 'alt+q':
             case 'ctrl+d':

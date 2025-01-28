@@ -46,7 +46,7 @@ status = (function ()
         for (var _a_ = ci = 1, _b_ = gtr; (_a_ <= _b_ ? ci < gtr : ci > gtr); (_a_ <= _b_ ? ++ci : --ci))
         {
             fg = (cursor[0] ? 'status_fg' : 'column_fg')
-            if (util.isPosOutsideLines(cursor,this.state.s.lines))
+            if (util.isLinesPosOutside(this.state.s.lines,cursor))
             {
                 fg = 'status_empty'
             }

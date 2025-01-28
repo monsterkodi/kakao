@@ -250,12 +250,23 @@ function state
                     remove = 2
                     line = lines[y] + line
                 else
-                    x -= 1
-                    if mods == 'cmd'
-                        lf 'todo: cmd+delete delete words or whitespaces'
-                        line = kstr.splice line x 1
+                    if mods in ['cmd' 'alt']
+                        rng = util.rangeOfWordOrWhitespaceLeftToPos lines @s.cursor
+                        lf 'cmd+delete' rng
+                        dc = rng[2] - rng[0]
+                        x -= dc
+                        line = kstr.splice line x dc
                     else
-                        line = kstr.splice line x 1
+                        before = util.textFromBolToPos lines @s.cursor
+                        if util.isOnlyWhitespace before
+                            lf "only WS >#{before}<" 
+                            dc = x % 4
+                            dc = 4 if dc == 0
+                            x -= dc
+                            line = kstr.splice line x dc
+                        else
+                            x -= 1
+                            line = kstr.splice line x 1
             
         lines.splice y remove line
             
@@ -267,9 +278,9 @@ function state
         
         ⮐ if empty @s.selections
         
-        cursor      = @s.cursor.asMutable()
-        lines       = @s.lines.asMutable()
-        selections  = @s.selections.asMutable()
+        cursor     = @s.cursor.asMutable()
+        lines      = @s.lines.asMutable()
+        selections = @s.selections.asMutable()
         
         [lines cursor] = util.deleteLinesRangesAndAdjustCursor lines selections cursor
                 
@@ -426,13 +437,16 @@ function state
 
     selectWord: x y =>
         
-        ⮐ if @isInvalidLineIndex y
+        if range = util.rangeOfClosestWordToPos lines [x y]
+            @select range[0..1] range[2..3]
         
-        line = @s.lines[y]
-        
-        [rs re] = kstr.rangeOfClosestWord line x
-        if rs >= 0 and re >= 0
-            @select [rs y] [re+1 y]
+        # ⮐ if @isInvalidLineIndex y
+#         
+        # line = @s.lines[y]
+#         
+        # [rs re] = kstr.rangeOfClosestWord line x
+        # if rs >= 0 and re >= 0
+            # @select [rs y] [re+1 y]
                         
     selectLine: y=@s.cursor[1] =>
         

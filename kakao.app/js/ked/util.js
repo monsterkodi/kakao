@@ -130,38 +130,35 @@ class util
     {
         var l, y
 
-        if (_k_.empty(lines))
-        {
-            return ''
-        }
-        if (_k_.empty(rng))
+        if (_k_.empty(lines) || _k_.empty(rng))
         {
             return ''
         }
         l = []
         for (var _a_ = y = rng[1], _b_ = rng[3]; (_a_ <= _b_ ? y <= rng[3] : y >= rng[3]); (_a_ <= _b_ ? ++y : --y))
         {
-            if ((0 <= y && y < lines.length))
+            if (util.isInvalidLineIndex(lines,y))
             {
-                if (y === rng[1])
+                continue
+            }
+            if (y === rng[1])
+            {
+                if (y === rng[3])
                 {
-                    if (y === rng[3])
-                    {
-                        l.push(lines[y].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1))
-                    }
-                    else
-                    {
-                        l.push(lines[y].slice(rng[0]))
-                    }
-                }
-                else if (y === rng[3])
-                {
-                    l.push(lines[y].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
+                    l.push(lines[y].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1))
                 }
                 else
                 {
-                    l.push(lines[y])
+                    l.push(lines[y].slice(rng[0]))
                 }
+            }
+            else if (y === rng[3])
+            {
+                l.push(lines[y].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
+            }
+            else
+            {
+                l.push(lines[y])
             }
         }
         return l.join('\n')
@@ -186,14 +183,71 @@ class util
         return text.slice(0, -1)
     }
 
-    static isPosInsideLines (pos, lines)
+    static textFromBolToPos (lines, pos)
+    {
+        return lines[pos[1]].slice(0, typeof pos === 'number' ? pos+1 : Infinity)
+    }
+
+    static isLinesPosInside (lines, pos)
     {
         return pos[1] < lines.length && (0 <= pos[0] && pos[0] <= lines[pos[1]].length)
     }
 
-    static isPosOutsideLines (pos, lines)
+    static isLinesPosOutside (lines, pos)
     {
-        return !util.isPosInsideLines(pos,lines)
+        return !util.isLinesPosInside(lines,pos)
+    }
+
+    static isValidLineIndex (lines, li)
+    {
+        return (0 <= li && li < lines.length)
+    }
+
+    static isInvalidLineIndex (lines, li)
+    {
+        return !util.isValidLineIndex(lines,li)
+    }
+
+    static rangeOfClosestWordToPos (lines, pos)
+    {
+        var re, rs, x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        if (util.isInvalidLineIndex(lines,y))
+        {
+            return
+        }
+        var _b_ = kstr.rangeOfClosestWord(lines[y],x); rs = _b_[0]; re = _b_[1]
+
+        if ((0 <= rs && rs < re))
+        {
+            return [rs,y,re,y]
+        }
+    }
+
+    static rangeOfWordOrWhitespaceLeftToPos (lines, pos)
+    {
+        var r, x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        if (x <= 0 || util.isInvalidLineIndex(lines,y))
+        {
+            return
+        }
+        if (r = kstr.rangeOfClosestWord(lines[y].slice(0, typeof x === 'number' ? x : -1),x))
+        {
+            if (r[1] < x)
+            {
+                return [r[1],y,x,y]
+            }
+            if ((0 <= r[0] && r[0] < r[1]))
+            {
+                return [r[0],y,r[1],y]
+            }
+        }
+        return [0,y,x,y]
     }
 
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
@@ -266,6 +320,11 @@ class util
             }
         }
         return [lines,cursor]
+    }
+
+    static isOnlyWhitespace (text)
+    {
+        return /^\s+$/.test(text)
     }
 }
 

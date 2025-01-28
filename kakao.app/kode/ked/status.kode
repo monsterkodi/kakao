@@ -40,7 +40,7 @@ function status
         colno = rpad gtr-1 "#{cursor[0]+1}"
         for ci in 1...gtr
             fg = cursor[0] ? 'status_fg' : 'column_fg'
-            fg = 'status_empty' if util.isPosOutsideLines cursor @state.s.lines 
+            fg = 'status_empty' if util.isLinesPosOutside @state.s.lines cursor 
             add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_dark'
 
         # draw the separator after the column number

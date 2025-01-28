@@ -147,7 +147,7 @@ str.unfilletBlocks = blocks ->
     # 000   000  000   000  000     000     000            000  000        000   000  000       000         
     # 00     00  000   000  000     000     00000000  0000000   000        000   000   0000000  00000000    
 
-str.indexOfClosestNonWS = s x ->
+str.indexOfClosestNonWhitespace = s x ->
     
     ⮐ -1 if empty s
     x = clamp 0 s.length-1 x
@@ -170,7 +170,7 @@ str.indexOfClosestNonWS = s x ->
     else
         x+dr
         
-str.indexOfPreviousWS = s x ->
+str.indexOfPreviousWhitespace = s x ->
     
     ⮐ -1 if empty s
     
@@ -180,7 +180,7 @@ str.indexOfPreviousWS = s x ->
         x--
     x
 
-str.indexOfNextWS = s x ->
+str.indexOfNextWhitespace = s x ->
     
     ⮐ -1 if empty s
     
@@ -253,16 +253,17 @@ str.indexOfNextNonAlphaNumeric = s x ->
 
 str.rangeOfClosestWord = s x ->
     
-    ⮐ [-1 -1] if empty str
+    ⮐ if empty str
     
     x = str.indexOfClosestAlphaNumeric s x
     
-    ⮐ [-1 -1] if x < 0
+    ⮐ if x < 0
     
     rs = str.indexOfPreviousNonAlphaNumeric s x
     re = str.indexOfNextNonAlphaNumeric s x
     
-    [rs+1 re-1]
+    if re > rs
+        [rs+1 re]
 
 #  0000000  000       0000000    0000000  00000000   0000000  000000000   0000000  000   000  000   000  000   000  000   000  
 # 000       000      000   000  000       000       000          000     000       000   000  000   000  0000  000  000  000   
@@ -272,16 +273,17 @@ str.rangeOfClosestWord = s x ->
 
 str.rangeOfClosestChunk = s x ->
     
-    ⮐ [-1 -1] if empty str
+    ⮐ if empty str
     
-    x = str.indexOfClosestNonWS s x
+    x = str.indexOfClosestNonWhitespace s x
     
-    ⮐ [-1 -1] if x < 0
+    ⮐ if x < 0
     
-    rs = str.indexOfPreviousWS s x
-    re = str.indexOfNextWS s x
+    rs = str.indexOfPreviousWhitespace s x
+    re = str.indexOfNextWhitespace s x
     
-    [rs+1 re-1]
+    if re > rs
+        [rs+1 re]
     
 #  0000000  00000000   000      000   0000000  00000000
 # 000       000   000  000      000  000       000

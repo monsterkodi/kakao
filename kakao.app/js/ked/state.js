@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -252,7 +252,7 @@ state = (function ()
 
     state.prototype["delete"] = function (type, mods)
     {
-        var line, lines, remove, x, y
+        var before, dc, line, lines, remove, rng, x, y
 
         if (type === 'back' && !_k_.empty(this.s.selections))
         {
@@ -283,15 +283,33 @@ state = (function ()
                 }
                 else
                 {
-                    x -= 1
-                    if (mods === 'cmd')
+                    if (_k_.in(mods,['cmd','alt']))
                     {
-                        lf('todo: cmd+delete delete words or whitespaces')
-                        line = kstr.splice(line,x,1)
+                        rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,this.s.cursor)
+                        lf('cmd+delete',rng)
+                        dc = rng[2] - rng[0]
+                        x -= dc
+                        line = kstr.splice(line,x,dc)
                     }
                     else
                     {
-                        line = kstr.splice(line,x,1)
+                        before = util.textFromBolToPos(lines,this.s.cursor)
+                        if (util.isOnlyWhitespace(before))
+                        {
+                            lf(`only WS >${before}<`)
+                            dc = x % 4
+                            if (dc === 0)
+                            {
+                                dc = 4
+                            }
+                            x -= dc
+                            line = kstr.splice(line,x,dc)
+                        }
+                        else
+                        {
+                            x -= 1
+                            line = kstr.splice(line,x,1)
+                        }
                     }
                 }
                 break
@@ -510,18 +528,11 @@ state = (function ()
 
     state.prototype["selectWord"] = function (x, y)
     {
-        var line, re, rs
+        var range
 
-        if (this.isInvalidLineIndex(y))
+        if (range = util.rangeOfClosestWordToPos(lines,[x,y]))
         {
-            return
-        }
-        line = this.s.lines[y]
-        var _a_ = kstr.rangeOfClosestWord(line,x); rs = _a_[0]; re = _a_[1]
-
-        if (rs >= 0 && re >= 0)
-        {
-            return this.select([rs,y],[re + 1,y])
+            return this.select(range.slice(0, 2),range.slice(2, 4))
         }
     }
 

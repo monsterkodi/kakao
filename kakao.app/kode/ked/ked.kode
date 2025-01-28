@@ -145,9 +145,9 @@ function KED
     # 000   000  000       000      000          000     000       
     # 0000000    00000000  0000000  00000000     000     00000000  
     
-    delete: type =>
+    delete: type mods =>
         
-        @state.delete type
+        @state.delete type mods
         @redraw()
         
     #       000   0000000   000  000   000  
@@ -353,6 +353,7 @@ function KED
             'ctrl+k'            ➜ ⮐ @delete 'eol'
             'delete'            ➜ ⮐ @delete 'back'
             'cmd+delete'        ➜ ⮐ @delete 'back' 'cmd'
+            'alt+delete'        ➜ ⮐ @delete 'back' 'alt'
             
             'alt+q'         
             'ctrl+d'         

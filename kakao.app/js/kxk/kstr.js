@@ -157,7 +157,7 @@ str.unfilletBlocks = function (blocks)
     return s
 }
 
-str.indexOfClosestNonWS = function (s, x)
+str.indexOfClosestNonWhitespace = function (s, x)
 {
     var dl, dr
 
@@ -201,7 +201,7 @@ str.indexOfClosestNonWS = function (s, x)
     }
 }
 
-str.indexOfPreviousWS = function (s, x)
+str.indexOfPreviousWhitespace = function (s, x)
 {
     if (_k_.empty(s))
     {
@@ -215,7 +215,7 @@ str.indexOfPreviousWS = function (s, x)
     return x
 }
 
-str.indexOfNextWS = function (s, x)
+str.indexOfNextWhitespace = function (s, x)
 {
     if (_k_.empty(s))
     {
@@ -323,16 +323,19 @@ str.rangeOfClosestWord = function (s, x)
 
     if (_k_.empty(str))
     {
-        return [-1,-1]
+        return
     }
     x = str.indexOfClosestAlphaNumeric(s,x)
     if (x < 0)
     {
-        return [-1,-1]
+        return
     }
     rs = str.indexOfPreviousNonAlphaNumeric(s,x)
     re = str.indexOfNextNonAlphaNumeric(s,x)
-    return [rs + 1,re - 1]
+    if (re > rs)
+    {
+        return [rs + 1,re]
+    }
 }
 
 str.rangeOfClosestChunk = function (s, x)
@@ -341,16 +344,19 @@ str.rangeOfClosestChunk = function (s, x)
 
     if (_k_.empty(str))
     {
-        return [-1,-1]
+        return
     }
-    x = str.indexOfClosestNonWS(s,x)
+    x = str.indexOfClosestNonWhitespace(s,x)
     if (x < 0)
     {
-        return [-1,-1]
+        return
     }
-    rs = str.indexOfPreviousWS(s,x)
-    re = str.indexOfNextWS(s,x)
-    return [rs + 1,re - 1]
+    rs = str.indexOfPreviousWhitespace(s,x)
+    re = str.indexOfNextWhitespace(s,x)
+    if (re > rs)
+    {
+        return [rs + 1,re]
+    }
 }
 
 str.splice = function (s, i, c, r = '')
@@ -566,7 +572,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _463_13_
+    var _465_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }
