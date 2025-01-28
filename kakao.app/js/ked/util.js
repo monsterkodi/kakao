@@ -5,6 +5,23 @@ let kstr = kxk.kstr
 
 class util
 {
+    static cells (rows, cols)
+    {
+        var c, cells, l, lines
+
+        lines = []
+        for (var _a_ = l = 0, _b_ = rows; (_a_ <= _b_ ? l < rows : l > rows); (_a_ <= _b_ ? ++l : --l))
+        {
+            cells = []
+            for (var _c_ = c = 0, _d_ = cols; (_c_ <= _d_ ? c < cols : c > cols); (_c_ <= _d_ ? ++c : --c))
+            {
+                cells.push({bg:null,fg:null,char:' '})
+            }
+            lines.push(cells)
+        }
+        return lines
+    }
+
     static isPosInsideRange (pos, rng)
     {
         if (util.isPosBeforeRange(pos,rng))

@@ -1,26 +1,10 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var cells, makeCells
+var cells
 
 import color from "./color.js"
+import util from "./util.js"
 
-
-makeCells = function (rows, cols)
-{
-    var c, cells, l, lines
-
-    lines = []
-    for (var _a_ = l = 0, _b_ = rows; (_a_ <= _b_ ? l < rows : l > rows); (_a_ <= _b_ ? ++l : --l))
-    {
-        cells = []
-        for (var _c_ = c = 0, _d_ = cols; (_c_ <= _d_ ? c < cols : c > cols); (_c_ <= _d_ ? ++c : --c))
-        {
-            cells.push({bg:null,fg:null,char:' '})
-        }
-        lines.push(cells)
-    }
-    return lines
-}
 
 cells = (function ()
 {
@@ -39,7 +23,7 @@ cells = (function ()
     {
         this.rows = this.t.rows()
         this.cols = this.t.cols()
-        return this.c = makeCells(this.rows,this.cols)
+        return this.c = util.cells(this.rows,this.cols)
     }
 
     cells.prototype["bg_rect"] = function (x1, y1, x2, y2, c)

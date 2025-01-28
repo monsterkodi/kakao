@@ -1,0 +1,320 @@
+###
+00000000  0000000    000  000000000   0000000   00000000 
+000       000   000  000     000     000   000  000   000
+0000000   000   000  000     000     000   000  0000000  
+000       000   000  000     000     000   000  000   000
+00000000  0000000    000     000      0000000   000   000
+###
+
+use ../kxk ◆ events
+use ◆ state util
+
+function editor extends events
+
+    @: @cells ->
+        
+        @state = new state @cells
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event col row button mods count =>
+        
+        switch event
+            
+            'press'
+                        
+                if count > 1
+                    
+                    @state.deselect()
+                    
+                    x = col + @state.s.view[0] - @state.s.gutter
+                    y = row + @state.s.view[1]
+                    
+                    if count == 2
+                        if mods == 'alt'
+                            @state.selectChunk x y
+                        else
+                            @state.selectWord x y
+                    else
+                        @state.selectLine y
+                        
+                    @dragStart = copy @state.s.selections[0]
+                    
+                    ⮐ true
+                    
+                else
+                    
+                    x = col + @state.s.view[0] - @state.s.gutter
+                    y = row + @state.s.view[1]
+                    
+                    @dragStart = [x y x]
+                                    
+                    @state.deselect() if mods != 'ctrl'
+                    @state.setCursor(x y)
+                    
+                    ⮐ true
+                    
+            'drag'
+            
+                if @dragStart
+                    x = col + @state.s.view[0] - @state.s.gutter
+                    y = row + @state.s.view[1]
+                    
+                    start = [@dragStart[0] @dragStart[1]]
+                    
+                    if y < @dragStart[1] 
+                        start = [@dragStart[2] @dragStart[1]]
+                    
+                    if @state.select start [x y]
+                        ⮐ true
+                    
+            'release'
+            
+                delete @dragStart
+                
+        true
+                
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: dir mods =>
+        
+        steps = switch mods
+            
+            'shift'          ➜ 4
+            'shift+ctrl'     ➜ 8
+            'alt'            ➜ 16
+            'shift+alt'      ➜ 32
+            'ctrl+alt'       ➜ 64
+            'shift+ctrl+alt' ➜ 128
+            ➜ 1
+        
+        if @dragStart
+            
+            x = @state.s.cursor[0]
+            y = @state.s.cursor[1]
+            
+            switch dir
+                'up'    ➜ y -= steps    
+                'down'  ➜ y += steps    
+                'left'  ➜ x -= 1    
+                'right' ➜ x += 1    
+                
+            y = clamp 0 @state.s.lines.length-1 y
+            x = clamp 0 @state.s.lines[y].length-1 x
+            
+            start = [@dragStart[0] @dragStart[1]]
+            
+            if y < @dragStart[1] 
+                start = [@dragStart[2] @dragStart[1]]
+            
+            if @state.select start [x y]
+                @redraw()
+            
+            ⮐ 
+                
+        switch dir
+            'up'        
+            'down'      
+            'left'      
+            'right'     ➜ ⮐ @scrollView dir steps
+
+    #  0000000   0000000  00000000    0000000   000      000      
+    # 000       000       000   000  000   000  000      000      
+    # 0000000   000       0000000    000   000  000      000      
+    #      000  000       000   000  000   000  000      000      
+    # 0000000    0000000  000   000   0000000   0000000  0000000  
+    
+    scrollView: dir steps =>
+        
+        @state.scrollView dir steps
+        @redraw()
+        
+    # 000  000   000   0000000  00000000  00000000   000000000  
+    # 000  0000  000  000       000       000   000     000     
+    # 000  000 0 000  0000000   0000000   0000000       000     
+    # 000  000  0000       000  000       000   000     000     
+    # 000  000   000  0000000   00000000  000   000     000     
+    
+    insert: text =>
+        
+        @state.insert text
+        @redraw()
+        
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    delete: type mods =>
+        
+        @state.delete type mods
+        @redraw()
+        
+    #       000   0000000   000  000   000  
+    #       000  000   000  000  0000  000  
+    #       000  000   000  000  000 0 000  
+    # 000   000  000   000  000  000  0000  
+    #  0000000    0000000   000  000   000  
+    
+    joinLines: =>
+        
+        @state.joinLines()
+        @redraw()
+        
+    #  0000000  000   000  00000000    0000000   0000000   00000000   
+    # 000       000   000  000   000  000       000   000  000   000  
+    # 000       000   000  0000000    0000000   000   000  0000000    
+    # 000       000   000  000   000       000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  
+
+    moveCursorAndSelect: dir =>
+        
+        @state.moveCursorAndSelect dir
+        @redraw()
+    
+    moveCursor: dir steps =>
+        
+        @state.moveCursor dir steps
+        @redraw()
+                    
+    setCursor: x y =>
+        
+        @state.setCursor x y
+        @redraw()
+        
+    showCursorIfInView: =>
+        
+        show = util.isPosInsideRange @state.s.cursor @state.rangeForVisibleLines()
+        if @state.s.cursor[0] < @state.s.view[0] ➜ show = false
+        @cells.t.showCursor show     
+        
+    #  0000000   0000000   000   000  00000000  
+    # 000       000   000  000   000  000       
+    # 0000000   000000000   000 000   0000000   
+    #      000  000   000     000     000       
+    # 0000000   000   000      0      00000000  
+    
+    saveFile: ○=>
+        
+        text = @editor.state.s.lines.asMutable().join '\n'
+        
+        ○ nfs.write slash.untilde(@status.file) text
+        
+        @reloadFile()
+        
+    #  0000000  000   000  000000000  
+    # 000       000   000     000     
+    # 000       000   000     000     
+    # 000       000   000     000     
+    #  0000000   0000000      000     
+    
+    cut: =>
+        
+        @state.cut()
+        @redraw()
+        
+    copy: =>
+        
+        @state.copy()
+        
+    paste: =>
+        
+        @state.paste()
+        @redraw()
+        
+    undo: =>
+        
+        @state.undo()
+        @redraw()
+        
+    redo: =>
+        
+        @state.redo()
+        @redraw()
+
+    deselect: =>
+        
+        @state.deselect()
+        @redraw()
+        
+    onPaste: text => @insert text
+        
+    # 00000000   00000000  0000000    00000000    0000000   000   000  
+    # 000   000  000       000   000  000   000  000   000  000 0 000  
+    # 0000000    0000000   000   000  0000000    000000000  000000000  
+    # 000   000  000       000   000  000   000  000   000  000   000  
+    # 000   000  00000000  0000000    000   000  000   000  00     00  
+    
+    redraw: =>
+        
+        @emit 'redraw'
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key =>
+        
+        switch key
+            
+            'up' 'down' 'left' 'right'  ➜ ⮐ @moveCursor key
+            
+            'ctrl+up'                   ➜ ⮐ @moveCursor 'up'    4
+            'ctrl+down'                 ➜ ⮐ @moveCursor 'down'  4
+            'ctrl+left'                 ➜ ⮐ @moveCursor 'left'  4
+            'ctrl+right'                ➜ ⮐ @moveCursor 'right' 4
+                       
+            'ctrl+alt+up'               ➜ ⮐ @moveCursor 'up'    8
+            'ctrl+alt+down'             ➜ ⮐ @moveCursor 'down'  8
+            'ctrl+alt+left'             ➜ ⮐ @moveCursor 'left'  8
+            'ctrl+alt+right'            ➜ ⮐ @moveCursor 'right' 8
+    
+            'shift+ctrl+alt+up'         ➜ ⮐ @moveCursor 'up'    16
+            'shift+ctrl+alt+down'       ➜ ⮐ @moveCursor 'down'  16
+            'shift+ctrl+alt+left'       ➜ ⮐ @moveCursor 'left'  16
+            'shift+ctrl+alt+right'      ➜ ⮐ @moveCursor 'right' 16
+            
+            'ctrl+a'                    ➜ ⮐ @setCursor 0 @state.s.cursor[1]
+            'ctrl+e'                    ➜ ⮐ @setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
+            'ctrl+h'                    ➜ ⮐ @setCursor 0 0
+            'ctrl+j'                    ➜ ⮐ @setCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
+            'shift+ctrl+h'              ➜ ⮐ @moveCursorAndSelect 'bof'
+            'shift+ctrl+j'              ➜ ⮐ @moveCursorAndSelect 'eof'
+                    
+            'ctrl+k'                    ➜ ⮐ @delete 'eol'
+            'delete'                    ➜ ⮐ @delete 'back'
+            'cmd+delete'                ➜ ⮐ @delete 'back' 'cmd'
+            'alt+delete'                ➜ ⮐ @delete 'back' 'alt'
+                                    
+            'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @cut()     
+            'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @copy()        
+            'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @paste()
+               
+            'cmd+z'                     ➜ ⮐ @undo()
+            'cmd+y' 'shift+cmd+z'       ➜ ⮐ @redo()
+                        
+            'cmd+j'                     ➜ ⮐ @joinLines()
+                    
+            'shift+up'                  ➜ ⮐ @moveCursorAndSelect 'up'
+            'shift+down'                ➜ ⮐ @moveCursorAndSelect 'down'
+            'shift+left'                ➜ ⮐ @moveCursorAndSelect 'left'
+            'shift+right'               ➜ ⮐ @moveCursorAndSelect 'right'
+            'shift+cmd+right'           ➜ ⮐ @moveCursorAndSelect 'eol'
+            'shift+cmd+left'            ➜ ⮐ @moveCursorAndSelect 'bol'
+                                
+            'esc'                       ➜ ⮐ @deselect()
+            
+        @insert key
+            
+export editor

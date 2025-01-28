@@ -6,27 +6,17 @@
  0000000  00000000  0000000  0000000  0000000   
 ###
 
-use ◆ color
-
-makeCells = rows cols ->
-
-    lines = []
-    for l in 0...rows
-        cells = []
-        for c in 0...cols
-            cells.push bg:null fg:null char:' '
-        lines.push cells
-    lines
+use ◆ color util
 
 function cells
 
     @: @t -> @init()
     
-    init: => 
+    init: =>
     
         @rows = @t.rows()
         @cols = @t.cols()
-        @c = makeCells @rows @cols
+        @c = util.cells @rows @cols
         
     bg_rect: x1 y1 x2 y2 c =>
     
