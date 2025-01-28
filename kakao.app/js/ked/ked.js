@@ -9,7 +9,6 @@ import status from "./status.js"
 import screen from "./screen.js"
 import cells from "./cells.js"
 import state from "./state.js"
-import draw from "./draw.js"
 import scroll from "./scroll.js"
 
 import logfile from "./util/logfile.js"
@@ -47,7 +46,6 @@ KED = (function ()
         }).bind(this)
         this.screen = new screen(this.t)
         this.editor = new editor(this.screen)
-        this.draw = new draw(this.screen)
         this.gutter = new gutter(this.screen,this.editor.state)
         this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
@@ -160,20 +158,21 @@ KED = (function ()
         start = process.hrtime()
         w = this.t.cols()
         h = this.t.rows()
-        g = this.editor.state.s.gutter - 1
+        g = this.editor.state.gutterWidth()
+        this.status.gutter = g
         if (true)
         {
             this.scroll.cells.init(w - 1,0,1,h - 1)
-            this.gutter.cells.init(0,0,g - 1,h - 1)
+            this.gutter.cells.init(0,0,g,h - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.draw.cells.init(g - 1,0,w - g,h - 1)
+            this.editor.cells.init(g,0,w - g,h - 1)
         }
         else
         {
             this.scroll.cells.init(0,0,1,h - 1)
-            this.gutter.cells.init(1,0,g - 1,h - 1)
+            this.gutter.cells.init(1,0,g,h - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.draw.cells.init(g,0,w - g,h - 1)
+            this.editor.cells.init(g + 1,0,w - g,h - 1)
         }
         this.t.store()
         this.t.hideCursor()
@@ -181,7 +180,7 @@ KED = (function ()
         this.gutter.draw()
         this.scroll.draw()
         this.status.draw()
-        this.draw.state(this.editor.state)
+        this.editor.draw()
         this.screen.render()
         this.editor.showCursorIfInView()
         this.t.restore()

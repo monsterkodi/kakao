@@ -1,5 +1,5 @@
 var toExport = {}
-import color from "../color.js"
+import color from "../util/color.js"
 
 toExport["color"] = function ()
 {

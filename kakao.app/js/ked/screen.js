@@ -2,8 +2,8 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var screen
 
-import color from "./color.js"
-import util from "./util.js"
+import color from "./util/color.js"
+import util from "./util/util.js"
 
 
 screen = (function ()

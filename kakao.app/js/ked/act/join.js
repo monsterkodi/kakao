@@ -1,6 +1,6 @@
 var _k_ = {ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-import util from "../util.js"
+import util from "../util/util.js"
 
 export default {joinLines:function ()
 {

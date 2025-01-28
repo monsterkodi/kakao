@@ -19,7 +19,7 @@ function gutter
         for row in 0...@cells.rows
                         
             y = @state.s.view[1] + row
-            lineno = lpad @state.s.gutter-2 y+1
+            lineno = lpad @cells.cols-1 y+1
             lineno += ' '
             
             for c,i in lineno

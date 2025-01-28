@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status screen cells state draw scroll
+use ◆ ttio gutter editor status screen cells state scroll
 use ./util ◆ logfile util
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
@@ -30,7 +30,6 @@ function KED
         @screen = new screen @t
         
         @editor = new editor @screen
-        @draw   = new draw   @screen
         @gutter = new gutter @screen @editor.state
         @scroll = new scroll @screen @editor.state
         @status = new status @screen @editor.state
@@ -130,26 +129,27 @@ function KED
         w = @t.cols()
         h = @t.rows()
         
-        g = @editor.state.s.gutter-1
+        g = @editor.state.gutterWidth()
+        @status.gutter = g
         
         if true
             @scroll.cells.init w-1 0 1 h-1
-            @gutter.cells.init 0 0 g-1 h-1
+            @gutter.cells.init 0 0 g h-1
             @status.cells.init 0 h-1 w 1
-            @draw.cells.init   g-1 0 w-g h-1
+            @editor.cells.init g 0 w-g h-1
         else
             @scroll.cells.init 0 0 1 h-1 
-            @gutter.cells.init 1 0 g-1 h-1
+            @gutter.cells.init 1 0 g h-1
             @status.cells.init 0 h-1 w 1
-            @draw.cells.init   g 0 w-g h-1        
-            
+            @editor.cells.init g+1 0 w-g h-1        
+                        
         @t.store()                
         @t.hideCursor()
         @screen.init()
         @gutter.draw()
         @scroll.draw()
         @status.draw()
-        @draw.state @editor.state
+        @editor.draw()
         @screen.render()
         @editor.showCursorIfInView() 
         @t.restore()

@@ -1,7 +1,7 @@
 var toExport = {}
 var lines
 
-import util from "../util.js"
+import util from "../util/util.js"
 
 toExport["util"] = function ()
 {

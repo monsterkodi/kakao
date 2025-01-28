@@ -10,9 +10,9 @@ import ins from "./act/ins.js"
 import sel from "./act/sel.js"
 import join from "./act/join.js"
 
-import color from "./color.js"
 import syntax from "./syntax.js"
-import util from "./util.js"
+
+import util from "./util/util.js"
 
 import child_process from "child_process"
 
@@ -31,11 +31,10 @@ state = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
-        this["updateCursor"] = this["updateCursor"].bind(this)
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
-        this["calcGutter"] = this["calcGutter"].bind(this)
+        this["gutterWidth"] = this["gutterWidth"].bind(this)
         this["hasRedo"] = this["hasRedo"].bind(this)
         this["isDirty"] = this["isDirty"].bind(this)
         this["end"] = this["end"].bind(this)
@@ -58,7 +57,7 @@ state = (function ()
             }
         }
         this.syntax = new syntax
-        this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
+        this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0]})
         this.h = [this.s]
         this.r = []
         this.setCursor(0,0)
@@ -75,7 +74,6 @@ state = (function ()
     state.prototype["setLines"] = function (lines)
     {
         this.syntax.setLines(lines)
-        this.s = this.s.set('gutter',this.calcGutter(lines.length))
         this.s = this.s.set('lines',lines)
         this.r = []
         return this.h.push(this.s)
@@ -146,9 +144,9 @@ state = (function ()
         return this.r.length > 0
     }
 
-    state.prototype["calcGutter"] = function (numLines)
+    state.prototype["gutterWidth"] = function ()
     {
-        return _k_.max(5,2 + Math.ceil(Math.log10(numLines + 1)))
+        return _k_.max(4,2 + Math.ceil(Math.log10(this.s.lines.length + 1)))
     }
 
     state.prototype["cut"] = function ()
@@ -187,11 +185,6 @@ state = (function ()
         return this.insert(text)
     }
 
-    state.prototype["updateCursor"] = function ()
-    {
-        return this.cells.t.setCursor(this.s.cursor[0] - this.s.view[0] + this.s.gutter,this.s.cursor[1] - this.s.view[1])
-    }
-
     state.prototype["setCursor"] = function (x, y)
     {
         var view
@@ -212,9 +205,8 @@ state = (function ()
         {
             view[1] = 0
         }
-        view[0] = _k_.max(0,x - this.cells.cols + this.s.gutter + 1)
-        this.setView(view)
-        return this.updateCursor()
+        view[0] = _k_.max(0,x - this.cells.cols + 1)
+        return this.setView(view)
     }
 
     state.prototype["moveCursor"] = function (dir, steps = 1)
@@ -317,8 +309,7 @@ state = (function ()
         view[1] += sy
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows + 1),view[1])
         view[0] = _k_.max(0,view[0])
-        this.setView(view)
-        return this.updateCursor()
+        return this.setView(view)
     }
 
     state.prototype["setView"] = function (view)

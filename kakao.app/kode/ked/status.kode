@@ -13,6 +13,7 @@ function status
 
     @: screen @state ->
         
+        @gutter = 4
         @cells = new cells screen
         @file = ''
         @drawTime = ''
@@ -21,7 +22,6 @@ function status
         
         x      = 0
         y      = @cells.rows-1
-        gtr    = @state.s.gutter
         cursor = @state.s.cursor
         cols   = @cells.cols
         fnl    = @file.length
@@ -43,8 +43,8 @@ function status
         
         # draw the column number
         
-        colno = rpad gtr-1 "#{cursor[0]+1}"
-        for ci in 1...gtr
+        colno = rpad @gutter-1 "#{cursor[0]+1}"
+        for ci in 1...@gutter
             fg = cursor[0] ? 'status_fg' : 'column_fg'
             fg = 'status_empty' if util.isLinesPosOutside @state.s.lines cursor 
             add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_dark'

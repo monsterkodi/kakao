@@ -8,6 +8,7 @@ cells = (function ()
         this.screen = screen
     
         this["bg_rect"] = this["bg_rect"].bind(this)
+        this["screenForPos"] = this["screenForPos"].bind(this)
         this["posForScreen"] = this["posForScreen"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
         this["set"] = this["set"].bind(this)
@@ -35,6 +36,11 @@ cells = (function ()
     cells.prototype["posForScreen"] = function (x, y)
     {
         return [x - this.x,y - this.y]
+    }
+
+    cells.prototype["screenForPos"] = function (x, y)
+    {
+        return [x + this.x,y + this.y]
     }
 
     cells.prototype["bg_rect"] = function (x1, y1, x2, y2, bg)

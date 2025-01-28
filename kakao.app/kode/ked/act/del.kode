@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ◆ kstr
-use .. ◆ util
+use ../util ◆ util
 
 export
     

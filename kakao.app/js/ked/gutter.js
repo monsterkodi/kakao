@@ -22,7 +22,7 @@ gutter = (function ()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = this.state.s.view[1] + row
-            lineno = _k_.lpad(this.state.s.gutter - 2,y + 1)
+            lineno = _k_.lpad(this.cells.cols - 1,y + 1)
             lineno += ' '
             var list = _k_.list(lineno)
             for (i = 0; i < list.length; i++)

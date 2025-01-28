@@ -8,7 +8,8 @@
 
 use ../kxk ◆ immutable kstr
 use ./act ◆ del ins sel join
-use ◆ color syntax util
+use ◆ syntax 
+use ./util ◆ util
 use child_process
 
 function state 
@@ -26,7 +27,6 @@ function state
             selections:  []
             cursor:      [0 0]
             view:        [0 0]
-            gutter:      @calcGutter(1)
             
         @h = [@s] # undo states (history)
         @r = []   # redo states
@@ -56,7 +56,6 @@ function state
         
         @syntax.setLines lines
         
-        @s = @s.set 'gutter' @calcGutter(lines.length)
         @s = @s.set 'lines' lines        
         
         @r = []
@@ -106,9 +105,7 @@ function state
     isDirty: => @h.length > 1
     hasRedo: => @r.length > 0
                 
-    calcGutter: numLines =>
-        
-        max 5 2 + Math.ceil(Math.log10(numLines+1))
+    gutterWidth: => max 4 2 + Math.ceil(Math.log10(@s.lines.length+1))
                 
     #  0000000  000   000  000000000  
     # 000       000   000     000     
@@ -155,9 +152,7 @@ function state
     # 000       000   000  0000000    0000000   000   000  0000000    
     # 000       000   000  000   000       000  000   000  000   000  
     #  0000000   0000000   000   000  0000000    0000000   000   000  
-    
-    updateCursor: => @cells.t.setCursor @s.cursor[0]-@s.view[0]+@s.gutter @s.cursor[1]-@s.view[1]
-    
+        
     setCursor: x y =>
         
         y = clamp 0 @s.lines.length-1 y
@@ -175,11 +170,11 @@ function state
         if view[1] > 0 and @s.lines.length < @cells.rows
             view[1] = 0
 
-        view[0] = max 0 x - @cells.cols + @s.gutter + 1
+        view[0] = max 0 x - @cells.cols + 1
             
         @setView view
             
-        @updateCursor()
+        # @updateCursor()
         
     moveCursor: dir steps=1 =>
         
@@ -247,7 +242,7 @@ function state
             
         @setView view
         
-        @updateCursor()
+        # @updateCursor()
         
     setView: view => 
     

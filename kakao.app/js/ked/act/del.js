@@ -2,7 +2,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 import kstr from "../../kxk/kstr.js"
 
-import util from "../util.js"
+import util from "../util/util.js"
 
 export default {delete:function (type, mods)
 {

@@ -7,14 +7,81 @@
 ###
 
 use ../kxk ◆ events
-use ◆ state
+use ◆ state cells theme
 use ./util ◆ util
 
 function editor extends events
 
-    @: @cells ->
+    @: @screen ->
         
+        @cells = new cells @screen
         @state = new state @cells
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: =>
+        
+        syntax = @state.syntax
+        s      = @state.s
+        view   = s.view.asMutable()
+        lines  = s.lines.asMutable()
+        
+        for row in 0...@cells.rows-1
+            
+            y = row+view[1]
+            
+            break if y >= lines.length
+            line = lines[y]
+            
+            if not line?
+                lf 'empty line?', noon(lines), y, row, view[1]
+                lf 'empty line?' lines.length y
+                lf '???'
+            
+            # text
+            for x in 0...@cells.cols
+                if x < @cells.cols and x+view[0] < line.length
+                    fg = syntax.getColor x+view[0] y
+                    ch = syntax.getChar x+view[0] y line[x+view[0]]
+                    @cells.set x row ch fg
+                    
+            # empty
+            if y < lines.length
+                linel = line.length - view[0]
+                if y == s.cursor[1]
+                    if linel > 0
+                        @cells.bg_rect 0 row linel row theme.cursor_main
+                    @cells.bg_rect max(0 linel) row -1 row theme.cursor_empty
+                else
+                    if linel > 0
+                        @cells.bg_rect 0 row linel row theme.editor
+                    @cells.bg_rect max(0 linel) row -1 row theme.editor_empty
+                    
+        for selection in s.selections
+            
+            for li in selection[1]..selection[3]
+                
+                y  = li-view[1]
+                
+                if view[1] <= li < view[1] + @cells.rows - 1
+                    
+                    if li == selection[1]
+                        xs = selection[0]
+                    else
+                        xs = 0
+                        
+                    if li == selection[3]
+                        xe = selection[2]
+                    else
+                        xe = lines[li].length
+                        
+                    for x in xs...xe
+                        if 0 <= x-view[0] < @cells.cols
+                            @cells.set_bg x-view[0] y theme.selection
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -24,6 +91,8 @@ function editor extends events
     
     onMouse: event col row button mods count =>
         
+        [col row] = @cells.posForScreen col row
+        
         switch event
             
             'press'
@@ -32,7 +101,7 @@ function editor extends events
                     
                     @state.deselect()
                     
-                    x = col + @state.s.view[0] - @state.s.gutter
+                    x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
                     if count == 2
@@ -49,7 +118,7 @@ function editor extends events
                     
                 else
                     
-                    x = col + @state.s.view[0] - @state.s.gutter
+                    x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
                     @dragStart = [x y x]
@@ -62,7 +131,7 @@ function editor extends events
             'drag'
             
                 if @dragStart
-                    x = col + @state.s.view[0] - @state.s.gutter
+                    x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
                     start = [@dragStart[0] @dragStart[1]]
@@ -194,9 +263,16 @@ function editor extends events
         
     showCursorIfInView: =>
         
-        show = util.isPosInsideRange @state.s.cursor @state.rangeForVisibleLines()
-        if @state.s.cursor[0] < @state.s.view[0] ➜ show = false
-        @cells.t.showCursor show     
+        s = @state.s
+        [sx sy] = @cells.screenForPos s.cursor[0]-s.view[0] s.cursor[1]-s.view[1]
+        
+        lf 'sc' @cells.x @cells.y s.cursor[0]-s.view[0] s.cursor[1]-s.view[1]
+        
+        @screen.t.setCursor sx sy
+        
+        show = util.isPosInsideRange s.cursor @state.rangeForVisibleLines()
+        if s.cursor[0] < s.view[0] ➜ show = false
+        @screen.t.showCursor show     
         
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       
@@ -255,9 +331,7 @@ function editor extends events
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    redraw: =>
-        
-        @emit 'redraw'
+    redraw: => @emit 'redraw'
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

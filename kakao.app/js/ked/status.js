@@ -16,6 +16,7 @@ status = (function ()
         this.state = state
     
         this["draw"] = this["draw"].bind(this)
+        this.gutter = 4
         this.cells = new cells(screen)
         this.file = ''
         this.drawTime = ''
@@ -23,11 +24,10 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var add, ci, colno, cols, cursor, dt, dtl, dty, fg, fnl, gtr, i, lastDot, lastSlash, rcol, rdo, sel, set, x, y
+        var add, ci, colno, cols, cursor, dt, dtl, dty, fg, fnl, i, lastDot, lastSlash, rcol, rdo, sel, set, x, y
 
         x = 0
         y = this.cells.rows - 1
-        gtr = this.state.s.gutter
         cursor = this.state.s.cursor
         cols = this.cells.cols
         fnl = this.file.length
@@ -53,8 +53,8 @@ status = (function ()
             return x += set(x,char,fg,bg)
         }).bind(this)
         add('','status_dark','gutter')
-        colno = _k_.rpad(gtr - 1,`${cursor[0] + 1}`)
-        for (var _a_ = ci = 1, _b_ = gtr; (_a_ <= _b_ ? ci < gtr : ci > gtr); (_a_ <= _b_ ? ++ci : --ci))
+        colno = _k_.rpad(this.gutter - 1,`${cursor[0] + 1}`)
+        for (var _a_ = ci = 1, _b_ = this.gutter; (_a_ <= _b_ ? ci < this.gutter : ci > this.gutter); (_a_ <= _b_ ? ++ci : --ci))
         {
             fg = (cursor[0] ? 'status_fg' : 'column_fg')
             if (util.isLinesPosOutside(this.state.s.lines,cursor))
