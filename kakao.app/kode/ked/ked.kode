@@ -21,6 +21,8 @@ function KED
 
     @: ->
 
+        if args.version ➜ log '0.0.2'; process.exit 0
+                    
         @t = new ttio
         
         @log = new logfile
@@ -34,25 +36,25 @@ function KED
         @scroll = new scroll @screen @editor.state
         @status = new status @screen @editor.state
         
-        @mouseHandlers = [@scroll @editor]
         @editor.on 'redraw' @redraw
+        
+        @mouseHandlers = [@scroll @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
+        @t.on 'resize' @redraw
         @t.on 'paste'  @editor.onPaste
         @t.on 'wheel'  @editor.onWheel
-        @t.on 'resize' @onResize
         @t.on 'focus'  -> 
         @t.on 'blur'   -> 
-            
-        if args.version ➜ log '0.0.1'; process.exit 0
-                        
+                                    
         if valid args.options
             @loadFile args.options[0]
         else
-            @editor.state.init ['']
-            @t.setCursor 4 0
-            @onResize @t.cols() @t.rows()
+            @editor.state.syntax.ext = 'txt'
+            @editor.state.loadLines ['']
+            @t.setCursor 0 0
+            @redraw()
         
     @run: -> new KED()
     
@@ -61,6 +63,8 @@ function KED
     # 000      000   000  000000000  000   000  
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
+        
+    reloadFile: => @loadFile @status.file
         
     loadFile: p ○=>
         
@@ -81,10 +85,20 @@ function KED
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         
         @redraw()
+            
+    #  0000000   0000000   000   000  00000000  
+    # 000       000   000  000   000  000       
+    # 0000000   000000000   000 000   0000000   
+    #      000  000   000     000     000       
+    # 0000000   000   000      0      00000000  
     
-    reloadFile: =>
+    saveFile: ○=>
         
-        @loadFile @status.file
+        text = @editor.state.s.lines.asMutable().join '\n'
+        
+        if valid @status.file
+            ○ nfs.write slash.untilde(@status.file) text
+            @reloadFile()
                                     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -104,7 +118,7 @@ function KED
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKey: key => 
+    onKey: key =>
         
         switch key
             
@@ -114,8 +128,6 @@ function KED
             
         @editor.onKey key
                         
-    onResize: cols rows => @redraw()
-    
     # 00000000   00000000  0000000    00000000    0000000   000   000  
     # 000   000  000       000   000  000   000  000   000  000 0 000  
     # 0000000    0000000   000   000  0000000    000000000  000000000  

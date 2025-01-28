@@ -27,7 +27,6 @@ editor = (function ()
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
-        this["saveFile"] = this["saveFile"].bind(this)
         this["showCursorIfInView"] = this["showCursorIfInView"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
@@ -334,15 +333,6 @@ editor = (function ()
             show = false
         }
         return this.screen.t.showCursor(show)
-    }
-
-    editor.prototype["saveFile"] = async function ()
-    {
-        var text
-
-        text = this.editor.state.s.lines.asMutable().join('\n')
-        await nfs.write(slash.untilde(this.status.file),text)
-        return this.reloadFile()
     }
 
     editor.prototype["cut"] = function ()

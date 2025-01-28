@@ -46,13 +46,14 @@ export default {select:function (from, to)
     {
         return this.select(range.slice(0, 2),range.slice(2, 4))
     }
-},selectLine:(function (y = this.s.cursor[1])
+},selectLine:function (y)
 {
+    y = (y != null ? y : this.s.cursor[1])
     if ((0 <= y && y < this.s.lines.length))
     {
         return this.select([0,y],[this.s.lines[y].length,y])
     }
-}).bind(this),isSelectedLine:function (y)
+},isSelectedLine:function (y)
 {
     var selection
 

@@ -30,11 +30,16 @@ KED = (function ()
     function KED ()
     {
         this["redraw"] = this["redraw"].bind(this)
-        this["onResize"] = this["onResize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["reloadFile"] = this["reloadFile"].bind(this)
+        this["saveFile"] = this["saveFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
+        this["reloadFile"] = this["reloadFile"].bind(this)
+        if (args.version)
+        {
+            console.log('0.0.2')
+            process.exit(0)
+        }
         this.t = new ttio
         this.log = new logfile
         global.lf = (function (...args)
@@ -49,37 +54,38 @@ KED = (function ()
         this.gutter = new gutter(this.screen,this.editor.state)
         this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
-        this.mouseHandlers = [this.scroll,this.editor]
         this.editor.on('redraw',this.redraw)
+        this.mouseHandlers = [this.scroll,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
+        this.t.on('resize',this.redraw)
         this.t.on('paste',this.editor.onPaste)
         this.t.on('wheel',this.editor.onWheel)
-        this.t.on('resize',this.onResize)
         this.t.on('focus',function ()
         {})
         this.t.on('blur',function ()
         {})
-        if (args.version)
-        {
-            console.log('0.0.1')
-            process.exit(0)
-        }
         if (!_k_.empty(args.options))
         {
             this.loadFile(args.options[0])
         }
         else
         {
-            this.editor.state.init([''])
-            this.t.setCursor(4,0)
-            this.onResize(this.t.cols(),this.t.rows())
+            this.editor.state.syntax.ext = 'txt'
+            this.editor.state.loadLines([''])
+            this.t.setCursor(0,0)
+            this.redraw()
         }
     }
 
     KED["run"] = function ()
     {
         return new KED()
+    }
+
+    KED.prototype["reloadFile"] = function ()
+    {
+        return this.loadFile(this.status.file)
     }
 
     KED.prototype["loadFile"] = async function (p)
@@ -103,9 +109,16 @@ KED = (function ()
         return this.redraw()
     }
 
-    KED.prototype["reloadFile"] = function ()
+    KED.prototype["saveFile"] = async function ()
     {
-        return this.loadFile(this.status.file)
+        var text
+
+        text = this.editor.state.s.lines.asMutable().join('\n')
+        if (!_k_.empty(this.status.file))
+        {
+            await nfs.write(slash.untilde(this.status.file),text)
+            return this.reloadFile()
+        }
     }
 
     KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
@@ -144,11 +157,6 @@ KED = (function ()
         }
 
         return this.editor.onKey(key)
-    }
-
-    KED.prototype["onResize"] = function (cols, rows)
-    {
-        return this.redraw()
     }
 
     KED.prototype["redraw"] = function ()

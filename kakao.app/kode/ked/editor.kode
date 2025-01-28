@@ -272,21 +272,7 @@ function editor extends events
         if s.cursor[0] < s.view[0] ➜ show = false
             
         @screen.t.showCursor show     
-        
-    #  0000000   0000000   000   000  00000000  
-    # 000       000   000  000   000  000       
-    # 0000000   000000000   000 000   0000000   
-    #      000  000   000     000     000       
-    # 0000000   000   000      0      00000000  
-    
-    saveFile: ○=>
-        
-        text = @editor.state.s.lines.asMutable().join '\n'
-        
-        ○ nfs.write slash.untilde(@status.file) text
-        
-        @reloadFile()
-        
+                
     #  0000000  000   000  000000000  
     # 000       000   000     000     
     # 000       000   000     000     
