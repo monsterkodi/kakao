@@ -115,7 +115,7 @@ class util
             text += '\n'
         text[0...-1]
         
-    @textFromBolToPos:  lines pos -> lines[pos[1]][0..pos]
+    @textFromBolToPos:  lines pos -> lines[pos[1]][0...pos[0]]
         
     @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
     @isLinesPosOutside: lines pos -> not util.isLinesPosInside lines pos 
@@ -129,9 +129,9 @@ class util
         
         ⮐ if util.isInvalidLineIndex lines y
          
-        [rs re] = kstr.rangeOfClosestWord lines[y] x
-        if 0 <= rs < re
-            ⮐ [rs y re y]
+        if r = kstr.rangeOfClosestWord lines[y] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
 
     @rangeOfWordOrWhitespaceLeftToPos: lines pos ->
         

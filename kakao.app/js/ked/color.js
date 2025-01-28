@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
 
 class color
 {
@@ -18,12 +18,28 @@ class color
             {
                 return [Number.parseInt(c[0],16),Number.parseInt(c[1],16),Number.parseInt(c[2],16)]
             }
-            return [1,1,1]
+            return [255,255,255]
         }
         if (_k_.isNum(c))
         {
             return color.rgb(Number(c).toString(16))
         }
+    }
+
+    static hex (rgb)
+    {
+        return '#' + rgb.map(function (v)
+        {
+            return _k_.lpad(2,Number(v).toString(16),'0')
+        }).join('')
+    }
+
+    static darken (c, f = 0.5)
+    {
+        return color.hex(color.rgb(c).map(function (v)
+        {
+            return _k_.clamp(0,255,parseInt(f * v))
+        }))
     }
 
     static bg_rgb (c)
@@ -79,6 +95,14 @@ class color
     static status_empty = '#ff8844'
 
     static status_sel = '#ff00ff'
+
+    static status_file = '#ffff00'
+
+    static status_ext = '#ff8800'
+
+    static status_dir = '#8888ff'
+
+    static status_sep = '#4444aa'
 
     static status_fg_dim = '#333333'
 

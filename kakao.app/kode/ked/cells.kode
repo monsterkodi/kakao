@@ -14,7 +14,7 @@ makeCells = rows cols ->
     for l in 0...rows
         cells = []
         for c in 0...cols
-            cells.push bg:0 fg:0 char:' '
+            cells.push bg:null fg:null char:' '
         lines.push cells
     lines
 
@@ -69,14 +69,16 @@ function cells
         pfg = ''
         for y in 0...@rows
             for x in 0...@cols
-                bg = color.bg_rgb @c[y][x].bg
-                if bg != pbg
-                    s += bg
-                    pbg = bg
-                fg = color.fg_rgb @c[y][x].fg
-                if fg != pfg
-                    s += fg
-                    pfg = fg
+                if valid @c[y][x].bg
+                    bg = color.bg_rgb @c[y][x].bg
+                    if bg != pbg
+                        s += bg
+                        pbg = bg
+                if valid @c[y][x].fg
+                    fg = color.fg_rgb @c[y][x].fg
+                    if fg != pfg
+                        s += fg
+                        pfg = fg
                 s +=  @c[y][x].char
             s += '\n'
         @t.write s[0..-2]

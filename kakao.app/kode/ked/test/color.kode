@@ -1,0 +1,31 @@
+###
+ 0000000   0000000   000       0000000   00000000   
+000       000   000  000      000   000  000   000  
+000       000   000  000      000   000  0000000    
+000       000   000  000      000   000  000   000  
+ 0000000   0000000   0000000   0000000   000   000  
+###
+
+use ../color
+
+▸ color
+
+    ▸ hex
+    
+        color.hex [0 0 0]     ▸ '#000000'
+        color.hex [0 255 0]   ▸ '#00ff00'
+        color.hex [255 255 0] ▸ '#ffff00'
+        
+    ▸ darken
+    
+        color.darken 'ffff00' 1    ▸ '#ffff00'
+        color.darken 'ffff00' 0.9  ▸ '#e5e500'
+        color.darken 'ffff00' 0.8  ▸ '#cccc00'
+        color.darken 'ffff00' 0.7  ▸ '#b2b200'
+        color.darken 'ffff00' 0.6  ▸ '#999900'
+        color.darken 'ffff00'      ▸ '#7f7f00'
+        color.darken 'ffff00' 0.4  ▸ '#666600'
+        color.darken 'ffff00' 0.3  ▸ '#4c4c00'
+        color.darken 'ffff00' 0.2  ▸ '#333300'
+        color.darken 'ffff00' 0.1  ▸ '#191900'
+        color.darken 'ffff00' 0    ▸ '#000000'

@@ -24,11 +24,17 @@ class color
                 
                 ⮐ [Number.parseInt(c[0], 16) Number.parseInt(c[1], 16) Number.parseInt(c[2], 16)]
                 
-            ⮐ [1 1 1]
+            ⮐ [255 255 255]
                 
         if c is num
             
             ⮐ color.rgb Number(c).toString(16)
+            
+    @hex: rgb -> '#' + rgb.map((v) -> lpad 2 Number(v).toString(16) '0').join('')
+            
+    @darken: c f=0.5 -> 
+    
+        color.hex color.rgb(c).map((v) -> clamp(0 255 parseInt(f*v)))
             
     @bg_rgb: c -> 
         
@@ -60,6 +66,10 @@ class color
     @status_redo:       '#00dd00'  
     @status_empty:      '#ff8844'  
     @status_sel:        '#ff00ff'  
+    @status_file:       '#ffff00'  
+    @status_ext:        '#ff8800'  
+    @status_dir:        '#8888ff'  
+    @status_sep:        '#4444aa'  
     @status_fg_dim:     '#333333'  
     @editor:            '#0d0d0d'  
     @editor_empty:      '#0a0a0a'  

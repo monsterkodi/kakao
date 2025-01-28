@@ -231,7 +231,11 @@ function state
         
         if type == 'back' and valid @s.selections
             @deleteSelection()
-            ⮐ 
+            ⮐ @
+            
+        if type == 'back' and util.isLinesPosOutside(@s.lines @s.cursor)
+            @setCursor @s.lines[@s.cursor[1]].length @s.cursor[1]
+            ⮐ @
 
         [x y] = @s.cursor
         
@@ -252,14 +256,12 @@ function state
                 else
                     if mods in ['cmd' 'alt']
                         rng = util.rangeOfWordOrWhitespaceLeftToPos lines @s.cursor
-                        lf 'cmd+delete' rng
                         dc = rng[2] - rng[0]
                         x -= dc
                         line = kstr.splice line x dc
                     else
                         before = util.textFromBolToPos lines @s.cursor
                         if util.isOnlyWhitespace before
-                            lf "only WS >#{before}<" 
                             dc = x % 4
                             dc = 4 if dc == 0
                             x -= dc
@@ -437,7 +439,7 @@ function state
 
     selectWord: x y =>
         
-        if range = util.rangeOfClosestWordToPos lines [x y]
+        if range = util.rangeOfClosestWordToPos @s.lines [x y]
             @select range[0..1] range[2..3]
         
         # ⮐ if @isInvalidLineIndex y

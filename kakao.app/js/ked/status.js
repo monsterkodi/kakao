@@ -1,4 +1,4 @@
-var _k_ = {rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var status
 
@@ -20,7 +20,7 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var add, ci, colno, cols, cursor, dt, dtl, dty, fg, fnl, gtr, i, rdo, sel, set, x, y
+        var add, ci, colno, cols, cursor, dt, dtl, dty, fg, fnl, gtr, i, lastDot, lastSlash, rcol, rdo, sel, set, x, y
 
         x = 0
         y = this.cells.rows - 1
@@ -34,14 +34,22 @@ status = (function ()
         dty = this.state.isDirty()
         set = (function (x, char, fg, bg)
         {
-            this.cells.set(x,y,char,color[fg],color[bg])
+            if (!_k_.empty(fg) && fg[0] !== '#')
+            {
+                fg = color[fg]
+            }
+            if (!_k_.empty(bg) && bg[0] !== '#')
+            {
+                bg = color[bg]
+            }
+            this.cells.set(x,y,char,fg,bg)
             return 1
         }).bind(this)
         add = (function (char, fg, bg)
         {
             return x += set(x,char,fg,bg)
         }).bind(this)
-        add('','status_dark','gtr')
+        add('','status_dark','gutter')
         colno = _k_.rpad(gtr - 1,`${cursor[0] + 1}`)
         for (var _a_ = ci = 1, _b_ = gtr; (_a_ <= _b_ ? ci < gtr : ci > gtr); (_a_ <= _b_ ? ++ci : --ci))
         {
@@ -55,12 +63,24 @@ status = (function ()
         add('','status','status_dark')
         add((dty ? '' : ''),(dty ? 'status_dirty' : 'status_dark'),'status')
         add(' ','status_fg','status')
+        lastSlash = this.file.lastIndexOf('/')
+        lastDot = this.file.lastIndexOf('.')
         for (var _c_ = ci = 0, _d_ = fnl; (_c_ <= _d_ ? ci < fnl : ci > fnl); (_c_ <= _d_ ? ++ci : --ci))
         {
-            add(((ci < fnl) ? this.file[ci] : ' '),'status_fg','status')
+            fg = (ci > lastSlash ? 'status_file' : 'status_dir')
+            if ((lastSlash <= lastDot && lastDot <= ci))
+            {
+                fg = 'status_ext'
+            }
+            if (_k_.in(this.file[ci],'./'))
+            {
+                fg = color.darken(color[fg])
+            }
+            add(this.file[ci],fg,'status')
         }
         add(' ','status_fg','status')
-        add((rdo ? '' : ''),(rdo ? 'status_redo' : 'status_dark'),'status')
+        rcol = (rdo ? 'status_redo' : (dty ? 'status_dirty' : 'status_dark'))
+        add((rdo ? '' : ''),rcol,'status')
         add('','status','status_dark')
         for (var _e_ = ci = x, _f_ = cols - 1; (_e_ <= _f_ ? ci < cols - 1 : ci > cols - 1); (_e_ <= _f_ ? ++ci : --ci))
         {

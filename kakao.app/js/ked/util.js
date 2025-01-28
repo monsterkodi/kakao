@@ -185,7 +185,7 @@ class util
 
     static textFromBolToPos (lines, pos)
     {
-        return lines[pos[1]].slice(0, typeof pos === 'number' ? pos+1 : Infinity)
+        return lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
     }
 
     static isLinesPosInside (lines, pos)
@@ -210,7 +210,7 @@ class util
 
     static rangeOfClosestWordToPos (lines, pos)
     {
-        var re, rs, x, y
+        var r, x, y
 
         var _a_ = pos; x = _a_[0]; y = _a_[1]
 
@@ -218,11 +218,12 @@ class util
         {
             return
         }
-        var _b_ = kstr.rangeOfClosestWord(lines[y],x); rs = _b_[0]; re = _b_[1]
-
-        if ((0 <= rs && rs < re))
+        if (r = kstr.rangeOfClosestWord(lines[y],x))
         {
-            return [rs,y,re,y]
+            if ((0 <= r[0] && r[0] < r[1]))
+            {
+                return [r[0],y,r[1],y]
+            }
         }
     }
 

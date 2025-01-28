@@ -28,12 +28,16 @@ function status
         rdo    = @state.hasRedo()
         dty    = @state.isDirty()
         
-        set = x char fg bg => @cells.set x y char color[fg] color[bg]; 1
+        set = x char fg bg => 
+            if valid fg and fg[0] != '#' ➜ fg = color[fg]
+            if valid bg and bg[0] != '#' ➜ bg = color[bg]
+            @cells.set x y char fg bg
+            1
         add = char fg bg => x += set x char fg bg
         
         # draw the left edge of the status bar
         
-        add '' 'status_dark' 'gtr'
+        add '' 'status_dark' 'gutter'
         
         # draw the column number
         
@@ -54,14 +58,20 @@ function status
         # draw the file name
         
         add ' ' 'status_fg' 'status'
-            
+
+        lastSlash = @file.lastIndexOf '/'
+        lastDot = @file.lastIndexOf '.'
         for ci in 0...fnl
-            add (ci < fnl) ? @file[ci] : ' ' 'status_fg' 'status'
+            fg = ci > lastSlash ? 'status_file' : 'status_dir'
+            fg = 'status_ext' if lastSlash <= lastDot <= ci
+            fg = color.darken(color[fg]) if @file[ci] in './'
+            add @file[ci] fg 'status'
             
         # draw the redo indicator
         
         add ' ' 'status_fg' 'status'
-        add rdo ? '' : '' rdo ? 'status_redo' : 'status_dark' 'status'
+        rcol = rdo ? 'status_redo' : dty ? 'status_dirty' : 'status_dark'
+        add rdo ? '' : '' rcol 'status'
              
         # draw the right edge of the file name section
         

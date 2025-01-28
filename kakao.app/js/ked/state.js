@@ -257,7 +257,12 @@ state = (function ()
         if (type === 'back' && !_k_.empty(this.s.selections))
         {
             this.deleteSelection()
-            return
+            return this
+        }
+        if (type === 'back' && util.isLinesPosOutside(this.s.lines,this.s.cursor))
+        {
+            this.setCursor(this.s.lines[this.s.cursor[1]].length,this.s.cursor[1])
+            return this
         }
         var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
 
@@ -286,7 +291,6 @@ state = (function ()
                     if (_k_.in(mods,['cmd','alt']))
                     {
                         rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,this.s.cursor)
-                        lf('cmd+delete',rng)
                         dc = rng[2] - rng[0]
                         x -= dc
                         line = kstr.splice(line,x,dc)
@@ -296,7 +300,6 @@ state = (function ()
                         before = util.textFromBolToPos(lines,this.s.cursor)
                         if (util.isOnlyWhitespace(before))
                         {
-                            lf(`only WS >${before}<`)
                             dc = x % 4
                             if (dc === 0)
                             {
@@ -530,7 +533,7 @@ state = (function ()
     {
         var range
 
-        if (range = util.rangeOfClosestWordToPos(lines,[x,y]))
+        if (range = util.rangeOfClosestWordToPos(this.s.lines,[x,y]))
         {
             return this.select(range.slice(0, 2),range.slice(2, 4))
         }

@@ -15,7 +15,7 @@ makeCells = function (rows, cols)
         cells = []
         for (var _c_ = c = 0, _d_ = cols; (_c_ <= _d_ ? c < cols : c > cols); (_c_ <= _d_ ? ++c : --c))
         {
-            cells.push({bg:0,fg:0,char:' '})
+            cells.push({bg:null,fg:null,char:' '})
         }
         lines.push(cells)
     }
@@ -105,17 +105,23 @@ cells = (function ()
         {
             for (var _c_ = x = 0, _d_ = this.cols; (_c_ <= _d_ ? x < this.cols : x > this.cols); (_c_ <= _d_ ? ++x : --x))
             {
-                bg = color.bg_rgb(this.c[y][x].bg)
-                if (bg !== pbg)
+                if (!_k_.empty(this.c[y][x].bg))
                 {
-                    s += bg
-                    pbg = bg
+                    bg = color.bg_rgb(this.c[y][x].bg)
+                    if (bg !== pbg)
+                    {
+                        s += bg
+                        pbg = bg
+                    }
                 }
-                fg = color.fg_rgb(this.c[y][x].fg)
-                if (fg !== pfg)
+                if (!_k_.empty(this.c[y][x].fg))
                 {
-                    s += fg
-                    pfg = fg
+                    fg = color.fg_rgb(this.c[y][x].fg)
+                    if (fg !== pfg)
+                    {
+                        s += fg
+                        pfg = fg
+                    }
                 }
                 s += this.c[y][x].char
             }
