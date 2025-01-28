@@ -3,17 +3,18 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 var status
 
 import color from "./color.js"
+import cells from "./cells.js"
 import util from "./util.js"
 
 
 status = (function ()
 {
-    function status (cells, state)
+    function status (screen, state)
     {
-        this.cells = cells
         this.state = state
     
         this["draw"] = this["draw"].bind(this)
+        this.cells = new cells(screen)
         this.file = ''
         this.drawTime = ''
     }

@@ -6,11 +6,11 @@
 0000000    000   000  000   000  00     00  
 ###
 
-use ◆ color
+use ◆ color cells
 
 class draw
     
-    @: @screen ->
+    @: screen -> @cells = new cells screen
 
     state: state =>
         
@@ -18,9 +18,8 @@ class draw
         syntax = state.syntax
         view   = s.view.asMutable()
         lines  = s.lines.asMutable()
-        gutter = s.gutter
         
-        for row in 0...@screen.rows-1
+        for row in 0...@cells.rows-1
             
             y = row+view[1]
             
@@ -33,24 +32,23 @@ class draw
                 lf '???'
             
             # text
-            
-            for x in 0...@screen.cols-gutter
-                if x+gutter < @screen.cols and x+view[0] < line.length
-                    @screen.c[row][x+gutter].fg   = syntax.getColor x+view[0] y
-                    @screen.c[row][x+gutter].char = syntax.getChar  x+view[0] y line[x+view[0]]
-
-            # empty
+            for x in 0...@cells.cols
+                if x < @cells.cols and x+view[0] < line.length
+                    fg = syntax.getColor x+view[0] y
+                    ch = syntax.getChar x+view[0] y line[x+view[0]]
+                    @cells.set x row ch fg
                     
+            # empty
             if y < lines.length
                 linel = line.length - view[0]
                 if y == s.cursor[1]
                     if linel > 0
-                        @screen.bg_rect gutter row gutter+linel row color.cursor_main
-                    @screen.bg_rect max(gutter gutter+linel) row -1 row color.cursor_empty
+                        @cells.bg_rect 0 row linel row color.cursor_main
+                    @cells.bg_rect max(0 linel) row -1 row color.cursor_empty
                 else
                     if linel > 0
-                        @screen.bg_rect gutter row gutter+linel row color.editor
-                    @screen.bg_rect max(gutter gutter+linel) row -1 row color.editor_empty
+                        @cells.bg_rect 0 row linel row color.editor
+                    @cells.bg_rect max(0 linel) row -1 row color.editor_empty
                     
         for selection in s.selections
             
@@ -58,7 +56,7 @@ class draw
                 
                 y  = li-view[1]
                 
-                if view[1] <= li < view[1] + @screen.rows - 1
+                if view[1] <= li < view[1] + @cells.rows - 1
                     
                     if li == selection[1]
                         xs = selection[0]
@@ -71,7 +69,7 @@ class draw
                         xe = lines[li].length
                         
                     for x in xs...xe
-                        if gutter <= x-view[0]+gutter < @screen.cols
-                            @screen.c[y][x-view[0]+gutter].bg = color.selection
+                        if 0 <= x-view[0] < @cells.cols
+                            @cells.set_bg x-view[0] y color.selection
                             
 export draw

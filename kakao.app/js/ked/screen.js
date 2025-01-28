@@ -12,8 +12,8 @@ screen = (function ()
     {
         this.t = t
     
-        this["bg_rect"] = this["bg_rect"].bind(this)
         this["render"] = this["render"].bind(this)
+        this["set_bg"] = this["set_bg"].bind(this)
         this["set"] = this["set"].bind(this)
         this["init"] = this["init"].bind(this)
         this.init()
@@ -39,6 +39,14 @@ screen = (function ()
             {
                 return this.c[y][x].bg = bg
             }
+        }
+    }
+
+    screen.prototype["set_bg"] = function (x, y, bg)
+    {
+        if (x < this.cols && y < this.rows)
+        {
+            return this.c[y][x].bg = bg
         }
     }
 
@@ -77,41 +85,6 @@ screen = (function ()
             s += '\n'
         }
         return this.t.write(s.slice(0, -1))
-    }
-
-    screen.prototype["bg_rect"] = function (x1, y1, x2, y2, c)
-    {
-        var col, row
-
-        if (x1 < 0)
-        {
-            x1 = this.cols + x1
-        }
-        if (x2 < 0)
-        {
-            x2 = this.cols + x2
-        }
-        if (y1 < 0)
-        {
-            y1 = this.rows + y1
-        }
-        if (y2 < 0)
-        {
-            y2 = this.rows + y2
-        }
-        for (var _a_ = row = y1, _b_ = y2; (_a_ <= _b_ ? row <= y2 : row >= y2); (_a_ <= _b_ ? ++row : --row))
-        {
-            if (row < this.rows)
-            {
-                for (var _c_ = col = x1, _d_ = x2; (_c_ <= _d_ ? col <= x2 : col >= x2); (_c_ <= _d_ ? ++col : --col))
-                {
-                    if (col < this.cols)
-                    {
-                        this.c[row][col].bg = c
-                    }
-                }
-            }
-        }
     }
 
     return screen

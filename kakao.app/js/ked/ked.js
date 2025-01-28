@@ -155,9 +155,26 @@ KED = (function ()
 
     KED.prototype["redraw"] = function ()
     {
-        var start
+        var g, h, start, w
 
         start = process.hrtime()
+        w = this.t.cols()
+        h = this.t.rows()
+        g = this.editor.state.s.gutter - 1
+        if (true)
+        {
+            this.scroll.cells.init(w - 1,0,1,h - 1)
+            this.gutter.cells.init(0,0,g - 1,h - 1)
+            this.status.cells.init(0,h - 1,w,1)
+            this.draw.cells.init(g - 1,0,w - g,h - 1)
+        }
+        else
+        {
+            this.scroll.cells.init(0,0,1,h - 1)
+            this.gutter.cells.init(1,0,g - 1,h - 1)
+            this.status.cells.init(0,h - 1,w,1)
+            this.draw.cells.init(g,0,w - g,h - 1)
+        }
         this.t.store()
         this.t.hideCursor()
         this.screen.init()

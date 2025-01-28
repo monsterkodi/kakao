@@ -126,6 +126,22 @@ function KED
         
         start = process.hrtime()
         
+        w = @t.cols()
+        h = @t.rows()
+        
+        g = @editor.state.s.gutter-1
+        
+        if true
+            @scroll.cells.init w-1 0 1 h-1
+            @gutter.cells.init 0 0 g-1 h-1
+            @status.cells.init 0 h-1 w 1
+            @draw.cells.init   g-1 0 w-g h-1
+        else
+            @scroll.cells.init 0 0 1 h-1 
+            @gutter.cells.init 1 0 g-1 h-1
+            @status.cells.init 0 h-1 w 1
+            @draw.cells.init   g 0 w-g h-1        
+            
         @t.store()                
         @t.hideCursor()
         @screen.init()

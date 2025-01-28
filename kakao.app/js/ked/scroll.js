@@ -3,6 +3,7 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 var floor, pow, scroll
 
 import color from "./color.js"
+import cells from "./cells.js"
 
 floor = Math.floor
 pow = Math.pow
@@ -10,19 +11,21 @@ pow = Math.pow
 
 scroll = (function ()
 {
-    function scroll (cells, state)
+    function scroll (screen, state)
     {
-        this.cells = cells
         this.state = state
     
         this["draw"] = this["draw"].bind(this)
         this["scrollTo"] = this["scrollTo"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this.cells = new cells(screen)
     }
 
     scroll.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
         var hover
+
+        var _a_ = this.cells.posForScreen(col,row); col = _a_[0]; row = _a_[1]
 
         switch (event)
         {
@@ -64,8 +67,8 @@ scroll = (function ()
         var maxY, view
 
         view = this.state.s.view.asMutable()
-        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 2)))
-        maxY = this.state.s.lines.length - this.cells.rows + 1
+        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows) / (this.cells.rows - 1)))
+        maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
         {
             view[1] = _k_.min(maxY,view[1])
@@ -81,12 +84,12 @@ scroll = (function ()
 
         rows = this.cells.rows
         lnum = this.state.s.lines.length
-        kh = parseInt(floor(pow((rows - 1),2) / lnum))
-        kp = parseInt(floor((rows - kh - 2) * this.state.s.view[1] / (lnum - rows + 1)))
-        nc = parseInt(floor((rows - 2) * this.state.s.view[1] / (lnum - rows + 1)))
+        kh = parseInt(floor(pow((rows),2) / lnum))
+        kp = parseInt(floor((rows - kh - 1) * this.state.s.view[1] / (lnum - rows + 1)))
+        nc = parseInt(floor((rows - 1) * this.state.s.view[1] / (lnum - rows + 1)))
         ns = kp
         ne = kp + kh
-        for (var _a_ = row = 0, _b_ = rows - 1; (_a_ <= _b_ ? row < rows - 1 : row > rows - 1); (_a_ <= _b_ ? ++row : --row))
+        for (var _a_ = row = 0, _b_ = rows; (_a_ <= _b_ ? row < rows : row > rows); (_a_ <= _b_ ? ++row : --row))
         {
             bg = lnum < rows ? color.gutter : row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.gutter : color.gutter
             this.cells.set(0,row,' ',null,bg)

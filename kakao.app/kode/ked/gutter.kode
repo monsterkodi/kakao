@@ -6,15 +6,17 @@
  0000000    0000000      000        000     00000000  000   000  
 ###
 
-use ◆ color
+use ◆ color cells
 
 function gutter
 
-    @: @cells @state ->
+    @: screen @state ->
+        
+        @cells = new cells screen
         
     draw: ->
         
-        for row in 0...@cells.rows-1
+        for row in 0...@cells.rows
                         
             y = @state.s.view[1] + row
             lineno = lpad @state.s.gutter-2 y+1
@@ -22,7 +24,7 @@ function gutter
             
             for c,i in lineno
                 
-                col = i+1
+                col = i#+1
                 if col < @cells.rows
                     
                     fg = if

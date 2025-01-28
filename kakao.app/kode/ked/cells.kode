@@ -6,18 +6,12 @@
  0000000  00000000  0000000  0000000  0000000   
 ###
 
-use ◆ color util
-
 function cells
 
-    @: @screen -> @init()
+    @: @screen ->
     
-    init: @r =>
-    
-        @rows = @r.rows
-        @cols = @r.cols
-        @c = util.cells @rows @cols
-                                
+    init: @x @y @cols @rows =>
+        
     #  0000000  00000000  000000000  
     # 000       000          000     
     # 0000000   0000000      000     
@@ -26,6 +20,38 @@ function cells
     
     set: x y char fg bg =>
         
-        @screen.set @r.x+x @r.y+y char fg bg
+        @screen.set @x+x @y+y char fg bg
+        
+    set_bg: x y bg =>
+        
+        @screen.set_bg @x+x @y+y bg
+        
+    # 00000000    0000000    0000000  
+    # 000   000  000   000  000       
+    # 00000000   000   000  0000000   
+    # 000        000   000       000  
+    # 000         0000000   0000000   
+    
+    posForScreen: x y => [x-@x y-@y]
+        
+    # 0000000     0000000           00000000   00000000   0000000  000000000  
+    # 000   000  000                000   000  000       000          000     
+    # 0000000    000  0000          0000000    0000000   000          000     
+    # 000   000  000   000          000   000  000       000          000     
+    # 0000000     0000000   000000  000   000  00000000   0000000     000     
+    
+    bg_rect: x1 y1 x2 y2 bg =>
+    
+        x1 = @cols + x1 if x1 < 0
+        x2 = @cols + x2 if x2 < 0
+
+        y1 = @rows + y1 if y1 < 0
+        y2 = @rows + y2 if y2 < 0
+        
+        for row in y1..y2
+            if row < @rows
+                for col in x1..x2
+                    if col < @cols
+                        @set_bg col row bg
                 
 export cells
