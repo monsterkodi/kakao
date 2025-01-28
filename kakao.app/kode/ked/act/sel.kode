@@ -1,0 +1,96 @@
+###
+ 0000000  00000000  000        
+000       000       000        
+0000000   0000000   000        
+     000  000       000        
+0000000   00000000  0000000    
+###
+
+export
+    
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    select: from to ->
+        
+        selections = []
+        
+        @setCursor to[0] to[1]
+        
+        if from[1] > to[1]
+            [from to] = [to from]
+        else if from[1] == to[1] and from[0] > to[0]
+            [from to] = [to from]
+
+        to[1]   = clamp 0 @s.lines.length-1 to[1]
+        from[1] = clamp 0 @s.lines.length-1 from[1]
+            
+        to[0]   = clamp 0 @s.lines[to[1]].length to[0]
+        from[0] = clamp 0 @s.lines[from[1]].length from[0]
+        
+        selections.push [from[0] from[1] to[0] to[1]]
+        
+        @set 'selections' selections
+        
+        true
+        
+    #  0000000  000   000  000   000  000   000  000   000  
+    # 000       000   000  000   000  0000  000  000  000   
+    # 000       000000000  000   000  000 0 000  0000000    
+    # 000       000   000  000   000  000  0000  000  000   
+    #  0000000  000   000   0000000   000   000  000   000  
+    
+    selectChunk: x y ->
+        
+        ⮐ if @isInvalidLineIndex y
+        
+        line = @s.lines[y]
+        
+        [rs re] = kstr.rangeOfClosestChunk line x
+        if rs >= 0 and re >= 0
+            @select [rs y] [re+1 y]
+
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
+    selectWord: x y ->
+        
+        if range = util.rangeOfClosestWordToPos @s.lines [x y]
+            @select range[0..1] range[2..3]
+        
+    # 000      000  000   000  00000000  
+    # 000      000  0000  000  000       
+    # 000      000  000 0 000  0000000   
+    # 000      000  000  0000  000       
+    # 0000000  000  000   000  00000000  
+    
+    selectLine: y=@s.cursor[1] =>
+        
+        if 0 <= y < @s.lines.length
+            @select [0 y] [@s.lines[y].length y]
+
+    isSelectedLine: y ->
+        
+        for selection in @s.selections
+            if selection[3] == y and selection[2] == 0
+                continue
+            if selection[1] <= y <= selection[3]
+                ⮐ true
+        false
+            
+    # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  
+    # 000   000  000       000       000       000      000       000          000     
+    # 000   000  0000000   0000000   0000000   000      0000000   000          000     
+    # 000   000  000            000  000       000      000       000          000     
+    # 0000000    00000000  0000000   00000000  0000000  00000000   0000000     000     
+    
+    deselect: ->
+        
+        if valid @s.selections
+            @set 'selections' []

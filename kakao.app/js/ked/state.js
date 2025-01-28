@@ -1,9 +1,14 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
 import immutable from "../kxk/immutable.js"
 import kstr from "../kxk/kstr.js"
+
+import del from "./act/del.js"
+import ins from "./act/ins.js"
+import sel from "./act/sel.js"
+import join from "./act/join.js"
 
 import color from "./color.js"
 import syntax from "./syntax.js"
@@ -11,23 +16,15 @@ import util from "./util.js"
 
 import child_process from "child_process"
 
-import del from "./actions/del.js"
-
 
 state = (function ()
 {
     function state (cells)
     {
-        var k, v
+        var act, k, v
 
         this.cells = cells
     
-        this["deselect"] = this["deselect"].bind(this)
-        this["isSelectedLine"] = this["isSelectedLine"].bind(this)
-        this["selectLine"] = this["selectLine"].bind(this)
-        this["selectWord"] = this["selectWord"].bind(this)
-        this["selectChunk"] = this["selectChunk"].bind(this)
-        this["select"] = this["select"].bind(this)
         this["rangeForVisibleLines"] = this["rangeForVisibleLines"].bind(this)
         this["setView"] = this["setView"].bind(this)
         this["scrollView"] = this["scrollView"].bind(this)
@@ -35,13 +32,10 @@ state = (function ()
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["updateCursor"] = this["updateCursor"].bind(this)
-        this["insertNewline"] = this["insertNewline"].bind(this)
-        this["insert"] = this["insert"].bind(this)
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
         this["calcGutter"] = this["calcGutter"].bind(this)
-        this["joinLines"] = this["joinLines"].bind(this)
         this["hasRedo"] = this["hasRedo"].bind(this)
         this["isDirty"] = this["isDirty"].bind(this)
         this["end"] = this["end"].bind(this)
@@ -53,10 +47,15 @@ state = (function ()
         this["loadLines"] = this["loadLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
-        for (k in del)
+        var list = [del,ins,sel,join]
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            v = del[k]
-            this[k] = v.bind(this)
+            act = list[_a_]
+            for (k in act)
+            {
+                v = act[k]
+                this[k] = v.bind(this)
+            }
         }
         this.syntax = new syntax
         this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
@@ -147,20 +146,6 @@ state = (function ()
         return this.r.length > 0
     }
 
-    state.prototype["joinLines"] = function ()
-    {
-        var lines
-
-        if (this.s.cursor[1] >= this.s.lines.length - 1)
-        {
-            return
-        }
-        lines = this.s.lines.asMutable()
-        this.setCursor(lines[this.s.cursor[1]].length,this.s.cursor[1])
-        lines.splice(this.s.cursor[1],2,lines[this.s.cursor[1]] + lines[this.s.cursor[1] + 1])
-        return this.setLines(lines)
-    }
-
     state.prototype["calcGutter"] = function (numLines)
     {
         return _k_.max(5,2 + Math.ceil(Math.log10(numLines + 1)))
@@ -200,65 +185,6 @@ state = (function ()
 
         text = child_process.execSync('pbpaste').toString("utf8")
         return this.insert(text)
-    }
-
-    state.prototype["insert"] = function (text)
-    {
-        var i, line, lines, s, split, x, y
-
-        split = text.split(/\r?\n/)
-        if (split.length > 1)
-        {
-            this.begin()
-            var list = _k_.list(split)
-            for (i = 0; i < list.length; i++)
-            {
-                s = list[i]
-                this.insert(s)
-                if (i < split.length - 1 || text !== '\n')
-                {
-                    this.insertNewline()
-                }
-            }
-            this.end()
-            return
-        }
-        if (text === '\t')
-        {
-            text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
-        }
-        var _b_ = this.s.cursor; x = _b_[0]; y = _b_[1]
-
-        lines = this.s.lines.asMutable()
-        line = lines[y]
-        if (x > line.length)
-        {
-            line += _k_.lpad(x - line.length)
-        }
-        line = kstr.splice(line,x,0,text)
-        lines.splice(y,1,line)
-        this.setLines(lines)
-        x += text.length
-        this.syntax.updateLines(lines,[y])
-        return this.setCursor(x,y)
-    }
-
-    state.prototype["insertNewline"] = function ()
-    {
-        var after, before, line, lines, x, y
-
-        var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
-
-        lines = this.s.lines.asMutable()
-        line = lines[y]
-        before = line.slice(0, typeof x === 'number' ? x : -1)
-        after = line.slice(x)
-        lines.splice(y,1,before)
-        lines.splice(y + 1,0,after)
-        this.setLines(lines)
-        y = y + 1
-        x = 0
-        return this.setCursor(x,y)
     }
 
     state.prototype["updateCursor"] = function ()
@@ -392,7 +318,7 @@ state = (function ()
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows + 1),view[1])
         view[0] = _k_.max(0,view[0])
         this.setView(view)
-        return this.cells.t.setCursor(this.s.cursor[0] + this.s.gutter - this.s.view[0],this.s.cursor[1] - this.s.view[1])
+        return this.updateCursor()
     }
 
     state.prototype["setView"] = function (view)
@@ -403,94 +329,6 @@ state = (function ()
     state.prototype["rangeForVisibleLines"] = function ()
     {
         return [this.s.view[0],this.s.view[1],this.s.view[0] + this.cells.cols - 1,this.s.view[1] + this.cells.rows - 1]
-    }
-
-    state.prototype["select"] = function (from, to)
-    {
-        var selections
-
-        selections = []
-        this.setCursor(to[0],to[1])
-        if (from[1] > to[1])
-        {
-            var _a_ = [to,from]; from = _a_[0]; to = _a_[1]
-
-        }
-        else if (from[1] === to[1] && from[0] > to[0])
-        {
-            var _b_ = [to,from]; from = _b_[0]; to = _b_[1]
-
-        }
-        to[1] = _k_.clamp(0,this.s.lines.length - 1,to[1])
-        from[1] = _k_.clamp(0,this.s.lines.length - 1,from[1])
-        to[0] = _k_.clamp(0,this.s.lines[to[1]].length,to[0])
-        from[0] = _k_.clamp(0,this.s.lines[from[1]].length,from[0])
-        selections.push([from[0],from[1],to[0],to[1]])
-        this.set('selections',selections)
-        return true
-    }
-
-    state.prototype["selectChunk"] = function (x, y)
-    {
-        var line, re, rs
-
-        if (this.isInvalidLineIndex(y))
-        {
-            return
-        }
-        line = this.s.lines[y]
-        var _a_ = kstr.rangeOfClosestChunk(line,x); rs = _a_[0]; re = _a_[1]
-
-        if (rs >= 0 && re >= 0)
-        {
-            return this.select([rs,y],[re + 1,y])
-        }
-    }
-
-    state.prototype["selectWord"] = function (x, y)
-    {
-        var range
-
-        if (range = util.rangeOfClosestWordToPos(this.s.lines,[x,y]))
-        {
-            return this.select(range.slice(0, 2),range.slice(2, 4))
-        }
-    }
-
-    state.prototype["selectLine"] = function (y = this.s.cursor[1])
-    {
-        if ((0 <= y && y < this.s.lines.length))
-        {
-            return this.select([0,y],[this.s.lines[y].length,y])
-        }
-    }
-
-    state.prototype["isSelectedLine"] = function (y)
-    {
-        var selection
-
-        var list = _k_.list(this.s.selections)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            selection = list[_a_]
-            if (selection[3] === y && selection[2] === 0)
-            {
-                continue
-            }
-            if ((selection[1] <= y && y <= selection[3]))
-            {
-                return true
-            }
-        }
-        return false
-    }
-
-    state.prototype["deselect"] = function ()
-    {
-        if (!_k_.empty(this.s.selections))
-        {
-            return this.set('selections',[])
-        }
     }
 
     return state

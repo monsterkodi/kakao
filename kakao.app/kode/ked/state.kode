@@ -7,16 +7,17 @@
 ###
 
 use ../kxk ◆ immutable kstr
+use ./act ◆ del ins sel join
 use ◆ color syntax util
 use child_process
-use ./actions ◆ del
 
-function state
-
-    @: @cells -> 
+function state 
+    
+    @: @cells ->
         
-        for k,v of del
-            @[k] = v.bind @
+        for act in [del ins sel join]
+            for k,v of act
+                @[k] = v.bind @
         
         @syntax = new syntax
     
@@ -104,25 +105,7 @@ function state
         
     isDirty: => @h.length > 1
     hasRedo: => @r.length > 0
-        
-    #       000   0000000   000  000   000  
-    #       000  000   000  000  0000  000  
-    #       000  000   000  000  000 0 000  
-    # 000   000  000   000  000  000  0000  
-    #  0000000    0000000   000  000   000  
-    
-    joinLines: =>
-        
-        ⮐ if @s.cursor[1] >= @s.lines.length-1
-        
-        lines = @s.lines.asMutable()
-        
-        @setCursor lines[@s.cursor[1]].length @s.cursor[1]
-        
-        lines.splice @s.cursor[1] 2 lines[@s.cursor[1]] + lines[@s.cursor[1]+1]
-        
-        @setLines lines
-        
+                
     calcGutter: numLines =>
         
         max 5 2 + Math.ceil(Math.log10(numLines+1))
@@ -167,69 +150,6 @@ function state
         text = child_process.execSync('pbpaste').toString("utf8")
         @insert text
         
-    # 000  000   000   0000000  00000000  00000000   000000000  
-    # 000  0000  000  000       000       000   000     000     
-    # 000  000 0 000  0000000   0000000   0000000       000     
-    # 000  000  0000       000  000       000   000     000     
-    # 000  000   000  0000000   00000000  000   000     000     
-    
-    insert: text =>
-                
-        split = text.split /\r?\n/
-        if split.length > 1
-            @begin()
-            for s,i in split
-                @insert s
-                if i < split.length-1 or text != '\n'
-                    @insertNewline()            
-            @end()
-            ⮐ 
-            
-        if text == '\t'
-            text = lpad 4-@s.cursor[0]%4 ' '
-        # todo: handle pasted text with tabs?
-        
-        [x y] = @s.cursor
-            
-        lines = @s.lines.asMutable()
-        line  = lines[y]
-        
-        # fill line at end with spaces if cursor is behind end of line
-        if x > line.length
-            line += lpad x-line.length
-        
-        line = kstr.splice line x 0 text
-        
-        lines.splice y 1 line
-                
-        @setLines lines
-        
-        x += text.length
-        
-        @syntax.updateLines lines [y]
-        
-        @setCursor x y
-        
-    insertNewline: =>
-        
-        [x y] = @s.cursor
-        
-        lines = @s.lines.asMutable()
-        line  = lines[y]
-        
-        before = line[0...x]
-        after  = line[x..]
-        
-        lines.splice y 1 before
-        lines.splice y+1 0 after
-                
-        @setLines lines
-        
-        y = y + 1
-        x = 0
-        
-        @setCursor x y
-                            
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
     # 000       000   000  0000000    0000000   000   000  0000000    
@@ -327,7 +247,7 @@ function state
             
         @setView view
         
-        @cells.t.setCursor @s.cursor[0]+@s.gutter-@s.view[0] @s.cursor[1]-@s.view[1]
+        @updateCursor()
         
     setView: view => 
     
@@ -336,82 +256,5 @@ function state
     rangeForVisibleLines: =>
         
         [@s.view[0] @s.view[1] @s.view[0]+@cells.cols-1 @s.view[1]+@cells.rows-1]
-                
-    #  0000000  00000000  000      00000000   0000000  000000000  
-    # 000       000       000      000       000          000     
-    # 0000000   0000000   000      0000000   000          000     
-    #      000  000       000      000       000          000     
-    # 0000000   00000000  0000000  00000000   0000000     000     
-    
-    select: from to =>
-        
-        selections = []
-        
-        @setCursor to[0] to[1]
-        
-        if from[1] > to[1]
-            [from to] = [to from]
-        else if from[1] == to[1] and from[0] > to[0]
-            [from to] = [to from]
-
-        to[1]   = clamp 0 @s.lines.length-1 to[1]
-        from[1] = clamp 0 @s.lines.length-1 from[1]
-            
-        to[0]   = clamp 0 @s.lines[to[1]].length to[0]
-        from[0] = clamp 0 @s.lines[from[1]].length from[0]
-        
-        selections.push [from[0] from[1] to[0] to[1]]
-        
-        @set 'selections' selections
-        
-        true
-        
-    selectChunk: x y =>
-        
-        ⮐ if @isInvalidLineIndex y
-        
-        line = @s.lines[y]
-        
-        [rs re] = kstr.rangeOfClosestChunk line x
-        if rs >= 0 and re >= 0
-            @select [rs y] [re+1 y]
-
-    selectWord: x y =>
-        
-        if range = util.rangeOfClosestWordToPos @s.lines [x y]
-            @select range[0..1] range[2..3]
-        
-        # ⮐ if @isInvalidLineIndex y
-#         
-        # line = @s.lines[y]
-#         
-        # [rs re] = kstr.rangeOfClosestWord line x
-        # if rs >= 0 and re >= 0
-            # @select [rs y] [re+1 y]
-                        
-    selectLine: y=@s.cursor[1] =>
-        
-        if 0 <= y < @s.lines.length
-            @select [0 y] [@s.lines[y].length y]
-
-    isSelectedLine: y =>
-        
-        for selection in @s.selections
-            if selection[3] == y and selection[2] == 0
-                continue
-            if selection[1] <= y <= selection[3]
-                ⮐ true
-        false
-            
-    # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  
-    # 000   000  000       000       000       000      000       000          000     
-    # 000   000  0000000   0000000   0000000   000      0000000   000          000     
-    # 000   000  000            000  000       000      000       000          000     
-    # 0000000    00000000  0000000   00000000  0000000  00000000   0000000     000     
-    
-    deselect: =>
-        
-        if valid @s.selections
-            @set 'selections' []
-                    
+                                    
 export state

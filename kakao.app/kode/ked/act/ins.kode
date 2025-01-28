@@ -1,0 +1,74 @@
+###
+000  000   000   0000000    
+000  0000  000  000         
+000  000 0 000  0000000     
+000  000  0000       000    
+000  000   000  0000000     
+###
+
+use ../../kxk ◆ kstr
+
+export
+    
+    # 000  000   000   0000000  00000000  00000000   000000000  
+    # 000  0000  000  000       000       000   000     000     
+    # 000  000 0 000  0000000   0000000   0000000       000     
+    # 000  000  0000       000  000       000   000     000     
+    # 000  000   000  0000000   00000000  000   000     000     
+    
+    insert: text ->
+                
+        split = text.split /\r?\n/
+        if split.length > 1
+            @begin()
+            for s,i in split
+                @insert s
+                if i < split.length-1 or text != '\n'
+                    @insertNewline()            
+            @end()
+            ⮐ 
+            
+        if text == '\t'
+            text = lpad 4-@s.cursor[0]%4 ' '
+        # todo: handle pasted text with tabs?
+        
+        [x y] = @s.cursor
+            
+        lines = @s.lines.asMutable()
+        line  = lines[y]
+        
+        # fill line at end with spaces if cursor is behind end of line
+        if x > line.length
+            line += lpad x-line.length
+        
+        line = kstr.splice line x 0 text
+        
+        lines.splice y 1 line
+                
+        @setLines lines
+        
+        x += text.length
+        
+        @syntax.updateLines lines [y]
+        
+        @setCursor x y
+        
+    insertNewline: ->
+        
+        [x y] = @s.cursor
+        
+        lines = @s.lines.asMutable()
+        line  = lines[y]
+        
+        before = line[0...x]
+        after  = line[x..]
+        
+        lines.splice y 1 before
+        lines.splice y+1 0 after
+                
+        @setLines lines
+        
+        y = y + 1
+        x = 0
+        
+        @setCursor x y

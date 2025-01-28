@@ -1,0 +1,29 @@
+#       000   0000000   000  000   000  
+#       000  000   000  000  0000  000  
+#       000  000   000  000  000 0 000  
+# 000   000  000   000  000  000  0000  
+#  0000000    0000000   000  000   000  
+
+use .. ◆ util
+
+export
+
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
+    joinLines: ->
+        
+        [x y] = @s.cursor
+        lines = @s.lines.asMutable()
+        
+        ⮐ if util.isInvalidLineIndex lines y 
+        
+        x = lines[y].length
+        @setCursor x y
+        
+        lines.splice y 2 lines[y] + ltrim(lines[y+1])
+        
+        @setLines lines
