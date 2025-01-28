@@ -6,7 +6,7 @@
  0000000    0000000      000        000     00000000  000   000  
 ###
 
-use ◆ color cells
+use ◆ theme cells
 
 function gutter
 
@@ -28,13 +28,13 @@ function gutter
                 if col < @cells.rows
                     
                     fg = if
-                        y == @state.s.cursor[1] ➜ color.cursor
-                        @state.isSelectedLine y ➜ color.selection
-                                                ➜ color.linenr
+                        y == @state.s.cursor[1] ➜ theme.cursor
+                        @state.isSelectedLine y ➜ theme.selection
+                                                ➜ theme.linenr
                                                 
                     bg = if 
-                        @state.isSelectedLine y ➜ color.gutter_sel
-                                                ➜ color.gutter
+                        @state.isSelectedLine y ➜ theme.gutter_sel
+                                                ➜ theme.gutter
                     
                     @cells.set col row (y<@state.s.lines.length) ? c : ' ' fg bg
 

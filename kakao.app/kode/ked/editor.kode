@@ -7,7 +7,8 @@
 ###
 
 use ../kxk ◆ events
-use ◆ state util
+use ◆ state
+use ./util ◆ util
 
 function editor extends events
 

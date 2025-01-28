@@ -5,7 +5,8 @@ var editor
 import events from "../kxk/events.js"
 
 import state from "./state.js"
-import util from "./util.js"
+
+import util from "./util/util.js"
 
 
 editor = (function ()

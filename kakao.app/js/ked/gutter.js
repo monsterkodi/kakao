@@ -2,7 +2,7 @@ var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} 
 
 var gutter
 
-import color from "./color.js"
+import theme from "./theme.js"
 import cells from "./cells.js"
 
 
@@ -31,8 +31,8 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === this.state.s.cursor[1] ? color.cursor : this.state.isSelectedLine(y) ? color.selection : color.linenr
-                    bg = this.state.isSelectedLine(y) ? color.gutter_sel : color.gutter
+                    fg = y === this.state.s.cursor[1] ? theme.cursor : this.state.isSelectedLine(y) ? theme.selection : theme.linenr
+                    bg = this.state.isSelectedLine(y) ? theme.gutter_sel : theme.gutter
                     this.cells.set(col,row,((y < this.state.s.lines.length) ? c : ' '),fg,bg)
                 }
             }

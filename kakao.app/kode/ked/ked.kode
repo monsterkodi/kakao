@@ -6,7 +6,8 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status screen cells state draw logfile scroll color util
+use ◆ ttio gutter editor status screen cells state draw scroll
+use ./util ◆ logfile util
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
 

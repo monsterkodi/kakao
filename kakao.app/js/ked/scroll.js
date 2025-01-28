@@ -2,7 +2,7 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 
 var floor, pow, scroll
 
-import color from "./color.js"
+import theme from "./theme.js"
 import cells from "./cells.js"
 
 floor = Math.floor
@@ -91,7 +91,7 @@ scroll = (function ()
         ne = kp + kh
         for (var _a_ = row = 0, _b_ = rows; (_a_ <= _b_ ? row < rows : row > rows); (_a_ <= _b_ ? ++row : --row))
         {
-            bg = lnum < rows ? color.gutter : row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.gutter : color.gutter
+            bg = lnum < rows ? theme.gutter : row === nc ? (this.hover ? theme.scroll_doth : theme.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? theme.scroll_knob : theme.scroll) : this.hover ? theme.gutter : theme.gutter
             this.cells.set(0,row,' ',null,bg)
         }
     }

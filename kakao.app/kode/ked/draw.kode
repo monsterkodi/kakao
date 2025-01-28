@@ -6,7 +6,7 @@
 0000000    000   000  000   000  00     00  
 ###
 
-use ◆ color cells
+use ◆ theme cells
 
 class draw
     
@@ -43,12 +43,12 @@ class draw
                 linel = line.length - view[0]
                 if y == s.cursor[1]
                     if linel > 0
-                        @cells.bg_rect 0 row linel row color.cursor_main
-                    @cells.bg_rect max(0 linel) row -1 row color.cursor_empty
+                        @cells.bg_rect 0 row linel row theme.cursor_main
+                    @cells.bg_rect max(0 linel) row -1 row theme.cursor_empty
                 else
                     if linel > 0
-                        @cells.bg_rect 0 row linel row color.editor
-                    @cells.bg_rect max(0 linel) row -1 row color.editor_empty
+                        @cells.bg_rect 0 row linel row theme.editor
+                    @cells.bg_rect max(0 linel) row -1 row theme.editor_empty
                     
         for selection in s.selections
             
@@ -70,6 +70,6 @@ class draw
                         
                     for x in xs...xe
                         if 0 <= x-view[0] < @cells.cols
-                            @cells.set_bg x-view[0] y color.selection
+                            @cells.set_bg x-view[0] y theme.selection
                             
 export draw

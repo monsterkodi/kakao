@@ -8,7 +8,8 @@
 
 use ../kxk ◆ kstr
 use ../kolor/kolor
-use ◆ color
+
+use ◆ theme
 
 function syntax
 
@@ -35,7 +36,7 @@ function syntax
         
     getColor: x y =>
         
-        color.syntax[@getClass x y] ? '#ff0000'
+        theme.syntax[@getClass x y] ? '#ff0000'
         
     getChar: x y char =>
         

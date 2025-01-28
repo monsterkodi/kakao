@@ -10,10 +10,10 @@ import screen from "./screen.js"
 import cells from "./cells.js"
 import state from "./state.js"
 import draw from "./draw.js"
-import logfile from "./logfile.js"
 import scroll from "./scroll.js"
-import color from "./color.js"
-import util from "./util.js"
+
+import logfile from "./util/logfile.js"
+import util from "./util/util.js"
 
 import kxk from "../kxk.js"
 let karg = kxk.karg

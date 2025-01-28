@@ -6,7 +6,7 @@
 0000000    0000000  000   000   0000000   0000000  0000000
 ###
 
-use ◆ color cells
+use ◆ theme cells
 
 {floor, pow} = Math
 
@@ -93,11 +93,11 @@ function scroll
         for row in 0...rows
             
             bg = if
-                lnum < rows     ➜ color.gutter
-                row == nc       ➜ @hover ? color.scroll_doth : color.scroll_dot
-                ns <= row <= ne ➜ @hover ? color.scroll_knob : color.scroll
-                @hover          ➜ color.gutter
-                                ➜ color.gutter
+                lnum < rows     ➜ theme.gutter
+                row == nc       ➜ @hover ? theme.scroll_doth : theme.scroll_dot
+                ns <= row <= ne ➜ @hover ? theme.scroll_knob : theme.scroll
+                @hover          ➜ theme.gutter
+                                ➜ theme.gutter
                         
             @cells.set 0 row ' ' null bg
 

@@ -1,53 +1,5 @@
-###
- 0000000   0000000   000       0000000   00000000   
-000       000   000  000      000   000  000   000  
-000       000   000  000      000   000  0000000    
-000       000   000  000      000   000  000   000  
- 0000000   0000000   0000000   0000000   000   000  
-###
-
-class color
+class theme
     
-    @rgb: c ->
-        
-        if c is str
-            
-            if c.length == 7
-                
-                c = c[1..]
-            
-            if c.length == 6
-                
-                ⮐ [Number.parseInt(c[0..1], 16) Number.parseInt(c[2..3], 16) Number.parseInt(c[4..5], 16)]
-                
-            if c.length == 3
-                
-                ⮐ [Number.parseInt(c[0], 16) Number.parseInt(c[1], 16) Number.parseInt(c[2], 16)]
-                
-            ⮐ [255 255 255]
-                
-        if c is num
-            
-            ⮐ color.rgb Number(c).toString(16)
-            
-    @hex: rgb -> '#' + rgb.map((v) -> lpad 2 Number(v).toString(16) '0').join('')
-            
-    @darken: c f=0.5 -> 
-    
-        color.hex color.rgb(c).map((v) -> clamp(0 255 parseInt(f*v)))
-            
-    @bg_rgb: c -> 
-        
-        [r g b] = color.rgb c
-    
-        "\x1b[48;2;#{r};#{g};#{b}m" 
-
-    @fg_rgb: c -> 
-        
-        [r g b] = color.rgb c
-    
-        "\x1b[38;2;#{r};#{g};#{b}m" 
-        
     @selection:         '#222222'  
     @cursor:            '#ffff00'  
     @linenr:            '#1a1a1a'  
@@ -147,4 +99,4 @@ class color
         'text ext':                             '#888888'
         'punct text':                           '#444444'
         
-export color
+export theme

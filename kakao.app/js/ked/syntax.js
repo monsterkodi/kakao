@@ -6,7 +6,7 @@ import kstr from "../kxk/kstr.js"
 
 import kolor from "../kolor/kolor.js"
 
-import color from "./color.js"
+import theme from "./theme.js"
 
 
 syntax = (function ()
@@ -55,9 +55,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _38_36_
+        var _39_36_
 
-        return ((_38_36_=color.syntax[this.getClass(x,y)]) != null ? _38_36_ : '#ff0000')
+        return ((_39_36_=theme.syntax[this.getClass(x,y)]) != null ? _39_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

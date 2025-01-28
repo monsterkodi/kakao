@@ -2,9 +2,11 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var status
 
-import color from "./color.js"
 import cells from "./cells.js"
-import util from "./util.js"
+import theme from "./theme.js"
+
+import color from "./util/color.js"
+import util from "./util/util.js"
 
 
 status = (function ()
@@ -37,11 +39,11 @@ status = (function ()
         {
             if (!_k_.empty(fg) && fg[0] !== '#')
             {
-                fg = color[fg]
+                fg = theme[fg]
             }
             if (!_k_.empty(bg) && bg[0] !== '#')
             {
-                bg = color[bg]
+                bg = theme[bg]
             }
             this.cells.set(x,y,char,fg,bg)
             return 1
@@ -75,7 +77,7 @@ status = (function ()
             }
             if (_k_.in(this.file[ci],'./'))
             {
-                fg = color.darken(color[fg])
+                fg = color.darken(theme[fg])
             }
             add(this.file[ci],fg,'status')
         }
