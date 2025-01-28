@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -11,11 +11,15 @@ import util from "./util.js"
 
 import child_process from "child_process"
 
+import del from "./actions/del.js"
+
 
 state = (function ()
 {
     function state (cells)
     {
+        var k, v
+
         this.cells = cells
     
         this["deselect"] = this["deselect"].bind(this)
@@ -31,8 +35,6 @@ state = (function ()
         this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["updateCursor"] = this["updateCursor"].bind(this)
-        this["deleteSelection"] = this["deleteSelection"].bind(this)
-        this["delete"] = this["delete"].bind(this)
         this["insertNewline"] = this["insertNewline"].bind(this)
         this["insert"] = this["insert"].bind(this)
         this["paste"] = this["paste"].bind(this)
@@ -51,6 +53,11 @@ state = (function ()
         this["loadLines"] = this["loadLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
+        for (k in del)
+        {
+            v = del[k]
+            this[k] = v.bind(this)
+        }
         this.syntax = new syntax
         this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0],gutter:this.calcGutter(1)})
         this.h = [this.s]
@@ -199,10 +206,6 @@ state = (function ()
     {
         var i, line, lines, s, split, x, y
 
-        if (text === '\t')
-        {
-            text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
-        }
         split = text.split(/\r?\n/)
         if (split.length > 1)
         {
@@ -220,10 +223,18 @@ state = (function ()
             this.end()
             return
         }
+        if (text === '\t')
+        {
+            text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
+        }
         var _b_ = this.s.cursor; x = _b_[0]; y = _b_[1]
 
         lines = this.s.lines.asMutable()
         line = lines[y]
+        if (x > line.length)
+        {
+            line += _k_.lpad(x - line.length)
+        }
         line = kstr.splice(line,x,0,text)
         lines.splice(y,1,line)
         this.setLines(lines)
@@ -248,99 +259,6 @@ state = (function ()
         y = y + 1
         x = 0
         return this.setCursor(x,y)
-    }
-
-    state.prototype["delete"] = function (type, mods)
-    {
-        var before, dc, line, lines, remove, rng, x, y
-
-        if (type === 'back' && !_k_.empty(this.s.selections))
-        {
-            this.deleteSelection()
-            return this
-        }
-        if (type === 'back' && util.isLinesPosOutside(this.s.lines,this.s.cursor))
-        {
-            this.setCursor(this.s.lines[this.s.cursor[1]].length,this.s.cursor[1])
-            return this
-        }
-        var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
-
-        lines = this.s.lines.asMutable()
-        line = lines[y]
-        remove = 1
-        switch (type)
-        {
-            case 'eol':
-                line = line.slice(0, typeof x === 'number' ? x : -1)
-                break
-            case 'back':
-                if (x === 0)
-                {
-                    if (y <= 0)
-                    {
-                        return
-                    }
-                    y -= 1
-                    x = lines[y].length
-                    remove = 2
-                    line = lines[y] + line
-                }
-                else
-                {
-                    if (_k_.in(mods,['cmd','alt']))
-                    {
-                        rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,this.s.cursor)
-                        dc = rng[2] - rng[0]
-                        x -= dc
-                        line = kstr.splice(line,x,dc)
-                    }
-                    else
-                    {
-                        before = util.textFromBolToPos(lines,this.s.cursor)
-                        if (util.isOnlyWhitespace(before))
-                        {
-                            dc = x % 4
-                            if (dc === 0)
-                            {
-                                dc = 4
-                            }
-                            x -= dc
-                            line = kstr.splice(line,x,dc)
-                        }
-                        else
-                        {
-                            x -= 1
-                            line = kstr.splice(line,x,1)
-                        }
-                    }
-                }
-                break
-        }
-
-        lines.splice(y,remove,line)
-        this.setLines(lines)
-        this.setCursor(x,y)
-        return this
-    }
-
-    state.prototype["deleteSelection"] = function ()
-    {
-        var cursor, lines, selections
-
-        if (_k_.empty(this.s.selections))
-        {
-            return
-        }
-        cursor = this.s.cursor.asMutable()
-        lines = this.s.lines.asMutable()
-        selections = this.s.selections.asMutable()
-        var _a_ = util.deleteLinesRangesAndAdjustCursor(lines,selections,cursor); lines = _a_[0]; cursor = _a_[1]
-
-        this.deselect()
-        this.setLines(lines)
-        this.setCursor(cursor[0],cursor[1])
-        return this
     }
 
     state.prototype["updateCursor"] = function ()
