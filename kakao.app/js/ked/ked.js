@@ -160,21 +160,20 @@ KED = (function ()
         h = this.t.rows()
         g = this.editor.state.gutterWidth()
         this.status.gutter = g
-        if (true)
+        if (false)
         {
             this.scroll.cells.init(w - 1,0,1,h - 1)
             this.gutter.cells.init(0,0,g,h - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g,0,w - g,h - 1)
+            this.editor.cells.init(g,0,w - g - 1,h - 1)
         }
         else
         {
             this.scroll.cells.init(0,0,1,h - 1)
             this.gutter.cells.init(1,0,g,h - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g + 1,0,w - g,h - 1)
+            this.editor.cells.init(g + 1,0,w - g - 1,h - 1)
         }
-        this.t.store()
         this.t.hideCursor()
         this.screen.init()
         this.gutter.draw()
@@ -183,7 +182,6 @@ KED = (function ()
         this.editor.draw()
         this.screen.render()
         this.editor.showCursorIfInView()
-        this.t.restore()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }
 

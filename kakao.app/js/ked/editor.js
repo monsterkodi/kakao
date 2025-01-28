@@ -327,7 +327,6 @@ editor = (function ()
         s = this.state.s
         var _a_ = this.cells.screenForPos(s.cursor[0] - s.view[0],s.cursor[1] - s.view[1]); sx = _a_[0]; sy = _a_[1]
 
-        lf('sc',this.cells.x,this.cells.y,s.cursor[0] - s.view[0],s.cursor[1] - s.view[1])
         this.screen.t.setCursor(sx,sy)
         show = util.isPosInsideRange(s.cursor,this.state.rangeForVisibleLines())
         if (s.cursor[0] < s.view[0])

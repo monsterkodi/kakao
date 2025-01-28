@@ -266,12 +266,11 @@ function editor extends events
         s = @state.s
         [sx sy] = @cells.screenForPos s.cursor[0]-s.view[0] s.cursor[1]-s.view[1]
         
-        lf 'sc' @cells.x @cells.y s.cursor[0]-s.view[0] s.cursor[1]-s.view[1]
-        
         @screen.t.setCursor sx sy
         
         show = util.isPosInsideRange s.cursor @state.rangeForVisibleLines()
         if s.cursor[0] < s.view[0] ➜ show = false
+            
         @screen.t.showCursor show     
         
     #  0000000   0000000   000   000  00000000  

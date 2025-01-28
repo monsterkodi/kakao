@@ -132,18 +132,17 @@ function KED
         g = @editor.state.gutterWidth()
         @status.gutter = g
         
-        if true
+        if false # scrollbar on right side
             @scroll.cells.init w-1 0 1 h-1
             @gutter.cells.init 0 0 g h-1
             @status.cells.init 0 h-1 w 1
-            @editor.cells.init g 0 w-g h-1
+            @editor.cells.init g 0 w-g-1 h-1
         else
             @scroll.cells.init 0 0 1 h-1 
             @gutter.cells.init 1 0 g h-1
             @status.cells.init 0 h-1 w 1
-            @editor.cells.init g+1 0 w-g h-1        
+            @editor.cells.init g+1 0 w-g-1 h-1        
                         
-        @t.store()                
         @t.hideCursor()
         @screen.init()
         @gutter.draw()
@@ -152,7 +151,6 @@ function KED
         @editor.draw()
         @screen.render()
         @editor.showCursorIfInView() 
-        @t.restore()
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
                         

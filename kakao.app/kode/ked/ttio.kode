@@ -12,6 +12,8 @@ function TTIO extends events
 
     @: ->
         
+        @store()
+        
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
 
         @write '\x1b[?45h'   # origin mode (no wrap?)
@@ -34,6 +36,7 @@ function TTIO extends events
         
         @clear()
         @write '\x1b[?1049l' # scrollback screen buffer
+        @restore()
         process.exit 0
     
     clear: =>

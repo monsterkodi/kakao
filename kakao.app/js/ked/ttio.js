@@ -23,6 +23,7 @@ TTIO = (function ()
         this["clear"] = this["clear"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["write"] = this["write"].bind(this)
+        this.store()
         if (process.stdin.isTTY)
         {
             process.stdin.setRawMode(true)
@@ -51,6 +52,7 @@ TTIO = (function ()
     {
         this.clear()
         this.write('\x1b[?1049l')
+        this.restore()
         return process.exit(0)
     }
 
@@ -109,9 +111,9 @@ TTIO = (function ()
 
     TTIO.prototype["emitMousePress"] = function (col, row, button, mods = '')
     {
-        var diff, _67_19_
+        var diff, _70_19_
 
-        this.lastClick = ((_67_19_=this.lastClick) != null ? _67_19_ : {row:row,col:col,count:0,time:process.hrtime()})
+        this.lastClick = ((_70_19_=this.lastClick) != null ? _70_19_ : {row:row,col:col,count:0,time:process.hrtime()})
         if (this.lastClick.col === col && this.lastClick.row === row)
         {
             diff = process.hrtime(this.lastClick.time)
@@ -137,7 +139,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, modc, mods, row, seq, text, x, y, _96_23_
+        var code, col, key, modc, mods, row, seq, text, x, y, _99_23_
 
         if ((this.pasteBuffer != null))
         {
