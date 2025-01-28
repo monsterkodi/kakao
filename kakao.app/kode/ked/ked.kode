@@ -13,8 +13,8 @@ use ../kxk/nfs
 
 args = karg """
     ked [file]
-        options                                   **
-        version    log version                    = false
+        options                      **
+        version    log version       = false
     """
 
 function KED
@@ -26,9 +26,7 @@ function KED
         @t = new ttio
         
         @log = new logfile
-        
-        global.lf = args... => @log.write args.map((a) -> "#{a}").join(' ')
-        
+                
         @screen = new screen @t
         
         @editor = new editor @screen
@@ -45,8 +43,6 @@ function KED
         @t.on 'resize' @redraw
         @t.on 'paste'  @editor.onPaste
         @t.on 'wheel'  @editor.onWheel
-        @t.on 'focus'  -> 
-        @t.on 'blur'   -> 
                                     
         if valid args.options
             @loadFile args.options[0]
@@ -165,6 +161,6 @@ function KED
         @editor.showCursorIfInView() 
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-                        
+        
 export KED.run
 

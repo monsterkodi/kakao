@@ -51,7 +51,7 @@ editor = (function ()
         s = this.state.s
         view = s.view.asMutable()
         lines = s.lines.asMutable()
-        for (var _a_ = row = 0, _b_ = this.cells.rows - 1; (_a_ <= _b_ ? row < this.cells.rows - 1 : row > this.cells.rows - 1); (_a_ <= _b_ ? ++row : --row))
+        for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
             if (y >= lines.length)
@@ -102,7 +102,7 @@ editor = (function ()
             for (var _f_ = li = selection[1], _10_ = selection[3]; (_f_ <= _10_ ? li <= selection[3] : li >= selection[3]); (_f_ <= _10_ ? ++li : --li))
             {
                 y = li - view[1]
-                if ((view[1] <= li && li < view[1] + this.cells.rows - 1))
+                if ((view[1] <= li && li < view[1] + this.cells.rows))
                 {
                     if (li === selection[1])
                     {

@@ -23,7 +23,7 @@ function scroll
     onMouse: event col row button mods count =>
         
         [col row] = @cells.posForScreen col row
-            
+        
         switch event
             
             'press'
@@ -62,7 +62,7 @@ function scroll
         
         view = @state.s.view.asMutable()
         
-        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows)  / (@cells.rows-1))
+        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows)  / @cells.rows)
         
         maxY = @state.s.lines.length - @cells.rows
         
@@ -85,8 +85,8 @@ function scroll
         lnum = @state.s.lines.length
         
         kh = parseInt floor(pow((rows) 2) / lnum)
-        kp = parseInt floor((rows-kh-1) * @state.s.view[1] / (lnum-rows+1))
-        nc = parseInt floor((rows-1)    * @state.s.view[1] / (lnum-rows+1))
+        kp = parseInt floor((rows-kh-1) * @state.s.view[1] / (lnum-rows))
+        nc = parseInt floor((rows-1)    * @state.s.view[1] / (lnum-rows))
         ns = kp
         ne = kp+kh
         

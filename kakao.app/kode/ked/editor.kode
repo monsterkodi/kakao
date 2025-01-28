@@ -30,7 +30,7 @@ function editor extends events
         view   = s.view.asMutable()
         lines  = s.lines.asMutable()
         
-        for row in 0...@cells.rows-1
+        for row in 0...@cells.rows
             
             y = row+view[1]
             
@@ -67,7 +67,7 @@ function editor extends events
                 
                 y  = li-view[1]
                 
-                if view[1] <= li < view[1] + @cells.rows - 1
+                if view[1] <= li < view[1] + @cells.rows
                     
                     if li == selection[1]
                         xs = selection[0]

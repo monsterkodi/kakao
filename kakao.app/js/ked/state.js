@@ -195,7 +195,7 @@ state = (function ()
         view = this.s.view.asMutable()
         if (y >= view[1] + this.cells.rows - 1)
         {
-            view[1] = y - this.cells.rows + 2
+            view[1] = y - this.cells.rows + 1
         }
         else if (y < view[1])
         {

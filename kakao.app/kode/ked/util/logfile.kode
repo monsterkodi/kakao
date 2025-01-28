@@ -14,6 +14,8 @@ function logfile
         
         @stream = fs.createWriteStream 'ked.log' flags:'a'
         
+        global.lf = args... => @write args.map((a) -> "#{a}").join(' ')
+        
     write: txt ->
 
         @stream.write txt + '\n'

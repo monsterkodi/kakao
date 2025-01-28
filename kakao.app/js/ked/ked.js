@@ -22,8 +22,8 @@ let slash = kxk.slash
 import nfs from "../kxk/nfs.js"
 
 args = karg(`ked [file]
-    options                                   **
-    version    log version                    = false`)
+    options                      **
+    version    log version       = false`)
 
 KED = (function ()
 {
@@ -42,13 +42,6 @@ KED = (function ()
         }
         this.t = new ttio
         this.log = new logfile
-        global.lf = (function (...args)
-        {
-            return this.log.write(args.map(function (a)
-            {
-                return `${a}`
-            }).join(' '))
-        }).bind(this)
         this.screen = new screen(this.t)
         this.editor = new editor(this.screen)
         this.gutter = new gutter(this.screen,this.editor.state)
@@ -61,10 +54,6 @@ KED = (function ()
         this.t.on('resize',this.redraw)
         this.t.on('paste',this.editor.onPaste)
         this.t.on('wheel',this.editor.onWheel)
-        this.t.on('focus',function ()
-        {})
-        this.t.on('blur',function ()
-        {})
         if (!_k_.empty(args.options))
         {
             this.loadFile(args.options[0])

@@ -67,7 +67,7 @@ scroll = (function ()
         var maxY, view
 
         view = this.state.s.view.asMutable()
-        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows) / (this.cells.rows - 1)))
+        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows) / this.cells.rows))
         maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
         {
@@ -85,8 +85,8 @@ scroll = (function ()
         rows = this.cells.rows
         lnum = this.state.s.lines.length
         kh = parseInt(floor(pow((rows),2) / lnum))
-        kp = parseInt(floor((rows - kh - 1) * this.state.s.view[1] / (lnum - rows + 1)))
-        nc = parseInt(floor((rows - 1) * this.state.s.view[1] / (lnum - rows + 1)))
+        kp = parseInt(floor((rows - kh - 1) * this.state.s.view[1] / (lnum - rows)))
+        nc = parseInt(floor((rows - 1) * this.state.s.view[1] / (lnum - rows)))
         ns = kp
         ne = kp + kh
         for (var _a_ = row = 0, _b_ = rows; (_a_ <= _b_ ? row < rows : row > rows); (_a_ <= _b_ ? ++row : --row))
