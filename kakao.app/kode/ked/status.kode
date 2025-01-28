@@ -85,23 +85,27 @@ function status
              
             for i in 0...sel.length
                 add sel[i] (i<sel.length-4) ? 'status_sel' : 'status_fg_dim' 'status_dark'
-                
-        # fill the remaining space
-        for ci in x...cols-dtl-2
-            add ' ' null 'status_dark'
-                        
+                                        
         # draw the time if there's enough space
-                
-        add '' 'status' 'status_dark'
-         
-        for i in 0...dtl
-            fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
-            add dt[i] fg 'status'
-         
-        # draw the final edge of the status bar
-        
-        set cols-1 '' 'status' 'editor_empty'
+        if cols-dtl-2 >= x
+            # fill the space up to the time
+            for ci in x...cols-dtl-2
+                add ' ' null 'status_dark'
             
+            add '' 'status' 'status_dark'
+             
+            for i in 0...dtl
+                fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
+                add dt[i] fg 'status'
+             
+            # draw the final edge of the status bar
+            
+            add '' 'status' 'editor_empty'
+    
+        else
+            # fill the remaining space
+            for ci in x...cols-dtl-2
+                add ' ' null 'status_dark'
             
 export status
 

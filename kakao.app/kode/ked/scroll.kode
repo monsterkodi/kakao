@@ -97,7 +97,6 @@ function scroll
                 @hover          ➜ color.gutter
                                 ➜ color.gutter
                         
-            @cells.c[row][0].bg = bg
-            @cells.c[row][0].char = ' '
+            @cells.set 0 row ' ' null bg
 
 export scroll

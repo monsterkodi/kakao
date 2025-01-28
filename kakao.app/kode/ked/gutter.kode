@@ -16,9 +16,6 @@ function gutter
         
         for row in 0...@cells.rows-1
                         
-            # if @state.s.gutter-1 < @cells.c[row].length
-                # @cells.c[row][@state.s.gutter-1].bg = color.gutter
-            
             y = @state.s.view[1] + row
             lineno = lpad @state.s.gutter-2 y+1
             lineno += ' '
@@ -37,8 +34,6 @@ function gutter
                         @state.isSelectedLine y ➜ color.gutter_sel
                                                 ➜ color.gutter
                     
-                    @cells.c[row][col].bg   = bg
-                    @cells.c[row][col].fg   = fg
-                    @cells.c[row][col].char = y < @state.s.lines.length ? c : ' '
+                    @cells.set col row (y<@state.s.lines.length) ? c : ' ' fg bg
 
 export gutter

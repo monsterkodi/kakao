@@ -31,9 +31,7 @@ gutter = (function ()
                 {
                     fg = y === this.state.s.cursor[1] ? color.cursor : this.state.isSelectedLine(y) ? color.selection : color.linenr
                     bg = this.state.isSelectedLine(y) ? color.gutter_sel : color.gutter
-                    this.cells.c[row][col].bg = bg
-                    this.cells.c[row][col].fg = fg
-                    this.cells.c[row][col].char = (y < this.state.s.lines.length ? c : ' ')
+                    this.cells.set(col,row,((y < this.state.s.lines.length) ? c : ' '),fg,bg)
                 }
             }
         }

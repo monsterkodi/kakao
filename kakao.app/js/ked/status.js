@@ -90,17 +90,27 @@ status = (function ()
                 add(sel[i],((i < sel.length - 4) ? 'status_sel' : 'status_fg_dim'),'status_dark')
             }
         }
-        for (var _10_ = ci = x, _11_ = cols - dtl - 2; (_10_ <= _11_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_10_ <= _11_ ? ++ci : --ci))
+        if (cols - dtl - 2 >= x)
         {
-            add(' ',null,'status_dark')
+            for (var _10_ = ci = x, _11_ = cols - dtl - 2; (_10_ <= _11_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_10_ <= _11_ ? ++ci : --ci))
+            {
+                add(' ',null,'status_dark')
+            }
+            add('','status','status_dark')
+            for (var _12_ = i = 0, _13_ = dtl; (_12_ <= _13_ ? i < dtl : i > dtl); (_12_ <= _13_ ? ++i : --i))
+            {
+                fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
+                add(dt[i],fg,'status')
+            }
+            return add('','status','editor_empty')
         }
-        add('','status','status_dark')
-        for (var _12_ = i = 0, _13_ = dtl; (_12_ <= _13_ ? i < dtl : i > dtl); (_12_ <= _13_ ? ++i : --i))
+        else
         {
-            fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
-            add(dt[i],fg,'status')
+            for (var _14_ = ci = x, _15_ = cols - dtl - 2; (_14_ <= _15_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_14_ <= _15_ ? ++ci : --ci))
+            {
+                add(' ',null,'status_dark')
+            }
         }
-        return set(cols - 1,'','status','editor_empty')
     }
 
     return status

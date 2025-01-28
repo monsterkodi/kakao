@@ -89,8 +89,7 @@ scroll = (function ()
         for (var _a_ = row = 0, _b_ = rows - 1; (_a_ <= _b_ ? row < rows - 1 : row > rows - 1); (_a_ <= _b_ ? ++row : --row))
         {
             bg = lnum < rows ? color.gutter : row === nc ? (this.hover ? color.scroll_doth : color.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? color.scroll_knob : color.scroll) : this.hover ? color.gutter : color.gutter
-            this.cells.c[row][0].bg = bg
-            this.cells.c[row][0].char = ' '
+            this.cells.set(0,row,' ',null,bg)
         }
     }
 
