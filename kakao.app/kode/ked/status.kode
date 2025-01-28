@@ -76,38 +76,32 @@ function status
         # draw the right edge of the file name section
         
         add '' 'status' 'status_dark'
-
-        # fill the remaining space
         
-        for ci in x...cols-1
-            add ' ' null 'status_dark'
-                
-        # draw the time if there's enough space
-                
-        if cols-gtr+2+fnl > dtl+1
-            
-            set cols-dtl-2 '' 'status' 'status_dark'
-            
-            for i in 0...dtl
-                fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
-                set cols-dtl+i-1 dt[i] fg 'status'
-        
-        else
-            set cols-2 '' 'status' 'status_dark'
-
-        # draw the final edge of the status bar
-        
-        set cols-1 '' 'status' 'editor_empty'
-            
         # draw the selection count if there are selections
         
         if @state.s.selections.length
 
-            sel = "#{@state.s.selections.length} sel"
+            sel = " #{@state.s.selections.length} sel "
              
             for i in 0...sel.length
-                fg = i < sel.length-4 ? 'status_sel' : 'status_fg_dim'
-                set cols-dtl+i-sel.length-3 sel[i] fg 'status_dark'
+                add sel[i] (i<sel.length-4) ? 'status_sel' : 'status_fg_dim' 'status_dark'
+                
+        # fill the remaining space
+        for ci in x...cols-dtl-2
+            add ' ' null 'status_dark'
+                        
+        # draw the time if there's enough space
+                
+        add '' 'status' 'status_dark'
+         
+        for i in 0...dtl
+            fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
+            add dt[i] fg 'status'
+         
+        # draw the final edge of the status bar
+        
+        set cols-1 '' 'status' 'editor_empty'
+            
             
 export status
 

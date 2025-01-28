@@ -12,14 +12,12 @@ function gutter
 
     @: @cells @state ->
         
-        @draw()
-    
     draw: ->
         
-        for row in 0...@cells.t.rows()-1
+        for row in 0...@cells.rows-1
                         
-            if @state.s.gutter-1 < @cells.t.cols()
-                @cells.c[row][@state.s.gutter-1].bg = color.gutter
+            # if @state.s.gutter-1 < @cells.c[row].length
+                # @cells.c[row][@state.s.gutter-1].bg = color.gutter
             
             y = @state.s.view[1] + row
             lineno = lpad @state.s.gutter-2 y+1
@@ -28,7 +26,7 @@ function gutter
             for c,i in lineno
                 
                 col = i+1
-                if col < @cells.t.cols()
+                if col < @cells.rows
                     
                     fg = if
                         y == @state.s.cursor[1] ➜ color.cursor

@@ -82,33 +82,25 @@ status = (function ()
         rcol = (rdo ? 'status_redo' : (dty ? 'status_dirty' : 'status_dark'))
         add((rdo ? '' : ''),rcol,'status')
         add('','status','status_dark')
-        for (var _e_ = ci = x, _f_ = cols - 1; (_e_ <= _f_ ? ci < cols - 1 : ci > cols - 1); (_e_ <= _f_ ? ++ci : --ci))
+        if (this.state.s.selections.length)
+        {
+            sel = ` ${this.state.s.selections.length} sel `
+            for (var _e_ = i = 0, _f_ = sel.length; (_e_ <= _f_ ? i < sel.length : i > sel.length); (_e_ <= _f_ ? ++i : --i))
+            {
+                add(sel[i],((i < sel.length - 4) ? 'status_sel' : 'status_fg_dim'),'status_dark')
+            }
+        }
+        for (var _10_ = ci = x, _11_ = cols - dtl - 2; (_10_ <= _11_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_10_ <= _11_ ? ++ci : --ci))
         {
             add(' ',null,'status_dark')
         }
-        if (cols - gtr + 2 + fnl > dtl + 1)
+        add('','status','status_dark')
+        for (var _12_ = i = 0, _13_ = dtl; (_12_ <= _13_ ? i < dtl : i > dtl); (_12_ <= _13_ ? ++i : --i))
         {
-            set(cols - dtl - 2,'','status','status_dark')
-            for (var _10_ = i = 0, _11_ = dtl; (_10_ <= _11_ ? i < dtl : i > dtl); (_10_ <= _11_ ? ++i : --i))
-            {
-                fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
-                set(cols - dtl + i - 1,dt[i],fg,'status')
-            }
+            fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
+            add(dt[i],fg,'status')
         }
-        else
-        {
-            set(cols - 2,'','status','status_dark')
-        }
-        set(cols - 1,'','status','editor_empty')
-        if (this.state.s.selections.length)
-        {
-            sel = `${this.state.s.selections.length} sel`
-            for (var _12_ = i = 0, _13_ = sel.length; (_12_ <= _13_ ? i < sel.length : i > sel.length); (_12_ <= _13_ ? ++i : --i))
-            {
-                fg = (i < sel.length - 4 ? 'status_sel' : 'status_fg_dim')
-                set(cols - dtl + i - sel.length - 3,sel[i],fg,'status_dark')
-            }
-        }
+        return set(cols - 1,'','status','editor_empty')
     }
 
     return status
