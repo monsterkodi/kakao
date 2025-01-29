@@ -20,22 +20,7 @@ editor = (function ()
     
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
-        this["onPaste"] = this["onPaste"].bind(this)
-        this["deselect"] = this["deselect"].bind(this)
-        this["redo"] = this["redo"].bind(this)
-        this["undo"] = this["undo"].bind(this)
-        this["paste"] = this["paste"].bind(this)
-        this["copy"] = this["copy"].bind(this)
-        this["cut"] = this["cut"].bind(this)
         this["showCursorIfInView"] = this["showCursorIfInView"].bind(this)
-        this["setCursor"] = this["setCursor"].bind(this)
-        this["moveCursor"] = this["moveCursor"].bind(this)
-        this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
-        this["joinLines"] = this["joinLines"].bind(this)
-        this["delete"] = this["delete"].bind(this)
-        this["deindent"] = this["deindent"].bind(this)
-        this["insert"] = this["insert"].bind(this)
-        this["scrollView"] = this["scrollView"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["draw"] = this["draw"].bind(this)
@@ -78,7 +63,7 @@ editor = (function ()
             if (y < lines.length)
             {
                 linel = line.length - view[0]
-                if (y === s.cursor[1])
+                if (y === s.cursor[1] && this.constructor.name === 'editor')
                 {
                     if (linel > 0)
                     {
@@ -90,9 +75,9 @@ editor = (function ()
                 {
                     if (linel > 0)
                     {
-                        this.cells.bg_rect(0,row,linel,row,theme.editor)
+                        this.cells.bg_rect(0,row,linel,row,theme[this.constructor.name])
                     }
-                    this.cells.bg_rect(_k_.max(0,linel),row,-1,row,theme.editor_empty)
+                    this.cells.bg_rect(_k_.max(0,linel),row,-1,row,theme[this.constructor.name + '_empty'])
                 }
             }
         }
@@ -137,6 +122,10 @@ editor = (function ()
     {
         var start, x, y
 
+        if (row >= this.cells.y + this.cells.rows)
+        {
+            return
+        }
         var _a_ = this.cells.posForScreen(col,row); col = _a_[0]; row = _a_[1]
 
         switch (event)
@@ -272,57 +261,10 @@ editor = (function ()
             case 'down':
             case 'left':
             case 'right':
-                return this.scrollView(dir,steps)
-
+                this.state.scrollView(dir,steps)
+                break
         }
 
-    }
-
-    editor.prototype["scrollView"] = function (dir, steps)
-    {
-        this.state.scrollView(dir,steps)
-        return this.redraw()
-    }
-
-    editor.prototype["insert"] = function (text)
-    {
-        this.state.insert(text)
-        return this.redraw()
-    }
-
-    editor.prototype["deindent"] = function ()
-    {
-        this.state.deindent()
-        return this.redraw()
-    }
-
-    editor.prototype["delete"] = function (type, mods)
-    {
-        this.state.delete(type,mods)
-        return this.redraw()
-    }
-
-    editor.prototype["joinLines"] = function ()
-    {
-        this.state.joinLines()
-        return this.redraw()
-    }
-
-    editor.prototype["moveCursorAndSelect"] = function (dir)
-    {
-        this.state.moveCursorAndSelect(dir)
-        return this.redraw()
-    }
-
-    editor.prototype["moveCursor"] = function (dir, steps)
-    {
-        this.state.moveCursor(dir,steps)
-        return this.redraw()
-    }
-
-    editor.prototype["setCursor"] = function (x, y)
-    {
-        this.state.setCursor(x,y)
         return this.redraw()
     }
 
@@ -342,46 +284,6 @@ editor = (function ()
         return this.screen.t.showCursor(show)
     }
 
-    editor.prototype["cut"] = function ()
-    {
-        this.state.cut()
-        return this.redraw()
-    }
-
-    editor.prototype["copy"] = function ()
-    {
-        return this.state.copy()
-    }
-
-    editor.prototype["paste"] = function ()
-    {
-        this.state.paste()
-        return this.redraw()
-    }
-
-    editor.prototype["undo"] = function ()
-    {
-        this.state.undo()
-        return this.redraw()
-    }
-
-    editor.prototype["redo"] = function ()
-    {
-        this.state.redo()
-        return this.redraw()
-    }
-
-    editor.prototype["deselect"] = function ()
-    {
-        this.state.deselect()
-        return this.redraw()
-    }
-
-    editor.prototype["onPaste"] = function (text)
-    {
-        return this.insert(text)
-    }
-
     editor.prototype["redraw"] = function ()
     {
         return this.emit('redraw')
@@ -395,126 +297,126 @@ editor = (function ()
             case 'down':
             case 'left':
             case 'right':
-                return this.moveCursor(key)
+                return this.state.moveCursor(key)
 
             case 'ctrl+up':
-                return this.moveCursor('up',4)
+                return this.state.moveCursor('up',4)
 
             case 'ctrl+down':
-                return this.moveCursor('down',4)
+                return this.state.moveCursor('down',4)
 
             case 'ctrl+left':
-                return this.moveCursor('left',4)
+                return this.state.moveCursor('left',4)
 
             case 'ctrl+right':
-                return this.moveCursor('right',4)
+                return this.state.moveCursor('right',4)
 
             case 'ctrl+alt+up':
-                return this.moveCursor('up',8)
+                return this.state.moveCursor('up',8)
 
             case 'ctrl+alt+down':
-                return this.moveCursor('down',8)
+                return this.state.moveCursor('down',8)
 
             case 'ctrl+alt+left':
-                return this.moveCursor('left',8)
+                return this.state.moveCursor('left',8)
 
             case 'ctrl+alt+right':
-                return this.moveCursor('right',8)
+                return this.state.moveCursor('right',8)
 
             case 'shift+ctrl+alt+up':
-                return this.moveCursor('up',16)
+                return this.state.moveCursor('up',16)
 
             case 'shift+ctrl+alt+down':
-                return this.moveCursor('down',16)
+                return this.state.moveCursor('down',16)
 
             case 'shift+ctrl+alt+left':
-                return this.moveCursor('left',16)
+                return this.state.moveCursor('left',16)
 
             case 'shift+ctrl+alt+right':
-                return this.moveCursor('right',16)
+                return this.state.moveCursor('right',16)
 
             case 'ctrl+a':
-                return this.setCursor(0,this.state.s.cursor[1])
+                return this.state.setCursor(0,this.state.s.cursor[1])
 
             case 'ctrl+e':
-                return this.setCursor(this.state.s.lines[this.state.s.cursor[1]].length,this.state.s.cursor[1])
+                return this.state.setCursor(this.state.s.lines[this.state.s.cursor[1]].length,this.state.s.cursor[1])
 
             case 'ctrl+h':
-                return this.setCursor(0,0)
+                return this.state.setCursor(0,0)
 
             case 'ctrl+j':
-                return this.setCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
+                return this.state.setCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
 
             case 'shift+ctrl+h':
-                return this.moveCursorAndSelect('bof')
+                return this.state.moveCursorAndSelect('bof')
 
             case 'shift+ctrl+j':
-                return this.moveCursorAndSelect('eof')
+                return this.state.moveCursorAndSelect('eof')
 
             case 'ctrl+k':
-                return this.delete('eol')
+                return this.state.delete('eol')
 
             case 'delete':
-                return this.delete('back')
+                return this.state.delete('back')
 
             case 'cmd+delete':
-                return this.delete('back','cmd')
+                return this.state.delete('back','cmd')
 
             case 'alt+delete':
-                return this.delete('back','alt')
+                return this.state.delete('back','alt')
 
             case 'shift+tab':
-                return this.deindent()
+                return this.state.deindent()
 
             case 'alt+x':
             case 'cmd+x':
             case 'ctrl+x':
-                return this.cut()
+                return this.state.cut()
 
             case 'alt+c':
             case 'cmd+c':
             case 'ctrl+c':
-                return this.copy()
+                return this.state.copy()
 
             case 'alt+v':
             case 'cmd+v':
             case 'ctrl+v':
-                return this.paste()
+                return this.state.paste()
 
             case 'cmd+z':
-                return this.undo()
+                return this.state.undo()
 
             case 'cmd+y':
             case 'shift+cmd+z':
-                return this.redo()
+                return this.state.redo()
 
             case 'cmd+j':
-                return this.joinLines()
+                return this.state.joinLines()
 
             case 'shift+up':
-                return this.moveCursorAndSelect('up')
+                return this.state.moveCursorAndSelect('up')
 
             case 'shift+down':
-                return this.moveCursorAndSelect('down')
+                return this.state.moveCursorAndSelect('down')
 
             case 'shift+left':
-                return this.moveCursorAndSelect('left')
+                return this.state.moveCursorAndSelect('left')
 
             case 'shift+right':
-                return this.moveCursorAndSelect('right')
+                return this.state.moveCursorAndSelect('right')
 
             case 'shift+cmd+right':
-                return this.moveCursorAndSelect('eol')
+                return this.state.moveCursorAndSelect('eol')
 
             case 'shift+cmd+left':
-                return this.moveCursorAndSelect('bol')
+                return this.state.moveCursorAndSelect('bol')
 
             case 'esc':
-                return this.deselect()
+                return this.state.deselect()
 
         }
 
-        return this.insert(key)
+        return this.state.insert(key)
     }
 
     return editor

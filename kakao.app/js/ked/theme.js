@@ -50,6 +50,10 @@ class theme
 
     static editor_empty = '#0a0a0a'
 
+    static consol = '#1a1a1a'
+
+    static consol_empty = '#1a1a1a'
+
     static text = '#ffffff'
 
     static cursor_main = '#101010'

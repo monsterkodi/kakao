@@ -6,6 +6,7 @@ export default {insert:function (text)
 {
     var i, line, lines, s, split, x, y
 
+    lf(`text >${text}<`)
     split = text.split(/\r?\n/)
     if (split.length > 1)
     {
@@ -34,6 +35,10 @@ export default {insert:function (text)
     var _b_ = this.s.cursor; x = _b_[0]; y = _b_[1]
 
     lines = this.s.lines.asMutable()
+    if (y >= lines.length)
+    {
+        return lf('[ERROR] cursor outside lines?')
+    }
     line = lines[y]
     if (x > line.length)
     {

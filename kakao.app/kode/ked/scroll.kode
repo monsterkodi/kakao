@@ -62,7 +62,7 @@ function scroll
         
         view = @state.s.view.asMutable()
         
-        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows)  / @cells.rows)
+        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
         
         maxY = @state.s.lines.length - @cells.rows
         

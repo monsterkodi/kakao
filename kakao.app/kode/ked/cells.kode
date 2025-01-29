@@ -32,6 +32,9 @@ function cells
     # 000        000   000       000  
     # 000         0000000   0000000   
     
+    isInsideScreen:  x y => @x <= x < @x+@cols and @y <= y < @y+@rows
+    isOutsideScreen: x y => not @isInsideScreen x y
+    
     posForScreen: x y => [x-@x y-@y]
     screenForPos: x y => [x+@x y+@y]
         

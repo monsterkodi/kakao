@@ -25,6 +25,8 @@ class theme
     @status_fg_dim:     '#333333'  
     @editor:            '#0d0d0d'  
     @editor_empty:      '#0a0a0a'  
+    @consol:            '#1a1a1a'  
+    @consol_empty:      '#1a1a1a'  
     @text:              '#ffffff'  
     @cursor_main:       '#101010'  
     @cursor_empty:      '#000000'  

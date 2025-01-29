@@ -10,6 +10,7 @@ import screen from "./screen.js"
 import cells from "./cells.js"
 import state from "./state.js"
 import scroll from "./scroll.js"
+import consol from "./consol.js"
 
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
@@ -30,6 +31,7 @@ KED = (function ()
     function KED ()
     {
         this["redraw"] = this["redraw"].bind(this)
+        this["onConsolRows"] = this["onConsolRows"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["saveFile"] = this["saveFile"].bind(this)
@@ -40,15 +42,19 @@ KED = (function ()
             console.log('0.0.2')
             process.exit(0)
         }
+        this.consolRows = 5
         this.t = new ttio
         this.log = new logfile
         this.screen = new screen(this.t)
         this.editor = new editor(this.screen)
+        this.consol = new consol(this.screen)
         this.gutter = new gutter(this.screen,this.editor.state)
         this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
         this.editor.on('redraw',this.redraw)
-        this.mouseHandlers = [this.scroll,this.editor]
+        this.consol.on('consolRows',this.onConsolRows)
+        this.mouseHandlers = [this.scroll,this.consol,this.editor]
+        this.keyHandlers = [this.consol,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('resize',this.redraw)
@@ -127,6 +133,9 @@ KED = (function ()
 
     KED.prototype["onKey"] = function (key)
     {
+        var handler
+
+        lc('key',key)
         switch (key)
         {
             case 'alt+q':
@@ -145,31 +154,49 @@ KED = (function ()
 
         }
 
-        return this.editor.onKey(key)
+        var list = _k_.list(this.keyHandlers)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            handler = list[_a_]
+            if (handler.onKey(key))
+            {
+                return this.redraw()
+            }
+        }
+    }
+
+    KED.prototype["onConsolRows"] = function (consolRows)
+    {
+        this.consolRows = consolRows
+    
+        return this.redraw
     }
 
     KED.prototype["redraw"] = function ()
     {
-        var g, h, start, w
+        var c, g, h, start, w
 
         start = process.hrtime()
         w = this.t.cols()
         h = this.t.rows()
+        c = this.consolRows
         g = this.editor.state.gutterWidth()
         this.status.gutter = g
         if (false)
         {
-            this.scroll.cells.init(w - 1,0,1,h - 1)
-            this.gutter.cells.init(0,0,g,h - 1)
+            this.scroll.cells.init(w - 1,0,1,h - c - 1)
+            this.gutter.cells.init(0,0,g,h - c - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g,0,w - g - 1,h - 1)
+            this.editor.cells.init(g,0,w - g - 1,h - c - 1)
+            this.consol.cells.init(0,h - 1 - c,w - g - 1,c)
         }
         else
         {
-            this.scroll.cells.init(0,0,1,h - 1)
-            this.gutter.cells.init(1,0,g,h - 1)
+            this.scroll.cells.init(0,0,1,h - c - 1)
+            this.gutter.cells.init(1,0,g,h - c - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g + 1,0,w - g - 1,h - 1)
+            this.editor.cells.init(g + 1,0,w - g - 1,h - c - 1)
+            this.consol.cells.init(0,h - 1 - c,w - g - 1,c)
         }
         this.t.hideCursor()
         this.screen.init()
@@ -177,6 +204,7 @@ KED = (function ()
         this.scroll.draw()
         this.status.draw()
         this.editor.draw()
+        this.consol.draw()
         this.screen.render()
         this.editor.showCursorIfInView()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))

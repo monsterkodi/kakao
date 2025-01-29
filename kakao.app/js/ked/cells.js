@@ -10,6 +10,8 @@ cells = (function ()
         this["bg_rect"] = this["bg_rect"].bind(this)
         this["screenForPos"] = this["screenForPos"].bind(this)
         this["posForScreen"] = this["posForScreen"].bind(this)
+        this["isOutsideScreen"] = this["isOutsideScreen"].bind(this)
+        this["isInsideScreen"] = this["isInsideScreen"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
         this["set"] = this["set"].bind(this)
         this["init"] = this["init"].bind(this)
@@ -31,6 +33,16 @@ cells = (function ()
     cells.prototype["set_bg"] = function (x, y, bg)
     {
         return this.screen.set_bg(this.x + x,this.y + y,bg)
+    }
+
+    cells.prototype["isInsideScreen"] = function (x, y)
+    {
+        return (this.x <= x && x < this.x + this.cols) && (this.y <= y && y < this.y + this.rows)
+    }
+
+    cells.prototype["isOutsideScreen"] = function (x, y)
+    {
+        return !this.isInsideScreen(x,y)
     }
 
     cells.prototype["posForScreen"] = function (x, y)

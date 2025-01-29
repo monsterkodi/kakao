@@ -17,6 +17,8 @@ export
     # 000  000   000  0000000   00000000  000   000     000     
     
     insert: text ->
+        
+        lf "text >#{text}<" 
                 
         split = text.split /\r?\n/
         if split.length > 1
@@ -37,6 +39,9 @@ export
         [x y] = @s.cursor
             
         lines = @s.lines.asMutable()
+        
+        ⮐ lf '[ERROR] cursor outside lines?' if y >= lines.length
+        
         line  = lines[y]
         
         # fill line at end with spaces if cursor is behind end of line

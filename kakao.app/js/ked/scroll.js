@@ -67,7 +67,7 @@ scroll = (function ()
         var maxY, view
 
         view = this.state.s.view.asMutable()
-        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows) / this.cells.rows))
+        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 1)))
         maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
         {

@@ -46,6 +46,7 @@ state = (function ()
         this["isValidLineIndex"] = this["isValidLineIndex"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
+        this["clearLines"] = this["clearLines"].bind(this)
         this["set"] = this["set"].bind(this)
         var list = [del,insert,select,join,indent]
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -70,6 +71,12 @@ state = (function ()
         this.h.pop()
         this.h.push(this.s)
         return this.s
+    }
+
+    state.prototype["clearLines"] = function ()
+    {
+        this.setLines([''])
+        return this.setCursor(0,0)
     }
 
     state.prototype["setLines"] = function (lines)
@@ -306,7 +313,7 @@ state = (function ()
         view = this.s.view.asMutable()
         view[0] += sx
         view[1] += sy
-        view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows + 1),view[1])
+        view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
         view[0] = _k_.max(0,view[0])
         return this.setView(view)
     }

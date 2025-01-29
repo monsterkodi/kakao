@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status screen cells state scroll
+use ◆ ttio gutter editor status screen cells state scroll consol
 use ./util ◆ logfile util
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
@@ -22,6 +22,8 @@ function KED
     @: ->
 
         if args.version ➜ log '0.0.2'; process.exit 0
+            
+        @consolRows = 5
                     
         @t = new ttio
         
@@ -29,14 +31,17 @@ function KED
                 
         @screen = new screen @t
         
-        @editor = new editor @screen
-        @gutter = new gutter @screen @editor.state
-        @scroll = new scroll @screen @editor.state
-        @status = new status @screen @editor.state
+        @editor  = new editor @screen
+        @consol  = new consol @screen
+        @gutter  = new gutter @screen @editor.state
+        @scroll  = new scroll @screen @editor.state
+        @status  = new status @screen @editor.state
         
-        @editor.on 'redraw' @redraw
+        @editor.on 'redraw'     @redraw
+        @consol.on 'consolRows' @onConsolRows
         
-        @mouseHandlers = [@scroll @editor]
+        @mouseHandlers = [@scroll @consol @editor]
+        @keyHandlers   = [@consol @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -116,19 +121,25 @@ function KED
     
     onKey: key =>
         
+        lc 'key' key
+        
         switch key
             
             'alt+q' 'ctrl+d' 'ctrl+q' ➜ ⮐ @t.quit()
             'alt+r' 'ctrl+r' 'cmd+r'  ➜ ⮐ @reloadFile()
             'ctrl+s' 'cmd+s'          ➜ ⮐ @saveFile()
             
-        @editor.onKey key
+        for handler in @keyHandlers
+            if handler.onKey key
+                ⮐ @redraw()
                         
     # 00000000   00000000  0000000    00000000    0000000   000   000  
     # 000   000  000       000   000  000   000  000   000  000 0 000  
     # 0000000    0000000   000   000  0000000    000000000  000000000  
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
+    
+    onConsolRows: @consolRows => @redraw
     
     redraw: =>
         
@@ -137,19 +148,22 @@ function KED
         w = @t.cols()
         h = @t.rows()
         
+        c = @consolRows
         g = @editor.state.gutterWidth()
         @status.gutter = g
         
         if false # scrollbar on right side
-            @scroll.cells.init w-1 0 1 h-1
-            @gutter.cells.init 0 0 g h-1
-            @status.cells.init 0 h-1 w 1
-            @editor.cells.init g 0 w-g-1 h-1
+            @scroll.cells.init w-1 0 1 h-c-1
+            @gutter.cells.init 0   0 g h-c-1
+            @status.cells.init 0   h-1 w 1
+            @editor.cells.init g   0 w-g-1 h-c-1
+            @consol.cells.init 0   h-1-c w-g-1 c
         else
-            @scroll.cells.init 0 0 1 h-1 
-            @gutter.cells.init 1 0 g h-1
-            @status.cells.init 0 h-1 w 1
-            @editor.cells.init g+1 0 w-g-1 h-1        
+            @scroll.cells.init 0   0     1     h-c-1 
+            @gutter.cells.init 1   0     g     h-c-1
+            @status.cells.init 0   h-1   w     1
+            @editor.cells.init g+1 0     w-g-1 h-c-1    
+            @consol.cells.init 0   h-1-c w-g-1 c
                         
         @t.hideCursor()
         @screen.init()
@@ -157,6 +171,7 @@ function KED
         @scroll.draw()
         @status.draw()
         @editor.draw()
+        @consol.draw()
         @screen.render()
         @editor.showCursorIfInView() 
         
