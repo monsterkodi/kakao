@@ -96,6 +96,8 @@ function TTIO extends events
     
     onData: data =>
         
+        # lf 'data' data[1..]
+        
         if @pasteBuffer?
             
             @pasteBuffer += data.toString 'utf8'
@@ -212,6 +214,7 @@ function TTIO extends events
                 code = parseInt(seq.split(';')[-1])
                 modc = parseInt(seq.split(';')[-2])
                 mods = switch modc
+                    2   ➜ 'shift'
                     4   ➜ 'shift+alt'
                     6   ➜ 'shift+ctrl' 
                     7   ➜ 'ctrl+alt' 
@@ -224,7 +227,10 @@ function TTIO extends events
                         ➜ 'alt'
                 
                 switch code
+                    9   ➜ ⮐ @emit 'key' mods+'+tab' 
                     127 ➜ ⮐ @emit 'key' mods+'+delete' 
+                    
+                lf '[27;' modc code
                                 
             else if seq.startsWith '['
                 

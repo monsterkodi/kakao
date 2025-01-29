@@ -200,6 +200,32 @@ class util
         return text.slice(0, -1)
     }
 
+    static lineIndicesForRange (rng)
+    {
+        var indices, li
+
+        indices = []
+        for (var _a_ = li = rng[1], _b_ = rng[3]; (_a_ <= _b_ ? li <= rng[3] : li >= rng[3]); (_a_ <= _b_ ? ++li : --li))
+        {
+            indices.push(li)
+        }
+        return indices
+    }
+
+    static lineIndicesForRanges (rngs)
+    {
+        var indices, rng
+
+        indices = []
+        var list = _k_.list(rngs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            rng = list[_a_]
+            indices = indices.concat(this.lineIndicesForRange(rng))
+        }
+        return indices
+    }
+
     static textFromBolToPos (lines, pos)
     {
         return lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
@@ -266,6 +292,17 @@ class util
             }
         }
         return [0,y,x,y]
+    }
+
+    static numIndent (str)
+    {
+        var m
+
+        if (m = str.match(/^\s+/))
+        {
+            return String(m).length
+        }
+        return 0
     }
 
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)

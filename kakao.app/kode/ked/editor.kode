@@ -218,6 +218,11 @@ function editor extends events
         @state.insert text
         @redraw()
         
+    deindent: =>
+        
+        @state.deindent()
+        @redraw()
+        
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
@@ -356,6 +361,8 @@ function editor extends events
             'delete'                    ➜ ⮐ @delete 'back'
             'cmd+delete'                ➜ ⮐ @delete 'back' 'cmd'
             'alt+delete'                ➜ ⮐ @delete 'back' 'alt'
+            
+            'shift+tab'                 ➜ ⮐ @deindent()
                                     
             'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @cut()     
             'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @copy()        

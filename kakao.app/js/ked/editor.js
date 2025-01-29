@@ -33,6 +33,7 @@ editor = (function ()
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["joinLines"] = this["joinLines"].bind(this)
         this["delete"] = this["delete"].bind(this)
+        this["deindent"] = this["deindent"].bind(this)
         this["insert"] = this["insert"].bind(this)
         this["scrollView"] = this["scrollView"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
@@ -289,6 +290,12 @@ editor = (function ()
         return this.redraw()
     }
 
+    editor.prototype["deindent"] = function ()
+    {
+        this.state.deindent()
+        return this.redraw()
+    }
+
     editor.prototype["delete"] = function (type, mods)
     {
         this.state.delete(type,mods)
@@ -455,6 +462,9 @@ editor = (function ()
 
             case 'alt+delete':
                 return this.delete('back','alt')
+
+            case 'shift+tab':
+                return this.deindent()
 
             case 'alt+x':
             case 'cmd+x':

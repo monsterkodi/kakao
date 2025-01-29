@@ -139,7 +139,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, modc, mods, row, seq, text, x, y, _99_23_
+        var code, col, key, modc, mods, row, seq, text, x, y, _101_23_
 
         if ((this.pasteBuffer != null))
         {
@@ -372,6 +372,9 @@ TTIO = (function ()
                 {
                     switch (modc)
                     {
+                        case 2:
+                            return 'shift'
+
                         case 4:
                             return 'shift+alt'
 
@@ -406,11 +409,15 @@ TTIO = (function ()
                 }).bind(this))()
                 switch (code)
                 {
+                    case 9:
+                        return this.emit('key',mods + '+tab')
+
                     case 127:
                         return this.emit('key',mods + '+delete')
 
                 }
 
+                return lf('[27;',modc,code)
             }
             else if (seq.startsWith('['))
             {

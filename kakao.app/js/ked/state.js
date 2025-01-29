@@ -6,9 +6,10 @@ import immutable from "../kxk/immutable.js"
 import kstr from "../kxk/kstr.js"
 
 import del from "./act/del.js"
-import ins from "./act/ins.js"
-import sel from "./act/sel.js"
+import insert from "./act/insert.js"
+import select from "./act/select.js"
 import join from "./act/join.js"
+import indent from "./act/indent.js"
 
 import syntax from "./syntax.js"
 
@@ -46,7 +47,7 @@ state = (function ()
         this["loadLines"] = this["loadLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
-        var list = [del,ins,sel,join]
+        var list = [del,insert,select,join,indent]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             act = list[_a_]
@@ -104,8 +105,7 @@ state = (function ()
         }
         this.r.push(this.h.pop())
         this.s = this.h.slice(-1)[0]
-        this.syntax.setLines(this.s.lines.asMutable())
-        return this.updateCursor()
+        return this.syntax.setLines(this.s.lines.asMutable())
     }
 
     state.prototype["redo"] = function ()
@@ -116,8 +116,7 @@ state = (function ()
         }
         this.h.push(this.r.pop())
         this.s = this.h.slice(-1)[0]
-        this.syntax.setLines(this.s.lines.asMutable())
-        return this.updateCursor()
+        return this.syntax.setLines(this.s.lines.asMutable())
     }
 
     state.prototype["begin"] = function ()

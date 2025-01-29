@@ -131,6 +131,24 @@ class util
             text += '\n'
         text[0...-1]
         
+    @lineIndicesForRange: rng ->
+        
+        indices = []
+        
+        for li in rng[1]..rng[3]
+            indices.push li
+        
+        indices
+        
+    @lineIndicesForRanges: rngs ->
+        
+        indices = []
+        
+        for rng in rngs
+            indices = indices.concat @lineIndicesForRange(rng)
+            
+        indices
+        
     @textFromBolToPos:  lines pos -> lines[pos[1]][0...pos[0]]
         
     @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
@@ -162,6 +180,12 @@ class util
                 ⮐ [r[0] y r[1] y]
             
         [0 y x y]
+        
+    @numIndent: str ->
+ 
+        if m = str.match /^\s+/
+            ⮐ String(m).length
+        0
             
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       

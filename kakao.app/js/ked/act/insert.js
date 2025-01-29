@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 import kstr from "../../kxk/kstr.js"
 
@@ -25,6 +25,10 @@ export default {insert:function (text)
     }
     if (text === '\t')
     {
+        if (!_k_.empty(this.s.selections))
+        {
+            return this.indentSelectedLines()
+        }
         text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
     }
     var _b_ = this.s.cursor; x = _b_[0]; y = _b_[1]
