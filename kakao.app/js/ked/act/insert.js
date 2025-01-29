@@ -6,7 +6,6 @@ export default {insert:function (text)
 {
     var i, line, lines, s, split, x, y
 
-    lf(`text >${text}<`)
     split = text.split(/\r?\n/)
     if (split.length > 1)
     {

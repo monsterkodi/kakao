@@ -44,7 +44,7 @@ screen = (function ()
 
     screen.prototype["set_bg"] = function (x, y, bg)
     {
-        if (x < this.cols && y < this.rows)
+        if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {
             return this.c[y][x].bg = bg
         }

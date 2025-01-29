@@ -113,6 +113,7 @@ function KED
         for handler in @mouseHandlers
             if handler.onMouse event col row button mods count
                 ⮐ @redraw()
+        @redraw()
                 
     onWheel: col row dir mods =>
         

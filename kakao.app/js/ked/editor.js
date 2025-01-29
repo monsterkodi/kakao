@@ -20,9 +20,11 @@ editor = (function ()
     
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
+        this["isCursorVisible"] = this["isCursorVisible"].bind(this)
         this["showCursorIfInView"] = this["showCursorIfInView"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["postDraw"] = this["postDraw"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this.cells = new cells(this.screen)
         this.state = new state(this.cells)
@@ -33,6 +35,10 @@ editor = (function ()
     {
         var ch, fg, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
 
+        if (this.cells.rows <= 0 || this.cells.cols <= 0)
+        {
+            return
+        }
         syntax = this.state.syntax
         s = this.state.s
         view = s.view.asMutable()
@@ -63,13 +69,13 @@ editor = (function ()
             if (y < lines.length)
             {
                 linel = line.length - view[0]
-                if (y === s.cursor[1] && this.constructor.name === 'editor')
+                if (y === s.cursor[1])
                 {
                     if (linel > 0)
                     {
-                        this.cells.bg_rect(0,row,linel,row,theme.cursor_main)
+                        this.cells.bg_rect(0,row,linel,row,theme[this.constructor.name + '_cursor_main'])
                     }
-                    this.cells.bg_rect(_k_.max(0,linel),row,-1,row,theme.cursor_empty)
+                    this.cells.bg_rect(_k_.max(0,linel),row,-1,row,theme[this.constructor.name + '_cursor_empty'])
                 }
                 else
                 {
@@ -116,7 +122,15 @@ editor = (function ()
                 }
             }
         }
+        if (this.isCursorVisible())
+        {
+            this.cells.set_bg(s.cursor[0] - view[0],s.cursor[1] - view[1],theme[this.constructor.name + '_cursor_bg'])
+        }
+        return this.postDraw()
     }
+
+    editor.prototype["postDraw"] = function ()
+    {}
 
     editor.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
@@ -274,18 +288,25 @@ editor = (function ()
 
     editor.prototype["showCursorIfInView"] = function ()
     {
-        var s, show, sx, sy
+        var s, sx, sy
 
         s = this.state.s
         var _a_ = this.cells.screenForPos(s.cursor[0] - s.view[0],s.cursor[1] - s.view[1]); sx = _a_[0]; sy = _a_[1]
 
         this.screen.t.setCursor(sx,sy)
-        show = util.isPosInsideRange(s.cursor,this.state.rangeForVisibleLines())
-        if (s.cursor[0] < s.view[0])
+        return this.screen.t.showCursor(this.isCursorVisible())
+    }
+
+    editor.prototype["isCursorVisible"] = function ()
+    {
+        var visible
+
+        visible = util.isPosInsideRange(this.state.s.cursor,this.state.rangeForVisibleLines())
+        if (this.state.s.cursor[0] < this.state.s.view[0])
         {
-            show = false
+            visible = false
         }
-        return this.screen.t.showCursor(show)
+        return visible
     }
 
     editor.prototype["redraw"] = function ()

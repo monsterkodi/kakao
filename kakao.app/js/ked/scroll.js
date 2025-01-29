@@ -27,7 +27,6 @@ scroll = (function ()
 
         var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
 
-        lc(col,row,this.cells.isInsideScreen(sx,sy))
         switch (event)
         {
             case 'press':

@@ -24,8 +24,6 @@ function scroll
         
         [col row] = @cells.posForScreen sx sy
         
-        lc col row @cells.isInsideScreen(sx sy)
-        
         switch event
             
             'press'

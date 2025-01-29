@@ -33,7 +33,7 @@ function screen
             
     set_bg: x y bg =>
         
-        if x < @cols and y < @rows
+        if 0 <= x < @cols and 0 <= y < @rows
             @c[y][x].bg = bg
         
     # 00000000   00000000  000   000  0000000    00000000  00000000   
@@ -43,7 +43,7 @@ function screen
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
     render: =>
-        
+
         @t.setCursor 0 0
         s = ''
         pbg = ''

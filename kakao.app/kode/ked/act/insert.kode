@@ -18,7 +18,7 @@ export
     
     insert: text ->
         
-        lf "text >#{text}<" 
+        # lf "text >#{text}<" 
                 
         split = text.split /\r?\n/
         if split.length > 1

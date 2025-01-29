@@ -131,6 +131,7 @@ KED = (function ()
                 return this.redraw()
             }
         }
+        return this.redraw()
     }
 
     KED.prototype["onWheel"] = function (col, row, dir, mods)

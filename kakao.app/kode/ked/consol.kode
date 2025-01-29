@@ -6,7 +6,7 @@
  0000000   0000000   000   000  0000000    0000000   0000000
 ###
 
-use ◆ editor
+use ◆ editor theme
 
 function consol extends editor
 
@@ -19,6 +19,11 @@ function consol extends editor
             text = args.map((a) -> "#{a}").join(' ') 
             @state.insert '\n' #if @state.s.lines[@state.s.lines.length-1].length
             @state.insert text
+            
+    postDraw: =>
+        
+        fg = @hover ? theme.scroll_knob : theme.consol
+        @cells.set parseInt(@cells.cols/2) 0 '●' fg
             
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

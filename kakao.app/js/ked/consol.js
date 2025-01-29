@@ -3,6 +3,7 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 var consol
 
 import editor from "./editor.js"
+import theme from "./theme.js"
 
 
 consol = (function ()
@@ -13,6 +14,7 @@ consol = (function ()
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["postDraw"] = this["postDraw"].bind(this)
         consol.__super__.constructor.call(this,screen)
         global.lc = (function (...args)
         {
@@ -25,6 +27,14 @@ consol = (function ()
             this.state.insert('\n')
             return this.state.insert(text)
         }).bind(this)
+    }
+
+    consol.prototype["postDraw"] = function ()
+    {
+        var fg
+
+        fg = (this.hover ? theme.scroll_knob : theme.consol)
+        return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
     }
 
     consol.prototype["onMouse"] = function (event, col, row, button, mods, count)
