@@ -191,10 +191,14 @@ editor = (function ()
         return true
     }
 
-    editor.prototype["onWheel"] = function (dir, mods)
+    editor.prototype["onWheel"] = function (col, row, dir, mods)
     {
         var start, steps, x, y
 
+        if (row >= this.cells.y + this.cells.rows)
+        {
+            return
+        }
         steps = ((function ()
         {
             switch (mods)

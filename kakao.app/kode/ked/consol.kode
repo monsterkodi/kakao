@@ -17,7 +17,7 @@ function consol extends editor
         global.lc = args... => 
         
             text = args.map((a) -> "#{a}").join(' ') 
-            @state.insert '\n' if @state.s.lines[@state.s.lines.length-1].length
+            @state.insert '\n' #if @state.s.lines[@state.s.lines.length-1].length
             @state.insert text
             
     # 00     00   0000000   000   000   0000000  00000000  
@@ -27,8 +27,6 @@ function consol extends editor
     # 000   000   0000000    0000000   0000000   00000000  
     
     onMouse: event col row button mods count =>
-        
-        # ⮐ if @cells.isOutsideScreen col row
         
         [col row] = @cells.posForScreen col row
         
@@ -56,6 +54,37 @@ function consol extends editor
             
                 @hover = row == 0
                 
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: col row dir mods =>
+        
+        ⮐ if row < @cells.y
+        
+        steps = switch mods
+            
+            'shift'          ➜ 4
+            'shift+ctrl'     ➜ 8
+            'alt'            ➜ 16
+            'shift+alt'      ➜ 32
+            'ctrl+alt'       ➜ 64
+            'shift+ctrl+alt' ➜ 128
+            ➜ 1
+                        
+        switch dir
+            'up' 'down' 'left' 'right' ➜ @state.scrollView dir steps
+            
+        @redraw()
+                
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
     onKey: key =>
         
         switch key

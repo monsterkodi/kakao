@@ -20,15 +20,17 @@ function scroll
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event col row button mods count =>
+    onMouse: event sx sy button mods count =>
         
-        [col row] = @cells.posForScreen col row
+        [col row] = @cells.posForScreen sx sy
+        
+        lc col row @cells.isInsideScreen(sx sy)
         
         switch event
             
             'press'
             
-                if col == 0
+                if @cells.isInsideScreen sx sy
                     @doDrag = true
                     ⮐ @scrollTo row
                     
@@ -45,10 +47,7 @@ function scroll
             
             'move'
             
-                hover = col == 0
-                if @hover != hover
-                    @hover = hover
-                    ⮐ true
+                @hover = @cells.isInsideScreen sx sy
                     
         false
         

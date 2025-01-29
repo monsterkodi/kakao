@@ -231,88 +231,88 @@ TTIO = (function ()
                             return this.emit('mouse','move',x,y,'','shift+ctrl+alt')
 
                         case 64:
-                            return this.emit('wheel','up')
+                            return this.emit('wheel',x,y,'up')
 
                         case 68:
-                            return this.emit('wheel','up','shift')
+                            return this.emit('wheel',x,y,'up','shift')
 
                         case 72:
-                            return this.emit('wheel','up','alt')
+                            return this.emit('wheel',x,y,'up','alt')
 
                         case 76:
-                            return this.emit('wheel','up','shift+alt')
+                            return this.emit('wheel',x,y,'up','shift+alt')
 
                         case 84:
-                            return this.emit('wheel','up','shift+ctrl')
+                            return this.emit('wheel',x,y,'up','shift+ctrl')
 
                         case 88:
-                            return this.emit('wheel','up','ctrl+alt')
+                            return this.emit('wheel',x,y,'up','ctrl+alt')
 
                         case 92:
-                            return this.emit('wheel','up','shift+ctrl+alt')
+                            return this.emit('wheel',x,y,'up','shift+ctrl+alt')
 
                         case 65:
-                            return this.emit('wheel','down')
+                            return this.emit('wheel',x,y,'down')
 
                         case 69:
-                            return this.emit('wheel','down','shift')
+                            return this.emit('wheel',x,y,'down','shift')
 
                         case 73:
-                            return this.emit('wheel','down','alt')
+                            return this.emit('wheel',x,y,'down','alt')
 
                         case 77:
-                            return this.emit('wheel','down','shift+alt')
+                            return this.emit('wheel',x,y,'down','shift+alt')
 
                         case 85:
-                            return this.emit('wheel','down','shift+ctrl')
+                            return this.emit('wheel',x,y,'down','shift+ctrl')
 
                         case 89:
-                            return this.emit('wheel','down','ctrl+alt')
+                            return this.emit('wheel',x,y,'down','ctrl+alt')
 
                         case 93:
-                            return this.emit('wheel','down','shift+ctrl+alt')
+                            return this.emit('wheel',x,y,'down','shift+ctrl+alt')
 
                         case 66:
-                            return this.emit('wheel','left')
+                            return this.emit('wheel',x,y,'left')
 
                         case 70:
-                            return this.emit('wheel','left','shift')
+                            return this.emit('wheel',x,y,'left','shift')
 
                         case 74:
-                            return this.emit('wheel','left','alt')
+                            return this.emit('wheel',x,y,'left','alt')
 
                         case 78:
-                            return this.emit('wheel','left','shift+alt')
+                            return this.emit('wheel',x,y,'left','shift+alt')
 
                         case 86:
-                            return this.emit('wheel','left','shift+ctrl')
+                            return this.emit('wheel',x,y,'left','shift+ctrl')
 
                         case 90:
-                            return this.emit('wheel','left','ctrl+alt')
+                            return this.emit('wheel',x,y,'left','ctrl+alt')
 
                         case 94:
-                            return this.emit('wheel','left','shift+ctrl+alt')
+                            return this.emit('wheel',x,y,'left','shift+ctrl+alt')
 
                         case 67:
-                            return this.emit('wheel','right')
+                            return this.emit('wheel',x,y,'right')
 
                         case 71:
-                            return this.emit('wheel','right','shift')
+                            return this.emit('wheel',x,y,'right','shift')
 
                         case 75:
-                            return this.emit('wheel','right','alt')
+                            return this.emit('wheel',x,y,'right','alt')
 
                         case 79:
-                            return this.emit('wheel','right','shift+alt')
+                            return this.emit('wheel',x,y,'right','shift+alt')
 
                         case 87:
-                            return this.emit('wheel','right','shift+ctrl')
+                            return this.emit('wheel',x,y,'right','shift+ctrl')
 
                         case 91:
-                            return this.emit('wheel','right','ctrl+alt')
+                            return this.emit('wheel',x,y,'right','ctrl+alt')
 
                         case 95:
-                            return this.emit('wheel','right','shift+ctrl+alt')
+                            return this.emit('wheel',x,y,'right','shift+ctrl+alt')
 
                     }
 

@@ -21,16 +21,17 @@ scroll = (function ()
         this.cells = new cells(screen)
     }
 
-    scroll.prototype["onMouse"] = function (event, col, row, button, mods, count)
+    scroll.prototype["onMouse"] = function (event, sx, sy, button, mods, count)
     {
-        var hover
+        var col, row
 
-        var _a_ = this.cells.posForScreen(col,row); col = _a_[0]; row = _a_[1]
+        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
 
+        lc(col,row,this.cells.isInsideScreen(sx,sy))
         switch (event)
         {
             case 'press':
-                if (col === 0)
+                if (this.cells.isInsideScreen(sx,sy))
                 {
                     this.doDrag = true
                     return this.scrollTo(row)
@@ -50,12 +51,7 @@ scroll = (function ()
                 }
                 break
             case 'move':
-                hover = col === 0
-                if (this.hover !== hover)
-                {
-                    this.hover = hover
-                    return true
-                }
+                this.hover = this.cells.isInsideScreen(sx,sy)
                 break
         }
 

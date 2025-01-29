@@ -33,6 +33,7 @@ KED = (function ()
         this["redraw"] = this["redraw"].bind(this)
         this["onConsolRows"] = this["onConsolRows"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
+        this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["saveFile"] = this["saveFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
@@ -42,7 +43,7 @@ KED = (function ()
             console.log('0.0.2')
             process.exit(0)
         }
-        this.consolRows = 5
+        this.consolRows = 0
         this.t = new ttio
         this.log = new logfile
         this.screen = new screen(this.t)
@@ -54,12 +55,13 @@ KED = (function ()
         this.editor.on('redraw',this.redraw)
         this.consol.on('consolRows',this.onConsolRows)
         this.mouseHandlers = [this.scroll,this.consol,this.editor]
+        this.wheelHandlers = [this.consol,this.editor]
         this.keyHandlers = [this.consol,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
+        this.t.on('wheel',this.onWheel)
         this.t.on('resize',this.redraw)
         this.t.on('paste',this.editor.onPaste)
-        this.t.on('wheel',this.editor.onWheel)
         if (!_k_.empty(args.options))
         {
             this.loadFile(args.options[0])
@@ -131,6 +133,19 @@ KED = (function ()
         }
     }
 
+    KED.prototype["onWheel"] = function (col, row, dir, mods)
+    {
+        var handler
+
+        var list = _k_.list(this.wheelHandlers)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            handler = list[_a_]
+            handler.onWheel(col,row,dir,mods)
+        }
+        return this.redraw()
+    }
+
     KED.prototype["onKey"] = function (key)
     {
         var handler
@@ -174,29 +189,30 @@ KED = (function ()
 
     KED.prototype["redraw"] = function ()
     {
-        var c, g, h, start, w
+        var c, g, h, s, start, w
 
         start = process.hrtime()
         w = this.t.cols()
         h = this.t.rows()
+        s = 1
         c = this.consolRows
         g = this.editor.state.gutterWidth()
         this.status.gutter = g
         if (false)
         {
-            this.scroll.cells.init(w - 1,0,1,h - c - 1)
+            this.scroll.cells.init(w - s,0,s,h - c - 1)
             this.gutter.cells.init(0,0,g,h - c - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g,0,w - g - 1,h - c - 1)
-            this.consol.cells.init(0,h - 1 - c,w - g - 1,c)
+            this.editor.cells.init(g,0,w - g - s,h - c - 1)
+            this.consol.cells.init(0,h - 1 - c,w - g - s,c)
         }
         else
         {
-            this.scroll.cells.init(0,0,1,h - c - 1)
-            this.gutter.cells.init(1,0,g,h - c - 1)
+            this.scroll.cells.init(0,0,s,h - c - 1)
+            this.gutter.cells.init(s,0,g,h - c - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g + 1,0,w - g - 1,h - c - 1)
-            this.consol.cells.init(0,h - 1 - c,w - g - 1,c)
+            this.editor.cells.init(g + s,0,w - g - s,h - c - 1)
+            this.consol.cells.init(0,h - 1 - c,w - g - s,c)
         }
         this.t.hideCursor()
         this.screen.init()

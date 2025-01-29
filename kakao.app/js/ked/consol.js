@@ -11,6 +11,7 @@ consol = (function ()
     function consol (screen)
     {
         this["onKey"] = this["onKey"].bind(this)
+        this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         consol.__super__.constructor.call(this,screen)
         global.lc = (function (...args)
@@ -21,10 +22,7 @@ consol = (function ()
             {
                 return `${a}`
             }).join(' ')
-            if (this.state.s.lines[this.state.s.lines.length - 1].length)
-            {
-                this.state.insert('\n')
-            }
+            this.state.insert('\n')
             return this.state.insert(text)
         }).bind(this)
     }
@@ -61,6 +59,54 @@ consol = (function ()
 
         }
 
+    }
+
+    consol.prototype["onWheel"] = function (col, row, dir, mods)
+    {
+        var steps
+
+        if (row < this.cells.y)
+        {
+            return
+        }
+        steps = ((function ()
+        {
+            switch (mods)
+            {
+                case 'shift':
+                    return 4
+
+                case 'shift+ctrl':
+                    return 8
+
+                case 'alt':
+                    return 16
+
+                case 'shift+alt':
+                    return 32
+
+                case 'ctrl+alt':
+                    return 64
+
+                case 'shift+ctrl+alt':
+                    return 128
+
+                default:
+                    return 1
+            }
+
+        }).bind(this))()
+        switch (dir)
+        {
+            case 'up':
+            case 'down':
+            case 'left':
+            case 'right':
+                this.state.scrollView(dir,steps)
+                break
+        }
+
+        return this.redraw()
     }
 
     consol.prototype["onKey"] = function (key)
