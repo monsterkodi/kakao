@@ -60,7 +60,7 @@ state = (function ()
             }
         }
         this.syntax = new syntax
-        this.s = immutable({lines:[''],selections:[],cursor:[0,0],view:[0,0]})
+        this.s = immutable({lines:[''],selections:[],highlights:[],cursor:[0,0],view:[0,0]})
         this.h = [this.s]
         this.r = []
         this.setCursor(0,0)
@@ -71,7 +71,7 @@ state = (function ()
         this.s = this.s.set.apply(this.s,[item].concat(args))
         this.h.pop()
         this.h.push(this.s)
-        return this.s
+        return this
     }
 
     state.prototype["clearLines"] = function ()
@@ -180,16 +180,13 @@ state = (function ()
             return
         }
         proc = child_process.spawn('pbcopy')
-        proc.stdin.write(util.textForLinesRanges(this.s.lines.asMutable(),this.s.selections.asMutable()))
+        proc.stdin.write(this.textForSelection())
         return proc.stdin.end()
     }
 
     state.prototype["paste"] = function ()
     {
-        var text
-
-        text = child_process.execSync('pbpaste').toString("utf8")
-        return this.insert(text)
+        return this.insert(child_process.execSync('pbpaste').toString("utf8"))
     }
 
     state.prototype["setCursor"] = function (x, y)
@@ -291,7 +288,7 @@ state = (function ()
         selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
         selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
         this.set('selections',util.mergeRanges(selections))
-        return true
+        return this
     }
 
     state.prototype["scrollView"] = function (dir, steps = 1)
@@ -335,7 +332,8 @@ state = (function ()
 
     state.prototype["setView"] = function (view)
     {
-        return this.set('view',view)
+        this.set('view',view)
+        return this
     }
 
     state.prototype["rangeForVisibleLines"] = function ()

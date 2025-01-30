@@ -42,7 +42,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, fg, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
+        var bg, ch, fg, highlight, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -96,11 +96,24 @@ editor = (function ()
                 }
             }
         }
-        var list = _k_.list(s.selections)
+        var list = _k_.list(s.highlights)
         for (var _e_ = 0; _e_ < list.length; _e_++)
         {
-            selection = list[_e_]
-            for (var _f_ = li = selection[1], _10_ = selection[3]; (_f_ <= _10_ ? li <= selection[3] : li >= selection[3]); (_f_ <= _10_ ? ++li : --li))
+            highlight = list[_e_]
+            y = highlight[1] - view[1]
+            if ((view[1] <= li && li < view[1] + this.cells.rows))
+            {
+            }
+            for (var _f_ = x = highlight[0], _10_ = highlight[2]; (_f_ <= _10_ ? x < highlight[2] : x > highlight[2]); (_f_ <= _10_ ? ++x : --x))
+            {
+                this.cells.set_bg(x - view[0],y,theme.highlight)
+            }
+        }
+        var list1 = _k_.list(s.selections)
+        for (var _11_ = 0; _11_ < list1.length; _11_++)
+        {
+            selection = list1[_11_]
+            for (var _12_ = li = selection[1], _13_ = selection[3]; (_12_ <= _13_ ? li <= selection[3] : li >= selection[3]); (_12_ <= _13_ ? ++li : --li))
             {
                 y = li - view[1]
                 if ((view[1] <= li && li < view[1] + this.cells.rows))
@@ -121,7 +134,7 @@ editor = (function ()
                     {
                         xe = lines[li].length
                     }
-                    for (var _11_ = x = xs, _12_ = xe; (_11_ <= _12_ ? x < xe : x > xe); (_11_ <= _12_ ? ++x : --x))
+                    for (var _14_ = x = xs, _15_ = xe; (_14_ <= _15_ ? x < xe : x > xe); (_14_ <= _15_ ? ++x : --x))
                     {
                         if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
                         {
@@ -404,6 +417,24 @@ editor = (function ()
             case 'shift+ctrl+j':
                 return this.state.moveCursorAndSelect('eof')
 
+            case 'shift+up':
+                return this.state.moveCursorAndSelect('up')
+
+            case 'shift+down':
+                return this.state.moveCursorAndSelect('down')
+
+            case 'shift+left':
+                return this.state.moveCursorAndSelect('left')
+
+            case 'shift+right':
+                return this.state.moveCursorAndSelect('right')
+
+            case 'shift+cmd+right':
+                return this.state.moveCursorAndSelect('eol')
+
+            case 'shift+cmd+left':
+                return this.state.moveCursorAndSelect('bol')
+
             case 'ctrl+k':
                 return this.state.delete('eol')
 
@@ -444,30 +475,25 @@ editor = (function ()
             case 'cmd+j':
                 return this.state.joinLines()
 
-            case 'shift+up':
-                return this.state.moveCursorAndSelect('up')
+            case 'cmd+e':
+                return this.state.highlightSelectionOrWordAtCursor()
 
-            case 'shift+down':
-                return this.state.moveCursorAndSelect('down')
-
-            case 'shift+left':
-                return this.state.moveCursorAndSelect('left')
-
-            case 'shift+right':
-                return this.state.moveCursorAndSelect('right')
-
-            case 'shift+cmd+right':
-                return this.state.moveCursorAndSelect('eol')
-
-            case 'shift+cmd+left':
-                return this.state.moveCursorAndSelect('bol')
+            case 'cmd+g':
+                return this.state.selectNextHighlight()
 
             case 'esc':
                 return this.state.deselect()
 
         }
 
-        return this.state.insert(key)
+        if (0 <= key.indexOf('+'))
+        {
+            return lfc('unhandled?',key)
+        }
+        else
+        {
+            return this.state.insert(key)
+        }
     }
 
     return editor

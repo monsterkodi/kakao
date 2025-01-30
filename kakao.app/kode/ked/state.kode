@@ -12,7 +12,7 @@ use ◆ syntax
 use ./util ◆ util
 use child_process
 
-function state 
+function state
     
     @: @cells ->
         
@@ -25,6 +25,7 @@ function state
         @s = immutable
             lines:       ['']
             selections:  []
+            highlights:  []
             cursor:      [0 0]
             view:        [0 0]
             
@@ -44,7 +45,7 @@ function state
         @s = @s.set.apply @s [item].concat(args)
         @h.pop()
         @h.push @s
-        @s
+        @
     
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
@@ -136,7 +137,7 @@ function state
         ⮐ if empty @s.selections
             
         proc = child_process.spawn 'pbcopy'
-        proc.stdin.write util.textForLinesRanges(@s.lines.asMutable() @s.selections.asMutable())
+        proc.stdin.write @textForSelection()
         proc.stdin.end()
             
     # 00000000    0000000    0000000  000000000  00000000  
@@ -145,10 +146,7 @@ function state
     # 000        000   000       000     000     000       
     # 000        000   000  0000000      000     00000000  
     
-    paste: =>
-        
-        text = child_process.execSync('pbpaste').toString("utf8")
-        @insert text
+    paste: => @insert child_process.execSync('pbpaste').toString("utf8")
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
@@ -192,6 +190,12 @@ function state
         
         @setCursor c[0] c[1]
         
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
     moveCursorAndSelect: dir =>
         
         selections = @s.selections.asMutable()
@@ -214,8 +218,7 @@ function state
         selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
         
         @set 'selections' util.mergeRanges(selections)
-                    
-        true
+        @
         
     #  0000000   0000000  00000000    0000000   000      000      
     # 000       000       000   000  000   000  000      000      
@@ -248,9 +251,13 @@ function state
         view = @s.view.asMutable()
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
         view[0] = max 0 view[0]
+        
         @setView view
         
-    setView: view => @set 'view' view
+    setView: view => 
+    
+        @set 'view' view
+        @
                 
     rangeForVisibleLines: =>
         

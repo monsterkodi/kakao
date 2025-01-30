@@ -1,6 +1,10 @@
 class theme
 {
-    static selection = '#222222'
+    static selection_line = '#222222'
+
+    static selection = '#4444ff'
+
+    static highlight = '#555555'
 
     static cursor = '#ffff00'
 
@@ -58,17 +62,17 @@ class theme
 
     static editor_cursor_fg = '#000000'
 
-    static consol = '#1a1a1a'
+    static konsole = '#1a1a1a'
 
-    static consol_empty = '#000000'
+    static konsole_empty = '#000000'
 
-    static consol_cursor_main = '#1a1a1a'
+    static konsole_cursor_main = '#1a1a1a'
 
-    static consol_cursor_empty = '#000000'
+    static konsole_cursor_empty = '#000000'
 
-    static consol_cursor_bg = '#666666'
+    static konsole_cursor_bg = '#666666'
 
-    static consol_cursor_fg = '#000000'
+    static konsole_cursor_fg = '#000000'
 
     static text = '#ffffff'
 

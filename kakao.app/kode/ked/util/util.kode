@@ -186,6 +186,26 @@ class util
         if m = str.match /^\s+/
             ⮐ String(m).length
         0
+        
+    #  0000000  00000000    0000000   000   000   0000000  
+    # 000       000   000  000   000  0000  000  000       
+    # 0000000   00000000   000000000  000 0 000  0000000   
+    #      000  000        000   000  000  0000       000  
+    # 0000000   000        000   000  000   000  0000000   
+    
+    @lineSpansForText: lines text ->
+        
+        spans = []
+        
+        for line,y in lines
+            x2 = 0
+            while true
+                x1 = line.indexOf text x2
+                break if x1 < 0
+                x2 = x1+text.length
+                spans.push [x1 y x2]
+        
+        spans
             
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       

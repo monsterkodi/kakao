@@ -141,6 +141,7 @@ TTIO = (function ()
     {
         var code, col, key, modc, mods, row, seq, text, x, y, _101_23_
 
+        lf('data',data.slice(1))
         if ((this.pasteBuffer != null))
         {
             this.pasteBuffer += data.toString('utf8')
@@ -316,7 +317,7 @@ TTIO = (function ()
 
                     }
 
-                    console.log('mouse press?',seq)
+                    lfc('mouse press?',seq)
                     return
                 }
                 else if (seq.endsWith('m'))
@@ -343,21 +344,21 @@ TTIO = (function ()
 
                     }
 
-                    console.log('mouse release?',seq)
+                    lfc('mouse release?',seq)
                     return
                 }
             }
             else if (seq.startsWith('[27;9;') && seq.endsWith('~'))
             {
                 code = parseInt(seq.split(';').slice(-1)[0])
-                switch (code)
+                if ((97 <= code && code <= 122))
                 {
-                    case 90:
-                        return this.emit('key','shift+cmd+z')
-
+                    return this.emit('key',`cmd+${String.fromCodePoint(code)}`)
                 }
-
-                return this.emit('key',`cmd+${String.fromCodePoint(code)}`)
+                else
+                {
+                    return this.emit('key',`shift+cmd+${String.fromCodePoint(code + 32)}`)
+                }
             }
             else if (seq.startsWith('[27;5;') && seq.endsWith('~'))
             {
@@ -417,7 +418,7 @@ TTIO = (function ()
 
                 }
 
-                return lf('[27;',modc,code)
+                return lfc('[27;',modc,code)
             }
             else if (seq.startsWith('['))
             {
@@ -543,7 +544,7 @@ TTIO = (function ()
 
                 }
 
-                console.log('DATA',data,seq,seq.slice(1))
+                lfc('DATA',data,seq,seq.slice(1))
                 return
             }
             else if (data.length === 1)
@@ -572,7 +573,7 @@ TTIO = (function ()
 
                 }
 
-                console.log('seq?',seq,data)
+                return lfc('seq?',seq,data)
             }
         }
         else
@@ -580,7 +581,7 @@ TTIO = (function ()
             text = data.toString('utf8')
             if (text.length > 1)
             {
-                lf('paste?',text.length,text)
+                lfc('paste?',text.length,text)
                 return this.emit('paste',text)
             }
             switch (data[0])
@@ -771,7 +772,7 @@ TTIO = (function ()
             }
             else
             {
-                return lf('key?',key,data,data.length,data[0])
+                return lfc('key?',key,data,data.length,data[0])
             }
         }
     }

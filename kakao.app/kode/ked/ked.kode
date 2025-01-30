@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status screen cells state scroll consol
+use ◆ ttio gutter editor status screen cells state scroll konsole
 use ./util ◆ logfile util
 use ../kxk ▪ karg kstr slash
 use ../kxk/nfs
@@ -20,29 +20,35 @@ args = karg """
 function KED
 
     @: ->
+        
+        @version = '0.0.2'
 
-        if args.version ➜ log '0.0.2'; process.exit 0
+        if args.version ➜ log @version; process.exit 0
             
-        @consolRows = 0
+        @konsoleRows = 0
                     
         @t = new ttio
         
-        @log = new logfile
+        @logfile = new logfile
                 
-        @screen = new screen @t
+        @screen  = new screen @t
         
-        @editor  = new editor @screen
-        @consol  = new consol @screen
-        @gutter  = new gutter @screen @editor.state
-        @scroll  = new scroll @screen @editor.state
-        @status  = new status @screen @editor.state
+        @editor  = new editor   @screen
+        @konsole = new konsole  @screen
+        @gutter  = new gutter   @screen @editor.state
+        @scroll  = new scroll   @screen @editor.state
+        @status  = new status   @screen @editor.state
         
-        @editor.on 'redraw'     @redraw
-        @consol.on 'consolRows' @onConsolRows
+        global.lfc = args... => lc.apply null args; lf.apply null args
         
-        @mouseHandlers = [@scroll @consol @editor]
-        @wheelHandlers = [@consol @editor]
-        @keyHandlers   = [@consol @editor]
+        lfc 'ked' @version
+        
+        @editor.on  'redraw'      @redraw
+        @konsole.on 'konsoleRows' @onKonsoleRows
+        
+        @mouseHandlers = [@scroll @konsole @editor]
+        @wheelHandlers = [        @konsole @editor]
+        @keyHandlers   = [        @konsole @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -101,6 +107,8 @@ function KED
         if valid @status.file
             ○ nfs.write slash.untilde(@status.file) text
             @reloadFile()
+            
+    saveAs: => lfc 'saveAs'
                                     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -131,17 +139,17 @@ function KED
     
     onKey: key =>
         
-        lc 'key' key
+        # lc 'key' key
         
         switch key
             
-            'alt+q' 'ctrl+d' 'ctrl+q' ➜ ⮐ @t.quit()
-            'alt+r' 'ctrl+r' 'cmd+r'  ➜ ⮐ @reloadFile()
-            'ctrl+s' 'cmd+s'          ➜ ⮐ @saveFile()
+            'alt+q' 'ctrl+d' 'ctrl+q'       ➜ ⮐ @t.quit()
+            'alt+r' 'ctrl+r' 'cmd+r'        ➜ ⮐ @reloadFile()
+            'ctrl+s' 'cmd+s'                ➜ ⮐ @saveFile()
+            'shift+cmd+s' 'shift+ctrl+s'    ➜ ⮐ @saveAs()
             
         for handler in @keyHandlers
-            if handler.onKey key
-                break
+            break if handler.onKey key
                 
         @redraw()
                         
@@ -151,7 +159,7 @@ function KED
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    onConsolRows: @consolRows =>
+    onKonsoleRows: @konsoleRows =>
     
     redraw: =>
         
@@ -161,7 +169,7 @@ function KED
         h = @t.rows()
         
         s = 1
-        c = @consolRows
+        c = @konsoleRows
         g = @editor.state.gutterWidth()
         @status.gutter = g
         
@@ -170,13 +178,13 @@ function KED
             @gutter.cells.init 0   0     g     h-c-1
             @status.cells.init 0   h-1   w     1
             @editor.init       g   0     w-g-s h-c-1
-            @consol.init       0   h-1-c w-g-s c
+            @konsole.init      0   h-1-c w-g-s c
         else
             @scroll.cells.init 0   0     s     h-c-1 
             @gutter.cells.init s   0     g     h-c-1
             @status.cells.init 0   h-1   w     1
             @editor.init       g+s 0     w-g-s h-c-1    
-            @consol.init       0   h-1-c w-g-s c
+            @konsole.init      0   h-1-c w-g-s c
                         
         @t.hideCursor()
         @screen.init()
@@ -184,7 +192,7 @@ function KED
         @scroll.draw()
         @status.draw()
         @editor.draw()
-        @consol.draw()
+        @konsole.draw()
         @screen.render()
         @editor.showCursorIfInView() 
         

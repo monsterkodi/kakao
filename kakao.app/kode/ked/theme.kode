@@ -1,6 +1,16 @@
+###
+000000000  000   000  00000000  00     00  00000000  
+   000     000   000  000       000   000  000       
+   000     000000000  0000000   000000000  0000000   
+   000     000   000  000       000 0 000  000       
+   000     000   000  00000000  000   000  00000000  
+###
+
 class theme
     
-    @selection:             '#222222'  
+    @selection_line:        '#222222'  
+    @selection:             '#4444ff'  
+    @highlight:             '#555555'  
     @cursor:                '#ffff00'  
     @linenr:                '#1a1a1a'  
     @gutter_sel:            '#161616'  
@@ -29,12 +39,12 @@ class theme
     @editor_cursor_empty:   '#000000'  
     @editor_cursor_bg:      '#ffff00'  
     @editor_cursor_fg:      '#000000'  
-    @consol:                '#1a1a1a'  
-    @consol_empty:          '#000000'  
-    @consol_cursor_main:    '#1a1a1a'  
-    @consol_cursor_empty:   '#000000'  
-    @consol_cursor_bg:      '#666666'  
-    @consol_cursor_fg:      '#000000'  
+    @konsole:               '#1a1a1a'  
+    @konsole_empty:         '#000000'  
+    @konsole_cursor_main:   '#1a1a1a'  
+    @konsole_cursor_empty:  '#000000'  
+    @konsole_cursor_bg:     '#666666'  
+    @konsole_cursor_fg:     '#000000'  
     @text:                  '#ffffff'  
     
     @syntax: 

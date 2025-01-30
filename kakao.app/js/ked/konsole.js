@@ -1,22 +1,22 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
 
-var consol
+var konsole
 
 import editor from "./editor.js"
 import theme from "./theme.js"
 
 
-consol = (function ()
+konsole = (function ()
 {
-    _k_.extend(consol, editor)
-    function consol (screen)
+    _k_.extend(konsole, editor)
+    function konsole (screen)
     {
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["postDraw"] = this["postDraw"].bind(this)
         this["toggle"] = this["toggle"].bind(this)
-        consol.__super__.constructor.call(this,screen)
+        konsole.__super__.constructor.call(this,screen)
         global.lc = (function (...args)
         {
             var text
@@ -30,20 +30,20 @@ consol = (function ()
         }).bind(this)
     }
 
-    consol.prototype["toggle"] = function ()
+    konsole.prototype["toggle"] = function ()
     {
-        return this.emit('consolRows',(this.cells.rows ? 0 : 10))
+        return this.emit('konsoleRows',(this.cells.rows ? 0 : 10))
     }
 
-    consol.prototype["postDraw"] = function ()
+    konsole.prototype["postDraw"] = function ()
     {
         var fg
 
-        fg = (this.hover ? theme.scroll_knob : theme.consol)
+        fg = (this.hover ? theme.scroll_knob : theme.konsole)
         return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
     }
 
-    consol.prototype["onMouse"] = function (event, col, row, button, mods, count)
+    konsole.prototype["onMouse"] = function (event, col, row, button, mods, count)
     {
         var _a_ = this.cells.posForScreen(col,row); col = _a_[0]; row = _a_[1]
 
@@ -59,7 +59,7 @@ consol = (function ()
             case 'drag':
                 if (this.doDrag && row)
                 {
-                    this.emit('consolRows',this.cells.rows - row)
+                    this.emit('konsoleRows',this.cells.rows - row)
                     return true
                 }
                 break
@@ -77,7 +77,7 @@ consol = (function ()
 
     }
 
-    consol.prototype["onWheel"] = function (col, row, dir, mods)
+    konsole.prototype["onWheel"] = function (col, row, dir, mods)
     {
         var steps
 
@@ -125,7 +125,7 @@ consol = (function ()
         return this.redraw()
     }
 
-    consol.prototype["onKey"] = function (key)
+    konsole.prototype["onKey"] = function (key)
     {
         switch (key)
         {
@@ -142,7 +142,7 @@ consol = (function ()
         return false
     }
 
-    return consol
+    return konsole
 })()
 
-export default consol;
+export default konsole;

@@ -305,6 +305,30 @@ class util
         return 0
     }
 
+    static lineSpansForText (lines, text)
+    {
+        var line, spans, x1, x2, y
+
+        spans = []
+        var list = _k_.list(lines)
+        for (y = 0; y < list.length; y++)
+        {
+            line = list[y]
+            x2 = 0
+            while (true)
+            {
+                x1 = line.indexOf(text,x2)
+                if (x1 < 0)
+                {
+                    break
+                }
+                x2 = x1 + text.length
+                spans.push([x1,y,x2])
+            }
+        }
+        return spans
+    }
+
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
     {
         var partialFirst, ri, rng

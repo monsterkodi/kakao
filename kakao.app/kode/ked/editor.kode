@@ -67,12 +67,21 @@ function editor extends events
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@constructor.name]
                     @cells.bg_rect max(0 linel) row -1 row theme[@constructor.name + '_empty']
+
+        for highlight in s.highlights
+            
+            y = highlight[1]-view[1]
+                
+            if view[1] <= li < view[1] + @cells.rows
+                    
+            for x in highlight[0]...highlight[2]
+                @cells.set_bg x-view[0] y theme.highlight
                     
         for selection in s.selections
             
             for li in selection[1]..selection[3]
                 
-                y  = li-view[1]
+                y = li-view[1]
                 
                 if view[1] <= li < view[1] + @cells.rows
                     
@@ -283,8 +292,15 @@ function editor extends events
             'ctrl+e'                    ➜ ⮐ @state.setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
             'ctrl+h'                    ➜ ⮐ @state.setCursor 0 0
             'ctrl+j'                    ➜ ⮐ @state.setCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
+            
             'shift+ctrl+h'              ➜ ⮐ @state.moveCursorAndSelect 'bof'
             'shift+ctrl+j'              ➜ ⮐ @state.moveCursorAndSelect 'eof'
+            'shift+up'                  ➜ ⮐ @state.moveCursorAndSelect 'up'
+            'shift+down'                ➜ ⮐ @state.moveCursorAndSelect 'down'
+            'shift+left'                ➜ ⮐ @state.moveCursorAndSelect 'left'
+            'shift+right'               ➜ ⮐ @state.moveCursorAndSelect 'right'
+            'shift+cmd+right'           ➜ ⮐ @state.moveCursorAndSelect 'eol'
+            'shift+cmd+left'            ➜ ⮐ @state.moveCursorAndSelect 'bol'
                     
             'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
             'delete'                    ➜ ⮐ @state.delete 'back'
@@ -301,16 +317,15 @@ function editor extends events
             'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
                         
             'cmd+j'                     ➜ ⮐ @state.joinLines()
-                    
-            'shift+up'                  ➜ ⮐ @state.moveCursorAndSelect 'up'
-            'shift+down'                ➜ ⮐ @state.moveCursorAndSelect 'down'
-            'shift+left'                ➜ ⮐ @state.moveCursorAndSelect 'left'
-            'shift+right'               ➜ ⮐ @state.moveCursorAndSelect 'right'
-            'shift+cmd+right'           ➜ ⮐ @state.moveCursorAndSelect 'eol'
-            'shift+cmd+left'            ➜ ⮐ @state.moveCursorAndSelect 'bol'
-                                
-            'esc'                       ➜ ⮐ @state.deselect()
             
-        @state.insert key
+            'cmd+e'                     ➜ ⮐ @state.highlightSelectionOrWordAtCursor()
+            'cmd+g'                     ➜ ⮐ @state.selectNextHighlight()
+                                                    
+            'esc'                       ➜ ⮐ @state.deselect()
+
+        if 0 <= key.indexOf '+'
+            lfc 'unhandled?' key
+        else
+            @state.insert key
             
 export editor

@@ -96,7 +96,7 @@ function TTIO extends events
     
     onData: data =>
         
-        # lf 'data' data[1..]
+        lf 'data' data[1..]
         
         if @pasteBuffer?
             
@@ -113,7 +113,7 @@ function TTIO extends events
             
             seq = data[1..].toString 'utf8'
             
-            # lf seq
+            # lfc seq
             
             if seq == '[200~'
                 @pasteBuffer = ''
@@ -125,7 +125,7 @@ function TTIO extends events
                 x = col-1
                 y = row-1
                 if seq.endsWith 'M'
-                    # log code
+                    # lfc code
                     switch code
                         0  ➜ ⮐ @emitMousePress x y 'left' 
                         2  ➜ ⮐ @emitMousePress x y 'right'
@@ -181,7 +181,7 @@ function TTIO extends events
                         91 ➜ ⮐ @emit 'wheel' x y  'right' 'ctrl+alt'  
                         95 ➜ ⮐ @emit 'wheel' x y  'right' 'shift+ctrl+alt'
                         
-                    log 'mouse press?' seq
+                    lfc 'mouse press?' seq
                     ⮐ 
                 else if seq.endsWith 'm'
                     switch code
@@ -192,17 +192,17 @@ function TTIO extends events
                         16 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl'
                         24 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl+alt'
                         
-                    log 'mouse release?' seq
+                    lfc 'mouse release?' seq
                     ⮐ 
                     
             else if seq.startsWith('[27;9;') and seq.endsWith('~')
                 
                 code = parseInt seq.split(';')[-1]
                 
-                switch code
-                    90 ➜ ⮐ @emit 'key' 'shift+cmd+z'
-                
-                @emit 'key' "cmd+#{String.fromCodePoint code}"
+                if 97 <= code <= 122
+                    @emit 'key' "cmd+#{String.fromCodePoint code}"
+                else
+                    @emit 'key' "shift+cmd+#{String.fromCodePoint code+32}"
 
             else if seq.startsWith('[27;5;') and seq.endsWith('~')
                 
@@ -230,7 +230,7 @@ function TTIO extends events
                     9   ➜ ⮐ @emit 'key' mods+'+tab' 
                     127 ➜ ⮐ @emit 'key' mods+'+delete' 
                     
-                lf '[27;' modc code
+                lfc '[27;' modc code
                                 
             else if seq.startsWith '['
                 
@@ -276,7 +276,7 @@ function TTIO extends events
                     '[1;15C'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+right'
                     '[1;15D'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+left'
                     
-                log 'DATA' data, seq, seq[1..]
+                lfc 'DATA' data, seq, seq[1..]
                 ⮐ 
             else if data.length == 1
                 ⮐ @emit 'key' 'esc'  
@@ -289,13 +289,13 @@ function TTIO extends events
                     'b' ➜ ⮐ @emit 'key' 'alt+left'
                     'f' ➜ ⮐ @emit 'key' 'alt+right'
                     
-                log 'seq?' seq, data
+                lfc 'seq?' seq, data
         else
             
             text = data.toString 'utf8'
             
             if text.length > 1
-                lf 'paste?' text.length text
+                lfc 'paste?' text.length text
                 ⮐ @emit 'paste' text
                         
             switch data[0]
@@ -306,7 +306,7 @@ function TTIO extends events
                 
             key = if
                 0x1 <= data[0] <= 0x1a ➜ "ctrl+#{String.fromCodePoint 96+data[0]}"
-                ➜ data.toString 'utf8'
+                                       ➜ data.toString 'utf8'
             
             key = switch key
                 
@@ -371,6 +371,6 @@ function TTIO extends events
             if key 
                 @emit 'key' key
             else
-                lf 'key?' key data data.length data[0]
+                lfc 'key?' key data data.length data[0]
                 
 export TTIO

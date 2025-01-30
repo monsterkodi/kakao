@@ -23,9 +23,7 @@ export
         
         @setCursor to[0] to[1]
         
-        if from[1] > to[1]
-            [from to] = [to from]
-        else if from[1] == to[1] and from[0] > to[0]
+        if from[1] > to[1] or from[1] == to[1] and from[0] > to[0]
             [from to] = [to from]
 
         to[1]   = clamp 0 @s.lines.length-1 to[1]
@@ -38,7 +36,31 @@ export
         
         @set 'selections' selections
         
-        true
+    # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
+    # 000   000  000  000        000   000  000      000  000        000   000     000     
+    # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
+    # 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
+    # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
+    
+    highlightSelectionOrWordAtCursor: ->
+        
+        if valid @s.highlights
+        
+        @selectWord @s.cursor if empty @s.selections
+            
+        ⮐ @ if not @isSingleLineSelected()
+        
+        @highlightText @textForSelection()
+        
+    highlightText: text ->
+        
+        # lfc "highlight >#{text}<"
+        lines = @s.lines.asMutable()
+        spans = util.lineSpansForText lines text
+        # lfc 'spans' spans
+        @set 'highlights' spans
+        
+    selectNextHighlight: ->
         
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   
@@ -48,6 +70,8 @@ export
     
     selectChunk: x y ->
         
+        [x y] = x if x is arr and empty y
+        
         ⮐ if @isInvalidLineIndex y
         
         line = @s.lines[y]
@@ -55,6 +79,7 @@ export
         [rs re] = kstr.rangeOfClosestChunk line x
         if rs >= 0 and re >= 0
             @select [rs y] [re+1 y]
+        @
 
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
@@ -64,8 +89,11 @@ export
     
     selectWord: x y ->
         
+        [x y] = x if x is arr and empty y
+        
         if range = util.rangeOfClosestWordToPos @s.lines [x y]
             @select range[0..1] range[2..3]
+        @
         
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       
@@ -78,7 +106,20 @@ export
         y ?= @s.cursor[1]
         if 0 <= y < @s.lines.length
             @select [0 y] [@s.lines[y].length y]
+        @
+        
+    # 000000000  00000000  000   000  000000000  
+    #    000     000        000 000      000     
+    #    000     0000000     00000       000     
+    #    000     000        000 000      000     
+    #    000     00000000  000   000     000     
+    
+    textForSelection: -> util.textForLinesRanges @s.lines.asMutable() @s.selections.asMutable()
 
+    isSingleLineSelected: ->
+        
+        @s.selections.length == 1 and @s.selections[0][1] == @s.selections[0][3]
+        
     isSelectedLine: y ->
         
         for selection in @s.selections
@@ -98,3 +139,8 @@ export
         
         if valid @s.selections
             @set 'selections' []
+
+        if valid @s.highlights
+            @set 'highlights' []
+            
+            
