@@ -75,3 +75,15 @@ use ../util ◆ util
         util.rangeOfWordOrWhitespaceLeftToPos lines [1 0] ▸ [0 0 1 0]
         util.rangeOfWordOrWhitespaceLeftToPos lines [1 1] ▸ [0 1 1 1]
         util.rangeOfWordOrWhitespaceLeftToPos lines [3 1] ▸ [0 1 3 1]
+        
+    ▸ isFullLineRange
+    
+        lines = ['' '124' 'abcdef']
+        
+        util.isFullLineRange lines [0 0 0 1] ▸ true
+        util.isFullLineRange lines [0 0 0 0] ▸ true
+        util.isFullLineRange lines [0 1 3 1] ▸ true
+        util.isFullLineRange lines [0 1 5 1] ▸ true
+        util.isFullLineRange lines [0 1 2 1] ▸ false
+        util.isFullLineRange lines [1 1 3 1] ▸ false
+        

@@ -110,6 +110,38 @@ export default {select:function (from, to)
         }
     }
     return false
+},isHighlightedLine:function (y)
+{
+    var highlight
+
+    var list = _k_.list(this.s.highlights)
+    for (var _f_ = 0; _f_ < list.length; _f_++)
+    {
+        highlight = list[_f_]
+        if (highlight[1] === y)
+        {
+            return true
+        }
+    }
+    return false
+},isFullySelectedLine:function (y)
+{
+    var selection
+
+    var list = _k_.list(this.s.selections)
+    for (var _10_ = 0; _10_ < list.length; _10_++)
+    {
+        selection = list[_10_]
+        if (selection[3] === y && selection[2] === 0)
+        {
+            continue
+        }
+        if ((selection[1] <= y && y <= selection[3]))
+        {
+            return util.isFullLineRange(this.s.lines.asMutable(),selection)
+        }
+    }
+    return false
 },deselect:function ()
 {
     if (!_k_.empty(this.s.selections))

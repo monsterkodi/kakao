@@ -64,6 +64,16 @@ toExport["util"] = function ()
         compare(util.rangeOfWordOrWhitespaceLeftToPos(lines,[1,1]),[0,1,1,1])
         compare(util.rangeOfWordOrWhitespaceLeftToPos(lines,[3,1]),[0,1,3,1])
     })
+    section("isFullLineRange", function ()
+    {
+        lines = ['','124','abcdef']
+        compare(util.isFullLineRange(lines,[0,0,0,1]),true)
+        compare(util.isFullLineRange(lines,[0,0,0,0]),true)
+        compare(util.isFullLineRange(lines,[0,1,3,1]),true)
+        compare(util.isFullLineRange(lines,[0,1,5,1]),true)
+        compare(util.isFullLineRange(lines,[0,1,2,1]),false)
+        compare(util.isFullLineRange(lines,[1,1,3,1]),false)
+    })
 }
 toExport["util"]._section_ = true
 toExport._test_ = true

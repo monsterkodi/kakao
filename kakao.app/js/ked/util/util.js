@@ -251,6 +251,15 @@ class util
         return !util.isValidLineIndex(lines,li)
     }
 
+    static isFullLineRange (lines, rng)
+    {
+        if (rng[1] !== rng[3])
+        {
+            return true
+        }
+        return rng[1] === rng[3] && (0 <= rng[1] && rng[1] < lines.length) && rng[0] === 0 && rng[2] >= lines[rng[1]].length
+    }
+
     static rangeOfClosestWordToPos (lines, pos)
     {
         var r, x, y

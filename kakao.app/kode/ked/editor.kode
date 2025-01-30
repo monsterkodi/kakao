@@ -94,10 +94,12 @@ function editor extends events
                         xe = selection[2]
                     else
                         xe = lines[li].length
-                        
+
+                    bg = util.isFullLineRange(lines selection) ? theme.selection_line : theme.selection
+                    
                     for x in xs...xe
                         if 0 <= x-view[0] < @cells.cols
-                            @cells.set_bg x-view[0] y theme.selection
+                            @cells.set_bg x-view[0] y bg 
                             
         if @isCursorVisible()
             bg = theme[@constructor.name + '_cursor_bg']

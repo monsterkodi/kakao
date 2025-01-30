@@ -17,13 +17,16 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, i, lineno, row, y
+        var bg, c, col, fg, fullysel, highlighted, i, lineno, row, selected, y
 
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = this.state.s.view[1] + row
             lineno = _k_.lpad(this.cells.cols - 1,y + 1)
             lineno += ' '
+            selected = this.state.isSelectedLine(y)
+            highlighted = this.state.isHighlightedLine(y)
+            fullysel = this.state.isFullySelectedLine(y)
             var list = _k_.list(lineno)
             for (i = 0; i < list.length; i++)
             {
@@ -31,8 +34,8 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === this.state.s.cursor[1] ? theme.cursor : this.state.isSelectedLine(y) ? theme.selection : theme.linenr
-                    bg = this.state.isSelectedLine(y) ? theme.gutter_sel : theme.gutter
+                    fg = y === this.state.s.cursor[1] ? theme.cursor : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
+                    bg = fullysel ? theme.gutter_sel : theme.gutter
                     this.cells.set(col,row,((y < this.state.s.lines.length) ? c : ' '),fg,bg)
                 }
             }

@@ -141,7 +141,6 @@ TTIO = (function ()
     {
         var code, col, key, modc, mods, row, seq, text, x, y, _101_23_
 
-        lf('data',data.slice(1))
         if ((this.pasteBuffer != null))
         {
             this.pasteBuffer += data.toString('utf8')

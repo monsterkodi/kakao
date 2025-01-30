@@ -128,7 +128,23 @@ export
             if selection[1] <= y <= selection[3]
                 ⮐ true
         false
-                        
+        
+    isHighlightedLine: y ->
+
+        for highlight in @s.highlights
+            ⮐ true if highlight[1] == y
+                
+        false
+
+    isFullySelectedLine: y ->
+        
+        for selection in @s.selections
+            if selection[3] == y and selection[2] == 0
+                continue
+            if selection[1] <= y <= selection[3]
+                ⮐ util.isFullLineRange @s.lines.asMutable() selection
+        false
+        
     # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  
     # 000   000  000       000       000       000      000       000          000     
     # 000   000  0000000   0000000   0000000   000      0000000   000          000     

@@ -96,7 +96,7 @@ function TTIO extends events
     
     onData: data =>
         
-        lf 'data' data[1..]
+        # lf 'data' data[1..]
         
         if @pasteBuffer?
             

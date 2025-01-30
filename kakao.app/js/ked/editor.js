@@ -134,11 +134,12 @@ editor = (function ()
                     {
                         xe = lines[li].length
                     }
+                    bg = (util.isFullLineRange(lines,selection) ? theme.selection_line : theme.selection)
                     for (var _14_ = x = xs, _15_ = xe; (_14_ <= _15_ ? x < xe : x > xe); (_14_ <= _15_ ? ++x : --x))
                     {
                         if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
                         {
-                            this.cells.set_bg(x - view[0],y,theme.selection)
+                            this.cells.set_bg(x - view[0],y,bg)
                         }
                     }
                 }

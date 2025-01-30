@@ -46,7 +46,7 @@ class theme
     @konsole_cursor_bg:     '#666666'  
     @konsole_cursor_fg:     '#000000'  
     @text:                  '#ffffff'  
-    
+
     @syntax: 
         'text':                                 '#ffffff'
         'punct':                                '#555555'

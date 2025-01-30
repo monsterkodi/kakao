@@ -156,6 +156,12 @@ class util
     
     @isValidLineIndex:   lines li -> 0 <= li < lines.length
     @isInvalidLineIndex: lines li -> not util.isValidLineIndex lines li
+    
+    @isFullLineRange:    lines rng -> 
+        
+        ⮐ true if rng[1] != rng[3]
+    
+        rng[1] == rng[3] and 0 <= rng[1] < lines.length and rng[0] == 0 and rng[2] >= lines[rng[1]].length
 
     @rangeOfClosestWordToPos: lines pos ->
         
