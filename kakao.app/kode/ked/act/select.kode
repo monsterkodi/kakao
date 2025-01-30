@@ -42,22 +42,56 @@ export
     # 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
     
+    highlightSelectionOrAddNextHighlightToSelection: ->
+        
+        if valid @s.highlights ➜ ⮐ @addNextHighlightToSelection()
+            
+        @highlightSelectionOrWordAtCursor()
+        
+    addNextHighlightToSelection: ->
+        
+        ⮐ if empty @s.highlights
+        
+        lfc 'addNext' @s.highlights @s.cursor
+        
+        if next = util.nextSpanAfterPos @s.highlights @s.cursor
+            lfc 'next' next
+            @addSpanToSelection next
+            lfc 'cursor' util.endOfSpan(next)
+            @setCursor util.endOfSpan(next)
+            
+    addSpanToSelection: span ->
+        
+        selections = @s.selections.asMutable()
+        
+        selections.push util.rangeForSpan(span)
+        
+        @set 'selections' selections
+                
     highlightSelectionOrWordAtCursor: ->
         
-        if valid @s.highlights
-        
         @selectWord @s.cursor if empty @s.selections
-            
-        ⮐ @ if not @isSingleLineSelected()
         
-        @highlightText @textForSelection()
+        @highlightSelection()
+    
+    highlightSelection: ->
+        
+        ⮐ if empty @s.selections
+        
+        spans = []
+        lines = @s.lines.asMutable()
+        for selection in @s.selections.asMutable()
+            continue if selection[1] != selection[3]
+            text  = util.textForLinesRange lines selection
+            spans = spans.concat util.lineSpansForText(lines text)
+        
+        @set 'highlights' spans
         
     highlightText: text ->
         
-        # lfc "highlight >#{text}<"
         lines = @s.lines.asMutable()
         spans = util.lineSpansForText lines text
-        # lfc 'spans' spans
+
         @set 'highlights' spans
         
     selectNextHighlight: ->
@@ -70,7 +104,7 @@ export
     
     selectChunk: x y ->
         
-        [x y] = x if x is arr and empty y
+        [x y] = util.pos x y
         
         ⮐ if @isInvalidLineIndex y
         

@@ -155,9 +155,13 @@ TTIO = (function ()
         if (data[0] === 0x1b)
         {
             seq = data.slice(1).toString('utf8')
-            if (seq === '[200~')
+            if (seq.startsWith('[200~'))
             {
                 this.pasteBuffer = ''
+                if (seq.endsWith('\x1b[201~'))
+                {
+                    this.onData(data.slice(6))
+                }
                 return
             }
             if (seq.startsWith('[<'))

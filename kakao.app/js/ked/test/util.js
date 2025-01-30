@@ -1,5 +1,5 @@
 var toExport = {}
-var lines
+var lines, spans
 
 import util from "../util/util.js"
 
@@ -12,7 +12,7 @@ toExport["util"] = function ()
         compare(util.isPosInsideRange([7,1],[5,2,10,2]),false)
         compare(util.isPosInsideRange([7,2],[5,2,10,2]),true)
         compare(util.isPosInsideRange([5,2],[5,2,10,2]),true)
-        compare(util.isPosInsideRange([10,2],[5,2,10,2]),true)
+        compare(util.isPosInsideRange([10,2],[5,2,10,2]),false)
         compare(util.isPosInsideRange([4,2],[5,2,10,2]),false)
         compare(util.isPosInsideRange([11,2],[5,2,10,2]),false)
         compare(util.isPosInsideRange([7,3],[5,2,10,2]),false)
@@ -73,6 +73,32 @@ toExport["util"] = function ()
         compare(util.isFullLineRange(lines,[0,1,5,1]),true)
         compare(util.isFullLineRange(lines,[0,1,2,1]),false)
         compare(util.isFullLineRange(lines,[1,1,3,1]),false)
+    })
+    section("isPosAfterSpan", function ()
+    {
+        compare(util.isPosAfterSpan([0,0],[1,0,5]),false)
+        compare(util.isPosAfterSpan([5,0],[1,0,5]),true)
+        compare(util.isPosAfterSpan([6,0],[1,0,5]),true)
+        compare(util.isPosAfterSpan([0,1],[1,0,5]),true)
+    })
+    section("nextSpanAfterPos", function ()
+    {
+        spans = [[1,0,3],[6,0,8],[2,1,5]]
+        compare(util.nextSpanAfterPos(spans,[4,0]),[6,0,8])
+        compare(util.nextSpanAfterPos(spans,[0,0]),[1,0,3])
+        spans = [[0,21,11],[2,22,11],[5,23,11],[7,24,11]]
+        compare(util.nextSpanAfterPos(spans,[11,21]),[2,22,11])
+        compare(util.nextSpanAfterPos(spans,[11,22]),[5,23,11])
+        compare(util.nextSpanAfterPos(spans,[11,23]),[7,24,11])
+        compare(util.nextSpanAfterPos(spans,[11,24]),[0,21,11])
+        spans = [[2,1,5],[2,2,5],[2,3,5]]
+        compare(util.nextSpanAfterPos(spans,[5,2]),[2,3,5])
+        compare(util.nextSpanAfterPos(spans,[5,3]),[2,1,5])
+        compare(util.nextSpanAfterPos(spans,[5,1]),[2,2,5])
+        spans = [[1,4,3],[3,4,5]]
+        compare(util.nextSpanAfterPos(spans,[0,0]),[1,4,3])
+        compare(util.nextSpanAfterPos(spans,[3,4]),[3,4,5])
+        compare(util.nextSpanAfterPos(spans,[5,4]),[1,4,3])
     })
 }
 toExport["util"]._section_ = true

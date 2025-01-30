@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -22,6 +22,11 @@ class util
         return lines
     }
 
+    static pos (x, y)
+    {
+        return ((_k_.isArr(x) && _k_.empty(y)) ? x : [x,y])
+    }
+
     static isPosInsideRange (pos, rng)
     {
         if (util.isPosBeforeRange(pos,rng))
@@ -42,7 +47,104 @@ class util
 
     static isPosAfterRange (pos, rng)
     {
-        return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] > rng[2])
+        return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] >= rng[2])
+    }
+
+    static rangeForSpan (span)
+    {
+        return [span[0],span[1],span[2],span[1]]
+    }
+
+    static isPosInsideSpan (pos, span)
+    {
+        if (util.isPosBeforeSpan(pos,span))
+        {
+            return false
+        }
+        if (util.isPosAfterSpan(pos,span))
+        {
+            return false
+        }
+        return true
+    }
+
+    static isPosBeforeSpan (pos, span)
+    {
+        return pos[1] < span[1] || (pos[1] === span[1] && pos[0] < span[0])
+    }
+
+    static isPosAfterSpan (pos, span)
+    {
+        return pos[1] > span[1] || (pos[1] === span[1] && pos[0] >= span[2])
+    }
+
+    static endOfSpan (s)
+    {
+        return [s[2],s[1]]
+    }
+
+    static nextSpanAfterPos (spans, pos)
+    {
+        var index, span
+
+        if (_k_.empty(spans))
+        {
+            return
+        }
+        if (util.isPosAfterSpan(pos,spans.slice(-1)[0]))
+        {
+            pos = [0,0]
+        }
+        if (util.isPosBeforeSpan(pos,spans[0]))
+        {
+            return spans[0]
+        }
+        var list = _k_.list(spans)
+        for (index = 0; index < list.length; index++)
+        {
+            span = list[index]
+            if (util.isPosAfterSpan(pos,span))
+            {
+                if (index + 1 < spans.length && (util.isPosBeforeSpan(pos,spans[index + 1]) || util.isPosInsideSpan(pos,spans[index + 1])))
+                {
+                    return spans[index + 1]
+                }
+            }
+        }
+    }
+
+    static normalizeSpans (spans)
+    {
+        if (_k_.empty(spans))
+        {
+            return []
+        }
+        spans = spans.map(function (a)
+        {
+            if (a[0] > a[2])
+            {
+                return [a[2],a[1],a[0]]
+            }
+            else
+            {
+                return a
+            }
+        })
+        spans.sort(function (a, b)
+        {
+            if (a[1] === b[1])
+            {
+                return a[0] - b[0]
+            }
+            else
+            {
+                return a[1] - b[1]
+            }
+        })
+        return spans = spans.filter(function (a)
+        {
+            return a[0] !== a[2]
+        })
     }
 
     static numFullLinesInRange (lines, rng)
@@ -359,7 +461,8 @@ class util
                     }
                     else
                     {
-                        cursor[0] = 0
+                        cursor[0] = rng[0]
+                        cursor[1] = rng[1]
                     }
                 }
                 else

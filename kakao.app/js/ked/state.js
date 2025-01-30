@@ -66,9 +66,19 @@ state = (function ()
         this.setCursor(0,0)
     }
 
-    state.prototype["set"] = function (item, ...args)
+    state.prototype["set"] = function (item, arg)
     {
-        this.s = this.s.set.apply(this.s,[item].concat(args))
+        switch (item)
+        {
+            case 'highlights':
+                arg = util.normalizeSpans(arg)
+                break
+            case 'selections':
+                arg = util.mergeRanges(arg)
+                break
+        }
+
+        this.s = this.s.set(item,arg)
         this.h.pop()
         this.h.push(this.s)
         return this
@@ -193,6 +203,8 @@ state = (function ()
     {
         var view
 
+        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+
         y = _k_.clamp(0,this.s.lines.length - 1,y)
         x = _k_.max(0,x)
         this.set('cursor',[x,y])
@@ -287,7 +299,7 @@ state = (function ()
 
         selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
         selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
-        this.set('selections',util.mergeRanges(selections))
+        this.set('selections',selections)
         return this
     }
 

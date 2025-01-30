@@ -30,6 +30,8 @@ function KED
         @t = new ttio
         
         @logfile = new logfile
+        
+        global.lfc = args... => lf.apply null args; if global.lc? ➜ global.lc.apply null args 
                 
         @screen  = new screen @t
         
@@ -38,8 +40,6 @@ function KED
         @gutter  = new gutter   @screen @editor.state
         @scroll  = new scroll   @screen @editor.state
         @status  = new status   @screen @editor.state
-        
-        global.lfc = args... => lc.apply null args; lf.apply null args
         
         lfc 'ked' @version
         
@@ -54,7 +54,7 @@ function KED
         @t.on 'mouse'  @onMouse
         @t.on 'wheel'  @onWheel
         @t.on 'resize' @redraw
-        @t.on 'paste'  @editor.onPaste
+        @t.on 'paste'  @onPaste
                                     
         if valid args.options
             @loadFile args.options[0]
@@ -109,6 +109,17 @@ function KED
             @reloadFile()
             
     saveAs: => lfc 'saveAs'
+    
+    # 00000000    0000000    0000000  000000000  00000000  
+    # 000   000  000   000  000          000     000       
+    # 00000000   000000000  0000000      000     0000000   
+    # 000        000   000       000     000     000       
+    # 000        000   000  0000000      000     00000000  
+    
+    onPaste: text => 
+    
+        @editor.state.insert text
+        @redraw()
                                     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -152,7 +163,7 @@ function KED
             break if handler.onKey key
                 
         @redraw()
-                        
+                                
     # 00000000   00000000  0000000    00000000    0000000   000   000  
     # 000   000  000       000   000  000   000  000   000  000 0 000  
     # 0000000    0000000   000   000  0000000    000000000  000000000  

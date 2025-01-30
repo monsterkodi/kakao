@@ -477,7 +477,7 @@ editor = (function ()
                 return this.state.joinLines()
 
             case 'cmd+e':
-                return this.state.highlightSelectionOrWordAtCursor()
+                return this.state.highlightSelectionOrAddNextHighlightToSelection()
 
             case 'cmd+g':
                 return this.state.selectNextHighlight()
@@ -493,6 +493,7 @@ editor = (function ()
         }
         else
         {
+            this.state.deleteSelection()
             return this.state.insert(key)
         }
     }

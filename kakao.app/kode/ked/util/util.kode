@@ -26,11 +26,19 @@ class util
             lines.push cells
         lines
     
-    # 00000000    0000000    0000000            00000000    0000000   000   000   0000000   00000000    
-    # 000   000  000   000  000          00     000   000  000   000  0000  000  000        000         
-    # 00000000   000   000  0000000    000000   0000000    000000000  000 0 000  000  0000  0000000     
-    # 000        000   000       000     00     000   000  000   000  000  0000  000   000  000         
-    # 000         0000000   0000000             000   000  000   000  000   000   0000000   00000000    
+    # 00000000    0000000    0000000
+    # 000   000  000   000  000     
+    # 00000000   000   000  0000000 
+    # 000        000   000       000
+    # 000         0000000   0000000 
+
+    @pos: x y -> (x is arr and empty y) ? x : [x y]
+        
+    # 00000000    0000000   000   000   0000000   00000000  
+    # 000   000  000   000  0000  000  000        000       
+    # 0000000    000000000  000 0 000  000  0000  0000000   
+    # 000   000  000   000  000  0000  000   000  000       
+    # 000   000  000   000  000   000   0000000   00000000  
     
     @isPosInsideRange: pos rng ->
         
@@ -44,7 +52,52 @@ class util
     
     @isPosAfterRange:  pos rng ->
     
-        pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] > rng[2])
+        pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
+        
+    @rangeForSpan: span -> [span[0] span[1] span[2] span[1]]
+        
+    #  0000000  00000000    0000000   000   000  
+    # 000       000   000  000   000  0000  000  
+    # 0000000   00000000   000000000  000 0 000  
+    #      000  000        000   000  000  0000  
+    # 0000000   000        000   000  000   000  
+    
+    @isPosInsideSpan: pos span ->
+
+        ⮐ false if util.isPosBeforeSpan pos span
+        ⮐ false if util.isPosAfterSpan pos span
+        true
+        
+    @isPosBeforeSpan: pos span ->
+        
+        pos[1] < span[1] or (pos[1] == span[1] and pos[0] < span[0])
+
+    @isPosAfterSpan: pos span ->
+        
+        pos[1] > span[1] or (pos[1] == span[1] and pos[0] >= span[2])
+
+    @endOfSpan: s -> [s[2] s[1]]
+    
+    @nextSpanAfterPos: spans pos ->
+        
+        ⮐ if empty spans
+        
+        pos = [0 0] if util.isPosAfterSpan pos spans[-1]
+        
+        ⮐ spans[0] if util.isPosBeforeSpan pos spans[0]
+            
+        for span,index in spans
+            if util.isPosAfterSpan pos span
+                if index+1 < spans.length and (util.isPosBeforeSpan(pos spans[index+1]) or util.isPosInsideSpan(pos spans[index+1]))
+                    ⮐ spans[index+1]
+                    
+    @normalizeSpans: spans ->
+        
+        ⮐ [] if empty spans
+        
+        spans = spans.map (a) -> if a[0] > a[2] ➜ [a[2] a[1] a[0]] else a
+        spans.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
+        spans = spans.filter (a) -> a[0] != a[2]
         
     # 00000000    0000000   000   000   0000000   00000000   0000000  
     # 000   000  000   000  0000  000  000        000       000       
@@ -231,7 +284,8 @@ class util
                     if rng[1] == rng[3]
                         cursor[0] = rng[0]
                     else
-                        cursor[0] = 0
+                        cursor[0] = rng[0]
+                        cursor[1] = rng[1]
                 else
                     cursor[1] -= util.numFullLinesInRange lines rng
             

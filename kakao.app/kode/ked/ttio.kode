@@ -96,7 +96,7 @@ function TTIO extends events
     
     onData: data =>
         
-        # lf 'data' data[1..]
+        # lf 'data' data.length data[1..] @pasteBuffer? data[0] == 0x1b
         
         if @pasteBuffer?
             
@@ -113,10 +113,10 @@ function TTIO extends events
             
             seq = data[1..].toString 'utf8'
             
-            # lfc seq
-            
-            if seq == '[200~'
+            if seq.startsWith '[200~'
                 @pasteBuffer = ''
+                if seq.endsWith '\x1b[201~'
+                    @onData data[6..]
                 ⮐
                             
             if seq.startsWith '[<'

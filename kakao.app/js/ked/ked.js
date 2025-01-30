@@ -35,6 +35,7 @@ KED = (function ()
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["onPaste"] = this["onPaste"].bind(this)
         this["saveAs"] = this["saveAs"].bind(this)
         this["saveFile"] = this["saveFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
@@ -48,17 +49,22 @@ KED = (function ()
         this.konsoleRows = 0
         this.t = new ttio
         this.logfile = new logfile
+        global.lfc = (function (...args)
+        {
+            var _34_64_
+
+            lf.apply(null,args)
+            if ((global.lc != null))
+            {
+                return global.lc.apply(null,args)
+            }
+        }).bind(this)
         this.screen = new screen(this.t)
         this.editor = new editor(this.screen)
         this.konsole = new konsole(this.screen)
         this.gutter = new gutter(this.screen,this.editor.state)
         this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
-        global.lfc = (function (...args)
-        {
-            lc.apply(null,args)
-            return lf.apply(null,args)
-        }).bind(this)
         lfc('ked',this.version)
         this.editor.on('redraw',this.redraw)
         this.konsole.on('konsoleRows',this.onKonsoleRows)
@@ -69,7 +75,7 @@ KED = (function ()
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
         this.t.on('resize',this.redraw)
-        this.t.on('paste',this.editor.onPaste)
+        this.t.on('paste',this.onPaste)
         if (!_k_.empty(args.options))
         {
             this.loadFile(args.options[0])
@@ -129,6 +135,12 @@ KED = (function ()
     KED.prototype["saveAs"] = function ()
     {
         return lfc('saveAs')
+    }
+
+    KED.prototype["onPaste"] = function (text)
+    {
+        this.editor.state.insert(text)
+        return this.redraw()
     }
 
     KED.prototype["onMouse"] = function (event, col, row, button, mods, count)

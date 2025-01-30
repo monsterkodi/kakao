@@ -320,7 +320,7 @@ function editor extends events
                         
             'cmd+j'                     ➜ ⮐ @state.joinLines()
             
-            'cmd+e'                     ➜ ⮐ @state.highlightSelectionOrWordAtCursor()
+            'cmd+e'                     ➜ ⮐ @state.highlightSelectionOrAddNextHighlightToSelection()
             'cmd+g'                     ➜ ⮐ @state.selectNextHighlight()
                                                     
             'esc'                       ➜ ⮐ @state.deselect()
@@ -328,6 +328,7 @@ function editor extends events
         if 0 <= key.indexOf '+'
             lfc 'unhandled?' key
         else
+            @state.deleteSelection()
             @state.insert key
             
 export editor

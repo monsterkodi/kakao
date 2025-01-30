@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kstr from "../../kxk/kstr.js"
 
@@ -21,20 +21,65 @@ export default {select:function (from, to)
     from[0] = _k_.clamp(0,this.s.lines[from[1]].length,from[0])
     selections.push([from[0],from[1],to[0],to[1]])
     return this.set('selections',selections)
-},highlightSelectionOrWordAtCursor:function ()
+},highlightSelectionOrAddNextHighlightToSelection:function ()
 {
     if (!_k_.empty(this.s.highlights))
     {
+        return this.addNextHighlightToSelection()
     }
+    return this.highlightSelectionOrWordAtCursor()
+},addNextHighlightToSelection:function ()
+{
+    var next
+
+    if (_k_.empty(this.s.highlights))
+    {
+        return
+    }
+    lfc('addNext',this.s.highlights,this.s.cursor)
+    if (next = util.nextSpanAfterPos(this.s.highlights,this.s.cursor))
+    {
+        lfc('next',next)
+        this.addSpanToSelection(next)
+        lfc('cursor',util.endOfSpan(next))
+        return this.setCursor(util.endOfSpan(next))
+    }
+},addSpanToSelection:function (span)
+{
+    var selections
+
+    selections = this.s.selections.asMutable()
+    selections.push(util.rangeForSpan(span))
+    return this.set('selections',selections)
+},highlightSelectionOrWordAtCursor:function ()
+{
     if (_k_.empty(this.s.selections))
     {
         this.selectWord(this.s.cursor)
     }
-    if (!this.isSingleLineSelected())
+    return this.highlightSelection()
+},highlightSelection:function ()
+{
+    var lines, selection, spans, text
+
+    if (_k_.empty(this.s.selections))
     {
-        return this
+        return
     }
-    return this.highlightText(this.textForSelection())
+    spans = []
+    lines = this.s.lines.asMutable()
+    var list = _k_.list(this.s.selections.asMutable())
+    for (var _b_ = 0; _b_ < list.length; _b_++)
+    {
+        selection = list[_b_]
+        if (selection[1] !== selection[3])
+        {
+            continue
+        }
+        text = util.textForLinesRange(lines,selection)
+        spans = spans.concat(util.lineSpansForText(lines,text))
+    }
+    return this.set('highlights',spans)
 },highlightText:function (text)
 {
     var lines, spans
@@ -47,17 +92,14 @@ export default {select:function (from, to)
 {
     var line, re, rs
 
-    if (_k_.isArr(x) && _k_.empty(y))
-    {
-        var _b_ = x; x = _b_[0]; y = _b_[1]
+    var _c_ = util.pos(x,y); x = _c_[0]; y = _c_[1]
 
-    }
     if (this.isInvalidLineIndex(y))
     {
         return
     }
     line = this.s.lines[y]
-    var _c_ = kstr.rangeOfClosestChunk(line,x); rs = _c_[0]; re = _c_[1]
+    var _d_ = kstr.rangeOfClosestChunk(line,x); rs = _d_[0]; re = _d_[1]
 
     if (rs >= 0 && re >= 0)
     {
@@ -70,7 +112,7 @@ export default {select:function (from, to)
 
     if (_k_.isArr(x) && _k_.empty(y))
     {
-        var _d_ = x; x = _d_[0]; y = _d_[1]
+        var _e_ = x; x = _e_[0]; y = _e_[1]
 
     }
     if (range = util.rangeOfClosestWordToPos(this.s.lines,[x,y]))
@@ -97,9 +139,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _e_ = 0; _e_ < list.length; _e_++)
+    for (var _f_ = 0; _f_ < list.length; _f_++)
     {
-        selection = list[_e_]
+        selection = list[_f_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue
@@ -115,9 +157,9 @@ export default {select:function (from, to)
     var highlight
 
     var list = _k_.list(this.s.highlights)
-    for (var _f_ = 0; _f_ < list.length; _f_++)
+    for (var _10_ = 0; _10_ < list.length; _10_++)
     {
-        highlight = list[_f_]
+        highlight = list[_10_]
         if (highlight[1] === y)
         {
             return true
@@ -129,9 +171,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _10_ = 0; _10_ < list.length; _10_++)
+    for (var _11_ = 0; _11_ < list.length; _11_++)
     {
-        selection = list[_10_]
+        selection = list[_11_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue

@@ -40,9 +40,13 @@ function state
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: item args... =>
+    set: item arg =>
         
-        @s = @s.set.apply @s [item].concat(args)
+        switch item 
+            'highlights' ➜ arg = util.normalizeSpans arg
+            'selections' ➜ arg = util.mergeRanges arg
+        
+        @s = @s.set item arg
         @h.pop()
         @h.push @s
         @
@@ -156,6 +160,8 @@ function state
         
     setCursor: x y =>
         
+        [x y] = util.pos x y
+        
         y = clamp 0 @s.lines.length-1 y
         x = max 0 x
                         
@@ -217,7 +223,7 @@ function state
         selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
         selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
         
-        @set 'selections' util.mergeRanges(selections)
+        @set 'selections' selections
         @
         
     #  0000000   0000000  00000000    0000000   000      000      
