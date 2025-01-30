@@ -128,7 +128,7 @@ KED = (function ()
             handler = list[_a_]
             if (handler.onMouse(event,col,row,button,mods,count))
             {
-                return this.redraw()
+                break
             }
         }
         return this.redraw()
@@ -176,16 +176,15 @@ KED = (function ()
             handler = list[_a_]
             if (handler.onKey(key))
             {
-                return this.redraw()
+                break
             }
         }
+        return this.redraw()
     }
 
     KED.prototype["onConsolRows"] = function (consolRows)
     {
         this.consolRows = consolRows
-    
-        return this.redraw
     }
 
     KED.prototype["redraw"] = function ()
@@ -204,16 +203,16 @@ KED = (function ()
             this.scroll.cells.init(w - s,0,s,h - c - 1)
             this.gutter.cells.init(0,0,g,h - c - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g,0,w - g - s,h - c - 1)
-            this.consol.cells.init(0,h - 1 - c,w - g - s,c)
+            this.editor.init(g,0,w - g - s,h - c - 1)
+            this.consol.init(0,h - 1 - c,w - g - s,c)
         }
         else
         {
             this.scroll.cells.init(0,0,s,h - c - 1)
             this.gutter.cells.init(s,0,g,h - c - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.cells.init(g + s,0,w - g - s,h - c - 1)
-            this.consol.cells.init(0,h - 1 - c,w - g - s,c)
+            this.editor.init(g + s,0,w - g - s,h - c - 1)
+            this.consol.init(0,h - 1 - c,w - g - s,c)
         }
         this.t.hideCursor()
         this.screen.init()

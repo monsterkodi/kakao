@@ -15,6 +15,7 @@ consol = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["postDraw"] = this["postDraw"].bind(this)
+        this["toggle"] = this["toggle"].bind(this)
         consol.__super__.constructor.call(this,screen)
         global.lc = (function (...args)
         {
@@ -27,6 +28,11 @@ consol = (function ()
             this.state.insert('\n')
             return this.state.insert(text)
         }).bind(this)
+    }
+
+    consol.prototype["toggle"] = function ()
+    {
+        return this.emit('consolRows',(this.cells.rows ? 0 : 10))
     }
 
     consol.prototype["postDraw"] = function ()
@@ -125,6 +131,10 @@ consol = (function ()
         {
             case 'cmd+k':
                 this.state.clearLines()
+                return true
+
+            case 'alt+k':
+                this.toggle()
                 return true
 
         }

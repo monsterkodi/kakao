@@ -112,13 +112,15 @@ function KED
         
         for handler in @mouseHandlers
             if handler.onMouse event col row button mods count
-                ⮐ @redraw()
+                break
+                
         @redraw()
                 
     onWheel: col row dir mods =>
         
         for handler in @wheelHandlers
             handler.onWheel col row dir mods
+            
         @redraw()
             
     # 000   000  00000000  000   000  
@@ -139,7 +141,9 @@ function KED
             
         for handler in @keyHandlers
             if handler.onKey key
-                ⮐ @redraw()
+                break
+                
+        @redraw()
                         
     # 00000000   00000000  0000000    00000000    0000000   000   000  
     # 000   000  000       000   000  000   000  000   000  000 0 000  
@@ -147,7 +151,7 @@ function KED
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    onConsolRows: @consolRows => @redraw
+    onConsolRows: @consolRows =>
     
     redraw: =>
         
@@ -165,14 +169,14 @@ function KED
             @scroll.cells.init w-s 0     s     h-c-1
             @gutter.cells.init 0   0     g     h-c-1
             @status.cells.init 0   h-1   w     1
-            @editor.cells.init g   0     w-g-s h-c-1
-            @consol.cells.init 0   h-1-c w-g-s c
+            @editor.init       g   0     w-g-s h-c-1
+            @consol.init       0   h-1-c w-g-s c
         else
             @scroll.cells.init 0   0     s     h-c-1 
             @gutter.cells.init s   0     g     h-c-1
             @status.cells.init 0   h-1   w     1
-            @editor.cells.init g+s 0     w-g-s h-c-1    
-            @consol.cells.init 0   h-1-c w-g-s c
+            @editor.init       g+s 0     w-g-s h-c-1    
+            @consol.init       0   h-1-c w-g-s c
                         
         @t.hideCursor()
         @screen.init()

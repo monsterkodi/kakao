@@ -28,6 +28,7 @@ state = (function ()
     
         this["rangeForVisibleLines"] = this["rangeForVisibleLines"].bind(this)
         this["setView"] = this["setView"].bind(this)
+        this["adjustView"] = this["adjustView"].bind(this)
         this["scrollView"] = this["scrollView"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
         this["moveCursor"] = this["moveCursor"].bind(this)
@@ -240,6 +241,10 @@ state = (function ()
             case 'bol':
                 c[0] = 0
                 break
+            case 'eof':
+                c[1] = this.s.lines.length - 1
+                c[0] = this.s.lines[c[1]].length
+                break
         }
 
         return this.setCursor(c[0],c[1])
@@ -289,7 +294,7 @@ state = (function ()
         return true
     }
 
-    state.prototype["scrollView"] = function (dir, steps)
+    state.prototype["scrollView"] = function (dir, steps = 1)
     {
         var sx, sy, view
 
@@ -313,6 +318,16 @@ state = (function ()
         view = this.s.view.asMutable()
         view[0] += sx
         view[1] += sy
+        view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
+        view[0] = _k_.max(0,view[0])
+        return this.setView(view)
+    }
+
+    state.prototype["adjustView"] = function ()
+    {
+        var view
+
+        view = this.s.view.asMutable()
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
         view[0] = _k_.max(0,view[0])
         return this.setView(view)

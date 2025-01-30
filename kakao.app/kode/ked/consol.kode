@@ -20,6 +20,8 @@ function consol extends editor
             @state.insert '\n' #if @state.s.lines[@state.s.lines.length-1].length
             @state.insert text
             
+    toggle: => @emit 'consolRows' @cells.rows ? 0 : 10
+                
     postDraw: =>
         
         fg = @hover ? theme.scroll_knob : theme.consol
@@ -95,6 +97,7 @@ function consol extends editor
         switch key
             
             'cmd+k' ➜ @state.clearLines(); ⮐ true
+            'alt+k' ➜ @toggle(); ⮐ true
             
         false
     

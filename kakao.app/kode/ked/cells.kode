@@ -18,13 +18,18 @@ function cells
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: x y char fg bg =>
-        
-        @screen.set @x+x @y+y char fg bg
-        
-    set_bg: x y bg =>
-        
-        @screen.set_bg @x+x @y+y bg
+    set: x y char fg bg => @screen.set @x+x @y+y char fg bg
+    set_char: x y char => @screen.set_char @x+x @y+y char
+    set_bg: x y bg => @screen.set_bg @x+x @y+y bg
+    set_fg: x y fg => @screen.set_fg @x+x @y+y fg
+    
+    #  0000000   00000000  000000000  
+    # 000        000          000     
+    # 000  0000  0000000      000     
+    # 000   000  000          000     
+    #  0000000   00000000     000     
+    
+    get_char: x y => @screen.get_char @x+x @y+y
         
     # 00000000    0000000    0000000  
     # 000   000  000   000  000       

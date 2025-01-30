@@ -25,14 +25,16 @@ class theme
     @status_fg_dim:         '#333333'  
     @editor:                '#0d0d0d'  
     @editor_empty:          '#0a0a0a'  
-    @editor_cursor_bg:      '#222222'  
     @editor_cursor_main:    '#101010'  
     @editor_cursor_empty:   '#000000'  
+    @editor_cursor_bg:      '#ffff00'  
+    @editor_cursor_fg:      '#000000'  
     @consol:                '#1a1a1a'  
     @consol_empty:          '#000000'  
     @consol_cursor_main:    '#1a1a1a'  
     @consol_cursor_empty:   '#000000'  
-    @consol_cursor_bg:      '#ffff00'  
+    @consol_cursor_bg:      '#666666'  
+    @consol_cursor_fg:      '#000000'  
     @text:                  '#ffffff'  
     
     @syntax: 

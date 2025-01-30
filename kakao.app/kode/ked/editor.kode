@@ -8,7 +8,7 @@
 
 use ../kxk ◆ events
 use ◆ state cells theme
-use ./util ◆ util
+use ./util ◆ util color
 
 function editor extends events
 
@@ -16,6 +16,11 @@ function editor extends events
         
         @cells = new cells @screen
         @state = new state @cells
+        
+    init: x y w h => 
+    
+        @cells.init x y w h
+        @state.adjustView()
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -86,7 +91,15 @@ function editor extends events
                             @cells.set_bg x-view[0] y theme.selection
                             
         if @isCursorVisible()
-            @cells.set_bg s.cursor[0]-view[0] s.cursor[1]-view[1] theme[@constructor.name + '_cursor_bg']
+            bg = theme[@constructor.name + '_cursor_bg']
+            x = s.cursor[0]-view[0]
+            y = s.cursor[1]-view[1]
+            if @isCursorInEmpty()
+                bg = color.darken bg
+            else if ' ' == @cells.get_char(x y)
+                bg = color.darken bg 0.75
+            @cells.set_bg x y bg
+            @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
             
         @postDraw()
         
@@ -220,6 +233,10 @@ function editor extends events
         
         @screen.t.setCursor sx sy
         @screen.t.showCursor @isCursorVisible()
+        
+    isCursorInEmpty: =>
+        
+        util.isLinesPosOutside @state.s.lines @state.s.cursor
         
     isCursorVisible: =>
         

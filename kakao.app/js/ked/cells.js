@@ -12,7 +12,10 @@ cells = (function ()
         this["posForScreen"] = this["posForScreen"].bind(this)
         this["isOutsideScreen"] = this["isOutsideScreen"].bind(this)
         this["isInsideScreen"] = this["isInsideScreen"].bind(this)
+        this["get_char"] = this["get_char"].bind(this)
+        this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
+        this["set_char"] = this["set_char"].bind(this)
         this["set"] = this["set"].bind(this)
         this["init"] = this["init"].bind(this)
     }
@@ -30,9 +33,24 @@ cells = (function ()
         return this.screen.set(this.x + x,this.y + y,char,fg,bg)
     }
 
+    cells.prototype["set_char"] = function (x, y, char)
+    {
+        return this.screen.set_char(this.x + x,this.y + y,char)
+    }
+
     cells.prototype["set_bg"] = function (x, y, bg)
     {
         return this.screen.set_bg(this.x + x,this.y + y,bg)
+    }
+
+    cells.prototype["set_fg"] = function (x, y, fg)
+    {
+        return this.screen.set_fg(this.x + x,this.y + y,fg)
+    }
+
+    cells.prototype["get_char"] = function (x, y)
+    {
+        return this.screen.get_char(this.x + x,this.y + y)
     }
 
     cells.prototype["isInsideScreen"] = function (x, y)

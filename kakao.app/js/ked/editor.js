@@ -9,6 +9,7 @@ import cells from "./cells.js"
 import theme from "./theme.js"
 
 import util from "./util/util.js"
+import color from "./util/color.js"
 
 
 editor = (function ()
@@ -21,19 +22,27 @@ editor = (function ()
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["isCursorVisible"] = this["isCursorVisible"].bind(this)
+        this["isCursorInEmpty"] = this["isCursorInEmpty"].bind(this)
         this["showCursorIfInView"] = this["showCursorIfInView"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["postDraw"] = this["postDraw"].bind(this)
         this["draw"] = this["draw"].bind(this)
+        this["init"] = this["init"].bind(this)
         this.cells = new cells(this.screen)
         this.state = new state(this.cells)
         return editor.__super__.constructor.apply(this, arguments)
     }
 
+    editor.prototype["init"] = function (x, y, w, h)
+    {
+        this.cells.init(x,y,w,h)
+        return this.state.adjustView()
+    }
+
     editor.prototype["draw"] = function ()
     {
-        var ch, fg, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
+        var bg, ch, fg, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -124,7 +133,19 @@ editor = (function ()
         }
         if (this.isCursorVisible())
         {
-            this.cells.set_bg(s.cursor[0] - view[0],s.cursor[1] - view[1],theme[this.constructor.name + '_cursor_bg'])
+            bg = theme[this.constructor.name + '_cursor_bg']
+            x = s.cursor[0] - view[0]
+            y = s.cursor[1] - view[1]
+            if (this.isCursorInEmpty())
+            {
+                bg = color.darken(bg)
+            }
+            else if (' ' === this.cells.get_char(x,y))
+            {
+                bg = color.darken(bg,0.75)
+            }
+            this.cells.set_bg(x,y,bg)
+            this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
         }
         return this.postDraw()
     }
@@ -295,6 +316,11 @@ editor = (function ()
 
         this.screen.t.setCursor(sx,sy)
         return this.screen.t.showCursor(this.isCursorVisible())
+    }
+
+    editor.prototype["isCursorInEmpty"] = function ()
+    {
+        return util.isLinesPosOutside(this.state.s.lines,this.state.s.cursor)
     }
 
     editor.prototype["isCursorVisible"] = function ()

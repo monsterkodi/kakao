@@ -50,11 +50,13 @@ class theme
 
     static editor_empty = '#0a0a0a'
 
-    static editor_cursor_bg = '#222222'
-
     static editor_cursor_main = '#101010'
 
     static editor_cursor_empty = '#000000'
+
+    static editor_cursor_bg = '#ffff00'
+
+    static editor_cursor_fg = '#000000'
 
     static consol = '#1a1a1a'
 
@@ -64,7 +66,9 @@ class theme
 
     static consol_cursor_empty = '#000000'
 
-    static consol_cursor_bg = '#ffff00'
+    static consol_cursor_bg = '#666666'
+
+    static consol_cursor_fg = '#000000'
 
     static text = '#ffffff'
 

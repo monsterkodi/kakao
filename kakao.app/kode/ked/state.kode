@@ -188,6 +188,7 @@ function state
             'down'  ➜ c[1] += steps 
             'eol'   ➜ c[0] = @s.lines[c[1]].length
             'bol'   ➜ c[0] = 0
+            'eof'   ➜ c[1] = @s.lines.length-1; c[0] = @s.lines[c[1]].length
         
         @setCursor c[0] c[1]
         
@@ -222,7 +223,7 @@ function state
     #      000  000       000   000  000   000  000      000      
     # 0000000    0000000  000   000   0000000   0000000  0000000  
     
-    scrollView: dir steps =>
+    scrollView: dir steps=1 =>
         
         sx = sy = 0
         
@@ -238,9 +239,15 @@ function state
         view[1] += sy
         
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
-        
         view[0] = max 0 view[0]
             
+        @setView view
+        
+    adjustView: =>
+        
+        view = @s.view.asMutable()
+        view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
+        view[0] = max 0 view[0]
         @setView view
         
     setView: view => @set 'view' view
