@@ -21,12 +21,6 @@ function syntax
         
         @diss = kolor.dissect lines @ext
 
-        # lf noon(@diss)
-        
-    updateLines: lines changedLineIndices =>
-
-        @setLines lines
-        
     getClass: x y =>
         
         for dss in @diss[y]

@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -25,6 +25,41 @@ class util
     static pos (x, y)
     {
         return ((_k_.isArr(x) && _k_.empty(y)) ? x : [x,y])
+    }
+
+    static samePos (a, b)
+    {
+        return a[0] === b[0] && a[1] === b[1]
+    }
+
+    static normalizePositions (posl, maxY)
+    {
+        var i
+
+        if (_k_.empty(posl))
+        {
+            return []
+        }
+        if (posl.length === 1)
+        {
+            return posl
+        }
+        posl = posl.map(function (a)
+        {
+            return [_k_.max(0,a[0]),_k_.clamp(0,maxY,a[1])]
+        })
+        posl.sort(function (a, b)
+        {
+            return (a[1] === b[1] ? a[0] - b[0] : a[1] - b[1])
+        })
+        for (var _a_ = i = posl.length - 1, _b_ = 1; (_a_ <= _b_ ? i <= 1 : i >= 1); (_a_ <= _b_ ? ++i : --i))
+        {
+            if (util.samePos(posl[i],posl[i - 1]))
+            {
+                posl.splice(i,1)
+            }
+        }
+        return posl
     }
 
     static isPosInsideRange (pos, rng)
@@ -309,7 +344,10 @@ class util
         indices = []
         for (var _a_ = li = rng[1], _b_ = rng[3]; (_a_ <= _b_ ? li <= rng[3] : li >= rng[3]); (_a_ <= _b_ ? ++li : --li))
         {
-            indices.push(li)
+            if (li !== rng[3] || rng[2] > 0)
+            {
+                indices.push(li)
+            }
         }
         return indices
     }

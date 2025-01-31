@@ -16,7 +16,6 @@ syntax = (function ()
         this["getChar"] = this["getChar"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
-        this["updateLines"] = this["updateLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["setExt"] = this["setExt"].bind(this)
         this.ext = 'txt'
@@ -30,11 +29,6 @@ syntax = (function ()
     syntax.prototype["setLines"] = function (lines)
     {
         return this.diss = kolor.dissect(lines,this.ext)
-    }
-
-    syntax.prototype["updateLines"] = function (lines, changedLineIndices)
-    {
-        return this.setLines(lines)
     }
 
     syntax.prototype["getClass"] = function (x, y)
@@ -55,9 +49,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _39_36_
+        var _33_36_
 
-        return ((_39_36_=theme.syntax[this.getClass(x,y)]) != null ? _39_36_ : '#ff0000')
+        return ((_33_36_=theme.syntax[this.getClass(x,y)]) != null ? _33_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

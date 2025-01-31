@@ -48,10 +48,11 @@ KED = (function ()
         }
         this.konsoleRows = 0
         this.t = new ttio
+        this.t.hideCursor()
         this.logfile = new logfile
         global.lfc = (function (...args)
         {
-            var _34_64_
+            var _35_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -242,7 +243,6 @@ KED = (function ()
             this.editor.init(g + s,0,w - g - s,h - c - 1)
             this.konsole.init(0,h - 1 - c,w - g - s,c)
         }
-        this.t.hideCursor()
         this.screen.init()
         this.gutter.draw()
         this.scroll.draw()
@@ -250,7 +250,6 @@ KED = (function ()
         this.editor.draw()
         this.konsole.draw()
         this.screen.render()
-        this.editor.showCursorIfInView()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }
 

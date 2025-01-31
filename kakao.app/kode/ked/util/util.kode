@@ -33,6 +33,20 @@ class util
     # 000         0000000   0000000 
 
     @pos: x y -> (x is arr and empty y) ? x : [x y]
+    
+    @samePos: a b -> a[0] == b[0] and a[1] == b[1]
+    
+    @normalizePositions: posl maxY ->
+        
+        ⮐ [] if empty posl 
+        ⮐ posl if posl.length == 1
+        
+        posl = posl.map (a) -> [max(0 a[0]) clamp(0 maxY a[1])]
+        posl.sort (a b) -> a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]
+        for i in posl.length-1..1
+            if util.samePos posl[i] posl[i-1]
+                posl.splice i 1
+        posl
         
     # 00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  0000  000  000        000       
@@ -189,7 +203,8 @@ class util
         indices = []
         
         for li in rng[1]..rng[3]
-            indices.push li
+            if li != rng[3] or rng[2] > 0
+                indices.push li
         
         indices
         

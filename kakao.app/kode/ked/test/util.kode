@@ -119,3 +119,11 @@ use ../util ◆ util
         util.nextSpanAfterPos spans [0 0] ▸ [1 4 3]
         util.nextSpanAfterPos spans [3 4] ▸ [3 4 5]
         util.nextSpanAfterPos spans [5 4] ▸ [1 4 3]
+        
+    ▸ normalizePositions
+    
+        util.normalizePositions [[0 0] [1 0] [2 0]]     ▸ [[0 0] [1 0] [2 0]]
+        util.normalizePositions [[1 0] [2 0] [0 0]]     ▸ [[0 0] [1 0] [2 0]]
+        util.normalizePositions [[1 0] [2 0] [1 0]]     ▸ [[1 0] [2 0]]
+        util.normalizePositions [[2 2] [3 3] [1 1]]     ▸ [[1 1] [2 2] [3 3]]
+        util.normalizePositions [[2 2] [0 3] [11 1]]    ▸ [[11 1] [2 2] [0 3]]

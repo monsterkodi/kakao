@@ -101,14 +101,28 @@ function editor extends events
                         if 0 <= x-view[0] < @cells.cols
                             @cells.set_bg x-view[0] y bg 
                             
+        bg = theme[@constructor.name + '_cursor_multi']
+        
+        for cursor in s.cursors
+            
+            if @isCursorVisible cursor
+            
+                x = cursor[0]-view[0]
+                y = cursor[1]-view[1]
+                
+                @cells.set_bg x y bg
+                @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
+                            
         if @isCursorVisible()
+            
             bg = theme[@constructor.name + '_cursor_bg']
             x = s.cursor[0]-view[0]
             y = s.cursor[1]-view[1]
-            if @isCursorInEmpty()
-                bg = color.darken bg
-            else if ' ' == @cells.get_char(x y)
-                bg = color.darken bg 0.75
+            if s.cursors.length <= 1
+                if @isCursorInEmpty()
+                    bg = color.darken bg
+                else if ' ' == @cells.get_char(x y)
+                    bg = color.darken bg 0.75
             @cells.set_bg x y bg
             @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
             
@@ -158,8 +172,11 @@ function editor extends events
                     
                     @dragStart = [x y x]
                                     
-                    @state.deselect() if mods != 'ctrl'
-                    @state.setCursor(x y)
+                    @state.clearCursorsHighlightsAndSelections() if empty mods
+                    if mods == 'alt'
+                        @state.addCursor x y
+                    else
+                        @state.setCursor x y
                     
                     ⮐ true
                     
@@ -236,23 +253,19 @@ function editor extends events
     # 000       000   000  0000000    0000000   000   000  0000000    
     # 000       000   000  000   000       000  000   000  000   000  
     #  0000000   0000000   000   000  0000000    0000000   000   000  
-    
-    showCursorIfInView: =>
+            
+    isCursorInEmpty: cursor =>
         
-        s = @state.s
-        [sx sy] = @cells.screenForPos s.cursor[0]-s.view[0] s.cursor[1]-s.view[1]
+        cursor ?= @state.s.cursor.asMutable()
         
-        @screen.t.setCursor sx sy
-        @screen.t.showCursor @isCursorVisible()
+        util.isLinesPosOutside @state.s.lines cursor
         
-    isCursorInEmpty: =>
+    isCursorVisible: cursor =>
         
-        util.isLinesPosOutside @state.s.lines @state.s.cursor
+        cursor ?= @state.s.cursor.asMutable()
         
-    isCursorVisible: =>
-        
-        visible = util.isPosInsideRange @state.s.cursor @state.rangeForVisibleLines()
-        if @state.s.cursor[0] < @state.s.view[0] ➜ visible = false
+        visible = util.isPosInsideRange cursor @state.rangeForVisibleLines()
+        if cursor[0] < @state.s.view[0] ➜ visible = false
         visible
                 
     # 00000000   00000000  0000000    00000000    0000000   000   000  
@@ -314,6 +327,9 @@ function editor extends events
             'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @state.cut()     
             'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @state.copy()        
             'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @state.paste()
+            
+            'alt+down'                  ➜ ⮐ @state.expandCursors 'down'
+            'alt+up'                    ➜ ⮐ @state.expandCursors 'up'
                
             'cmd+z'                     ➜ ⮐ @state.undo()
             'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
@@ -323,12 +339,12 @@ function editor extends events
             'cmd+e'                     ➜ ⮐ @state.highlightSelectionOrAddNextHighlightToSelection()
             'cmd+g'                     ➜ ⮐ @state.selectNextHighlight()
                                                     
-            'esc'                       ➜ ⮐ @state.deselect()
+            'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
 
         if 0 <= key.indexOf '+'
             lfc 'unhandled?' key
         else
-            @state.deleteSelection()
+            @state.deleteSelection() if key not in '\t'
             @state.insert key
             
 export editor

@@ -7,7 +7,7 @@
 ###
 
 use ../kxk ◆ immutable kstr
-use ./act ◆ del insert select join indent
+use ./act ◆ del insert select join indent cursors
 use ◆ syntax 
 use ./util ◆ util
 use child_process
@@ -16,7 +16,7 @@ function state
     
     @: @cells ->
         
-        for act in [del insert select join indent]
+        for act in [del insert select join indent cursors]
             for k,v of act
                 @[k] = v.bind @
         
@@ -26,6 +26,7 @@ function state
             lines:       ['']
             selections:  []
             highlights:  []
+            cursors:     []
             cursor:      [0 0]
             view:        [0 0]
             
@@ -43,13 +44,21 @@ function state
     set: item arg =>
         
         switch item 
-            'highlights' ➜ arg = util.normalizeSpans arg
-            'selections' ➜ arg = util.mergeRanges arg
+            'highlights' ➜ arg = util.normalizeSpans     arg
+            'selections' ➜ arg = util.mergeRanges        arg
+            'cursors'    ➜ arg = @normalizeCursors       arg
         
         @s = @s.set item arg
         @h.pop()
         @h.push @s
         @
+        
+    normalizeCursors: cursors -> 
+        
+        cursors = util.normalizePositions cursors @s.lines.length-1
+        if cursors.length == 1
+            cursors = []
+        cursors
     
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
@@ -180,22 +189,7 @@ function state
         view[0] = max 0 x - @cells.cols + 1
             
         @setView view
-            
-    moveCursor: dir steps=1 =>
-        
-        c = @s.cursor.asMutable() 
-        
-        switch dir
-            'left'  ➜ c[0] -= 1
-            'right' ➜ c[0] += 1
-            'up'    ➜ c[1] -= steps
-            'down'  ➜ c[1] += steps 
-            'eol'   ➜ c[0] = @s.lines[c[1]].length
-            'bol'   ➜ c[0] = 0
-            'eof'   ➜ c[1] = @s.lines.length-1; c[0] = @s.lines[c[1]].length
-        
-        @setCursor c[0] c[1]
-        
+                    
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
     # 0000000   0000000   000      0000000   000          000     

@@ -100,6 +100,14 @@ toExport["util"] = function ()
         compare(util.nextSpanAfterPos(spans,[3,4]),[3,4,5])
         compare(util.nextSpanAfterPos(spans,[5,4]),[1,4,3])
     })
+    section("normalizePositions", function ()
+    {
+        compare(util.normalizePositions([[0,0],[1,0],[2,0]]),[[0,0],[1,0],[2,0]])
+        compare(util.normalizePositions([[1,0],[2,0],[0,0]]),[[0,0],[1,0],[2,0]])
+        compare(util.normalizePositions([[1,0],[2,0],[1,0]]),[[1,0],[2,0]])
+        compare(util.normalizePositions([[2,2],[3,3],[1,1]]),[[1,1],[2,2],[3,3]])
+        compare(util.normalizePositions([[2,2],[0,3],[11,1]]),[[11,1],[2,2],[0,3]])
+    })
 }
 toExport["util"]._section_ = true
 toExport._test_ = true

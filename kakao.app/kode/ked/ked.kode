@@ -28,6 +28,7 @@ function KED
         @konsoleRows = 0
                     
         @t = new ttio
+        @t.hideCursor()
         
         @logfile = new logfile
         
@@ -197,7 +198,6 @@ function KED
             @editor.init       g+s 0     w-g-s h-c-1    
             @konsole.init      0   h-1-c w-g-s c
                         
-        @t.hideCursor()
         @screen.init()
         @gutter.draw()
         @scroll.draw()
@@ -205,7 +205,6 @@ function KED
         @editor.draw()
         @konsole.draw()
         @screen.render()
-        @editor.showCursorIfInView() 
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         

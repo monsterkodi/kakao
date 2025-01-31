@@ -38,6 +38,7 @@ class theme
     @editor_cursor_main:    '#101010'  
     @editor_cursor_empty:   '#000000'  
     @editor_cursor_bg:      '#ffff00'  
+    @editor_cursor_multi:   '#ff0000'  
     @editor_cursor_fg:      '#000000'  
     @konsole:               '#1a1a1a'  
     @konsole_empty:         '#000000'  

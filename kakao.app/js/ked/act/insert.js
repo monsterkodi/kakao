@@ -4,7 +4,7 @@ import kstr from "../../kxk/kstr.js"
 
 export default {insert:function (text)
 {
-    var i, line, lines, s, split, x, y
+    var ci, cursor, cursors, i, line, lines, s, split, x, y
 
     split = text.split(/\r?\n/)
     if (split.length > 1)
@@ -29,31 +29,39 @@ export default {insert:function (text)
         {
             return this.indentSelectedLines()
         }
-        text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
     }
-    var _b_ = this.s.cursor; x = _b_[0]; y = _b_[1]
-
+    cursors = this.allCursors()
     lines = this.s.lines.asMutable()
-    if (y >= lines.length)
+    for (var _b_ = ci = cursors.length - 1, _c_ = 0; (_b_ <= _c_ ? ci <= 0 : ci >= 0); (_b_ <= _c_ ? ++ci : --ci))
     {
-        return lf('[ERROR] cursor outside lines?')
+        cursor = cursors[ci]
+        if (text === '\t')
+        {
+            text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
+        }
+        var _d_ = cursor; x = _d_[0]; y = _d_[1]
+
+        if (y >= lines.length)
+        {
+            return lf('[ERROR] cursor outside lines?')
+        }
+        line = lines[y]
+        if (x > line.length)
+        {
+            line += _k_.lpad(x - line.length)
+        }
+        line = kstr.splice(line,x,0,text)
+        lines.splice(y,1,line)
+        cursor[0] += text.length
     }
-    line = lines[y]
-    if (x > line.length)
-    {
-        line += _k_.lpad(x - line.length)
-    }
-    line = kstr.splice(line,x,0,text)
-    lines.splice(y,1,line)
     this.setLines(lines)
-    x += text.length
-    this.syntax.updateLines(lines,[y])
-    return this.setCursor(x,y)
+    this.set('cursors',cursors)
+    return this.setCursor(cursors.slice(-1)[0])
 },insertNewline:function ()
 {
     var after, before, line, lines, x, y
 
-    var _c_ = this.s.cursor; x = _c_[0]; y = _c_[1]
+    var _e_ = this.s.cursor; x = _e_[0]; y = _e_[1]
 
     lines = this.s.lines.asMutable()
     line = lines[y]

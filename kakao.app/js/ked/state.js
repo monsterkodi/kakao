@@ -10,6 +10,7 @@ import insert from "./act/insert.js"
 import select from "./act/select.js"
 import join from "./act/join.js"
 import indent from "./act/indent.js"
+import cursors from "./act/cursors.js"
 
 import syntax from "./syntax.js"
 
@@ -31,7 +32,6 @@ state = (function ()
         this["adjustView"] = this["adjustView"].bind(this)
         this["scrollView"] = this["scrollView"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
-        this["moveCursor"] = this["moveCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
@@ -49,7 +49,7 @@ state = (function ()
         this["setLines"] = this["setLines"].bind(this)
         this["clearLines"] = this["clearLines"].bind(this)
         this["set"] = this["set"].bind(this)
-        var list = [del,insert,select,join,indent]
+        var list = [del,insert,select,join,indent,cursors]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             act = list[_a_]
@@ -60,7 +60,7 @@ state = (function ()
             }
         }
         this.syntax = new syntax
-        this.s = immutable({lines:[''],selections:[],highlights:[],cursor:[0,0],view:[0,0]})
+        this.s = immutable({lines:[''],selections:[],highlights:[],cursors:[],cursor:[0,0],view:[0,0]})
         this.h = [this.s]
         this.r = []
         this.setCursor(0,0)
@@ -76,12 +76,25 @@ state = (function ()
             case 'selections':
                 arg = util.mergeRanges(arg)
                 break
+            case 'cursors':
+                arg = this.normalizeCursors(arg)
+                break
         }
 
         this.s = this.s.set(item,arg)
         this.h.pop()
         this.h.push(this.s)
         return this
+    }
+
+    state.prototype["normalizeCursors"] = function (cursors)
+    {
+        cursors = util.normalizePositions(cursors,this.s.lines.length - 1)
+        if (cursors.length === 1)
+        {
+            cursors = []
+        }
+        return cursors
     }
 
     state.prototype["clearLines"] = function ()
@@ -223,40 +236,6 @@ state = (function ()
         }
         view[0] = _k_.max(0,x - this.cells.cols + 1)
         return this.setView(view)
-    }
-
-    state.prototype["moveCursor"] = function (dir, steps = 1)
-    {
-        var c
-
-        c = this.s.cursor.asMutable()
-        switch (dir)
-        {
-            case 'left':
-                c[0] -= 1
-                break
-            case 'right':
-                c[0] += 1
-                break
-            case 'up':
-                c[1] -= steps
-                break
-            case 'down':
-                c[1] += steps
-                break
-            case 'eol':
-                c[0] = this.s.lines[c[1]].length
-                break
-            case 'bol':
-                c[0] = 0
-                break
-            case 'eof':
-                c[1] = this.s.lines.length - 1
-                c[0] = this.s.lines[c[1]].length
-                break
-        }
-
-        return this.setCursor(c[0],c[1])
     }
 
     state.prototype["moveCursorAndSelect"] = function (dir)

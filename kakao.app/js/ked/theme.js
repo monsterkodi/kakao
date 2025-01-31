@@ -60,6 +60,8 @@ class theme
 
     static editor_cursor_bg = '#ffff00'
 
+    static editor_cursor_multi = '#ff0000'
+
     static editor_cursor_fg = '#000000'
 
     static konsole = '#1a1a1a'

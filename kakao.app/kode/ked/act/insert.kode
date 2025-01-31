@@ -33,32 +33,37 @@ export
         if text == '\t'
             if valid @s.selections
                 ⮐ @indentSelectedLines()
-            text = lpad 4-@s.cursor[0]%4 ' '
         # todo: handle pasted text with tabs?
         
-        [x y] = @s.cursor
-            
+        cursors = @allCursors()
         lines = @s.lines.asMutable()
         
-        ⮐ lf '[ERROR] cursor outside lines?' if y >= lines.length
+        for ci in cursors.length-1..0
+            cursor = cursors[ci]
         
-        line  = lines[y]
-        
-        # fill line at end with spaces if cursor is behind end of line
-        if x > line.length
-            line += lpad x-line.length
-        
-        line = kstr.splice line x 0 text
-        
-        lines.splice y 1 line
+            if text == '\t'
+                text = lpad 4-@s.cursor[0]%4 ' '
+            
+            [x y] = cursor
+                
+            ⮐ lf '[ERROR] cursor outside lines?' if y >= lines.length
+            
+            line = lines[y]
+            
+            # fill line at end with spaces if cursor is behind end of line
+            if x > line.length
+                line += lpad x-line.length
+            
+            line = kstr.splice line x 0 text
+            
+            lines.splice y 1 line
+            
+            cursor[0] += text.length
                 
         @setLines lines
         
-        x += text.length
-        
-        @syntax.updateLines lines [y]
-        
-        @setCursor x y
+        @set 'cursors' cursors
+        @setCursor cursors[-1]
         
     insertNewline: ->
         

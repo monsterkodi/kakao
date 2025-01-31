@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
@@ -23,7 +23,6 @@ editor = (function ()
         this["redraw"] = this["redraw"].bind(this)
         this["isCursorVisible"] = this["isCursorVisible"].bind(this)
         this["isCursorInEmpty"] = this["isCursorInEmpty"].bind(this)
-        this["showCursorIfInView"] = this["showCursorIfInView"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["postDraw"] = this["postDraw"].bind(this)
@@ -42,7 +41,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, fg, highlight, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
+        var bg, ch, cursor, fg, highlight, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -145,18 +144,34 @@ editor = (function ()
                 }
             }
         }
+        bg = theme[this.constructor.name + '_cursor_multi']
+        var list2 = _k_.list(s.cursors)
+        for (var _16_ = 0; _16_ < list2.length; _16_++)
+        {
+            cursor = list2[_16_]
+            if (this.isCursorVisible(cursor))
+            {
+                x = cursor[0] - view[0]
+                y = cursor[1] - view[1]
+                this.cells.set_bg(x,y,bg)
+                this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
+            }
+        }
         if (this.isCursorVisible())
         {
             bg = theme[this.constructor.name + '_cursor_bg']
             x = s.cursor[0] - view[0]
             y = s.cursor[1] - view[1]
-            if (this.isCursorInEmpty())
+            if (s.cursors.length <= 1)
             {
-                bg = color.darken(bg)
-            }
-            else if (' ' === this.cells.get_char(x,y))
-            {
-                bg = color.darken(bg,0.75)
+                if (this.isCursorInEmpty())
+                {
+                    bg = color.darken(bg)
+                }
+                else if (' ' === this.cells.get_char(x,y))
+                {
+                    bg = color.darken(bg,0.75)
+                }
             }
             this.cells.set_bg(x,y,bg)
             this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
@@ -208,11 +223,18 @@ editor = (function ()
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
                     this.dragStart = [x,y,x]
-                    if (mods !== 'ctrl')
+                    if (_k_.empty(mods))
                     {
-                        this.state.deselect()
+                        this.state.clearCursorsHighlightsAndSelections()
                     }
-                    this.state.setCursor(x,y)
+                    if (mods === 'alt')
+                    {
+                        this.state.addCursor(x,y)
+                    }
+                    else
+                    {
+                        this.state.setCursor(x,y)
+                    }
                     return true
                 }
                 break
@@ -321,28 +343,19 @@ editor = (function ()
         return this.redraw()
     }
 
-    editor.prototype["showCursorIfInView"] = function ()
+    editor.prototype["isCursorInEmpty"] = function (cursor)
     {
-        var s, sx, sy
-
-        s = this.state.s
-        var _a_ = this.cells.screenForPos(s.cursor[0] - s.view[0],s.cursor[1] - s.view[1]); sx = _a_[0]; sy = _a_[1]
-
-        this.screen.t.setCursor(sx,sy)
-        return this.screen.t.showCursor(this.isCursorVisible())
+        cursor = (cursor != null ? cursor : this.state.s.cursor.asMutable())
+        return util.isLinesPosOutside(this.state.s.lines,cursor)
     }
 
-    editor.prototype["isCursorInEmpty"] = function ()
-    {
-        return util.isLinesPosOutside(this.state.s.lines,this.state.s.cursor)
-    }
-
-    editor.prototype["isCursorVisible"] = function ()
+    editor.prototype["isCursorVisible"] = function (cursor)
     {
         var visible
 
-        visible = util.isPosInsideRange(this.state.s.cursor,this.state.rangeForVisibleLines())
-        if (this.state.s.cursor[0] < this.state.s.view[0])
+        cursor = (cursor != null ? cursor : this.state.s.cursor.asMutable())
+        visible = util.isPosInsideRange(cursor,this.state.rangeForVisibleLines())
+        if (cursor[0] < this.state.s.view[0])
         {
             visible = false
         }
@@ -466,6 +479,12 @@ editor = (function ()
             case 'ctrl+v':
                 return this.state.paste()
 
+            case 'alt+down':
+                return this.state.expandCursors('down')
+
+            case 'alt+up':
+                return this.state.expandCursors('up')
+
             case 'cmd+z':
                 return this.state.undo()
 
@@ -483,7 +502,7 @@ editor = (function ()
                 return this.state.selectNextHighlight()
 
             case 'esc':
-                return this.state.deselect()
+                return this.state.clearCursorsHighlightsAndSelections()
 
         }
 
@@ -493,7 +512,10 @@ editor = (function ()
         }
         else
         {
-            this.state.deleteSelection()
+            if (!(_k_.in(key,'\t')))
+            {
+                this.state.deleteSelection()
+            }
             return this.state.insert(key)
         }
     }
