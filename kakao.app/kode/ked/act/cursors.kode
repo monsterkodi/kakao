@@ -64,7 +64,8 @@ export
     
     moveCursor: dir steps=1 ->
         
-        # @deselect()
+        if @s.highlights.length
+            @deselect()
         
         cursors = @allCursors()
         
@@ -76,6 +77,7 @@ export
                 'down'  ➜ c[1] += steps 
                 'eol'   ➜ c[0] = @s.lines[c[1]].length
                 'bol'   ➜ c[0] = 0
+                'bof'   ➜ c[0] = 0; c[1] = 0
                 'eof'   ➜ c[1] = @s.lines.length-1; c[0] = @s.lines[c[1]].length
         
         @setCursor cursors[-1]

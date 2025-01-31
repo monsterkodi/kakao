@@ -111,6 +111,10 @@ export default {select:function (from, to)
         this.select([0,y],[this.s.lines[y].length,y])
     }
     return this
+},selectAllLines:function ()
+{
+    this.moveCursor('bof')
+    return this.moveCursorAndSelect('eof')
 },textForSelection:function ()
 {
     return util.textForLinesRanges(this.s.lines.asMutable(),this.s.selections.asMutable())

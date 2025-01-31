@@ -8,9 +8,9 @@
 
 class theme
     
-    @selection_line:        '#222222'  
+    @selection_line:        '#444444'  
     @selection:             '#4444ff'  
-    @highlight:             '#555555'  
+    @highlight:             '#444444'  
     @cursor:                '#ffff00'  
     @linenr:                '#1a1a1a'  
     @gutter_sel:            '#161616'  

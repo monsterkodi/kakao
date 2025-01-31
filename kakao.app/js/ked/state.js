@@ -32,6 +32,7 @@ state = (function ()
         this["adjustView"] = this["adjustView"].bind(this)
         this["scrollView"] = this["scrollView"].bind(this)
         this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
+        this["mainCursor"] = this["mainCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
@@ -60,7 +61,7 @@ state = (function ()
             }
         }
         this.syntax = new syntax
-        this.s = immutable({lines:[''],selections:[],highlights:[],cursors:[],cursor:[0,0],view:[0,0]})
+        this.s = immutable({lines:[''],selections:[],highlights:[],cursors:[[0,0]],cursor:[0,0],main:0,view:[0,0]})
         this.h = [this.s]
         this.r = []
         this.setCursor(0,0)
@@ -198,6 +199,7 @@ state = (function ()
     {
         var proc
 
+        lf('copy')
         if (_k_.empty(this.s.selections))
         {
             return
@@ -236,6 +238,11 @@ state = (function ()
         }
         view[0] = _k_.max(0,x - this.cells.cols + 1)
         return this.setView(view)
+    }
+
+    state.prototype["mainCursor"] = function ()
+    {
+        return this.s.cursors[this.s.main].asMutable()
     }
 
     state.prototype["moveCursorAndSelect"] = function (dir)

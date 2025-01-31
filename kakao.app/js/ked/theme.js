@@ -1,10 +1,10 @@
 class theme
 {
-    static selection_line = '#222222'
+    static selection_line = '#444444'
 
     static selection = '#4444ff'
 
-    static highlight = '#555555'
+    static highlight = '#444444'
 
     static cursor = '#ffff00'
 

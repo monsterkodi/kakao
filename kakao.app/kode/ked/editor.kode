@@ -76,6 +76,8 @@ function editor extends events
                     
             for x in highlight[0]...highlight[2]
                 @cells.set_bg x-view[0] y theme.highlight
+                
+                @cells.set_char x y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x y)+'\x1b[4:0m'
                     
         for selection in s.selections
             
@@ -283,7 +285,7 @@ function editor extends events
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKey: key =>
+    onKey: key event =>
         
         switch key
             
@@ -304,8 +306,8 @@ function editor extends events
             'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursor 'left'  16
             'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursor 'right' 16
             
-            'ctrl+a'                    ➜ ⮐ @state.setCursor 0 @state.s.cursor[1]
-            'ctrl+e'                    ➜ ⮐ @state.setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
+            'cmd+left'  'ctrl+a'        ➜ ⮐ @state.setCursor 0 @state.s.cursor[1]
+            'cmd+right' 'ctrl+e'        ➜ ⮐ @state.setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
             'ctrl+h'                    ➜ ⮐ @state.setCursor 0 0
             'ctrl+j'                    ➜ ⮐ @state.setCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             
@@ -317,6 +319,7 @@ function editor extends events
             'shift+right'               ➜ ⮐ @state.moveCursorAndSelect 'right'
             'shift+cmd+right'           ➜ ⮐ @state.moveCursorAndSelect 'eol'
             'shift+cmd+left'            ➜ ⮐ @state.moveCursorAndSelect 'bol'
+            'cmd+a'                     ➜ ⮐ @state.selectAllLines()
                     
             'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
             'delete'                    ➜ ⮐ @state.delete 'back'
@@ -324,13 +327,14 @@ function editor extends events
             'alt+delete'                ➜ ⮐ @state.delete 'back' 'alt'
             
             'shift+tab'                 ➜ ⮐ @state.deindent()
+            'tab'                       ➜ ⮐ @state.insert '\t'
                                     
             'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @state.cut()     
             'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @state.copy()        
             'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @state.paste()
             
-            'alt+down'                  ➜ ⮐ @state.expandCursors 'down'
-            'alt+up'                    ➜ ⮐ @state.expandCursors 'up'
+            'cmd+down'                  ➜ ⮐ @state.expandCursors 'down'
+            'cmd+up'                    ➜ ⮐ @state.expandCursors 'up'
                
             'cmd+z'                     ➜ ⮐ @state.undo()
             'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
@@ -342,10 +346,11 @@ function editor extends events
                                                     
             'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
 
-        if 0 <= key.indexOf '+'
-            lfc 'unhandled?' key
+        if valid event.char
+            @state.deleteSelection()
+            @state.insert event.char
         else
-            @state.deleteSelection() if key not in '\t'
-            @state.insert key
-            
+            if key not in ['shift' 'ctrl' 'alt' 'cmd'] 
+                lfc 'editor.onKey?' key
+
 export editor

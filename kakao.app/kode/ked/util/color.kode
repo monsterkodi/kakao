@@ -47,5 +47,11 @@ class color
         [r g b] = color.rgb c
     
         "\x1b[38;2;#{r};#{g};#{b}m" 
-                
+
+    @ul_rgb: c -> 
+        
+        [r g b] = color.rgb c
+    
+        "\x1b[58;2;#{r};#{g};#{b}m" 
+        
 export color

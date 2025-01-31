@@ -173,14 +173,13 @@ KED = (function ()
         return this.redraw()
     }
 
-    KED.prototype["onKey"] = function (key)
+    KED.prototype["onKey"] = function (key, event)
     {
         var handler
 
         switch (key)
         {
             case 'alt+q':
-            case 'ctrl+d':
             case 'ctrl+q':
                 return this.t.quit()
 
@@ -203,7 +202,7 @@ KED = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             handler = list[_a_]
-            if (handler.onKey(key))
+            if (handler.onKey(key,event))
             {
                 break
             }

@@ -16,16 +16,19 @@ function TTIO extends events
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
 
-        @write '\x1b[?45h'   # origin mode (no wrap?)
-        @write '\x1b[?1000h' # mouse events
-        @write '\x1b[?1002h' # cell motion tracking
-        @write '\x1b[?1003h' # mouse move events
-        @write '\x1b[?1004h' # focus
-        @write '\x1b[?1006h' # mouse SGR mode
-        @write '\x1b[?1049h' # alternate screen buffer
-        @write '\x1b[?2004h' # bracketed paste mode
-        @write '\x1b[>4;2m'  # modify other keys
-        @write '\x1b[6 q'    # cursor solid bar
+        @write '\x1b[?1000h'    # mouse events
+        @write '\x1b[?1002h'    # cell motion tracking
+        @write '\x1b[?1003h'    # mouse move events
+        @write '\x1b[?1004h'    # focus events
+        @write '\x1b[?1006h'    # mouse SGR mode
+        @write '\x1b[?1049h'    # alternate screen buffer
+        @write '\x1b[?2004h'    # bracketed paste mode
+        @write '\x1b[>1u'       # kitty keyboard protocol
+        @write '\x1b[=31;1u'    # 1 disambiguate escape codes
+                                # 2 event types
+                                # 4 alternate keys
+                                # 8 all keys as escape codes
+                                # 16 associated text
         
         process.stdout.on 'resize' @onResize
         process.stdin.on  'data'   @onData
@@ -36,6 +39,8 @@ function TTIO extends events
         
         @clear()
         @write '\x1b[?1049l' # scrollback screen buffer
+        @write '\x1b[<u'     # end kitty keyboard protocol
+        @showCursor()
         @restore()
         process.exit 0
     
@@ -88,6 +93,70 @@ function TTIO extends events
                 
         @emit 'mouse' 'press' col row button mods @lastClick.count
         
+    # 000   000  000  000000000  000000000  000   000  
+    # 000  000   000     000        000      000 000   
+    # 0000000    000     000        000       00000    
+    # 000  000   000     000        000        000     
+    # 000   000  000     000        000        000     
+    
+    parseKittyEvent: csi ->
+                
+        ⮐ if csi[-1] not in 'uABCD'
+        
+        key = switch csi[-1]
+            'A' ➜ 'up'    
+            'B' ➜ 'down'  
+            'D' ➜ 'left'  
+            'C' ➜ 'right'
+            
+        char = ''
+            
+        if csi[-1] == 'u'
+            code = parseInt csi                
+            key = switch code
+                9       ➜ 'tab'
+                27      ➜ 'esc'
+                13      ➜ 'return'
+                127     ➜ 'delete'
+                57441   ➜ 'shift'
+                57442   ➜ 'ctrl'
+                57443   ➜ 'alt'
+                57444   ➜ 'cmd'
+                        ➜ String.fromCodePoint code
+                        
+            char = switch key
+                'tab'    ➜ '\t'
+                'return' ➜ '\n'
+                         ➜ ''
+                    
+        mods = []
+        type = 'press'
+        
+        splt = csi[0..-2].split ';'
+        
+        if splt.length > 1
+            
+            type = 'repeat'  if splt[1].endsWith ':2'
+            type = 'release' if splt[1].endsWith ':3'
+            
+            if splt.length > 2
+                char = String.fromCodePoint parseInt(splt[2])
+            
+            mbit = parseInt(splt[1])-1
+            if mbit & 0x1 ➜ mods.push 'shift'
+            if mbit & 0x4 ➜ mods.push 'ctrl'
+            if mbit & 0x2 ➜ mods.push 'alt'
+            if mbit & 0x8 ➜ mods.push 'cmd'
+                
+        if key not in mods
+            mods.push key
+        combo = mods.join '+'
+                    
+        key:    key
+        combo:  combo
+        type:   type
+        char:   char
+        
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  
     # 000   000  000000000     000     000000000  
@@ -96,8 +165,16 @@ function TTIO extends events
     
     onData: data =>
         
-        # lf 'data' data.length data[1..] @pasteBuffer? data[0] == 0x1b
+        if data[0] == 0x1b and data[1] == 0x5b
+            csi = data[2..].toString 'utf8'
+        else if data[0] == 0x1b
+            esc = data[1..].toString 'utf8'
+            lf 'esc' esc
+        else
+            lf 'dta' data
         
+        # lf 'data' data[1..]
+            
         if @pasteBuffer?
             
             @pasteBuffer += data.toString 'utf8'
@@ -109,22 +186,27 @@ function TTIO extends events
                 delete @pasteBuffer
             ⮐ 
         
-        if data[0] == 0x1b
+        if csi
             
-            seq = data[1..].toString 'utf8'
-            
-            if seq.startsWith '[200~'
+            if event = @parseKittyEvent csi
+                if event.type == 'release'
+                    ⮐ @emit 'release' event.combo event
+                else 
+                    # lf '▸' noon(event)
+                    ⮐ @emit 'key' event.combo event
+                                
+            if csi.startsWith '200~'
                 @pasteBuffer = ''
-                if seq.endsWith '\x1b[201~'
+                if csi.endsWith '\x1b[201~'
                     @onData data[6..]
                 ⮐
                             
-            if seq.startsWith '[<'
+            if csi.startsWith '<'
                 
-                [code col row] = seq[2..-2].split(';').map (s) -> parseInt s
+                [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
                 x = col-1
                 y = row-1
-                if seq.endsWith 'M'
+                if csi.endsWith 'M'
                     # lfc code
                     switch code
                         0  ➜ ⮐ @emitMousePress x y 'left' 
@@ -181,9 +263,9 @@ function TTIO extends events
                         91 ➜ ⮐ @emit 'wheel' x y  'right' 'ctrl+alt'  
                         95 ➜ ⮐ @emit 'wheel' x y  'right' 'shift+ctrl+alt'
                         
-                    lfc 'mouse press?' seq
+                    lfc 'mouse press?' csi
                     ⮐ 
-                else if seq.endsWith 'm'
+                else if csi.endsWith 'm'
                     switch code
                         0  ➜ ⮐ @emit 'mouse' 'release' x y 'left'
                         2  ➜ ⮐ @emit 'mouse' 'release' x y 'right'
@@ -192,185 +274,21 @@ function TTIO extends events
                         16 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl'
                         24 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl+alt'
                         
-                    lfc 'mouse release?' seq
+                    lfc 'mouse release?' csi
                     ⮐ 
-                    
-            else if seq.startsWith('[27;9;') and seq.endsWith('~')
                 
-                code = parseInt seq.split(';')[-1]
+        else if esc
+            
+            lfc 'esc' esc
                 
-                if 97 <= code <= 122
-                    @emit 'key' "cmd+#{String.fromCodePoint code}"
-                else
-                    @emit 'key' "shift+cmd+#{String.fromCodePoint code+32}"
-
-            else if seq.startsWith('[27;5;') and seq.endsWith('~')
-                
-                code = 32 + parseInt(seq.split(';')[-1])
-                @emit 'key' "shift+ctrl+#{String.fromCodePoint code}"
-                
-            else if seq.startsWith('[27;') and seq.endsWith('~')
-                
-                code = parseInt(seq.split(';')[-1])
-                modc = parseInt(seq.split(';')[-2])
-                mods = switch modc
-                    2   ➜ 'shift'
-                    4   ➜ 'shift+alt'
-                    6   ➜ 'shift+ctrl' 
-                    7   ➜ 'ctrl+alt' 
-                    8   ➜ 'shift+ctrl+alt' 
-                    10  ➜ 'shift+cmd'
-                    11  ➜ 'alt+cmd'
-                    12  ➜ 'shift+alt+cmd'
-                    13  ➜ 'ctrl+cmd'
-                    14  ➜ 'shift+ctrl+cmd'
-                        ➜ 'alt'
-                
-                switch code
-                    9   ➜ ⮐ @emit 'key' mods+'+tab' 
-                    127 ➜ ⮐ @emit 'key' mods+'+delete' 
-                    
-                lfc '[27;' modc code
-                                
-            else if seq.startsWith '['
-                
-                switch seq[1]
-                    'O' ➜ ⮐ @emit 'blur'
-                    'I' ➜ ⮐ @emit 'focus'
-                    'A' ➜ ⮐ @emit 'key' 'up'    
-                    'B' ➜ ⮐ @emit 'key' 'down'  
-                    'D' ➜ ⮐ @emit 'key' 'left'  
-                    'C' ➜ ⮐ @emit 'key' 'right' 
-                    
-                switch seq[0..]
-                    '[1;3A'         ➜ ⮐ @emit 'key' 'alt+up'
-                    '[1;3B'         ➜ ⮐ @emit 'key' 'alt+down'
-                    '[1;2A'         ➜ ⮐ @emit 'key' 'shift+up'
-                    '[1;2B'         ➜ ⮐ @emit 'key' 'shift+down'
-                    '[1;2C'         ➜ ⮐ @emit 'key' 'shift+right'
-                    '[1;2D'         ➜ ⮐ @emit 'key' 'shift+left'
-                    '[1;4A'         ➜ ⮐ @emit 'key' 'shift+alt+up'
-                    '[1;4B'         ➜ ⮐ @emit 'key' 'shift+alt+down'
-                    '[1;4C'         ➜ ⮐ @emit 'key' 'shift+alt+right'
-                    '[1;4D'         ➜ ⮐ @emit 'key' 'shift+alt+left'
-                    '[1;5A'         ➜ ⮐ @emit 'key' 'ctrl+up'
-                    '[1;5B'         ➜ ⮐ @emit 'key' 'ctrl+down'
-                    '[1;5C'         ➜ ⮐ @emit 'key' 'ctrl+right'
-                    '[1;5D'         ➜ ⮐ @emit 'key' 'ctrl+left'
-                    '[1;6A'         ➜ ⮐ @emit 'key' 'shift+ctrl+up'
-                    '[1;6B'         ➜ ⮐ @emit 'key' 'shift+ctrl+down'
-                    '[1;6C'         ➜ ⮐ @emit 'key' 'shift+ctrl+right'
-                    '[1;6D'         ➜ ⮐ @emit 'key' 'shift+ctrl+left'
-                    '[1;7A'         ➜ ⮐ @emit 'key' 'ctrl+alt+up'
-                    '[1;7B'         ➜ ⮐ @emit 'key' 'ctrl+alt+down'
-                    '[1;7C'         ➜ ⮐ @emit 'key' 'ctrl+alt+right'
-                    '[1;7D'         ➜ ⮐ @emit 'key' 'ctrl+alt+left'
-                    '[1;8A'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+up'
-                    '[1;8B'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+down'
-                    '[1;8C'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+right'
-                    '[1;8D'         ➜ ⮐ @emit 'key' 'shift+ctrl+alt+left'
-                    '[1;10C'        ➜ ⮐ @emit 'key' 'shift+cmd+right'
-                    '[1;10D'        ➜ ⮐ @emit 'key' 'shift+cmd+left'
-                    '[1;15A'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+up'
-                    '[1;15B'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+down'
-                    '[1;15C'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+right'
-                    '[1;15D'        ➜ ⮐ @emit 'key' 'ctrl+alt+cmd+left'
-                    
-                lfc 'DATA' data, seq, seq[1..]
-                ⮐ 
-            else if data.length == 1
-                ⮐ @emit 'key' 'esc'  
-            else
-                if data.length == 2
-                    switch data[1]
-                        0x15 ➜ ⮐ @emit 'key' 'cmd+delete'
-                        
-                switch seq[0]
-                    'b' ➜ ⮐ @emit 'key' 'alt+left'
-                    'f' ➜ ⮐ @emit 'key' 'alt+right'
-                    
-                lfc 'seq?' seq, data
-        else
+        else # not a csi or esc sequence
             
             text = data.toString 'utf8'
             
             if text.length > 1
-                lfc 'paste?' text.length text
+                lfc 'paste?' data[0]==0x1b data[1..] text.length text
                 ⮐ @emit 'paste' text
                         
-            switch data[0]
-                0x09 ➜ ⮐ @emit 'key' '\t'
-                0x0d ➜ ⮐ @emit 'key' '\n' 
-                0x20 ➜ ⮐ @emit 'key' ' '
-                0x7f ➜ ⮐ @emit 'key' 'delete' 
-                
-            key = if
-                0x1 <= data[0] <= 0x1a ➜ "ctrl+#{String.fromCodePoint 96+data[0]}"
-                                       ➜ data.toString 'utf8'
-            
-            key = switch key
-                
-                'å' ➜ 'alt+a'
-                '∫' ➜ 'alt+b'
-                'ç' ➜ 'alt+c'
-                '∂' ➜ 'alt+d'
-                '´' ➜ 'alt+e'
-                'ƒ' ➜ 'alt+f'
-                '©' ➜ 'alt+g'
-                '˙' ➜ 'alt+h'
-                'ˆ' ➜ 'alt+i'
-                '∆' ➜ 'alt+j'
-                '˚' ➜ 'alt+k'
-                '¬' ➜ 'alt+l'
-                'µ' ➜ 'alt+m'
-                '˜' ➜ 'alt+n'
-                'ø' ➜ 'alt+o'
-                'π' ➜ 'alt+π'
-                'œ' ➜ 'alt+q'
-                '®' ➜ 'alt+r'
-                'ß' ➜ 'alt+s'
-                '†' ➜ 'alt+t'
-                '¨' ➜ 'alt+u'
-                '√' ➜ 'alt+v'
-                '∑' ➜ 'alt+w'
-                '≈' ➜ 'alt+x'
-                '¥' ➜ 'alt+y'
-                'Ω' ➜ 'alt+z'
-                    
-                'Å' ➜ 'shift+alt+a'  
-                'ı' ➜ 'shift+alt+b'  
-                'Ç' ➜ 'shift+alt+c'  
-                'Î' ➜ 'shift+alt+d'  
-                '´' ➜ 'shift+alt+e'  #alt+e
-                'Ï' ➜ 'shift+alt+f'  
-                '˝' ➜ 'shift+alt+g'  
-                'Ó' ➜ 'shift+alt+h'  
-                'ˆ' ➜ 'shift+alt+i'  #alt+i
-                'Ô' ➜ 'shift+alt+j'  
-                '' ➜ 'shift+alt+k'  
-                'Ò' ➜ 'shift+alt+l'  
-                'Â' ➜ 'shift+alt+m'  
-                '˜' ➜ 'shift+alt+n'  #alt+n
-                'Ø' ➜ 'shift+alt+o'  
-                '∏' ➜ 'shift+alt+p'  
-                'Œ' ➜ 'shift+alt+q'  
-                '‰' ➜ 'shift+alt+r'  
-                'Í' ➜ 'shift+alt+s'  
-                'ˇ' ➜ 'shift+alt+t'  
-                '¨' ➜ 'shift+alt+u'  #alt+u
-                '◊' ➜ 'shift+alt+v'  
-                '„' ➜ 'shift+alt+w'  
-                '˛' ➜ 'shift+alt+x'  
-                'Á' ➜ 'shift+alt+y'  
-                '¸' ➜ 'shift+alt+z'  
-                
-                    ➜ key
-                            
-            # lf 'KEY' data.length data key
-                        
-            if key 
-                @emit 'key' key
-            else
-                lfc 'key?' key data data.length data[0]
+            lfc 'unhandled?' data data.length data[0] data[1..]
                 
 export TTIO

@@ -37,6 +37,10 @@ export default {allCursors:function ()
 {
     var c, cursors
 
+    if (this.s.highlights.length)
+    {
+        this.deselect()
+    }
     cursors = this.allCursors()
     var list = _k_.list(cursors)
     for (var _b_ = 0; _b_ < list.length; _b_++)
@@ -61,6 +65,10 @@ export default {allCursors:function ()
                 break
             case 'bol':
                 c[0] = 0
+                break
+            case 'bof':
+                c[0] = 0
+                c[1] = 0
                 break
             case 'eof':
                 c[1] = this.s.lines.length - 1

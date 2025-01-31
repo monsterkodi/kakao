@@ -149,19 +149,19 @@ function KED
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKey: key =>
+    onKey: key event =>
         
         # lc 'key' key
         
         switch key
             
-            'alt+q' 'ctrl+d' 'ctrl+q'       ➜ ⮐ @t.quit()
-            'alt+r' 'ctrl+r' 'cmd+r'        ➜ ⮐ @reloadFile()
-            'ctrl+s' 'cmd+s'                ➜ ⮐ @saveFile()
-            'shift+cmd+s' 'shift+ctrl+s'    ➜ ⮐ @saveAs()
+            'alt+q' 'ctrl+q'             ➜ ⮐ @t.quit()
+            'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
+            'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
+            'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
             
         for handler in @keyHandlers
-            break if handler.onKey key
+            break if handler.onKey key event
                 
         @redraw()
                                 

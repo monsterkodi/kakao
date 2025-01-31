@@ -106,6 +106,7 @@ editor = (function ()
             for (var _f_ = x = highlight[0], _10_ = highlight[2]; (_f_ <= _10_ ? x < highlight[2] : x > highlight[2]); (_f_ <= _10_ ? ++x : --x))
             {
                 this.cells.set_bg(x - view[0],y,theme.highlight)
+                this.cells.set_char(x,y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x,y) + '\x1b[4:0m')
             }
         }
         var list1 = _k_.list(s.selections)
@@ -368,7 +369,7 @@ editor = (function ()
         return this.emit('redraw')
     }
 
-    editor.prototype["onKey"] = function (key)
+    editor.prototype["onKey"] = function (key, event)
     {
         switch (key)
         {
@@ -414,9 +415,11 @@ editor = (function ()
             case 'shift+ctrl+alt+right':
                 return this.state.moveCursor('right',16)
 
+            case 'cmd+left':
             case 'ctrl+a':
                 return this.state.setCursor(0,this.state.s.cursor[1])
 
+            case 'cmd+right':
             case 'ctrl+e':
                 return this.state.setCursor(this.state.s.lines[this.state.s.cursor[1]].length,this.state.s.cursor[1])
 
@@ -450,6 +453,9 @@ editor = (function ()
             case 'shift+cmd+left':
                 return this.state.moveCursorAndSelect('bol')
 
+            case 'cmd+a':
+                return this.state.selectAllLines()
+
             case 'ctrl+k':
                 return this.state.delete('eol')
 
@@ -464,6 +470,9 @@ editor = (function ()
 
             case 'shift+tab':
                 return this.state.deindent()
+
+            case 'tab':
+                return this.state.insert('\t')
 
             case 'alt+x':
             case 'cmd+x':
@@ -480,10 +489,10 @@ editor = (function ()
             case 'ctrl+v':
                 return this.state.paste()
 
-            case 'alt+down':
+            case 'cmd+down':
                 return this.state.expandCursors('down')
 
-            case 'alt+up':
+            case 'cmd+up':
                 return this.state.expandCursors('up')
 
             case 'cmd+z':
@@ -507,17 +516,17 @@ editor = (function ()
 
         }
 
-        if (0 <= key.indexOf('+'))
+        if (!_k_.empty(event.char))
         {
-            return lfc('unhandled?',key)
+            this.state.deleteSelection()
+            return this.state.insert(event.char)
         }
         else
         {
-            if (!(_k_.in(key,'\t')))
+            if (!(_k_.in(key,['shift','ctrl','alt','cmd'])))
             {
-                this.state.deleteSelection()
+                return lfc('editor.onKey?',key)
             }
-            return this.state.insert(key)
         }
     }
 

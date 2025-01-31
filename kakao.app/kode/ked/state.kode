@@ -26,8 +26,9 @@ function state
             lines:       ['']
             selections:  []
             highlights:  []
-            cursors:     []
+            cursors:     [[0 0]]
             cursor:      [0 0]
+            main:        0
             view:        [0 0]
             
         @h = [@s] # undo states (history)
@@ -146,7 +147,7 @@ function state
     #  0000000   0000000   000           000     
     
     copy: =>
-        
+        lf 'copy'
         ⮐ if empty @s.selections
             
         proc = child_process.spawn 'pbcopy'
@@ -189,6 +190,8 @@ function state
         view[0] = max 0 x - @cells.cols + 1
             
         @setView view
+        
+    mainCursor: => @s.cursors[@s.main].asMutable()
                     
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     

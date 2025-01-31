@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var TTIO
 
@@ -28,7 +28,6 @@ TTIO = (function ()
         {
             process.stdin.setRawMode(true)
         }
-        this.write('\x1b[?45h')
         this.write('\x1b[?1000h')
         this.write('\x1b[?1002h')
         this.write('\x1b[?1003h')
@@ -36,8 +35,8 @@ TTIO = (function ()
         this.write('\x1b[?1006h')
         this.write('\x1b[?1049h')
         this.write('\x1b[?2004h')
-        this.write('\x1b[>4;2m')
-        this.write('\x1b[6 q')
+        this.write('\x1b[>1u')
+        this.write('\x1b[=31;1u')
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
         return TTIO.__super__.constructor.apply(this, arguments)
@@ -52,6 +51,8 @@ TTIO = (function ()
     {
         this.clear()
         this.write('\x1b[?1049l')
+        this.write('\x1b[<u')
+        this.showCursor()
         this.restore()
         return process.exit(0)
     }
@@ -111,9 +112,9 @@ TTIO = (function ()
 
     TTIO.prototype["emitMousePress"] = function (col, row, button, mods = '')
     {
-        var diff, _70_19_
+        var diff, _75_19_
 
-        this.lastClick = ((_70_19_=this.lastClick) != null ? _70_19_ : {row:row,col:col,count:0,time:process.hrtime()})
+        this.lastClick = ((_75_19_=this.lastClick) != null ? _75_19_ : {row:row,col:col,count:0,time:process.hrtime()})
         if (this.lastClick.col === col && this.lastClick.row === row)
         {
             diff = process.hrtime(this.lastClick.time)
@@ -137,10 +138,146 @@ TTIO = (function ()
         return this.emit('mouse','press',col,row,button,mods,this.lastClick.count)
     }
 
+    TTIO.prototype["parseKittyEvent"] = function (csi)
+    {
+        var char, code, combo, key, mbit, mods, splt, type
+
+        if (!(_k_.in(csi.slice(-1)[0],'uABCD')))
+        {
+            return
+        }
+        key = ((function ()
+        {
+            switch (csi.slice(-1)[0])
+            {
+                case 'A':
+                    return 'up'
+
+                case 'B':
+                    return 'down'
+
+                case 'D':
+                    return 'left'
+
+                case 'C':
+                    return 'right'
+
+            }
+
+        }).bind(this))()
+        char = ''
+        if (csi.slice(-1)[0] === 'u')
+        {
+            code = parseInt(csi)
+            key = ((function ()
+            {
+                switch (code)
+                {
+                    case 9:
+                        return 'tab'
+
+                    case 27:
+                        return 'esc'
+
+                    case 13:
+                        return 'return'
+
+                    case 127:
+                        return 'delete'
+
+                    case 57441:
+                        return 'shift'
+
+                    case 57442:
+                        return 'ctrl'
+
+                    case 57443:
+                        return 'alt'
+
+                    case 57444:
+                        return 'cmd'
+
+                    default:
+                        return String.fromCodePoint(code)
+                }
+
+            }).bind(this))()
+            char = ((function ()
+            {
+                switch (key)
+                {
+                    case 'tab':
+                        return '\t'
+
+                    case 'return':
+                        return '\n'
+
+                    default:
+                        return ''
+                }
+
+            }).bind(this))()
+        }
+        mods = []
+        type = 'press'
+        splt = csi.slice(0, -1).split(';')
+        if (splt.length > 1)
+        {
+            if (splt[1].endsWith(':2'))
+            {
+                type = 'repeat'
+            }
+            if (splt[1].endsWith(':3'))
+            {
+                type = 'release'
+            }
+            if (splt.length > 2)
+            {
+                char = String.fromCodePoint(parseInt(splt[2]))
+            }
+            mbit = parseInt(splt[1]) - 1
+            if (mbit & 0x1)
+            {
+                mods.push('shift')
+            }
+            if (mbit & 0x4)
+            {
+                mods.push('ctrl')
+            }
+            if (mbit & 0x2)
+            {
+                mods.push('alt')
+            }
+            if (mbit & 0x8)
+            {
+                mods.push('cmd')
+            }
+        }
+        if (!(_k_.in(key,mods)))
+        {
+            mods.push(key)
+        }
+        combo = mods.join('+')
+        return {key:key,combo:combo,type:type,char:char}
+    }
+
     TTIO.prototype["onData"] = function (data)
     {
-        var code, col, key, modc, mods, row, seq, text, x, y, _101_23_
+        var code, col, csi, esc, event, row, text, x, y, _178_23_
 
+        if (data[0] === 0x1b && data[1] === 0x5b)
+        {
+            csi = data.slice(2).toString('utf8')
+        }
+        else if (data[0] === 0x1b)
+        {
+            esc = data.slice(1).toString('utf8')
+            lf('esc',esc)
+        }
+        else
+        {
+            lf('dta',data)
+        }
         if ((this.pasteBuffer != null))
         {
             this.pasteBuffer += data.toString('utf8')
@@ -152,28 +289,38 @@ TTIO = (function ()
             }
             return
         }
-        if (data[0] === 0x1b)
+        if (csi)
         {
-            seq = data.slice(1).toString('utf8')
-            if (seq.startsWith('[200~'))
+            if (event = this.parseKittyEvent(csi))
+            {
+                if (event.type === 'release')
+                {
+                    return this.emit('release',event.combo,event)
+                }
+                else
+                {
+                    return this.emit('key',event.combo,event)
+                }
+            }
+            if (csi.startsWith('200~'))
             {
                 this.pasteBuffer = ''
-                if (seq.endsWith('\x1b[201~'))
+                if (csi.endsWith('\x1b[201~'))
                 {
                     this.onData(data.slice(6))
                 }
                 return
             }
-            if (seq.startsWith('[<'))
+            if (csi.startsWith('<'))
             {
-                var _a_ = seq.slice(2, -1).split(';').map(function (s)
+                var _a_ = csi.slice(1, -1).split(';').map(function (s)
                 {
                     return parseInt(s)
                 }); code = _a_[0]; col = _a_[1]; row = _a_[2]
 
                 x = col - 1
                 y = row - 1
-                if (seq.endsWith('M'))
+                if (csi.endsWith('M'))
                 {
                     switch (code)
                     {
@@ -320,10 +467,10 @@ TTIO = (function ()
 
                     }
 
-                    lfc('mouse press?',seq)
+                    lfc('mouse press?',csi)
                     return
                 }
-                else if (seq.endsWith('m'))
+                else if (csi.endsWith('m'))
                 {
                     switch (code)
                     {
@@ -347,436 +494,24 @@ TTIO = (function ()
 
                     }
 
-                    lfc('mouse release?',seq)
+                    lfc('mouse release?',csi)
                     return
                 }
             }
-            else if (seq.startsWith('[27;9;') && seq.endsWith('~'))
-            {
-                code = parseInt(seq.split(';').slice(-1)[0])
-                if ((97 <= code && code <= 122))
-                {
-                    return this.emit('key',`cmd+${String.fromCodePoint(code)}`)
-                }
-                else
-                {
-                    return this.emit('key',`shift+cmd+${String.fromCodePoint(code + 32)}`)
-                }
-            }
-            else if (seq.startsWith('[27;5;') && seq.endsWith('~'))
-            {
-                code = 32 + parseInt(seq.split(';').slice(-1)[0])
-                return this.emit('key',`shift+ctrl+${String.fromCodePoint(code)}`)
-            }
-            else if (seq.startsWith('[27;') && seq.endsWith('~'))
-            {
-                code = parseInt(seq.split(';').slice(-1)[0])
-                modc = parseInt(seq.split(';').slice(-2,-1)[0])
-                mods = ((function ()
-                {
-                    switch (modc)
-                    {
-                        case 2:
-                            return 'shift'
-
-                        case 4:
-                            return 'shift+alt'
-
-                        case 6:
-                            return 'shift+ctrl'
-
-                        case 7:
-                            return 'ctrl+alt'
-
-                        case 8:
-                            return 'shift+ctrl+alt'
-
-                        case 10:
-                            return 'shift+cmd'
-
-                        case 11:
-                            return 'alt+cmd'
-
-                        case 12:
-                            return 'shift+alt+cmd'
-
-                        case 13:
-                            return 'ctrl+cmd'
-
-                        case 14:
-                            return 'shift+ctrl+cmd'
-
-                        default:
-                            return 'alt'
-                    }
-
-                }).bind(this))()
-                switch (code)
-                {
-                    case 9:
-                        return this.emit('key',mods + '+tab')
-
-                    case 127:
-                        return this.emit('key',mods + '+delete')
-
-                }
-
-                return lfc('[27;',modc,code)
-            }
-            else if (seq.startsWith('['))
-            {
-                switch (seq[1])
-                {
-                    case 'O':
-                        return this.emit('blur')
-
-                    case 'I':
-                        return this.emit('focus')
-
-                    case 'A':
-                        return this.emit('key','up')
-
-                    case 'B':
-                        return this.emit('key','down')
-
-                    case 'D':
-                        return this.emit('key','left')
-
-                    case 'C':
-                        return this.emit('key','right')
-
-                }
-
-                switch (seq.slice(0))
-                {
-                    case '[1;3A':
-                        return this.emit('key','alt+up')
-
-                    case '[1;3B':
-                        return this.emit('key','alt+down')
-
-                    case '[1;2A':
-                        return this.emit('key','shift+up')
-
-                    case '[1;2B':
-                        return this.emit('key','shift+down')
-
-                    case '[1;2C':
-                        return this.emit('key','shift+right')
-
-                    case '[1;2D':
-                        return this.emit('key','shift+left')
-
-                    case '[1;4A':
-                        return this.emit('key','shift+alt+up')
-
-                    case '[1;4B':
-                        return this.emit('key','shift+alt+down')
-
-                    case '[1;4C':
-                        return this.emit('key','shift+alt+right')
-
-                    case '[1;4D':
-                        return this.emit('key','shift+alt+left')
-
-                    case '[1;5A':
-                        return this.emit('key','ctrl+up')
-
-                    case '[1;5B':
-                        return this.emit('key','ctrl+down')
-
-                    case '[1;5C':
-                        return this.emit('key','ctrl+right')
-
-                    case '[1;5D':
-                        return this.emit('key','ctrl+left')
-
-                    case '[1;6A':
-                        return this.emit('key','shift+ctrl+up')
-
-                    case '[1;6B':
-                        return this.emit('key','shift+ctrl+down')
-
-                    case '[1;6C':
-                        return this.emit('key','shift+ctrl+right')
-
-                    case '[1;6D':
-                        return this.emit('key','shift+ctrl+left')
-
-                    case '[1;7A':
-                        return this.emit('key','ctrl+alt+up')
-
-                    case '[1;7B':
-                        return this.emit('key','ctrl+alt+down')
-
-                    case '[1;7C':
-                        return this.emit('key','ctrl+alt+right')
-
-                    case '[1;7D':
-                        return this.emit('key','ctrl+alt+left')
-
-                    case '[1;8A':
-                        return this.emit('key','shift+ctrl+alt+up')
-
-                    case '[1;8B':
-                        return this.emit('key','shift+ctrl+alt+down')
-
-                    case '[1;8C':
-                        return this.emit('key','shift+ctrl+alt+right')
-
-                    case '[1;8D':
-                        return this.emit('key','shift+ctrl+alt+left')
-
-                    case '[1;10C':
-                        return this.emit('key','shift+cmd+right')
-
-                    case '[1;10D':
-                        return this.emit('key','shift+cmd+left')
-
-                    case '[1;15A':
-                        return this.emit('key','ctrl+alt+cmd+up')
-
-                    case '[1;15B':
-                        return this.emit('key','ctrl+alt+cmd+down')
-
-                    case '[1;15C':
-                        return this.emit('key','ctrl+alt+cmd+right')
-
-                    case '[1;15D':
-                        return this.emit('key','ctrl+alt+cmd+left')
-
-                }
-
-                lfc('DATA',data,seq,seq.slice(1))
-                return
-            }
-            else if (data.length === 1)
-            {
-                return this.emit('key','esc')
-            }
-            else
-            {
-                if (data.length === 2)
-                {
-                    switch (data[1])
-                    {
-                        case 0x15:
-                            return this.emit('key','cmd+delete')
-
-                    }
-
-                }
-                switch (seq[0])
-                {
-                    case 'b':
-                        return this.emit('key','alt+left')
-
-                    case 'f':
-                        return this.emit('key','alt+right')
-
-                }
-
-                return lfc('seq?',seq,data)
-            }
+        }
+        else if (esc)
+        {
+            return lfc('esc',esc)
         }
         else
         {
             text = data.toString('utf8')
             if (text.length > 1)
             {
-                lfc('paste?',text.length,text)
+                lfc('paste?',data[0] === 0x1b,data.slice(1),text.length,text)
                 return this.emit('paste',text)
             }
-            switch (data[0])
-            {
-                case 0x09:
-                    return this.emit('key','\t')
-
-                case 0x0d:
-                    return this.emit('key','\n')
-
-                case 0x20:
-                    return this.emit('key',' ')
-
-                case 0x7f:
-                    return this.emit('key','delete')
-
-            }
-
-            key = (0x1 <= data[0] && data[0] <= 0x1a) ? `ctrl+${String.fromCodePoint(96 + data[0])}` : data.toString('utf8')
-            key = ((function ()
-            {
-                switch (key)
-                {
-                    case 'å':
-                        return 'alt+a'
-
-                    case '∫':
-                        return 'alt+b'
-
-                    case 'ç':
-                        return 'alt+c'
-
-                    case '∂':
-                        return 'alt+d'
-
-                    case '´':
-                        return 'alt+e'
-
-                    case 'ƒ':
-                        return 'alt+f'
-
-                    case '©':
-                        return 'alt+g'
-
-                    case '˙':
-                        return 'alt+h'
-
-                    case 'ˆ':
-                        return 'alt+i'
-
-                    case '∆':
-                        return 'alt+j'
-
-                    case '˚':
-                        return 'alt+k'
-
-                    case '¬':
-                        return 'alt+l'
-
-                    case 'µ':
-                        return 'alt+m'
-
-                    case '˜':
-                        return 'alt+n'
-
-                    case 'ø':
-                        return 'alt+o'
-
-                    case 'π':
-                        return 'alt+π'
-
-                    case 'œ':
-                        return 'alt+q'
-
-                    case '®':
-                        return 'alt+r'
-
-                    case 'ß':
-                        return 'alt+s'
-
-                    case '†':
-                        return 'alt+t'
-
-                    case '¨':
-                        return 'alt+u'
-
-                    case '√':
-                        return 'alt+v'
-
-                    case '∑':
-                        return 'alt+w'
-
-                    case '≈':
-                        return 'alt+x'
-
-                    case '¥':
-                        return 'alt+y'
-
-                    case 'Ω':
-                        return 'alt+z'
-
-                    case 'Å':
-                        return 'shift+alt+a'
-
-                    case 'ı':
-                        return 'shift+alt+b'
-
-                    case 'Ç':
-                        return 'shift+alt+c'
-
-                    case 'Î':
-                        return 'shift+alt+d'
-
-                    case '´':
-                        return 'shift+alt+e'
-
-                    case 'Ï':
-                        return 'shift+alt+f'
-
-                    case '˝':
-                        return 'shift+alt+g'
-
-                    case 'Ó':
-                        return 'shift+alt+h'
-
-                    case 'ˆ':
-                        return 'shift+alt+i'
-
-                    case 'Ô':
-                        return 'shift+alt+j'
-
-                    case '':
-                        return 'shift+alt+k'
-
-                    case 'Ò':
-                        return 'shift+alt+l'
-
-                    case 'Â':
-                        return 'shift+alt+m'
-
-                    case '˜':
-                        return 'shift+alt+n'
-
-                    case 'Ø':
-                        return 'shift+alt+o'
-
-                    case '∏':
-                        return 'shift+alt+p'
-
-                    case 'Œ':
-                        return 'shift+alt+q'
-
-                    case '‰':
-                        return 'shift+alt+r'
-
-                    case 'Í':
-                        return 'shift+alt+s'
-
-                    case 'ˇ':
-                        return 'shift+alt+t'
-
-                    case '¨':
-                        return 'shift+alt+u'
-
-                    case '◊':
-                        return 'shift+alt+v'
-
-                    case '„':
-                        return 'shift+alt+w'
-
-                    case '˛':
-                        return 'shift+alt+x'
-
-                    case 'Á':
-                        return 'shift+alt+y'
-
-                    case '¸':
-                        return 'shift+alt+z'
-
-                    default:
-                        return key
-                }
-
-            }).bind(this))()
-            if (key)
-            {
-                return this.emit('key',key)
-            }
-            else
-            {
-                return lfc('key?',key,data,data.length,data[0])
-            }
+            return lfc('unhandled?',data,data.length,data[0],data.slice(1))
         }
     }
 

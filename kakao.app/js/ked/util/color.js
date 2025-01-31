@@ -59,6 +59,15 @@ class color
 
         return `\x1b[38;2;${r};${g};${b}m`
     }
+
+    static ul_rgb (c)
+    {
+        var b, g, r
+
+        var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
+
+        return `\x1b[58;2;${r};${g};${b}m`
+    }
 }
 
 export default color;
