@@ -231,6 +231,16 @@ class util
     
         rng[1] == rng[3] and 0 <= rng[1] < lines.length and rng[0] == 0 and rng[2] >= lines[rng[1]].length
 
+    @rangeOfClosestChunkToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if util.isInvalidLineIndex lines y
+         
+        if r = kstr.rangeOfClosestChunk lines[y] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
+        
     @rangeOfClosestWordToPos: lines pos ->
         
         [x y] = pos

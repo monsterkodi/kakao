@@ -37,7 +37,6 @@ export default {allCursors:function ()
 {
     var c, cursors
 
-    this.deselect()
     cursors = this.allCursors()
     var list = _k_.list(cursors)
     for (var _b_ = 0; _b_ < list.length; _b_++)

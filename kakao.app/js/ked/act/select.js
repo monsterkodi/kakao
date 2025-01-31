@@ -87,28 +87,18 @@ export default {select:function (from, to)
 },selectNextHighlight:function ()
 {},selectChunk:function (x, y)
 {
-    var line, re, rs
+    var range
 
-    var _c_ = util.pos(x,y); x = _c_[0]; y = _c_[1]
-
-    if (this.isInvalidLineIndex(y))
+    if (range = util.rangeOfClosestChunkToPos(this.s.lines,util.pos(x,y)))
     {
-        return
-    }
-    line = this.s.lines[y]
-    var _d_ = kstr.rangeOfClosestChunk(line,x); rs = _d_[0]; re = _d_[1]
-
-    if (rs >= 0 && re >= 0)
-    {
-        this.select([rs,y],[re + 1,y])
+        this.select(range.slice(0, 2),range.slice(2, 4))
     }
     return this
 },selectWord:function (x, y)
 {
-    var pos, range
+    var range
 
-    pos = util.pos(x,y)
-    if (range = util.rangeOfClosestWordToPos(this.s.lines,pos))
+    if (range = util.rangeOfClosestWordToPos(this.s.lines,util.pos(x,y)))
     {
         this.select(range.slice(0, 2),range.slice(2, 4))
     }
@@ -132,9 +122,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _e_ = 0; _e_ < list.length; _e_++)
+    for (var _c_ = 0; _c_ < list.length; _c_++)
     {
-        selection = list[_e_]
+        selection = list[_c_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue
@@ -150,9 +140,9 @@ export default {select:function (from, to)
     var highlight
 
     var list = _k_.list(this.s.highlights)
-    for (var _f_ = 0; _f_ < list.length; _f_++)
+    for (var _d_ = 0; _d_ < list.length; _d_++)
     {
-        highlight = list[_f_]
+        highlight = list[_d_]
         if (highlight[1] === y)
         {
             return true
@@ -164,9 +154,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _10_ = 0; _10_ < list.length; _10_++)
+    for (var _e_ = 0; _e_ < list.length; _e_++)
     {
-        selection = list[_10_]
+        selection = list[_e_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue

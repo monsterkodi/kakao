@@ -204,6 +204,7 @@ editor = (function ()
                     {
                         if (mods === 'alt')
                         {
+                            this.state.clearCursorsHighlightsAndSelections()
                             this.state.selectChunk(x,y)
                         }
                         else

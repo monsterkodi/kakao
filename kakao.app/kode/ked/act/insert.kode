@@ -39,10 +39,11 @@ export
         lines = @s.lines.asMutable()
         
         for ci in cursors.length-1..0
+            
             cursor = cursors[ci]
         
             if text == '\t'
-                text = lpad 4-@s.cursor[0]%4 ' '
+                text = lpad 4-cursor[0]%4 ' '
             
             [x y] = cursor
                 

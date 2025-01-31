@@ -101,15 +101,8 @@ export
     
     selectChunk: x y ->
         
-        [x y] = util.pos x y
-        
-        ⮐ if @isInvalidLineIndex y
-        
-        line = @s.lines[y]
-        
-        [rs re] = kstr.rangeOfClosestChunk line x
-        if rs >= 0 and re >= 0
-            @select [rs y] [re+1 y]
+        if range = util.rangeOfClosestChunkToPos @s.lines util.pos(x y)
+            @select range[0..1] range[2..3]
         @
 
     # 000   000   0000000   00000000   0000000    
@@ -120,9 +113,7 @@ export
     
     selectWord: x y ->
         
-        pos = util.pos x y
-        
-        if range = util.rangeOfClosestWordToPos @s.lines pos
+        if range = util.rangeOfClosestWordToPos @s.lines util.pos(x y)
             @select range[0..1] range[2..3]
         @
         

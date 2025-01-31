@@ -155,6 +155,7 @@ function editor extends events
                     
                     if count == 2
                         if mods == 'alt'
+                            @state.clearCursorsHighlightsAndSelections()
                             @state.selectChunk x y
                         else
                             @state.selectWord x y

@@ -400,6 +400,25 @@ class util
         return rng[1] === rng[3] && (0 <= rng[1] && rng[1] < lines.length) && rng[0] === 0 && rng[2] >= lines[rng[1]].length
     }
 
+    static rangeOfClosestChunkToPos (lines, pos)
+    {
+        var r, x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        if (util.isInvalidLineIndex(lines,y))
+        {
+            return
+        }
+        if (r = kstr.rangeOfClosestChunk(lines[y],x))
+        {
+            if ((0 <= r[0] && r[0] < r[1]))
+            {
+                return [r[0],y,r[1],y]
+            }
+        }
+    }
+
     static rangeOfClosestWordToPos (lines, pos)
     {
         var r, x, y

@@ -37,7 +37,7 @@ export default {insert:function (text)
         cursor = cursors[ci]
         if (text === '\t')
         {
-            text = _k_.lpad(4 - this.s.cursor[0] % 4,' ')
+            text = _k_.lpad(4 - cursor[0] % 4,' ')
         }
         var _d_ = cursor; x = _d_[0]; y = _d_[1]
 
