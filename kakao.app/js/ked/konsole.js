@@ -43,11 +43,13 @@ konsole = (function ()
         return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
     }
 
-    konsole.prototype["onMouse"] = function (event, col, row, button, mods, count)
+    konsole.prototype["onMouse"] = function (type, sx, sy)
     {
-        var _a_ = this.cells.posForScreen(col,row); col = _a_[0]; row = _a_[1]
+        var col, row
 
-        switch (event)
+        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
+
+        switch (type)
         {
             case 'press':
                 if (row === 0)

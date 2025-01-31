@@ -33,11 +33,11 @@ function konsole extends editor
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event col row button mods count =>
+    onMouse: type sx sy =>
         
-        [col row] = @cells.posForScreen col row
+        [col row] = @cells.posForScreen sx sy
         
-        switch event
+        switch type
             
             'press'
             

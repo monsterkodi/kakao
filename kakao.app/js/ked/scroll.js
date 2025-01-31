@@ -21,13 +21,13 @@ scroll = (function ()
         this.cells = new cells(screen)
     }
 
-    scroll.prototype["onMouse"] = function (event, sx, sy, button, mods, count)
+    scroll.prototype["onMouse"] = function (type, sx, sy)
     {
         var col, row
 
         var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
 
-        switch (event)
+        switch (type)
         {
             case 'press':
                 if (this.cells.isInsideScreen(sx,sy))

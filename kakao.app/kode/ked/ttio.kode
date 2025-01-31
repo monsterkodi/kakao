@@ -69,35 +69,16 @@ function TTIO extends events
     restore: => @write '\x1b8'
 
     onResize: => @emit 'resize' @cols() @rows()
-    
-    emitMousePress: col row button mods='' =>
-        
-        @lastClick ?= 
-            row:    row
-            col:    col
-            count:  0
-            time:   process.hrtime()
-        
-        if @lastClick.col == col and @lastClick.row == row
-            diff = process.hrtime(@lastClick.time)
-            @lastClick.time = process.hrtime()
-            if diff[0] < 1 and diff[1] < 500000000
-                @lastClick.count += 1
-            else    
-                @lastClick.count = 1
-        else
-           @lastClick.col   = col 
-           @lastClick.row   = row
-           @lastClick.count = 1
-           @lastClick.time  = process.hrtime()
-                
-        @emit 'mouse' 'press' col row button mods @lastClick.count
-        
+            
     # 000   000  000  000000000  000000000  000   000  
     # 000  000   000     000        000      000 000   
     # 0000000    000     000        000       00000    
     # 000  000   000     000        000        000     
     # 000   000  000     000        000        000     
+    #
+    # https://sw.kovidgoyal.net/kitty/keyboard-protocol/
+    #
+    # doesn't work in terminal.app
     
     parseKittyEvent: csi ->
                 
@@ -157,6 +138,81 @@ function TTIO extends events
         type:   type
         char:   char
         
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    parseMouseEvent: csi =>
+                
+        [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
+        x = col-1
+        y = row-1
+        
+        event =
+            type:   'release'
+            x:      x
+            y:      y
+        
+        mods = []
+        mods.push 'shift' if code & 0b00100
+        mods.push 'alt'   if code & 0b01000
+        mods.push 'ctrl'  if code & 0b10000
+        
+        event.mods = mods.join '+' if valid mods
+                
+        if csi.endsWith 'M'
+            
+            event.type = switch code & 0b11100000
+                32  ➜ (code & 0b11 == 3) ? 'move' : 'drag'
+                64  ➜ 'wheel'
+                0   ➜ 'press'  
+                
+        if event.type == 'wheel'
+            
+            event.dir = switch code & 0b11
+                0 ➜ 'up'
+                1 ➜ 'down'
+                2 ➜ 'left'
+                3 ➜ 'right'
+                
+        else if (code & 0b11) != 3
+            
+            event.button = switch code & 0b11
+                0 ➜ 'left'
+                1 ➜ 'middle'
+                2 ➜ 'right'
+                
+        event
+            
+    emitMouseEvent: event =>
+        
+        if event.type == 'press'
+        
+            @lastClick ?= 
+                x:      event.x
+                y:      event.y
+                count:  0
+                time:   process.hrtime()
+            
+            if @lastClick.y == event.x and @lastClick.x == event.y
+                diff = process.hrtime @lastClick.time
+                @lastClick.time = process.hrtime()
+                if diff[0] < 1 and diff[1] < 500000000
+                    @lastClick.count += 1
+                else    
+                    @lastClick.count = 1
+            else
+               @lastClick.y     = event.x
+               @lastClick.x     = event.y
+               @lastClick.count = 1
+               @lastClick.time  = process.hrtime()
+               
+            event.count = @lastClick.count
+                    
+        @emit 'mouse' event.type event.x event.y event
+            
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  
     # 000   000  000000000     000     000000000  
@@ -201,81 +257,12 @@ function TTIO extends events
                     @onData data[6..]
                 ⮐
                             
-            if csi.startsWith '<'
+            if csi.startsWith('<') and csi[-1] in 'Mm'
                 
-                [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
-                x = col-1
-                y = row-1
-                if csi.endsWith 'M'
-                    # lfc code
-                    switch code
-                        0  ➜ ⮐ @emitMousePress x y 'left' 
-                        2  ➜ ⮐ @emitMousePress x y 'right'
-                        4  ➜ ⮐ @emitMousePress x y 'left' 'shift'
-                        8  ➜ ⮐ @emitMousePress x y 'left' 'alt'
-                        16 ➜ ⮐ @emitMousePress x y 'left' 'ctrl'
-                        24 ➜ ⮐ @emitMousePress x y 'left' 'ctrl+alt'
-                        
-                        32 ➜ ⮐ @emit 'mouse' 'drag'  x y 'left'  
-                        34 ➜ ⮐ @emit 'mouse' 'drag'  x y 'right' 
-                        36 ➜ ⮐ @emit 'mouse' 'drag'  x y 'left'  'shift'
-                        40 ➜ ⮐ @emit 'mouse' 'drag'  x y 'left'  'alt'
-                        48 ➜ ⮐ @emit 'mouse' 'drag'  x y 'left'  'ctrl'
-                        
-                        35 ➜ ⮐ @emit 'mouse' 'move'  x y '' 
-                        39 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'shift'
-                        51 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'ctrl'
-                        43 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'alt'
-                        47 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'shift+alt'
-                        55 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'shift+ctrl'
-                        59 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'ctrl+alt'
-                        63 ➜ ⮐ @emit 'mouse' 'move'  x y '' 'shift+ctrl+alt'
-                        
-                        64 ➜ ⮐ @emit 'wheel' x y  'up'   
-                        68 ➜ ⮐ @emit 'wheel' x y  'up' 'shift'  
-                        72 ➜ ⮐ @emit 'wheel' x y  'up' 'alt'  
-                        76 ➜ ⮐ @emit 'wheel' x y  'up' 'shift+alt'  
-                        84 ➜ ⮐ @emit 'wheel' x y  'up' 'shift+ctrl'  
-                        88 ➜ ⮐ @emit 'wheel' x y  'up' 'ctrl+alt'  
-                        92 ➜ ⮐ @emit 'wheel' x y  'up' 'shift+ctrl+alt'
-                        
-                        65 ➜ ⮐ @emit 'wheel' x y  'down' 
-                        69 ➜ ⮐ @emit 'wheel' x y  'down' 'shift'  
-                        73 ➜ ⮐ @emit 'wheel' x y  'down' 'alt'  
-                        77 ➜ ⮐ @emit 'wheel' x y  'down' 'shift+alt'  
-                        85 ➜ ⮐ @emit 'wheel' x y  'down' 'shift+ctrl'  
-                        89 ➜ ⮐ @emit 'wheel' x y  'down' 'ctrl+alt'  
-                        93 ➜ ⮐ @emit 'wheel' x y  'down' 'shift+ctrl+alt'
-                        
-                        66 ➜ ⮐ @emit 'wheel' x y  'left' 
-                        70 ➜ ⮐ @emit 'wheel' x y  'left' 'shift'  
-                        74 ➜ ⮐ @emit 'wheel' x y  'left' 'alt'  
-                        78 ➜ ⮐ @emit 'wheel' x y  'left' 'shift+alt'  
-                        86 ➜ ⮐ @emit 'wheel' x y  'left' 'shift+ctrl'  
-                        90 ➜ ⮐ @emit 'wheel' x y  'left' 'ctrl+alt'  
-                        94 ➜ ⮐ @emit 'wheel' x y  'left' 'shift+ctrl+alt'
-                        
-                        67 ➜ ⮐ @emit 'wheel' x y  'right'
-                        71 ➜ ⮐ @emit 'wheel' x y  'right' 'shift'  
-                        75 ➜ ⮐ @emit 'wheel' x y  'right' 'alt'   
-                        79 ➜ ⮐ @emit 'wheel' x y  'right' 'shift+alt'   
-                        87 ➜ ⮐ @emit 'wheel' x y  'right' 'shift+ctrl'   
-                        91 ➜ ⮐ @emit 'wheel' x y  'right' 'ctrl+alt'  
-                        95 ➜ ⮐ @emit 'wheel' x y  'right' 'shift+ctrl+alt'
-                        
-                    lfc 'mouse press?' csi
-                    ⮐ 
-                else if csi.endsWith 'm'
-                    switch code
-                        0  ➜ ⮐ @emit 'mouse' 'release' x y 'left'
-                        2  ➜ ⮐ @emit 'mouse' 'release' x y 'right'
-                        4  ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'shift'
-                        8  ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'alt'
-                        16 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl'
-                        24 ➜ ⮐ @emit 'mouse' 'release' x y 'left' 'ctrl+alt'
-                        
-                    lfc 'mouse release?' csi
-                    ⮐ 
+                if event = @parseMouseEvent csi
+                    ⮐ @emitMouseEvent event
+                    
+                lfc 'unhandled?' csi
                 
         else if esc
             

@@ -33,7 +33,6 @@ KED = (function ()
         this["redraw"] = this["redraw"].bind(this)
         this["onKonsoleRows"] = this["onKonsoleRows"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
-        this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onPaste"] = this["onPaste"].bind(this)
         this["saveAs"] = this["saveAs"].bind(this)
@@ -144,31 +143,30 @@ KED = (function ()
         return this.redraw()
     }
 
-    KED.prototype["onMouse"] = function (event, col, row, button, mods, count)
+    KED.prototype["onMouse"] = function (type, sx, sy, event)
     {
         var handler
 
-        var list = _k_.list(this.mouseHandlers)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
+        if (type === 'wheel')
         {
-            handler = list[_a_]
-            if (handler.onMouse(event,col,row,button,mods,count))
+            var list = _k_.list(this.wheelHandlers)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
             {
-                break
+                handler = list[_a_]
+                handler.onWheel(sx,sy,event.dir,event.mods)
             }
         }
-        return this.redraw()
-    }
-
-    KED.prototype["onWheel"] = function (col, row, dir, mods)
-    {
-        var handler
-
-        var list = _k_.list(this.wheelHandlers)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
+        else
         {
-            handler = list[_a_]
-            handler.onWheel(col,row,dir,mods)
+            var list1 = _k_.list(this.mouseHandlers)
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                handler = list1[_b_]
+                if (handler.onMouse(type,sx,sy,event))
+                {
+                    break
+                }
+            }
         }
         return this.redraw()
     }

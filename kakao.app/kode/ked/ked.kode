@@ -128,21 +128,21 @@ function KED
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event col row button mods count =>
+    onMouse: type sx sy event =>
         
-        for handler in @mouseHandlers
-            if handler.onMouse event col row button mods count
-                break
+        if type == 'wheel'
+            
+            for handler in @wheelHandlers
+                handler.onWheel sx sy event.dir event.mods
+        
+        else
+        
+            for handler in @mouseHandlers
+                if handler.onMouse type sx sy event
+                    break
                 
         @redraw()
                 
-    onWheel: col row dir mods =>
-        
-        for handler in @wheelHandlers
-            handler.onWheel col row dir mods
-            
-        @redraw()
-            
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    
