@@ -42,11 +42,83 @@ export
     # 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
     
-    highlightSelectionOrAddNextHighlightToSelection: ->
+    selectWordAtCursor_highlightSelection_selectAllHighlights: ->
         
-        if valid @s.highlights ➜ ⮐ @addNextHighlightToSelection()
+        if valid @s.highlights 
+            pos = @mainCursor()
+            if @s.selections.length < @s.highlights.length
+                @selectAllHighlights()
+            else
+                @moveCursorToNextHighlight pos
+            ⮐ 
+        
+        @selectWordAtCursor_highlightSelection()
+        @selectAllHighlights()
+    
+    highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight: ->
+        
+        if valid @s.highlights 
+            @deselectCursorHighlight()
+            @moveCursorToNextHighlight()
+            ⮐ 
             
-        @highlightSelectionOrWordAtCursor()
+        @selectWordAtCursor_highlightSelection()
+        @deselectCursorHighlight()
+    
+    selectWordAtCursor_highlightSelection_selectNextHighlight: ->
+        
+        if valid @s.highlights 
+            @set 'cursors' []
+            @selectNextHighlight()
+            
+        @selectWordAtCursor_highlightSelection()
+    
+    selectWordAtCursor_highlightSelection_addNextHighlightToSelection: ->
+        
+        if valid @s.highlights ➜ ⮐ @addCurrentOrNextHighlightToSelection()
+            
+        @selectWordAtCursor_highlightSelection()
+        
+    deselectCursorHighlight: ->
+        
+        ⮐ if empty @s.highlights
+        ⮐ if empty @s.selections
+        
+        if prev = util.prevSpanBeforePos @s.highlights @s.cursor
+            @deselectSpan prev
+            @setCursor util.endOfSpan(prev)
+        else
+            lf 'no prev'
+
+    selectAllHighlights: ->
+        
+        ⮐ if empty @s.highlights
+        
+        selections = []
+        for span in @s.highlights
+            selections.push util.rangeForSpan(span)
+            @addCursor util.endOfSpan(span)
+        
+        @set 'selections' selections
+                    
+    selectNextHighlight: ->
+        
+        ⮐ if empty @s.highlights
+        
+        if next = util.nextSpanAfterPos @s.highlights @s.cursor
+            @selectSpan next
+            @setCursor util.endOfSpan(next)
+                        
+    addCurrentOrNextHighlightToSelection: ->            
+        
+        if prev = util.prevSpanBeforePos @s.highlights @s.cursor
+            if not util.rangesContainSpan @s.selections prev
+                lf 'addSpanToSelection' @s.cursor prev
+                @addSpanToSelection prev
+                @addCursor util.endOfSpan(prev)
+                ⮐ 
+                
+        @addNextHighlightToSelection()
         
     addNextHighlightToSelection: ->
         
@@ -55,7 +127,30 @@ export
         if next = util.nextSpanAfterPos @s.highlights @s.cursor
             @addSpanToSelection next
             @addCursor util.endOfSpan(next)
-            # @setCursor util.endOfSpan(next)
+            
+    moveCursorToNextHighlight: pos ->
+        
+        ⮐ if empty @s.highlights
+        
+        pos ?= @s.cursor
+        
+        if next = util.nextSpanAfterPos @s.highlights pos
+            @setCursor util.endOfSpan(next)
+
+    selectSpan: span ->
+        
+        @set 'selections' [util.rangeForSpan(span)]
+        
+    deselectSpan: span ->
+        
+        rng = util.rangeForSpan span
+        
+        selections = @s.selections.asMutable()
+        for selection,index in selections
+            if util.isSameRange selection rng
+                selections.splice index 1
+                break
+        @set 'selections' selections
             
     addSpanToSelection: span ->
         
@@ -65,7 +160,7 @@ export
         
         @set 'selections' selections
                 
-    highlightSelectionOrWordAtCursor: ->
+    selectWordAtCursor_highlightSelection: ->
         
         @selectWord @s.cursor if empty @s.selections
         
@@ -90,8 +185,6 @@ export
         spans = util.lineSpansForText lines text
 
         @set 'highlights' spans
-        
-    selectNextHighlight: ->
         
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   

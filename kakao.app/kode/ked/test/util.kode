@@ -90,9 +90,23 @@ use ../util ◆ util
     ▸ isPosAfterSpan
     
         util.isPosAfterSpan [0 0] [1 0 5] ▸ false
+        util.isPosAfterSpan [4 0] [1 0 5] ▸ false
         util.isPosAfterSpan [5 0] [1 0 5] ▸ true
         util.isPosAfterSpan [6 0] [1 0 5] ▸ true
         util.isPosAfterSpan [0 1] [1 0 5] ▸ true
+        
+    ▸ isPosBeforeSpan
+        
+        util.isPosBeforeSpan [0 0] [1 0 3] ▸ true
+        util.isPosBeforeSpan [1 0] [1 0 3] ▸ false
+        util.isPosBeforeSpan [3 1] [1 0 3] ▸ false
+        
+    ▸ isPosInsideSpan
+    
+        util.isPosInsideSpan [0 0] [1 0 3] ▸ false
+        util.isPosInsideSpan [1 0] [1 0 3] ▸ true
+        util.isPosInsideSpan [2 0] [1 0 3] ▸ true
+        util.isPosInsideSpan [3 0] [1 0 3] ▸ false
         
     ▸ nextSpanAfterPos
     
@@ -119,6 +133,20 @@ use ../util ◆ util
         util.nextSpanAfterPos spans [0 0] ▸ [1 4 3]
         util.nextSpanAfterPos spans [3 4] ▸ [3 4 5]
         util.nextSpanAfterPos spans [5 4] ▸ [1 4 3]
+        
+    ▸ prevSpanBeforePos
+    
+        spans = [[1 0 3] [6 0 8] [2 1 5]]
+        
+        util.prevSpanBeforePos spans [0 0] ▸ [2 1 5]
+        util.prevSpanBeforePos spans [1 0] ▸ [2 1 5]
+        util.prevSpanBeforePos spans [2 0] ▸ [2 1 5]
+        util.prevSpanBeforePos spans [3 0] ▸ [1 0 3]
+        util.prevSpanBeforePos spans [4 0] ▸ [1 0 3]
+        util.prevSpanBeforePos spans [6 0] ▸ [1 0 3]
+        util.prevSpanBeforePos spans [7 0] ▸ [1 0 3]
+        util.prevSpanBeforePos spans [9 0] ▸ [6 0 8]
+        util.prevSpanBeforePos spans [0 1] ▸ [6 0 8]
         
     ▸ normalizePositions
     

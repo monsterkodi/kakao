@@ -75,6 +75,9 @@ class util
     # 0000000   00000000   000000000  000 0 000  
     #      000  000        000   000  000  0000  
     # 0000000   000        000   000  000   000  
+ 
+    @isSameSpan:  a b -> a eql b
+    @isSameRange: a b -> a eql b
     
     @isPosInsideSpan: pos span ->
 
@@ -104,6 +107,17 @@ class util
             if util.isPosAfterSpan pos span
                 if index+1 < spans.length and (util.isPosBeforeSpan(pos spans[index+1]) or util.isPosInsideSpan(pos spans[index+1]))
                     ⮐ spans[index+1]
+
+    @prevSpanBeforePos: spans pos ->
+        
+        ⮐ if empty spans
+        ⮐ spans[-1] if util.isPosBeforeSpan pos spans[0]
+        ⮐ spans[-1] if util.isPosInsideSpan pos spans[0]
+            
+        for index in spans.length-1..0
+            span = spans[index]
+            if util.isPosAfterSpan pos span
+                ⮐ span
                     
     @normalizeSpans: spans ->
         
@@ -119,19 +133,13 @@ class util
     # 000   000  000   000  000  0000  000   000  000            000  
     # 000   000  000   000  000   000   0000000   00000000  0000000   
     
-    @numFullLinesInRange: lines rng ->
+    @rangesContainSpan: rngs span -> @rangesContainRange rngs util.rangeForSpan(span)
+    @rangesContainRange: rngs range -> 
         
-        d = rng[3] - rng[1]
-        
-        if d == 0 
-            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
-        
-        n = 0
-        n += 1   if rng[0] == 0 
-        n += d-2 if d > 1
-        n += 1   if rng[2] == lines[rng[3]].length
-        n
-            
+        for rng in rngs
+            ⮐ true if rng eql range
+        false
+                
     @normalizeRanges: rngs ->
         
         ⮐ [] if empty rngs
@@ -216,6 +224,19 @@ class util
             indices = indices.concat @lineIndicesForRange(rng)
             
         indices
+        
+    @numFullLinesInRange: lines rng ->
+        
+        d = rng[3] - rng[1]
+        
+        if d == 0 
+            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
+        
+        n = 0
+        n += 1   if rng[0] == 0 
+        n += d-2 if d > 1
+        n += 1   if rng[2] == lines[rng[3]].length
+        n
         
     @textFromBolToPos:  lines pos -> lines[pos[1]][0...pos[0]]
         

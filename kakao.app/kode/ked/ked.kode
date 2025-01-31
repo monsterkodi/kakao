@@ -25,10 +25,11 @@ function KED
 
         if args.version ➜ log @version; process.exit 0
             
+        process.on 'uncaughtException' @onException
+            
         @konsoleRows = 0
                     
         @t = new ttio
-        @t.hideCursor()
         
         @logfile = new logfile
         
@@ -65,7 +66,21 @@ function KED
             @t.setCursor 0 0
             @redraw()
         
-    @run: -> new KED()
+    # 00000000   000   000  000   000  
+    # 000   000  000   000  0000  000  
+    # 0000000    000   000  000 0 000  
+    # 000   000  000   000  000  0000  
+    # 000   000   0000000   000   000  
+    
+    @run: -> 
+
+            ked = new KED()
+            
+    onException: err =>
+
+        @t.quit()
+        error err
+        process.exit 1
     
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -155,7 +170,7 @@ function KED
         
         switch key
             
-            'alt+q' 'ctrl+q'             ➜ ⮐ @t.quit()
+            'alt+q' 'ctrl+q'             ➜ @t.quit(); process.exit(0)
             'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
@@ -207,6 +222,6 @@ function KED
         @screen.render()
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        
+
 export KED.run
 

@@ -14,6 +14,8 @@ function TTIO extends events
         
         @store()
         
+        @hideCursor()
+        
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
 
         @write '\x1b[?1000h'    # mouse events
@@ -38,11 +40,10 @@ function TTIO extends events
     quit: =>
         
         @clear()
-        @write '\x1b[?1049l' # scrollback screen buffer
         @write '\x1b[<u'     # end kitty keyboard protocol
+        @write '\x1b[?1049l' # scrollback screen buffer
         @showCursor()
         @restore()
-        process.exit 0
     
     clear: =>
         @write '\x1b[2J' # clear screen

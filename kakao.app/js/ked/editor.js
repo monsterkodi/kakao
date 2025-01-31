@@ -496,20 +496,26 @@ editor = (function ()
                 return this.state.expandCursors('up')
 
             case 'cmd+z':
-                return this.state.undo()
+                return this.undo()
 
             case 'cmd+y':
             case 'shift+cmd+z':
-                return this.state.redo()
+                return this.redo()
 
             case 'cmd+j':
-                return this.state.joinLines()
-
-            case 'cmd+e':
-                return this.state.highlightSelectionOrAddNextHighlightToSelection()
+                return this.join.Lines()
 
             case 'cmd+g':
-                return this.state.selectNextHighlight()
+                return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()
+
+            case 'cmd+d':
+                return this.state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+
+            case 'cmd+e':
+                return this.state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+
+            case 'alt+cmd+d':
+                return this.state.selectWordAtCursor_highlightSelection_selectAllHighlights()
 
             case 'esc':
                 return this.state.clearCursorsHighlightsAndSelections()

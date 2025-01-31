@@ -199,7 +199,6 @@ state = (function ()
     {
         var proc
 
-        lf('copy')
         if (_k_.empty(this.s.selections))
         {
             return

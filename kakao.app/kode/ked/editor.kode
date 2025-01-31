@@ -336,14 +336,17 @@ function editor extends events
             'cmd+down'                  ➜ ⮐ @state.expandCursors 'down'
             'cmd+up'                    ➜ ⮐ @state.expandCursors 'up'
                
-            'cmd+z'                     ➜ ⮐ @state.undo()
-            'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
+            'cmd+z'                     ➜ ⮐ @undo()
+            'cmd+y' 'shift+cmd+z'       ➜ ⮐ @redo()
                         
-            'cmd+j'                     ➜ ⮐ @state.joinLines()
+            'cmd+j'                     ➜ ⮐ @join.Lines()
             
-            'cmd+e'                     ➜ ⮐ @state.highlightSelectionOrAddNextHighlightToSelection()
-            'cmd+g'                     ➜ ⮐ @state.selectNextHighlight()
-                                                    
+            'cmd+g'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
+            'cmd+d'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+            'cmd+e'                     ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+            
+            'alt+cmd+d'                 ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectAllHighlights()
+            
             'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
 
         if valid event.char

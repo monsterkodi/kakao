@@ -39,19 +39,20 @@ KED = (function ()
         this["saveFile"] = this["saveFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
+        this["onException"] = this["onException"].bind(this)
         this.version = '0.0.2'
         if (args.version)
         {
             console.log(this.version)
             process.exit(0)
         }
+        process.on('uncaughtException',this.onException)
         this.konsoleRows = 0
         this.t = new ttio
-        this.t.hideCursor()
         this.logfile = new logfile
         global.lfc = (function (...args)
         {
-            var _35_64_
+            var _36_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -91,7 +92,16 @@ KED = (function ()
 
     KED["run"] = function ()
     {
-        return new KED()
+        var ked
+
+        return ked = new KED()
+    }
+
+    KED.prototype["onException"] = function (err)
+    {
+        this.t.quit()
+        console.error(err)
+        return process.exit(1)
     }
 
     KED.prototype["reloadFile"] = function ()
@@ -179,8 +189,9 @@ KED = (function ()
         {
             case 'alt+q':
             case 'ctrl+q':
-                return this.t.quit()
-
+                this.t.quit()
+                process.exit(0)
+                break
             case 'alt+r':
             case 'ctrl+r':
             case 'cmd+r':

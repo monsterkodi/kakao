@@ -147,7 +147,7 @@ function state
     #  0000000   0000000   000           000     
     
     copy: =>
-        lf 'copy'
+        # lf 'copy'
         ⮐ if empty @s.selections
             
         proc = child_process.spawn 'pbcopy'
