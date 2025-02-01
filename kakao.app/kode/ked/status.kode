@@ -78,8 +78,9 @@ function status
         # draw the right edge of the file name section
         
         add '' 'status' 'status_dark'
+        add ' ' null 'status_dark'
         
-        # draw the selection count if there are selections
+        # draw the selection count 
         
         if @state.s.selections.length
 
@@ -87,8 +88,27 @@ function status
              
             for i in 0...sel.length
                 add sel[i] (i<sel.length-4) ? 'status_sel' : 'status_fg_dim' 'status_dark'
-                                        
+
+        # draw the cursor count 
+            
+        if @state.s.cursors.length > 1
+
+            cur = " #{@state.s.cursors.length} cur "
+             
+            for i in 0...cur.length
+                add cur[i] (i<cur.length-4) ? 'status_cur' : 'status_fg_dim' 'status_dark'
+
+        # draw the highlight count
+                
+        if @state.s.highlights.length
+
+            hil = " #{@state.s.highlights.length} hil "
+             
+            for i in 0...hil.length
+                add hil[i] (i<hil.length-4) ? 'status_hil' : 'status_fg_dim' 'status_dark'
+                
         # draw the time if there's enough space
+        
         if cols-dtl-2 >= x
             # fill the space up to the time
             for ci in x...cols-dtl-2

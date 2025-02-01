@@ -121,15 +121,15 @@ export default {allCursors:function ()
     return this.set('cursors',[mc],0)
 },singleCursorAtIndentOrStartOfLine:function ()
 {
-    var indent, lines, mc, rng
+    var ind, lines, mc, rng
 
     lines = this.allLines()
     mc = this.mainCursor()
     rng = util.lineRangeAtPos(lines,mc)
-    indent = util.lineIndentAtPos(lines,mc)
-    if (indent < mc[0])
+    ind = util.lineIndentAtPos(lines,mc)
+    if (ind < mc[0])
     {
-        mc[0] = indent
+        mc[0] = ind
     }
     else
     {
@@ -137,6 +137,53 @@ export default {allCursors:function ()
     }
     this.deselect()
     return this.set('cursors',[mc],0)
+},moveCursorsToIndentOrStartOfLines:function ()
+{
+    var cur, cursors, ind, lines
+
+    cursors = this.allCursors()
+    lines = this.allLines()
+    var list = _k_.list(cursors)
+    for (var _e_ = 0; _e_ < list.length; _e_++)
+    {
+        cur = list[_e_]
+        ind = util.lineIndentAtPos(lines,cur)
+        if (ind < cur[0])
+        {
+            cur[0] = ind
+        }
+        else
+        {
+            cur[0] = 0
+        }
+    }
+    return this.set('cursors',cursors)
+},moveCursorsToEndOfLines:function ()
+{
+    var cur, cursors, lines
+
+    cursors = this.allCursors()
+    lines = this.allLines()
+    var list = _k_.list(cursors)
+    for (var _f_ = 0; _f_ < list.length; _f_++)
+    {
+        cur = list[_f_]
+        cur[0] = util.lineRangeAtPos(lines,cur)[2]
+    }
+    return this.set('cursors',cursors)
+},isAnyCursorInLine:function (y)
+{
+    var c
+
+    var list = _k_.list(this.allCursors())
+    for (var _10_ = 0; _10_ < list.length; _10_++)
+    {
+        c = list[_10_]
+        if (c[1] === y)
+        {
+            return true
+        }
+    }
 },moveCursorAndSelect:function (dir)
 {
     var mc, selection, selections

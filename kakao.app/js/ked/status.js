@@ -24,7 +24,7 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var add, ci, colno, cols, cursor, dt, dtl, dty, fg, fnl, i, lastDot, lastSlash, rcol, rdo, sel, set, x, y
+        var add, ci, colno, cols, cur, cursor, dt, dtl, dty, fg, fnl, hil, i, lastDot, lastSlash, rcol, rdo, sel, set, x, y
 
         x = 0
         y = this.cells.rows - 1
@@ -85,6 +85,7 @@ status = (function ()
         rcol = (rdo ? 'status_redo' : (dty ? 'status_dirty' : 'status_dark'))
         add((rdo ? '' : ''),rcol,'status')
         add('','status','status_dark')
+        add(' ',null,'status_dark')
         if (this.state.s.selections.length)
         {
             sel = ` ${this.state.s.selections.length} sel `
@@ -93,14 +94,30 @@ status = (function ()
                 add(sel[i],((i < sel.length - 4) ? 'status_sel' : 'status_fg_dim'),'status_dark')
             }
         }
+        if (this.state.s.cursors.length > 1)
+        {
+            cur = ` ${this.state.s.cursors.length} cur `
+            for (var _10_ = i = 0, _11_ = cur.length; (_10_ <= _11_ ? i < cur.length : i > cur.length); (_10_ <= _11_ ? ++i : --i))
+            {
+                add(cur[i],((i < cur.length - 4) ? 'status_cur' : 'status_fg_dim'),'status_dark')
+            }
+        }
+        if (this.state.s.highlights.length)
+        {
+            hil = ` ${this.state.s.highlights.length} hil `
+            for (var _12_ = i = 0, _13_ = hil.length; (_12_ <= _13_ ? i < hil.length : i > hil.length); (_12_ <= _13_ ? ++i : --i))
+            {
+                add(hil[i],((i < hil.length - 4) ? 'status_hil' : 'status_fg_dim'),'status_dark')
+            }
+        }
         if (cols - dtl - 2 >= x)
         {
-            for (var _10_ = ci = x, _11_ = cols - dtl - 2; (_10_ <= _11_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_10_ <= _11_ ? ++ci : --ci))
+            for (var _14_ = ci = x, _15_ = cols - dtl - 2; (_14_ <= _15_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_14_ <= _15_ ? ++ci : --ci))
             {
                 add(' ',null,'status_dark')
             }
             add('','status','status_dark')
-            for (var _12_ = i = 0, _13_ = dtl; (_12_ <= _13_ ? i < dtl : i > dtl); (_12_ <= _13_ ? ++i : --i))
+            for (var _16_ = i = 0, _17_ = dtl; (_16_ <= _17_ ? i < dtl : i > dtl); (_16_ <= _17_ ? ++i : --i))
             {
                 fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
                 add(dt[i],fg,'status')
@@ -109,7 +126,7 @@ status = (function ()
         }
         else
         {
-            for (var _14_ = ci = x, _15_ = cols - dtl - 2; (_14_ <= _15_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_14_ <= _15_ ? ++ci : --ci))
+            for (var _18_ = ci = x, _19_ = cols - dtl - 2; (_18_ <= _19_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_18_ <= _19_ ? ++ci : --ci))
             {
                 add(' ',null,'status_dark')
             }

@@ -73,12 +73,13 @@ function editor extends events
             
             y = highlight[1]-view[1]
                 
-            if view[1] <= li < view[1] + @cells.rows
+            if 0 <= y < @cells.rows
                     
-            for x in highlight[0]...highlight[2]
-                @cells.set_bg x-view[0] y theme.highlight
-                
-                @cells.set_char x y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x y)+'\x1b[4:0m'
+                for x in highlight[0]...highlight[2]
+                    
+                    if 0 <= x-view[0] < @cells.cols
+                        @cells.set_bg x-view[0] y theme.highlight
+                        @cells.set_char x-view[0] y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x-view[0] y)+'\x1b[4:0m'
                     
         for selection in s.selections
             
@@ -341,8 +342,8 @@ function editor extends events
                         
             'cmd+j'                     ➜ ⮐ @state.joinLines()
 
-            'cmd+left'                  ➜ ⮐ @state.setMainCursor 0 @state.mainCursor()[1]
-            'cmd+right'                 ➜ ⮐ @state.setMainCursor @state.s.lines[@state.mainCursor()[1]].length @state.mainCursor()[1]
+            'cmd+left'                  ➜ ⮐ @state.moveCursorsToIndentOrStartOfLines()
+            'cmd+right'                 ➜ ⮐ @state.moveCursorsToEndOfLines()
             
             'cmd+g'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
             'cmd+d'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()

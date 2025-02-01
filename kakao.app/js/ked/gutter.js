@@ -17,7 +17,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, fullysel, highlighted, i, lineno, mainCursor, row, selected, y
+        var bg, c, col, fg, fullysel, hasCursor, highlighted, i, lineno, mainCursor, row, selected, y
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
@@ -25,6 +25,7 @@ gutter = (function ()
             y = this.state.s.view[1] + row
             lineno = _k_.lpad(this.cells.cols - 1,y + 1)
             lineno += ' '
+            hasCursor = this.state.isAnyCursorInLine(y)
             selected = this.state.isSelectedLine(y)
             highlighted = this.state.isHighlightedLine(y)
             fullysel = this.state.isFullySelectedLine(y)
@@ -35,8 +36,8 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === mainCursor[1] ? theme.cursor : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
-                    bg = fullysel ? theme.gutter_sel : theme.gutter
+                    fg = y === mainCursor[1] ? theme.editor_cursor_bg : hasCursor ? theme.editor_cursor_multi : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
+                    bg = fullysel ? theme.gutter_fully_selected : selected ? theme.gutter_selected : theme.gutter
                     this.cells.set(col,row,((y < this.state.s.lines.length) ? c : ' '),fg,bg)
                 }
             }

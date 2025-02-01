@@ -101,13 +101,16 @@ editor = (function ()
         {
             highlight = list[_e_]
             y = highlight[1] - view[1]
-            if ((view[1] <= li && li < view[1] + this.cells.rows))
+            if ((0 <= y && y < this.cells.rows))
             {
-            }
-            for (var _f_ = x = highlight[0], _10_ = highlight[2]; (_f_ <= _10_ ? x < highlight[2] : x > highlight[2]); (_f_ <= _10_ ? ++x : --x))
-            {
-                this.cells.set_bg(x - view[0],y,theme.highlight)
-                this.cells.set_char(x,y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x,y) + '\x1b[4:0m')
+                for (var _f_ = x = highlight[0], _10_ = highlight[2]; (_f_ <= _10_ ? x < highlight[2] : x > highlight[2]); (_f_ <= _10_ ? ++x : --x))
+                {
+                    if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
+                    {
+                        this.cells.set_bg(x - view[0],y,theme.highlight)
+                        this.cells.set_char(x - view[0],y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - view[0],y) + '\x1b[4:0m')
+                    }
+                }
             }
         }
         var list1 = _k_.list(s.selections)
@@ -505,10 +508,10 @@ editor = (function ()
                 return this.state.joinLines()
 
             case 'cmd+left':
-                return this.state.setMainCursor(0,this.state.mainCursor()[1])
+                return this.state.moveCursorsToIndentOrStartOfLines()
 
             case 'cmd+right':
-                return this.state.setMainCursor(this.state.s.lines[this.state.mainCursor()[1]].length,this.state.mainCursor()[1])
+                return this.state.moveCursorsToEndOfLines()
 
             case 'cmd+g':
                 return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()

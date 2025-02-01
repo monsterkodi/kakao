@@ -10,7 +10,9 @@ class theme
 
     static linenr = '#1a1a1a'
 
-    static gutter_sel = '#161616'
+    static gutter_fully_selected = '#161616'
+
+    static gutter_selected = '#222299'
 
     static gutter = '#0a0a0a'
 
@@ -38,7 +40,11 @@ class theme
 
     static status_empty = '#ff8844'
 
-    static status_sel = '#ff00ff'
+    static status_sel = '#8888ff'
+
+    static status_hil = '#888888'
+
+    static status_cur = '#ff0000'
 
     static status_file = '#ffff00'
 
@@ -58,9 +64,9 @@ class theme
 
     static editor_cursor_empty = '#000000'
 
-    static editor_cursor_bg = '#ffff00'
-
     static editor_cursor_multi = '#ff0000'
+
+    static editor_cursor_bg = '#ffff00'
 
     static editor_cursor_fg = '#000000'
 

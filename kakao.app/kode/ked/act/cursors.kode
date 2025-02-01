@@ -136,16 +136,45 @@ export
         lines = @allLines()
         mc    = @mainCursor()
         
-        rng    = util.lineRangeAtPos  lines mc
-        indent = util.lineIndentAtPos lines mc
+        rng   = util.lineRangeAtPos  lines mc
+        ind   = util.lineIndentAtPos lines mc
         
-        if indent < mc[0]
-            mc[0] = indent
+        if ind < mc[0]
+            mc[0] = ind
         else
             mc  = util.rangeStart rng
         
         @deselect()
         @set 'cursors' [mc] 0
+
+    moveCursorsToIndentOrStartOfLines: ->
+        
+        cursors = @allCursors()
+        lines = @allLines()
+        
+        for cur in cursors
+            ind = util.lineIndentAtPos lines cur
+            if ind < cur[0]
+                cur[0] = ind
+            else
+                cur[0] = 0
+        
+        @set 'cursors' cursors
+        
+    moveCursorsToEndOfLines: ->
+        
+        cursors = @allCursors()
+        lines = @allLines()
+        
+        for cur in cursors
+            cur[0] = util.lineRangeAtPos(lines cur)[2]
+        
+        @set 'cursors' cursors
+                
+    isAnyCursorInLine: y ->
+        
+        for c in @allCursors()
+            ⮐ true if c[1] == y
                     
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
