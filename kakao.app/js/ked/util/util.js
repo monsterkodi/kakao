@@ -102,12 +102,22 @@ class util
         return [span[0],span[1],span[2],span[1]]
     }
 
-    static rangeStart (rng)
+    static isEmptyRange (rng)
+    {
+        return rng[0] === rng[2] && rng[1] === rng[3]
+    }
+
+    static isRangeEmpty (rng)
+    {
+        return rng[0] === rng[2] && rng[1] === rng[3]
+    }
+
+    static startOfRange (rng)
     {
         return [rng[0],rng[1]]
     }
 
-    static rangeEnd (rng)
+    static endOfRange (rng)
     {
         return [rng[2],rng[3]]
     }
@@ -143,6 +153,11 @@ class util
     static isPosAfterSpan (pos, span)
     {
         return pos[1] > span[1] || (pos[1] === span[1] && pos[0] >= span[2])
+    }
+
+    static startOfSpan (s)
+    {
+        return [s[0],s[1]]
     }
 
     static endOfSpan (s)
@@ -240,6 +255,22 @@ class util
         })
     }
 
+    static rangesContainLine (rngs, lineIndex)
+    {
+        var rng
+
+        var list = _k_.list(rngs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            rng = list[_a_]
+            if ((rng[1] <= lineIndex && lineIndex <= rng[3]))
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     static rangesContainSpan (rngs, span)
     {
         return this.rangesContainRange(rngs,util.rangeForSpan(span))
@@ -304,6 +335,26 @@ class util
         {
             return a[0] !== a[2] || a[1] !== a[3]
         })
+    }
+
+    static endPositionsOfRanges (rngs)
+    {
+        return rngs.map(function (r)
+        {
+            return util.endOfRange(r)
+        })
+    }
+
+    static removeTrailingEmptyRange (rngs)
+    {
+        if (util.isEmptyRange(rngs.slice(-1)[0]))
+        {
+            return rngs.slice(0, -1)
+        }
+        else
+        {
+            return rngs
+        }
     }
 
     static mergeRanges (rngs)
@@ -445,6 +496,62 @@ class util
         return n
     }
 
+    static numLinesInRange (rng)
+    {
+        return rng[3] - rng[1] + 1
+    }
+
+    static lineRangesInRange (lines, rng)
+    {
+        var ln, rngs
+
+        rngs = []
+        for (var _a_ = ln = 0, _b_ = util.numLinesInRange(rng); (_a_ <= _b_ ? ln < util.numLinesInRange(rng) : ln > util.numLinesInRange(rng)); (_a_ <= _b_ ? ++ln : --ln))
+        {
+            rngs.push(util.lineRangeAtPos(lines,[0,rng[1] + ln]))
+        }
+        return rngs
+    }
+
+    static splitLineRange (lines, rng)
+    {
+        var i, nl, split
+
+        nl = util.numLinesInRange(rng)
+        if (nl === 1)
+        {
+            return rng
+        }
+        split = []
+        split.push([rng[0],rng[1],lines[rng[1]].length,rng[1]])
+        if (nl > 2)
+        {
+            for (var _a_ = i = 1, _b_ = nl - 2; (_a_ <= _b_ ? i <= nl - 2 : i >= nl - 2); (_a_ <= _b_ ? ++i : --i))
+            {
+                split.push([0,rng[1] + i,lines[rng[1] + i].length,rng[1] + i])
+            }
+        }
+        if (rng[2] > 0)
+        {
+            split.push([0,rng[3],rng[2],rng[3]])
+        }
+        return split
+    }
+
+    static splitLineRanges (lines, rngs)
+    {
+        var rng, split
+
+        split = []
+        var list = _k_.list(rngs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            rng = list[_a_]
+            split = split.concat(util.splitLineRange(lines,rng))
+        }
+        return split
+    }
+
     static textFromBolToPos (lines, pos)
     {
         return lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
@@ -477,6 +584,11 @@ class util
             return true
         }
         return rng[1] === rng[3] && (0 <= rng[1] && rng[1] < lines.length) && rng[0] === 0 && rng[2] >= lines[rng[1]].length
+    }
+
+    static rangeOfLine (lines, y)
+    {
+        return [0,y,lines[y].length,y]
     }
 
     static rangeOfClosestChunkToPos (lines, pos)

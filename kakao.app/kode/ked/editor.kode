@@ -320,7 +320,6 @@ function editor extends events
             'shift+right'               ➜ ⮐ @state.moveCursorAndSelect 'right'
             'shift+cmd+right'           ➜ ⮐ @state.moveCursorAndSelect 'eol'
             'shift+cmd+left'            ➜ ⮐ @state.moveCursorAndSelect 'bol'
-            'cmd+a'                     ➜ ⮐ @state.selectAllLines()
                     
             'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
             'delete'                    ➜ ⮐ @state.delete 'back'
@@ -340,10 +339,12 @@ function editor extends events
             'cmd+z'                     ➜ ⮐ @state.undo()
             'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
                         
+            'cmd+a'                     ➜ ⮐ @state.selectAllLines()
             'cmd+j'                     ➜ ⮐ @state.joinLines()
+            'cmd+l'                     ➜ ⮐ @state.selectMoreLines()
 
             'cmd+left'                  ➜ ⮐ @state.moveCursorsToIndentOrStartOfLines()
-            'cmd+right'                 ➜ ⮐ @state.moveCursorsToEndOfLines()
+            'cmd+right'                 ➜ ⮐ @state.moveCursorsToEndOfSelectionsOrLines()
             
             'cmd+g'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
             'cmd+d'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()

@@ -8,7 +8,7 @@
 
 class theme
     
-    @selection_line:        '#444444'  
+    @selection_line:        '#333333'  
     @selection:             '#4444ff'  
     @highlight:             '#444444'  
     @cursor:                '#ffff00'  

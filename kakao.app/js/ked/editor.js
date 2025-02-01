@@ -455,9 +455,6 @@ editor = (function ()
             case 'shift+cmd+left':
                 return this.state.moveCursorAndSelect('bol')
 
-            case 'cmd+a':
-                return this.state.selectAllLines()
-
             case 'ctrl+k':
                 return this.state.delete('eol')
 
@@ -504,14 +501,20 @@ editor = (function ()
             case 'shift+cmd+z':
                 return this.state.redo()
 
+            case 'cmd+a':
+                return this.state.selectAllLines()
+
             case 'cmd+j':
                 return this.state.joinLines()
+
+            case 'cmd+l':
+                return this.state.selectMoreLines()
 
             case 'cmd+left':
                 return this.state.moveCursorsToIndentOrStartOfLines()
 
             case 'cmd+right':
-                return this.state.moveCursorsToEndOfLines()
+                return this.state.moveCursorsToEndOfSelectionsOrLines()
 
             case 'cmd+g':
                 return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()

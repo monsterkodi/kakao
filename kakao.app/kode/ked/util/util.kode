@@ -76,9 +76,12 @@ class util
         pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
         
     @rangeForSpan: span -> [span[0] span[1] span[2] span[1]]
+    
+    @isEmptyRange: rng -> rng[0] == rng[2] and rng[1] == rng[3]
+    @isRangeEmpty: rng -> rng[0] == rng[2] and rng[1] == rng[3]
 
-    @rangeStart: rng -> [rng[0] rng[1]]
-    @rangeEnd:   rng -> [rng[2] rng[3]]
+    @startOfRange: rng -> [rng[0] rng[1]]
+    @endOfRange:   rng -> [rng[2] rng[3]]
         
     #  0000000  00000000    0000000   000   000  
     # 000       000   000  000   000  0000  000  
@@ -103,7 +106,8 @@ class util
         
         pos[1] > span[1] or (pos[1] == span[1] and pos[0] >= span[2])
 
-    @endOfSpan: s -> [s[2] s[1]]
+    @startOfSpan: s -> [s[0] s[1]]
+    @endOfSpan:   s -> [s[2] s[1]]
     
     @nextSpanAfterPos: spans pos ->
         
@@ -143,6 +147,12 @@ class util
     # 000   000  000   000  000  0000  000   000  000            000  
     # 000   000  000   000  000   000   0000000   00000000  0000000   
     
+    @rangesContainLine: rngs lineIndex -> 
+        
+        for rng in rngs
+            ⮐ true if rng[1] <= lineIndex <= rng[3]
+        false
+        
     @rangesContainSpan: rngs span -> @rangesContainRange rngs util.rangeForSpan(span)
     @rangesContainRange: rngs range -> 
         
@@ -158,6 +168,17 @@ class util
         rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
         rngs.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
         rngs = rngs.filter (a) -> a[0] != a[2] or a[1] != a[3]
+        
+    @endPositionsOfRanges: rngs ->
+        
+        rngs.map (r) -> util.endOfRange r
+        
+    @removeTrailingEmptyRange: rngs ->
+        
+        if util.isEmptyRange rngs[-1]
+            rngs[0..-2]
+        else
+            rngs
         
     # 00     00  00000000  00000000    0000000   00000000  
     # 000   000  000       000   000  000        000       
@@ -248,6 +269,39 @@ class util
         n += 1   if rng[2] == lines[rng[3]].length
         n
         
+    @numLinesInRange: rng -> rng[3] - rng[1] + 1
+        
+    @lineRangesInRange: lines rng ->
+        
+        rngs = []
+        for ln in 0...util.numLinesInRange(rng)
+            rngs.push util.lineRangeAtPos(lines [0 rng[1]+ln])
+        rngs
+        
+    @splitLineRange: lines rng ->
+        
+        nl = util.numLinesInRange rng 
+        ⮐ rng if nl == 1
+        
+        split = []
+        
+        split.push [rng[0] rng[1] lines[rng[1]].length rng[1]]
+        
+        if nl > 2
+            for i in 1..nl-2
+                split.push [0 rng[1]+i lines[rng[1]+i].length rng[1]+i]
+        
+        split.push [0 rng[3] rng[2] rng[3]] if rng[2] > 0 # don't include empty last range!
+        
+        split
+        
+    @splitLineRanges: lines rngs ->
+        
+        split = []        
+        for rng in rngs
+            split = split.concat util.splitLineRange(lines rng)        
+        split
+        
     @textFromBolToPos:  lines pos -> lines[pos[1]][0...pos[0]]
         
     @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
@@ -261,6 +315,8 @@ class util
         ⮐ true if rng[1] != rng[3]
     
         rng[1] == rng[3] and 0 <= rng[1] < lines.length and rng[0] == 0 and rng[2] >= lines[rng[1]].length
+        
+    @rangeOfLine: lines y -> [0 y lines[y].length y]
 
     @rangeOfClosestChunkToPos: lines pos ->
         

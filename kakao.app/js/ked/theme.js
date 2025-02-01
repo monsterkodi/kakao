@@ -1,6 +1,6 @@
 class theme
 {
-    static selection_line = '#444444'
+    static selection_line = '#333333'
 
     static selection = '#4444ff'
 

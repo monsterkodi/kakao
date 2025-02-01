@@ -135,6 +135,16 @@ toExport["util"] = function ()
         compare(util.normalizePositions([[2,2],[3,3],[1,1]]),[[1,1],[2,2],[3,3]])
         compare(util.normalizePositions([[2,2],[0,3],[11,1]]),[[11,1],[2,2],[0,3]])
     })
+    section("lineRangesInRange", function ()
+    {
+        lines = ['1','','12','abc']
+        compare(util.lineRangesInRange(lines,[0,0,0,2]),[[0,0,1,0],[0,1,0,1],[0,2,2,2]])
+    })
+    section("splitLineRanges", function ()
+    {
+        lines = ['1','','12','abc']
+        compare(util.splitLineRanges(lines,[[0,0,1,2]]),[[0,0,1,0],[0,1,0,1],[0,2,1,2]])
+    })
 }
 toExport["util"]._section_ = true
 toExport._test_ = true

@@ -255,6 +255,47 @@ export default {select:function (from, to)
 {
     this.moveCursor('bof')
     return this.moveCursorAndSelect('eof')
+},selectMoreLines:function ()
+{
+    var c, cursorLineAtIndex, cursors, lastCursor, lines, selections, start
+
+    cursors = this.allCursors()
+    selections = this.allSelections()
+    lines = this.allLines()
+    lastCursor = []
+    cursorLineAtIndex = function (c, i)
+    {
+        var range
+
+        range = util.rangeOfLine(lines,i)
+        selections.push(range)
+        return lastCursor = util.endOfRange(range)
+    }
+    start = false
+    var list = _k_.list(cursors)
+    for (var _e_ = 0; _e_ < list.length; _e_++)
+    {
+        c = list[_e_]
+        if (!util.rangesContainLine(selections,c[1]))
+        {
+            cursorLineAtIndex(c,c[1])
+            start = true
+        }
+    }
+    if (!start)
+    {
+        var list1 = _k_.list(cursors)
+        for (var _f_ = 0; _f_ < list1.length; _f_++)
+        {
+            c = list1[_f_]
+            if (c[1] < lines.length - 1)
+            {
+                cursorLineAtIndex(c,c[1] + 1)
+            }
+        }
+    }
+    this.set('selections',selections)
+    return this.set('cursors',[lastCursor],0)
 },textForSelection:function ()
 {
     return util.textForLinesRanges(this.allLines(),this.allSelections())
@@ -266,9 +307,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _e_ = 0; _e_ < list.length; _e_++)
+    for (var _10_ = 0; _10_ < list.length; _10_++)
     {
-        selection = list[_e_]
+        selection = list[_10_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue
@@ -284,9 +325,9 @@ export default {select:function (from, to)
     var highlight
 
     var list = _k_.list(this.s.highlights)
-    for (var _f_ = 0; _f_ < list.length; _f_++)
+    for (var _11_ = 0; _11_ < list.length; _11_++)
     {
-        highlight = list[_f_]
+        highlight = list[_11_]
         if (highlight[1] === y)
         {
             return true
@@ -298,9 +339,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _10_ = 0; _10_ < list.length; _10_++)
+    for (var _12_ = 0; _12_ < list.length; _12_++)
     {
-        selection = list[_10_]
+        selection = list[_12_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue

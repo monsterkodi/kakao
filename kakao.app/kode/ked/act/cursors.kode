@@ -16,10 +16,7 @@ export
     # 000   000  000      000      
     # 000   000  0000000  0000000  
     
-    allCursors: -> 
-        
-        cursors = @s.cursors.asMutable()
-        util.normalizePositions cursors @s.lines.length-1
+    allCursors: -> @s.cursors.asMutable()
     
     # 00000000  000   000  00000000    0000000   000   000  0000000    
     # 000        000 000   000   000  000   000  0000  000  000   000  
@@ -126,7 +123,7 @@ export
     singleCursorAtEndOfLine: ->
         
         rng = util.lineRangeAtPos @allLines() @mainCursor()
-        mc  = util.rangeEnd rng
+        mc  = util.endOfRange rng
         
         @deselect()
         @set 'cursors' [mc] 0
@@ -142,7 +139,7 @@ export
         if ind < mc[0]
             mc[0] = ind
         else
-            mc  = util.rangeStart rng
+            mc  = util.startOfRange rng
         
         @deselect()
         @set 'cursors' [mc] 0
@@ -161,6 +158,19 @@ export
         
         @set 'cursors' cursors
         
+    moveCursorsToEndOfSelectionsOrLines: ->
+        
+        selections = @allSelections()
+        
+        if empty selections
+            ⮐ @moveCursorsToEndOfLines()
+        
+        lines   = @allLines()
+        rngs    = util.splitLineRanges lines selections
+        cursors = util.endPositionsOfRanges rngs
+        
+        @set 'cursors' cursors
+            
     moveCursorsToEndOfLines: ->
         
         cursors = @allCursors()
