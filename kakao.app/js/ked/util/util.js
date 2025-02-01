@@ -62,6 +62,18 @@ class util
         return posl
     }
 
+    static indexOfPosInPositions (pos, posl)
+    {
+        if (_k_.empty(posl))
+        {
+            return -1
+        }
+        return posl.findIndex(function (p)
+        {
+            return _k_.eql(pos, p)
+        })
+    }
+
     static isPosInsideRange (pos, rng)
     {
         if (util.isPosBeforeRange(pos,rng))

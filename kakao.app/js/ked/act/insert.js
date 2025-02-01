@@ -55,8 +55,7 @@ export default {insert:function (text)
         cursor[0] += text.length
     }
     this.setLines(lines)
-    this.set('cursors',cursors)
-    return this.set('main',cursors.length - 1)
+    return this.set('cursors',cursors,cursors.length - 1)
 },insertNewline:function ()
 {
     var after, before, line, lines, x, y

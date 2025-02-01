@@ -19,7 +19,6 @@ export
     allCursors: -> 
         
         cursors = @s.cursors.asMutable()
-        # cursors.push @s.cursor.asMutable()
         util.normalizePositions cursors @s.lines.length-1
     
     # 00000000  000   000  00000000    0000000   000   000  0000000    
@@ -79,8 +78,7 @@ export
                 'bof'   ➜ c[0] = 0; c[1] = 0
                 'eof'   ➜ c[1] = @s.lines.length-1; c[0] = @s.lines[c[1]].length
         
-        @set 'cursors' cursors
-        @set 'main' @s.main
+        @set 'cursors' cursors @s.main
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
@@ -95,7 +93,29 @@ export
         y = clamp 0 @s.lines.length-1 y
         x = max 0 x
                         
-        @set 'cursors' [[x y]]
+        @set 'cursors' [[x y]] 0
+        
+    moveMainCursor: x y ->
+        
+        [x y] = util.pos x y
+        
+        y = clamp 0 @s.lines.length-1 y
+        x = max 0 x
+        
+        mainCursor = @mainCursor()
+        
+        ⮐ if mainCursor eql [x y]
+
+        cursors = @allCursors()
+
+        cursors.splice util.indexOfPosInPositions(mainCursor cursors) 1
+        
+        main = util.indexOfPosInPositions [x y] cursors
+        if main < 0
+            cursors.push [x y]
+            main = cursors.length-1
+        
+        @set 'cursors' cursors main
                 
     mainCursor: -> @s.cursors[@s.main].asMutable()
                     

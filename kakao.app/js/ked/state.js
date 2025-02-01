@@ -45,6 +45,7 @@ state = (function ()
         this["isInvalidLineIndex"] = this["isInvalidLineIndex"].bind(this)
         this["isValidLineIndex"] = this["isValidLineIndex"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
+        this["allLines"] = this["allLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["clearLines"] = this["clearLines"].bind(this)
         this["set"] = this["set"].bind(this)
@@ -147,6 +148,11 @@ state = (function ()
         this.s = this.s.set('lines',lines)
         this.r = []
         return this.h.push(this.s)
+    }
+
+    state.prototype["allLines"] = function ()
+    {
+        return this.s.lines.asMutable()
     }
 
     state.prototype["loadLines"] = function (lines)

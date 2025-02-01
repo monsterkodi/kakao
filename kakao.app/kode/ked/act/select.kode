@@ -36,6 +36,9 @@ export
         
         @set 'selections' selections
         
+    allSelections: -> @s.selections.asMutable()
+    allHighlights: -> @s.highlights.asMutable()
+        
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     
     # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
@@ -58,8 +61,8 @@ export
     highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight: ->
         
         if valid @s.highlights 
-            @deselectCursorHighlight()
-            @moveCursorToNextHighlight()
+            if not @deselectCursorHighlight()
+                @moveCursorToNextHighlight()
             ⮐ 
             
         @selectWordAtCursor_highlightSelection()
@@ -86,7 +89,6 @@ export
         
         if prev = util.prevSpanBeforePos @s.highlights @mainCursor()
             @deselectSpan prev
-            @setMainCursor util.endOfSpan(prev)
 
     selectAllHighlights: ->
         
@@ -132,7 +134,7 @@ export
         pos ?= @mainCursor()
         
         if next = util.nextSpanAfterPos @s.highlights pos
-            @setMainCursor util.endOfSpan(next)
+            @moveMainCursor util.endOfSpan(next)
 
     selectSpan: span ->
         
@@ -146,8 +148,9 @@ export
         for selection,index in selections
             if util.isSameRange selection rng
                 selections.splice index 1
-                break
-        @set 'selections' selections
+                @set 'selections' selections
+                ⮐ true
+        false
             
     addSpanToSelection: span ->
         
@@ -281,7 +284,7 @@ export
     clearCursors: ->
             
         if @s.cursors.length > 1
-            @set 'cursors' [@mainCursor()]
+            @set 'cursors' [@mainCursor()] 0
             
     clearCursorsHighlightsAndSelections: ->
         

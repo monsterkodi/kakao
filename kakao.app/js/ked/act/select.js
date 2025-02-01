@@ -21,6 +21,12 @@ export default {select:function (from, to)
     from[0] = _k_.clamp(0,this.s.lines[from[1]].length,from[0])
     selections.push([from[0],from[1],to[0],to[1]])
     return this.set('selections',selections)
+},allSelections:function ()
+{
+    return this.s.selections.asMutable()
+},allHighlights:function ()
+{
+    return this.s.highlights.asMutable()
 },selectWordAtCursor_highlightSelection_selectAllHighlights:function ()
 {
     var pos
@@ -44,8 +50,10 @@ export default {select:function (from, to)
 {
     if (!_k_.empty(this.s.highlights))
     {
-        this.deselectCursorHighlight()
-        this.moveCursorToNextHighlight()
+        if (!this.deselectCursorHighlight())
+        {
+            this.moveCursorToNextHighlight()
+        }
         return
     }
     this.selectWordAtCursor_highlightSelection()
@@ -79,8 +87,7 @@ export default {select:function (from, to)
     }
     if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
     {
-        this.deselectSpan(prev)
-        return this.setMainCursor(util.endOfSpan(prev))
+        return this.deselectSpan(prev)
     }
 },selectAllHighlights:function ()
 {
@@ -150,7 +157,7 @@ export default {select:function (from, to)
     pos = (pos != null ? pos : this.mainCursor())
     if (next = util.nextSpanAfterPos(this.s.highlights,pos))
     {
-        return this.setMainCursor(util.endOfSpan(next))
+        return this.moveMainCursor(util.endOfSpan(next))
     }
 },selectSpan:function (span)
 {
@@ -168,10 +175,11 @@ export default {select:function (from, to)
         if (util.isSameRange(selection,rng))
         {
             selections.splice(index,1)
-            break
+            this.set('selections',selections)
+            return true
         }
     }
-    return this.set('selections',selections)
+    return false
 },addSpanToSelection:function (span)
 {
     var selections
@@ -317,7 +325,7 @@ export default {select:function (from, to)
 {
     if (this.s.cursors.length > 1)
     {
-        return this.set('cursors',[this.mainCursor()])
+        return this.set('cursors',[this.mainCursor()],0)
     }
 },clearCursorsHighlightsAndSelections:function ()
 {

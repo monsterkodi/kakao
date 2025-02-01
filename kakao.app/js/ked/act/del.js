@@ -85,12 +85,13 @@ export default {delete:function (type, mods)
         return
     }
     cursor = this.mainCursor()
-    lines = this.s.lines.asMutable()
-    selections = this.s.selections.asMutable()
+    lines = this.allLines()
+    selections = this.allSelections()
     var _b_ = util.deleteLinesRangesAndAdjustCursor(lines,selections,cursor); lines = _b_[0]; cursor = _b_[1]
 
     this.deselect()
     this.setLines(lines)
-    this.setMainCursor(cursor[0],cursor[1])
+    this.setMainCursor(cursor)
+    this.clearHighlights()
     return this
 }}

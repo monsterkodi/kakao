@@ -77,13 +77,14 @@ export
         ⮐ if empty @s.selections
         
         cursor     = @mainCursor()
-        lines      = @s.lines.asMutable()
-        selections = @s.selections.asMutable()
+        lines      = @allLines()
+        selections = @allSelections()
         
         [lines cursor] = util.deleteLinesRangesAndAdjustCursor lines selections cursor
-                
+        
         @deselect()
         @setLines lines
-        @setMainCursor cursor[0] cursor[1]
+        @setMainCursor cursor
+        @clearHighlights()
         @
         
