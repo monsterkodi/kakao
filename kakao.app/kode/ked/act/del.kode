@@ -18,16 +18,16 @@ export
     # 0000000    00000000  0000000  00000000     000     00000000  
     
     delete: type mods ->
-        
+                
         if type == 'back' and valid @s.selections
             @deleteSelection()
             ⮐ @
+        
+        [x y] = @mainCursor()
             
-        if type == 'back' and util.isLinesPosOutside(@s.lines @s.cursor)
-            @setCursor @s.lines[@s.cursor[1]].length @s.cursor[1]
+        if type == 'back' and util.isLinesPosOutside(@s.lines [x y])
+            @setMainCursor @s.lines[y].length y
             ⮐ @
-
-        [x y] = @s.cursor
         
         lines = @s.lines.asMutable()
         line  = lines[y]
@@ -45,12 +45,12 @@ export
                     line = lines[y] + line
                 else
                     if mods in ['cmd' 'alt']
-                        rng = util.rangeOfWordOrWhitespaceLeftToPos lines @s.cursor
+                        rng = util.rangeOfWordOrWhitespaceLeftToPos lines @mainCursor()
                         dc = rng[2] - rng[0]
                         x -= dc
                         line = kstr.splice line x dc
                     else
-                        before = util.textFromBolToPos lines @s.cursor
+                        before = util.textFromBolToPos lines @mainCursor()
                         if util.isOnlyWhitespace before
                             dc = x % 4
                             dc = 4 if dc == 0
@@ -62,8 +62,8 @@ export
             
         lines.splice y remove line
             
-        @setLines  lines
-        @setCursor x y
+        @setLines lines
+        @setMainCursor x y
         @
         
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
@@ -76,7 +76,7 @@ export
         
         ⮐ if empty @s.selections
         
-        cursor     = @s.cursor.asMutable()
+        cursor     = @mainCursor()
         lines      = @s.lines.asMutable()
         selections = @s.selections.asMutable()
         
@@ -84,6 +84,6 @@ export
                 
         @deselect()
         @setLines lines
-        @setCursor cursor[0] cursor[1]
+        @setMainCursor cursor[0] cursor[1]
         @
         

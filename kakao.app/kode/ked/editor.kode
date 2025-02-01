@@ -20,7 +20,7 @@ function editor extends events
     init: x y w h => 
     
         @cells.init x y w h
-        @state.adjustView()
+        @state.initView()
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -32,10 +32,11 @@ function editor extends events
         
         ⮐ if @cells.rows <= 0 or @cells.cols <= 0
         
-        syntax = @state.syntax
-        s      = @state.s
-        view   = s.view.asMutable()
-        lines  = s.lines.asMutable()
+        syntax     = @state.syntax
+        s          = @state.s
+        view       = s.view.asMutable()
+        lines      = s.lines.asMutable()
+        mainCursor = @state.mainCursor()
         
         for row in 0...@cells.rows
             
@@ -59,7 +60,7 @@ function editor extends events
             # empty
             if y < lines.length
                 linel = line.length - view[0]
-                if y == s.cursor[1]
+                if y == mainCursor[1]
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@constructor.name + '_cursor_main']
                     @cells.bg_rect max(0 linel) row -1 row theme[@constructor.name + '_cursor_empty']
@@ -118,8 +119,8 @@ function editor extends events
         if @isCursorVisible()
             
             bg = theme[@constructor.name + '_cursor_bg']
-            x = s.cursor[0]-view[0]
-            y = s.cursor[1]-view[1]
+            x = mainCursor[0]-view[0]
+            y = mainCursor[1]-view[1]
             if s.cursors.length <= 1
                 if @isCursorInEmpty()
                     bg = color.darken bg
@@ -179,7 +180,7 @@ function editor extends events
                     if mods == 'alt'
                         @state.addCursor x y
                     else
-                        @state.setCursor x y
+                        @state.setMainCursor x y
                     
                     ⮐ true
                     
@@ -225,8 +226,7 @@ function editor extends events
         
         if @dragStart
             
-            x = @state.s.cursor[0]
-            y = @state.s.cursor[1]
+            [x y] = @state.mainCursor()
             
             switch dir
                 'up'    ➜ y -= steps    
@@ -259,13 +259,13 @@ function editor extends events
             
     isCursorInEmpty: cursor =>
         
-        cursor ?= @state.s.cursor.asMutable()
+        cursor ?= @state.mainCursor()
         
         util.isLinesPosOutside @state.s.lines cursor
         
     isCursorVisible: cursor =>
         
-        cursor ?= @state.s.cursor.asMutable()
+        cursor ?= @state.mainCursor()
         
         visible = util.isPosInsideRange cursor @state.rangeForVisibleLines()
         if cursor[0] < @state.s.view[0] ➜ visible = false
@@ -306,10 +306,10 @@ function editor extends events
             'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursor 'left'  16
             'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursor 'right' 16
             
-            'cmd+left'  'ctrl+a'        ➜ ⮐ @state.setCursor 0 @state.s.cursor[1]
-            'cmd+right' 'ctrl+e'        ➜ ⮐ @state.setCursor @state.s.lines[@state.s.cursor[1]].length @state.s.cursor[1]
-            'ctrl+h'                    ➜ ⮐ @state.setCursor 0 0
-            'ctrl+j'                    ➜ ⮐ @state.setCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
+            'cmd+left'  'ctrl+a'        ➜ ⮐ @state.setMainCursor 0 @state.mainCursor()[1]
+            'cmd+right' 'ctrl+e'        ➜ ⮐ @state.setMainCursor @state.s.lines[@state.mainCursor()[1]].length @state.mainCursor()[1]
+            'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
+            'ctrl+j'                    ➜ ⮐ @state.setMainCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             
             'shift+ctrl+h'              ➜ ⮐ @state.moveCursorAndSelect 'bof'
             'shift+ctrl+j'              ➜ ⮐ @state.moveCursorAndSelect 'eof'
@@ -336,10 +336,10 @@ function editor extends events
             'cmd+down'                  ➜ ⮐ @state.expandCursors 'down'
             'cmd+up'                    ➜ ⮐ @state.expandCursors 'up'
                
-            'cmd+z'                     ➜ ⮐ @undo()
-            'cmd+y' 'shift+cmd+z'       ➜ ⮐ @redo()
+            'cmd+z'                     ➜ ⮐ @state.undo()
+            'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
                         
-            'cmd+j'                     ➜ ⮐ @join.Lines()
+            'cmd+j'                     ➜ ⮐ @state.joinLines()
             
             'cmd+g'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
             'cmd+d'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()

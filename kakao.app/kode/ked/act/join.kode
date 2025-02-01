@@ -18,14 +18,15 @@ export
     
     joinLines: ->
         
-        [x y] = @s.cursor
+        [x y] = @mainCursor()
         lines = @s.lines.asMutable()
         
         ⮐ if util.isInvalidLineIndex lines y 
         
         x = lines[y].length
-        @setCursor x y
+        @setMainCursor x y
         
         lines.splice y 2 lines[y] + ltrim(lines[y+1])
         
         @setLines lines
+        

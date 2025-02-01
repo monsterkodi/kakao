@@ -13,13 +13,13 @@ export default {delete:function (type, mods)
         this.deleteSelection()
         return this
     }
-    if (type === 'back' && util.isLinesPosOutside(this.s.lines,this.s.cursor))
+    var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
+
+    if (type === 'back' && util.isLinesPosOutside(this.s.lines,[x,y]))
     {
-        this.setCursor(this.s.lines[this.s.cursor[1]].length,this.s.cursor[1])
+        this.setMainCursor(this.s.lines[y].length,y)
         return this
     }
-    var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
-
     lines = this.s.lines.asMutable()
     line = lines[y]
     remove = 1
@@ -44,14 +44,14 @@ export default {delete:function (type, mods)
             {
                 if (_k_.in(mods,['cmd','alt']))
                 {
-                    rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,this.s.cursor)
+                    rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,this.mainCursor())
                     dc = rng[2] - rng[0]
                     x -= dc
                     line = kstr.splice(line,x,dc)
                 }
                 else
                 {
-                    before = util.textFromBolToPos(lines,this.s.cursor)
+                    before = util.textFromBolToPos(lines,this.mainCursor())
                     if (util.isOnlyWhitespace(before))
                     {
                         dc = x % 4
@@ -74,7 +74,7 @@ export default {delete:function (type, mods)
 
     lines.splice(y,remove,line)
     this.setLines(lines)
-    this.setCursor(x,y)
+    this.setMainCursor(x,y)
     return this
 },deleteSelection:function ()
 {
@@ -84,13 +84,13 @@ export default {delete:function (type, mods)
     {
         return
     }
-    cursor = this.s.cursor.asMutable()
+    cursor = this.mainCursor()
     lines = this.s.lines.asMutable()
     selections = this.s.selections.asMutable()
     var _b_ = util.deleteLinesRangesAndAdjustCursor(lines,selections,cursor); lines = _b_[0]; cursor = _b_[1]
 
     this.deselect()
     this.setLines(lines)
-    this.setCursor(cursor[0],cursor[1])
+    this.setMainCursor(cursor[0],cursor[1])
     return this
 }}

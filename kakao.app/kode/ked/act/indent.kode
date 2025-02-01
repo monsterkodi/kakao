@@ -21,7 +21,7 @@ export
         
         ⮐ if empty @s.selections
         
-        [x y] = @s.cursor
+        [x y] = @mainCursor()
             
         lines = @s.lines.asMutable()
         
@@ -44,11 +44,11 @@ export
             
         lines = @s.lines.asMutable()
             
-        li = @s.cursor[1]
+        li = @mainCursor()[1]
         if ind = util.numIndent lines[li]
             lines[li] = lines[li][min(ind 4)..]
             @setLines lines
-            @setCursor 0 li
+            @setMainCursor 0 li
         
     deindentSelectedLines: ->
 
@@ -63,3 +63,5 @@ export
                 lines[li] = lines[li][min(ind 4)..]
         
         @setLines lines
+        
+        

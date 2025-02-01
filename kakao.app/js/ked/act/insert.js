@@ -56,12 +56,12 @@ export default {insert:function (text)
     }
     this.setLines(lines)
     this.set('cursors',cursors)
-    return this.setCursor(cursors.slice(-1)[0])
+    return this.set('main',cursors.length - 1)
 },insertNewline:function ()
 {
     var after, before, line, lines, x, y
 
-    var _e_ = this.s.cursor; x = _e_[0]; y = _e_[1]
+    var _e_ = this.mainCursor(); x = _e_[0]; y = _e_[1]
 
     lines = this.s.lines.asMutable()
     line = lines[y]
@@ -72,5 +72,5 @@ export default {insert:function (text)
     this.setLines(lines)
     y = y + 1
     x = 0
-    return this.setCursor(x,y)
+    return this.setMainCursor(x,y)
 }}

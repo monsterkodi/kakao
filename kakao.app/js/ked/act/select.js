@@ -9,7 +9,7 @@ export default {select:function (from, to)
     var selections
 
     selections = []
-    this.setCursor(to[0],to[1])
+    this.setMainCursor(to[0],to[1])
     if (from[1] > to[1] || from[1] === to[1] && from[0] > to[0])
     {
         var _a_ = [to,from]; from = _a_[0]; to = _a_[1]
@@ -54,7 +54,7 @@ export default {select:function (from, to)
 {
     if (!_k_.empty(this.s.highlights))
     {
-        this.set('cursors',[])
+        this.clearCursors()
         this.selectNextHighlight()
     }
     return this.selectWordAtCursor_highlightSelection()
@@ -77,14 +77,10 @@ export default {select:function (from, to)
     {
         return
     }
-    if (prev = util.prevSpanBeforePos(this.s.highlights,this.s.cursor))
+    if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
     {
         this.deselectSpan(prev)
-        return this.setCursor(util.endOfSpan(prev))
-    }
-    else
-    {
-        return lf('no prev')
+        return this.setMainCursor(util.endOfSpan(prev))
     }
 },selectAllHighlights:function ()
 {
@@ -111,20 +107,19 @@ export default {select:function (from, to)
     {
         return
     }
-    if (next = util.nextSpanAfterPos(this.s.highlights,this.s.cursor))
+    if (next = util.nextSpanAfterPos(this.s.highlights,this.mainCursor()))
     {
         this.selectSpan(next)
-        return this.setCursor(util.endOfSpan(next))
+        return this.setMainCursor(util.endOfSpan(next))
     }
 },addCurrentOrNextHighlightToSelection:function ()
 {
     var prev
 
-    if (prev = util.prevSpanBeforePos(this.s.highlights,this.s.cursor))
+    if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
     {
         if (!util.rangesContainSpan(this.s.selections,prev))
         {
-            lf('addSpanToSelection',this.s.cursor,prev)
             this.addSpanToSelection(prev)
             this.addCursor(util.endOfSpan(prev))
             return
@@ -139,7 +134,7 @@ export default {select:function (from, to)
     {
         return
     }
-    if (next = util.nextSpanAfterPos(this.s.highlights,this.s.cursor))
+    if (next = util.nextSpanAfterPos(this.s.highlights,this.mainCursor()))
     {
         this.addSpanToSelection(next)
         return this.addCursor(util.endOfSpan(next))
@@ -152,10 +147,10 @@ export default {select:function (from, to)
     {
         return
     }
-    pos = (pos != null ? pos : this.s.cursor)
+    pos = (pos != null ? pos : this.mainCursor())
     if (next = util.nextSpanAfterPos(this.s.highlights,pos))
     {
-        return this.setCursor(util.endOfSpan(next))
+        return this.setMainCursor(util.endOfSpan(next))
     }
 },selectSpan:function (span)
 {
@@ -188,7 +183,7 @@ export default {select:function (from, to)
 {
     if (_k_.empty(this.s.selections))
     {
-        this.selectWord(this.s.cursor)
+        this.selectWord(this.mainCursor())
     }
     return this.highlightSelection()
 },highlightSelection:function ()
@@ -240,7 +235,7 @@ export default {select:function (from, to)
     return this
 },selectLine:function (y)
 {
-    y = (y != null ? y : this.s.cursor[1])
+    y = (y != null ? y : this.mainCursor()[1])
     if ((0 <= y && y < this.s.lines.length))
     {
         this.select([0,y],[this.s.lines[y].length,y])
@@ -320,9 +315,9 @@ export default {select:function (from, to)
     }
 },clearCursors:function ()
 {
-    if (!_k_.empty(this.s.cursors))
+    if (this.s.cursors.length > 1)
     {
-        return this.set('cursors',[])
+        return this.set('cursors',[this.mainCursor()])
     }
 },clearCursorsHighlightsAndSelections:function ()
 {

@@ -27,14 +27,13 @@ function state
             selections:  []
             highlights:  []
             cursors:     [[0 0]]
-            cursor:      [0 0]
             main:        0
             view:        [0 0]
             
         @h = [@s] # undo states (history)
         @r = []   # redo states
             
-        @setCursor 0 0
+        # @adjustViewForMainCursor()
         
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -42,24 +41,42 @@ function state
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: item arg =>
+    set: item arg opt =>
+        
+        if item == 'cursors' 
+            mainCursor = opt? ? arg[opt] : @mainCursor()
+            lf 'setCursors' mainCursor arg 
+        else if item == 'main'
+            lf 'setMain' arg
+        
+        arg = switch item 
+            'highlights' ➜ util.normalizeSpans         arg
+            'selections' ➜ util.mergeRanges            arg
+            'cursors'    ➜ @normalizeCursors           arg
+            'main'       ➜ clamp 0 @s.cursors.length-1 arg
+                         ➜ arg
+        
+        lf 'set' item arg if item != 'view'
+        @s = @s.set item arg
+        
+        if item == 'cursors'
+            for cur,idx in arg
+                if cur eql mainCursor
+                    lf 'newMain' idx
+                    @s = @s.set 'main' idx
+                    break
         
         switch item 
-            'highlights' ➜ arg = util.normalizeSpans     arg
-            'selections' ➜ arg = util.mergeRanges        arg
-            'cursors'    ➜ arg = @normalizeCursors       arg
+            'cursors' 
+            'main' ➜  @adjustViewForMainCursor()
         
-        @s = @s.set item arg
         @h.pop()
         @h.push @s
         @
         
     normalizeCursors: cursors -> 
         
-        cursors = util.normalizePositions cursors @s.lines.length-1
-        if cursors.length == 1
-            cursors = []
-        cursors
+        util.normalizePositions cursors @s.lines.length-1
     
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
@@ -70,7 +87,7 @@ function state
     clearLines: => 
         
         @setLines ['']
-        @setCursor 0 0
+        @setMainCursor 0 0
     
     setLines: lines =>
         
@@ -161,68 +178,7 @@ function state
     # 000        000   000  0000000      000     00000000  
     
     paste: => @insert child_process.execSync('pbpaste').toString("utf8")
-        
-    #  0000000  000   000  00000000    0000000   0000000   00000000   
-    # 000       000   000  000   000  000       000   000  000   000  
-    # 000       000   000  0000000    0000000   000   000  0000000    
-    # 000       000   000  000   000       000  000   000  000   000  
-    #  0000000   0000000   000   000  0000000    0000000   000   000  
-        
-    setCursor: x y =>
-        
-        [x y] = util.pos x y
-        
-        y = clamp 0 @s.lines.length-1 y
-        x = max 0 x
-                        
-        @set 'cursor' [x y]
-        
-        view = @s.view.asMutable()
-        
-        if y >= view[1] + @cells.rows - 1
-            view[1] = y - @cells.rows + 1
-        else if y < view[1]
-            view[1] = y
-            
-        if view[1] > 0 and @s.lines.length < @cells.rows
-            view[1] = 0
-
-        view[0] = max 0 x - @cells.cols + 1
-            
-        @setView view
-        
-    mainCursor: => @s.cursors[@s.main].asMutable()
-                    
-    #  0000000  00000000  000      00000000   0000000  000000000  
-    # 000       000       000      000       000          000     
-    # 0000000   0000000   000      0000000   000          000     
-    #      000  000       000      000       000          000     
-    # 0000000   00000000  0000000  00000000   0000000     000     
-    
-    moveCursorAndSelect: dir =>
-        
-        selections = @s.selections.asMutable()
-        selection = [@s.cursor[0] @s.cursor[1] @s.cursor[0] @s.cursor[1]]
-        selections.push selection 
-        
-        @moveCursor dir 1
-        
-        switch dir
-            'left'  ➜ selection[0] = selection[0]-1
-            'right' ➜ selection[2] = selection[2]+1
-            'up'    ➜ selection[1] = max 0 selection[1]-1
-            'down'  ➜ selection[3] = min @s.lines.length-1 selection[3]+1
-            'eol'   ➜ selection[2] = Infinity
-            'bol'   ➜ selection[0] = 0
-            'bof'   ➜ selection[1] = 0; selection[0] = 0
-            'eof'   ➜ selection[3] = @s.lines.length-1; selection[2] = @s.lines[@s.lines.length-1].length
-            
-        selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
-        selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
-        
-        @set 'selections' selections
-        @
-        
+                
     #  0000000   0000000  00000000    0000000   000      000      
     # 000       000       000   000  000   000  000      000      
     # 0000000   000       0000000    000   000  000      000      
@@ -248,8 +204,26 @@ function state
         view[0] = max 0 view[0]
             
         @setView view
+
+    adjustViewForMainCursor: =>
         
-    adjustView: =>
+        [x y] = @mainCursor()
+        
+        view = @s.view.asMutable()
+        
+        if y >= view[1] + @cells.rows - 1
+            view[1] = y - @cells.rows + 1
+        else if y < view[1]
+            view[1] = y
+            
+        if view[1] > 0 and @s.lines.length < @cells.rows
+            view[1] = 0
+
+        view[0] = max 0 x - @cells.cols + 1
+            
+        @setView view
+        
+    initView: =>
         
         view = @s.view.asMutable()
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]

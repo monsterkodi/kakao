@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import util from "../util/util.js"
 
@@ -7,7 +7,6 @@ export default {allCursors:function ()
     var cursors
 
     cursors = this.s.cursors.asMutable()
-    cursors.push(this.s.cursor.asMutable())
     return util.normalizePositions(cursors,this.s.lines.length - 1)
 },expandCursors:function (dir)
 {
@@ -30,9 +29,8 @@ export default {allCursors:function ()
 
     pos = util.pos(x,y)
     cursors = this.allCursors()
-    this.setCursor(pos)
     cursors.push(pos)
-    return this.set('cursors',cursors)
+    return this.set('cursors',cursors,cursors.length - 1)
 },moveCursor:function (dir, steps = 1)
 {
     var c, cursors
@@ -77,6 +75,59 @@ export default {allCursors:function ()
         }
 
     }
-    this.setCursor(cursors.slice(-1)[0])
-    return this.set('cursors',cursors)
+    this.set('cursors',cursors)
+    return this.set('main',this.s.main)
+},setMainCursor:function (x, y)
+{
+    var _c_ = util.pos(x,y); x = _c_[0]; y = _c_[1]
+
+    y = _k_.clamp(0,this.s.lines.length - 1,y)
+    x = _k_.max(0,x)
+    return this.set('cursors',[[x,y]])
+},mainCursor:function ()
+{
+    return this.s.cursors[this.s.main].asMutable()
+},moveCursorAndSelect:function (dir)
+{
+    var mc, selection, selections
+
+    selections = this.s.selections.asMutable()
+    mc = this.mainCursor()
+    selection = [mc[0],mc[1],mc[0],mc[1]]
+    selections.push(selection)
+    this.moveCursor(dir,1)
+    switch (dir)
+    {
+        case 'left':
+            selection[0] = selection[0] - 1
+            break
+        case 'right':
+            selection[2] = selection[2] + 1
+            break
+        case 'up':
+            selection[1] = _k_.max(0,selection[1] - 1)
+            break
+        case 'down':
+            selection[3] = _k_.min(this.s.lines.length - 1,selection[3] + 1)
+            break
+        case 'eol':
+            selection[2] = Infinity
+            break
+        case 'bol':
+            selection[0] = 0
+            break
+        case 'bof':
+            selection[1] = 0
+            selection[0] = 0
+            break
+        case 'eof':
+            selection[3] = this.s.lines.length - 1
+            selection[2] = this.s.lines[this.s.lines.length - 1].length
+            break
+    }
+
+    selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
+    selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
+    this.set('selections',selections)
+    return this
 }}

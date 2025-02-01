@@ -64,11 +64,11 @@ export
         @setLines lines
         
         @set 'cursors' cursors
-        @setCursor cursors[-1]
+        @set 'main' cursors.length-1
         
     insertNewline: ->
         
-        [x y] = @s.cursor
+        [x y] = @mainCursor()
         
         lines = @s.lines.asMutable()
         line  = lines[y]
@@ -84,4 +84,5 @@ export
         y = y + 1
         x = 0
         
-        @setCursor x y
+        @setMainCursor x y
+        

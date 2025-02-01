@@ -17,8 +17,9 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, fullysel, highlighted, i, lineno, row, selected, y
+        var bg, c, col, fg, fullysel, highlighted, i, lineno, mainCursor, row, selected, y
 
+        mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = this.state.s.view[1] + row
@@ -34,7 +35,7 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === this.state.s.cursor[1] ? theme.cursor : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
+                    fg = y === mainCursor[1] ? theme.cursor : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
                     bg = fullysel ? theme.gutter_sel : theme.gutter
                     this.cells.set(col,row,((y < this.state.s.lines.length) ? c : ' '),fg,bg)
                 }

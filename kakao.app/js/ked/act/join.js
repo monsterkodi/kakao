@@ -6,7 +6,7 @@ export default {joinLines:function ()
 {
     var lines, x, y
 
-    var _a_ = this.s.cursor; x = _a_[0]; y = _a_[1]
+    var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
 
     lines = this.s.lines.asMutable()
     if (util.isInvalidLineIndex(lines,y))
@@ -14,7 +14,7 @@ export default {joinLines:function ()
         return
     }
     x = lines[y].length
-    this.setCursor(x,y)
+    this.setMainCursor(x,y)
     lines.splice(y,2,lines[y] + _k_.ltrim(lines[y + 1]))
     return this.setLines(lines)
 }}

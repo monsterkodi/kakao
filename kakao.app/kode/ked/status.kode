@@ -22,7 +22,7 @@ function status
         
         x      = 0
         y      = @cells.rows-1
-        cursor = @state.s.cursor
+        cursor = @state.mainCursor()
         cols   = @cells.cols
         fnl    = @file.length
         dt     = @drawTime

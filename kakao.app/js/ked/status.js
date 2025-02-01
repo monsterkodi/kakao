@@ -28,7 +28,7 @@ status = (function ()
 
         x = 0
         y = this.cells.rows - 1
-        cursor = this.state.s.cursor
+        cursor = this.state.mainCursor()
         cols = this.cells.cols
         fnl = this.file.length
         dt = this.drawTime

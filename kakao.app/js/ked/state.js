@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -29,11 +29,9 @@ state = (function ()
     
         this["rangeForVisibleLines"] = this["rangeForVisibleLines"].bind(this)
         this["setView"] = this["setView"].bind(this)
-        this["adjustView"] = this["adjustView"].bind(this)
+        this["initView"] = this["initView"].bind(this)
+        this["adjustViewForMainCursor"] = this["adjustViewForMainCursor"].bind(this)
         this["scrollView"] = this["scrollView"].bind(this)
-        this["moveCursorAndSelect"] = this["moveCursorAndSelect"].bind(this)
-        this["mainCursor"] = this["mainCursor"].bind(this)
-        this["setCursor"] = this["setCursor"].bind(this)
         this["paste"] = this["paste"].bind(this)
         this["copy"] = this["copy"].bind(this)
         this["cut"] = this["cut"].bind(this)
@@ -61,28 +59,72 @@ state = (function ()
             }
         }
         this.syntax = new syntax
-        this.s = immutable({lines:[''],selections:[],highlights:[],cursors:[[0,0]],cursor:[0,0],main:0,view:[0,0]})
+        this.s = immutable({lines:[''],selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
         this.h = [this.s]
         this.r = []
-        this.setCursor(0,0)
     }
 
-    state.prototype["set"] = function (item, arg)
+    state.prototype["set"] = function (item, arg, opt)
     {
+        var cur, idx, mainCursor
+
+        if (item === 'cursors')
+        {
+            mainCursor = ((opt != null) ? arg[opt] : this.mainCursor())
+            lf('setCursors',mainCursor,arg)
+        }
+        else if (item === 'main')
+        {
+            lf('setMain',arg)
+        }
+        arg = ((function ()
+        {
+            switch (item)
+            {
+                case 'highlights':
+                    return util.normalizeSpans(arg)
+
+                case 'selections':
+                    return util.mergeRanges(arg)
+
+                case 'cursors':
+                    return this.normalizeCursors(arg)
+
+                case 'main':
+                    return _k_.clamp(0,this.s.cursors.length - 1,arg)
+
+                default:
+                    return arg
+            }
+
+        }).bind(this))()
+        if (item !== 'view')
+        {
+            lf('set',item,arg)
+        }
+        this.s = this.s.set(item,arg)
+        if (item === 'cursors')
+        {
+            var list = _k_.list(arg)
+            for (idx = 0; idx < list.length; idx++)
+            {
+                cur = list[idx]
+                if (_k_.eql(cur, mainCursor))
+                {
+                    lf('newMain',idx)
+                    this.s = this.s.set('main',idx)
+                    break
+                }
+            }
+        }
         switch (item)
         {
-            case 'highlights':
-                arg = util.normalizeSpans(arg)
-                break
-            case 'selections':
-                arg = util.mergeRanges(arg)
-                break
             case 'cursors':
-                arg = this.normalizeCursors(arg)
+            case 'main':
+                this.adjustViewForMainCursor()
                 break
         }
 
-        this.s = this.s.set(item,arg)
         this.h.pop()
         this.h.push(this.s)
         return this
@@ -90,18 +132,13 @@ state = (function ()
 
     state.prototype["normalizeCursors"] = function (cursors)
     {
-        cursors = util.normalizePositions(cursors,this.s.lines.length - 1)
-        if (cursors.length === 1)
-        {
-            cursors = []
-        }
-        return cursors
+        return util.normalizePositions(cursors,this.s.lines.length - 1)
     }
 
     state.prototype["clearLines"] = function ()
     {
         this.setLines([''])
-        return this.setCursor(0,0)
+        return this.setMainCursor(0,0)
     }
 
     state.prototype["setLines"] = function (lines)
@@ -213,81 +250,6 @@ state = (function ()
         return this.insert(child_process.execSync('pbpaste').toString("utf8"))
     }
 
-    state.prototype["setCursor"] = function (x, y)
-    {
-        var view
-
-        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
-
-        y = _k_.clamp(0,this.s.lines.length - 1,y)
-        x = _k_.max(0,x)
-        this.set('cursor',[x,y])
-        view = this.s.view.asMutable()
-        if (y >= view[1] + this.cells.rows - 1)
-        {
-            view[1] = y - this.cells.rows + 1
-        }
-        else if (y < view[1])
-        {
-            view[1] = y
-        }
-        if (view[1] > 0 && this.s.lines.length < this.cells.rows)
-        {
-            view[1] = 0
-        }
-        view[0] = _k_.max(0,x - this.cells.cols + 1)
-        return this.setView(view)
-    }
-
-    state.prototype["mainCursor"] = function ()
-    {
-        return this.s.cursors[this.s.main].asMutable()
-    }
-
-    state.prototype["moveCursorAndSelect"] = function (dir)
-    {
-        var selection, selections
-
-        selections = this.s.selections.asMutable()
-        selection = [this.s.cursor[0],this.s.cursor[1],this.s.cursor[0],this.s.cursor[1]]
-        selections.push(selection)
-        this.moveCursor(dir,1)
-        switch (dir)
-        {
-            case 'left':
-                selection[0] = selection[0] - 1
-                break
-            case 'right':
-                selection[2] = selection[2] + 1
-                break
-            case 'up':
-                selection[1] = _k_.max(0,selection[1] - 1)
-                break
-            case 'down':
-                selection[3] = _k_.min(this.s.lines.length - 1,selection[3] + 1)
-                break
-            case 'eol':
-                selection[2] = Infinity
-                break
-            case 'bol':
-                selection[0] = 0
-                break
-            case 'bof':
-                selection[1] = 0
-                selection[0] = 0
-                break
-            case 'eof':
-                selection[3] = this.s.lines.length - 1
-                selection[2] = this.s.lines[this.s.lines.length - 1].length
-                break
-        }
-
-        selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
-        selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
-        this.set('selections',selections)
-        return this
-    }
-
     state.prototype["scrollView"] = function (dir, steps = 1)
     {
         var sx, sy, view
@@ -317,7 +279,30 @@ state = (function ()
         return this.setView(view)
     }
 
-    state.prototype["adjustView"] = function ()
+    state.prototype["adjustViewForMainCursor"] = function ()
+    {
+        var view, x, y
+
+        var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
+
+        view = this.s.view.asMutable()
+        if (y >= view[1] + this.cells.rows - 1)
+        {
+            view[1] = y - this.cells.rows + 1
+        }
+        else if (y < view[1])
+        {
+            view[1] = y
+        }
+        if (view[1] > 0 && this.s.lines.length < this.cells.rows)
+        {
+            view[1] = 0
+        }
+        view[0] = _k_.max(0,x - this.cells.cols + 1)
+        return this.setView(view)
+    }
+
+    state.prototype["initView"] = function ()
     {
         var view
 

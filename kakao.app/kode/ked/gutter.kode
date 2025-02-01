@@ -16,6 +16,8 @@ function gutter
         
     draw: ->
         
+        mainCursor = @state.mainCursor()
+        
         for row in 0...@cells.rows
                         
             y = @state.s.view[1] + row
@@ -32,7 +34,7 @@ function gutter
                 if col < @cells.rows
                     
                     fg = if
-                        y == @state.s.cursor[1] ➜ theme.cursor
+                        y == mainCursor[1] ➜ theme.cursor
                         fullysel                ➜ theme.selection_line
                         selected                ➜ theme.selection
                         highlighted             ➜ theme.highlight

@@ -36,12 +36,12 @@ editor = (function ()
     editor.prototype["init"] = function (x, y, w, h)
     {
         this.cells.init(x,y,w,h)
-        return this.state.adjustView()
+        return this.state.initView()
     }
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, cursor, fg, highlight, li, line, linel, lines, row, s, selection, syntax, view, x, xe, xs, y
+        var bg, ch, cursor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, syntax, view, x, xe, xs, y
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -51,6 +51,7 @@ editor = (function ()
         s = this.state.s
         view = s.view.asMutable()
         lines = s.lines.asMutable()
+        mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -77,7 +78,7 @@ editor = (function ()
             if (y < lines.length)
             {
                 linel = line.length - view[0]
-                if (y === s.cursor[1])
+                if (y === mainCursor[1])
                 {
                     if (linel > 0)
                     {
@@ -161,8 +162,8 @@ editor = (function ()
         if (this.isCursorVisible())
         {
             bg = theme[this.constructor.name + '_cursor_bg']
-            x = s.cursor[0] - view[0]
-            y = s.cursor[1] - view[1]
+            x = mainCursor[0] - view[0]
+            y = mainCursor[1] - view[1]
             if (s.cursors.length <= 1)
             {
                 if (this.isCursorInEmpty())
@@ -235,7 +236,7 @@ editor = (function ()
                     }
                     else
                     {
-                        this.state.setCursor(x,y)
+                        this.state.setMainCursor(x,y)
                     }
                     return true
                 }
@@ -301,8 +302,8 @@ editor = (function ()
         }).bind(this))()
         if (this.dragStart)
         {
-            x = this.state.s.cursor[0]
-            y = this.state.s.cursor[1]
+            var _a_ = this.state.mainCursor(); x = _a_[0]; y = _a_[1]
+
             switch (dir)
             {
                 case 'up':
@@ -347,7 +348,7 @@ editor = (function ()
 
     editor.prototype["isCursorInEmpty"] = function (cursor)
     {
-        cursor = (cursor != null ? cursor : this.state.s.cursor.asMutable())
+        cursor = (cursor != null ? cursor : this.state.mainCursor())
         return util.isLinesPosOutside(this.state.s.lines,cursor)
     }
 
@@ -355,7 +356,7 @@ editor = (function ()
     {
         var visible
 
-        cursor = (cursor != null ? cursor : this.state.s.cursor.asMutable())
+        cursor = (cursor != null ? cursor : this.state.mainCursor())
         visible = util.isPosInsideRange(cursor,this.state.rangeForVisibleLines())
         if (cursor[0] < this.state.s.view[0])
         {
@@ -417,17 +418,17 @@ editor = (function ()
 
             case 'cmd+left':
             case 'ctrl+a':
-                return this.state.setCursor(0,this.state.s.cursor[1])
+                return this.state.setMainCursor(0,this.state.mainCursor()[1])
 
             case 'cmd+right':
             case 'ctrl+e':
-                return this.state.setCursor(this.state.s.lines[this.state.s.cursor[1]].length,this.state.s.cursor[1])
+                return this.state.setMainCursor(this.state.s.lines[this.state.mainCursor()[1]].length,this.state.mainCursor()[1])
 
             case 'ctrl+h':
-                return this.state.setCursor(0,0)
+                return this.state.setMainCursor(0,0)
 
             case 'ctrl+j':
-                return this.state.setCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
+                return this.state.setMainCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
 
             case 'shift+ctrl+h':
                 return this.state.moveCursorAndSelect('bof')
@@ -496,14 +497,14 @@ editor = (function ()
                 return this.state.expandCursors('up')
 
             case 'cmd+z':
-                return this.undo()
+                return this.state.undo()
 
             case 'cmd+y':
             case 'shift+cmd+z':
-                return this.redo()
+                return this.state.redo()
 
             case 'cmd+j':
-                return this.join.Lines()
+                return this.state.joinLines()
 
             case 'cmd+g':
                 return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()
