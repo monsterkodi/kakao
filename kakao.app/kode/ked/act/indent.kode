@@ -23,7 +23,7 @@ export
         
         [x y] = @mainCursor()
             
-        lines = @s.lines.asMutable()
+        lines = @allLines()
         
         indices = util.lineIndicesForRanges @s.selections
         
@@ -42,7 +42,7 @@ export
         
         if valid @s.selections ➜ ⮐ @deindentSelectedLines()
             
-        lines = @s.lines.asMutable()
+        lines = @allLines()
             
         li = @mainCursor()[1]
         if ind = util.numIndent lines[li]
@@ -54,7 +54,7 @@ export
 
         ⮐ if empty @s.selections
         
-        lines = @s.lines.asMutable()
+        lines = @allLines()
         
         indices = util.lineIndicesForRanges @s.selections
         

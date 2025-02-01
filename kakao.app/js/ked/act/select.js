@@ -40,7 +40,7 @@ export default {select:function (from, to)
         }
         else
         {
-            this.moveCursorToNextHighlight(pos)
+            this.addNextHighlightToSelection()
         }
         return
     }
@@ -91,20 +91,22 @@ export default {select:function (from, to)
     }
 },selectAllHighlights:function ()
 {
-    var selections, span
+    var cursors, selections, span
 
     if (_k_.empty(this.s.highlights))
     {
         return
     }
     selections = []
+    cursors = []
     var list = _k_.list(this.s.highlights)
     for (var _b_ = 0; _b_ < list.length; _b_++)
     {
         span = list[_b_]
         selections.push(util.rangeForSpan(span))
-        this.addCursor(util.endOfSpan(span))
+        cursors.push(util.endOfSpan(span))
     }
+    this.addCursors(cursors)
     return this.set('selections',selections)
 },selectNextHighlight:function ()
 {
@@ -167,7 +169,7 @@ export default {select:function (from, to)
     var index, rng, selection, selections
 
     rng = util.rangeForSpan(span)
-    selections = this.s.selections.asMutable()
+    selections = this.allSelections()
     var list = _k_.list(selections)
     for (index = 0; index < list.length; index++)
     {
@@ -184,7 +186,7 @@ export default {select:function (from, to)
 {
     var selections
 
-    selections = this.s.selections.asMutable()
+    selections = this.allSelections()
     selections.push(util.rangeForSpan(span))
     return this.set('selections',selections)
 },selectWordAtCursor_highlightSelection:function ()
@@ -203,8 +205,8 @@ export default {select:function (from, to)
         return
     }
     spans = []
-    lines = this.s.lines.asMutable()
-    var list = _k_.list(this.s.selections.asMutable())
+    lines = this.allLines()
+    var list = _k_.list(this.allSelections())
     for (var _d_ = 0; _d_ < list.length; _d_++)
     {
         selection = list[_d_]
@@ -220,7 +222,7 @@ export default {select:function (from, to)
 {
     var lines, spans
 
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     spans = util.lineSpansForText(lines,text)
     return this.set('highlights',spans)
 },selectChunk:function (x, y)
@@ -255,7 +257,7 @@ export default {select:function (from, to)
     return this.moveCursorAndSelect('eof')
 },textForSelection:function ()
 {
-    return util.textForLinesRanges(this.s.lines.asMutable(),this.s.selections.asMutable())
+    return util.textForLinesRanges(this.allLines(),this.allSelections())
 },isSingleLineSelected:function ()
 {
     return this.s.selections.length === 1 && this.s.selections[0][1] === this.s.selections[0][3]
@@ -305,7 +307,7 @@ export default {select:function (from, to)
         }
         if ((selection[1] <= y && y <= selection[3]))
         {
-            return util.isFullLineRange(this.s.lines.asMutable(),selection)
+            return util.isFullLineRange(this.allLines(),selection)
         }
     }
     return false

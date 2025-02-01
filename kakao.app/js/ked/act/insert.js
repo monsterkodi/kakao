@@ -31,7 +31,7 @@ export default {insert:function (text)
         }
     }
     cursors = this.allCursors()
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     for (var _b_ = ci = cursors.length - 1, _c_ = 0; (_b_ <= _c_ ? ci <= 0 : ci >= 0); (_b_ <= _c_ ? ++ci : --ci))
     {
         cursor = cursors[ci]
@@ -62,7 +62,7 @@ export default {insert:function (text)
 
     var _e_ = this.mainCursor(); x = _e_[0]; y = _e_[1]
 
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     line = lines[y]
     before = line.slice(0, typeof x === 'number' ? x : -1)
     after = line.slice(x)

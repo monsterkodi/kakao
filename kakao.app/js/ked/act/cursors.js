@@ -31,6 +31,9 @@ export default {allCursors:function ()
     cursors = this.allCursors()
     cursors.push(pos)
     return this.set('cursors',cursors,cursors.length - 1)
+},addCursors:function (cursors)
+{
+    return this.set('cursors',this.allCursors().concat(cursors))
 },moveCursor:function (dir, steps = 1)
 {
     var c, cursors
@@ -138,7 +141,7 @@ export default {allCursors:function ()
 {
     var mc, selection, selections
 
-    selections = this.s.selections.asMutable()
+    selections = this.allSelections()
     mc = this.mainCursor()
     selection = [mc[0],mc[1],mc[0],mc[1]]
     selections.push(selection)

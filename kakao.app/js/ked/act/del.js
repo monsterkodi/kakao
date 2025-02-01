@@ -20,7 +20,7 @@ export default {delete:function (type, mods)
         this.setMainCursor(this.s.lines[y].length,y)
         return this
     }
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     line = lines[y]
     remove = 1
     switch (type)

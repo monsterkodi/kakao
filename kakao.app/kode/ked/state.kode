@@ -117,14 +117,14 @@ function state
         ⮐ if @h.length <= 1
         @r.push @h.pop()
         @s = @h[-1]
-        @syntax.setLines @s.lines.asMutable()
+        @syntax.setLines @allLines()
         
     redo: =>
         
         ⮐ if empty @r
         @h.push @r.pop()
         @s = @h[-1]
-        @syntax.setLines @s.lines.asMutable()
+        @syntax.setLines @allLines()
         
     begin: => @beginIndex = @h.length
         

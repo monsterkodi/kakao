@@ -52,7 +52,7 @@ export
             if @s.selections.length < @s.highlights.length
                 @selectAllHighlights()
             else
-                @moveCursorToNextHighlight pos
+                @addNextHighlightToSelection()
             ⮐ 
         
         @selectWordAtCursor_highlightSelection()
@@ -95,10 +95,12 @@ export
         ⮐ if empty @s.highlights
         
         selections = []
+        cursors = []
         for span in @s.highlights
             selections.push util.rangeForSpan(span)
-            @addCursor util.endOfSpan(span)
-        
+            cursors.push util.endOfSpan(span)
+            
+        @addCursors cursors        
         @set 'selections' selections
                     
     selectNextHighlight: ->
@@ -144,7 +146,7 @@ export
         
         rng = util.rangeForSpan span
         
-        selections = @s.selections.asMutable()
+        selections = @allSelections()
         for selection,index in selections
             if util.isSameRange selection rng
                 selections.splice index 1
@@ -154,7 +156,7 @@ export
             
     addSpanToSelection: span ->
         
-        selections = @s.selections.asMutable()
+        selections = @allSelections()
         
         selections.push util.rangeForSpan(span)
         
@@ -171,8 +173,8 @@ export
         ⮐ if empty @s.selections
         
         spans = []
-        lines = @s.lines.asMutable()
-        for selection in @s.selections.asMutable()
+        lines = @allLines()
+        for selection in @allSelections()
             continue if selection[1] != selection[3]
             text  = util.textForLinesRange lines selection
             spans = spans.concat util.lineSpansForText(lines text)
@@ -181,7 +183,7 @@ export
         
     highlightText: text ->
         
-        lines = @s.lines.asMutable()
+        lines = @allLines()
         spans = util.lineSpansForText lines text
 
         @set 'highlights' spans
@@ -234,7 +236,7 @@ export
     #    000     000        000 000      000     
     #    000     00000000  000   000     000     
     
-    textForSelection: -> util.textForLinesRanges @s.lines.asMutable() @s.selections.asMutable()
+    textForSelection: -> util.textForLinesRanges @allLines() @allSelections()
 
     isSingleLineSelected: ->
         
@@ -262,7 +264,7 @@ export
             if selection[3] == y and selection[2] == 0
                 continue
             if selection[1] <= y <= selection[3]
-                ⮐ util.isFullLineRange @s.lines.asMutable() selection
+                ⮐ util.isFullLineRange @allLines() selection
         false
         
     # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  

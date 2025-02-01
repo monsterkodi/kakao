@@ -12,7 +12,7 @@ export default {indentSelectedLines:function ()
     }
     var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
 
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     indices = util.lineIndicesForRanges(this.s.selections)
     var list = _k_.list(indices)
     for (var _b_ = 0; _b_ < list.length; _b_++)
@@ -29,7 +29,7 @@ export default {indentSelectedLines:function ()
     {
         return this.deindentSelectedLines()
     }
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     li = this.mainCursor()[1]
     if (ind = util.numIndent(lines[li]))
     {
@@ -45,7 +45,7 @@ export default {indentSelectedLines:function ()
     {
         return
     }
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     indices = util.lineIndicesForRanges(this.s.selections)
     var list = _k_.list(indices)
     for (var _c_ = 0; _c_ < list.length; _c_++)

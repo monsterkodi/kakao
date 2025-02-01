@@ -50,9 +50,9 @@ class theme
 
     static status_fg_dim = '#333333'
 
-    static editor = '#0d0d0d'
+    static editor = '#000000'
 
-    static editor_empty = '#0a0a0a'
+    static editor_empty = '#000000'
 
     static editor_cursor_main = '#101010'
 

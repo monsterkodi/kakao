@@ -176,7 +176,7 @@ state = (function ()
         }
         this.r.push(this.h.pop())
         this.s = this.h.slice(-1)[0]
-        return this.syntax.setLines(this.s.lines.asMutable())
+        return this.syntax.setLines(this.allLines())
     }
 
     state.prototype["redo"] = function ()
@@ -187,7 +187,7 @@ state = (function ()
         }
         this.h.push(this.r.pop())
         this.s = this.h.slice(-1)[0]
-        return this.syntax.setLines(this.s.lines.asMutable())
+        return this.syntax.setLines(this.allLines())
     }
 
     state.prototype["begin"] = function ()

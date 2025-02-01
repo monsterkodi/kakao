@@ -8,7 +8,7 @@ export default {joinLines:function ()
 
     var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
 
-    lines = this.s.lines.asMutable()
+    lines = this.allLines()
     if (util.isInvalidLineIndex(lines,y))
     {
         return

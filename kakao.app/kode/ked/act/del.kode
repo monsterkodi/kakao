@@ -29,7 +29,7 @@ export
             @setMainCursor @s.lines[y].length y
             ⮐ @
         
-        lines = @s.lines.asMutable()
+        lines = @allLines()
         line  = lines[y]
         
         remove = 1
