@@ -139,25 +139,25 @@ function editor extends events
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event col row button mods count =>
+    onMouse: type sx sy event =>
         
         ⮐ if row >= @cells.y + @cells.rows
         
-        [col row] = @cells.posForScreen col row
+        [col row] = @cells.posForScreen sx sy 
         
-        switch event
+        switch type
             
             'press'
                         
-                if count > 1
+                if event.count > 1
                     
                     @state.deselect()
                     
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
-                    if count == 2
-                        if mods == 'alt'
+                    if event.count == 2
+                        if event.mods == 'alt'
                             @state.clearCursorsHighlightsAndSelections()
                             @state.selectChunk x y
                         else
@@ -176,8 +176,8 @@ function editor extends events
                     
                     @dragStart = [x y x]
                                     
-                    @state.clearCursorsHighlightsAndSelections() if empty mods
-                    if mods == 'alt'
+                    @state.clearCursorsHighlightsAndSelections() if empty event.mods
+                    if event.mods == 'alt'
                         @state.addCursor x y
                     else
                         @state.setMainCursor x y
@@ -306,8 +306,8 @@ function editor extends events
             'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursor 'left'  16
             'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursor 'right' 16
             
-            'cmd+left'  'ctrl+a'        ➜ ⮐ @state.setMainCursor 0 @state.mainCursor()[1]
-            'cmd+right' 'ctrl+e'        ➜ ⮐ @state.setMainCursor @state.s.lines[@state.mainCursor()[1]].length @state.mainCursor()[1]
+            'ctrl+a'                    ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
+            'ctrl+e'                    ➜ ⮐ @state.singleCursorAtEndOfLine()
             'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
             'ctrl+j'                    ➜ ⮐ @state.setMainCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             
@@ -340,6 +340,9 @@ function editor extends events
             'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()
                         
             'cmd+j'                     ➜ ⮐ @state.joinLines()
+
+            'cmd+left'                  ➜ ⮐ @state.setMainCursor 0 @state.mainCursor()[1]
+            'cmd+right'                 ➜ ⮐ @state.setMainCursor @state.s.lines[@state.mainCursor()[1]].length @state.mainCursor()[1]
             
             'cmd+g'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
             'cmd+d'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()

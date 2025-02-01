@@ -108,6 +108,32 @@ export default {allCursors:function ()
 },mainCursor:function ()
 {
     return this.s.cursors[this.s.main].asMutable()
+},singleCursorAtEndOfLine:function ()
+{
+    var mc, rng
+
+    rng = util.lineRangeAtPos(this.allLines(),this.mainCursor())
+    mc = util.rangeEnd(rng)
+    this.deselect()
+    return this.set('cursors',[mc],0)
+},singleCursorAtIndentOrStartOfLine:function ()
+{
+    var indent, lines, mc, rng
+
+    lines = this.allLines()
+    mc = this.mainCursor()
+    rng = util.lineRangeAtPos(lines,mc)
+    indent = util.lineIndentAtPos(lines,mc)
+    if (indent < mc[0])
+    {
+        mc[0] = indent
+    }
+    else
+    {
+        mc = util.rangeStart(rng)
+    }
+    this.deselect()
+    return this.set('cursors',[mc],0)
 },moveCursorAndSelect:function (dir)
 {
     var mc, selection, selections

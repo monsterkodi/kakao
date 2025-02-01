@@ -102,6 +102,16 @@ class util
         return [span[0],span[1],span[2],span[1]]
     }
 
+    static rangeStart (rng)
+    {
+        return [rng[0],rng[1]]
+    }
+
+    static rangeEnd (rng)
+    {
+        return [rng[2],rng[3]]
+    }
+
     static isSameSpan (a, b)
     {
         return _k_.eql(a, b)
@@ -529,6 +539,24 @@ class util
             }
         }
         return [0,y,x,y]
+    }
+
+    static lineRangeAtPos (lines, pos)
+    {
+        var x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        return [0,y,lines[y].length,y]
+    }
+
+    static lineIndentAtPos (lines, pos)
+    {
+        var x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        return util.numIndent(lines[y])
     }
 
     static numIndent (str)

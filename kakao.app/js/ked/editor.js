@@ -184,27 +184,27 @@ editor = (function ()
     editor.prototype["postDraw"] = function ()
     {}
 
-    editor.prototype["onMouse"] = function (event, col, row, button, mods, count)
+    editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var start, x, y
+        var col, row, start, x, y
 
         if (row >= this.cells.y + this.cells.rows)
         {
             return
         }
-        var _a_ = this.cells.posForScreen(col,row); col = _a_[0]; row = _a_[1]
+        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
 
-        switch (event)
+        switch (type)
         {
             case 'press':
-                if (count > 1)
+                if (event.count > 1)
                 {
                     this.state.deselect()
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
-                    if (count === 2)
+                    if (event.count === 2)
                     {
-                        if (mods === 'alt')
+                        if (event.mods === 'alt')
                         {
                             this.state.clearCursorsHighlightsAndSelections()
                             this.state.selectChunk(x,y)
@@ -226,11 +226,11 @@ editor = (function ()
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
                     this.dragStart = [x,y,x]
-                    if (_k_.empty(mods))
+                    if (_k_.empty(event.mods))
                     {
                         this.state.clearCursorsHighlightsAndSelections()
                     }
-                    if (mods === 'alt')
+                    if (event.mods === 'alt')
                     {
                         this.state.addCursor(x,y)
                     }
@@ -416,13 +416,11 @@ editor = (function ()
             case 'shift+ctrl+alt+right':
                 return this.state.moveCursor('right',16)
 
-            case 'cmd+left':
             case 'ctrl+a':
-                return this.state.setMainCursor(0,this.state.mainCursor()[1])
+                return this.state.singleCursorAtIndentOrStartOfLine()
 
-            case 'cmd+right':
             case 'ctrl+e':
-                return this.state.setMainCursor(this.state.s.lines[this.state.mainCursor()[1]].length,this.state.mainCursor()[1])
+                return this.state.singleCursorAtEndOfLine()
 
             case 'ctrl+h':
                 return this.state.setMainCursor(0,0)
@@ -505,6 +503,12 @@ editor = (function ()
 
             case 'cmd+j':
                 return this.state.joinLines()
+
+            case 'cmd+left':
+                return this.state.setMainCursor(0,this.state.mainCursor()[1])
+
+            case 'cmd+right':
+                return this.state.setMainCursor(this.state.s.lines[this.state.mainCursor()[1]].length,this.state.mainCursor()[1])
 
             case 'cmd+g':
                 return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()

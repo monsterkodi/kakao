@@ -118,6 +118,30 @@ export
         @set 'cursors' cursors main
                 
     mainCursor: -> @s.cursors[@s.main].asMutable()
+    
+    singleCursorAtEndOfLine: ->
+        
+        rng = util.lineRangeAtPos @allLines() @mainCursor()
+        mc  = util.rangeEnd rng
+        
+        @deselect()
+        @set 'cursors' [mc] 0
+        
+    singleCursorAtIndentOrStartOfLine: ->
+        
+        lines = @allLines()
+        mc    = @mainCursor()
+        
+        rng    = util.lineRangeAtPos  lines mc
+        indent = util.lineIndentAtPos lines mc
+        
+        if indent < mc[0]
+            mc[0] = indent
+        else
+            mc  = util.rangeStart rng
+        
+        @deselect()
+        @set 'cursors' [mc] 0
                     
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     

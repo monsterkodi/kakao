@@ -76,6 +76,9 @@ class util
         pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
         
     @rangeForSpan: span -> [span[0] span[1] span[2] span[1]]
+
+    @rangeStart: rng -> [rng[0] rng[1]]
+    @rangeEnd:   rng -> [rng[2] rng[3]]
         
     #  0000000  00000000    0000000   000   000  
     # 000       000   000  000   000  0000  000  
@@ -291,7 +294,19 @@ class util
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
             
-        [0 y x y]
+        [0 y x y]   
+
+    @lineRangeAtPos: lines pos ->
+
+        [x y] = pos
+    
+        [0 y lines[y].length y]
+
+    @lineIndentAtPos: lines pos -> 
+
+        [x y] = pos
+
+        util.numIndent lines[y]
         
     @numIndent: str ->
  
