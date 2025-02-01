@@ -22,6 +22,11 @@ logfile = (function ()
         return this.stream.write(txt + '\n')
     }
 
+    logfile.prototype["close"] = function (cb)
+    {
+        return this.stream.close(cb)
+    }
+
     return logfile
 })()
 

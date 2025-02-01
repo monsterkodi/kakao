@@ -39,9 +39,11 @@ class util
     @normalizePositions: posl maxY ->
         
         ⮐ [] if empty posl 
-        ⮐ posl if posl.length == 1
         
         posl = posl.map (a) -> [max(0 a[0]) clamp(0 maxY a[1])]
+        
+        ⮐ posl if posl.length == 1
+        
         posl.sort (a b) -> a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]
         for i in posl.length-1..1
             if util.samePos posl[i] posl[i-1]
@@ -324,6 +326,48 @@ class util
     # 0000000    00000000  0000000  00000000     000     00000000  
     
     @deleteLinesRangesAndAdjustCursor: lines rngs cursor ->
+        
+        for ri in rngs.length-1..0
+            rng = rngs[ri]
+            
+            if util.isPosInsideRange cursor rng
+                cursor = [rng[0] rng[1]]
+            else if util.isPosAfterRange cursor rng
+                if cursor[1] == rng[3]
+                    if rng[1] == rng[3]
+                        cursor[0] = rng[0]
+                    else
+                        cursor[0] = rng[0]
+                        cursor[1] = rng[1]
+                else
+                    cursor[1] -= util.numFullLinesInRange lines rng
+            
+            if rng[1] == rng[3]
+                if rng[0] == 0 and rng[2] == lines[rng[1]].length
+                    lines.splice rng[1] 1
+                else
+                    lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
+            else
+                if rng[2] == lines[rng[3]].length
+                    lines.splice rng[3] 1
+                else
+                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]
+                    partialFirst = true
+                    
+                if rng[3]-rng[1] > 1
+                    lines.splice rng[1]+1 rng[3]-rng[1]-1
+                    
+                if rng[0] == 0
+                    lines.splice rng[1] 1
+                else
+                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
+                    
+                    if partialFirst
+                        lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
+                    
+        [lines cursor]
+
+    @deleteLinesRangesAndAdjustCursors: lines rngs cursors ->
         
         for ri in rngs.length-1..0
             rng = rngs[ri]

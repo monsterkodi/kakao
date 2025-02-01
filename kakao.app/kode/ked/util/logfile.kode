@@ -20,4 +20,8 @@ function logfile
 
         @stream.write txt + '\n'
         
+    close: cb ->
+        
+        @stream.close cb
+        
 export logfile

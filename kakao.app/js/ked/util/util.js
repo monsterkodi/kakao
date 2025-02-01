@@ -40,14 +40,14 @@ class util
         {
             return []
         }
-        if (posl.length === 1)
-        {
-            return posl
-        }
         posl = posl.map(function (a)
         {
             return [_k_.max(0,a[0]),_k_.clamp(0,maxY,a[1])]
         })
+        if (posl.length === 1)
+        {
+            return posl
+        }
         posl.sort(function (a, b)
         {
             return (a[1] === b[1] ? a[0] - b[0] : a[1] - b[1])
@@ -569,6 +569,79 @@ class util
     static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
     {
         var partialFirst, ri, rng
+
+        for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
+        {
+            rng = rngs[ri]
+            if (util.isPosInsideRange(cursor,rng))
+            {
+                cursor = [rng[0],rng[1]]
+            }
+            else if (util.isPosAfterRange(cursor,rng))
+            {
+                if (cursor[1] === rng[3])
+                {
+                    if (rng[1] === rng[3])
+                    {
+                        cursor[0] = rng[0]
+                    }
+                    else
+                    {
+                        cursor[0] = rng[0]
+                        cursor[1] = rng[1]
+                    }
+                }
+                else
+                {
+                    cursor[1] -= util.numFullLinesInRange(lines,rng)
+                }
+            }
+            if (rng[1] === rng[3])
+            {
+                if (rng[0] === 0 && rng[2] === lines[rng[1]].length)
+                {
+                    lines.splice(rng[1],1)
+                }
+                else
+                {
+                    lines.splice(rng[1],1,kstr.splice(lines[rng[1]],rng[0],rng[2] - rng[0]))
+                }
+            }
+            else
+            {
+                if (rng[2] === lines[rng[3]].length)
+                {
+                    lines.splice(rng[3],1)
+                }
+                else
+                {
+                    lines.splice(rng[3],1,lines[rng[3]].slice(rng[2]))
+                    partialFirst = true
+                }
+                if (rng[3] - rng[1] > 1)
+                {
+                    lines.splice(rng[1] + 1,rng[3] - rng[1] - 1)
+                }
+                if (rng[0] === 0)
+                {
+                    lines.splice(rng[1],1)
+                }
+                else
+                {
+                    lines.splice(rng[1],1,lines[rng[1]].slice(0, typeof rng[0] === 'number' ? rng[0] : -1))
+                    if (partialFirst)
+                    {
+                        lines.splice(rng[1],2,lines[rng[1]] + lines[rng[1] + 1])
+                    }
+                }
+            }
+        }
+        return [lines,cursor]
+    }
+
+    static deleteLinesRangesAndAdjustCursors (lines, rngs, cursors)
+    {
+        var cursor, partialFirst, ri, rng
 
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {

@@ -42,10 +42,7 @@ function state
     set: item arg opt =>
         
         if item == 'cursors' 
-            mainCursor = opt? ? arg[opt] : @mainCursor()
-            lf 'setCursors' mainCursor arg 
-        else if item == 'main'
-            lf 'setMain' arg
+            mainCursor = opt? ? copy arg[clamp 0 arg.length-1 opt] : @mainCursor()
         
         arg = switch item 
             'highlights' ➜ util.normalizeSpans         arg
@@ -54,15 +51,17 @@ function state
             'main'       ➜ clamp 0 @s.cursors.length-1 arg
                          ➜ arg
         
-        lf 'set' item arg if item != 'view'
         @s = @s.set item arg
-        
+
         if item == 'cursors'
+            main = -1
             for cur,idx in arg
                 if cur eql mainCursor
-                    lf 'newMain' idx
-                    @s = @s.set 'main' idx
+                    main = idx
                     break
+            if main < 0
+                main = clamp 0 @s.cursors.length-1 @s.main
+            @s = @s.set 'main' main    
         
         switch item 
             'cursors' 
