@@ -398,6 +398,13 @@ class util
         rng[1] == rng[3] and 0 <= rng[1] < lines.length and rng[0] == 0 and rng[2] >= lines[rng[1]].length
         
     @rangeOfLine: lines y -> [0 y lines[y].length y]
+    
+    @numIndentOfLines: lines ->
+        
+        for line in lines
+            continue if empty trim line
+            ⮐ util.numIndent line
+        0
 
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   
@@ -456,8 +463,15 @@ class util
         newls = []
         newpl = []
         for rng,idx in util.rangesForLinePositions lines posl
-            newpl.push [0 newls.length] if idx != 0
-            newls = newls.concat util.linesForLineRange(lines rng)
+            ls = util.linesForLineRange lines rng
+            if idx > 0
+                if posl[idx-1][0]
+                    indent = util.numIndent last newls
+                    indent = max indent util.numIndentOfLines(ls[1..]) if ls.length>1 and posl[idx-1][0] > indent
+                else indent = 0
+                newpl.push [indent newls.length] 
+            ls[0] = lpad(indent) + ls[0] if indent
+            newls = newls.concat ls
         [newls newpl]
         
     # 0000000    00000000  000      00000000  000000000  00000000  

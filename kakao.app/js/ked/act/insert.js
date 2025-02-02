@@ -2,6 +2,8 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 import kstr from "../../kxk/kstr.js"
 
+import util from "../util/util.js"
+
 export default {insert:function (text)
 {
     var ci, cursor, cursors, i, line, lines, s, split, x, y
