@@ -76,15 +76,15 @@ export
         
         ⮐ if empty @s.selections
         
-        cursor     = @mainCursor()
+        cursors    = @allCursors()
         lines      = @allLines()
         selections = @allSelections()
         
-        [lines cursor] = util.deleteLinesRangesAndAdjustCursor lines selections cursor
+        [lines cursors] = util.deleteLinesRangesAndAdjustCursors lines selections cursors
         
         @deselect()
         @setLines lines
-        @setMainCursor cursor
+        @set 'cursors' cursors
         @clearHighlights()
         @
         

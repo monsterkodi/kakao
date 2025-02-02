@@ -442,6 +442,69 @@ class util
         return text.slice(0, -1)
     }
 
+    static lineSpansForText (lines, text)
+    {
+        var line, spans, x1, x2, y
+
+        spans = []
+        var list = _k_.list(lines)
+        for (y = 0; y < list.length; y++)
+        {
+            line = list[y]
+            x2 = 0
+            while (true)
+            {
+                x1 = line.indexOf(text,x2)
+                if (x1 < 0)
+                {
+                    break
+                }
+                x2 = x1 + text.length
+                spans.push([x1,y,x2])
+            }
+        }
+        return spans
+    }
+
+    static textFromBolToPos (lines, pos)
+    {
+        return lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
+    }
+
+    static isOnlyWhitespace (text)
+    {
+        return /^\s+$/.test(text)
+    }
+
+    static numIndent (str)
+    {
+        var m
+
+        if (m = str.match(/^\s+/))
+        {
+            return String(m).length
+        }
+        return 0
+    }
+
+    static lineRangeAtPos (lines, pos)
+    {
+        var x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        return [0,y,lines[y].length,y]
+    }
+
+    static lineIndentAtPos (lines, pos)
+    {
+        var x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        return util.numIndent(lines[y])
+    }
+
     static lineIndicesForRange (rng)
     {
         var indices, li
@@ -552,11 +615,6 @@ class util
         return split
     }
 
-    static textFromBolToPos (lines, pos)
-    {
-        return lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
-    }
-
     static isLinesPosInside (lines, pos)
     {
         return pos[1] < lines.length && (0 <= pos[0] && pos[0] <= lines[pos[1]].length)
@@ -653,132 +711,6 @@ class util
         return [0,y,x,y]
     }
 
-    static lineRangeAtPos (lines, pos)
-    {
-        var x, y
-
-        var _a_ = pos; x = _a_[0]; y = _a_[1]
-
-        return [0,y,lines[y].length,y]
-    }
-
-    static lineIndentAtPos (lines, pos)
-    {
-        var x, y
-
-        var _a_ = pos; x = _a_[0]; y = _a_[1]
-
-        return util.numIndent(lines[y])
-    }
-
-    static numIndent (str)
-    {
-        var m
-
-        if (m = str.match(/^\s+/))
-        {
-            return String(m).length
-        }
-        return 0
-    }
-
-    static lineSpansForText (lines, text)
-    {
-        var line, spans, x1, x2, y
-
-        spans = []
-        var list = _k_.list(lines)
-        for (y = 0; y < list.length; y++)
-        {
-            line = list[y]
-            x2 = 0
-            while (true)
-            {
-                x1 = line.indexOf(text,x2)
-                if (x1 < 0)
-                {
-                    break
-                }
-                x2 = x1 + text.length
-                spans.push([x1,y,x2])
-            }
-        }
-        return spans
-    }
-
-    static deleteLinesRangesAndAdjustCursor (lines, rngs, cursor)
-    {
-        var partialFirst, ri, rng
-
-        for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
-        {
-            rng = rngs[ri]
-            if (util.isPosInsideRange(cursor,rng))
-            {
-                cursor = [rng[0],rng[1]]
-            }
-            else if (util.isPosAfterRange(cursor,rng))
-            {
-                if (cursor[1] === rng[3])
-                {
-                    if (rng[1] === rng[3])
-                    {
-                        cursor[0] = rng[0]
-                    }
-                    else
-                    {
-                        cursor[0] = rng[0]
-                        cursor[1] = rng[1]
-                    }
-                }
-                else
-                {
-                    cursor[1] -= util.numFullLinesInRange(lines,rng)
-                }
-            }
-            if (rng[1] === rng[3])
-            {
-                if (rng[0] === 0 && rng[2] === lines[rng[1]].length)
-                {
-                    lines.splice(rng[1],1)
-                }
-                else
-                {
-                    lines.splice(rng[1],1,kstr.splice(lines[rng[1]],rng[0],rng[2] - rng[0]))
-                }
-            }
-            else
-            {
-                if (rng[2] === lines[rng[3]].length)
-                {
-                    lines.splice(rng[3],1)
-                }
-                else
-                {
-                    lines.splice(rng[3],1,lines[rng[3]].slice(rng[2]))
-                    partialFirst = true
-                }
-                if (rng[3] - rng[1] > 1)
-                {
-                    lines.splice(rng[1] + 1,rng[3] - rng[1] - 1)
-                }
-                if (rng[0] === 0)
-                {
-                    lines.splice(rng[1],1)
-                }
-                else
-                {
-                    lines.splice(rng[1],1,lines[rng[1]].slice(0, typeof rng[0] === 'number' ? rng[0] : -1))
-                    if (partialFirst)
-                    {
-                        lines.splice(rng[1],2,lines[rng[1]] + lines[rng[1] + 1])
-                    }
-                }
-            }
-        }
-        return [lines,cursor]
-    }
-
     static deleteLinesRangesAndAdjustCursors (lines, rngs, cursors)
     {
         var cursor, partialFirst, ri, rng
@@ -786,27 +718,32 @@ class util
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
             rng = rngs[ri]
-            if (util.isPosInsideRange(cursor,rng))
+            var list = _k_.list(cursors)
+            for (var _c_ = 0; _c_ < list.length; _c_++)
             {
-                cursor = [rng[0],rng[1]]
-            }
-            else if (util.isPosAfterRange(cursor,rng))
-            {
-                if (cursor[1] === rng[3])
+                cursor = list[_c_]
+                if (util.isPosInsideRange(cursor,rng))
                 {
-                    if (rng[1] === rng[3])
+                    cursor = [rng[0],rng[1]]
+                }
+                else if (util.isPosAfterRange(cursor,rng))
+                {
+                    if (cursor[1] === rng[3])
                     {
-                        cursor[0] = rng[0]
+                        if (rng[1] === rng[3])
+                        {
+                            cursor[0] -= rng[2] - rng[0]
+                        }
+                        else
+                        {
+                            cursor[0] === rng[0]
+                            cursor[1] -= rng[3] - rng[1]
+                        }
                     }
                     else
                     {
-                        cursor[0] = rng[0]
-                        cursor[1] = rng[1]
+                        cursor[1] -= util.numFullLinesInRange(lines,rng)
                     }
-                }
-                else
-                {
-                    cursor[1] -= util.numFullLinesInRange(lines,rng)
                 }
             }
             if (rng[1] === rng[3])
@@ -849,12 +786,7 @@ class util
                 }
             }
         }
-        return [lines,cursor]
-    }
-
-    static isOnlyWhitespace (text)
-    {
-        return /^\s+$/.test(text)
+        return [lines,cursors]
     }
 }
 

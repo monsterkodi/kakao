@@ -78,20 +78,20 @@ export default {delete:function (type, mods)
     return this
 },deleteSelection:function ()
 {
-    var cursor, lines, selections
+    var cursors, lines, selections
 
     if (_k_.empty(this.s.selections))
     {
         return
     }
-    cursor = this.mainCursor()
+    cursors = this.allCursors()
     lines = this.allLines()
     selections = this.allSelections()
-    var _b_ = util.deleteLinesRangesAndAdjustCursor(lines,selections,cursor); lines = _b_[0]; cursor = _b_[1]
+    var _b_ = util.deleteLinesRangesAndAdjustCursors(lines,selections,cursors); lines = _b_[0]; cursors = _b_[1]
 
     this.deselect()
     this.setLines(lines)
-    this.setMainCursor(cursor)
+    this.set('cursors',cursors)
     this.clearHighlights()
     return this
 }}

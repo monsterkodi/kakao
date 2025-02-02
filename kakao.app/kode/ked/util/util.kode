@@ -203,11 +203,11 @@ class util
 
         mrgd
 
-    # 000      000  000   000  00000000   0000000  
-    # 000      000  0000  000  000       000       
-    # 000      000  000 0 000  0000000   0000000   
-    # 000      000  000  0000  000            000  
-    # 0000000  000  000   000  00000000  0000000   
+    # 000000000  00000000  000   000  000000000  
+    #    000     000        000 000      000     
+    #    000     0000000     00000       000     
+    #    000     000        000 000      000     
+    #    000     00000000  000   000     000     
     
     @textForLinesRange: lines rng ->
         
@@ -237,6 +237,48 @@ class util
             text += '\n'
         text[0...-1]
         
+    @lineSpansForText: lines text ->
+        
+        spans = []
+        
+        for line,y in lines
+            x2 = 0
+            while true
+                x1 = line.indexOf text x2
+                break if x1 < 0
+                x2 = x1+text.length
+                spans.push [x1 y x2]
+        
+        spans
+        
+    @textFromBolToPos: lines pos -> lines[pos[1]][0...pos[0]]
+    
+    @isOnlyWhitespace: text -> /^\s+$/.test text
+    
+    @numIndent: str ->
+ 
+        if m = str.match /^\s+/
+            ⮐ String(m).length
+        0
+        
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
+    @lineRangeAtPos: lines pos ->
+
+        [x y] = pos
+    
+        [0 y lines[y].length y]
+
+    @lineIndentAtPos: lines pos -> 
+
+        [x y] = pos
+
+        util.numIndent lines[y]
+            
     @lineIndicesForRange: rng ->
         
         indices = []
@@ -301,9 +343,7 @@ class util
         for rng in rngs
             split = split.concat util.splitLineRange(lines rng)        
         split
-        
-    @textFromBolToPos:  lines pos -> lines[pos[1]][0...pos[0]]
-        
+                
     @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
     @isLinesPosOutside: lines pos -> not util.isLinesPosInside lines pos 
     
@@ -318,6 +358,12 @@ class util
         
     @rangeOfLine: lines y -> [0 y lines[y].length y]
 
+    #  0000000  000   000  000   000  000   000  000   000  
+    # 000       000   000  000   000  0000  000  000  000   
+    # 000       000000000  000   000  000 0 000  0000000    
+    # 000       000   000  000   000  000  0000  000  000   
+    #  0000000  000   000   0000000   000   000  000   000  
+    
     @rangeOfClosestChunkToPos: lines pos ->
         
         [x y] = pos
@@ -328,6 +374,12 @@ class util
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
         
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
     @rangeOfClosestWordToPos: lines pos ->
         
         [x y] = pos
@@ -351,109 +403,31 @@ class util
                 ⮐ [r[0] y r[1] y]
             
         [0 y x y]   
-
-    @lineRangeAtPos: lines pos ->
-
-        [x y] = pos
-    
-        [0 y lines[y].length y]
-
-    @lineIndentAtPos: lines pos -> 
-
-        [x y] = pos
-
-        util.numIndent lines[y]
-        
-    @numIndent: str ->
- 
-        if m = str.match /^\s+/
-            ⮐ String(m).length
-        0
-        
-    #  0000000  00000000    0000000   000   000   0000000  
-    # 000       000   000  000   000  0000  000  000       
-    # 0000000   00000000   000000000  000 0 000  0000000   
-    #      000  000        000   000  000  0000       000  
-    # 0000000   000        000   000  000   000  0000000   
-    
-    @lineSpansForText: lines text ->
-        
-        spans = []
-        
-        for line,y in lines
-            x2 = 0
-            while true
-                x1 = line.indexOf text x2
-                break if x1 < 0
-                x2 = x1+text.length
-                spans.push [x1 y x2]
-        
-        spans
-            
+                                
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
     # 000   000  000       000      000          000     000       
     # 0000000    00000000  0000000  00000000     000     00000000  
     
-    @deleteLinesRangesAndAdjustCursor: lines rngs cursor ->
-        
-        for ri in rngs.length-1..0
-            rng = rngs[ri]
-            
-            if util.isPosInsideRange cursor rng
-                cursor = [rng[0] rng[1]]
-            else if util.isPosAfterRange cursor rng
-                if cursor[1] == rng[3]
-                    if rng[1] == rng[3]
-                        cursor[0] = rng[0]
-                    else
-                        cursor[0] = rng[0]
-                        cursor[1] = rng[1]
-                else
-                    cursor[1] -= util.numFullLinesInRange lines rng
-            
-            if rng[1] == rng[3]
-                if rng[0] == 0 and rng[2] == lines[rng[1]].length
-                    lines.splice rng[1] 1
-                else
-                    lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
-            else
-                if rng[2] == lines[rng[3]].length
-                    lines.splice rng[3] 1
-                else
-                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]
-                    partialFirst = true
-                    
-                if rng[3]-rng[1] > 1
-                    lines.splice rng[1]+1 rng[3]-rng[1]-1
-                    
-                if rng[0] == 0
-                    lines.splice rng[1] 1
-                else
-                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
-                    
-                    if partialFirst
-                        lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
-                    
-        [lines cursor]
-
     @deleteLinesRangesAndAdjustCursors: lines rngs cursors ->
         
         for ri in rngs.length-1..0
             rng = rngs[ri]
             
-            if util.isPosInsideRange cursor rng
-                cursor = [rng[0] rng[1]]
-            else if util.isPosAfterRange cursor rng
-                if cursor[1] == rng[3]
-                    if rng[1] == rng[3]
-                        cursor[0] = rng[0]
+            for cursor in cursors
+                
+                if util.isPosInsideRange cursor rng
+                    cursor = [rng[0] rng[1]]
+                else if util.isPosAfterRange cursor rng
+                    if cursor[1] == rng[3]
+                        if rng[1] == rng[3]
+                            cursor[0] -= rng[2] - rng[0]
+                        else
+                            cursor[0] == rng[0]
+                            cursor[1] -= rng[3] - rng[1]
                     else
-                        cursor[0] = rng[0]
-                        cursor[1] = rng[1]
-                else
-                    cursor[1] -= util.numFullLinesInRange lines rng
+                        cursor[1] -= util.numFullLinesInRange lines rng
             
             if rng[1] == rng[3]
                 if rng[0] == 0 and rng[2] == lines[rng[1]].length
@@ -478,8 +452,6 @@ class util
                     if partialFirst
                         lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
                     
-        [lines cursor]
-        
-    @isOnlyWhitespace: text -> /^\s+$/.test text
-        
+        [lines cursors]
+                
 export util
