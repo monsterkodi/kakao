@@ -211,7 +211,7 @@ export default {allCursors:function ()
         return this.moveCursorsToEndOfLines()
     }
     lines = this.allLines()
-    rngs = util.splitLineRanges(lines,selections)
+    rngs = util.splitLineRanges(lines,selections,false)
     cursors = util.endPositionsOfRanges(rngs)
     return this.setCursors(cursors)
 },moveCursorsToEndOfLines:function ()

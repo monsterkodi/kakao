@@ -183,6 +183,29 @@ class util
         return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] >= rng[2])
     }
 
+    static isPosTouchingRange (pos, rng)
+    {
+        if (util.isPosInsideRange(pos,rng))
+        {
+            return true
+        }
+        if (_k_.eql(pos, util.endOfRange(rng)))
+        {
+            return true
+        }
+        return false
+    }
+
+    static rangeContainsPos (rng, pos)
+    {
+        return util.isPosInsideRange(pos,rng)
+    }
+
+    static rangeTouchesPos (rng, pos)
+    {
+        return util.isPosTouchingRange(pos,rng)
+    }
+
     static rangeForSpan (span)
     {
         return [span[0],span[1],span[2],span[1]]
@@ -416,7 +439,7 @@ class util
                 return a
             }
         })
-        rngs.sort(function (a, b)
+        return rngs.sort(function (a, b)
         {
             if (a[1] === b[1])
             {
@@ -426,10 +449,6 @@ class util
             {
                 return a[1] - b[1]
             }
-        })
-        return rngs = rngs.filter(function (a)
-        {
-            return a[0] !== a[2] || a[1] !== a[3]
         })
     }
 
@@ -473,6 +492,36 @@ class util
         }
         rngs.push([posl.slice(-1)[0][0],posl.slice(-1)[0][1],lines.slice(-1)[0].length,lines.length - 1])
         return rngs
+    }
+
+    static rangeInRangesContainingPos (rngs, pos)
+    {
+        var rng
+
+        var list = _k_.list(rngs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            rng = list[_a_]
+            if (util.rangeContainsPos(rng,pos))
+            {
+                return rng
+            }
+        }
+    }
+
+    static rangeInRangesTouchingPos (rngs, pos)
+    {
+        var rng
+
+        var list = _k_.list(rngs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            rng = list[_a_]
+            if (util.rangeTouchesPos(rng,pos))
+            {
+                return rng
+            }
+        }
     }
 
     static mergeLineRanges (lines, rngs)
@@ -706,13 +755,13 @@ class util
 
     static linesForLineRange (lines, rng)
     {
-        return util.splitLineRangeIncludeEmpty(lines,rng).map(function (r)
+        return util.splitLineRange(lines,rng).map(function (r)
         {
             return util.textForLineRange(lines,r)
         })
     }
 
-    static splitLineRangeIncludeEmpty (lines, rng, includeEmpty = true)
+    static splitLineRange (lines, rng, includeEmpty = true)
     {
         var i, nl, split
 
@@ -737,12 +786,7 @@ class util
         return split
     }
 
-    static splitLineRange (lines, rng)
-    {
-        return util.splitLineRangeIncludeEmpty(lines,rng,false)
-    }
-
-    static splitLineRanges (lines, rngs)
+    static splitLineRanges (lines, rngs, includeEmpty = true)
     {
         var rng, split
 
@@ -751,7 +795,7 @@ class util
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             rng = list[_a_]
-            split = split.concat(util.splitLineRange(lines,rng))
+            split = split.concat(util.splitLineRange(lines,rng,includeEmpty))
         }
         return split
     }
@@ -1015,6 +1059,74 @@ class util
                 return
             }
         }
+    }
+
+    static addLinesBelowPositionsToRanges (lines, posl, rngs)
+    {
+        var addLineAtIndex, c, newp, newr
+
+        newp = []
+        newr = _k_.copy(rngs)
+        addLineAtIndex = function (c, i)
+        {
+            var range
+
+            range = util.rangeOfLine(lines,i)
+            if (util.isEmptyRange(range))
+            {
+                range[1] += 1
+            }
+            newr.push(range)
+            return newp.push(util.endOfRange(range))
+        }
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            c = list[_a_]
+            if (!util.rangesContainLine(rngs,c[1]))
+            {
+                addLineAtIndex(c,c[1])
+            }
+            else
+            {
+                if (c[1] < lines.length - 1)
+                {
+                    addLineAtIndex(c,c[1] + 1)
+                }
+            }
+        }
+        return [newp,newr]
+    }
+
+    static removeLinesAtPositionsFromRanges (lines, posl, rngs)
+    {
+        var idx, newp, newr, pos, rng
+
+        newp = []
+        newr = util.splitLineRanges(lines,rngs)
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            if (rng = util.rangeInRangesTouchingPos(newr,pos))
+            {
+                idx = newr.indexOf(rng)
+                if (idx > 0)
+                {
+                    newp.push(util.endOfRange(newr[idx - 1]))
+                }
+                else
+                {
+                    newp.push(util.endOfRange(newr[idx]))
+                }
+                newr.splice(idx,1)
+            }
+            else
+            {
+                newp.push(pos)
+            }
+        }
+        return [newp,newr]
     }
 }
 

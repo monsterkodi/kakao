@@ -143,8 +143,9 @@ function state
             @h.splice @beginIndex @h.length-@beginIndex-1
     
             delete @beginIndex
+        @
             
-    pushState: -> @h.push @s
+    pushState: -> @h.push @s;@
     swapState: -> @h.pop();@pushState() 
         
     isDirty: => @h.length > 1

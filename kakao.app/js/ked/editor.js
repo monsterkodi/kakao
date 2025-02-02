@@ -540,6 +540,9 @@ editor = (function ()
             case 'cmd+l':
                 return this.state.selectMoreLines()
 
+            case 'shift+cmd+l':
+                return this.state.selectLessLines()
+
             case 'cmd+left':
                 return this.state.moveCursorsToIndentOrStartOfLines()
 

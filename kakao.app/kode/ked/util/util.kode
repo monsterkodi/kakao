@@ -115,6 +115,15 @@ class util
     
         pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
         
+    @isPosTouchingRange: pos rng ->
+        
+        ⮐ true if util.isPosInsideRange pos rng
+        ⮐ true if pos eql util.endOfRange rng
+        false
+
+    @rangeContainsPos: rng pos -> util.isPosInsideRange pos rng
+    @rangeTouchesPos:  rng pos -> util.isPosTouchingRange pos rng
+        
     @rangeForSpan: span -> [span[0] span[1] span[2] span[1]]
     @rangeFromStartToEnd: start end -> [start[0] start[1] end[0] end[1]]
     
@@ -212,7 +221,6 @@ class util
         rngs = rngs.map (a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a
         rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
         rngs.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
-        rngs = rngs.filter (a) -> a[0] != a[2] or a[1] != a[3]
         
     @endPositionsOfRanges: rngs ->
         
@@ -233,7 +241,19 @@ class util
             rngs.push [posl[idx-1][0] posl[idx-1][1] pos[0] pos[1]] if idx > 0            
         rngs.push [posl[-1][0] posl[-1][1] lines[-1].length lines.length-1]
         rngs
-                    
+        
+    @rangeInRangesContainingPos: rngs pos ->
+        
+        for rng in rngs
+            if util.rangeContainsPos rng pos
+                ⮐ rng
+
+    @rangeInRangesTouchingPos: rngs pos ->
+        
+        for rng in rngs
+            if util.rangeTouchesPos rng pos
+                ⮐ rng
+                
     # 00     00  00000000  00000000    0000000   00000000  
     # 000   000  000       000   000  000        000       
     # 000000000  0000000   0000000    000  0000  0000000   
@@ -248,7 +268,7 @@ class util
         
         mrgd = []
         for s,i in rngs
-            if  empty mrgd or 
+            if empty mrgd or 
                 s[1] > tail[3]+1 or 
                 s[1] == tail[3] and s[0] > tail[2] or 
                 s[1] == tail[3]+1 and (s[0] > 0 or tail[2] < lines[tail[3]].length)
@@ -383,9 +403,9 @@ class util
         
     @linesForLineRange: lines rng ->
 
-        util.splitLineRangeIncludeEmpty(lines rng).map (r) -> util.textForLineRange lines r
+        util.splitLineRange(lines rng).map (r) -> util.textForLineRange lines r
 
-    @splitLineRangeIncludeEmpty: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
+    @splitLineRange: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
         
         nl = util.numLinesInRange rng 
         ⮐ [rng] if nl == 1
@@ -401,18 +421,14 @@ class util
         split.push [0 rng[3] rng[2] rng[3]] if includeEmpty or rng[2] > 0
 
         split
-        
-    @splitLineRange: lines rng -> # split multi-line-range into list of single-line-ranges
-        
-        util.splitLineRangeIncludeEmpty lines rng false
-                    
-    @splitLineRanges: lines rngs -> # split list of multi-line-ranges into list of single-line-ranges
+                            
+    @splitLineRanges: lines rngs includeEmpty=true -> # split list of multi-line-ranges into list of single-line-ranges
         
         split = []        
         for rng in rngs
-            split = split.concat util.splitLineRange(lines rng)        
+            split = split.concat util.splitLineRange(lines rng includeEmpty)
         split
-                
+        
     @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
     @isLinesPosOutside: lines pos -> not util.isLinesPosInside lines pos 
     
@@ -576,5 +592,53 @@ class util
             
             ⮐ if ci >= cursors.length
             ⮐ if cursors[ci][1] > cursor[1]
+            
+    #  0000000   0000000    0000000          00000000    0000000   000   000   0000000   00000000   0000000  
+    # 000   000  000   000  000   000        000   000  000   000  0000  000  000        000       000       
+    # 000000000  000   000  000   000        0000000    000000000  000 0 000  000  0000  0000000   0000000   
+    # 000   000  000   000  000   000        000   000  000   000  000  0000  000   000  000            000  
+    # 000   000  0000000    0000000          000   000  000   000  000   000   0000000   00000000  0000000   
+    
+    @addLinesBelowPositionsToRanges: lines posl rngs ->
+    
+        newp = []
+        newr = copy rngs
+    
+        addLineAtIndex = c i ->
+            range = util.rangeOfLine lines i
+            range[1] += 1 if util.isEmptyRange range
+            newr.push range
+            newp.push util.endOfRange(range)
+            
+        for c in posl
+            if not util.rangesContainLine(rngs c[1])
+                addLineAtIndex c c[1]
+            else
+                addLineAtIndex c c[1]+1 if c[1] < lines.length-1
+    
+        [newp newr]
+    
+    # 00000000   00000000  00     00   0000000   000   000  00000000     00000000   000   000   0000000    0000000    
+    # 000   000  000       000   000  000   000  000   000  000          000   000  0000  000  000        000         
+    # 0000000    0000000   000000000  000   000   000 000   0000000      0000000    000 0 000  000  0000  0000000     
+    # 000   000  000       000 0 000  000   000     000     000          000   000  000  0000  000   000       000    
+    # 000   000  00000000  000   000   0000000       0      00000000     000   000  000   000   0000000   0000000     
+    
+    @removeLinesAtPositionsFromRanges: lines posl rngs ->
+        
+        newp = []
+        newr = util.splitLineRanges lines rngs
+        
+        for pos in posl
+            if rng = util.rangeInRangesTouchingPos newr pos
+                idx = newr.indexOf rng
+                if idx > 0
+                    newp.push util.endOfRange(newr[idx-1])
+                else
+                    newp.push util.endOfRange(newr[idx])
+                newr.splice idx 1
+            else
+                newp.push pos
+        [newp newr]
                 
 export util

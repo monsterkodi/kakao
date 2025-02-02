@@ -190,13 +190,15 @@ state = (function ()
         if (!_k_.empty(this.beginIndex))
         {
             this.h.splice(this.beginIndex,this.h.length - this.beginIndex - 1)
-            return delete this.beginIndex
+            delete this.beginIndex
         }
+        return this
     }
 
     state.prototype["pushState"] = function ()
     {
-        return this.h.push(this.s)
+        this.h.push(this.s)
+        return this
     }
 
     state.prototype["swapState"] = function ()

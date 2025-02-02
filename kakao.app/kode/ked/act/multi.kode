@@ -188,12 +188,11 @@ export
         
         selections = @allSelections()
         
-        if empty selections
-            ⮐ @moveCursorsToEndOfLines()
+        ⮐ @moveCursorsToEndOfLines() if empty selections
         
         lines   = @allLines()
-        rngs    = util.splitLineRanges lines selections
-        # lfc '●' rngs.length rngs noon(rngs)
+        rngs    = util.splitLineRanges lines selections false
+
         cursors = util.endPositionsOfRanges rngs
         
         @setCursors cursors

@@ -241,31 +241,40 @@ export
         @moveCursor 'bof'
         @moveCursorAndSelect 'eof'
         
+    # 00     00   0000000   00000000   00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000  0000000    0000000   
+    # 000 0 000  000   000  000   000  000       
+    # 000   000   0000000   000   000  00000000  
+    
     selectMoreLines: ->
         
         cursors    = @allCursors()
         selections = @allSelections()
         lines      = @allLines()
-        lastCursor = []
         
-        cursorLineAtIndex = c i ->
-            range = util.rangeOfLine lines i
-            selections.push range
-            lastCursor = util.endOfRange range
-            
-        start = false
-        for c in cursors
-            if not util.rangesContainLine selections c[1]
-                cursorLineAtIndex c c[1]
-                start = true
-                
-        if not start
-            for c in cursors
-                cursorLineAtIndex c c[1]+1 if c[1] < lines.length-1
-                
+        [cursors selections] = util.addLinesBelowPositionsToRanges lines cursors selections
+        
         @setSelections selections
-        @setCursors [lastCursor] 0
+        @setCursors cursors cursors.length-1
+
+    # 000      00000000   0000000   0000000  
+    # 000      000       000       000       
+    # 000      0000000   0000000   0000000   
+    # 000      000            000       000  
+    # 0000000  00000000  0000000   0000000   
+    
+    selectLessLines: ->
         
+        cursors    = @allCursors()
+        selections = @allSelections()
+        lines      = @allLines()
+        
+        [cursors selections] = util.removeLinesAtPositionsFromRanges lines cursors selections
+        
+        @setSelections selections
+        @setCursors cursors cursors.length-1
+                
     # 000000000  00000000  000   000  000000000  
     #    000     000        000 000      000     
     #    000     0000000     00000       000     

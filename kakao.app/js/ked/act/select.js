@@ -271,45 +271,26 @@ export default {select:function (from, to)
     return this.moveCursorAndSelect('eof')
 },selectMoreLines:function ()
 {
-    var c, cursorLineAtIndex, cursors, lastCursor, lines, selections, start
+    var cursors, lines, selections
 
     cursors = this.allCursors()
     selections = this.allSelections()
     lines = this.allLines()
-    lastCursor = []
-    cursorLineAtIndex = function (c, i)
-    {
-        var range
+    var _f_ = util.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
 
-        range = util.rangeOfLine(lines,i)
-        selections.push(range)
-        return lastCursor = util.endOfRange(range)
-    }
-    start = false
-    var list = _k_.list(cursors)
-    for (var _f_ = 0; _f_ < list.length; _f_++)
-    {
-        c = list[_f_]
-        if (!util.rangesContainLine(selections,c[1]))
-        {
-            cursorLineAtIndex(c,c[1])
-            start = true
-        }
-    }
-    if (!start)
-    {
-        var list1 = _k_.list(cursors)
-        for (var _10_ = 0; _10_ < list1.length; _10_++)
-        {
-            c = list1[_10_]
-            if (c[1] < lines.length - 1)
-            {
-                cursorLineAtIndex(c,c[1] + 1)
-            }
-        }
-    }
     this.setSelections(selections)
-    return this.setCursors([lastCursor],0)
+    return this.setCursors(cursors,cursors.length - 1)
+},selectLessLines:function ()
+{
+    var cursors, lines, selections
+
+    cursors = this.allCursors()
+    selections = this.allSelections()
+    lines = this.allLines()
+    var _10_ = util.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _10_[0]; selections = _10_[1]
+
+    this.setSelections(selections)
+    return this.setCursors(cursors,cursors.length - 1)
 },textForSelection:function ()
 {
     return util.textForLineRanges(this.allLines(),this.allSelections())

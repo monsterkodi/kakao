@@ -356,6 +356,7 @@ function editor extends events
             'cmd+a'                     ➜ ⮐ @state.selectAllLines()
             'cmd+j'                     ➜ ⮐ @state.joinLines()
             'cmd+l'                     ➜ ⮐ @state.selectMoreLines()
+            'shift+cmd+l'               ➜ ⮐ @state.selectLessLines()
 
             'cmd+left'                  ➜ ⮐ @state.moveCursorsToIndentOrStartOfLines()
             'cmd+right'                 ➜ ⮐ @state.moveCursorsToEndOfSelectionsOrLines()

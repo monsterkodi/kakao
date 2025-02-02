@@ -86,23 +86,3 @@ export
         @setCursors cursors
         @setLines   lines
         
-    insertNewlineOld: ->
-        
-        [x y] = @mainCursor()
-        
-        lines = @allLines()
-        line  = lines[y]
-        
-        before = line[0...x]
-        after  = line[x..]
-        
-        lines.splice y 1 before
-        lines.splice y+1 0 after
-                
-        @setLines lines
-        
-        y = y + 1
-        x = 0
-        
-        @setMainCursor x y
-        

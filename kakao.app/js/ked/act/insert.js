@@ -73,20 +73,4 @@ export default {insert:function (text)
 
     this.setCursors(cursors)
     return this.setLines(lines)
-},insertNewlineOld:function ()
-{
-    var after, before, line, lines, x, y
-
-    var _f_ = this.mainCursor(); x = _f_[0]; y = _f_[1]
-
-    lines = this.allLines()
-    line = lines[y]
-    before = line.slice(0, typeof x === 'number' ? x : -1)
-    after = line.slice(x)
-    lines.splice(y,1,before)
-    lines.splice(y + 1,0,after)
-    this.setLines(lines)
-    y = y + 1
-    x = 0
-    return this.setMainCursor(x,y)
 }}
