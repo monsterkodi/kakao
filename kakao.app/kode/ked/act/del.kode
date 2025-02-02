@@ -20,13 +20,14 @@ export
     delete: type mods ->
                 
         if type == 'back' and valid @s.selections
-            @deleteSelection()
-            ⮐ @
+            ⮐ @deleteSelection()
         
         lines   = @allLines()
         cursors = @allCursors()
             
-        for cursor,ci in cursors
+        for ci in cursors.length-1..0
+            
+            cursor = cursors[ci]
             
             [x y] = cursor
                 
@@ -36,6 +37,7 @@ export
             line = lines[y]
             
             remove = 1
+            dc = 0
             
             switch type
                 
@@ -49,29 +51,30 @@ export
                             x = lines[y].length
                             remove = 2
                             line = lines[y] + line
+                            cursor[0] = x
+                            cursor[1] = y
                     else
                         if mods in ['cmd' 'alt']
                             rng = util.rangeOfWordOrWhitespaceLeftToPos lines cursor
                             dc = rng[2] - rng[0]
-                            x -= dc
-                            line = kstr.splice line x dc
+                            line = kstr.splice line x-dc dc
                         else
                             before = util.textFromBolToPos lines cursor
                             if util.isOnlyWhitespace before
                                 dc = x % 4
                                 dc = 4 if dc == 0
-                                x -= dc
-                                line = kstr.splice line x dc
+                                line = kstr.splice line x-dc dc
                             else
-                                x -= 1
-                                line = kstr.splice line x 1
+                                dc = 1
+                                line = kstr.splice line x-dc dc
                                 
-            cursor[0] = x
+            util.moveCursorsInSameLineBy cursors cursor -dc
             
             lines.splice y remove line
             
         @setLines   lines
         @setCursors cursors
+        @clearHighlights()
         @
     
     deleteOld: type mods ->
@@ -133,15 +136,17 @@ export
         
         ⮐ if empty @s.selections
         
+        @pushState() if not @beginIndex
+        
         cursors    = @allCursors()
         lines      = @allLines()
         selections = @allSelections()
         
-        [lines cursors] = util.deleteLinesRangesAndAdjustCursors lines selections cursors
+        [lines cursors] = util.deleteLineRangesAndAdjustPositions lines selections cursors
         
         @deselect()
-        @setLines lines
-        @setCursors cursors
         @clearHighlights()
+        @setLines   lines
+        @setCursors cursors
         @
         

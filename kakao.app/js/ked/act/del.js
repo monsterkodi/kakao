@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 import kstr from "../../kxk/kstr.js"
 
@@ -10,16 +10,14 @@ export default {delete:function (type, mods)
 
     if (type === 'back' && !_k_.empty(this.s.selections))
     {
-        this.deleteSelection()
-        return this
+        return this.deleteSelection()
     }
     lines = this.allLines()
     cursors = this.allCursors()
-    var list = _k_.list(cursors)
-    for (ci = 0; ci < list.length; ci++)
+    for (var _a_ = ci = cursors.length - 1, _b_ = 0; (_a_ <= _b_ ? ci <= 0 : ci >= 0); (_a_ <= _b_ ? ++ci : --ci))
     {
-        cursor = list[ci]
-        var _b_ = cursor; x = _b_[0]; y = _b_[1]
+        cursor = cursors[ci]
+        var _c_ = cursor; x = _c_[0]; y = _c_[1]
 
         if (type === 'back' && cursors.length === 1 && util.isLinesPosOutside(this.s.lines,[x,y]))
         {
@@ -27,6 +25,7 @@ export default {delete:function (type, mods)
         }
         line = lines[y]
         remove = 1
+        dc = 0
         switch (type)
         {
             case 'eol':
@@ -45,6 +44,8 @@ export default {delete:function (type, mods)
                         x = lines[y].length
                         remove = 2
                         line = lines[y] + line
+                        cursor[0] = x
+                        cursor[1] = y
                     }
                 }
                 else
@@ -53,8 +54,7 @@ export default {delete:function (type, mods)
                     {
                         rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,cursor)
                         dc = rng[2] - rng[0]
-                        x -= dc
-                        line = kstr.splice(line,x,dc)
+                        line = kstr.splice(line,x - dc,dc)
                     }
                     else
                     {
@@ -66,24 +66,24 @@ export default {delete:function (type, mods)
                             {
                                 dc = 4
                             }
-                            x -= dc
-                            line = kstr.splice(line,x,dc)
+                            line = kstr.splice(line,x - dc,dc)
                         }
                         else
                         {
-                            x -= 1
-                            line = kstr.splice(line,x,1)
+                            dc = 1
+                            line = kstr.splice(line,x - dc,dc)
                         }
                     }
                 }
                 break
         }
 
-        cursor[0] = x
+        util.moveCursorsInSameLineBy(cursors,cursor,-dc)
         lines.splice(y,remove,line)
     }
     this.setLines(lines)
     this.setCursors(cursors)
+    this.clearHighlights()
     return this
 },deleteOld:function (type, mods)
 {
@@ -94,7 +94,7 @@ export default {delete:function (type, mods)
         this.deleteSelection()
         return this
     }
-    var _c_ = this.mainCursor(); x = _c_[0]; y = _c_[1]
+    var _d_ = this.mainCursor(); x = _d_[0]; y = _d_[1]
 
     if (type === 'back' && util.isLinesPosOutside(this.s.lines,[x,y]))
     {
@@ -165,14 +165,18 @@ export default {delete:function (type, mods)
     {
         return
     }
+    if (!this.beginIndex)
+    {
+        this.pushState()
+    }
     cursors = this.allCursors()
     lines = this.allLines()
     selections = this.allSelections()
-    var _d_ = util.deleteLinesRangesAndAdjustCursors(lines,selections,cursors); lines = _d_[0]; cursors = _d_[1]
+    var _e_ = util.deleteLineRangesAndAdjustPositions(lines,selections,cursors); lines = _e_[0]; cursors = _e_[1]
 
     this.deselect()
+    this.clearHighlights()
     this.setLines(lines)
     this.setCursors(cursors)
-    this.clearHighlights()
     return this
 }}

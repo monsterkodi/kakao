@@ -10,6 +10,7 @@ export default {insert:function (text)
     if (split.length > 1)
     {
         this.begin()
+        this.deleteSelection()
         var list = _k_.list(split)
         for (i = 0; i < list.length; i++)
         {
@@ -23,11 +24,15 @@ export default {insert:function (text)
         this.end()
         return
     }
-    if (text === '\t')
+    if (!_k_.empty(this.s.selections))
     {
-        if (!_k_.empty(this.s.selections))
+        if (text === '\t')
         {
             return this.indentSelectedLines()
+        }
+        if (this.s.cursors.length === 1)
+        {
+            this.deleteSelection()
         }
     }
     cursors = this.allCursors()

@@ -34,24 +34,31 @@ use ../util ◆ util
         util.normalizeRanges [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9] [1 1 2 2]]
         util.normalizeRanges [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9] [1 1 2 2]]
         
-    ▸ mergeRanges
+    ▸ mergeLineRanges
     
-        util.mergeRanges [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9]]
-        util.mergeRanges [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9]]
-        util.mergeRanges [[1 1 2 2] [0 0 9 9] [0 0 10 0] [0 8 9 9]] ▸ [[0 0 9 9]]
+        lines = ['1234567890' '1234567890' '1234567890']
+    
+        util.mergeLineRanges lines [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9]]
+        util.mergeLineRanges lines [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9]]
+        util.mergeLineRanges lines [[1 1 2 2] [0 0 9 9] [0 0 10 0] [0 8 9 9]] ▸ [[0 0 9 9]]
         
-        util.mergeRanges [[4 0 6 0] [8 0 10 0]] ▸ [[4 0 6 0] [8 0 10 0]]
-        util.mergeRanges [[4 0 6 0] [7 0 10 0]] ▸ [[4 0 6 0] [7 0 10 0]]
-        util.mergeRanges [[4 0 6 0] [6 0 10 0]] ▸ [[4 0 10 0]]
-        util.mergeRanges [[4 0 6 0] [5 0 10 0]] ▸ [[4 0 10 0]]
+        util.mergeLineRanges lines [[4 0 6 0] [8 0 10 0]] ▸ [[4 0 6 0] [8 0 10 0]]
+        util.mergeLineRanges lines [[4 0 6 0] [7 0 10 0]] ▸ [[4 0 6 0] [7 0 10 0]]
+        util.mergeLineRanges lines [[4 0 6 0] [6 0 10 0]] ▸ [[4 0 10 0]]
+        util.mergeLineRanges lines [[4 0 6 0] [5 0 10 0]] ▸ [[4 0 10 0]]
+        
+        util.mergeLineRanges lines [[4 1 10 1] [0 2 4 2]] ▸ [[4 1 4 2]]
 
-    ▸ deleteRangesAndAdjustCursors
+    ▸ deleteLineRangesAndAdjustPositions
     
         lines = ['1234567890' 'abcdefghij']
     
-        # util.deleteLinesRangesAndAdjustCursors lines [[5 0 5 0]] [[5 1]] ▸ [lines [[5 1]]]
-        # util.deleteLinesRangesAndAdjustCursors lines [[5 0 6 0]] [[5 1]] ▸ [['123457890''abcdefghij'] [[5 1]]]
-        util.deleteLinesRangesAndAdjustCursors lines [[5 0 5 1]] [[5 1]] ▸ [['12345fghij'] [[5 0]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 0]] [[5 1]] ▸ [lines [[5 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 6 0]] [[5 1]] ▸ [['123457890''abcdefghij'] [[5 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 1]] [[5 1]] ▸ [['12345fghij'] [[5 0]]]
+        
+        lines = ['line 1' 'line 2' 'line 3']
+        util.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [['line 3'] [[0 0]]]
 
     ▸ rangeOfClosestWordToPos
     
@@ -164,6 +171,7 @@ use ../util ◆ util
     ▸ splitLineRanges
     
         lines = ['1' '' '12' 'abc']
-        util.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
+        # util.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
+        util.splitLineRanges lines [[0 2 1 2] [2 2 3 2]] ▸ [[0 2 1 2] [2 2 3 2]]
         
         

@@ -535,7 +535,6 @@ editor = (function ()
 
         if (!_k_.empty(event.char))
         {
-            this.state.deleteSelection()
             return this.state.insert(event.char)
         }
         else

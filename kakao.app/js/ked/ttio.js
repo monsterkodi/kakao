@@ -37,6 +37,7 @@ TTIO = (function ()
         this.write('\x1b[?1006h')
         this.write('\x1b[?1049h')
         this.write('\x1b[?2004h')
+        this.write('\x1b[>1s')
         this.write('\x1b[>1u')
         this.write('\x1b[=31;1u')
         process.stdout.on('resize',this.onResize)
@@ -52,6 +53,7 @@ TTIO = (function ()
     TTIO.prototype["quit"] = function ()
     {
         this.clear()
+        this.write('\x1b[>0s')
         this.write('\x1b[<u')
         this.write('\x1b[?1049l')
         this.showCursor()
@@ -328,11 +330,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _194_23_
+        var diff, _196_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_194_23_=this.lastClick) != null ? _194_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_196_23_=this.lastClick) != null ? _196_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -360,7 +362,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _235_23_
+        var csi, esc, event, text, _238_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {

@@ -34,7 +34,7 @@ export
         
         selections.push [from[0] from[1] to[0] to[1]]
         
-        @set 'selections' selections
+        @setSelections selections
         
     allSelections: -> @s.selections.asMutable()
     allHighlights: -> @s.highlights.asMutable()
@@ -101,7 +101,7 @@ export
             cursors.push util.endOfSpan(span)
             
         @addCursors cursors        
-        @set 'selections' selections
+        @setSelections selections
                     
     selectNextHighlight: ->
         
@@ -140,7 +140,7 @@ export
 
     selectSpan: span ->
         
-        @set 'selections' [util.rangeForSpan(span)]
+        @setSelections [util.rangeForSpan(span)]
         
     deselectSpan: span ->
         
@@ -150,7 +150,7 @@ export
         for selection,index in selections
             if util.isSameRange selection rng
                 selections.splice index 1
-                @set 'selections' selections
+                @setSelections selections
                 ⮐ true
         false
             
@@ -160,7 +160,7 @@ export
         
         selections.push util.rangeForSpan(span)
         
-        @set 'selections' selections
+        @setSelections selections
                 
     selectWordAtCursor_highlightSelection: ->
         
@@ -179,14 +179,14 @@ export
             text  = util.textForLinesRange lines selection
             spans = spans.concat util.lineSpansForText(lines text)
         
-        @set 'highlights' spans
+        @setHighlights spans
         
     highlightText: text ->
         
         lines = @allLines()
         spans = util.lineSpansForText lines text
 
-        @set 'highlights' spans
+        @setHighlights spans
         
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   
@@ -225,6 +225,17 @@ export
             @select [0 y] [@s.lines[y].length y]
         @
         
+    selectCursorLines: ->
+        
+        selections = []
+        cursors = @allCursors()
+        lines = @allLines()
+        
+        for y in util.lineIndicesForPositions cursors
+            selections.push [0 y lines[y].length y]
+            
+        @setSelections selections
+        
     selectAllLines: ->
         
         @moveCursor 'bof'
@@ -252,7 +263,7 @@ export
             for c in cursors
                 cursorLineAtIndex c c[1]+1 if c[1] < lines.length-1
                 
-        @set 'selections' selections
+        @setSelections selections
         @setCursors [lastCursor] 0
         
     # 000000000  00000000  000   000  000000000  
@@ -301,12 +312,12 @@ export
     deselect: ->
         
         if valid @s.selections
-            @set 'selections' []
+            @setSelections []
             
     clearHighlights: ->
 
         if valid @s.highlights
-            @set 'highlights' []
+            @setHighlights []
             
     clearCursors: ->
             
@@ -315,6 +326,7 @@ export
             
     clearCursorsHighlightsAndSelections: ->
         
+        @pushState() if @s.cursors.length>1 or valid @s.selections
         @clearCursors()
         @clearHighlights()
         @deselect()

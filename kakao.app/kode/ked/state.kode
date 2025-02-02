@@ -39,23 +39,22 @@ function state
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: item arg opt =>
+    set: item arg =>
         
-        arg = switch item 
-            'highlights' ➜ util.normalizeSpans         arg
-            'selections' ➜ util.mergeRanges            arg
-            'main'       ➜ clamp 0 @s.cursors.length-1 arg
-                         ➜ arg
-        
+        # lf item noon(arg) if item=='selections'
         @s = @s.set item arg
-        
-        switch item 
-            'main' ➜  @adjustViewForMainCursor()
-        
-        @h.pop()
-        @h.push @s
+        @swapState()
         @
+        
+    setSelections: selections -> @set 'selections' util.mergeLineRanges(@allLines() selections)
+    setHighlights: highlights -> @set 'highlights' util.normalizeSpans(highlights)
                 
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
+    # 000       000   000  000   000  000       000   000  000   000  000       
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
+    # 000       000   000  000   000       000  000   000  000   000       000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+    
     setCursors: cursors main -> 
     
         if main?
@@ -73,15 +72,13 @@ function state
                 main = idx
                 break
                 
-        if main < 0
-            main = clamp 0 @s.cursors.length-1 @s.main
+        main = @s.main if main < 0
+        main = clamp 0 @s.cursors.length-1 main
             
         @s = @s.set 'main' main    
         
         @adjustViewForMainCursor()
-        
-        @h.pop()
-        @h.push @s
+        @swapState()
         @
         
     # 000      000  000   000  00000000   0000000  
@@ -89,19 +86,14 @@ function state
     # 000      000  000 0 000  0000000   0000000   
     # 000      000  000  0000  000            000  
     # 0000000  000  000   000  00000000  0000000   
-    
-    clearLines: => 
         
-        @setLines ['']
-        @setMainCursor 0 0
-    
     setLines: lines =>
         
         @syntax.setLines lines
         
         @s = @s.set 'lines' lines        
         @r = []
-        @h.push @s
+        @pushState()
         
     allLines: => @s.lines.asMutable()
         
@@ -110,6 +102,11 @@ function state
         @r = []
         @h = []
         @setLines lines
+        
+    clearLines: => 
+        
+        @setLines ['']
+        @setMainCursor 0 0
         
     isValidLineIndex:   li => 0 <= li < @s.lines.length
     isInvalidLineIndex: li => not @isValidLineIndex li
@@ -143,6 +140,9 @@ function state
             @h.splice @beginIndex @h.length-@beginIndex-1
     
             delete @beginIndex
+            
+    pushState: -> @h.push @s
+    swapState: -> @h.pop();@pushState() 
         
     isDirty: => @h.length > 1
     hasRedo: => @r.length > 0
@@ -158,8 +158,13 @@ function state
     cut: =>
         
         if empty @s.selections
-            @selectLine()
-            @cut() if valid @s.selections
+            @selectCursorLines()
+            ⮐ @cut() if valid @s.selections
+
+            if util.isEmptyLineAtPos @allLines() @mainCursor()
+                lines = @allLines()
+                lines.splice @mainCursor()[1] 1
+                @setLines lines
             ⮐ 
         @copy()
         @deleteSelection()

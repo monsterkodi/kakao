@@ -176,7 +176,9 @@ function editor extends events
                     y = row + @state.s.view[1]
                     
                     @dragStart = [x y x]
-                                    
+                    
+                    # todo: shift click extends selection                           
+                    
                     @state.clearCursorsHighlightsAndSelections() if empty event.mods
                     if event.mods == 'alt'
                         @state.addCursor x y
@@ -355,7 +357,6 @@ function editor extends events
             'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
 
         if valid event.char
-            @state.deleteSelection()
             @state.insert event.char
         else
             if key not in ['shift' 'ctrl' 'alt' 'cmd'] 

@@ -25,6 +25,7 @@ function TTIO extends events
         @write '\x1b[?1006h'    # mouse SGR mode
         @write '\x1b[?1049h'    # alternate screen buffer
         @write '\x1b[?2004h'    # bracketed paste mode
+        @write '\x1b[>1s'       # send shift in mouse press events
         @write '\x1b[>1u'       # kitty keyboard protocol
         @write '\x1b[=31;1u'    # 1 disambiguate escape codes
                                 # 2 event types
@@ -40,6 +41,7 @@ function TTIO extends events
     quit: =>
         
         @clear()
+        @write '\x1b[>0s'    # end sending shift in mouse press
         @write '\x1b[<u'     # end kitty keyboard protocol
         @write '\x1b[?1049l' # scrollback screen buffer
         @showCursor()
@@ -164,7 +166,7 @@ function TTIO extends events
         event.mods = mods.join '+' if valid mods
                 
         if csi.endsWith 'M'
-            
+
             event.type = switch code & 0b11100000
                 32  ➜ (code & 0b11 == 3) ? 'move' : 'drag'
                 64  ➜ 'wheel'
@@ -211,7 +213,8 @@ function TTIO extends events
                @lastClick.time  = process.hrtime()
                
             event.count = @lastClick.count
-                    
+        
+        # lfc noon event
         @emit 'mouse' event.type event.x event.y event
             
     # 0000000     0000000   000000000   0000000   

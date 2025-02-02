@@ -34,8 +34,6 @@ class util
 
     static normalizePositions (posl, maxY)
     {
-        var i
-
         if (_k_.empty(posl))
         {
             return []
@@ -44,14 +42,26 @@ class util
         {
             return [_k_.max(0,a[0]),_k_.clamp(0,maxY,a[1])]
         })
-        if (posl.length === 1)
-        {
-            return posl
-        }
-        posl.sort(function (a, b)
+        posl = util.sortPositions(posl)
+        return posl = util.removeDuplicatePositions(posl)
+    }
+
+    static sortPositions (posl)
+    {
+        return posl.sort(function (a, b)
         {
             return (a[1] === b[1] ? a[0] - b[0] : a[1] - b[1])
         })
+    }
+
+    static removeDuplicatePositions (posl)
+    {
+        var i
+
+        if (posl.length <= 1)
+        {
+            return posl
+        }
         for (var _a_ = i = posl.length - 1, _b_ = 1; (_a_ <= _b_ ? i <= 1 : i >= 1); (_a_ <= _b_ ? ++i : --i))
         {
             if (util.samePos(posl[i],posl[i - 1]))
@@ -72,6 +82,20 @@ class util
         {
             return _k_.eql(pos, p)
         })
+    }
+
+    static lineIndicesForPositions (posl)
+    {
+        var pos, set
+
+        set = new Set()
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            set.add(pos[1])
+        }
+        return Array.from(set)
     }
 
     static isPosInsideRange (pos, rng)
@@ -155,6 +179,11 @@ class util
         return pos[1] > span[1] || (pos[1] === span[1] && pos[0] >= span[2])
     }
 
+    static isPosBeforeOrInsideSpan (pos, span)
+    {
+        return util.isPosBeforeSpan(pos,span) || util.isPosInsideSpan(pos,span)
+    }
+
     static startOfSpan (s)
     {
         return [s[0],s[1]]
@@ -187,7 +216,7 @@ class util
             span = list[index]
             if (util.isPosAfterSpan(pos,span))
             {
-                if (index + 1 < spans.length && (util.isPosBeforeSpan(pos,spans[index + 1]) || util.isPosInsideSpan(pos,spans[index + 1])))
+                if (index + 1 < spans.length && util.isPosBeforeOrInsideSpan(pos,spans[index + 1]))
                 {
                     return spans[index + 1]
                 }
@@ -357,9 +386,9 @@ class util
         }
     }
 
-    static mergeRanges (rngs)
+    static mergeLineRanges (lines, rngs)
     {
-        var i, lastmrgd, mrgd, s
+        var i, mrgd, s, tail
 
         if (_k_.empty(rngs))
         {
@@ -371,15 +400,15 @@ class util
         for (i = 0; i < list.length; i++)
         {
             s = list[i]
-            lastmrgd = (!_k_.empty(mrgd) ? mrgd[mrgd.length - 1] : [])
-            if (_k_.empty(mrgd) || s[1] > lastmrgd[3] || s[1] === lastmrgd[3] && s[0] > lastmrgd[2])
+            if (_k_.empty(mrgd) || s[1] > tail[3] + 1 || s[1] === tail[3] && s[0] > tail[2] || s[1] === tail[3] + 1 && (s[0] > 0 || tail[2] < lines[tail[3]].length))
             {
                 mrgd.push(s)
+                tail = s
             }
-            else if (s[3] > lastmrgd[3] || s[3] === lastmrgd[3] && s[2] > lastmrgd[2])
+            else if (s[3] > tail[3] || s[3] === tail[3] && s[2] > tail[2])
             {
-                lastmrgd[2] = s[2]
-                lastmrgd[3] = s[3]
+                tail[2] = s[2]
+                tail[3] = s[3]
             }
         }
         return mrgd
@@ -564,6 +593,11 @@ class util
         return rng[3] - rng[1] + 1
     }
 
+    static isEmptyLineAtPos (lines, pos)
+    {
+        return lines[pos[1]].length <= 0
+    }
+
     static lineRangesInRange (lines, rng)
     {
         var ln, rngs
@@ -583,7 +617,7 @@ class util
         nl = util.numLinesInRange(rng)
         if (nl === 1)
         {
-            return rng
+            return [rng]
         }
         split = []
         split.push([rng[0],rng[1],lines[rng[1]].length,rng[1]])
@@ -711,41 +745,14 @@ class util
         return [0,y,x,y]
     }
 
-    static deleteLinesRangesAndAdjustCursors (lines, rngs, cursors)
+    static deleteLineRangesAndAdjustPositions (lines, rngs, posl)
     {
-        var cursor, partialFirst, ri, rng
+        var partialLast, ri, rng
 
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
             rng = rngs[ri]
-            var list = _k_.list(cursors)
-            for (var _c_ = 0; _c_ < list.length; _c_++)
-            {
-                cursor = list[_c_]
-                if (util.isPosInsideRange(cursor,rng))
-                {
-                    cursor = [rng[0],rng[1]]
-                }
-                else if (util.isPosAfterRange(cursor,rng))
-                {
-                    if (cursor[1] === rng[3])
-                    {
-                        if (rng[1] === rng[3])
-                        {
-                            cursor[0] -= rng[2] - rng[0]
-                        }
-                        else
-                        {
-                            cursor[0] === rng[0]
-                            cursor[1] -= rng[3] - rng[1]
-                        }
-                    }
-                    else
-                    {
-                        cursor[1] -= util.numFullLinesInRange(lines,rng)
-                    }
-                }
-            }
+            posl = util.adjustPositionsForDeletedLineRange(posl,lines,rng)
             if (rng[1] === rng[3])
             {
                 if (rng[0] === 0 && rng[2] === lines[rng[1]].length)
@@ -766,9 +773,9 @@ class util
                 else
                 {
                     lines.splice(rng[3],1,lines[rng[3]].slice(rng[2]))
-                    partialFirst = true
+                    partialLast = true
                 }
-                if (rng[3] - rng[1] > 1)
+                if (rng[3] - rng[1] >= 2)
                 {
                     lines.splice(rng[1] + 1,rng[3] - rng[1] - 1)
                 }
@@ -779,14 +786,73 @@ class util
                 else
                 {
                     lines.splice(rng[1],1,lines[rng[1]].slice(0, typeof rng[0] === 'number' ? rng[0] : -1))
-                    if (partialFirst)
+                    if (partialLast)
                     {
                         lines.splice(rng[1],2,lines[rng[1]] + lines[rng[1] + 1])
                     }
                 }
             }
         }
-        return [lines,cursors]
+        return [lines,posl]
+    }
+
+    static adjustPositionsForDeletedLineRange (posl, lines, rng)
+    {
+        var pi, pos
+
+        for (var _a_ = pi = posl.length - 1, _b_ = 0; (_a_ <= _b_ ? pi <= 0 : pi >= 0); (_a_ <= _b_ ? ++pi : --pi))
+        {
+            pos = posl[pi]
+            if (util.isPosInsideRange(pos,rng))
+            {
+                pos[0] = rng[0]
+                pos[1] = rng[1]
+            }
+            else if (util.isPosAfterRange(pos,rng))
+            {
+                if (pos[1] === rng[3])
+                {
+                    if (rng[1] === rng[3])
+                    {
+                        pos[0] -= rng[2] - rng[0]
+                    }
+                    else
+                    {
+                        pos[0] = rng[0]
+                        pos[1] -= rng[3] - rng[1]
+                    }
+                }
+                else
+                {
+                    pos[1] -= util.numFullLinesInRange(lines,rng)
+                }
+            }
+            else
+            {
+                break
+            }
+        }
+        return util.removeDuplicatePositions(posl)
+    }
+
+    static moveCursorsInSameLineBy (cursors, cursor, delta)
+    {
+        var ci
+
+        ci = cursors.indexOf(cursor)
+        while (true)
+        {
+            cursors[ci][0] += delta
+            ci++
+            if (ci >= cursors.length)
+            {
+                return
+            }
+            if (cursors[ci][1] > cursor[1])
+            {
+                return
+            }
+        }
     }
 }
 

@@ -27,20 +27,26 @@ toExport["util"] = function ()
         compare(util.normalizeRanges([[0,0,9,9],[1,1,2,2]]),[[0,0,9,9],[1,1,2,2]])
         compare(util.normalizeRanges([[1,1,2,2],[0,0,9,9]]),[[0,0,9,9],[1,1,2,2]])
     })
-    section("mergeRanges", function ()
+    section("mergeLineRanges", function ()
     {
-        compare(util.mergeRanges([[0,0,9,9],[1,1,2,2]]),[[0,0,9,9]])
-        compare(util.mergeRanges([[1,1,2,2],[0,0,9,9]]),[[0,0,9,9]])
-        compare(util.mergeRanges([[1,1,2,2],[0,0,9,9],[0,0,10,0],[0,8,9,9]]),[[0,0,9,9]])
-        compare(util.mergeRanges([[4,0,6,0],[8,0,10,0]]),[[4,0,6,0],[8,0,10,0]])
-        compare(util.mergeRanges([[4,0,6,0],[7,0,10,0]]),[[4,0,6,0],[7,0,10,0]])
-        compare(util.mergeRanges([[4,0,6,0],[6,0,10,0]]),[[4,0,10,0]])
-        compare(util.mergeRanges([[4,0,6,0],[5,0,10,0]]),[[4,0,10,0]])
+        lines = ['1234567890','1234567890','1234567890']
+        compare(util.mergeLineRanges(lines,[[0,0,9,9],[1,1,2,2]]),[[0,0,9,9]])
+        compare(util.mergeLineRanges(lines,[[1,1,2,2],[0,0,9,9]]),[[0,0,9,9]])
+        compare(util.mergeLineRanges(lines,[[1,1,2,2],[0,0,9,9],[0,0,10,0],[0,8,9,9]]),[[0,0,9,9]])
+        compare(util.mergeLineRanges(lines,[[4,0,6,0],[8,0,10,0]]),[[4,0,6,0],[8,0,10,0]])
+        compare(util.mergeLineRanges(lines,[[4,0,6,0],[7,0,10,0]]),[[4,0,6,0],[7,0,10,0]])
+        compare(util.mergeLineRanges(lines,[[4,0,6,0],[6,0,10,0]]),[[4,0,10,0]])
+        compare(util.mergeLineRanges(lines,[[4,0,6,0],[5,0,10,0]]),[[4,0,10,0]])
+        compare(util.mergeLineRanges(lines,[[4,1,10,1],[0,2,4,2]]),[[4,1,4,2]])
     })
-    section("deleteRangesAndAdjustCursors", function ()
+    section("deleteLineRangesAndAdjustPositions", function ()
     {
         lines = ['1234567890','abcdefghij']
-        compare(util.deleteLinesRangesAndAdjustCursors(lines,[[5,0,5,1]],[[5,1]]),[['12345fghij'],[[5,0]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,0]],[[5,1]]),[lines,[[5,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,6,0]],[[5,1]]),[['123457890','abcdefghij'],[[5,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,1]],[[5,1]]),[['12345fghij'],[[5,0]]])
+        lines = ['line 1','line 2','line 3']
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,0,6,1]],[[6,0],[6,1]]),[['line 3'],[[0,0]]])
     })
     section("rangeOfClosestWordToPos", function ()
     {
@@ -141,7 +147,7 @@ toExport["util"] = function ()
     section("splitLineRanges", function ()
     {
         lines = ['1','','12','abc']
-        compare(util.splitLineRanges(lines,[[0,0,1,2]]),[[0,0,1,0],[0,1,0,1],[0,2,1,2]])
+        compare(util.splitLineRanges(lines,[[0,2,1,2],[2,2,3,2]]),[[0,2,1,2],[2,2,3,2]])
     })
 }
 toExport["util"]._section_ = true

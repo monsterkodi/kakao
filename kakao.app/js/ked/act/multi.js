@@ -235,6 +235,6 @@ export default {allCursors:function ()
 
     selection[0] = _k_.clamp(0,this.s.lines[selection[1]].length,selection[0])
     selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
-    this.set('selections',selections)
+    this.setSelections(selections)
     return this
 }}

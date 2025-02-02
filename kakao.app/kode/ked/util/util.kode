@@ -41,10 +41,15 @@ class util
         ⮐ [] if empty posl 
         
         posl = posl.map (a) -> [max(0 a[0]) clamp(0 maxY a[1])]
+        posl = util.sortPositions posl
+        posl = util.removeDuplicatePositions posl
         
-        ⮐ posl if posl.length == 1
+    @sortPositions: posl -> posl.sort (a b) -> a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]
         
-        posl.sort (a b) -> a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]
+    @removeDuplicatePositions: posl ->
+        
+        ⮐ posl if posl.length <= 1
+        
         for i in posl.length-1..1
             if util.samePos posl[i] posl[i-1]
                 posl.splice i 1
@@ -54,6 +59,13 @@ class util
         
         ⮐ -1 if empty posl
         posl.findIndex (p) -> pos eql p
+        
+    @lineIndicesForPositions: posl ->
+        
+        set = new Set()
+        for pos in posl
+            set.add pos[1]
+        Array.from set
         
     # 00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  0000  000  000        000       
@@ -105,6 +117,10 @@ class util
     @isPosAfterSpan: pos span ->
         
         pos[1] > span[1] or (pos[1] == span[1] and pos[0] >= span[2])
+        
+    @isPosBeforeOrInsideSpan: pos span ->
+        
+        util.isPosBeforeSpan(pos span) or util.isPosInsideSpan(pos span)
 
     @startOfSpan: s -> [s[0] s[1]]
     @endOfSpan:   s -> [s[2] s[1]]
@@ -119,7 +135,7 @@ class util
             
         for span,index in spans
             if util.isPosAfterSpan pos span
-                if index+1 < spans.length and (util.isPosBeforeSpan(pos spans[index+1]) or util.isPosInsideSpan(pos spans[index+1]))
+                if index+1 < spans.length and util.isPosBeforeOrInsideSpan pos spans[index+1]
                     ⮐ spans[index+1]
 
     @prevSpanBeforePos: spans pos ->
@@ -186,7 +202,7 @@ class util
     # 000 0 000  000       000   000  000   000  000       
     # 000   000  00000000  000   000   0000000   00000000  
     
-    @mergeRanges: rngs ->
+    @mergeLineRanges: lines rngs ->
         
         ⮐ [] if empty rngs
         
@@ -194,12 +210,15 @@ class util
         
         mrgd = []
         for s,i in rngs
-            lastmrgd = valid mrgd ? mrgd[mrgd.length-1] : []
-            if empty mrgd or s[1] > lastmrgd[3] or s[1] == lastmrgd[3] and s[0] > lastmrgd[2]
-                mrgd.push s
-            else if s[3] > lastmrgd[3] or s[3] == lastmrgd[3] and s[2] > lastmrgd[2]
-                lastmrgd[2] = s[2] 
-                lastmrgd[3] = s[3]
+            if  empty mrgd or 
+                s[1] > tail[3]+1 or 
+                s[1] == tail[3] and s[0] > tail[2] or 
+                s[1] == tail[3]+1 and (s[0] > 0 or tail[2] < lines[tail[3]].length)
+                    mrgd.push s
+                    tail = s
+            else if s[3] > tail[3] or s[3] == tail[3] and s[2] > tail[2]
+                tail[2] = s[2] 
+                tail[3] = s[3]
 
         mrgd
 
@@ -312,6 +331,8 @@ class util
         n
         
     @numLinesInRange: rng -> rng[3] - rng[1] + 1
+    
+    @isEmptyLineAtPos: lines pos -> lines[pos[1]].length <= 0
         
     @lineRangesInRange: lines rng ->
         
@@ -323,7 +344,7 @@ class util
     @splitLineRange: lines rng ->
         
         nl = util.numLinesInRange rng 
-        ⮐ rng if nl == 1
+        ⮐ [rng] if nl == 1
         
         split = []
         
@@ -334,7 +355,7 @@ class util
                 split.push [0 rng[1]+i lines[rng[1]+i].length rng[1]+i]
         
         split.push [0 rng[3] rng[2] rng[3]] if rng[2] > 0 # don't include empty last range!
-        
+
         split
         
     @splitLineRanges: lines rngs ->
@@ -410,48 +431,70 @@ class util
     # 000   000  000       000      000          000     000       
     # 0000000    00000000  0000000  00000000     000     00000000  
     
-    @deleteLinesRangesAndAdjustCursors: lines rngs cursors ->
+    @deleteLineRangesAndAdjustPositions: lines rngs posl ->
         
         for ri in rngs.length-1..0
             rng = rngs[ri]
             
-            for cursor in cursors
-                
-                if util.isPosInsideRange cursor rng
-                    cursor = [rng[0] rng[1]]
-                else if util.isPosAfterRange cursor rng
-                    if cursor[1] == rng[3]
-                        if rng[1] == rng[3]
-                            cursor[0] -= rng[2] - rng[0]
-                        else
-                            cursor[0] == rng[0]
-                            cursor[1] -= rng[3] - rng[1]
-                    else
-                        cursor[1] -= util.numFullLinesInRange lines rng
+            posl = util.adjustPositionsForDeletedLineRange posl lines rng
             
-            if rng[1] == rng[3]
+            if rng[1] == rng[3] # single line range
                 if rng[0] == 0 and rng[2] == lines[rng[1]].length
                     lines.splice rng[1] 1
                 else
                     lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
-            else
-                if rng[2] == lines[rng[3]].length
-                    lines.splice rng[3] 1
+            else # range spans multiple lines
+                if rng[2] == lines[rng[3]].length # range ends at end of last line
+                    lines.splice rng[3] 1 
                 else
                     lines.splice rng[3] 1 lines[rng[3]][rng[2]..]
-                    partialFirst = true
+                    partialLast = true
                     
-                if rng[3]-rng[1] > 1
-                    lines.splice rng[1]+1 rng[3]-rng[1]-1
+                if rng[3]-rng[1] >= 2 # more than 2 lines in range
+                    lines.splice rng[1]+1 rng[3]-rng[1]-1 # remove middle lines
                     
-                if rng[0] == 0
+                if rng[0] == 0 # range starts at start of first line
                     lines.splice rng[1] 1
                 else
                     lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
                     
-                    if partialFirst
+                    if partialLast
                         lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
+               
+        [lines posl]
+        
+    @adjustPositionsForDeletedLineRange: posl lines rng ->
+        
+        for pi in posl.length-1..0
+            pos = posl[pi]
+            
+            if util.isPosInsideRange pos rng
+                pos[0] = rng[0] 
+                pos[1] = rng[1]
+            else if util.isPosAfterRange pos rng
+                if pos[1] == rng[3]
+                    if rng[1] == rng[3]
+                        pos[0] -= rng[2] - rng[0]
+                    else
+                        pos[0] = rng[0]
+                        pos[1] -= rng[3] - rng[1]
+                else
+                    pos[1] -= util.numFullLinesInRange lines rng
+            else
+                break
                     
-        [lines cursors]
+        util.removeDuplicatePositions posl
+        
+    @moveCursorsInSameLineBy: cursors cursor delta ->
+    
+        ci = cursors.indexOf cursor
+    
+        while true
+            
+            cursors[ci][0] += delta
+            ci++
+            
+            ⮐ if ci >= cursors.length
+            ⮐ if cursors[ci][1] > cursor[1]
                 
 export util

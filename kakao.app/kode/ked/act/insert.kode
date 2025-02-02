@@ -19,24 +19,28 @@ export
     insert: text ->
         
         # lf "text >#{text}<" 
-                
+        
         split = text.split /\r?\n/
         if split.length > 1
             @begin()
+            @deleteSelection()
             for s,i in split
                 @insert s
                 if i < split.length-1 or text != '\n'
                     @insertNewline()            
             @end()
             ⮐ 
-            
-        if text == '\t'
-            if valid @s.selections
+        
+        if valid @s.selections
+            if text == '\t'
                 ⮐ @indentSelectedLines()
+            if @s.cursors.length == 1
+                @deleteSelection()
+            
         # todo: handle pasted text with tabs?
         
         cursors = @allCursors()
-        lines = @allLines()
+        lines   = @allLines()
         
         for ci in cursors.length-1..0
             

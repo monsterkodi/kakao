@@ -167,6 +167,7 @@ export
         
         lines   = @allLines()
         rngs    = util.splitLineRanges lines selections
+        # lfc '●' rngs.length rngs noon(rngs)
         cursors = util.endPositionsOfRanges rngs
         
         @setCursors cursors
@@ -214,7 +215,7 @@ export
         selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
         selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
         
-        @set 'selections' selections
+        @setSelections selections
         @
         
         
