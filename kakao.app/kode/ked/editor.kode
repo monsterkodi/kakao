@@ -309,6 +309,16 @@ function editor extends events
             'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursor 'left'  16
             'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursor 'right' 16
             
+            'alt+up'                    ➜ ⮐ @state.moveMainCursorInDirection 'up'
+            'alt+down'                  ➜ ⮐ @state.moveMainCursorInDirection 'down'
+            'alt+left'                  ➜ ⮐ @state.moveMainCursorInDirection 'left'
+            'alt+right'                 ➜ ⮐ @state.moveMainCursorInDirection 'right'
+
+            'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
+            'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
+            'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
+            'shift+alt+right'           ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true
+            
             'ctrl+a'                    ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
             'ctrl+e'                    ➜ ⮐ @state.singleCursorAtEndOfLine()
             'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
@@ -335,8 +345,10 @@ function editor extends events
             'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @state.copy()        
             'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @state.paste()
             
-            'cmd+down'                  ➜ ⮐ @state.expandCursors 'down'
-            'cmd+up'                    ➜ ⮐ @state.expandCursors 'up'
+            'cmd+up'                    ➜ ⮐ @state.expandCursors   'up'
+            'cmd+down'                  ➜ ⮐ @state.expandCursors   'down'
+            'shift+cmd+up'              ➜ ⮐ @state.contractCursors 'up'
+            'shift+cmd+down'            ➜ ⮐ @state.contractCursors 'down'
                
             'cmd+z'                     ➜ ⮐ @state.undo()
             'cmd+y' 'shift+cmd+z'       ➜ ⮐ @state.redo()

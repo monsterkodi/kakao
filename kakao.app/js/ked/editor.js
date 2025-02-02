@@ -419,6 +419,30 @@ editor = (function ()
             case 'shift+ctrl+alt+right':
                 return this.state.moveCursor('right',16)
 
+            case 'alt+up':
+                return this.state.moveMainCursorInDirection('up')
+
+            case 'alt+down':
+                return this.state.moveMainCursorInDirection('down')
+
+            case 'alt+left':
+                return this.state.moveMainCursorInDirection('left')
+
+            case 'alt+right':
+                return this.state.moveMainCursorInDirection('right')
+
+            case 'shift+alt+up':
+                return this.state.moveMainCursorInDirection('up',{keep:true})
+
+            case 'shift+alt+down':
+                return this.state.moveMainCursorInDirection('down',{keep:true})
+
+            case 'shift+alt+left':
+                return this.state.moveMainCursorInDirection('left',{keep:true})
+
+            case 'shift+alt+right':
+                return this.state.moveMainCursorInDirection('right',{keep:true})
+
             case 'ctrl+a':
                 return this.state.singleCursorAtIndentOrStartOfLine()
 
@@ -488,11 +512,17 @@ editor = (function ()
             case 'ctrl+v':
                 return this.state.paste()
 
+            case 'cmd+up':
+                return this.state.expandCursors('up')
+
             case 'cmd+down':
                 return this.state.expandCursors('down')
 
-            case 'cmd+up':
-                return this.state.expandCursors('up')
+            case 'shift+cmd+up':
+                return this.state.contractCursors('up')
+
+            case 'shift+cmd+down':
+                return this.state.contractCursors('down')
 
             case 'cmd+z':
                 return this.state.undo()

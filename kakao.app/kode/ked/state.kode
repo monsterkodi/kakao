@@ -56,7 +56,10 @@ function state
     #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
     
     setCursors: cursors main -> 
-    
+
+        if main is arr
+            main = util.indexOfPosInPositions main cursors
+        
         if main?
             mainCursor = copy cursors[clamp 0 cursors.length-1 main]
         else

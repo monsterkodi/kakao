@@ -97,9 +97,11 @@ function TTIO extends events
             
         if csi[-1] == 'u'
             code = parseInt csi                
+            # lf 'code' code csi
             key = switch code
                 9       ➜ 'tab'
                 27      ➜ 'esc'
+                32      ➜ 'space'
                 13      ➜ 'return'
                 127     ➜ 'delete'
                 57441   ➜ 'shift'
@@ -111,6 +113,7 @@ function TTIO extends events
             char = switch key
                 'tab'    ➜ '\t'
                 'return' ➜ '\n'
+                'space'  ➜ ' '
                          ➜ ''
                     
         mods = []
@@ -134,8 +137,9 @@ function TTIO extends events
                 
         if key not in mods
             mods.push key
+            
         combo = mods.join '+'
-                    
+        
         key:    key
         combo:  combo
         type:   type

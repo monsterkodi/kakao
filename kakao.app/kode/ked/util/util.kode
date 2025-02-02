@@ -66,6 +66,34 @@ class util
         for pos in posl
             set.add pos[1]
         Array.from set
+        
+    @positionInDirection: pos dir ->
+        
+        [x y] = pos
+        
+        switch dir
+            'up'    ➜ [x y-1]
+            'down'  ➜ [x y+1]
+            'left'  ➜ [x-1 y]
+            'right' ➜ [x+1 y]
+            
+    @traversePositionsInDirection: posl pos dir ->
+
+        while next = util.neighborPositionInDirection posl pos dir
+            pos = next
+        pos
+        
+    @neighborPositionInDirection: posl pos dir ->
+        
+        nbp = util.positionInDirection pos dir
+        if util.positionsContain posl nbp
+            posl[util.indexOfPosInPositions nbp posl]
+
+    @positionsContain: posl pos ->
+        
+        for p in posl
+            ⮐ true if p eql pos
+        false
                 
     # 00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  0000  000  000        000       

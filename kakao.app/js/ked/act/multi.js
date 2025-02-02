@@ -7,7 +7,7 @@ export default {allCursors:function ()
     return this.s.cursors.asMutable()
 },expandCursors:function (dir)
 {
-    var c, cursors, dy, newCursors
+    var c, cursors, dy, mc, newCursors
 
     cursors = this.allCursors()
     dy = (dir === 'up' ? -1 : 1)
@@ -16,10 +16,43 @@ export default {allCursors:function ()
     for (var _a_ = 0; _a_ < list.length; _a_++)
     {
         c = list[_a_]
+        newCursors.push(c)
         newCursors.push([c[0],c[1] + dy])
     }
-    cursors = cursors.concat(newCursors)
-    return this.setCursors(cursors)
+    mc = util.traversePositionsInDirection(newCursors,this.mainCursor(),dir)
+    return this.setCursors(newCursors,mc)
+},contractCursors:function (dir)
+{
+    var add, c, cursors, nbdn, nbup, newCursors, solo
+
+    cursors = this.allCursors()
+    newCursors = []
+    var list = _k_.list(cursors)
+    for (var _b_ = 0; _b_ < list.length; _b_++)
+    {
+        c = list[_b_]
+        nbup = util.positionsContain(cursors,util.positionInDirection(c,'down'))
+        nbdn = util.positionsContain(cursors,util.positionInDirection(c,'up'))
+        solo = !(nbup || nbdn)
+        add = ((function ()
+        {
+            switch (dir)
+            {
+                case 'up':
+                    return nbup || solo
+
+                case 'down':
+                    return nbdn || solo
+
+            }
+
+        }).bind(this))()
+        if (add)
+        {
+            newCursors.push(c)
+        }
+    }
+    return this.setCursors(newCursors)
 },addCursor:function (x, y)
 {
     var cursors, pos
@@ -41,9 +74,9 @@ export default {allCursors:function ()
     }
     cursors = this.allCursors()
     var list = _k_.list(cursors)
-    for (var _b_ = 0; _b_ < list.length; _b_++)
+    for (var _c_ = 0; _c_ < list.length; _c_++)
     {
-        c = list[_b_]
+        c = list[_c_]
         switch (dir)
         {
             case 'left':
@@ -78,16 +111,29 @@ export default {allCursors:function ()
     return this.setCursors(cursors,this.s.main)
 },setMainCursor:function (x, y)
 {
-    var _c_ = util.pos(x,y); x = _c_[0]; y = _c_[1]
+    var _d_ = util.pos(x,y); x = _d_[0]; y = _d_[1]
 
     y = _k_.clamp(0,this.s.lines.length - 1,y)
     x = _k_.max(0,x)
     return this.setCursors([[x,y]],0)
+},moveMainCursorInDirection:function (dir, opt = {})
+{
+    var mc
+
+    mc = util.positionInDirection(this.mainCursor(),dir)
+    if (opt.keep)
+    {
+        return this.addCursor(mc)
+    }
+    else
+    {
+        return this.moveMainCursor(mc)
+    }
 },moveMainCursor:function (x, y)
 {
     var cursors, main, mainCursor
 
-    var _d_ = util.pos(x,y); x = _d_[0]; y = _d_[1]
+    var _e_ = util.pos(x,y); x = _e_[0]; y = _e_[1]
 
     y = _k_.clamp(0,this.s.lines.length - 1,y)
     x = _k_.max(0,x)
@@ -141,9 +187,9 @@ export default {allCursors:function ()
     cursors = this.allCursors()
     lines = this.allLines()
     var list = _k_.list(cursors)
-    for (var _e_ = 0; _e_ < list.length; _e_++)
+    for (var _f_ = 0; _f_ < list.length; _f_++)
     {
-        cur = list[_e_]
+        cur = list[_f_]
         ind = util.lineIndentAtPos(lines,cur)
         if (ind < cur[0])
         {
@@ -175,9 +221,9 @@ export default {allCursors:function ()
     cursors = this.allCursors()
     lines = this.allLines()
     var list = _k_.list(cursors)
-    for (var _f_ = 0; _f_ < list.length; _f_++)
+    for (var _10_ = 0; _10_ < list.length; _10_++)
     {
-        cur = list[_f_]
+        cur = list[_10_]
         cur[0] = util.lineRangeAtPos(lines,cur)[2]
     }
     return this.setCursors(cursors)
@@ -186,9 +232,9 @@ export default {allCursors:function ()
     var c
 
     var list = _k_.list(this.allCursors())
-    for (var _10_ = 0; _10_ < list.length; _10_++)
+    for (var _11_ = 0; _11_ < list.length; _11_++)
     {
-        c = list[_10_]
+        c = list[_11_]
         if (c[1] === y)
         {
             return true

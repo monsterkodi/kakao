@@ -32,11 +32,28 @@ export
         
         newCursors = []
         for c in cursors
+            newCursors.push c
             newCursors.push [c[0] c[1]+dy]
 
-        cursors = cursors.concat newCursors
+        mc = util.traversePositionsInDirection newCursors @mainCursor() dir
+        @setCursors newCursors mc
         
-        @setCursors cursors
+    contractCursors: dir ->
+        
+        cursors = @allCursors()
+
+        newCursors = []
+        for c in cursors
+            nbup = util.positionsContain cursors util.positionInDirection(c 'down')
+            nbdn = util.positionsContain cursors util.positionInDirection(c 'up')
+            solo = not (nbup or nbdn)
+            add = switch dir
+                'up'   ➜ nbup or solo
+                'down' ➜ nbdn or solo
+            
+            newCursors.push c if add
+
+        @setCursors newCursors
         
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
@@ -96,8 +113,17 @@ export
                         
         @setCursors [[x y]] 0
         
-    moveMainCursor: x y ->
+    moveMainCursorInDirection: dir opt={} ->
         
+        mc = util.positionInDirection @mainCursor() dir
+        
+        if opt.keep
+            @addCursor mc
+        else
+            @moveMainCursor mc
+                        
+    moveMainCursor: x y ->
+                
         [x y] = util.pos x y
         
         y = clamp 0 @s.lines.length-1 y

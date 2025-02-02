@@ -154,6 +154,9 @@ TTIO = (function ()
                     case 27:
                         return 'esc'
 
+                    case 32:
+                        return 'space'
+
                     case 13:
                         return 'return'
 
@@ -186,6 +189,9 @@ TTIO = (function ()
 
                     case 'return':
                         return '\n'
+
+                    case 'space':
+                        return ' '
 
                     default:
                         return ''
@@ -330,11 +336,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _196_23_
+        var diff, _200_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_196_23_=this.lastClick) != null ? _196_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_200_23_=this.lastClick) != null ? _200_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -362,7 +368,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _238_23_
+        var csi, esc, event, text, _242_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {

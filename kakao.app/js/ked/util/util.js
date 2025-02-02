@@ -98,6 +98,68 @@ class util
         return Array.from(set)
     }
 
+    static positionInDirection (pos, dir)
+    {
+        var x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        switch (dir)
+        {
+            case 'up':
+                return [x,y - 1]
+
+            case 'down':
+                return [x,y + 1]
+
+            case 'left':
+                return [x - 1,y]
+
+            case 'right':
+                return [x + 1,y]
+
+        }
+
+    }
+
+    static traversePositionsInDirection (posl, pos, dir)
+    {
+        var next
+
+        while (next = util.neighborPositionInDirection(posl,pos,dir))
+        {
+            pos = next
+        }
+        return pos
+    }
+
+    static neighborPositionInDirection (posl, pos, dir)
+    {
+        var nbp
+
+        nbp = util.positionInDirection(pos,dir)
+        if (util.positionsContain(posl,nbp))
+        {
+            return posl[util.indexOfPosInPositions(nbp,posl)]
+        }
+    }
+
+    static positionsContain (posl, pos)
+    {
+        var p
+
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            p = list[_a_]
+            if (_k_.eql(p, pos))
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     static isPosInsideRange (pos, rng)
     {
         if (util.isPosBeforeRange(pos,rng))
