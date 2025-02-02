@@ -6,26 +6,25 @@ import util from "../util/util.js"
 
 export default {delete:function (type, mods)
 {
-    var before, cursor, cursors, dc, line, lines, remove, rng, x, y
+    var before, ci, cursor, cursors, dc, line, lines, remove, rng, x, y
 
     if (type === 'back' && !_k_.empty(this.s.selections))
     {
         this.deleteSelection()
         return this
     }
+    lines = this.allLines()
     cursors = this.allCursors()
     var list = _k_.list(cursors)
-    for (var _a_ = 0; _a_ < list.length; _a_++)
+    for (ci = 0; ci < list.length; ci++)
     {
-        cursor = list[_a_]
-        var _b_ = cursor(); x = _b_[0]; y = _b_[1]
+        cursor = list[ci]
+        var _b_ = cursor; x = _b_[0]; y = _b_[1]
 
-        if (type === 'back' && util.isLinesPosOutside(this.s.lines,[x,y]))
+        if (type === 'back' && cursors.length === 1 && util.isLinesPosOutside(this.s.lines,[x,y]))
         {
-            this.setMainCursor(this.s.lines[y].length,y)
-            return this
+            return this.setMainCursor(this.s.lines[y].length,y)
         }
-        lines = this.allLines()
         line = lines[y]
         remove = 1
         switch (type)
@@ -36,27 +35,30 @@ export default {delete:function (type, mods)
             case 'back':
                 if (x === 0)
                 {
-                    if (y <= 0)
+                    if (cursors.length === 1)
                     {
-                        return
+                        if (y <= 0)
+                        {
+                            return
+                        }
+                        y -= 1
+                        x = lines[y].length
+                        remove = 2
+                        line = lines[y] + line
                     }
-                    y -= 1
-                    x = lines[y].length
-                    remove = 2
-                    line = lines[y] + line
                 }
                 else
                 {
                     if (_k_.in(mods,['cmd','alt']))
                     {
-                        rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,this.mainCursor())
+                        rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,cursor)
                         dc = rng[2] - rng[0]
                         x -= dc
                         line = kstr.splice(line,x,dc)
                     }
                     else
                     {
-                        before = util.textFromBolToPos(lines,this.mainCursor())
+                        before = util.textFromBolToPos(lines,cursor)
                         if (util.isOnlyWhitespace(before))
                         {
                             dc = x % 4
@@ -77,8 +79,9 @@ export default {delete:function (type, mods)
                 break
         }
 
+        cursor[0] = x
+        lines.splice(y,remove,line)
     }
-    lines.splice(y,remove,line)
     this.setLines(lines)
     this.setCursors(cursors)
     return this
