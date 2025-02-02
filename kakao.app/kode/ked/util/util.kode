@@ -495,29 +495,7 @@ class util
                 ⮐ [r[0] y r[1] y]
             
         [0 y x y]   
-        
-    # 0000000    00000000   00000000   0000000   000   000      000      000  000   000  00000000   0000000  
-    # 000   000  000   000  000       000   000  000  000       000      000  0000  000  000       000       
-    # 0000000    0000000    0000000   000000000  0000000        000      000  000 0 000  0000000   0000000   
-    # 000   000  000   000  000       000   000  000  000       000      000  000  0000  000            000  
-    # 0000000    000   000  00000000  000   000  000   000      0000000  000  000   000  00000000  0000000   
-    
-    @breakLinesAtPositions: lines posl ->
-        
-        newls = []
-        newpl = []
-        for rng,idx in util.rangesForLinePositions lines posl
-            ls = util.linesForLineRange lines rng
-            if idx > 0
-                if posl[idx-1][0]
-                    indent = util.numIndent last newls
-                    indent = max indent util.numIndentOfLines(ls[1..]) if ls.length>1 and posl[idx-1][0] > indent
-                else indent = 0
-                newpl.push [indent newls.length] 
-            ls[0] = lpad(indent) + ls[0] if indent
-            newls = newls.concat ls
-        [newls newpl]
-        
+                
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
@@ -640,5 +618,89 @@ class util
             else
                 newp.push pos
         [newp newr]
+
+    # 0000000    00000000   00000000   0000000   000   000      000      000  000   000  00000000   0000000  
+    # 000   000  000   000  000       000   000  000  000       000      000  0000  000  000       000       
+    # 0000000    0000000    0000000   000000000  0000000        000      000  000 0 000  0000000   0000000   
+    # 000   000  000   000  000       000   000  000  000       000      000  000  0000  000            000  
+    # 0000000    000   000  00000000  000   000  000   000      0000000  000  000   000  00000000  0000000   
+    
+    @breakLinesAtPositions: lines posl ->
+        
+        newls = []
+        newpl = []
+        for rng,idx in util.rangesForLinePositions lines posl
+            ls = util.linesForLineRange lines rng
+            if idx > 0
+                if posl[idx-1][0]
+                    indent = util.numIndent last newls
+                    indent = max indent util.numIndentOfLines(ls[1..]) if ls.length>1 and posl[idx-1][0] > indent
+                else indent = 0
+                newpl.push [indent newls.length] 
+            ls[0] = lpad(indent) + ls[0] if indent
+            newls = newls.concat ls
+        [newls newpl]
+        
+    # 000  000   000   0000000  00000000  00000000   000000000        000000000  00000000  000   000  000000000  
+    # 000  0000  000  000       000       000   000     000              000     000        000 000      000     
+    # 000  000 0 000  0000000   0000000   0000000       000              000     0000000     00000       000     
+    # 000  000  0000       000  000       000   000     000              000     000        000 000      000     
+    # 000  000   000  0000000   00000000  000   000     000              000     00000000  000   000     000     
+    
+    @insertTextAtPositions: lines text posl ->
+        
+        if text == '\t'
+            pos  = posl[0]
+            text = lpad 4-pos[0]%4 ' '
+        text = kstr.detab text
+        
+        txtls = util.linesForText text
+        newls = []
+        newpl = []
+        rngs = util.rangesForLinePositions lines posl
+        
+        for idx in 0...rngs.length
+            
+            rng   = rngs[idx]
+            after = util.linesForLineRange lines rng
+            
+            if idx > 0
                 
+                [x y] = posl[idx-1]
+                
+                if valid before ➜ line = before.pop()
+                else              line = newls.pop()
+                    
+                # fill line at end with spaces if pos is behind end of line
+                if x > line.length ➜ line += lpad x-line.length
+                                        
+                if txtls.length > 1
+                    
+                    mod = (idx-1) % txtls.length
+                    txt = txtls[mod]
+                    
+                    if idx == rngs.length-1 and posl.length == 1
+                        while mod < txtls.length-1
+                            before.push line+txt
+                            mod++
+                            txt  = txtls[mod]
+                            line = ''
+                else                    
+                    txt = txtls[0]
+                
+                line += txt
+                    
+                px = line.length
+                line += after.shift()
+                before.push line
+                
+                newls = newls.concat before
+                newpl.push [px newls.length-1]
+                
+            before = after
+            
+        newls = newls.concat before
+            
+        [newls newpl]            
+                    
 export util

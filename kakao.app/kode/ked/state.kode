@@ -102,6 +102,7 @@ function state
         
     loadLines: lines =>
         
+        @clearCursorsHighlightsAndSelections()
         @r = []
         @h = []
         @setLines lines

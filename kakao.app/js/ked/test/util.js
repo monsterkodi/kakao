@@ -195,6 +195,17 @@ line 2`)
         compare(util.breakLinesAtPositions(lines,[[6,1]]),[['line 1','line 2',''],[[0,2]]])
         compare(util.breakLinesAtPositions(lines,[[0,0],[0,1]]),[['','line 1','','line 2'],[[0,1],[0,3]]])
     })
+    section("insertTextAtPositions", function ()
+    {
+        lines = util.linesForText(`line 1
+line 2`)
+        compare(util.insertTextAtPositions(lines,'',[[0,0]]),[['line 1','line 2'],[[0,0]]])
+        compare(util.insertTextAtPositions(lines,'a ',[[0,0]]),[['a line 1','line 2'],[[2,0]]])
+        compare(util.insertTextAtPositions(lines,'a ',[[0,0],[0,1]]),[['a line 1','a line 2'],[[2,0],[2,1]]])
+        compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0]]),[['xlixne 1','line 2'],[[1,0],[4,0]]])
+        compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
+        compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[['a','bline 1','line 2'],[[1,1]]])
+    })
 }
 toExport["util"]._section_ = true
 toExport._test_ = true

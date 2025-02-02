@@ -18,56 +18,20 @@ export
     # 000  000   000  0000000   00000000  000   000     000     
     
     insert: text ->
-        
-        # lf "text >#{text}<" 
-        
-        split = text.split /\r?\n/
-        if split.length > 1
-            @begin()
-            @deleteSelection()
-            for s,i in split
-                @insert s
-                if i < split.length-1 or text != '\n'
-                    @insertNewline()            
-            @end()
-            ⮐ 
-        
+                
         if valid @s.selections
             if text == '\t'
                 ⮐ @indentSelectedLines()
             if @s.cursors.length == 1
                 @deleteSelection()
-            
-        # todo: handle pasted text with tabs?
-        
+                    
         cursors = @allCursors()
         lines   = @allLines()
         
-        for ci in cursors.length-1..0
-            
-            cursor = cursors[ci]
-        
-            if text == '\t'
-                text = lpad 4-cursor[0]%4 ' '
-            
-            [x y] = cursor
-                
-            ⮐ lf '[ERROR] cursor outside lines?' if y >= lines.length
-            
-            line = lines[y]
-            
-            # fill line at end with spaces if cursor is behind end of line
-            if x > line.length
-                line += lpad x-line.length
-            
-            line = kstr.splice line x 0 text
-            
-            lines.splice y 1 line
-            
-            cursor[0] += text.length
-                
-        @setLines lines
-        
+        [lines cursors] = util.insertTextAtPositions lines text cursors
+                        
+        @clearHighlights()
+        @setLines   lines
         @setCursors cursors cursors.length-1
         
     # 000   000  00000000  000   000  000      000  000   000  00000000  

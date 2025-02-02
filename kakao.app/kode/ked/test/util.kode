@@ -235,6 +235,20 @@ use ../util ◆ util
 
         util.breakLinesAtPositions lines [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
         
+    ▸ insertTextAtPositions
+    
+        lines = util.linesForText 
+            """
+            line 1
+            line 2
+            """
         
+        util.insertTextAtPositions lines ''       [[0 0]]       ▸ [['line 1' 'line 2'] [[0 0]]]
+        util.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [['a line 1' 'line 2'] [[2 0]]]
+        util.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [['a line 1' 'a line 2'] [[2 0] [2 1]]]
+
+        util.insertTextAtPositions lines 'x'      [[0 0] [2 0]] ▸ [['xlixne 1' 'line 2'] [[1 0] [4 0]]]
+        util.insertTextAtPositions lines 'x'      [[0 0] [2 0] [6 0]] ▸ [['xlixne 1x' 'line 2'] [[1 0] [4 0] [9 0]]]
         
+        util.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [['a' 'bline 1' 'line 2'] [[1 1]]]
         
