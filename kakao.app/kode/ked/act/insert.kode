@@ -69,7 +69,23 @@ export
         
         @setCursors cursors cursors.length-1
         
+    # 000   000  00000000  000   000  000      000  000   000  00000000  
+    # 0000  000  000       000 0 000  000      000  0000  000  000       
+    # 000 0 000  0000000   000000000  000      000  000 0 000  0000000   
+    # 000  0000  000       000   000  000      000  000  0000  000       
+    # 000   000  00000000  00     00  0000000  000  000   000  00000000  
+    
     insertNewline: ->
+        
+        cursors = @allCursors()
+        lines   = @allLines()
+        
+        [lines cursors] = util.breakLinesAtPositions lines cursors
+
+        @setCursors cursors
+        @setLines   lines
+        
+    insertNewlineOld: ->
         
         [x y] = @mainCursor()
         

@@ -176,7 +176,7 @@ export
         lines = @allLines()
         for selection in @allSelections()
             continue if selection[1] != selection[3]
-            text  = util.textForLinesRange lines selection
+            text  = util.textForLineRange lines selection
             spans = spans.concat util.lineSpansForText(lines text)
         
         @setHighlights spans
@@ -272,7 +272,7 @@ export
     #    000     000        000 000      000     
     #    000     00000000  000   000     000     
     
-    textForSelection: -> util.textForLinesRanges @allLines() @allSelections()
+    textForSelection: -> util.textForLineRanges @allLines() @allSelections()
 
     isSingleLineSelected: ->
         

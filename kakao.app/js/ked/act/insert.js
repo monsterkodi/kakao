@@ -63,9 +63,19 @@ export default {insert:function (text)
     return this.setCursors(cursors,cursors.length - 1)
 },insertNewline:function ()
 {
+    var cursors, lines
+
+    cursors = this.allCursors()
+    lines = this.allLines()
+    var _e_ = util.breakLinesAtPositions(lines,cursors); lines = _e_[0]; cursors = _e_[1]
+
+    this.setCursors(cursors)
+    return this.setLines(lines)
+},insertNewlineOld:function ()
+{
     var after, before, line, lines, x, y
 
-    var _e_ = this.mainCursor(); x = _e_[0]; y = _e_[1]
+    var _f_ = this.mainCursor(); x = _f_[0]; y = _f_[1]
 
     lines = this.allLines()
     line = lines[y]

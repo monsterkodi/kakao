@@ -39,15 +39,6 @@ toExport["util"] = function ()
         compare(util.mergeLineRanges(lines,[[4,0,6,0],[5,0,10,0]]),[[4,0,10,0]])
         compare(util.mergeLineRanges(lines,[[4,1,10,1],[0,2,4,2]]),[[4,1,4,2]])
     })
-    section("deleteLineRangesAndAdjustPositions", function ()
-    {
-        lines = ['1234567890','abcdefghij']
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,0]],[[5,1]]),[lines,[[5,1]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,6,0]],[[5,1]]),[['123457890','abcdefghij'],[[5,1]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,1]],[[5,1]]),[['12345fghij'],[[5,0]]])
-        lines = ['line 1','line 2','line 3']
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,0,6,1]],[[6,0],[6,1]]),[['line 3'],[[0,0]]])
-    })
     section("rangeOfClosestWordToPos", function ()
     {
         lines = ['1 2  3   4','   ab  ghij']
@@ -146,8 +137,63 @@ toExport["util"] = function ()
     })
     section("splitLineRanges", function ()
     {
-        lines = ['1','','12','abc']
+        lines = util.linesForText(`1
+
+12
+abc`)
+        compare(util.splitLineRanges(lines,[[0,0,1,2]]),[[0,0,1,0],[0,1,0,1],[0,2,1,2]])
         compare(util.splitLineRanges(lines,[[0,2,1,2],[2,2,3,2]]),[[0,2,1,2],[2,2,3,2]])
+    })
+    section("linesForLineRange", function ()
+    {
+        lines = util.linesForText(`123
+456
+
+abc
+def`)
+        compare(util.linesForLineRange(lines,[0,0,3,4]),['123','456','','abc','def'])
+        compare(util.linesForLineRange(lines,[0,0,0,0]),[''])
+        compare(util.linesForLineRange(lines,[0,0,1,0]),['1'])
+        compare(util.linesForLineRange(lines,[3,0,1,1]),['','4'])
+        compare(util.linesForLineRange(lines,[3,0,0,1]),['',''])
+    })
+    section("rangesForLinePositions", function ()
+    {
+        lines = util.linesForText(`123
+456
+
+abc
+def`)
+        compare(util.rangesForLinePositions(lines,[]),[])
+        compare(util.rangesForLinePositions(lines,[[0,0]]),[[0,0,0,0],[0,0,3,4]])
+        compare(util.rangesForLinePositions(lines,[[1,0]]),[[0,0,1,0],[1,0,3,4]])
+        compare(util.rangesForLinePositions(lines,[[0,2]]),[[0,0,0,2],[0,2,3,4]])
+        compare(util.rangesForLinePositions(lines,[[0,0],[1,0]]),[[0,0,0,0],[0,0,1,0],[1,0,3,4]])
+        compare(util.rangesForLinePositions(lines,[[3,0],[3,1]]),[[0,0,3,0],[3,0,3,1],[3,1,3,4]])
+    })
+    section("deleteLineRangesAndAdjustPositions", function ()
+    {
+        lines = ['1234567890','abcdefghij']
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,0]],[[5,1]]),[lines,[[5,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,6,0]],[[5,1]]),[['123457890','abcdefghij'],[[5,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,1]],[[5,1]]),[['12345fghij'],[[5,0]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,1,1,1]],[[0,1]]),[['1234567890','bcdefghij'],[[0,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,3,1]],[[3,1]]),[['12345defghij'],[[5,0]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[3,0,5,1]],[[3,1]]),[['123fghij'],[[3,0]]])
+        lines = ['line 1','line 2','line 3']
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,0,6,1]],[[6,0],[6,1]]),[['line 3'],[[0,0]]])
+    })
+    section("breakLinesAtPositions", function ()
+    {
+        lines = util.linesForText(`line 1
+line 2`)
+        compare(util.breakLinesAtPositions(lines,[[0,0]]),[['','line 1','line 2'],[[0,1]]])
+        compare(util.breakLinesAtPositions(lines,[[2,0]]),[['li','ne 1','line 2'],[[0,1]]])
+        compare(util.breakLinesAtPositions(lines,[[6,0]]),[['line 1','','line 2'],[[0,1]]])
+        compare(util.breakLinesAtPositions(lines,[[0,1]]),[['line 1','','line 2'],[[0,2]]])
+        compare(util.breakLinesAtPositions(lines,[[2,1]]),[['line 1','li','ne 2'],[[0,2]]])
+        compare(util.breakLinesAtPositions(lines,[[6,1]]),[['line 1','line 2',''],[[0,2]]])
+        compare(util.breakLinesAtPositions(lines,[[0,0],[0,1]]),[['','line 1','','line 2'],[[0,1],[0,3]]])
     })
 }
 toExport["util"]._section_ = true

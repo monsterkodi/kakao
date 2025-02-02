@@ -214,7 +214,7 @@ export default {select:function (from, to)
         {
             continue
         }
-        text = util.textForLinesRange(lines,selection)
+        text = util.textForLineRange(lines,selection)
         spans = spans.concat(util.lineSpansForText(lines,text))
     }
     return this.setHighlights(spans)
@@ -312,7 +312,7 @@ export default {select:function (from, to)
     return this.setCursors([lastCursor],0)
 },textForSelection:function ()
 {
-    return util.textForLinesRanges(this.allLines(),this.allSelections())
+    return util.textForLineRanges(this.allLines(),this.allSelections())
 },isSingleLineSelected:function ()
 {
     return this.s.selections.length === 1 && this.s.selections[0][1] === this.s.selections[0][3]

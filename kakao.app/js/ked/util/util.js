@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -124,6 +124,11 @@ class util
     static rangeForSpan (span)
     {
         return [span[0],span[1],span[2],span[1]]
+    }
+
+    static rangeFromStartToEnd (start, end)
+    {
+        return [start[0],start[1],end[0],end[1]]
     }
 
     static isEmptyRange (rng)
@@ -386,6 +391,28 @@ class util
         }
     }
 
+    static rangesForLinePositions (lines, posl)
+    {
+        var idx, pos, rngs
+
+        if (_k_.empty(posl))
+        {
+            return []
+        }
+        rngs = [[0,0,posl[0][0],posl[0][1]]]
+        var list = _k_.list(posl)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            pos = list[idx]
+            if (idx > 0)
+            {
+                rngs.push([posl[idx - 1][0],posl[idx - 1][1],pos[0],pos[1]])
+            }
+        }
+        rngs.push([posl.slice(-1)[0][0],posl.slice(-1)[0][1],lines.slice(-1)[0].length,lines.length - 1])
+        return rngs
+    }
+
     static mergeLineRanges (lines, rngs)
     {
         var i, mrgd, s, tail
@@ -414,7 +441,12 @@ class util
         return mrgd
     }
 
-    static textForLinesRange (lines, rng)
+    static linesForText (text)
+    {
+        return text.split(/\r?\n/)
+    }
+
+    static textForLineRange (lines, rng)
     {
         var l, y
 
@@ -452,7 +484,7 @@ class util
         return l.join('\n')
     }
 
-    static textForLinesRanges (lines, rngs)
+    static textForLineRanges (lines, rngs)
     {
         var rng, text
 
@@ -465,7 +497,7 @@ class util
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             rng = list[_a_]
-            text += util.textForLinesRange(lines,rng)
+            text += util.textForLineRange(lines,rng)
             text += '\n'
         }
         return text.slice(0, -1)
@@ -610,7 +642,15 @@ class util
         return rngs
     }
 
-    static splitLineRange (lines, rng)
+    static linesForLineRange (lines, rng)
+    {
+        return util.splitLineRangeIncludeEmpty(lines,rng).map(function (r)
+        {
+            return util.textForLineRange(lines,r)
+        })
+    }
+
+    static splitLineRangeIncludeEmpty (lines, rng, includeEmpty = true)
     {
         var i, nl, split
 
@@ -628,11 +668,16 @@ class util
                 split.push([0,rng[1] + i,lines[rng[1] + i].length,rng[1] + i])
             }
         }
-        if (rng[2] > 0)
+        if (includeEmpty || rng[2] > 0)
         {
             split.push([0,rng[3],rng[2],rng[3]])
         }
         return split
+    }
+
+    static splitLineRange (lines, rng)
+    {
+        return util.splitLineRangeIncludeEmpty(lines,rng,false)
     }
 
     static splitLineRanges (lines, rngs)
@@ -745,10 +790,31 @@ class util
         return [0,y,x,y]
     }
 
+    static breakLinesAtPositions (lines, posl)
+    {
+        var idx, newls, newpl, rng
+
+        newls = []
+        newpl = []
+        var list = _k_.list(util.rangesForLinePositions(lines,posl))
+        for (idx = 0; idx < list.length; idx++)
+        {
+            rng = list[idx]
+            if (idx !== 0)
+            {
+                newpl.push([0,newls.length])
+            }
+            newls = newls.concat(util.linesForLineRange(lines,rng))
+        }
+        return [newls,newpl]
+    }
+
     static deleteLineRangesAndAdjustPositions (lines, rngs, posl)
     {
         var partialLast, ri, rng
 
+        lines = _k_.copy(lines)
+        posl = _k_.clone(posl)
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
             rng = rngs[ri]

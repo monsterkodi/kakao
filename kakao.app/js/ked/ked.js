@@ -128,7 +128,7 @@ KED = (function ()
             this.status.file = slash.normalize(p)
         }
         text = await nfs.read(slash.untilde(p))
-        lines = text.split(/\r?\n/)
+        lines = util.linesForText(text)
         this.editor.state.syntax.ext = slash.ext(p)
         this.editor.state.loadLines(lines)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))

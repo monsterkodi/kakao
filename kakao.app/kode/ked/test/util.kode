@@ -49,17 +49,6 @@ use ../util ◆ util
         
         util.mergeLineRanges lines [[4 1 10 1] [0 2 4 2]] ▸ [[4 1 4 2]]
 
-    ▸ deleteLineRangesAndAdjustPositions
-    
-        lines = ['1234567890' 'abcdefghij']
-    
-        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 0]] [[5 1]] ▸ [lines [[5 1]]]
-        util.deleteLineRangesAndAdjustPositions lines [[5 0 6 0]] [[5 1]] ▸ [['123457890''abcdefghij'] [[5 1]]]
-        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 1]] [[5 1]] ▸ [['12345fghij'] [[5 0]]]
-        
-        lines = ['line 1' 'line 2' 'line 3']
-        util.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [['line 3'] [[0 0]]]
-
     ▸ rangeOfClosestWordToPos
     
         lines = ['1 2  3   4' '   ab  ghij']
@@ -170,8 +159,82 @@ use ../util ◆ util
         
     ▸ splitLineRanges
     
-        lines = ['1' '' '12' 'abc']
-        # util.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
+        lines = util.linesForText """
+            1
+            
+            12
+            abc
+            """
+
+        util.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
         util.splitLineRanges lines [[0 2 1 2] [2 2 3 2]] ▸ [[0 2 1 2] [2 2 3 2]]
+        
+    ▸ linesForLineRange
+    
+        lines = util.linesForText """
+            123
+            456
+            
+            abc
+            def
+            """
+            
+        util.linesForLineRange lines [0 0 3 4] ▸ ['123' '456' '' 'abc' 'def']
+        util.linesForLineRange lines [0 0 0 0] ▸ ['']
+        util.linesForLineRange lines [0 0 1 0] ▸ ['1']
+        util.linesForLineRange lines [3 0 1 1] ▸ ['' '4']
+        util.linesForLineRange lines [3 0 0 1] ▸ ['' '']
+        
+    ▸ rangesForLinePositions 
+    
+        lines = util.linesForText """
+            123
+            456
+            
+            abc
+            def
+            """
+    
+        util.rangesForLinePositions lines []      ▸ []
+        util.rangesForLinePositions lines [[0 0]] ▸ [[0 0 0 0] [0 0 3 4]]
+        util.rangesForLinePositions lines [[1 0]] ▸ [[0 0 1 0] [1 0 3 4]]
+        util.rangesForLinePositions lines [[0 2]] ▸ [[0 0 0 2] [0 2 3 4]]
+        
+        util.rangesForLinePositions lines [[0 0] [1 0]] ▸ [[0 0 0 0] [0 0 1 0] [1 0 3 4]]
+        util.rangesForLinePositions lines [[3 0] [3 1]] ▸ [[0 0 3 0] [3 0 3 1] [3 1 3 4]]
+        
+    ▸ deleteLineRangesAndAdjustPositions
+    
+        lines = ['1234567890' 'abcdefghij']
+    
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 0]] [[5 1]] ▸ [lines [[5 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 6 0]] [[5 1]] ▸ [['123457890''abcdefghij'] [[5 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 1]] [[5 1]] ▸ [['12345fghij'] [[5 0]]]
+        util.deleteLineRangesAndAdjustPositions lines [[0 1 1 1]] [[0 1]] ▸ [['1234567890''bcdefghij'] [[0 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 3 1]] [[3 1]] ▸ [['12345defghij'] [[5 0]]]
+        util.deleteLineRangesAndAdjustPositions lines [[3 0 5 1]] [[3 1]] ▸ [['123fghij'] [[3 0]]]
+        
+        lines = ['line 1' 'line 2' 'line 3']
+        util.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [['line 3'] [[0 0]]]
+        
+    ▸ breakLinesAtPositions
+    
+        lines = util.linesForText 
+            """
+            line 1
+            line 2
+            """
+            
+        util.breakLinesAtPositions lines [[0 0]] ▸ [['' 'line 1' 'line 2'] [[0 1]]]
+        util.breakLinesAtPositions lines [[2 0]] ▸ [['li' 'ne 1' 'line 2'] [[0 1]]]
+        util.breakLinesAtPositions lines [[6 0]] ▸ [['line 1' '' 'line 2'] [[0 1]]]
+        
+        util.breakLinesAtPositions lines [[0 1]] ▸ [['line 1' '' 'line 2'] [[0 2]]]
+        util.breakLinesAtPositions lines [[2 1]] ▸ [['line 1' 'li' 'ne 2'] [[0 2]]]
+        util.breakLinesAtPositions lines [[6 1]] ▸ [['line 1' 'line 2' ''] [[0 2]]]
+
+        util.breakLinesAtPositions lines [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
+        
+        
         
         
