@@ -1,4 +1,4 @@
-var _k_ = {copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var state
 
@@ -10,7 +10,7 @@ import insert from "./act/insert.js"
 import select from "./act/select.js"
 import join from "./act/join.js"
 import indent from "./act/indent.js"
-import cursors from "./act/cursors.js"
+import multi from "./act/multi.js"
 
 import syntax from "./syntax.js"
 
@@ -49,7 +49,7 @@ state = (function ()
         this["setLines"] = this["setLines"].bind(this)
         this["clearLines"] = this["clearLines"].bind(this)
         this["set"] = this["set"].bind(this)
-        var list = [del,insert,select,join,indent,cursors]
+        var list = [del,insert,select,join,indent,multi]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             act = list[_a_]
@@ -67,12 +67,6 @@ state = (function ()
 
     state.prototype["set"] = function (item, arg, opt)
     {
-        var cur, idx, main, mainCursor
-
-        if (item === 'cursors')
-        {
-            mainCursor = ((opt != null) ? _k_.copy(arg[_k_.clamp(0,arg.length - 1,opt)]) : this.mainCursor())
-        }
         arg = ((function ()
         {
             switch (item)
@@ -83,9 +77,6 @@ state = (function ()
                 case 'selections':
                     return util.mergeRanges(arg)
 
-                case 'cursors':
-                    return this.normalizeCursors(arg)
-
                 case 'main':
                     return _k_.clamp(0,this.s.cursors.length - 1,arg)
 
@@ -95,28 +86,8 @@ state = (function ()
 
         }).bind(this))()
         this.s = this.s.set(item,arg)
-        if (item === 'cursors')
-        {
-            main = -1
-            var list = _k_.list(arg)
-            for (idx = 0; idx < list.length; idx++)
-            {
-                cur = list[idx]
-                if (_k_.eql(cur, mainCursor))
-                {
-                    main = idx
-                    break
-                }
-            }
-            if (main < 0)
-            {
-                main = _k_.clamp(0,this.s.cursors.length - 1,this.s.main)
-            }
-            this.s = this.s.set('main',main)
-        }
         switch (item)
         {
-            case 'cursors':
             case 'main':
                 this.adjustViewForMainCursor()
                 break
@@ -127,9 +98,40 @@ state = (function ()
         return this
     }
 
-    state.prototype["normalizeCursors"] = function (cursors)
+    state.prototype["setCursors"] = function (cursors, main)
     {
-        return util.normalizePositions(cursors,this.s.lines.length - 1)
+        var cur, idx, mainCursor
+
+        if ((main != null))
+        {
+            mainCursor = _k_.copy(cursors[_k_.clamp(0,cursors.length - 1,main)])
+        }
+        else
+        {
+            mainCursor = this.mainCursor()
+        }
+        cursors = util.normalizePositions(cursors,this.s.lines.length - 1)
+        this.s = this.s.set('cursors',cursors)
+        main = -1
+        var list = _k_.list(cursors)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            cur = list[idx]
+            if (_k_.eql(cur, mainCursor))
+            {
+                main = idx
+                break
+            }
+        }
+        if (main < 0)
+        {
+            main = _k_.clamp(0,this.s.cursors.length - 1,this.s.main)
+        }
+        this.s = this.s.set('main',main)
+        this.adjustViewForMainCursor()
+        this.h.pop()
+        this.h.push(this.s)
+        return this
     }
 
     state.prototype["clearLines"] = function ()

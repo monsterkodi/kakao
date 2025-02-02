@@ -63,7 +63,7 @@ export
                 
         @setLines lines
         
-        @set 'cursors' cursors cursors.length-1
+        @setCursors cursors cursors.length-1
         
     insertNewline: ->
         

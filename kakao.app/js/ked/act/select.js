@@ -295,7 +295,7 @@ export default {select:function (from, to)
         }
     }
     this.set('selections',selections)
-    return this.set('cursors',[lastCursor],0)
+    return this.setCursors([lastCursor],0)
 },textForSelection:function ()
 {
     return util.textForLinesRanges(this.allLines(),this.allSelections())
@@ -368,7 +368,7 @@ export default {select:function (from, to)
 {
     if (this.s.cursors.length > 1)
     {
-        return this.set('cursors',[this.mainCursor()],0)
+        return this.setCursors([this.mainCursor()],0)
     }
 },clearCursorsHighlightsAndSelections:function ()
 {

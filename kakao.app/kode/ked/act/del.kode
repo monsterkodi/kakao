@@ -23,6 +23,58 @@ export
             @deleteSelection()
             ⮐ @
         
+        cursors = @allCursors()
+        
+        for cursor in cursors
+            [x y] = cursor()
+                
+            if type == 'back' and util.isLinesPosOutside(@s.lines [x y])
+                @setMainCursor @s.lines[y].length y
+                ⮐ @
+            
+            lines = @allLines()
+            line  = lines[y]
+            
+            remove = 1
+            
+            switch type
+                'eol'  ➜ line = line[0...x]
+                'back' 
+                    if x == 0
+                        ⮐ if y <= 0
+                        y -= 1
+                        x = lines[y].length
+                        remove = 2
+                        line = lines[y] + line
+                    else
+                        if mods in ['cmd' 'alt']
+                            rng = util.rangeOfWordOrWhitespaceLeftToPos lines @mainCursor()
+                            dc = rng[2] - rng[0]
+                            x -= dc
+                            line = kstr.splice line x dc
+                        else
+                            before = util.textFromBolToPos lines @mainCursor()
+                            if util.isOnlyWhitespace before
+                                dc = x % 4
+                                dc = 4 if dc == 0
+                                x -= dc
+                                line = kstr.splice line x dc
+                            else
+                                x -= 1
+                                line = kstr.splice line x 1
+            
+        lines.splice y remove line
+            
+        @setLines lines
+        @setCursors cursors
+        @
+    
+    deleteOld: type mods ->
+                
+        if type == 'back' and valid @s.selections
+            @deleteSelection()
+            ⮐ @
+        
         [x y] = @mainCursor()
             
         if type == 'back' and util.isLinesPosOutside(@s.lines [x y])
@@ -84,7 +136,7 @@ export
         
         @deselect()
         @setLines lines
-        @set 'cursors' cursors
+        @setCursors cursors
         @clearHighlights()
         @
         

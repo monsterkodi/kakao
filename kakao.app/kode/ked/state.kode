@@ -7,7 +7,7 @@
 ###
 
 use ../kxk ◆ immutable kstr
-use ./act ◆ del insert select join indent cursors
+use ./act ◆ del insert select join indent multi
 use ◆ syntax 
 use ./util ◆ util
 use child_process
@@ -16,7 +16,7 @@ function state
     
     @: @cells ->
         
-        for act in [del insert select join indent cursors]
+        for act in [del insert select join indent multi]
             for k,v of act
                 @[k] = v.bind @
         
@@ -41,40 +41,49 @@ function state
     
     set: item arg opt =>
         
-        if item == 'cursors' 
-            mainCursor = opt? ? copy arg[clamp 0 arg.length-1 opt] : @mainCursor()
-        
         arg = switch item 
             'highlights' ➜ util.normalizeSpans         arg
             'selections' ➜ util.mergeRanges            arg
-            'cursors'    ➜ @normalizeCursors           arg
             'main'       ➜ clamp 0 @s.cursors.length-1 arg
                          ➜ arg
         
         @s = @s.set item arg
-
-        if item == 'cursors'
-            main = -1
-            for cur,idx in arg
-                if cur eql mainCursor
-                    main = idx
-                    break
-            if main < 0
-                main = clamp 0 @s.cursors.length-1 @s.main
-            @s = @s.set 'main' main    
         
         switch item 
-            'cursors' 
             'main' ➜  @adjustViewForMainCursor()
         
         @h.pop()
         @h.push @s
         @
-        
-    normalizeCursors: cursors -> 
-        
-        util.normalizePositions cursors @s.lines.length-1
+                
+    setCursors: cursors main -> 
     
+        if main?
+            mainCursor = copy cursors[clamp 0 cursors.length-1 main]
+        else
+            mainCursor = @mainCursor()
+        
+        cursors = util.normalizePositions cursors @s.lines.length-1
+            
+        @s = @s.set 'cursors' cursors
+
+        main = -1
+        for cur,idx in cursors
+            if cur eql mainCursor
+                main = idx
+                break
+                
+        if main < 0
+            main = clamp 0 @s.cursors.length-1 @s.main
+            
+        @s = @s.set 'main' main    
+        
+        @adjustViewForMainCursor()
+        
+        @h.pop()
+        @h.push @s
+        @
+        
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
     # 000      000  000 0 000  0000000   0000000   
@@ -91,7 +100,6 @@ function state
         @syntax.setLines lines
         
         @s = @s.set 'lines' lines        
-        
         @r = []
         @h.push @s
         

@@ -1,9 +1,9 @@
 ###
- 0000000  000   000  00000000    0000000   0000000   00000000    0000000  
-000       000   000  000   000  000       000   000  000   000  000       
-000       000   000  0000000    0000000   000   000  0000000    0000000   
-000       000   000  000   000       000  000   000  000   000       000  
- 0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+00     00  000   000  000      000000000  000    
+000   000  000   000  000         000     000    
+000000000  000   000  000         000     000    
+000 0 000  000   000  000         000     000    
+000   000   0000000   0000000     000     000    
 ###
 
 use ../util ◆ util
@@ -36,7 +36,7 @@ export
 
         cursors = cursors.concat newCursors
         
-        @set 'cursors' cursors
+        @setCursors cursors
         
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
@@ -49,11 +49,11 @@ export
         pos = util.pos x y
         cursors = @allCursors()
         cursors.push pos
-        @set 'cursors' cursors cursors.length-1
+        @setCursors cursors cursors.length-1
         
     addCursors: cursors ->
         
-        @set 'cursors' @allCursors().concat(cursors)
+        @setCursors @allCursors().concat(cursors)
         
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -79,7 +79,7 @@ export
                 'bof'   ➜ c[0] = 0; c[1] = 0
                 'eof'   ➜ c[1] = @s.lines.length-1; c[0] = @s.lines[c[1]].length
  
-        @set 'cursors' cursors @s.main
+        @setCursors cursors @s.main
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
@@ -94,7 +94,7 @@ export
         y = clamp 0 @s.lines.length-1 y
         x = max 0 x
                         
-        @set 'cursors' [[x y]] 0
+        @setCursors [[x y]] 0
         
     moveMainCursor: x y ->
         
@@ -116,7 +116,7 @@ export
             cursors.push [x y]
             main = cursors.length-1
         
-        @set 'cursors' cursors main
+        @setCursors cursors main
                 
     mainCursor: -> @s.cursors[@s.main].asMutable()
     
@@ -126,7 +126,7 @@ export
         mc  = util.endOfRange rng
         
         @deselect()
-        @set 'cursors' [mc] 0
+        @setCursors [mc] 0
         
     singleCursorAtIndentOrStartOfLine: ->
         
@@ -142,7 +142,7 @@ export
             mc  = util.startOfRange rng
         
         @deselect()
-        @set 'cursors' [mc] 0
+        @setCursors [mc] 0
 
     moveCursorsToIndentOrStartOfLines: ->
         
@@ -156,7 +156,7 @@ export
             else
                 cur[0] = 0
         
-        @set 'cursors' cursors
+        @setCursors cursors
         
     moveCursorsToEndOfSelectionsOrLines: ->
         
@@ -169,7 +169,7 @@ export
         rngs    = util.splitLineRanges lines selections
         cursors = util.endPositionsOfRanges rngs
         
-        @set 'cursors' cursors
+        @setCursors cursors
             
     moveCursorsToEndOfLines: ->
         
@@ -179,7 +179,7 @@ export
         for cur in cursors
             cur[0] = util.lineRangeAtPos(lines cur)[2]
         
-        @set 'cursors' cursors
+        @setCursors cursors
                 
     isAnyCursorInLine: y ->
         

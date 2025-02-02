@@ -253,7 +253,7 @@ export
                 cursorLineAtIndex c c[1]+1 if c[1] < lines.length-1
                 
         @set 'selections' selections
-        @set 'cursors' [lastCursor] 0
+        @setCursors [lastCursor] 0
         
     # 000000000  00000000  000   000  000000000  
     #    000     000        000 000      000     
@@ -311,7 +311,7 @@ export
     clearCursors: ->
             
         if @s.cursors.length > 1
-            @set 'cursors' [@mainCursor()] 0
+            @setCursors [@mainCursor()] 0
             
     clearCursorsHighlightsAndSelections: ->
         
