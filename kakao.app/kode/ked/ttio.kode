@@ -168,7 +168,8 @@ function TTIO extends events
         mods.push 'ctrl'  if code & 0b10000
         
         event.mods = mods.join '+' if valid mods
-                
+        event[m] = m in mods for m in ['shift' 'ctrl' 'alt' 'cmd']
+                        
         if csi.endsWith 'M'
 
             event.type = switch code & 0b11100000
@@ -190,7 +191,8 @@ function TTIO extends events
                 0 ➜ 'left'
                 1 ➜ 'middle'
                 2 ➜ 'right'
-                
+
+        lf 'mouse----' noon(event)                
         event
             
     emitMouseEvent: event =>

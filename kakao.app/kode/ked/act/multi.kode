@@ -66,11 +66,17 @@ export
         pos = util.pos x y
         cursors = @allCursors()
         cursors.push pos
-        @setCursors cursors cursors.length-1
+        @setCursors cursors -1
         
     addCursors: cursors ->
         
         @setCursors @allCursors().concat(cursors)
+        
+    delCursorsInRange: rng ->
+        
+        outside = util.positionsOutsideRange @allCursors() rng
+        outside.push util.endOfRange(rng)
+        @setCursors outside -1
         
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -169,6 +175,19 @@ export
         
         @deselect()
         @setCursors [mc] 0
+        
+    moveCursorsToStartOfSelectionsOrIndentOrStartOfLines: ->
+        
+        selections = @allSelections()
+        
+        ⮐ @moveCursorsToIndentOrStartOfLines() if empty selections
+        
+        lines   = @allLines()
+        rngs    = util.splitLineRanges lines selections false
+
+        cursors = util.startPositionsOfRanges rngs
+        
+        @setCursors cursors
 
     moveCursorsToIndentOrStartOfLines: ->
         

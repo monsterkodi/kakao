@@ -60,10 +60,17 @@ export default {allCursors:function ()
     pos = util.pos(x,y)
     cursors = this.allCursors()
     cursors.push(pos)
-    return this.setCursors(cursors,cursors.length - 1)
+    return this.setCursors(cursors,-1)
 },addCursors:function (cursors)
 {
     return this.setCursors(this.allCursors().concat(cursors))
+},delCursorsInRange:function (rng)
+{
+    var outside
+
+    outside = util.positionsOutsideRange(this.allCursors(),rng)
+    outside.push(util.endOfRange(rng))
+    return this.setCursors(outside,-1)
 },moveCursor:function (dir, steps = 1)
 {
     var c, cursors
@@ -180,6 +187,19 @@ export default {allCursors:function ()
     }
     this.deselect()
     return this.setCursors([mc],0)
+},moveCursorsToStartOfSelectionsOrIndentOrStartOfLines:function ()
+{
+    var cursors, lines, rngs, selections
+
+    selections = this.allSelections()
+    if (_k_.empty(selections))
+    {
+        return this.moveCursorsToIndentOrStartOfLines()
+    }
+    lines = this.allLines()
+    rngs = util.splitLineRanges(lines,selections,false)
+    cursors = util.startPositionsOfRanges(rngs)
+    return this.setCursors(cursors)
 },moveCursorsToIndentOrStartOfLines:function ()
 {
     var cur, cursors, ind, lines

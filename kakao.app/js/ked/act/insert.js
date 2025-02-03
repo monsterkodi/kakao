@@ -14,10 +14,7 @@ export default {insert:function (text)
         {
             return this.indentSelectedLines()
         }
-        if (this.s.cursors.length === 1)
-        {
-            this.deleteSelection()
-        }
+        this.deleteSelection()
     }
     cursors = this.allCursors()
     lines = this.allLines()
@@ -25,7 +22,7 @@ export default {insert:function (text)
 
     this.clearHighlights()
     this.setLines(lines)
-    return this.setCursors(cursors,cursors.length - 1)
+    return this.setCursors(cursors,-1)
 },insertNewline:function ()
 {
     var cursors, lines

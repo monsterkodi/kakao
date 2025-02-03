@@ -94,6 +94,10 @@ class util
         for p in posl
             ⮐ true if p eql pos
         false
+        
+    @positionsOutsideRange: posl rng ->
+        
+        posl.filter (p) -> util.isPosOutsideRange(p rng)
                 
     # 00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  0000  000  000        000       
@@ -106,6 +110,8 @@ class util
         ⮐ false if util.isPosBeforeRange pos rng 
         ⮐ false if util.isPosAfterRange pos rng 
         true
+        
+    @isPosOutsideRange: pos rng -> not util.isPosInsideRange pos rng
 
     @isPosBeforeRange: pos rng ->
     
@@ -222,9 +228,8 @@ class util
         rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
         rngs.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
         
-    @endPositionsOfRanges: rngs ->
-        
-        rngs.map (r) -> util.endOfRange r
+    @startPositionsOfRanges: rngs -> rngs.map (r) -> util.startOfRange r
+    @endPositionsOfRanges:   rngs -> rngs.map (r) -> util.endOfRange r
         
     @removeTrailingEmptyRange: rngs ->
         

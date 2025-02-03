@@ -151,15 +151,14 @@ function editor extends events
             'press'
                         
                 if event.count > 1
-                    
-                    @state.deselect()
+
+                    @state.deselect() if not event.shift
                     
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
                     if event.count == 2
-                        if event.mods == 'alt'
-                            @state.clearCursorsHighlightsAndSelections()
+                        if event.alt
                             @state.selectChunk x y
                         else
                             @state.selectWord x y
@@ -179,8 +178,10 @@ function editor extends events
                     
                     # todo: shift click extends selection                           
                     
-                    @state.clearCursorsHighlightsAndSelections() if empty event.mods
-                    if event.mods == 'alt'
+                    @state.deselect() if not event.shift
+                    @state.clearCursors() if not event.alt
+
+                    if event.alt
                         @state.addCursor x y
                     else
                         @state.setMainCursor x y
@@ -198,8 +199,10 @@ function editor extends events
                     if y < @dragStart[1] 
                         start = [@dragStart[2] @dragStart[1]]
                     
-                    if @state.select start [x y]
-                        ⮐ true
+                    if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd util.rangeFromStartToEnd(start [x y])
+                    else             @state.select start [x y]
+                        
+                    ⮐ true
                     
             'release'
             
@@ -358,7 +361,7 @@ function editor extends events
             'cmd+l'                     ➜ ⮐ @state.selectMoreLines()
             'shift+cmd+l'               ➜ ⮐ @state.selectLessLines()
 
-            'cmd+left'                  ➜ ⮐ @state.moveCursorsToIndentOrStartOfLines()
+            'cmd+left'                  ➜ ⮐ @state.moveCursorsToStartOfSelectionsOrIndentOrStartOfLines()
             'cmd+right'                 ➜ ⮐ @state.moveCursorsToEndOfSelectionsOrLines()
             
             'cmd+g'                     ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()

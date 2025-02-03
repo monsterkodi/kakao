@@ -160,6 +160,14 @@ class util
         return false
     }
 
+    static positionsOutsideRange (posl, rng)
+    {
+        return posl.filter(function (p)
+        {
+            return util.isPosOutsideRange(p,rng)
+        })
+    }
+
     static isPosInsideRange (pos, rng)
     {
         if (util.isPosBeforeRange(pos,rng))
@@ -171,6 +179,11 @@ class util
             return false
         }
         return true
+    }
+
+    static isPosOutsideRange (pos, rng)
+    {
+        return !util.isPosInsideRange(pos,rng)
     }
 
     static isPosBeforeRange (pos, rng)
@@ -449,6 +462,14 @@ class util
             {
                 return a[1] - b[1]
             }
+        })
+    }
+
+    static startPositionsOfRanges (rngs)
+    {
+        return rngs.map(function (r)
+        {
+            return util.startOfRange(r)
         })
     }
 

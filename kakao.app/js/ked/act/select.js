@@ -182,13 +182,20 @@ export default {select:function (from, to)
         }
     }
     return false
-},addSpanToSelection:function (span)
+},addRangeToSelectionWithMainCursorAtEnd:function (rng)
+{
+    this.addRangeToSelection(rng)
+    return this.delCursorsInRange(rng)
+},addRangeToSelection:function (rng)
 {
     var selections
 
     selections = this.allSelections()
-    selections.push(util.rangeForSpan(span))
+    selections.push(rng)
     return this.setSelections(selections)
+},addSpanToSelection:function (span)
+{
+    return this.addRangeToSelection(util.rangeForSpan(span))
 },selectWordAtCursor_highlightSelection:function ()
 {
     if (_k_.empty(this.s.selections))
@@ -227,11 +234,11 @@ export default {select:function (from, to)
     return this.setHighlights(spans)
 },selectChunk:function (x, y)
 {
-    var range
+    var rng
 
-    if (range = util.rangeOfClosestChunkToPos(this.s.lines,util.pos(x,y)))
+    if (rng = util.rangeOfClosestChunkToPos(this.s.lines,util.pos(x,y)))
     {
-        this.select(range.slice(0, 2),range.slice(2, 4))
+        this.addRangeToSelectionWithMainCursorAtEnd(rng)
     }
     return this
 },selectWord:function (x, y)
@@ -240,7 +247,7 @@ export default {select:function (from, to)
 
     if (range = util.rangeOfClosestWordToPos(this.s.lines,util.pos(x,y)))
     {
-        this.select(range.slice(0, 2),range.slice(2, 4))
+        this.addRangeToSelectionWithMainCursorAtEnd(range)
     }
     return this
 },selectLine:function (y)
@@ -251,7 +258,7 @@ export default {select:function (from, to)
         this.select([0,y],[this.s.lines[y].length,y])
     }
     return this
-},selectCursorLines:function ()
+},selectCursorLines:function (append = false)
 {
     var cursors, lines, selections, y
 
@@ -263,6 +270,11 @@ export default {select:function (from, to)
     {
         y = list[_e_]
         selections.push([0,y,lines[y].length,y])
+    }
+    if (append && !_k_.empty(selections))
+    {
+        selections.slice(-1)[0][2] = 0
+        selections.slice(-1)[0][3] += 1
     }
     return this.setSelections(selections)
 },selectAllLines:function ()
@@ -279,7 +291,7 @@ export default {select:function (from, to)
     var _f_ = util.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
 
     this.setSelections(selections)
-    return this.setCursors(cursors,cursors.length - 1)
+    return this.setCursors(cursors,-1)
 },selectLessLines:function ()
 {
     var cursors, lines, selections
@@ -290,7 +302,7 @@ export default {select:function (from, to)
     var _10_ = util.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _10_[0]; selections = _10_[1]
 
     this.setSelections(selections)
-    return this.setCursors(cursors,cursors.length - 1)
+    return this.setCursors(cursors,-1)
 },textForSelection:function ()
 {
     return util.textForLineRanges(this.allLines(),this.allSelections())

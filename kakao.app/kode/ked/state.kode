@@ -57,8 +57,8 @@ function state
     
     setCursors: cursors main -> 
 
-        if main is arr
-            main = util.indexOfPosInPositions main cursors
+        if main is arr ➜ main = util.indexOfPosInPositions main cursors
+        if main is num and main < 0 ➜ main = cursors.length+main
         
         if main?
             mainCursor = copy cursors[clamp 0 cursors.length-1 main]
@@ -181,8 +181,13 @@ function state
     #  0000000   0000000   000           000     
     
     copy: =>
-        # lf 'copy'
-        ⮐ if empty @s.selections
+
+        if empty @s.selections
+            @selectCursorLines true
+            if valid @s.selections
+                @copy()
+                @deselect()
+            ⮐ 
             
         proc = child_process.spawn 'pbcopy'
         proc.stdin.write @textForSelection()

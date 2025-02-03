@@ -22,8 +22,7 @@ export
         if valid @s.selections
             if text == '\t'
                 ⮐ @indentSelectedLines()
-            if @s.cursors.length == 1
-                @deleteSelection()
+            @deleteSelection()
                     
         cursors = @allCursors()
         lines   = @allLines()
@@ -32,7 +31,7 @@ export
                         
         @clearHighlights()
         @setLines   lines
-        @setCursors cursors cursors.length-1
+        @setCursors cursors -1
         
     # 000   000  00000000  000   000  000      000  000   000  00000000  
     # 0000  000  000       000 0 000  000      000  0000  000  000       
