@@ -291,7 +291,11 @@ class util
     #    000     000        000 000      000     
     #    000     00000000  000   000     000     
     
-    @linesForText: text -> text.split /\r?\n/
+    @linesForText: text -> 
+        
+        text = text.replace /\x1b/g, '▪'
+    
+        text.split /\r?\n/
     
     @textForLineRange: lines rng ->
         
@@ -500,7 +504,54 @@ class util
                 ⮐ [r[0] y r[1] y]
             
         [0 y x y]   
-                
+
+    @rangeOfWordOrWhitespaceRightToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if x < 0 or util.isInvalidLineIndex lines y
+        
+        if r = kstr.rangeOfClosestWord lines[y][x..] 0
+            if 0 == r[0] < r[1]
+                ⮐ [x y r[1]+x y]
+            if r[0] > 0 
+                ⮐ [x y r[0]+x y]
+            
+        [x y lines[y].length y]   
+        
+    @lineChar: line x -> line[x] if 0 <= x < line.length
+        
+    @categoryForChar: char -> 
+        
+        if 
+            empty char      ➜ ⮐ 'empty'
+            /\s+/.test char ➜ ⮐ 'ws'
+            /\w+/.test char ➜ ⮐ 'word'
+            
+        'punct'
+        
+    @jumpDelta: line px dx jump ->
+        
+        ci = px
+        if nc = cat = util.categoryForChar(util.lineChar(line ci))
+            ⮐ dx if cat not in jump
+            while true
+                ci += dx
+                nc = util.categoryForChar(util.lineChar(line ci))
+                break if nc != cat
+                break if ci <= 0
+                ⮐ 1 if dx > 0 and nc == 'empty'
+        ci - px
+
+    @numCharsFromPosToWordOrPunctInDirection: lines pos dir opt ->
+        
+        dx = dir == 'left' ? -1 : 1
+        
+        if opt.jump ➜ ⮐ util.jumpDelta(lines[pos[1]] pos[0] dx opt.jump)
+            
+        ⮐ 0 if pos[0] + dx < 0
+        dx
+        
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   

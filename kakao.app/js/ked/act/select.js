@@ -279,7 +279,7 @@ export default {select:function (from, to)
     return this.setSelections(selections)
 },selectAllLines:function ()
 {
-    this.moveCursor('bof')
+    this.moveCursors('bof')
     return this.moveCursorAndSelect('eof')
 },selectMoreLines:function ()
 {

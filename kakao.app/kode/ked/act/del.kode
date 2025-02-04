@@ -19,7 +19,7 @@ export
     
     delete: type mods ->
                 
-        if type == 'back' and valid @s.selections
+        if type in ['back' 'next'] and valid @s.selections
             ⮐ @deleteSelection()
         
         lines   = @allLines()
@@ -31,7 +31,7 @@ export
             
             [x y] = cursor
                 
-            if type == 'back' and cursors.length == 1 and util.isLinesPosOutside @s.lines [x y] 
+            if type in ['back' 'next'] and cursors.length == 1 and util.isLinesPosOutside @s.lines [x y] 
                 ⮐ @setMainCursor @s.lines[y].length y
             
             line = lines[y]
@@ -54,7 +54,7 @@ export
                             cursor[0] = x
                             cursor[1] = y
                     else
-                        if mods in ['cmd' 'alt']
+                        if mods == 'alt'
                             rng = util.rangeOfWordOrWhitespaceLeftToPos lines cursor
                             dc = rng[2] - rng[0]
                             line = kstr.splice line x-dc dc
@@ -67,6 +67,25 @@ export
                             else
                                 dc = 1
                                 line = kstr.splice line x-dc dc
+
+                'next' 
+                    if x == lines[y].length
+                        if cursors.length == 1
+                            ⮐ if y >= lines.length-1
+                            x = lines[y].length
+                            remove = 2
+                            line = line + lines[y+1]
+                            cursor[0] = x
+                            cursor[1] = y
+                    else
+                        if mods == 'alt'
+                            if rng = util.rangeOfWordOrWhitespaceRightToPos lines cursor
+                                dc = rng[2] - rng[0]
+                                line = kstr.splice line x dc
+                        else
+                            dc = 1
+                            line = kstr.splice line x dc
+                        cursor[0] += dc
                                 
             util.moveCursorsInSameLineBy cursors cursor -dc
             

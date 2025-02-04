@@ -30,3 +30,5 @@ export
         
         @setLines lines
         
+    moveSelectedOrCursorLines: dir ->
+        

@@ -249,7 +249,7 @@ export
         
     selectAllLines: ->
         
-        @moveCursor 'bof'
+        @moveCursors 'bof'
         @moveCursorAndSelect 'eof'
         
     # 00     00   0000000   00000000   00000000  

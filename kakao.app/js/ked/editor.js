@@ -386,72 +386,67 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
+        if (this.state.s.cursors.length === 1)
+        {
+            switch (key)
+            {
+                case 'ctrl+alt+up':
+                    return this.state.moveCursors('up',{count:8})
+
+                case 'ctrl+alt+down':
+                    return this.state.moveCursors('down',{count:8})
+
+                case 'ctrl+alt+left':
+                    return this.state.moveCursors('left',{count:8})
+
+                case 'ctrl+alt+right':
+                    return this.state.moveCursors('right',{count:8})
+
+                case 'shift+ctrl+alt+up':
+                    return this.state.moveCursors('up',{count:16})
+
+                case 'shift+ctrl+alt+down':
+                    return this.state.moveCursors('down',{count:16})
+
+                case 'shift+ctrl+alt+left':
+                    return this.state.moveCursors('left',{count:16})
+
+                case 'shift+ctrl+alt+right':
+                    return this.state.moveCursors('right',{count:16})
+
+            }
+
+        }
         switch (key)
         {
             case 'up':
             case 'down':
             case 'left':
             case 'right':
-                return this.state.moveCursor(key)
+                return this.state.moveCursors(key)
 
             case 'ctrl+up':
-                return this.state.moveCursor('up',4)
-
-            case 'ctrl+down':
-                return this.state.moveCursor('down',4)
-
-            case 'ctrl+left':
-                return this.state.moveCursor('left',4)
-
-            case 'ctrl+right':
-                return this.state.moveCursor('right',4)
-
-            case 'ctrl+alt+up':
-                return this.state.moveCursor('up',8)
-
-            case 'ctrl+alt+down':
-                return this.state.moveCursor('down',8)
-
-            case 'ctrl+alt+left':
-                return this.state.moveCursor('left',8)
-
-            case 'ctrl+alt+right':
-                return this.state.moveCursor('right',8)
-
-            case 'shift+ctrl+alt+up':
-                return this.state.moveCursor('up',16)
-
-            case 'shift+ctrl+alt+down':
-                return this.state.moveCursor('down',16)
-
-            case 'shift+ctrl+alt+left':
-                return this.state.moveCursor('left',16)
-
-            case 'shift+ctrl+alt+right':
-                return this.state.moveCursor('right',16)
-
-            case 'alt+up':
                 return this.state.moveMainCursorInDirection('up')
 
-            case 'alt+down':
+            case 'ctrl+down':
                 return this.state.moveMainCursorInDirection('down')
 
-            case 'alt+left':
+            case 'ctrl+left':
                 return this.state.moveMainCursorInDirection('left')
 
-            case 'alt+right':
+            case 'ctrl+right':
                 return this.state.moveMainCursorInDirection('right')
 
-            case 'shift+alt+up':
+            case 'shift+ctrl+up':
                 return this.state.moveMainCursorInDirection('up',{keep:true})
 
-            case 'shift+alt+down':
+            case 'shift+ctrl+down':
                 return this.state.moveMainCursorInDirection('down',{keep:true})
 
-            case 'shift+alt+left':
+            case 'shift+ctrl+left':
                 return this.state.moveMainCursorInDirection('left',{keep:true})
 
-            case 'shift+alt+right':
+            case 'shift+ctrl+right':
                 return this.state.moveMainCursorInDirection('right',{keep:true})
 
             case 'ctrl+a':
@@ -490,6 +485,12 @@ editor = (function ()
             case 'shift+cmd+left':
                 return this.state.moveCursorAndSelect('bol')
 
+            case 'alt+d':
+                return this.state.delete('next','alt')
+
+            case 'ctrl+d':
+                return this.state.delete('next')
+
             case 'ctrl+k':
                 return this.state.delete('eol')
 
@@ -522,6 +523,18 @@ editor = (function ()
             case 'cmd+v':
             case 'ctrl+v':
                 return this.state.paste()
+
+            case 'alt+up':
+                return this.state.moveSelectedOrCursorLines('up')
+
+            case 'alt+down':
+                return this.state.moveSelectedOrCursorLines('down')
+
+            case 'alt+left':
+                return this.state.moveCursors('left',{jump:['ws','word','empty','punct']})
+
+            case 'alt+right':
+                return this.state.moveCursors('right',{jump:['ws','word','empty','punct']})
 
             case 'cmd+up':
                 return this.state.expandCursors('up')

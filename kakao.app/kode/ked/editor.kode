@@ -293,34 +293,33 @@ function editor extends events
     
     onKey: key event =>
         
+        if @state.s.cursors.length == 1
+            
+            switch key
+                                
+                'ctrl+alt+up'               ➜ ⮐ @state.moveCursors 'up'    count:8
+                'ctrl+alt+down'             ➜ ⮐ @state.moveCursors 'down'  count:8
+                'ctrl+alt+left'             ➜ ⮐ @state.moveCursors 'left'  count:8
+                'ctrl+alt+right'            ➜ ⮐ @state.moveCursors 'right' count:8
+        
+                'shift+ctrl+alt+up'         ➜ ⮐ @state.moveCursors 'up'    count:16
+                'shift+ctrl+alt+down'       ➜ ⮐ @state.moveCursors 'down'  count:16
+                'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursors 'left'  count:16
+                'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursors 'right' count:16
+        
         switch key
-            
-            'up' 'down' 'left' 'right'  ➜ ⮐ @state.moveCursor key
-            
-            'ctrl+up'                   ➜ ⮐ @state.moveCursor 'up'    4
-            'ctrl+down'                 ➜ ⮐ @state.moveCursor 'down'  4
-            'ctrl+left'                 ➜ ⮐ @state.moveCursor 'left'  4
-            'ctrl+right'                ➜ ⮐ @state.moveCursor 'right' 4
-                       
-            'ctrl+alt+up'               ➜ ⮐ @state.moveCursor 'up'    8
-            'ctrl+alt+down'             ➜ ⮐ @state.moveCursor 'down'  8
-            'ctrl+alt+left'             ➜ ⮐ @state.moveCursor 'left'  8
-            'ctrl+alt+right'            ➜ ⮐ @state.moveCursor 'right' 8
-    
-            'shift+ctrl+alt+up'         ➜ ⮐ @state.moveCursor 'up'    16
-            'shift+ctrl+alt+down'       ➜ ⮐ @state.moveCursor 'down'  16
-            'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursor 'left'  16
-            'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursor 'right' 16
-            
-            'alt+up'                    ➜ ⮐ @state.moveMainCursorInDirection 'up'
-            'alt+down'                  ➜ ⮐ @state.moveMainCursorInDirection 'down'
-            'alt+left'                  ➜ ⮐ @state.moveMainCursorInDirection 'left'
-            'alt+right'                 ➜ ⮐ @state.moveMainCursorInDirection 'right'
 
-            'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
-            'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
-            'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
-            'shift+alt+right'           ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true
+            'up' 'down' 'left' 'right'  ➜ ⮐ @state.moveCursors key
+                            
+            'ctrl+up'                   ➜ ⮐ @state.moveMainCursorInDirection 'up'
+            'ctrl+down'                 ➜ ⮐ @state.moveMainCursorInDirection 'down'
+            'ctrl+left'                 ➜ ⮐ @state.moveMainCursorInDirection 'left'
+            'ctrl+right'                ➜ ⮐ @state.moveMainCursorInDirection 'right'
+
+            'shift+ctrl+up'             ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
+            'shift+ctrl+down'           ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
+            'shift+ctrl+left'           ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
+            'shift+ctrl+right'          ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true
             
             'ctrl+a'                    ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
             'ctrl+e'                    ➜ ⮐ @state.singleCursorAtEndOfLine()
@@ -336,6 +335,8 @@ function editor extends events
             'shift+cmd+right'           ➜ ⮐ @state.moveCursorAndSelect 'eol'
             'shift+cmd+left'            ➜ ⮐ @state.moveCursorAndSelect 'bol'
                     
+            'alt+d'                     ➜ ⮐ @state.delete 'next' 'alt'
+            'ctrl+d'                    ➜ ⮐ @state.delete 'next'
             'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
             'delete'                    ➜ ⮐ @state.delete 'back'
             'cmd+delete'                ➜ ⮐ @state.delete 'back' 'cmd'
@@ -347,6 +348,11 @@ function editor extends events
             'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @state.cut()     
             'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @state.copy()        
             'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @state.paste()
+            
+            'alt+up'                    ➜ ⮐ @state.moveSelectedOrCursorLines 'up'
+            'alt+down'                  ➜ ⮐ @state.moveSelectedOrCursorLines 'down'
+            'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
+            'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
             
             'cmd+up'                    ➜ ⮐ @state.expandCursors   'up'
             'cmd+down'                  ➜ ⮐ @state.expandCursors   'down'

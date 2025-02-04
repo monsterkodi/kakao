@@ -71,15 +71,19 @@ export default {allCursors:function ()
     outside = util.positionsOutsideRange(this.allCursors(),rng)
     outside.push(util.endOfRange(rng))
     return this.setCursors(outside,-1)
-},moveCursor:function (dir, steps = 1)
+},moveCursors:function (dir, opt)
 {
-    var c, cursors
+    var c, cursors, lines, _90_18_, _91_22_
 
+    opt = (opt != null ? opt : {})
+    opt.count = ((_90_18_=opt.count) != null ? _90_18_ : 1)
+    opt.jumpWords = ((_91_22_=opt.jumpWords) != null ? _91_22_ : false)
     if (this.s.highlights.length)
     {
         this.deselect()
     }
     cursors = this.allCursors()
+    lines = this.allLines()
     var list = _k_.list(cursors)
     for (var _c_ = 0; _c_ < list.length; _c_++)
     {
@@ -87,16 +91,14 @@ export default {allCursors:function ()
         switch (dir)
         {
             case 'left':
-                c[0] -= 1
-                break
             case 'right':
-                c[0] += 1
+                c[0] += util.numCharsFromPosToWordOrPunctInDirection(lines,c,dir,opt)
                 break
             case 'up':
-                c[1] -= steps
+                c[1] -= opt.count
                 break
             case 'down':
-                c[1] += steps
+                c[1] += opt.count
                 break
             case 'eol':
                 c[0] = this.s.lines[c[1]].length
@@ -268,7 +270,7 @@ export default {allCursors:function ()
     mc = this.mainCursor()
     selection = [mc[0],mc[1],mc[0],mc[1]]
     selections.push(selection)
-    this.moveCursor(dir,1)
+    this.moveCursors(dir)
     switch (dir)
     {
         case 'left':

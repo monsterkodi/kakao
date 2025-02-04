@@ -17,4 +17,5 @@ export default {joinLines:function ()
     this.setMainCursor(x,y)
     lines.splice(y,2,lines[y] + _k_.ltrim(lines[y + 1]))
     return this.setLines(lines)
-}}
+},moveSelectedOrCursorLines:function (dir)
+{}}

@@ -192,7 +192,7 @@ function TTIO extends events
                 1 ➜ 'middle'
                 2 ➜ 'right'
 
-        lf 'mouse----' noon(event)                
+        # lf 'mouse----' noon(event)                
         event
             
     emitMouseEvent: event =>

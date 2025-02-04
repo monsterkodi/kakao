@@ -84,19 +84,24 @@ export
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    moveCursor: dir steps=1 ->
+    moveCursors: dir opt ->
+        
+        opt ?= {}
+        opt.count ?= 1
+        opt.jumpWords ?= false
         
         if @s.highlights.length
             @deselect()
         
         cursors = @allCursors()
+        lines   = @allLines()
         
         for c in cursors
             switch dir
-                'left'  ➜ c[0] -= 1
-                'right' ➜ c[0] += 1
-                'up'    ➜ c[1] -= steps
-                'down'  ➜ c[1] += steps 
+                'left'  
+                'right' ➜ c[0] += util.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
+                'up'    ➜ c[1] -= opt.count
+                'down'  ➜ c[1] += opt.count
                 'eol'   ➜ c[0] = @s.lines[c[1]].length
                 'bol'   ➜ c[0] = 0
                 'bof'   ➜ c[0] = 0; c[1] = 0
@@ -244,7 +249,7 @@ export
         selection = [mc[0] mc[1] mc[0] mc[1]]
         selections.push selection 
         
-        @moveCursor dir 1
+        @moveCursors dir
         
         switch dir
             'left'  ➜ selection[0] = selection[0]-1
