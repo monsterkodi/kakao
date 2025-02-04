@@ -12,7 +12,10 @@ TTIO = (function ()
     {
         this["onData"] = this["onData"].bind(this)
         this["emitMouseEvent"] = this["emitMouseEvent"].bind(this)
-        this["parseMouseEvent"] = this["parseMouseEvent"].bind(this)
+        this["parseMouse"] = this["parseMouse"].bind(this)
+        this["parseRaw"] = this["parseRaw"].bind(this)
+        this["parseEsc"] = this["parseEsc"].bind(this)
+        this["parseCsi"] = this["parseCsi"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["restore"] = this["restore"].bind(this)
         this["store"] = this["store"].bind(this)
@@ -113,7 +116,7 @@ TTIO = (function ()
         return this.emit('resize',this.cols(),this.rows())
     }
 
-    TTIO.prototype["parseKittyEvent"] = function (csi)
+    TTIO.prototype["parseKitty"] = function (csi)
     {
         var char, code, combo, key, mbit, mods, splt, type
 
@@ -242,7 +245,40 @@ TTIO = (function ()
         return {key:key,combo:combo,type:type,char:char}
     }
 
-    TTIO.prototype["parseMouseEvent"] = function (csi)
+    TTIO.prototype["parseCsi"] = function (csi)
+    {
+        return lf('---- csi',csi)
+    }
+
+    TTIO.prototype["parseEsc"] = function (esc)
+    {
+        return lf('---- esc',esc)
+    }
+
+    TTIO.prototype["parseRaw"] = function (raw)
+    {
+        var char, key
+
+        lf('---- raw',Number(raw[0]).toString(16))
+        if (raw[0] > 127 && raw[1] === undefined)
+        {
+            raw[0] -= 128
+            return parseEsc(raw.toString,'utf8')
+        }
+        char = raw.toString('utf8')
+        if (char.length)
+        {
+            lf('---- raw',char.length,raw,char,typeof(raw),char.codePointAt(0))
+            key = char.toLowerCase()
+            return {key:key,combo:(key !== char ? 'shift' : ''),type:type,char:char}
+        }
+        else
+        {
+            return lf('---- raw',raw.length,raw)
+        }
+    }
+
+    TTIO.prototype["parseMouse"] = function (csi)
     {
         var code, col, event, m, mods, row, x, y
 
@@ -342,11 +378,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _202_23_
+        var diff, _247_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_202_23_=this.lastClick) != null ? _202_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_247_23_=this.lastClick) != null ? _247_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -374,7 +410,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _244_23_
+        var csi, esc, event, text, _286_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
@@ -383,11 +419,6 @@ TTIO = (function ()
         else if (data[0] === 0x1b)
         {
             esc = data.slice(1).toString('utf8')
-            lf('esc',esc)
-        }
-        else
-        {
-            lf('dta',data)
         }
         if ((this.pasteBuffer != null))
         {
@@ -402,17 +433,6 @@ TTIO = (function ()
         }
         if (csi)
         {
-            if (event = this.parseKittyEvent(csi))
-            {
-                if (event.type === 'release')
-                {
-                    return this.emit('release',event.combo,event)
-                }
-                else
-                {
-                    return this.emit('key',event.combo,event)
-                }
-            }
             if (csi.startsWith('200~'))
             {
                 this.pasteBuffer = ''
@@ -424,26 +444,56 @@ TTIO = (function ()
             }
             if (csi.startsWith('<') && _k_.in(csi.slice(-1)[0],'Mm'))
             {
-                if (event = this.parseMouseEvent(csi))
+                if (event = this.parseMouse(csi))
                 {
                     return this.emitMouseEvent(event)
                 }
-                return lfc('unhandled?',csi)
+                lfc('unhandled mouse event?',csi)
+            }
+            if (event = this.parseKitty(csi))
+            {
+                if (event.type === 'release')
+                {
+                    return this.emit('release',event.combo,event)
+                }
+                else
+                {
+                    return this.emit('key',event.combo,event)
+                }
+            }
+            if (event = this.parseCsi(csi))
+            {
+                if (_k_.in(event.type,['press','repeat']))
+                {
+                    return this.emit('key',event.combo,event)
+                }
             }
         }
         else if (esc)
         {
-            return lfc('esc',esc)
+            if (event = this.parseEsc(esc))
+            {
+                if (_k_.in(event.type,['press','repeat']))
+                {
+                    return this.emit('key',event.combo,event)
+                }
+            }
         }
         else
         {
+            if (event = this.parseRaw(data))
+            {
+                if (_k_.in(event.type,['press','repeat']))
+                {
+                    return this.emit('key',event.combo,event)
+                }
+            }
             text = data.toString('utf8')
             if (text.length > 1)
             {
                 lfc('paste?',data[0] === 0x1b,data.slice(1),text.length,text)
                 return this.emit('paste',text)
             }
-            return lfc('unhandled?',data,data.length,data[0],data.slice(1))
         }
     }
 

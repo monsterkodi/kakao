@@ -6,52 +6,52 @@
  0000000   0000000   0000000   0000000   000   000  
 ###
 
+use ../../kxk ▪ kstr
+
+int = s -> parseInt s
+
 class color
     
-    @rgb: c ->
+    @use256colors: '256color' in process.env.TERM 
+    
+    @rgb: c -> kstr.hexColor c
+    @hex: c -> kstr.hexColor c
         
-        if c is str
-            
-            if c.length == 7
+    @_256: c -> # xterm-256color indices
+        
+        [r g b] = color.rgb c
                 
-                c = c[1..]
-            
-            if c.length == 6
-                
-                ⮐ [Number.parseInt(c[0..1], 16) Number.parseInt(c[2..3], 16) Number.parseInt(c[4..5], 16)]
-                
-            if c.length == 3
-                
-                ⮐ [Number.parseInt(c[0], 16) Number.parseInt(c[1], 16) Number.parseInt(c[2], 16)]
-                
-            ⮐ [255 255 255]
-                
-        if c is num
-            
-            ⮐ color.rgb Number(c).toString(16)
-            
-    @hex: rgb -> '#' + rgb.map((v) -> lpad 2 Number(v).toString(16) '0').join('')
-            
+        if r == g == b
+            232 + int 24 * g / 255
+        else
+            r = int 5 * r / 255
+            g = int 5 * g / 255
+            b = int 5 * b / 255
+            16 + 36 * r + 6 * g + b
+        
     @darken: c f=0.5 -> 
     
-        color.hex color.rgb(c).map((v) -> clamp(0 255 parseInt(f*v)))
+        color.hex color.rgb(c).map((v) -> clamp(0 255 int(f*v)))
             
     @bg_rgb: c -> 
         
-        [r g b] = color.rgb c
-    
-        "\x1b[48;2;#{r};#{g};#{b}m" 
+        if @use256colors
+            "\x1b[48;5;#{color._256 c}m"
+        else
+            [r g b] = color.rgb c
+            "\x1b[48;2;#{r};#{g};#{b}m" 
 
     @fg_rgb: c -> 
         
-        [r g b] = color.rgb c
-    
-        "\x1b[38;2;#{r};#{g};#{b}m" 
+        if @use256colors
+            "\x1b[38;5;#{color._256 c}m"
+        else
+            [r g b] = color.rgb c
+            "\x1b[38;2;#{r};#{g};#{b}m" 
 
     @ul_rgb: c -> 
         
         [r g b] = color.rgb c
-    
         "\x1b[58;2;#{r};#{g};#{b}m" 
         
 export color

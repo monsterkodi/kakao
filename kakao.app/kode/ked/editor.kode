@@ -6,7 +6,7 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../kxk ◆ events
+use ../kxk ◆ events matchr kstr
 use ◆ state cells theme
 use ./util ◆ util color
 
@@ -55,6 +55,7 @@ function editor extends events
                 if x < @cells.cols and x+view[0] < line.length
                     fg = syntax.getColor x+view[0] y
                     ch = syntax.getChar x+view[0] y line[x+view[0]]
+                    if ch == "#" checkColor = true
                     @cells.set x row ch fg
                     
             # empty
@@ -68,6 +69,15 @@ function editor extends events
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@constructor.name]
                     @cells.bg_rect max(0 linel) row -1 row theme[@constructor.name + '_empty']
+                    
+                if checkColor
+                    if rngs = kstr.colorRanges line                        
+                        for rng in rngs
+                            if rng.clss in ['trio' 'hexa']
+                                cx = max(0 linel)+1
+                                @cells.set cx row '' rng.match theme[@constructor.name + '_empty']
+                                @cells.bg_rect cx+1 row cx+4 row rng.match
+                                @cells.set cx+5 row '' rng.match theme[@constructor.name + '_empty']
 
         for highlight in s.highlights
             

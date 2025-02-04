@@ -66,7 +66,7 @@ KED = (function ()
         this.gutter = new gutter(this.screen,this.editor.state)
         this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
-        lfc('ked',this.version)
+        lfc('▸                                         ked',this.version)
         this.editor.on('redraw',this.redraw)
         this.konsole.on('konsoleRows',this.onKonsoleRows)
         this.mouseHandlers = [this.scroll,this.konsole,this.editor]

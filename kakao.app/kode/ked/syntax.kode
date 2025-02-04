@@ -35,7 +35,7 @@ function syntax
     getChar: x y char =>
         
         clss = @getClass x y
-        ⮐ '█' if 0 <= clss.indexOf 'header'
+        ⮐ '█' if 'header' in clss
         char
         
 export syntax

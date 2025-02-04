@@ -1,37 +1,47 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
+var int
+
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
+
+
+int = function (s)
+{
+    return parseInt(s)
+}
 class color
 {
+    static use256colors = _k_.in('256color',process.env.TERM)
+
     static rgb (c)
     {
-        if (_k_.isStr(c))
-        {
-            if (c.length === 7)
-            {
-                c = c.slice(1)
-            }
-            if (c.length === 6)
-            {
-                return [Number.parseInt(c.slice(0, 2),16),Number.parseInt(c.slice(2, 4),16),Number.parseInt(c.slice(4, 6),16)]
-            }
-            if (c.length === 3)
-            {
-                return [Number.parseInt(c[0],16),Number.parseInt(c[1],16),Number.parseInt(c[2],16)]
-            }
-            return [255,255,255]
-        }
-        if (_k_.isNum(c))
-        {
-            return color.rgb(Number(c).toString(16))
-        }
+        return kstr.hexColor(c)
     }
 
-    static hex (rgb)
+    static hex (c)
     {
-        return '#' + rgb.map(function (v)
+        return kstr.hexColor(c)
+    }
+
+    static _256 (c)
+    {
+        var b, g, r
+
+        var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
+
+        if ((r === g && g === b))
         {
-            return _k_.lpad(2,Number(v).toString(16),'0')
-        }).join('')
+            232 + int
+            return 24 * g / 255
+        }
+        else
+        {
+            r = parseInt(5 * r / 255)
+            g = parseInt(5 * g / 255)
+            b = parseInt(5 * b / 255)
+            return 16 + 36 * r + 6 * g + b
+        }
     }
 
     static darken (c, f = 0.5)
@@ -46,18 +56,32 @@ class color
     {
         var b, g, r
 
-        var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
+        if (this.use256colors)
+        {
+            return `\x1b[48;5;${color._256(c)}m`
+        }
+        else
+        {
+            var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
-        return `\x1b[48;2;${r};${g};${b}m`
+            return `\x1b[48;2;${r};${g};${b}m`
+        }
     }
 
     static fg_rgb (c)
     {
         var b, g, r
 
-        var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
+        if (this.use256colors)
+        {
+            return `\x1b[38;5;${color._256(c)}m`
+        }
+        else
+        {
+            var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
-        return `\x1b[38;2;${r};${g};${b}m`
+            return `\x1b[38;2;${r};${g};${b}m`
+        }
     }
 
     static ul_rgb (c)

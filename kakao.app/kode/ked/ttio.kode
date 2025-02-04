@@ -83,7 +83,7 @@ function TTIO extends events
     #
     # doesn't work in terminal.app
     
-    parseKittyEvent: csi ->
+    parseKitty: csi ->
                 
         ⮐ if csi[-1] not in 'uABCD'
         
@@ -145,13 +145,58 @@ function TTIO extends events
         type:   type
         char:   char
         
+    #  0000000   0000000  000  
+    # 000       000       000  
+    # 000       0000000   000  
+    # 000            000  000  
+    #  0000000  0000000   000  
+    
+    parseCsi: csi =>
+        
+        lf '---- csi' csi
+        
+    # 00000000   0000000   0000000  
+    # 000       000       000       
+    # 0000000   0000000   000       
+    # 000            000  000       
+    # 00000000  0000000    0000000  
+    
+    parseEsc: esc =>
+        
+        lf '---- esc' esc
+        
+    # 00000000    0000000   000   000  
+    # 000   000  000   000  000 0 000  
+    # 0000000    000000000  000000000  
+    # 000   000  000   000  000   000  
+    # 000   000  000   000  00     00  
+    
+    parseRaw: raw =>
+        
+        lf '---- raw' Number(raw[0]).toString(16)
+        
+        if raw[0] > 127 and raw[1] == undefined
+            raw[0] -= 128
+            ⮐ parseEsc raw.toString 'utf8'
+
+        char = raw.toString 'utf8'
+        if char.length
+            lf '---- raw' char.length raw char typeof(raw) char.codePointAt(0)
+            key = char.toLowerCase()
+            key:    key
+            combo:  key != char ? 'shift' : ''
+            type:   type
+            char:   char
+        else
+            lf '---- raw' raw.length raw  
+        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    parseMouseEvent: csi =>
+    parseMouse: csi =>
                 
         [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
         x = col-1
@@ -235,9 +280,6 @@ function TTIO extends events
             csi = data[2..].toString 'utf8'
         else if data[0] == 0x1b
             esc = data[1..].toString 'utf8'
-            lf 'esc' esc
-        else
-            lf 'dta' data
         
         # lf 'data' data[1..]
             
@@ -254,38 +296,48 @@ function TTIO extends events
         
         if csi
             
-            if event = @parseKittyEvent csi
+            if csi.startsWith '200~' # paste start
+                @pasteBuffer = ''
+                if csi.endsWith '\x1b[201~'
+                    @onData data[6..]
+                ⮐
+                
+            if csi.startsWith('<') and csi[-1] in 'Mm'
+                
+                if event = @parseMouse csi
+                    ⮐ @emitMouseEvent event
+                    
+                lfc 'unhandled mouse event?' csi
+                
+            if event = @parseKitty csi
                 if event.type == 'release'
                     ⮐ @emit 'release' event.combo event
                 else 
                     # lf '▸' noon(event)
                     ⮐ @emit 'key' event.combo event
-                                
-            if csi.startsWith '200~'
-                @pasteBuffer = ''
-                if csi.endsWith '\x1b[201~'
-                    @onData data[6..]
-                ⮐
-                            
-            if csi.startsWith('<') and csi[-1] in 'Mm'
-                
-                if event = @parseMouseEvent csi
-                    ⮐ @emitMouseEvent event
                     
-                lfc 'unhandled?' csi
-                
+            if event = @parseCsi csi
+                if event.type in ['press' 'repeat']
+                    ⮐ @emit 'key' event.combo event
+                    
         else if esc
             
-            lfc 'esc' esc
+            if event = @parseEsc esc
+                if event.type in ['press' 'repeat']
+                    ⮐ @emit 'key' event.combo event
                 
         else # not a csi or esc sequence
-            
+
+            if event = @parseRaw data
+                if event.type in ['press' 'repeat']
+                    ⮐ @emit 'key' event.combo event
+        
             text = data.toString 'utf8'
             
             if text.length > 1
                 lfc 'paste?' data[0]==0x1b data[1..] text.length text
                 ⮐ @emit 'paste' text
                         
-            lfc 'unhandled?' data data.length data[0] data[1..]
+            # lfc 'unhandled?' data data.length data[0] data[1..]
                 
 export TTIO

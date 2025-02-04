@@ -43,7 +43,7 @@ function KED
         @scroll  = new scroll   @screen @editor.state
         @status  = new status   @screen @editor.state
         
-        lfc 'ked' @version
+        lfc '▸                                         ked' @version
         
         @editor.on  'redraw'      @redraw
         @konsole.on 'konsoleRows' @onKonsoleRows

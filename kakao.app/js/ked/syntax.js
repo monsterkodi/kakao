@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var syntax
 
@@ -59,7 +59,7 @@ syntax = (function ()
         var clss
 
         clss = this.getClass(x,y)
-        if (0 <= clss.indexOf('header'))
+        if (_k_.in('header',clss))
         {
             return '█'
         }

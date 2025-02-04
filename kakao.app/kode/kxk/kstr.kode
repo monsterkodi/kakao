@@ -9,6 +9,7 @@
 ###
 
 use ./ansi
+use ./matchr
 
 str = o -> # converts anything into a string in noon syntax 
 
@@ -316,6 +317,65 @@ ESCAPE_REGEXP = /[\-\\\^\$\*\+\?\.\(\)\|\[\]\{\}\/]/g
 str.escapeRegexp = s -> s.replace ESCAPE_REGEXP, '\\$&'
 str.escapeRegExp = s -> s.replace ESCAPE_REGEXP, '\\$&'
 
+# 000   000  00000000  000   000  
+# 000   000  000        000 000   
+# 000000000  0000000     00000    
+# 000   000  000        000 000   
+# 000   000  00000000  000   000  
+
+str.hex = s -> 
+    
+    if s is str ➜ ⮐ Number.parseInt s 16
+    if s is num ➜ ⮐ Number(s).toString 16
+        
+str.hexColor = s ->
+    
+    if s is arr
+        
+        ⮐ '#' + s.map((v) -> lpad 2 Number(v).toString(16) '0').join('')
+        
+    if s is str           
+        
+        s = str.rgbaToHex(s) if s.startsWith 'rgb'
+        l = s.length
+        if l == 7 or l == 4 ➜ s = s[1..]; l--
+        if l == 6 ➜ ⮐ [str.hex(s[0..1]) str.hex(s[2..3]) str.hex(s[4..5])]
+        if l == 3 ➜ ⮐ [str.hex(s[0])*16 str.hex(s[1])*16 str.hex(s[2])*16]
+            
+        ⮐ [0 0 0]
+        
+    if s is num
+        
+        ⮐ str.hexColor Number(s).toString(16)
+        
+str.rgbaToHex = s ->   
+    
+    if rgb is str and rgb.startsWith 'rgb'
+        
+        kstr.hexColor s.split('(')[1].split(',').map((c)->parseInt(c))
+
+#  0000000   0000000   000       0000000   00000000   
+# 000       000   000  000      000   000  000   000  
+# 000       000   000  000      000   000  0000000    
+# 000       000   000  000      000   000  000   000  
+#  0000000   0000000   0000000   0000000   000   000  
+
+str.colorRanges = s ->
+    
+    trio  = /#[a-fA-F0-9]{3}(?![\w\d])/
+    hexa  = /#[a-fA-F0-9]{6}|0x[a-fA-F0-9]{6}(?![\w\d])/
+    rgb   = /rgb\s*\(\s*\d+\s*\,\s*\d+\s*\,\s*\d+\s*\)/
+    rgba  = /rgba\s*\(\s*\d+\s*\,\s*\d+\s*\,\s*\d+\s*\,\s*\d+\.?\d*\s*\)/
+
+    regexps = [[trio 'trio'] [hexa 'hexa'] [rgb 'rgb'] [rgba 'rgba']]
+    if rngs = matchr.ranges regexps s
+        for rng in rngs
+            if rng.clss in ['rgb' 'rgba']
+                rng.color = str.hexColor str.rgbaToHex(rng.match)
+            else
+                rng.color = str.hexColor rng.match
+    rngs
+        
 #  0000000  000000000  00000000   000  00000000
 # 000          000     000   000  000  000   000
 # 0000000      000     0000000    000  00000000
