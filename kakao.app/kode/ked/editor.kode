@@ -59,6 +59,7 @@ function editor extends events
                     @cells.set x row ch fg
                     
             # empty
+            emptyColor = theme[@constructor.name + '_empty']
             if y < lines.length
                 linel = line.length - view[0]
                 if y == mainCursor[1]
@@ -68,16 +69,18 @@ function editor extends events
                 else
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@constructor.name]
-                    @cells.bg_rect max(0 linel) row -1 row theme[@constructor.name + '_empty']
+                    @cells.bg_rect max(0 linel) row -1 row emptyColor
                     
                 if checkColor
-                    if rngs = kstr.colorRanges line                        
-                        for rng in rngs
-                            if rng.clss in ['trio' 'hexa']
-                                cx = max(0 linel)+1
-                                @cells.set cx row '' rng.match theme[@constructor.name + '_empty']
-                                @cells.bg_rect cx+1 row cx+4 row rng.match
-                                @cells.set cx+5 row '' rng.match theme[@constructor.name + '_empty']
+                    if rngs = kstr.colorRanges line
+                        cx = max(0 linel)+1
+                        for rng,idx in rngs
+                            clr = color.rgb rng.color
+                            dta = 4
+                            if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
+                            if idx == rngs.length-1 ➜ dta--
+                            @cells.bg_rect cx row cx+dta row rng.match; cx += dta
+                            if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
 
         for highlight in s.highlights
             

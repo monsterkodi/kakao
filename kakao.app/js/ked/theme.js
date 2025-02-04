@@ -1,90 +1,90 @@
 class theme
 {
-    static selection_line = '#333333'
+    static selection_line = '#333'
 
-    static selection = '#4444ff'
+    static selection = '#44f'
 
-    static highlight = '#444444'
+    static highlight = '#444'
 
-    static cursor = '#ffff00'
+    static cursor = '#ff0'
 
     static linenr = '#1a1a1a'
 
     static gutter_fully_selected = '#161616'
 
-    static gutter_selected = '#222299'
+    static gutter_selected = '#229'
 
     static gutter = '#0a0a0a'
 
-    static column = '#222222'
+    static column = '#222'
 
-    static column_fg = '#000000'
+    static column_fg = '#000'
 
-    static status = '#222222'
+    static status = '#222'
 
     static status_dark = '#1a1a1a'
 
     static scroll = '#1a1a1a'
 
-    static scroll_dot = '#222222'
+    static scroll_dot = '#222'
 
-    static scroll_knob = '#4444ff'
+    static scroll_knob = '#44f'
 
-    static scroll_doth = '#8888ff'
+    static scroll_doth = '#88f'
 
-    static status_fg = '#888888'
+    static status_fg = '#888'
 
-    static status_dirty = '#ffaa00'
+    static status_dirty = '#fa0'
 
-    static status_redo = '#00dd00'
+    static status_redo = '#0d0'
 
-    static status_empty = '#ff8844'
+    static status_empty = '#f84'
 
-    static status_sel = '#8888ff'
+    static status_sel = '#88f'
 
-    static status_hil = '#888888'
+    static status_hil = '#888'
 
-    static status_cur = '#ff0000'
+    static status_cur = '#f00'
 
-    static status_file = '#ffff00'
+    static status_file = '#ff0'
 
-    static status_ext = '#ff8800'
+    static status_ext = '#f80'
 
-    static status_dir = '#8888ff'
+    static status_dir = '#88f'
 
-    static status_sep = '#4444aa'
+    static status_sep = '#44a'
 
-    static status_fg_dim = '#333333'
+    static status_fg_dim = '#333'
 
-    static editor = '#000000'
+    static editor = '#000'
 
-    static editor_empty = '#000000'
+    static editor_empty = '#000'
 
     static editor_cursor_main = '#101010'
 
-    static editor_cursor_empty = '#000000'
+    static editor_cursor_empty = '#000'
 
-    static editor_cursor_multi = '#ff0000'
+    static editor_cursor_multi = '#f00'
 
-    static editor_cursor_bg = '#ffff00'
+    static editor_cursor_bg = '#ff0'
 
-    static editor_cursor_fg = '#000000'
+    static editor_cursor_fg = '#000'
 
     static konsole = '#1a1a1a'
 
-    static konsole_empty = '#000000'
+    static konsole_empty = '#000'
 
     static konsole_cursor_main = '#1a1a1a'
 
-    static konsole_cursor_empty = '#000000'
+    static konsole_cursor_empty = '#000'
 
-    static konsole_cursor_bg = '#666666'
+    static konsole_cursor_bg = '#666'
 
-    static konsole_cursor_fg = '#000000'
+    static konsole_cursor_fg = '#000'
 
-    static text = '#ffffff'
+    static text = '#fff'
 
-    static syntax = {'text':'#ffffff','punct':'#555555','template':'#555555','define':'#555555','text require':'#555555','keyword require':'#444444','comment':'#444444','punct require':'#3a3a3a','punct template':'#3a3a3a','punct minor':'#303030','punct define':'#303030','punct comment':'#222222','punct keyword':'#aaaaff','keyword':'#9999ff','number':'#8888ff','punct compare':'#7777ff','punct compare ligature':'#6666ff','punct function tail ligature':'#5555ff','keyword type':'#5555aa','punct keyword return':'#4444aa','punct range ligature':'#2222aa','nil':'#ff0044','punct function bound tail ligature':'#ff8888','text this':'#ffaa66','punct obj':'#aaaa44','punct this':'#888844','punct method class':'#666637','method class':'#ffff88','dictionary key':'#ffff77','method':'#ffff66','class':'#ffff44','property':'#ffff22','function call':'#ffee00','obj':'#ffcc00','function':'#ffaa00','punct method':'#aa6600','punct function':'#884400','punct property':'#664400','punct string double triple':'#00dd00','comment triple header':'#00cc00','module require string':'#00cc00','string double triple':'#00cc00','string double':'#00bb00','string single':'#00aa00','punct dictionary':'#009900','function argument':'#008800','text require string':'#007700','comment header':'#006600','punct comment triple':'#005500','punct string double':'#004400','punct string single':'#003300','punct string interpolation start':'#005500','punct string interpolation end':'#005500','text dir':'#aaaaff','punct dir':'#5555aa','js file':'#00aa00','js ext':'#006600','punct js':'#004400','json file':'#dd00dd','json ext':'#880088','punct json':'#550055','kode file':'#ffaa00','kode ext':'#dd8800','punct kode':'#bb6600','text file':'#dddddd','text ext':'#888888','punct text':'#444444'}
+    static syntax = {'text':'#fff','punct':'#555','template':'#555','define':'#555','text require':'#555','keyword require':'#444','comment':'#444','punct require':'#3a3a3a','punct template':'#3a3a3a','punct minor':'#303030','punct define':'#303030','punct comment':'#222','punct keyword':'#aaf','keyword':'#99f','number':'#88f','punct compare':'#77f','punct compare ligature':'#66f','punct function tail ligature':'#55f','keyword type':'#55a','punct keyword return':'#44a','punct range ligature':'#22a','nil':'#f04','punct function bound tail ligature':'#f88','text this':'#fa6','punct obj':'#aa4','punct this':'#884','punct method class':'#663','method class':'#ff8','dictionary key':'#ff7','method':'#ff6','class':'#ff4','property':'#ff2','function call':'#fe0','obj':'#fc0','function':'#fa0','punct method':'#a60','punct function':'#840','punct property':'#640','punct string double triple':'#0d0','comment triple header':'#0c0','module require string':'#0c0','string double triple':'#0c0','string double':'#0b0','string single':'#0a0','punct dictionary':'#090','function argument':'#080','text require string':'#070','comment header':'#060','punct comment triple':'#050','punct string double':'#040','punct string single':'#030','punct string interpolation start':'#050','punct string interpolation end':'#050','text dir':'#aaf','punct dir':'#55a','js file':'#0a0','js ext':'#060','punct js':'#040','json file':'#d0d','json ext':'#808','punct json':'#505','kode file':'#fa0','kode ext':'#d80','punct kode':'#b60','text file':'#ddd','text ext':'#888','punct text':'#444'}
 }
 
 export default theme;
