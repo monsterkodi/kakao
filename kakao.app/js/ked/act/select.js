@@ -279,8 +279,7 @@ export default {select:function (from, to)
     return this.setSelections(selections)
 },selectAllLines:function ()
 {
-    this.moveCursors('bof')
-    return this.moveCursorAndSelect('eof')
+    return this.setSelections([[0,0,this.s.lines[this.s.lines.length - 1].length,this.s.lines.length - 1]])
 },selectMoreLines:function ()
 {
     var cursors, lines, selections

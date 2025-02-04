@@ -206,6 +206,10 @@ class util
         {
             return true
         }
+        if (_k_.eql(pos, util.startOfRange(rng)))
+        {
+            return true
+        }
         return false
     }
 
@@ -1092,7 +1096,7 @@ class util
         for (var _a_ = pi = posl.length - 1, _b_ = 0; (_a_ <= _b_ ? pi <= 0 : pi >= 0); (_a_ <= _b_ ? ++pi : --pi))
         {
             pos = posl[pi]
-            if (util.isPosInsideRange(pos,rng))
+            if (util.isPosTouchingRange(pos,rng))
             {
                 pos[0] = rng[0]
                 pos[1] = rng[1]
@@ -1101,13 +1105,9 @@ class util
             {
                 if (pos[1] === rng[3])
                 {
-                    if (rng[1] === rng[3])
+                    pos[0] -= rng[2] - rng[0]
+                    if (rng[1] < rng[3])
                     {
-                        pos[0] -= rng[2] - rng[0]
-                    }
-                    else
-                    {
-                        pos[0] = rng[0]
                         pos[1] -= rng[3] - rng[1]
                     }
                 }
@@ -1312,6 +1312,19 @@ class util
         }
         newls = newls.concat(before)
         return [newls,newpl]
+    }
+
+    static rangeForJoiningLine (lines, idx)
+    {
+        return [lines[idx].length,idx,0,idx + 1]
+    }
+
+    static rangesForJoiningLines (lines, idxs)
+    {
+        return idxs.map(function (idx)
+        {
+            return util.rangeForJoiningLine(lines,idx)
+        })
     }
 }
 

@@ -101,20 +101,22 @@ export
     #      000  000       000      000       000          000     000  000   000  000  0000  
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
     
-    deleteSelection: ->
+    deleteSelection: -> @deleteRanges @allSelections() @allCursors()
         
-        ⮐ if empty @s.selections
+    deleteRanges: rngs posl ->
+        
+        ⮐ if empty rngs
         
         @pushState() if not @beginIndex
         
-        cursors    = @allCursors()
-        lines      = @allLines()
-        selections = @allSelections()
-        
-        [lines cursors] = util.deleteLineRangesAndAdjustPositions lines selections cursors
-        
+        [lines cursors] = util.deleteLineRangesAndAdjustPositions @allLines() rngs posl
         @deselect()
         @clearHighlights()
         @setLines   lines
         @setCursors cursors
+        
+        
+        
+        
+        
         

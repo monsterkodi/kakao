@@ -18,17 +18,14 @@ export
     
     joinLines: ->
         
-        [x y] = @mainCursor()
-        lines = @allLines()
+        @moveCursorsToEndOfLines()
         
-        ⮐ if util.isInvalidLineIndex lines y 
+        idxs = util.lineIndicesForPositions @allCursors()
+        rngs = util.rangesForJoiningLines @allLines() idxs
         
-        x = lines[y].length
-        @setMainCursor x y
-        
-        lines.splice y 2 lines[y] + ltrim(lines[y+1])
-        
-        @setLines lines
+        @deleteRanges rngs @allCursors()
         
     moveSelectedOrCursorLines: dir ->
+        
+        
         

@@ -249,8 +249,7 @@ export
         
     selectAllLines: ->
         
-        @moveCursors 'bof'
-        @moveCursorAndSelect 'eof'
+        @setSelections [[0 0 @s.lines[@s.lines.length-1].length @s.lines.length-1]]
         
     # 00     00   0000000   00000000   00000000  
     # 000   000  000   000  000   000  000       

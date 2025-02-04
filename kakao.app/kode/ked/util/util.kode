@@ -125,6 +125,7 @@ class util
         
         ⮐ true if util.isPosInsideRange pos rng
         ⮐ true if pos eql util.endOfRange rng
+        ⮐ true if pos eql util.startOfRange rng
         false
 
     @rangeContainsPos: rng pos -> util.isPosInsideRange pos rng
@@ -598,18 +599,16 @@ class util
         for pi in posl.length-1..0
             pos = posl[pi]
             
-            if util.isPosInsideRange pos rng
+            if util.isPosTouchingRange pos rng
                 pos[0] = rng[0] 
                 pos[1] = rng[1]
             else if util.isPosAfterRange pos rng
-                if pos[1] == rng[3]
-                    if rng[1] == rng[3]
-                        pos[0] -= rng[2] - rng[0]
-                    else
-                        pos[0] = rng[0]
+                if pos[1] == rng[3] # pos in last line of range
+                    pos[0] -= rng[2] - rng[0]
+                    if rng[1] < rng[3] # multi line range
                         pos[1] -= rng[3] - rng[1]
                 else
-                    pos[1] -= util.numFullLinesInRange lines rng
+                    pos[1] -= util.numFullLinesInRange(lines rng)
             else
                 break
                     
@@ -757,6 +756,10 @@ class util
             
         newls = newls.concat before
             
-        [newls newpl]            
+        [newls newpl]      
+        
+    @rangeForJoiningLine: lines idx -> [lines[idx].length idx 0 idx+1]
+        
+    @rangesForJoiningLines: lines idxs -> idxs.map (idx) -> util.rangeForJoiningLine lines idx
                     
 export util

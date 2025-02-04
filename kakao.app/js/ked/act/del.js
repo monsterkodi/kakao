@@ -120,9 +120,12 @@ export default {delete:function (type, mods)
     return this.setCursors(cursors)
 },deleteSelection:function ()
 {
-    var cursors, lines, selections
+    return this.deleteRanges(this.allSelections(),this.allCursors())
+},deleteRanges:function (rngs, posl)
+{
+    var cursors, lines
 
-    if (_k_.empty(this.s.selections))
+    if (_k_.empty(rngs))
     {
         return
     }
@@ -130,10 +133,7 @@ export default {delete:function (type, mods)
     {
         this.pushState()
     }
-    cursors = this.allCursors()
-    lines = this.allLines()
-    selections = this.allSelections()
-    var _d_ = util.deleteLineRangesAndAdjustPositions(lines,selections,cursors); lines = _d_[0]; cursors = _d_[1]
+    var _d_ = util.deleteLineRangesAndAdjustPositions(this.allLines(),rngs,posl); lines = _d_[0]; cursors = _d_[1]
 
     this.deselect()
     this.clearHighlights()
