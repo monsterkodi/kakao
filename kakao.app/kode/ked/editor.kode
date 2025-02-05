@@ -322,20 +322,14 @@ function editor extends events
         
         switch key
 
-            'up' 'down' 'left' 'right'  ➜ ⮐ @state.moveCursors key
-                            
-            'ctrl+up'                   ➜ ⮐ @state.moveMainCursorInDirection 'up'
-            'ctrl+down'                 ➜ ⮐ @state.moveMainCursorInDirection 'down'
-            'ctrl+left'                 ➜ ⮐ @state.moveMainCursorInDirection 'left'
-            'ctrl+right'                ➜ ⮐ @state.moveMainCursorInDirection 'right'
+            'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
+            'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
+            'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
+            'shift+alt+right'           ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true
 
-            'shift+ctrl+up'             ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
-            'shift+ctrl+down'           ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
-            'shift+ctrl+left'           ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
-            'shift+ctrl+right'          ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true
-            
-            'ctrl+a'                    ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
-            'ctrl+e'                    ➜ ⮐ @state.singleCursorAtEndOfLine()
+            'home' 'ctrl+a'             ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
+            'end'  'ctrl+e'             ➜ ⮐ @state.singleCursorAtEndOfLine()
+
             'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
             'ctrl+j'                    ➜ ⮐ @state.setMainCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             

@@ -456,39 +456,23 @@ editor = (function ()
         }
         switch (key)
         {
-            case 'up':
-            case 'down':
-            case 'left':
-            case 'right':
-                return this.state.moveCursors(key)
-
-            case 'ctrl+up':
-                return this.state.moveMainCursorInDirection('up')
-
-            case 'ctrl+down':
-                return this.state.moveMainCursorInDirection('down')
-
-            case 'ctrl+left':
-                return this.state.moveMainCursorInDirection('left')
-
-            case 'ctrl+right':
-                return this.state.moveMainCursorInDirection('right')
-
-            case 'shift+ctrl+up':
+            case 'shift+alt+up':
                 return this.state.moveMainCursorInDirection('up',{keep:true})
 
-            case 'shift+ctrl+down':
+            case 'shift+alt+down':
                 return this.state.moveMainCursorInDirection('down',{keep:true})
 
-            case 'shift+ctrl+left':
+            case 'shift+alt+left':
                 return this.state.moveMainCursorInDirection('left',{keep:true})
 
-            case 'shift+ctrl+right':
+            case 'shift+alt+right':
                 return this.state.moveMainCursorInDirection('right',{keep:true})
 
+            case 'home':
             case 'ctrl+a':
                 return this.state.singleCursorAtIndentOrStartOfLine()
 
+            case 'end':
             case 'ctrl+e':
                 return this.state.singleCursorAtEndOfLine()
 

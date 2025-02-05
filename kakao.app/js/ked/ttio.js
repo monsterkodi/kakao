@@ -37,7 +37,6 @@ TTIO = (function ()
         this.write('\x1b[?1002h')
         this.write('\x1b[?1003h')
         this.write('\x1b[?1004h')
-        this.write('\x1b[?1006h')
         this.write('\x1b[?1049h')
         this.write('\x1b[?2004h')
         this.write('\x1b[>1s')
@@ -147,6 +146,7 @@ TTIO = (function ()
         if (csi.slice(-1)[0] === 'u')
         {
             code = parseInt(csi)
+            lc('code',code,csi)
             key = ((function ()
             {
                 switch (code)
@@ -205,6 +205,7 @@ TTIO = (function ()
         mods = []
         type = 'press'
         splt = csi.slice(0, -1).split(';')
+        lc('csi',csi)
         if (splt.length > 1)
         {
             if (splt[1].endsWith(':2'))
@@ -378,11 +379,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _247_23_
+        var diff, _248_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_247_23_=this.lastClick) != null ? _247_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_248_23_=this.lastClick) != null ? _248_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -410,8 +411,9 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _286_23_
+        var csi, esc, event, text, _290_23_
 
+        lc('dl',data.length)
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
             csi = data.slice(2).toString('utf8')
@@ -419,7 +421,13 @@ TTIO = (function ()
         else if (data[0] === 0x1b)
         {
             esc = data.slice(1).toString('utf8')
+            lfc('esc',esc)
         }
+        else
+        {
+            lfc('dta',data)
+        }
+        lfc('data',data.slice(1),csi,esc)
         if ((this.pasteBuffer != null))
         {
             this.pasteBuffer += data.toString('utf8')

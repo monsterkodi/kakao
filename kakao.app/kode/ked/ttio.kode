@@ -21,8 +21,7 @@ function TTIO extends events
         @write '\x1b[?1000h'    # mouse events
         @write '\x1b[?1002h'    # cell motion tracking
         @write '\x1b[?1003h'    # mouse move events
-        @write '\x1b[?1004h'    # focus events
-        @write '\x1b[?1006h'    # mouse SGR mode
+        @write '\x1b[?1004h'    # focus events        @write '\x1b[?1006h'    # mouse SGR mode
         @write '\x1b[?1049h'    # alternate screen buffer
         @write '\x1b[?2004h'    # bracketed paste mode
         @write '\x1b[>1s'       # send shift in mouse press events
@@ -97,7 +96,7 @@ function TTIO extends events
             
         if csi[-1] == 'u'
             code = parseInt csi                
-            # lf 'code' code csi
+            lc 'code' code csi
             key = switch code
                 9       ➜ 'tab'
                 27      ➜ 'esc'
@@ -120,7 +119,9 @@ function TTIO extends events
         type = 'press'
         
         splt = csi[0..-2].split ';'
-        
+           
+        lc 'csi' csi
+
         if splt.length > 1
             
             type = 'repeat'  if splt[1].endsWith ':2'
@@ -237,7 +238,7 @@ function TTIO extends events
                 1 ➜ 'middle'
                 2 ➜ 'right'
 
-        # lf 'mouse----' noon(event)                
+        # lf 'mouse----' csi noon(event)                
         event
             
     emitMouseEvent: event =>
@@ -275,13 +276,16 @@ function TTIO extends events
     # 0000000    000   000     000     000   000  
     
     onData: data =>
-        
+        lc 'dl' data.length
         if data[0] == 0x1b and data[1] == 0x5b
             csi = data[2..].toString 'utf8'
         else if data[0] == 0x1b
             esc = data[1..].toString 'utf8'
+            lfc 'esc' esc
+        else
+            lfc 'dta' data
         
-        # lf 'data' data[1..]
+        lfc 'data' data[1..] csi esc
             
         if @pasteBuffer?
             
