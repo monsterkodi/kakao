@@ -408,3 +408,59 @@ use .. ◆ kstr
         kstr.indexOfClosestAlphaNumeric '  hello   word !'  8  ▸ 10
         kstr.indexOfClosestAlphaNumeric '  hello   word !'  15 ▸ 13
         
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    ▸ hexColor
+    
+        kstr.hexColor null                  ▸ undefined
+        kstr.hexColor 'dead'                ▸ undefined
+        kstr.hexColor "#dead"               ▸ undefined
+        kstr.hexColor 'alive?'              ▸ undefined
+        kstr.hexColor 'deadbeef'            ▸ undefined
+        
+        kstr.hexColor 0                     ▸ '#000000'
+        kstr.hexColor 128<<8                ▸ '#008000'
+        kstr.hexColor 255<<16               ▸ '#ff0000'
+        kstr.hexColor [0 0 0]               ▸ '#000000'
+        kstr.hexColor [0 255 0]             ▸ '#00ff00'
+        kstr.hexColor [255 255 0]           ▸ '#ffff00'
+        
+        kstr.hexColor "#ead"                ▸ [238 170 221]
+        kstr.hexColor "#adbeef"             ▸ [173 190 239]
+        kstr.hexColor "#ffffff"             ▸ [255 255 255]
+        kstr.hexColor "#fff"                ▸ [255 255 255]
+        kstr.hexColor "#ffff00"             ▸ [255 255   0]
+        kstr.hexColor "#ff0"                ▸ [255 255   0]
+        
+        kstr.hexColor 'rgb(255,100,0)'      ▸ [255 100   0]
+        kstr.hexColor 'rgba(255,100,0)'     ▸ [255 100   0]
+        kstr.hexColor 'rgba(255,100,0,0)'   ▸ [  0   0   0]
+        kstr.hexColor 'rgba(255,100,0,1)'   ▸ [255 100   0]
+        kstr.hexColor 'rgba(255,100,0,0.5)' ▸ [127  50   0]
+        
+        kstr.hexColor 'rgb(a,b,c)'          ▸ undefined
+        kstr.hexColor 'rgba(a,b,c)'         ▸ undefined
+        kstr.hexColor 'rgba(a,b,c,d)'       ▸ undefined
+        kstr.hexColor 'rgba(-1,-2,-3)'      ▸ undefined
+        kstr.hexColor 'rgba(256,256,256)'   ▸ undefined
+        kstr.hexColor 'rgba(255,100,0,1.1)' ▸ undefined
+        kstr.hexColor 'rgba(255,100,0,-1)'  ▸ undefined
+        
+    ▸ darkenColor
+    
+        kstr.darkenColor 'ffff00' 1    ▸ '#ffff00'
+        kstr.darkenColor 'ffff00' 0.9  ▸ '#e5e500'
+        kstr.darkenColor 'ffff00' 0.8  ▸ '#cccc00'
+        kstr.darkenColor 'ffff00' 0.7  ▸ '#b2b200'
+        kstr.darkenColor 'ffff00' 0.6  ▸ '#999900'
+        kstr.darkenColor 'ffff00'      ▸ '#7f7f00'
+        kstr.darkenColor 'ffff00' 0.4  ▸ '#666600'
+        kstr.darkenColor 'ffff00' 0.3  ▸ '#4c4c00'
+        kstr.darkenColor 'ffff00' 0.2  ▸ '#333300'
+        kstr.darkenColor 'ffff00' 0.1  ▸ '#191900'
+        kstr.darkenColor 'ffff00' 0    ▸ '#000000'
+        

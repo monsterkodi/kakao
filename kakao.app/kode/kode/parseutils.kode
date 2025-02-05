@@ -67,8 +67,7 @@ function ParseUtils
             @shiftNewline rule, tokens
             return tokens.shift()
             
-        error "parse.shiftClose: '#{rule}' expected closing '#{text}'"
-        print.tokens "shiftClose missing close '#{text}'" tokens if @debug
+        @onError "#{rule} is missing closing #{text}" tokens:tokens
         null
         
     #  0000000  000   000  000  00000000  000000000  000   000  00000000  000   000  000      000  000   000  00000000  

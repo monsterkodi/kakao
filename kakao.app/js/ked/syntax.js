@@ -49,9 +49,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _33_36_
+        var _34_36_
 
-        return ((_33_36_=theme.syntax[this.getClass(x,y)]) != null ? _33_36_ : '#ff0000')
+        return ((_34_36_=theme.syntax[this.getClass(x,y)]) != null ? _34_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

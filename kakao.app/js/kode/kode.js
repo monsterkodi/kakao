@@ -22,6 +22,7 @@ class Kode
 
         this.args = args
     
+        this.onError = this.onError.bind(this)
         this.args = ((_16_14_=this.args) != null ? _16_14_ : {})
         this.args.header = ((_17_21_=this.args.header) != null ? _17_21_ : true)
         this.version = '0.2.0'
@@ -34,6 +35,19 @@ class Kode
         this.returner = new returner(this)
         this.operator = new operator(this)
         this.renderer = new renderer(this)
+    }
+
+    onError (msg, info)
+    {
+        var li
+
+        console.error(this.file)
+        if (info.tokens)
+        {
+            li = info.tokens[0].line
+            console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
+        }
+        console.error(msg)
     }
 
     eval (text, file, glob)
@@ -64,15 +78,18 @@ class Kode
 
     compile (text, file)
     {
-        if (_k_.empty(_k_.trim(text)))
+        this.text = text
+        this.file = file
+    
+        if (_k_.empty(_k_.trim(this.text)))
         {
             return ''
         }
         if (this.args.verbose)
         {
-            console.log(text)
+            console.log(this.text)
         }
-        return this.renderer.render(this.ast(text),file)
+        return this.renderer.render(this.ast(this.text),this.file)
     }
 
     ast (text)

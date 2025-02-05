@@ -328,31 +328,50 @@ str.hex = s ->
     if s is str ➜ ⮐ Number.parseInt s 16
     if s is num ➜ ⮐ Number(s).toString 16
         
+str.darkenColor = s f=0.5 ->
+    
+    s = str.hexColor if not s is str
+    str.hexColor str.hexColor(s).map((v) -> clamp(0 255 parseInt(f*v)))
+        
 str.hexColor = s ->
     
     if s is arr
         
-        ⮐ '#' + s.map((v) -> lpad 2 Number(v).toString(16) '0').join('')
+        h = '#' + s[0..2].map((v) -> lpad 2 str.hex(v) '0').join('')
+        if s.length > 3 and s[3] is num
+            h = str.darkenColor h s[3]
+        ⮐ h
         
     if s is str           
-        
-        s = str.rgbaToHex(s) if s.startsWith 'rgb'
+        validate = a -> 
+            for v in a ➜ ⮐ if empty v
+            a
+        if s = str.rgbaToHexColor(s) if s.startsWith 'rgb'
+        ⮐ if empty s
         l = s.length
-        if l == 7 or l == 4 ➜ s = s[1..]; l--
-        if l == 6 ➜ ⮐ [str.hex(s[0..1]) str.hex(s[2..3]) str.hex(s[4..5])]
-        if l == 3 ➜ ⮐ [str.hex(s[0])*16 str.hex(s[1])*16 str.hex(s[2])*16]
-            
-        ⮐ [0 0 0]
+        if (l == 7 or l == 4) and s[0] == "#" ➜ s = s[1..]; l--
+        if l == 6 ➜ ⮐ validate [str.hex(s[0..1]) str.hex(s[2..3]) str.hex(s[4..5])]
+        if l == 3 ➜ ⮐ validate [str.hex(s[0])*17 str.hex(s[1])*17 str.hex(s[2])*17]
+        ⮐
         
     if s is num
         
-        ⮐ str.hexColor Number(s).toString(16)
+        ⮐ str.hexColor str.hexColor(lpad(6 Number(s).toString(16) '0'))
         
-str.rgbaToHex = s ->   
+str.rgbaToHexColor = s ->   
     
-    if rgb is str and rgb.startsWith 'rgb'
+    if s is str and s.startsWith 'rgb'
         
-        kstr.hexColor s.split('(')[1].split(',').map((c)->parseInt(c))
+        spl = s.split('(')[1].split(')')[0].split(',')
+        vls = spl[0..2].map((c) -> parseInt c)
+        ⮐ if not (3 <= vls.length <= 4)
+        for v in vls ➜ ⮐ if empty(v) or v < 0 or v > 255
+        if spl.length > 3
+            f = parseFloat(spl[3])
+            ⮐ if empty f
+            ⮐ if not (0 <= f <= 1)
+            vls.push f
+        str.hexColor vls
 
 #  0000000   0000000   000       0000000   00000000   
 # 000       000   000  000      000   000  000   000  
@@ -371,9 +390,10 @@ str.colorRanges = s ->
     if rngs = matchr.ranges regexps s
         for rng in rngs
             if rng.clss in ['rgb' 'rgba']
-                rng.color = str.hexColor str.rgbaToHex(rng.match)
+                rng.color = str.hexColor str.rgbaToHexColor(rng.match)
             else
                 rng.color = str.hexColor rng.match
+    rngs = rngs.filter (r) -> valid r.color
     rngs
         
 #  0000000  000000000  00000000   000  00000000

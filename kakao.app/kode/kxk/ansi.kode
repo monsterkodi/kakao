@@ -47,9 +47,9 @@ toHexString = num ->
     while num.length < 2 then num = "0#{num}"
     num
 
-[0..5] each (red) ->
-    [0..5] each (green) ->
-        [0..5] each (blue) ->
+for red in 0..5
+    for green in 0..5
+        for blue in 0..5
             c = 16 + (red * 36) + (green * 6) + blue
             r = if red   > 0 then red   * 40 + 55 else 0
             g = if green > 0 then green * 40 + 55 else 0
@@ -58,7 +58,7 @@ toHexString = num ->
             STYLES["f#{c}"] = "##{rgb}"
             STYLES["b#{c}"] = "##{rgb}"
 
-[0..23] each (gray) ->
+for gray in 0..23
     c = gray+232
     l = toHexString(gray*10 + 8)
     STYLES["f#{c}"] = "##{l}#{l}#{l}"
@@ -79,7 +79,7 @@ class Ansi
         for l in s?.split('\n') ? []
             diss = andi.dissect(l)[1]
             htmlLine = ''
-            for i in [0...diss.length]
+            for i in 0...diss.length
                 d = diss[i]
                 span = d.styl and "<span style=\"#{d.styl}\">#{d.match}</span>" or d.match
                 if parseInt i
@@ -88,6 +88,20 @@ class Ansi
                 htmlLine += span
             lines.push htmlLine
         lines.join '\n'
+        
+    @colors: ->
+        
+        hex = []
+        for red in 0..5
+            for green in 0..5
+                for blue in 0..5
+                    c = 16 + (red * 36) + (green * 6) + blue
+                    r = if red   > 0 then red   * 40 + 55 else 0
+                    g = if green > 0 then green * 40 + 55 else 0
+                    b = if blue  > 0 then blue  * 40 + 55 else 0            
+                    rgb = (toHexString(n) for n in [r, g, b]).join('')
+                    hex.push "##{rgb}"
+        hex
         
     dissect: @input ->
         
@@ -184,7 +198,7 @@ class Ansi
             ''
         
         toHighIntensity = c ->
-            for i in [0..7]
+            for i in 0..7
                 if c == STYLES["f#{i}"]
                     return STYLES["f#{8+i}"]
             c
@@ -232,7 +246,7 @@ class Ansi
             @input = @input.replace handler.pattern, handler.sub
 
         while (length = @input.length) > 0
-            process(handler, i) for handler, i in tokens
+            process(handler, i) for handler,i in tokens
             break if @input.length == length
             
 export Ansi

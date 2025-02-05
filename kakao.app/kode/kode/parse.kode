@@ -29,6 +29,8 @@ function Parse extends parseutils
 
         @debug    = @kode.args.debug
         @verbose  = @kode.args.verbose
+        
+    onError: msg info -> @kode.onError msg info
 
     # 00000000    0000000   00000000    0000000  00000000
     # 000   000  000   000  000   000  000       000

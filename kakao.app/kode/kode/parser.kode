@@ -745,7 +745,7 @@ function Parser extends parse
 
         @pop '['
         
-        if comp = @lcomp items
+        if comp = @lcomp(items)
             return comp
         
         array:
@@ -822,7 +822,8 @@ function Parser extends parse
         
         @pop '('
 
-        ⮐ comp if comp = @lcomp exps
+        if comp = @lcomp(exps)
+            ⮐ comp 
         
         parens:
             open:  open
@@ -857,7 +858,8 @@ function Parser extends parse
     
     lcomp: exps ->
         
-        ⮐ if not f = exps[0].for
+        ⮐ if empty exps
+        ⮐ if not exps[0]['for']
         
         lcomp: exps[0]
             

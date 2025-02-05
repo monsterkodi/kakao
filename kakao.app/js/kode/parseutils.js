@@ -41,11 +41,7 @@ ParseUtils = (function ()
             this.shiftNewline(rule,tokens)
             return tokens.shift()
         }
-        console.error(`parse.shiftClose: '${rule}' expected closing '${text}'`)
-        if (this.debug)
-        {
-            print.tokens(`shiftClose missing close '${text}'`,tokens)
-        }
+        this.onError(`${rule} is missing closing ${text}`,{tokens:tokens})
         return null
     }
 
@@ -71,7 +67,7 @@ ParseUtils = (function ()
 
     ParseUtils.prototype["nameMethods"] = function (mthds)
     {
-        var m, name, _107_34_, _107_39_, _108_35_, _108_41_
+        var m, name, _106_34_, _106_39_, _107_35_, _107_41_
 
         if ((mthds != null ? mthds.length : undefined))
         {
@@ -79,7 +75,7 @@ ParseUtils = (function ()
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
                 m = list[_a_]
-                if (name = ((_107_34_=m.keyval) != null ? (_107_39_=_107_34_.key) != null ? _107_39_.text : undefined : undefined))
+                if (name = ((_106_34_=m.keyval) != null ? (_106_39_=_106_34_.key) != null ? _106_39_.text : undefined : undefined))
                 {
                     if (((m.keyval.val != null ? m.keyval.val.func : undefined) != null))
                     {
@@ -229,7 +225,7 @@ ParseUtils = (function ()
 
     ParseUtils.prototype["ifSuitableForInline"] = function (e)
     {
-        var ei, _256_24_, _257_24_, _258_24_, _259_24_, _264_26_, _265_26_
+        var ei, _255_24_, _256_24_, _257_24_, _258_24_, _263_26_, _264_26_
 
         if (e.if)
         {

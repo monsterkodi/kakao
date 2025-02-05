@@ -408,53 +408,121 @@ str.hex = function (s)
     }
 }
 
+str.darkenColor = function (s, f = 0.5)
+{
+    if (!(_k_.isStr(s)))
+    {
+        s = str.hexColor
+    }
+    return str.hexColor(str.hexColor(s).map(function (v)
+    {
+        return _k_.clamp(0,255,parseInt(f * v))
+    }))
+}
+
 str.hexColor = function (s)
 {
-    var l
+    var h, l, validate
 
     if (_k_.isArr(s))
     {
-        return '#' + s.map(function (v)
+        h = '#' + s.slice(0, 3).map(function (v)
         {
-            return _k_.lpad(2,Number(v).toString(16),'0')
+            return _k_.lpad(2,str.hex(v),'0')
         }).join('')
+        if (s.length > 3 && _k_.isNum(s[3]))
+        {
+            h = str.darkenColor(h,s[3])
+        }
+        return h
     }
     if (_k_.isStr(s))
     {
+        validate = function (a)
+        {
+            var v
+
+            var list = _k_.list(a)
+            for (var _10_ = 0; _10_ < list.length; _10_++)
+            {
+                v = list[_10_]
+                if (_k_.empty(v))
+                {
+                    return
+                }
+            }
+            return a
+        }
         if (s.startsWith('rgb'))
         {
-            s = str.rgbaToHex(s)
+            if (s = str.rgbaToHexColor(s))
+            {
+            }
+        }
+        if (_k_.empty(s))
+        {
+            return
         }
         l = s.length
-        if (l === 7 || l === 4)
+        if ((l === 7 || l === 4) && s[0] === "#")
         {
             s = s.slice(1)
             l--
         }
         if (l === 6)
         {
-            return [str.hex(s.slice(0, 2)),str.hex(s.slice(2, 4)),str.hex(s.slice(4, 6))]
+            return validate([str.hex(s.slice(0, 2)),str.hex(s.slice(2, 4)),str.hex(s.slice(4, 6))])
         }
         if (l === 3)
         {
-            return [str.hex(s[0]) * 16,str.hex(s[1]) * 16,str.hex(s[2]) * 16]
+            return validate([str.hex(s[0]) * 17,str.hex(s[1]) * 17,str.hex(s[2]) * 17])
         }
-        return [0,0,0]
+        return
     }
     if (_k_.isNum(s))
     {
-        return str.hexColor(Number(s).toString(16))
+        return str.hexColor(str.hexColor(_k_.lpad(6,Number(s).toString(16),'0')))
     }
 }
 
-str.rgbaToHex = function (s)
+str.rgbaToHexColor = function (s)
 {
-    if (_k_.isStr(rgb) && rgb.startsWith('rgb'))
+    var f, spl, v, vls
+
+    if (_k_.isStr(s) && s.startsWith('rgb'))
     {
-        return kstr.hexColor(s.split('(')[1].split(',').map(function (c)
+        spl = s.split('(')[1].split(')')[0].split(',')
+        vls = spl.slice(0, 3).map(function (c)
         {
             return parseInt(c)
-        }))
+        })
+        if (!((3 <= vls.length && vls.length <= 4)))
+        {
+            return
+        }
+        var list = _k_.list(vls)
+        for (var _11_ = 0; _11_ < list.length; _11_++)
+        {
+            v = list[_11_]
+            if (_k_.empty((v)) || v < 0 || v > 255)
+            {
+                return
+            }
+        }
+        if (spl.length > 3)
+        {
+            f = parseFloat(spl[3])
+            if (_k_.empty(f))
+            {
+                return
+            }
+            if (!((0 <= f && f <= 1)))
+            {
+                return
+            }
+            vls.push(f)
+        }
+        return str.hexColor(vls)
     }
 }
 
@@ -470,12 +538,12 @@ str.colorRanges = function (s)
     if (rngs = matchr.ranges(regexps,s))
     {
         var list = _k_.list(rngs)
-        for (var _10_ = 0; _10_ < list.length; _10_++)
+        for (var _12_ = 0; _12_ < list.length; _12_++)
         {
-            rng = list[_10_]
+            rng = list[_12_]
             if (_k_.in(rng.clss,['rgb','rgba']))
             {
-                rng.color = str.hexColor(str.rgbaToHex(rng.match))
+                rng.color = str.hexColor(str.rgbaToHexColor(rng.match))
             }
             else
             {
@@ -483,6 +551,10 @@ str.colorRanges = function (s)
             }
         }
     }
+    rngs = rngs.filter(function (r)
+    {
+        return !_k_.empty(r.color)
+    })
     return rngs
 }
 
@@ -612,9 +684,9 @@ str.time = function (t)
             f = 1
             o = {ms:1000,second:60,minute:60,hour:24,day:30,month:12,year:0}
             var list = _k_.list(Object.keys(o))
-            for (var _11_ = 0; _11_ < list.length; _11_++)
+            for (var _13_ = 0; _13_ < list.length; _13_++)
             {
-                k = list[_11_]
+                k = list[_13_]
                 num = parseInt(t / f)
                 f *= o[k]
                 if (k === 'year' || t < f)
@@ -631,9 +703,9 @@ str.time = function (t)
             thsnd = BigInt(1000)
             f = thsnd
             var list1 = ['ns','μs','ms','second']
-            for (var _12_ = 0; _12_ < list1.length; _12_++)
+            for (var _14_ = 0; _14_ < list1.length; _14_++)
             {
-                k = list1[_12_]
+                k = list1[_14_]
                 if (k === 'seconds' || t < f)
                 {
                     num = parseInt(thsnd * t / f)
@@ -664,7 +736,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _525_13_
+    var _545_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

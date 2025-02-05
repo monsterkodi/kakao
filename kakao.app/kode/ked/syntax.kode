@@ -20,6 +20,7 @@ function syntax
     setLines: lines =>
         
         @diss = kolor.dissect lines @ext
+        # lf noon(@diss)
 
     getClass: x y =>
         

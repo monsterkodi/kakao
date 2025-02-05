@@ -27,6 +27,21 @@ class Kode
         @returner = new returner @
         @operator = new operator @
         @renderer = new renderer @
+        
+    # 00000000  00000000   00000000    0000000   00000000   
+    # 000       000   000  000   000  000   000  000   000  
+    # 0000000   0000000    0000000    000   000  0000000    
+    # 000       000   000  000   000  000   000  000   000  
+    # 00000000  000   000  000   000   0000000   000   000  
+    
+    onError: msg info =>
+        
+        # error noon(info) #if @args.verbose
+        error @file
+        if info.tokens
+            li = info.tokens[0].line
+            error "#{li}:" @text.split(/\r?\n/)[li-1]
+        error msg
 
     # 00000000  000   000   0000000   000
     # 000       000   000  000   000  000
@@ -58,13 +73,13 @@ class Kode
 
     @compile: text opt={} -> (new Kode(opt)).compile text
     
-    compile: text file ->
+    compile: @text @file ->
 
-        ⮐ '' if empty trim text
+        ⮐ '' if empty trim @text
         
-        log text if @args.verbose
+        log @text if @args.verbose
 
-        @renderer.render @ast(text) file
+        @renderer.render @ast(@text) @file
         
     #  0000000    0000000  000000000  
     # 000   000  000          000     

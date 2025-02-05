@@ -677,9 +677,11 @@ Parser = (function ()
 
     Parser.prototype["lcomp"] = function (exps)
     {
-        var f
-
-        if (!(f = exps[0].for))
+        if (_k_.empty(exps))
+        {
+            return
+        }
+        if (!exps[0]['for'])
         {
             return
         }

@@ -79,8 +79,9 @@ class color
     
     @use256colors: '256color' in process.env.TERM 
     
-    @rgb: c -> kstr.hexColor c
-    @hex: c -> kstr.hexColor c
+    @rgb:    c   -> kstr.hexColor c
+    @hex:    c   -> kstr.hexColor c
+    @darken: c f -> kstr.darkenColor c f
         
     @_256: c -> # xterm-256color indices
         
@@ -93,20 +94,17 @@ class color
             g = int 5 * g / 255
             b = int 5 * b / 255
             16 + 36 * r + 6 * g + b
-        
-    @darken: c f=0.5 -> 
+                    
+    @bg_rgb: c -> # background
     
-        color.hex color.rgb(c).map((v) -> clamp(0 255 int(f*v)))
-            
-    @bg_rgb: c -> 
-        
+        lf '256?' @use256colors
         if @use256colors
             "\x1b[48;5;#{color._256 c}m"
         else
             [r g b] = color.rgb c
             "\x1b[48;2;#{r};#{g};#{b}m" 
 
-    @fg_rgb: c -> 
+    @fg_rgb: c -> # foreground (text) 
         
         if @use256colors
             "\x1b[38;5;#{color._256 c}m"
@@ -114,7 +112,7 @@ class color
             [r g b] = color.rgb c
             "\x1b[38;2;#{r};#{g};#{b}m" 
 
-    @ul_rgb: c -> 
+    @ul_rgb: c -> # underline color
         
         [r g b] = color.rgb c
         "\x1b[58;2;#{r};#{g};#{b}m" 

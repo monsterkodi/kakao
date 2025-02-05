@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int
 
@@ -24,6 +24,11 @@ class color
         return kstr.hexColor(c)
     }
 
+    static darken (c, f)
+    {
+        return kstr.darkenColor(c,f)
+    }
+
     static _256 (c)
     {
         var b, g, r
@@ -44,18 +49,11 @@ class color
         }
     }
 
-    static darken (c, f = 0.5)
-    {
-        return color.hex(color.rgb(c).map(function (v)
-        {
-            return _k_.clamp(0,255,parseInt(f * v))
-        }))
-    }
-
     static bg_rgb (c)
     {
         var b, g, r
 
+        lf('256?',this.use256colors)
         if (this.use256colors)
         {
             return `\x1b[48;5;${color._256(c)}m`
