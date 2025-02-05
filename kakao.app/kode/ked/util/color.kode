@@ -71,7 +71,11 @@
     
 ###
 
-use ../../kxk ▪ kstr
+use ../../kxk ▪ kstr 
+use ../../kxk/ansi
+
+# ansi.log256Colors()
+# process.exit 0
 
 int = s -> parseInt s
 
@@ -97,7 +101,6 @@ class color
                     
     @bg_rgb: c -> # background
     
-        lf '256?' @use256colors
         if @use256colors
             "\x1b[48;5;#{color._256 c}m"
         else

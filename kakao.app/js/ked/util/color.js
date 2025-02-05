@@ -5,6 +5,8 @@ var int
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 
+import ansi from "../../kxk/ansi.js"
+
 
 int = function (s)
 {
@@ -53,7 +55,6 @@ class color
     {
         var b, g, r
 
-        lf('256?',this.use256colors)
         if (this.use256colors)
         {
             return `\x1b[48;5;${color._256(c)}m`

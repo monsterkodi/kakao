@@ -1,6 +1,8 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var b, blue, c, g, gray, green, l, n, r, red, rgb, STYLES, toHexString
+
+import kstr from "./kstr.js"
 
 STYLES = {f0:'#000',f1:'#F00',f2:'#0D0',f3:'#DD0',f4:'#00F',f5:'#D0D',f6:'#0DD',f7:'#AAA',f8:'#555',f9:'#F55',f10:'#5F5',f11:'#FF5',f12:'#55F',f13:'#F5F',f14:'#5FF',f15:'#FFF',b0:'#000',b1:'#A00',b2:'#0A0',b3:'#A50',b4:'#00A',b5:'#A0A',b6:'#0AA',b7:'#AAA',b8:'#555',b9:'#F55',b10:'#5F5',b11:'#FF5',b12:'#55F',b13:'#F5F',b14:'#5FF',b15:'#FFF'}
 
@@ -40,11 +42,11 @@ class Ansi
 {
     static html (s)
     {
-        var andi, d, diss, htmlLine, i, lines, span, _79_32_
+        var andi, d, diss, htmlLine, i, lines, span, _81_32_
 
         andi = new Ansi()
         lines = []
-        var list1 = ((_79_32_=(s != null ? s.split('\n') : undefined)) != null ? _79_32_ : [])
+        var list1 = ((_81_32_=(s != null ? s.split('\n') : undefined)) != null ? _81_32_ : [])
         for (var _a_ = 0; _a_ < list1.length; _a_++)
         {
             l = list1[_a_]
@@ -70,9 +72,9 @@ class Ansi
 
     static colors ()
     {
-        var hex
+        var h, hex
 
-        hex = []
+        hex = ['#000000','#cd0000','#00cd00','#cdcd00','#0000ee','#cd00cd','#00cdcd','#e5e5e5','#7f7f7f','#ff0000','#00ff00','#ffff00','#5c5cff','#ff00ff','#00ffff','#ffffff']
         for (red = 0; red <= 5; red++)
         {
             for (green = 0; green <= 5; green++)
@@ -80,15 +82,106 @@ class Ansi
                 for (blue = 0; blue <= 5; blue++)
                 {
                     c = 16 + (red * 36) + (green * 6) + blue
-                    r = red > 0 ? red * 40 + 55 : 0
-                    g = green > 0 ? green * 40 + 55 : 0
-                    b = blue > 0 ? blue * 40 + 55 : 0
+                    r = (red > 0 ? red * 40 + 55 : 0)
+                    g = (green > 0 ? green * 40 + 55 : 0)
+                    b = (blue > 0 ? blue * 40 + 55 : 0)
                     rgb = (function () { var r_a_ = []; var list1 = [r,g,b]; for (var _b_ = 0; _b_ < list1.length; _b_++)  { n = list1[_b_];r_a_.push(toHexString(n))  } return r_a_ }).bind(this)().join('')
                     hex.push(`#${rgb}`)
                 }
             }
         }
+        for (g = 0; g < 24; g++)
+        {
+            h = g * 10 + 8
+            hex.push(`#${toHexString(h)}${toHexString(h)}${toHexString(h)}`)
+        }
         return hex
+    }
+
+    static bg (c)
+    {
+        var _a_ = kstr.hexColor(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
+
+        return `\x1b[48;2;${r};${g};${b}m`
+    }
+
+    static fg (c)
+    {
+        var _a_ = kstr.hexColor(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
+
+        return `\x1b[38;2;${r};${g};${b}m`
+    }
+
+    static bg256 (c)
+    {
+        var dist, indx, minDist, minIndx, palc, trueCol
+
+        trueCol = kstr.hexColor(c)
+        minDist = Infinity
+        minIndx = Infinity
+        var list1 = _k_.list(Ansi.c256)
+        for (indx = 0; indx < list1.length; indx++)
+        {
+            palc = list1[indx]
+            dist = Ansi.colorDist(trueCol,kstr.hexColor(palc))
+            if (dist < minDist)
+            {
+                minDist = dist
+                minIndx = indx
+            }
+        }
+        return `\x1b[48;5;${minIndx}m`
+    }
+
+    static log256Colors ()
+    {
+        var i, j, s
+
+        s = ''
+        for (i = 0; i < 4; i++)
+        {
+            for (j = 0; j < 4; j++)
+            {
+                s += `\x1b[48;5;${i * 4 + j}m\x1b[38;5;${i * 4 + j}m ● \x1b[48;5;0m` + Ansi.bg256(Ansi.c256[i * 4 + j]) + '  '
+            }
+            s += '\x1b[49m\n'
+        }
+        for (i = 0; i < 36; i++)
+        {
+            for (j = 0; j < 6; j++)
+            {
+                s += `\x1b[48;5;${i * 6 + j + 16}m\x1b[38;5;${i * 6 + j + 16}m ● \x1b[48;5;0m` + Ansi.bg256(Ansi.c256[i * 6 + j + 16]) + '  '
+            }
+            s += '\x1b[49m\n'
+        }
+        for (i = 0; i < 4; i++)
+        {
+            for (j = 0; j < 6; j++)
+            {
+                s += `\x1b[48;5;${i * 6 + j + 16 + 6 * 36}m\x1b[38;5;${i * 6 + j + 16 + 6 * 36}m ● \x1b[48;5;0m`
+            }
+            s += '\x1b[49m\n'
+        }
+        console.log(s)
+        s = ''
+        i = 0
+        for (r = 0; r < 256; r++)
+        {
+            for (b = 0; b < 256; b++)
+            {
+                s += Ansi.bg256(kstr.hexColor([r,g,b])) + '      '
+                if ((i % 36 * 3) === 0)
+                {
+                    s += '\x1b[49m\n'
+                }
+            }
+        }
+        console.log(s)
+    }
+
+    static colorDist (c1, c2)
+    {
+        return Math.pow(30 * (c1[0] - c2[0]),2) + Math.pow(59 * (c1[1] - c2[1]),2) + Math.pow(11 * (c1[2] - c2[2]),2)
     }
 
     dissect (input)
@@ -364,4 +457,5 @@ class Ansi
     }
 }
 
+Ansi.c256 = Ansi.colors()
 export default Ansi;
