@@ -27,14 +27,24 @@ export
         
     moveSelectionOrCursorLines: dir ->
         
-        lf 'moveSelectionOrCursorLines:' dir
+        selections = @allSelections()
+        cursors    = @allCursors() 
+        indices    = util.lineIndicesForRangesOrPositions selections cursors
+        
+        [lines selections cursors] = util.moveLineRangesAndPositionsAtIndicesInDirection @allLines() selections cursors indices dir
+        
+        @setLines lines
+        @setSelections selections
+        @setCursors cursors
+        
+    toggleCommentAtSelectionOrCursorLines: ->
 
         selections = @allSelections()
-        cursors = @allCursors()
-        lines = @allLines()
-        
-        rngs = selectionsOrCursorLineRanges()
-        
-        
-        
-        
+        cursors    = @allCursors() 
+        indices    = util.lineIndicesForRangesOrPositions selections cursors
+
+        [lines selections cursors] = util.toggleCommentsInLineRangesAtIndices @allLines() selections cursors indices
+                
+        @setLines lines        
+        @setSelections selections
+        @setCursors cursors        

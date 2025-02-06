@@ -10,11 +10,26 @@ export default {joinLines:function ()
     return this.deleteRanges(rngs,this.allCursors())
 },moveSelectionOrCursorLines:function (dir)
 {
-    var cursors, lines, rngs, selections
+    var cursors, indices, lines, selections
 
-    lf('moveSelectionOrCursorLines:',dir)
     selections = this.allSelections()
     cursors = this.allCursors()
-    lines = this.allLines()
-    return rngs = selectionsOrCursorLineRanges()
+    indices = util.lineIndicesForRangesOrPositions(selections,cursors)
+    var _a_ = util.moveLineRangesAndPositionsAtIndicesInDirection(this.allLines(),selections,cursors,indices,dir); lines = _a_[0]; selections = _a_[1]; cursors = _a_[2]
+
+    this.setLines(lines)
+    this.setSelections(selections)
+    return this.setCursors(cursors)
+},toggleCommentAtSelectionOrCursorLines:function ()
+{
+    var cursors, indices, lines, selections
+
+    selections = this.allSelections()
+    cursors = this.allCursors()
+    indices = util.lineIndicesForRangesOrPositions(selections,cursors)
+    var _b_ = util.toggleCommentsInLineRangesAtIndices(this.allLines(),selections,cursors,indices); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
+
+    this.setLines(lines)
+    this.setSelections(selections)
+    return this.setCursors(cursors)
 }}

@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -549,6 +549,18 @@ class util
         }
     }
 
+    static lineIndicesForRangesOrPositions (rngs, posl)
+    {
+        var indices
+
+        indices = util.lineIndicesForRanges(rngs)
+        if (_k_.empty(indices))
+        {
+            indices = util.lineIndicesForPositions(posl)
+        }
+        return indices
+    }
+
     static mergeLineRanges (lines, rngs)
     {
         var i, mrgd, s, tail
@@ -683,6 +695,14 @@ class util
             return String(m).length
         }
         return 0
+    }
+
+    static splitLineIndent (str)
+    {
+        var i
+
+        i = util.numIndent(str)
+        return [str.slice(0, typeof i === 'number' ? i : -1),str.slice(i)]
     }
 
     static lineRangeAtPos (lines, pos)
@@ -1337,6 +1357,142 @@ class util
         {
             return util.rangeForJoiningLine(lines,idx)
         })
+    }
+
+    static moveLineRangesAndPositionsAtIndicesInDirection (lines, rngs, posl, indices, dir)
+    {
+        var d, ii, index, newLines, newPosl, newRngs, pos, re, rng, rs
+
+        if (_k_.empty(indices) || dir === 'down' && indices.slice(-1)[0] >= lines.length - 1 || dir === 'up' && indices[0] <= 0)
+        {
+            return [lines,rngs,posl]
+        }
+        newLines = _k_.copy(lines)
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        var _a_ = ((function ()
+        {
+            switch (dir)
+            {
+                case 'down':
+                    return [indices.length - 1,0]
+
+                case 'up':
+                    return [0,indices.length - 1]
+
+            }
+
+        }).bind(this))(); rs = _a_[0]; re = _a_[1]
+
+        for (var _b_ = ii = rs, _c_ = re; (_b_ <= _c_ ? ii <= re : ii >= re); (_b_ <= _c_ ? ++ii : --ii))
+        {
+            index = indices[ii]
+            switch (dir)
+            {
+                case 'down':
+                    newLines.splice(index,2,newLines[index + 1],newLines[index])
+                    break
+                case 'up':
+                    newLines.splice(index - 1,2,newLines[index],newLines[index - 1])
+                    break
+            }
+
+            var list = _k_.list(newPosl)
+            for (var _d_ = 0; _d_ < list.length; _d_++)
+            {
+                pos = list[_d_]
+                if (pos[1] === index)
+                {
+                    pos[1] += ((function ()
+                    {
+                        switch (dir)
+                        {
+                            case 'down':
+                                return 1
+
+                            case 'up':
+                                return -1
+
+                        }
+
+                    }).bind(this))()
+                }
+            }
+            var list1 = _k_.list(newRngs)
+            for (var _e_ = 0; _e_ < list1.length; _e_++)
+            {
+                rng = list1[_e_]
+                if (rng[1] === index)
+                {
+                    d = ((function ()
+                    {
+                        switch (dir)
+                        {
+                            case 'down':
+                                return 1
+
+                            case 'up':
+                                return -1
+
+                        }
+
+                    }).bind(this))()
+                    rng[1] += d
+                    rng[3] += d
+                }
+            }
+        }
+        return [newLines,newRngs,newPosl]
+    }
+
+    static toggleCommentsInLineRangesAtIndices (lines, rngs, posl, indices)
+    {
+        var comIndent, comment, comStart, d, indent, index, line, minIndent, newLine, newLines, newPosl, newRngs
+
+        if (_k_.empty(indices))
+        {
+            return [lines,rngs,posl]
+        }
+        newLines = _k_.copy(lines)
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        comStart = '#'
+        minIndent = Infinity
+        var list = _k_.list(indices)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            index = list[_a_]
+            var _b_ = util.splitLineIndent(newLines[index]); indent = _b_[0]; line = _b_[1]
+
+            if (!line.startsWith(comStart))
+            {
+                comment = comStart
+                minIndent = _k_.min(indent.length,minIndent)
+            }
+        }
+        if (comment)
+        {
+            comIndent = _k_.lpad(minIndent)
+        }
+        var list1 = _k_.list(indices)
+        for (var _c_ = 0; _c_ < list1.length; _c_++)
+        {
+            index = list1[_c_]
+            var _d_ = util.splitLineIndent(newLines[index]); indent = _d_[0]; line = _d_[1]
+
+            if (comment)
+            {
+                indent = (indent.length > minIndent ? _k_.lpad(indent.length - minIndent) : '')
+                newLine = comIndent + comment + indent + ' ' + line
+            }
+            else
+            {
+                d = (line[comStart.length] === ' ' ? 1 : 0)
+                newLine = indent + line.slice(comStart.length + d)
+            }
+            newLines.splice(index,1,newLine)
+        }
+        return [newLines,newRngs,newPosl]
     }
 }
 

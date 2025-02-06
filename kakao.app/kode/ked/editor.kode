@@ -392,6 +392,8 @@ function editor extends view
             'cmd+e' 'ctrl+e'            ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
             
             'alt+cmd+d'                 ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectAllHighlights()
+
+            'cmd+/'                     ➜ ⮐ @state.toggleCommentAtSelectionOrCursorLines()
             
             'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
 

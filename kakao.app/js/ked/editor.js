@@ -631,6 +631,9 @@ editor = (function ()
             case 'alt+cmd+d':
                 return this.state.selectWordAtCursor_highlightSelection_selectAllHighlights()
 
+            case 'cmd+/':
+                return this.state.toggleCommentAtSelectionOrCursorLines()
+
             case 'esc':
                 return this.state.clearCursorsHighlightsAndSelections()
 

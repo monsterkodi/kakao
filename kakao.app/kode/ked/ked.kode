@@ -175,11 +175,11 @@ function KED
     
     onKey: key event =>
         
-        lf 'ked.onKey' key noon(event)
+        #lf 'ked.onKey' key noon(event)
         
         switch key
             
-            'alt+q' 'ctrl+q'             ➜ @t.quit(); process.exit(0)
+            'alt+q' 'ctrl+q' 'cmd+esc'   ➜ @t.quit(); process.exit(0)
             'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()

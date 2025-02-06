@@ -258,7 +258,13 @@ class util
         
         for rng in rngs
             if util.rangeTouchesPos rng pos
-                ⮐ rng
+                ⮐ rng   
+
+    @lineIndicesForRangesOrPositions: rngs posl ->
+
+        indices = util.lineIndicesForRanges rngs
+        indices = util.lineIndicesForPositions posl if empty indices
+        indices
                 
     # 00     00  00000000  00000000    0000000   00000000  
     # 000   000  000       000   000  000        000       
@@ -349,6 +355,11 @@ class util
         if m = str.match /^\s+/
             ⮐ String(m).length
         0
+        
+    @splitLineIndent: str ->
+        
+        i = util.numIndent str
+        [str[0...i] str[i..]]
         
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
@@ -767,5 +778,74 @@ class util
     @rangeForJoiningLine: lines idx -> [lines[idx].length idx 0 idx+1]
         
     @rangesForJoiningLines: lines idxs -> idxs.map (idx) -> util.rangeForJoiningLine lines idx
-                    
+    
+    @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
+        
+        if empty indices or dir == 'down' and indices[-1] >= lines.length-1 or dir == 'up' and indices[0] <= 0
+            ⮐ [lines rngs posl]
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        [rs re] = switch dir
+            'down' ➜ [indices.length-1 0]
+            'up'   ➜ [0 indices.length-1]
+        
+        for ii in rs..re
+            index = indices[ii]
+            
+            switch dir 
+                'down' ➜ newLines.splice index   2 newLines[index+1] newLines[index] 
+                'up'   ➜ newLines.splice index-1 2 newLines[index]   newLines[index-1]
+                
+            for pos in newPosl
+                if pos[1] == index 
+                    pos[1] += switch dir                     
+                        'down' ➜ 1
+                        'up'   ➜ -1
+
+            for rng in newRngs
+                if rng[1] == index 
+                    d = switch dir                     
+                        'down' ➜ 1
+                        'up'   ➜ -1
+                    rng[1] += d
+                    rng[3] += d
+        
+        [newLines newRngs newPosl]
+                  
+    @toggleCommentsInLineRangesAtIndices: lines rngs posl indices ->
+        
+        ⮐ [lines rngs posl] if empty indices
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        comStart = '#'
+        minIndent = Infinity
+             
+        for index in indices
+            
+            [indent line] = util.splitLineIndent newLines[index]
+            if not line.startsWith comStart
+                comment = comStart
+                minIndent = min indent.length minIndent
+            
+        comIndent = lpad minIndent if comment
+                
+        for index in indices
+            
+            [indent line] = util.splitLineIndent newLines[index]
+            if comment
+                indent = indent.length > minIndent ? lpad(indent.length-minIndent) : ''
+                newLine = comIndent + comment + indent + ' ' + line
+            else
+                d = line[comStart.length] == ' ' ? 1 : 0
+                newLine = indent + line[comStart.length+d..]
+            newLines.splice index 1 newLine
+        
+        [newLines newRngs newPosl]        
+            
 export util

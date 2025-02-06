@@ -206,6 +206,27 @@ line 2`)
         compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
         compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[['a','bline 1','line 2'],[[1,1]]])
     })
+    section("moveLineRangesAndPositionsAtIndicesInDirection", function ()
+    {
+        lines = ['a','b','c']
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1],'down'),[['a','c','b'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[2],'down'),[['a','b','c'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1,2],'down'),[['a','b','c'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[0,2],'down'),[['a','b','c'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1],'up'),[['b','a','c'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[2],'up'),[['a','c','b'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1,2],'up'),[['b','c','a'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[0,2],'up'),[['a','b','c'],[],[]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1]],[1],'down'),[['a','c','b'],[],[[0,2]]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'down'),[['a','c','b'],[],[[0,2],[1,2]]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'down'),[['a','c','b'],[],[[0,2],[1,2]]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1]],[1],'up'),[['b','a','c'],[],[[0,0]]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'up'),[['b','a','c'],[],[[0,0],[1,0]]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'up'),[['b','a','c'],[],[[0,0],[1,0]]])
+        lines = ['a','b','c','d','e']
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'up'),[['b','c','d','a','e'],[],[[0,0],[0,1],[0,2]]])
+        compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'down'),[['a','e','b','c','d'],[],[[0,2],[0,3],[0,4]]])
+    })
 }
 toExport["util"]._section_ = true
 toExport._test_ = true
