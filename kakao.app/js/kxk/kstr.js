@@ -366,6 +366,11 @@ str.splice = function (s, i, c, r = '')
     return s.slice(0,i) + r + s.slice(i + Math.abs(c))
 }
 
+str.clean = function (s)
+{
+    return s.replaceAll('\r\n','\n')
+}
+
 str.encode = function (s, spaces = true)
 {
     var r
@@ -736,7 +741,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _545_13_
+    var _547_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

@@ -161,17 +161,20 @@ function state
     #  0000000   0000000      000     
     
     cut: =>
-        
+        lf 'state.cut'
+        # if empty @s.selections
+            # @selectCursorLines()
+            # ⮐ @cut() if valid @s.selections
+
+            # if util.isEmptyLineAtPos @allLines() @mainCursor()
+                # lines = @allLines()
+                # lines.splice @mainCursor()[1] 1
+                # @setLines lines
+            # ⮐ 
+        @copy()
         if empty @s.selections
             @selectCursorLines()
-            ⮐ @cut() if valid @s.selections
-
-            if util.isEmptyLineAtPos @allLines() @mainCursor()
-                lines = @allLines()
-                lines.splice @mainCursor()[1] 1
-                @setLines lines
-            ⮐ 
-        @copy()
+            lf 'state.cut' @allSelections()
         @deleteSelection()
         
     #  0000000   0000000   00000000   000   000  
@@ -218,7 +221,11 @@ function state
                 
             'linux'
             
-                @insert child_process.execSync('xsel').toString("utf8")
+                text = child_process.execSync('xsel -o --clipboard')
+                
+                lf 'paste\n' noon(text.toString("utf8"))
+            
+                @insert text.toString("utf8")
             
             'win32'
             

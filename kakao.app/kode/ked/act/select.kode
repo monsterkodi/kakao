@@ -234,7 +234,7 @@ export
         
     selectCursorLines: append=false ->
                     
-        @setSelections util.lineRangesForPositions @allLines() @allCursors() append
+        @setSelections util.lineRangesForPositions(@allLines() @allCursors() append)
         
     selectAllLines: ->
         

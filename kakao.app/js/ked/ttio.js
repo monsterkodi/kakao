@@ -4,6 +4,7 @@ var TTIO
 
 import events from "../kxk/events.js"
 import post from "../kxk/post.js"
+import kstr from "../kxk/kstr.js"
 
 
 TTIO = (function ()
@@ -511,7 +512,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _343_23_
+        var csi, dataStr, esc, event, text, _343_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
@@ -521,16 +522,20 @@ TTIO = (function ()
         {
             esc = data.slice(1).toString('utf8')
         }
-        lfc('data',data.slice(1),csi,esc)
         if ((this.pasteBuffer != null))
         {
-            this.pasteBuffer += data.toString('utf8')
-            if (this.pasteBuffer.endsWith('\x1b[201~'))
+            dataStr = data.toString('utf8')
+            if (dataStr.endsWith('\x1b[201~'))
             {
-                this.pasteBuffer = this.pasteBuffer.slice(0, -6)
+                this.pasteBuffer += data.slice(0, -6).toString('utf8')
                 lf('tty paste end',_k_.noon((this.pasteBuffer)))
-                this.emit('paste',this.pasteBuffer)
+                this.emit('paste',kstr.clean,this.pasteBuffer)
                 delete this.pasteBuffer
+            }
+            else
+            {
+                this.pasteBuffer += dataStr
+                lf('tty paste cont',_k_.noon((this.pasteBuffer)))
             }
             return
         }
@@ -538,13 +543,13 @@ TTIO = (function ()
         {
             if (csi.startsWith('200~'))
             {
-                this.pasteBuffer = data.slice(6)
+                this.pasteBuffer = data.slice(6).toString('utf8')
                 lf('tty paste start',_k_.noon((this.pasteBuffer)))
                 if (csi.endsWith('\x1b[201~'))
                 {
-                    this.pasteBuffer = this.pasteBuffer.slice(0, -6)
+                    this.pasteBuffer = data.slice(6, -6).toString('utf8')
                     lf('tty paste immediate end',_k_.noon((this.pasteBuffer)))
-                    this.emit('paste',this.pasteBuffer)
+                    this.emit('paste',kstr.clean,this.pasteBuffer)
                     delete this.pasteBuffer
                 }
                 return
@@ -599,7 +604,7 @@ TTIO = (function ()
             if (text.length > 1)
             {
                 lfc('paste?',data[0] === 0x1b,data.slice(1),text.length,text)
-                return this.emit('paste',text)
+                return this.emit('paste',kstr.clean,text)
             }
         }
     }

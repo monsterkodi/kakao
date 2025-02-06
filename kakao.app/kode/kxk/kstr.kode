@@ -302,6 +302,8 @@ str.splice = s i c r='' -> s.slice(0 i) + r + s.slice(i + Math.abs(c))
 # 000       000  0000  000       000   000  000   000  000
 # 00000000  000   000   0000000   0000000   0000000    00000000
 
+str.clean = s -> s.replaceAll '\r\n' '\n'
+
 str.encode = s spaces=true ->
 
     if s

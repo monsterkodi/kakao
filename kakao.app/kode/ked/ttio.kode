@@ -6,7 +6,7 @@
    000        000     000   0000000   
 ###
 
-use ../kxk ◆ events post
+use ../kxk ◆ events post kstr
 
 function TTIO extends events
 
@@ -338,31 +338,34 @@ function TTIO extends events
         else if data[0] == 0x1b
             esc = data[1..].toString 'utf8'
         
-        lfc 'data' data[1..] csi esc
+        # lfc 'data' data[1..] csi esc
             
         if @pasteBuffer?
+        
+            dataStr = data.toString 'utf8'
             
-            @pasteBuffer += data.toString 'utf8'
-            
-            if @pasteBuffer.endsWith '\x1b[201~'
-                @pasteBuffer = @pasteBuffer[0...-6]
+            if dataStr.endsWith '\x1b[201~'
+                @pasteBuffer += data[0...-6].toString 'utf8'
                 lf 'tty paste end' noon(@pasteBuffer)
-                @emit 'paste' @pasteBuffer
+                @emit 'paste' kstr.clean @pasteBuffer
                 delete @pasteBuffer
+            else
+                @pasteBuffer += dataStr
+                lf 'tty paste cont' noon(@pasteBuffer)
             ⮐ 
         
         if csi
             
             if csi.startsWith '200~' # paste start
                 
-                @pasteBuffer = data[6..]
+                @pasteBuffer = data[6..].toString('utf8')
                 
                 lf 'tty paste start' noon(@pasteBuffer)
                 
                 if csi.endsWith '\x1b[201~'
-                    @pasteBuffer = @pasteBuffer[0...-6]
+                    @pasteBuffer = data[6...-6].toString('utf8')
                     lf 'tty paste immediate end' noon(@pasteBuffer)
-                    @emit 'paste' @pasteBuffer
+                    @emit 'paste' kstr.clean @pasteBuffer
                     delete @pasteBuffer
                 ⮐
                 
@@ -400,7 +403,7 @@ function TTIO extends events
             
             if text.length > 1
                 lfc 'paste?' data[0]==0x1b data[1..] text.length text
-                ⮐ @emit 'paste' text
+                ⮐ @emit 'paste' kstr.clean text
                         
             # lfc 'unhandled?' data data.length data[0] data[1..]
                 

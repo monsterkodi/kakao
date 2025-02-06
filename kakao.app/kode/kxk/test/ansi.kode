@@ -49,4 +49,4 @@ colors = [
 
 ▸ ansi
 
-    log noon(ansi.colors())
+    # log noon(ansi.colors())

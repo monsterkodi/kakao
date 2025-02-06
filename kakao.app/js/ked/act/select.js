@@ -260,7 +260,7 @@ export default {select:function (from, to)
     return this
 },selectCursorLines:function (append = false)
 {
-    return this.setSelections(util.lineRangesForPositions,this.allLines(),this.allCursors(),append)
+    return this.setSelections(util.lineRangesForPositions(this.allLines(),this.allCursors(),append))
 },selectAllLines:function ()
 {
     return this.setSelections([[0,0,this.s.lines[this.s.lines.length - 1].length,this.s.lines.length - 1]])
