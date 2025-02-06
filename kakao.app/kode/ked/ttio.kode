@@ -338,15 +338,15 @@ function TTIO extends events
         else if data[0] == 0x1b
             esc = data[1..].toString 'utf8'
         
-        #lfc 'data' data[1..] csi esc
+        lfc 'data' data[1..] csi esc
             
         if @pasteBuffer?
             
             @pasteBuffer += data.toString 'utf8'
             
             if @pasteBuffer.endsWith '\x1b[201~'
-                
                 @pasteBuffer = @pasteBuffer[0...-6]
+                lf 'tty paste end' noon(@pasteBuffer)
                 @emit 'paste' @pasteBuffer
                 delete @pasteBuffer
             ⮐ 
@@ -354,9 +354,16 @@ function TTIO extends events
         if csi
             
             if csi.startsWith '200~' # paste start
-                @pasteBuffer = ''
+                
+                @pasteBuffer = data[6..]
+                
+                lf 'tty paste start' noon(@pasteBuffer)
+                
                 if csi.endsWith '\x1b[201~'
-                    @onData data[6..]
+                    @pasteBuffer = @pasteBuffer[0...-6]
+                    lf 'tty paste immediate end' noon(@pasteBuffer)
+                    @emit 'paste' @pasteBuffer
+                    delete @pasteBuffer
                 ⮐
                 
             if csi.startsWith('<') and csi[-1] in 'Mm'

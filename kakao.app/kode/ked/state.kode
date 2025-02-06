@@ -182,8 +182,6 @@ function state
     
     copy: =>
     
-        lf 'copy' os.platform()
-
         switch os.platform()
             
             'darwin'
@@ -192,9 +190,13 @@ function state
                 proc.stdin.end @textForSelectionOrCursorLines()
                 
             'linux'
+            
+                proc = child_process.spawn 'xsel' ['-i' '--clipboard'] 
+                proc.stdin.write @textForSelectionOrCursorLines()
+                proc.stdin.end()
+            
             'win32'
                 
-                lf noon(@textForSelectionOrCursorLines())
                 proc = child_process.spawn "#{◆dir}/../../bin/utf8clip.exe"
                 proc.stdin.write @textForSelectionOrCursorLines()
                 proc.stdin.end()
@@ -208,8 +210,6 @@ function state
     
     paste: => 
     
-        lf 'paste' os.platform()
-    
         switch os.platform() 
             
             'darwin'
@@ -217,11 +217,12 @@ function state
                 @insert child_process.execSync('pbpaste').toString("utf8")
                 
             'linux'
+            
+                @insert child_process.execSync('xsel').toString("utf8")
+            
             'win32'
             
-                text = child_process.execSync("#{◆dir}/../../bin/utf8clip.exe").toString("utf8")
-                lf noon(text)
-                @insert text
+                @insert child_process.execSync("#{◆dir}/../../bin/utf8clip.exe").toString("utf8")
                 
     #  0000000   0000000  00000000    0000000   000      000      
     # 000       000       000   000  000   000  000      000      
