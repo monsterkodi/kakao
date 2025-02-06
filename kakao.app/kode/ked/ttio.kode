@@ -165,8 +165,14 @@ function TTIO extends events
     parseCsi: csi =>
         
         switch csi
-            'I' ➜ ⮐ post.emit 'focus'
-            'O' ➜ ⮐ post.emit 'blur'
+            'I'     ➜ ⮐ post.emit 'focus'
+            'O'     ➜ ⮐ post.emit 'blur'
+            'H'     ➜ ⮐ @keyEventForCombo('home')
+            'F'     ➜ ⮐ @keyEventForCombo('end')
+            '3~'    ➜ ⮐ @keyEventForCombo('entf')
+            '5~'    ➜ ⮐ @keyEventForCombo('pageup')
+            '6~'    ➜ ⮐ @keyEventForCombo('pagedown')
+            'Z'     ➜ ⮐ @keyEventForCombo('shift+z' 'Z')
         
         lf '---- csi' csi
         
@@ -180,6 +186,18 @@ function TTIO extends events
         
         lf '---- esc' esc
         
+        switch esc
+        
+            'OP' ➜ ⮐ @keyEventForCombo('f1')
+            'OQ' ➜ ⮐ @keyEventForCombo('f2')
+            'OR' ➜ ⮐ @keyEventForCombo('f3')
+            'OS' ➜ ⮐ @keyEventForCombo('f4')
+            
+        char = esc.toString 'utf8'
+        
+        if event = @keyEventForChar char
+            return event
+        
     # 00000000    0000000   000   000  
     # 000   000  000   000  000 0 000  
     # 0000000    000000000  000000000  
@@ -188,23 +206,47 @@ function TTIO extends events
     
     parseRaw: raw =>
         
-        lf '---- raw' Number(raw[0]).toString(16)
+        lf '---- raw' '0x'+Number(raw[0]).toString(16) #'a'.charCodeAt(0)
         
-        if raw[0] > 127 and raw[1] == undefined
-            raw[0] -= 128
-            ⮐ parseEsc raw.toString 'utf8'
+        if raw.length == 1
+                                
+            switch raw[0]
+                0x9  ➜ ⮐ @keyEventForCombo('tab')
+                0xd  ➜ ⮐ @keyEventForCombo('return' '\n')
+                0x1b ➜ ⮐ @keyEventForCombo('esc')
+                0x7f ➜ ⮐ @keyEventForCombo('delete')
 
-        char = raw.toString 'utf8'
-        if char.length
-            lf '---- raw' char.length raw char typeof(raw) char.codePointAt(0)
-            key = char.toLowerCase()
-            key:    key
-            type:   'press'
-            combo:  key != char ? 'shift' : ''
-            char:   char
-        else
-            lf '---- raw' raw.length raw  
+            if 0x1 <= raw[0] <= 0x1a
+                ⮐ @keyEventForCombo("ctrl+#{String.fromCharCode(raw[0]+96)}")
+                
+            char = raw.toString 'utf8'
+            
+            if event = @keyEventForChar char
+                ⮐ event
+                
+            if raw[0] > 127 
+                raw[0] -= 128
+                ⮐ parseEsc raw.toString 'utf8'
+                
+        lf '---! raw' raw
         
+    keyEventForChar: char =>
+        
+        if char.length
+            key = char.toLowerCase()
+            return
+                key:    key
+                type:   'press'
+                combo:  key != char ? 'shift' : ''
+                char:   char
+                
+    keyEventForCombo: combo char='' =>
+    
+        key:    combo.split('+')[-1]
+        type:   'press'
+        combo:  combo
+        char:   char
+            
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
@@ -295,11 +337,8 @@ function TTIO extends events
             csi = data[2..].toString 'utf8'
         else if data[0] == 0x1b
             esc = data[1..].toString 'utf8'
-            lfc 'esc' esc
-        else
-            lfc 'dta' data
         
-        #lfc 'data' data[1..] csi esc
+        #lfc 'data' data[1..] csi esc
             
         if @pasteBuffer?
             

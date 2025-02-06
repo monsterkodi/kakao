@@ -1,5 +1,3 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
-
 var int
 
 import kxk from "../../kxk.js"
@@ -14,7 +12,7 @@ int = function (s)
 }
 class color
 {
-    static use256colors = _k_.in('256color',process.env.TERM)
+    static use256colors = false
 
     static rgb (c)
     {

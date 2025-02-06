@@ -430,7 +430,7 @@ class util
 
     static normalizeRanges (rngs)
     {
-        if (_k_.empty(rngs))
+        if (_k_.empty(rngs) || !(_k_.isArr(rngs)))
         {
             return []
         }
@@ -553,7 +553,7 @@ class util
     {
         var i, mrgd, s, tail
 
-        if (_k_.empty(rngs))
+        if (_k_.empty(rngs) || !(_k_.isArr(rngs)))
         {
             return []
         }

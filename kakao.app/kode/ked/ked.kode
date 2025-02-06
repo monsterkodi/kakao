@@ -175,7 +175,7 @@ function KED
     
     onKey: key event =>
         
-        # lc 'key' key
+        lf 'ked.onKey' key noon(event)
         
         switch key
             

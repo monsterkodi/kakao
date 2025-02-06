@@ -49,22 +49,23 @@ toHexString = num ->
     while num.length < 2 then num = "0#{num}"
     num
 
-for red in 0..5
-    for green in 0..5
-        for blue in 0..5
-            c = 16 + (red * 36) + (green * 6) + blue
-            r = if red   > 0 then red   * 40 + 55 else 0
-            g = if green > 0 then green * 40 + 55 else 0
-            b = if blue  > 0 then blue  * 40 + 55 else 0            
-            rgb = (toHexString(n) for n in [r, g, b]).join('')
-            STYLES["f#{c}"] = "##{rgb}"
-            STYLES["b#{c}"] = "##{rgb}"
-
-for gray in 0..23
-    c = gray+232
-    l = toHexString(gray*10 + 8)
-    STYLES["f#{c}"] = "##{l}#{l}#{l}"
-    STYLES["b#{c}"] = "##{l}#{l}#{l}"
+initStyles = ->
+    for red in 0..5
+        for green in 0..5
+            for blue in 0..5
+                c = 16 + (red * 36) + (green * 6) + blue
+                r = if red   > 0 then red   * 40 + 55 else 0
+                g = if green > 0 then green * 40 + 55 else 0
+                b = if blue  > 0 then blue  * 40 + 55 else 0            
+                rgb = (toHexString(n) for n in [r, g, b]).join('')
+                STYLES["f#{c}"] = "##{rgb}"
+                STYLES["b#{c}"] = "##{rgb}"
+    
+    for gray in 0..23
+        c = gray+232
+        l = toHexString(gray*10 + 8)
+        STYLES["f#{c}"] = "##{l}#{l}#{l}"
+        STYLES["b#{c}"] = "##{l}#{l}#{l}"
 
 #  0000000   000   000   0000000  000
 # 000   000  0000  000  000       000
@@ -103,7 +104,6 @@ class Ansi
         for red in 0..5
             for green in 0..5
                 for blue in 0..5
-                    c = 16 + (red * 36) + (green * 6) + blue
                     r = red   > 0 ? red   * 40 + 55 : 0
                     g = green > 0 ? green * 40 + 55 : 0
                     b = blue  > 0 ? blue  * 40 + 55 : 0            
@@ -128,48 +128,45 @@ class Ansi
         
     @bg256: c -> 
         
-        trueCol = kstr.hexColor c
-        minDist = Infinity
-        minIndx = Infinity
-        for palc,indx in Ansi.c256
-            dist = Ansi.colorDist trueCol kstr.hexColor(palc) 
-            if dist < minDist
-                minDist = dist
-                minIndx = indx
-        "\x1b[48;5;#{minIndx}m"
+        "\x1b[48;5;#{Ansi.idx256(c)}m"
+        
+    @idx256: c -> 
+    
+        [r g b] = kstr.hexColor c
+        
+        if r == g == b
+            return 232 + parseInt((g-8)/10)
+        
+        r = r > 0 ? parseInt((r-55)/40) : 0
+        g = g > 0 ? parseInt((g-55)/40) : 0
+        b = b > 0 ? parseInt((b-55)/40) : 0
+        16 + (r * 36) + (g * 6) + b
         
     @log256Colors: ->
         
         s = ''
         for i in 0...4
             for j in 0...4
-                s += "\x1b[48;5;#{i*4+j}m\x1b[38;5;#{i*4+j}m ● \x1b[48;5;0m" + Ansi.bg256(Ansi.c256[i*4+j]) + '  '
+                s += "\x1b[48;5;#{i*4+j}m\x1b[38;5;#{i*4+j}m ● \x1b[48;5;0m" + Ansi.bg256(Ansi.c256[i*4+j]) + Ansi.idx256(Ansi.c256[i*4+j]) + ' ' 
             s += '\x1b[49m\n'
                 
         for i in 0...36
             for j in 0...6
-                s += "\x1b[48;5;#{i*6+j+16}m\x1b[38;5;#{i*6+j+16}m ● \x1b[48;5;0m" + Ansi.bg256(Ansi.c256[i*6+j+16]) + '  '
+                s += "\x1b[48;5;#{i*6+j+16}m\x1b[38;5;#{i*6+j+16}m ● \x1b[48;5;0m" + Ansi.bg256(Ansi.c256[i*6+j+16]) + Ansi.idx256(Ansi.c256[i*6+j+16]) +  '  '
             s += '\x1b[49m\n'
             
         for i in 0...4
             for j in 0...6
-                s += "\x1b[48;5;#{i*6+j+16+6*36}m\x1b[38;5;#{i*6+j+16+6*36}m ● \x1b[48;5;0m"
+                s += "\x1b[48;5;#{i*6+j+16+6*36}m\x1b[38;5;#{i*6+j+16+6*36}m ● \x1b[48;5;0m" + Ansi.bg256(Ansi.c256[i*6+j+16+6*36]) + Ansi.idx256(Ansi.c256[i*6+j+16+6*36]) + '  '
             s += '\x1b[49m\n'
         log s
         
-        s = ''
-        i = 0
-        for r in 0...256
-            for b in 0...256
-                s += Ansi.bg256(kstr.hexColor([r g b])) + '      '
-                if (i % 36*3) == 0 
-                    s += '\x1b[49m\n'
-        log s
+        # s = ''
+        # for r in 0..255
+            # s += Ansi.bg256(kstr.hexColor([r r r])) + ' '
+        # log s+'\x1b[49m\x1b[39m◂\n'
+        log '???'
             
-    @colorDist: c1 c2 ->
-          
-          Math.pow(30 * (c1[0] - c2[0]) 2) + Math.pow(59 * (c1[1] - c2[1]) 2) + Math.pow(11 * (c1[2] - c2[2]) 2)
-        
     dissect: @input ->
         
         @diss  = []
@@ -315,8 +312,8 @@ class Ansi
         while (length = @input.length) > 0
             process(handler, i) for handler,i in tokens
             break if @input.length == length
-           
+            
+initStyles()           
 Ansi.c256 = Ansi.colors()
-
 export Ansi
 

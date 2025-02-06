@@ -480,11 +480,9 @@ editor = (function ()
                 return this.state.moveMainCursorInDirection('right',{keep:true})
 
             case 'home':
-            case 'ctrl+a':
                 return this.state.singleCursorAtIndentOrStartOfLine()
 
             case 'end':
-            case 'ctrl+e':
                 return this.state.singleCursorAtEndOfLine()
 
             case 'ctrl+h':
@@ -520,7 +518,8 @@ editor = (function ()
             case 'alt+d':
                 return this.state.delete('next','alt')
 
-            case 'ctrl+d':
+            case 'shift+ctrl+k':
+            case 'entf':
                 return this.state.delete('next')
 
             case 'ctrl+k':
@@ -556,9 +555,6 @@ editor = (function ()
             case 'ctrl+v':
                 return this.state.paste()
 
-            case 'alt+cmd+l':
-                return lfc('restart ked!')
-
             case 'alt+up':
                 return this.state.moveSelectionOrCursorLines('up')
 
@@ -572,49 +568,64 @@ editor = (function ()
                 return this.state.moveCursors('right',{jump:['ws','word','empty','punct']})
 
             case 'cmd+up':
+            case 'ctrl+up':
                 return this.state.expandCursors('up')
 
             case 'cmd+down':
+            case 'ctrl+down':
                 return this.state.expandCursors('down')
 
             case 'shift+cmd+up':
+            case 'shift+ctrl+up':
                 return this.state.contractCursors('up')
 
             case 'shift+cmd+down':
+            case 'shift+ctrl+down':
                 return this.state.contractCursors('down')
 
             case 'cmd+z':
+            case 'ctrl+z':
                 return this.state.undo()
 
-            case 'cmd+y':
             case 'shift+cmd+z':
+            case 'cmd+y':
+            case 'ctrl+y':
                 return this.state.redo()
 
             case 'cmd+a':
+            case 'ctrl+a':
                 return this.state.selectAllLines()
 
             case 'cmd+j':
+            case 'ctrl+j':
                 return this.state.joinLines()
 
             case 'cmd+l':
+            case 'ctrl+l':
                 return this.state.selectMoreLines()
 
             case 'shift+cmd+l':
+            case 'shift+ctrl+l':
                 return this.state.selectLessLines()
 
             case 'cmd+left':
+            case 'ctrl+left':
                 return this.state.moveCursorsToStartOfSelectionsOrIndentOrStartOfLines()
 
             case 'cmd+right':
+            case 'ctrl+right':
                 return this.state.moveCursorsToEndOfSelectionsOrLines()
 
             case 'cmd+g':
+            case 'ctrl+g':
                 return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()
 
             case 'cmd+d':
+            case 'ctrl+d':
                 return this.state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
 
             case 'cmd+e':
+            case 'ctrl+e':
                 return this.state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
 
             case 'alt+cmd+d':

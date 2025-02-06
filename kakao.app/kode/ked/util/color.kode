@@ -74,14 +74,14 @@
 use ../../kxk ▪ kstr 
 use ../../kxk/ansi
 
-# ansi.log256Colors()
-# process.exit 0
+#ansi.log256Colors()
+#process.exit 0
 
 int = s -> parseInt s
 
 class color
     
-    @use256colors: '256color' in process.env.TERM 
+    @use256colors: false #'256color' in process.env.TERM 
     
     @rgb:    c   -> kstr.hexColor c
     @hex:    c   -> kstr.hexColor c

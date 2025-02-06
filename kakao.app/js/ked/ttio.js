@@ -14,6 +14,8 @@ TTIO = (function ()
         this["onData"] = this["onData"].bind(this)
         this["emitMouseEvent"] = this["emitMouseEvent"].bind(this)
         this["parseMouse"] = this["parseMouse"].bind(this)
+        this["keyEventForCombo"] = this["keyEventForCombo"].bind(this)
+        this["keyEventForChar"] = this["keyEventForChar"].bind(this)
         this["parseRaw"] = this["parseRaw"].bind(this)
         this["parseEsc"] = this["parseEsc"].bind(this)
         this["parseCsi"] = this["parseCsi"].bind(this)
@@ -269,6 +271,24 @@ TTIO = (function ()
             case 'O':
                 return post.emit('blur')
 
+            case 'H':
+                return this.keyEventForCombo('home')
+
+            case 'F':
+                return this.keyEventForCombo('end')
+
+            case '3~':
+                return this.keyEventForCombo('entf')
+
+            case '5~':
+                return this.keyEventForCombo('pageup')
+
+            case '6~':
+                return this.keyEventForCombo('pagedown')
+
+            case 'Z':
+                return this.keyEventForCombo('shift+z','Z')
+
         }
 
         return lf('---- csi',csi)
@@ -276,30 +296,87 @@ TTIO = (function ()
 
     TTIO.prototype["parseEsc"] = function (esc)
     {
-        return lf('---- esc',esc)
+        var char, event
+
+        lf('---- esc',esc)
+        switch (esc)
+        {
+            case 'OP':
+                return this.keyEventForCombo('f1')
+
+            case 'OQ':
+                return this.keyEventForCombo('f2')
+
+            case 'OR':
+                return this.keyEventForCombo('f3')
+
+            case 'OS':
+                return this.keyEventForCombo('f4')
+
+        }
+
+        char = esc.toString('utf8')
+        if (event = this.keyEventForChar(char))
+        {
+            return event
+        }
     }
 
     TTIO.prototype["parseRaw"] = function (raw)
     {
-        var char, key
+        var char, event
 
-        lf('---- raw',Number(raw[0]).toString(16))
-        if (raw[0] > 127 && raw[1] === undefined)
+        lf('---- raw','0x' + Number(raw[0]).toString(16))
+        if (raw.length === 1)
         {
-            raw[0] -= 128
-            return parseEsc(raw.toString,'utf8')
+            switch (raw[0])
+            {
+                case 0x9:
+                    return this.keyEventForCombo('tab')
+
+                case 0xd:
+                    return this.keyEventForCombo('return','\n')
+
+                case 0x1b:
+                    return this.keyEventForCombo('esc')
+
+                case 0x7f:
+                    return this.keyEventForCombo('delete')
+
+            }
+
+            if ((0x1 <= raw[0] && raw[0] <= 0x1a))
+            {
+                return this.keyEventForCombo(`ctrl+${String.fromCharCode(raw[0] + 96)}`)
+            }
+            char = raw.toString('utf8')
+            if (event = this.keyEventForChar(char))
+            {
+                return event
+            }
+            if (raw[0] > 127)
+            {
+                raw[0] -= 128
+                return parseEsc(raw.toString,'utf8')
+            }
         }
-        char = raw.toString('utf8')
+        return lf('---! raw',raw)
+    }
+
+    TTIO.prototype["keyEventForChar"] = function (char)
+    {
+        var key
+
         if (char.length)
         {
-            lf('---- raw',char.length,raw,char,typeof(raw),char.codePointAt(0))
             key = char.toLowerCase()
             return {key:key,type:'press',combo:(key !== char ? 'shift' : ''),char:char}
         }
-        else
-        {
-            return lf('---- raw',raw.length,raw)
-        }
+    }
+
+    TTIO.prototype["keyEventForCombo"] = function (combo, char = '')
+    {
+        return {key:combo.split('+').slice(-1)[0],type:'press',combo:combo,char:char}
     }
 
     TTIO.prototype["parseMouse"] = function (csi)
@@ -402,11 +479,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _262_23_
+        var diff, _304_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_262_23_=this.lastClick) != null ? _262_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_304_23_=this.lastClick) != null ? _304_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -434,7 +511,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _304_23_
+        var csi, esc, event, text, _343_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
@@ -443,11 +520,6 @@ TTIO = (function ()
         else if (data[0] === 0x1b)
         {
             esc = data.slice(1).toString('utf8')
-            lfc('esc',esc)
-        }
-        else
-        {
-            lfc('dta',data)
         }
         if ((this.pasteBuffer != null))
         {

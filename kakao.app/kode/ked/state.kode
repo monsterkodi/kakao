@@ -10,7 +10,7 @@ use ../kxk ◆ immutable kstr
 use ./act ◆ del insert select join indent multi
 use ◆ syntax 
 use ./util ◆ util
-use child_process
+use child_process os
 
 function state
     
@@ -181,10 +181,24 @@ function state
     #  0000000   0000000   000           000     
     
     copy: =>
+    
+        lf 'copy' os.platform()
 
-        proc = child_process.spawn 'pbcopy'
-        proc.stdin.write @textForSelectionOrCursorLines()
-        proc.stdin.end()
+        switch os.platform()
+            
+            'darwin'
+                
+                proc = child_process.spawn 'pbcopy'
+                proc.stdin.end @textForSelectionOrCursorLines()
+                
+            'linux'
+            'win32'
+                
+                lf noon(@textForSelectionOrCursorLines())
+                proc = child_process.spawn "#{◆dir}/../../bin/utf8clip.exe"
+                proc.stdin.write @textForSelectionOrCursorLines()
+                proc.stdin.end()
+        
             
     # 00000000    0000000    0000000  000000000  00000000  
     # 000   000  000   000  000          000     000       
@@ -192,7 +206,22 @@ function state
     # 000        000   000       000     000     000       
     # 000        000   000  0000000      000     00000000  
     
-    paste: => @insert child_process.execSync('pbpaste').toString("utf8")
+    paste: => 
+    
+        lf 'paste' os.platform()
+    
+        switch os.platform() 
+            
+            'darwin'
+                
+                @insert child_process.execSync('pbpaste').toString("utf8")
+                
+            'linux'
+            'win32'
+            
+                text = child_process.execSync("#{◆dir}/../../bin/utf8clip.exe").toString("utf8")
+                lf noon(text)
+                @insert text
                 
     #  0000000   0000000  00000000    0000000   000      000      
     # 000       000       000   000  000   000  000      000      

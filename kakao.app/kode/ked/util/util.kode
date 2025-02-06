@@ -223,7 +223,7 @@ class util
                 
     @normalizeRanges: rngs ->
         
-        ⮐ [] if empty rngs
+        ⮐ [] if empty rngs or not rngs is arr
         
         rngs = rngs.map (a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a
         rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
@@ -268,7 +268,7 @@ class util
     
     @mergeLineRanges: lines rngs ->
         
-        ⮐ [] if empty rngs
+        ⮐ [] if empty rngs or not rngs is arr
         
         rngs = util.normalizeRanges rngs
         
