@@ -260,23 +260,7 @@ export default {select:function (from, to)
     return this
 },selectCursorLines:function (append = false)
 {
-    var cursors, lines, selections, y
-
-    selections = []
-    cursors = this.allCursors()
-    lines = this.allLines()
-    var list = _k_.list(util.lineIndicesForPositions(cursors))
-    for (var _e_ = 0; _e_ < list.length; _e_++)
-    {
-        y = list[_e_]
-        selections.push([0,y,lines[y].length,y])
-    }
-    if (append && !_k_.empty(selections))
-    {
-        selections.slice(-1)[0][2] = 0
-        selections.slice(-1)[0][3] += 1
-    }
-    return this.setSelections(selections)
+    return this.setSelections(util.lineRangesForPositions,this.allLines(),this.allCursors(),append)
 },selectAllLines:function ()
 {
     return this.setSelections([[0,0,this.s.lines[this.s.lines.length - 1].length,this.s.lines.length - 1]])
@@ -287,7 +271,7 @@ export default {select:function (from, to)
     cursors = this.allCursors()
     selections = this.allSelections()
     lines = this.allLines()
-    var _f_ = util.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
+    var _e_ = util.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _e_[0]; selections = _e_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors,-1)
@@ -298,13 +282,19 @@ export default {select:function (from, to)
     cursors = this.allCursors()
     selections = this.allSelections()
     lines = this.allLines()
-    var _10_ = util.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _10_[0]; selections = _10_[1]
+    var _f_ = util.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors,-1)
 },textForSelection:function ()
 {
     return util.textForLineRanges(this.allLines(),this.allSelections())
+},selectionsOrCursorLineRanges:function ()
+{
+    return (!_k_.empty(this.s.selections) ? this.allSelections() : util.lineRangesForPositions(this.allLines(),this.allCursors(),true))
+},textForSelectionOrCursorLines:function ()
+{
+    return util.textForLineRanges(this.allLines(),this.selectionsOrCursorLineRanges())
 },isSingleLineSelected:function ()
 {
     return this.s.selections.length === 1 && this.s.selections[0][1] === this.s.selections[0][3]
@@ -313,9 +303,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _11_ = 0; _11_ < list.length; _11_++)
+    for (var _10_ = 0; _10_ < list.length; _10_++)
     {
-        selection = list[_11_]
+        selection = list[_10_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue
@@ -331,9 +321,9 @@ export default {select:function (from, to)
     var highlight
 
     var list = _k_.list(this.s.highlights)
-    for (var _12_ = 0; _12_ < list.length; _12_++)
+    for (var _11_ = 0; _11_ < list.length; _11_++)
     {
-        highlight = list[_12_]
+        highlight = list[_11_]
         if (highlight[1] === y)
         {
             return true
@@ -345,9 +335,9 @@ export default {select:function (from, to)
     var selection
 
     var list = _k_.list(this.s.selections)
-    for (var _13_ = 0; _13_ < list.length; _13_++)
+    for (var _12_ = 0; _12_ < list.length; _12_++)
     {
-        selection = list[_13_]
+        selection = list[_12_]
         if (selection[3] === y && selection[2] === 0)
         {
             continue

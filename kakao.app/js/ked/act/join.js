@@ -10,10 +10,11 @@ export default {joinLines:function ()
     return this.deleteRanges(rngs,this.allCursors())
 },moveSelectionOrCursorLines:function (dir)
 {
-    var cursors, lines, selections
+    var cursors, lines, rngs, selections
 
     lf('moveSelectionOrCursorLines:',dir)
     selections = this.allSelections()
     cursors = this.allCursors()
-    return lines = this.allLines()
+    lines = this.allLines()
+    return rngs = selectionsOrCursorLineRanges()
 }}

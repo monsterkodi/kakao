@@ -28,10 +28,12 @@ export
     moveSelectionOrCursorLines: dir ->
         
         lf 'moveSelectionOrCursorLines:' dir
-        
+
         selections = @allSelections()
         cursors = @allCursors()
         lines = @allLines()
+        
+        rngs = selectionsOrCursorLineRanges()
         
         
         

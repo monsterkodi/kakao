@@ -182,15 +182,8 @@ function state
     
     copy: =>
 
-        if empty @s.selections
-            @selectCursorLines true
-            if valid @s.selections
-                @copy()
-                @deselect()
-            ⮐ 
-            
         proc = child_process.spawn 'pbcopy'
-        proc.stdin.write @textForSelection()
+        proc.stdin.write @textForSelectionOrCursorLines()
         proc.stdin.end()
             
     # 00000000    0000000    0000000  000000000  00000000  

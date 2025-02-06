@@ -233,19 +233,8 @@ export
         @
         
     selectCursorLines: append=false ->
-        
-        selections = []
-        cursors    = @allCursors()
-        lines      = @allLines()
-        
-        for y in util.lineIndicesForPositions cursors
-            selections.push [0 y lines[y].length y]
-            
-        if append and valid selections
-            selections[-1][2]  = 0 
-            selections[-1][3] += 1
-            
-        @setSelections selections
+                    
+        @setSelections util.lineRangesForPositions @allLines() @allCursors() append
         
     selectAllLines: ->
         
@@ -292,6 +281,12 @@ export
     #    000     00000000  000   000     000     
     
     textForSelection: -> util.textForLineRanges @allLines() @allSelections()
+    
+    selectionsOrCursorLineRanges: -> valid @s.selections ? @allSelections() : util.lineRangesForPositions(@allLines() @allCursors() true)
+    
+    textForSelectionOrCursorLines: -> 
+        
+        util.textForLineRanges @allLines() @selectionsOrCursorLineRanges()
 
     isSingleLineSelected: ->
         

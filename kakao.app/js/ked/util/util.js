@@ -687,11 +687,23 @@ class util
 
     static lineRangeAtPos (lines, pos)
     {
-        var x, y
+        return [0,pos[1],lines[pos[1]].length,pos[1]]
+    }
 
-        var _a_ = pos; x = _a_[0]; y = _a_[1]
+    static lineRangesForPositions (lines, posl, append = false)
+    {
+        var rngs
 
-        return [0,y,lines[y].length,y]
+        rngs = util.lineIndicesForPositions(posl).map(function (y)
+        {
+            return [0,y,lines[y].length,y]
+        })
+        if (!_k_.empty(rngs) && append)
+        {
+            rngs.slice(-1)[0][2] = 0
+            rngs.slice(-1)[0][3] += 1
+        }
+        return rngs
     }
 
     static lineIndentAtPos (lines, pos)

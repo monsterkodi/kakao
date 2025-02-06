@@ -254,18 +254,8 @@ state = (function ()
     {
         var proc
 
-        if (_k_.empty(this.s.selections))
-        {
-            this.selectCursorLines(true)
-            if (!_k_.empty(this.s.selections))
-            {
-                this.copy()
-                this.deselect()
-            }
-            return
-        }
         proc = child_process.spawn('pbcopy')
-        proc.stdin.write(this.textForSelection())
+        proc.stdin.write(this.textForSelectionOrCursorLines())
         return proc.stdin.end()
     }
 
