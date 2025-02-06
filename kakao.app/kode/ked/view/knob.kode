@@ -1,0 +1,55 @@
+###
+000   000  000   000   0000000   0000000  
+000  000   0000  000  000   000  000   000
+0000000    000 0 000  000   000  0000000  
+000  000   000  0000  000   000  000   000
+000   000  000   000   0000000   0000000  
+###
+
+use ../../kxk ◆ post
+use .. ◆ theme
+
+function knob
+
+    @: @cells @name ->
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: type sx sy event =>
+        
+        [col row] = @cells.posForScreen sx sy
+        
+        switch type
+            
+            'press'
+            
+                if row == 0
+                    @doDrag = true
+                    ⮐ true
+                    
+            'drag'
+            
+                if @doDrag and row
+                    post.emit 'view.size' @name @cells.cols @cells.rows - row 
+                    ⮐ true
+                
+            'release'
+            
+                if @doDrag
+                    delete @doDrag
+                    ⮐ true
+            
+            'move'
+            
+                @hover = row == 0
+                
+    draw: =>
+        
+        fg = @hover ? theme.scroll_knob : theme.konsole
+        @cells.set parseInt(@cells.cols/2) 0 '●' fg
+
+export knob

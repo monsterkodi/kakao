@@ -5,18 +5,19 @@ var konsole
 import editor from "./editor.js"
 import theme from "./theme.js"
 
+import knob from "./view/knob.js"
+
 
 konsole = (function ()
 {
     _k_.extend(konsole, editor)
-    function konsole (screen)
+    function konsole (screen, name)
     {
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
-        this["onMouse"] = this["onMouse"].bind(this)
         this["postDraw"] = this["postDraw"].bind(this)
-        this["toggle"] = this["toggle"].bind(this)
-        konsole.__super__.constructor.call(this,screen)
+        konsole.__super__.constructor.call(this,screen,name)
+        this.knob = new knob(this.cells,this.name)
         global.lc = (function (...args)
         {
             var text
@@ -30,53 +31,9 @@ konsole = (function ()
         }).bind(this)
     }
 
-    konsole.prototype["toggle"] = function ()
-    {
-        return this.emit('konsoleRows',(this.cells.rows ? 0 : 10))
-    }
-
     konsole.prototype["postDraw"] = function ()
     {
-        var fg
-
-        fg = (this.hover ? theme.scroll_knob : theme.konsole)
-        return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
-    }
-
-    konsole.prototype["onMouse"] = function (type, sx, sy)
-    {
-        var col, row
-
-        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
-
-        switch (type)
-        {
-            case 'press':
-                if (row === 0)
-                {
-                    this.doDrag = true
-                    return true
-                }
-                break
-            case 'drag':
-                if (this.doDrag && row)
-                {
-                    this.emit('konsoleRows',this.cells.rows - row)
-                    return true
-                }
-                break
-            case 'release':
-                if (this.doDrag)
-                {
-                    delete this.doDrag
-                    return true
-                }
-                break
-            case 'move':
-                return this.hover = row === 0
-
-        }
-
+        return this.knob.draw()
     }
 
     konsole.prototype["onWheel"] = function (col, row, dir, mods)

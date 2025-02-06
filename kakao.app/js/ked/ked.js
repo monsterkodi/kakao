@@ -1,6 +1,6 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}};_k_.b4=_k_.k.F256(_k_.k.b(4));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.b6=_k_.k.F256(_k_.k.b(6));_k_.b7=_k_.k.F256(_k_.k.b(7));_k_.b8=_k_.k.F256(_k_.k.b(8))
 
-var args, KED
+var KED
 
 import ttio from "./ttio.js"
 import gutter from "./gutter.js"
@@ -19,19 +19,21 @@ import kxk from "../kxk.js"
 let karg = kxk.karg
 let kstr = kxk.kstr
 let slash = kxk.slash
+let post = kxk.post
 
 import nfs from "../kxk/nfs.js"
 
-args = karg(`ked [file]
-    options                      **
-    version    log version       = false`)
+import child_process from "child_process"
+
 
 KED = (function ()
 {
     function KED ()
     {
+        var args, h
+
         this["redraw"] = this["redraw"].bind(this)
-        this["onKonsoleRows"] = this["onKonsoleRows"].bind(this)
+        this["onViewSize"] = this["onViewSize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onPaste"] = this["onPaste"].bind(this)
@@ -41,18 +43,26 @@ KED = (function ()
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this.version = '0.0.2'
-        if (args.version)
-        {
-            console.log(this.version)
-            process.exit(0)
-        }
+        h = ''
+        h += _k_.b8("    ███   ███  ████████  ███████  \n")
+        h += _k_.b7("    ███  ███   ███       ███   ███\n")
+        h += _k_.b6("    ███████    ███████   ███   ███\n")
+        h += _k_.b5("    ███  ███   ███       ███   ███\n")
+        h += _k_.b4("    ███   ███  ████████  ███████  \n")
+        h = '\n\n' + h + '\n'
+        args = karg(`
+ked [file]
+    options                      **
+    
+    version    log version       = false
+    `,{preHelp:h,version:this.version})
         process.on('uncaughtException',this.onException)
-        this.konsoleRows = 0
-        this.t = new ttio
+        this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
+        this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _36_64_
+            var _45_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -61,15 +71,15 @@ KED = (function ()
             }
         }).bind(this)
         this.screen = new screen(this.t)
-        this.editor = new editor(this.screen)
-        this.konsole = new konsole(this.screen)
+        this.editor = new editor(this.screen,'editor')
+        this.konsole = new konsole(this.screen,'konsole')
         this.gutter = new gutter(this.screen,this.editor.state)
         this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
         lfc('▸                                         ked',this.version)
         this.editor.on('redraw',this.redraw)
-        this.konsole.on('konsoleRows',this.onKonsoleRows)
-        this.mouseHandlers = [this.scroll,this.konsole,this.editor]
+        post.on('view.size',this.onViewSize)
+        this.mouseHandlers = [this.scroll,this.konsole.knob,this.editor]
         this.wheelHandlers = [this.konsole,this.editor]
         this.keyHandlers = [this.konsole,this.editor]
         this.t.on('key',this.onKey)
@@ -92,21 +102,19 @@ KED = (function ()
 
     KED["run"] = function ()
     {
-        var ked
-
-        return ked = new KED()
+        return new KED()
     }
 
     KED.prototype["onException"] = function (err)
     {
-        this.t.quit()
-        console.log(_k_.noon((this.editor.state.s)))
+        var _89_10_
+
+        ;(this.t != null ? this.t.quit() : undefined)
         console.error(err)
-        this.logfile.close(function ()
+        return this.logfile.close(function ()
         {
             return process.exit(1)
         })
-        return process.exitCode = 1
     }
 
     KED.prototype["reloadFile"] = function ()
@@ -224,37 +232,37 @@ KED = (function ()
         return this.redraw()
     }
 
-    KED.prototype["onKonsoleRows"] = function (konsoleRows)
+    KED.prototype["onViewSize"] = function (name, x, y)
     {
-        this.konsoleRows = konsoleRows
+        return this.viewSizes[name] = [x,y]
     }
 
     KED.prototype["redraw"] = function ()
     {
-        var c, g, h, s, start, w
+        var g, h, k, s, start, w
 
         start = process.hrtime()
         w = this.t.cols()
         h = this.t.rows()
         s = 1
-        c = this.konsoleRows
+        k = this.viewSizes.konsole[1]
         g = this.editor.state.gutterWidth()
         this.status.gutter = g
         if (false)
         {
-            this.scroll.cells.init(w - s,0,s,h - c - 1)
-            this.gutter.cells.init(0,0,g,h - c - 1)
+            this.scroll.cells.init(w - s,0,s,h - k - 1)
+            this.gutter.cells.init(0,0,g,h - k - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.init(g,0,w - g - s,h - c - 1)
-            this.konsole.init(0,h - 1 - c,w - g - s,c)
+            this.editor.init(g,0,w - g - s,h - k - 1)
+            this.konsole.init(0,h - k - 1,w - g - s,k)
         }
         else
         {
-            this.scroll.cells.init(0,0,s,h - c - 1)
-            this.gutter.cells.init(s,0,g,h - c - 1)
+            this.scroll.cells.init(0,0,s,h - k - 1)
+            this.gutter.cells.init(s,0,g,h - k - 1)
             this.status.cells.init(0,h - 1,w,1)
-            this.editor.init(g + s,0,w - g - s,h - c - 1)
-            this.konsole.init(0,h - 1 - c,w - g - s,c)
+            this.editor.init(g + s,0,w - g - s,h - k - 1)
+            this.konsole.init(0,h - k - 1,w - g - s,k)
         }
         this.screen.init()
         this.gutter.draw()
@@ -270,3 +278,8 @@ KED = (function ()
 })()
 
 export default KED.run;
+if (((globalThis.process != null ? globalThis.process.argv : undefined) != null) && import.meta.filename === process.argv[1])
+{
+    console.log('◆main')
+    KED.run()
+}

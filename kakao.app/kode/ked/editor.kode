@@ -7,14 +7,15 @@
 ###
 
 use ../kxk ◆ events matchr kstr
-use ◆ state cells theme
+use ◆ state theme
 use ./util ◆ util color
+use ./view ◆ view
 
-function editor extends events
+function editor extends view
 
-    @: @screen ->
+    @: screen name ->
         
-        @cells = new cells @screen
+        super screen name
         @state = new state @cells
         
     init: x y w h => 
@@ -306,6 +307,8 @@ function editor extends events
     
     onKey: key event =>
         
+        lf 'key' key
+        
         if @state.s.cursors.length == 1
             
             switch key
@@ -322,6 +325,12 @@ function editor extends events
         
         switch key
 
+            'up'                        ➜ ⮐ @state.moveCursors 'up'   
+            'down'                      ➜ ⮐ @state.moveCursors 'down' 
+            'left'                      ➜ ⮐ @state.moveCursors 'left' 
+            'right'                     ➜ ⮐ @state.moveCursors 'right'
+            
+            
             'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
             'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
             'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
@@ -356,8 +365,9 @@ function editor extends events
             'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @state.copy()        
             'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @state.paste()
             
-            'alt+up'                    ➜ ⮐ @state.moveSelectedOrCursorLines 'up'
-            'alt+down'                  ➜ ⮐ @state.moveSelectedOrCursorLines 'down'
+            'alt+cmd+l'                 ➜ ⮐ lfc 'restart ked!'
+            'alt+up'                    ➜ ⮐ @state.moveSelectionOrCursorLines 'up'
+            'alt+down'                  ➜ ⮐ @state.moveSelectionOrCursorLines 'down'
             'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
             'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
             

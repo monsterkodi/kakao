@@ -51,10 +51,14 @@ error = (msg) ->
 ###
 
 # options: 
-#     ignoreArgs:  number of leading process.argv items to ignore (default=2)
-#     argv:        list of string arguments to use instead of process.argv
-#     dontExit:    don't exit process on -V/--version or -h/--help  (returns undefined instead)
-#     returnLog:   help/version output is returned instead of logged (implies dontExit)
+#     ignoreArgs:       number of leading process.argv items to ignore (default=2)
+#     argv:             list of string arguments to use instead of process.argv
+#     dontExit:         don't exit process on -V/--version or -h/--help  (returns undefined instead)
+#     returnLog:        help/version output is returned instead of logged (implies dontExit)
+#     preHelp:          text that gets printed before the help
+#     postHelp:         text that gets printed after the help
+#     preVersion:       text that gets printed before the version
+#     version:          text that gets printed when version is requested
 
 parse = (config, options={}) ->
         
@@ -191,8 +195,12 @@ parse = (config, options={}) ->
     000   000  000       000      000      
     000   000  00000000  0000000  000      
     ###
+    helpText = ''
     
-    helpText  = "\n#{w5 'usage:'}  #{bold name} "
+    if valid options.preHelp
+        helpText += options.preHelp
+    
+    helpText += "\n#{w5 'usage:'}  #{bold name} "
     helpText += "#{w5('[ ')}#{bold(y5(param))}#{paramList and w5(' ... ]') or w5(']')}"
     helpText += '\n'
     if cfg[param]?['?']
@@ -203,25 +211,28 @@ parse = (config, options={}) ->
     if optionsText.length
         helpText += w5 "\noptions:\n"
         helpText += optionsText
-        helpText += '\n\n'
+        helpText += '\n'
     
     short2key['h'] ?= 'help'
     long2key['help'] ?= 'help'
     
-    if config.version?
-        version = config.version
+    if options.version? or config.version?
         delete config.version
         long2key['version'] ?= 'version' 
         short2key['V'] ?= 'version'
         
     delete config[name]
     if Object.keys(config).length # append remaining keys as help text
+        helpText += '\n'
         helpText += noon.stringify config, 
             maxalign: 16
             colors: 
                 key:     gray
                 string:  white
         helpText += '\n'
+        
+    if valid options.postHelp
+        helpText += options.postHelp
         
     ###
     00000000   00000000   0000000  000   000  000      000000000
@@ -240,24 +251,23 @@ parse = (config, options={}) ->
         
     expandedArgs = expand argv
 
-    addParam = (arg) ->
+    addParam = arg ->
         if paramList
             result[param].push arg
         else
             result[param] = arg
             
-    addIgnored = (arg) ->
+    addIgnored = arg ->
         if not result['__ignored'] then result['__ignored'] = []
         result['__ignored'].push arg
         
-    addParamOrIgnore = (arg) ->
+    addParamOrIgnore = arg ->
         if param
             addParam arg
         else
             addIgnored arg
-                
+
     while arg = expandedArgs.shift()
-        
         org = arg
         if arg.substr(0,2) == '--'
             if not arg = long2key[arg.substr 2]
@@ -272,13 +282,25 @@ parse = (config, options={}) ->
             continue
             
         if arg == 'help'
-            if options.returnLog then return helpText
+            
+            ⮐ helpText if options.returnLog
+            
             log helpText
+            
             ⮐ if options.dontExit
             process.exit 0
-        else if arg == 'version' and version?
-            if options.returnLog then return version
-            log version
+            
+        else if arg == 'version' and options.version?
+            
+            ⮐ version if options.returnLog 
+            
+            v = ''
+            v += options.preVersion if valid options.preVersion
+            v += options.version
+            v += options.postVersion if valid options.postVersion
+            
+            log v
+            
             ⮐ if options.dontExit
             process.exit 0
             

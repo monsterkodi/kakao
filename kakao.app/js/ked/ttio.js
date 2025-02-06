@@ -3,6 +3,7 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 var TTIO
 
 import events from "../kxk/events.js"
+import post from "../kxk/post.js"
 
 
 TTIO = (function ()
@@ -27,16 +28,17 @@ TTIO = (function ()
         this["clear"] = this["clear"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["write"] = this["write"].bind(this)
-        this.store()
         this.hideCursor()
         if (process.stdin.isTTY)
         {
             process.stdin.setRawMode(true)
         }
+        lf('ttio ▸')
         this.write('\x1b[?1000h')
         this.write('\x1b[?1002h')
         this.write('\x1b[?1003h')
         this.write('\x1b[?1004h')
+        this.write('\x1b[?1006h')
         this.write('\x1b[?1049h')
         this.write('\x1b[?2004h')
         this.write('\x1b[>1s')
@@ -54,11 +56,14 @@ TTIO = (function ()
 
     TTIO.prototype["quit"] = function ()
     {
+        process.stdout.removeListener('resize',this.onResize)
+        process.stdin.removeListener('data',this.onData)
         this.clear()
         this.write('\x1b[>0s')
         this.write('\x1b[<u')
         this.write('\x1b[?1049l')
         this.showCursor()
+        lf('ttio ◂◂◂')
         return this.restore()
     }
 
@@ -146,7 +151,11 @@ TTIO = (function ()
         if (csi.slice(-1)[0] === 'u')
         {
             code = parseInt(csi)
-            lc('code',code,csi)
+            if (_k_.empty(code))
+            {
+                return
+            }
+            lfc('csi:',csi)
             key = ((function ()
             {
                 switch (code)
@@ -218,7 +227,11 @@ TTIO = (function ()
             }
             if (splt.length > 2)
             {
-                char = String.fromCodePoint(parseInt(splt[2]))
+                code = parseInt(splt[2])
+                if (!_k_.empty(code))
+                {
+                    char = String.fromCodePoint(code)
+                }
             }
             mbit = parseInt(splt[1]) - 1
             if (mbit & 0x1)
@@ -248,6 +261,16 @@ TTIO = (function ()
 
     TTIO.prototype["parseCsi"] = function (csi)
     {
+        switch (csi)
+        {
+            case 'I':
+                return post.emit('focus')
+
+            case 'O':
+                return post.emit('blur')
+
+        }
+
         return lf('---- csi',csi)
     }
 
@@ -271,7 +294,7 @@ TTIO = (function ()
         {
             lf('---- raw',char.length,raw,char,typeof(raw),char.codePointAt(0))
             key = char.toLowerCase()
-            return {key:key,combo:(key !== char ? 'shift' : ''),type:type,char:char}
+            return {key:key,type:'press',combo:(key !== char ? 'shift' : ''),char:char}
         }
         else
         {
@@ -379,11 +402,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _248_23_
+        var diff, _262_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_248_23_=this.lastClick) != null ? _248_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_262_23_=this.lastClick) != null ? _262_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -411,9 +434,8 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, esc, event, text, _290_23_
+        var csi, esc, event, text, _304_23_
 
-        lc('dl',data.length)
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
             csi = data.slice(2).toString('utf8')
@@ -427,7 +449,6 @@ TTIO = (function ()
         {
             lfc('dta',data)
         }
-        lfc('data',data.slice(1),csi,esc)
         if ((this.pasteBuffer != null))
         {
             this.pasteBuffer += data.toString('utf8')

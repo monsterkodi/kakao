@@ -25,7 +25,14 @@ export
         
         @deleteRanges rngs @allCursors()
         
-    moveSelectedOrCursorLines: dir ->
+    moveSelectionOrCursorLines: dir ->
+        
+        lf 'moveSelectionOrCursorLines:' dir
+        
+        selections = @allSelections()
+        cursors = @allCursors()
+        lines = @allLines()
+        
         
         
         

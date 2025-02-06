@@ -8,37 +8,46 @@
 
 use ◆ ttio gutter editor status screen cells state scroll konsole
 use ./util ◆ logfile util
-use ../kxk ▪ karg kstr slash
+use ../kxk ▪ karg kstr slash post
 use ../kxk/nfs
-
-args = karg """
-    ked [file]
-        options                      **
-        version    log version       = false
-    """
+use child_process
 
 function KED
 
     @: ->
         
         @version = '0.0.2'
-
-        if args.version ➜ log @version; process.exit 0
+        h = ''
+        h += b8 "    ███   ███  ████████  ███████  \n"
+        h += b7 "    ███  ███   ███       ███   ███\n"
+        h += b6 "    ███████    ███████   ███   ███\n"
+        h += b5 "    ███  ███   ███       ███   ███\n"
+        h += b4 "    ███   ███  ████████  ███████  \n"
+        h = '\n\n' + h + '\n'
+        
+        args = karg """
             
+            ked [file]
+                options                      **
+                
+                version    log version       = false
+                
+            """ preHelp:h version:@version
+        
         process.on 'uncaughtException' @onException
             
-        @konsoleRows = 0
-                    
-        @t = new ttio
+        @viewSizes = konsole: [0 0]
         
         @logfile = new logfile
+                    
+        @t = new ttio
         
         global.lfc = args... => lf.apply null args; if global.lc? ➜ global.lc.apply null args 
                 
         @screen  = new screen @t
         
-        @editor  = new editor   @screen
-        @konsole = new konsole  @screen
+        @editor  = new editor   @screen 'editor'
+        @konsole = new konsole  @screen 'konsole'
         @gutter  = new gutter   @screen @editor.state
         @scroll  = new scroll   @screen @editor.state
         @status  = new status   @screen @editor.state
@@ -46,9 +55,10 @@ function KED
         lfc '▸                                         ked' @version
         
         @editor.on  'redraw'      @redraw
-        @konsole.on 'konsoleRows' @onKonsoleRows
         
-        @mouseHandlers = [@scroll @konsole @editor]
+        post.on     'view.size'   @onViewSize
+        
+        @mouseHandlers = [@scroll @konsole.knob @editor]
         @wheelHandlers = [        @konsole @editor]
         @keyHandlers   = [        @konsole @editor]
         
@@ -72,17 +82,15 @@ function KED
     # 000   000  000   000  000  0000  
     # 000   000   0000000   000   000  
     
-    @run: -> ked = new KED()
-            
+    @run: -> new KED()
+                
     onException: err =>
 
-        @t.quit()
-        log noon(@editor.state.s)
+        @t?.quit()
         error err
-        @logfile.close ->
-            process.exit 1
-        process.exitCode = 1
-    
+        @logfile.close -> process.exit 1
+        # process.exitCode = 1
+            
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
     # 000      000   000  000000000  000   000  
@@ -187,7 +195,7 @@ function KED
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    onKonsoleRows: @konsoleRows =>
+    onViewSize: name x y => @viewSizes[name] = [x y]
     
     redraw: =>
         
@@ -197,22 +205,22 @@ function KED
         h = @t.rows()
         
         s = 1
-        c = @konsoleRows
+        k = @viewSizes.konsole[1]
         g = @editor.state.gutterWidth()
         @status.gutter = g
         
         if false # scrollbar on right side
-            @scroll.cells.init w-s 0     s     h-c-1
-            @gutter.cells.init 0   0     g     h-c-1
+            @scroll.cells.init w-s 0     s     h-k-1
+            @gutter.cells.init 0   0     g     h-k-1
             @status.cells.init 0   h-1   w     1
-            @editor.init       g   0     w-g-s h-c-1
-            @konsole.init      0   h-1-c w-g-s c
+            @editor.init       g   0     w-g-s h-k-1
+            @konsole.init      0   h-k-1 w-g-s k
         else
-            @scroll.cells.init 0   0     s     h-c-1 
-            @gutter.cells.init s   0     g     h-c-1
+            @scroll.cells.init 0   0     s     h-k-1 
+            @gutter.cells.init s   0     g     h-k-1
             @status.cells.init 0   h-1   w     1
-            @editor.init       g+s 0     w-g-s h-c-1    
-            @konsole.init      0   h-1-c w-g-s c
+            @editor.init       g+s 0     w-g-s h-k-1    
+            @konsole.init      0   h-k-1 w-g-s k
                         
         @screen.init()
         @gutter.draw()
@@ -225,4 +233,8 @@ function KED
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
 
 export KED.run
+
+◆main
+    log '◆main'
+    KED.run()
 

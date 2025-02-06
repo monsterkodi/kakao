@@ -7,20 +7,19 @@ import matchr from "../kxk/matchr.js"
 import kstr from "../kxk/kstr.js"
 
 import state from "./state.js"
-import cells from "./cells.js"
 import theme from "./theme.js"
 
 import util from "./util/util.js"
 import color from "./util/color.js"
 
+import view from "./view/view.js"
+
 
 editor = (function ()
 {
-    _k_.extend(editor, events)
-    function editor (screen)
+    _k_.extend(editor, view)
+    function editor (screen, name)
     {
-        this.screen = screen
-    
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["isCursorVisible"] = this["isCursorVisible"].bind(this)
@@ -30,9 +29,8 @@ editor = (function ()
         this["postDraw"] = this["postDraw"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["init"] = this["init"].bind(this)
-        this.cells = new cells(this.screen)
+        editor.__super__.constructor.call(this,screen,name)
         this.state = new state(this.cells)
-        return editor.__super__.constructor.apply(this, arguments)
     }
 
     editor.prototype["init"] = function (x, y, w, h)
@@ -423,6 +421,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
+        lf('key',key)
         if (this.state.s.cursors.length === 1)
         {
             switch (key)
@@ -456,6 +455,18 @@ editor = (function ()
         }
         switch (key)
         {
+            case 'up':
+                return this.state.moveCursors('up')
+
+            case 'down':
+                return this.state.moveCursors('down')
+
+            case 'left':
+                return this.state.moveCursors('left')
+
+            case 'right':
+                return this.state.moveCursors('right')
+
             case 'shift+alt+up':
                 return this.state.moveMainCursorInDirection('up',{keep:true})
 
@@ -545,11 +556,14 @@ editor = (function ()
             case 'ctrl+v':
                 return this.state.paste()
 
+            case 'alt+cmd+l':
+                return lfc('restart ked!')
+
             case 'alt+up':
-                return this.state.moveSelectedOrCursorLines('up')
+                return this.state.moveSelectionOrCursorLines('up')
 
             case 'alt+down':
-                return this.state.moveSelectedOrCursorLines('down')
+                return this.state.moveSelectionOrCursorLines('down')
 
             case 'alt+left':
                 return this.state.moveCursors('left',{jump:['ws','word','empty','punct']})

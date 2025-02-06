@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, each_r: function (o) {return Array.isArray(o) ? [] : typeof o == 'string' ? o.split('') : {}}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}};_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.m5=_k_.k.F256(_k_.k.m(5));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w5=_k_.k.F256(_k_.k.w(5))
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, each_r: function (o) {return Array.isArray(o) ? [] : typeof o == 'string' ? o.split('') : {}}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}};_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.g5=_k_.k.F256(_k_.k.g(5));_k_.m5=_k_.k.F256(_k_.k.m(5));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w5=_k_.k.F256(_k_.k.w(5))
 
 var error, expand, parse
 
@@ -41,7 +41,7 @@ error = function (msg)
 
 parse = function (config, options = {})
 {
-    var addIgnored, addParam, addParamOrIgnore, arg, argv, cfg, df, expandedArgs, help, helpText, k, lng, lngHelp, long, long2key, maxHelp, maxLong, name, optionsText, org, param, paramList, result, short, short2key, sht, shtHelp, v, version, _208_19_, _209_21_, _211_21_, _214_28_, _215_23_, _234_23_
+    var addIgnored, addParam, addParamOrIgnore, arg, argv, cfg, df, expandedArgs, help, helpText, k, lng, lngHelp, long, long2key, maxHelp, maxLong, name, optionsText, org, param, paramList, result, short, short2key, sht, shtHelp, v, _216_19_, _217_21_, _219_22_, _219_41_, _221_28_, _222_23_, _245_23_, _293_52_
 
     if (typeof(config) === 'string')
     {
@@ -311,7 +311,12 @@ broken key: ${bold(_k_.y5(k))}`)
             }
         }
     }
-    helpText = `\n${_k_.w5('usage:')}  ${bold(name)} `
+    helpText = ''
+    if (!_k_.empty(options.preHelp))
+    {
+        helpText += options.preHelp
+    }
+    helpText += `\n${_k_.w5('usage:')}  ${bold(name)} `
     helpText += `${_k_.w5('[ ')}${bold(_k_.y5(param))}${paramList && _k_.w5(' ... ]') || _k_.w5(']')}`
     helpText += '\n'
     if ((cfg[param] != null ? cfg[param]['?'] : undefined))
@@ -327,24 +332,28 @@ broken key: ${bold(_k_.y5(k))}`)
     {
         helpText += _k_.w5("\noptions:\n")
         helpText += optionsText
-        helpText += '\n\n'
+        helpText += '\n'
     }
-    short2key['h'] = ((_208_19_=short2key['h']) != null ? _208_19_ : 'help')
-    long2key['help'] = ((_209_21_=long2key['help']) != null ? _209_21_ : 'help')
-    if ((config.version != null))
+    short2key['h'] = ((_216_19_=short2key['h']) != null ? _216_19_ : 'help')
+    long2key['help'] = ((_217_21_=long2key['help']) != null ? _217_21_ : 'help')
+    if ((options.version != null) || (config.version != null))
     {
-        version = config.version
         delete config.version
-        long2key['version'] = ((_214_28_=long2key['version']) != null ? _214_28_ : 'version')
-        short2key['V'] = ((_215_23_=short2key['V']) != null ? _215_23_ : 'version')
+        long2key['version'] = ((_221_28_=long2key['version']) != null ? _221_28_ : 'version')
+        short2key['V'] = ((_222_23_=short2key['V']) != null ? _222_23_ : 'version')
     }
     delete config[name]
     if (Object.keys(config).length)
     {
+        helpText += '\n'
         helpText += noon.stringify(config,{maxalign:16,colors:{key:gray,string:white}})
         helpText += '\n'
     }
-    options.ignoreArgs = ((_234_23_=options.ignoreArgs) != null ? _234_23_ : 2)
+    if (!_k_.empty(options.postHelp))
+    {
+        helpText += options.postHelp
+    }
+    options.ignoreArgs = ((_245_23_=options.ignoreArgs) != null ? _245_23_ : 2)
     if (options.argv)
     {
         argv = options.argv
@@ -421,13 +430,23 @@ broken key: ${bold(_k_.y5(k))}`)
             }
             process.exit(0)
         }
-        else if (arg === 'version' && (version != null))
+        else if (arg === 'version' && (options.version != null))
         {
             if (options.returnLog)
             {
                 return version
             }
-            console.log(version)
+            v = ''
+            if (!_k_.empty(options.preVersion))
+            {
+                v += options.preVersion
+            }
+            v += options.version
+            if (!_k_.empty(options.postVersion))
+            {
+                v += options.postVersion
+            }
+            console.log(v)
             if (options.dontExit)
             {
                 return

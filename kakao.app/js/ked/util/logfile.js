@@ -7,7 +7,7 @@ logfile = (function ()
 {
     function logfile ()
     {
-        this.stream = fs.createWriteStream('ked.log',{flags:'a'})
+        this.stream = fs.createWriteStream('ked.log',{flags:'a',autoClose:false})
         global.lf = (function (...args)
         {
             return this.write(args.map(function (a)
@@ -19,11 +19,16 @@ logfile = (function ()
 
     logfile.prototype["write"] = function (txt)
     {
+        if (this.stream.closed || !this.stream.writable)
+        {
+            return
+        }
         return this.stream.write(txt + '\n')
     }
 
     logfile.prototype["close"] = function (cb)
     {
+        this.stream.end('◂◂◂')
         return this.stream.close(cb)
     }
 

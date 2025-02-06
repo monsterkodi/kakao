@@ -6,22 +6,25 @@
    000        000     000   0000000   
 ###
 
-use ../kxk ◆ events
+use ../kxk ◆ events post
 
 function TTIO extends events
 
     @: ->
         
-        @store()
+        # @store()
         
         @hideCursor()
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
+            
+        lf 'ttio ▸' 
 
         @write '\x1b[?1000h'    # mouse events
         @write '\x1b[?1002h'    # cell motion tracking
         @write '\x1b[?1003h'    # mouse move events
-        @write '\x1b[?1004h'    # focus events        @write '\x1b[?1006h'    # mouse SGR mode
+        @write '\x1b[?1004h'    # focus events        
+        @write '\x1b[?1006h'    # mouse SGR mode
         @write '\x1b[?1049h'    # alternate screen buffer
         @write '\x1b[?2004h'    # bracketed paste mode
         @write '\x1b[>1s'       # send shift in mouse press events
@@ -39,11 +42,15 @@ function TTIO extends events
     
     quit: =>
         
+        process.stdout.removeListener 'resize' @onResize
+        process.stdin.removeListener  'data'   @onData
+        
         @clear()
         @write '\x1b[>0s'    # end sending shift in mouse press
         @write '\x1b[<u'     # end kitty keyboard protocol
         @write '\x1b[?1049l' # scrollback screen buffer
         @showCursor()
+        lf 'ttio ◂◂◂'
         @restore()
     
     clear: =>
@@ -95,8 +102,9 @@ function TTIO extends events
         char = ''
             
         if csi[-1] == 'u'
-            code = parseInt csi                
-            lc 'code' code csi
+            code = parseInt csi
+            ⮐ if empty code
+            lfc 'csi:' csi
             key = switch code
                 9       ➜ 'tab'
                 27      ➜ 'esc'
@@ -128,7 +136,9 @@ function TTIO extends events
             type = 'release' if splt[1].endsWith ':3'
             
             if splt.length > 2
-                char = String.fromCodePoint parseInt(splt[2])
+                code = parseInt splt[2]
+                if valid code
+                    char = String.fromCodePoint code
             
             mbit = parseInt(splt[1])-1
             if mbit & 0x1 ➜ mods.push 'shift'
@@ -153,6 +163,10 @@ function TTIO extends events
     #  0000000  0000000   000  
     
     parseCsi: csi =>
+        
+        switch csi
+            'I' ➜ ⮐ post.emit 'focus'
+            'O' ➜ ⮐ post.emit 'blur'
         
         lf '---- csi' csi
         
@@ -185,8 +199,8 @@ function TTIO extends events
             lf '---- raw' char.length raw char typeof(raw) char.codePointAt(0)
             key = char.toLowerCase()
             key:    key
+            type:   'press'
             combo:  key != char ? 'shift' : ''
-            type:   type
             char:   char
         else
             lf '---- raw' raw.length raw  
@@ -276,7 +290,7 @@ function TTIO extends events
     # 0000000    000   000     000     000   000  
     
     onData: data =>
-        lc 'dl' data.length
+
         if data[0] == 0x1b and data[1] == 0x5b
             csi = data[2..].toString 'utf8'
         else if data[0] == 0x1b
@@ -285,7 +299,7 @@ function TTIO extends events
         else
             lfc 'dta' data
         
-        lfc 'data' data[1..] csi esc
+        #lfc 'data' data[1..] csi esc
             
         if @pasteBuffer?
             
@@ -317,7 +331,7 @@ function TTIO extends events
                 if event.type == 'release'
                     ⮐ @emit 'release' event.combo event
                 else 
-                    # lf '▸' noon(event)
+                    #lf '▸' noon(event)
                     ⮐ @emit 'key' event.combo event
                     
             if event = @parseCsi csi

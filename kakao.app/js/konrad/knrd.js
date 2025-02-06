@@ -70,8 +70,7 @@ bundleDir = function ()
 
 bump = async function ()
 {
-    await nfs.write(bundlePath('kode/konrad/version.kode'),`export ${version + 1}\n`)
-    return await nfs.write(bundlePath('js/konrad/version.js'),`export default ${version + 1};`)
+    return await nfs.write(bundlePath('kode/konrad/version.kode'),`export ${version + 1}\n`)
 }
 
 gatherFiles = async function ()

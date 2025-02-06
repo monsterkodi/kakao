@@ -12,16 +12,19 @@ function logfile
 
     @: ->
         
-        @stream = fs.createWriteStream 'ked.log' flags:'a'
+        @stream = fs.createWriteStream 'ked.log' flags:'a' autoClose:false
         
         global.lf = args... => @write args.map((a) -> "#{a}").join(' ')
         
     write: txt ->
+        
+        ⮐ if @stream.closed or not @stream.writable
 
         @stream.write txt + '\n'
         
     close: cb ->
         
+        @stream.end '◂◂◂'
         @stream.close cb
         
 export logfile

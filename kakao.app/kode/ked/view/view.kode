@@ -1,0 +1,22 @@
+###
+000   000  000  00000000  000   000
+000   000  000  000       000 0 000
+ 000 000   000  0000000   000000000
+   000     000  000       000   000
+    0      000  00000000  00     00
+###
+
+use ../cells 
+use ../../kxk ◆ events kstr post
+
+function view extends events
+
+    @: @screen @name ->
+        
+        @cells = new cells @screen
+        
+    toggle: => 
+    
+        post.emit 'view.size' @name @cells.cols (@cells.rows ? 0 : 10) 
+        
+export view
