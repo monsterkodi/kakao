@@ -535,7 +535,7 @@ editor = (function ()
                 return this.state.delete('back','alt')
 
             case 'shift+tab':
-                return this.state.deindent()
+                return this.state.deindentSelectedOrCursorLines()
 
             case 'tab':
                 return this.state.insert('\t')

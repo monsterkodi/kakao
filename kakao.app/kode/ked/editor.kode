@@ -358,7 +358,7 @@ function editor extends view
             'cmd+delete'                ➜ ⮐ @state.delete 'back' 'cmd'
             'alt+delete'                ➜ ⮐ @state.delete 'back' 'alt'
             
-            'shift+tab'                 ➜ ⮐ @state.deindent()
+            'shift+tab'                 ➜ ⮐ @state.deindentSelectedOrCursorLines()
             'tab'                       ➜ ⮐ @state.insert '\t'
                                     
             'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @state.cut()     

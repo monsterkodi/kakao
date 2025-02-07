@@ -779,6 +779,12 @@ class util
         
     @rangesForJoiningLines: lines idxs -> idxs.map (idx) -> util.rangeForJoiningLine lines idx
     
+    # 00     00   0000000   000   000  00000000         000      000  000   000  00000000   0000000  
+    # 000   000  000   000  000   000  000              000      000  0000  000  000       000       
+    # 000000000  000   000   000 000   0000000          000      000  000 0 000  0000000   0000000   
+    # 000 0 000  000   000     000     000              000      000  000  0000  000            000  
+    # 000   000   0000000       0      00000000         0000000  000  000   000  00000000  0000000   
+    
     @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
         
         if empty indices or dir == 'down' and indices[-1] >= lines.length-1 or dir == 'up' and indices[0] <= 0
@@ -815,6 +821,12 @@ class util
         
         [newLines newRngs newPosl]
                   
+    #  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
+    # 000       000   000  000   000  000   000  000       0000  000     000     000       
+    # 000       000   000  000000000  000000000  0000000   000 0 000     000     0000000   
+    # 000       000   000  000 0 000  000 0 000  000       000  0000     000          000  
+    #  0000000   0000000   000   000  000   000  00000000  000   000     000     0000000   
+    
     @toggleCommentsInLineRangesAtIndices: lines rngs posl indices ->
         
         ⮐ [lines rngs posl] if empty indices
@@ -846,6 +858,71 @@ class util
                 newLine = indent + line[comStart.length+d..]
             newLines.splice index 1 newLine
         
-        [newLines newRngs newPosl]        
+        [newLines newRngs newPosl]      
+        
+    # 0000000    00000000  000  000   000  0000000    00000000  000   000  000000000  
+    # 000   000  000       000  0000  000  000   000  000       0000  000     000     
+    # 000   000  0000000   000  000 0 000  000   000  0000000   000 0 000     000     
+    # 000   000  000       000  000  0000  000   000  000       000  0000     000     
+    # 0000000    00000000  000  000   000  0000000    00000000  000   000     000     
+    
+    @deindentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
+        
+        ⮐ [lines rngs posl] if empty indices  
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        for index in indices
             
+            [indent line] = util.splitLineIndent newLines[index]
+        
+            if indent.length
+                
+                sc = min 4 indent.length
+                newLines.splice index 1 indent[sc..] + line
+                
+                for pos in newPosl
+                    if pos[1] == index 
+                        pos[0] = max 0 pos[0] - sc
+                        
+                for rng in newRngs
+                    if rng[1] == index 
+                        rng[0] = max 0 rng[0] - sc
+                        rng[2] = max 0 rng[2] - sc
+        
+        [newLines newRngs newPosl]
+
+    # 000  000   000  0000000    00000000  000   000  000000000  
+    # 000  0000  000  000   000  000       0000  000     000     
+    # 000  000 0 000  000   000  0000000   000 0 000     000     
+    # 000  000  0000  000   000  000       000  0000     000     
+    # 000  000   000  0000000    00000000  000   000     000     
+    
+    @indentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
+        
+        ⮐ [lines rngs posl] if empty indices  
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        for index in indices
+            
+            [indent line] = util.splitLineIndent newLines[index]
+        
+            newLines[index] = lpad(4 ' ') + newLines[index]
+            
+            for pos in newPosl
+                if pos[1] == index 
+                    pos[0] += 4
+                    
+            for rng in newRngs
+                if rng[1] == index 
+                    rng[0] += 4
+                    rng[2] += 4
+        
+        [newLines newRngs newPosl]
+        
 export util

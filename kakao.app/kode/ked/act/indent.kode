@@ -11,26 +11,25 @@ use ../util ◆ util
 export
 
     
-    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000    
-    # 000       000       000      000       000          000     000  000   000  0000  000    
-    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000    
-    #      000  000       000      000       000          000     000  000   000  000  0000    
-    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000    
+    #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
+    # 000       000       000      000       000          000     000       000   000  
+    # 0000000   0000000   000      0000000   000          000     0000000   000   000  
+    #      000  000       000      000       000          000     000       000   000  
+    # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
     indentSelectedLines: ->
         
         ⮐ if empty @s.selections
         
-        [x y] = @mainCursor()
-            
-        lines = @allLines()
+        selections = @allSelections()
+        cursors    = @allCursors() 
+        indices    = util.lineIndicesForRangesOrPositions selections cursors
         
-        indices = util.lineIndicesForRanges @s.selections
-        
-        for li in indices
-            lines[li] = lpad(4 ' ') + lines[li]
+        [lines selections cursors] = util.indentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
         
         @setLines lines
+        @setSelections selections
+        @setCursors cursors
         
     # 0000000    00000000  000  000   000  0000000    00000000  000   000  000000000  
     # 000   000  000       000  0000  000  000   000  000       0000  000     000     
@@ -38,30 +37,17 @@ export
     # 000   000  000       000  000  0000  000   000  000       000  0000     000     
     # 0000000    00000000  000  000   000  0000000    00000000  000   000     000     
     
-    deindent: ->
+    deindentSelectedOrCursorLines: ->
         
-        if valid @s.selections ➜ ⮐ @deindentSelectedLines()
-            
-        lines = @allLines()
-            
-        li = @mainCursor()[1]
-        if ind = util.numIndent lines[li]
-            lines[li] = lines[li][min(ind 4)..]
-            @setLines lines
-            @setMainCursor 0 li
+        selections = @allSelections()
+        cursors    = @allCursors() 
+        indices    = util.lineIndicesForRangesOrPositions selections cursors
         
-    deindentSelectedLines: ->
-
-        ⮐ if empty @s.selections
-        
-        lines = @allLines()
-        
-        indices = util.lineIndicesForRanges @s.selections
-        
-        for li in indices
-            if ind = util.numIndent lines[li]
-                lines[li] = lines[li][min(ind 4)..]
+        [lines selections cursors] = util.deindentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
         
         @setLines lines
+        @setSelections selections
+        @setCursors cursors
+    
         
         

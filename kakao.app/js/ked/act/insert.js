@@ -10,10 +10,6 @@ export default {insert:function (text)
 
     if (!_k_.empty(this.s.selections))
     {
-        if (text === '\t')
-        {
-            return this.indentSelectedLines()
-        }
         this.deleteSelection()
     }
     cursors = this.allCursors()

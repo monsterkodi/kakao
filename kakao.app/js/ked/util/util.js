@@ -1494,6 +1494,92 @@ class util
         }
         return [newLines,newRngs,newPosl]
     }
+
+    static deindentLineRangesAndPositionsAtIndices (lines, rngs, posl, indices)
+    {
+        var indent, index, line, newLines, newPosl, newRngs, pos, rng, sc
+
+        if (_k_.empty(indices))
+        {
+            return [lines,rngs,posl]
+        }
+        newLines = _k_.copy(lines)
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        var list = _k_.list(indices)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            index = list[_a_]
+            var _b_ = util.splitLineIndent(newLines[index]); indent = _b_[0]; line = _b_[1]
+
+            if (indent.length)
+            {
+                sc = _k_.min(4,indent.length)
+                newLines.splice(index,1,indent.slice(sc) + line)
+                var list1 = _k_.list(newPosl)
+                for (var _c_ = 0; _c_ < list1.length; _c_++)
+                {
+                    pos = list1[_c_]
+                    if (pos[1] === index)
+                    {
+                        pos[0] = _k_.max(0,pos[0] - sc)
+                    }
+                }
+                var list2 = _k_.list(newRngs)
+                for (var _d_ = 0; _d_ < list2.length; _d_++)
+                {
+                    rng = list2[_d_]
+                    if (rng[1] === index)
+                    {
+                        rng[0] = _k_.max(0,rng[0] - sc)
+                        rng[2] = _k_.max(0,rng[2] - sc)
+                    }
+                }
+            }
+        }
+        return [newLines,newRngs,newPosl]
+    }
+
+    static indentLineRangesAndPositionsAtIndices (lines, rngs, posl, indices)
+    {
+        var indent, index, line, newLines, newPosl, newRngs, pos, rng
+
+        if (_k_.empty(indices))
+        {
+            return [lines,rngs,posl]
+        }
+        newLines = _k_.copy(lines)
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        var list = _k_.list(indices)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            index = list[_a_]
+            var _b_ = util.splitLineIndent(newLines[index]); indent = _b_[0]; line = _b_[1]
+
+            newLines[index] = _k_.lpad(4,' ') + newLines[index]
+            var list1 = _k_.list(newPosl)
+            for (var _c_ = 0; _c_ < list1.length; _c_++)
+            {
+                pos = list1[_c_]
+                if (pos[1] === index)
+                {
+                    pos[0] += 4
+                }
+            }
+            var list2 = _k_.list(newRngs)
+            for (var _d_ = 0; _d_ < list2.length; _d_++)
+            {
+                rng = list2[_d_]
+                if (rng[1] === index)
+                {
+                    rng[0] += 4
+                    rng[2] += 4
+                }
+            }
+        }
+        return [newLines,newRngs,newPosl]
+    }
 }
 
 export default util;
