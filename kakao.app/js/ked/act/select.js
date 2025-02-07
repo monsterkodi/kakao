@@ -374,7 +374,7 @@ export default {select:function (from, to)
 {
     if (this.s.cursors.length > 1)
     {
-        return this.setCursors([this.mainCursor()],0)
+        return this.setCursors([this.mainCursor()])
     }
 },clearCursorsHighlightsAndSelections:function ()
 {

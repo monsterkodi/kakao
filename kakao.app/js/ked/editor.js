@@ -280,7 +280,14 @@ editor = (function ()
                     }
                     else
                     {
-                        this.state.setMainCursor(x,y)
+                        if (event.shift && this.state.s.cursors.length === 1)
+                        {
+                            this.state.setMainCursorAndSelect(x,y)
+                        }
+                        else
+                        {
+                            this.state.setMainCursor(x,y)
+                        }
                     }
                     return true
                 }

@@ -341,7 +341,7 @@ export
     clearCursors: ->
             
         if @s.cursors.length > 1
-            @setCursors [@mainCursor()] 0
+            @setCursors [@mainCursor()]
             
     clearCursorsHighlightsAndSelections: ->
         

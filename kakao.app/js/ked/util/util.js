@@ -1606,6 +1606,35 @@ class util
         return [newLines,newRngs,newPosl]
     }
 
+    static extendLineRangesFromPositionToPosition (lines, rngs, start, pos)
+    {
+        var newRngs, rng
+
+        if (_k_.empty(rngs))
+        {
+            return [util.rangeFromStartToEnd(start,pos)]
+        }
+        newRngs = _k_.copy(rngs)
+        if (rng = util.rangeInRangesTouchingPos(newRngs,start))
+        {
+            if (util.isPosAfterRange(pos,rng))
+            {
+                rng[2] = pos[0]
+                rng[3] = pos[1]
+            }
+            else if (util.isPosBeforeRange(pos,rng))
+            {
+                rng[0] = pos[0]
+                rng[1] = pos[1]
+            }
+        }
+        else
+        {
+            newRngs.push(util.rangeFromStartToEnd(start,pos))
+        }
+        return newRngs
+    }
+
     static extendLineRangesByMovingPositionsInDirection (lines, rngs, posl, dir)
     {
         var ind, line, newPosl, newRngs, pos, rng

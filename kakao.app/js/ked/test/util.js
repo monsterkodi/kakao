@@ -3,8 +3,22 @@ var line, lines, spans
 
 import util from "../util/util.js"
 
+
+global.lf = function (...args)
+{
+    console.log(args.map(function (a)
+    {
+        return `${a}`
+    }).join(' '))
+}
 toExport["util"] = function ()
 {
+    section("extendLineRangesToPosition", function ()
+    {
+        lines = ['123','45','6']
+        compare(util.extendLineRangesFromPositionToPosition(lines,[],[0,0],[0,2]),[[0,0,0,2]])
+        compare(util.extendLineRangesFromPositionToPosition(lines,[[0,0,1,0],[2,0,3,0]],[1,1],[0,2]),[[0,0,1,0],[2,0,3,0],[1,1,0,2]])
+    })
     section("jumpDelta", function ()
     {
         line = '1  '
@@ -40,7 +54,6 @@ toExport["util"] = function ()
         compare(util.jumpDelta(line,9,1,['word']),1)
         compare(util.jumpDelta(line,10,1,['word']),1)
         compare(util.jumpDelta(line,11,1,['word']),1)
-        line = '  ab += cd ;;  '
         compare(util.jumpDelta(line,0,1,['punct']),1)
         compare(util.jumpDelta(line,1,1,['punct']),1)
         compare(util.jumpDelta(line,2,1,['punct']),1)
@@ -53,7 +66,6 @@ toExport["util"] = function ()
         compare(util.jumpDelta(line,9,1,['punct']),1)
         compare(util.jumpDelta(line,10,1,['punct']),1)
         compare(util.jumpDelta(line,11,1,['punct']),2)
-        line = '  ab += cd ;;  '
         compare(util.jumpDelta(line,0,1,['ws','word','punct']),2)
         compare(util.jumpDelta(line,1,1,['ws','word','punct']),1)
         compare(util.jumpDelta(line,2,1,['ws','word','punct']),2)
@@ -66,6 +78,18 @@ toExport["util"] = function ()
         compare(util.jumpDelta(line,9,1,['ws','word','punct']),1)
         compare(util.jumpDelta(line,10,1,['ws','word','punct']),1)
         compare(util.jumpDelta(line,11,1,['ws','word','punct']),2)
+        compare(util.jumpDelta(line,0,-1,['ws','word','punct']),0)
+        compare(util.jumpDelta(line,1,-1,['ws','word','punct']),-1)
+        compare(util.jumpDelta(line,2,-1,['ws','word','punct']),-2)
+        compare(util.jumpDelta(line,3,-1,['ws','word','punct']),-1)
+        compare(util.jumpDelta(line,4,-1,['ws','word','punct']),-2)
+        compare(util.jumpDelta(line,5,-1,['ws','word','punct']),-1)
+        compare(util.jumpDelta(line,6,-1,['ws','word','punct']),-1)
+        compare(util.jumpDelta(line,7,-1,['ws','word','punct']),-2)
+        compare(util.jumpDelta(line,8,-1,['ws','word','punct']),-1)
+        compare(util.jumpDelta(line,9,-1,['ws','word','punct']),-1)
+        compare(util.jumpDelta(line,10,-1,['ws','word','punct']),-2)
+        compare(util.jumpDelta(line,11,-1,['ws','word','punct']),-1)
         line = '  '
         compare(util.jumpDelta(line,5,-1,['empty']),-3)
         compare(util.jumpDelta(line,4,-1,['empty']),-2)
@@ -74,11 +98,6 @@ toExport["util"] = function ()
         compare(util.jumpDelta(line,4,-1,['ws']),-1)
         compare(util.jumpDelta(line,3,-1,['ws']),-1)
         compare(util.jumpDelta(line,2,-1,['ws']),-2)
-        line = '  ab += cd ;;  '
-        compare(util.jumpDelta(line,0,-1,['ws','word','punct']),0)
-        compare(util.jumpDelta(line,1,-1,['ws','word','punct']),-1)
-        compare(util.jumpDelta(line,2,-1,['ws','word','punct']),-2)
-        compare(util.jumpDelta(line,3,-1,['ws','word','punct']),-1)
     })
     section("isPosInsideRange", function ()
     {

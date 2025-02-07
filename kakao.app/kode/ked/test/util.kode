@@ -7,7 +7,16 @@
 
 use ../util ◆ util
 
+global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
+
 ▸ util
+
+    ▸ extendLineRangesToPosition 
+    
+        lines = ['123' '45' '6']
+    
+        util.extendLineRangesFromPositionToPosition lines [] [0 0] [0 2] ▸ [[0 0 0 2]]
+        util.extendLineRangesFromPositionToPosition lines [[0 0 1 0] [2 0 3 0]] [1 1] [0 2] ▸ [[0 0 1 0] [2 0 3 0] [1 1 0 2]]
 
     ▸ jumpDelta
     
@@ -50,8 +59,6 @@ use ../util ◆ util
         util.jumpDelta line 10  1 ['word'] ▸  1
         util.jumpDelta line 11  1 ['word'] ▸  1
 
-        line = '  ab += cd ;;  '
-
         util.jumpDelta line 0   1 ['punct'] ▸  1
         util.jumpDelta line 1   1 ['punct'] ▸  1
         util.jumpDelta line 2   1 ['punct'] ▸  1
@@ -65,8 +72,6 @@ use ../util ◆ util
         util.jumpDelta line 10  1 ['punct'] ▸  1
         util.jumpDelta line 11  1 ['punct'] ▸  2
 
-        line = '  ab += cd ;;  '
-        
         util.jumpDelta line 0   1 ['ws' 'word' 'punct'] ▸  2
         util.jumpDelta line 1   1 ['ws' 'word' 'punct'] ▸  1
         util.jumpDelta line 2   1 ['ws' 'word' 'punct'] ▸  2
@@ -80,6 +85,19 @@ use ../util ◆ util
         util.jumpDelta line 10  1 ['ws' 'word' 'punct'] ▸  1
         util.jumpDelta line 11  1 ['ws' 'word' 'punct'] ▸  2
         
+        util.jumpDelta line 0   -1 ['ws' 'word' 'punct'] ▸   0
+        util.jumpDelta line 1   -1 ['ws' 'word' 'punct'] ▸  -1
+        util.jumpDelta line 2   -1 ['ws' 'word' 'punct'] ▸  -2
+        util.jumpDelta line 3   -1 ['ws' 'word' 'punct'] ▸  -1
+        util.jumpDelta line 4   -1 ['ws' 'word' 'punct'] ▸  -2
+        util.jumpDelta line 5   -1 ['ws' 'word' 'punct'] ▸  -1
+        util.jumpDelta line 6   -1 ['ws' 'word' 'punct'] ▸  -1
+        util.jumpDelta line 7   -1 ['ws' 'word' 'punct'] ▸  -2
+        util.jumpDelta line 8   -1 ['ws' 'word' 'punct'] ▸  -1
+        util.jumpDelta line 9   -1 ['ws' 'word' 'punct'] ▸  -1
+        util.jumpDelta line 10  -1 ['ws' 'word' 'punct'] ▸  -2
+        util.jumpDelta line 11  -1 ['ws' 'word' 'punct'] ▸  -1
+        
         line = '  '
         
         util.jumpDelta line 5  -1 ['empty'] ▸ -3
@@ -90,21 +108,6 @@ use ../util ◆ util
         util.jumpDelta line 4  -1 ['ws'] ▸ -1
         util.jumpDelta line 3  -1 ['ws'] ▸ -1
         util.jumpDelta line 2  -1 ['ws'] ▸ -2
-
-        line = '  ab += cd ;;  '
-        
-        util.jumpDelta line 0   -1 ['ws' 'word' 'punct'] ▸   0
-        util.jumpDelta line 1   -1 ['ws' 'word' 'punct'] ▸  -1
-        util.jumpDelta line 2   -1 ['ws' 'word' 'punct'] ▸  -2
-        util.jumpDelta line 3   -1 ['ws' 'word' 'punct'] ▸  -1
-        # util.jumpDelta line 4   -1 ['ws' 'word' 'punct'] ▸  1
-        # util.jumpDelta line 5   -1 ['ws' 'word' 'punct'] ▸  2
-        # util.jumpDelta line 6   -1 ['ws' 'word' 'punct'] ▸  1
-        # util.jumpDelta line 7   -1 ['ws' 'word' 'punct'] ▸  1
-        # util.jumpDelta line 8   -1 ['ws' 'word' 'punct'] ▸  2
-        # util.jumpDelta line 9   -1 ['ws' 'word' 'punct'] ▸  1
-        # util.jumpDelta line 10  -1 ['ws' 'word' 'punct'] ▸  1
-        # util.jumpDelta line 11  -1 ['ws' 'word' 'punct'] ▸  2
         
     ▸ isPosInsideRange
     

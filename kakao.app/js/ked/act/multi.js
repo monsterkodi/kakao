@@ -292,6 +292,10 @@ export default {allCursors:function ()
             return true
         }
     }
+},setMainCursorAndSelect:function (x, y)
+{
+    this.setSelections(util.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
+    return this.setCursors([[x,y]])
 },moveCursorsAndSelect:function (dir)
 {
     var cursors, selections

@@ -189,16 +189,17 @@ function editor extends view
                     y = row + @state.s.view[1]
                     
                     @dragStart = [x y x]
-                    
-                    # todo: shift click extends selection                           
-                    
+                                        
                     @state.deselect() if not event.shift
                     @state.clearCursors() if not event.alt
 
                     if event.alt
                         @state.addCursor x y
                     else
-                        @state.setMainCursor x y
+                        if event.shift and @state.s.cursors.length == 1
+                            @state.setMainCursorAndSelect x y
+                        else
+                            @state.setMainCursor x y
                     
                     ⮐ true
                     

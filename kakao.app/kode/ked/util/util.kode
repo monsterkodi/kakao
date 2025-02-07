@@ -117,7 +117,7 @@ class util
     
         pos[1] < rng[1] or (pos[1] == rng[1] and pos[0] < rng[0])
     
-    @isPosAfterRange:  pos rng ->
+    @isPosAfterRange: pos rng ->
     
         pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
         
@@ -940,6 +940,24 @@ class util
     # 0000000     00000       000     0000000   000 0 000  000   000        0000000    000 0 000  000  0000  0000000   
     # 000        000 000      000     000       000  0000  000   000        000   000  000  0000  000   000       000  
     # 00000000  000   000     000     00000000  000   000  0000000          000   000  000   000   0000000   0000000   
+    
+    @extendLineRangesFromPositionToPosition: lines rngs start pos ->
+
+        if empty rngs ➜ ⮐ [util.rangeFromStartToEnd(start pos)]
+
+        newRngs = copy rngs
+        
+        if rng = util.rangeInRangesTouchingPos newRngs start
+            if util.isPosAfterRange pos rng
+                rng[2] = pos[0]
+                rng[3] = pos[1]
+            else if util.isPosBeforeRange pos rng
+                rng[0] = pos[0]
+                rng[1] = pos[1]
+        else
+            newRngs.push util.rangeFromStartToEnd(start pos)
+
+        newRngs
     
     @extendLineRangesByMovingPositionsInDirection: lines rngs posl dir ->
         
