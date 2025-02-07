@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import util from "../util/util.js"
 
@@ -73,11 +73,33 @@ export default {allCursors:function ()
     return this.setCursors(outside,-1)
 },moveCursors:function (dir, opt)
 {
-    var c, cursors, lines, _90_18_, _91_22_
+    var c, cursors, ind, line, lines, _98_18_, _99_22_
 
+    if (_k_.isArr(dir))
+    {
+        switch (dir[0])
+        {
+            case 'bos':
+                if (this.moveCursorsToStartOfSelections())
+                {
+                    return
+                }
+                dir = dir.slice(1)
+                break
+            case 'eos':
+                if (this.moveCursorsToEndOfSelections())
+                {
+                    return
+                }
+                dir = dir.slice(1)
+                break
+        }
+
+        dir = dir[0]
+    }
     opt = (opt != null ? opt : {})
-    opt.count = ((_90_18_=opt.count) != null ? _90_18_ : 1)
-    opt.jumpWords = ((_91_22_=opt.jumpWords) != null ? _91_22_ : false)
+    opt.count = ((_98_18_=opt.count) != null ? _98_18_ : 1)
+    opt.jumpWords = ((_99_22_=opt.jumpWords) != null ? _99_22_ : false)
     if (this.s.highlights.length)
     {
         this.deselect()
@@ -88,6 +110,7 @@ export default {allCursors:function ()
     for (var _c_ = 0; _c_ < list.length; _c_++)
     {
         c = list[_c_]
+        line = lines[c[1]]
         switch (dir)
         {
             case 'left':
@@ -112,12 +135,24 @@ export default {allCursors:function ()
                 break
             case 'eof':
                 c[1] = this.s.lines.length - 1
-                c[0] = this.s.lines[c[1]].length
+                c[0] = line.length
+                break
+            case 'ind':
+                c[0] = util.numIndent(line)
+                break
+            case 'ind_eol':
+                ind = util.numIndent(line)
+                c[0] = (c[0] < ind ? ind : line.length)
+                break
+            case 'ind_bol':
+                ind = util.numIndent(line)
+                c[0] = (c[0] > ind ? ind : 0)
                 break
         }
 
     }
-    return this.setCursors(cursors,this.s.main)
+    this.setCursors(cursors,this.s.main)
+    return true
 },setMainCursor:function (x, y)
 {
     var _d_ = util.pos(x,y); x = _d_[0]; y = _d_[1]
@@ -206,53 +241,30 @@ export default {allCursors:function ()
 
     this.deselect()
     return this.setCursors([mc])
-},moveCursorsToStartOfSelectionsOrIndentOrStartOfLines:function ()
+},moveCursorsToStartOfSelections:function ()
 {
-    var cursors, lines, rngs, selections
+    var rngs, selections
 
     selections = this.allSelections()
     if (_k_.empty(selections))
     {
-        return this.moveCursorsToIndentOrStartOfLines()
+        return
     }
-    lines = this.allLines()
-    rngs = util.splitLineRanges(lines,selections,false)
-    cursors = util.startPositionsOfRanges(rngs)
-    return this.setCursors(cursors)
-},moveCursorsToIndentOrStartOfLines:function ()
+    rngs = util.splitLineRanges(this.allLines(),selections,false)
+    this.setCursors(util.startPositionsOfRanges(rngs))
+    return true
+},moveCursorsToEndOfSelections:function ()
 {
-    var cur, cursors, ind, lines
-
-    cursors = this.allCursors()
-    lines = this.allLines()
-    var list = _k_.list(cursors)
-    for (var _f_ = 0; _f_ < list.length; _f_++)
-    {
-        cur = list[_f_]
-        ind = util.lineIndentAtPos(lines,cur)
-        if (ind < cur[0])
-        {
-            cur[0] = ind
-        }
-        else
-        {
-            cur[0] = 0
-        }
-    }
-    return this.setCursors(cursors)
-},moveCursorsToEndOfSelectionsOrLines:function ()
-{
-    var cursors, lines, rngs, selections
+    var rngs, selections
 
     selections = this.allSelections()
     if (_k_.empty(selections))
     {
-        return this.moveCursorsToEndOfLines()
+        return
     }
-    lines = this.allLines()
-    rngs = util.splitLineRanges(lines,selections,false)
-    cursors = util.endPositionsOfRanges(rngs)
-    return this.setCursors(cursors)
+    rngs = util.splitLineRanges(this.allLines(),selections,false)
+    this.setCursors(util.endPositionsOfRanges(rngs))
+    return true
 },moveCursorsToEndOfLines:function ()
 {
     var cur, cursors, lines
@@ -260,20 +272,21 @@ export default {allCursors:function ()
     cursors = this.allCursors()
     lines = this.allLines()
     var list = _k_.list(cursors)
-    for (var _10_ = 0; _10_ < list.length; _10_++)
+    for (var _f_ = 0; _f_ < list.length; _f_++)
     {
-        cur = list[_10_]
+        cur = list[_f_]
         cur[0] = util.lineRangeAtPos(lines,cur)[2]
     }
-    return this.setCursors(cursors)
+    this.setCursors(cursors)
+    return true
 },isAnyCursorInLine:function (y)
 {
     var c
 
     var list = _k_.list(this.allCursors())
-    for (var _11_ = 0; _11_ < list.length; _11_++)
+    for (var _10_ = 0; _10_ < list.length; _10_++)
     {
-        c = list[_11_]
+        c = list[_10_]
         if (c[1] === y)
         {
             return true
@@ -326,7 +339,7 @@ export default {allCursors:function ()
 {
     var cursors, selections
 
-    var _12_ = util.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir); selections = _12_[0]; cursors = _12_[1]
+    var _11_ = util.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir); selections = _11_[0]; cursors = _11_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors)

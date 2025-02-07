@@ -480,10 +480,10 @@ editor = (function ()
                 return this.state.moveCursorsAndSelect('right')
 
             case 'shift+cmd+right':
-                return this.state.moveCursorsAndSelect('eol')
+                return this.state.moveCursorsAndSelect('ind_eol')
 
             case 'shift+cmd+left':
-                return this.state.moveCursorsAndSelect('bol')
+                return this.state.moveCursorsAndSelect('ind_bol')
 
             case 'shift+ctrl+h':
                 return this.state.moveCursorAndSelect('bof')
@@ -616,11 +616,11 @@ editor = (function ()
 
             case 'cmd+left':
             case 'ctrl+left':
-                return this.state.moveCursorsToStartOfSelectionsOrIndentOrStartOfLines()
+                return this.state.moveCursors(['bos','ind_bol'])
 
             case 'cmd+right':
             case 'ctrl+right':
-                return this.state.moveCursorsToEndOfSelectionsOrLines()
+                return this.state.moveCursors(['eos','ind_eol'])
 
             case 'cmd+e':
             case 'ctrl+e':

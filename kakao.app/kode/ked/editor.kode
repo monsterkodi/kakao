@@ -334,8 +334,8 @@ function editor extends view
             'shift+down'                ➜ ⮐ @state.moveCursorsAndSelect 'down'
             'shift+left'                ➜ ⮐ @state.moveCursorsAndSelect 'left'
             'shift+right'               ➜ ⮐ @state.moveCursorsAndSelect 'right'
-            'shift+cmd+right'           ➜ ⮐ @state.moveCursorsAndSelect 'eol'
-            'shift+cmd+left'            ➜ ⮐ @state.moveCursorsAndSelect 'bol'
+            'shift+cmd+right'           ➜ ⮐ @state.moveCursorsAndSelect 'ind_eol'
+            'shift+cmd+left'            ➜ ⮐ @state.moveCursorsAndSelect 'ind_bol'
             
             'shift+ctrl+h'              ➜ ⮐ @state.moveCursorAndSelect 'bof'
             'shift+ctrl+j'              ➜ ⮐ @state.moveCursorAndSelect 'eof'
@@ -387,8 +387,8 @@ function editor extends view
             'cmd+l'       'ctrl+l'       ➜ ⮐ @state.selectMoreLines()
             'shift+cmd+l' 'shift+ctrl+l' ➜ ⮐ @state.selectLessLines()
 
-            'cmd+left'  'ctrl+left'     ➜ ⮐ @state.moveCursorsToStartOfSelectionsOrIndentOrStartOfLines()
-            'cmd+right' 'ctrl+right'    ➜ ⮐ @state.moveCursorsToEndOfSelectionsOrLines()
+            'cmd+left'  'ctrl+left'     ➜ ⮐ @state.moveCursors ['bos' 'ind_bol']
+            'cmd+right' 'ctrl+right'    ➜ ⮐ @state.moveCursors ['eos' 'ind_eol']
             
             'cmd+e' 'ctrl+e'            ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
             'cmd+d' 'ctrl+d'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()

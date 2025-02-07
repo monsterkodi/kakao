@@ -86,6 +86,14 @@ export
     
     moveCursors: dir opt ->
         
+        if dir is arr
+
+            switch dir[0]
+                'bos' ➜ ⮐ if @moveCursorsToStartOfSelections(); dir = dir[1..]
+                'eos' ➜ ⮐ if @moveCursorsToEndOfSelections();   dir = dir[1..]
+                    
+            dir = dir[0]
+        
         opt ?= {}
         opt.count ?= 1
         opt.jumpWords ?= false
@@ -97,17 +105,24 @@ export
         lines   = @allLines()
         
         for c in cursors
+            
+            line = lines[c[1]]
+            
             switch dir
                 'left'  
-                'right' ➜ c[0] += util.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
-                'up'    ➜ c[1] -= opt.count
-                'down'  ➜ c[1] += opt.count
-                'eol'   ➜ c[0] = @s.lines[c[1]].length
-                'bol'   ➜ c[0] = 0
-                'bof'   ➜ c[0] = 0; c[1] = 0
-                'eof'   ➜ c[1] = @s.lines.length-1; c[0] = @s.lines[c[1]].length
+                'right'     ➜ c[0] += util.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
+                'up'        ➜ c[1] -= opt.count
+                'down'      ➜ c[1] += opt.count
+                'eol'       ➜ c[0] = @s.lines[c[1]].length
+                'bol'       ➜ c[0] = 0
+                'bof'       ➜ c[0] = 0; c[1] = 0
+                'eof'       ➜ c[1] = @s.lines.length-1; c[0] = line.length
+                'ind'       ➜ c[0] = util.numIndent(line)
+                'ind_eol'   ➜ ind  = util.numIndent(line); c[0] = c[0] < ind ? ind : line.length
+                'ind_bol'   ➜ ind  = util.numIndent(line); c[0] = c[0] > ind ? ind : 0
  
         @setCursors cursors @s.main
+        true
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
@@ -192,46 +207,30 @@ export
         @deselect()
         @setCursors [mc]
         
-    moveCursorsToStartOfSelectionsOrIndentOrStartOfLines: ->
+    moveCursorsToStartOfSelections: ->
         
         selections = @allSelections()
         
-        ⮐ @moveCursorsToIndentOrStartOfLines() if empty selections
+        ⮐ if empty selections
         
-        lines   = @allLines()
-        rngs    = util.splitLineRanges lines selections false
+        rngs = util.splitLineRanges @allLines() selections false
 
-        cursors = util.startPositionsOfRanges rngs
+        @setCursors util.startPositionsOfRanges(rngs)
         
-        @setCursors cursors
-
-    moveCursorsToIndentOrStartOfLines: ->
+        true
         
-        cursors = @allCursors()
-        lines = @allLines()
-        
-        for cur in cursors
-            ind = util.lineIndentAtPos lines cur
-            if ind < cur[0]
-                cur[0] = ind
-            else
-                cur[0] = 0
-        
-        @setCursors cursors
-        
-    moveCursorsToEndOfSelectionsOrLines: ->
+    moveCursorsToEndOfSelections: ->
         
         selections = @allSelections()
-        
-        ⮐ @moveCursorsToEndOfLines() if empty selections
-        
-        lines   = @allLines()
-        rngs    = util.splitLineRanges lines selections false
+         
+        ⮐ if empty selections
+         
+        rngs = util.splitLineRanges @allLines() selections false
 
-        cursors = util.endPositionsOfRanges rngs
+        @setCursors util.endPositionsOfRanges(rngs)
         
-        @setCursors cursors
-            
+        true
+        
     moveCursorsToEndOfLines: ->
         
         cursors = @allCursors()
@@ -241,6 +240,8 @@ export
             cur[0] = util.lineRangeAtPos(lines cur)[2]
         
         @setCursors cursors
+        
+        true
                 
     isAnyCursorInLine: y ->
         

@@ -1583,7 +1583,7 @@ class util
 
     static extendLineRangesByMovingPositionsInDirection (lines, rngs, posl, dir)
     {
-        var newPosl, newRngs, pos, rng
+        var ind, line, newPosl, newRngs, pos, rng
 
         newRngs = _k_.copy(rngs)
         newPosl = _k_.copy(posl)
@@ -1591,6 +1591,7 @@ class util
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             pos = list[_a_]
+            line = lines[pos[1]]
             rng = [pos[0],pos[1],pos[0],pos[1]]
             newRngs.push(rng)
             switch (dir)
@@ -1606,7 +1607,7 @@ class util
                     pos[1] += 1
                     break
                 case 'eol':
-                    pos[0] = lines[pos[1]].length
+                    pos[0] = line.length
                     break
                 case 'bol':
                     pos[0] = 0
@@ -1617,7 +1618,15 @@ class util
                     break
                 case 'eof':
                     pos[1] = lines.length - 1
-                    pos[0] = lines[pos[1]].length
+                    pos[0] = line.length
+                    break
+                case 'ind_bol':
+                    ind = util.numIndent(line)
+                    pos[0] = (pos[0] > ind ? ind : 0)
+                    break
+                case 'ind_eol':
+                    ind = util.numIndent(line)
+                    pos[0] = (pos[0] < ind ? ind : line.length)
                     break
             }
 
@@ -1647,6 +1656,14 @@ class util
                 case 'eof':
                     rng[3] = lines.length - 1
                     rng[2] = lines[lines.length - 1].length
+                    break
+                case 'ind_bol':
+                    ind = util.numIndent(line)
+                    rng[0] = (rng[0] > ind ? ind : 0)
+                    break
+                case 'ind_eol':
+                    ind = util.numIndent(line)
+                    rng[2] = (rng[2] < ind ? ind : line.length)
                     break
             }
 
