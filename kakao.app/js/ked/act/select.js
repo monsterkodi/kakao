@@ -58,19 +58,19 @@ export default {select:function (from, to)
     }
     this.selectWordAtCursor_highlightSelection()
     return this.deselectCursorHighlight()
+},selectWordAtCursor_highlightSelection_addNextHighlightToSelection:function ()
+{
+    if (!_k_.empty(this.s.highlights))
+    {
+        return this.addCurrentOrNextHighlightToSelection()
+    }
+    return this.selectWordAtCursor_highlightSelection()
 },selectWordAtCursor_highlightSelection_selectNextHighlight:function ()
 {
     if (!_k_.empty(this.s.highlights))
     {
         this.clearCursors()
         this.selectNextHighlight()
-    }
-    return this.selectWordAtCursor_highlightSelection()
-},selectWordAtCursor_highlightSelection_addNextHighlightToSelection:function ()
-{
-    if (!_k_.empty(this.s.highlights))
-    {
-        return this.addCurrentOrNextHighlightToSelection()
     }
     return this.selectWordAtCursor_highlightSelection()
 },deselectCursorHighlight:function ()

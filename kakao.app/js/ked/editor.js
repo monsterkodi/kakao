@@ -509,6 +509,12 @@ editor = (function ()
             case 'end':
                 return this.state.singleCursorAtEndOfLine()
 
+            case 'pageup':
+                return this.state.singleCursorPage('up')
+
+            case 'pagedown':
+                return this.state.singleCursorPage('down')
+
             case 'ctrl+h':
                 return this.state.setMainCursor(0,0)
 
@@ -616,22 +622,24 @@ editor = (function ()
             case 'ctrl+right':
                 return this.state.moveCursorsToEndOfSelectionsOrLines()
 
-            case 'cmd+g':
-            case 'ctrl+g':
-                return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()
+            case 'cmd+e':
+            case 'ctrl+e':
+                return this.state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
 
             case 'cmd+d':
             case 'ctrl+d':
                 return this.state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
 
-            case 'cmd+e':
-            case 'ctrl+e':
-                return this.state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+            case 'cmd+g':
+            case 'ctrl+g':
+                return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()
 
             case 'alt+cmd+d':
+            case 'alt+ctrl+d':
                 return this.state.selectWordAtCursor_highlightSelection_selectAllHighlights()
 
             case 'cmd+/':
+            case 'ctrl+/':
                 return this.state.toggleCommentAtSelectionOrCursorLines()
 
             case 'esc':

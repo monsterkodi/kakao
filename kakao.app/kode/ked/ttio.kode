@@ -12,7 +12,7 @@ function TTIO extends events
 
     @: ->
         
-        # @store()
+        @store()
         
         @hideCursor()
         
@@ -185,19 +185,24 @@ function TTIO extends events
     
     parseEsc: esc =>
         
-        lf '---- esc' esc
+        lf '---- esc' esc      
+
+        if esc.length == 1
+            code = esc.charCodeAt 0
+            if 1 <= code <= 26
+                key = String.fromCharCode code + 96
+                ⮐ @keyEventForCombo "alt+cmd+#{key}"
         
         switch esc
         
             'OP' ➜ ⮐ @keyEventForCombo('f1')
             'OQ' ➜ ⮐ @keyEventForCombo('f2')
             'OR' ➜ ⮐ @keyEventForCombo('f3')
-            'OS' ➜ ⮐ @keyEventForCombo('f4')
+            'OS' ➜ ⮐ @keyEventForCombo('f4')   
+                 ➜ lf 'esc' esc.charCodeAt(0) esc.length
             
-        char = esc.toString 'utf8'
-        
-        if event = @keyEventForChar char
-            return event
+        if event = @keyEventForChar esc
+            ⮐  event
         
     # 00000000    0000000   000   000  
     # 000   000  000   000  000 0 000  
@@ -271,14 +276,20 @@ function TTIO extends events
         mods.push 'ctrl'  if code & 0b10000
         
         event.mods = mods.join '+' if valid mods
-        event[m] = m in mods for m in ['shift' 'ctrl' 'alt' 'cmd']
+        event[m] = (m in mods) for m in ['shift' 'ctrl' 'alt' 'cmd']
                         
         if csi.endsWith 'M'
 
             event.type = switch code & 0b11100000
                 32  ➜ (code & 0b11 == 3) ? 'move' : 'drag'
                 64  ➜ 'wheel'
-                0   ➜ 'press'  
+                0   ➜ 'press' 
+
+        else 
+
+            event.type = switch code
+                35  ➜ 'move' # win terminal reports move differently?
+                    ➜ 'release' 
                 
         if event.type == 'wheel'
             
@@ -295,7 +306,7 @@ function TTIO extends events
                 1 ➜ 'middle'
                 2 ➜ 'right'
 
-        # lf 'mouse----' csi noon(event)                
+        #lf 'mouse----' csi noon(event)                
         event
             
     emitMouseEvent: event =>

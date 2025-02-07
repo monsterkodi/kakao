@@ -163,7 +163,7 @@ export
         mc  = util.endOfRange rng
         
         @deselect()
-        @setCursors [mc] 0
+        @setCursors [mc]
         
     singleCursorAtIndentOrStartOfLine: ->
         
@@ -179,7 +179,18 @@ export
             mc  = util.startOfRange rng
         
         @deselect()
-        @setCursors [mc] 0
+        @setCursors [mc]
+
+    singleCursorPage: dir ->
+
+        mc = @mainCursor()
+        
+        switch dir
+            'up'   ➜  mc[1] -= @cells.rows
+            'down' ➜  mc[1] += @cells.rows
+
+        @deselect()
+        @setCursors [mc]
         
     moveCursorsToStartOfSelectionsOrIndentOrStartOfLines: ->
         

@@ -348,6 +348,9 @@ function editor extends view
             'home'                      ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
             'end'                       ➜ ⮐ @state.singleCursorAtEndOfLine()
 
+            'pageup'                    ➜ ⮐ @state.singleCursorPage 'up'
+            'pagedown'                  ➜ ⮐ @state.singleCursorPage 'down'
+
             'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
             'ctrl+j'                    ➜ ⮐ @state.setMainCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             
@@ -387,13 +390,13 @@ function editor extends view
             'cmd+left'  'ctrl+left'     ➜ ⮐ @state.moveCursorsToStartOfSelectionsOrIndentOrStartOfLines()
             'cmd+right' 'ctrl+right'    ➜ ⮐ @state.moveCursorsToEndOfSelectionsOrLines()
             
-            'cmd+g' 'ctrl+g'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
-            'cmd+d' 'ctrl+d'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
             'cmd+e' 'ctrl+e'            ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+            'cmd+d' 'ctrl+d'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+            'cmd+g' 'ctrl+g'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
             
-            'alt+cmd+d'                 ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectAllHighlights()
+            'alt+cmd+d' 'alt+ctrl+d'    ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectAllHighlights()
 
-            'cmd+/'                     ➜ ⮐ @state.toggleCommentAtSelectionOrCursorLines()
+            'cmd+/' 'ctrl+/'            ➜ ⮐ @state.toggleCommentAtSelectionOrCursorLines()
             
             'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
 

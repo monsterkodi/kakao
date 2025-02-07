@@ -40,7 +40,8 @@ function scroll
             'release'
             
                 if @doDrag
-                    delete @doDrag
+                    delete @doDrag 
+                    @hover = @cells.isInsideScreen sx sy
                     ⮐ true
             
             'move'

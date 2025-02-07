@@ -46,7 +46,7 @@ export
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
     
     selectWordAtCursor_highlightSelection_selectAllHighlights: ->
-        
+        # alt+cmd+d alt+ctrl+d
         if valid @s.highlights 
             pos = @mainCursor()
             if @s.selections.length < @s.highlights.length
@@ -59,7 +59,7 @@ export
         @selectAllHighlights()
     
     highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight: ->
-        
+        # cmd+e ctrl+e
         if valid @s.highlights 
             if not @deselectCursorHighlight()
                 @moveCursorToNextHighlight()
@@ -68,20 +68,20 @@ export
         @selectWordAtCursor_highlightSelection()
         @deselectCursorHighlight()
     
-    selectWordAtCursor_highlightSelection_selectNextHighlight: ->
+    selectWordAtCursor_highlightSelection_addNextHighlightToSelection: ->
+        # cmd+d ctrl+d
+        if valid @s.highlights ➜ ⮐ @addCurrentOrNextHighlightToSelection()
+            
+        @selectWordAtCursor_highlightSelection()
         
+    selectWordAtCursor_highlightSelection_selectNextHighlight: ->
+        # cmd+g ctrl+g
         if valid @s.highlights 
             @clearCursors()
             @selectNextHighlight()
             
         @selectWordAtCursor_highlightSelection()
     
-    selectWordAtCursor_highlightSelection_addNextHighlightToSelection: ->
-        
-        if valid @s.highlights ➜ ⮐ @addCurrentOrNextHighlightToSelection()
-            
-        @selectWordAtCursor_highlightSelection()
-        
     deselectCursorHighlight: ->
         
         ⮐ if empty @s.highlights

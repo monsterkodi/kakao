@@ -46,6 +46,7 @@ scroll = (function ()
                 if (this.doDrag)
                 {
                     delete this.doDrag
+                    this.hover = this.cells.isInsideScreen(sx,sy)
                     return true
                 }
                 break

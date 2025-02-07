@@ -31,6 +31,7 @@ TTIO = (function ()
         this["clear"] = this["clear"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["write"] = this["write"].bind(this)
+        this.store()
         this.hideCursor()
         if (process.stdin.isTTY)
         {
@@ -297,9 +298,18 @@ TTIO = (function ()
 
     TTIO.prototype["parseEsc"] = function (esc)
     {
-        var char, event
+        var code, event, key
 
         lf('---- esc',esc)
+        if (esc.length === 1)
+        {
+            code = esc.charCodeAt(0)
+            if ((1 <= code && code <= 26))
+            {
+                key = String.fromCharCode(code + 96)
+                return this.keyEventForCombo(`alt+cmd+${key}`)
+            }
+        }
         switch (esc)
         {
             case 'OP':
@@ -314,10 +324,11 @@ TTIO = (function ()
             case 'OS':
                 return this.keyEventForCombo('f4')
 
+            default:
+                lf('esc',esc.charCodeAt(0),esc.length)
         }
 
-        char = esc.toString('utf8')
-        if (event = this.keyEventForChar(char))
+        if (event = this.keyEventForChar(esc))
         {
             return event
         }
@@ -413,7 +424,7 @@ TTIO = (function ()
         for (var _b_ = 0; _b_ < list.length; _b_++)
         {
             m = list[_b_]
-            event[m] = _k_.in(m,mods)
+            event[m] = (_k_.in(m,mods))
         }
         if (csi.endsWith('M'))
         {
@@ -430,6 +441,21 @@ TTIO = (function ()
                     case 0:
                         return 'press'
 
+                }
+
+            }).bind(this))()
+        }
+        else
+        {
+            event.type = ((function ()
+            {
+                switch (code)
+                {
+                    case 35:
+                        return 'move'
+
+                    default:
+                        return 'release'
                 }
 
             }).bind(this))()
@@ -480,11 +506,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _305_23_
+        var diff, _316_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_305_23_=this.lastClick) != null ? _305_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_316_23_=this.lastClick) != null ? _316_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -512,7 +538,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, text, _344_23_
+        var csi, dataStr, esc, event, text, _355_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {

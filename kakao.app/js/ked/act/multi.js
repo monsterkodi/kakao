@@ -170,7 +170,7 @@ export default {allCursors:function ()
     rng = util.lineRangeAtPos(this.allLines(),this.mainCursor())
     mc = util.endOfRange(rng)
     this.deselect()
-    return this.setCursors([mc],0)
+    return this.setCursors([mc])
 },singleCursorAtIndentOrStartOfLine:function ()
 {
     var ind, lines, mc, rng
@@ -188,7 +188,24 @@ export default {allCursors:function ()
         mc = util.startOfRange(rng)
     }
     this.deselect()
-    return this.setCursors([mc],0)
+    return this.setCursors([mc])
+},singleCursorPage:function (dir)
+{
+    var mc
+
+    mc = this.mainCursor()
+    switch (dir)
+    {
+        case 'up':
+            mc[1] -= this.cells.rows
+            break
+        case 'down':
+            mc[1] += this.cells.rows
+            break
+    }
+
+    this.deselect()
+    return this.setCursors([mc])
 },moveCursorsToStartOfSelectionsOrIndentOrStartOfLines:function ()
 {
     var cursors, lines, rngs, selections
