@@ -20,7 +20,7 @@ export
     insert: text ->
                 
         if valid @s.selections
-            # ⮐ @indentSelectedLines() if text == '\t'
+            ⮐ @indentSelectedLines() if text == '\t'
             @deleteSelection()
                     
         cursors = @allCursors()

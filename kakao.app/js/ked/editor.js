@@ -467,6 +467,30 @@ editor = (function ()
             case 'right':
                 return this.state.moveCursors('right')
 
+            case 'shift+up':
+                return this.state.moveCursorsAndSelect('up')
+
+            case 'shift+down':
+                return this.state.moveCursorsAndSelect('down')
+
+            case 'shift+left':
+                return this.state.moveCursorsAndSelect('left')
+
+            case 'shift+right':
+                return this.state.moveCursorsAndSelect('right')
+
+            case 'shift+cmd+right':
+                return this.state.moveCursorsAndSelect('eol')
+
+            case 'shift+cmd+left':
+                return this.state.moveCursorsAndSelect('bol')
+
+            case 'shift+ctrl+h':
+                return this.state.moveCursorAndSelect('bof')
+
+            case 'shift+ctrl+j':
+                return this.state.moveCursorAndSelect('eof')
+
             case 'shift+alt+up':
                 return this.state.moveMainCursorInDirection('up',{keep:true})
 
@@ -490,30 +514,6 @@ editor = (function ()
 
             case 'ctrl+j':
                 return this.state.setMainCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
-
-            case 'shift+ctrl+h':
-                return this.state.moveCursorAndSelect('bof')
-
-            case 'shift+ctrl+j':
-                return this.state.moveCursorAndSelect('eof')
-
-            case 'shift+up':
-                return this.state.moveCursorAndSelect('up')
-
-            case 'shift+down':
-                return this.state.moveCursorAndSelect('down')
-
-            case 'shift+left':
-                return this.state.moveCursorAndSelect('left')
-
-            case 'shift+right':
-                return this.state.moveCursorAndSelect('right')
-
-            case 'shift+cmd+right':
-                return this.state.moveCursorAndSelect('eol')
-
-            case 'shift+cmd+left':
-                return this.state.moveCursorAndSelect('bol')
 
             case 'alt+d':
                 return this.state.delete('next','alt')

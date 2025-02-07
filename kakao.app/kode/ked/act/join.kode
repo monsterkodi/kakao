@@ -47,4 +47,5 @@ export
                 
         @setLines lines        
         @setSelections selections
-        @setCursors cursors        
+        @setCursors cursors
+        

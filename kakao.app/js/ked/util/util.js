@@ -1057,7 +1057,7 @@ class util
         var dx
 
         dx = (dir === 'left' ? -1 : 1)
-        if (opt.jump)
+        if ((opt != null ? opt.jump : undefined))
         {
             return util.jumpDelta(lines[pos[1]],pos[0],dx,opt.jump)
         }
@@ -1579,6 +1579,87 @@ class util
             }
         }
         return [newLines,newRngs,newPosl]
+    }
+
+    static extendLineRangesByMovingPositionsInDirection (lines, rngs, posl, dir)
+    {
+        var newPosl, newRngs, pos, rng
+
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        var list = _k_.list(newPosl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            rng = [pos[0],pos[1],pos[0],pos[1]]
+            newRngs.push(rng)
+            switch (dir)
+            {
+                case 'left':
+                case 'right':
+                    pos[0] += util.numCharsFromPosToWordOrPunctInDirection(lines,pos,dir)
+                    break
+                case 'up':
+                    pos[1] -= 1
+                    break
+                case 'down':
+                    pos[1] += 1
+                    break
+                case 'eol':
+                    pos[0] = lines[pos[1]].length
+                    break
+                case 'bol':
+                    pos[0] = 0
+                    break
+                case 'bof':
+                    pos[0] = 0
+                    pos[1] = 0
+                    break
+                case 'eof':
+                    pos[1] = lines.length - 1
+                    pos[0] = lines[pos[1]].length
+                    break
+            }
+
+            switch (dir)
+            {
+                case 'left':
+                    rng[0] = rng[0] - 1
+                    break
+                case 'right':
+                    rng[2] = rng[2] + 1
+                    break
+                case 'up':
+                    rng[1] = _k_.max(0,rng[1] - 1)
+                    break
+                case 'down':
+                    rng[3] = _k_.min(lines.length - 1,rng[3] + 1)
+                    break
+                case 'eol':
+                    rng[2] = Infinity
+                    break
+                case 'bol':
+                    rng[0] = 0
+                    break
+                case 'bof':
+                    rng[1] = rng[0] = 0
+                    break
+                case 'eof':
+                    rng[3] = lines.length - 1
+                    rng[2] = lines[lines.length - 1].length
+                    break
+            }
+
+            if (rng[1] < lines.length)
+            {
+                rng[0] = _k_.clamp(0,lines[rng[1]].length,rng[0])
+            }
+            if (rng[3] < lines.length)
+            {
+                rng[2] = _k_.clamp(0,lines[rng[3]].length,rng[2])
+            }
+        }
+        return [newRngs,newPosl]
     }
 }
 

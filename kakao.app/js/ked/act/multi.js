@@ -305,4 +305,12 @@ export default {allCursors:function ()
     selection[2] = _k_.clamp(0,this.s.lines[selection[3]].length,selection[2])
     this.setSelections(selections)
     return this
+},moveCursorsAndSelect:function (dir)
+{
+    var cursors, selections
+
+    var _12_ = util.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir); selections = _12_[0]; cursors = _12_[1]
+
+    this.setSelections(selections)
+    return this.setCursors(cursors)
 }}
