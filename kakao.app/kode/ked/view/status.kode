@@ -6,8 +6,9 @@
 0000000      000     000   000     000      0000000   0000000   
 ###
 
-use ◆ cells theme
-use ./util ◆ color util
+use ..      ◆ theme
+use         ◆ cells 
+use ../util ◆ color util
 
 function status
 
@@ -17,6 +18,8 @@ function status
         @cells = new cells screen
         @file = ''
         @drawTime = ''
+        
+    init: x y w h -> @cells.init x y w h
         
     draw: =>
         

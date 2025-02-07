@@ -3,7 +3,8 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 var floor, pow, scroll
 
 import theme from "../theme.js"
-import cells from "../cells.js"
+
+import cells from "./cells.js"
 
 floor = Math.floor
 pow = Math.pow

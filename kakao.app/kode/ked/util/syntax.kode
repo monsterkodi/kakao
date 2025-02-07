@@ -6,10 +6,9 @@
 0000000      000     000   000     000     000   000  000   000
 ###
 
-use ../kxk ◆ kstr
-use ../kolor/kolor
-
-use ◆ theme
+use ../../kxk   ◆ kstr
+use ../../kolor ◆ kolor
+use    ..       ◆ theme
 
 function syntax
 

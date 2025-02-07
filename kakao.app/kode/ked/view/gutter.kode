@@ -6,13 +6,16 @@
  0000000    0000000      000        000     00000000  000   000  
 ###
 
-use ◆ theme cells
+use .. ◆ theme 
+use    ◆ cells
 
 function gutter
 
     @: screen @state ->
         
         @cells = new cells screen
+        
+    init: x y w h -> @cells.init x y w h
         
     draw: ->
         

@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ◆ events kstr post
-use ../cells 
-use ◆ knob
+use   ../view ◆ cells 
+use           ◆ knob
 
 function view extends events
 

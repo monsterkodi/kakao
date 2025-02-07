@@ -12,9 +12,8 @@ import join from "./act/join.js"
 import indent from "./act/indent.js"
 import multi from "./act/multi.js"
 
-import syntax from "./syntax.js"
-
 import util from "./util/util.js"
+import syntax from "./util/syntax.js"
 
 import child_process from "child_process"
 import os from "os"
@@ -230,7 +229,6 @@ state = (function ()
 
     state.prototype["cut"] = function ()
     {
-        lf('state.cut')
         this.copy()
         if (_k_.empty(this.s.selections))
         {

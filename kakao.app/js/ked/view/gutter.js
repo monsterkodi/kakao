@@ -2,7 +2,8 @@ var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} 
 
 var gutter
 
-import theme from "./theme.js"
+import theme from "../theme.js"
+
 import cells from "./cells.js"
 
 
@@ -13,6 +14,11 @@ gutter = (function ()
         this.state = state
     
         this.cells = new cells(screen)
+    }
+
+    gutter.prototype["init"] = function (x, y, w, h)
+    {
+        return this.cells.init(x,y,w,h)
     }
 
     gutter.prototype["draw"] = function ()

@@ -7,7 +7,6 @@
 ###
 
 use ◆ editor theme 
-# use ./view ◆ knob
 
 function konsole extends editor
 

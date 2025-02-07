@@ -6,7 +6,7 @@ import events from "../../kxk/events.js"
 import kstr from "../../kxk/kstr.js"
 import post from "../../kxk/post.js"
 
-import cells from "../cells.js"
+import cells from "./cells.js"
 
 import knob from "./knob.js"
 

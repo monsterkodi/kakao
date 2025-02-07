@@ -9,7 +9,7 @@
 use ../kxk ◆ events matchr kstr
 use ◆ state theme
 use ./util ◆ util color
-use ./view ◆ view scroll
+use ./view ◆ view scroll gutter
 
 function editor extends view
 
@@ -21,14 +21,21 @@ function editor extends view
         
         for feature in features
             switch feature
-                'scroll' ➜ @scroll = new scroll screen @state
+                'scroll' ➜ @scroll = new scroll @screen @state
+                'gutter' ➜ @gutter = new gutter @screen @state
         
     init: x y w h => 
         
         s = 0
+        g = 0 
+        
         if @scroll
             s = 1
             @scroll.init x     y     s       h 
+        if @gutter
+            g = @state.gutterWidth()
+            @gutter.init x+s   y     g       h
+            
         @cells.init      x+s   y     w-s     h
         @state.initView()
         
@@ -154,6 +161,7 @@ function editor extends view
             @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
 
         @scroll?.draw()
+        @gutter?.draw()
         super()
             
         @postDraw()
@@ -168,20 +176,12 @@ function editor extends view
     
     onMouse: type sx sy event =>
         
-        # lf 'onMouse1' @name 
-        
         ⮐ true if @scroll?.onMouse type sx sy event
         ⮐ true if super type sx sy event
-        
-        # lf 'onMouse2' @name 
-                
-        # ⮐ if row >= @cells.y + @cells.rows
         
         [col row] = @cells.posForScreen sx sy 
         
         ⮐ if row < 0 or row >= @cells.row
-        
-        # lf 'onMouse4' @name col row
         
         switch type
             

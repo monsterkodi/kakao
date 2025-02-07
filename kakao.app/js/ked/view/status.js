@@ -2,11 +2,12 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var status
 
-import cells from "./cells.js"
-import theme from "./theme.js"
+import theme from "../theme.js"
 
-import color from "./util/color.js"
-import util from "./util/util.js"
+import cells from "./cells.js"
+
+import color from "../util/color.js"
+import util from "../util/util.js"
 
 
 status = (function ()
@@ -20,6 +21,11 @@ status = (function ()
         this.cells = new cells(screen)
         this.file = ''
         this.drawTime = ''
+    }
+
+    status.prototype["init"] = function (x, y, w, h)
+    {
+        return this.cells.init(x,y,w,h)
     }
 
     status.prototype["draw"] = function ()

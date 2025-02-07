@@ -14,6 +14,7 @@ import color from "./util/color.js"
 
 import view from "./view/view.js"
 import scroll from "./view/scroll.js"
+import gutter from "./view/gutter.js"
 
 
 editor = (function ()
@@ -41,7 +42,10 @@ editor = (function ()
             switch (feature)
             {
                 case 'scroll':
-                    this.scroll = new scroll(screen,this.state)
+                    this.scroll = new scroll(this.screen,this.state)
+                    break
+                case 'gutter':
+                    this.gutter = new gutter(this.screen,this.state)
                     break
             }
 
@@ -50,13 +54,19 @@ editor = (function ()
 
     editor.prototype["init"] = function (x, y, w, h)
     {
-        var s
+        var g, s
 
         s = 0
+        g = 0
         if (this.scroll)
         {
             s = 1
             this.scroll.init(x,y,s,h)
+        }
+        if (this.gutter)
+        {
+            g = this.state.gutterWidth()
+            this.gutter.init(x + s,y,g,h)
         }
         this.cells.init(x + s,y,w - s,h)
         return this.state.initView()
@@ -64,7 +74,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _156_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _163_15_, _164_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -240,6 +250,7 @@ editor = (function ()
             this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
         }
         ;(this.scroll != null ? this.scroll.draw() : undefined)
+        ;(this.gutter != null ? this.gutter.draw() : undefined)
         editor.__super__.draw.call(this)
         return this.postDraw()
     }
@@ -249,7 +260,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _173_30_
+        var col, row, start, x, y, _179_30_
 
         if ((this.scroll != null ? this.scroll.onMouse(type,sx,sy,event) : undefined))
         {

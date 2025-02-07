@@ -2,11 +2,11 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var syntax
 
-import kstr from "../kxk/kstr.js"
+import kstr from "../../kxk/kstr.js"
 
-import kolor from "../kolor/kolor.js"
+import kolor from "../../kolor/kolor.js"
 
-import theme from "./theme.js"
+import theme from "../theme.js"
 
 
 syntax = (function ()
@@ -49,9 +49,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _34_36_
+        var _33_36_
 
-        return ((_34_36_=theme.syntax[this.getClass(x,y)]) != null ? _34_36_ : '#ff0000')
+        return ((_33_36_=theme.syntax[this.getClass(x,y)]) != null ? _33_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

@@ -6,11 +6,11 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status screen cells state konsole
-use ./util ◆ logfile util
-use ../kxk ▪ karg kstr slash post
 use ../kxk/nfs
-use child_process
+use ../kxk ▪ karg kstr slash post
+use        ◆ ttio editor state konsole
+use ./view ◆ screen cells status
+use ./util ◆ logfile util
 
 function KED
 
@@ -47,8 +47,7 @@ function KED
         @screen  = new screen @t
         
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter']
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'knob']
-        @gutter  = new gutter   @screen @editor.state
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'knob'  ]
         @status  = new status   @screen @editor.state
         
         lfc '▸                                         ked' @version
@@ -203,21 +202,20 @@ function KED
         w = @t.cols()
         h = @t.rows()
         
-        s = 1
         k = @viewSizes.konsole[1]
-        g = @editor.state.gutterWidth()
-        @status.gutter = g
+
+        @status.gutter = @editor.state.gutterWidth()
         
-        @gutter.cells.init s   0     g     h-k-1
-        @status.cells.init 0   h-1   w     1
-        @editor.init       g+s 0     w-g-s h-k-1    
-        @konsole.init      0   h-k-1 w-g-s k
+        @status.init  0  h-1   w     1
+        @editor.init  0  0     w h-k-1    
+        @konsole.init 0  h-k-1 w   k
                         
         @screen.init()
-        @gutter.draw()
+        
         @status.draw()
         @editor.draw()
         @konsole.draw()
+        
         @screen.render()
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))

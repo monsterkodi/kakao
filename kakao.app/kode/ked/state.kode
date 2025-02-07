@@ -6,10 +6,9 @@
 0000000      000     000   000     000     00000000  
 ###
 
-use ../kxk ◆ immutable kstr
-use ./act ◆ del insert select join indent multi
-use ◆ syntax 
-use ./util ◆ util
+use ../kxk  ◆ immutable kstr
+use  ./act  ◆ del insert select join indent multi
+use  ./util ◆ util syntax
 use child_process os
 
 function state
@@ -161,16 +160,7 @@ function state
     #  0000000   0000000      000     
     
     cut: =>
-        lf 'state.cut'
-        # if empty @s.selections
-            # @selectCursorLines()
-            # ⮐ @cut() if valid @s.selections
-
-            # if util.isEmptyLineAtPos @allLines() @mainCursor()
-                # lines = @allLines()
-                # lines.splice @mainCursor()[1] 1
-                # @setLines lines
-            # ⮐ 
+        # lf 'state.cut'
         @copy()
         if empty @s.selections
             @selectCursorLines()
