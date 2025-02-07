@@ -218,7 +218,6 @@ TTIO = (function ()
         mods = []
         type = 'press'
         splt = csi.slice(0, -1).split(';')
-        lc('csi',csi)
         if (splt.length > 1)
         {
             if (splt[1].endsWith(':2'))

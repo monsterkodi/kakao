@@ -6,13 +6,15 @@
 0000000    0000000  000   000   0000000   0000000  0000000
 ###
 
-use ◆ theme cells
+use .. ◆ theme cells
 
 {floor, pow} = Math
 
 function scroll
 
-    @: screen @state -> @cells = new cells screen        
+    @: screen @state -> @cells = new cells screen  
+    
+    init: x y w h -> @cells.init x y w h 
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

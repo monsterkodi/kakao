@@ -9,18 +9,27 @@
 use ../kxk ◆ events matchr kstr
 use ◆ state theme
 use ./util ◆ util color
-use ./view ◆ view
+use ./view ◆ view scroll
 
 function editor extends view
 
-    @: screen name ->
+    @: screen name features ->
         
-        super screen name
+        super screen name features
+        
         @state = new state @cells
         
+        for feature in features
+            switch feature
+                'scroll' ➜ @scroll = new scroll screen @state
+        
     init: x y w h => 
-    
-        @cells.init x y w h
+        
+        s = 0
+        if @scroll
+            s = 1
+            @scroll.init x     y     s       h 
+        @cells.init      x+s   y     w-s     h
         @state.initView()
         
     # 0000000    00000000    0000000   000   000  
@@ -143,6 +152,9 @@ function editor extends view
                     bg = color.darken bg 0.75
             @cells.set_bg x y bg
             @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
+
+        @scroll?.draw()
+        super()
             
         @postDraw()
         
@@ -156,9 +168,20 @@ function editor extends view
     
     onMouse: type sx sy event =>
         
-        ⮐ if row >= @cells.y + @cells.rows
+        # lf 'onMouse1' @name 
+        
+        ⮐ true if @scroll?.onMouse type sx sy event
+        ⮐ true if super type sx sy event
+        
+        # lf 'onMouse2' @name 
+                
+        # ⮐ if row >= @cells.y + @cells.rows
         
         [col row] = @cells.posForScreen sx sy 
+        
+        ⮐ if row < 0 or row >= @cells.row
+        
+        # lf 'onMouse4' @name col row
         
         switch type
             
@@ -223,7 +246,7 @@ function editor extends view
             
                 delete @dragStart
                 
-        true
+        false
                 
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -308,7 +331,7 @@ function editor extends view
     
     onKey: key event =>
         
-        lf 'key' key
+        lc 'key' key
         
         if @state.s.cursors.length == 1
             

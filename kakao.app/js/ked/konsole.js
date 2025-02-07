@@ -5,19 +5,15 @@ var konsole
 import editor from "./editor.js"
 import theme from "./theme.js"
 
-import knob from "./view/knob.js"
-
 
 konsole = (function ()
 {
     _k_.extend(konsole, editor)
-    function konsole (screen, name)
+    function konsole (screen, name, features)
     {
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
-        this["postDraw"] = this["postDraw"].bind(this)
-        konsole.__super__.constructor.call(this,screen,name)
-        this.knob = new knob(this.cells,this.name)
+        konsole.__super__.constructor.call(this,screen,name,features)
         global.lc = (function (...args)
         {
             var text
@@ -29,11 +25,6 @@ konsole = (function ()
             this.state.insert('\n')
             return this.state.insert(text)
         }).bind(this)
-    }
-
-    konsole.prototype["postDraw"] = function ()
-    {
-        return this.knob.draw()
     }
 
     konsole.prototype["onWheel"] = function (col, row, dir, mods)

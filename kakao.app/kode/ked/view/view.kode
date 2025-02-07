@@ -6,14 +6,33 @@
     0      000  00000000  00     00
 ###
 
-use ../cells 
 use ../../kxk ◆ events kstr post
+use ../cells 
+use ◆ knob
 
 function view extends events
 
-    @: @screen @name ->
+    @: @screen @name features ->
         
         @cells = new cells @screen
+        
+        for feature in features
+            switch feature
+                'knob' ➜ @knob = new knob @cells @name
+                
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: type sx sy event =>
+    
+        @knob?.onMouse type sx sy event
+        
+    draw: =>
+        
+        @knob?.draw()
         
     toggle: => 
     

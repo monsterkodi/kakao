@@ -47,6 +47,8 @@ function knob
             
                 @hover = row == 0
                 
+        false
+                
     draw: =>
         
         fg = @hover ? theme.scroll_knob : theme.konsole

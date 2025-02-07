@@ -2,8 +2,8 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 
 var floor, pow, scroll
 
-import theme from "./theme.js"
-import cells from "./cells.js"
+import theme from "../theme.js"
+import cells from "../cells.js"
 
 floor = Math.floor
 pow = Math.pow
@@ -19,6 +19,11 @@ scroll = (function ()
         this["scrollTo"] = this["scrollTo"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this.cells = new cells(screen)
+    }
+
+    scroll.prototype["init"] = function (x, y, w, h)
+    {
+        return this.cells.init(x,y,w,h)
     }
 
     scroll.prototype["onMouse"] = function (type, sx, sy)

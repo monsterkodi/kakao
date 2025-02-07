@@ -6,7 +6,7 @@
 000   000  00000000  0000000    
 ###
 
-use ◆ ttio gutter editor status screen cells state scroll konsole
+use ◆ ttio gutter editor status screen cells state konsole
 use ./util ◆ logfile util
 use ../kxk ▪ karg kstr slash post
 use ../kxk/nfs
@@ -46,10 +46,9 @@ function KED
                 
         @screen  = new screen @t
         
-        @editor  = new editor   @screen 'editor'
-        @konsole = new konsole  @screen 'konsole'
+        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter']
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'knob']
         @gutter  = new gutter   @screen @editor.state
-        @scroll  = new scroll   @screen @editor.state
         @status  = new status   @screen @editor.state
         
         lfc '▸                                         ked' @version
@@ -58,9 +57,9 @@ function KED
         
         post.on     'view.size'   @onViewSize
         
-        @mouseHandlers = [@scroll @konsole.knob @editor]
-        @wheelHandlers = [        @konsole @editor]
-        @keyHandlers   = [        @konsole @editor]
+        @mouseHandlers = [@konsole @editor]
+        @wheelHandlers = [@konsole @editor]
+        @keyHandlers   = [@konsole @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -209,22 +208,13 @@ function KED
         g = @editor.state.gutterWidth()
         @status.gutter = g
         
-        if false # scrollbar on right side
-            @scroll.cells.init w-s 0     s     h-k-1
-            @gutter.cells.init 0   0     g     h-k-1
-            @status.cells.init 0   h-1   w     1
-            @editor.init       g   0     w-g-s h-k-1
-            @konsole.init      0   h-k-1 w-g-s k
-        else
-            @scroll.cells.init 0   0     s     h-k-1 
-            @gutter.cells.init s   0     g     h-k-1
-            @status.cells.init 0   h-1   w     1
-            @editor.init       g+s 0     w-g-s h-k-1    
-            @konsole.init      0   h-k-1 w-g-s k
+        @gutter.cells.init s   0     g     h-k-1
+        @status.cells.init 0   h-1   w     1
+        @editor.init       g+s 0     w-g-s h-k-1    
+        @konsole.init      0   h-k-1 w-g-s k
                         
         @screen.init()
         @gutter.draw()
-        @scroll.draw()
         @status.draw()
         @editor.draw()
         @konsole.draw()

@@ -46,10 +46,11 @@ knob = (function ()
                 }
                 break
             case 'move':
-                return this.hover = row === 0
-
+                this.hover = row === 0
+                break
         }
 
+        return false
     }
 
     knob.prototype["draw"] = function ()

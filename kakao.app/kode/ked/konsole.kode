@@ -7,15 +7,13 @@
 ###
 
 use ◆ editor theme 
-use ./view ◆ knob
+# use ./view ◆ knob
 
 function konsole extends editor
 
-    @: screen name ->
+    @: screen name features ->
         
-        super screen name
-        
-        @knob = new knob @cells @name
+        super screen name features
         
         global.lc = args... => 
         
@@ -23,8 +21,6 @@ function konsole extends editor
             @state.insert '\n' 
             @state.insert text
                          
-    postDraw: => @knob.draw()
-                                    
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
     # 000000000  000000000  0000000   0000000   000      

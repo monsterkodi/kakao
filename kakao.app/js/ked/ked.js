@@ -9,7 +9,6 @@ import status from "./status.js"
 import screen from "./screen.js"
 import cells from "./cells.js"
 import state from "./state.js"
-import scroll from "./scroll.js"
 import konsole from "./konsole.js"
 
 import logfile from "./util/logfile.js"
@@ -71,15 +70,14 @@ ked [file]
             }
         }).bind(this)
         this.screen = new screen(this.t)
-        this.editor = new editor(this.screen,'editor')
-        this.konsole = new konsole(this.screen,'konsole')
+        this.editor = new editor(this.screen,'editor',['scroll','gutter'])
+        this.konsole = new konsole(this.screen,'konsole',['scroll','knob'])
         this.gutter = new gutter(this.screen,this.editor.state)
-        this.scroll = new scroll(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
         lfc('▸                                         ked',this.version)
         this.editor.on('redraw',this.redraw)
         post.on('view.size',this.onViewSize)
-        this.mouseHandlers = [this.scroll,this.konsole.knob,this.editor]
+        this.mouseHandlers = [this.konsole,this.editor]
         this.wheelHandlers = [this.konsole,this.editor]
         this.keyHandlers = [this.konsole,this.editor]
         this.t.on('key',this.onKey)
@@ -107,7 +105,7 @@ ked [file]
 
     KED.prototype["onException"] = function (err)
     {
-        var _89_10_
+        var _88_10_
 
         ;(this.t != null ? this.t.quit() : undefined)
         console.error(err)
@@ -249,25 +247,12 @@ ked [file]
         k = this.viewSizes.konsole[1]
         g = this.editor.state.gutterWidth()
         this.status.gutter = g
-        if (false)
-        {
-            this.scroll.cells.init(w - s,0,s,h - k - 1)
-            this.gutter.cells.init(0,0,g,h - k - 1)
-            this.status.cells.init(0,h - 1,w,1)
-            this.editor.init(g,0,w - g - s,h - k - 1)
-            this.konsole.init(0,h - k - 1,w - g - s,k)
-        }
-        else
-        {
-            this.scroll.cells.init(0,0,s,h - k - 1)
-            this.gutter.cells.init(s,0,g,h - k - 1)
-            this.status.cells.init(0,h - 1,w,1)
-            this.editor.init(g + s,0,w - g - s,h - k - 1)
-            this.konsole.init(0,h - k - 1,w - g - s,k)
-        }
+        this.gutter.cells.init(s,0,g,h - k - 1)
+        this.status.cells.init(0,h - 1,w,1)
+        this.editor.init(g + s,0,w - g - s,h - k - 1)
+        this.konsole.init(0,h - k - 1,w - g - s,k)
         this.screen.init()
         this.gutter.draw()
-        this.scroll.draw()
         this.status.draw()
         this.editor.draw()
         this.konsole.draw()
