@@ -330,15 +330,20 @@ function editor extends view
             'left'                      ➜ ⮐ @state.moveCursors 'left' 
             'right'                     ➜ ⮐ @state.moveCursors 'right'
             
+            'cmd+left'  'ctrl+left'     ➜ ⮐ @state.moveCursors ['bos' 'ind_bol']
+            'cmd+right' 'ctrl+right'    ➜ ⮐ @state.moveCursors ['eos' 'ind_eol']
+            
+            'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
+            'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
+            
             'shift+up'                  ➜ ⮐ @state.moveCursorsAndSelect 'up'
             'shift+down'                ➜ ⮐ @state.moveCursorsAndSelect 'down'
             'shift+left'                ➜ ⮐ @state.moveCursorsAndSelect 'left'
             'shift+right'               ➜ ⮐ @state.moveCursorsAndSelect 'right'
             'shift+cmd+right'           ➜ ⮐ @state.moveCursorsAndSelect 'ind_eol'
             'shift+cmd+left'            ➜ ⮐ @state.moveCursorsAndSelect 'ind_bol'
-            
-            'shift+ctrl+h'              ➜ ⮐ @state.moveCursorAndSelect 'bof'
-            'shift+ctrl+j'              ➜ ⮐ @state.moveCursorAndSelect 'eof'
+            'shift+ctrl+h'              ➜ ⮐ @state.moveCursorsAndSelect 'bof'
+            'shift+ctrl+j'              ➜ ⮐ @state.moveCursorsAndSelect 'eof'
             
             'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
             'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
@@ -370,11 +375,9 @@ function editor extends view
             
             'alt+up'                    ➜ ⮐ @state.moveSelectionOrCursorLines 'up'
             'alt+down'                  ➜ ⮐ @state.moveSelectionOrCursorLines 'down'
-            'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
-            'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
 
-            'cmd+up'   'ctrl+up'        ➜ ⮐ @state.expandCursors   'up'
-            'cmd+down' 'ctrl+down'      ➜ ⮐ @state.expandCursors   'down'
+            'cmd+up'   'ctrl+up'               ➜ ⮐ @state.expandCursors   'up'
+            'cmd+down' 'ctrl+down'             ➜ ⮐ @state.expandCursors   'down'
             'shift+cmd+up'   'shift+ctrl+up'   ➜ ⮐ @state.contractCursors 'up'
             'shift+cmd+down' 'shift+ctrl+down' ➜ ⮐ @state.contractCursors 'down'
                
@@ -386,9 +389,6 @@ function editor extends view
             'cmd+j'       'ctrl+j'       ➜ ⮐ @state.joinLines()
             'cmd+l'       'ctrl+l'       ➜ ⮐ @state.selectMoreLines()
             'shift+cmd+l' 'shift+ctrl+l' ➜ ⮐ @state.selectLessLines()
-
-            'cmd+left'  'ctrl+left'     ➜ ⮐ @state.moveCursors ['bos' 'ind_bol']
-            'cmd+right' 'ctrl+right'    ➜ ⮐ @state.moveCursors ['eos' 'ind_eol']
             
             'cmd+e' 'ctrl+e'            ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
             'cmd+d' 'ctrl+d'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()

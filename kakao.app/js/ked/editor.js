@@ -467,6 +467,20 @@ editor = (function ()
             case 'right':
                 return this.state.moveCursors('right')
 
+            case 'cmd+left':
+            case 'ctrl+left':
+                return this.state.moveCursors(['bos','ind_bol'])
+
+            case 'cmd+right':
+            case 'ctrl+right':
+                return this.state.moveCursors(['eos','ind_eol'])
+
+            case 'alt+left':
+                return this.state.moveCursors('left',{jump:['ws','word','empty','punct']})
+
+            case 'alt+right':
+                return this.state.moveCursors('right',{jump:['ws','word','empty','punct']})
+
             case 'shift+up':
                 return this.state.moveCursorsAndSelect('up')
 
@@ -486,10 +500,10 @@ editor = (function ()
                 return this.state.moveCursorsAndSelect('ind_bol')
 
             case 'shift+ctrl+h':
-                return this.state.moveCursorAndSelect('bof')
+                return this.state.moveCursorsAndSelect('bof')
 
             case 'shift+ctrl+j':
-                return this.state.moveCursorAndSelect('eof')
+                return this.state.moveCursorsAndSelect('eof')
 
             case 'shift+alt+up':
                 return this.state.moveMainCursorInDirection('up',{keep:true})
@@ -567,12 +581,6 @@ editor = (function ()
             case 'alt+down':
                 return this.state.moveSelectionOrCursorLines('down')
 
-            case 'alt+left':
-                return this.state.moveCursors('left',{jump:['ws','word','empty','punct']})
-
-            case 'alt+right':
-                return this.state.moveCursors('right',{jump:['ws','word','empty','punct']})
-
             case 'cmd+up':
             case 'ctrl+up':
                 return this.state.expandCursors('up')
@@ -613,14 +621,6 @@ editor = (function ()
             case 'shift+cmd+l':
             case 'shift+ctrl+l':
                 return this.state.selectLessLines()
-
-            case 'cmd+left':
-            case 'ctrl+left':
-                return this.state.moveCursors(['bos','ind_bol'])
-
-            case 'cmd+right':
-            case 'ctrl+right':
-                return this.state.moveCursors(['eos','ind_eol'])
 
             case 'cmd+e':
             case 'ctrl+e':

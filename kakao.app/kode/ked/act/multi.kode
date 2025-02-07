@@ -254,37 +254,31 @@ export
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
     
-    moveCursorAndSelect: dir ->
-        
-        selections = @allSelections()
-        mc = @mainCursor()
-        selection = [mc[0] mc[1] mc[0] mc[1]]
-        selections.push selection 
-        
-        @moveCursors dir
-        
-        switch dir
-            'left'  ➜ selection[0] = selection[0]-1
-            'right' ➜ selection[2] = selection[2]+1
-            'up'    ➜ selection[1] = max 0 selection[1]-1
-            'down'  ➜ selection[3] = min @s.lines.length-1 selection[3]+1
-            'eol'   ➜ selection[2] = Infinity
-            'bol'   ➜ selection[0] = 0
-            'bof'   ➜ selection[1] = 0; selection[0] = 0
-            'eof'   ➜ selection[3] = @s.lines.length-1; selection[2] = @s.lines[@s.lines.length-1].length
-            
-        selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
-        selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
-        
-        @setSelections selections
-        @
+    # moveCursorAndSelect: dir ->
+#         
+        # selections = @allSelections()
+        # mc = @mainCursor()
+        # selection = [mc[0] mc[1] mc[0] mc[1]]
+        # selections.push selection 
+#         
+        # @moveCursors dir
+#         
+        # switch dir
+            # 'left'  ➜ selection[0] = selection[0]-1
+            # 'right' ➜ selection[2] = selection[2]+1
+            # 'up'    ➜ selection[1] = max 0 selection[1]-1
+            # 'down'  ➜ selection[3] = min @s.lines.length-1 selection[3]+1
+            # 'eol'   ➜ selection[2] = Infinity
+            # 'bol'   ➜ selection[0] = 0
+            # 'bof'   ➜ selection[1] = 0; selection[0] = 0
+            # 'eof'   ➜ selection[3] = @s.lines.length-1; selection[2] = @s.lines[@s.lines.length-1].length
+#             
+        # selection[0] = clamp 0 @s.lines[selection[1]].length selection[0]
+        # selection[2] = clamp 0 @s.lines[selection[3]].length selection[2]
+#         
+        # @setSelections selections
+        # @
 
-    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
-    # 000       000   000  000   000  000       000   000  000   000  000       
-    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
-    # 000       000   000  000   000       000  000   000  000   000       000  
-    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
-    
     moveCursorsAndSelect: dir ->
         
         [selections cursors] = util.extendLineRangesByMovingPositionsInDirection @allLines() @allSelections() @allCursors() dir

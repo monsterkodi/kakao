@@ -550,16 +550,26 @@ class util
         
     @jumpDelta: line px dx jump ->
         
-        ci = px
-        if nc = cat = util.categoryForChar(util.lineChar(line ci))
+        if dx > 0
+            ci = px
+            if nc = cat = util.categoryForChar util.lineChar(line ci)
+                ⮐ dx if cat not in jump
+                while true
+                    ci += dx
+                    nc = util.categoryForChar util.lineChar(line ci)
+                    break if nc != cat
+                    break if ci <= 0
+                    ⮐ 1 if nc == 'empty'
+            ci - px
+        else
+            ci = px - 1
+            ⮐ 0 if ci < 0
+            if ci >= line.length and 'empty' in jump ➜ ⮐ line.length - ci - 1
+            cat = util.categoryForChar util.lineChar(line ci)
             ⮐ dx if cat not in jump
-            while true
+            while 0 <= ci < line.length and util.categoryForChar(util.lineChar(line ci)) == cat
                 ci += dx
-                nc = util.categoryForChar(util.lineChar(line ci))
-                break if nc != cat
-                break if ci <= 0
-                ⮐ 1 if dx > 0 and nc == 'empty'
-        ci - px
+            min dx ci - px + 1
 
     @numCharsFromPosToWordOrPunctInDirection: lines pos dir opt ->
         
@@ -950,7 +960,7 @@ class util
                 'eol'       ➜ pos[0] = line.length
                 'bol'       ➜ pos[0] = 0
                 'bof'       ➜ pos[0] = 0; pos[1] = 0
-                'eof'       ➜ pos[1] = lines.length-1; pos[0] = line.length
+                'eof'       ➜ pos[1] = lines.length-1; pos[0] = lines[lines.length-1].length
 
                 'ind_bol'   ➜ ind = util.numIndent(line); pos[0] = pos[0] > ind ? ind : 0
                 'ind_eol'   ➜ ind = util.numIndent(line); pos[0] = pos[0] < ind ? ind : line.length
