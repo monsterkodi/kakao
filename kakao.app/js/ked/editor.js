@@ -15,6 +15,7 @@ import color from "./util/color.js"
 import view from "./view/view.js"
 import scroll from "./view/scroll.js"
 import gutter from "./view/gutter.js"
+import mapscr from "./view/mapscr.js"
 
 
 editor = (function ()
@@ -47,6 +48,9 @@ editor = (function ()
                 case 'gutter':
                     this.gutter = new gutter(this.screen,this.state)
                     break
+                case 'mapscr':
+                    this.mapscr = new mapscr(this.screen,this.state)
+                    break
             }
 
         }
@@ -54,10 +58,11 @@ editor = (function ()
 
     editor.prototype["init"] = function (x, y, w, h)
     {
-        var g, s
+        var g, m, s
 
         s = 0
         g = 0
+        m = 0
         if (this.scroll)
         {
             s = 1
@@ -68,13 +73,18 @@ editor = (function ()
             g = this.state.gutterWidth()
             this.gutter.init(x + s,y,g,h)
         }
-        this.cells.init(x + s + g,y,w - s - g,h)
+        if (this.mapscr)
+        {
+            m = 8
+            this.mapscr.init(x + w - m,y,m,h)
+        }
+        this.cells.init(x + s + g,y,w - s - g - m,h)
         return this.state.initView()
     }
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _170_15_, _171_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _176_15_, _177_15_, _178_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -251,6 +261,7 @@ editor = (function ()
         }
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
+        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
         editor.__super__.draw.call(this)
         return this.postDraw()
     }
@@ -260,7 +271,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _186_30_
+        var col, row, start, x, y, _194_30_
 
         if ((this.scroll != null ? this.scroll.onMouse(type,sx,sy,event) : undefined))
         {

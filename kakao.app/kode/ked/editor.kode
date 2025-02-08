@@ -9,7 +9,7 @@
 use ../kxk ◆ events matchr kstr
 use ◆ state theme
 use ./util ◆ util color
-use ./view ◆ view scroll gutter
+use ./view ◆ view scroll gutter mapscr
 
 function editor extends view
 
@@ -23,6 +23,7 @@ function editor extends view
             switch feature
                 'scroll' ➜ @scroll = new scroll @screen @state
                 'gutter' ➜ @gutter = new gutter @screen @state
+                'mapscr' ➜ @mapscr = new mapscr @screen @state
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -34,6 +35,7 @@ function editor extends view
         
         s = 0
         g = 0 
+        m = 0
         
         if @scroll
             s = 1
@@ -43,7 +45,11 @@ function editor extends view
             g = @state.gutterWidth()
             @gutter.init x+s   y     g       h
             
-        @cells.init      x+s+g y     w-s-g   h
+        if @mapscr
+            m = 8
+            @mapscr.init x+w-m y     m       h
+            
+        @cells.init      x+s+g y     w-s-g-m h
         @state.initView()
         
     # 0000000    00000000    0000000   000   000  
@@ -169,6 +175,8 @@ function editor extends view
 
         @scroll?.draw()
         @gutter?.draw()
+        @mapscr?.draw()
+        
         super()
             
         @postDraw()

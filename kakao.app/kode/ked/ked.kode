@@ -46,7 +46,7 @@ function KED
                 
         @screen  = new screen @t
         
-        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter']
+        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr']
         @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob'  ]
         @status  = new status   @screen @editor.state
         
@@ -63,7 +63,7 @@ function KED
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
         @t.on 'wheel'  @onWheel
-        @t.on 'resize' @redraw
+        @t.on 'resize' @onResize
         @t.on 'paste'  @onPaste
                                     
         if valid args.options
@@ -73,7 +73,7 @@ function KED
             @editor.state.loadLines ['']
             @t.setCursor 0 0
             @redraw()
-        
+            
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
     # 0000000    000   000  000 0 000  
@@ -194,6 +194,13 @@ function KED
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
     onViewSize: name x y => @viewSizes[name] = [x y]
+    
+    onResize: cols rows size => 
+        
+        lf 'ked.onResize' cols rows size
+        @editor.mapscr.onResize()
+        
+        @redraw()
     
     redraw: =>
         

@@ -50,6 +50,7 @@ TTIO = (function ()
         this.write('\x1b[=31;1u')
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
+        setTimeout(this.onResize,10)
         return TTIO.__super__.constructor.apply(this, arguments)
     }
 
@@ -121,7 +122,7 @@ TTIO = (function ()
 
     TTIO.prototype["onResize"] = function ()
     {
-        return this.emit('resize',this.cols(),this.rows())
+        return this.write('\x1b[14t')
     }
 
     TTIO.prototype["parseKitty"] = function (csi)
@@ -291,6 +292,10 @@ TTIO = (function ()
 
         }
 
+        if (csi.startsWith('_G' && csi.endsWith(';OK')))
+        {
+            return
+        }
         return lf('---- csi',csi)
     }
 
@@ -306,6 +311,13 @@ TTIO = (function ()
             {
                 key = String.fromCharCode(code + 96)
                 return this.keyEventForCombo(`alt+cmd+${key}`)
+            }
+        }
+        else
+        {
+            if (esc.startsWith('_G'))
+            {
+                return
             }
         }
         switch (esc)
@@ -504,11 +516,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _316_23_
+        var diff, _322_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_316_23_=this.lastClick) != null ? _316_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_322_23_=this.lastClick) != null ? _322_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -536,7 +548,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, text, _355_23_
+        var csi, dataStr, esc, event, pxs, text, _361_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
@@ -565,6 +577,18 @@ TTIO = (function ()
         }
         if (csi)
         {
+            if (csi.startsWith('4;') && csi.endsWith('t'))
+            {
+                pxs = csi.slice(2, -1).split(';').map(function (p)
+                {
+                    return parseInt(p)
+                })
+                this.pixels = [pxs[1],pxs[0]]
+                this.cellsz = [parseInt(this.pixels[0] / this.cols()),parseInt(this.pixels[1] / this.rows())]
+                lf('emit resize',this.cols(),this.rows(),this.pixels,this.cellsz)
+                this.emit('resize',this.cols(),this.rows(),this.pixels,this.cellsz)
+                return
+            }
             if (csi.startsWith('200~'))
             {
                 this.pasteBuffer = data.slice(6).toString('utf8')

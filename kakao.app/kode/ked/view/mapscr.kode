@@ -1,0 +1,66 @@
+
+###
+00     00   0000000   00000000    0000000   0000000  00000000 
+000   000  000   000  000   000  000       000       000   000
+000000000  000000000  00000000   0000000   000       0000000  
+000 0 000  000   000  000             000  000       000   000
+000   000  000   000  000        0000000    0000000  000   000
+###
+
+use .. ◆ theme 
+use    ◆ cells
+
+function mapscr
+
+    @: screen @state ->
+        
+        @cells = new cells screen
+        
+    onResize: ->
+        
+        t = @cells.screen.t
+        
+        ⮐ if empty t.pixels
+        
+        [w h] = [@cells.cols * t.cellsz[0] @cells.rows * t.cellsz[1]]
+                
+        data = Buffer.allocUnsafe w*h*3
+        for y in 0...h
+            for x in 0...w
+                data[(y*w+x)*3+0] = min 255 x
+                data[(y*w+x)*3+1] = 0
+                data[(y*w+x)*3+2] = min 255 y
+        
+        if 'kitty' in process.env.TERM and data.length > 4096
+            base64 = data[0...4096].toString 'base64'
+            t.write "\x1b_Gi=666,p=777,f=24,s=#{w},v=#{h},m=1;#{base64}\x1b\\"
+            rest = data.length%4096
+            for i in 1...parseInt(data.length/4096)
+                base64 = data[i*4096...(i+1)*4096].toString 'base64'
+                t.write "\x1b_Gm=1;#{base64}\x1b\\"
+            base64 = data[data.length-rest..].toString 'base64'
+            t.write "\x1b_Gm=0;#{base64}\x1b\\"
+        else
+            base64 = data.toString 'base64'
+            t.write "\x1b_Gi=666,p=777,f=24,s=#{w},v=#{h};#{base64}\x1b\\"
+                
+    init: x y w h -> @cells.init x y w h
+        
+    draw: ->
+        
+        # fg = theme.selection
+        # bg = theme.gutter
+        
+        # for row in 0...@cells.rows
+            # for col in 0...@cells.cols
+                # @cells.set col row ' ' fg bg
+                
+        t = @cells.screen.t
+        
+        ⮐ if empty t.pixels
+        
+        t.setCursor @cells.x @cells.y
+        t.write "\x1b_Ga=p,i=666,p=777\x1b\\"
+        @
+                
+export mapscr

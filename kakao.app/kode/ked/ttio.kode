@@ -38,6 +38,8 @@ function TTIO extends events
         process.stdout.on 'resize' @onResize
         process.stdin.on  'data'   @onData
         
+        setTimeout @onResize 10 # delay screen size request due to ghostty bug
+        
     write: str => process.stdout.write str
     
     quit: =>
@@ -74,11 +76,11 @@ function TTIO extends events
         else
             @hideCursor()
             
-    store:   => @write '\x1b7'
-    restore: => @write '\x1b8'
+    store:    => @write '\x1b7'
+    restore:  => @write '\x1b8'
 
-    onResize: => @emit 'resize' @cols() @rows()
-            
+    onResize: => @write '\x1b[14t'
+                
     # 000   000  000  000000000  000000000  000   000  
     # 000  000   000     000        000      000 000   
     # 0000000    000     000        000       00000    
@@ -175,6 +177,8 @@ function TTIO extends events
             '6~'    ➜ ⮐ @keyEventForCombo('pagedown')
             'Z'     ➜ ⮐ @keyEventForCombo('shift+z' 'Z')
         
+        ⮐ if csi.startsWith '_G' and csi.endsWith ';OK'
+            
         lf '---- csi' csi
         
     # 00000000   0000000   0000000  
@@ -192,6 +196,8 @@ function TTIO extends events
             if 1 <= code <= 26
                 key = String.fromCharCode code + 96
                 ⮐ @keyEventForCombo "alt+cmd+#{key}"
+        else
+            ⮐ if esc.startsWith '_G'
         
         switch esc
         
@@ -367,6 +373,17 @@ function TTIO extends events
             ⮐ 
         
         if csi
+            
+            if csi.startsWith('4;') and csi.endsWith('t')
+                
+                pxs = csi[2..-2].split(';').map (p) -> parseInt(p)
+                @pixels = [pxs[1] pxs[0]]
+                @cellsz = [parseInt(@pixels[0]/@cols()) parseInt(@pixels[1]/@rows())]
+
+                lf 'emit resize' @cols() @rows() @pixels @cellsz
+                
+                @emit 'resize' @cols() @rows() @pixels @cellsz
+                ⮐ 
             
             if csi.startsWith '200~' # paste start
                 

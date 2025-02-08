@@ -30,6 +30,7 @@ KED = (function ()
         var args, h
 
         this["redraw"] = this["redraw"].bind(this)
+        this["onResize"] = this["onResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -68,7 +69,7 @@ ked [file]
             }
         }).bind(this)
         this.screen = new screen(this.t)
-        this.editor = new editor(this.screen,'editor',['scroll','gutter'])
+        this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','knob'])
         this.status = new status(this.screen,this.editor.state)
         lfc('▸                                         ked',this.version)
@@ -80,7 +81,7 @@ ked [file]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
-        this.t.on('resize',this.redraw)
+        this.t.on('resize',this.onResize)
         this.t.on('paste',this.onPaste)
         if (!_k_.empty(args.options))
         {
@@ -231,6 +232,13 @@ ked [file]
     KED.prototype["onViewSize"] = function (name, x, y)
     {
         return this.viewSizes[name] = [x,y]
+    }
+
+    KED.prototype["onResize"] = function (cols, rows, size)
+    {
+        lf('ked.onResize',cols,rows,size)
+        this.editor.mapscr.onResize()
+        return this.redraw()
     }
 
     KED.prototype["redraw"] = function ()
