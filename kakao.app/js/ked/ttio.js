@@ -159,7 +159,6 @@ TTIO = (function ()
             {
                 return
             }
-            lfc('csi:',csi)
             key = ((function ()
             {
                 switch (code)

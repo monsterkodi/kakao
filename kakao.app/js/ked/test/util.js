@@ -238,18 +238,18 @@ abc`)
         compare(util.splitLineRanges(lines,[[0,0,1,2]]),[[0,0,1,0],[0,1,0,1],[0,2,1,2]])
         compare(util.splitLineRanges(lines,[[0,2,1,2],[2,2,3,2]]),[[0,2,1,2],[2,2,3,2]])
     })
-    section("linesForLineRange", function ()
+    section("linesForRange", function ()
     {
         lines = util.linesForText(`123
 456
 
 abc
 def`)
-        compare(util.linesForLineRange(lines,[0,0,3,4]),['123','456','','abc','def'])
-        compare(util.linesForLineRange(lines,[0,0,0,0]),[''])
-        compare(util.linesForLineRange(lines,[0,0,1,0]),['1'])
-        compare(util.linesForLineRange(lines,[3,0,1,1]),['','4'])
-        compare(util.linesForLineRange(lines,[3,0,0,1]),['',''])
+        compare(util.linesForRange(lines,[0,0,3,4]),['123','456','','abc','def'])
+        compare(util.linesForRange(lines,[0,0,0,0]),[''])
+        compare(util.linesForRange(lines,[0,0,1,0]),['1'])
+        compare(util.linesForRange(lines,[3,0,1,1]),['','4'])
+        compare(util.linesForRange(lines,[3,0,0,1]),['',''])
     })
     section("rangesForLinePositions", function ()
     {

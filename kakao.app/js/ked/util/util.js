@@ -3,6 +3,8 @@ var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {r
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 
+import prof from "./prof.js"
+
 class util
 {
     static cells (rows, cols)
@@ -811,12 +813,21 @@ class util
         return rngs
     }
 
-    static linesForLineRange (lines, rng)
+    static linesForRange (lines, rng)
     {
-        return util.splitLineRange(lines,rng).map(function (r)
+        var lns, nl
+
+        nl = util.numLinesInRange(rng)
+        if (nl === 1)
         {
-            return util.textForLineRange(lines,r)
-        })
+            return [lines[rng[1]].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1)]
+        }
+        lns = [lines[rng[1]].slice(rng[0])]
+        if (nl > 2)
+        {
+            lns = lns.concat(lines.slice(rng[1] + 1, typeof rng[3] === 'number' ? rng[3] : -1))
+        }
+        return lns = lns.concat(lines[rng[3]].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
     }
 
     static splitLineRange (lines, rng, includeEmpty = true)
@@ -1279,7 +1290,7 @@ class util
         for (idx = 0; idx < list.length; idx++)
         {
             rng = list[idx]
-            ls = util.linesForLineRange(lines,rng)
+            ls = util.linesForRange(lines,rng)
             if (idx > 0)
             {
                 if (posl[idx - 1][0])
@@ -1322,7 +1333,7 @@ class util
         for (var _a_ = idx = 0, _b_ = rngs.length; (_a_ <= _b_ ? idx < rngs.length : idx > rngs.length); (_a_ <= _b_ ? ++idx : --idx))
         {
             rng = rngs[idx]
-            after = util.linesForLineRange(lines,rng)
+            after = util.linesForRange(lines,rng)
             if (idx > 0)
             {
                 var _c_ = posl[idx - 1]; x = _c_[0]; y = _c_[1]

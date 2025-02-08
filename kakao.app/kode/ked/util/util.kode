@@ -7,6 +7,7 @@
 ###
 
 use ../../kxk ▪ kstr
+use ◆ prof
 
 class util
     
@@ -428,9 +429,15 @@ class util
             rngs.push util.lineRangeAtPos(lines [0 rng[1]+ln])
         rngs
         
-    @linesForLineRange: lines rng ->
+    @linesForRange: lines rng ->
 
-        util.splitLineRange(lines rng).map (r) -> util.textForLineRange lines r
+        nl = util.numLinesInRange rng 
+        
+        ⮐ [lines[rng[1]][rng[0]...rng[2]]] if nl == 1
+        
+        lns = [lines[rng[1]][rng[0]..]]
+        lns = lns.concat lines[rng[1]+1...rng[3]] if nl > 2
+        lns = lns.concat lines[rng[3]][0...rng[2]] 
 
     @splitLineRange: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
         
@@ -712,7 +719,7 @@ class util
         newls = []
         newpl = []
         for rng,idx in util.rangesForLinePositions lines posl
-            ls = util.linesForLineRange lines rng
+            ls = util.linesForRange lines rng
             if idx > 0
                 if posl[idx-1][0]
                     indent = util.numIndent last newls
@@ -731,6 +738,8 @@ class util
     
     @insertTextAtPositions: lines text posl ->
         
+        # prof.start 'insert'
+        
         if text == '\t'
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
@@ -744,8 +753,9 @@ class util
         for idx in 0...rngs.length
             
             rng   = rngs[idx]
-            after = util.linesForLineRange lines rng
             
+            after = util.linesForRange lines rng
+                        
             if idx > 0
                 
                 [x y] = posl[idx-1]
@@ -783,6 +793,8 @@ class util
             
         newls = newls.concat before
             
+        # prof.end 'insert' 'loop'
+        
         [newls newpl]      
         
     @rangeForJoiningLine: lines idx -> [lines[idx].length idx 0 idx+1]

@@ -104,7 +104,7 @@ function TTIO extends events
         if csi[-1] == 'u'
             code = parseInt csi
             ⮐ if empty code
-            lfc 'csi:' csi  
+            # lf 'csi:' csi  
 
             key = switch code
                 9       ➜ 'tab'

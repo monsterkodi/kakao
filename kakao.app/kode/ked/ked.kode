@@ -47,7 +47,7 @@ function KED
         @screen  = new screen @t
         
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter']
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'knob'  ]
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob'  ]
         @status  = new status   @screen @editor.state
         
         lfc '▸                                         ked' @version
@@ -212,9 +212,9 @@ function KED
                         
         @screen.init()
         
-        @status.draw()
         @editor.draw()
         @konsole.draw()
+        @status.draw()
         
         @screen.render()
         

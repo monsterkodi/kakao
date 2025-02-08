@@ -16,14 +16,10 @@ konsole = (function ()
         konsole.__super__.constructor.call(this,screen,name,features)
         global.lc = (function (...args)
         {
-            var text
-
-            text = args.map(function (a)
+            return this.state.insert('\n' + args.map(function (a)
             {
                 return `${a}`
-            }).join(' ')
-            this.state.insert('\n')
-            return this.state.insert(text)
+            }).join(' '))
         }).bind(this)
     }
 

@@ -269,7 +269,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
         util.splitLineRanges lines [[0 2 1 2] [2 2 3 2]] ▸ [[0 2 1 2] [2 2 3 2]]
         
-    ▸ linesForLineRange
+    ▸ linesForRange
     
         lines = util.linesForText """
             123
@@ -279,11 +279,11 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
             def
             """
             
-        util.linesForLineRange lines [0 0 3 4] ▸ ['123' '456' '' 'abc' 'def']
-        util.linesForLineRange lines [0 0 0 0] ▸ ['']
-        util.linesForLineRange lines [0 0 1 0] ▸ ['1']
-        util.linesForLineRange lines [3 0 1 1] ▸ ['' '4']
-        util.linesForLineRange lines [3 0 0 1] ▸ ['' '']
+        util.linesForRange lines [0 0 3 4] ▸ ['123' '456' '' 'abc' 'def']
+        util.linesForRange lines [0 0 0 0] ▸ ['']
+        util.linesForRange lines [0 0 1 0] ▸ ['1']
+        util.linesForRange lines [3 0 1 1] ▸ ['' '4']
+        util.linesForRange lines [3 0 0 1] ▸ ['' '']
         
     ▸ rangesForLinePositions 
     

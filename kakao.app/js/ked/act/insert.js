@@ -3,6 +3,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 import kstr from "../../kxk/kstr.js"
 
 import util from "../util/util.js"
+import prof from "../util/prof.js"
 
 export default {insert:function (text)
 {

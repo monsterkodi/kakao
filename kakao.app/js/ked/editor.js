@@ -34,7 +34,7 @@ editor = (function ()
         this["draw"] = this["draw"].bind(this)
         this["init"] = this["init"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
-        this.state = new state(this.cells)
+        this.state = new state(this.cells,this.name)
         var list = _k_.list(features)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -68,13 +68,13 @@ editor = (function ()
             g = this.state.gutterWidth()
             this.gutter.init(x + s,y,g,h)
         }
-        this.cells.init(x + s,y,w - s,h)
+        this.cells.init(x + s + g,y,w - s - g,h)
         return this.state.initView()
     }
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _163_15_, _164_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _170_15_, _171_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -260,7 +260,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _179_30_
+        var col, row, start, x, y, _186_30_
 
         if ((this.scroll != null ? this.scroll.onMouse(type,sx,sy,event) : undefined))
         {

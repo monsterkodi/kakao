@@ -13,7 +13,9 @@ use child_process os
 
 function state
     
-    @: @cells ->
+    @: @cells name ->
+        
+        @name = name + '.state'
         
         for act in [del insert select join indent multi]
             for k,v of act

@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ◆ kstr
-use ../util ◆ util
+use ../util ◆ util prof
 
 export
     
@@ -18,19 +18,25 @@ export
     # 000  000   000  0000000   00000000  000   000     000     
     
     insert: text ->
-                
+        
         if valid @s.selections
             ⮐ @indentSelectedLines() if text == '\t'
             @deleteSelection()
                     
         cursors = @allCursors()
         lines   = @allLines()
+
+        # prof.start @name 'insert'
         
         [lines cursors] = util.insertTextAtPositions lines text cursors
-                        
+        
+        # prof.time @name 'insert' 'text'
+        
         @clearHighlights()
         @setLines   lines
         @setCursors cursors -1
+
+        # prof.end @name 'insert' 'set'
         
     # 000   000  00000000  000   000  000      000  000   000  00000000  
     # 0000  000  000       000 0 000  000      000  0000  000  000       

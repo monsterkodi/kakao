@@ -21,7 +21,7 @@ import os from "os"
 
 state = (function ()
 {
-    function state (cells)
+    function state (cells, name)
     {
         var act, k, v
 
@@ -49,6 +49,7 @@ state = (function ()
         this["allLines"] = this["allLines"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
+        this.name = name + '.state'
         var list = [del,insert,select,join,indent,multi]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
