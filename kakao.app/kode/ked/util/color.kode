@@ -81,39 +81,19 @@ int = s -> parseInt s
 
 class color
     
-    @use256colors: false #'256color' in process.env.TERM 
-    
     @rgb:    c   -> kstr.hexColor c
     @hex:    c   -> kstr.hexColor c
     @darken: c f -> kstr.darkenColor c f
-        
-    @_256: c -> # xterm-256color indices
-        
-        [r g b] = color.rgb c
-                
-        if r == g == b
-            232 + int 24 * g / 255
-        else
-            r = int 5 * r / 255
-            g = int 5 * g / 255
-            b = int 5 * b / 255
-            16 + 36 * r + 6 * g + b
-                    
+                            
     @bg_rgb: c -> # background
     
-        if @use256colors
-            "\x1b[48;5;#{color._256 c}m"
-        else
-            [r g b] = color.rgb c
-            "\x1b[48;2;#{r};#{g};#{b}m" 
+        [r g b] = color.rgb c
+        "\x1b[48;2;#{r};#{g};#{b}m" 
 
     @fg_rgb: c -> # foreground (text) 
         
-        if @use256colors
-            "\x1b[38;5;#{color._256 c}m"
-        else
-            [r g b] = color.rgb c
-            "\x1b[38;2;#{r};#{g};#{b}m" 
+        [r g b] = color.rgb c
+        "\x1b[38;2;#{r};#{g};#{b}m" 
 
     @ul_rgb: c -> # underline color
         
