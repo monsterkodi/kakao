@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var mapscr
 
@@ -45,7 +45,7 @@ mapscr = (function ()
 
     mapscr.prototype["reallocBuffer"] = function ()
     {
-        var b, base64, ch, chunks, data, fg, g, h, i, li, line, r, t, w, x, xi, y
+        var b, base64, ch, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
 
         prof.start('mapscr')
         t = this.cells.screen.t
@@ -53,9 +53,9 @@ mapscr = (function ()
 
         data = Buffer.alloc(w * h * 3)
         prof.time('mapscr','alloc')
-        for (var _b_ = y = 0, _c_ = _k_.min(h,this.state.s.lines.length * 3); (_b_ <= _c_ ? y < _k_.min(h,this.state.s.lines.length * 3) : y > _k_.min(h,this.state.s.lines.length * 3)); (_b_ <= _c_ ? ++y : --y))
+        for (var _b_ = y = 0, _c_ = _k_.min(h,this.state.s.lines.length * 4); (_b_ <= _c_ ? y < _k_.min(h,this.state.s.lines.length * 4) : y > _k_.min(h,this.state.s.lines.length * 4)); (_b_ <= _c_ ? ++y : --y))
         {
-            li = parseInt(y / 3)
+            li = parseInt(y / 4)
             line = this.state.s.lines[li]
             for (var _d_ = x = 0, _e_ = _k_.min(w,line.length * 2); (_d_ <= _e_ ? x < _k_.min(w,line.length * 2) : x > _k_.min(w,line.length * 2)); (_d_ <= _e_ ? ++x : --x))
             {
@@ -66,11 +66,31 @@ mapscr = (function ()
                     data[(y * w + x) * 3 + 2] = 55
                 }
                 xi = parseInt(x / 2)
-                fg = this.state.syntax.getColor(xi,li)
                 ch = line[xi]
                 if (!_k_.empty(ch) && ch !== ' ')
                 {
-                    var _f_ = color.rgb(fg); r = _f_[0]; g = _f_[1]; b = _f_[2]
+                    clss = this.state.syntax.getClass(xi,li)
+                    if (_k_.in('header',clss))
+                    {
+                        if (_k_.in('triple',clss))
+                        {
+                            rgb = [27,207,14]
+                        }
+                        else
+                        {
+                            rgb = [9,140,0]
+                        }
+                    }
+                    else
+                    {
+                        f = 0.7
+                        rgb = color.rgb(this.state.syntax.getColor(xi,li))
+                        rgb = rgb.map(function (v)
+                        {
+                            return _k_.clamp(0,255,parseInt(f * v))
+                        })
+                    }
+                    var _f_ = rgb; r = _f_[0]; g = _f_[1]; b = _f_[2]
 
                     data[(y * w + x) * 3 + 0] = r
                     data[(y * w + x) * 3 + 1] = g

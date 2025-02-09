@@ -45,8 +45,8 @@ function mapscr
         data = Buffer.alloc w*h*3
         prof.time 'mapscr' 'alloc'
         
-        for y in 0...min(h @state.s.lines.length*3)
-            li = parseInt y/3
+        for y in 0...min(h @state.s.lines.length*4)
+            li = parseInt y/4
             line = @state.s.lines[li]
             for x in 0...min(w line.length*2)
                 if x == 0
@@ -54,11 +54,25 @@ function mapscr
                     data[(y*w+x)*3+1] = 55 
                     data[(y*w+x)*3+2] = 55 
                     
-                xi = parseInt x/2
-                fg = @state.syntax.getColor xi li
+                xi = parseInt x/2                
                 ch = line[xi]
+                
                 if valid ch and ch != ' '
-                    [r g b] = color.rgb fg
+                
+                    clss = @state.syntax.getClass xi li
+                    
+                    if 'header' in clss
+                        if 'triple' in clss
+                            rgb = [27 207 14]
+                        else
+                            rgb = [9 140 0]
+                    else
+                        f = 0.7
+                        rgb = color.rgb @state.syntax.getColor(xi li)
+                        rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
+                    
+                    [r g b] = rgb
+                    
                     data[(y*w+x)*3+0] = r
                     data[(y*w+x)*3+1] = g
                     data[(y*w+x)*3+2] = b
