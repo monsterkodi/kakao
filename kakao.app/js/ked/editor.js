@@ -272,8 +272,12 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _194_30_
+        var col, row, start, x, y, _194_30_, _195_30_
 
+        if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
+        {
+            return true
+        }
         if ((this.scroll != null ? this.scroll.onMouse(type,sx,sy,event) : undefined))
         {
             return true

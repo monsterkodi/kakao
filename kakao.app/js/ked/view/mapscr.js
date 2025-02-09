@@ -1,6 +1,6 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var mapscr
+var floor, mapscr, pow
 
 import prof from "../util/prof.js"
 import syntax from "../util/syntax.js"
@@ -11,7 +11,9 @@ import theme from "../theme.js"
 
 import cells from "./cells.js"
 
-import { NodeSharedMemoryWriteStream } from "../../../node-libsharedmemory"
+floor = Math.floor
+pow = Math.pow
+
 
 mapscr = (function ()
 {
@@ -19,10 +21,19 @@ mapscr = (function ()
     {
         this.state = state
     
+        this["onMouse"] = this["onMouse"].bind(this)
+        this["rowAtPixelY"] = this["rowAtPixelY"].bind(this)
+        this["scrollToPixel"] = this["scrollToPixel"].bind(this)
+        this["scrollTo"] = this["scrollTo"].bind(this)
         this["reallocBuffer"] = this["reallocBuffer"].bind(this)
         this["onPreResize"] = this["onPreResize"].bind(this)
         this.cells = new cells(screen)
         screen.t.on('preResize',this.onPreResize)
+    }
+
+    mapscr.prototype["init"] = function (x, y, w, h)
+    {
+        return this.cells.init(x,y,w,h)
     }
 
     mapscr.prototype["onPreResize"] = function ()
@@ -119,11 +130,6 @@ mapscr = (function ()
         return this.draw()
     }
 
-    mapscr.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
-    }
-
     mapscr.prototype["draw"] = function ()
     {
         var t
@@ -136,6 +142,82 @@ mapscr = (function ()
         t.setCursor(this.cells.x,this.cells.y)
         t.write("\x1b_Gq=1,a=p,i=666,p=777\x1b\\")
         return this
+    }
+
+    mapscr.prototype["scrollTo"] = function (row)
+    {
+        var maxY, view
+
+        view = this.state.s.view.asMutable()
+        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 1)))
+        maxY = this.state.s.lines.length - this.cells.rows
+        if (maxY > 0)
+        {
+            view[1] = _k_.min(maxY,view[1])
+        }
+        view[1] = _k_.max(0,view[1])
+        this.state.setView(view)
+        return true
+    }
+
+    mapscr.prototype["scrollToPixel"] = function (pixel)
+    {
+        var maxY, rof, view
+
+        rof = pixel[1] / this.cells.screen.t.cellsz[1]
+        lf(pixel,rof)
+        view = this.state.s.view.asMutable()
+        view[1] = parseInt(floor(rof * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 1)))
+        maxY = this.state.s.lines.length - this.cells.rows
+        if (maxY > 0)
+        {
+            view[1] = _k_.min(maxY,view[1])
+        }
+        view[1] = _k_.max(0,view[1])
+        this.state.setView(view)
+        return true
+    }
+
+    mapscr.prototype["rowAtPixelY"] = function (py)
+    {
+        return parseInt(py / this.cells.screen.t.cellsz[1])
+    }
+
+    mapscr.prototype["onMouse"] = function (type, sx, sy, event)
+    {
+        var col, row
+
+        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
+
+        switch (type)
+        {
+            case 'press':
+                if (this.cells.isInsideScreen(sx,sy))
+                {
+                    this.doDrag = true
+                    return this.scrollToPixel(event.pixel)
+                }
+                break
+            case 'drag':
+                if (this.doDrag)
+                {
+                    return this.scrollToPixel(event.pixel)
+                }
+                break
+            case 'release':
+                if (this.doDrag)
+                {
+                    delete this.doDrag
+                    this.hover = this.cells.isInsideScreen(sx,sy)
+                    return true
+                }
+                break
+            case 'move':
+                this.hover = this.cells.isInsideScreen(sx,sy)
+                break
+        }
+
+        return false
     }
 
     return mapscr

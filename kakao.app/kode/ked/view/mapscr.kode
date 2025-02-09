@@ -11,7 +11,7 @@ use ../util ◆ prof syntax color util
 use ..      ◆ theme 
 use         ◆ cells
 
-import {NodeSharedMemoryWriteStream} from "../../../node-libsharedmemory"
+{floor, pow} = Math
 
 function mapscr
 
@@ -20,7 +20,15 @@ function mapscr
         @cells = new cells screen
         
         screen.t.on 'preResize' @onPreResize
+       
+    init: x y w h -> @cells.init x y w h
         
+    # 00000000   00000000   0000000  000  0000000  00000000  
+    # 000   000  000       000       000     000   000       
+    # 0000000    0000000   0000000   000    000    0000000   
+    # 000   000  000            000  000   000     000       
+    # 000   000  00000000  0000000   000  0000000  00000000  
+    
     onPreResize: => 
         
         @cells.screen.t.write "\x1b_Gq=1,a=d,d=A\x1b\\"
@@ -34,6 +42,12 @@ function mapscr
         clearTimeout @reallocId
         @reallocId = setTimeout @reallocBuffer 10
         
+    # 0000000    000   000  00000000  00000000  00000000  00000000   
+    # 000   000  000   000  000       000       000       000   000  
+    # 0000000    000   000  000000    000000    0000000   0000000    
+    # 000   000  000   000  000       000       000       000   000  
+    # 0000000     0000000   000       000       00000000  000   000  
+    
     reallocBuffer: =>
         
         prof.start 'mapscr'
@@ -102,9 +116,13 @@ function mapscr
         prof.end 'mapscr' 'send'
         
         @draw()
-                
-    init: x y w h -> @cells.init x y w h
-        
+                        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
     draw: ->
 
         t = @cells.screen.t
@@ -114,5 +132,85 @@ function mapscr
         t.setCursor @cells.x @cells.y
         t.write "\x1b_Gq=1,a=p,i=666,p=777\x1b\\"
         @
+        
+    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
+    # 000       000       000   000  000   000  000      000         000     000   000  
+    # 0000000   000       0000000    000   000  000      000         000     000   000  
+    #      000  000       000   000  000   000  000      000         000     000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
+    
+    scrollTo: row =>
+        
+        view = @state.s.view.asMutable()
+        
+        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        
+        maxY = @state.s.lines.length - @cells.rows
+        
+        view[1] = min maxY view[1] if maxY > 0
+        view[1] = max 0 view[1]
+        
+        @state.setView view
+        
+        true
+
+    scrollToPixel: pixel =>
+        
+        rof = pixel[1]/@cells.screen.t.cellsz[1]
+        
+        lf pixel rof
+        
+        view = @state.s.view.asMutable()
+        
+        view[1] = parseInt floor(rof * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        
+        maxY = @state.s.lines.length - @cells.rows
+        
+        view[1] = min maxY view[1] if maxY > 0
+        view[1] = max 0 view[1]
+        
+        @state.setView view
+        
+        true
+        
+    rowAtPixelY: py =>
+        
+        parseInt py/@cells.screen.t.cellsz[1]
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: type sx sy event =>
+        
+        [col row] = @cells.posForScreen sx sy
+        
+        switch type
+            
+            'press'
+            
+                if @cells.isInsideScreen sx sy
+                    @doDrag = true
+                    ⮐ @scrollToPixel event.pixel
+                    
+            'drag'
+            
+                if @doDrag
+                    ⮐ @scrollToPixel event.pixel
                 
+            'release'
+            
+                if @doDrag
+                    delete @doDrag 
+                    @hover = @cells.isInsideScreen sx sy
+                    ⮐ true
+            
+            'move'
+            
+                @hover = @cells.isInsideScreen sx sy
+                    
+        false
+        
 export mapscr

@@ -191,6 +191,7 @@ function editor extends view
     
     onMouse: type sx sy event =>
         
+        ⮐ true if @mapscr?.onMouse type sx sy event
         ⮐ true if @scroll?.onMouse type sx sy event
         ⮐ true if super type sx sy event
         

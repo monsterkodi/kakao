@@ -25,6 +25,7 @@ function TTIO extends events
         @write '\x1b[?1003h'    # mouse move events
         @write '\x1b[?1004h'    # focus events        
         @write '\x1b[?1006h'    # mouse SGR mode
+        @write '\x1b[?1016h'    # mouse SGR pixel mode
         @write '\x1b[?1049h'    # alternate screen buffer
         @write '\x1b[?2004h'    # bracketed paste mode
         @write '\x1b[>1s'       # send shift in mouse press events
@@ -268,14 +269,19 @@ function TTIO extends events
     
     parseMouse: csi =>
                 
-        [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
-        x = col-1
-        y = row-1
+        # [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
+        # x = col-1
+        # y = row-1
+        
+        [code px py] = csi[1..-2].split(';').map (s) -> parseInt s
+        
+        cx = parseInt px/@cellsz[0]
+        cy = parseInt py/@cellsz[1]        
         
         event =
             type:   'release'
-            x:      x
-            y:      y
+            cell:   [cx cy]
+            pixel:  [px py]
         
         mods = []
         mods.push 'shift' if code & 0b00100
@@ -321,8 +327,8 @@ function TTIO extends events
         if event.type == 'press'
         
             @lastClick ?= 
-                x:      event.x
-                y:      event.y
+                x:      event.cell[0]
+                y:      event.cell[1]
                 count:  0
                 time:   process.hrtime()
             
@@ -334,15 +340,15 @@ function TTIO extends events
                 else    
                     @lastClick.count = 1
             else
-               @lastClick.y     = event.x
-               @lastClick.x     = event.y
+               @lastClick.y     = event.cell[0]
+               @lastClick.x     = event.cell[1]
                @lastClick.count = 1
                @lastClick.time  = process.hrtime()
                
             event.count = @lastClick.count
         
         # lfc noon event
-        @emit 'mouse' event.type event.x event.y event
+        @emit 'mouse' event.type event.cell[0] event.cell[1] event
             
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  

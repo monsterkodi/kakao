@@ -43,6 +43,7 @@ TTIO = (function ()
         this.write('\x1b[?1003h')
         this.write('\x1b[?1004h')
         this.write('\x1b[?1006h')
+        this.write('\x1b[?1016h')
         this.write('\x1b[?1049h')
         this.write('\x1b[?2004h')
         this.write('\x1b[>1s')
@@ -400,16 +401,16 @@ TTIO = (function ()
 
     TTIO.prototype["parseMouse"] = function (csi)
     {
-        var code, col, event, m, mods, row, x, y
+        var code, cx, cy, event, m, mods, px, py
 
         var _a_ = csi.slice(1, -1).split(';').map(function (s)
         {
             return parseInt(s)
-        }); code = _a_[0]; col = _a_[1]; row = _a_[2]
+        }); code = _a_[0]; px = _a_[1]; py = _a_[2]
 
-        x = col - 1
-        y = row - 1
-        event = {type:'release',x:x,y:y}
+        cx = parseInt(px / this.cellsz[0])
+        cy = parseInt(py / this.cellsz[1])
+        event = {type:'release',cell:[cx,cy],pixel:[px,py]}
         mods = []
         if (code & 0b00100)
         {
@@ -513,11 +514,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _323_23_
+        var diff, _329_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_323_23_=this.lastClick) != null ? _323_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_329_23_=this.lastClick) != null ? _329_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -533,19 +534,19 @@ TTIO = (function ()
             }
             else
             {
-                this.lastClick.y = event.x
-                this.lastClick.x = event.y
+                this.lastClick.y = event.cell[0]
+                this.lastClick.x = event.cell[1]
                 this.lastClick.count = 1
                 this.lastClick.time = process.hrtime()
             }
             event.count = this.lastClick.count
         }
-        return this.emit('mouse',event.type,event.x,event.y,event)
+        return this.emit('mouse',event.type,event.cell[0],event.cell[1],event)
     }
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, text, _362_23_
+        var csi, dataStr, esc, event, i, pxs, text, _368_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
