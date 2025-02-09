@@ -47,15 +47,13 @@ function KED
         @screen  = new screen @t
         
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr']
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob'  ]
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
         @status  = new status   @screen @editor.state
         
         lfc '▸                                         ked' @version
         
-        # @editor.on  'redraw'      @redraw
-        post.on  'redraw'      @redraw
-        
-        post.on     'view.size'   @onViewSize
+        post.on 'redraw'    @redraw
+        post.on 'view.size' @onViewSize
         
         @mouseHandlers = [@konsole @editor]
         @wheelHandlers = [@konsole @editor]
@@ -194,14 +192,21 @@ function KED
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    onViewSize: name x y => @viewSizes[name] = [x y]
+    onViewSize: name x y => 
     
+        @viewSizes[name] = [x y]
+        lfc noon(@viewSizes)
+        
+        @editor.mapscr?.onPreResize()
+        @konsole.mapscr?.onPreResize()
+        @editor.mapscr?.onResize()
+        @konsole.mapscr?.onResize()
+        
     onResize: cols rows size => 
         
-        # lf 'ked.onResize' cols rows size
-        @editor.mapscr?.onResize()
-        
         @redraw()
+        @editor.mapscr?.onResize()
+        @konsole.mapscr?.onResize()
     
     redraw: =>
         

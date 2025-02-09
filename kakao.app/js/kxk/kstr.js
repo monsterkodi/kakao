@@ -531,6 +531,18 @@ str.rgbaToHexColor = function (s)
     }
 }
 
+str.hash = function (s)
+{
+    var h, i
+
+    h = 9
+    for (var _12_ = i = s.length, _13_ = 0; (_12_ <= _13_ ? i <= 0 : i >= 0); (_12_ <= _13_ ? ++i : --i))
+    {
+        h = Math.imul(h ^ s.charCodeAt(i),9 ** 9)
+    }
+    return h ^ h >> 9
+}
+
 str.colorRanges = function (s)
 {
     var hexa, regexps, rgb, rgba, rng, rngs, trio
@@ -543,9 +555,9 @@ str.colorRanges = function (s)
     if (rngs = matchr.ranges(regexps,s))
     {
         var list = _k_.list(rngs)
-        for (var _12_ = 0; _12_ < list.length; _12_++)
+        for (var _14_ = 0; _14_ < list.length; _14_++)
         {
-            rng = list[_12_]
+            rng = list[_14_]
             if (_k_.in(rng.clss,['rgb','rgba']))
             {
                 rng.color = str.hexColor(str.rgbaToHexColor(rng.match))
@@ -689,9 +701,9 @@ str.time = function (t)
             f = 1
             o = {ms:1000,second:60,minute:60,hour:24,day:30,month:12,year:0}
             var list = _k_.list(Object.keys(o))
-            for (var _13_ = 0; _13_ < list.length; _13_++)
+            for (var _15_ = 0; _15_ < list.length; _15_++)
             {
-                k = list[_13_]
+                k = list[_15_]
                 num = parseInt(t / f)
                 f *= o[k]
                 if (k === 'year' || t < f)
@@ -708,9 +720,9 @@ str.time = function (t)
             thsnd = BigInt(1000)
             f = thsnd
             var list1 = ['ns','μs','ms','second']
-            for (var _14_ = 0; _14_ < list1.length; _14_++)
+            for (var _16_ = 0; _16_ < list1.length; _16_++)
             {
-                k = list1[_14_]
+                k = list1[_16_]
                 if (k === 'seconds' || t < f)
                 {
                     num = parseInt(thsnd * t / f)
@@ -741,7 +753,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _547_13_
+    var _554_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

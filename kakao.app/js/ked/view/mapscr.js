@@ -2,6 +2,9 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var floor, mapscr, pow
 
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
+
 import prof from "../util/prof.js"
 import syntax from "../util/syntax.js"
 import color from "../util/color.js"
@@ -22,12 +25,16 @@ mapscr = (function ()
         this.state = state
     
         this["onMouse"] = this["onMouse"].bind(this)
-        this["rowAtPixelY"] = this["rowAtPixelY"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
-        this["scrollTo"] = this["scrollTo"].bind(this)
         this["reallocBuffer"] = this["reallocBuffer"].bind(this)
+        this["onResize"] = this["onResize"].bind(this)
         this["onPreResize"] = this["onPreResize"].bind(this)
+        this["clearImages"] = this["clearImages"].bind(this)
         this.cells = new cells(screen)
+        this.imgId = kstr.hash(this.state.name)
+        this.pixelsPerRow = 4
+        this.pixelsPerCol = 2
+        lf(this.state.name,this.imgId)
         screen.t.on('preResize',this.onPreResize)
     }
 
@@ -36,9 +43,14 @@ mapscr = (function ()
         return this.cells.init(x,y,w,h)
     }
 
+    mapscr.prototype["clearImages"] = function ()
+    {
+        return this.cells.screen.t.write(`\x1b_Gq=1,a=d,d=i,i=${this.imgId}\x1b\\`)
+    }
+
     mapscr.prototype["onPreResize"] = function ()
     {
-        return this.cells.screen.t.write("\x1b_Gq=1,a=d,d=A\x1b\\")
+        return this.clearImages()
     }
 
     mapscr.prototype["onResize"] = function ()
@@ -56,19 +68,23 @@ mapscr = (function ()
 
     mapscr.prototype["reallocBuffer"] = function ()
     {
-        var b, base64, ch, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
+        var b, base64, bytes, ch, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
 
-        prof.start('mapscr')
         t = this.cells.screen.t
         var _a_ = [this.cells.cols * t.cellsz[0],this.cells.rows * t.cellsz[1]]; w = _a_[0]; h = _a_[1]
 
-        data = Buffer.alloc(w * h * 3)
-        prof.time('mapscr','alloc')
-        for (var _b_ = y = 0, _c_ = _k_.min(h,this.state.s.lines.length * 4); (_b_ <= _c_ ? y < _k_.min(h,this.state.s.lines.length * 4) : y > _k_.min(h,this.state.s.lines.length * 4)); (_b_ <= _c_ ? ++y : --y))
+        bytes = w * h * 3
+        if (bytes <= 0)
         {
-            li = parseInt(y / 4)
+            this.clearImages()
+            return
+        }
+        data = Buffer.alloc(bytes)
+        for (var _b_ = y = 0, _c_ = _k_.min(h,this.state.s.lines.length * this.pixelsPerRow); (_b_ <= _c_ ? y < _k_.min(h,this.state.s.lines.length * this.pixelsPerRow) : y > _k_.min(h,this.state.s.lines.length * this.pixelsPerRow)); (_b_ <= _c_ ? ++y : --y))
+        {
+            li = parseInt(y / this.pixelsPerRow)
             line = this.state.s.lines[li]
-            for (var _d_ = x = 0, _e_ = _k_.min(w,line.length * 2); (_d_ <= _e_ ? x < _k_.min(w,line.length * 2) : x > _k_.min(w,line.length * 2)); (_d_ <= _e_ ? ++x : --x))
+            for (var _d_ = x = 0, _e_ = _k_.min(w,line.length * this.pixelsPerCol); (_d_ <= _e_ ? x < _k_.min(w,line.length * this.pixelsPerCol) : x > _k_.min(w,line.length * this.pixelsPerCol)); (_d_ <= _e_ ? ++x : --x))
             {
                 if (x === 0)
                 {
@@ -76,7 +92,7 @@ mapscr = (function ()
                     data[(y * w + x) * 3 + 1] = 55
                     data[(y * w + x) * 3 + 2] = 55
                 }
-                xi = parseInt(x / 2)
+                xi = parseInt(x / this.pixelsPerCol)
                 ch = line[xi]
                 if (!_k_.empty(ch) && ch !== ' ')
                 {
@@ -109,11 +125,10 @@ mapscr = (function ()
                 }
             }
         }
-        prof.time('mapscr','fill')
         if (data.length > 4096)
         {
             base64 = data.slice(0, 4096).toString('base64')
-            t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h},m=1;${base64}\x1b\\`)
+            t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h},m=1;${base64}\x1b\\`)
             chunks = Math.ceil(data.length / 4096)
             for (var _10_ = i = 1, _11_ = chunks; (_10_ <= _11_ ? i < chunks : i > chunks); (_10_ <= _11_ ? ++i : --i))
             {
@@ -124,9 +139,8 @@ mapscr = (function ()
         else
         {
             base64 = data.toString('base64')
-            t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h};${base64}\x1b\\`)
+            t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
-        prof.end('mapscr','send')
         return this.draw()
     }
 
@@ -135,39 +149,22 @@ mapscr = (function ()
         var t
 
         t = this.cells.screen.t
-        if (_k_.empty(t.pixels))
+        if (_k_.empty(t.pixels) || this.cells.rows <= 0)
         {
             return
         }
         t.setCursor(this.cells.x,this.cells.y)
-        t.write("\x1b_Gq=1,a=p,i=666,p=777\x1b\\")
+        t.write(`\x1b_Gq=1,a=p,i=${this.imgId},p=${this.imgId}\x1b\\`)
         return this
-    }
-
-    mapscr.prototype["scrollTo"] = function (row)
-    {
-        var maxY, view
-
-        view = this.state.s.view.asMutable()
-        view[1] = parseInt(floor(row * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 1)))
-        maxY = this.state.s.lines.length - this.cells.rows
-        if (maxY > 0)
-        {
-            view[1] = _k_.min(maxY,view[1])
-        }
-        view[1] = _k_.max(0,view[1])
-        this.state.setView(view)
-        return true
     }
 
     mapscr.prototype["scrollToPixel"] = function (pixel)
     {
-        var maxY, rof, view
+        var maxY, view
 
-        rof = pixel[1] / this.cells.screen.t.cellsz[1]
-        lf(pixel,rof)
         view = this.state.s.view.asMutable()
-        view[1] = parseInt(floor(rof * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 1)))
+        view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / this.pixelsPerRow)
+        view[1] -= 6
         maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
         {
@@ -176,11 +173,6 @@ mapscr = (function ()
         view[1] = _k_.max(0,view[1])
         this.state.setView(view)
         return true
-    }
-
-    mapscr.prototype["rowAtPixelY"] = function (py)
-    {
-        return parseInt(py / this.cells.screen.t.cellsz[1])
     }
 
     mapscr.prototype["onMouse"] = function (type, sx, sy, event)

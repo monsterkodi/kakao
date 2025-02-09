@@ -374,6 +374,13 @@ str.rgbaToHexColor = s ->
             ⮐ if not (0 <= f <= 1)
             vls.push f
         str.hexColor vls
+        
+str.hash = s -> 
+
+    h = 9
+    for i in s.length..0 
+        h = Math.imul h^s.charCodeAt(i), 9**9
+    h^h >> 9
 
 #  0000000   0000000   000       0000000   00000000   
 # 000       000   000  000      000   000  000   000  

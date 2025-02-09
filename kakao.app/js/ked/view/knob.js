@@ -1,3 +1,5 @@
+var _k_ = {max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
+
 var knob
 
 import post from "../../kxk/post.js"
@@ -34,7 +36,7 @@ knob = (function ()
             case 'drag':
                 if (this.doDrag && row)
                 {
-                    post.emit('view.size',this.name,this.cells.cols,this.cells.rows - row)
+                    post.emit('view.size',this.name,this.cells.cols,_k_.max(0,this.cells.rows - row))
                     return true
                 }
                 break

@@ -34,7 +34,7 @@ function knob
             'drag'
             
                 if @doDrag and row
-                    post.emit 'view.size' @name @cells.cols @cells.rows - row 
+                    post.emit 'view.size' @name @cells.cols max(0 @cells.rows - row)
                     ⮐ true
                 
             'release'

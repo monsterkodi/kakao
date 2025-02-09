@@ -7,6 +7,7 @@
 000   000  000   000  000        0000000    0000000  000   000
 ###
 
+use ../../kxk ▪ kstr
 use ../util ◆ prof syntax color util
 use ..      ◆ theme 
 use         ◆ cells
@@ -18,6 +19,12 @@ function mapscr
     @: screen @state ->
         
         @cells = new cells screen
+        @imgId = kstr.hash @state.name
+        
+        @pixelsPerRow = 4
+        @pixelsPerCol = 2
+        
+        lf @state.name @imgId
         
         screen.t.on 'preResize' @onPreResize
        
@@ -29,11 +36,13 @@ function mapscr
     # 000   000  000            000  000   000     000       
     # 000   000  00000000  0000000   000  0000000  00000000  
     
-    onPreResize: => 
+    clearImages: =>
         
-        @cells.screen.t.write "\x1b_Gq=1,a=d,d=A\x1b\\"
-                
-    onResize: ->
+        @cells.screen.t.write "\x1b_Gq=1,a=d,d=i,i=#{@imgId}\x1b\\" # delete all images with id        
+    
+    onPreResize: => @clearImages()
+        
+    onResize: =>
         
         t = @cells.screen.t
         
@@ -50,25 +59,31 @@ function mapscr
     
     reallocBuffer: =>
         
-        prof.start 'mapscr'
+        # prof.start 'mapscr'
         
         t = @cells.screen.t
         
         [w h] = [@cells.cols * t.cellsz[0] @cells.rows * t.cellsz[1]]
         
-        data = Buffer.alloc w*h*3
-        prof.time 'mapscr' 'alloc'
+        bytes = w*h*3
         
-        for y in 0...min(h @state.s.lines.length*4)
-            li = parseInt y/4
+        if bytes <= 0
+            @clearImages()
+            ⮐ 
+        
+        data = Buffer.alloc bytes
+        # prof.time 'mapscr' 'alloc'
+        
+        for y in 0...min(h @state.s.lines.length*@pixelsPerRow)
+            li = parseInt y/@pixelsPerRow
             line = @state.s.lines[li]
-            for x in 0...min(w line.length*2)
+            for x in 0...min(w line.length*@pixelsPerCol)
                 if x == 0
                     data[(y*w+x)*3+0] = 55 
                     data[(y*w+x)*3+1] = 55 
                     data[(y*w+x)*3+2] = 55 
                     
-                xi = parseInt x/2                
+                xi = parseInt x/@pixelsPerCol              
                 ch = line[xi]
                 
                 if valid ch and ch != ' '
@@ -91,7 +106,7 @@ function mapscr
                     data[(y*w+x)*3+1] = g
                     data[(y*w+x)*3+2] = b
                 
-        prof.time 'mapscr' 'fill'        
+        # prof.time 'mapscr' 'fill'        
         
         # q=1  don't send OK q=2 don't send OK and failure
         # i=n  image id 
@@ -104,16 +119,16 @@ function mapscr
                 
         if data.length > 4096 # and 'kitty' in process.env.TERM
             base64 = data[0...4096].toString 'base64'
-            t.write "\x1b_Gq=1,i=666,p=777,f=24,s=#{w},v=#{h},m=1;#{base64}\x1b\\"
+            t.write "\x1b_Gq=1,i=#{@imgId},p=#{@imgId},f=24,s=#{w},v=#{h},m=1;#{base64}\x1b\\"
             chunks = Math.ceil data.length / 4096
             for i in 1...chunks
                 base64 = data[i*4096...Math.min((i+1)*4096, data.length)].toString 'base64'
                 t.write "\x1b_Gq=1,m=#{(i == chunks - 1) ? 0 : 1};#{base64}\x1b\\"
         else
             base64 = data.toString 'base64'
-            t.write "\x1b_Gq=1,i=666,p=777,f=24,s=#{w},v=#{h};#{base64}\x1b\\"
+            t.write "\x1b_Gq=1,i=#{@imgId},p=#{@imgId},f=24,s=#{w},v=#{h};#{base64}\x1b\\"
             
-        prof.end 'mapscr' 'send'
+        # prof.end 'mapscr' 'send'
         
         @draw()
                         
@@ -127,10 +142,10 @@ function mapscr
 
         t = @cells.screen.t
         
-        ⮐ if empty t.pixels
+        ⮐ if empty t.pixels or @cells.rows <= 0
         
         t.setCursor @cells.x @cells.y
-        t.write "\x1b_Gq=1,a=p,i=666,p=777\x1b\\"
+        t.write "\x1b_Gq=1,a=p,i=#{@imgId},p=#{@imgId}\x1b\\"
         @
         
     #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
@@ -139,30 +154,13 @@ function mapscr
     #      000  000       000   000  000   000  000      000         000     000   000  
     # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
     
-    scrollTo: row =>
-        
-        view = @state.s.view.asMutable()
-        
-        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
-        
-        maxY = @state.s.lines.length - @cells.rows
-        
-        view[1] = min maxY view[1] if maxY > 0
-        view[1] = max 0 view[1]
-        
-        @state.setView view
-        
-        true
-
     scrollToPixel: pixel =>
         
-        rof = pixel[1]/@cells.screen.t.cellsz[1]
-        
-        lf pixel rof
-        
         view = @state.s.view.asMutable()
         
-        view[1] = parseInt floor(rof * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        view[1] = parseInt (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
+        
+        view[1] -= 6 # offset so that clicking inside a header scrolls it into view
         
         maxY = @state.s.lines.length - @cells.rows
         
@@ -172,10 +170,6 @@ function mapscr
         @state.setView view
         
         true
-        
-    rowAtPixelY: py =>
-        
-        parseInt py/@cells.screen.t.cellsz[1]
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
