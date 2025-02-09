@@ -112,7 +112,9 @@ screen = (function ()
             }
             s += '\n'
         }
-        return this.t.write(s.slice(0, -1))
+        this.t.write(s.slice(0, -1))
+        this.t.lastCols = this.cols
+        return this.t.lastRows = this.rows
     }
 
     return screen

@@ -2,10 +2,16 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var mapscr
 
+import prof from "../util/prof.js"
+import syntax from "../util/syntax.js"
+import color from "../util/color.js"
+import util from "../util/util.js"
+
 import theme from "../theme.js"
 
 import cells from "./cells.js"
 
+import { NodeSharedMemoryWriteStream } from "../../../node-libsharedmemory"
 
 mapscr = (function ()
 {
@@ -13,46 +19,84 @@ mapscr = (function ()
     {
         this.state = state
     
+        this["reallocBuffer"] = this["reallocBuffer"].bind(this)
+        this["onPreResize"] = this["onPreResize"].bind(this)
         this.cells = new cells(screen)
+        screen.t.on('preResize',this.onPreResize)
+    }
+
+    mapscr.prototype["onPreResize"] = function ()
+    {
+        return this.cells.screen.t.write("\x1b_Gq=1,a=d,d=A\x1b\\")
     }
 
     mapscr.prototype["onResize"] = function ()
     {
-        var base64, chunks, data, h, i, t, w, x, y
+        var t
 
         t = this.cells.screen.t
         if (_k_.empty(t.pixels))
         {
             return
         }
+        clearTimeout(this.reallocId)
+        return this.reallocId = setTimeout(this.reallocBuffer,10)
+    }
+
+    mapscr.prototype["reallocBuffer"] = function ()
+    {
+        var b, base64, ch, chunks, data, fg, g, h, i, li, line, r, t, w, x, xi, y
+
+        prof.start('mapscr')
+        t = this.cells.screen.t
         var _a_ = [this.cells.cols * t.cellsz[0],this.cells.rows * t.cellsz[1]]; w = _a_[0]; h = _a_[1]
 
-        data = Buffer.allocUnsafe(w * h * 3)
-        for (var _b_ = y = 0, _c_ = h; (_b_ <= _c_ ? y < h : y > h); (_b_ <= _c_ ? ++y : --y))
+        data = Buffer.alloc(w * h * 3)
+        prof.time('mapscr','alloc')
+        for (var _b_ = y = 0, _c_ = _k_.min(h,this.state.s.lines.length * 3); (_b_ <= _c_ ? y < _k_.min(h,this.state.s.lines.length * 3) : y > _k_.min(h,this.state.s.lines.length * 3)); (_b_ <= _c_ ? ++y : --y))
         {
-            for (var _d_ = x = 0, _e_ = w; (_d_ <= _e_ ? x < w : x > w); (_d_ <= _e_ ? ++x : --x))
+            li = parseInt(y / 3)
+            line = this.state.s.lines[li]
+            for (var _d_ = x = 0, _e_ = _k_.min(w,line.length * 2); (_d_ <= _e_ ? x < _k_.min(w,line.length * 2) : x > _k_.min(w,line.length * 2)); (_d_ <= _e_ ? ++x : --x))
             {
-                data[(y * w + x) * 3 + 0] = _k_.min(255,x)
-                data[(y * w + x) * 3 + 1] = 0
-                data[(y * w + x) * 3 + 2] = _k_.min(255,y)
+                if (x === 0)
+                {
+                    data[(y * w + x) * 3 + 0] = 55
+                    data[(y * w + x) * 3 + 1] = 55
+                    data[(y * w + x) * 3 + 2] = 55
+                }
+                xi = parseInt(x / 2)
+                fg = this.state.syntax.getColor(xi,li)
+                ch = line[xi]
+                if (!_k_.empty(ch) && ch !== ' ')
+                {
+                    var _f_ = color.rgb(fg); r = _f_[0]; g = _f_[1]; b = _f_[2]
+
+                    data[(y * w + x) * 3 + 0] = r
+                    data[(y * w + x) * 3 + 1] = g
+                    data[(y * w + x) * 3 + 2] = b
+                }
             }
         }
+        prof.time('mapscr','fill')
         if (data.length > 4096)
         {
             base64 = data.slice(0, 4096).toString('base64')
             t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h},m=1;${base64}\x1b\\`)
             chunks = Math.ceil(data.length / 4096)
-            for (var _f_ = i = 1, _10_ = chunks; (_f_ <= _10_ ? i < chunks : i > chunks); (_f_ <= _10_ ? ++i : --i))
+            for (var _10_ = i = 1, _11_ = chunks; (_10_ <= _11_ ? i < chunks : i > chunks); (_10_ <= _11_ ? ++i : --i))
             {
                 base64 = data.slice(i * 4096, typeof Math.min((i + 1) * 4096,data.length) === 'number' ? Math.min((i + 1) * 4096,data.length) : -1).toString('base64')
-                t.write(`\x1b_Gq=1,m=${(i === chunks - 1 ? 0 : 1)};${base64}\x1b\\`)
+                t.write(`\x1b_Gq=1,m=${((i === chunks - 1) ? 0 : 1)};${base64}\x1b\\`)
             }
         }
         else
         {
             base64 = data.toString('base64')
-            return t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h};${base64}\x1b\\`)
+            t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
+        prof.end('mapscr','send')
+        return this.draw()
     }
 
     mapscr.prototype["init"] = function (x, y, w, h)

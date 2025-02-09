@@ -122,6 +122,7 @@ TTIO = (function ()
 
     TTIO.prototype["onResize"] = function ()
     {
+        this.emit('preResize')
         return this.write('\x1b[14t')
     }
 
@@ -512,11 +513,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _320_23_
+        var diff, _323_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_320_23_=this.lastClick) != null ? _320_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_323_23_=this.lastClick) != null ? _323_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -544,7 +545,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, pxs, text, _359_23_
+        var csi, dataStr, esc, event, i, pxs, text, _362_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
@@ -581,7 +582,6 @@ TTIO = (function ()
                 })
                 this.pixels = [pxs[1],pxs[0]]
                 this.cellsz = [parseInt(this.pixels[0] / this.cols()),parseInt(this.pixels[1] / this.rows())]
-                lf('emit resize',this.cols(),this.rows(),this.pixels,this.cellsz)
                 this.emit('resize',this.cols(),this.rows(),this.pixels,this.cellsz)
                 return
             }
@@ -624,7 +624,11 @@ TTIO = (function ()
                 {
                     return this.emit('key',event.combo,event)
                 }
-                lf('unhandled csi event',_k_.noon((event)))
+                lf(`unhandled csi ${csi} event`,_k_.noon((event)))
+                for (var _a_ = i = 0, _b_ = data.length; (_a_ <= _b_ ? i < data.length : i > data.length); (_a_ <= _b_ ? ++i : --i))
+                {
+                    lf(i,'0x' + data[i].toString(16),String.fromCodePoint(data[i]))
+                }
                 return
             }
         }

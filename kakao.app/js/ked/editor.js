@@ -5,6 +5,7 @@ var editor
 import events from "../kxk/events.js"
 import matchr from "../kxk/matchr.js"
 import kstr from "../kxk/kstr.js"
+import post from "../kxk/post.js"
 
 import state from "./state.js"
 import theme from "./theme.js"
@@ -75,7 +76,7 @@ editor = (function ()
         }
         if (this.mapscr)
         {
-            m = 8
+            m = 10
             this.mapscr.init(x + w - m,y,m,h)
         }
         this.cells.init(x + s + g,y,w - s - g - m,h)
@@ -478,7 +479,7 @@ editor = (function ()
 
     editor.prototype["redraw"] = function ()
     {
-        return this.emit('redraw')
+        return post.emit('redraw')
     }
 
     editor.prototype["onKey"] = function (key, event)

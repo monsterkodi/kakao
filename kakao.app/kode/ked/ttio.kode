@@ -79,7 +79,10 @@ function TTIO extends events
     store:    => @write '\x1b7'
     restore:  => @write '\x1b8'
 
-    onResize: => @write '\x1b[14t'
+    onResize: => 
+        
+        @emit 'preResize'
+        @write '\x1b[14t' # request screen size in pixels
                 
     # 000   000  000  000000000  000000000  000   000  
     # 000  000   000     000        000      000 000   
@@ -378,7 +381,7 @@ function TTIO extends events
                 @pixels = [pxs[1] pxs[0]]
                 @cellsz = [parseInt(@pixels[0]/@cols()) parseInt(@pixels[1]/@rows())]
 
-                lf 'emit resize' @cols() @rows() @pixels @cellsz
+                # lf 'emit resize' @cols() @rows() @pixels @cellsz
                 
                 @emit 'resize' @cols() @rows() @pixels @cellsz
                 ⮐ 
@@ -414,9 +417,9 @@ function TTIO extends events
             if event = @parseCsi csi
                 if event.type in ['press' 'repeat']
                     ⮐ @emit 'key' event.combo event
-                lf 'unhandled csi event' noon(event)
-                # for i in 0...data.length
-                    # lf i '0x' + data[i].toString(16) String.fromCodePoint(data[i])
+                lf "unhandled csi #{csi} event" noon(event)
+                for i in 0...data.length
+                    lf i '0x' + data[i].toString(16) String.fromCodePoint(data[i])
                 ⮐ # ignore release events for now
                     
         else if esc

@@ -6,7 +6,7 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../kxk ◆ events matchr kstr
+use ../kxk ◆ events matchr kstr post
 use ◆ state theme
 use ./util ◆ util color
 use ./view ◆ view scroll gutter mapscr
@@ -46,7 +46,7 @@ function editor extends view
             @gutter.init x+s   y     g       h
             
         if @mapscr
-            m = 8
+            m = 10
             @mapscr.init x+w-m y     m       h
             
         @cells.init      x+s+g y     w-s-g-m h
@@ -336,7 +336,7 @@ function editor extends view
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    redraw: => @emit 'redraw'
+    redraw: => post.emit 'redraw'
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

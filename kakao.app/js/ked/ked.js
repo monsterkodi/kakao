@@ -73,7 +73,7 @@ ked [file]
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','knob'])
         this.status = new status(this.screen,this.editor.state)
         lfc('▸                                         ked',this.version)
-        this.editor.on('redraw',this.redraw)
+        post.on('redraw',this.redraw)
         post.on('view.size',this.onViewSize)
         this.mouseHandlers = [this.konsole,this.editor]
         this.wheelHandlers = [this.konsole,this.editor]
@@ -103,7 +103,7 @@ ked [file]
 
     KED.prototype["onException"] = function (err)
     {
-        var _87_10_
+        var _88_10_
 
         ;(this.t != null ? this.t.quit() : undefined)
         console.error(err)
@@ -236,8 +236,9 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        lf('ked.onResize',cols,rows,size)
-        this.editor.mapscr.onResize()
+        var _202_22_
+
+        ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
         return this.redraw()
     }
 

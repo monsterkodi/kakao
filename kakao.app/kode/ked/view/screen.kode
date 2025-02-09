@@ -85,5 +85,8 @@ function screen
                 s +=  @c[y][x].char
             s += '\n'
         @t.write s[0..-2]
+        
+        @t.lastCols = @cols
+        @t.lastRows = @rows
                 
 export screen

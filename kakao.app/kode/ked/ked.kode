@@ -52,7 +52,8 @@ function KED
         
         lfc '▸                                         ked' @version
         
-        @editor.on  'redraw'      @redraw
+        # @editor.on  'redraw'      @redraw
+        post.on  'redraw'      @redraw
         
         post.on     'view.size'   @onViewSize
         
@@ -197,8 +198,8 @@ function KED
     
     onResize: cols rows size => 
         
-        lf 'ked.onResize' cols rows size
-        @editor.mapscr.onResize()
+        # lf 'ked.onResize' cols rows size
+        @editor.mapscr?.onResize()
         
         @redraw()
     
