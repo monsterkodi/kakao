@@ -30,19 +30,26 @@ function mapscr
                 data[(y*w+x)*3+0] = min 255 x
                 data[(y*w+x)*3+1] = 0
                 data[(y*w+x)*3+2] = min 255 y
+                
+        # q=1  don't send OK q=2 don't send OK and failure
+        # i=n  image id 
+        # p=n  placement id
+        # f=24 3 bytes per pixel
+        # s=n  width v=n  height
+        # m=1  image chunk not larger than 4096 bytes
+        # m=0  last chunk of image
+        # a=p  placement action
         
-        if 'kitty' in process.env.TERM and data.length > 4096
+        if data.length > 4096 # and 'kitty' in process.env.TERM
             base64 = data[0...4096].toString 'base64'
-            t.write "\x1b_Gi=666,p=777,f=24,s=#{w},v=#{h},m=1;#{base64}\x1b\\"
-            rest = data.length%4096
-            for i in 1...parseInt(data.length/4096)
-                base64 = data[i*4096...(i+1)*4096].toString 'base64'
-                t.write "\x1b_Gm=1;#{base64}\x1b\\"
-            base64 = data[data.length-rest..].toString 'base64'
-            t.write "\x1b_Gm=0;#{base64}\x1b\\"
+            t.write "\x1b_Gq=1,i=666,p=777,f=24,s=#{w},v=#{h},m=1;#{base64}\x1b\\"
+            chunks = Math.ceil data.length / 4096
+            for i in 1...chunks
+                base64 = data[i*4096...Math.min((i+1)*4096, data.length)].toString 'base64'
+                t.write "\x1b_Gq=1,m=#{i == chunks - 1 ? 0 : 1};#{base64}\x1b\\"
         else
             base64 = data.toString 'base64'
-            t.write "\x1b_Gi=666,p=777,f=24,s=#{w},v=#{h};#{base64}\x1b\\"
+            t.write "\x1b_Gq=1,i=666,p=777,f=24,s=#{w},v=#{h};#{base64}\x1b\\"
                 
     init: x y w h -> @cells.init x y w h
         
@@ -60,7 +67,7 @@ function mapscr
         ⮐ if empty t.pixels
         
         t.setCursor @cells.x @cells.y
-        t.write "\x1b_Ga=p,i=666,p=777\x1b\\"
+        t.write "\x1b_Gq=1,a=p,i=666,p=777\x1b\\"
         @
                 
 export mapscr

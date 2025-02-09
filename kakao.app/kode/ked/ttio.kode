@@ -92,7 +92,7 @@ function TTIO extends events
     # doesn't work in terminal.app
     
     parseKitty: csi ->
-                
+        
         ⮐ if csi[-1] not in 'uABCD'
         
         key = switch csi[-1]
@@ -153,7 +153,7 @@ function TTIO extends events
             mods.push key
             
         combo = mods.join '+'
-        
+                
         key:    key
         combo:  combo
         type:   type
@@ -176,9 +176,7 @@ function TTIO extends events
             '5~'    ➜ ⮐ @keyEventForCombo('pageup')
             '6~'    ➜ ⮐ @keyEventForCombo('pagedown')
             'Z'     ➜ ⮐ @keyEventForCombo('shift+z' 'Z')
-        
-        ⮐ if csi.startsWith '_G' and csi.endsWith ';OK'
-            
+                    
         lf '---- csi' csi
         
     # 00000000   0000000   0000000  
@@ -189,8 +187,6 @@ function TTIO extends events
     
     parseEsc: esc =>
         
-        lf '---- esc' esc      
-
         if esc.length == 1
             code = esc.charCodeAt 0
             if 1 <= code <= 26
@@ -198,6 +194,7 @@ function TTIO extends events
                 ⮐ @keyEventForCombo "alt+cmd+#{key}"
         else
             ⮐ if esc.startsWith '_G'
+        
         
         switch esc
         
@@ -207,8 +204,9 @@ function TTIO extends events
             'OS' ➜ ⮐ @keyEventForCombo('f4')   
                  ➜ lf 'esc' esc.charCodeAt(0) esc.length
             
-        if event = @keyEventForChar esc
-            ⮐  event
+        ⮐  event if event = @keyEventForChar esc
+            
+        lf '---- esc' esc      
         
     # 00000000    0000000   000   000  
     # 000   000  000   000  000 0 000  
@@ -404,6 +402,7 @@ function TTIO extends events
                     ⮐ @emitMouseEvent event
                     
                 lfc 'unhandled mouse event?' csi
+                ⮐ 
                 
             if event = @parseKitty csi
                 if event.type == 'release'
@@ -415,6 +414,10 @@ function TTIO extends events
             if event = @parseCsi csi
                 if event.type in ['press' 'repeat']
                     ⮐ @emit 'key' event.combo event
+                lf 'unhandled csi event' noon(event)
+                # for i in 0...data.length
+                    # lf i '0x' + data[i].toString(16) String.fromCodePoint(data[i])
+                ⮐ # ignore release events for now
                     
         else if esc
             

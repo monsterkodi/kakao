@@ -292,10 +292,6 @@ TTIO = (function ()
 
         }
 
-        if (csi.startsWith('_G' && csi.endsWith(';OK')))
-        {
-            return
-        }
         return lf('---- csi',csi)
     }
 
@@ -303,7 +299,6 @@ TTIO = (function ()
     {
         var code, event, key
 
-        lf('---- esc',esc)
         if (esc.length === 1)
         {
             code = esc.charCodeAt(0)
@@ -342,6 +337,7 @@ TTIO = (function ()
         {
             return event
         }
+        return lf('---- esc',esc)
     }
 
     TTIO.prototype["parseRaw"] = function (raw)
@@ -516,11 +512,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _322_23_
+        var diff, _320_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_322_23_=this.lastClick) != null ? _322_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
+            this.lastClick = ((_320_23_=this.lastClick) != null ? _320_23_ : {x:event.x,y:event.y,count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -548,7 +544,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, pxs, text, _361_23_
+        var csi, dataStr, esc, event, pxs, text, _359_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {
@@ -609,6 +605,7 @@ TTIO = (function ()
                     return this.emitMouseEvent(event)
                 }
                 lfc('unhandled mouse event?',csi)
+                return
             }
             if (event = this.parseKitty(csi))
             {
@@ -627,6 +624,8 @@ TTIO = (function ()
                 {
                     return this.emit('key',event.combo,event)
                 }
+                lf('unhandled csi event',_k_.noon((event)))
+                return
             }
         }
         else if (esc)

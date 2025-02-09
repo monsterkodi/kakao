@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var mapscr
 
@@ -18,7 +18,7 @@ mapscr = (function ()
 
     mapscr.prototype["onResize"] = function ()
     {
-        var base64, data, h, i, rest, t, w, x, y
+        var base64, chunks, data, h, i, t, w, x, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.pixels))
@@ -37,23 +37,21 @@ mapscr = (function ()
                 data[(y * w + x) * 3 + 2] = _k_.min(255,y)
             }
         }
-        if (_k_.in('kitty',process.env.TERM) && data.length > 4096)
+        if (data.length > 4096)
         {
             base64 = data.slice(0, 4096).toString('base64')
-            t.write(`\x1b_Gi=666,p=777,f=24,s=${w},v=${h},m=1;${base64}\x1b\\`)
-            rest = data.length % 4096
-            for (var _f_ = i = 1, _10_ = parseInt(data.length / 4096); (_f_ <= _10_ ? i < parseInt(data.length / 4096) : i > parseInt(data.length / 4096)); (_f_ <= _10_ ? ++i : --i))
+            t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h},m=1;${base64}\x1b\\`)
+            chunks = Math.ceil(data.length / 4096)
+            for (var _f_ = i = 1, _10_ = chunks; (_f_ <= _10_ ? i < chunks : i > chunks); (_f_ <= _10_ ? ++i : --i))
             {
-                base64 = data.slice(i * 4096, (i + 1) * 4096).toString('base64')
-                t.write(`\x1b_Gm=1;${base64}\x1b\\`)
+                base64 = data.slice(i * 4096, typeof Math.min((i + 1) * 4096,data.length) === 'number' ? Math.min((i + 1) * 4096,data.length) : -1).toString('base64')
+                t.write(`\x1b_Gq=1,m=${(i === chunks - 1 ? 0 : 1)};${base64}\x1b\\`)
             }
-            base64 = data.slice(data.length - rest).toString('base64')
-            return t.write(`\x1b_Gm=0;${base64}\x1b\\`)
         }
         else
         {
             base64 = data.toString('base64')
-            return t.write(`\x1b_Gi=666,p=777,f=24,s=${w},v=${h};${base64}\x1b\\`)
+            return t.write(`\x1b_Gq=1,i=666,p=777,f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
     }
 
@@ -72,7 +70,7 @@ mapscr = (function ()
             return
         }
         t.setCursor(this.cells.x,this.cells.y)
-        t.write("\x1b_Ga=p,i=666,p=777\x1b\\")
+        t.write("\x1b_Gq=1,a=p,i=666,p=777\x1b\\")
         return this
     }
 
