@@ -301,7 +301,7 @@ class util
     
     @linesForText: text -> 
         
-        text = text.replace /\x1b/g, '▪'
+        text = text.replace /\x1b/g, '�'
     
         text.split /\r?\n/
     

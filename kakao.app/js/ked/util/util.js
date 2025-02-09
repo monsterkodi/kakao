@@ -593,7 +593,7 @@ class util
 
     static linesForText (text)
     {
-        text = text.replace(/\x1b/g,'▪')
+        text = text.replace(/\x1b/g,'�')
         return text.split(/\r?\n/)
     }
 

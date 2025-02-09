@@ -1459,19 +1459,31 @@ body
     -webkit-user-select: none;
 }
 
+
+
+.li1.marker,
+.li2.marker,
+.li3.marker
+{
+    visibility: hidden;
+}
+
 .li1.marker:before
 {
     content: '▸';
+    visibility: visible;
 }
 
 .li2.marker:before
 {
     content: '▪';
+    visibility: visible;
 }
 
 .li3.marker:before
 {
     content: '◆';
+    visibility: visible;
 }
 
 .ligature

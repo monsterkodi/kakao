@@ -127,3 +127,28 @@ advanced shortcuts
 
     ^'              toggle sticky selection
     ^◂ ^▸           remove from selection in sticky mode
+    
+unicode replacement sequences
+
+    ~>   ▸
+    ~<   ◂
+    ~.   ▶
+    ~,   ◀
+    ~v   ▾
+    ~V   ▼
+    ~^   ▴
+    ~6   ▲
+    ~\   █
+    ~[   
+    ~]   
+    ~{   
+    ~}   
+    ~c   ●
+    ~d   ◆
+    ~o   ○
+    ~r   ⮐
+    ~s   ▪
+    ~S   ■
+    ~t   ➜
+    ~X   ✘
+    ~O   ✔

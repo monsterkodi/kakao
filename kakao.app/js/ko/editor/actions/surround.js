@@ -200,6 +200,18 @@ export default {initSurround:function ()
             }
         }
     }
+    if (!this.numSelections())
+    {
+        var list4 = _k_.list(newCursors)
+        for (var _13_ = 0; _13_ < list4.length; _13_++)
+        {
+            c = list4[_13_]
+            if (c[0] > 0 && this.do.line(c[1])[c[0] - 1] === '~')
+            {
+                return false
+            }
+        }
+    }
     this.do.start()
     if (this.do.numSelections() === 0)
     {
@@ -209,13 +221,13 @@ export default {initSurround:function ()
     {
         newSelections = this.do.selections()
     }
-    var _13_ = this.surroundPairs[ch]; cl = _13_[0]; cr = _13_[1]
+    var _14_ = this.surroundPairs[ch]; cl = _14_[0]; cr = _14_[1]
 
     this.surroundStack.push([cl,cr])
-    var list4 = _k_.list(reversed(newSelections))
-    for (var _14_ = 0; _14_ < list4.length; _14_++)
+    var list5 = _k_.list(reversed(newSelections))
+    for (var _15_ = 0; _15_ < list5.length; _15_++)
     {
-        ns = list4[_14_]
+        ns = list5[_15_]
         if (cl === '#{')
         {
             if (sr = this.rangeOfStringSurroundingRange(ns))
@@ -232,7 +244,7 @@ export default {initSurround:function ()
         }
         else if (_k_.in(this.fileType,['coffee','kode']) && cl === '(' && lengthOfRange(ns) > 0)
         {
-            var _15_ = this.splitStateLineAtPos(this.do,rangeStartPos(ns)); before = _15_[0]; after = _15_[1]
+            var _16_ = this.splitStateLineAtPos(this.do,rangeStartPos(ns)); before = _16_[0]; after = _16_[1]
 
             trimmed = before.trimRight()
             beforeGood = /\w$/.test(trimmed) && !/(if|when|in|and|or|is|not|else|return)$/.test(trimmed)
@@ -241,10 +253,10 @@ export default {initSurround:function ()
             {
                 spaces = before.length - trimmed.length
                 this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),trimmed.length,spaces))
-                var list5 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
-                for (var _16_ = 0; _16_ < list5.length; _16_++)
+                var list6 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
+                for (var _17_ = 0; _17_ < list6.length; _17_++)
                 {
-                    c = list5[_16_]
+                    c = list6[_17_]
                     c[0] -= spaces
                 }
                 ns[1][0] -= spaces
@@ -253,30 +265,30 @@ export default {initSurround:function ()
         }
         this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][1],0,cr))
         this.do.change(ns[0],kstr.splice(this.do.line(ns[0]),ns[1][0],0,cl))
-        var list6 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
-        for (var _17_ = 0; _17_ < list6.length; _17_++)
-        {
-            c = list6[_17_]
-            c[0] += cl.length
-        }
-        var list7 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][1] - 1,newSelections))
+        var list7 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][0] - 1,newCursors))
         for (var _18_ = 0; _18_ < list7.length; _18_++)
         {
-            os = list7[_18_]
-            os[1][0] += cr.length
-            os[1][1] += cr.length
+            c = list7[_18_]
+            c[0] += cl.length
         }
-        var list8 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][0] - 1,newSelections))
+        var list8 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][1] - 1,newSelections))
         for (var _19_ = 0; _19_ < list8.length; _19_++)
         {
             os = list8[_19_]
+            os[1][0] += cr.length
+            os[1][1] += cr.length
+        }
+        var list9 = _k_.list(rangesAfterLineColInRanges(ns[0],ns[1][0] - 1,newSelections))
+        for (var _1a_ = 0; _1a_ < list9.length; _1a_++)
+        {
+            os = list9[_1a_]
             os[1][0] += cl.length
             os[1][1] += cl.length
         }
-        var list9 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][1],newCursors))
-        for (var _1a_ = 0; _1a_ < list9.length; _1a_++)
+        var list10 = _k_.list(positionsAfterLineColInPositions(ns[0],ns[1][1],newCursors))
+        for (var _1b_ = 0; _1b_ < list10.length; _1b_++)
         {
-            c = list9[_1a_]
+            c = list10[_1b_]
             c[0] += cr.length
         }
     }
@@ -296,15 +308,15 @@ export default {initSurround:function ()
     pairs = uniqEqual(Object.values(this.surroundPairs))
     openClosePairs = []
     var list = _k_.list(cs)
-    for (var _1b_ = 0; _1b_ < list.length; _1b_++)
+    for (var _1c_ = 0; _1c_ < list.length; _1c_++)
     {
-        c = list[_1b_]
+        c = list[_1c_]
         numPairs = openClosePairs.length
         var list1 = _k_.list(pairs)
-        for (var _1c_ = 0; _1c_ < list1.length; _1c_++)
+        for (var _1d_ = 0; _1d_ < list1.length; _1d_++)
         {
-            so = list1[_1c_][0]
-            sc = list1[_1c_][1]
+            so = list1[_1d_][0]
+            sc = list1[_1d_][1]
             before = this.do.line(c[1]).slice(c[0] - so.length,c[0])
             after = this.do.line(c[1]).slice(c[0],c[0] + sc.length)
             if (so === before && sc === after)
@@ -324,16 +336,16 @@ export default {initSurround:function ()
     }
     uniquePairs = uniqEqual(openClosePairs)
     var list2 = _k_.list(cs)
-    for (var _1d_ = 0; _1d_ < list2.length; _1d_++)
+    for (var _1e_ = 0; _1e_ < list2.length; _1e_++)
     {
-        c = list2[_1d_]
-        var _1e_ = openClosePairs.shift(); so = _1e_[0]; sc = _1e_[1]
+        c = list2[_1e_]
+        var _1f_ = openClosePairs.shift(); so = _1f_[0]; sc = _1f_[1]
 
         this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0] - so.length,so.length + sc.length))
         var list3 = _k_.list(positionsAfterLineColInPositions(c[1],c[0],cs))
-        for (var _1f_ = 0; _1f_ < list3.length; _1f_++)
+        for (var _20_ = 0; _20_ < list3.length; _20_++)
         {
-            nc = list3[_1f_]
+            nc = list3[_20_]
             nc[0] -= sc.length + so.length
         }
         c[0] -= so.length

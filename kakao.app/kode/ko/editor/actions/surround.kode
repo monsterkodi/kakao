@@ -126,7 +126,11 @@ export
         if ch == "'" and not @numSelections() # check if any alpabetical character is before any cursor
             for c in newCursors
                 ⮐ false if c[0] > 0 and /[A-Za-z]/.test @do.line(c[1])[c[0]-1] 
-        
+
+        if not @numSelections() # check if a tilde is before any cursor
+            for c in newCursors
+                ⮐ false if c[0] > 0 and @do.line(c[1])[c[0]-1] == '~'
+                
         @do.start()
         if @do.numSelections() == 0
             newSelections = rangesFromPositions newCursors

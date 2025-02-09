@@ -1241,14 +1241,22 @@ infoPadding = 6px
 // 000 0 000  000   000  000   000  000  000   000   000  000   000  000   000  000  0000
 // 000   000  000   000  000   000  000   000  0000000     0000000   00     00  000   000
 
+.li1.marker
+.li2.marker
+.li3.marker
+    visibility          hidden
+
 .li1.marker:before
     content             '▸'
+    visibility          visible
     
 .li2.marker:before    
     content             '▪'
+    visibility          visible
     
 .li3.marker:before    
     content             '◆'
+    visibility          visible
 
 .ligature
     font-family         fontLigature

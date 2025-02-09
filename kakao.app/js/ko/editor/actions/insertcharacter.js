@@ -71,11 +71,11 @@ export default {insertCharacter:function (ch)
                 case '>':
                     return '▸'
 
-                case '.':
-                    return '▶'
-
                 case '<':
                     return '◂'
+
+                case '.':
+                    return '▶'
 
                 case ',':
                     return '◀'
@@ -89,14 +89,29 @@ export default {insertCharacter:function (ch)
                 case '^':
                     return '▴'
 
-                case '6':
-                    return '▲'
+                case 'b':
+                    return '█'
 
-                case 'd':
-                    return '◆'
+                case '\\':
+                    return '█'
+
+                case '[':
+                    return ''
+
+                case ']':
+                    return ''
+
+                case '{':
+                    return ''
+
+                case '}':
+                    return ''
 
                 case 'c':
                     return '●'
+
+                case 'd':
+                    return '◆'
 
                 case 'o':
                     return '○'
@@ -118,6 +133,39 @@ export default {insertCharacter:function (ch)
 
                 case 'O':
                     return '✔'
+
+                case '1':
+                    return '┏'
+
+                case '2':
+                    return '┳'
+
+                case '3':
+                    return '┓'
+
+                case '4':
+                    return '┣'
+
+                case '5':
+                    return '╋'
+
+                case '6':
+                    return '┫'
+
+                case '7':
+                    return '┗'
+
+                case '8':
+                    return '┻'
+
+                case '9':
+                    return '┛'
+
+                case '-':
+                    return '━'
+
+                case '=':
+                    return '┃'
 
             }
 
