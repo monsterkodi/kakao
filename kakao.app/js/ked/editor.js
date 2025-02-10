@@ -385,7 +385,7 @@ editor = (function ()
     {
         var start, steps, x, y
 
-        if (event.row >= this.cells.y + this.cells.rows)
+        if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
             return
         }

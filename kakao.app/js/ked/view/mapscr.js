@@ -55,15 +55,12 @@ mapscr = (function ()
 
     mapscr.prototype["onResize"] = function ()
     {
-        var t
-
-        t = this.cells.screen.t
-        if (_k_.empty(t.pixels))
+        if (_k_.empty(this.cells.screen.t.pixels))
         {
             return
         }
         clearTimeout(this.reallocId)
-        return this.reallocId = setTimeout(this.reallocBuffer,10)
+        return this.reallocId = setTimeout(this.reallocBuffer,100)
     }
 
     mapscr.prototype["reallocBuffer"] = function ()
@@ -154,7 +151,7 @@ mapscr = (function ()
             return
         }
         t.setCursor(this.cells.x,this.cells.y)
-        t.write(`\x1b_Gq=1,a=p,i=${this.imgId},p=${this.imgId}\x1b\\`)
+        t.write(`\x1b_Gq=1,a=p,i=${this.imgId},p=${this.imgId},C=1\x1b\\`)
         return this
     }
 

@@ -269,10 +269,12 @@ TTIO = (function ()
         switch (csi)
         {
             case 'I':
-                return post.emit('focus')
+                post.emit('focus')
+                return
 
             case 'O':
-                return post.emit('blur')
+                post.emit('blur')
+                return
 
             case 'H':
                 return this.keyEventForCombo('home')
@@ -294,7 +296,8 @@ TTIO = (function ()
 
         }
 
-        return lf('---- csi',csi)
+        lf('---- csi',csi)
+        return null
     }
 
     TTIO.prototype["parseEsc"] = function (esc)
@@ -339,7 +342,8 @@ TTIO = (function ()
         {
             return event
         }
-        return lf('---- esc',esc)
+        lf('---- esc',esc)
+        return null
     }
 
     TTIO.prototype["parseRaw"] = function (raw)
@@ -514,11 +518,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _329_23_
+        var diff, _327_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_329_23_=this.lastClick) != null ? _329_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_327_23_=this.lastClick) != null ? _327_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -546,7 +550,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, text, _368_23_
+        var csi, dataStr, esc, event, i, pxs, text, _366_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {

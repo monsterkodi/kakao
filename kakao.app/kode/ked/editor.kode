@@ -272,7 +272,7 @@ function editor extends view
     
     onWheel: event =>
         
-        ⮐ if event.row >= @cells.y + @cells.rows
+        ⮐ if event.cell[1] >= @cells.y + @cells.rows
         
         steps  = 4
         steps *= 2 if event.shift

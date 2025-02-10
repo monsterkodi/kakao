@@ -109,7 +109,7 @@ class util
     @isPosInsideRange: pos rng ->
         
         ⮐ false if util.isPosBeforeRange pos rng 
-        ⮐ false if util.isPosAfterRange pos rng 
+        ⮐ false if util.isPosAfterRange  pos rng 
         true
         
     @isPosOutsideRange: pos rng -> not util.isPosInsideRange pos rng

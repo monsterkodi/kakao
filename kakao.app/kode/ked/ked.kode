@@ -194,10 +194,10 @@ function KED
     
     onViewSize: name x y => 
     
-        @viewSizes[name] = [x y]
+        @viewSizes[name] = [x min(y @screen.rows-1)]
         
-        @editor.mapscr?.onPreResize()
-        @konsole.mapscr?.onPreResize()
+        # @editor.mapscr?.onPreResize()
+        # @konsole.mapscr?.onPreResize()
         @editor.mapscr?.onResize()
         @konsole.mapscr?.onResize()
         

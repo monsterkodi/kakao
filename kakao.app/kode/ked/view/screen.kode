@@ -26,7 +26,7 @@ function screen
     
     set: x y char fg bg =>
         
-        if x < @cols and y < @rows
+        if 0 <= x < @cols and 0 <= y < @rows
             @c[y][x].char = char
             @c[y][x].fg = fg if valid fg
             @c[y][x].bg = bg if valid bg

@@ -27,7 +27,7 @@ konsole = (function ()
     {
         var steps
 
-        if (event.row < this.cells.y)
+        if (event.cell[1] < this.cells.y)
         {
             return
         }

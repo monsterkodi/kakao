@@ -26,7 +26,7 @@ function konsole extends editor
     
     onWheel: event =>
         
-        ⮐ if event.row < @cells.y
+        ⮐ if event.cell[1] < @cells.y
         
         steps  = 4
         steps *= 2 if event.shift

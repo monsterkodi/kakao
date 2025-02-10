@@ -31,7 +31,7 @@ screen = (function ()
 
     screen.prototype["set"] = function (x, y, char, fg, bg)
     {
-        if (x < this.cols && y < this.rows)
+        if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {
             this.c[y][x].char = char
             if (!_k_.empty(fg))

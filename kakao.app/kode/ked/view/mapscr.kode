@@ -44,12 +44,10 @@ function mapscr
         
     onResize: =>
         
-        t = @cells.screen.t
-        
-        ⮐ if empty t.pixels
+        ⮐ if empty @cells.screen.t.pixels
         
         clearTimeout @reallocId
-        @reallocId = setTimeout @reallocBuffer 10
+        @reallocId = setTimeout @reallocBuffer 100
         
     # 0000000    000   000  00000000  00000000  00000000  00000000   
     # 000   000  000   000  000       000       000       000   000  
@@ -145,7 +143,7 @@ function mapscr
         ⮐ if empty t.pixels or @cells.rows <= 0
         
         t.setCursor @cells.x @cells.y
-        t.write "\x1b_Gq=1,a=p,i=#{@imgId},p=#{@imgId}\x1b\\"
+        t.write "\x1b_Gq=1,a=p,i=#{@imgId},p=#{@imgId},C=1\x1b\\"
         @
         
     #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   

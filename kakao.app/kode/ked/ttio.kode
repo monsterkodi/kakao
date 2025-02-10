@@ -172,8 +172,8 @@ function TTIO extends events
     parseCsi: csi =>
         
         switch csi
-            'I'     ➜ ⮐ post.emit 'focus'
-            'O'     ➜ ⮐ post.emit 'blur'
+            'I'     ➜ post.emit 'focus' ; ⮐
+            'O'     ➜ post.emit 'blur'  ; ⮐
             'H'     ➜ ⮐ @keyEventForCombo('home')
             'F'     ➜ ⮐ @keyEventForCombo('end')
             '3~'    ➜ ⮐ @keyEventForCombo('entf')
@@ -182,6 +182,7 @@ function TTIO extends events
             'Z'     ➜ ⮐ @keyEventForCombo('shift+z' 'Z')
                     
         lf '---- csi' csi
+        null
         
     # 00000000   0000000   0000000  
     # 000       000       000       
@@ -210,7 +211,8 @@ function TTIO extends events
             
         ⮐  event if event = @keyEventForChar esc
             
-        lf '---- esc' esc      
+        lf '---- esc' esc 
+        null
         
     # 00000000    0000000   000   000  
     # 000   000  000   000  000 0 000  
@@ -269,10 +271,6 @@ function TTIO extends events
     
     parseMouse: csi =>
                 
-        # [code col row] = csi[1..-2].split(';').map (s) -> parseInt s
-        # x = col-1
-        # y = row-1
-        
         [code px py] = csi[1..-2].split(';').map (s) -> parseInt s
         
         cx = parseInt px/@cellsz[0]
