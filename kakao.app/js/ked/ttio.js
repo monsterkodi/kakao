@@ -445,7 +445,7 @@ TTIO = (function ()
                 switch (code & 0b11100000)
                 {
                     case 32:
-                        return ((code & 0b11 === 3) ? 'move' : 'drag')
+                        return (((code & 0b11) === 3) ? 'move' : 'drag')
 
                     case 64:
                         return 'wheel'
@@ -518,11 +518,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _327_23_
+        var diff, _329_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_327_23_=this.lastClick) != null ? _327_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_329_23_=this.lastClick) != null ? _329_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -550,7 +550,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, text, _366_23_
+        var csi, dataStr, esc, event, i, pxs, text, _369_23_
 
         if (data[0] === 0x1b && data[1] === 0x5b)
         {

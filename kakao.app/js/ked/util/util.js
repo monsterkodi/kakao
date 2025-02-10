@@ -458,7 +458,7 @@ class util
                 return a
             }
         })
-        return rngs.sort(function (a, b)
+        rngs.sort(function (a, b)
         {
             if (a[1] === b[1])
             {
@@ -468,6 +468,10 @@ class util
             {
                 return a[1] - b[1]
             }
+        })
+        return rngs.filter(function (a)
+        {
+            return a[1] !== a[3] || a[0] !== a[2]
         })
     }
 

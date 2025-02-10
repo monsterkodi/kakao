@@ -57,7 +57,7 @@ konsole = (function ()
         return this.redraw()
     }
 
-    konsole.prototype["onKey"] = function (key)
+    konsole.prototype["onKey"] = function (key, event)
     {
         switch (key)
         {
@@ -71,7 +71,7 @@ konsole = (function ()
 
         }
 
-        return false
+        return konsole.__super__.onKey.call(this,key,event)
     }
 
     return konsole

@@ -229,6 +229,7 @@ class util
         rngs = rngs.map (a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a
         rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
         rngs.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
+        rngs.filter (a) -> a[1] != a[3] or a[0] != a[2] 
         
     @startPositionsOfRanges: rngs -> rngs.map (r) -> util.startOfRange r
     @endPositionsOfRanges:   rngs -> rngs.map (r) -> util.endOfRange r

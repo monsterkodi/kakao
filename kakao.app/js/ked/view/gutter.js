@@ -42,7 +42,7 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === mainCursor[1] ? theme.editor_cursor_bg : hasCursor ? theme.editor_cursor_multi : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
+                    fg = y === mainCursor[1] ? (this.state.hasFocus ? theme.editor_cursor_bg : theme.editor_cursor_blur) : hasCursor ? theme.editor_cursor_multi : fullysel ? theme.selection_line : selected ? theme.selection : highlighted ? theme.highlight : theme.linenr
                     bg = fullysel ? theme.gutter_fully_selected : selected ? theme.gutter_selected : theme.gutter
                     this.cells.set(col,row,((y < this.state.s.lines.length) ? c : ' '),fg,bg)
                 }

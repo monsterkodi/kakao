@@ -28,6 +28,8 @@ editor = (function ()
 
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
+        this["onFocus"] = this["onFocus"].bind(this)
+        this["grabFocus"] = this["grabFocus"].bind(this)
         this["isCursorVisible"] = this["isCursorVisible"].bind(this)
         this["isCursorInEmpty"] = this["isCursorInEmpty"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
@@ -37,6 +39,7 @@ editor = (function ()
         this["init"] = this["init"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
         this.state = new state(this.cells,this.name)
+        post.on('focus',this.onFocus)
         var list = _k_.list(features)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -85,7 +88,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _176_15_, _177_15_, _178_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _178_15_, _179_15_, _180_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -243,7 +246,7 @@ editor = (function ()
         }
         if (this.isCursorVisible())
         {
-            bg = theme[this.constructor.name + '_cursor_bg']
+            bg = theme[this.constructor.name + ((this.state.hasFocus ? '_cursor_bg' : '_cursor_blur'))]
             x = mainCursor[0] - view[0]
             y = mainCursor[1] - view[1]
             if (s.cursors.length <= 1)
@@ -272,7 +275,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _194_30_, _195_30_
+        var col, row, start, x, y, _196_30_, _197_30_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
         {
@@ -349,6 +352,7 @@ editor = (function ()
                             this.state.setMainCursor(x,y)
                         }
                     }
+                    this.grabFocus()
                     return true
                 }
                 break
@@ -467,6 +471,16 @@ editor = (function ()
         return visible
     }
 
+    editor.prototype["grabFocus"] = function ()
+    {
+        return post.emit('focus',this.name)
+    }
+
+    editor.prototype["onFocus"] = function (name)
+    {
+        return this.state.hasFocus = (name === this.name)
+    }
+
     editor.prototype["redraw"] = function ()
     {
         return post.emit('redraw')
@@ -474,7 +488,10 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        lc('key',key)
+        if (!this.state.hasFocus)
+        {
+            return
+        }
         if (this.state.s.cursors.length === 1)
         {
             switch (key)

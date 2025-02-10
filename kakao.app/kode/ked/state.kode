@@ -22,6 +22,7 @@ function state
                 @[k] = v.bind @
         
         @syntax = new syntax
+        @hasFocus = false
     
         @s = immutable
             lines:       ['']

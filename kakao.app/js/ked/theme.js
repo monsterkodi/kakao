@@ -66,19 +66,23 @@ class theme
 
     static editor_cursor_multi = '#f00'
 
+    static editor_cursor_blur = '#666'
+
     static editor_cursor_bg = '#ff0'
 
     static editor_cursor_fg = '#000'
 
-    static konsole = '#1a1a1a'
+    static konsole = '#000'
 
     static konsole_empty = '#000'
 
-    static konsole_cursor_main = '#1a1a1a'
+    static konsole_cursor_main = '#101010'
 
     static konsole_cursor_empty = '#000'
 
-    static konsole_cursor_bg = '#666'
+    static konsole_cursor_blur = '#666'
+
+    static konsole_cursor_bg = '#ff0'
 
     static konsole_cursor_fg = '#000'
 

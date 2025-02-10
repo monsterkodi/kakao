@@ -44,13 +44,13 @@ function konsole extends editor
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKey: key =>
+    onKey: key event =>
         
         switch key
             
             'cmd+k' ➜ @state.clearLines(); ⮐ true
             'alt+k' ➜ @toggle(); ⮐ true
             
-        false
-    
+        super key event
+            
 export konsole

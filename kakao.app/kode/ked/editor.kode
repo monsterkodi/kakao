@@ -19,6 +19,8 @@ function editor extends view
         
         @state = new state @cells @name
         
+        post.on 'focus' @onFocus
+        
         for feature in features
             switch feature
                 'scroll' ➜ @scroll = new scroll @screen @state
@@ -162,7 +164,7 @@ function editor extends view
                             
         if @isCursorVisible()
             
-            bg = theme[@constructor.name + '_cursor_bg']
+            bg = theme[@constructor.name + (@state.hasFocus ? '_cursor_bg' : '_cursor_blur')]
             x = mainCursor[0]-view[0]
             y = mainCursor[1]-view[1]
             if s.cursors.length <= 1
@@ -240,6 +242,7 @@ function editor extends view
                         else
                             @state.setMainCursor x y
                     
+                    @grabFocus()
                     ⮐ true
                     
             'drag'
@@ -325,7 +328,21 @@ function editor extends view
         visible = util.isPosInsideRange cursor @state.rangeForVisibleLines()
         if cursor[0] < @state.s.view[0] ➜ visible = false
         visible
-                
+        
+    # 00000000   0000000    0000000  000   000   0000000  
+    # 000       000   000  000       000   000  000       
+    # 000000    000   000  000       000   000  0000000   
+    # 000       000   000  000       000   000       000  
+    # 000        0000000    0000000   0000000   0000000   
+    
+    grabFocus: =>
+    
+        post.emit 'focus' @name
+        
+    onFocus: name =>
+        
+        @state.hasFocus = (name == @name)
+        
     # 00000000   00000000  0000000    00000000    0000000   000   000  
     # 000   000  000       000   000  000   000  000   000  000 0 000  
     # 0000000    0000000   000   000  0000000    000000000  000000000  
@@ -342,7 +359,9 @@ function editor extends view
     
     onKey: key event =>
         
-        lc 'key' key
+        ⮐ if not @state.hasFocus
+        
+        # lc 'key' key
         
         if @state.s.cursors.length == 1
             
