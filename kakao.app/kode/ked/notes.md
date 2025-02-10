@@ -25,29 +25,62 @@
 * todo
 
 - quick open cmd+p
+    - merge with macro?
+
 - mapscroll
-    - add scroll knob
-    - add cursors and selections
+    - add scrollbar handle
+    - show cursors and selections
     - fix scrolling to bottom for long files
     - split image into chunks
     - update on changes
+
 - find and search
+    - each multiline editor has its own knobbed finder at bottom
+    - heach finder has a search toggle, which searches in in all files
+        - opens the search result panel, if not open already
+        - the finder of the search result panel is set to the search parameters:
+            - if executed via shortcut: selected or cursor word
+            - if executed from a finder: the finder's setting 
+                - original finder can be closed and thus 'moves' to the search result pane
+
+▸ completion
+
+▸ macro
+    - unicode palette
+    
 - fscol
-- unicode replacement mode ~[n][a-Z]
-    - insert n characters if provided 
-        - test
-- undo fixes
-- ansi mode
-    - store ansi color in cells
-    - color palette
+    ▸ funclist
+    
 - ascii header mode
     - switch automatically if cursor inside
     - change 0 to █ or ░
-- file watcher    
-- state tests
-- theme 
-    - color vibrancy?      
-- syntax highlighting 
-    - remove ligature?
-    - style for certain unicode characters?
+    
+- file watcher
+
+- nice to have
+    
+    - unicode replacement mode ~[n][a-Z]
+        - insert n characters if provided 
+        
+    - syntax highlighting 
+        - remove ligature?
+        - style for certain unicode characters?
+        
+    - ansi mode
+        - store ansi color in cells
+        - color palette
+        
+    - theme 
+        - color vibrancy?      
+        
+    - help 
+        - interactive-keyboard-shortcuts
+        
+    - tabs
+    - git
+    
+- todo
+    - state tests
+    - undo fixes
+    
     

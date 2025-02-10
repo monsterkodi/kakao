@@ -72,8 +72,11 @@ ked [file]
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
         this.status = new status(this.screen,this.editor.state)
+        this.editor.state.hasFocus = true
         lfc('▸                                         ked',this.version)
         post.on('redraw',this.redraw)
+        post.on('window.focus',this.redraw)
+        post.on('window.blur',this.redraw)
         post.on('view.size',this.onViewSize)
         this.mouseHandlers = [this.konsole,this.editor]
         this.wheelHandlers = [this.konsole,this.editor]
@@ -103,7 +106,7 @@ ked [file]
 
     KED.prototype["onException"] = function (err)
     {
-        var _86_10_
+        var _90_10_
 
         ;(this.t != null ? this.t.quit() : undefined)
         console.error(err)
@@ -231,7 +234,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _201_22_, _202_23_
+        var _205_22_, _206_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -240,7 +243,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _207_22_, _208_23_
+        var _211_22_, _212_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

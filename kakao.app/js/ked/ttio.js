@@ -13,6 +13,7 @@ TTIO = (function ()
     function TTIO ()
     {
         this["onData"] = this["onData"].bind(this)
+        this["parseData"] = this["parseData"].bind(this)
         this["emitMouseEvent"] = this["emitMouseEvent"].bind(this)
         this["parseMouse"] = this["parseMouse"].bind(this)
         this["keyEventForCombo"] = this["keyEventForCombo"].bind(this)
@@ -32,6 +33,7 @@ TTIO = (function ()
         this["quit"] = this["quit"].bind(this)
         this["write"] = this["write"].bind(this)
         this.store()
+        this.hasFocus = true
         this.hideCursor()
         if (process.stdin.isTTY)
         {
@@ -127,12 +129,20 @@ TTIO = (function ()
         return this.write('\x1b[14t')
     }
 
-    TTIO.prototype["parseKitty"] = function (csi)
+    TTIO.prototype["parseKitty"] = function (csi, data)
     {
-        var char, code, combo, key, mbit, mods, splt, type
+        var char, code, combo, di, event, key, mbit, mods, splt, type
 
         if (!(_k_.in(csi.slice(-1)[0],'uABCD')))
         {
+            if (_k_.in(':3u',csi))
+            {
+                lf('?????',data.length)
+                for (var _a_ = di = 1, _b_ = data.length; (_a_ <= _b_ ? di < data.length : di > data.length); (_a_ <= _b_ ? ++di : --di))
+                {
+                    lf(`${di} 0x${data[di].toString(16)} ${String.fromCodePoint(data[di])}`)
+                }
+            }
             return
         }
         key = ((function ()
@@ -226,7 +236,7 @@ TTIO = (function ()
             {
                 type = 'repeat'
             }
-            if (splt[1].endsWith(':3') && csi !== '27;9:3u')
+            if (splt[1].endsWith(':3'))
             {
                 type = 'release'
             }
@@ -261,21 +271,14 @@ TTIO = (function ()
             mods.push(key)
         }
         combo = mods.join('+')
-        return {key:key,combo:combo,type:type,char:char}
+        event = {key:key,combo:combo,type:type,char:char}
+        return event
     }
 
     TTIO.prototype["parseCsi"] = function (csi)
     {
         switch (csi)
         {
-            case 'I':
-                post.emit('focus')
-                return
-
-            case 'O':
-                post.emit('blur')
-                return
-
             case 'H':
                 return this.keyEventForCombo('home')
 
@@ -296,7 +299,6 @@ TTIO = (function ()
 
         }
 
-        lf('---- csi',csi)
         return null
     }
 
@@ -311,6 +313,10 @@ TTIO = (function ()
             {
                 key = String.fromCharCode(code + 96)
                 return this.keyEventForCombo(`alt+cmd+${key}`)
+            }
+            if (esc === '\\')
+            {
+                return
             }
         }
         else
@@ -518,11 +524,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _329_23_
+        var diff, _337_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_329_23_=this.lastClick) != null ? _329_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_337_23_=this.lastClick) != null ? _337_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -548,18 +554,53 @@ TTIO = (function ()
         return this.emit('mouse',event.type,event.cell[0],event.cell[1],event)
     }
 
+    TTIO.prototype["parseData"] = function (data)
+    {
+        var e, raw, s, seq, seqs, type
+
+        seqs = []
+        s = 0
+        while (s < data.length)
+        {
+            type = data[s] === 0x1b && data[s + 1] === 0x5b ? 'csi' : data[s] === 0x1b ? 'esc' : 'raw'
+            e = s + 1
+            while (e < data.length)
+            {
+                if (data[e] === 0x1b)
+                {
+                    break
+                }
+                e += 1
+            }
+            raw = data.slice(s, typeof e === 'number' ? e : -1)
+            seq = {type:type,data:raw}
+            switch (type)
+            {
+                case 'csi':
+                    seq.csi = data.slice(s + 2, typeof e === 'number' ? e : -1).toString('utf8')
+                    break
+                case 'esc':
+                    seq.esc = data.slice(s + 1, typeof e === 'number' ? e : -1).toString('utf8')
+                    break
+                case 'raw':
+                    seq.raw = raw.toString('utf8')
+                    break
+            }
+
+            s = e
+            seqs.push(seq)
+        }
+        if (seq.length > 1)
+        {
+            lf(`multiseq ${seq.length}`)
+        }
+        return seqs
+    }
+
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, text, _369_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _409_23_
 
-        if (data[0] === 0x1b && data[1] === 0x5b)
-        {
-            csi = data.slice(2).toString('utf8')
-        }
-        else if (data[0] === 0x1b)
-        {
-            esc = data.slice(1).toString('utf8')
-        }
         if ((this.pasteBuffer != null))
         {
             dataStr = data.toString('utf8')
@@ -577,91 +618,137 @@ TTIO = (function ()
             }
             return
         }
-        if (csi)
+        var list = _k_.list(this.parseData(data))
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            if (csi.startsWith('4;') && csi.endsWith('t'))
+            seq = list[_a_]
+            data = seq.data
+            csi = seq.csi
+            esc = seq.esc
+            raw = seq.raw
+            if (csi)
             {
-                pxs = csi.slice(2, -1).split(';').map(function (p)
+                if (csi.startsWith('4;') && csi.endsWith('t'))
                 {
-                    return parseInt(p)
-                })
-                this.pixels = [pxs[1],pxs[0]]
-                this.cellsz = [parseInt(this.pixels[0] / this.cols()),parseInt(this.pixels[1] / this.rows())]
-                this.emit('resize',this.cols(),this.rows(),this.pixels,this.cellsz)
-                return
-            }
-            if (csi.startsWith('200~'))
-            {
-                this.pasteBuffer = data.slice(6).toString('utf8')
-                lf('tty paste start',_k_.noon((this.pasteBuffer)))
-                if (csi.endsWith('\x1b[201~'))
+                    pxs = csi.slice(2, -1).split(';').map(function (p)
+                    {
+                        return parseInt(p)
+                    })
+                    this.pixels = [pxs[1],pxs[0]]
+                    this.cellsz = [parseInt(this.pixels[0] / this.cols()),parseInt(this.pixels[1] / this.rows())]
+                    this.emit('resize',this.cols(),this.rows(),this.pixels,this.cellsz)
+                    continue
+                }
+                if (csi.startsWith('200~'))
                 {
-                    this.pasteBuffer = data.slice(6, -6).toString('utf8')
-                    lf('tty paste immediate end',_k_.noon((this.pasteBuffer)))
+                    this.pasteBuffer = data.slice(6).toString('utf8')
+                    lf('tty paste start',_k_.noon((this.pasteBuffer)))
+                    continue
+                }
+                if (csi.startsWith('201~'))
+                {
+                    lf('tty paste end',_k_.noon((this.pasteBuffer)))
                     this.emit('paste',kstr.clean,this.pasteBuffer)
                     delete this.pasteBuffer
+                    continue
                 }
-                return
+                if (csi.startsWith('<') && _k_.in(csi.slice(-1)[0],'Mm'))
+                {
+                    if (event = this.parseMouse(csi))
+                    {
+                        this.emitMouseEvent(event)
+                        continue
+                    }
+                    lfc('unhandled mouse event?',csi)
+                    continue
+                }
+                if (event = this.parseKitty(csi,data))
+                {
+                    if (event.type === 'release')
+                    {
+                        this.emit('release',event.combo,event)
+                        continue
+                    }
+                    else
+                    {
+                        this.emit('key',event.combo,event)
+                        continue
+                    }
+                }
+                if (event = this.parseCsi(csi))
+                {
+                    if (_k_.in(event.type,['press','repeat']))
+                    {
+                        this.emit('key',event.combo,event)
+                        continue
+                    }
+                    if (event.type === 'release')
+                    {
+                        continue
+                    }
+                }
+                switch (csi)
+                {
+                    case 'I':
+                        this.hasFocus = true
+                        post.emit('window.focus')
+                        continue
+                        break
+                    case 'O':
+                        this.hasFocus = false
+                        post.emit('window.blur')
+                        continue
+                        break
+                }
+
             }
-            if (csi.startsWith('<') && _k_.in(csi.slice(-1)[0],'Mm'))
+            else if (esc)
             {
-                if (event = this.parseMouse(csi))
+                if (event = this.parseEsc(esc))
                 {
-                    return this.emitMouseEvent(event)
+                    if (_k_.in(event.type,['press','repeat']))
+                    {
+                        this.emit('key',event.combo,event)
+                        continue
+                    }
                 }
-                lfc('unhandled mouse event?',csi)
-                return
+                switch (esc)
+                {
+                    case '\\':
+                        continue
+                        break
+                }
+
+                if (esc.startsWith('_G'))
+                {
+                    lf(esc)
+                    continue
+                }
             }
-            if (event = this.parseKitty(csi))
+            else
             {
-                if (event.type === 'release')
+                if (event = this.parseRaw(data))
                 {
-                    return this.emit('release',event.combo,event)
+                    if (_k_.in(event.type,['press','repeat']))
+                    {
+                        this.emit('key',event.combo,event)
+                        continue
+                    }
                 }
-                else
+                text = data.toString('utf8')
+                if (text.length > 1)
                 {
-                    return this.emit('key',event.combo,event)
+                    lfc('paste?',data[0] === 0x1b,data.slice(1),text.length,text)
+                    this.emit('paste',kstr.clean,text)
+                    continue
                 }
             }
-            if (event = this.parseCsi(csi))
+            lf("unhandled sequence:",seq)
+            for (var _b_ = i = 0, _c_ = data.length; (_b_ <= _c_ ? i < data.length : i > data.length); (_b_ <= _c_ ? ++i : --i))
             {
-                if (_k_.in(event.type,['press','repeat']))
-                {
-                    return this.emit('key',event.combo,event)
-                }
-                lf(`unhandled csi ${csi} event`,_k_.noon((event)))
-                for (var _a_ = i = 0, _b_ = data.length; (_a_ <= _b_ ? i < data.length : i > data.length); (_a_ <= _b_ ? ++i : --i))
-                {
-                    lf(i,'0x' + data[i].toString(16),String.fromCodePoint(data[i]))
-                }
-                return
+                lf(`${i} 0x${data[i].toString(16)} ▸${(data[i] === 0x1b ? 'esc' : String.fromCodePoint(data[i]))}◂`)
             }
-        }
-        else if (esc)
-        {
-            if (event = this.parseEsc(esc))
-            {
-                if (_k_.in(event.type,['press','repeat']))
-                {
-                    return this.emit('key',event.combo,event)
-                }
-            }
-        }
-        else
-        {
-            if (event = this.parseRaw(data))
-            {
-                if (_k_.in(event.type,['press','repeat']))
-                {
-                    return this.emit('key',event.combo,event)
-                }
-            }
-            text = data.toString('utf8')
-            if (text.length > 1)
-            {
-                lfc('paste?',data[0] === 0x1b,data.slice(1),text.length,text)
-                return this.emit('paste',kstr.clean,text)
-            }
+            lf(`${data.length} bytes ▪`)
         }
     }
 

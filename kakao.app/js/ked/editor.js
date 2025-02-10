@@ -88,7 +88,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _178_15_, _179_15_, _180_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _181_15_, _182_15_, _183_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -232,6 +232,10 @@ editor = (function ()
             }
         }
         bg = theme[this.constructor.name + '_cursor_multi']
+        if (!this.cells.screen.t.hasFocus)
+        {
+            bg = color.darken(bg,0.25)
+        }
         var list3 = _k_.list(s.cursors)
         for (var _17_ = 0; _17_ < list3.length; _17_++)
         {
@@ -253,12 +257,16 @@ editor = (function ()
             {
                 if (this.isCursorInEmpty())
                 {
-                    bg = color.darken(bg)
+                    bg = color.darken(bg,0.7)
                 }
                 else if (' ' === this.cells.get_char(x,y))
                 {
-                    bg = color.darken(bg,0.75)
+                    bg = color.darken(bg,0.8)
                 }
+            }
+            if (!this.cells.screen.t.hasFocus)
+            {
+                bg = color.darken(bg,0.25)
             }
             this.cells.set_bg(x,y,bg)
             this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
@@ -275,7 +283,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _196_30_, _197_30_
+        var col, row, start, x, y, _199_30_, _200_30_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
         {

@@ -14,6 +14,7 @@ function TTIO extends events
         
         @store()
         
+        @hasFocus = true
         @hideCursor()
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
@@ -95,9 +96,15 @@ function TTIO extends events
     #
     # doesn't work in terminal.app
     
-    parseKitty: csi ->
+    parseKitty: csi data ->
         
-        ⮐ if csi[-1] not in 'uABCD'
+                
+        if csi[-1] not in 'uABCD'
+            if ':3u' in csi
+                lf '?????' data.length
+                for di in 1...data.length
+                    lf "#{di} 0x#{data[di].toString(16)} #{String.fromCodePoint(data[di])}"
+            ⮐ 
         
         key = switch csi[-1]
             'A' ➜ 'up'    
@@ -109,8 +116,8 @@ function TTIO extends events
             
         if csi[-1] == 'u'
             code = parseInt csi
+            # lf 'csi:' csi code
             ⮐ if empty code
-            # lf 'csi:' csi  
 
             key = switch code
                 9       ➜ 'tab'
@@ -129,7 +136,7 @@ function TTIO extends events
                 'return' ➜ '\n'
                 'space'  ➜ ' '
                          ➜ ''
-                    
+                         
         mods = []
         type = 'press'
         
@@ -140,7 +147,7 @@ function TTIO extends events
         if splt.length > 1
             
             type = 'repeat'  if splt[1].endsWith ':2'
-            type = 'release' if splt[1].endsWith(':3') and csi != '27;9:3u'
+            type = 'release' if splt[1].endsWith(':3') # and csi != '27;9:3u'
             
             if splt.length > 2
                 code = parseInt splt[2]
@@ -157,11 +164,15 @@ function TTIO extends events
             mods.push key
             
         combo = mods.join '+'
-                
-        key:    key
-        combo:  combo
-        type:   type
-        char:   char
+            
+        event = 
+            key:    key
+            combo:  combo
+            type:   type
+            char:   char
+            
+        # lf 'kitty' event
+        event
         
     #  0000000   0000000  000  
     # 000       000       000  
@@ -172,8 +183,6 @@ function TTIO extends events
     parseCsi: csi =>
         
         switch csi
-            'I'     ➜ post.emit 'focus' ; ⮐
-            'O'     ➜ post.emit 'blur'  ; ⮐
             'H'     ➜ ⮐ @keyEventForCombo('home')
             'F'     ➜ ⮐ @keyEventForCombo('end')
             '3~'    ➜ ⮐ @keyEventForCombo('entf')
@@ -181,7 +190,6 @@ function TTIO extends events
             '6~'    ➜ ⮐ @keyEventForCombo('pagedown')
             'Z'     ➜ ⮐ @keyEventForCombo('shift+z' 'Z')
                     
-        lf '---- csi' csi
         null
         
     # 00000000   0000000   0000000  
@@ -197,9 +205,9 @@ function TTIO extends events
             if 1 <= code <= 26
                 key = String.fromCharCode code + 96
                 ⮐ @keyEventForCombo "alt+cmd+#{key}"
+            ⮐ if esc == '\\' # esc\ end of kitty graphics message
         else
-            ⮐ if esc.startsWith '_G'
-        
+            ⮐ if esc.startsWith '_G' # start of kitty graphics message
         
         switch esc
         
@@ -351,6 +359,45 @@ function TTIO extends events
         
         @emit 'mouse' event.type event.cell[0] event.cell[1] event
             
+    # 00000000    0000000   00000000    0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 00000000   000000000  0000000    0000000   0000000   
+    # 000        000   000  000   000       000  000       
+    # 000        000   000  000   000  0000000   00000000  
+    
+    parseData: data =>
+        
+        seqs = []
+        s = 0
+        
+        while s < data.length
+        
+            type = if
+                data[s] == 0x1b and data[s+1] == 0x5b ➜ 'csi'
+                data[s] == 0x1b                       ➜ 'esc'
+                                                      ➜ 'raw'
+                                                      
+            e = s+1
+            
+            while e < data.length
+                break if data[e] == 0x1b
+                e += 1
+                                                      
+            raw = data[s...e]
+            seq = type:type data:raw
+                
+            switch type
+                'csi' ➜ seq.csi = data[s+2...e].toString 'utf8'
+                'esc' ➜ seq.esc = data[s+1...e].toString 'utf8'
+                'raw' ➜ seq.raw =           raw.toString 'utf8'
+                
+            s = e
+                
+            seqs.push seq
+            
+        lf "multiseq #{seq.length}" if seq.length > 1
+        seqs
+    
     # 0000000     0000000   000000000   0000000   
     # 000   000  000   000     000     000   000  
     # 000   000  000000000     000     000000000  
@@ -359,13 +406,6 @@ function TTIO extends events
     
     onData: data =>
 
-        if data[0] == 0x1b and data[1] == 0x5b
-            csi = data[2..].toString 'utf8'
-        else if data[0] == 0x1b
-            esc = data[1..].toString 'utf8'
-        
-        # lfc 'data' data[1..] csi esc
-            
         if @pasteBuffer?
         
             dataStr = data.toString 'utf8'
@@ -380,73 +420,106 @@ function TTIO extends events
                 lf 'tty paste cont' noon(@pasteBuffer)
             ⮐ 
         
-        if csi
+        for seq in @parseData data
             
-            if csi.startsWith('4;') and csi.endsWith('t')
-                
-                pxs = csi[2..-2].split(';').map (p) -> parseInt(p)
-                @pixels = [pxs[1] pxs[0]]
-                @cellsz = [parseInt(@pixels[0]/@cols()) parseInt(@pixels[1]/@rows())]
-
-                # lf 'emit resize' @cols() @rows() @pixels @cellsz
-                
-                @emit 'resize' @cols() @rows() @pixels @cellsz
-                ⮐ 
+            data = seq.data
+            csi  = seq.csi
+            esc  = seq.esc
+            raw  = seq.raw
+        
+            # lf 'seq' seq.type seq.data.length csi esc raw
             
-            if csi.startsWith '200~' # paste start
+            if csi
                 
-                @pasteBuffer = data[6..].toString('utf8')
+                if csi.startsWith('4;') and csi.endsWith('t') # screen size in pixels
+                    
+                    pxs = csi[2..-2].split(';').map (p) -> parseInt(p)
+                    @pixels = [pxs[1] pxs[0]]
+                    @cellsz = [parseInt(@pixels[0]/@cols()) parseInt(@pixels[1]/@rows())]
+    
+                    @emit 'resize' @cols() @rows() @pixels @cellsz
+                    
+                    continue
                 
-                lf 'tty paste start' noon(@pasteBuffer)
-                
-                if csi.endsWith '\x1b[201~'
-                    @pasteBuffer = data[6...-6].toString('utf8')
-                    lf 'tty paste immediate end' noon(@pasteBuffer)
+                if csi.startsWith '200~' # paste start
+                    
+                    @pasteBuffer = data[6..].toString('utf8')
+                    
+                    lf 'tty paste start' noon(@pasteBuffer)
+                    
+                    continue
+                    
+                if csi.startsWith '201~' # paste end
+                    
+                    lf 'tty paste end' noon(@pasteBuffer)
+                    
                     @emit 'paste' kstr.clean @pasteBuffer
                     delete @pasteBuffer
-                ⮐
-                
-            if csi.startsWith('<') and csi[-1] in 'Mm'
-                
-                if event = @parseMouse csi
-                    ⮐ @emitMouseEvent event
                     
-                lfc 'unhandled mouse event?' csi
-                ⮐ 
-                
-            if event = @parseKitty csi
-                if event.type == 'release'
-                    ⮐ @emit 'release' event.combo event
-                else 
-                    #lf '▸' noon(event)
-                    ⮐ @emit 'key' event.combo event
+                    continue
                     
-            if event = @parseCsi csi
-                if event.type in ['press' 'repeat']
-                    ⮐ @emit 'key' event.combo event
-                lf "unhandled csi #{csi} event" noon(event)
-                for i in 0...data.length
-                    lf i '0x' + data[i].toString(16) String.fromCodePoint(data[i])
-                ⮐ # ignore release events for now
+                if csi.startsWith('<') and csi[-1] in 'Mm'
                     
-        else if esc
-            
-            if event = @parseEsc esc
-                if event.type in ['press' 'repeat']
-                    ⮐ @emit 'key' event.combo event
-                
-        else # not a csi or esc sequence
-
-            if event = @parseRaw data
-                if event.type in ['press' 'repeat']
-                    ⮐ @emit 'key' event.combo event
-        
-            text = data.toString 'utf8'
-            
-            if text.length > 1
-                lfc 'paste?' data[0]==0x1b data[1..] text.length text
-                ⮐ @emit 'paste' kstr.clean text
+                    if event = @parseMouse csi
+                        @emitMouseEvent event
+                        continue
                         
-            # lfc 'unhandled?' data data.length data[0] data[1..]
+                    lfc 'unhandled mouse event?' csi
+                    continue 
+                    
+                if event = @parseKitty csi data
+                    
+                    if event.type == 'release'
+                        @emit 'release' event.combo event
+                        continue
+                    else 
+                        #lf '▸' noon(event)
+                        @emit 'key' event.combo event
+                        continue
+                        
+                if event = @parseCsi csi
+                    
+                    if event.type in ['press' 'repeat']
+                        @emit 'key' event.combo event
+                        continue
+                        
+                    continue if event.type == 'release' # ignore release events for now
+
+                switch csi
+                    'I' ➜ @hasFocus = true;  post.emit 'window.focus' ; continue
+                    'O' ➜ @hasFocus = false; post.emit 'window.blur'  ; continue
+                        
+            else if esc
+                
+                if event = @parseEsc esc
+                    if event.type in ['press' 'repeat']
+                        @emit 'key' event.combo event
+                        continue
+                        
+                switch esc
+                    '\\' ➜ continue # probably end of kitty graphics message
+                    
+                if esc.startsWith '_G'
+                    lf esc
+                    continue
+                    
+            else # not a csi or esc sequence
+    
+                if event = @parseRaw data
+                    if event.type in ['press' 'repeat']
+                        @emit 'key' event.combo event
+                        continue
+            
+                text = data.toString 'utf8'
+                
+                if text.length > 1
+                    lfc 'paste?' data[0]==0x1b data[1..] text.length text
+                    @emit 'paste' kstr.clean text
+                    continue
+                            
+            lf "unhandled sequence:" seq
+            for i in 0...data.length
+                lf "#{i} 0x#{data[i].toString(16)} ▸#{data[i] == 0x1b ? 'esc' :String.fromCodePoint(data[i])}◂" 
+            lf "#{data.length} bytes ▪"
                 
 export TTIO

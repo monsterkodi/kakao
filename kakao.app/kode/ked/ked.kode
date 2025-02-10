@@ -50,10 +50,14 @@ function KED
         @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
         @status  = new status   @screen @editor.state
         
+        @editor.state.hasFocus = true
+        
         lfc '▸                                         ked' @version
         
-        post.on 'redraw'    @redraw
-        post.on 'view.size' @onViewSize
+        post.on 'redraw'        @redraw
+        post.on 'window.focus'  @redraw
+        post.on 'window.blur'   @redraw
+        post.on 'view.size'     @onViewSize
         
         @mouseHandlers = [@konsole @editor]
         @wheelHandlers = [@konsole @editor]

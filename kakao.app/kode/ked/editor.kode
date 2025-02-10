@@ -151,6 +151,7 @@ function editor extends view
                             @cells.set_bg x-view[0] y bg 
                             
         bg = theme[@constructor.name + '_cursor_multi']
+        bg = color.darken bg 0.25 if not @cells.screen.t.hasFocus
         
         for cursor in s.cursors
             
@@ -169,9 +170,11 @@ function editor extends view
             y = mainCursor[1]-view[1]
             if s.cursors.length <= 1
                 if @isCursorInEmpty()
-                    bg = color.darken bg
+                    bg = color.darken bg 0.7
                 else if ' ' == @cells.get_char(x y)
-                    bg = color.darken bg 0.75
+                    bg = color.darken bg 0.8
+            bg = color.darken bg 0.25 if not @cells.screen.t.hasFocus
+                
             @cells.set_bg x y bg
             @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
 
