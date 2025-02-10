@@ -24,7 +24,13 @@
 ** todo
 * todo
 
+- quick open cmd+p
 - mapscroll
+    - add scroll knob
+    - add cursors and selections
+    - fix scrolling to bottom for long files
+    - split image into chunks
+    - update on changes
 - find and search
 - fscol
 - unicode replacement mode ~[n][a-Z]

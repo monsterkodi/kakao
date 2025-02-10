@@ -14,7 +14,16 @@ function logfile
         
         @stream = fs.createWriteStream 'ked.log' flags:'a' autoClose:false
         
-        global.lf = args... => @write args.map((a) -> "#{a}").join(' ')
+        # global.lf = args... => @write args.map((a) -> "#{noon a}").join(' ')
+        global.lf = args... => 
+            
+            if args.length and args[0] is str
+                key = "▸ #{args[0]}"
+                obj = {}
+                obj[key] = args[1..]
+                @write noon(obj)
+            else        
+                @write "▸" noon(args)
         
     write: txt ->
         

@@ -270,25 +270,20 @@ function editor extends view
     # 000   000  000   000  000       000       000      
     # 00     00  000   000  00000000  00000000  0000000  
     
-    onWheel: col row dir mods =>
+    onWheel: event =>
         
-        ⮐ if row >= @cells.y + @cells.rows
+        ⮐ if event.row >= @cells.y + @cells.rows
         
-        steps = switch mods
-            
-            'shift'          ➜ 4
-            'shift+ctrl'     ➜ 8
-            'alt'            ➜ 16
-            'shift+alt'      ➜ 32
-            'ctrl+alt'       ➜ 64
-            'shift+ctrl+alt' ➜ 128
-            ➜ 1
+        steps  = 4
+        steps *= 2 if event.shift
+        steps *= 2 if event.ctrl
+        steps *= 2 if event.alt
         
         if @dragStart
             
             [x y] = @state.mainCursor()
             
-            switch dir
+            switch event.dir
                 'up'    ➜ y -= steps    
                 'down'  ➜ y += steps    
                 'left'  ➜ x -= 1    
@@ -306,8 +301,8 @@ function editor extends view
                 @redraw()
             ⮐ 
                 
-        switch dir
-            'up' 'down' 'left' 'right' ➜ @state.scrollView dir steps
+        switch event.dir
+            'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
             
         @redraw()
 

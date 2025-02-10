@@ -23,48 +23,34 @@ konsole = (function ()
         }).bind(this)
     }
 
-    konsole.prototype["onWheel"] = function (col, row, dir, mods)
+    konsole.prototype["onWheel"] = function (event)
     {
         var steps
 
-        if (row < this.cells.y)
+        if (event.row < this.cells.y)
         {
             return
         }
-        steps = ((function ()
+        steps = 4
+        if (event.shift)
         {
-            switch (mods)
-            {
-                case 'shift':
-                    return 4
-
-                case 'shift+ctrl':
-                    return 8
-
-                case 'alt':
-                    return 16
-
-                case 'shift+alt':
-                    return 32
-
-                case 'ctrl+alt':
-                    return 64
-
-                case 'shift+ctrl+alt':
-                    return 128
-
-                default:
-                    return 1
-            }
-
-        }).bind(this))()
-        switch (dir)
+            steps *= 2
+        }
+        if (event.ctrl)
+        {
+            steps *= 2
+        }
+        if (event.alt)
+        {
+            steps *= 2
+        }
+        switch (event.dir)
         {
             case 'up':
             case 'down':
             case 'left':
             case 'right':
-                this.state.scrollView(dir,steps)
+                this.state.scrollView(event.dir,steps)
                 break
         }
 

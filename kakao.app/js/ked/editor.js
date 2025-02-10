@@ -381,46 +381,32 @@ editor = (function ()
         return false
     }
 
-    editor.prototype["onWheel"] = function (col, row, dir, mods)
+    editor.prototype["onWheel"] = function (event)
     {
         var start, steps, x, y
 
-        if (row >= this.cells.y + this.cells.rows)
+        if (event.row >= this.cells.y + this.cells.rows)
         {
             return
         }
-        steps = ((function ()
+        steps = 4
+        if (event.shift)
         {
-            switch (mods)
-            {
-                case 'shift':
-                    return 4
-
-                case 'shift+ctrl':
-                    return 8
-
-                case 'alt':
-                    return 16
-
-                case 'shift+alt':
-                    return 32
-
-                case 'ctrl+alt':
-                    return 64
-
-                case 'shift+ctrl+alt':
-                    return 128
-
-                default:
-                    return 1
-            }
-
-        }).bind(this))()
+            steps *= 2
+        }
+        if (event.ctrl)
+        {
+            steps *= 2
+        }
+        if (event.alt)
+        {
+            steps *= 2
+        }
         if (this.dragStart)
         {
             var _a_ = this.state.mainCursor(); x = _a_[0]; y = _a_[1]
 
-            switch (dir)
+            switch (event.dir)
             {
                 case 'up':
                     y -= steps
@@ -449,13 +435,13 @@ editor = (function ()
             }
             return
         }
-        switch (dir)
+        switch (event.dir)
         {
             case 'up':
             case 'down':
             case 'left':
             case 'right':
-                this.state.scrollView(dir,steps)
+                this.state.scrollView(event.dir,steps)
                 break
         }
 

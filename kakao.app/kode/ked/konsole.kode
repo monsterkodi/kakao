@@ -24,22 +24,17 @@ function konsole extends editor
     # 000   000  000   000  000       000       000      
     # 00     00  000   000  00000000  00000000  0000000  
     
-    onWheel: col row dir mods =>
+    onWheel: event =>
         
-        ⮐ if row < @cells.y
+        ⮐ if event.row < @cells.y
         
-        steps = switch mods
-            
-            'shift'          ➜ 4
-            'shift+ctrl'     ➜ 8
-            'alt'            ➜ 16
-            'shift+alt'      ➜ 32
-            'ctrl+alt'       ➜ 64
-            'shift+ctrl+alt' ➜ 128
-            ➜ 1
-                        
-        switch dir
-            'up' 'down' 'left' 'right' ➜ @state.scrollView dir steps
+        steps  = 4
+        steps *= 2 if event.shift
+        steps *= 2 if event.ctrl
+        steps *= 2 if event.alt
+        
+        switch event.dir
+            'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
             
         @redraw()
                 
