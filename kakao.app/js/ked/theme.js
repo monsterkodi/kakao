@@ -1,8 +1,8 @@
 class theme
 {
-    static selection_line = '#333'
+    static selection_line = '#222'
 
-    static selection = '#44f'
+    static selection = '#22a'
 
     static highlight = '#444'
 
@@ -12,7 +12,7 @@ class theme
 
     static gutter_fully_selected = '#161616'
 
-    static gutter_selected = '#229'
+    static gutter_selected = '#118'
 
     static gutter = '#0a0a0a'
 

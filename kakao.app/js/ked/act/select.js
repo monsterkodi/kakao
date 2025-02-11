@@ -326,21 +326,21 @@ export default {select:function (from, to)
         }
     }
     return false
-},isHighlightedLine:function (y)
+},isFullySelectedLine:function (y)
 {
-    var highlight
+    var selection
 
-    var list = _k_.list(this.s.highlights)
+    var list = _k_.list(this.s.selections)
     for (var _11_ = 0; _11_ < list.length; _11_++)
     {
-        highlight = list[_11_]
-        if (highlight[1] === y)
+        selection = list[_11_]
+        if ((selection[1] <= y && y <= selection[3]))
         {
-            return true
+            return util.isFullLineRange(this.allLines(),selection)
         }
     }
     return false
-},isFullySelectedLine:function (y)
+},isPartiallySelectedLine:function (y)
 {
     var selection
 
@@ -348,13 +348,45 @@ export default {select:function (from, to)
     for (var _12_ = 0; _12_ < list.length; _12_++)
     {
         selection = list[_12_]
-        if (selection[3] === y && selection[2] === 0)
-        {
-            continue
-        }
         if ((selection[1] <= y && y <= selection[3]))
         {
-            return util.isFullLineRange(this.allLines(),selection)
+            return !util.isFullLineRange(this.allLines(),selection)
+        }
+    }
+    return false
+},isSpanSelectedLine:function (y)
+{
+    var selection, span
+
+    var list = _k_.list(this.s.selections)
+    for (var _13_ = 0; _13_ < list.length; _13_++)
+    {
+        selection = list[_13_]
+        if ((selection[1] <= y && y <= selection[3]))
+        {
+            span = util.isSpanLineRange(this.allLines(),selection)
+            if (span)
+            {
+                return true
+            }
+        }
+        if (selection[1] > y)
+        {
+            return false
+        }
+    }
+    return false
+},isHighlightedLine:function (y)
+{
+    var highlight
+
+    var list = _k_.list(this.s.highlights)
+    for (var _14_ = 0; _14_ < list.length; _14_++)
+    {
+        highlight = list[_14_]
+        if (highlight[1] === y)
+        {
+            return true
         }
     }
     return false

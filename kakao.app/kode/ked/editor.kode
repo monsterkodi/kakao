@@ -144,14 +144,15 @@ function editor extends view
                     else
                         xe = lines[li].length
 
-                    bg = util.isFullLineRange(lines selection) ? theme.selection_line : theme.selection
+                    bg = util.isSpanLineRange(lines selection) ? theme.selection : theme.selection_line
+                    bg = color.darken bg if not @cells.screen.t.hasFocus
                     
                     for x in xs...xe
                         if 0 <= x-view[0] < @cells.cols
                             @cells.set_bg x-view[0] y bg 
                             
         bg = theme[@constructor.name + '_cursor_multi']
-        bg = color.darken bg 0.25 if not @cells.screen.t.hasFocus
+        bg = color.darken bg if not @cells.screen.t.hasFocus
         
         for cursor in s.cursors
             
@@ -173,7 +174,7 @@ function editor extends view
                     bg = color.darken bg 0.7
                 else if ' ' == @cells.get_char(x y)
                     bg = color.darken bg 0.8
-            bg = color.darken bg 0.25 if not @cells.screen.t.hasFocus
+            bg = color.darken bg if not @cells.screen.t.hasFocus
                 
             @cells.set_bg x y bg
             @cells.set_fg x y theme[@constructor.name + '_cursor_fg']

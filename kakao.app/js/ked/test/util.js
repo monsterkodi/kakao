@@ -163,6 +163,14 @@ toExport["util"] = function ()
         compare(util.isFullLineRange(lines,[0,1,2,1]),false)
         compare(util.isFullLineRange(lines,[1,1,3,1]),false)
     })
+    section("isSpanLineRange", function ()
+    {
+        lines = ['','124','abcdef']
+        compare(util.isSpanLineRange(lines,[0,1,1,1]),true)
+        compare(util.isSpanLineRange(lines,[0,0,0,0]),false)
+        compare(util.isSpanLineRange(lines,[0,1,3,1]),false)
+        compare(util.isSpanLineRange(lines,[1,1,1,2]),false)
+    })
     section("isPosAfterSpan", function ()
     {
         compare(util.isPosAfterSpan([0,0],[1,0,5]),false)

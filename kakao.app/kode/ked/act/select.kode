@@ -306,20 +306,34 @@ export
                 ⮐ true
         false
         
+    isFullySelectedLine: y ->
+        
+        for selection in @s.selections
+            if selection[1] <= y <= selection[3]
+                ⮐ util.isFullLineRange(@allLines() selection)
+        false
+        
+    isPartiallySelectedLine: y ->
+        
+        for selection in @s.selections
+            if selection[1] <= y <= selection[3]
+                ⮐ not util.isFullLineRange(@allLines() selection)
+        false
+        
+    isSpanSelectedLine: y ->
+        
+        for selection in @s.selections
+            if selection[1] <= y <= selection[3]
+                span = util.isSpanLineRange(@allLines() selection)
+                ⮐ true if span
+            ⮐ false if selection[1] > y
+        false
+        
     isHighlightedLine: y ->
 
         for highlight in @s.highlights
             ⮐ true if highlight[1] == y
                 
-        false
-
-    isFullySelectedLine: y ->
-        
-        for selection in @s.selections
-            if selection[3] == y and selection[2] == 0
-                continue
-            if selection[1] <= y <= selection[3]
-                ⮐ util.isFullLineRange @allLines() selection
         false
         
     # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  

@@ -893,13 +893,19 @@ class util
         return !util.isValidLineIndex(lines,li)
     }
 
+    static isMultiLineRange (lines, rng)
+    {
+        return rng[1] !== rng[3]
+    }
+
     static isFullLineRange (lines, rng)
     {
-        if (rng[1] !== rng[3])
-        {
-            return true
-        }
-        return rng[1] === rng[3] && (0 <= rng[1] && rng[1] < lines.length) && rng[0] === 0 && rng[2] >= lines[rng[1]].length
+        return ((0 <= rng[1] && (rng[1] <= rng[3] && rng[3] < lines.length))) && (rng[0] === 0) && (rng[2] >= lines[rng[3]].length || rng[2] === 0 && rng[1] < rng[3])
+    }
+
+    static isSpanLineRange (lines, rng)
+    {
+        return ((0 <= rng[1] && (rng[1] === rng[3] && rng[3] < lines.length))) && (rng[0] > 0 || rng[2] < lines[rng[1]].length)
     }
 
     static rangeOfLine (lines, y)

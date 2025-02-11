@@ -59,6 +59,9 @@
 
 - nice to have
     
+    - tabs
+    - git
+    
     - unicode replacement mode ~[n][a-Z]
         - insert n characters if provided 
         
@@ -75,9 +78,7 @@
         
     - help 
         - interactive-keyboard-shortcuts
-        
-    - tabs
-    - git
+        - multicursor tutorial game?
     
 - todo
     - state tests

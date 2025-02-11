@@ -470,11 +470,11 @@ class util
     @isValidLineIndex:   lines li -> 0 <= li < lines.length
     @isInvalidLineIndex: lines li -> not util.isValidLineIndex lines li
     
-    @isFullLineRange:    lines rng -> 
+    @isMultiLineRange: lines rng -> rng[1] != rng[3]
         
-        ⮐ true if rng[1] != rng[3]
+    @isFullLineRange: lines rng -> (0 <= rng[1] <= rng[3] < lines.length) and (rng[0] == 0) and (rng[2] >= lines[rng[3]].length or rng[2] == 0 and rng[1] < rng[3])
     
-        rng[1] == rng[3] and 0 <= rng[1] < lines.length and rng[0] == 0 and rng[2] >= lines[rng[1]].length
+    @isSpanLineRange: lines rng -> (0 <= rng[1] == rng[3] < lines.length) and (rng[0] > 0 or rng[2] < lines[rng[1]].length)
         
     @rangeOfLine: lines y -> [0 y lines[y].length y]
     

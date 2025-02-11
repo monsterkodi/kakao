@@ -88,7 +88,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _181_15_, _182_15_, _183_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _182_15_, _183_15_, _184_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -220,7 +220,11 @@ editor = (function ()
                     {
                         xe = lines[li].length
                     }
-                    bg = (util.isFullLineRange(lines,selection) ? theme.selection_line : theme.selection)
+                    bg = (util.isSpanLineRange(lines,selection) ? theme.selection : theme.selection_line)
+                    if (!this.cells.screen.t.hasFocus)
+                    {
+                        bg = color.darken(bg)
+                    }
                     for (var _15_ = x = xs, _16_ = xe; (_15_ <= _16_ ? x < xe : x > xe); (_15_ <= _16_ ? ++x : --x))
                     {
                         if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
@@ -234,7 +238,7 @@ editor = (function ()
         bg = theme[this.constructor.name + '_cursor_multi']
         if (!this.cells.screen.t.hasFocus)
         {
-            bg = color.darken(bg,0.25)
+            bg = color.darken(bg)
         }
         var list3 = _k_.list(s.cursors)
         for (var _17_ = 0; _17_ < list3.length; _17_++)
@@ -266,7 +270,7 @@ editor = (function ()
             }
             if (!this.cells.screen.t.hasFocus)
             {
-                bg = color.darken(bg,0.25)
+                bg = color.darken(bg)
             }
             this.cells.set_bg(x,y,bg)
             this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
@@ -283,7 +287,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _199_30_, _200_30_
+        var col, row, start, x, y, _200_30_, _201_30_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
         {

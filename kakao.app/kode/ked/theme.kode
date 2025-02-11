@@ -8,13 +8,13 @@
 
 class theme
     
-    @selection_line:        '#333'     
-    @selection:             '#44f'     
+    @selection_line:        '#222'     
+    @selection:             '#22a'     
     @highlight:             '#444'     
     @cursor:                '#ff0'     
     @linenr:                '#1a1a1a'  
     @gutter_fully_selected: '#161616'  
-    @gutter_selected:       '#229'     
+    @gutter_selected:       '#118'     
     @gutter:                '#0a0a0a'  
     @column:                '#222'     
     @column_fg:             '#000'  
