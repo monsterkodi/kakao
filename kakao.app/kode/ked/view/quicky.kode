@@ -1,0 +1,88 @@
+###
+ 0000000   000   000  000   0000000  000   000  000   000
+000   000  000   000  000  000       000  000    000 000 
+000 00 00  000   000  000  000       0000000      00000  
+000 0000   000   000  000  000       000  000      000   
+ 00000 00   0000000   000   0000000  000   000     000   
+###
+
+use ../../kxk ▪ kstr slash post
+use         ◆ cells input choices
+use ../util ◆ prjcts
+use ..      ◆ editor theme
+
+function quicky
+
+    @: @screen ->
+        
+        @name    = 'quicky'
+        
+        @cells   = new cells   @screen
+        
+        @input   = new input   @screen @name
+        @choices = new choices @screen @name
+                
+    show: =>
+        
+        x = parseInt @screen.cols/4
+        y = parseInt @screen.rows/4
+        w = parseInt @screen.cols/2
+        h = parseInt @screen.rows/2
+        
+        c = min h @choices.num()
+        
+        @input.init    x+1   y+1   w-2  1
+        @choices.init  x+1   y+3   w-2  c
+        @cells.init    x     y     w    c+4
+        
+        @input.grabFocus()
+        post.emit 'redraw'
+        
+    hide: => @cells.rows = 0
+    hidden: -> @cells.rows <= 0
+    
+    open: currentFile ->
+        
+        lf 'quicky.open' currentFile prjcts.files(currentFile)
+        
+        @input.set   currentFile
+        @choices.set prjcts.files(currentFile)
+        @show()
+        
+    draw: ->
+        
+        ⮐ if @cells.rows <= 0
+        
+        @cells.bg_rect 0 0 @cells.cols @cells.rows theme[@name]
+        
+        @input.draw()
+        @choices.draw()
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event =>
+        
+        ⮐ if @hidden()
+        
+        @input.onKey key event
+        
+    onMouse: type sx sy event =>
+        
+        ⮐ if @hidden()
+        
+        @input.onMouse type sx sy event
+        
+    onWheel: event =>
+        
+        ⮐ if @hidden()
+        
+        @input.onWheel event
+        
+        # ⮐ true if @choices.onWheel event
+        true
+
+export quicky

@@ -4,7 +4,7 @@ class theme
 
     static selection = '#22a'
 
-    static highlight = '#444'
+    static highlight = '#222'
 
     static cursor = '#ff0'
 
@@ -55,6 +55,8 @@ class theme
     static status_sep = '#44a'
 
     static status_fg_dim = '#333'
+
+    static quicky = '#333'
 
     static editor = '#000'
 

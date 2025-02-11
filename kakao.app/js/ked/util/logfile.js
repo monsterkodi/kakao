@@ -9,7 +9,7 @@ logfile = (function ()
 {
     function logfile ()
     {
-        this.stream = fs.createWriteStream('ked.log',{flags:'a',autoClose:false})
+        this.stream = fs.createWriteStream('ked.log',{flags:'w',autoClose:false})
         global.lf = (function (...args)
         {
             var key, obj

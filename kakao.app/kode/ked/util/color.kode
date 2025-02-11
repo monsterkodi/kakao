@@ -87,16 +87,19 @@ class color
                             
     @bg_rgb: c -> # background
     
+        ⮐ '' if empty c
         [r g b] = color.rgb c
         "\x1b[48;2;#{r};#{g};#{b}m" 
 
     @fg_rgb: c -> # foreground (text) 
         
+        ⮐ '' if empty c
         [r g b] = color.rgb c
         "\x1b[38;2;#{r};#{g};#{b}m" 
 
     @ul_rgb: c -> # underline color
         
+        ⮐ '' if empty c
         [r g b] = color.rgb c
         "\x1b[58;2;#{r};#{g};#{b}m" 
         

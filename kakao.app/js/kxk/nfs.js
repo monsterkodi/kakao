@@ -199,14 +199,57 @@ class NFS
         }
     }
 
-    static async pkg (p)
-    {
-        console.error('todo')
-    }
-
     static async git (p)
     {
-        console.error('todo')
+        var git
+
+        git = slash.path(p)
+        while (git.length && git !== "/")
+        {
+            if (await NFS.isDir(slash.path(git,'.git')))
+            {
+                return git
+            }
+            git = slash.dir(git)
+        }
+    }
+
+    static async pkg (p)
+    {
+        var pkg
+
+        pkg = slash.path(p)
+        while (pkg.length && pkg !== "/")
+        {
+            if (await NFS.isFile(slash.path(pkg,'package.json')))
+            {
+                return pkg
+            }
+            pkg = slash.dir(pkg)
+        }
+    }
+
+    static async prj (p)
+    {
+        var pth
+
+        pth = slash.path(p)
+        while (pth.length && pth !== "/")
+        {
+            if (await NFS.isDir(slash.path(pth,'.git')))
+            {
+                return pth
+            }
+            if (await NFS.isFile(slash.path(pth,'package.json')))
+            {
+                return pth
+            }
+            if (await NFS.isFile(slash.path(slash.dir(pth),'kakao.kode')))
+            {
+                return pth
+            }
+            pth = slash.dir(pth)
+        }
     }
 
     static async isWritable (p)

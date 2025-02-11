@@ -18,6 +18,7 @@ cells = (function ()
         this["set_char"] = this["set_char"].bind(this)
         this["set"] = this["set"].bind(this)
         this["init"] = this["init"].bind(this)
+        this.init(0,0,0,0)
     }
 
     cells.prototype["init"] = function (x, y, cols, rows)

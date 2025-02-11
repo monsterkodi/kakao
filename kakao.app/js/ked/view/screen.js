@@ -90,23 +90,17 @@ screen = (function ()
         {
             for (var _c_ = x = 0, _d_ = this.cols; (_c_ <= _d_ ? x < this.cols : x > this.cols); (_c_ <= _d_ ? ++x : --x))
             {
-                if (!_k_.empty(this.c[y][x].bg))
+                bg = color.bg_rgb(this.c[y][x].bg)
+                if (bg !== pbg)
                 {
-                    bg = color.bg_rgb(this.c[y][x].bg)
-                    if (bg !== pbg)
-                    {
-                        s += bg
-                        pbg = bg
-                    }
+                    s += bg
+                    pbg = bg
                 }
-                if (!_k_.empty(this.c[y][x].fg))
+                fg = color.fg_rgb(this.c[y][x].fg)
+                if (fg !== pfg)
                 {
-                    fg = color.fg_rgb(this.c[y][x].fg)
-                    if (fg !== pfg)
-                    {
-                        s += fg
-                        pfg = fg
-                    }
+                    s += fg
+                    pfg = fg
                 }
                 s += this.c[y][x].char
             }

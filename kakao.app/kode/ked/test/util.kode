@@ -191,8 +191,6 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.isSpanLineRange lines [0 0 0 0] ▸ false
         util.isSpanLineRange lines [0 1 3 1] ▸ false
         util.isSpanLineRange lines [1 1 1 2] ▸ false
-        # util.isSpanLineRange lines [0 1 2 1] ▸ false
-        # util.isSpanLineRange lines [1 1 3 1] ▸ false
         
     ▸ isPosAfterSpan
     

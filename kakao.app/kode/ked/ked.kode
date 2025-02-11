@@ -9,8 +9,8 @@
 use ../kxk/nfs
 use ../kxk ▪ karg kstr slash post
 use        ◆ ttio editor state konsole
-use ./view ◆ screen cells status
-use ./util ◆ logfile util
+use ./view ◆ screen cells status quicky
+use ./util ◆ logfile util prjcts
 
 function KED
 
@@ -39,29 +39,29 @@ function KED
         @viewSizes = konsole: [0 0]
         
         @logfile = new logfile
+        lf "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked #{@version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
                     
         @t = new ttio
         
         global.lfc = args... => lf.apply null args; if global.lc? ➜ global.lc.apply null args 
-                
+        
         @screen  = new screen @t
         
+        @quicky  = new quicky   @screen 
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr']
         @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
         @status  = new status   @screen @editor.state
         
         @editor.state.hasFocus = true
         
-        lfc '▸                                         ked' @version
-        
         post.on 'redraw'        @redraw
         post.on 'window.focus'  @redraw
         post.on 'window.blur'   @redraw
         post.on 'view.size'     @onViewSize
         
-        @mouseHandlers = [@konsole @editor]
-        @wheelHandlers = [@konsole @editor]
-        @keyHandlers   = [@konsole @editor]
+        @mouseHandlers = [@quicky @konsole @editor]
+        @wheelHandlers = [@quicky @konsole @editor]
+        @keyHandlers   = [@quicky @konsole @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -91,7 +91,7 @@ function KED
         error err
         @logfile.close -> process.exit 1
         # process.exitCode = 1
-            
+                    
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
     # 000      000   000  000000000  000   000  
@@ -106,8 +106,10 @@ function KED
         
         if slash.isAbsolute p
             @status.file = slash.tilde  p
+            @currentFile = slash.path p
         else
             @status.file = slash.normalize p
+            @currentFile = slash.path process.cwd() p
 
         text =○ nfs.read slash.untilde(p)
         
@@ -119,6 +121,9 @@ function KED
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         
         @redraw()
+        
+        prjcts.index @currentFile
+        @
             
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       
@@ -158,7 +163,8 @@ function KED
         if type == 'wheel'
 
             for handler in @wheelHandlers
-                handler.onWheel event
+                if handler.onWheel event
+                    break
         
         else
         
@@ -184,6 +190,7 @@ function KED
             'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
+            'cmd+p'                      ➜ ⮐ @quicky.open @currentFile
             
         for handler in @keyHandlers
             break if handler.onKey key event
@@ -237,6 +244,8 @@ function KED
         @editor.draw()
         @konsole.draw()
         @status.draw()
+        
+        @quicky.draw()
         
         @screen.render()
         

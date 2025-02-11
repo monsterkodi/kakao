@@ -10,7 +10,7 @@ class theme
     
     @selection_line:        '#222'     
     @selection:             '#22a'     
-    @highlight:             '#444'     
+    @highlight:             '#222'     
     @cursor:                '#ff0'     
     @linenr:                '#1a1a1a'  
     @gutter_fully_selected: '#161616'  
@@ -36,6 +36,7 @@ class theme
     @status_dir:            '#88f'     
     @status_sep:            '#44a'     
     @status_fg_dim:         '#333'     
+    @quicky:                '#333'     
     @editor:                '#000'     
     @editor_empty:          '#000'     
     @editor_cursor_main:    '#101010'  

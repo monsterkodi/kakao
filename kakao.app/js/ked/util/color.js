@@ -1,3 +1,5 @@
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+
 var int
 
 import kxk from "../../kxk.js"
@@ -31,6 +33,10 @@ class color
     {
         var b, g, r
 
+        if (_k_.empty(c))
+        {
+            return ''
+        }
         var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
         return `\x1b[48;2;${r};${g};${b}m`
@@ -40,6 +46,10 @@ class color
     {
         var b, g, r
 
+        if (_k_.empty(c))
+        {
+            return ''
+        }
         var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
         return `\x1b[38;2;${r};${g};${b}m`
@@ -49,6 +59,10 @@ class color
     {
         var b, g, r
 
+        if (_k_.empty(c))
+        {
+            return ''
+        }
         var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
         return `\x1b[58;2;${r};${g};${b}m`

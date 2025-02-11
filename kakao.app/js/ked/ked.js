@@ -18,9 +18,11 @@ import konsole from "./konsole.js"
 import screen from "./view/screen.js"
 import cells from "./view/cells.js"
 import status from "./view/status.js"
+import quicky from "./view/quicky.js"
 
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
+import prjcts from "./util/prjcts.js"
 
 
 KED = (function ()
@@ -57,10 +59,11 @@ ked [file]
         process.on('uncaughtException',this.onException)
         this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
+        lf(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked ${this.version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _45_64_
+            var _46_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -69,18 +72,18 @@ ked [file]
             }
         }).bind(this)
         this.screen = new screen(this.t)
+        this.quicky = new quicky(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
         this.status = new status(this.screen,this.editor.state)
         this.editor.state.hasFocus = true
-        lfc('▸                                         ked',this.version)
         post.on('redraw',this.redraw)
         post.on('window.focus',this.redraw)
         post.on('window.blur',this.redraw)
         post.on('view.size',this.onViewSize)
-        this.mouseHandlers = [this.konsole,this.editor]
-        this.wheelHandlers = [this.konsole,this.editor]
-        this.keyHandlers = [this.konsole,this.editor]
+        this.mouseHandlers = [this.quicky,this.konsole,this.editor]
+        this.wheelHandlers = [this.quicky,this.konsole,this.editor]
+        this.keyHandlers = [this.quicky,this.konsole,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -129,17 +132,21 @@ ked [file]
         if (slash.isAbsolute(p))
         {
             this.status.file = slash.tilde(p)
+            this.currentFile = slash.path(p)
         }
         else
         {
             this.status.file = slash.normalize(p)
+            this.currentFile = slash.path(process.cwd(),p)
         }
         text = await nfs.read(slash.untilde(p))
         lines = util.linesForText(text)
         this.editor.state.syntax.ext = slash.ext(p)
         this.editor.state.loadLines(lines)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-        return this.redraw()
+        this.redraw()
+        prjcts.index(this.currentFile)
+        return this
     }
 
     KED.prototype["saveFile"] = async function ()
@@ -175,7 +182,10 @@ ked [file]
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
                 handler = list[_a_]
-                handler.onWheel(event)
+                if (handler.onWheel(event))
+                {
+                    break
+                }
             }
         }
         else
@@ -218,6 +228,9 @@ ked [file]
             case 'shift+ctrl+s':
                 return this.saveAs()
 
+            case 'cmd+p':
+                return this.quicky.open(this.currentFile)
+
         }
 
         var list = _k_.list(this.keyHandlers)
@@ -234,7 +247,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _205_22_, _206_23_
+        var _212_22_, _213_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -243,7 +256,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _211_22_, _212_23_
+        var _218_22_, _219_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -266,6 +279,7 @@ ked [file]
         this.editor.draw()
         this.konsole.draw()
         this.status.draw()
+        this.quicky.draw()
         this.screen.render()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }

@@ -12,7 +12,7 @@ function logfile
 
     @: ->
         
-        @stream = fs.createWriteStream 'ked.log' flags:'a' autoClose:false
+        @stream = fs.createWriteStream 'ked.log' flags:'w' autoClose:false
         
         # global.lf = args... => @write args.map((a) -> "#{noon a}").join(' ')
         global.lf = args... => 

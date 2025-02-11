@@ -91,16 +91,16 @@ function editor extends view
                     @cells.set x row ch fg
                     
             # empty
-            emptyColor = theme[@constructor.name + '_empty']
+            emptyColor = theme[@name + '_empty']
             if y < lines.length
                 linel = line.length - view[0]
                 if y == mainCursor[1]
                     if linel > 0
-                        @cells.bg_rect 0 row linel row theme[@constructor.name + '_cursor_main']
-                    @cells.bg_rect max(0 linel) row -1 row theme[@constructor.name + '_cursor_empty']
+                        @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
+                    @cells.bg_rect max(0 linel) row -1 row theme[@name + '_cursor_empty']
                 else
                     if linel > 0
-                        @cells.bg_rect 0 row linel row theme[@constructor.name]
+                        @cells.bg_rect 0 row linel row theme[@name]
                     @cells.bg_rect max(0 linel) row -1 row emptyColor
                     
                 if checkColor
@@ -114,6 +114,10 @@ function editor extends view
                             @cells.bg_rect cx row cx+dta row rng.match; cx += dta
                             if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
 
+                                
+        bg = theme.highlight
+        bg = color.darken bg if not @cells.screen.t.hasFocus
+                                
         for highlight in s.highlights
             
             y = highlight[1]-view[1]
@@ -123,7 +127,7 @@ function editor extends view
                 for x in highlight[0]...highlight[2]
                     
                     if 0 <= x-view[0] < @cells.cols
-                        @cells.set_bg x-view[0] y theme.highlight
+                        @cells.set_bg x-view[0] y bg
                         @cells.set_char x-view[0] y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x-view[0] y)+'\x1b[4:0m'
                     
         for selection in s.selections
@@ -151,7 +155,8 @@ function editor extends view
                         if 0 <= x-view[0] < @cells.cols
                             @cells.set_bg x-view[0] y bg 
                             
-        bg = theme[@constructor.name + '_cursor_multi']
+        fg = theme[@name + '_cursor_fg'] ? theme['editor_cursor_fg']
+        bg = theme[@name + '_cursor_multi'] ? theme['editor_cursor_multi']
         bg = color.darken bg if not @cells.screen.t.hasFocus
         
         for cursor in s.cursors
@@ -162,22 +167,28 @@ function editor extends view
                 y = cursor[1]-view[1]
                 
                 @cells.set_bg x y bg
-                @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
+                @cells.set_fg x y fg
                             
         if @isCursorVisible()
             
-            bg = theme[@constructor.name + (@state.hasFocus ? '_cursor_bg' : '_cursor_blur')]
+            fg  = theme[@name    + '_cursor_fg']
+            fg ?= theme['editor' + '_cursor_fg']
+            bg  = theme[@name    + (@state.hasFocus ? '_cursor_bg' : '_cursor_blur')]
+            bg ?= theme['editor' + (@state.hasFocus ? '_cursor_bg' : '_cursor_blur')]
+            
             x = mainCursor[0]-view[0]
             y = mainCursor[1]-view[1]
+            
             if s.cursors.length <= 1
                 if @isCursorInEmpty()
                     bg = color.darken bg 0.7
                 else if ' ' == @cells.get_char(x y)
                     bg = color.darken bg 0.8
+                    
             bg = color.darken bg if not @cells.screen.t.hasFocus
                 
             @cells.set_bg x y bg
-            @cells.set_fg x y theme[@constructor.name + '_cursor_fg']
+            @cells.set_fg x y fg
 
         @scroll?.draw()
         @gutter?.draw()

@@ -88,7 +88,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _182_15_, _183_15_, _184_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _158_41_, _159_44_, _193_15_, _194_15_, _195_15_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -126,7 +126,7 @@ editor = (function ()
                     this.cells.set(x,row,ch,fg)
                 }
             }
-            emptyColor = theme[this.constructor.name + '_empty']
+            emptyColor = theme[this.name + '_empty']
             if (y < lines.length)
             {
                 linel = line.length - view[0]
@@ -134,15 +134,15 @@ editor = (function ()
                 {
                     if (linel > 0)
                     {
-                        this.cells.bg_rect(0,row,linel,row,theme[this.constructor.name + '_cursor_main'])
+                        this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
                     }
-                    this.cells.bg_rect(_k_.max(0,linel),row,-1,row,theme[this.constructor.name + '_cursor_empty'])
+                    this.cells.bg_rect(_k_.max(0,linel),row,-1,row,theme[this.name + '_cursor_empty'])
                 }
                 else
                 {
                     if (linel > 0)
                     {
-                        this.cells.bg_rect(0,row,linel,row,theme[this.constructor.name])
+                        this.cells.bg_rect(0,row,linel,row,theme[this.name])
                     }
                     this.cells.bg_rect(_k_.max(0,linel),row,-1,row,emptyColor)
                 }
@@ -178,6 +178,11 @@ editor = (function ()
                 }
             }
         }
+        bg = theme.highlight
+        if (!this.cells.screen.t.hasFocus)
+        {
+            bg = color.darken(bg)
+        }
         var list1 = _k_.list(s.highlights)
         for (var _f_ = 0; _f_ < list1.length; _f_++)
         {
@@ -189,7 +194,7 @@ editor = (function ()
                 {
                     if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
                     {
-                        this.cells.set_bg(x - view[0],y,theme.highlight)
+                        this.cells.set_bg(x - view[0],y,bg)
                         this.cells.set_char(x - view[0],y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - view[0],y) + '\x1b[4:0m')
                     }
                 }
@@ -235,7 +240,8 @@ editor = (function ()
                 }
             }
         }
-        bg = theme[this.constructor.name + '_cursor_multi']
+        fg = ((_158_41_=theme[this.name + '_cursor_fg']) != null ? _158_41_ : theme['editor_cursor_fg'])
+        bg = ((_159_44_=theme[this.name + '_cursor_multi']) != null ? _159_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -249,12 +255,15 @@ editor = (function ()
                 x = cursor[0] - view[0]
                 y = cursor[1] - view[1]
                 this.cells.set_bg(x,y,bg)
-                this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
+                this.cells.set_fg(x,y,fg)
             }
         }
         if (this.isCursorVisible())
         {
-            bg = theme[this.constructor.name + ((this.state.hasFocus ? '_cursor_bg' : '_cursor_blur'))]
+            fg = theme[this.name + '_cursor_fg']
+            fg = (fg != null ? fg : theme['editor' + '_cursor_fg'])
+            bg = theme[this.name + ((this.state.hasFocus ? '_cursor_bg' : '_cursor_blur'))]
+            bg = (bg != null ? bg : theme['editor' + ((this.state.hasFocus ? '_cursor_bg' : '_cursor_blur'))])
             x = mainCursor[0] - view[0]
             y = mainCursor[1] - view[1]
             if (s.cursors.length <= 1)
@@ -273,7 +282,7 @@ editor = (function ()
                 bg = color.darken(bg)
             }
             this.cells.set_bg(x,y,bg)
-            this.cells.set_fg(x,y,theme[this.constructor.name + '_cursor_fg'])
+            this.cells.set_fg(x,y,fg)
         }
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
@@ -287,7 +296,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _200_30_, _201_30_
+        var col, row, start, x, y, _211_30_, _212_30_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
         {

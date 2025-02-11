@@ -1,0 +1,24 @@
+###
+000  000   000  00000000   000   000  000000000
+000  0000  000  000   000  000   000     000   
+000  000 0 000  00000000   000   000     000   
+000  000  0000  000        000   000     000   
+000  000   000  000         0000000      000   
+###
+
+use .. ◆ editor theme 
+
+function input extends editor
+
+    @: screen name features ->
+        
+        super screen name []
+
+    init: x y w h -> @cells.init x y w h         
+    set: text -> @state.loadLines [text]
+    
+    onWheel: event ->
+        
+        super event
+    
+export input

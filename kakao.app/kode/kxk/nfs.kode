@@ -205,14 +205,62 @@ class NFS
         if ○ NFS.exists from
             ○ fsp.rename from, to
     
+    #  0000000   000  000000000  
+    # 000        000     000     
+    # 000  0000  000     000     
+    # 000   000  000     000     
+    #  0000000   000     000     
+    
+    @git: p ○->
+    
+        git = slash.path p
+        
+        while git.length and git != "/"
+            
+            ⮐ git if ○ NFS.isDir(slash.path(git '.git'))
+            
+            git = slash.dir git
+    
+    # 00000000   000   000   0000000   
+    # 000   000  000  000   000        
+    # 00000000   0000000    000  0000  
+    # 000        000  000   000   000  
+    # 000        000   000   0000000   
+    
+    @pkg: p ○->
+        
+        pkg = slash.path p
+        
+        while pkg.length and pkg != "/"
+            
+            ⮐ pkg if ○ NFS.isFile(slash.path(pkg 'package.json'))
+            
+            pkg = slash.dir pkg
+            
+    # 00000000   00000000         000  
+    # 000   000  000   000        000  
+    # 00000000   0000000          000  
+    # 000        000   000  000   000  
+    # 000        000   000   0000000   
+    
+    @prj: p ○->
+        
+        pth = slash.path p
+        
+        while pth.length and pth != "/"
+            
+            ⮐ pth if ○ NFS.isDir(slash.path(pth '.git'))
+            ⮐ pth if ○ NFS.isFile(slash.path(pth 'package.json'))
+            ⮐ pth if ○ NFS.isFile(slash.path(slash.dir(pth) 'kakao.kode')) # should be done differently at some point!
+            
+            pth = slash.dir pth
+    
     # 000000000   0000000   0000000     0000000     
     #    000     000   000  000   000  000   000    
     #    000     000   000  000   000  000   000    
     #    000     000   000  000   000  000   000    
     #    000      0000000   0000000     0000000     
         
-    @pkg:        p ○-> error 'todo'
-    @git:        p ○-> error 'todo'
     @isWritable: p ○-> error 'todo'
     @isReadable: p ○-> error 'todo'
     @duplicate:  p ○-> error 'todo'
