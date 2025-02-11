@@ -232,6 +232,16 @@ export
             @select [0 y] [@s.lines[y].length y]
         @
         
+    selectPrevLine: y ->
+        
+        y ?= @mainCursor()[1]
+        @selectLine y-1
+        
+    selectNextLine: y ->
+        
+        y ?= @mainCursor()[1]
+        @selectLine y+1
+        
     selectCursorLines: append=false ->
                     
         @setSelections util.lineRangesForPositions(@allLines() @allCursors() append)
@@ -286,6 +296,7 @@ export
     #    000     00000000  000   000     000     
     
     textForSelection: -> util.textForLineRanges @allLines() @allSelections()
+    selectedText:     -> util.textForLineRanges @allLines() @allSelections()
     
     selectionsOrCursorLineRanges: -> valid @s.selections ? @allSelections() : util.lineRangesForPositions(@allLines() @allCursors() true)
     

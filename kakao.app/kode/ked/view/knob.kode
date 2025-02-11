@@ -19,11 +19,11 @@ function knob
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: type sx sy event =>
+    onMouse: event =>
         
-        [col row] = @cells.posForScreen sx sy
+        [col row] = @cells.posForEvent event
         
-        switch type
+        switch event.type
             
             'press'
             

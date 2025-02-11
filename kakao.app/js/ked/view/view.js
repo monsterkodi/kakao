@@ -16,7 +16,7 @@ view = (function ()
     _k_.extend(view, events)
     function view (screen, name, features)
     {
-        var feature
+        var f, feature
 
         this.screen = screen
         this.name = name
@@ -25,10 +25,17 @@ view = (function ()
         this["draw"] = this["draw"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this.cells = new cells(this.screen)
+        this.feats = {}
         var list = _k_.list(features)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            feature = list[_a_]
+            f = list[_a_]
+            this.feats[f] = true
+        }
+        var list1 = _k_.list(features)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            feature = list1[_b_]
             switch (feature)
             {
                 case 'knob':
@@ -40,16 +47,16 @@ view = (function ()
         return view.__super__.constructor.apply(this, arguments)
     }
 
-    view.prototype["onMouse"] = function (type, sx, sy, event)
+    view.prototype["onMouse"] = function (event)
     {
-        var _31_13_
+        var _33_13_
 
-        return (this.knob != null ? this.knob.onMouse(type,sx,sy,event) : undefined)
+        return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
 
     view.prototype["draw"] = function ()
     {
-        var _35_13_
+        var _37_13_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

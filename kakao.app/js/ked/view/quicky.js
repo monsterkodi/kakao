@@ -1,6 +1,6 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var quicky
+var int, quicky
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -16,6 +16,7 @@ import prjcts from "../util/prjcts.js"
 import editor from "../editor.js"
 import theme from "../theme.js"
 
+int = parseInt
 
 quicky = (function ()
 {
@@ -44,10 +45,9 @@ quicky = (function ()
         h = parseInt(this.screen.rows / 2)
         c = _k_.min(h,this.choices.num())
         this.input.init(x + 2,y + 1,w - 4,1)
-        this.choices.init(x + 2,y + 3,w - 4,c)
+        this.choices.init(x + 2,y + 3,w - 3,c)
         this.cells.init(x,y,w,c + 4)
-        this.input.grabFocus()
-        return post.emit('redraw')
+        return this.input.grabFocus()
     }
 
     quicky.prototype["hide"] = function ()
@@ -77,9 +77,37 @@ quicky = (function ()
 
     quicky.prototype["open"] = function (currentFile)
     {
+        var ccol, currentDir, items
+
+        items = prjcts.files(currentFile)
+        currentDir = slash.dir(currentFile)
+        items = items.map(function (i)
+        {
+            return slash.relative(i,currentDir)
+        })
+        items.sort(function (a, b)
+        {
+            return slash.name(a).localeCompare(slash.name(b))
+        })
+        if (items[0] === '.')
+        {
+            items.shift()
+        }
+        ccol = parseInt(this.screen.cols / 2) - 5
+        items = items.map((function (i)
+        {
+            return _k_.rpad(ccol,i)
+        }).bind(this))
         this.input.set('')
-        this.choices.set(prjcts.files(currentFile))
+        this.choices.set(items)
+        this.choices.state.selectLine(0)
         return this.show()
+    }
+
+    quicky.prototype["postResult"] = function ()
+    {
+        post.emit('quicky',_k_.trim(this.input.state.s.lines[0]))
+        return this.hide()
     }
 
     quicky.prototype["draw"] = function ()
@@ -108,6 +136,21 @@ quicky = (function ()
         return this.choices.draw()
     }
 
+    quicky.prototype["moveSelection"] = function (dir)
+    {
+        switch (dir)
+        {
+            case 'down':
+                this.choices.state.selectNextLine()
+                break
+            case 'up':
+                this.choices.state.selectPrevLine()
+                break
+        }
+
+        return this.input.set(this.choices.state.selectedText())
+    }
+
     quicky.prototype["onKey"] = function (key, event)
     {
         if (this.hidden())
@@ -123,7 +166,11 @@ quicky = (function ()
                 }
                 break
             case 'return':
-                return this.hide()
+                return this.postResult()
+
+            case 'up':
+            case 'down':
+                return this.moveSelection(event.combo)
 
         }
 

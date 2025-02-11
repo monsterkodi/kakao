@@ -18,13 +18,13 @@ knob = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
     }
 
-    knob.prototype["onMouse"] = function (type, sx, sy, event)
+    knob.prototype["onMouse"] = function (event)
     {
         var col, row
 
-        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
+        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        switch (type)
+        switch (event.type)
         {
             case 'press':
                 if (row === 0)

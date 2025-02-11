@@ -38,7 +38,7 @@ class walker
         while (!_k_.empty(toWalk))
         {
             listDir = toWalk.shift()
-            items = await nfs.list(listDir)
+            items = await nfs.list(listDir,{recursive:false})
             var list = _k_.list(items)
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {

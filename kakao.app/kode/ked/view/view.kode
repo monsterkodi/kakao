@@ -15,6 +15,8 @@ function view extends events
     @: @screen @name features ->
         
         @cells = new cells @screen
+        @feats = {}
+        @feats[f] = true for f in features
         
         for feature in features
             switch feature
@@ -26,9 +28,9 @@ function view extends events
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: type sx sy event =>
+    onMouse: event =>
     
-        @knob?.onMouse type sx sy event
+        @knob?.onMouse event
         
     draw: =>
         

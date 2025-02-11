@@ -1,5 +1,7 @@
 var cells
 
+import util from "../util/util.js"
+
 
 cells = (function ()
 {
@@ -9,10 +11,15 @@ cells = (function ()
     
         this["fill_rect"] = this["fill_rect"].bind(this)
         this["bg_rect"] = this["bg_rect"].bind(this)
+        this["posForEvent"] = this["posForEvent"].bind(this)
         this["screenForPos"] = this["screenForPos"].bind(this)
         this["posForScreen"] = this["posForScreen"].bind(this)
+        this["isOutsideEvent"] = this["isOutsideEvent"].bind(this)
+        this["isInsideEvent"] = this["isInsideEvent"].bind(this)
         this["isOutsideScreen"] = this["isOutsideScreen"].bind(this)
         this["isInsideScreen"] = this["isInsideScreen"].bind(this)
+        this["isOutsidePos"] = this["isOutsidePos"].bind(this)
+        this["isInsidePos"] = this["isInsidePos"].bind(this)
         this["get_char"] = this["get_char"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
@@ -65,24 +72,57 @@ cells = (function ()
         return this.screen.get_char(this.wx(x),this.wy(y))
     }
 
+    cells.prototype["isInsidePos"] = function (x, y)
+    {
+        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+
+        return ((0 <= x && x < this.cols)) && ((0 <= y && y < this.rows))
+    }
+
+    cells.prototype["isOutsidePos"] = function (x, y)
+    {
+        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+
+        return x < 0 || x >= this.cols || y < 0 || y >= this.rows
+    }
+
     cells.prototype["isInsideScreen"] = function (x, y)
     {
-        return (this.x <= x && x < this.x + this.cols) && (this.y <= y && y < this.y + this.rows)
+        return this.isInsidePos(this.posForScreen(x,y))
     }
 
     cells.prototype["isOutsideScreen"] = function (x, y)
     {
-        return !this.isInsideScreen(x,y)
+        return this.isOutsidePos(this.posForScreen(x,y))
+    }
+
+    cells.prototype["isInsideEvent"] = function (evt)
+    {
+        return this.isInsidePos(this.posForEvent(evt))
+    }
+
+    cells.prototype["isOutsideEvent"] = function (evt)
+    {
+        return this.isOutsidePos(this.posForEvent(evt))
     }
 
     cells.prototype["posForScreen"] = function (x, y)
     {
+        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+
         return [x - this.x,y - this.y]
     }
 
     cells.prototype["screenForPos"] = function (x, y)
     {
+        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+
         return [x + this.x,y + this.y]
+    }
+
+    cells.prototype["posForEvent"] = function (evt)
+    {
+        return this.posForScreen(evt.cell)
     }
 
     cells.prototype["bg_rect"] = function (x1, y1, x2, y2, bg)

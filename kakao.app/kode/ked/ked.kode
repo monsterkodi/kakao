@@ -47,8 +47,8 @@ function KED
         @screen  = new screen @t
         
         @quicky  = new quicky   @screen 
-        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' ]
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob']
+        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
         @status  = new status   @screen @editor.state
         
         lfc "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked #{@version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
@@ -59,6 +59,7 @@ function KED
         post.on 'window.focus'  @redraw
         post.on 'window.blur'   @redraw
         post.on 'view.size'     @onViewSize
+        post.on 'quicky'        @onQuicky
         
         @mouseHandlers = [@quicky @konsole @editor]
         @wheelHandlers = [@quicky @konsole @editor]
@@ -162,9 +163,9 @@ function KED
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: type sx sy event =>
+    onMouse: event =>
 
-        if type == 'wheel'
+        if event.type == 'wheel'
 
             for handler in @wheelHandlers
                 if handler.onWheel event
@@ -173,7 +174,7 @@ function KED
         else
         
             for handler in @mouseHandlers
-                if handler.onMouse type sx sy event
+                if handler.onMouse event
                     break
 
         @redraw()                
@@ -200,6 +201,21 @@ function KED
             break if handler.onKey key event
                 
         @redraw()
+        
+    #  0000000   000   000  000   0000000  000   000  000   000  
+    # 000   000  000   000  000  000       000  000    000 000   
+    # 000 00 00  000   000  000  000       0000000      00000    
+    # 000 0000   000   000  000  000       000  000      000     
+    #  00000 00   0000000   000   0000000  000   000     000     
+    
+    onQuicky: event ○=>
+        
+        
+        file = slash.path slash.dir(@currentFile) event
+        lf 'event' slash.dir(@currentFile) @currentFile event file
+        
+        if ○ nfs.fileExists file
+            ○ @loadFile file
                                 
     #  0000000  000  0000000  00000000  
     # 000       000     000   000       

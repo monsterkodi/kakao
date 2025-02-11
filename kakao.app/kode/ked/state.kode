@@ -104,7 +104,9 @@ function state
         
     loadLines: lines =>
         
-        @setCursors [[0 0]]
+        @s = @s.set 'cursors' [[0 0]]
+        @s = @s.set 'view' [0 0]
+        @s = @s.set 'main' 0
         @clearCursorsHighlightsAndSelections()
         @r = []
         @h = []

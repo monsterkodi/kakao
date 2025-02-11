@@ -6,6 +6,8 @@
  0000000  00000000  0000000  0000000  0000000   
 ###
 
+use ../util ◆ util
+
 function cells
 
     @: @screen -> @init 0 0 0 0
@@ -40,11 +42,18 @@ function cells
     # 000        000   000       000  
     # 000         0000000   0000000   
     
-    isInsideScreen:  x y => @x <= x < @x+@cols and @y <= y < @y+@rows
-    isOutsideScreen: x y => not @isInsideScreen x y
+    isInsidePos:     x y => [x y] = util.pos(x y); (0 <= x < @cols) and (0 <= y < @rows)
+    isOutsidePos:    x y => [x y] = util.pos(x y); x < 0 or x >= @cols or y < 0 or y >= @rows
     
-    posForScreen: x y => [x-@x y-@y]
-    screenForPos: x y => [x+@x y+@y]
+    isInsideScreen:  x y => @isInsidePos  @posForScreen(x y)
+    isOutsideScreen: x y => @isOutsidePos @posForScreen(x y)
+    
+    isInsideEvent:   evt => @isInsidePos  @posForEvent(evt)
+    isOutsideEvent:  evt => @isOutsidePos @posForEvent(evt)
+        
+    posForScreen:    x y => [x y] = util.pos(x y); [x-@x y-@y]
+    screenForPos:    x y => [x y] = util.pos(x y); [x+@x y+@y]
+    posForEvent:     evt => @posForScreen evt.cell
         
     # 0000000     0000000           00000000   00000000   0000000  000000000  
     # 000   000  000                000   000  000       000          000     

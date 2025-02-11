@@ -35,6 +35,7 @@ KED = (function ()
         this["redraw"] = this["redraw"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
+        this["onQuicky"] = this["onQuicky"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onPaste"] = this["onPaste"].bind(this)
@@ -73,8 +74,8 @@ ked [file]
         }).bind(this)
         this.screen = new screen(this.t)
         this.quicky = new quicky(this.screen)
-        this.editor = new editor(this.screen,'editor',['scroll','gutter'])
-        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','knob'])
+        this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
+        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
         this.status = new status(this.screen,this.editor.state)
         lfc(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked ${this.version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
         this.editor.state.hasFocus = true
@@ -82,6 +83,7 @@ ked [file]
         post.on('window.focus',this.redraw)
         post.on('window.blur',this.redraw)
         post.on('view.size',this.onViewSize)
+        post.on('quicky',this.onQuicky)
         this.mouseHandlers = [this.quicky,this.konsole,this.editor]
         this.wheelHandlers = [this.quicky,this.konsole,this.editor]
         this.keyHandlers = [this.quicky,this.konsole,this.editor]
@@ -110,7 +112,7 @@ ked [file]
 
     KED.prototype["quit"] = function (msg)
     {
-        var _92_10_
+        var _93_10_
 
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         ;(this.t != null ? this.t.quit() : undefined)
@@ -182,11 +184,11 @@ ked [file]
         return this.redraw()
     }
 
-    KED.prototype["onMouse"] = function (type, sx, sy, event)
+    KED.prototype["onMouse"] = function (event)
     {
         var handler
 
-        if (type === 'wheel')
+        if (event.type === 'wheel')
         {
             var list = _k_.list(this.wheelHandlers)
             for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -204,7 +206,7 @@ ked [file]
             for (var _b_ = 0; _b_ < list1.length; _b_++)
             {
                 handler = list1[_b_]
-                if (handler.onMouse(type,sx,sy,event))
+                if (handler.onMouse(event))
                 {
                     break
                 }
@@ -255,9 +257,21 @@ ked [file]
         return this.redraw()
     }
 
+    KED.prototype["onQuicky"] = async function (event)
+    {
+        var file
+
+        file = slash.path(slash.dir(this.currentFile),event)
+        lf('event',slash.dir(this.currentFile),this.currentFile,event,file)
+        if (await nfs.fileExists(file))
+        {
+            return await this.loadFile(file)
+        }
+    }
+
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _216_22_, _217_23_
+        var _232_22_, _233_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -266,7 +280,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _222_22_, _223_23_
+        var _238_22_, _239_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

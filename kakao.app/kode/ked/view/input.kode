@@ -17,8 +17,4 @@ function input extends editor
     init: x y w h -> @cells.init x y w h         
     set: text -> @state.loadLines [text]
     
-    onWheel: event ->
-        
-        super event
-    
 export input

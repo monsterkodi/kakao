@@ -258,6 +258,14 @@ export default {select:function (from, to)
         this.select([0,y],[this.s.lines[y].length,y])
     }
     return this
+},selectPrevLine:function (y)
+{
+    y = (y != null ? y : this.mainCursor()[1])
+    return this.selectLine(y - 1)
+},selectNextLine:function (y)
+{
+    y = (y != null ? y : this.mainCursor()[1])
+    return this.selectLine(y + 1)
 },selectCursorLines:function (append = false)
 {
     return this.setSelections(util.lineRangesForPositions(this.allLines(),this.allCursors(),append))
@@ -297,6 +305,9 @@ export default {select:function (from, to)
     this.setSelections(selections)
     return this.setCursors(cursors,-1)
 },textForSelection:function ()
+{
+    return util.textForLineRanges(this.allLines(),this.allSelections())
+},selectedText:function ()
 {
     return util.textForLineRanges(this.allLines(),this.allSelections())
 },selectionsOrCursorLineRanges:function ()

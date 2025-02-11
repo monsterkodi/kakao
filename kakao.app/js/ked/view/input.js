@@ -24,11 +24,6 @@ input = (function ()
         return this.state.loadLines([text])
     }
 
-    input.prototype["onWheel"] = function (event)
-    {
-        return input.__super__.onWheel.call(this,event)
-    }
-
     return input
 })()
 

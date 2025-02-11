@@ -365,7 +365,7 @@ function TTIO extends events
         
         # lfc noon(event)
         
-        @emit 'mouse' event.type event.cell[0] event.cell[1] event
+        @emit 'mouse' event
             
     # 00000000    0000000   00000000    0000000  00000000  
     # 000   000  000   000  000   000  000       000       

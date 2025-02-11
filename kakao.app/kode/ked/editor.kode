@@ -23,6 +23,7 @@ function editor extends view
         
         for feature in features
             switch feature
+                'scrllr'
                 'scroll' ➜ @scroll = new scroll @screen @state
                 'gutter' ➜ @gutter = new gutter @screen @state
                 'mapscr' ➜ @mapscr = new mapscr @screen @state
@@ -35,23 +36,27 @@ function editor extends view
     
     init: x y w h => 
         
-        s = 0
-        g = 0 
-        m = 0
+        g = m = s = 0 
+        sl = sr = 0
         
         if @scroll
             s = 1
-            @scroll.init x     y     s       h 
+            if @feats.scrllr
+                sr = s
+                @scroll.init x+w-sr y     s       h 
+            else
+                sl = s
+                @scroll.init x      y     s       h 
             
         if @gutter
             g = @state.gutterWidth()
-            @gutter.init x+s   y     g       h
+            @gutter.init x+sl   y     g       h
             
         if @mapscr
             m = 10
-            @mapscr.init x+w-m y     m       h
+            @mapscr.init x+w-sr-m y     m       h
             
-        @cells.init      x+s+g y     w-s-g-m h
+        @cells.init      x+sl+g y     w-sr-g-m h
         @state.initView()
         
     # 0000000    00000000    0000000   000   000  
@@ -208,19 +213,19 @@ function editor extends view
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: type sx sy event =>
+    onMouse: event =>
         
-        ⮐ true if @mapscr?.onMouse type sx sy event
-        ⮐ true if @scroll?.onMouse type sx sy event
-        ⮐ true if super type sx sy event
+        ⮐ true if @mapscr?.onMouse event
+        ⮐ true if @scroll?.onMouse event
+        ⮐ true if super            event
         
-        [col row] = @cells.posForScreen sx sy 
+        [col row] = @cells.posForEvent event
         
-        ⮐ if row < 0 or row >= @cells.row
-        
-        switch type
+        switch event.type
             
             'press'
+            
+                ⮐ if @cells.isOutsideEvent event
                         
                 if event.count > 1
 
@@ -260,11 +265,13 @@ function editor extends view
                             @state.setMainCursor x y
                     
                     @grabFocus()
+                    
                     ⮐ true
                     
             'drag'
             
                 if @dragStart
+                    
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
@@ -359,6 +366,7 @@ function editor extends view
     grabFocus: =>
     
         post.emit 'focus' @name
+        @redraw()
         
     onFocus: name =>
         

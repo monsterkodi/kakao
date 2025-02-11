@@ -27,16 +27,17 @@ scroll = (function ()
         return this.cells.init(x,y,w,h)
     }
 
-    scroll.prototype["onMouse"] = function (type, sx, sy)
+    scroll.prototype["onMouse"] = function (event)
     {
         var col, row
 
-        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
+        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        switch (type)
+        this.hover = this.cells.isInsideEvent(event)
+        switch (event.type)
         {
             case 'press':
-                if (this.cells.isInsideScreen(sx,sy))
+                if (this.hover)
                 {
                     this.doDrag = true
                     return this.scrollTo(row)
@@ -45,6 +46,7 @@ scroll = (function ()
             case 'drag':
                 if (this.doDrag)
                 {
+                    this.hover = true
                     return this.scrollTo(row)
                 }
                 break
@@ -52,12 +54,8 @@ scroll = (function ()
                 if (this.doDrag)
                 {
                     delete this.doDrag
-                    this.hover = this.cells.isInsideScreen(sx,sy)
                     return true
                 }
-                break
-            case 'move':
-                this.hover = this.cells.isInsideScreen(sx,sy)
                 break
         }
 

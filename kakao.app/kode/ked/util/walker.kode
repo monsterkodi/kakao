@@ -50,8 +50,8 @@ class walker
             
             # lf 'walk dir' listDir
         
-            items = ○ nfs.list listDir
-            # lf 'walker items' items
+            items = ○ nfs.list listDir recursive:false
+            # lf 'walker items' listDir items
             
             for item in items
                 # lf 'item' item

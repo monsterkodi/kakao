@@ -11,6 +11,8 @@ use         ◆ cells input choices
 use ../util ◆ prjcts
 use ..      ◆ editor theme
 
+int = parseInt
+
 function quicky
 
     @: @screen ->
@@ -19,46 +21,72 @@ function quicky
         
         @cells   = new cells   @screen
         
-        @input   = new input   @screen 'quicky_input'
+        @input   = new input   @screen 'quicky_input' 
         @choices = new choices @screen 'quicky_choices'
                 
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
     show: =>
         
-        x = parseInt @screen.cols/4
-        y = parseInt @screen.rows/4
-        w = parseInt @screen.cols/2
-        h = parseInt @screen.rows/2
+        x = int @screen.cols/4
+        y = int @screen.rows/4
+        w = int @screen.cols/2
+        h = int @screen.rows/2
         
         c = min h @choices.num()
         
         @input.init    x+2   y+1   w-4  1
-        @choices.init  x+2   y+3   w-4  c
+        @choices.init  x+2   y+3   w-3  c
         @cells.init    x     y     w    c+4
         
         @input.grabFocus()
-        post.emit 'redraw'
         
     hide:   => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
     hidden: -> @cells.rows <= 0
     
     toggle: currentFile -> if @hidden() then @open(currentFile) else @hide()
-    open: currentFile ->
+    open:   currentFile ->
         
-        # lf 'quicky.open' currentFile prjcts.files(currentFile)
+        items = prjcts.files currentFile
+        currentDir = slash.dir currentFile
+        items = items.map (i) -> slash.relative i currentDir
         
-        @input.set '' #currentFile
-        @choices.set prjcts.files(currentFile)
+        items.sort (a b) -> slash.name(a).localeCompare slash.name(b)
+        items.shift() if items[0] == '.'
+        
+        ccol = int(@screen.cols/2) - 5
+        
+        items = items.map (i) => rpad ccol i
+        
+        @input.set '' # last file?
+        @choices.set items
+        @choices.state.selectLine 0
         @show()
         
+    postResult: ->
+        
+        post.emit 'quicky' trim(@input.state.s.lines[0])
+        @hide()
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
     draw: ->
         
         ⮐ if @hidden()
         
-        # ┏━┳━┓
-        # ┃ ┃ ┃
-        # ┣━╋━┫
-        # ┃ ┃ ┃
-        # ┗━┻━┛
+        # ┏┳━┓
+        # ┣╋━┫
+        # ┃┃ ┃
+        # ┗┻━┛
+        
         ff = theme.quicky_frame_fg
         fb = theme.quicky_frame_bg
         
@@ -78,6 +106,20 @@ function quicky
         @input.draw()
         @choices.draw()
         
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    moveSelection: dir ->
+        
+        switch dir
+            'down'  ➜ @choices.state.selectNextLine()
+            'up'    ➜ @choices.state.selectPrevLine()
+            
+        @input.set @choices.state.selectedText()
+        
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    
@@ -89,8 +131,9 @@ function quicky
         ⮐ if @hidden()
         
         switch event.combo 
-            'esc'    then ⮐ @hide() if empty @input.state.s.selections
-            'return' then ⮐ @hide()
+            'esc'       ➜ ⮐ @hide() if empty @input.state.s.selections
+            'return'    ➜ ⮐ @postResult()
+            'up' 'down' ➜ ⮐ @moveSelection event.combo
         
         ⮐ true if @input.onKey key event
         ⮐ true if @choices.onKey key event

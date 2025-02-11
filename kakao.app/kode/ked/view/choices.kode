@@ -12,9 +12,8 @@ function choices extends editor
 
     @: screen name ->
         
-        super screen name []
+        super screen name ['scrllr']
         
-    init: x y w h -> @cells.init x y w h         
     set: @items -> @state.loadLines @items
         
     num: -> @items.length

@@ -574,7 +574,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        return this.emit('mouse',event.type,event.cell[0],event.cell[1],event)
+        return this.emit('mouse',event)
     }
 
     TTIO.prototype["parseData"] = function (data)

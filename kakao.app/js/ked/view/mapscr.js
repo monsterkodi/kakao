@@ -172,13 +172,15 @@ mapscr = (function ()
         return true
     }
 
-    mapscr.prototype["onMouse"] = function (type, sx, sy, event)
+    mapscr.prototype["onMouse"] = function (event)
     {
-        var col, row
+        var col, row, sx, sy
 
-        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
+        var _a_ = event.cell; sx = _a_[0]; sy = _a_[1]
 
-        switch (type)
+        var _b_ = this.cells.posForEvent(event); col = _b_[0]; row = _b_[1]
+
+        switch (event.type)
         {
             case 'press':
                 if (this.cells.isInsideScreen(sx,sy))

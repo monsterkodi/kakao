@@ -46,6 +46,7 @@ editor = (function ()
             feature = list[_a_]
             switch (feature)
             {
+                case 'scrllr':
                 case 'scroll':
                     this.scroll = new scroll(this.screen,this.state)
                     break
@@ -62,33 +63,41 @@ editor = (function ()
 
     editor.prototype["init"] = function (x, y, w, h)
     {
-        var g, m, s
+        var g, m, s, sl, sr
 
-        s = 0
-        g = 0
-        m = 0
+        g = m = s = 0
+        sl = sr = 0
         if (this.scroll)
         {
             s = 1
-            this.scroll.init(x,y,s,h)
+            if (this.feats.scrllr)
+            {
+                sr = s
+                this.scroll.init(x + w - sr,y,s,h)
+            }
+            else
+            {
+                sl = s
+                this.scroll.init(x,y,s,h)
+            }
         }
         if (this.gutter)
         {
             g = this.state.gutterWidth()
-            this.gutter.init(x + s,y,g,h)
+            this.gutter.init(x + sl,y,g,h)
         }
         if (this.mapscr)
         {
             m = 10
-            this.mapscr.init(x + w - m,y,m,h)
+            this.mapscr.init(x + w - sr - m,y,m,h)
         }
-        this.cells.init(x + s + g,y,w - s - g - m,h)
+        this.cells.init(x + sl + g,y,w - sr - g - m,h)
         return this.state.initView()
     }
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _160_41_, _161_44_, _195_15_, _196_15_, _197_15_, _73_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _165_41_, _166_44_, _200_15_, _201_15_, _202_15_, _78_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -99,7 +108,7 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_73_26_=theme[this.name]) != null ? _73_26_ : theme['editor'])
+        bg = ((_78_26_=theme[this.name]) != null ? _78_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -241,8 +250,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_160_41_=theme[this.name + '_cursor_fg']) != null ? _160_41_ : theme['editor_cursor_fg'])
-        bg = ((_161_44_=theme[this.name + '_cursor_multi']) != null ? _161_44_ : theme['editor_cursor_multi'])
+        fg = ((_165_41_=theme[this.name + '_cursor_fg']) != null ? _165_41_ : theme['editor_cursor_fg'])
+        bg = ((_166_44_=theme[this.name + '_cursor_multi']) != null ? _166_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -295,31 +304,31 @@ editor = (function ()
     editor.prototype["postDraw"] = function ()
     {}
 
-    editor.prototype["onMouse"] = function (type, sx, sy, event)
+    editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _213_30_, _214_30_
+        var col, row, start, x, y, _218_30_, _219_30_
 
-        if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
+        if ((this.mapscr != null ? this.mapscr.onMouse(event) : undefined))
         {
             return true
         }
-        if ((this.scroll != null ? this.scroll.onMouse(type,sx,sy,event) : undefined))
+        if ((this.scroll != null ? this.scroll.onMouse(event) : undefined))
         {
             return true
         }
-        if (editor.__super__.onMouse.call(this,type,sx,sy,event))
+        if (editor.__super__.onMouse.call(this,event))
         {
             return true
         }
-        var _a_ = this.cells.posForScreen(sx,sy); col = _a_[0]; row = _a_[1]
+        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        if (row < 0 || row >= this.cells.row)
-        {
-            return
-        }
-        switch (type)
+        switch (event.type)
         {
             case 'press':
+                if (this.cells.isOutsideEvent(event))
+                {
+                    return
+                }
                 if (event.count > 1)
                 {
                     if (!event.shift)
@@ -491,7 +500,8 @@ editor = (function ()
 
     editor.prototype["grabFocus"] = function ()
     {
-        return post.emit('focus',this.name)
+        post.emit('focus',this.name)
+        return this.redraw()
     }
 
     editor.prototype["onFocus"] = function (name)

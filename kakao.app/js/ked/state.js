@@ -143,7 +143,9 @@ state = (function ()
 
     state.prototype["loadLines"] = function (lines)
     {
-        this.setCursors([[0,0]])
+        this.s = this.s.set('cursors',[[0,0]])
+        this.s = this.s.set('view',[0,0])
+        this.s = this.s.set('main',0)
         this.clearCursorsHighlightsAndSelections()
         this.r = []
         this.h = []

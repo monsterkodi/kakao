@@ -18,9 +18,13 @@ class NFS
     # 000   000  000  000   000  000      000       000     000     
     # 0000000    000  000   000  0000000  000  0000000      000     
     
-    @listdir: dir found ○->
+    @listdir: dir opt ○->
+        
+        opt ?= {}
+        opt.recursive ?= true
+        opt.found ?= []
             
-        dirents =○ fsp.readdir dir, { withFileTypes: true }
+        dirents =○ fsp.readdir dir withFileTypes:true
         
         for dirent in dirents
     
@@ -30,21 +34,21 @@ class NFS
             if isDir and file in ['node_modules' '.git'] 
                 continue # is it a good idea to hardcode this here?
             
-            absPath = slash.path dir, file
+            absPath = slash.path dir file
             
-            found.push 
+            opt.found.push
                 type: isDir ? 'dir' : 'file'
                 file: file
                 path: absPath
             
-            if isDir
+            if isDir and opt.recursive
     
-                ○ NFS.listdir absPath, found
-                
-        found
+                ○ NFS.listdir absPath opt
+        
+        opt.found
     
-    @list:    p ○-> ○ NFS.listdir p, []
-    @dirlist: p ○-> ○ NFS.listdir p, []
+    @list:    p opt ○-> ○ NFS.listdir p opt
+    @dirlist: p opt ○-> ○ NFS.listdir p opt
     
     # 00000000   00000000   0000000   0000000    
     # 000   000  000       000   000  000   000  

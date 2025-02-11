@@ -7,10 +7,13 @@ import fs from "fs"
 import fsp from 'fs/promises'
 class NFS
 {
-    static async listdir (dir, found)
+    static async listdir (dir, opt)
     {
-        var absPath, dirent, dirents, file, isDir
+        var absPath, dirent, dirents, file, isDir, _24_22_, _25_18_
 
+        opt = (opt != null ? opt : {})
+        opt.recursive = ((_24_22_=opt.recursive) != null ? _24_22_ : true)
+        opt.found = ((_25_18_=opt.found) != null ? _25_18_ : [])
         dirents = await fsp.readdir(dir,{withFileTypes:true})
         var list = _k_.list(dirents)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -23,23 +26,23 @@ class NFS
                 continue
             }
             absPath = slash.path(dir,file)
-            found.push({type:(isDir ? 'dir' : 'file'),file:file,path:absPath})
-            if (isDir)
+            opt.found.push({type:(isDir ? 'dir' : 'file'),file:file,path:absPath})
+            if (isDir && opt.recursive)
             {
-                await NFS.listdir(absPath,found)
+                await NFS.listdir(absPath,opt)
             }
         }
-        return found
+        return opt.found
     }
 
-    static async list (p)
+    static async list (p, opt)
     {
-        return await NFS.listdir(p,[])
+        return await NFS.listdir(p,opt)
     }
 
-    static async dirlist (p)
+    static async dirlist (p, opt)
     {
-        return await NFS.listdir(p,[])
+        return await NFS.listdir(p,opt)
     }
 
     static async read (p)

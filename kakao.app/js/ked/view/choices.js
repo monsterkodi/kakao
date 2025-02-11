@@ -11,12 +11,7 @@ choices = (function ()
     _k_.extend(choices, editor)
     function choices (screen, name)
     {
-        choices.__super__.constructor.call(this,screen,name,[])
-    }
-
-    choices.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
+        choices.__super__.constructor.call(this,screen,name,['scrllr'])
     }
 
     choices.prototype["set"] = function (items)
