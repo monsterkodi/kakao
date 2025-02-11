@@ -39,7 +39,7 @@ logfile = (function ()
 
     logfile.prototype["close"] = function (cb)
     {
-        this.stream.end('◂◂◂')
+        this.stream.end('▪')
         return this.stream.close(cb)
     }
 

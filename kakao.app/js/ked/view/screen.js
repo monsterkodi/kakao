@@ -1,5 +1,3 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
-
 var screen
 
 import color from "../util/color.js"
@@ -34,14 +32,8 @@ screen = (function ()
         if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {
             this.c[y][x].char = char
-            if (!_k_.empty(fg))
-            {
-                this.c[y][x].fg = fg
-            }
-            if (!_k_.empty(bg))
-            {
-                return this.c[y][x].bg = bg
-            }
+            this.c[y][x].fg = (fg != null ? fg : '')
+            return this.c[y][x].bg = (bg != null ? bg : '')
         }
     }
 
@@ -75,12 +67,12 @@ screen = (function ()
         {
             return this.c[y][x].char
         }
-        return ' '
+        return ''
     }
 
     screen.prototype["render"] = function ()
     {
-        var bg, fg, pbg, pfg, s, x, y
+        var bg, char, fg, pbg, pfg, s, x, y
 
         this.t.setCursor(0,0)
         s = ''
@@ -90,6 +82,7 @@ screen = (function ()
         {
             for (var _c_ = x = 0, _d_ = this.cols; (_c_ <= _d_ ? x < this.cols : x > this.cols); (_c_ <= _d_ ? ++x : --x))
             {
+                char = this.c[y][x].char
                 bg = color.bg_rgb(this.c[y][x].bg)
                 if (bg !== pbg)
                 {
@@ -102,13 +95,11 @@ screen = (function ()
                     s += fg
                     pfg = fg
                 }
-                s += this.c[y][x].char
+                s += char
             }
             s += '\n'
         }
-        this.t.write(s.slice(0, -1))
-        this.t.lastCols = this.cols
-        return this.t.lastRows = this.rows
+        return this.t.write(s.slice(0, -1))
     }
 
     return screen

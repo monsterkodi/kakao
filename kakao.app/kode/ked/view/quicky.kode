@@ -19,8 +19,8 @@ function quicky
         
         @cells   = new cells   @screen
         
-        @input   = new input   @screen @name
-        @choices = new choices @screen @name
+        @input   = new input   @screen 'quicky_input'
+        @choices = new choices @screen 'quicky_choices'
                 
     show: =>
         
@@ -31,29 +31,49 @@ function quicky
         
         c = min h @choices.num()
         
-        @input.init    x+1   y+1   w-2  1
-        @choices.init  x+1   y+3   w-2  c
+        @input.init    x+2   y+1   w-4  1
+        @choices.init  x+2   y+3   w-4  c
         @cells.init    x     y     w    c+4
         
         @input.grabFocus()
         post.emit 'redraw'
         
-    hide: => @cells.rows = 0
+    hide:   => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
     hidden: -> @cells.rows <= 0
     
+    toggle: currentFile -> if @hidden() then @open(currentFile) else @hide()
     open: currentFile ->
         
-        lf 'quicky.open' currentFile prjcts.files(currentFile)
+        # lf 'quicky.open' currentFile prjcts.files(currentFile)
         
-        @input.set   currentFile
+        @input.set '' #currentFile
         @choices.set prjcts.files(currentFile)
         @show()
         
     draw: ->
         
-        ⮐ if @cells.rows <= 0
+        ⮐ if @hidden()
         
-        @cells.bg_rect 0 0 @cells.cols @cells.rows theme[@name]
+        # ┏━┳━┓
+        # ┃ ┃ ┃
+        # ┣━╋━┫
+        # ┃ ┃ ┃
+        # ┗━┻━┛
+        ff = theme.quicky_frame_fg
+        fb = theme.quicky_frame_bg
+        
+        @cells.fill_rect 1 1 -2 -2 ' ' null fb
+        @cells.fill_rect  1  0 -2  0 '━' ff fb
+        @cells.fill_rect  0  1  0 -2 '┃' ff fb
+        @cells.fill_rect -1  1 -1 -2 '┃' ff fb
+        @cells.fill_rect  1  2 -2  2 '━' ff fb
+        @cells.fill_rect  1 -1 -2 -1 '━' ff fb
+        @cells.set  0  0 '┏' ff fb
+        @cells.set -1  0 '┓' ff fb
+        @cells.set  0  2 '┣' ff fb    
+        @cells.set -1  2 '┫' ff fb    
+        @cells.set  0 -1 '┗' ff fb
+        @cells.set -1 -1 '┛' ff fb
         
         @input.draw()
         @choices.draw()
@@ -68,21 +88,27 @@ function quicky
         
         ⮐ if @hidden()
         
-        @input.onKey key event
+        switch event.combo 
+            'esc'    then ⮐ @hide() if empty @input.state.s.selections
+            'return' then ⮐ @hide()
+        
+        ⮐ true if @input.onKey key event
+        ⮐ true if @choices.onKey key event
+        true
         
     onMouse: type sx sy event =>
         
         ⮐ if @hidden()
-        
-        @input.onMouse type sx sy event
+        ⮐ true if @input.onMouse type sx sy event
+        ⮐ true if @choices.onMouse type sx sy event
+        true
         
     onWheel: event =>
         
         ⮐ if @hidden()
         
-        @input.onWheel event
-        
-        # ⮐ true if @choices.onWheel event
+        ⮐ true if @input.onWheel event
+        ⮐ true if @choices.onWheel event
         true
 
 export quicky

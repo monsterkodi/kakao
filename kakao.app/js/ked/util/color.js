@@ -35,7 +35,7 @@ class color
 
         if (_k_.empty(c))
         {
-            return ''
+            return '\x1b[49m'
         }
         var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
@@ -48,7 +48,7 @@ class color
 
         if (_k_.empty(c))
         {
-            return ''
+            return '\x1b[39m'
         }
         var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 
@@ -61,7 +61,7 @@ class color
 
         if (_k_.empty(c))
         {
-            return ''
+            return '\x1b[59m'
         }
         var _a_ = color.rgb(c); r = _a_[0]; g = _a_[1]; b = _a_[2]
 

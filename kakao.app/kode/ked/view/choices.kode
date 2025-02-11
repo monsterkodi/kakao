@@ -6,19 +6,17 @@
  0000000  000   000   0000000   000   0000000  00000000  0000000 
 ###
 
-use ◆ cells
+use .. ◆ editor theme 
 
-function choices
+function choices extends editor
 
-    @: screen @name ->
+    @: screen name ->
         
-        @cells = new cells screen
-
+        super screen name []
+        
     init: x y w h -> @cells.init x y w h         
-    set: @items ->
+    set: @items -> @state.loadLines @items
         
     num: -> @items.length
     
-    draw: ->
-
 export choices

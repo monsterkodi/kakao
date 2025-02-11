@@ -143,6 +143,7 @@ state = (function ()
 
     state.prototype["loadLines"] = function (lines)
     {
+        this.setCursors([[0,0]])
         this.clearCursorsHighlightsAndSelections()
         this.r = []
         this.h = []

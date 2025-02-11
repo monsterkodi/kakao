@@ -39,7 +39,7 @@ TTIO = (function ()
         {
             process.stdin.setRawMode(true)
         }
-        lf('ttio ▸')
+        lf('▸▸▸')
         this.write('\x1b[?1000h')
         this.write('\x1b[?1002h')
         this.write('\x1b[?1003h')
@@ -71,7 +71,7 @@ TTIO = (function ()
         this.write('\x1b[<u')
         this.write('\x1b[?1049l')
         this.showCursor()
-        lf('ttio ◂◂◂')
+        lf('◂◂◂')
         return this.restore()
     }
 
@@ -133,7 +133,7 @@ TTIO = (function ()
     {
         var char, code, combo, di, event, key, mbit, mods, splt, type
 
-        if (!(_k_.in(csi.slice(-1)[0],'uABCD')))
+        if (!(_k_.in(csi.slice(-1)[0],'uABCDFH~')))
         {
             if (_k_.in(':3u',csi))
             {
@@ -161,9 +161,34 @@ TTIO = (function ()
                 case 'C':
                     return 'right'
 
+                case 'H':
+                    return 'home'
+
+                case 'F':
+                    return 'end'
+
             }
 
         }).bind(this))()
+        if (csi.slice(-1)[0] === '~')
+        {
+            key = ((function ()
+            {
+                switch (csi.slice(-2,-1)[0])
+                {
+                    case '3':
+                        return 'entf'
+
+                    case '5':
+                        return 'pageup'
+
+                    case '6':
+                        return 'pagedown'
+
+                }
+
+            }).bind(this))()
+        }
         char = ''
         if (csi.slice(-1)[0] === 'u')
         {
@@ -356,7 +381,6 @@ TTIO = (function ()
     {
         var char, event
 
-        lf('---- raw','0x' + Number(raw[0]).toString(16))
         if (raw.length === 1)
         {
             switch (raw[0])
@@ -390,7 +414,6 @@ TTIO = (function ()
                 return parseEsc(raw.toString,'utf8')
             }
         }
-        return lf('---! raw',raw)
     }
 
     TTIO.prototype["keyEventForChar"] = function (char)
@@ -524,11 +547,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _337_23_
+        var diff, _345_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_337_23_=this.lastClick) != null ? _337_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_345_23_=this.lastClick) != null ? _345_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.y === event.x && this.lastClick.x === event.y)
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -599,7 +622,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _409_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _417_23_
 
         if ((this.pasteBuffer != null))
         {
@@ -608,7 +631,7 @@ TTIO = (function ()
             {
                 this.pasteBuffer += data.slice(0, -6).toString('utf8')
                 lf('tty paste end',_k_.noon((this.pasteBuffer)))
-                this.emit('paste',kstr.clean,this.pasteBuffer)
+                this.emit('paste',kstr.clean(this.pasteBuffer))
                 delete this.pasteBuffer
             }
             else
@@ -648,7 +671,7 @@ TTIO = (function ()
                 if (csi.startsWith('201~'))
                 {
                     lf('tty paste end',_k_.noon((this.pasteBuffer)))
-                    this.emit('paste',kstr.clean,this.pasteBuffer)
+                    this.emit('paste',kstr.clean(this.pasteBuffer))
                     delete this.pasteBuffer
                     continue
                 }
@@ -721,7 +744,6 @@ TTIO = (function ()
 
                 if (esc.startsWith('_G'))
                 {
-                    lf(esc)
                     continue
                 }
             }
@@ -738,8 +760,7 @@ TTIO = (function ()
                 text = data.toString('utf8')
                 if (text.length > 1)
                 {
-                    lfc('paste?',data[0] === 0x1b,data.slice(1),text.length,text)
-                    this.emit('paste',kstr.clean,text)
+                    lf('paste?',text)
                     continue
                 }
             }

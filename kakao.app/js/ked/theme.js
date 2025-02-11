@@ -58,6 +58,12 @@ class theme
 
     static quicky = '#333'
 
+    static quicky_input = '#338'
+
+    static quicky_frame_fg = '#222'
+
+    static quicky_frame_bg = '#000'
+
     static editor = '#000'
 
     static editor_empty = '#000'

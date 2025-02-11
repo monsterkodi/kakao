@@ -84,7 +84,7 @@ class prjcts
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            lf 'prjcts indexed' prjPath @projects
+            lc 'prjcts indexed' prjPath @projects
 
             post.emit 'prjcts.project.indexed' prjPath
         

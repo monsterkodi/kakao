@@ -16,7 +16,7 @@ function KED
 
     @: ->
         
-        @version = '0.0.2'
+        @version = '0.0.3'
         h = ''
         h += b8 "    ███   ███  ████████  ███████  \n"
         h += b7 "    ███  ███   ███       ███   ███\n"
@@ -39,7 +39,6 @@ function KED
         @viewSizes = konsole: [0 0]
         
         @logfile = new logfile
-        lf "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked #{@version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
                     
         @t = new ttio
         
@@ -48,10 +47,12 @@ function KED
         @screen  = new screen @t
         
         @quicky  = new quicky   @screen 
-        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr']
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
+        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' ]
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob']
         @status  = new status   @screen @editor.state
         
+        lfc "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked #{@version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
+
         @editor.state.hasFocus = true
         
         post.on 'redraw'        @redraw
@@ -84,13 +85,16 @@ function KED
     # 000   000   0000000   000   000  
     
     @run: -> new KED()
-                
-    onException: err =>
-
+    
+    quit: msg ->
+        
+        lf "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" 
         @t?.quit()
-        error err
-        @logfile.close -> process.exit 1
-        # process.exitCode = 1
+        @logfile.close ->
+            error msg if msg?
+            process.exit msg? ? 1 : 0
+                
+    onException: err => @quit err
                     
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -159,7 +163,7 @@ function KED
     # 000   000   0000000    0000000   0000000   00000000  
     
     onMouse: type sx sy event =>
-        
+
         if type == 'wheel'
 
             for handler in @wheelHandlers
@@ -171,8 +175,8 @@ function KED
             for handler in @mouseHandlers
                 if handler.onMouse type sx sy event
                     break
-                
-        @redraw()
+
+        @redraw()                
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -186,11 +190,11 @@ function KED
         
         switch key
             
-            'alt+q' 'ctrl+q' 'cmd+esc'   ➜ @t.quit(); process.exit(0)
+            'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐ @quit()
             'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
-            'cmd+p'                      ➜ ⮐ @quicky.open @currentFile
+            'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             
         for handler in @keyHandlers
             break if handler.onKey key event
@@ -224,8 +228,13 @@ function KED
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    redraw: =>
-        
+    redraw: =>    
+
+        clearImmediate @redrawId
+        @redrawId = setImmediate @draw
+                                      
+    draw: =>
+              
         start = process.hrtime()
         
         w = @t.cols()
@@ -244,7 +253,6 @@ function KED
         @editor.draw()
         @konsole.draw()
         @status.draw()
-        
         @quicky.draw()
         
         @screen.render()

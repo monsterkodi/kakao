@@ -17,11 +17,14 @@ function cells
     # 0000000   0000000      000     
     #      000  000          000     
     # 0000000   00000000     000     
+
+    wx: x -> x < 0 ? @x+@cols+x : @x+x
+    wy: y -> y < 0 ? @y+@rows+y : @y+y
     
-    set:      x y char fg bg => @screen.set      @x+x @y+y char fg bg
-    set_char: x y char       => @screen.set_char @x+x @y+y char
-    set_bg:   x y bg         => @screen.set_bg   @x+x @y+y bg
-    set_fg:   x y fg         => @screen.set_fg   @x+x @y+y fg
+    set:      x y char fg bg => @screen.set      @wx(x) @wy(y) char fg bg
+    set_char: x y char       => @screen.set_char @wx(x) @wy(y) char
+    set_bg:   x y bg         => @screen.set_bg   @wx(x) @wy(y) bg
+    set_fg:   x y fg         => @screen.set_fg   @wx(x) @wy(y) fg
     
     #  0000000   00000000  000000000  
     # 000        000          000     
@@ -29,7 +32,7 @@ function cells
     # 000   000  000          000     
     #  0000000   00000000     000     
     
-    get_char: x y => @screen.get_char @x+x @y+y
+    get_char: x y => @screen.get_char @wx(x) @wy(y)
         
     # 00000000    0000000    0000000  
     # 000   000  000   000  000       
@@ -62,5 +65,19 @@ function cells
                 for col in x1..x2
                     if col < @cols
                         @set_bg col row bg
-                
+
+    fill_rect: x1 y1 x2 y2 char fg bg =>
+    
+        x1 = @cols + x1 if x1 < 0
+        x2 = @cols + x2 if x2 < 0
+
+        y1 = @rows + y1 if y1 < 0
+        y2 = @rows + y2 if y2 < 0
+        
+        for row in y1..y2
+            if row < @rows
+                for col in x1..x2
+                    if col < @cols
+                        @set col row char fg bg
+                        
 export cells

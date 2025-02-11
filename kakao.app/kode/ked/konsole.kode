@@ -16,7 +16,12 @@ function konsole extends editor
         
         global.lc = args... => 
         
-            @state.insert '\n' + args.map((a) -> "#{a}").join(' ') 
+            if args.length and args[0] is str
+                obj = {}
+                obj[args[0]] = args[1..]
+                @state.insert "\n"+noon(obj)
+            else        
+                @state.insert "\n"+noon(args)
                          
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      

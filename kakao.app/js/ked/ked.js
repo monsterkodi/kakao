@@ -31,6 +31,7 @@ KED = (function ()
     {
         var args, h
 
+        this["draw"] = this["draw"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
@@ -42,7 +43,7 @@ KED = (function ()
         this["loadFile"] = this["loadFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
-        this.version = '0.0.2'
+        this.version = '0.0.3'
         h = ''
         h += _k_.b8("    ███   ███  ████████  ███████  \n")
         h += _k_.b7("    ███  ███   ███       ███   ███\n")
@@ -59,11 +60,10 @@ ked [file]
         process.on('uncaughtException',this.onException)
         this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
-        lf(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked ${this.version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _46_64_
+            var _45_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -73,9 +73,10 @@ ked [file]
         }).bind(this)
         this.screen = new screen(this.t)
         this.quicky = new quicky(this.screen)
-        this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
-        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
+        this.editor = new editor(this.screen,'editor',['scroll','gutter'])
+        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','knob'])
         this.status = new status(this.screen,this.editor.state)
+        lfc(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked ${this.version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
         this.editor.state.hasFocus = true
         post.on('redraw',this.redraw)
         post.on('window.focus',this.redraw)
@@ -107,16 +108,25 @@ ked [file]
         return new KED()
     }
 
-    KED.prototype["onException"] = function (err)
+    KED.prototype["quit"] = function (msg)
     {
-        var _90_10_
+        var _92_10_
 
+        lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         ;(this.t != null ? this.t.quit() : undefined)
-        console.error(err)
         return this.logfile.close(function ()
         {
-            return process.exit(1)
+            if ((msg != null))
+            {
+                console.error(msg)
+            }
+            return process.exit(((msg != null) ? 1 : 0))
         })
+    }
+
+    KED.prototype["onException"] = function (err)
+    {
+        return this.quit(err)
     }
 
     KED.prototype["reloadFile"] = function ()
@@ -212,9 +222,8 @@ ked [file]
             case 'alt+q':
             case 'ctrl+q':
             case 'cmd+esc':
-                this.t.quit()
-                process.exit(0)
-                break
+                return this.quit()
+
             case 'alt+r':
             case 'ctrl+r':
             case 'cmd+r':
@@ -229,7 +238,8 @@ ked [file]
                 return this.saveAs()
 
             case 'cmd+p':
-                return this.quicky.open(this.currentFile)
+            case 'ctrl+p':
+                return this.quicky.toggle(this.currentFile)
 
         }
 
@@ -247,7 +257,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _212_22_, _213_23_
+        var _216_22_, _217_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -256,7 +266,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _218_22_, _219_23_
+        var _222_22_, _223_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -264,6 +274,12 @@ ked [file]
     }
 
     KED.prototype["redraw"] = function ()
+    {
+        clearImmediate(this.redrawId)
+        return this.redrawId = setImmediate(this.draw)
+    }
+
+    KED.prototype["draw"] = function ()
     {
         var h, k, start, w
 

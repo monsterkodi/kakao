@@ -33,7 +33,7 @@ function logfile
         
     close: cb ->
         
-        @stream.end '◂◂◂'
+        @stream.end '▪'
         @stream.close cb
         
 export logfile

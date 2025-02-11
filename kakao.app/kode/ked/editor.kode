@@ -67,8 +67,10 @@ function editor extends view
         syntax     = @state.syntax
         s          = @state.s
         view       = s.view.asMutable()
-        lines      = s.lines.asMutable()
+        lines      = @state.allLines()
         mainCursor = @state.mainCursor()
+        
+        bg = theme[@name] ? theme['editor']
         
         for row in 0...@cells.rows
             
@@ -84,11 +86,11 @@ function editor extends view
             
             # text
             for x in 0...@cells.cols
-                if x < @cells.cols and x+view[0] < line.length
+                if x+view[0] < line.length
                     fg = syntax.getColor x+view[0] y
                     ch = syntax.getChar x+view[0] y line[x+view[0]]
                     if ch == "#" checkColor = true
-                    @cells.set x row ch fg
+                    @cells.set x row ch fg bg
                     
             # empty
             emptyColor = theme[@name + '_empty']
@@ -340,9 +342,13 @@ function editor extends view
         
         cursor ?= @state.mainCursor()
         
-        visible = util.isPosInsideRange cursor @state.rangeForVisibleLines()
-        if cursor[0] < @state.s.view[0] ➜ visible = false
-        visible
+        # visible = util.isPosInsideRange cursor @state.rangeForVisibleLines()
+        # if cursor[0] < @state.s.view[0] ➜ visible = false
+        # visible
+        
+        v = @state.s.view
+        
+        v[0] <= cursor[0] < v[0] + @cells.cols and v[1] <= cursor[1] < v[1] + @cells.rows
         
     # 00000000   0000000    0000000  000   000   0000000  
     # 000       000   000  000       000   000  000       

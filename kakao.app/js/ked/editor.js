@@ -88,7 +88,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _158_41_, _159_44_, _193_15_, _194_15_, _195_15_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _160_41_, _161_44_, _195_15_, _196_15_, _197_15_, _73_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -97,8 +97,9 @@ editor = (function ()
         syntax = this.state.syntax
         s = this.state.s
         view = s.view.asMutable()
-        lines = s.lines.asMutable()
+        lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
+        bg = ((_73_26_=theme[this.name]) != null ? _73_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -115,7 +116,7 @@ editor = (function ()
             }
             for (var _c_ = x = 0, _d_ = this.cells.cols; (_c_ <= _d_ ? x < this.cells.cols : x > this.cells.cols); (_c_ <= _d_ ? ++x : --x))
             {
-                if (x < this.cells.cols && x + view[0] < line.length)
+                if (x + view[0] < line.length)
                 {
                     fg = syntax.getColor(x + view[0],y)
                     ch = syntax.getChar(x + view[0],y,line[x + view[0]])
@@ -123,7 +124,7 @@ editor = (function ()
                     {
                     }
                     checkColor = true
-                    this.cells.set(x,row,ch,fg)
+                    this.cells.set(x,row,ch,fg,bg)
                 }
             }
             emptyColor = theme[this.name + '_empty']
@@ -240,8 +241,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_158_41_=theme[this.name + '_cursor_fg']) != null ? _158_41_ : theme['editor_cursor_fg'])
-        bg = ((_159_44_=theme[this.name + '_cursor_multi']) != null ? _159_44_ : theme['editor_cursor_multi'])
+        fg = ((_160_41_=theme[this.name + '_cursor_fg']) != null ? _160_41_ : theme['editor_cursor_fg'])
+        bg = ((_161_44_=theme[this.name + '_cursor_multi']) != null ? _161_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -296,7 +297,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (type, sx, sy, event)
     {
-        var col, row, start, x, y, _211_30_, _212_30_
+        var col, row, start, x, y, _213_30_, _214_30_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(type,sx,sy,event) : undefined))
         {
@@ -481,15 +482,11 @@ editor = (function ()
 
     editor.prototype["isCursorVisible"] = function (cursor)
     {
-        var visible
+        var v
 
         cursor = (cursor != null ? cursor : this.state.mainCursor())
-        visible = util.isPosInsideRange(cursor,this.state.rangeForVisibleLines())
-        if (cursor[0] < this.state.s.view[0])
-        {
-            visible = false
-        }
-        return visible
+        v = this.state.s.view
+        return (v[0] <= cursor[0] && cursor[0] < v[0] + this.cells.cols) && (v[1] <= cursor[1] && cursor[1] < v[1] + this.cells.rows)
     }
 
     editor.prototype["grabFocus"] = function ()

@@ -104,7 +104,7 @@ class prjcts
                 file = list[_a_]
                 this.allFiles[file] = prjPath
             }
-            lf('prjcts indexed',prjPath,this.projects)
+            lc('prjcts indexed',prjPath,this.projects)
             post.emit('prjcts.project.indexed',prjPath)
         }
         delete this.indexing

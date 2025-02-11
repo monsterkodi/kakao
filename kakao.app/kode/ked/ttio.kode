@@ -19,7 +19,7 @@ function TTIO extends events
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
             
-        lf 'ttio ▸' 
+        lf '▸▸▸' 
 
         @write '\x1b[?1000h'    # mouse events
         @write '\x1b[?1002h'    # cell motion tracking
@@ -54,7 +54,7 @@ function TTIO extends events
         @write '\x1b[<u'     # end kitty keyboard protocol
         @write '\x1b[?1049l' # scrollback screen buffer
         @showCursor()
-        lf 'ttio ◂◂◂'
+        lf '◂◂◂'
         @restore()
     
     clear: =>
@@ -99,7 +99,7 @@ function TTIO extends events
     parseKitty: csi data ->
         
                 
-        if csi[-1] not in 'uABCD'
+        if csi[-1] not in 'uABCDFH~'
             if ':3u' in csi
                 lf '?????' data.length
                 for di in 1...data.length
@@ -110,8 +110,16 @@ function TTIO extends events
             'A' ➜ 'up'    
             'B' ➜ 'down'  
             'D' ➜ 'left'  
-            'C' ➜ 'right'
-            
+            'C' ➜ 'right'  
+            'H' ➜ 'home'
+            'F' ➜ 'end'
+                                   
+        if csi[-1] == '~'
+            key = switch csi[-2]
+                '3' ➜ 'entf'
+                '5' ➜ 'pageup'
+                '6' ➜ 'pagedown'
+
         char = ''
             
         if csi[-1] == 'u'
@@ -230,7 +238,7 @@ function TTIO extends events
     
     parseRaw: raw =>
         
-        lf '---- raw' '0x'+Number(raw[0]).toString(16) #'a'.charCodeAt(0)
+        # lf '---- raw' '0x'+Number(raw[0]).toString(16) #'a'.charCodeAt(0)
         
         if raw.length == 1
                                 
@@ -252,7 +260,7 @@ function TTIO extends events
                 raw[0] -= 128
                 ⮐ parseEsc raw.toString 'utf8'
                 
-        lf '---! raw' raw
+        # lf '---! raw' raw
         
     keyEventForChar: char =>
         
@@ -413,7 +421,7 @@ function TTIO extends events
             if dataStr.endsWith '\x1b[201~'
                 @pasteBuffer += data[0...-6].toString 'utf8'
                 lf 'tty paste end' noon(@pasteBuffer)
-                @emit 'paste' kstr.clean @pasteBuffer
+                @emit 'paste' kstr.clean(@pasteBuffer)
                 delete @pasteBuffer
             else
                 @pasteBuffer += dataStr
@@ -453,7 +461,7 @@ function TTIO extends events
                     
                     lf 'tty paste end' noon(@pasteBuffer)
                     
-                    @emit 'paste' kstr.clean @pasteBuffer
+                    @emit 'paste' kstr.clean(@pasteBuffer)
                     delete @pasteBuffer
                     
                     continue
@@ -500,7 +508,7 @@ function TTIO extends events
                     '\\' ➜ continue # probably end of kitty graphics message
                     
                 if esc.startsWith '_G'
-                    lf esc
+                    # lf esc
                     continue
                     
             else # not a csi or esc sequence
@@ -513,8 +521,8 @@ function TTIO extends events
                 text = data.toString 'utf8'
                 
                 if text.length > 1
-                    lfc 'paste?' data[0]==0x1b data[1..] text.length text
-                    @emit 'paste' kstr.clean text
+                    lf 'paste?' text
+                    # @emit 'paste' kstr.clean(text)
                     continue
                             
             lf "unhandled sequence:" seq
