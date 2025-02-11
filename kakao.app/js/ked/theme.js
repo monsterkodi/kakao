@@ -46,13 +46,9 @@ class theme
 
     static status_cur = '#f00'
 
-    static status_file = '#ff0'
+    static file = '#ff0'
 
-    static status_ext = '#f80'
-
-    static status_dir = '#88f'
-
-    static status_sep = '#44a'
+    static dir = '#88f'
 
     static status_fg_dim = '#333'
 

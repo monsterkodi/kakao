@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int, quicky
 
@@ -27,12 +27,14 @@ quicky = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
+        this["onInputChanged"] = this["onInputChanged"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
         this.name = 'quicky'
         this.cells = new cells(this.screen)
         this.input = new input(this.screen,'quicky_input')
         this.choices = new choices(this.screen,'quicky_choices')
+        this.input.on('changed',this.onInputChanged)
     }
 
     quicky.prototype["show"] = function ()
@@ -63,6 +65,11 @@ quicky = (function ()
         return this.cells.rows <= 0
     }
 
+    quicky.prototype["visible"] = function ()
+    {
+        return this.cells.rows > 0
+    }
+
     quicky.prototype["toggle"] = function (currentFile)
     {
         if (this.hidden())
@@ -77,7 +84,7 @@ quicky = (function ()
 
     quicky.prototype["open"] = function (currentFile)
     {
-        var ccol, currentDir, items
+        var ccol, currentDir, indent, indents, item, items, maxind
 
         items = prjcts.files(currentFile)
         currentDir = slash.dir(currentFile)
@@ -85,29 +92,49 @@ quicky = (function ()
         {
             return slash.relative(i,currentDir)
         })
-        items.sort(function (a, b)
-        {
-            return slash.name(a).localeCompare(slash.name(b))
-        })
-        if (items[0] === '.')
-        {
-            items.shift()
-        }
         ccol = parseInt(this.screen.cols / 2) - 5
-        items = items.map((function (i)
+        maxind = 0
+        indents = []
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            return _k_.rpad(ccol,i)
+            item = list[_a_]
+            indent = 0
+            if (item.slice(0, 2) === '..')
+            {
+                indent = slash.dir(item).length
+            }
+            if (indent)
+            {
+                indent += 1
+            }
+            maxind = _k_.max(maxind,indent)
+            indents.push(indent)
+        }
+        items = items.map((function (i, n)
+        {
+            return _k_.rpad(ccol,_k_.lpad(maxind - indents[n]) + i)
         }).bind(this))
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)
+        this.choices.state.setMainCursor(0,0)
         return this.show()
+    }
+
+    quicky.prototype["onInputChanged"] = function (text)
+    {
+        this.choices.filter(text)
+        this.choices.state.selectLine(0)
+        return this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
     }
 
     quicky.prototype["postResult"] = function ()
     {
-        post.emit('quicky',_k_.trim(this.input.state.s.lines[0]))
-        return this.hide()
+        this.cells.rows = 0
+        post.emit('focus','editor')
+        post.emit('quicky',_k_.trim(this.choices.state.selectedText()))
+        return {redraw:false}
     }
 
     quicky.prototype["draw"] = function ()
@@ -148,7 +175,8 @@ quicky = (function ()
                 break
         }
 
-        return this.input.set(this.choices.state.selectedText())
+        this.input.set(this.choices.state.selectedText())
+        return this.input.selectAll()
     }
 
     quicky.prototype["onKey"] = function (key, event)
@@ -170,8 +198,11 @@ quicky = (function ()
 
             case 'up':
             case 'down':
-                return this.moveSelection(event.combo)
-
+                if (this.input.state.hasFocus)
+                {
+                    return this.moveSelection(event.combo)
+                }
+                break
         }
 
         if (this.input.onKey(key,event))

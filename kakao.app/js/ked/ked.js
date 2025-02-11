@@ -138,7 +138,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text
+        var lines, start, text, _128_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -156,6 +156,7 @@ ked [file]
         this.editor.state.syntax.ext = slash.ext(p)
         this.editor.state.loadLines(lines)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         this.redraw()
         prjcts.index(this.currentFile)
         return this
@@ -217,7 +218,7 @@ ked [file]
 
     KED.prototype["onKey"] = function (key, event)
     {
-        var handler
+        var handler, result
 
         switch (key)
         {
@@ -249,12 +250,15 @@ ked [file]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             handler = list[_a_]
-            if (handler.onKey(key,event))
+            if (result = handler.onKey(key,event))
             {
                 break
             }
         }
-        return this.redraw()
+        if ((result != null ? result.redraw : undefined) !== false)
+        {
+            return this.redraw()
+        }
     }
 
     KED.prototype["onQuicky"] = async function (event)
@@ -271,7 +275,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _232_22_, _233_23_
+        var _233_22_, _234_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -280,7 +284,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _238_22_, _239_23_
+        var _239_22_, _240_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

@@ -94,11 +94,15 @@ function state
         
     setLines: lines =>
         
+        if empty lines ➜ lines = ['']
+        
         @syntax.setLines lines
         
         @s = @s.set 'lines' lines        
         @r = []
         @pushState()
+        
+        @onLinesChanged?()
         
     allLines: => @s.lines.asMutable()
         

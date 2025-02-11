@@ -28,13 +28,13 @@ mapscr = (function ()
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["reallocBuffer"] = this["reallocBuffer"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["reload"] = this["reload"].bind(this)
         this["onPreResize"] = this["onPreResize"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name)
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
-        lf(this.state.name,this.imgId)
         screen.t.on('preResize',this.onPreResize)
     }
 
@@ -53,6 +53,12 @@ mapscr = (function ()
         return this.clearImages()
     }
 
+    mapscr.prototype["reload"] = function ()
+    {
+        this.clearImages()
+        return this.reallocBuffer()
+    }
+
     mapscr.prototype["onResize"] = function ()
     {
         if (_k_.empty(this.cells.screen.t.pixels))
@@ -65,9 +71,13 @@ mapscr = (function ()
 
     mapscr.prototype["reallocBuffer"] = function ()
     {
-        var b, base64, bytes, ch, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
+        var b, base64, bytes, ch, chunk, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
 
         t = this.cells.screen.t
+        if (_k_.empty(t.cellsz))
+        {
+            return
+        }
         var _a_ = [this.cells.cols * t.cellsz[0],this.cells.rows * t.cellsz[1]]; w = _a_[0]; h = _a_[1]
 
         bytes = w * h * 3
@@ -122,20 +132,20 @@ mapscr = (function ()
                 }
             }
         }
-        if (data.length > 4096)
+        base64 = data.toString('base64')
+        if (base64.length > 4096)
         {
-            base64 = data.slice(0, 4096).toString('base64')
-            t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h},m=1;${base64}\x1b\\`)
-            chunks = Math.ceil(data.length / 4096)
+            chunk = base64.slice(0, 4096)
+            t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h},m=1;${chunk}\x1b\\`)
+            chunks = Math.ceil(base64.length / 4096)
             for (var _10_ = i = 1, _11_ = chunks; (_10_ <= _11_ ? i < chunks : i > chunks); (_10_ <= _11_ ? ++i : --i))
             {
-                base64 = data.slice(i * 4096, typeof Math.min((i + 1) * 4096,data.length) === 'number' ? Math.min((i + 1) * 4096,data.length) : -1).toString('base64')
-                t.write(`\x1b_Gq=1,m=${((i === chunks - 1) ? 0 : 1)};${base64}\x1b\\`)
+                chunk = base64.slice(i * 4096, typeof Math.min((i + 1) * 4096,base64.length) === 'number' ? Math.min((i + 1) * 4096,base64.length) : -1)
+                t.write(`\x1b_Gq=1,m=${((i === chunks - 1) ? 0 : 1)};${chunk}\x1b\\`)
             }
         }
         else
         {
-            base64 = data.toString('base64')
             t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
         return this.draw()

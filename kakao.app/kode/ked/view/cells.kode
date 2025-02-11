@@ -6,7 +6,8 @@
  0000000  00000000  0000000  0000000  0000000   
 ###
 
-use ../util ◆ util
+use ..        ◆ theme
+use ../util   ◆ util color
 
 function cells
 
@@ -88,5 +89,20 @@ function cells
                 for col in x1..x2
                     if col < @cols
                         @set col row char fg bg
+                        
+    draw_path: x y pth bg ->
+
+        lastSlash = pth.lastIndexOf '/'
+        lastDot   = pth.lastIndexOf '.'
+        
+        for ci in 0...pth.length
+            fg = ci > lastSlash ? 'file' : 'dir'
+            fg = theme[fg]
+            fg = color.darken(fg) if lastSlash <= lastDot <= ci
+            fg = color.darken(fg) if pth[ci] in './'
+            @set x y pth[ci] fg bg
+            x += 1
+            
+        pth.length
                         
 export cells

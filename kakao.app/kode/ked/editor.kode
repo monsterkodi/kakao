@@ -43,20 +43,20 @@ function editor extends view
             s = 1
             if @feats.scrllr
                 sr = s
-                @scroll.init x+w-sr y     s       h 
+                @scroll.init x+w-sr y   s   h 
             else
                 sl = s
-                @scroll.init x      y     s       h 
+                @scroll.init x      y   s   h 
             
         if @gutter
             g = @state.gutterWidth()
-            @gutter.init x+sl   y     g       h
+            @gutter.init    x+sl    y   g   h
             
         if @mapscr
             m = 10
-            @mapscr.init x+w-sr-m y     m       h
+            @mapscr.init x+w-sr-m   y   m   h
             
-        @cells.init      x+sl+g y     w-sr-g-m h
+        @cells.init x+sl+g  y   w-sr-g-m    h
         @state.initView()
         
     # 0000000    00000000    0000000   000   000  
@@ -203,10 +203,6 @@ function editor extends view
         
         super()
             
-        @postDraw()
-        
-    postDraw: =>
-        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   

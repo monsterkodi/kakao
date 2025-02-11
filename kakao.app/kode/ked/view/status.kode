@@ -21,10 +21,16 @@ function status
         
     init: x y w h -> @cells.init x y w h
         
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
     draw: =>
         
         x      = 0
-        y      = @cells.rows-1
+        y      = 0 #@cells.rows-1
         cursor = @state.mainCursor()
         cols   = @cells.cols
         fnl    = @file.length
@@ -63,14 +69,16 @@ function status
         # draw the file name
         
         add ' ' 'status_fg' 'status'
+        
+        x += @cells.draw_path x y @file theme.status
 
-        lastSlash = @file.lastIndexOf '/'
-        lastDot = @file.lastIndexOf '.'
-        for ci in 0...fnl
-            fg = ci > lastSlash ? 'status_file' : 'status_dir'
-            fg = 'status_ext' if lastSlash <= lastDot <= ci
-            fg = color.darken(theme[fg]) if @file[ci] in './'
-            add @file[ci] fg 'status'
+        # lastSlash = @file.lastIndexOf '/'
+        # lastDot = @file.lastIndexOf '.'
+        # for ci in 0...fnl
+            # fg = ci > lastSlash ? 'status_file' : 'status_dir'
+            # fg = 'status_ext' if lastSlash <= lastDot <= ci
+            # fg = color.darken(theme[fg]) if @file[ci] in './'
+            # add @file[ci] fg 'status'
             
         # draw the redo indicator
         

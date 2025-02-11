@@ -23,7 +23,9 @@ function quicky
         
         @input   = new input   @screen 'quicky_input' 
         @choices = new choices @screen 'quicky_choices'
-                
+        
+        @input.on 'changed' @onInputChanged
+                        
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  
@@ -47,6 +49,13 @@ function quicky
         
     hide:   => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
     hidden: -> @cells.rows <= 0
+    visible: -> @cells.rows > 0
+    
+    #  0000000   00000000   00000000  000   000  
+    # 000   000  000   000  000       0000  000  
+    # 000   000  00000000   0000000   000 0 000  
+    # 000   000  000        000       000  0000  
+    #  0000000   000        00000000  000   000  
     
     toggle: currentFile -> if @hidden() then @open(currentFile) else @hide()
     open:   currentFile ->
@@ -55,22 +64,37 @@ function quicky
         currentDir = slash.dir currentFile
         items = items.map (i) -> slash.relative i currentDir
         
-        items.sort (a b) -> slash.name(a).localeCompare slash.name(b)
-        items.shift() if items[0] == '.'
-        
         ccol = int(@screen.cols/2) - 5
         
-        items = items.map (i) => rpad ccol i
+        maxind = 0
+        indents = []
+        for item in items
+            indent = 0
+            indent = slash.dir(item).length if item[0..1]== '..'
+            indent += 1 if indent
+            maxind = max maxind indent
+            indents.push indent  
+            
+        items = items.map (i n) => rpad ccol lpad(maxind-indents[n])+i
         
-        @input.set '' # last file?
+        @input.set '' # previously opened file?
         @choices.set items
         @choices.state.selectLine 0
+        @choices.state.setMainCursor 0 0
         @show()
+
+    onInputChanged: text =>
+        
+        @choices.filter text
+        @choices.state.selectLine 0
+        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
         
     postResult: ->
         
-        post.emit 'quicky' trim(@input.state.s.lines[0])
-        @hide()
+        @cells.rows = 0
+        post.emit 'focus' 'editor'
+        post.emit 'quicky' trim(@choices.state.selectedText())
+        redraw:false
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -119,6 +143,7 @@ function quicky
             'up'    ➜ @choices.state.selectPrevLine()
             
         @input.set @choices.state.selectedText()
+        @input.selectAll()
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -133,7 +158,7 @@ function quicky
         switch event.combo 
             'esc'       ➜ ⮐ @hide() if empty @input.state.s.selections
             'return'    ➜ ⮐ @postResult()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo
+            'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.state.hasFocus
         
         ⮐ true if @input.onKey key event
         ⮐ true if @choices.onKey key event

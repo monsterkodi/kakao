@@ -130,10 +130,17 @@ state = (function ()
 
     state.prototype["setLines"] = function (lines)
     {
+        var _105_23_
+
+        if (_k_.empty(lines))
+        {
+            lines = ['']
+        }
         this.syntax.setLines(lines)
         this.s = this.s.set('lines',lines)
         this.r = []
-        return this.pushState()
+        this.pushState()
+        return (typeof this.onLinesChanged === "function" ? this.onLinesChanged() : undefined)
     }
 
     state.prototype["allLines"] = function ()

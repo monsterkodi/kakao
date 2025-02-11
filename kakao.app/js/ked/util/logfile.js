@@ -12,18 +12,17 @@ logfile = (function ()
         this.stream = fs.createWriteStream('ked.log',{flags:'w',autoClose:false})
         global.lf = (function (...args)
         {
-            var key, obj
+            var obj
 
             if (args.length && _k_.isStr(args[0]))
             {
-                key = `▸ ${args[0]}`
                 obj = {}
-                obj[key] = args.slice(1)
-                return this.write(_k_.noon((obj)))
+                obj[args[0]] = args.slice(1)
+                return this.write("▸" + _k_.noon((obj)))
             }
             else
             {
-                return this.write("▸",_k_.noon((args)))
+                return this.write("▾\n" + _k_.noon((args)))
             }
         }).bind(this)
     }

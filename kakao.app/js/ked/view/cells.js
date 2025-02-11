@@ -1,6 +1,11 @@
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+
 var cells
 
+import theme from "../theme.js"
+
 import util from "../util/util.js"
+import color from "../util/color.js"
 
 
 cells = (function ()
@@ -193,6 +198,30 @@ cells = (function ()
                 }
             }
         }
+    }
+
+    cells.prototype["draw_path"] = function (x, y, pth, bg)
+    {
+        var ci, fg, lastDot, lastSlash
+
+        lastSlash = pth.lastIndexOf('/')
+        lastDot = pth.lastIndexOf('.')
+        for (var _a_ = ci = 0, _b_ = pth.length; (_a_ <= _b_ ? ci < pth.length : ci > pth.length); (_a_ <= _b_ ? ++ci : --ci))
+        {
+            fg = (ci > lastSlash ? 'file' : 'dir')
+            fg = theme[fg]
+            if ((lastSlash <= lastDot && lastDot <= ci))
+            {
+                fg = color.darken(fg)
+            }
+            if (_k_.in(pth[ci],'./'))
+            {
+                fg = color.darken(fg)
+            }
+            this.set(x,y,pth[ci],fg,bg)
+            x += 1
+        }
+        return pth.length
     }
 
     return cells

@@ -18,12 +18,11 @@ function logfile
         global.lf = args... => 
             
             if args.length and args[0] is str
-                key = "▸ #{args[0]}"
                 obj = {}
-                obj[key] = args[1..]
-                @write noon(obj)
+                obj[args[0]] = args[1..]
+                @write "▸"+noon(obj)
             else        
-                @write "▸" noon(args)
+                @write "▾\n"+noon(args)
         
     write: txt ->
         

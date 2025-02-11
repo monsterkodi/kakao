@@ -18,4 +18,19 @@ function choices extends editor
         
     num: -> @items.length
     
+    weight: item text ->
+        
+        w = 0
+        w += text.length if text in item
+        w
+    
+    filter: text => 
+        
+        ⮐ if empty @items
+        lf 'filter' text
+        filtered = copy @items
+        filtered.sort (a b) => @weight(b text) - @weight(a text)
+        
+        @state.loadLines filtered
+    
 export choices

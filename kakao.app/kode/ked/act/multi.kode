@@ -137,7 +137,7 @@ export
         y = clamp 0 @s.lines.length-1 y
         x = max 0 x
                         
-        @setCursors [[x y]] 0
+        @setCursors [[x y]]
         
     moveMainCursorInDirection: dir opt={} ->
         

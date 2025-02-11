@@ -43,6 +43,9 @@
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
 
+- prefs 
+    - file positions
+
 ▸ completion
 
 ▸ macro

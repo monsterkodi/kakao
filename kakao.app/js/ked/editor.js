@@ -34,7 +34,6 @@ editor = (function ()
         this["isCursorInEmpty"] = this["isCursorInEmpty"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["postDraw"] = this["postDraw"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["init"] = this["init"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
@@ -297,16 +296,12 @@ editor = (function ()
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
         ;(this.mapscr != null ? this.mapscr.draw() : undefined)
-        editor.__super__.draw.call(this)
-        return this.postDraw()
+        return editor.__super__.draw.call(this)
     }
-
-    editor.prototype["postDraw"] = function ()
-    {}
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _218_30_, _219_30_
+        var col, row, start, x, y, _214_30_, _215_30_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(event) : undefined))
         {

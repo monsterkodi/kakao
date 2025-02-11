@@ -159,7 +159,7 @@ export default {allCursors:function ()
 
     y = _k_.clamp(0,this.s.lines.length - 1,y)
     x = _k_.max(0,x)
-    return this.setCursors([[x,y]],0)
+    return this.setCursors([[x,y]])
 },moveMainCursorInDirection:function (dir, opt = {})
 {
     var mc
