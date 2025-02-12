@@ -299,13 +299,21 @@ line 2`)
             compare(insert(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
             compare(insert(lines,'z',[[0,0],[2,0],[6,0],[1,1],[2,1],[4,1]]),[['zlizne 1z','lziznez 2'],[[1,0],[4,0],[9,0],[2,1],[4,1],[7,1]]])
         })
-        section("multiple lines", function ()
+        section("multiple lines into single cursor", function ()
         {
             lines = util.linesForText(`line 1
 line 2`)
             compare(insert(lines,'a\nb',[[0,0]]),[['a','b','line 1','line 2'],[[0,2]]])
             compare(insert(lines,'a\nb',[[2,0]]),[['lia','bne 1','line 2'],[[1,1]]])
             compare(insert(lines,'a\nb',[[0,1]]),[['line 1','a','b','line 2'],[[0,3]]])
+        })
+        section("multiple lines into multi cursor", function ()
+        {
+            lines = util.linesForText(`1234
+5678`)
+            compare(insert(lines,'X\nY',[[0,0],[0,1]]),[['X1234','Y5678'],[[1,0],[1,1]]])
+            compare(insert(lines,'X\nY',[[0,0],[1,0],[2,0],[3,0]]),[['X1Y2X3Y4','5678'],[[1,0],[3,0],[5,0],[7,0]]])
+            compare(insert(lines,'@\n$\n%',[[0,0],[1,0],[2,0],[3,0]]),[['@1$2%3@4','5678'],[[1,0],[3,0],[5,0],[7,0]]])
         })
         section("newlines", function ()
         {

@@ -752,9 +752,6 @@ class util
                                         
                 if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     
-                    # mod = (idx-1) % txtls.length
-                    # txt = txtls[mod]
-                    
                     posLineIndent = util.numIndent line
                     
                     indent = 0                                                   # indentation mess, needs cleanup
@@ -774,27 +771,24 @@ class util
                     # if posl[idx-1][0] > indent                                   # indentation mess, needs cleanup
                         # line = line[txtindent..]                                 # indentation mess, needs cleanup
                     
-                    # txt = txtls[idx-1]
-#                         
-                    # while mod < txtls.length-1 # loop over lines in text to insert
-                        # mod++
-                        # txt  = txtls[mod]
-                        # line = indentstr
-                        
-                    # before.
-                    
                     lf "▪#{line}▪#{txtls[0]}▪" 
                                         
-                    before.push line + txtls[0]
-                    for line,lidx in txtls[1..]
-                        before.push indentstr + line
-                    
-                    if x > posLineIndent
+                    if posl.length > 1 and text != '\n'
+                        insertLineIndex = (idx-1) % txtls.length
+                        before.push line + txtls[insertLineIndex]
                         newpl.push [last(before).length newls.length+before.length-1]
                         before.push before.pop()+after.shift()
                     else
-                        before.pop() if text == '\n'
-                        newpl.push [indent newls.length+before.length]
+                        before.push line + txtls[0]
+                        for line,lidx in txtls[1..]
+                            before.push indentstr + line
+                    
+                        if x > posLineIndent
+                            newpl.push [last(before).length newls.length+before.length-1]
+                            before.push before.pop()+after.shift()
+                        else
+                            before.pop() if text == '\n'
+                            newpl.push [indent newls.length+before.length]
                         
                     newls = newls.concat before
                             

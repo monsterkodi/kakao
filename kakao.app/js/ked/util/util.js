@@ -1292,7 +1292,7 @@ class util
 
     static insertTextAtPositions (lines, text, posl)
     {
-        var after, before, idx, indent, indentstr, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtindent, txtls, x, y
+        var after, before, idx, indent, indentstr, insertLineIndex, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtindent, txtls, x, y
 
         if (text === '\t')
         {
@@ -1342,25 +1342,35 @@ class util
                     indent = _k_.max(0,indent)
                     indentstr = _k_.lpad(indent)
                     lf(`▪${line}▪${txtls[0]}▪`)
-                    before.push(line + txtls[0])
-                    var list1 = _k_.list(txtls.slice(1))
-                    for (lidx = 0; lidx < list1.length; lidx++)
+                    if (posl.length > 1 && text !== '\n')
                     {
-                        line = list1[lidx]
-                        before.push(indentstr + line)
-                    }
-                    if (x > posLineIndent)
-                    {
+                        insertLineIndex = (idx - 1) % txtls.length
+                        before.push(line + txtls[insertLineIndex])
                         newpl.push([_k_.last(before).length,newls.length + before.length - 1])
                         before.push(before.pop() + after.shift())
                     }
                     else
                     {
-                        if (text === '\n')
+                        before.push(line + txtls[0])
+                        var list1 = _k_.list(txtls.slice(1))
+                        for (lidx = 0; lidx < list1.length; lidx++)
                         {
-                            before.pop()
+                            line = list1[lidx]
+                            before.push(indentstr + line)
                         }
-                        newpl.push([indent,newls.length + before.length])
+                        if (x > posLineIndent)
+                        {
+                            newpl.push([_k_.last(before).length,newls.length + before.length - 1])
+                            before.push(before.pop() + after.shift())
+                        }
+                        else
+                        {
+                            if (text === '\n')
+                            {
+                                before.pop()
+                            }
+                            newpl.push([indent,newls.length + before.length])
+                        }
                     }
                     newls = newls.concat(before)
                 }
