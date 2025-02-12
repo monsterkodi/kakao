@@ -312,6 +312,12 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.rangesForLinePositions lines [[0 0] [1 0]] ▸ [[0 0 0 0] [0 0 1 0] [1 0 3 4]]
         util.rangesForLinePositions lines [[3 0] [3 1]] ▸ [[0 0 3 0] [3 0 3 1] [3 1 3 4]]
         
+    # 0000000    00000000  000      00000000  000000000  00000000  000      000  000   000  00000000   0000000  
+    # 000   000  000       000      000          000     000       000      000  0000  000  000       000       
+    # 000   000  0000000   000      0000000      000     0000000   000      000  000 0 000  0000000   0000000   
+    # 000   000  000       000      000          000     000       000      000  000  0000  000            000  
+    # 0000000    00000000  0000000  00000000     000     00000000  0000000  000  000   000  00000000  0000000   
+    
     ▸ deleteLineRangesAndAdjustPositions
     
         lines = ['1234567890' 'abcdefghij']
@@ -325,42 +331,78 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         
         lines = ['line 1' 'line 2' 'line 3']
         util.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [['line 3'] [[0 0]]]
-        
-    ▸ breakLinesAtPositions
+                
+    # 000  000   000   0000000  00000000  00000000   000000000  
+    # 000  0000  000  000       000       000   000     000     
+    # 000  000 0 000  0000000   0000000   0000000       000     
+    # 000  000  0000       000  000       000   000     000     
+    # 000  000   000  0000000   00000000  000   000     000     
     
-        lines = util.linesForText 
-            """
-            line 1
-            line 2
-            """
-            
-        util.breakLinesAtPositions lines [[0 0]] ▸ [['' 'line 1' 'line 2'] [[0 1]]]
-        util.breakLinesAtPositions lines [[2 0]] ▸ [['li' 'ne 1' 'line 2'] [[0 1]]]
-        util.breakLinesAtPositions lines [[6 0]] ▸ [['line 1' '' 'line 2'] [[0 1]]]
-        
-        util.breakLinesAtPositions lines [[0 1]] ▸ [['line 1' '' 'line 2'] [[0 2]]]
-        util.breakLinesAtPositions lines [[2 1]] ▸ [['line 1' 'li' 'ne 2'] [[0 2]]]
-        util.breakLinesAtPositions lines [[6 1]] ▸ [['line 1' 'line 2' ''] [[0 2]]]
-
-        util.breakLinesAtPositions lines [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
-        
     ▸ insertTextAtPositions
     
-        lines = util.linesForText 
-            """
-            line 1
-            line 2
-            """
+        insert = util.insertTextAtPositions
+    
+        ▸ single spans
+    
+            lines = util.linesForText 
+                """
+                line 1
+                line 2
+                """
+            
+            insert lines ''       [[0 0]]       ▸ [['line 1' 'line 2'] [[0 0]]]
+            insert lines 'a '     [[0 0]]       ▸ [['a line 1' 'line 2'] [[2 0]]]
+            insert lines 'a '     [[0 0] [0 1]] ▸ [['a line 1' 'a line 2'] [[2 0] [2 1]]]
+    
+            insert lines 'x'      [[0 0] [2 0]] ▸ [['xlixne 1' 'line 2'] [[1 0] [4 0]]]
+            insert lines 'x'      [[0 0] [2 0] [6 0]] ▸ [['xlixne 1x' 'line 2'] [[1 0] [4 0] [9 0]]]
+            insert lines 'z'      [[0 0] [2 0] [6 0] [1 1] [2 1] [4 1]] ▸ [['zlizne 1z' 'lziznez 2'] [[1 0] [4 0] [9 0] [2 1] [4 1] [7 1]]]
+            
+        ▸ multiple lines
         
-        util.insertTextAtPositions lines ''       [[0 0]]       ▸ [['line 1' 'line 2'] [[0 0]]]
-        util.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [['a line 1' 'line 2'] [[2 0]]]
-        util.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [['a line 1' 'a line 2'] [[2 0] [2 1]]]
-
-        util.insertTextAtPositions lines 'x'      [[0 0] [2 0]] ▸ [['xlixne 1' 'line 2'] [[1 0] [4 0]]]
-        util.insertTextAtPositions lines 'x'      [[0 0] [2 0] [6 0]] ▸ [['xlixne 1x' 'line 2'] [[1 0] [4 0] [9 0]]]
+            lines = util.linesForText 
+                """
+                line 1
+                line 2
+                """
+                
+            insert lines 'a\nb'   [[0 0]]       ▸ [['a' 'b' 'line 1' 'line 2'] [[0 2]]]
+            insert lines 'a\nb'   [[2 0]]       ▸ [['lia' 'bne 1' 'line 2'] [[1 1]]]
+            insert lines 'a\nb'   [[0 1]]       ▸ [['line 1' 'a' 'b' 'line 2'] [[0 3]]]
         
-        util.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [['a' 'bline 1' 'line 2'] [[1 1]]]
+        ▸ newlines
         
+            lines = util.linesForText 
+                """
+                line 1
+                line 2
+                """
+                
+            insert lines '\n' [[2 0]] ▸ [['li' 'ne 1' 'line 2'] [[0 1]]]
+            insert lines '\n' [[6 0]] ▸ [['line 1' '' 'line 2'] [[0 1]]]
+                                              
+            insert lines '\n' [[0 1]] ▸ [['line 1' '' 'line 2'] [[0 2]]]
+            insert lines '\n' [[2 1]] ▸ [['line 1' 'li' 'ne 2'] [[0 2]]]
+            insert lines '\n' [[6 1]] ▸ [['line 1' 'line 2' ''] [[0 2]]]
+                                              
+            insert lines '\n' [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
+            
+            lines = util.linesForText 
+                """ 
+                ◆1
+                ◆2
+                ◆3
+                ◆4
+                """
+            
+            insert lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [['◆' '1' '◆' '2' '◆' '3' '◆' '4'] [[0 1] [0 3] [0 5] [0 7]]]
+        
+    # 00     00   0000000   000   000  00000000  000      000  000   000  00000000   0000000  
+    # 000   000  000   000  000   000  000       000      000  0000  000  000       000       
+    # 000000000  000   000   000 000   0000000   000      000  000 0 000  0000000   0000000   
+    # 000 0 000  000   000     000     000       000      000  000  0000  000            000  
+    # 000   000   0000000       0      00000000  0000000  000  000   000  00000000  0000000   
+    
     ▸ moveLineRangesAndPositionsAtIndicesInDirection
     
         lines = ['a' 'b' 'c']

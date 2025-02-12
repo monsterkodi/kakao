@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -1290,53 +1290,14 @@ class util
         return [newp,newr]
     }
 
-    static breakLinesAtPositions (lines, posl)
-    {
-        var idx, indent, ls, newls, newpl, rng
-
-        newls = []
-        newpl = []
-        var list = _k_.list(util.rangesForLinePositions(lines,posl))
-        for (idx = 0; idx < list.length; idx++)
-        {
-            rng = list[idx]
-            ls = util.linesForRange(lines,rng)
-            indent = 0
-            if (idx > 0)
-            {
-                indent = util.numIndent(_k_.last(newls))
-                indent = _k_.max(indent,util.numIndent)
-                if (posl[idx - 1][0])
-                {
-                    if (ls.length > 1 && posl[idx - 1][0] > indent)
-                    {
-                        indent = _k_.max(indent,util.numIndentOfLines(ls.slice(1)))
-                    }
-                }
-                else
-                {
-                    indent = 0
-                }
-                newpl.push([indent,newls.length])
-            }
-            ls[0] = _k_.lpad(indent) + ls[0]
-            newls = newls.concat(ls)
-        }
-        return [newls,newpl]
-    }
-
     static insertTextAtPositions (lines, text, posl)
     {
-        var after, before, idx, line, mod, newls, newpl, pos, px, rng, rngs, txt, txtls, x, y
+        var after, before, idx, indent, indentstr, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtindent, txtls, x, y
 
         if (text === '\t')
         {
             pos = posl[0]
             text = _k_.lpad(4 - pos[0] % 4,' ')
-        }
-        else if (text === '\n')
-        {
-            return util.breakLinesAtPositions(lines,posl)
         }
         text = kstr.detab(text)
         txtls = util.linesForText(text)
@@ -1366,28 +1327,49 @@ class util
                 }
                 if (txtls.length > 1)
                 {
-                    mod = (idx - 1) % txtls.length
-                    txt = txtls[mod]
-                    if (idx === rngs.length - 1 && posl.length === 1)
+                    posLineIndent = util.numIndent(line)
+                    indent = 0
+                    if (newls.length)
                     {
-                        while (mod < txtls.length - 1)
-                        {
-                            before.push(line + txt)
-                            mod++
-                            txt = txtls[mod]
-                            line = ''
-                        }
+                        indent = util.numIndent(_k_.last(newls))
                     }
+                    if (after.length > 1 && posl[idx - 1][0] > indent)
+                    {
+                        indent = _k_.max(indent,util.numIndentOfLines(after.slice(1)))
+                    }
+                    txtindent = util.numIndentOfLines(txtls)
+                    indent -= txtindent
+                    indent = _k_.max(0,indent)
+                    indentstr = _k_.lpad(indent)
+                    lf(`▪${line}▪${txtls[0]}▪`)
+                    before.push(line + txtls[0])
+                    var list1 = _k_.list(txtls.slice(1))
+                    for (lidx = 0; lidx < list1.length; lidx++)
+                    {
+                        line = list1[lidx]
+                        before.push(indentstr + line)
+                    }
+                    if (x > posLineIndent)
+                    {
+                        newpl.push([_k_.last(before).length,newls.length + before.length - 1])
+                        before.push(before.pop() + after.shift())
+                    }
+                    else
+                    {
+                        if (text === '\n')
+                        {
+                            before.pop()
+                        }
+                        newpl.push([indent,newls.length + before.length])
+                    }
+                    newls = newls.concat(before)
                 }
                 else
                 {
-                    txt = txtls[0]
+                    newpl.push([line.length + txtls[0].length,newls.length + before.length])
+                    line += txtls[0] + after.shift()
+                    newls = newls.concat(before,line)
                 }
-                line += txt
-                px = line.length
-                line += after.shift()
-                newls = newls.concat(before,line)
-                newpl.push([px,newls.length - 1])
             }
             before = after
         }

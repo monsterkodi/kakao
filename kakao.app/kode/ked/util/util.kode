@@ -713,34 +713,6 @@ class util
             else
                 newp.push pos
         [newp newr]
-
-    # 0000000    00000000   00000000   0000000   000   000      000      000  000   000  00000000   0000000  
-    # 000   000  000   000  000       000   000  000  000       000      000  0000  000  000       000       
-    # 0000000    0000000    0000000   000000000  0000000        000      000  000 0 000  0000000   0000000   
-    # 000   000  000   000  000       000   000  000  000       000      000  000  0000  000            000  
-    # 0000000    000   000  00000000  000   000  000   000      0000000  000  000   000  00000000  0000000   
-    
-    @breakLinesAtPositions: lines posl ->
-
-        # lf 'break lines'
-        
-        newls = []
-        newpl = []
-        for rng,idx in util.rangesForLinePositions lines posl
-            ls = util.linesForRange lines rng
-            indent = 0
-            if idx > 0
-                indent = util.numIndent last(newls) #if newls.length
-                indent = max indent util.numIndent 
-
-                if posl[idx-1][0]
-                    if ls.length>1 and posl[idx-1][0] > indent
-                        indent = max indent util.numIndentOfLines(ls[1..]) 
-                else indent = 0
-                newpl.push [indent newls.length] 
-            ls[0] = lpad(indent) + ls[0]
-            newls = newls.concat ls
-        [newls newpl]
         
     # 000  000   000   0000000  00000000  00000000   000000000        000000000  00000000  000   000  000000000  
     # 000  0000  000  000       000       000   000     000              000     000        000 000      000     
@@ -755,8 +727,6 @@ class util
         if text == '\t'
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
-        else if text == '\n' 
-            ⮐ util.breakLinesAtPositions lines posl
             
         # lf "insert text ▸#{text}◂"
             
@@ -769,7 +739,7 @@ class util
         
         for rng,idx in rngs
             
-            after = util.linesForRange lines rng # all the lines in the current range
+            after = util.linesForRange lines rng # all the lines in the current range (after current position)
                         
             if idx > 0                           # start processing ranges after the first position
                 
@@ -780,28 +750,59 @@ class util
                     
                 if x > line.length ➜ line += lpad x-line.length # fill line at end with spaces if pos is in empty space
                                         
-                if txtls.length > 1                 # handle multiples lines to insert
+                if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     
-                    mod = (idx-1) % txtls.length
-                    txt = txtls[mod]
+                    # mod = (idx-1) % txtls.length
+                    # txt = txtls[mod]
                     
-                    if idx == rngs.length-1 and posl.length == 1
-                        while mod < txtls.length-1
-                            before.push line+txt
-                            mod++
-                            txt  = txtls[mod]
-                            line = ''
-                else                    
-                    txt = txtls[0]                  # use the first line of lines to insert
-                
-                line += txt                         # ... and append it to current line
-                
-                px = line.length                    # move position to the end of the inserted text
+                    posLineIndent = util.numIndent line
                     
-                line += after.shift()               # and add the first line of the lines after pos
-                
-                newls = newls.concat before line    # add lines from before 
-                newpl.push [px newls.length-1]      # add adjusted position
+                    indent = 0                                                   # indentation mess, needs cleanup
+                    # lf "newls.length #{newls.length}"                          # indentation mess, needs cleanup
+                    indent = util.numIndent last(newls) if newls.length          # indentation mess, needs cleanup
+                    # lf "current indent #{indent}"                              # indentation mess, needs cleanup
+                    if after.length>1 and posl[idx-1][0] > indent                # indentation mess, needs cleanup
+                        indent = max indent util.numIndentOfLines(after[1..])    # indentation mess, needs cleanup
+                        # lf "forward indent #{indent}"                          # indentation mess, needs cleanup
+                                                                                 # indentation mess, needs cleanup
+                    txtindent = util.numIndentOfLines txtls                      # indentation mess, needs cleanup
+                    indent   -= txtindent                                        # indentation mess, needs cleanup
+                    indent    = max 0 indent                                     # indentation mess, needs cleanup
+                                                                                 # indentation mess, needs cleanup
+                    indentstr = lpad indent                                      # indentation mess, needs cleanup
+                                                                                 # indentation mess, needs cleanup
+                    # if posl[idx-1][0] > indent                                   # indentation mess, needs cleanup
+                        # line = line[txtindent..]                                 # indentation mess, needs cleanup
+                    
+                    # txt = txtls[idx-1]
+#                         
+                    # while mod < txtls.length-1 # loop over lines in text to insert
+                        # mod++
+                        # txt  = txtls[mod]
+                        # line = indentstr
+                        
+                    # before.
+                    
+                    lf "▪#{line}▪#{txtls[0]}▪" 
+                                        
+                    before.push line + txtls[0]
+                    for line,lidx in txtls[1..]
+                        before.push indentstr + line
+                    
+                    if x > posLineIndent
+                        newpl.push [last(before).length newls.length+before.length-1]
+                        before.push before.pop()+after.shift()
+                    else
+                        before.pop() if text == '\n'
+                        newpl.push [indent newls.length+before.length]
+                        
+                    newls = newls.concat before
+                            
+                else                                # if text is the only line to insert
+
+                    newpl.push [line.length+txtls[0].length newls.length+before.length] # move position to the end of the inserted text
+                    line += txtls[0] + after.shift()        # append it and first line after to current line
+                    newls = newls.concat before line        # add lines from before and current line to result
                 
             before = after 
             

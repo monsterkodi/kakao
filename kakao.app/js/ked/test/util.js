@@ -1,5 +1,5 @@
 var toExport = {}
-var line, lines, spans
+var insert, line, lines, spans
 
 import util from "../util/util.js"
 
@@ -285,28 +285,44 @@ def`)
         lines = ['line 1','line 2','line 3']
         compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,0,6,1]],[[6,0],[6,1]]),[['line 3'],[[0,0]]])
     })
-    section("breakLinesAtPositions", function ()
-    {
-        lines = util.linesForText(`line 1
-line 2`)
-        compare(util.breakLinesAtPositions(lines,[[0,0]]),[['','line 1','line 2'],[[0,1]]])
-        compare(util.breakLinesAtPositions(lines,[[2,0]]),[['li','ne 1','line 2'],[[0,1]]])
-        compare(util.breakLinesAtPositions(lines,[[6,0]]),[['line 1','','line 2'],[[0,1]]])
-        compare(util.breakLinesAtPositions(lines,[[0,1]]),[['line 1','','line 2'],[[0,2]]])
-        compare(util.breakLinesAtPositions(lines,[[2,1]]),[['line 1','li','ne 2'],[[0,2]]])
-        compare(util.breakLinesAtPositions(lines,[[6,1]]),[['line 1','line 2',''],[[0,2]]])
-        compare(util.breakLinesAtPositions(lines,[[0,0],[0,1]]),[['','line 1','','line 2'],[[0,1],[0,3]]])
-    })
     section("insertTextAtPositions", function ()
     {
-        lines = util.linesForText(`line 1
+        insert = util.insertTextAtPositions
+        section("single spans", function ()
+        {
+            lines = util.linesForText(`line 1
 line 2`)
-        compare(util.insertTextAtPositions(lines,'',[[0,0]]),[['line 1','line 2'],[[0,0]]])
-        compare(util.insertTextAtPositions(lines,'a ',[[0,0]]),[['a line 1','line 2'],[[2,0]]])
-        compare(util.insertTextAtPositions(lines,'a ',[[0,0],[0,1]]),[['a line 1','a line 2'],[[2,0],[2,1]]])
-        compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0]]),[['xlixne 1','line 2'],[[1,0],[4,0]]])
-        compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
-        compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[['a','bline 1','line 2'],[[1,1]]])
+            compare(insert(lines,'',[[0,0]]),[['line 1','line 2'],[[0,0]]])
+            compare(insert(lines,'a ',[[0,0]]),[['a line 1','line 2'],[[2,0]]])
+            compare(insert(lines,'a ',[[0,0],[0,1]]),[['a line 1','a line 2'],[[2,0],[2,1]]])
+            compare(insert(lines,'x',[[0,0],[2,0]]),[['xlixne 1','line 2'],[[1,0],[4,0]]])
+            compare(insert(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
+            compare(insert(lines,'z',[[0,0],[2,0],[6,0],[1,1],[2,1],[4,1]]),[['zlizne 1z','lziznez 2'],[[1,0],[4,0],[9,0],[2,1],[4,1],[7,1]]])
+        })
+        section("multiple lines", function ()
+        {
+            lines = util.linesForText(`line 1
+line 2`)
+            compare(insert(lines,'a\nb',[[0,0]]),[['a','b','line 1','line 2'],[[0,2]]])
+            compare(insert(lines,'a\nb',[[2,0]]),[['lia','bne 1','line 2'],[[1,1]]])
+            compare(insert(lines,'a\nb',[[0,1]]),[['line 1','a','b','line 2'],[[0,3]]])
+        })
+        section("newlines", function ()
+        {
+            lines = util.linesForText(`line 1
+line 2`)
+            compare(insert(lines,'\n',[[2,0]]),[['li','ne 1','line 2'],[[0,1]]])
+            compare(insert(lines,'\n',[[6,0]]),[['line 1','','line 2'],[[0,1]]])
+            compare(insert(lines,'\n',[[0,1]]),[['line 1','','line 2'],[[0,2]]])
+            compare(insert(lines,'\n',[[2,1]]),[['line 1','li','ne 2'],[[0,2]]])
+            compare(insert(lines,'\n',[[6,1]]),[['line 1','line 2',''],[[0,2]]])
+            compare(insert(lines,'\n',[[0,0],[0,1]]),[['','line 1','','line 2'],[[0,1],[0,3]]])
+            lines = util.linesForText(`◆1
+◆2
+◆3
+◆4`)
+            compare(insert(lines,'\n',[[1,0],[1,1],[1,2],[1,3]]),[['◆','1','◆','2','◆','3','◆','4'],[[0,1],[0,3],[0,5],[0,7]]])
+        })
     })
     section("moveLineRangesAndPositionsAtIndicesInDirection", function ()
     {
