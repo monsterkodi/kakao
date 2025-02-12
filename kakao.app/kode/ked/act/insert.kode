@@ -34,7 +34,7 @@ export
         
         @clearHighlights()
         @setLines   lines
-        @setCursors cursors -1
+        @setCursors cursors #-1
 
         # prof.end @name 'insert' 'set'
         
@@ -51,6 +51,7 @@ export
         
         [lines cursors] = util.breakLinesAtPositions lines cursors
 
+        @clearHighlights()
         @setCursors cursors
         @setLines   lines
         

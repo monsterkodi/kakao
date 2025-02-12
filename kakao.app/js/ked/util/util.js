@@ -1301,11 +1301,13 @@ class util
         {
             rng = list[idx]
             ls = util.linesForRange(lines,rng)
+            indent = 0
             if (idx > 0)
             {
+                indent = util.numIndent(_k_.last(newls))
+                indent = _k_.max(indent,util.numIndent)
                 if (posl[idx - 1][0])
                 {
-                    indent = util.numIndent(_k_.last(newls))
                     if (ls.length > 1 && posl[idx - 1][0] > indent)
                     {
                         indent = _k_.max(indent,util.numIndentOfLines(ls.slice(1)))
@@ -1317,10 +1319,7 @@ class util
                 }
                 newpl.push([indent,newls.length])
             }
-            if (indent)
-            {
-                ls[0] = _k_.lpad(indent) + ls[0]
-            }
+            ls[0] = _k_.lpad(indent) + ls[0]
             newls = newls.concat(ls)
         }
         return [newls,newpl]
@@ -1335,18 +1334,23 @@ class util
             pos = posl[0]
             text = _k_.lpad(4 - pos[0] % 4,' ')
         }
+        else if (text === '\n')
+        {
+            return util.breakLinesAtPositions(lines,posl)
+        }
         text = kstr.detab(text)
         txtls = util.linesForText(text)
         newls = []
         newpl = []
         rngs = util.rangesForLinePositions(lines,posl)
-        for (var _a_ = idx = 0, _b_ = rngs.length; (_a_ <= _b_ ? idx < rngs.length : idx > rngs.length); (_a_ <= _b_ ? ++idx : --idx))
+        var list = _k_.list(rngs)
+        for (idx = 0; idx < list.length; idx++)
         {
-            rng = rngs[idx]
+            rng = list[idx]
             after = util.linesForRange(lines,rng)
             if (idx > 0)
             {
-                var _c_ = posl[idx - 1]; x = _c_[0]; y = _c_[1]
+                var _b_ = posl[idx - 1]; x = _b_[0]; y = _b_[1]
 
                 if (!_k_.empty(before))
                 {
@@ -1382,8 +1386,7 @@ class util
                 line += txt
                 px = line.length
                 line += after.shift()
-                before.push(line)
-                newls = newls.concat(before)
+                newls = newls.concat(before,line)
                 newpl.push([px,newls.length - 1])
             }
             before = after

@@ -23,8 +23,8 @@
 *** todo ***
 ** todo
 * todo
-    
-- indent on insert line breaks  
+
+- fix cutting empty lines    
 
 - quick open cmd+p
     - merge with macro?

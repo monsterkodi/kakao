@@ -240,7 +240,12 @@ class util
             rngs[0..-2]
         else
             rngs
-            
+
+    ###
+    returns a list of ranges for lines split by positions.
+    the range up to the first position is included, as well as the
+    one from the last position up to the end of text.
+    ###        
     @rangesForLinePositions: lines posl ->
         
         ⮐ [] if empty posl
@@ -716,18 +721,24 @@ class util
     # 0000000    000   000  00000000  000   000  000   000      0000000  000  000   000  00000000  0000000   
     
     @breakLinesAtPositions: lines posl ->
+
+        # lf 'break lines'
         
         newls = []
         newpl = []
         for rng,idx in util.rangesForLinePositions lines posl
             ls = util.linesForRange lines rng
+            indent = 0
             if idx > 0
+                indent = util.numIndent last(newls) #if newls.length
+                indent = max indent util.numIndent 
+
                 if posl[idx-1][0]
-                    indent = util.numIndent last newls
-                    indent = max indent util.numIndentOfLines(ls[1..]) if ls.length>1 and posl[idx-1][0] > indent
+                    if ls.length>1 and posl[idx-1][0] > indent
+                        indent = max indent util.numIndentOfLines(ls[1..]) 
                 else indent = 0
                 newpl.push [indent newls.length] 
-            ls[0] = lpad(indent) + ls[0] if indent
+            ls[0] = lpad(indent) + ls[0]
             newls = newls.concat ls
         [newls newpl]
         
@@ -738,36 +749,38 @@ class util
     # 000  000   000  0000000   00000000  000   000     000              000     00000000  000   000     000     
     
     @insertTextAtPositions: lines text posl ->
-        
+                          
         # prof.start 'insert'
         
         if text == '\t'
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
+        else if text == '\n' 
+            ⮐ util.breakLinesAtPositions lines posl
+            
+        # lf "insert text ▸#{text}◂"
+            
         text = kstr.detab text
         
-        txtls = util.linesForText text
-        newls = []
-        newpl = []
-        rngs = util.rangesForLinePositions lines posl
+        txtls = util.linesForText text  # the text to insert split into lines
+        newls = []                      # list of new lines 
+        newpl = []                      # list of new positions
+        rngs = util.rangesForLinePositions lines posl # list of ranges for lines split by positions
         
-        for idx in 0...rngs.length
+        for rng,idx in rngs
             
-            rng   = rngs[idx]
-            
-            after = util.linesForRange lines rng
+            after = util.linesForRange lines rng # all the lines in the current range
                         
-            if idx > 0
+            if idx > 0                           # start processing ranges after the first position
                 
-                [x y] = posl[idx-1]
+                [x y] = posl[idx-1]              # coordinates of current position 
                 
-                if valid before ➜ line = before.pop()
-                else              line = newls.pop()
+                if valid before ➜ line = before.pop() # pop the last line from before the current position
+                else              line = newls.pop()  # or the last of the already generated lines
                     
-                # fill line at end with spaces if pos is behind end of line
-                if x > line.length ➜ line += lpad x-line.length
+                if x > line.length ➜ line += lpad x-line.length # fill line at end with spaces if pos is in empty space
                                         
-                if txtls.length > 1
+                if txtls.length > 1                 # handle multiples lines to insert
                     
                     mod = (idx-1) % txtls.length
                     txt = txtls[mod]
@@ -779,22 +792,22 @@ class util
                             txt  = txtls[mod]
                             line = ''
                 else                    
-                    txt = txtls[0]
+                    txt = txtls[0]                  # use the first line of lines to insert
                 
-                line += txt
+                line += txt                         # ... and append it to current line
+                
+                px = line.length                    # move position to the end of the inserted text
                     
-                px = line.length
-                line += after.shift()
-                before.push line
+                line += after.shift()               # and add the first line of the lines after pos
                 
-                newls = newls.concat before
-                newpl.push [px newls.length-1]
+                newls = newls.concat before line    # add lines from before 
+                newpl.push [px newls.length-1]      # add adjusted position
                 
-            before = after
+            before = after 
             
         newls = newls.concat before
             
-        # prof.end 'insert' 'loop'
+        # prof.end 'insert'
         
         [newls newpl]      
         

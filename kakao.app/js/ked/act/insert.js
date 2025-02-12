@@ -23,7 +23,7 @@ export default {insert:function (text)
 
     this.clearHighlights()
     this.setLines(lines)
-    return this.setCursors(cursors,-1)
+    return this.setCursors(cursors)
 },insertNewline:function ()
 {
     var cursors, lines
@@ -32,6 +32,7 @@ export default {insert:function (text)
     lines = this.allLines()
     var _b_ = util.breakLinesAtPositions(lines,cursors); lines = _b_[0]; cursors = _b_[1]
 
+    this.clearHighlights()
     this.setCursors(cursors)
     return this.setLines(lines)
 }}
