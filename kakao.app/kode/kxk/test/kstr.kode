@@ -293,6 +293,32 @@ use .. ◆ kstr
         
             r = kstr.unfilletBlocks blockFillets
             r ▸ text + '\n'
+            
+    ▸ levensthein
+    
+        kstr.levensthein 'a' 'b' ▸ 1
+        kstr.levensthein 'a' 'zZ' ▸ 2
+        kstr.levensthein 'a' 'zZZ' ▸ 3
+        kstr.levensthein 'a' 'worl' ▸ 4
+        kstr.levensthein 'a' 'world' ▸ 5
+        kstr.levensthein 'hello' 'world' ▸ 4
+        kstr.levensthein 'ko.ko' 'ko' ▸ 3
+        kstr.levensthein 'ke.ko' 'ko' ▸ 3
+        kstr.levensthein 'xx.ko' 'ko' ▸ 3
+        kstr.levensthein 'wool' 'bool' ▸ 1
+        kstr.levensthein 'oxol' 'bool' ▸ 2
+        
+    ▸ weight
+    
+        kstr.weight ''    ▸ 0
+        kstr.weight null  ▸ 0
+        kstr.weight ' '   ▸ 0
+        kstr.weight '  '  ▸ 0
+        kstr.weight('a') > kstr.weight('') ▸ true
+        kstr.weight('b') > kstr.weight('a') ▸ true
+        kstr.weight('b') > kstr.weight('ab') ▸ true
+        kstr.weight('b') > kstr.weight('abZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ') ▸ true
+        kstr.weight('b') > kstr.weight('B') ▸ true
 
     #  0000000  000   000  000   000  000   000  000   000    
     # 000       000   000  000   000  0000  000  000  000     

@@ -1,6 +1,11 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var choices
+
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
+let slash = kxk.slash
+let krzl = kxk.krzl
 
 import editor from "../editor.js"
 import theme from "../theme.js"
@@ -29,31 +34,38 @@ choices = (function ()
 
     choices.prototype["weight"] = function (item, text)
     {
-        var w
+        var idx, p, w
 
-        w = 0
-        if (_k_.in(text,item))
+        p = slash.parse(item)
+        idx = item.indexOf(text)
+        if (idx < 0)
         {
-            w += text.length
+            idx = item.length * 2
         }
+        w = 0
+        w += idx
+        w += kstr.levensthein(p.name,text)
+        w += kstr.levensthein(p.dir,text)
+        w += kstr.levensthein(p.ext,text)
         return w
     }
 
     choices.prototype["filter"] = function (text)
     {
-        var filtered
+        var fuzz, fuzzied
 
         if (_k_.empty(this.items))
         {
             return
         }
-        lf('filter',text)
-        filtered = _k_.copy(this.items)
-        filtered.sort((function (a, b)
+        fuzz = new krzl(this.items)
+        fuzzied = fuzz.filter(text)
+        lf('fuzzied',fuzzied)
+        fuzzied.sort((function (a, b)
         {
-            return this.weight(b,text) - this.weight(a,text)
+            return this.weight(a,text) - this.weight(b,text)
         }).bind(this))
-        return this.state.loadLines(filtered)
+        return this.state.loadLines(fuzzied)
     }
 
     return choices

@@ -763,4 +763,116 @@ str.ansi2html = function (s)
     return ansi.html(s)
 }
 str.ansi = ansi
+
+str.levensthein = function (a, b = '')
+{
+    var ay, bx0, bx1, bx2, bx3, d0, d1, d2, d3, dd, dy, la, lb, len, offset, vector, x, y, y2, _min
+
+    if (a === b)
+    {
+        return 0
+    }
+    if (a.length > b.length)
+    {
+        var _17_ = [b,a]; a = _17_[0]; b = _17_[1]
+
+    }
+    la = a.length
+    lb = b.length
+    while (la > 0 && (a.charCodeAt(la - 1) === b.charCodeAt(lb - 1)))
+    {
+        la--
+        lb--
+    }
+    offset = 0
+    while (offset < la && (a.charCodeAt(offset) === b.charCodeAt(offset)))
+    {
+        offset++
+    }
+    la -= offset
+    lb -= offset
+    if (la === 0 || lb < 3)
+    {
+        return lb
+    }
+    x = 0
+    vector = []
+    for (var _18_ = y = 0, _19_ = la; (_18_ <= _19_ ? y < la : y > la); (_18_ <= _19_ ? ++y : --y))
+    {
+        vector.push(y + 1)
+        vector.push(a.charCodeAt(offset + y))
+    }
+    len = vector.length - 1
+    _min = function (d0, d1, d2, bx, ay)
+    {
+        if (d0 < d1 || d2 < d1)
+        {
+            return (d0 > d2 ? d2 + 1 : d0 + 1)
+        }
+        else
+        {
+            return (bx === ay ? d1 : d1 + 1)
+        }
+    }
+    while (x < lb - 3)
+    {
+        bx0 = b.charCodeAt(offset + (d0 = x))
+        bx1 = b.charCodeAt(offset + (d1 = x + 1))
+        bx2 = b.charCodeAt(offset + (d2 = x + 2))
+        bx3 = b.charCodeAt(offset + (d3 = x + 3))
+        dd = (x += 4)
+        for (var _1a_ = y2 = 0, _1b_ = len / 2; (_1a_ <= _1b_ ? y2 < len / 2 : y2 > len / 2); (_1a_ <= _1b_ ? ++y2 : --y2))
+        {
+            y = y2 * 2
+            dy = vector[y]
+            ay = vector[y + 1]
+            d0 = _min(dy,d0,d1,bx0,ay)
+            d1 = _min(d0,d1,d2,bx1,ay)
+            d2 = _min(d1,d2,d3,bx2,ay)
+            dd = _min(d2,d3,dd,bx3,ay)
+            vector[y] = dd
+            d3 = d2
+            d2 = d1
+            d1 = d0
+            d0 = dy
+        }
+    }
+    while (x < lb)
+    {
+        bx0 = b.charCodeAt(offset + (d0 = x))
+        dd = ++x
+        for (var _1c_ = y2 = 0, _1d_ = len / 2; (_1c_ <= _1d_ ? y2 < len / 2 : y2 > len / 2); (_1c_ <= _1d_ ? ++y2 : --y2))
+        {
+            y = y2 * 2
+            dy = vector[y]
+            vector[y] = dd = _min(dy,d0,dd,bx0,vector[y + 1])
+            d0 = dy
+        }
+    }
+    return dd
+}
+
+str.weight = function (s)
+{
+    var c, f, i, w
+
+    if (_k_.isStr(s))
+    {
+        s = _k_.trim(s)
+    }
+    if (_k_.empty(s))
+    {
+        return 0
+    }
+    w = 0
+    f = 1
+    var list = _k_.list(s)
+    for (i = 0; i < list.length; i++)
+    {
+        c = list[i]
+        w += c.charCodeAt(0) * f
+        f /= 256.0
+    }
+    return w
+}
 export default str;

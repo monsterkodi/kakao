@@ -77,6 +77,17 @@ function quicky
             
         items = items.map (i n) => rpad ccol lpad(maxind-indents[n])+i
         
+        weight = item ->
+            
+            p = slash.parse item
+            
+            w = 0
+            w += item.split('/').length * 256
+            w += kstr.weight(p.name)
+            w
+        
+        items.sort (a b) -> weight(a) - weight(b)
+        
         @input.set '' # previously opened file?
         @choices.set items
         @choices.state.selectLine 0

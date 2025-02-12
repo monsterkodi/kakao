@@ -84,7 +84,7 @@ quicky = (function ()
 
     quicky.prototype["open"] = function (currentFile)
     {
-        var ccol, currentDir, indent, indents, item, items, maxind
+        var ccol, currentDir, indent, indents, item, items, maxind, weight
 
         items = prjcts.files(currentFile)
         currentDir = slash.dir(currentFile)
@@ -115,6 +115,20 @@ quicky = (function ()
         {
             return _k_.rpad(ccol,_k_.lpad(maxind - indents[n]) + i)
         }).bind(this))
+        weight = function (item)
+        {
+            var p, w
+
+            p = slash.parse(item)
+            w = 0
+            w += item.split('/').length * 256
+            w += kstr.weight(p.name)
+            return w
+        }
+        items.sort(function (a, b)
+        {
+            return weight(a) - weight(b)
+        })
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)

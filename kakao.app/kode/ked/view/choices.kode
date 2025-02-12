@@ -6,6 +6,7 @@
  0000000  000   000   0000000   000   0000000  00000000  0000000 
 ###
 
+use ../../kxk ▪ kstr slash krzl
 use .. ◆ editor theme 
 
 function choices extends editor
@@ -20,17 +21,27 @@ function choices extends editor
     
     weight: item text ->
         
-        w = 0
-        w += text.length if text in item
+        p = slash.parse item
+        
+        idx = item.indexOf text
+        idx = item.length*2 if idx < 0
+        w  = 0
+        w += idx
+        w += kstr.levensthein p.name text
+        w += kstr.levensthein p.dir  text
+        w += kstr.levensthein p.ext  text
         w
-    
+
     filter: text => 
         
         ⮐ if empty @items
-        lf 'filter' text
-        filtered = copy @items
-        filtered.sort (a b) => @weight(b text) - @weight(a text)
         
-        @state.loadLines filtered
+        fuzz = new krzl @items
+        fuzzied = fuzz.filter text
+        lf 'fuzzied' fuzzied
+        
+        fuzzied.sort (a b) => @weight(a text) - @weight(b text)
+        
+        @state.loadLines fuzzied
     
 export choices
