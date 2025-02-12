@@ -552,7 +552,7 @@ TTIO = (function ()
         if (event.type === 'press')
         {
             this.lastClick = ((_345_23_=this.lastClick) != null ? _345_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
-            if (this.lastClick.y === event.x && this.lastClick.x === event.y)
+            if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
                 this.lastClick.time = process.hrtime()
@@ -567,12 +567,13 @@ TTIO = (function ()
             }
             else
             {
-                this.lastClick.y = event.cell[0]
-                this.lastClick.x = event.cell[1]
+                this.lastClick.x = event.cell[0]
+                this.lastClick.y = event.cell[1]
                 this.lastClick.count = 1
                 this.lastClick.time = process.hrtime()
             }
             event.count = this.lastClick.count
+            lfc('mouse',event)
         }
         return this.emit('mouse',event)
     }

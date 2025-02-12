@@ -348,7 +348,7 @@ function TTIO extends events
                 count:  0
                 time:   process.hrtime()
             
-            if @lastClick.y == event.x and @lastClick.x == event.y
+            if @lastClick.x == event.cell[0] and @lastClick.y == event.cell[1]
                 diff = process.hrtime @lastClick.time
                 @lastClick.time = process.hrtime()
                 if diff[0] < 1 and diff[1] < 500000000
@@ -356,14 +356,14 @@ function TTIO extends events
                 else    
                     @lastClick.count = 1
             else
-               @lastClick.y     = event.cell[0]
-               @lastClick.x     = event.cell[1]
+               @lastClick.x     = event.cell[0]
+               @lastClick.y     = event.cell[1]
                @lastClick.count = 1
                @lastClick.time  = process.hrtime()
                
             event.count = @lastClick.count
         
-        # lfc noon(event)
+            lfc 'mouse' event
         
         @emit 'mouse' event
             

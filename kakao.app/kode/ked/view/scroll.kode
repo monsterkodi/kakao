@@ -40,7 +40,9 @@ function scroll
             
                 if @doDrag
                     @hover = true
-                    ⮐ @scrollTo row
+                    ⮐ @scrollTo row 
+                else
+                    @hover = false
                 
             'release'
             

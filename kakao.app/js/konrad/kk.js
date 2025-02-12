@@ -126,9 +126,9 @@ class kk
                 {
                     return
                 }
-                console.log(_k_.b5('🔧'),_k_.w3(info.path))
                 if (_k_.in(slash.ext(info.path),['kode','pug','styl','noon']))
                 {
+                    console.log(_k_.b5('🔧'),_k_.w3(info.path))
                     await knrd(info.path)
                     return await kk.test(args.options)
                 }

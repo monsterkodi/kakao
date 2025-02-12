@@ -23,16 +23,20 @@
 *** todo ***
 ** todo
 * todo
+    
+- indent on insert line breaks  
 
 - quick open cmd+p
     - merge with macro?
+    - navigate directories
+    - fix layout issues for larger repositories with longer file names
 
 - mapscroll
     - add scrollbar handle
-    - show cursors and selections
+    - update on line changes
     - fix scrolling to bottom for long files
+    - show cursors and selections
     - split image into chunks
-    - update on changes
 
 - find and search
     - each multiline editor has its own knobbed finder at bottom

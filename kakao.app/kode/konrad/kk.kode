@@ -105,9 +105,8 @@ class kk
 
                 ⮐ if slash.contains info.path '.stash'
                 
-                log b5('🔧') w3(info.path)
-                
                 if slash.ext(info.path) in ['kode' 'pug' 'styl' 'noon']
+                    log b5('🔧') w3(info.path)
                     ○ knrd info.path
                     ○ kk.test args.options
     

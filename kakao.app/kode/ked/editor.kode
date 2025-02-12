@@ -221,7 +221,8 @@ function editor extends view
             
             'press'
             
-                ⮐ if @cells.isOutsideEvent event
+                if @cells.isOutsideEvent event
+                    ⮐ if not @gutter?.cells.isInsideEvent event
                         
                 if event.count > 1
 
@@ -240,7 +241,7 @@ function editor extends view
                         
                     @dragStart = copy @state.s.selections[0]
                     
-                    ⮐ true
+                    true
                     
                 else
                     

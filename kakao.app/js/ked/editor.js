@@ -301,7 +301,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _214_30_, _215_30_
+        var col, row, start, x, y, _214_30_, _215_30_, _225_41_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(event) : undefined))
         {
@@ -322,7 +322,10 @@ editor = (function ()
             case 'press':
                 if (this.cells.isOutsideEvent(event))
                 {
-                    return
+                    if (!(this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
+                    {
+                        return
+                    }
                 }
                 if (event.count > 1)
                 {
@@ -348,7 +351,7 @@ editor = (function ()
                         this.state.selectLine(y)
                     }
                     this.dragStart = _k_.copy(this.state.s.selections[0])
-                    return true
+                    true
                 }
                 else
                 {

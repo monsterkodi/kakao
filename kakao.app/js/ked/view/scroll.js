@@ -49,6 +49,10 @@ scroll = (function ()
                     this.hover = true
                     return this.scrollTo(row)
                 }
+                else
+                {
+                    this.hover = false
+                }
                 break
             case 'release':
                 if (this.doDrag)
