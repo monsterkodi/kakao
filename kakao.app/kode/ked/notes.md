@@ -87,4 +87,6 @@
     - state tests
     - undo fixes
     
+agg ked01.cast ked01.gif --font-family "LiterationMono Nerd Font" --idle-time-limit 0.2 --speed 4 --theme 000000,ffffff,272822,f92672,a6e22e,f4bf75,66d9ef,ae81ff,a1efe4,f8f8f2 --line-height 1.3    
+gifsicle ked01.gif -o ked01o.gif -O=3 --colors 256 
     

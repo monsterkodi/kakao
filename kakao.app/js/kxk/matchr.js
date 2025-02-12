@@ -71,7 +71,7 @@ ranges = function (regexes, text, flags)
             {
                 if (match[0].length > 0)
                 {
-                    rgs.push({start:match.index + i,match:match[0],clss:arg,index:r})
+                    rgs.push({start:match.index + i,match:match[0],length:match[0].length,clss:arg,index:r})
                 }
                 i += match.index + Math.max(1,match[0].length)
                 s = text.slice(i)
@@ -95,7 +95,7 @@ ranges = function (regexes, text, flags)
                         break
                     }
                     gi = match[0].slice(gs).indexOf(match[j + 1])
-                    rgs.push({start:match.index + i + gs + gi,match:match[j + 1],clss:value,index:r})
+                    rgs.push({start:match.index + i + gs + gi,match:match[j + 1],length:match[j + 1].length,clss:value,index:r})
                     gs += match[j + 1].length
                 }
                 i += match.index + match[0].length
@@ -108,7 +108,7 @@ ranges = function (regexes, text, flags)
 
 dissect = function (ranges, opt = {join:false})
 {
-    var c, d, di, dps, i, p, pn, r, rg, ri, si, _167_22_, _168_36_, _170_48_
+    var c, d, di, dps, i, p, pn, r, rg, ri, si, _169_22_, _170_36_, _172_48_
 
     if (!ranges.length)
     {
@@ -212,7 +212,7 @@ dissect = function (ranges, opt = {join:false})
     }
     d = d.filter(function (i)
     {
-        var _185_31_
+        var _187_31_
 
         return (i.match != null ? i.match.trim().length : undefined)
     })

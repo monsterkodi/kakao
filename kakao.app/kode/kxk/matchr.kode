@@ -48,7 +48,7 @@ sortRanges = (rgs) ->
                 the nth [key, value] pair if value(s) is an object
 ###
 
-ranges = (regexes, text, flags) ->
+ranges = regexes text flags ->
     
     if not regexes is Array
         if regexes is str
@@ -85,6 +85,7 @@ ranges = (regexes, text, flags) ->
                     rgs.push
                         start: match.index + i
                         match: match[0]
+                        length: match[0].length
                         clss:  arg
                         index: r
                     
@@ -106,6 +107,7 @@ ranges = (regexes, text, flags) ->
                     rgs.push
                         start: match.index + i + gs + gi
                         match: match[j+1]
+                        length: match[j+1].length
                         clss:  value
                         index: r
                         
@@ -132,7 +134,7 @@ ranges = (regexes, text, flags) ->
         with none of the [start, start+match.length] ranges overlapping
 ###
 
-dissect = (ranges, opt = join:false) -> 
+dissect = ranges opt=join:false -> 
     
     return [] if not ranges.length
     
@@ -206,7 +208,7 @@ dissect = (ranges, opt = join:false) ->
     merges two sorted lists of dissections
 ###
     
-merge = (dssA, dssB) ->
+merge = dssA dssB ->
     
     result = []
     A = dssA.shift()

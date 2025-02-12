@@ -6,6 +6,8 @@
    000     000   000  00000000  000   000  00000000  
 ###
 
+use ./util ◆ color
+
 class theme
     
     @selection_line:        '#222'     
@@ -135,6 +137,8 @@ class theme
         'punct dir':                            '#55a'   
         'js file':                              '#0a0'   
         'js ext':                               '#060'   
+        'noon file':                            '#0a0'   
+        'noon ext':                             '#060'   
         'punct js':                             '#040'   
         'json file':                            '#d0d'   
         'json ext':                             '#808'   
@@ -145,5 +149,21 @@ class theme
         'text file':                            '#ddd'   
         'text ext':                             '#888'   
         'punct text':                           '#444'   
+        
+        'file':                                 '#aaa'   
+        'ext':                                  '#444'   
+        'dir':                                  '#88f'   
+        'dir_punct':                            '#226'   
+
+        '.text':                                '#aaf'   
+        '.kode':                                '#ff0'   
+        '.js':                                  '#0a0'   
+        '.noon':                                '#0a0'   
+        '.json':                                '#d0d'   
+        '.md':                                  '#aaf'   
+
+for key,value of theme.syntax
+    if key[0] == '.'
+        theme.syntax[key+'_ext'] = color.darken value 0.2
         
 export theme

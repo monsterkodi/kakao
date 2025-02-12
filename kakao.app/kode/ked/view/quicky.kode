@@ -6,10 +6,12 @@
  00000 00   0000000   000   0000000  000   000     000   
 ###
 
-use ../../kxk ▪ kstr slash post
+use ../../kxk ▪ kstr slash post noon
 use         ◆ cells input choices
 use ../util ◆ prjcts
 use ..      ◆ editor theme
+
+import rgxs from './quicky.json' with { type: "json" }
 
 int = parseInt
 
@@ -23,6 +25,8 @@ function quicky
         
         @input   = new input   @screen 'quicky_input' 
         @choices = new choices @screen 'quicky_choices'
+        
+        @choices.state.syntax.setRgxs rgxs
         
         @input.on 'changed' @onInputChanged
                         
@@ -91,7 +95,8 @@ function quicky
         @input.set '' # previously opened file?
         @choices.set items
         @choices.state.selectLine 0
-        @choices.state.setMainCursor 0 0
+        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        @choices.state.setView [0 0]
         @show()
 
     onInputChanged: text =>
@@ -167,7 +172,7 @@ function quicky
         ⮐ if @hidden()
         
         switch event.combo 
-            'esc'       ➜ ⮐ @hide() if empty @input.state.s.selections
+            'esc'       ➜ ⮐ @hide()
             'return'    ➜ ⮐ @postResult()
             'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.state.hasFocus
         

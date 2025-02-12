@@ -58,6 +58,11 @@ choices = (function ()
         {
             return
         }
+        if (_k_.empty(text))
+        {
+            this.state.loadLines(this.items)
+            return
+        }
         fuzz = new krzl(this.items)
         fuzzied = fuzz.filter(text)
         lf('fuzzied',fuzzied)

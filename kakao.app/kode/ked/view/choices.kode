@@ -36,6 +36,10 @@ function choices extends editor
         
         ⮐ if empty @items
         
+        if empty text
+            @state.loadLines @items
+            return
+
         fuzz = new krzl @items
         fuzzied = fuzz.filter text
         lf 'fuzzied' fuzzied

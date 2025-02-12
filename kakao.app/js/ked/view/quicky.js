@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int, quicky
 
@@ -6,6 +6,7 @@ import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
+let noon = kxk.noon
 
 import cells from "./cells.js"
 import input from "./input.js"
@@ -16,6 +17,7 @@ import prjcts from "../util/prjcts.js"
 import editor from "../editor.js"
 import theme from "../theme.js"
 
+import rgxs from './quicky.json' with { type : "json" }
 int = parseInt
 
 quicky = (function ()
@@ -34,6 +36,7 @@ quicky = (function ()
         this.cells = new cells(this.screen)
         this.input = new input(this.screen,'quicky_input')
         this.choices = new choices(this.screen,'quicky_choices')
+        this.choices.state.syntax.setRgxs(rgxs)
         this.input.on('changed',this.onInputChanged)
     }
 
@@ -132,7 +135,8 @@ quicky = (function ()
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)
-        this.choices.state.setMainCursor(0,0)
+        this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
+        this.choices.state.setView([0,0])
         return this.show()
     }
 
@@ -202,11 +206,8 @@ quicky = (function ()
         switch (event.combo)
         {
             case 'esc':
-                if (_k_.empty(this.input.state.s.selections))
-                {
-                    return this.hide()
-                }
-                break
+                return this.hide()
+
             case 'return':
                 return this.postResult()
 
