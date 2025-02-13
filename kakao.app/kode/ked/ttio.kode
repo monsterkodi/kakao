@@ -41,7 +41,7 @@ function TTIO extends events
         process.stdin.on  'data'   @onData
         
         setTimeout @onResize 10 # delay screen size request due to ghostty bug
-        
+                
     write: str => process.stdout.write str
     
     quit: =>
@@ -52,7 +52,15 @@ function TTIO extends events
         @clear()
         @write '\x1b[>0s'    # end sending shift in mouse press
         @write '\x1b[<u'     # end kitty keyboard protocol
-        @write '\x1b[?1049l' # scrollback screen buffer
+        @write '\x1b[?1000l' # end mouse events
+        @write '\x1b[?1002l' # end cell motion tracking
+        @write '\x1b[?1003l' # end mouse move events
+        @write '\x1b[?1004l' # end focus events        
+        @write '\x1b[?1006l' # end mouse SGR mode
+        @write '\x1b[?1016l' # end mouse SGR pixel mode
+        @write '\x1b[?1049l' # end alternate screen buffer
+        @write '\x1b[?2004l' # end bracketed paste mode
+        @write '\x1b[?1049l' # end scrollback screen buffer
         @showCursor()
         lf '◂◂◂'
         @restore()
@@ -366,6 +374,10 @@ function TTIO extends events
             # lfc 'mouse' event
         
         @emit 'mouse' event
+    
+    setPointerStyle: pointerStyle='hand' =>
+    
+        @write "\x1b]22;#{pointerStyle}\x1b\\"
             
     # 00000000    0000000   00000000    0000000  00000000  
     # 000   000  000   000  000   000  000       000       

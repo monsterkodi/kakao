@@ -21,7 +21,7 @@ function mapscr
         @cells = new cells screen
         @imgId = kstr.hash @state.name
         
-        @pixelsPerRow = 4
+        @pixelsPerRow = 3
         @pixelsPerCol = 2
         
         screen.t.on 'preResize' @onPreResize
@@ -205,6 +205,7 @@ function mapscr
             'move'
             
                 @hover = @cells.isInsideScreen sx sy
+                @cells.screen.t.setPointerStyle('hand') if @hover
                     
         false
         

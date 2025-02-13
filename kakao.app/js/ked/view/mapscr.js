@@ -33,7 +33,7 @@ mapscr = (function ()
         this["clearImages"] = this["clearImages"].bind(this)
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name)
-        this.pixelsPerRow = 4
+        this.pixelsPerRow = 3
         this.pixelsPerCol = 2
         screen.t.on('preResize',this.onPreResize)
     }
@@ -215,6 +215,10 @@ mapscr = (function ()
                 break
             case 'move':
                 this.hover = this.cells.isInsideScreen(sx,sy)
+                if (this.hover)
+                {
+                    this.cells.screen.t.setPointerStyle('hand')
+                }
                 break
         }
 

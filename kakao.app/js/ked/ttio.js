@@ -14,6 +14,7 @@ TTIO = (function ()
     {
         this["onData"] = this["onData"].bind(this)
         this["parseData"] = this["parseData"].bind(this)
+        this["setPointerStyle"] = this["setPointerStyle"].bind(this)
         this["emitMouseEvent"] = this["emitMouseEvent"].bind(this)
         this["parseMouse"] = this["parseMouse"].bind(this)
         this["keyEventForCombo"] = this["keyEventForCombo"].bind(this)
@@ -69,6 +70,14 @@ TTIO = (function ()
         this.clear()
         this.write('\x1b[>0s')
         this.write('\x1b[<u')
+        this.write('\x1b[?1000l')
+        this.write('\x1b[?1002l')
+        this.write('\x1b[?1003l')
+        this.write('\x1b[?1004l')
+        this.write('\x1b[?1006l')
+        this.write('\x1b[?1016l')
+        this.write('\x1b[?1049l')
+        this.write('\x1b[?2004l')
         this.write('\x1b[?1049l')
         this.showCursor()
         lf('◂◂◂')
@@ -547,11 +556,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _345_23_
+        var diff, _353_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_345_23_=this.lastClick) != null ? _345_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_353_23_=this.lastClick) != null ? _353_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -575,6 +584,11 @@ TTIO = (function ()
             event.count = this.lastClick.count
         }
         return this.emit('mouse',event)
+    }
+
+    TTIO.prototype["setPointerStyle"] = function (pointerStyle = 'hand')
+    {
+        return this.write(`\x1b]22;${pointerStyle}\x1b\\`)
     }
 
     TTIO.prototype["parseData"] = function (data)
@@ -622,7 +636,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _417_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _429_23_
 
         if ((this.pasteBuffer != null))
         {

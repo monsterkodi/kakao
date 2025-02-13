@@ -409,6 +409,12 @@ editor = (function ()
             case 'release':
                 delete this.dragStart
                 break
+            case 'move':
+                if (this.cells.isInsideEvent(event))
+                {
+                    this.cells.screen.t.setPointerStyle('xterm')
+                }
+                break
         }
 
         return false

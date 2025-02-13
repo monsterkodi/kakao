@@ -286,6 +286,11 @@ function editor extends view
             
                 delete @dragStart
                 
+            'move'
+                
+                if @cells.isInsideEvent event
+                    @cells.screen.t.setPointerStyle 'xterm'
+                
         false
                 
     # 000   000  000   000  00000000  00000000  000      
