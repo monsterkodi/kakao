@@ -44,7 +44,7 @@ KED = (function ()
         this["loadFile"] = this["loadFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
-        this.version = '0.0.3'
+        this.version = '0.0.4'
         h = ''
         h += _k_.b8("    ███   ███  ████████  ███████  \n")
         h += _k_.b7("    ███  ███   ███       ███   ███\n")
@@ -55,7 +55,6 @@ KED = (function ()
         args = karg(`
 ked [file]
     options                      **
-    
     version    log version       = false
     `,{preHelp:h,version:this.version})
         process.on('uncaughtException',this.onException)
@@ -64,7 +63,7 @@ ked [file]
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _45_64_
+            var _44_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -112,7 +111,7 @@ ked [file]
 
     KED.prototype["quit"] = function (msg)
     {
-        var _93_10_
+        var _92_10_
 
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         ;(this.t != null ? this.t.quit() : undefined)
@@ -138,7 +137,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _128_22_
+        var lines, start, text, _127_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -275,7 +274,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _233_22_, _234_23_
+        var _232_22_, _233_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -284,7 +283,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _239_22_, _240_23_
+        var _238_22_, _239_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

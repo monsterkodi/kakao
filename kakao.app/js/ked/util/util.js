@@ -716,13 +716,13 @@ class util
         return [0,pos[1],lines[pos[1]].length,pos[1]]
     }
 
-    static lineRangesForPositions (lines, posl, append = false)
+    static lineRangesForPositions (lines, posl, append)
     {
         var rngs
 
         rngs = util.lineIndicesForPositions(posl).map(function (y)
         {
-            return [0,y,lines[y].length,y]
+            return (lines[y].length ? [0,y,lines[y].length,y] : [0,y,0,y + 1])
         })
         if (!_k_.empty(rngs) && append)
         {

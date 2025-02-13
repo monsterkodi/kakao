@@ -306,7 +306,7 @@ starComment = function ()
 
 funcArgs = function ()
 {
-    var ch, turd
+    var ch, turd, _262_30_
 
     if (notCode)
     {
@@ -319,7 +319,7 @@ funcArgs = function ()
     turd = (chunk.turd[0] === '○' ? chunk.turd.slice(1, 3) : chunk.turd.slice(0, 2))
     if (_k_.in(turd[0],'=-') && turd[1] === '>')
     {
-        if (_k_.in(getChunk(-1).match,':)'))
+        if (_k_.in((getChunk(-1) != null ? getChunk(-1).match : undefined),':)'))
         {
             return
         }

@@ -10,6 +10,19 @@ let lang = util.lang
 lang('kode')
 toExport["kolor"] = function ()
 {
+    section("kode", function ()
+    {
+        lang('kode')
+        dss = dissect("a = b -> true")
+        compare(inc(dss[0],0,"a"),'function')
+        compare(inc(dss[0],2,"="),'punct function')
+        compare(inc(dss[0],4,"b"),'function argument')
+        compare(inc(dss[0],6,"->"),'punct function tail ligature')
+        dss = dissect("->")
+        compare(inc(dss[0],0,"->"),'punct function tail ligature')
+        dss = dissect("    -> true")
+        compare(inc(dss[0],4,"->"),'punct function tail ligature')
+    })
     section("fallback", function ()
     {
         rgs = ranges('text','unknown')
@@ -80,7 +93,7 @@ toExport["kolor"] = function ()
     })
     section("comment header", function ()
     {
-        lang('coffee')
+        lang('kode')
         rgs = ranges("# 0 00 0000")
         compare(inc(rgs,0,"#"),'punct comment')
         compare(inc(rgs,2,"0"),'comment header')

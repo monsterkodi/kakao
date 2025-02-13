@@ -24,9 +24,10 @@
 ** todo
 * todo
 
-- fix cutting empty lines    
+- multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
 
 - quick open cmd+p
+    - fix it being empty sometimes
     - merge with macro?
     - navigate directories
     - fix layout issues for larger repositories with longer file names

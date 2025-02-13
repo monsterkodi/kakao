@@ -573,7 +573,6 @@ TTIO = (function ()
                 this.lastClick.time = process.hrtime()
             }
             event.count = this.lastClick.count
-            lfc('mouse',event)
         }
         return this.emit('mouse',event)
     }

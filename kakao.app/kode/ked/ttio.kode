@@ -363,7 +363,7 @@ function TTIO extends events
                
             event.count = @lastClick.count
         
-            lfc 'mouse' event
+            # lfc 'mouse' event
         
         @emit 'mouse' event
             

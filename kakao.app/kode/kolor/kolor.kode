@@ -259,7 +259,7 @@ funcArgs = ->
     
     turd = chunk.turd[0] == '○' ? chunk.turd[1..2] : chunk.turd[0..1]
     if turd[0] in '=-' and turd[1] == '>'
-        ⮐ if getChunk(-1).match in ':)'
+        ⮐ if getChunk(-1)?.match in ':)'
         if line.chunks[0].clss in ['text''dictionary key'] and line.chunks[1].match in ':=' 
             for ch in line.chunks[2...chunkIndex]
                 if ch.clss in ['function call' 'text']

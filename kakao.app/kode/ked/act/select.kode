@@ -242,9 +242,13 @@ export
         y ?= @mainCursor()[1]
         @selectLine y+1
         
-    selectCursorLines: append=false ->
+    selectCursorLines: ->
                     
-        @setSelections util.lineRangesForPositions(@allLines() @allCursors() append)
+        selections = util.lineRangesForPositions(@allLines() @allCursors())
+        
+        ▴ selections.length == @s.cursors.length
+                    
+        @setSelections selections
         
     selectAllLines: ->
         

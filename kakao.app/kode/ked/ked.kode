@@ -15,8 +15,8 @@ use ./util ◆ logfile util prjcts
 function KED
 
     @: ->
-        
-        @version = '0.0.3'
+
+        @version = '0.0.4'
         h = ''
         h += b8 "    ███   ███  ████████  ███████  \n"
         h += b7 "    ███  ███   ███       ███   ███\n"
@@ -24,12 +24,11 @@ function KED
         h += b5 "    ███  ███   ███       ███   ███\n"
         h += b4 "    ███   ███  ████████  ███████  \n"
         h = '\n\n' + h + '\n'
-        
+
         args = karg """
             
             ked [file]
                 options                      **
-                
                 version    log version       = false
                 
             """ preHelp:h version:@version
