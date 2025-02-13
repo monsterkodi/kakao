@@ -1292,7 +1292,7 @@ class util
 
     static insertTextAtPositions (lines, text, posl)
     {
-        var after, before, idx, indent, indentstr, insertLineIndex, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtindent, txtls, x, y
+        var after, before, idx, indentstr, insertLineIndex, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtls, x, y
 
         if (text === '\t')
         {
@@ -1327,21 +1327,6 @@ class util
                 }
                 if (txtls.length > 1)
                 {
-                    posLineIndent = util.numIndent(line)
-                    indent = 0
-                    if (newls.length)
-                    {
-                        indent = util.numIndent(_k_.last(newls))
-                    }
-                    if (after.length > 1 && posl[idx - 1][0] > indent)
-                    {
-                        indent = _k_.max(indent,util.numIndentOfLines(after.slice(1)))
-                    }
-                    txtindent = util.numIndentOfLines(txtls)
-                    indent -= txtindent
-                    indent = _k_.max(0,indent)
-                    indentstr = _k_.lpad(indent)
-                    lf(`▪${line}▪${txtls[0]}▪`)
                     if (posl.length > 1 && text !== '\n')
                     {
                         insertLineIndex = (idx - 1) % txtls.length
@@ -1351,6 +1336,8 @@ class util
                     }
                     else
                     {
+                        posLineIndent = util.numIndent(line)
+                        indentstr = _k_.lpad(posLineIndent)
                         before.push(line + txtls[0])
                         var list1 = _k_.list(txtls.slice(1))
                         for (lidx = 0; lidx < list1.length; lidx++)
@@ -1365,11 +1352,12 @@ class util
                         }
                         else
                         {
+                            after.unshift(indentstr + after.shift())
                             if (text === '\n')
                             {
                                 before.pop()
                             }
-                            newpl.push([indent,newls.length + before.length])
+                            newpl.push([indentstr.length,newls.length + before.length])
                         }
                     }
                     newls = newls.concat(before)

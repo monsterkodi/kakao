@@ -331,6 +331,25 @@ line 2`)
 ◆4`)
             compare(insert(lines,'\n',[[1,0],[1,1],[1,2],[1,3]]),[['◆','1','◆','2','◆','3','◆','4'],[[0,1],[0,3],[0,5],[0,7]]])
         })
+        section("insert into indented lines", function ()
+        {
+            lines = util.linesForText(`◆1
+    ◆2
+        ◆3`)
+            section("single span", function ()
+            {
+                compare(insert(lines,'~!',[[4,1]]),[['◆1','    ~!◆2','        ◆3'],[[6,1]]])
+                compare(insert(lines,'#{',[[2,2]]),[['◆1','    ◆2','  #{      ◆3'],[[4,2]]])
+            })
+            section("newline into single cursor", function ()
+            {
+                compare(insert(lines,'\n',[[4,1]]),[['◆1','    ','    ◆2','        ◆3'],[[4,2]]])
+            })
+            section("multiple lines into single cursor", function ()
+            {
+                compare(insert(lines,'a\nb',[[4,1]]),[['◆1','    a','    b','    ◆2','        ◆3'],[[4,3]]])
+            })
+        })
     })
     section("moveLineRangesAndPositionsAtIndicesInDirection", function ()
     {

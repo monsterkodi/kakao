@@ -752,33 +752,14 @@ class util
                                         
                 if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     
-                    posLineIndent = util.numIndent line
-                    
-                    indent = 0                                                   # indentation mess, needs cleanup
-                    # lf "newls.length #{newls.length}"                          # indentation mess, needs cleanup
-                    indent = util.numIndent last(newls) if newls.length          # indentation mess, needs cleanup
-                    # lf "current indent #{indent}"                              # indentation mess, needs cleanup
-                    if after.length>1 and posl[idx-1][0] > indent                # indentation mess, needs cleanup
-                        indent = max indent util.numIndentOfLines(after[1..])    # indentation mess, needs cleanup
-                        # lf "forward indent #{indent}"                          # indentation mess, needs cleanup
-                                                                                 # indentation mess, needs cleanup
-                    txtindent = util.numIndentOfLines txtls                      # indentation mess, needs cleanup
-                    indent   -= txtindent                                        # indentation mess, needs cleanup
-                    indent    = max 0 indent                                     # indentation mess, needs cleanup
-                                                                                 # indentation mess, needs cleanup
-                    indentstr = lpad indent                                      # indentation mess, needs cleanup
-                                                                                 # indentation mess, needs cleanup
-                    # if posl[idx-1][0] > indent                                   # indentation mess, needs cleanup
-                        # line = line[txtindent..]                                 # indentation mess, needs cleanup
-                    
-                    lf "▪#{line}▪#{txtls[0]}▪" 
-                                        
                     if posl.length > 1 and text != '\n'
                         insertLineIndex = (idx-1) % txtls.length
                         before.push line + txtls[insertLineIndex]
                         newpl.push [last(before).length newls.length+before.length-1]
                         before.push before.pop()+after.shift()
                     else
+                        posLineIndent = util.numIndent line
+                        indentstr = lpad posLineIndent
                         before.push line + txtls[0]
                         for line,lidx in txtls[1..]
                             before.push indentstr + line
@@ -787,8 +768,9 @@ class util
                             newpl.push [last(before).length newls.length+before.length-1]
                             before.push before.pop()+after.shift()
                         else
+                            after.unshift indentstr+after.shift()
                             before.pop() if text == '\n'
-                            newpl.push [indent newls.length+before.length]
+                            newpl.push [indentstr.length newls.length+before.length]
                         
                     newls = newls.concat before
                             
