@@ -21,7 +21,7 @@ function mapscr
         @cells = new cells screen
         @imgId = kstr.hash @state.name
         
-        @pixelsPerRow = 3
+        @pixelsPerRow = 4
         @pixelsPerCol = 2
         
         screen.t.on 'preResize' @onPreResize

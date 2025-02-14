@@ -8,14 +8,14 @@ let slash = kxk.slash
 let post = kxk.post
 let noon = kxk.noon
 
-import cells from "./cells.js"
-import input from "./input.js"
-import choices from "./choices.js"
-
 import prjcts from "../util/prjcts.js"
 
 import editor from "../editor.js"
 import theme from "../theme.js"
+
+import cells from "./cells.js"
+import input from "./input.js"
+import choices from "./choices.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 int = parseInt
@@ -31,6 +31,7 @@ quicky = (function ()
         this["onKey"] = this["onKey"].bind(this)
         this["onInputChanged"] = this["onInputChanged"].bind(this)
         this["hide"] = this["hide"].bind(this)
+        this["layout"] = this["layout"].bind(this)
         this["show"] = this["show"].bind(this)
         this.name = 'quicky'
         this.cells = new cells(this.screen)
@@ -42,6 +43,12 @@ quicky = (function ()
 
     quicky.prototype["show"] = function ()
     {
+        this.layout()
+        return this.input.grabFocus()
+    }
+
+    quicky.prototype["layout"] = function ()
+    {
         var c, h, w, x, y
 
         x = parseInt(this.screen.cols / 4)
@@ -51,8 +58,7 @@ quicky = (function ()
         c = _k_.min(h,this.choices.num())
         this.input.init(x + 2,y + 1,w - 4,1)
         this.choices.init(x + 2,y + 3,w - 3,c)
-        this.cells.init(x,y,w,c + 4)
-        return this.input.grabFocus()
+        return this.cells.init(x,y,w,c + 4)
     }
 
     quicky.prototype["hide"] = function ()
@@ -89,6 +95,7 @@ quicky = (function ()
     {
         var ccol, currentDir, indent, indents, item, items, maxind, weight
 
+        lf('quicky.open',currentFile)
         items = prjcts.files(currentFile)
         currentDir = slash.dir(currentFile)
         items = items.map(function (i)
@@ -144,39 +151,36 @@ quicky = (function ()
     {
         this.choices.filter(text)
         this.choices.state.selectLine(0)
-        return this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
+        this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
+        return this.layout()
     }
 
     quicky.prototype["postResult"] = function ()
     {
         this.cells.rows = 0
         post.emit('focus','editor')
-        post.emit('quicky',_k_.trim(this.choices.state.selectedText()))
-        return {redraw:false}
+        if (this.choices.num())
+        {
+            post.emit('quicky',_k_.trim(this.choices.state.selectedText()))
+            return {redraw:false}
+        }
+        else
+        {
+            return {redraw:true}
+        }
     }
 
     quicky.prototype["draw"] = function ()
     {
-        var fb, ff
+        var bg, fg
 
         if (this.hidden())
         {
             return
         }
-        ff = theme.quicky_frame_fg
-        fb = theme.quicky_frame_bg
-        this.cells.fill_rect(1,1,-2,-2,' ',null,fb)
-        this.cells.fill_rect(1,0,-2,0,'━',ff,fb)
-        this.cells.fill_rect(0,1,0,-2,'┃',ff,fb)
-        this.cells.fill_rect(-1,1,-1,-2,'┃',ff,fb)
-        this.cells.fill_rect(1,2,-2,2,'━',ff,fb)
-        this.cells.fill_rect(1,-1,-2,-1,'━',ff,fb)
-        this.cells.set(0,0,'┏',ff,fb)
-        this.cells.set(-1,0,'┓',ff,fb)
-        this.cells.set(0,2,'┣',ff,fb)
-        this.cells.set(-1,2,'┫',ff,fb)
-        this.cells.set(0,-1,'┗',ff,fb)
-        this.cells.set(-1,-1,'┛',ff,fb)
+        fg = theme.quicky_frame_fg
+        bg = theme.quicky_frame_bg
+        this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
         this.input.draw()
         return this.choices.draw()
     }

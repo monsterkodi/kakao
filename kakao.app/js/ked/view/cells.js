@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var cells
 
@@ -14,6 +14,7 @@ cells = (function ()
     {
         this.screen = screen
     
+        this["draw_frame"] = this["draw_frame"].bind(this)
         this["fill_rect"] = this["fill_rect"].bind(this)
         this["bg_rect"] = this["bg_rect"].bind(this)
         this["posForEvent"] = this["posForEvent"].bind(this)
@@ -197,6 +198,52 @@ cells = (function ()
                     }
                 }
             }
+        }
+    }
+
+    cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
+    {
+        var bg, fg, x, y, _102_16_, _110_20_, _111_20_
+
+        if (x1 < 0)
+        {
+            x1 = this.cols + x1
+        }
+        if (x2 < 0)
+        {
+            x2 = this.cols + x2
+        }
+        if (y1 < 0)
+        {
+            y1 = this.rows + y1
+        }
+        if (y2 < 0)
+        {
+            y2 = this.rows + y2
+        }
+        opt = (opt != null ? opt : {})
+        opt.pad = ((_102_16_=opt.pad) != null ? _102_16_ : [1,0])
+        fg = ((_110_20_=opt.fg) != null ? _110_20_ : '#888888')
+        bg = ((_111_20_=opt.bg) != null ? _111_20_ : null)
+        this.set(x1,y1,'╭',fg,bg)
+        this.set(x2,y1,'╮',fg,bg)
+        this.set(x1,y2,'╰',fg,bg)
+        this.set(x2,y2,'╯',fg,bg)
+        this.fill_rect(x1 + 1,y1,x2 - 1,y1,'─',fg,bg)
+        this.fill_rect(x1 + 1,y2,x2 - 1,y2,'─',fg,bg)
+        this.fill_rect(x1,y1 + 1,x1,y2 - 1,'│',fg,bg)
+        this.fill_rect(x2,y1 + 1,x2,y2 - 1,'│',fg,bg)
+        for (var _a_ = x = 0, _b_ = opt.pad[0]; (_a_ <= _b_ ? x < opt.pad[0] : x > opt.pad[0]); (_a_ <= _b_ ? ++x : --x))
+        {
+            this.fill_rect(x1 + 1 + x,y1 + 1,x1 + 1 + x,y2 - 1,' ',fg,bg)
+        }
+        var list = _k_.list(opt.hdiv)
+        for (var _c_ = 0; _c_ < list.length; _c_++)
+        {
+            y = list[_c_]
+            this.set(x1,y,'├',fg,bg)
+            this.set(x2,y,'┤',fg,bg)
+            this.fill_rect(x1 + 1,y,x2 - 1,y,'─',fg,bg)
         }
     }
 

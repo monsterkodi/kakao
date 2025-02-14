@@ -20,9 +20,10 @@
             ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
             ┗━━━━━━━━━━━━ status ━━━━━━━━━━━━━━┛
 
-*** todo ***
-** todo
-* todo
+#### todo
+### todo
+## todo
+# todo
 
 - multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
 

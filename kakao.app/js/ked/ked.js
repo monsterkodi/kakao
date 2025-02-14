@@ -10,11 +10,6 @@ let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
 
-import ttio from "./ttio.js"
-import editor from "./editor.js"
-import state from "./state.js"
-import konsole from "./konsole.js"
-
 import screen from "./view/screen.js"
 import cells from "./view/cells.js"
 import status from "./view/status.js"
@@ -23,6 +18,11 @@ import quicky from "./view/quicky.js"
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
 import prjcts from "./util/prjcts.js"
+
+import ttio from "./ttio.js"
+import editor from "./editor.js"
+import state from "./state.js"
+import konsole from "./konsole.js"
 
 
 KED = (function ()
@@ -264,8 +264,9 @@ ked [file]
     {
         var file
 
+        lf('onQuicky',event)
         file = slash.path(slash.dir(this.currentFile),event)
-        lf('event',slash.dir(this.currentFile),this.currentFile,event,file)
+        lf('file',file)
         if (await nfs.fileExists(file))
         {
             return await this.loadFile(file)
@@ -274,7 +275,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _232_22_, _233_23_
+        var _233_22_, _234_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -283,7 +284,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _238_22_, _239_23_
+        var _239_22_, _240_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

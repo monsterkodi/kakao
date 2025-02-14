@@ -1,15 +1,15 @@
 ###
  0000000   000   000  000   0000000  000   000  000   000
-000   000  000   000  000  000       000  000    000 000 
-000 00 00  000   000  000  000       0000000      00000  
-000 0000   000   000  000  000       000  000      000   
- 00000 00   0000000   000   0000000  000   000     000   
+000   000  000   000  000  000       000  000    000 000
+000 00 00  000   000  000  000       0000000      00000
+000 0000   000   000  000  000       000  000      000
+ 00000 00   0000000   000   0000000  000   000     000
 ###
 
 use ../../kxk ▪ kstr slash post noon
-use         ◆ cells input choices
 use ../util ◆ prjcts
 use ..      ◆ editor theme
+use         ◆ cells input choices
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -18,58 +18,65 @@ int = parseInt
 function quicky
 
     @: @screen ->
-        
+
         @name    = 'quicky'
-        
+
         @cells   = new cells   @screen
-        
-        @input   = new input   @screen 'quicky_input' 
+
+        @input   = new input   @screen 'quicky_input'
         @choices = new choices @screen 'quicky_choices'
-        
+
         @choices.state.syntax.setRgxs rgxs
-        
+
         @input.on 'changed' @onInputChanged
-                        
-    #  0000000  000   000   0000000   000   000  
-    # 000       000   000  000   000  000 0 000  
-    # 0000000   000000000  000   000  000000000  
-    #      000  000   000  000   000  000   000  
-    # 0000000   000   000   0000000   00     00  
-    
+
+    #  0000000  000   000   0000000   000   000
+    # 000       000   000  000   000  000 0 000
+    # 0000000   000000000  000   000  000000000
+    #      000  000   000  000   000  000   000
+    # 0000000   000   000   0000000   00     00
+
     show: =>
-        
+
+        @layout()
+        @input.grabFocus()
+
+    layout: =>
+
         x = int @screen.cols/4
         y = int @screen.rows/4
         w = int @screen.cols/2
         h = int @screen.rows/2
-        
+
         c = min h @choices.num()
-        
+
         @input.init    x+2   y+1   w-4  1
         @choices.init  x+2   y+3   w-3  c
         @cells.init    x     y     w    c+4
-        
-        @input.grabFocus()
-        
+
+        # lf 'layout' c @choices.items.length
+
     hide:   => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
     hidden: -> @cells.rows <= 0
     visible: -> @cells.rows > 0
-    
-    #  0000000   00000000   00000000  000   000  
-    # 000   000  000   000  000       0000  000  
-    # 000   000  00000000   0000000   000 0 000  
-    # 000   000  000        000       000  0000  
-    #  0000000   000        00000000  000   000  
-    
+
+    #  0000000   00000000   00000000  000   000
+    # 000   000  000   000  000       0000  000
+    # 000   000  00000000   0000000   000 0 000
+    # 000   000  000        000       000  0000
+    #  0000000   000        00000000  000   000
+
     toggle: currentFile -> if @hidden() then @open(currentFile) else @hide()
     open:   currentFile ->
-        
+
+        lf 'quicky.open' currentFile
+
         items = prjcts.files currentFile
         currentDir = slash.dir currentFile
         items = items.map (i) -> slash.relative i currentDir
-        
+
         ccol = int(@screen.cols/2) - 5
-        
+
         maxind = 0
         indents = []
         for item in items
@@ -77,21 +84,21 @@ function quicky
             indent = slash.dir(item).length if item[0..1]== '..'
             indent += 1 if indent
             maxind = max maxind indent
-            indents.push indent  
-            
+            indents.push indent
+
         items = items.map (i n) => rpad ccol lpad(maxind-indents[n])+i
-        
+
         weight = item ->
-            
+
             p = slash.parse item
-            
+
             w = 0
             w += item.split('/').length * 256
             w += kstr.weight(p.name)
             w
-        
+
         items.sort (a b) -> weight(a) - weight(b)
-        
+
         @input.set '' # previously opened file?
         @choices.set items
         @choices.state.selectLine 0
@@ -100,97 +107,86 @@ function quicky
         @show()
 
     onInputChanged: text =>
-        
+
         @choices.filter text
         @choices.state.selectLine 0
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
-        
+        @layout()
+
     postResult: ->
-        
+
         @cells.rows = 0
         post.emit 'focus' 'editor'
-        post.emit 'quicky' trim(@choices.state.selectedText())
-        redraw:false
-        
-    # 0000000    00000000    0000000   000   000  
-    # 000   000  000   000  000   000  000 0 000  
-    # 000   000  0000000    000000000  000000000  
-    # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000  00     00  
-    
+
+        if @choices.num()
+            post.emit 'quicky' trim(@choices.state.selectedText())
+            redraw:false
+        else
+            redraw:true
+
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
     draw: ->
-        
+
         ⮐ if @hidden()
-        
-        # ┏┳━┓
-        # ┣╋━┫
-        # ┃┃ ┃
-        # ┗┻━┛
-        
-        ff = theme.quicky_frame_fg
-        fb = theme.quicky_frame_bg
-        
-        @cells.fill_rect 1 1 -2 -2 ' ' null fb
-        @cells.fill_rect  1  0 -2  0 '━' ff fb
-        @cells.fill_rect  0  1  0 -2 '┃' ff fb
-        @cells.fill_rect -1  1 -1 -2 '┃' ff fb
-        @cells.fill_rect  1  2 -2  2 '━' ff fb
-        @cells.fill_rect  1 -1 -2 -1 '━' ff fb
-        @cells.set  0  0 '┏' ff fb
-        @cells.set -1  0 '┓' ff fb
-        @cells.set  0  2 '┣' ff fb    
-        @cells.set -1  2 '┫' ff fb    
-        @cells.set  0 -1 '┗' ff fb
-        @cells.set -1 -1 '┛' ff fb
-        
+
+        fg = theme.quicky_frame_fg
+        bg = theme.quicky_frame_bg
+
+        @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
+
         @input.draw()
         @choices.draw()
-        
-    #  0000000  00000000  000      00000000   0000000  000000000  
-    # 000       000       000      000       000          000     
-    # 0000000   0000000   000      0000000   000          000     
-    #      000  000       000      000       000          000     
-    # 0000000   00000000  0000000  00000000   0000000     000     
-    
+
+    #  0000000  00000000  000      00000000   0000000  000000000
+    # 000       000       000      000       000          000
+    # 0000000   0000000   000      0000000   000          000
+    #      000  000       000      000       000          000
+    # 0000000   00000000  0000000  00000000   0000000     000
+
     moveSelection: dir ->
-        
+
         switch dir
             'down'  ➜ @choices.state.selectNextLine()
             'up'    ➜ @choices.state.selectPrevLine()
-            
+
         @input.set @choices.state.selectedText()
         @input.selectAll()
-        
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
+
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000
+    # 0000000    0000000     00000
+    # 000  000   000          000
+    # 000   000  00000000     000
+
     onKey: key event =>
-        
+
         ⮐ if @hidden()
-        
-        switch event.combo 
+
+        switch event.combo
             'esc'       ➜ ⮐ @hide()
             'return'    ➜ ⮐ @postResult()
             'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.state.hasFocus
-        
+
         ⮐ true if @input.onKey key event
         ⮐ true if @choices.onKey key event
         true
-        
+
     onMouse: type sx sy event =>
-        
+
         ⮐ if @hidden()
         ⮐ true if @input.onMouse type sx sy event
         ⮐ true if @choices.onMouse type sx sy event
         true
-        
+
     onWheel: event =>
-        
+
         ⮐ if @hidden()
-        
+
         ⮐ true if @input.onWheel event
         ⮐ true if @choices.onWheel event
         true

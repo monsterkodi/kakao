@@ -7,9 +7,6 @@ import matchr from "../kxk/matchr.js"
 import kstr from "../kxk/kstr.js"
 import post from "../kxk/post.js"
 
-import state from "./state.js"
-import theme from "./theme.js"
-
 import util from "./util/util.js"
 import color from "./util/color.js"
 
@@ -17,6 +14,9 @@ import view from "./view/view.js"
 import scroll from "./view/scroll.js"
 import gutter from "./view/gutter.js"
 import mapscr from "./view/mapscr.js"
+
+import state from "./state.js"
+import theme from "./theme.js"
 
 
 editor = (function ()

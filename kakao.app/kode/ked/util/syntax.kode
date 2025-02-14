@@ -24,10 +24,10 @@ function syntax
             @diss = []
             for line in lines
                 dss = matchr.ranges @config line
-                lf '●' line noon(dss)
                 @diss.push dss
         else
             @diss = kolor.dissect lines @ext
+            lf '●' line noon(dss)
             
 
     getClass: x y =>

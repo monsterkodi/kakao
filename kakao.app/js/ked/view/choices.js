@@ -29,7 +29,11 @@ choices = (function ()
 
     choices.prototype["num"] = function ()
     {
-        return this.items.length
+        if (this.state.s.lines.length === 1 && _k_.empty(this.state.s.lines[0]))
+        {
+            return 0
+        }
+        return this.state.s.lines.length
     }
 
     choices.prototype["weight"] = function (item, text)
@@ -65,11 +69,14 @@ choices = (function ()
         }
         fuzz = new krzl(this.items)
         fuzzied = fuzz.filter(text)
-        lf('fuzzied',fuzzied)
         fuzzied.sort((function (a, b)
         {
             return this.weight(a,text) - this.weight(b,text)
         }).bind(this))
+        if (_k_.empty(fuzzied))
+        {
+            fuzzied = ['']
+        }
         return this.state.loadLines(fuzzied)
     }
 

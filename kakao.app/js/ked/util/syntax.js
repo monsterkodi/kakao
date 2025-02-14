@@ -45,13 +45,13 @@ syntax = (function ()
             {
                 line = list[_a_]
                 dss = matchr.ranges(this.config,line)
-                lf('●',line,_k_.noon((dss)))
                 this.diss.push(dss)
             }
         }
         else
         {
-            return this.diss = kolor.dissect(lines,this.ext)
+            this.diss = kolor.dissect(lines,this.ext)
+            return lf('●',line,_k_.noon((dss)))
         }
     }
 

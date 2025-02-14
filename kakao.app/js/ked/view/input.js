@@ -20,7 +20,6 @@ input = (function ()
     {
         var newText
 
-        lf('onChange',this.state.s.lines.length)
         newText = _k_.trim(this.state.s.lines[0])
         if (this.text.localeCompare(newText))
         {
@@ -43,6 +42,12 @@ input = (function ()
     input.prototype["selectAll"] = function ()
     {
         return this.state.selectLine(0)
+    }
+
+    input.prototype["draw"] = function ()
+    {
+        this.cells.fill_rect(0,0,-1,-1,' ',null,theme.quicky_frame_bg)
+        return input.__super__.draw.call(this)
     }
 
     return input

@@ -7,9 +7,9 @@
 ###
 
 use ../kxk ◆ events matchr kstr post
-use ◆ state theme
 use ./util ◆ util color
 use ./view ◆ view scroll gutter mapscr
+use        ◆ state theme
 
 function editor extends view
 

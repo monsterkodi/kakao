@@ -33,7 +33,7 @@ mapscr = (function ()
         this["clearImages"] = this["clearImages"].bind(this)
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name)
-        this.pixelsPerRow = 3
+        this.pixelsPerRow = 4
         this.pixelsPerCol = 2
         screen.t.on('preResize',this.onPreResize)
     }

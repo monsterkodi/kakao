@@ -1,9 +1,9 @@
 ###
 000  000   000  00000000   000   000  000000000
-000  0000  000  000   000  000   000     000   
-000  000 0 000  00000000   000   000     000   
-000  000  0000  000        000   000     000   
-000  000   000  000         0000000      000   
+000  0000  000  000   000  000   000     000
+000  000 0 000  00000000   000   000     000
+000  000  0000  000        000   000     000
+000  000   000  000         0000000      000
 ###
 
 use .. ◆ editor theme
@@ -11,23 +11,27 @@ use .. ◆ editor theme
 function input extends editor
 
     @: screen name features ->
-        
+
         super screen name []
-        
+
         @state.onLinesChanged = @onChange
-        
+
     onChange: =>
-        
-        lf 'onChange' @state.s.lines.length
+
         newText = trim @state.s.lines[0]
-        
+
         if @text.localeCompare newText
             @text = newText
             @emit 'changed' @text
-        
-    init: x y w h -> @cells.init x y w h         
+
+    init: x y w h -> @cells.init x y w h
     set: text -> @text = trim text; @state.loadLines [@text]
-    
+
     selectAll: -> @state.selectLine 0
-    
+
+    draw: ->
+
+        @cells.fill_rect 0 0 -1 -1 ' ' null theme.quicky_frame_bg
+        super()
+
 export input

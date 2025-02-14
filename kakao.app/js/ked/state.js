@@ -76,7 +76,6 @@ state = (function ()
 
     state.prototype["setSelections"] = function (selections)
     {
-        lf('selections',selections)
         return this.set('selections',util.mergeLineRanges(this.allLines(),selections))
     }
 

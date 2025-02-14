@@ -8,9 +8,9 @@
 
 use ../kxk/nfs
 use ../kxk ▪ karg kstr slash post
-use        ◆ ttio editor state konsole
 use ./view ◆ screen cells status quicky
 use ./util ◆ logfile util prjcts
+use        ◆ ttio editor state konsole
 
 function KED
 
@@ -211,8 +211,9 @@ function KED
     
     onQuicky: event ○=>
         
+        lf 'onQuicky' event
         file = slash.path slash.dir(@currentFile) event
-        lf 'event' slash.dir(@currentFile) @currentFile event file
+        lf 'file' file
         
         if ○ nfs.fileExists file
             ○ @loadFile file

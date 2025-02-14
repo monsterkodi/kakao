@@ -1,28 +1,32 @@
 ###
  0000000  000   000   0000000   000   0000000  00000000   0000000
-000       000   000  000   000  000  000       000       000     
-000       000000000  000   000  000  000       0000000   0000000 
+000       000   000  000   000  000  000       000       000
+000       000000000  000   000  000  000       0000000   0000000
 000       000   000  000   000  000  000       000            000
- 0000000  000   000   0000000   000   0000000  00000000  0000000 
+ 0000000  000   000   0000000   000   0000000  00000000  0000000
 ###
 
 use ../../kxk ▪ kstr slash krzl
-use .. ◆ editor theme 
+use .. ◆ editor theme
 
 function choices extends editor
 
     @: screen name ->
-        
+
         super screen name ['scrllr']
-        
+
     set: @items -> @state.loadLines @items
-        
-    num: -> @items.length
-    
+
+    num: ->
+
+        ⮐ 0 if @state.s.lines.length == 1 and empty @state.s.lines[0]
+
+        @state.s.lines.length
+
     weight: item text ->
-        
+
         p = slash.parse item
-        
+
         idx = item.indexOf text
         idx = item.length*2 if idx < 0
         w  = 0
@@ -32,20 +36,21 @@ function choices extends editor
         w += kstr.levensthein p.ext  text
         w
 
-    filter: text => 
-        
+    filter: text =>
+
         ⮐ if empty @items
-        
+
         if empty text
             @state.loadLines @items
             return
 
         fuzz = new krzl @items
         fuzzied = fuzz.filter text
-        lf 'fuzzied' fuzzied
-        
+
         fuzzied.sort (a b) => @weight(a text) - @weight(b text)
-        
+
+        fuzzied = [''] if empty fuzzied
+
         @state.loadLines fuzzied
-    
+
 export choices
