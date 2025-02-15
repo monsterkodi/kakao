@@ -145,6 +145,16 @@ function text
         lns = [lines[rng[1]][rng[0]..]]
         lns = lns.concat lines[rng[1]+1...rng[3]] if nl > 2
         lns = lns.concat lines[rng[3]][0...rng[2]] 
+        
+    @indexOfLongestLine: lines ->
+        
+        maxIndex = 0
+        maxLength = 0
+        for line,index in lines
+            if line.length > maxLength
+                maxLength = line.length
+                maxIndex  = index
+        maxIndex
 
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     

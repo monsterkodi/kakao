@@ -11,6 +11,8 @@ screen = (function ()
         this.t = t
     
         this["render"] = this["render"].bind(this)
+        this["get_bg"] = this["get_bg"].bind(this)
+        this["get_fg"] = this["get_fg"].bind(this)
         this["get_char"] = this["get_char"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
@@ -24,24 +26,7 @@ screen = (function ()
     {
         this.rows = this.t.rows()
         this.cols = this.t.cols()
-        return this.c = screen.cells(this.rows,this.cols)
-    }
-
-    screen["cells"] = function (rows, cols)
-    {
-        var c, cells, l, lines
-
-        lines = []
-        for (var _a_ = l = 0, _b_ = rows; (_a_ <= _b_ ? l < rows : l > rows); (_a_ <= _b_ ? ++l : --l))
-        {
-            cells = []
-            for (var _c_ = c = 0, _d_ = cols; (_c_ <= _d_ ? c < cols : c > cols); (_c_ <= _d_ ? ++c : --c))
-            {
-                cells.push({bg:null,fg:null,char:' '})
-            }
-            lines.push(cells)
-        }
-        return lines
+        return this.c = util.cells(this.cols,this.rows)
     }
 
     screen.prototype["set"] = function (x, y, char, fg, bg)
@@ -49,8 +34,8 @@ screen = (function ()
         if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {
             this.c[y][x].char = char
-            this.c[y][x].fg = (fg != null ? fg : '')
-            return this.c[y][x].bg = (bg != null ? bg : '')
+            this.c[y][x].fg = (fg != null ? fg : [])
+            return this.c[y][x].bg = (bg != null ? bg : [])
         }
     }
 
@@ -85,6 +70,24 @@ screen = (function ()
             return this.c[y][x].char
         }
         return ''
+    }
+
+    screen.prototype["get_fg"] = function (x, y, fg)
+    {
+        if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
+        {
+            return this.c[y][x].fg
+        }
+        return []
+    }
+
+    screen.prototype["get_bg"] = function (x, y, fg)
+    {
+        if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
+        {
+            return this.c[y][x].bg
+        }
+        return []
     }
 
     screen.prototype["render"] = function ()

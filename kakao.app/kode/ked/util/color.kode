@@ -71,8 +71,9 @@
     
 ###
 
-use ../../kxk ▪ kstr 
-use ../../kxk/ansi
+use ../../kxk ▪ kstr randRange
+use ../../kxk ◆ ansi
+use ◆ util
 
 #ansi.log256Colors()
 #process.exit 0
@@ -88,19 +89,22 @@ class color
     @bg_rgb: c -> # background
     
         ⮐ '\x1b[49m' if empty c
-        [r g b] = color.rgb c
+        [r g b] = c if c is arr
+        [r g b] = color.rgb c if c is str
         "\x1b[48;2;#{r};#{g};#{b}m" 
 
     @fg_rgb: c -> # foreground (text) 
         
         ⮐ '\x1b[39m' if empty c
-        [r g b] = color.rgb c
+        [r g b] = c if c is arr
+        [r g b] = color.rgb c if c is str
         "\x1b[38;2;#{r};#{g};#{b}m" 
 
     @ul_rgb: c -> # underline color
         
         ⮐ '\x1b[59m' if empty c
-        [r g b] = color.rgb c
+        [r g b] = c if c is arr
+        [r g b] = color.rgb c if c is str
         "\x1b[58;2;#{r};#{g};#{b}m" 
         
     @randomBackgroundColors: lines bg fg->
@@ -116,7 +120,47 @@ class color
                 else
                     clr = color.bg_rgb @darken(bg 0.75+Math.random()*0.25)
                 rl +=  clr + char 
-            resl.push rl + '\x1b[49m\x1b[39m'
+            resl.push rl + '\x1b[49m'
         resl
+                
+    @linesForCells: cells ->
+        
+        lines = []
+        for row in cells
+            line = ''
+            for cell,idx in row
+                line += color.bg_rgb cell.bg
+                line += color.fg_rgb cell.fg
+                line += cell.char
+            lines.push line + '\x1b[49m'
+        lines
+        
+    #  0000000   000       0000000   000   000  
+    # 000        000      000   000  000 0 000  
+    # 000  0000  000      000   000  000000000  
+    # 000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   00     00  
+    
+    @glowEffect: cells ->
+        
+        for row,y in cells
+            for cell,x in row
+                nbcs = util.cellNeighborsAtPos cells x y
+                nbcs = nbcs.filter (n) -> n.cell.char != ' '
+                continue if empty nbcs
+                fgs = nbcs.map (n) -> n.cell.fg
+                sum = util.sum fgs
+                scl = randRange 0.22 0.25
+                sum = sum.map (v) -> clamp 0 255 int(scl * v / 9)
+                cell.bg = sum
+        cells
+        
+    @variateCellsColor: cells type amount ->
+        
+        for cell in cells
+            clr = cell.cell[type]
+            f = 1 + randRange(-amount/2 amount/2)
+            clr = clr.map (v) -> int clamp(0 255 v * f)
+            cell.cell[type] = clr
         
 export color

@@ -96,7 +96,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _167_41_, _168_44_, _202_15_, _203_15_, _204_15_, _78_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _165_41_, _166_44_, _200_15_, _201_15_, _202_15_, _78_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -249,8 +249,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_167_41_=theme[this.name + '_cursor_fg']) != null ? _167_41_ : theme['editor_cursor_fg'])
-        bg = ((_168_44_=theme[this.name + '_cursor_multi']) != null ? _168_44_ : theme['editor_cursor_multi'])
+        fg = ((_165_41_=theme[this.name + '_cursor_fg']) != null ? _165_41_ : theme['editor_cursor_fg'])
+        bg = ((_166_44_=theme[this.name + '_cursor_multi']) != null ? _166_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -301,7 +301,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _216_30_, _217_30_, _227_41_
+        var col, row, start, x, y, _214_30_, _215_30_, _225_41_
 
         if ((this.mapscr != null ? this.mapscr.onMouse(event) : undefined))
         {
@@ -428,7 +428,7 @@ editor = (function ()
         {
             return
         }
-        steps = 4
+        steps = 1
         if (event.shift)
         {
             steps *= 2

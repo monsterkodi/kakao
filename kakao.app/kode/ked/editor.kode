@@ -104,12 +104,10 @@ function editor extends view
                 if y == mainCursor[1]
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
-                    # @cells.bg_rect max(0 linel) row -1 row theme[@name + '_cursor_empty']
                     @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
                 else
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@name]
-                    # @cells.bg_rect max(0 linel) row -1 row emptyColor
                     @cells.bg_fill max(0 linel) row -1 row emptyColor
                     
                 if checkColor
@@ -305,7 +303,7 @@ function editor extends view
         
         ⮐ if event.cell[1] >= @cells.y + @cells.rows
         
-        steps  = 4
+        steps  = 1 # should be 4 if not using a mouse pad -> config
         steps *= 2 if event.shift
         steps *= 2 if event.ctrl
         steps *= 2 if event.alt

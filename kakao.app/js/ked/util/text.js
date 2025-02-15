@@ -242,13 +242,32 @@ text = (function ()
         return lns = lns.concat(lines[rng[3]].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
     }
 
+    text["indexOfLongestLine"] = function (lines)
+    {
+        var index, line, maxIndex, maxLength
+
+        maxIndex = 0
+        maxLength = 0
+        var list = _k_.list(lines)
+        for (index = 0; index < list.length; index++)
+        {
+            line = list[index]
+            if (line.length > maxLength)
+            {
+                maxLength = line.length
+                maxIndex = index
+            }
+        }
+        return maxIndex
+    }
+
     text["joinLineColumns"] = function (lineCols)
     {
         var cidx, i, lidx, line, lines, numCols, numLines
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/util/text.kode", 156, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/util/text.kode", 166, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

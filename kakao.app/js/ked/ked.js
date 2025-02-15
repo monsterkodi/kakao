@@ -1,4 +1,4 @@
-var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }};_k_.b4=_k_.k.F256(_k_.k.b(4));_k_.b5=_k_.k.F256(_k_.k.b(5));_k_.b6=_k_.k.F256(_k_.k.b(6));_k_.b7=_k_.k.F256(_k_.k.b(7));_k_.b8=_k_.k.F256(_k_.k.b(8))
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var KED
 
@@ -31,7 +31,7 @@ KED = (function ()
 {
     function KED ()
     {
-        var args, bgs, fgs, h, idx, l, lc, lcs
+        var args, c, cells, dcells, ecells, h, kcells, l
 
         this["draw"] = this["draw"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
@@ -47,44 +47,76 @@ KED = (function ()
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this.version = '0.0.4'
-        h = ''
-        h += _k_.b8("    ███   ███  ████████  ███████  \n")
-        h += _k_.b7("    ███  ███   ███       ███   ███\n")
-        h += _k_.b6("    ███████    ███████   ███   ███\n")
-        h += _k_.b5("    ███  ███   ███       ███   ███\n")
-        h += _k_.b4("    ███   ███  ████████  ███████  \n")
-        h = `╭───╮                ╭───╮                ╭───╮
-│○○○│                │▢▢▢│                ││
-│○○○│                ╰───╯                ││
-│○○○│     ╭───╮    ╭───────╮       ╭──────╯│
-│○○○│   ╭─╯○○○│  ╭─╯▢▢▢▢▢▢▢╰─╮   ╭─╯│
-│○○○│ ╭─╯○○╭──╯ ╭╯▢▢╭─────╮▢▢╰╮ ╭╯╭─────╮│
-│○○○╰─╯○○╭─╯    │▢▢▢│     │▢▢▢│ ││     ││
-│○○○○○○○○│      │▢▢▢╰─────╯▢▢▢│ ││     ││
-│○○○╭─╮○○╰─╮    │▢▢▢╭─────────╯ ││     ││
-│○○○│ ╰─╮○○╰─╮  │▢▢▢│     ╭───╮ ││     ││
-│○○○│   ╰─╮○○╰╮ ╰╮▢▢╰─────╯▢▢╭╯ ╰╮╰─────╯╭╯
-│○○○│     │○○○│  ╰─╮▢▢▢▢▢▢▢╭─╯   ╰─╮╭─╯ 
-╰───╯     ╰───╯    ╰───────╯       ╰───────╯   `
-        l = util.linesForText(h)
-        lcs = util.splitLinesAtCols(l,[16,32])
-        console.log(lcs.length)
-        bgs = ['#0b0','#88f','#f21']
-        bgs = bgs.map(function (b)
+        h = `
+╭───╮                ╭───╮                ╭───╮
+│○○○│                │○○○│                │○○○│
+│○○○│                ╰───╯                │○○○│
+│○○○│     ╭───╮    ╭───────╮       ╭──────╯○○○│
+│○○○│   ╭─╯○○○│  ╭─╯○○○○○○○╰─╮   ╭─╯○○○○○○○○○○│
+│○○○│ ╭─╯○○╭──╯ ╭╯○○╭─────╮○○╰╮ ╭╯○○╭─────╮○○○│
+│○○○╰─╯○○╭─╯    │○○○│     │○○○│ │○○○│     │○○○│
+│○○○○○○○○│      │○○○╰─────╯○○○│ │○○○│     │○○○│
+│○○○╭─╮○○╰─╮    │○○○╭─────────╯ │○○○│     │○○○│
+│○○○│ ╰─╮○○╰─╮  │○○○│     ╭───╮ │○○○│     │○○○│
+│○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯
+│○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯ 
+╰───╯     ╰───╯    ╰───────╯       ╰───────╯   
+`
+        l = util.indentLines(util.linesForText(h))
+        cells = util.cellsForLines(l)
+        kcells = util.cellsInRect(cells,0,0,19,-1)
+        var list = _k_.list(kcells)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            return color.darken(b,0.3)
-        })
-        fgs = ['#0f0','#ccf','#fa1']
-        var list = _k_.list(lcs)
-        for (idx = 0; idx < list.length; idx++)
-        {
-            lc = list[idx]
-            lcs[idx] = color.randomBackgroundColors(lc,bgs[idx],fgs[idx])
+            c = list[_a_]
+            switch (c.cell.char)
+            {
+                case ' ':
+                case '○':
+                    c.cell.fg = [0,80,0]
+                    break
+                default:
+                    c.cell.fg = [0,255,0]
+            }
+
         }
-        l = util.joinLineColumns(lcs)
-        l = util.indentLines(l)
+        ecells = util.cellsInRect(cells,19,0,35,-1)
+        var list1 = _k_.list(ecells)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            c = list1[_b_]
+            switch (c.cell.char)
+            {
+                case ' ':
+                case '○':
+                    c.cell.fg = [0,0,155]
+                    break
+                default:
+                    c.cell.fg = [120,120,255]
+            }
+
+        }
+        dcells = util.cellsInRect(cells,36,0,-1,-1)
+        var list2 = _k_.list(dcells)
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            c = list2[_c_]
+            switch (c.cell.char)
+            {
+                case ' ':
+                case '○':
+                    c.cell.fg = [105,0,0]
+                    break
+                default:
+                    c.cell.fg = [255,160,0]
+            }
+
+        }
+        color.glowEffect(cells)
+        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.6)
+        l = util.indentLines(color.linesForCells(cells),0)
         h = l.join('\n')
-        h = '\n\n' + h + '\n'
+        h = '\n' + h + '\n'
         args = karg(`
 ked [file]
     options                      **
@@ -97,7 +129,7 @@ ked [file]
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _145_64_
+            var _125_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -145,7 +177,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _195_10_
+        var _175_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -172,7 +204,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _233_22_
+        var lines, start, text, _213_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -317,7 +349,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _339_22_, _340_23_
+        var _319_22_, _320_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -326,7 +358,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _345_22_, _346_23_
+        var _325_22_, _326_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

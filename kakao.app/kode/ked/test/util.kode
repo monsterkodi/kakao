@@ -11,6 +11,34 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
 
 ▸ util
 
+    ▸ cells
+        
+        l = util.linesForText """
+            012
+            abc
+            XYZ
+            """
+            
+        cells = util.cellsForLines l
+        
+        rect = util.cellsInRect cells 0 0 1 1
+        for c in rect
+            c.cell.fg = [255 0 0]
+            
+        cells[0][0].fg ▸ [255 0 0]
+        cells[1][1].fg ▸ [255 0 0]
+        cells[2][2].fg ▸ []
+        
+        util.clampCellRect cells 0 0 1 1 ▸ [0 0 1 1]
+        util.clampCellRect cells -1 -1 1 1 ▸ [0 0 1 1]
+        
+        util.cellsInRect(cells 0 0 1 1).map((n) -> n.cell.char) ▸ ['0' '1' 'a' 'b']
+        util.cellsInRect(cells 1 1 1 1).map((n) -> n.cell.char) ▸ ['b']
+        util.cellsInRect(cells 0 0 2 0).map((n) -> n.cell.char) ▸ ['0' '1' '2']
+        util.cellsInRect(cells -2 -1 -1 -1).map((n) -> n.cell.char) ▸ ['Y' 'Z']
+        
+        util.cellNeighborsAtPos(cells 0 0).map((n) -> n.cell.char) ▸ ['0' '1' 'a' 'b']
+
     ▸ extendLineRangesToPosition 
     
         lines = ['123' '45' '6']
@@ -340,8 +368,6 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
     
     ▸ insertTextAtPositions
     
-        insert = util.insertTextAtPositions
-    
         ▸ single spans
     
             lines = util.linesForText 
@@ -350,13 +376,13 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 line 2
                 """
             
-            insert lines ''       [[0 0]]       ▸ [['line 1' 'line 2'] [[0 0]]]
-            insert lines 'a '     [[0 0]]       ▸ [['a line 1' 'line 2'] [[2 0]]]
-            insert lines 'a '     [[0 0] [0 1]] ▸ [['a line 1' 'a line 2'] [[2 0] [2 1]]]
+            util.insertTextAtPositions lines ''       [[0 0]]       ▸ [['line 1' 'line 2'] [[0 0]]]
+            util.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [['a line 1' 'line 2'] [[2 0]]]
+            util.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [['a line 1' 'a line 2'] [[2 0] [2 1]]]
     
-            insert lines 'x'      [[0 0] [2 0]] ▸ [['xlixne 1' 'line 2'] [[1 0] [4 0]]]
-            insert lines 'x'      [[0 0] [2 0] [6 0]] ▸ [['xlixne 1x' 'line 2'] [[1 0] [4 0] [9 0]]]
-            insert lines 'z'      [[0 0] [2 0] [6 0] [1 1] [2 1] [4 1]] ▸ [['zlizne 1z' 'lziznez 2'] [[1 0] [4 0] [9 0] [2 1] [4 1] [7 1]]]
+            util.insertTextAtPositions lines 'x'      [[0 0] [2 0]] ▸ [['xlixne 1' 'line 2'] [[1 0] [4 0]]]
+            util.insertTextAtPositions lines 'x'      [[0 0] [2 0] [6 0]] ▸ [['xlixne 1x' 'line 2'] [[1 0] [4 0] [9 0]]]
+            util.insertTextAtPositions lines 'z'      [[0 0] [2 0] [6 0] [1 1] [2 1] [4 1]] ▸ [['zlizne 1z' 'lziznez 2'] [[1 0] [4 0] [9 0] [2 1] [4 1] [7 1]]]
             
         ▸ multiple lines into single cursor
         
@@ -366,9 +392,9 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 line 2
                 """
                 
-            insert lines 'a\nb'   [[0 0]]       ▸ [['a' 'b' 'line 1' 'line 2'] [[0 2]]]
-            insert lines 'a\nb'   [[2 0]]       ▸ [['lia' 'bne 1' 'line 2'] [[1 1]]]
-            insert lines 'a\nb'   [[0 1]]       ▸ [['line 1' 'a' 'b' 'line 2'] [[0 3]]]
+            util.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [['a' 'b' 'line 1' 'line 2'] [[0 2]]]
+            util.insertTextAtPositions lines 'a\nb'   [[2 0]]       ▸ [['lia' 'bne 1' 'line 2'] [[1 1]]]
+            util.insertTextAtPositions lines 'a\nb'   [[0 1]]       ▸ [['line 1' 'a' 'b' 'line 2'] [[0 3]]]
 
         ▸ multiple lines into multi cursor
         
@@ -378,9 +404,9 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 5678
                 """
                 
-            insert lines 'X\nY'      [[0 0] [0 1]]              ▸ [['X1234' 'Y5678'] [[1 0] [1 1]]]
-            insert lines 'X\nY'      [[0 0] [1 0] [2 0] [3 0]]  ▸ [['X1Y2X3Y4' '5678'] [[1 0] [3 0] [5 0] [7 0]]]
-            insert lines '@\n$\n%'   [[0 0] [1 0] [2 0] [3 0]]  ▸ [['@1$2%3@4' '5678'] [[1 0] [3 0] [5 0] [7 0]]]
+            util.insertTextAtPositions lines 'X\nY'      [[0 0] [0 1]]              ▸ [['X1234' 'Y5678'] [[1 0] [1 1]]]
+            util.insertTextAtPositions lines 'X\nY'      [[0 0] [1 0] [2 0] [3 0]]  ▸ [['X1Y2X3Y4' '5678'] [[1 0] [3 0] [5 0] [7 0]]]
+            util.insertTextAtPositions lines '@\n$\n%'   [[0 0] [1 0] [2 0] [3 0]]  ▸ [['@1$2%3@4' '5678'] [[1 0] [3 0] [5 0] [7 0]]]
             
         ▸ newlines
         
@@ -390,14 +416,14 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 line 2
                 """
                 
-            insert lines '\n' [[2 0]] ▸ [['li' 'ne 1' 'line 2'] [[0 1]]]
-            insert lines '\n' [[6 0]] ▸ [['line 1' '' 'line 2'] [[0 1]]]
+            util.insertTextAtPositions lines '\n' [[2 0]] ▸ [['li' 'ne 1' 'line 2'] [[0 1]]]
+            util.insertTextAtPositions lines '\n' [[6 0]] ▸ [['line 1' '' 'line 2'] [[0 1]]]
                                               
-            insert lines '\n' [[0 1]] ▸ [['line 1' '' 'line 2'] [[0 2]]]
-            insert lines '\n' [[2 1]] ▸ [['line 1' 'li' 'ne 2'] [[0 2]]]
-            insert lines '\n' [[6 1]] ▸ [['line 1' 'line 2' ''] [[0 2]]]
+            util.insertTextAtPositions lines '\n' [[0 1]] ▸ [['line 1' '' 'line 2'] [[0 2]]]
+            util.insertTextAtPositions lines '\n' [[2 1]] ▸ [['line 1' 'li' 'ne 2'] [[0 2]]]
+            util.insertTextAtPositions lines '\n' [[6 1]] ▸ [['line 1' 'line 2' ''] [[0 2]]]
                                               
-            insert lines '\n' [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
+            util.insertTextAtPositions lines '\n' [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
             
             lines = util.linesForText 
                 """ 
@@ -407,9 +433,9 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 ◆4
                 """
             
-            insert lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [['◆' '1' '◆' '2' '◆' '3' '◆' '4'] [[0 1] [0 3] [0 5] [0 7]]]
+            util.insertTextAtPositions lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [['◆' '1' '◆' '2' '◆' '3' '◆' '4'] [[0 1] [0 3] [0 5] [0 7]]]
             
-        ▸ insert into indented lines
+        ▸ util.insertTextAtPositions into indented lines
                 
             lines = util.linesForText
                 """ 
@@ -420,16 +446,16 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
             
             ▸ single span 
         
-                insert lines '~!' [[4 1]] ▸ [['◆1' '    ~!◆2' '        ◆3'] [[6 1]]]
-                insert lines '#{' [[2 2]] ▸ [['◆1' '    ◆2' '  #{      ◆3'] [[4 2]]]
+                util.insertTextAtPositions lines '~!' [[4 1]] ▸ [['◆1' '    ~!◆2' '        ◆3'] [[6 1]]]
+                util.insertTextAtPositions lines '#{' [[2 2]] ▸ [['◆1' '    ◆2' '  #{      ◆3'] [[4 2]]]
                 
             ▸ newline into single cursor
     
-                insert lines '\n' [[4 1]] ▸ [['◆1' '    ' '    ◆2' '        ◆3'] [[4 2]]]
+                util.insertTextAtPositions lines '\n' [[4 1]] ▸ [['◆1' '    ' '    ◆2' '        ◆3'] [[4 2]]]
             
             ▸ multiple lines into single cursor
             
-                insert lines 'a\nb' [[4 1]] ▸ [['◆1' '    a' '    b' '    ◆2' '        ◆3'] [[4 3]]]
+                util.insertTextAtPositions lines 'a\nb' [[4 1]] ▸ [['◆1' '    a' '    b' '    ◆2' '        ◆3'] [[4 3]]]
         
     # 00     00   0000000   000   000  00000000  000      000  000   000  00000000   0000000  
     # 000   000  000   000  000   000  000       000      000  0000  000  000       000       

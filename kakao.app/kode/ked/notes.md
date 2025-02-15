@@ -25,6 +25,11 @@
 ## todo
 # todo
 
+- greeter 
+    - glow header
+    - recent files
+    - browser
+    
 - session
     - save main cursor positions per file and apply on load
     - load last session by default?  
@@ -40,12 +45,6 @@
     - merge with macro?
     - fix layout issues for larger repositories with longer file names
 
-- mapscroll
-    - add scrollbar handle
-    - update on line changes
-    - fix scrolling to bottom for long files
-    - show cursors and selections
-    - split image into chunks
 
 
 - find and search
@@ -57,6 +56,13 @@
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
                 
+- mapscroll
+    - add scrollbar handle
+    - update on line changes
+    - fix scrolling to bottom for long files
+    - show cursors and selections
+    - split image into chunks
+
 - multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
 
 - prefs 
@@ -78,8 +84,6 @@
 
 - nice to have
     
-    - greeter 
-        - recent files
     - tabs
     - git
     

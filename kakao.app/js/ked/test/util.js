@@ -1,5 +1,7 @@
 var toExport = {}
-var insert, line, lines, spans
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+
+var c, cells, l, line, lines, rect, spans
 
 import util from "../util/util.js"
 
@@ -13,6 +15,45 @@ global.lf = function (...args)
 }
 toExport["util"] = function ()
 {
+    section("cells", function ()
+    {
+        l = util.linesForText(`012
+abc
+XYZ`)
+        cells = util.cellsForLines(l)
+        rect = util.cellsInRect(cells,0,0,1,1)
+        var list = _k_.list(rect)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            c = list[_a_]
+            c.cell.fg = [255,0,0]
+        }
+        compare(cells[0][0].fg,[255,0,0])
+        compare(cells[1][1].fg,[255,0,0])
+        compare(cells[2][2].fg,[])
+        compare(util.clampCellRect(cells,0,0,1,1),[0,0,1,1])
+        compare(util.clampCellRect(cells,-1,-1,1,1),[0,0,1,1])
+        compare(util.cellsInRect(cells,0,0,1,1).map(function (n)
+        {
+            return n.cell.char
+        }),['0','1','a','b'])
+        compare(util.cellsInRect(cells,1,1,1,1).map(function (n)
+        {
+            return n.cell.char
+        }),['b'])
+        compare(util.cellsInRect(cells,0,0,2,0).map(function (n)
+        {
+            return n.cell.char
+        }),['0','1','2'])
+        compare(util.cellsInRect(cells,-2,-1,-1,-1).map(function (n)
+        {
+            return n.cell.char
+        }),['Y','Z'])
+        compare(util.cellNeighborsAtPos(cells,0,0).map(function (n)
+        {
+            return n.cell.char
+        }),['0','1','a','b'])
+    })
     section("extendLineRangesToPosition", function ()
     {
         lines = ['123','45','6']
@@ -287,67 +328,66 @@ def`)
     })
     section("insertTextAtPositions", function ()
     {
-        insert = util.insertTextAtPositions
         section("single spans", function ()
         {
             lines = util.linesForText(`line 1
 line 2`)
-            compare(insert(lines,'',[[0,0]]),[['line 1','line 2'],[[0,0]]])
-            compare(insert(lines,'a ',[[0,0]]),[['a line 1','line 2'],[[2,0]]])
-            compare(insert(lines,'a ',[[0,0],[0,1]]),[['a line 1','a line 2'],[[2,0],[2,1]]])
-            compare(insert(lines,'x',[[0,0],[2,0]]),[['xlixne 1','line 2'],[[1,0],[4,0]]])
-            compare(insert(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
-            compare(insert(lines,'z',[[0,0],[2,0],[6,0],[1,1],[2,1],[4,1]]),[['zlizne 1z','lziznez 2'],[[1,0],[4,0],[9,0],[2,1],[4,1],[7,1]]])
+            compare(util.insertTextAtPositions(lines,'',[[0,0]]),[['line 1','line 2'],[[0,0]]])
+            compare(util.insertTextAtPositions(lines,'a ',[[0,0]]),[['a line 1','line 2'],[[2,0]]])
+            compare(util.insertTextAtPositions(lines,'a ',[[0,0],[0,1]]),[['a line 1','a line 2'],[[2,0],[2,1]]])
+            compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0]]),[['xlixne 1','line 2'],[[1,0],[4,0]]])
+            compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0],[6,0]]),[['xlixne 1x','line 2'],[[1,0],[4,0],[9,0]]])
+            compare(util.insertTextAtPositions(lines,'z',[[0,0],[2,0],[6,0],[1,1],[2,1],[4,1]]),[['zlizne 1z','lziznez 2'],[[1,0],[4,0],[9,0],[2,1],[4,1],[7,1]]])
         })
         section("multiple lines into single cursor", function ()
         {
             lines = util.linesForText(`line 1
 line 2`)
-            compare(insert(lines,'a\nb',[[0,0]]),[['a','b','line 1','line 2'],[[0,2]]])
-            compare(insert(lines,'a\nb',[[2,0]]),[['lia','bne 1','line 2'],[[1,1]]])
-            compare(insert(lines,'a\nb',[[0,1]]),[['line 1','a','b','line 2'],[[0,3]]])
+            compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[['a','b','line 1','line 2'],[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'a\nb',[[2,0]]),[['lia','bne 1','line 2'],[[1,1]]])
+            compare(util.insertTextAtPositions(lines,'a\nb',[[0,1]]),[['line 1','a','b','line 2'],[[0,3]]])
         })
         section("multiple lines into multi cursor", function ()
         {
             lines = util.linesForText(`1234
 5678`)
-            compare(insert(lines,'X\nY',[[0,0],[0,1]]),[['X1234','Y5678'],[[1,0],[1,1]]])
-            compare(insert(lines,'X\nY',[[0,0],[1,0],[2,0],[3,0]]),[['X1Y2X3Y4','5678'],[[1,0],[3,0],[5,0],[7,0]]])
-            compare(insert(lines,'@\n$\n%',[[0,0],[1,0],[2,0],[3,0]]),[['@1$2%3@4','5678'],[[1,0],[3,0],[5,0],[7,0]]])
+            compare(util.insertTextAtPositions(lines,'X\nY',[[0,0],[0,1]]),[['X1234','Y5678'],[[1,0],[1,1]]])
+            compare(util.insertTextAtPositions(lines,'X\nY',[[0,0],[1,0],[2,0],[3,0]]),[['X1Y2X3Y4','5678'],[[1,0],[3,0],[5,0],[7,0]]])
+            compare(util.insertTextAtPositions(lines,'@\n$\n%',[[0,0],[1,0],[2,0],[3,0]]),[['@1$2%3@4','5678'],[[1,0],[3,0],[5,0],[7,0]]])
         })
         section("newlines", function ()
         {
             lines = util.linesForText(`line 1
 line 2`)
-            compare(insert(lines,'\n',[[2,0]]),[['li','ne 1','line 2'],[[0,1]]])
-            compare(insert(lines,'\n',[[6,0]]),[['line 1','','line 2'],[[0,1]]])
-            compare(insert(lines,'\n',[[0,1]]),[['line 1','','line 2'],[[0,2]]])
-            compare(insert(lines,'\n',[[2,1]]),[['line 1','li','ne 2'],[[0,2]]])
-            compare(insert(lines,'\n',[[6,1]]),[['line 1','line 2',''],[[0,2]]])
-            compare(insert(lines,'\n',[[0,0],[0,1]]),[['','line 1','','line 2'],[[0,1],[0,3]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[2,0]]),[['li','ne 1','line 2'],[[0,1]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[6,0]]),[['line 1','','line 2'],[[0,1]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[0,1]]),[['line 1','','line 2'],[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[2,1]]),[['line 1','li','ne 2'],[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[6,1]]),[['line 1','line 2',''],[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[0,0],[0,1]]),[['','line 1','','line 2'],[[0,1],[0,3]]])
             lines = util.linesForText(`◆1
 ◆2
 ◆3
 ◆4`)
-            compare(insert(lines,'\n',[[1,0],[1,1],[1,2],[1,3]]),[['◆','1','◆','2','◆','3','◆','4'],[[0,1],[0,3],[0,5],[0,7]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[1,0],[1,1],[1,2],[1,3]]),[['◆','1','◆','2','◆','3','◆','4'],[[0,1],[0,3],[0,5],[0,7]]])
         })
-        section("insert into indented lines", function ()
+        section("util.insertTextAtPositions into indented lines", function ()
         {
             lines = util.linesForText(`◆1
     ◆2
         ◆3`)
             section("single span", function ()
             {
-                compare(insert(lines,'~!',[[4,1]]),[['◆1','    ~!◆2','        ◆3'],[[6,1]]])
-                compare(insert(lines,'#{',[[2,2]]),[['◆1','    ◆2','  #{      ◆3'],[[4,2]]])
+                compare(util.insertTextAtPositions(lines,'~!',[[4,1]]),[['◆1','    ~!◆2','        ◆3'],[[6,1]]])
+                compare(util.insertTextAtPositions(lines,'#{',[[2,2]]),[['◆1','    ◆2','  #{      ◆3'],[[4,2]]])
             })
             section("newline into single cursor", function ()
             {
-                compare(insert(lines,'\n',[[4,1]]),[['◆1','    ','    ◆2','        ◆3'],[[4,2]]])
+                compare(util.insertTextAtPositions(lines,'\n',[[4,1]]),[['◆1','    ','    ◆2','        ◆3'],[[4,2]]])
             })
             section("multiple lines into single cursor", function ()
             {
-                compare(insert(lines,'a\nb',[[4,1]]),[['◆1','    a','    b','    ◆2','        ◆3'],[[4,3]]])
+                compare(util.insertTextAtPositions(lines,'a\nb',[[4,1]]),[['◆1','    a','    b','    ◆2','        ◆3'],[[4,3]]])
             })
         })
     })
