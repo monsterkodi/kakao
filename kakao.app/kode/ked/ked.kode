@@ -4,10 +4,13 @@
 0000000    0000000   000   000  
 000  000   000       000   000  
 000   000  00000000  0000000    
+
+    bun --watch js/ked/ked.js kode/ked/kde.kode
+
 ###
 
-use ../kxk/nfs
 use ../kxk ▪ karg kstr slash post
+use ../kxk ◆ nfs
 use ./view ◆ screen cells status quicky
 use ./util ◆ logfile util prjcts session
 use        ◆ ttio editor state konsole
@@ -106,7 +109,7 @@ function KED
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
         
-    reloadFile: => @loadFile @status.file
+    reloadFile: => @loadFile @currentFile
         
     loadFile: p ○=>
         
@@ -118,14 +121,15 @@ function KED
         else
             @status.file = slash.normalize p
             @currentFile = slash.path process.cwd() p
-            
-        lf '@currentFile' @currentFile
 
-        text =○ nfs.read slash.untilde(p)
+        @currentFile =○ nfs.resolveSymlink @currentFile
+        # lf 'ked.loadFile @currentFile' @currentFile
+
+        text =○ nfs.read @currentFile
         
         lines = util.linesForText text
         
-        @editor.state.syntax.ext = slash.ext p
+        @editor.state.syntax.ext = slash.ext @currentFile
         @editor.state.loadLines lines
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
@@ -147,8 +151,8 @@ function KED
         
         text = @editor.state.s.lines.asMutable().join '\n'
         
-        if valid @status.file
-            ○ nfs.write slash.untilde(@status.file) text
+        if valid @currentFile
+            ○ nfs.write @currentFile text
             @reloadFile()
             
     saveAs: => lfc 'saveAs'

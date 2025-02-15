@@ -25,9 +25,18 @@
 ## todo
 # todo
 
-- multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
+- session
+    - save main cursor positions per file and apply on load
+    - load last session by default?  
+    - global session for recent files?
+    
+- config
+
+    - similar to session, but loads and merges (to handle multiple instances)
 
 - quick open cmd+p
+    - cmd+. to open in browser mode for now?
+    - add cwd in browser mode
     - merge with macro?
     - fix layout issues for larger repositories with longer file names
 
@@ -38,6 +47,7 @@
     - show cursors and selections
     - split image into chunks
 
+
 - find and search
     - each multiline editor has its own knobbed finder at bottom
     - heach finder has a search toggle, which searches in in all files
@@ -46,6 +56,8 @@
             - if executed via shortcut: selected or cursor word
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
+                
+- multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
 
 - prefs 
     - file positions
@@ -66,6 +78,8 @@
 
 - nice to have
     
+    - greeter 
+        - recent files
     - tabs
     - git
     

@@ -61,9 +61,11 @@ class prjcts
         
         # lf 'prjcts.index ▪' prjPath
         
+        prjPath = null if prjPath == '/'
+        
         prjPath ?= slash.dir file
         
-        # lf 'prjcts.index ▸' prjPath
+        lf 'prjcts.index ▸' prjPath
         
         if @indexing
             ⮐ if @indexing == prjPath

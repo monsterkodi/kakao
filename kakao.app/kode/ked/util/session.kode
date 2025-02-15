@@ -5,7 +5,14 @@
          000  000            000       000  000  000   000  000  0000    
     0000000   00000000  0000000   0000000   000   0000000   000   000    
 
-    key value store with delayed saving to disk
+    key value store with delayed saving to disk  
+    
+    is coupled to the process: doesn't care about other instances
+    
+    stores 
+    
+        - main cursor positions per file
+        - recent file history
 ###
 
 use ../../kxk ◆ noon events slash post nfs sds
@@ -13,16 +20,14 @@ use ../../kxk/util ▪ isEqual defaults uuid
 
 function session extends events
 
-    @: opt={} ->
+    @: opt ->
 
         @name = uuid()
-        
-        opt.separator ?= '|'
-        opt.timeout   ?= 4000
-        
-        ⮐ error 'no name for session?' if not @name
 
-        @sep  = opt.separator
+        opt ?= {}        
+        opt.timeout ?= 4000
+        
+        @sep  = opt.separator ? '|'
         
         @file = slash.path "~/.config/ked/sessions/#{@name}.noon"
         
@@ -52,7 +57,7 @@ function session extends events
         lf "session[#{@name}].set" key value
 
         ⮐ if not key is str
-        ⮐ if isEqual @get(key) value
+        ⮐ if eql @get(key) value
         ⮐ if @get(key) == value
         ⮐ @del(key) if empty value
 

@@ -27,7 +27,7 @@ function syntax
                 @diss.push dss
         else
             @diss = kolor.dissect lines @ext
-            # lf '●' line noon(dss)
+            # lf '●' @diss
             
     getClass: x y =>
         

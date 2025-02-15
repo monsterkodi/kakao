@@ -99,6 +99,7 @@ class theme
         'property':                             '#ff2'   
         'function call':                        '#fe0'   
         'obj':                                  '#fc0'   
+        'module':                               '#fc0'   
         'function':                             '#fa0'   
         'punct method':                         '#a60'   
         'punct function':                       '#840'   

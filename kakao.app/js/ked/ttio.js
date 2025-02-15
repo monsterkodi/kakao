@@ -450,6 +450,10 @@ TTIO = (function ()
             return parseInt(s)
         }); code = _a_[0]; px = _a_[1]; py = _a_[2]
 
+        if (_k_.empty(this.cellsz))
+        {
+            return
+        }
         cx = parseInt(px / this.cellsz[0])
         cy = parseInt(py / this.cellsz[1])
         event = {type:'release',cell:[cx,cy],pixel:[px,py]}
@@ -556,11 +560,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _353_23_
+        var diff, _355_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_353_23_=this.lastClick) != null ? _353_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_355_23_=this.lastClick) != null ? _355_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -636,7 +640,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _429_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _431_23_
 
         if ((this.pasteBuffer != null))
         {

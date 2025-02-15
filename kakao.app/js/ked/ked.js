@@ -2,13 +2,13 @@ var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48
 
 var KED
 
-import nfs from "../kxk/nfs.js"
-
 import kxk from "../kxk.js"
 let karg = kxk.karg
 let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
+
+import nfs from "../kxk/nfs.js"
 
 import screen from "./view/screen.js"
 import cells from "./view/cells.js"
@@ -65,7 +65,7 @@ ked [file]
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _46_64_
+            var _49_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -113,7 +113,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _96_10_
+        var _99_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -135,12 +135,12 @@ ked [file]
 
     KED.prototype["reloadFile"] = function ()
     {
-        return this.loadFile(this.status.file)
+        return this.loadFile(this.currentFile)
     }
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _133_22_
+        var lines, start, text, _137_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -153,10 +153,10 @@ ked [file]
             this.status.file = slash.normalize(p)
             this.currentFile = slash.path(process.cwd(),p)
         }
-        lf('@currentFile',this.currentFile)
-        text = await nfs.read(slash.untilde(p))
+        this.currentFile = await nfs.resolveSymlink(this.currentFile)
+        text = await nfs.read(this.currentFile)
         lines = util.linesForText(text)
-        this.editor.state.syntax.ext = slash.ext(p)
+        this.editor.state.syntax.ext = slash.ext(this.currentFile)
         this.editor.state.loadLines(lines)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
@@ -170,9 +170,9 @@ ked [file]
         var text
 
         text = this.editor.state.s.lines.asMutable().join('\n')
-        if (!_k_.empty(this.status.file))
+        if (!_k_.empty(this.currentFile))
         {
-            await nfs.write(slash.untilde(this.status.file),text)
+            await nfs.write(this.currentFile,text)
             return this.reloadFile()
         }
     }
@@ -285,7 +285,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _239_22_, _240_23_
+        var _243_22_, _244_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -294,7 +294,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _245_22_, _246_23_
+        var _249_22_, _250_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

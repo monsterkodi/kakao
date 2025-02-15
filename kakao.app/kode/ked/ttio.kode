@@ -297,6 +297,8 @@ function TTIO extends events
                 
         [code px py] = csi[1..-2].split(';').map (s) -> parseInt s
         
+        ⮐ if empty @cellsz
+        
         cx = parseInt px/@cellsz[0]
         cy = parseInt py/@cellsz[1]        
         

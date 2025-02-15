@@ -118,6 +118,7 @@ kode
         or
         and
         not
+        eql
         yes
         ok
         when

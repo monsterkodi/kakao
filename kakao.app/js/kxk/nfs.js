@@ -14,13 +14,14 @@ class NFS
         opt = (opt != null ? opt : {})
         opt.recursive = ((_24_22_=opt.recursive) != null ? _24_22_ : true)
         opt.found = ((_25_18_=opt.found) != null ? _25_18_ : [])
+        dir = await NFS.resolveSymlink(dir)
         dirents = await fsp.readdir(dir,{withFileTypes:true})
         var list = _k_.list(dirents)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             dirent = list[_a_]
             file = dirent.name
-            isDir = !dirent.isFile()
+            isDir = dirent.isDirectory()
             if (isDir && _k_.in(file,['node_modules','.git']))
             {
                 continue
@@ -38,6 +39,21 @@ class NFS
     static list = NFS.listdir
 
     static dirlist = NFS.listdir
+
+    static async resolveSymlink (p)
+    {
+        var r, stat
+
+        stat = await fsp.lstat(p)
+        if (stat.isSymbolicLink())
+        {
+            lf('readlink',p,stat)
+            r = await fsp.readlink(p)
+            return r
+        }
+        lf('no symlink',p)
+        return p
+    }
 
     static async read (p)
     {

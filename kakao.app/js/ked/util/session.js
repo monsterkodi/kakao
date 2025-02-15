@@ -18,9 +18,9 @@ let uuid = util.uuid
 session = (function ()
 {
     _k_.extend(session, events)
-    function session (opt = {})
+    function session (opt)
     {
-        var _20_22_, _21_22_
+        var _28_20_, _30_30_
 
         this["save"] = this["save"].bind(this)
         this["load"] = this["load"].bind(this)
@@ -32,13 +32,9 @@ session = (function ()
         this["get"] = this["get"].bind(this)
         this["keypath"] = this["keypath"].bind(this)
         this.name = uuid()
-        opt.separator = ((_20_22_=opt.separator) != null ? _20_22_ : '|')
-        opt.timeout = ((_21_22_=opt.timeout) != null ? _21_22_ : 4000)
-        if (!this.name)
-        {
-            return console.error('no name for session?')
-        }
-        this.sep = opt.separator
+        opt = (opt != null ? opt : {})
+        opt.timeout = ((_28_20_=opt.timeout) != null ? _28_20_ : 4000)
+        this.sep = ((_30_30_=opt.separator) != null ? _30_30_ : '|')
         this.file = slash.path(`~/.config/ked/sessions/${this.name}.noon`)
         lf('session',this.file)
         return session.__super__.constructor.apply(this, arguments)
@@ -51,7 +47,7 @@ session = (function ()
 
     session.prototype["get"] = function (key, value)
     {
-        var _41_45_
+        var _46_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -62,17 +58,18 @@ session = (function ()
 
     session.prototype["set"] = function (key, value)
     {
-        var _59_14_
+        var _64_14_
 
         lf(`session[${this.name}].set`,key,value)
         if (!(_k_.isStr(key)))
         {
             return
         }
-        if (isEqual(this.get(key),value))
+        if (eql)
         {
             return
         }
+        this.get(key)(value)
         if (this.get(key) === value)
         {
             return
@@ -81,7 +78,7 @@ session = (function ()
         {
             return this.del(key)
         }
-        this.data = ((_59_14_=this.data) != null ? _59_14_ : {})
+        this.data = ((_64_14_=this.data) != null ? _64_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         return this.delayedSave()
     }

@@ -55,7 +55,7 @@ class prjcts
 
     static async index (file)
     {
-        var exists, prjPath, result, walk, _70_19_
+        var exists, prjPath, result, walk, _72_19_
 
         if (!(_k_.isStr(file)))
         {
@@ -73,14 +73,19 @@ class prjcts
             return
         }
         prjPath = await nfs.prj(file)
+        if (prjPath === '/')
+        {
+            prjPath = null
+        }
         prjPath = (prjPath != null ? prjPath : slash.dir(file))
+        lf('prjcts.index ▸',prjPath)
         if (this.indexing)
         {
             if (this.indexing === prjPath)
             {
                 return
             }
-            this.queue = ((_70_19_=this.queue) != null ? _70_19_ : [])
+            this.queue = ((_72_19_=this.queue) != null ? _72_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)

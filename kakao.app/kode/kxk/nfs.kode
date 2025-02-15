@@ -24,17 +24,22 @@ class NFS
         opt.recursive ?= true
         opt.found ?= []
         
+        dir =○ NFS.resolveSymlink dir
+        
+        # lf 'nfs.listdir' dir
+        
         dirents =○ fsp.readdir dir withFileTypes:true
         
         for dirent in dirents
     
             file  = dirent.name
-            isDir = not dirent.isFile()
+            isDir = dirent.isDirectory()
             
             if isDir and file in ['node_modules' '.git'] 
                 continue # is it a good idea to hardcode this here?
             
             absPath = slash.path dir file
+            # lf 'isDir' isDir absPath dirent
             
             opt.found.push
                 type: isDir ? 'dir' : 'file'
@@ -49,6 +54,16 @@ class NFS
     
     @list:    NFS.listdir
     @dirlist: NFS.listdir
+    
+    @resolveSymlink: p ○->
+        
+        stat =○ fsp.lstat p
+        if stat.isSymbolicLink()
+            lf 'readlink' p stat
+            r =○ fsp.readlink p
+            ⮐ r
+        lf 'no symlink' p
+        p
     
     # 00000000   00000000   0000000   0000000    
     # 000   000  000       000   000  000   000  
