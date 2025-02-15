@@ -103,4 +103,20 @@ class color
         [r g b] = color.rgb c
         "\x1b[58;2;#{r};#{g};#{b}m" 
         
+    @randomBackgroundColors: lines bg fg->
+        
+        resl = []
+        for line in lines
+            rl = ''
+            rl += color.fg_rgb fg
+            for char,idx in line
+                clr = ''
+                if char == ' '
+                    clr = '\x1b[49m' if idx and line[idx-1] != ' '
+                else
+                    clr = color.bg_rgb @darken(bg 0.75+Math.random()*0.25)
+                rl +=  clr + char 
+            resl.push rl + '\x1b[49m\x1b[39m'
+        resl
+        
 export color

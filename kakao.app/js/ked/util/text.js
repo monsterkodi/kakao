@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var text
 
@@ -149,6 +149,14 @@ text = (function ()
         return this.numIndent(lines[pos[1]])
     }
 
+    text["indentLines"] = function (lines, num = 4)
+    {
+        return lines.map(function (l)
+        {
+            return _k_.lpad(num) + l
+        })
+    }
+
     text["lineRangeAtPos"] = function (lines, pos)
     {
         return [0,pos[1],lines[pos[1]].length,pos[1]]
@@ -232,6 +240,69 @@ text = (function ()
             lns = lns.concat(lines.slice(rng[1] + 1, typeof rng[3] === 'number' ? rng[3] : -1))
         }
         return lns = lns.concat(lines[rng[3]].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
+    }
+
+    text["joinLineColumns"] = function (lineCols)
+    {
+        var cidx, i, lidx, line, lines, numCols, numLines
+
+        for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
+        {
+            _k_.assert("kode/ked/util/text.kode", 156, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+        }
+        numLines = lineCols[0].length
+        numCols = lineCols.length
+        lines = []
+        for (var _c_ = lidx = 0, _d_ = numLines; (_c_ <= _d_ ? lidx < numLines : lidx > numLines); (_c_ <= _d_ ? ++lidx : --lidx))
+        {
+            line = ''
+            for (var _e_ = cidx = 0, _f_ = numCols; (_e_ <= _f_ ? cidx < numCols : cidx > numCols); (_e_ <= _f_ ? ++cidx : --cidx))
+            {
+                line += lineCols[cidx][lidx]
+            }
+            lines.push(line)
+        }
+        return lines
+    }
+
+    text["splitTextAtCols"] = function (text, cols)
+    {
+        var col, idx, prv, spans
+
+        spans = []
+        var list = _k_.list(cols)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            col = list[idx]
+            prv = (idx > 0 ? cols[idx - 1] : 0)
+            spans.push(text.slice(prv, typeof col === 'number' ? col : -1))
+        }
+        spans.push(text.slice(col))
+        return spans
+    }
+
+    text["splitLinesAtCols"] = function (lines, cols)
+    {
+        var cls, i, idx, line, span, spans
+
+        cls = []
+        for (var _a_ = i = 0, _b_ = cols.length; (_a_ <= _b_ ? i <= cols.length : i >= cols.length); (_a_ <= _b_ ? ++i : --i))
+        {
+            cls.push([])
+        }
+        var list = _k_.list(lines)
+        for (var _c_ = 0; _c_ < list.length; _c_++)
+        {
+            line = list[_c_]
+            spans = this.splitTextAtCols(line,cols)
+            var list1 = _k_.list(spans)
+            for (idx = 0; idx < list1.length; idx++)
+            {
+                span = list1[idx]
+                cls[idx].push(span)
+            }
+        }
+        return cls
     }
 
     text["splitLineRange"] = function (lines, rng, includeEmpty = true)

@@ -90,6 +90,10 @@ function text
 
         @numIndent lines[pos[1]]
         
+    @indentLines: lines num=4 ->
+        
+        lines.map (l) -> lpad(num) + l
+        
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
     # 000      000  000 0 000  0000000   0000000   
@@ -146,7 +150,41 @@ function text
     # 000       000   000  000      000     000     
     # 0000000   00000000   000      000     000     
     #      000  000        000      000     000     
-    # 0000000   000        0000000  000     000     
+    # 0000000   000        0000000  000     000   
+    
+    @joinLineColumns: lineCols ->
+        ▴ lineCols[i].length == lineCols[i+1].length for i in 0...lineCols.length-1
+        numLines = lineCols[0].length
+        numCols  = lineCols.length
+        lines = []
+        for lidx in 0...numLines
+            line = ''
+            for cidx in 0...numCols
+                line += lineCols[cidx][lidx]
+            lines.push line
+        lines
+    
+    @splitTextAtCols: text cols -> 
+        
+        spans = []
+        for col,idx in cols
+            prv = idx > 0 ? cols[idx-1] : 0
+            spans.push text[prv...col]
+        spans.push text[col..]
+        spans
+    
+    @splitLinesAtCols: lines cols ->
+
+        cls = []
+        for i in 0..cols.length
+            cls.push []
+        
+        for line in lines 
+            spans = @splitTextAtCols line cols
+            for span,idx in spans
+                cls[idx].push span
+        
+        cls
     
     @splitLineRange: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
         
