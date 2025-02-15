@@ -34,16 +34,8 @@ class Slash
         p = Slash.normalize(p)
         if (!p)
         {
-            console.log('no pee?',p)
+            console.log('slash.path -- no pee?',p)
             return p
-        }
-        if (p.endsWith(':.') && p.length === 3)
-        {
-            p = p.slice(0, 2)
-        }
-        if (p.endsWith(':') && p.length === 2)
-        {
-            p = p + '/'
         }
         if (tilde)
         {
@@ -54,7 +46,7 @@ class Slash
 
     static normalize (path)
     {
-        var c, comp, i, prun
+        var c, comp, i, p, prun
 
         if (!(_k_.isStr(path)))
         {
@@ -95,7 +87,16 @@ class Slash
             }
             prun.push(c)
         }
-        return prun.join('/')
+        p = prun.join('/')
+        if (p.endsWith(':.') && p.length === 3)
+        {
+            p = p.slice(0, 2)
+        }
+        if (p.endsWith(':') && p.length === 2)
+        {
+            p = p + '/'
+        }
+        return p
     }
 
     static unslash (p)
@@ -164,6 +165,25 @@ class Slash
             return dd + rc.join('/')
         }
         return rel
+    }
+
+    static absolute (p, cwd)
+    {
+        if (_k_.empty(p))
+        {
+            return ''
+        }
+        if (p.startsWith('~/'))
+        {
+            p = Slash.untilde(p)
+        }
+        p = Slash.unenv(p)
+        if (Slash.isRelative(p) && !_k_.empty(cwd))
+        {
+            p = cwd + '/' + p
+        }
+        p = Slash.normalize(p)
+        return p
     }
 
     static split (p)
@@ -410,7 +430,7 @@ class Slash
 
     static isAbsolute (p)
     {
-        return (p != null ? p[0] : undefined) === Slash.sep
+        return _k_.in((p != null ? p[0] : undefined),[Slash.sep,'~'])
     }
 
     static isRelative (p)
@@ -449,23 +469,23 @@ class Slash
 
     static home ()
     {
-        var _314_35_
+        var _326_35_
 
-        return ((_314_35_=globalThis.homeDir) != null ? _314_35_ : process.env.HOME)
+        return ((_326_35_=globalThis.homeDir) != null ? _326_35_ : process.env.HOME)
     }
 
     static user ()
     {
-        var _315_35_
+        var _327_35_
 
-        return ((_315_35_=globalThis.useName) != null ? _315_35_ : process.env.USER)
+        return ((_327_35_=globalThis.useName) != null ? _327_35_ : process.env.USER)
     }
 
     static tmpdir ()
     {
-        var _316_35_
+        var _328_35_
 
-        return ((_316_35_=globalThis.tmpDir) != null ? _316_35_ : '/tmp')
+        return ((_328_35_=globalThis.tmpDir) != null ? _328_35_ : '/tmp')
     }
 
     static tmpfile (ext)

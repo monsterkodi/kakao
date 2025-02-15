@@ -31,6 +31,7 @@ class prjcts
 
         if (!_k_.empty(path))
         {
+            path = slash.absolute(path,process.cwd())
             if (prjPath = this.allFiles[path])
             {
                 return prjPath
@@ -54,7 +55,7 @@ class prjcts
 
     static async index (file)
     {
-        var exists, prjPath, result, walk, _65_19_
+        var exists, prjPath, result, walk, _70_19_
 
         if (!(_k_.isStr(file)))
         {
@@ -65,6 +66,7 @@ class prjcts
         {
             return
         }
+        file = slash.absolute(file,process.cwd())
         exists = await nfs.exists(file)
         if (!exists)
         {
@@ -78,7 +80,7 @@ class prjcts
             {
                 return
             }
-            this.queue = ((_65_19_=this.queue) != null ? _65_19_ : [])
+            this.queue = ((_70_19_=this.queue) != null ? _70_19_ : [])
             if (!(_k_.in(prjPath,this.queue)))
             {
                 this.queue.push(prjPath)
@@ -104,7 +106,6 @@ class prjcts
                 file = list[_a_]
                 this.allFiles[file] = prjPath
             }
-            lc('prjcts indexed',prjPath,this.projects)
             post.emit('prjcts.project.indexed',prjPath)
         }
         delete this.indexing

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var choices
 
@@ -16,30 +16,45 @@ choices = (function ()
     _k_.extend(choices, editor)
     function choices (screen, name)
     {
+        this["draw"] = this["draw"].bind(this)
         this["filter"] = this["filter"].bind(this)
+        this["weight"] = this["weight"].bind(this)
+        this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,['scrllr'])
     }
 
-    choices.prototype["set"] = function (items)
+    choices.prototype["set"] = function (items, key)
     {
+        var lines
+
         this.items = items
+        this.key = key
     
-        return this.state.loadLines(this.items)
+        this.fuzzied = this.items
+        lines = (this.key ? this.items.map(this.extract) : this.items)
+        return this.state.loadLines(lines)
     }
 
     choices.prototype["num"] = function ()
     {
-        if (this.state.s.lines.length === 1 && _k_.empty(this.state.s.lines[0]))
-        {
-            return 0
-        }
-        return this.state.s.lines.length
+        return this.fuzzied.length
+    }
+
+    choices.prototype["current"] = function ()
+    {
+        return this.fuzzied[this.state.mainCursor()[1]]
+    }
+
+    choices.prototype["extract"] = function (item)
+    {
+        return (this.key && _k_.isObj(item) ? item[this.key] : item)
     }
 
     choices.prototype["weight"] = function (item, text)
     {
         var idx, p, w
 
+        item = this.extract(item)
         p = slash.parse(item)
         idx = item.indexOf(text)
         if (idx < 0)
@@ -56,7 +71,7 @@ choices = (function ()
 
     choices.prototype["filter"] = function (text)
     {
-        var fuzz, fuzzied
+        var fuzz, lines
 
         if (_k_.empty(this.items))
         {
@@ -64,20 +79,26 @@ choices = (function ()
         }
         if (_k_.empty(text))
         {
-            this.state.loadLines(this.items)
-            return
+            return this.set(this.items,this.key)
         }
-        fuzz = new krzl(this.items)
-        fuzzied = fuzz.filter(text)
-        fuzzied.sort((function (a, b)
+        fuzz = new krzl({values:this.items,extract:this.extract})
+        this.fuzzied = fuzz.filter(text)
+        this.fuzzied.sort((function (a, b)
         {
             return this.weight(a,text) - this.weight(b,text)
         }).bind(this))
-        if (_k_.empty(fuzzied))
+        lines = this.fuzzied.map(this.extract)
+        if (_k_.empty(lines))
         {
-            fuzzied = ['']
+            lines = ['']
         }
-        return this.state.loadLines(fuzzied)
+        return this.state.loadLines(lines)
+    }
+
+    choices.prototype["draw"] = function ()
+    {
+        this.cells.bg_fill(0,0,-1,-1,'#f80')
+        return choices.__super__.draw.call(this)
     }
 
     return choices

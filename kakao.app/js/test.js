@@ -78,6 +78,10 @@ for (var _d_ = 0; _d_ < list3.length; _d_++)
         for (var _e_ = 0; _e_ < list4.length; _e_++)
         {
             file = list4[_e_]
+            if (file.type === 'dir')
+            {
+                continue
+            }
             test = await import(file.path)
             tester.test(test.default)
         }

@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int, quicky
 
@@ -7,6 +7,8 @@ let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
 let noon = kxk.noon
+
+import nfs from "../../kxk/nfs.js"
 
 import prjcts from "../util/prjcts.js"
 
@@ -30,6 +32,9 @@ quicky = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onInputChanged"] = this["onInputChanged"].bind(this)
+        this["openFileInEditor"] = this["openFileInEditor"].bind(this)
+        this["gotoFileOrDirectory"] = this["gotoFileOrDirectory"].bind(this)
+        this["gotoDirectory"] = this["gotoDirectory"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
         this["show"] = this["show"].bind(this)
@@ -93,15 +98,21 @@ quicky = (function ()
 
     quicky.prototype["open"] = function (currentFile)
     {
-        var ccol, currentDir, indent, indents, item, items, maxind, weight
+        return this.gotoFile(currentFile)
+    }
 
-        lf('quicky.open',currentFile)
-        items = prjcts.files(currentFile)
-        currentDir = slash.dir(currentFile)
-        items = items.map(function (i)
+    quicky.prototype["gotoFile"] = function (currentFile)
+    {
+        var ccol, indent, indents, item, items, maxind, weight
+
+        this.currentFile = currentFile
+    
+        items = prjcts.files(this.currentFile)
+        this.currentDir = slash.dir(this.currentFile)
+        items = items.map((function (i)
         {
-            return slash.relative(i,currentDir)
-        })
+            return slash.relative(i,this.currentDir)
+        }).bind(this))
         ccol = parseInt(this.screen.cols / 2) - 5
         maxind = 0
         indents = []
@@ -109,11 +120,7 @@ quicky = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
-            indent = 0
-            if (item.slice(0, 2) === '..')
-            {
-                indent = slash.dir(item).length
-            }
+            indent = slash.dir(item).length
             if (indent)
             {
                 indent += 1
@@ -147,6 +154,74 @@ quicky = (function ()
         return this.show()
     }
 
+    quicky.prototype["gotoDirectory"] = async function (dir)
+    {
+        var item, items, parent, tilde, weight
+
+        if (_k_.empty(dir))
+        {
+            return
+        }
+        this.currentDir = slash.untilde(dir)
+        items = await nfs.list(this.currentDir,{recursive:false})
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            tilde = slash.tilde(item.path)
+            item.tilde = (tilde === '~' ? item.path : tilde)
+        }
+        parent = slash.dir(this.currentDir)
+        if (!_k_.empty(parent))
+        {
+            items.push({type:'dir',file:slash.name(parent),path:parent,tilde:'..'})
+        }
+        weight = function (item)
+        {
+            var p, w
+
+            p = slash.parse(item.tilde)
+            w = 0
+            w += item.tilde.split('/').length * 256
+            w += kstr.weight(p.name)
+            return w
+        }
+        items.sort(function (a, b)
+        {
+            return weight(a) - weight(b)
+        })
+        this.input.set('..')
+        this.input.selectAll()
+        this.choices.set(items,'tilde')
+        this.choices.state.selectLine(0)
+        this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
+        this.choices.state.setView([0,0])
+        return this.show()
+    }
+
+    quicky.prototype["gotoFileOrDirectory"] = async function (path)
+    {
+        var isDir
+
+        isDir = await nfs.dirExists(path)
+        if (isDir)
+        {
+            return await this.gotoDirectory(path)
+        }
+        else
+        {
+            return this.openFileInEditor(path)
+        }
+    }
+
+    quicky.prototype["openFileInEditor"] = function (file)
+    {
+        this.cells.rows = 0
+        post.emit('focus','editor')
+        post.emit('quicky',file)
+        return {redraw:false}
+    }
+
     quicky.prototype["onInputChanged"] = function (text)
     {
         this.choices.filter(text)
@@ -157,17 +232,54 @@ quicky = (function ()
 
     quicky.prototype["postResult"] = function ()
     {
+        var current
+
+        switch (this.input.current())
+        {
+            case '/':
+                return this.gotoDirectory('/')
+
+            case '~':
+                return this.gotoDirectory('~')
+
+            case '.':
+                return this.gotoDirectory(this.currentDir)
+
+            case '..':
+                return this.gotoDirectory(slash.dir(this.currentDir))
+
+        }
+
+        current = this.choices.current()
+        if (_k_.empty(current) && !_k_.empty(this.input.current()))
+        {
+            return this.gotoFileOrDirectory(this.input.current())
+        }
+        if (current.tilde)
+        {
+            return this.gotoFileOrDirectory(current.tilde)
+        }
+        return this.returnToEditor()
+    }
+
+    quicky.prototype["returnToEditor"] = function ()
+    {
         this.cells.rows = 0
         post.emit('focus','editor')
         if (this.choices.num())
         {
-            post.emit('quicky',_k_.trim(this.choices.state.selectedText()))
+            post.emit('quicky',this.currentChoice())
             return {redraw:false}
         }
         else
         {
             return {redraw:true}
         }
+    }
+
+    quicky.prototype["currentChoice"] = function ()
+    {
+        return _k_.trim(this.choices.current())
     }
 
     quicky.prototype["draw"] = function ()

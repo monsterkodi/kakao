@@ -15,10 +15,12 @@ function input extends editor
         super screen name []
 
         @state.onLinesChanged = @onChange
+        
+    current: => trim @state.s.lines[0]
 
     onChange: =>
 
-        newText = trim @state.s.lines[0]
+        newText = @current()
 
         if @text.localeCompare newText
             @text = newText

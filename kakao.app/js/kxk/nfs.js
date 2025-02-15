@@ -35,15 +35,9 @@ class NFS
         return opt.found
     }
 
-    static async list (p, opt)
-    {
-        return await NFS.listdir(p,opt)
-    }
+    static list = NFS.listdir
 
-    static async dirlist (p, opt)
-    {
-        return await NFS.listdir(p,opt)
-    }
+    static dirlist = NFS.listdir
 
     static async read (p)
     {
@@ -59,31 +53,25 @@ class NFS
 
     static async write (p, text)
     {
-        var mode, stat, tmpfile
+        var dir, file, tmp
 
-        try
+        file = slash.untilde(p)
+        dir = slash.dir(file)
+        tmp = slash.tmpfile()
+        await fsp.mkdir(dir,{recursive:true})
+        if (await fsp.access(dir,fs.constants.W_OK))
         {
-            tmpfile = slash.tmpfile()
-            try
-            {
-                stat = await fsp.stat(p)
-                mode = stat.mode
-                await fsp.access(p,(fs.R_OK | fs.F_OK))
-            }
-            catch (err)
-            {
-                mode = 0o666
-                await fsp.mkdir(slash.dir(p),{recursive:true})
-            }
-            await fsp.writeFile(tmpfile,text,{mode:mode})
-            await fsp.rename(tmpfile,p)
-            return p
+            return {error:`can't access ${dir}`}
         }
-        catch (err)
+        if (await fsp.writeFile(tmp,text))
         {
-            console.error("nfs.write -- " + String(err))
-            return ''
+            return {error:`can't write ${tmp}`}
         }
+        if (await fsp.rename(tmp,file))
+        {
+            return {error:`can't move ${tmp} to ${file}`}
+        }
+        return file
     }
 
     static async info (p)
@@ -108,7 +96,7 @@ class NFS
         {
             if (err.code !== 'EEXIST')
             {
-                return console.error("nfs.mkdir -- " + String(err))
+                return {error:`nfs.mkdir -- ${String(err)}`}
             }
         }
         return p
@@ -116,16 +104,13 @@ class NFS
 
     static async exists (p)
     {
-        var r
-
         try
         {
             if (!(p != null))
             {
                 return
             }
-            p = slash.path(slash.removeLinePos(p))
-            r = await fsp.access(p,fs.R_OK | fs.F_OK)
+            p = slash.absolute(slash.removeLinePos(p),process.cwd())
             return await fsp.stat(p)
         }
         catch (err)
@@ -237,6 +222,10 @@ class NFS
         var pth
 
         pth = slash.path(p)
+        if (await NFS.isFile(pth))
+        {
+            pth = slash.dir(pth)
+        }
         while (pth.length && pth !== "/")
         {
             if (await NFS.isDir(slash.path(pth,'.git')))
@@ -253,6 +242,7 @@ class NFS
             }
             pth = slash.dir(pth)
         }
+        return pth
     }
 
     static async isWritable (p)

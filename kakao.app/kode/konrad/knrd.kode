@@ -76,7 +76,6 @@ bundleDir = ->
 bump = ○->
     
     ○ nfs.write bundlePath('kode/konrad/version.kode') "export #{version+1}\n"
-    # ○ nfs.write bundlePath('js/konrad/version.js') "export default #{version+1};"
     
 #  0000000    0000000   000000000  000   000  00000000  00000000   
 # 000        000   000     000     000   000  000       000   000  

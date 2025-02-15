@@ -15,16 +15,23 @@ function choices extends editor
 
         super screen name ['scrllr']
 
-    set: @items -> @state.loadLines @items
+    set: @items @key -> 
+        
+        @fuzzied = @items
+        
+        lines = @key ? @items.map(@extract) : @items
+        
+        @state.loadLines lines
 
-    num: ->
+    num: -> @fuzzied.length
 
-        ⮐ 0 if @state.s.lines.length == 1 and empty @state.s.lines[0]
+    current: -> @fuzzied[@state.mainCursor()[1]]
 
-        @state.s.lines.length
+    extract: item => @key and item is obj ? item[@key] : item        
+        
+    weight: item text =>
 
-    weight: item text ->
-
+        item = @extract item
         p = slash.parse item
 
         idx = item.indexOf text
@@ -41,16 +48,24 @@ function choices extends editor
         ⮐ if empty @items
 
         if empty text
-            @state.loadLines @items
-            return
+            ⮐ @set @items @key
 
-        fuzz = new krzl @items
-        fuzzied = fuzz.filter text
+        fuzz = new krzl values:@items extract:@extract
+        
+        @fuzzied = fuzz.filter text
 
-        fuzzied.sort (a b) => @weight(a text) - @weight(b text)
+        @fuzzied.sort (a b) => @weight(a text) - @weight(b text)
+        
+        lines = @fuzzied.map @extract
 
-        fuzzied = [''] if empty fuzzied
+        lines = [''] if empty lines
 
-        @state.loadLines fuzzied
+        @state.loadLines lines
+        
+    draw: =>
+
+        @cells.bg_fill 0 0 -1 -1 '#f80'
+        
+        super()
 
 export choices

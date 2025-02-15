@@ -1,23 +1,22 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isFunc: function (o) {return typeof o === 'function'}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var Krzl
 
 
 Krzl = (function ()
 {
-    function Krzl (opt)
+    function Krzl (values, opt)
     {
         var _24_31_, _25_41_
 
-        if (_k_.isArr(opt))
+        this.values = values
+    
+        if (_k_.isObj(this.values) && _k_.empty(opt))
         {
-            opt = {values:opt}
+            opt = this.values
+            this.values = opt.values
         }
-        else
-        {
-            opt = (opt != null ? opt : {})
-        }
-        this.values = opt.values
+        opt = (opt != null ? opt : {})
         this.weight = opt.weight
         this.extract = ((_24_31_=opt.extract) != null ? _24_31_ : function (i)
         {

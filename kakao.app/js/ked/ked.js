@@ -18,6 +18,7 @@ import quicky from "./view/quicky.js"
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
 import prjcts from "./util/prjcts.js"
+import session from "./util/session.js"
 
 import ttio from "./ttio.js"
 import editor from "./editor.js"
@@ -60,10 +61,11 @@ ked [file]
         process.on('uncaughtException',this.onException)
         this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
+        this.session = new session
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _44_64_
+            var _46_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -109,10 +111,11 @@ ked [file]
         return new KED()
     }
 
-    KED.prototype["quit"] = function (msg)
+    KED.prototype["quit"] = async function (msg)
     {
-        var _92_10_
+        var _96_10_
 
+        await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         ;(this.t != null ? this.t.quit() : undefined)
         return this.logfile.close(function ()
@@ -137,7 +140,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _127_22_
+        var lines, start, text, _133_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -150,6 +153,7 @@ ked [file]
             this.status.file = slash.normalize(p)
             this.currentFile = slash.path(process.cwd(),p)
         }
+        lf('@currentFile',this.currentFile)
         text = await nfs.read(slash.untilde(p))
         lines = util.linesForText(text)
         this.editor.state.syntax.ext = slash.ext(p)
@@ -262,12 +266,18 @@ ked [file]
 
     KED.prototype["onQuicky"] = async function (event)
     {
-        var file
+        var exists, file
 
-        lf('onQuicky',event)
-        file = slash.path(slash.dir(this.currentFile),event)
-        lf('file',file)
-        if (await nfs.fileExists(file))
+        if (slash.isAbsolute(event))
+        {
+            file = event
+        }
+        else
+        {
+            file = slash.path(slash.dir(this.currentFile),event)
+        }
+        exists = await nfs.fileExists(file)
+        if (exists)
         {
             return await this.loadFile(file)
         }
@@ -275,7 +285,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _233_22_, _234_23_
+        var _239_22_, _240_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -284,7 +294,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _239_22_, _240_23_
+        var _245_22_, _246_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

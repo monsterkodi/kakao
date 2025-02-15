@@ -1,0 +1,122 @@
+###
+     0000000  00000000   0000000   0000000  000   0000000   000   000    
+    000       000       000       000       000  000   000  0000  000    
+    0000000   0000000   0000000   0000000   000  000   000  000 0 000    
+         000  000            000       000  000  000   000  000  0000    
+    0000000   00000000  0000000   0000000   000   0000000   000   000    
+
+    key value store with delayed saving to disk
+###
+
+use ../../kxk ◆ noon events slash post nfs sds
+use ../../kxk/util ▪ isEqual defaults uuid
+
+function session extends events
+
+    @: opt={} ->
+
+        @name = uuid()
+        
+        opt.separator ?= '|'
+        opt.timeout   ?= 4000
+        
+        ⮐ error 'no name for session?' if not @name
+
+        @sep  = opt.separator
+        
+        @file = slash.path "~/.config/ked/sessions/#{@name}.noon"
+        
+        lf 'session' @file
+        
+    keypath: key => key.split @sep
+    
+    #  0000000   00000000  000000000
+    # 000        000          000   
+    # 000  0000  0000000      000   
+    # 000   000  000          000   
+    #  0000000   00000000     000   
+        
+    get: key value =>
+        
+        ⮐ clone(value) if not key?.split?
+        clone sds.get @data @keypath(key) value
+         
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: key value =>
+        
+        lf "session[#{@name}].set" key value
+
+        ⮐ if not key is str
+        ⮐ if isEqual @get(key) value
+        ⮐ if @get(key) == value
+        ⮐ @del(key) if empty value
+
+        @data ?= {}
+        sds.set @data @keypath(key) value
+        @delayedSave()
+        
+    del: key => 
+    
+        ⮐ if not @data
+        sds.del @data @keypath(key)
+        @delayedSave()
+        
+    delayedSave: =>
+        
+        clearTimeout @timer
+        @timer = setTimeout (=> @save()) @timeout
+                
+    clear: =>
+        
+        @data = {}
+        
+        clearTimeout @timer
+        
+    # 000       0000000    0000000   0000000    
+    # 000      000   000  000   000  000   000  
+    # 000      000   000  000000000  000   000  
+    # 000      000   000  000   000  000   000  
+    # 0000000   0000000   000   000  0000000    
+    
+    reload: => @load()
+    
+    load: ○=>
+        
+        try
+            @data =○ noon.load @file
+        catch err
+            error "session -- can't load '#{@file}':" err
+            {}
+        
+    #  0000000   0000000   000   000  00000000
+    # 000       000   000  000   000  000     
+    # 0000000   000000000   000 000   0000000 
+    #      000  000   000     000     000     
+    # 0000000   000   000      0      00000000
+
+    save: ○=>
+        
+        ⮐ if not @file
+        ⮐ if empty @data
+        
+        clearTimeout @timer
+        @timer = null
+
+        try
+            text = noon.stringify(@data {indent:2 maxalign:8})+'\n'
+
+            result =○ nfs.write @file text
+            if result.error
+                lf 'save failed!' @file result
+            else
+                lf 'session.saved' result @data
+
+        catch err
+            lf "session -- can't save to '#{@file}':" err
+        
+export session

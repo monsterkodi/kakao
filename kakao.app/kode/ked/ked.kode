@@ -9,7 +9,7 @@
 use ../kxk/nfs
 use ../kxk ▪ karg kstr slash post
 use ./view ◆ screen cells status quicky
-use ./util ◆ logfile util prjcts
+use ./util ◆ logfile util prjcts session
 use        ◆ ttio editor state konsole
 
 function KED
@@ -38,6 +38,8 @@ function KED
         @viewSizes = konsole: [0 0]
         
         @logfile = new logfile
+        
+        @session = new session
                     
         @t = new ttio
         
@@ -86,7 +88,9 @@ function KED
     
     @run: -> new KED()
     
-    quit: msg ->
+    quit: msg ○->
+        
+        ○ @session.save()
         
         lf "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" 
         @t?.quit()
@@ -114,6 +118,8 @@ function KED
         else
             @status.file = slash.normalize p
             @currentFile = slash.path process.cwd() p
+            
+        lf '@currentFile' @currentFile
 
         text =○ nfs.read slash.untilde(p)
         
@@ -211,11 +217,13 @@ function KED
     
     onQuicky: event ○=>
         
-        lf 'onQuicky' event
-        file = slash.path slash.dir(@currentFile) event
-        lf 'file' file
+        if slash.isAbsolute event
+            file = event
+        else
+            file = slash.path slash.dir(@currentFile) event
         
-        if ○ nfs.fileExists file
+        exists =○ nfs.fileExists file
+        if exists
             ○ @loadFile file
                                 
     #  0000000  000  0000000  00000000  
@@ -228,8 +236,6 @@ function KED
     
         @viewSizes[name] = [x min(y @screen.rows-1)]
         
-        # @editor.mapscr?.onPreResize()
-        # @konsole.mapscr?.onPreResize()
         @editor.mapscr?.onResize()
         @konsole.mapscr?.onResize()
         

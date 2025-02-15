@@ -12,14 +12,14 @@
 
 function Krzl
 
-    @: (opt) ->
+    @: @values opt ->
         
-        if opt is arr
-            opt = values:opt
-        else 
-            opt ?= {}
+        if @values is obj and empty opt
+            opt = @values
+            @values = opt.values
+        
+        opt ?= {}
             
-        @values  = opt.values             # the values to sort
         @weight  = opt.weight             # customize result order, can be undefined
         @extract = opt.extract ? (i) -> i # only works on strings if @extract isn't provided
         @sortByLength = opt.sortByLength ? true # by default, results are sorted by length

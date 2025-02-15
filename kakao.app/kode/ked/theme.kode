@@ -152,7 +152,8 @@ class theme
         
         'file':                                 '#aaa'   
         'ext':                                  '#444'   
-        'dir':                                  '#88f'   
+        'dir_leaf':                             '#aaf'   
+        'dir':                                  '#66f'   
         'dir_punct':                            '#226'   
 
         '.text':                                '#aaf'   
@@ -160,7 +161,7 @@ class theme
         '.js':                                  '#0a0'   
         '.noon':                                '#0a0'   
         '.json':                                '#d0d'   
-        '.md':                                  '#aaf'   
+        '.md':                                  '#f4f'   
 
 for key,value of theme.syntax
     if key[0] == '.'

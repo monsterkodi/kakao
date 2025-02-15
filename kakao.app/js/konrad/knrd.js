@@ -106,7 +106,7 @@ gatherFiles = async function ()
 
 knrd = async function (files = [], opt = {})
 {
-    var compText, file, icon, ignore, rule, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _117_23_
+    var compText, file, icon, ignore, rule, skip, srcFile, srcText, tgtFile, tgtText, transpiled, _116_23_
 
     if (_k_.isStr(files))
     {
@@ -126,7 +126,7 @@ knrd = async function (files = [], opt = {})
             files = []
         }
     }
-    opt.verbose = ((_117_23_=opt.verbose) != null ? _117_23_ : opt.debug)
+    opt.verbose = ((_116_23_=opt.verbose) != null ? _116_23_ : opt.debug)
     if (opt.verbose)
     {
         console.log('opt',opt)

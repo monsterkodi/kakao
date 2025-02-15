@@ -7,22 +7,22 @@ import nfs from "../../kxk/nfs.js"
 
 class walker
 {
-    static sourceFileExtensions = ['kode','coffee','styl','swift','pug','md','noon','txt','json','sh','py','cpp','mm','zig','cc','c','cs','h','hpp','ts','js','mjs','frag','vert','config','lua']
+    static sourceFileExtensions = ['kode','styl','pug','md','noon','txt','sh','mm','zig','h','hpp','config','lua']
 
     constructor (cfg)
     {
-        var _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _25_25_
+        var _20_25_, _21_25_, _22_25_, _23_25_, _24_25_, _25_25_, _26_25_
 
         this.cfg = cfg
     
         this.cfg.files = []
-        this.cfg.maxDepth = ((_19_25_=this.cfg.maxDepth) != null ? _19_25_ : 3)
-        this.cfg.dotFiles = ((_20_25_=this.cfg.dotFiles) != null ? _20_25_ : false)
-        this.cfg.maxFiles = ((_21_25_=this.cfg.maxFiles) != null ? _21_25_ : 15000)
-        this.cfg.ignore = ((_22_25_=this.cfg.ignore) != null ? _22_25_ : ['node_modules','build','Build','Library','Applications'])
-        this.cfg.include = ((_23_25_=this.cfg.include) != null ? _23_25_ : ['.konrad.noon','.gitignore','.npmignore'])
-        this.cfg.ignoreExt = ((_24_25_=this.cfg.ignoreExt) != null ? _24_25_ : ['asar'])
-        this.cfg.includeExt = ((_25_25_=this.cfg.includeExt) != null ? _25_25_ : walker.sourceFileExtensions)
+        this.cfg.maxDepth = ((_20_25_=this.cfg.maxDepth) != null ? _20_25_ : 3)
+        this.cfg.dotFiles = ((_21_25_=this.cfg.dotFiles) != null ? _21_25_ : false)
+        this.cfg.maxFiles = ((_22_25_=this.cfg.maxFiles) != null ? _22_25_ : 15000)
+        this.cfg.ignore = ((_23_25_=this.cfg.ignore) != null ? _23_25_ : ['node_modules','build','Build','Library','Applications'])
+        this.cfg.include = ((_24_25_=this.cfg.include) != null ? _24_25_ : ['.konrad.noon','.gitignore','.npmignore'])
+        this.cfg.ignoreExt = ((_25_25_=this.cfg.ignoreExt) != null ? _25_25_ : ['asar'])
+        this.cfg.includeExt = ((_26_25_=this.cfg.includeExt) != null ? _26_25_ : walker.sourceFileExtensions)
     }
 
     ignore (p)
@@ -30,7 +30,7 @@ class walker
 
     async start ()
     {
-        var dir, ext, file, item, items, listDir, p, toWalk, _63_31_, _91_17_
+        var dir, ext, file, item, items, listDir, p, toWalk, _64_31_, _92_17_
 
         dir = this.cfg.root
         this.running = true

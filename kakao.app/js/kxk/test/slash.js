@@ -230,6 +230,13 @@ toExport["slash"] = function ()
             compare(slash.relative('C:\\some\\path\\on.c','D:\\path\\on.d'),'C:/some/path/on.c')
         }
     })
+    section("absolute", function ()
+    {
+        compare(slash.absolute('/some/path'),'/some/path')
+        compare(slash.absolute('./child','/parent'),'/parent/child')
+        compare(slash.untilde('~/child'),'/Users/kodi/child')
+        compare(slash.absolute('~/child'),'/Users/kodi/child')
+    })
     section("split", function ()
     {
         compare(slash.split('/c/users/home/'),['c','users','home'])

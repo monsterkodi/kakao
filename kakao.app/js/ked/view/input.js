@@ -12,15 +12,21 @@ input = (function ()
     function input (screen, name, features)
     {
         this["onChange"] = this["onChange"].bind(this)
+        this["current"] = this["current"].bind(this)
         input.__super__.constructor.call(this,screen,name,[])
         this.state.onLinesChanged = this.onChange
+    }
+
+    input.prototype["current"] = function ()
+    {
+        return _k_.trim(this.state.s.lines[0])
     }
 
     input.prototype["onChange"] = function ()
     {
         var newText
 
-        newText = _k_.trim(this.state.s.lines[0])
+        newText = this.current()
         if (this.text.localeCompare(newText))
         {
             this.text = newText

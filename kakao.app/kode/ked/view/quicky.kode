@@ -7,6 +7,7 @@
 ###
 
 use ../../kxk ▪ kstr slash post noon
+use ../../kxk ◆ nfs
 use ../util ◆ prjcts
 use ..      ◆ editor theme
 use         ◆ cells input choices
@@ -67,21 +68,28 @@ function quicky
     #  0000000   000        00000000  000   000
 
     toggle: currentFile -> if @hidden() then @open(currentFile) else @hide()
-    open:   currentFile ->
+    open:   currentFile -> @gotoFile currentFile
+        
+    #  0000000    0000000   000000000   0000000   00000000  000  000      00000000  
+    # 000        000   000     000     000   000  000       000  000      000       
+    # 000  0000  000   000     000     000   000  000000    000  000      0000000   
+    # 000   000  000   000     000     000   000  000       000  000      000       
+    #  0000000    0000000      000      0000000   000       000  0000000  00000000  
+    
+    gotoFile: @currentFile ->
 
-        lf 'quicky.open' currentFile
+        # lf 'quicky.gotoFile' @currentFile
 
-        items = prjcts.files currentFile
-        currentDir = slash.dir currentFile
-        items = items.map (i) -> slash.relative i currentDir
+        items = prjcts.files @currentFile
+        @currentDir = slash.dir @currentFile
+        items = items.map (i) => slash.relative i @currentDir
 
         ccol = int(@screen.cols/2) - 5
 
         maxind = 0
         indents = []
         for item in items
-            indent = 0
-            indent = slash.dir(item).length if item[0..1]== '..'
+            indent = slash.dir(item).length
             indent += 1 if indent
             maxind = max maxind indent
             indents.push indent
@@ -94,7 +102,7 @@ function quicky
 
             w = 0
             w += item.split('/').length * 256
-            w += kstr.weight(p.name)
+            w += kstr.weight p.name
             w
 
         items.sort (a b) -> weight(a) - weight(b)
@@ -105,7 +113,91 @@ function quicky
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
         @choices.state.setView [0 0]
         @show()
+        
+    #  0000000    0000000   000000000   0000000   0000000    000  00000000   
+    # 000        000   000     000     000   000  000   000  000  000   000  
+    # 000  0000  000   000     000     000   000  000   000  000  0000000    
+    # 000   000  000   000     000     000   000  000   000  000  000   000  
+    #  0000000    0000000      000      0000000   0000000    000  000   000  
+    
+    gotoDirectory: dir ○=>
+        
+        ⮐ if empty dir
 
+        @currentDir = slash.untilde dir
+        
+        # lf 'quicky.gotoDirectory' @currentDir
+
+        items =○ nfs.list @currentDir recursive:false
+        
+        for item in items
+            tilde = slash.tilde item.path
+            item.tilde = tilde == '~' ? item.path : tilde
+            
+        parent = slash.dir @currentDir
+        if valid parent
+            items.push
+                type: 'dir'
+                file: slash.name(parent)
+                path: parent
+                tilde: '..'
+
+        # lf 'items' items
+        
+        weight = item ->
+
+            p = slash.parse item.tilde
+
+            w = 0
+            w += item.tilde.split('/').length * 256
+            w += kstr.weight(p.name)
+            w
+
+        items.sort (a b) -> weight(a) - weight(b)
+
+        @input.set '..'
+        @input.selectAll()
+        
+        @choices.set items 'tilde'
+        @choices.state.selectLine 0
+        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        @choices.state.setView [0 0]
+        @show()
+        
+    # 00000000  000  000      00000000   0000000   00000000   0000000    000  00000000   
+    # 000       000  000      000       000   000  000   000  000   000  000  000   000  
+    # 000000    000  000      0000000   000   000  0000000    000   000  000  0000000    
+    # 000       000  000      000       000   000  000   000  000   000  000  000   000  
+    # 000       000  0000000  00000000   0000000   000   000  0000000    000  000   000  
+    
+    gotoFileOrDirectory: path ○=>
+        
+        # lf 'gotoFileOrDirectory' path
+        
+        isDir =○ nfs.dirExists path
+        
+        # lf 'isDir?' isDir
+        
+        if isDir
+            ○ @gotoDirectory path
+        else
+            @openFileInEditor path
+            
+    openFileInEditor: file =>
+        
+        # lf 'quicky.openFileInEditor' file
+       
+        @cells.rows = 0
+        post.emit 'focus' 'editor'
+        post.emit 'quicky' file
+        redraw:false
+        
+    # 000  000   000  00000000   000   000  000000000  
+    # 000  0000  000  000   000  000   000     000     
+    # 000  000 0 000  00000000   000   000     000     
+    # 000  000  0000  000        000   000     000     
+    # 000  000   000  000         0000000      000     
+    
     onInputChanged: text =>
 
         @choices.filter text
@@ -113,16 +205,49 @@ function quicky
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
         @layout()
 
+    # 00000000    0000000    0000000  000000000  00000000   00000000   0000000  000   000  000      000000000  
+    # 000   000  000   000  000          000     000   000  000       000       000   000  000         000     
+    # 00000000   000   000  0000000      000     0000000    0000000   0000000   000   000  000         000     
+    # 000        000   000       000     000     000   000  000            000  000   000  000         000     
+    # 000         0000000   0000000      000     000   000  00000000  0000000    0000000   0000000     000     
+    
     postResult: ->
+        
+        # lf ">#{@input.current()}<" 
+        
+        switch @input.current()
+            
+            '/'  ➜ ⮐ @gotoDirectory '/'
+            '~'  ➜ ⮐ @gotoDirectory '~'
+            '.'  ➜ ⮐ @gotoDirectory @currentDir
+            '..' ➜ ⮐ @gotoDirectory slash.dir(@currentDir)
+            
+        current = @choices.current()
+        # lf 'current choice' current
+        
+        if empty current and valid @input.current()
+            
+            ⮐ @gotoFileOrDirectory @input.current()
+        
+        if current.tilde
+            
+            ⮐ @gotoFileOrDirectory current.tilde
+    
+        @returnToEditor()
+                     
+    returnToEditor: ->
 
+        # lf 'returnToEditor'
         @cells.rows = 0
         post.emit 'focus' 'editor'
 
         if @choices.num()
-            post.emit 'quicky' trim(@choices.state.selectedText())
+            post.emit 'quicky' @currentChoice()
             redraw:false
         else
             redraw:true
+            
+    currentChoice: -> trim @choices.current()
 
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000

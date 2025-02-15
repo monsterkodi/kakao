@@ -76,6 +76,21 @@ function cells
                     if col < @cols
                         @set_bg col row bg
 
+    bg_fill: x1 y1 x2 y2 bg =>
+    
+        x1 = @cols + x1 if x1 < 0
+        x2 = @cols + x2 if x2 < 0
+
+        y1 = @rows + y1 if y1 < 0
+        y2 = @rows + y2 if y2 < 0
+        
+        for row in y1..y2
+            if row < @rows
+                for col in x1..x2
+                    if col < @cols
+                        @set_bg   col row bg
+                        @set_char col row ' '
+                        
     fill_rect: x1 y1 x2 y2 char fg bg =>
     
         x1 = @cols + x1 if x1 < 0

@@ -2,16 +2,4 @@
 
 import ked from '../js/ked/ked.js'
 
-function main() 
-{
-    if (process.env.process_restarting) 
-    {
-        delete process.env.process_restarting
-        setTimeout(main, 100)
-        return
-    }
-    
-    ked()
-}   
-
-main()
+ked()

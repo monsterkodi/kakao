@@ -22,6 +22,9 @@ class prjcts
     @dir: path ->
 
         if valid path
+            
+            path = slash.absolute path process.cwd()
+            
             if prjPath = @allFiles[path]
                 return prjPath
             if prjcts.projects[path]
@@ -46,15 +49,17 @@ class prjcts
             
         ⮐ if file.startsWith 'untitled-'
         
-        # lf 'prjcts.index ●' file
+        file = slash.absolute file process.cwd()
+        
+        # lfc 'prjcts.index ●' file
         
         exists =○ nfs.exists file
         
         ⮐ if not exists
         
-        # lf 'prjcts.index ▪' exists
-        
         prjPath =○ nfs.prj file
+        
+        # lf 'prjcts.index ▪' prjPath
         
         prjPath ?= slash.dir file
         
@@ -76,7 +81,8 @@ class prjcts
             maxDepth:    12
             maxFiles:    10000
             file:        (f) => post.emit 'prjcts.file.indexed' f
-                    
+                  
+        # lf 'start walker'
         result =○ walk.start()
         
         if result
@@ -84,7 +90,7 @@ class prjcts
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            lc 'prjcts indexed' prjPath @projects
+            # lfc 'prjcts indexed' prjPath @projects
 
             post.emit 'prjcts.project.indexed' prjPath
         

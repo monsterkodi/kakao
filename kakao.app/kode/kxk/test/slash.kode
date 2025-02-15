@@ -341,6 +341,13 @@ use .. ◆ slash
             slash.relative 'C:\\some\\path' 'C:/some/path' ▸ '.'
             slash.relative 'C:/some/path/on.c' 'D:/path/on.d' ▸ 'C:/some/path/on.c'
             slash.relative 'C:\\some\\path\\on.c' 'D:\\path\\on.d' ▸ 'C:/some/path/on.c'
+            
+    ▸ absolute
+    
+        slash.absolute '/some/path'         ▸ '/some/path'
+        slash.absolute './child' '/parent'  ▸ '/parent/child'
+        slash.untilde  '~/child'            ▸ '/Users/kodi/child'
+        slash.absolute '~/child'            ▸ '/Users/kodi/child'
                             
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     

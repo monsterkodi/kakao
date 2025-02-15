@@ -36,17 +36,10 @@ class Slash
         p = Slash.normalize p
         
         if not p
-            log 'no pee?' p
+            log 'slash.path -- no pee?' p
             ⮐ p
             
-        if p.endsWith(':.') and p.length == 3
-            p = p[..1]
-            
-        if p.endsWith(':') and p.length == 2
-            p = p + '/'
-            
         p = Slash.tilde p if tilde
-            
         p
         
     # 000   000   0000000   00000000   00     00   0000000   000      000  0000000  00000000  
@@ -77,7 +70,10 @@ class Slash
                         continue
             prun.push c
         
-        prun.join '/'
+        p = prun.join '/'
+        p = p[..1]  if p.endsWith(':.') and p.length == 3
+        p = p + '/' if p.endsWith(':')  and p.length == 2
+        p
         
     # 000   000  000   000   0000000  000       0000000    0000000  000   000  
     # 000   000  0000  000  000       000      000   000  000       000   000  
@@ -138,6 +134,22 @@ class Slash
         return dd + rc.join('/') if valid dd
         
         rel
+        
+    #  0000000   0000000     0000000   0000000   000      000   000  000000000  00000000  
+    # 000   000  000   000  000       000   000  000      000   000     000     000       
+    # 000000000  0000000    0000000   000   000  000      000   000     000     0000000   
+    # 000   000  000   000       000  000   000  000      000   000     000     000       
+    # 000   000  0000000    0000000    0000000   0000000   0000000      000     00000000  
+    
+    @absolute: p cwd ->
+        
+        ⮐ '' if empty p
+        
+        p = Slash.untilde p if p.startsWith '~/'
+        p = Slash.unenv p
+        p = cwd + '/' + p if Slash.isRelative(p) and valid cwd
+        p = Slash.normalize p
+        p
             
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
@@ -271,7 +283,7 @@ class Slash
     @file:       p -> Slash.parse(p).file
     @name:       p -> Slash.parse(p).name
     
-    @isAbsolute: p -> p?[0] == Slash.sep
+    @isAbsolute: p -> p?[0] in [Slash.sep '~']
     @isRelative: p -> not Slash.isAbsolute p
     
     # 00000000    0000000   00000000    0000000  00000000  

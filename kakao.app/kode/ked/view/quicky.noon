@@ -2,6 +2,8 @@
 ([^\/]+)(\.noon)    . .noon . .noon_ext
 ([^\/]+)(\.kode)    . .kode . .kode_ext
 ([^\/]+)(\.md)      . .md   . .md_ext
+(\/)([\w\.]+)(\/)   .  dir_punct  . dir . dir_punct  
 (\w+)(\.\w+)        .  file .  ext
-(\w+)(\/)           .  dir  .  dir_punct  
-..\/                           dir_punct
+(\w+)$              .  dir_leaf
+(\w+|~)(\/)         .  dir  .  dir_punct
+(\.\.)(\/?)         .  dir  .  dir_punct

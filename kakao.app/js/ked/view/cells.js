@@ -16,6 +16,7 @@ cells = (function ()
     
         this["draw_frame"] = this["draw_frame"].bind(this)
         this["fill_rect"] = this["fill_rect"].bind(this)
+        this["bg_fill"] = this["bg_fill"].bind(this)
         this["bg_rect"] = this["bg_rect"].bind(this)
         this["posForEvent"] = this["posForEvent"].bind(this)
         this["screenForPos"] = this["screenForPos"].bind(this)
@@ -166,6 +167,42 @@ cells = (function ()
         }
     }
 
+    cells.prototype["bg_fill"] = function (x1, y1, x2, y2, bg)
+    {
+        var col, row
+
+        if (x1 < 0)
+        {
+            x1 = this.cols + x1
+        }
+        if (x2 < 0)
+        {
+            x2 = this.cols + x2
+        }
+        if (y1 < 0)
+        {
+            y1 = this.rows + y1
+        }
+        if (y2 < 0)
+        {
+            y2 = this.rows + y2
+        }
+        for (var _a_ = row = y1, _b_ = y2; (_a_ <= _b_ ? row <= y2 : row >= y2); (_a_ <= _b_ ? ++row : --row))
+        {
+            if (row < this.rows)
+            {
+                for (var _c_ = col = x1, _d_ = x2; (_c_ <= _d_ ? col <= x2 : col >= x2); (_c_ <= _d_ ? ++col : --col))
+                {
+                    if (col < this.cols)
+                    {
+                        this.set_bg(col,row,bg)
+                        this.set_char(col,row,' ')
+                    }
+                }
+            }
+        }
+    }
+
     cells.prototype["fill_rect"] = function (x1, y1, x2, y2, char, fg, bg)
     {
         var col, row
@@ -203,7 +240,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _102_16_, _110_20_, _111_20_
+        var bg, fg, x, y, _117_16_, _125_20_, _126_20_
 
         if (x1 < 0)
         {
@@ -222,9 +259,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_102_16_=opt.pad) != null ? _102_16_ : [1,0])
-        fg = ((_110_20_=opt.fg) != null ? _110_20_ : '#888888')
-        bg = ((_111_20_=opt.bg) != null ? _111_20_ : null)
+        opt.pad = ((_117_16_=opt.pad) != null ? _117_16_ : [1,0])
+        fg = ((_125_20_=opt.fg) != null ? _125_20_ : '#888888')
+        bg = ((_126_20_=opt.bg) != null ? _126_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

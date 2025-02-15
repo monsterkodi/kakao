@@ -31,7 +31,7 @@ if lastArg == 'help'
 
 tests = {}; for m in mods ➜ tests[m] = true
 
-hdr = (h) -> log G2(y8(' ' + rpad(33 h) + ' '))
+hdr = h -> log G2(y8(' ' + rpad(33 h) + ' '))
 
 if 
     lastArg == 'brief'
@@ -53,16 +53,18 @@ if
             
         hdr process.argv[-1]
         
-        file = slash.path ◆dir, '..' lastArg
+        file = slash.path ◆dir '..' lastArg
         test =○ import(file)
         tester.test test.default
     
 for mod in mods
+    
     if tests[mod]
         hdr mod
         files =○ fs.list(slash.path(◆dir, mod, 'test'))
         for file in files
-            test =○ import(file.path)
+            continue if file.type == 'dir' # ignore subdirectories for now
+            test =○ import(file.path) # shouldn't the file type be checked here?
             tester.test test.default
         
 tester.summarize()
