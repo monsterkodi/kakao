@@ -16,7 +16,23 @@ function screen
     
         @rows = @t.rows()
         @cols = @t.cols()
-        @c = util.cells @rows @cols
+        @c = screen.cells @rows @cols
+        
+    #  0000000  00000000  000      000       0000000  
+    # 000       000       000      000      000       
+    # 000       0000000   000      000      0000000   
+    # 000       000       000      000           000  
+    #  0000000  00000000  0000000  0000000  0000000   
+    
+    @cells: rows cols ->
+    
+        lines = []
+        for l in 0...rows
+            cells = []
+            for c in 0...cols
+                cells.push bg:null fg:null char:' '
+            lines.push cells
+        lines
                                 
     #  0000000  00000000  000000000  
     # 000       000          000     

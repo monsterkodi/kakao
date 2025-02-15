@@ -47,11 +47,9 @@ class NFS
         stat = await fsp.lstat(p)
         if (stat.isSymbolicLink())
         {
-            lf('readlink',p,stat)
             r = await fsp.readlink(p)
             return r
         }
-        lf('no symlink',p)
         return p
     }
 

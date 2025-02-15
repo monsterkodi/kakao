@@ -59,10 +59,9 @@ class NFS
         
         stat =○ fsp.lstat p
         if stat.isSymbolicLink()
-            lf 'readlink' p stat
+            # lf 'readlink' p stat
             r =○ fsp.readlink p
             ⮐ r
-        lf 'no symlink' p
         p
     
     # 00000000   00000000   0000000   0000000    

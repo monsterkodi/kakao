@@ -24,7 +24,24 @@ screen = (function ()
     {
         this.rows = this.t.rows()
         this.cols = this.t.cols()
-        return this.c = util.cells(this.rows,this.cols)
+        return this.c = screen.cells(this.rows,this.cols)
+    }
+
+    screen["cells"] = function (rows, cols)
+    {
+        var c, cells, l, lines
+
+        lines = []
+        for (var _a_ = l = 0, _b_ = rows; (_a_ <= _b_ ? l < rows : l > rows); (_a_ <= _b_ ? ++l : --l))
+        {
+            cells = []
+            for (var _c_ = c = 0, _d_ = cols; (_c_ <= _d_ ? c < cols : c > cols); (_c_ <= _d_ ? ++c : --c))
+            {
+                cells.push({bg:null,fg:null,char:' '})
+            }
+            lines.push(cells)
+        }
+        return lines
     }
 
     screen.prototype["set"] = function (x, y, char, fg, bg)

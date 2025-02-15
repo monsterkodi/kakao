@@ -1,0 +1,425 @@
+###
+00000000  0000000    000  000000000
+000       000   000  000     000   
+0000000   000   000  000     000   
+000       000   000  000     000   
+00000000  0000000    000     000   
+###
+
+use ../../kxk ▪ kstr
+use ◆ prof
+
+function edit
+    
+    # 000  000   000   0000000  00000000  00000000   000000000
+    # 000  0000  000  000       000       000   000     000   
+    # 000  000 0 000  0000000   0000000   0000000       000   
+    # 000  000  0000       000  000       000   000     000   
+    # 000  000   000  0000000   00000000  000   000     000   
+    
+    @insertTextAtPositions: lines text posl ->
+                          
+        # prof.start 'insert'
+        
+        if text == '\t'
+            pos  = posl[0]
+            text = lpad 4-pos[0]%4 ' '
+            
+        # lf "insert text ▸#{text}◂"
+            
+        text = kstr.detab text
+        
+        txtls = @linesForText text  # the text to insert split into lines
+        newls = []                      # list of new lines 
+        newpl = []                      # list of new positions
+        rngs = @rangesForLinePositions lines posl # list of ranges for lines split by positions
+        
+        for rng,idx in rngs
+            
+            after = @linesForRange lines rng # all the lines in the current range (after current position)
+                        
+            if idx > 0                           # start processing ranges after the first position
+                
+                [x y] = posl[idx-1]              # coordinates of current position 
+                
+                if valid before ➜ line = before.pop() # pop the last line from before the current position
+                else              line = newls.pop()  # or the last of the already generated lines
+                    
+                if x > line.length ➜ line += lpad x-line.length # fill line at end with spaces if pos is in empty space
+                                        
+                if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
+                    
+                    if posl.length > 1 and text != '\n'
+                        insertLineIndex = (idx-1) % txtls.length
+                        before.push line + txtls[insertLineIndex]
+                        newpl.push [last(before).length newls.length+before.length-1]
+                        before.push before.pop()+after.shift()
+                    else
+                        posLineIndent = @numIndent line
+                        indentstr = lpad posLineIndent
+                        before.push line + txtls[0]
+                        for line,lidx in txtls[1..]
+                            before.push indentstr + line
+                    
+                        if x > posLineIndent
+                            newpl.push [last(before).length newls.length+before.length-1]
+                            before.push before.pop()+after.shift()
+                        else
+                            after.unshift indentstr+after.shift()
+                            before.pop() if text == '\n'
+                            newpl.push [indentstr.length newls.length+before.length]
+                        
+                    newls = newls.concat before
+                            
+                else                                # if text is the only line to insert
+
+                    newpl.push [line.length+txtls[0].length newls.length+before.length] # move position to the end of the inserted text
+                    line += txtls[0] + after.shift()        # append it and first line after to current line
+                    newls = newls.concat before line        # add lines from before and current line to result
+                
+            before = after 
+            
+        newls = newls.concat before
+            
+        # prof.end 'insert'
+        
+        [newls newpl]     
+
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    @deleteLineRangesAndAdjustPositions: lines rngs posl ->
+        
+        lines = copy lines
+        posl  = clone posl
+        
+        for ri in rngs.length-1..0
+            rng = rngs[ri]
+            
+            posl = @adjustPositionsForDeletedLineRange posl lines rng
+            
+            if rng[1] == rng[3] # single line range
+                if rng[0] == 0 and rng[2] == lines[rng[1]].length
+                    lines.splice rng[1] 1
+                else
+                    lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
+            else # range spans multiple lines
+                if rng[2] == lines[rng[3]].length # range ends at end of last line
+                    lines.splice rng[3] 1 
+                else
+                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]
+                    partialLast = true
+                    
+                if rng[3]-rng[1] >= 2 # more than 2 lines in range
+                    lines.splice rng[1]+1 rng[3]-rng[1]-1 # remove middle lines
+                    
+                if rng[0] == 0 # range starts at start of first line
+                    lines.splice rng[1] 1
+                else
+                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
+                    
+                    if partialLast
+                        lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
+               
+        [lines posl]
+        
+    @adjustPositionsForDeletedLineRange: posl lines rng ->
+        
+        for pi in posl.length-1..0
+            pos = posl[pi]
+            
+            if @isPosTouchingRange pos rng
+                pos[0] = rng[0] 
+                pos[1] = rng[1]
+            else if @isPosAfterRange pos rng
+                if pos[1] == rng[3] # pos in last line of range
+                    pos[0] -= rng[2] - rng[0]
+                    if rng[1] < rng[3] # multi line range
+                        pos[1] -= rng[3] - rng[1]
+                else
+                    pos[1] -= @numFullLinesInRange(lines rng)
+            else
+                break
+                    
+        @removeDuplicatePositions posl
+        
+    @moveCursorsInSameLineBy: cursors cursor delta ->
+    
+        ci = cursors.indexOf cursor
+    
+        while true
+            
+            cursors[ci][0] += delta
+            ci++
+            
+            ⮐ if ci >= cursors.length
+            ⮐ if cursors[ci][1] > cursor[1]
+            
+    #  0000000   0000000    0000000          00000000    0000000   000   000   0000000   00000000   0000000  
+    # 000   000  000   000  000   000        000   000  000   000  0000  000  000        000       000       
+    # 000000000  000   000  000   000        0000000    000000000  000 0 000  000  0000  0000000   0000000   
+    # 000   000  000   000  000   000        000   000  000   000  000  0000  000   000  000            000  
+    # 000   000  0000000    0000000          000   000  000   000  000   000   0000000   00000000  0000000   
+    
+    @addLinesBelowPositionsToRanges: lines posl rngs ->
+    
+        newp = []
+        newr = copy rngs
+    
+        addLineAtIndex = c i ->
+            range = @rangeOfLine lines i
+            range[1] += 1 if @isEmptyRange range
+            newr.push range
+            newp.push @endOfRange(range)
+            
+        for c in posl
+            if not @rangesContainLine(rngs c[1])
+                addLineAtIndex c c[1]
+            else
+                addLineAtIndex c c[1]+1 if c[1] < lines.length-1
+    
+        [newp newr]
+    
+    # 00000000   00000000  00     00   0000000   000   000  00000000     00000000   000   000   0000000    0000000    
+    # 000   000  000       000   000  000   000  000   000  000          000   000  0000  000  000        000         
+    # 0000000    0000000   000000000  000   000   000 000   0000000      0000000    000 0 000  000  0000  0000000     
+    # 000   000  000       000 0 000  000   000     000     000          000   000  000  0000  000   000       000    
+    # 000   000  00000000  000   000   0000000       0      00000000     000   000  000   000   0000000   0000000     
+    
+    @removeLinesAtPositionsFromRanges: lines posl rngs ->
+        
+        newp = []
+        newr = @splitLineRanges lines rngs
+        
+        for pos in posl
+            if rng = @rangeInRangesTouchingPos newr pos
+                idx = newr.indexOf rng
+                if idx > 0
+                    newp.push @endOfRange(newr[idx-1])
+                else
+                    newp.push @endOfRange(newr[idx])
+                newr.splice idx 1
+            else
+                newp.push pos
+        [newp newr]         
+        
+    @rangeForJoiningLine: lines idx -> [lines[idx].length idx 0 idx+1]
+        
+    @rangesForJoiningLines: lines idxs -> idxs.map (idx) -> @rangeForJoiningLine lines idx
+    
+    # 00     00   0000000   000   000  00000000         000      000  000   000  00000000   0000000  
+    # 000   000  000   000  000   000  000              000      000  0000  000  000       000       
+    # 000000000  000   000   000 000   0000000          000      000  000 0 000  0000000   0000000   
+    # 000 0 000  000   000     000     000              000      000  000  0000  000            000  
+    # 000   000   0000000       0      00000000         0000000  000  000   000  00000000  0000000   
+    
+    @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
+        
+        if empty indices or dir == 'down' and indices[-1] >= lines.length-1 or dir == 'up' and indices[0] <= 0
+            ⮐ [lines rngs posl]
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        [rs re] = switch dir
+            'down' ➜ [indices.length-1 0]
+            'up'   ➜ [0 indices.length-1]
+        
+        for ii in rs..re
+            index = indices[ii]
+            
+            switch dir 
+                'down' ➜ newLines.splice index   2 newLines[index+1] newLines[index] 
+                'up'   ➜ newLines.splice index-1 2 newLines[index]   newLines[index-1]
+                
+            for pos in newPosl
+                if pos[1] == index 
+                    pos[1] += switch dir                     
+                        'down' ➜ 1
+                        'up'   ➜ -1
+
+            for rng in newRngs
+                if rng[1] == index 
+                    d = switch dir                     
+                        'down' ➜ 1
+                        'up'   ➜ -1
+                    rng[1] += d
+                    rng[3] += d
+        
+        [newLines newRngs newPosl]
+                  
+    #  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
+    # 000       000   000  000   000  000   000  000       0000  000     000     000       
+    # 000       000   000  000000000  000000000  0000000   000 0 000     000     0000000   
+    # 000       000   000  000 0 000  000 0 000  000       000  0000     000          000  
+    #  0000000   0000000   000   000  000   000  00000000  000   000     000     0000000   
+    
+    @toggleCommentsInLineRangesAtIndices: lines rngs posl indices ->
+        
+        ⮐ [lines rngs posl] if empty indices
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        comStart = '#'
+        minIndent = Infinity
+             
+        for index in indices
+            
+            [indent line] = @splitLineIndent newLines[index]
+            if not line.startsWith comStart
+                comment = comStart
+                minIndent = min indent.length minIndent
+            
+        comIndent = lpad minIndent if comment
+                
+        for index in indices
+            
+            [indent line] = @splitLineIndent newLines[index]
+            if comment
+                indent = indent.length > minIndent ? lpad(indent.length-minIndent) : ''
+                newLine = comIndent + comment + indent + ' ' + line
+            else
+                d = line[comStart.length] == ' ' ? 1 : 0
+                newLine = indent + line[comStart.length+d..]
+            newLines.splice index 1 newLine
+        
+        [newLines newRngs newPosl]      
+        
+    # 0000000    00000000  000  000   000  0000000    00000000  000   000  000000000  
+    # 000   000  000       000  0000  000  000   000  000       0000  000     000     
+    # 000   000  0000000   000  000 0 000  000   000  0000000   000 0 000     000     
+    # 000   000  000       000  000  0000  000   000  000       000  0000     000     
+    # 0000000    00000000  000  000   000  0000000    00000000  000   000     000     
+    
+    @deindentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
+        
+        ⮐ [lines rngs posl] if empty indices  
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        for index in indices
+            
+            [indent line] = @splitLineIndent newLines[index]
+        
+            if indent.length
+                
+                sc = min 4 indent.length
+                newLines.splice index 1 indent[sc..] + line
+                
+                for pos in newPosl
+                    if pos[1] == index 
+                        pos[0] = max 0 pos[0] - sc
+                        
+                for rng in newRngs
+                    if rng[1] == index 
+                        rng[0] = max 0 rng[0] - sc
+                        rng[2] = max 0 rng[2] - sc
+        
+        [newLines newRngs newPosl]
+
+    # 000  000   000  0000000    00000000  000   000  000000000  
+    # 000  0000  000  000   000  000       0000  000     000     
+    # 000  000 0 000  000   000  0000000   000 0 000     000     
+    # 000  000  0000  000   000  000       000  0000     000     
+    # 000  000   000  0000000    00000000  000   000     000     
+    
+    @indentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
+        
+        ⮐ [lines rngs posl] if empty indices  
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        for index in indices
+            
+            [indent line] = @splitLineIndent newLines[index]
+        
+            newLines[index] = lpad(4 ' ') + newLines[index]
+            
+            for pos in newPosl
+                if pos[1] == index 
+                    pos[0] += 4
+                    
+            for rng in newRngs
+                if rng[1] == index 
+                    rng[0] += 4
+                    rng[2] += 4
+        
+        [newLines newRngs newPosl]
+        
+    # 00000000  000   000  000000000  00000000  000   000  0000000          00000000   000   000   0000000    0000000  
+    # 000        000 000      000     000       0000  000  000   000        000   000  0000  000  000        000       
+    # 0000000     00000       000     0000000   000 0 000  000   000        0000000    000 0 000  000  0000  0000000   
+    # 000        000 000      000     000       000  0000  000   000        000   000  000  0000  000   000       000  
+    # 00000000  000   000     000     00000000  000   000  0000000          000   000  000   000   0000000   0000000   
+    
+    @extendLineRangesFromPositionToPosition: lines rngs start pos ->
+
+        if empty rngs ➜ ⮐ [@rangeFromStartToEnd(start pos)]
+
+        newRngs = copy rngs
+        
+        if rng = @rangeInRangesTouchingPos newRngs start
+            if @isPosAfterRange pos rng
+                rng[2] = pos[0]
+                rng[3] = pos[1]
+            else if @isPosBeforeRange pos rng
+                rng[0] = pos[0]
+                rng[1] = pos[1]
+        else
+            newRngs.push @rangeFromStartToEnd(start pos)
+
+        newRngs
+    
+    @extendLineRangesByMovingPositionsInDirection: lines rngs posl dir ->
+        
+        newRngs = copy rngs
+        newPosl = copy posl
+        
+        for pos in newPosl
+            
+            line = lines[pos[1]]
+            rng = [pos[0] pos[1] pos[0] pos[1]]
+            newRngs.push rng
+            
+            switch dir
+                'left'  
+                'right'     ➜ pos[0] += @numCharsFromPosToWordOrPunctInDirection(lines pos dir)
+                'up'        ➜ pos[1] -= 1
+                'down'      ➜ pos[1] += 1
+                'eol'       ➜ pos[0] = line.length
+                'bol'       ➜ pos[0] = 0
+                'bof'       ➜ pos[0] = 0; pos[1] = 0
+                'eof'       ➜ pos[1] = lines.length-1; pos[0] = lines[lines.length-1].length
+
+                'ind_bol'   ➜ ind = @numIndent(line); pos[0] = pos[0] > ind ? ind : 0
+                'ind_eol'   ➜ ind = @numIndent(line); pos[0] = pos[0] < ind ? ind : line.length
+                
+            switch dir
+                'left'      ➜ rng[0] = rng[0]-1
+                'right'     ➜ rng[2] = rng[2]+1
+                'up'        ➜ rng[1] = max 0 rng[1]-1
+                'down'      ➜ rng[3] = min lines.length-1 rng[3]+1
+                'eol'       ➜ rng[2] = Infinity
+                'bol'       ➜ rng[0] = 0
+                'bof'       ➜ rng[1] = rng[0] = 0
+                'eof'       ➜ rng[3] = lines.length-1; rng[2] = lines[lines.length-1].length
+
+                'ind_bol'   ➜ ind = @numIndent(line); rng[0] = rng[0] > ind ? ind : 0
+                'ind_eol'   ➜ ind = @numIndent(line); rng[2] = rng[2] < ind ? ind : line.length
+                
+            rng[0] = clamp 0 lines[rng[1]].length rng[0] if rng[1] < lines.length
+            rng[2] = clamp 0 lines[rng[3]].length rng[2] if rng[3] < lines.length
+        
+        [newRngs newPosl]
+        
+export edit
