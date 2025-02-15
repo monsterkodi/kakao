@@ -273,6 +273,7 @@ cells = (function ()
         for (var _a_ = x = 0, _b_ = opt.pad[0]; (_a_ <= _b_ ? x < opt.pad[0] : x > opt.pad[0]); (_a_ <= _b_ ? ++x : --x))
         {
             this.fill_rect(x1 + 1 + x,y1 + 1,x1 + 1 + x,y2 - 1,' ',fg,bg)
+            this.fill_rect(x2 - 1 - x,y1 + 1,x2 - 1 - x,y2 - 1,' ',fg,bg)
         }
         var list = _k_.list(opt.hdiv)
         for (var _c_ = 0; _c_ < list.length; _c_++)

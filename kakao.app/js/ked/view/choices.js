@@ -97,7 +97,6 @@ choices = (function ()
 
     choices.prototype["draw"] = function ()
     {
-        this.cells.bg_fill(0,0,-1,-1,'#f80')
         return choices.__super__.draw.call(this)
     }
 

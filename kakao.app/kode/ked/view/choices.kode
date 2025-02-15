@@ -64,7 +64,7 @@ function choices extends editor
         
     draw: =>
 
-        @cells.bg_fill 0 0 -1 -1 '#f80'
+        # @cells.bg_fill 0 0 -1 -1 '#f80'
         
         super()
 

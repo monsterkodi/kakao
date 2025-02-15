@@ -114,7 +114,7 @@ function KED
         
         if slash.isAbsolute p
             @status.file = slash.tilde  p
-            @currentFile = slash.path p
+            @currentFile = slash.absolute p
         else
             @status.file = slash.normalize p
             @currentFile = slash.path process.cwd() p
@@ -220,7 +220,7 @@ function KED
         if slash.isAbsolute event
             file = event
         else
-            file = slash.path slash.dir(@currentFile) event
+            file = slash.absolute event slash.dir(@currentFile)
         
         exists =○ nfs.fileExists file
         if exists

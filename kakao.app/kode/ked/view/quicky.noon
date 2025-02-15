@@ -6,4 +6,5 @@
 (\w+)(\.\w+)        .  file .  ext
 (\w+)$              .  dir_leaf
 (\w+|~)(\/)         .  dir  .  dir_punct
-(\.\.)(\/?)         .  dir  .  dir_punct
+\.\.                .  dir  
+\/                  .  dir_punct

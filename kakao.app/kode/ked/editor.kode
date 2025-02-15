@@ -104,11 +104,13 @@ function editor extends view
                 if y == mainCursor[1]
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
-                    @cells.bg_rect max(0 linel) row -1 row theme[@name + '_cursor_empty']
+                    # @cells.bg_rect max(0 linel) row -1 row theme[@name + '_cursor_empty']
+                    @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
                 else
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@name]
-                    @cells.bg_rect max(0 linel) row -1 row emptyColor
+                    # @cells.bg_rect max(0 linel) row -1 row emptyColor
+                    @cells.bg_fill max(0 linel) row -1 row emptyColor
                     
                 if checkColor
                     if rngs = kstr.colorRanges line

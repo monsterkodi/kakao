@@ -107,6 +107,7 @@ quicky = (function ()
 
         this.currentFile = currentFile
     
+        lf('quicky.gotoFile',this.currentFile)
         items = prjcts.files(this.currentFile)
         this.currentDir = slash.dir(this.currentFile)
         items = items.map((function (i)

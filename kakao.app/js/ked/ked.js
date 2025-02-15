@@ -146,7 +146,7 @@ ked [file]
         if (slash.isAbsolute(p))
         {
             this.status.file = slash.tilde(p)
-            this.currentFile = slash.path(p)
+            this.currentFile = slash.absolute(p)
         }
         else
         {
@@ -274,7 +274,7 @@ ked [file]
         }
         else
         {
-            file = slash.path(slash.dir(this.currentFile),event)
+            file = slash.absolute(event,slash.dir(this.currentFile))
         }
         exists = await nfs.fileExists(file)
         if (exists)

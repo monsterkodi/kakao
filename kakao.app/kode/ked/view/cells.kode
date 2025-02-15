@@ -114,7 +114,7 @@ function cells
         y2 = @rows + y2 if y2 < 0
         
         opt ?= {}
-        opt.pad ?= [1 0]
+        opt.pad ?= [1 0] # padding at left and right edge by default
         
         # ╭─┬─╮
         # │ │ │
@@ -135,8 +135,9 @@ function cells
         @fill_rect x1 y1+1 x1 y2-1 '│' fg bg
         @fill_rect x2 y1+1 x2 y2-1 '│' fg bg
         
-        for x in 0...opt.pad[0]
+        for x in 0...opt.pad[0] # horizontal padding todo:verical
             @fill_rect x1+1+x y1+1 x1+1+x y2-1 ' ' fg bg
+            @fill_rect x2-1-x y1+1 x2-1-x y2-1 ' ' fg bg
         
         for y in opt.hdiv
             @set  x1  y '├' fg bg
