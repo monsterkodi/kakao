@@ -102,7 +102,6 @@ mapscr = (function ()
     {
         var b, base64, bytes, ch, chunk, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
 
-        prof.start('mapscr')
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
         {
@@ -178,7 +177,6 @@ mapscr = (function ()
         {
             t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
-        prof.end('mapscr')
         return this.draw()
     }
 

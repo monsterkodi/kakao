@@ -26,22 +26,29 @@ function mapview
         
     init: x y w h -> 
     
-        lf 'init' @state.name
+        # lf 'init' @state.name
         @cells.init x y w h
     
-    hidden:  -> @cells.cols <= 0
-    visible: -> @cells.cols > 0
     
-    hide: => 
-        lf 'hide' @state.name
-        @clearImages()
-        @cells.cols = 0
-        
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
     show: doShow=true => 
         
         ⮐ @hide() if doShow == false
         @cells.cols = 10
+
+    hide: => 
+        # lf 'hide' @state.name
+        @clearImages()
+        @cells.cols = 0
         
+    hidden:  -> @cells.cols <= 0
+    visible: -> @cells.cols > 0
+    
     clearImages: =>
         
         @cells.screen.t.write "\x1b_Gq=1,a=d,d=i,i=#{@imgId}\x1b\\" # delete all images with id        
@@ -70,9 +77,9 @@ function mapview
         
         @show()
 
-        lf 'realloc' @state.name @cells.cols @cells.rows
+        # lf 'realloc' @state.name @cells.cols @cells.rows
         
-        prof.start 'mapview'
+        # prof.start 'mapview'
         
         [w h] = [@cells.cols * t.cellsz[0] @cells.rows * t.cellsz[1]]
         
@@ -143,7 +150,7 @@ function mapview
         else            
             t.write "\x1b_Gq=1,i=#{@imgId},p=#{@imgId},f=24,s=#{w},v=#{h};#{base64}\x1b\\"
             
-        prof.end 'mapview' #'send'
+        # prof.end 'mapview' #'send'
                 
         @draw()
                         
@@ -159,7 +166,7 @@ function mapview
         
         ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
         
-        lf 'draw' @state.name
+        # lf 'draw' @state.name
         
         t.setCursor @cells.x @cells.y
         t.write "\x1b_Gq=1,a=p,i=#{@imgId},p=#{@imgId},C=1\x1b\\"

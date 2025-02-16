@@ -354,13 +354,14 @@ quicky = (function ()
 
     quicky.prototype["moveSelection"] = function (dir)
     {
+        lf('moveSelection',dir)
         switch (dir)
         {
             case 'down':
-                this.choices.state.selectNextLine()
+                this.choices.selectNext()
                 break
             case 'up':
-                this.choices.state.selectPrevLine()
+                this.choices.selectPrev()
                 break
         }
 
@@ -384,7 +385,6 @@ quicky = (function ()
 
         if (_k_.in(slash.ext(file),walker.sourceFileExtensions))
         {
-            lf('preview',file)
             text = await nfs.read(file)
             lines = util.linesForText(text)
             this.choices.mapscr.show()
@@ -410,7 +410,7 @@ quicky = (function ()
 
     quicky.prototype["onKey"] = function (key, event)
     {
-        var current, upDir, _386_69_
+        var current, upDir, _378_69_
 
         if (this.hidden())
         {
@@ -453,7 +453,7 @@ quicky = (function ()
                         else
                         {
                             this.choices.mapscr.hide()
-                            return this.gotoFileOrDirectory(((_386_69_=current.link) != null ? _386_69_ : current.path))
+                            return this.gotoFileOrDirectory(((_378_69_=current.link) != null ? _378_69_ : current.path))
                         }
                     }
                     break

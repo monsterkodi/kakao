@@ -70,7 +70,7 @@ function mapscr
     
     reallocBuffer: =>
         
-        prof.start 'mapscr'
+        # prof.start 'mapscr'
         
         t = @cells.screen.t
         ⮐ if empty t.cellsz
@@ -141,7 +141,7 @@ function mapscr
         else            
             t.write "\x1b_Gq=1,i=#{@imgId},p=#{@imgId},f=24,s=#{w},v=#{h};#{base64}\x1b\\"
             
-        prof.end 'mapscr' #'send'
+        # prof.end 'mapscr' #'send'
         
         @draw()
                         

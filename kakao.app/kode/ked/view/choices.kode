@@ -27,6 +27,13 @@ function choices extends editor
 
     current: -> @fuzzied[@state.mainCursor()[1]]
     
+    selectNext: -> lf 'next'; @state.selectNextLine() ; @frontCursor()
+    selectPrev: -> lf 'prev'; @state.selectPrevLine() ; @frontCursor()
+    
+    frontCursor: -> 
+        
+        @state.setMainCursor 0 @state.mainCursor()[1]
+    
     extract: item => @key and item is obj ? item[@key] : item        
         
     weight: item text =>

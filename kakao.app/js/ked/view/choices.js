@@ -44,6 +44,25 @@ choices = (function ()
         return this.fuzzied[this.state.mainCursor()[1]]
     }
 
+    choices.prototype["selectNext"] = function ()
+    {
+        lf('next')
+        this.state.selectNextLine()
+        return this.frontCursor()
+    }
+
+    choices.prototype["selectPrev"] = function ()
+    {
+        lf('prev')
+        this.state.selectPrevLine()
+        return this.frontCursor()
+    }
+
+    choices.prototype["frontCursor"] = function ()
+    {
+        return this.state.setMainCursor(0,this.state.mainCursor()[1])
+    }
+
     choices.prototype["extract"] = function (item)
     {
         return (this.key && _k_.isObj(item) ? item[this.key] : item)

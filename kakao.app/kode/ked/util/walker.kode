@@ -11,8 +11,8 @@ use ../../kxk ◆ nfs
 
 class walker
     
-    # @sourceFileExtensions: [ 'kode' 'coffee' 'styl' 'swift' 'pug' 'md' 'noon' 'txt' 'json' 'sh' 'py' 'cpp' 'mm' 'zig' 'cc' 'c' 'cs' 'h' 'hpp' 'ts' 'js' 'mjs' 'frag' 'vert' 'config' 'lua']
-    @sourceFileExtensions: [ 'kode' 'styl' 'pug' 'md' 'noon' 'txt' 'sh' 'mm' 'zig' 'h' 'hpp' 'config' 'lua'] # move this to config!
+    @indexFileExtensions:  [ 'kode' 'mm' 'zig' 'cc' 'c' 'h' 'hpp' 'cpp' ] # move this to config!
+    @sourceFileExtensions: walker.indexFileExtensions.concat([ 'ts' 'js' 'mjs' 'swift' 'styl' 'css' 'pug' 'html' 'md' 'noon' 'json' 'txt' 'log' 'sh' 'py' 'frag' 'vert' 'config' 'lua' ] # move this to config!)
 
     @: @cfg ->
 
@@ -23,9 +23,9 @@ class walker
         @cfg.ignore      ?= ['node_modules' 'build' 'Build' 'Library' 'Applications'] #, 'resources' 'ThirdParty' 'Binaries' 'Intermediate' 'Saved' 'Programs' 'Shaders' 'DerivedDataCache' 'Content' 'Samples']
         @cfg.include     ?= ['.konrad.noon' '.gitignore' '.npmignore']
         @cfg.ignoreExt   ?= ['asar']
-        @cfg.includeExt  ?= walker.sourceFileExtensions
+        @cfg.includeExt  ?= walker.indexFileExtensions # this should be set by prjcts instead
         
-        # lf 'walker' @cfg
+        # lf 'walker' @cfg walker.sourceFileExtensions
         
     ignore: p -> #lf 'ignore' p; true
       

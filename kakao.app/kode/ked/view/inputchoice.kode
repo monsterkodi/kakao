@@ -1,0 +1,155 @@
+###
+000  000   000  00000000   000   000  000000000   0000000  000   000   0000000   000   0000000  00000000  
+000  0000  000  000   000  000   000     000     000       000   000  000   000  000  000       000       
+000  000 0 000  00000000   000   000     000     000       000000000  000   000  000  000       0000000   
+000  000  0000  000        000   000     000     000       000   000  000   000  000  000       000       
+000  000   000  000         0000000      000      0000000  000   000   0000000   000   0000000  00000000  
+###
+
+use ../../kxk ▪ post
+use ..        ◆ theme
+use           ◆ cells input choices
+
+function inputchoice
+
+    @: @screen @name ->
+
+        @cells   = new cells   @screen
+        @input   = new input   @screen "#{@name}_input"
+        @choices = new choices @screen "#{@name}_choices"
+
+        @choices.mapscr.hide()        
+
+        @input.on 'changed' @onInputChanged
+        
+    #  0000000  000   000   0000000   000   000
+    # 000       000   000  000   000  000 0 000
+    # 0000000   000000000  000   000  000000000
+    #      000  000   000  000   000  000   000
+    # 0000000   000   000   0000000   00     00
+
+    show: =>
+
+        @layout()
+        @choices.grabFocus()
+
+    hide: => 
+        
+        @choices.mapscr.hide()
+        @cells.rows = 0 
+        post.emit 'focus' 'editor' 
+        redraw:true
+        
+    hidden:  -> @cells.rows <= 0 or @cells.cols <= 0
+    visible: -> @cells.rows > 0 and @cells.cols > 0
+    toggle:  -> if @hidden() then @show() else @hide()
+            
+        
+    # 000  000   000  00000000   000   000  000000000  
+    # 000  0000  000  000   000  000   000     000     
+    # 000  000 0 000  00000000   000   000     000     
+    # 000  000  0000  000        000   000     000     
+    # 000  000   000  000         0000000      000     
+    
+    onInputChanged: text =>
+
+        @choices.filter text
+        @choices.state.selectLine 0
+        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        @layout()
+        
+    currentChoice: -> trim @choices.current()
+    
+    onChoiceAction: choice action => lf 'onChoiceAction' choice action
+
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
+    draw: ->
+
+        ⮐ if @hidden()
+
+        @input.draw()
+        @choices.draw()    
+
+    drawBackground: ->
+        
+        fg = theme.quicky_frame_fg
+        bg = theme.quicky_frame_bg
+
+        @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
+
+    #  0000000  00000000  000      00000000   0000000  000000000
+    # 000       000       000      000       000          000
+    # 0000000   0000000   000      0000000   000          000
+    #      000  000       000      000       000          000
+    # 0000000   00000000  0000000  00000000   0000000     000
+
+    moveSelection: dir ->
+        
+        # lf 'moveSelection' dir
+
+        switch dir
+            'down'  ➜ @choices.selectNext()
+            'up'    ➜ @choices.selectPrev()
+
+        @input.set ''
+        @choices.grabFocus()
+        
+    moveFocus: ->
+        
+        if @choices.hasFocus()
+            @input.grabFocus()
+        else
+            @choices.grabFocus()
+
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000
+    # 0000000    0000000     00000
+    # 000  000   000          000
+    # 000   000  00000000     000
+
+    onKey: key event =>
+
+        ⮐ if @hidden()
+
+        switch event.combo
+            'tab'       ➜ ⮐ @moveFocus()
+            'esc'       ➜ ⮐ @hide()
+            'return'    ➜ ⮐ @applyChoice()
+            'up' 'down' ➜ ⮐ @moveSelection event.combo
+
+        if @choices.hasFocus()
+            
+            current = @choices.current()
+            # lf 'current' current key
+            switch event.combo
+                'right'  
+                'left'  
+                'space' ➜ @onChoiceAction current event.combo
+                    
+            @input.grabFocus()
+            
+        ⮐ true if @input.onKey   key event
+        ⮐ true if @choices.onKey key event
+        true
+        
+    onMouse: type sx sy event =>
+
+        ⮐ if @hidden()
+        ⮐ true if @input.onMouse type sx sy event
+        ⮐ true if @choices.onMouse type sx sy event
+        true
+
+    onWheel: event =>
+
+        ⮐ if @hidden()
+
+        ⮐ true if @input.onWheel event
+        ⮐ true if @choices.onWheel event
+        true
+        
+export inputchoice

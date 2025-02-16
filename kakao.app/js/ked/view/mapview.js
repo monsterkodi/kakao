@@ -31,8 +31,8 @@ mapview = (function ()
         this["getLines"] = this["getLines"].bind(this)
         this["reload"] = this["reload"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
-        this["show"] = this["show"].bind(this)
         this["hide"] = this["hide"].bind(this)
+        this["show"] = this["show"].bind(this)
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name)
         this.pixelsPerRow = 4
@@ -41,8 +41,22 @@ mapview = (function ()
 
     mapview.prototype["init"] = function (x, y, w, h)
     {
-        lf('init',this.state.name)
         return this.cells.init(x,y,w,h)
+    }
+
+    mapview.prototype["show"] = function (doShow = true)
+    {
+        if (doShow === false)
+        {
+            return this.hide()
+        }
+        return this.cells.cols = 10
+    }
+
+    mapview.prototype["hide"] = function ()
+    {
+        this.clearImages()
+        return this.cells.cols = 0
     }
 
     mapview.prototype["hidden"] = function ()
@@ -53,22 +67,6 @@ mapview = (function ()
     mapview.prototype["visible"] = function ()
     {
         return this.cells.cols > 0
-    }
-
-    mapview.prototype["hide"] = function ()
-    {
-        lf('hide',this.state.name)
-        this.clearImages()
-        return this.cells.cols = 0
-    }
-
-    mapview.prototype["show"] = function (doShow = true)
-    {
-        if (doShow === false)
-        {
-            return this.hide()
-        }
-        return this.cells.cols = 10
     }
 
     mapview.prototype["clearImages"] = function ()
@@ -112,8 +110,6 @@ mapview = (function ()
             return
         }
         this.show()
-        lf('realloc',this.state.name,this.cells.cols,this.cells.rows)
-        prof.start('mapview')
         var _a_ = [this.cells.cols * t.cellsz[0],this.cells.rows * t.cellsz[1]]; w = _a_[0]; h = _a_[1]
 
         bytes = w * h * 3
@@ -186,7 +182,6 @@ mapview = (function ()
         {
             t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
-        prof.end('mapview')
         return this.draw()
     }
 
@@ -199,7 +194,6 @@ mapview = (function ()
         {
             return
         }
-        lf('draw',this.state.name)
         t.setCursor(this.cells.x,this.cells.y)
         t.write(`\x1b_Gq=1,a=p,i=${this.imgId},p=${this.imgId},C=1\x1b\\`)
         return this

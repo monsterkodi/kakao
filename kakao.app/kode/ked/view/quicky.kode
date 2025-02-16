@@ -23,13 +23,11 @@ function quicky
         @name    = 'quicky'
 
         @cells   = new cells   @screen
-
         @input   = new input   @screen 'quicky_input'
         @crumbs  = new crumbs  @screen 'quicky_crumbs'
         @choices = new choices @screen 'quicky_choices'
 
         @choices.mapscr.hide()
-        
         @choices.state.syntax.setRgxs rgxs
 
         @input.on 'changed' @onInputChanged
@@ -211,8 +209,6 @@ function quicky
         
         isDir =○ nfs.dirExists path
         
-        # lf 'isDir?' isDir
-        
         if isDir
             ○ @gotoDirectory path
         else
@@ -222,10 +218,6 @@ function quicky
             
     openFileInEditor: file =>
         
-        # lf 'quicky.openFileInEditor' file
-       
-        # @cells.rows = 0
-        # post.emit 'focus' 'editor'
         @hide()
         post.emit 'quicky' file
         redraw:false
@@ -275,9 +267,6 @@ function quicky
                      
     returnToEditor: ->
 
-        # lf 'returnToEditor'
-        # @cells.rows = 0
-        # post.emit 'focus' 'editor'
         @hide()
 
         if @choices.num()
@@ -314,10 +303,12 @@ function quicky
     # 0000000   00000000  0000000  00000000   0000000     000
 
     moveSelection: dir ->
+        
+        lf 'moveSelection' dir
 
         switch dir
-            'down'  ➜ @choices.state.selectNextLine()
-            'up'    ➜ @choices.state.selectPrevLine()
+            'down'  ➜ @choices.selectNext()
+            'up'    ➜ @choices.selectPrev()
 
         @choices.mapscr.hide()
         
@@ -337,9 +328,10 @@ function quicky
     
     preview: file ○->
         
+        # lf 'preview' walker.sourceFileExtensions
+        
         if slash.ext(file) in walker.sourceFileExtensions
 
-            lf 'preview' file
             text =○ nfs.read file
             lines = util.linesForText text
             @choices.mapscr.show()

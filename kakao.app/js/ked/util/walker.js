@@ -7,7 +7,9 @@ import nfs from "../../kxk/nfs.js"
 
 class walker
 {
-    static sourceFileExtensions = ['kode','styl','pug','md','noon','txt','sh','mm','zig','h','hpp','config','lua']
+    static indexFileExtensions = ['kode','mm','zig','cc','c','h','hpp','cpp']
+
+    static sourceFileExtensions = walker.indexFileExtensions.concat(['ts','js','mjs','swift','styl','css','pug','html','md','noon','json','txt','log','sh','py','frag','vert','config','lua'])
 
     constructor (cfg)
     {
@@ -22,7 +24,7 @@ class walker
         this.cfg.ignore = ((_23_25_=this.cfg.ignore) != null ? _23_25_ : ['node_modules','build','Build','Library','Applications'])
         this.cfg.include = ((_24_25_=this.cfg.include) != null ? _24_25_ : ['.konrad.noon','.gitignore','.npmignore'])
         this.cfg.ignoreExt = ((_25_25_=this.cfg.ignoreExt) != null ? _25_25_ : ['asar'])
-        this.cfg.includeExt = ((_26_25_=this.cfg.includeExt) != null ? _26_25_ : walker.sourceFileExtensions)
+        this.cfg.includeExt = ((_26_25_=this.cfg.includeExt) != null ? _26_25_ : walker.indexFileExtensions)
     }
 
     ignore (p)

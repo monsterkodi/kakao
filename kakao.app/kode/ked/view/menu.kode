@@ -9,20 +9,15 @@
 use ../../kxk ▪ kstr slash post noon
 use ../util ◆ prjcts util
 use ..      ◆ editor theme
-use         ◆ cells input choices greeter
+use         ◆ cells input choices greeter inputchoice
 
-function menu
+function menu extends inputchoice
 
     @: @screen ->
         
-        @name    = 'menu'
+        super @screen 'menu'
         
-        @cells   = new cells   @screen
         @greeter = new greeter @screen
-        @input   = new input   @screen 'quicky_input'
-        @choices = new choices @screen 'quicky_choices'
-
-        @input.on 'changed' @onInputChanged
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -33,12 +28,12 @@ function menu
     show: =>
 
         @greeter.show @greet
-        @layout()
-        @input.grabFocus()
+        super()
 
-    hide:    => @cells.rows = 0; delete @greet; post.emit 'focus' 'editor'; post.emit 'redraw'; true
-    hidden:  -> @cells.rows <= 0
-    visible: -> @cells.rows > 0
+    hide:    => 
+    
+        delete @greet
+        super()
     
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -65,8 +60,6 @@ function menu
     # 000   000  000        000       000  0000
     #  0000000   000        00000000  000   000
 
-    toggle: -> if @hidden() then @open() else @hide()
-    
     open: @greet=false -> 
         
         items = util.linesForText
@@ -85,7 +78,7 @@ function menu
         @input.set ''
         @choices.set items
         @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        @choices.frontCursor()
         @choices.state.setView [0 0]
         
         post.emit 'greet' if @greet
@@ -98,13 +91,6 @@ function menu
     # 000  000  0000  000        000   000     000     
     # 000  000   000  000         0000000      000     
     
-    onInputChanged: text =>
-
-        @choices.filter text
-        @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
-        @layout()
-
     applyChoice: ->
         
         current = @choices.current()
@@ -114,9 +100,13 @@ function menu
             'quit'     ➜ post.emit 'quit' ; ⮐ redraw:false
             'open ...' ➜ post.emit 'quicky.dir' process.cwd()
             
-        lf 'menu choice' current
+        # lf 'menu choice' current
         
         @hide()
+        
+    onChoiceAction: choice action => 
+    
+        @applyChoice() if action in ['space' 'right']
                     
     currentChoice: -> trim @choices.current()
         
@@ -132,62 +122,9 @@ function menu
         
         @layout()
 
-        fg = theme.quicky_frame_fg
-        bg = theme.quicky_frame_bg
-
-        @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
-
+        @drawBackground()
         @greeter.draw() if @greet
-        @input.draw()
-        @choices.draw()
+        
+        super()
 
-    #  0000000  00000000  000      00000000   0000000  000000000
-    # 000       000       000      000       000          000
-    # 0000000   0000000   000      0000000   000          000
-    #      000  000       000      000       000          000
-    # 0000000   00000000  0000000  00000000   0000000     000
-
-    moveSelection: dir ->
-
-        switch dir
-            'down'  ➜ @choices.state.selectNextLine()
-            'up'    ➜ @choices.state.selectPrevLine()
-
-        @input.set @choices.state.selectedText()
-        @input.selectAll()
-
-    # 000   000  00000000  000   000
-    # 000  000   000        000 000
-    # 0000000    0000000     00000
-    # 000  000   000          000
-    # 000   000  00000000     000
-
-    onKey: key event =>
-
-        ⮐ if @hidden()
-
-        switch event.combo
-            'esc'       ➜ ⮐ @hide()
-            'return'    ➜ ⮐ @applyChoice()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.hasFocus()
-
-        ⮐ true if @input.onKey key event
-        ⮐ true if @choices.onKey key event
-        true
-
-    onMouse: type sx sy event =>
-
-        ⮐ if @hidden()
-        ⮐ true if @input.onMouse type sx sy event
-        ⮐ true if @choices.onMouse type sx sy event
-        true
-
-    onWheel: event =>
-
-        ⮐ if @hidden()
-
-        ⮐ true if @input.onWheel event
-        ⮐ true if @choices.onWheel event
-        true
-    
 export menu
