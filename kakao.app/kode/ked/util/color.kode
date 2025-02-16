@@ -141,17 +141,17 @@ class color
     # 000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   00     00  
     
-    @glowEffect: cells ->
+    @glowEffect: cells strength=0.5 ->
         
         for row,y in cells
             for cell,x in row
-                nbcs = util.cellNeighborsAtPos cells x y
-                nbcs = nbcs.filter (n) -> n.cell.char != ' '
+                nbcs = util.cellNeighborsAtPos cells x y 4 2
                 continue if empty nbcs
                 fgs = nbcs.map (n) -> n.cell.fg
                 sum = util.sum fgs
-                scl = randRange 0.22 0.25
-                sum = sum.map (v) -> clamp 0 255 int(scl * v / 9)
+                scl = strength * 0.007
+                scl = scl * randRange(0.95 1.05)
+                sum = sum.map (v) -> clamp 0 255 int(scl * v)
                 cell.bg = sum
         cells
         
@@ -162,5 +162,12 @@ class color
             f = 1 + randRange(-amount/2 amount/2)
             clr = clr.map (v) -> int clamp(0 255 v * f)
             cell.cell[type] = clr
+
+    @dimCellsColor: cells type amount ->
         
+        for cell in cells
+            clr = cell.cell[type]
+            clr = clr.map (v) -> int clamp(0 255 v * amount)
+            cell.cell[type] = clr
+            
 export color

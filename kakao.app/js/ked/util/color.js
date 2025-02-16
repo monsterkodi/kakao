@@ -152,7 +152,7 @@ class color
         return lines
     }
 
-    static glowEffect (cells)
+    static glowEffect (cells, strength = 0.5)
     {
         var cell, fgs, nbcs, row, scl, sum, x, y
 
@@ -164,11 +164,7 @@ class color
             for (x = 0; x < list1.length; x++)
             {
                 cell = list1[x]
-                nbcs = util.cellNeighborsAtPos(cells,x,y)
-                nbcs = nbcs.filter(function (n)
-                {
-                    return n.cell.char !== ' '
-                })
+                nbcs = util.cellNeighborsAtPos(cells,x,y,4,2)
                 if (_k_.empty(nbcs))
                 {
                     continue
@@ -178,10 +174,11 @@ class color
                     return n.cell.fg
                 })
                 sum = util.sum(fgs)
-                scl = randRange(0.22,0.25)
+                scl = strength * 0.007
+                scl = scl * randRange(0.95,1.05)
                 sum = sum.map(function (v)
                 {
-                    return _k_.clamp(0,255,parseInt(scl * v / 9))
+                    return _k_.clamp(0,255,parseInt(scl * v))
                 })
                 cell.bg = sum
             }
@@ -202,6 +199,23 @@ class color
             clr = clr.map(function (v)
             {
                 return parseInt(_k_.clamp(0,255,v * f))
+            })
+            cell.cell[type] = clr
+        }
+    }
+
+    static dimCellsColor (cells, type, amount)
+    {
+        var cell, clr
+
+        var list = _k_.list(cells)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            cell = list[_a_]
+            clr = cell.cell[type]
+            clr = clr.map(function (v)
+            {
+                return parseInt(_k_.clamp(0,255,v * amount))
             })
             cell.cell[type] = clr
         }

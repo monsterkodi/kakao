@@ -99,12 +99,12 @@ function util
                 res.push pos:[x y] cell:cells[y][x]
         res
         
-    @cellNeighborsAtPos: cells x y ->
+    @cellNeighborsAtPos: cells x y xd=1 yd=1->
         
-        [x1 y1 x2 y2] = @clampCellRect cells x-1 y-1 x+1 y+1
+        [x1 y1 x2 y2] = @clampCellRect cells x-xd y-yd x+xd y+yd
         
         @cellsInRect cells x1 y1 x2 y2
-                        
+        
     # 00000000    0000000    0000000
     # 000   000  000   000  000     
     # 00000000   000   000  0000000 

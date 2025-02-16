@@ -15,12 +15,14 @@ import cells from "./view/cells.js"
 import status from "./view/status.js"
 import quicky from "./view/quicky.js"
 import greeter from "./view/greeter.js"
+import menu from "./view/menu.js"
 
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
 import prjcts from "./util/prjcts.js"
 import session from "./util/session.js"
 import color from "./util/color.js"
+import help from "./util/help.js"
 
 import ttio from "./ttio.js"
 import editor from "./editor.js"
@@ -53,7 +55,7 @@ KED = (function ()
 ked [file]
     options                      **
     version    log version       = false
-    `,{preHelp:this.helpHeader(),version:this.version})
+    `,{preHelp:help.header(),version:this.version})
         process.on('uncaughtException',this.onException)
         this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
@@ -70,6 +72,7 @@ ked [file]
             }
         }).bind(this)
         this.screen = new screen(this.t)
+        this.menu = new menu(this.screen)
         this.greeter = new greeter(this.screen)
         this.quicky = new quicky(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
@@ -83,9 +86,9 @@ ked [file]
         post.on('view.size',this.onViewSize)
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
-        this.mouseHandlers = [this.quicky,this.greeter,this.konsole,this.editor]
-        this.wheelHandlers = [this.quicky,this.greeter,this.konsole,this.editor]
-        this.keyHandlers = [this.quicky,this.greeter,this.konsole,this.editor]
+        this.mouseHandlers = [this.quicky,this.menu,this.konsole,this.editor]
+        this.wheelHandlers = [this.quicky,this.menu,this.konsole,this.editor]
+        this.keyHandlers = [this.quicky,this.menu,this.konsole,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -98,7 +101,8 @@ ked [file]
         else
         {
             this.newFile()
-            this.greeter.open()
+            this.menu.open()
+            this.greeter.show()
         }
     }
 
@@ -109,7 +113,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _89_10_
+        var _91_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -131,7 +135,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _111_22_
+        var _113_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -156,7 +160,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _151_22_
+        var lines, start, text, _153_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -264,7 +268,7 @@ ked [file]
                 return this.newFile()
 
             case 'alt+m':
-                return this.greeter.toggle()
+                return this.menu.toggle()
 
             case 'cmd+p':
             case 'ctrl+p':
@@ -308,7 +312,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _259_22_, _260_23_
+        var _261_22_, _262_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -317,7 +321,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _265_22_, _266_23_
+        var _267_22_, _268_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -346,86 +350,11 @@ ked [file]
         this.editor.draw()
         this.konsole.draw()
         this.status.draw()
+        this.menu.draw()
         this.greeter.draw()
         this.quicky.draw()
         this.screen.render()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-    }
-
-    KED.prototype["helpHeader"] = function ()
-    {
-        var c, cells, dcells, ecells, h, kcells, l
-
-        h = `
-╭───╮                ╭───╮                ╭───╮
-│○○○│                │○○○│                │○○○│
-│○○○│                ╰───╯                │○○○│
-│○○○│     ╭───╮    ╭───────╮       ╭──────╯○○○│
-│○○○│   ╭─╯○○○│  ╭─╯○○○○○○○╰─╮   ╭─╯○○○○○○○○○○│
-│○○○│ ╭─╯○○╭──╯ ╭╯○○╭─────╮○○╰╮ ╭╯○○╭─────╮○○○│
-│○○○╰─╯○○╭─╯    │○○○│     │○○○│ │○○○│     │○○○│
-│○○○○○○○○│      │○○○╰─────╯○○○│ │○○○│     │○○○│
-│○○○╭─╮○○╰─╮    │○○○╭─────────╯ │○○○│     │○○○│
-│○○○│ ╰─╮○○╰─╮  │○○○│     ╭───╮ │○○○│     │○○○│
-│○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯
-│○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯ 
-╰───╯     ╰───╯    ╰───────╯       ╰───────╯   
-`
-        l = util.indentLines(util.linesForText(h))
-        cells = util.cellsForLines(l)
-        kcells = util.cellsInRect(cells,0,0,19,-1)
-        var list = _k_.list(kcells)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            c = list[_a_]
-            switch (c.cell.char)
-            {
-                case ' ':
-                case '○':
-                    c.cell.fg = [0,80,0]
-                    break
-                default:
-                    c.cell.fg = [0,255,0]
-            }
-
-        }
-        ecells = util.cellsInRect(cells,19,0,35,-1)
-        var list1 = _k_.list(ecells)
-        for (var _b_ = 0; _b_ < list1.length; _b_++)
-        {
-            c = list1[_b_]
-            switch (c.cell.char)
-            {
-                case ' ':
-                case '○':
-                    c.cell.fg = [0,0,155]
-                    break
-                default:
-                    c.cell.fg = [120,120,255]
-            }
-
-        }
-        dcells = util.cellsInRect(cells,36,0,-1,-1)
-        var list2 = _k_.list(dcells)
-        for (var _c_ = 0; _c_ < list2.length; _c_++)
-        {
-            c = list2[_c_]
-            switch (c.cell.char)
-            {
-                case ' ':
-                case '○':
-                    c.cell.fg = [105,0,0]
-                    break
-                default:
-                    c.cell.fg = [255,160,0]
-            }
-
-        }
-        color.glowEffect(cells)
-        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.6)
-        l = util.indentLines(color.linesForCells(cells),0)
-        h = l.join('\n')
-        return h = '\n' + h + '\n'
     }
 
     return KED

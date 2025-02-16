@@ -10,8 +10,8 @@
 
 use ../kxk ▪ karg kstr slash post
 use ../kxk ◆ nfs
-use ./view ◆ screen cells status quicky greeter
-use ./util ◆ logfile util prjcts session color
+use ./view ◆ screen cells status quicky greeter menu
+use ./util ◆ logfile util prjcts session color help
 use        ◆ ttio editor state konsole
 
 function KED
@@ -25,7 +25,7 @@ function KED
                 options                      **
                 version    log version       = false
                 
-            """ preHelp:@helpHeader() version:@version
+            """ preHelp:help.header() version:@version
         
         process.on 'uncaughtException' @onException
             
@@ -40,6 +40,7 @@ function KED
         
         @screen  = new screen @t
         
+        @menu    = new menu     @screen
         @greeter = new greeter  @screen
         @quicky  = new quicky   @screen 
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
@@ -57,9 +58,9 @@ function KED
         post.on 'quicky'        @onQuicky
         post.on 'file.new'      @newFile
         
-        @mouseHandlers = [@quicky @greeter @konsole @editor]
-        @wheelHandlers = [@quicky @greeter @konsole @editor]
-        @keyHandlers   = [@quicky @greeter @konsole @editor]
+        @mouseHandlers = [@quicky @menu @konsole @editor]
+        @wheelHandlers = [@quicky @menu @konsole @editor]
+        @keyHandlers   = [@quicky @menu @konsole @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -71,7 +72,8 @@ function KED
             @loadFile args.options[0]
         else
             @newFile()
-            @greeter.open()
+            @menu.open()
+            @greeter.show()
             
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -221,7 +223,7 @@ function KED
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
-            'alt+m'                      ➜ ⮐ @greeter.toggle()
+            'alt+m'                      ➜ ⮐ @menu.toggle()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             
         for handler in @keyHandlers
@@ -296,65 +298,13 @@ function KED
         @editor.draw()
         @konsole.draw()
         @status.draw()
+        @menu.draw()
         @greeter.draw()
         @quicky.draw()
         
         @screen.render()
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
-
-    helpHeader: ->
-        
-        h = """
-            
-            ╭───╮                ╭───╮                ╭───╮
-            │○○○│                │○○○│                │○○○│
-            │○○○│                ╰───╯                │○○○│
-            │○○○│     ╭───╮    ╭───────╮       ╭──────╯○○○│
-            │○○○│   ╭─╯○○○│  ╭─╯○○○○○○○╰─╮   ╭─╯○○○○○○○○○○│
-            │○○○│ ╭─╯○○╭──╯ ╭╯○○╭─────╮○○╰╮ ╭╯○○╭─────╮○○○│
-            │○○○╰─╯○○╭─╯    │○○○│     │○○○│ │○○○│     │○○○│
-            │○○○○○○○○│      │○○○╰─────╯○○○│ │○○○│     │○○○│
-            │○○○╭─╮○○╰─╮    │○○○╭─────────╯ │○○○│     │○○○│
-            │○○○│ ╰─╮○○╰─╮  │○○○│     ╭───╮ │○○○│     │○○○│
-            │○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯
-            │○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯ 
-            ╰───╯     ╰───╯    ╰───────╯       ╰───────╯   
-            
-            """ 
-            
-        l = util.indentLines util.linesForText(h)
-
-        cells = util.cellsForLines l
-        
-        kcells = util.cellsInRect cells 0 0 19 -1
-        for c in kcells
-            switch c.cell.char
-                ' ' ➜ 
-                '○' ➜ c.cell.fg = [0 80 0]
-                    ➜ c.cell.fg = [0 255 0]
-                                
-        ecells = util.cellsInRect cells 19 0 35 -1
-        for c in ecells
-            switch c.cell.char
-                ' ' ➜ 
-                '○' ➜ c.cell.fg = [0 0 155]
-                    ➜ c.cell.fg = [120 120 255]
-            
-        dcells = util.cellsInRect cells 36 0 -1 -1
-        for c in dcells
-            switch c.cell.char
-                ' ' ➜ 
-                '○' ➜ c.cell.fg = [105 0 0]
-                    ➜ c.cell.fg = [255 160 0]
-
-        color.glowEffect cells
-        color.variateCellsColor util.cellsWithChar(cells '○') 'fg' 0.6
-
-        l = util.indentLines color.linesForCells(cells) 0
-        h = l.join '\n'
-        
-        h = '\n' + h + '\n'
         
 export KED.run
 

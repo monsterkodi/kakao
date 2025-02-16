@@ -168,11 +168,11 @@ util = (function ()
         return res
     }
 
-    util["cellNeighborsAtPos"] = function (cells, x, y)
+    util["cellNeighborsAtPos"] = function (cells, x, y, xd = 1, yd = 1)
     {
         var x1, x2, y1, y2
 
-        var _a_ = this.clampCellRect(cells,x - 1,y - 1,x + 1,y + 1); x1 = _a_[0]; y1 = _a_[1]; x2 = _a_[2]; y2 = _a_[3]
+        var _a_ = this.clampCellRect(cells,x - xd,y - yd,x + xd,y + yd); x1 = _a_[0]; y1 = _a_[1]; x2 = _a_[2]; y2 = _a_[3]
 
         return this.cellsInRect(cells,x1,y1,x2,y2)
     }

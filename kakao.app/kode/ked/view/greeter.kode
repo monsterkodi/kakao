@@ -1,29 +1,23 @@
 ###
- 0000000   00000000   00000000  00000000  000000000  00000000  00000000 
-000        000   000  000       000          000     000       000   000
-000  0000  0000000    0000000   0000000      000     0000000   0000000  
-000   000  000   000  000       000          000     000       000   000
- 0000000   000   000  00000000  00000000     000     00000000  000   000
+     0000000   00000000   00000000  00000000  000000000  00000000  00000000   
+    000        000   000  000       000          000     000       000   000  
+    000  0000  0000000    0000000   0000000      000     0000000   0000000    
+    000   000  000   000  000       000          000     000       000   000  
+     0000000   000   000  00000000  00000000     000     00000000  000   000  
 ###
 
-use ../../kxk ▪ kstr slash post noon
-use ../../kxk ◆ nfs
-use ../util ◆ prjcts util
+use ../../kxk ▪ kstr
+use ../util ◆ util help
 use ..      ◆ editor theme
-use         ◆ cells input choices
+use         ◆ cells 
 
 function greeter
 
     @: @screen ->
         
+        @header  = help.headerCells()
         @name    = 'greeter'
-
-        @cells   = new cells   @screen
-
-        @input   = new input   @screen 'quicky_input'
-        @choices = new choices @screen 'quicky_choices'
-
-        @input.on 'changed' @onInputChanged
+        @cells   = new cells @screen
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -32,25 +26,16 @@ function greeter
     # 0000000   000   000   0000000   00     00
 
     show: =>
-
-        @layout()
-        @input.grabFocus()
-
-    layout: =>
-
-        x = int @screen.cols/4
+        
+        [w h] = util.cellSize @header
+        
         y = int @screen.rows/4
-        w = int @screen.cols/2
-        h = int @screen.rows/2
+        x = int @screen.cols/2-w/2
 
-        c = min h @choices.num()
+        @cells.init x y w h
 
-        @input.init    x+2   y+1   w-4  1
-        @choices.init  x+2   y+3   w-3  c
-        @cells.init    x     y     w    c+4
-
-    hide:   => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
-    hidden: -> @cells.rows <= 0
+    hide:    => @cells.rows = 0
+    hidden:  -> @cells.rows <= 0
     visible: -> @cells.rows > 0
 
     #  0000000   00000000   00000000  000   000
@@ -60,54 +45,6 @@ function greeter
     #  0000000   000        00000000  000   000
 
     toggle: -> if @hidden() then @open() else @hide()
-    open:   -> 
-        
-        items = util.linesForText
-            """
-            recent ...
-            open ...
-            session ...
-            help
-            """
-        ccol = int(@screen.cols/2) - 5
-
-        @input.set ''
-        @choices.set items
-        @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
-        @choices.state.setView [0 0]
-        @show()
-
-    # 000  000   000  00000000   000   000  000000000  
-    # 000  0000  000  000   000  000   000     000     
-    # 000  000 0 000  00000000   000   000     000     
-    # 000  000  0000  000        000   000     000     
-    # 000  000   000  000         0000000      000     
-    
-    onInputChanged: text =>
-
-        @choices.filter text
-        @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
-        @layout()
-
-    applyChoice: ->
-        
-        current = @choices.current()
-        lf 'greeter choice' current
-        
-        switch current
-            'new file' ➜ post.emit 'file.new'
-        
-        @returnToEditor()
-        
-    returnToEditor: ->
-
-        @cells.rows = 0
-        post.emit 'focus' 'editor'
-        redraw:true
-            
-    currentChoice: -> trim @choices.current()
         
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
@@ -118,62 +55,11 @@ function greeter
     draw: ->
 
         ⮐ if @hidden()
+        
+        @show()
+        
+        for row,y in @header
+            for cell,x in row
+                @cells.set x y cell.char cell.fg cell.bg
 
-        fg = theme.quicky_frame_fg
-        bg = theme.quicky_frame_bg
-
-        @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
-
-        @input.draw()
-        @choices.draw()
-
-    #  0000000  00000000  000      00000000   0000000  000000000
-    # 000       000       000      000       000          000
-    # 0000000   0000000   000      0000000   000          000
-    #      000  000       000      000       000          000
-    # 0000000   00000000  0000000  00000000   0000000     000
-
-    moveSelection: dir ->
-
-        switch dir
-            'down'  ➜ @choices.state.selectNextLine()
-            'up'    ➜ @choices.state.selectPrevLine()
-
-        @input.set @choices.state.selectedText()
-        @input.selectAll()
-
-    # 000   000  00000000  000   000
-    # 000  000   000        000 000
-    # 0000000    0000000     00000
-    # 000  000   000          000
-    # 000   000  00000000     000
-
-    onKey: key event =>
-
-        ⮐ if @hidden()
-
-        switch event.combo
-            'esc'       ➜ ⮐ @hide()
-            'return'    ➜ ⮐ @applyChoice()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.state.hasFocus
-
-        ⮐ true if @input.onKey key event
-        ⮐ true if @choices.onKey key event
-        true
-
-    onMouse: type sx sy event =>
-
-        ⮐ if @hidden()
-        ⮐ true if @input.onMouse type sx sy event
-        ⮐ true if @choices.onMouse type sx sy event
-        true
-
-    onWheel: event =>
-
-        ⮐ if @hidden()
-
-        ⮐ true if @input.onWheel event
-        ⮐ true if @choices.onWheel event
-        true
-    
 export greeter
