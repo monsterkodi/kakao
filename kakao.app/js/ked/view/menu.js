@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var menu
 
@@ -17,6 +17,7 @@ import theme from "../theme.js"
 import cells from "./cells.js"
 import input from "./input.js"
 import choices from "./choices.js"
+import greeter from "./greeter.js"
 
 
 menu = (function ()
@@ -29,11 +30,12 @@ menu = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onInputChanged"] = this["onInputChanged"].bind(this)
-        this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
+        this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
         this.name = 'menu'
         this.cells = new cells(this.screen)
+        this.greeter = new greeter(this.screen)
         this.input = new input(this.screen,'quicky_input')
         this.choices = new choices(this.screen,'quicky_choices')
         this.input.on('changed',this.onInputChanged)
@@ -41,27 +43,15 @@ menu = (function ()
 
     menu.prototype["show"] = function ()
     {
+        this.greeter.show(this.greet)
         this.layout()
         return this.input.grabFocus()
-    }
-
-    menu.prototype["layout"] = function ()
-    {
-        var c, h, w, x, y
-
-        w = 50
-        h = this.choices.num()
-        x = parseInt(this.screen.cols / 2 - w / 2)
-        y = parseInt(this.screen.rows / 2 + 3)
-        c = _k_.min(h)
-        this.input.init(x + 2,y + 1,w - 4,1)
-        this.choices.init(x + 2,y + 3,w - 3,c)
-        return this.cells.init(x,y,w,c + 4)
     }
 
     menu.prototype["hide"] = function ()
     {
         this.cells.rows = 0
+        delete this.greet
         post.emit('focus','editor')
         post.emit('redraw')
         return true
@@ -77,6 +67,21 @@ menu = (function ()
         return this.cells.rows > 0
     }
 
+    menu.prototype["layout"] = function ()
+    {
+        var c, g, h, w, x, y
+
+        w = 16
+        c = this.choices.num()
+        g = (this.greet ? this.greeter.cells.rows : 0)
+        h = c + 4 + g
+        x = parseInt(this.screen.cols / 2 - w / 2)
+        y = parseInt(this.screen.rows / 2 - h / 2 + g)
+        this.input.init(x + 2,y + 1,w - 4,1)
+        this.choices.init(x + 2,y + 3,w - 3,c)
+        return this.cells.init(x,y,w,c + 4)
+    }
+
     menu.prototype["toggle"] = function ()
     {
         if (this.hidden())
@@ -89,21 +94,31 @@ menu = (function ()
         }
     }
 
-    menu.prototype["open"] = function ()
+    menu.prototype["open"] = function (greet = false)
     {
         var ccol, items
 
+        this.greet = greet
+    
         items = util.linesForText(`open ...
 recent ...
 session ...
-about
-help`)
+help
+quit`)
+        if (!this.greet)
+        {
+            items.splice(items.length - 2,0,'about')
+        }
         ccol = parseInt(this.screen.cols / 2) - 5
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
         this.choices.state.setView([0,0])
+        if (this.greet)
+        {
+            post.emit('greet')
+        }
         return this.show()
     }
 
@@ -120,22 +135,22 @@ help`)
         var current
 
         current = this.choices.current()
-        lf('greeter choice',current)
         switch (current)
         {
-            case 'new file':
-                post.emit('file.new')
+            case 'about':
+                return this.open(true)
+
+            case 'quit':
+                post.emit('quit')
+                return {redraw:false}
+
+            case 'open ...':
+                post.emit('quicky.dir',process.cwd())
                 break
         }
 
-        return this.returnToEditor()
-    }
-
-    menu.prototype["returnToEditor"] = function ()
-    {
-        this.cells.rows = 0
-        post.emit('focus','editor')
-        return {redraw:true}
+        lf('menu choice',current)
+        return this.hide()
     }
 
     menu.prototype["currentChoice"] = function ()
@@ -155,6 +170,10 @@ help`)
         fg = theme.quicky_frame_fg
         bg = theme.quicky_frame_bg
         this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
+        if (this.greet)
+        {
+            this.greeter.draw()
+        }
         this.input.draw()
         return this.choices.draw()
     }

@@ -14,7 +14,6 @@ import screen from "./view/screen.js"
 import cells from "./view/cells.js"
 import status from "./view/status.js"
 import quicky from "./view/quicky.js"
-import greeter from "./view/greeter.js"
 import menu from "./view/menu.js"
 
 import logfile from "./util/logfile.js"
@@ -50,6 +49,7 @@ KED = (function ()
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["newFile"] = this["newFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
+        this["quit"] = this["quit"].bind(this)
         this.version = '0.0.4'
         args = karg(`
 ked [file]
@@ -73,7 +73,6 @@ ked [file]
         }).bind(this)
         this.screen = new screen(this.t)
         this.menu = new menu(this.screen)
-        this.greeter = new greeter(this.screen)
         this.quicky = new quicky(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
@@ -86,6 +85,7 @@ ked [file]
         post.on('view.size',this.onViewSize)
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
+        post.on('quit',this.quit)
         this.mouseHandlers = [this.quicky,this.menu,this.konsole,this.editor]
         this.wheelHandlers = [this.quicky,this.menu,this.konsole,this.editor]
         this.keyHandlers = [this.quicky,this.menu,this.konsole,this.editor]
@@ -101,8 +101,7 @@ ked [file]
         else
         {
             this.newFile()
-            this.menu.open()
-            this.greeter.show()
+            this.menu.open(true)
         }
     }
 
@@ -113,7 +112,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _91_10_
+        var _90_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -135,7 +134,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _113_22_
+        var _112_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -160,7 +159,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _153_22_
+        var lines, start, text, _152_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -241,7 +240,7 @@ ked [file]
 
     KED.prototype["onKey"] = function (key, event)
     {
-        var handler, result
+        var handler, result, _227_99_
 
         switch (key)
         {
@@ -273,6 +272,10 @@ ked [file]
             case 'cmd+p':
             case 'ctrl+p':
                 return this.quicky.toggle(this.currentFile)
+
+            case 'cmd+.':
+            case 'ctrl+.':
+                return this.quicky.gotoDirectory(((_227_99_=slash.dir(this.currentFile)) != null ? _227_99_ : process.cwd()))
 
         }
 
@@ -347,11 +350,13 @@ ked [file]
         this.editor.init(0,0,w,h - k - 1)
         this.konsole.init(0,h - k - 1,w,k)
         this.screen.init()
-        this.editor.draw()
-        this.konsole.draw()
-        this.status.draw()
+        if (!this.menu.greet)
+        {
+            this.editor.draw()
+            this.status.draw()
+            this.konsole.draw()
+        }
         this.menu.draw()
-        this.greeter.draw()
         this.quicky.draw()
         this.screen.render()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
@@ -363,6 +368,5 @@ ked [file]
 export default KED.run;
 if (((globalThis.process != null ? globalThis.process.argv : undefined) != null) && import.meta.filename === process.argv[1])
 {
-    console.log('◆main')
     KED.run()
 }

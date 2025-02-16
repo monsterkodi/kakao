@@ -27,10 +27,14 @@ greeter = (function ()
         this.cells = new cells(this.screen)
     }
 
-    greeter.prototype["show"] = function ()
+    greeter.prototype["show"] = function (doShow = true)
     {
         var h, w, x, y
 
+        if (doShow === false)
+        {
+            return this.hide()
+        }
         var _a_ = util.cellSize(this.header); w = _a_[0]; h = _a_[1]
 
         y = parseInt(this.screen.rows / 4)

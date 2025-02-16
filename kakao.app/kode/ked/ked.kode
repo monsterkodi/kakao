@@ -10,7 +10,7 @@
 
 use ../kxk ▪ karg kstr slash post
 use ../kxk ◆ nfs
-use ./view ◆ screen cells status quicky greeter menu
+use ./view ◆ screen cells status quicky menu
 use ./util ◆ logfile util prjcts session color help
 use        ◆ ttio editor state konsole
 
@@ -40,8 +40,7 @@ function KED
         
         @screen  = new screen @t
         
-        @menu    = new menu     @screen
-        @greeter = new greeter  @screen
+        @menu    = new menu     @screen        
         @quicky  = new quicky   @screen 
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
         @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
@@ -57,6 +56,7 @@ function KED
         post.on 'view.size'     @onViewSize
         post.on 'quicky'        @onQuicky
         post.on 'file.new'      @newFile
+        post.on 'quit'          @quit
         
         @mouseHandlers = [@quicky @menu @konsole @editor]
         @wheelHandlers = [@quicky @menu @konsole @editor]
@@ -72,8 +72,7 @@ function KED
             @loadFile args.options[0]
         else
             @newFile()
-            @menu.open()
-            @greeter.show()
+            @menu.open true
             
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -83,7 +82,7 @@ function KED
     
     @run: -> new KED()
     
-    quit: msg ○->
+    quit: msg ○=>
         
         ○ @session.save()
         
@@ -225,6 +224,7 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+m'                      ➜ ⮐ @menu.toggle()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
+            'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDirectory slash.dir(@currentFile) ? process.cwd()
             
         for handler in @keyHandlers
             break if result = handler.onKey key event
@@ -295,11 +295,11 @@ function KED
                         
         @screen.init()
         
-        @editor.draw()
-        @konsole.draw()
-        @status.draw()
+        if not @menu.greet
+            @editor.draw()
+            @status.draw()
+            @konsole.draw()
         @menu.draw()
-        @greeter.draw()
         @quicky.draw()
         
         @screen.render()
@@ -308,42 +308,7 @@ function KED
         
 export KED.run
 
-###
-╭─┬─┬─╮ ╭─╮╭─╮╭─╮   ╭ ╮
-│k│ė│d│ │k││ė││d│ ─  │ 
-╰─┴─┴─╯ ╰─╯╰─╯╰─╯   ╰ ╯
-
-            ╭───╮                 ╭───╮                 ╭───╮
-            │   │                 │   │                 │   │
-            │   │                 ╰───╯                 │   │
-            │   │     ╭───╮     ╭───────╮        ╭──────╯   │
-            │   │   ╭─╯   │   ╭─╯       ╰─╮    ╭─╯          │
-            │   │ ╭─╯  ╭──╯  ╭╯  ╭─────╮  ╰╮  ╭╯  ╭─────╮   │
-            │   ╰─╯  ╭─╯     │   │     │   │  │   │     │   │
-            │        │       │   ╰─────╯   │  │   │     │   │
-            │   ╭─╮  ╰─╮     │   ╭─────────╯  │   │     │   │
-            │   │ ╰─╮  ╰─╮   │   │     ╭───╮  │   │     │   │
-            │   │   ╰─╮  ╰╮  ╰╮  ╰─────╯  ╭╯  ╰╮  ╰─────╯  ╭╯
-            │   │     │   │   ╰─╮       ╭─╯    ╰─╮       ╭─╯
-            ╰───╯     ╰───╯     ╰───────╯        ╰───────╯  
-
-            ████                  ████                  ████
-            ████                  ████                  ████
-            ████                                        ████
-            ████      ████      ████████         ███████████
-            ████    ██████    ████████████     █████████████
-            ████  █████      ████      ████   ████      ████
-            █████████        ████      ████   ████      ████
-            █████████        ██████████████   ████      ████
-            ████  █████      ████             ████      ████
-            ████    █████    ████      ████   ████      ████
-            ████      ████    ████████████     ████████████ 
-            ████      ████      ████████         ████████   
-                
-    kėd
-###
-
 ◆main
-    log '◆main'
+    # log '◆ main'
     KED.run()
 

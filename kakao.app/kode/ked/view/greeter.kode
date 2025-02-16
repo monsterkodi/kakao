@@ -25,7 +25,9 @@ function greeter
     #      000  000   000  000   000  000   000
     # 0000000   000   000   0000000   00     00
 
-    show: =>
+    show: doShow=true =>
+        
+        ⮐ @hide() if doShow == false
         
         [w h] = util.cellSize @header
         

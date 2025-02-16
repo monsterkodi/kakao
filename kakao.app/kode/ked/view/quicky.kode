@@ -30,6 +30,8 @@ function quicky
         @choices.state.syntax.setRgxs rgxs
 
         @input.on 'changed' @onInputChanged
+        
+        post.on 'quicky.dir' @gotoDirectory
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -78,7 +80,7 @@ function quicky
     
     gotoFile: @currentFile ->
 
-        lf 'quicky.gotoFile' @currentFile
+        # lf 'quicky.gotoFile' @currentFile
 
         items = prjcts.files @currentFile
         @currentDir = slash.dir @currentFile
@@ -126,7 +128,7 @@ function quicky
 
         @currentDir = slash.untilde dir
         
-        # lf 'quicky.gotoDirectory' @currentDir
+        lf 'quicky.gotoDirectory' @currentDir
 
         items =○ nfs.list @currentDir recursive:false
         

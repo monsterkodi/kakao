@@ -4,6 +4,7 @@ var floor, mapscr, pow
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
+let post = kxk.post
 
 import prof from "../util/prof.js"
 import syntax from "../util/syntax.js"
@@ -36,6 +37,7 @@ mapscr = (function ()
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
         screen.t.on('preResize',this.onPreResize)
+        post.on('greet',this.clearImages)
     }
 
     mapscr.prototype["init"] = function (x, y, w, h)

@@ -9,15 +9,16 @@
 use ../../kxk ▪ kstr slash post noon
 use ../util ◆ prjcts util
 use ..      ◆ editor theme
-use         ◆ cells input choices
+use         ◆ cells input choices greeter
 
 function menu
 
     @: @screen ->
         
         @name    = 'menu'
-
+        
         @cells   = new cells   @screen
+        @greeter = new greeter @screen
         @input   = new input   @screen 'quicky_input'
         @choices = new choices @screen 'quicky_choices'
 
@@ -31,25 +32,32 @@ function menu
 
     show: =>
 
+        @greeter.show @greet
         @layout()
         @input.grabFocus()
 
+    hide:    => @cells.rows = 0; delete @greet; post.emit 'focus' 'editor'; post.emit 'redraw'; true
+    hidden:  -> @cells.rows <= 0
+    visible: -> @cells.rows > 0
+    
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
     layout: =>
 
-        w = 50
-        h = @choices.num()
+        w = 16
+        c = @choices.num()
+        g = @greet ? @greeter.cells.rows : 0
+        h = c + 4 + g
         x = int @screen.cols/2 - w/2
-        y = int @screen.rows/2 + 3
-
-        c = min h 
+        y = int @screen.rows/2 - h/2 + g
 
         @input.init    x+2   y+1   w-4  1
         @choices.init  x+2   y+3   w-3  c
         @cells.init    x     y     w    c+4
-
-    hide:    => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
-    hidden:  -> @cells.rows <= 0
-    visible: -> @cells.rows > 0
 
     #  0000000   00000000   00000000  000   000
     # 000   000  000   000  000       0000  000
@@ -58,16 +66,20 @@ function menu
     #  0000000   000        00000000  000   000
 
     toggle: -> if @hidden() then @open() else @hide()
-    open:   -> 
+    
+    open: @greet=false -> 
         
         items = util.linesForText
             """
             open ...
             recent ...
             session ...
-            about
             help
+            quit
             """
+            
+        items.splice items.length-2 0 'about' if not @greet
+            
         ccol = int(@screen.cols/2) - 5
 
         @input.set ''
@@ -75,6 +87,9 @@ function menu
         @choices.state.selectLine 0
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
         @choices.state.setView [0 0]
+        
+        post.emit 'greet' if @greet
+        
         @show()
 
     # 000  000   000  00000000   000   000  000000000  
@@ -93,19 +108,16 @@ function menu
     applyChoice: ->
         
         current = @choices.current()
-        lf 'greeter choice' current
         
         switch current
-            'new file' ➜ post.emit 'file.new'
-        
-        @returnToEditor()
-        
-    returnToEditor: ->
-
-        @cells.rows = 0
-        post.emit 'focus' 'editor'
-        redraw:true
+            'about'    ➜ ⮐ @open true
+            'quit'     ➜ post.emit 'quit' ; ⮐ redraw:false
+            'open ...' ➜ post.emit 'quicky.dir' process.cwd()
             
+        lf 'menu choice' current
+        
+        @hide()
+                    
     currentChoice: -> trim @choices.current()
         
     # 0000000    00000000    0000000   000   000
@@ -125,6 +137,7 @@ function menu
 
         @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
 
+        @greeter.draw() if @greet
         @input.draw()
         @choices.draw()
 

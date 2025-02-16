@@ -7,7 +7,7 @@
 000   000  000   000  000        0000000    0000000  000   000
 ###
 
-use ../../kxk ▪ kstr
+use ../../kxk ▪ kstr post
 use ../util ◆ prof syntax color util
 use ..      ◆ theme 
 use         ◆ cells
@@ -25,6 +25,7 @@ function mapscr
         @pixelsPerCol = 2
         
         screen.t.on 'preResize' @onPreResize
+        post.on 'greet' @clearImages
        
     init: x y w h -> @cells.init x y w h
         

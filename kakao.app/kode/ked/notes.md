@@ -26,9 +26,7 @@
 # todo
 
 - greeter 
-    - glow header
     - recent files
-    - browser
     
 - session
     - save main cursor positions per file and apply on load
@@ -44,8 +42,6 @@
     - add cwd in browser mode
     - merge with macro?
     - fix layout issues for larger repositories with longer file names
-
-
 
 - find and search
     - each multiline editor has its own knobbed finder at bottom

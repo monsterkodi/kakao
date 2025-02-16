@@ -44,6 +44,7 @@ quicky = (function ()
         this.choices = new choices(this.screen,'quicky_choices')
         this.choices.state.syntax.setRgxs(rgxs)
         this.input.on('changed',this.onInputChanged)
+        post.on('quicky.dir',this.gotoDirectory)
     }
 
     quicky.prototype["show"] = function ()
@@ -107,7 +108,6 @@ quicky = (function ()
 
         this.currentFile = currentFile
     
-        lf('quicky.gotoFile',this.currentFile)
         items = prjcts.files(this.currentFile)
         this.currentDir = slash.dir(this.currentFile)
         items = items.map((function (i)
@@ -164,6 +164,7 @@ quicky = (function ()
             return
         }
         this.currentDir = slash.untilde(dir)
+        lf('quicky.gotoDirectory',this.currentDir)
         items = await nfs.list(this.currentDir,{recursive:false})
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
