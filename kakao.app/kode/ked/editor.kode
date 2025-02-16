@@ -8,7 +8,7 @@
 
 use ../kxk ◆ events matchr kstr post
 use ./util ◆ util color
-use ./view ◆ view scroll gutter mapscr
+use ./view ◆ view scroll gutter mapscr mapview
 use        ◆ state theme
 
 function editor extends view
@@ -24,9 +24,10 @@ function editor extends view
         for feature in features
             switch feature
                 'scrllr'
-                'scroll' ➜ @scroll = new scroll @screen @state
-                'gutter' ➜ @gutter = new gutter @screen @state
-                'mapscr' ➜ @mapscr = new mapscr @screen @state
+                'scroll'    ➜ @scroll = new scroll  @screen @state
+                'gutter'    ➜ @gutter = new gutter  @screen @state
+                'mapscr'    ➜ @mapscr = new mapscr  @screen @state
+                'mapview'   ➜ @mapscr = new mapview @screen @state
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -52,7 +53,7 @@ function editor extends view
             g = @state.gutterWidth()
             @gutter.init    x+sl    y   g   h
             
-        if @mapscr
+        if @mapscr and @mapscr.visible()
             m = 10
             @mapscr.init x+w-sr-m   y   m   h
             
@@ -180,8 +181,8 @@ function editor extends view
             
             fg  = theme[@name    + '_cursor_fg']
             fg ?= theme['editor' + '_cursor_fg']
-            bg  = theme[@name    + (@state.hasFocus ? '_cursor_bg' : '_cursor_blur')]
-            bg ?= theme['editor' + (@state.hasFocus ? '_cursor_bg' : '_cursor_blur')]
+            bg  = theme[@name    + (@hasFocus() ? '_cursor_bg' : '_cursor_blur')]
+            bg ?= theme['editor' + (@hasFocus() ? '_cursor_bg' : '_cursor_blur')]
             
             x = mainCursor[0]-view[0]
             y = mainCursor[1]-view[1]
@@ -211,9 +212,9 @@ function editor extends view
     
     onMouse: event =>
         
-        ⮐ true if @mapscr?.onMouse event
-        ⮐ true if @scroll?.onMouse event
-        ⮐ true if super            event
+        ⮐ true if @mapscr?.onMouse? event
+        ⮐ true if @scroll?.onMouse  event
+        ⮐ true if super             event
         
         [col row] = @cells.posForEvent event
         
@@ -370,6 +371,10 @@ function editor extends view
         post.emit 'focus' @name
         @redraw()
         
+    hasFocus: ->
+        
+        @state.hasFocus
+        
     onFocus: name =>
         
         @state.hasFocus = (name == @name)
@@ -390,7 +395,7 @@ function editor extends view
     
     onKey: key event =>
         
-        ⮐ if not @state.hasFocus
+        ⮐ if not @hasFocus()
         
         # lc 'key' key
         

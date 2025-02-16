@@ -32,6 +32,8 @@ mapscr = (function ()
         this["reload"] = this["reload"].bind(this)
         this["onPreResize"] = this["onPreResize"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
+        this["hide"] = this["hide"].bind(this)
+        this["show"] = this["show"].bind(this)
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name)
         this.pixelsPerRow = 4
@@ -43,6 +45,33 @@ mapscr = (function ()
     mapscr.prototype["init"] = function (x, y, w, h)
     {
         return this.cells.init(x,y,w,h)
+    }
+
+    mapscr.prototype["show"] = function (doShow = true)
+    {
+        if (doShow === false)
+        {
+            return this.hide()
+        }
+        else
+        {
+            return this.cells.cols = 10
+        }
+    }
+
+    mapscr.prototype["hide"] = function ()
+    {
+        return this.cells.cols = 0
+    }
+
+    mapscr.prototype["hidden"] = function ()
+    {
+        return this.cells.cols <= 0
+    }
+
+    mapscr.prototype["visible"] = function ()
+    {
+        return this.cells.cols > 0
     }
 
     mapscr.prototype["clearImages"] = function ()

@@ -29,7 +29,7 @@ function session extends events
         
         @sep  = opt.separator ? '|'
         
-        @file = slash.path "~/.config/ked/sessions/#{@name}.noon"
+        @file = slash.absolute "~/.config/ked/sessions/#{@name}.noon"
         
         lf 'session' @file
         

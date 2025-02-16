@@ -35,7 +35,7 @@ session = (function ()
         opt = (opt != null ? opt : {})
         opt.timeout = ((_28_20_=opt.timeout) != null ? _28_20_ : 4000)
         this.sep = ((_30_30_=opt.separator) != null ? _30_30_ : '|')
-        this.file = slash.path(`~/.config/ked/sessions/${this.name}.noon`)
+        this.file = slash.absolute(`~/.config/ked/sessions/${this.name}.noon`)
         lf('session',this.file)
         return session.__super__.constructor.apply(this, arguments)
     }

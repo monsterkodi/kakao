@@ -12,7 +12,7 @@ use ../../kxk ◆ nfs
 class walker
     
     # @sourceFileExtensions: [ 'kode' 'coffee' 'styl' 'swift' 'pug' 'md' 'noon' 'txt' 'json' 'sh' 'py' 'cpp' 'mm' 'zig' 'cc' 'c' 'cs' 'h' 'hpp' 'ts' 'js' 'mjs' 'frag' 'vert' 'config' 'lua']
-    @sourceFileExtensions: [ 'kode' 'styl' 'pug' 'md' 'noon' 'txt' 'sh' 'mm' 'zig' 'h' 'hpp' 'config' 'lua']
+    @sourceFileExtensions: [ 'kode' 'styl' 'pug' 'md' 'noon' 'txt' 'sh' 'mm' 'zig' 'h' 'hpp' 'config' 'lua'] # move this to config!
 
     @: @cfg ->
 

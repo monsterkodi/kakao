@@ -244,6 +244,8 @@ function KED
         else
             file = slash.absolute event slash.dir(@currentFile)
         
+        ⮐ if slash.samePath file @currentFile
+            
         exists =○ nfs.fileExists file
         if exists
             ○ @loadFile file

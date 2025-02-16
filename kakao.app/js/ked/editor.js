@@ -14,6 +14,7 @@ import view from "./view/view.js"
 import scroll from "./view/scroll.js"
 import gutter from "./view/gutter.js"
 import mapscr from "./view/mapscr.js"
+import mapview from "./view/mapview.js"
 
 import state from "./state.js"
 import theme from "./theme.js"
@@ -55,6 +56,9 @@ editor = (function ()
                 case 'mapscr':
                     this.mapscr = new mapscr(this.screen,this.state)
                     break
+                case 'mapview':
+                    this.mapscr = new mapview(this.screen,this.state)
+                    break
             }
 
         }
@@ -85,7 +89,7 @@ editor = (function ()
             g = this.state.gutterWidth()
             this.gutter.init(x + sl,y,g,h)
         }
-        if (this.mapscr)
+        if (this.mapscr && this.mapscr.visible())
         {
             m = 10
             this.mapscr.init(x + w - sr - m,y,m,h)
@@ -96,7 +100,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _165_41_, _166_44_, _200_15_, _201_15_, _202_15_, _78_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _166_41_, _167_44_, _201_15_, _202_15_, _203_15_, _79_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -107,7 +111,7 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_78_26_=theme[this.name]) != null ? _78_26_ : theme['editor'])
+        bg = ((_79_26_=theme[this.name]) != null ? _79_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -249,8 +253,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_165_41_=theme[this.name + '_cursor_fg']) != null ? _165_41_ : theme['editor_cursor_fg'])
-        bg = ((_166_44_=theme[this.name + '_cursor_multi']) != null ? _166_44_ : theme['editor_cursor_multi'])
+        fg = ((_166_41_=theme[this.name + '_cursor_fg']) != null ? _166_41_ : theme['editor_cursor_fg'])
+        bg = ((_167_44_=theme[this.name + '_cursor_multi']) != null ? _167_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -271,8 +275,8 @@ editor = (function ()
         {
             fg = theme[this.name + '_cursor_fg']
             fg = (fg != null ? fg : theme['editor' + '_cursor_fg'])
-            bg = theme[this.name + ((this.state.hasFocus ? '_cursor_bg' : '_cursor_blur'))]
-            bg = (bg != null ? bg : theme['editor' + ((this.state.hasFocus ? '_cursor_bg' : '_cursor_blur'))])
+            bg = theme[this.name + ((this.hasFocus() ? '_cursor_bg' : '_cursor_blur'))]
+            bg = (bg != null ? bg : theme['editor' + ((this.hasFocus() ? '_cursor_bg' : '_cursor_blur'))])
             x = mainCursor[0] - view[0]
             y = mainCursor[1] - view[1]
             if (s.cursors.length <= 1)
@@ -301,9 +305,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _214_30_, _215_30_, _225_41_
+        var col, row, start, x, y, _215_30_, _215_39_, _216_30_, _226_41_
 
-        if ((this.mapscr != null ? this.mapscr.onMouse(event) : undefined))
+        if (((_215_30_=this.mapscr) != null ? typeof (_215_39_=_215_30_.onMouse) === "function" ? _215_39_(event) : undefined : undefined))
         {
             return true
         }
@@ -508,6 +512,11 @@ editor = (function ()
         return this.redraw()
     }
 
+    editor.prototype["hasFocus"] = function ()
+    {
+        return this.state.hasFocus
+    }
+
     editor.prototype["onFocus"] = function (name)
     {
         return this.state.hasFocus = (name === this.name)
@@ -520,7 +529,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        if (!this.state.hasFocus)
+        if (!this.hasFocus())
         {
             return
         }

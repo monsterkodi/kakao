@@ -38,8 +38,6 @@
     - similar to session, but loads and merges (to handle multiple instances)
 
 - quick open cmd+p
-    - cmd+. to open in browser mode for now?
-    - add cwd in browser mode
     - merge with macro?
     - fix layout issues for larger repositories with longer file names
 

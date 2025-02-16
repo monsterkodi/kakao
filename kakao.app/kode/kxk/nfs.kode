@@ -32,19 +32,32 @@ class NFS
         
         for dirent in dirents
     
-            file  = dirent.name
-            isDir = dirent.isDirectory()
+            file     = dirent.name
+            isDir    = dirent.isDirectory()
+            absPath  = slash.path dir file
+            resolved = undefined
             
-            if isDir and file in ['node_modules' '.git'] 
-                continue # is it a good idea to hardcode this here?
+            if dirent.isSymbolicLink()
+                resolved =○ fsp.readlink absPath
+                if not slash.isAbsolute resolved
+                    resolved = slash.path dir resolved
+                # lf 'symlink' absPath resolved
+                isDir =○ @isDir resolved
             
-            absPath = slash.path dir file
+            if isDir # is it a good idea to hardcode this here?
+                continue if file in ['node_modules' '.git'] 
+                continue if absPath in ['/Users/Shared']
+            else 
+                continue if file in ['.DS_Store' '.localized']
+            
             # lf 'isDir' isDir absPath dirent
             
             opt.found.push
                 type: isDir ? 'dir' : 'file'
                 file: file
                 path: absPath
+                
+            opt.found[-1].link = resolved if resolved
             
             if isDir and opt.recursive
     
@@ -59,7 +72,6 @@ class NFS
         
         stat =○ fsp.lstat p
         if stat.isSymbolicLink()
-            # lf 'readlink' p stat
             r =○ fsp.readlink p
             ⮐ r
         p

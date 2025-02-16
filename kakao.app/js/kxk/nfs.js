@@ -9,7 +9,7 @@ class NFS
 {
     static async listdir (dir, opt)
     {
-        var absPath, dirent, dirents, file, isDir, _24_22_, _25_18_
+        var absPath, dirent, dirents, file, isDir, resolved, _24_22_, _25_18_
 
         opt = (opt != null ? opt : {})
         opt.recursive = ((_24_22_=opt.recursive) != null ? _24_22_ : true)
@@ -22,12 +22,40 @@ class NFS
             dirent = list[_a_]
             file = dirent.name
             isDir = dirent.isDirectory()
-            if (isDir && _k_.in(file,['node_modules','.git']))
-            {
-                continue
-            }
             absPath = slash.path(dir,file)
+            resolved = undefined
+            if (dirent.isSymbolicLink())
+            {
+                resolved = await fsp.readlink(absPath)
+                if (!slash.isAbsolute(resolved))
+                {
+                    resolved = slash.path(dir,resolved)
+                }
+                isDir = await this.isDir(resolved)
+            }
+            if (isDir)
+            {
+                if (_k_.in(file,['node_modules','.git']))
+                {
+                    continue
+                }
+                if (_k_.in(absPath,['/Users/Shared']))
+                {
+                    continue
+                }
+            }
+            else
+            {
+                if (_k_.in(file,['.DS_Store','.localized']))
+                {
+                    continue
+                }
+            }
             opt.found.push({type:(isDir ? 'dir' : 'file'),file:file,path:absPath})
+            if (resolved)
+            {
+                opt.found.slice(-1)[0].link = resolved
+            }
             if (isDir && opt.recursive)
             {
                 await NFS.listdir(absPath,opt)

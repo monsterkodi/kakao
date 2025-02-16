@@ -8,9 +8,9 @@
 
 use ../../kxk ▪ kstr slash post noon
 use ../../kxk ◆ nfs
-use ../util ◆ prjcts
+use ../util ◆ prjcts walker util
 use ..      ◆ editor theme
-use         ◆ cells input choices
+use         ◆ cells input choices crumbs
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -25,8 +25,11 @@ function quicky
         @cells   = new cells   @screen
 
         @input   = new input   @screen 'quicky_input'
+        @crumbs  = new crumbs  @screen 'quicky_crumbs'
         @choices = new choices @screen 'quicky_choices'
 
+        @choices.mapscr.hide()
+        
         @choices.state.syntax.setRgxs rgxs
 
         @input.on 'changed' @onInputChanged
@@ -51,11 +54,14 @@ function quicky
         w = int @screen.cols/2
         h = int @screen.rows/2
 
-        c = min h @choices.num()
+        cs = min h @choices.num()
+        ch = @crumbs.visible() ? 1 : 0
+        cd = ch == 1 ? 1 : 0
 
-        @input.init    x+2   y+1   w-4  1
-        @choices.init  x+2   y+3   w-3  c
-        @cells.init    x     y     w    c+4
+        @input.init    x+2   y+1     w-4  1
+        @crumbs.init   x+2   y+3     w-4  ch
+        @choices.init  x+2   y+3+cd  w-3  cs
+        @cells.init    x     y       w    cs+4+cd
 
         # lf 'layout' c @choices.items.length
 
@@ -85,6 +91,8 @@ function quicky
         items = prjcts.files @currentFile
         @currentDir = slash.dir @currentFile
         items = items.map (i) => slash.relative i @currentDir
+        
+        @crumbs.hide()
 
         ccol = int(@screen.cols/2) - 5
 
@@ -122,19 +130,25 @@ function quicky
     # 000   000  000   000     000     000   000  000   000  000  000   000  
     #  0000000    0000000      000      0000000   0000000    000  000   000  
     
-    gotoDirectory: dir ○=>
+    gotoDirectory: dir select ○=>
         
         ⮐ if empty dir
 
-        @currentDir = slash.untilde dir
+        dir = slash.untilde dir
+        lf 'quicky.gotoDirectory' dir
         
-        lf 'quicky.gotoDirectory' @currentDir
+        try
+            items =○ nfs.list dir recursive:false
+        catch err
+            lf 'list error' err
+            ⮐ 
 
-        items =○ nfs.list @currentDir recursive:false
+        @currentDir = dir
+        @crumbs.show @currentDir
         
         for item in items
-            tilde = slash.tilde item.path
-            item.tilde = tilde == '~' ? item.path : tilde
+            item.tilde = slash.relative item.path @currentDir
+            item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
             
         parent = slash.dir @currentDir
         if valid parent
@@ -142,29 +156,37 @@ function quicky
                 type: 'dir'
                 file: slash.name(parent)
                 path: parent
-                tilde: '..'
+                tilde: ' ..'
 
-        # lf 'items' items
-        
         weight = item ->
 
-            p = slash.parse item.tilde
+            p = slash.parse item.path
 
             w = 0
-            w += item.tilde.split('/').length * 256
-            w += kstr.weight(p.name)
+            ⮐ w if item.tilde == ' ..'
+            w += 10000 if item.type == 'file'
+            w += 1000  if item.tilde.startsWith ' .'
+            w += kstr.weight(p.file)
             w
 
         items.sort (a b) -> weight(a) - weight(b)
 
-        @input.set '..'
-        @input.selectAll()
+        @input.set ''
+
+        selectIndex = valid parent and items.length > 1 ? 1 : 0        
+        
+        if select
+            for item,idx in items
+                if slash.samePath item.path select
+                    selectIndex = idx
+                    break
         
         @choices.set items 'tilde'
-        @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        @choices.state.selectLine selectIndex
+        @choices.state.setMainCursor @choices.state.s.lines[selectIndex].length selectIndex
         @choices.state.setView [0 0]
         @show()
+        @choices.grabFocus()
         
     # 00000000  000  000      00000000   0000000   00000000   0000000    000  00000000   
     # 000       000  000      000       000   000  000   000  000   000  000  000   000  
@@ -227,15 +249,15 @@ function quicky
             '..' ➜ ⮐ @gotoDirectory slash.dir(@currentDir)
             
         current = @choices.current()
-        # lf 'current choice' current
+        lf 'current choice' current
         
         if empty current and valid @input.current()
             
             ⮐ @gotoFileOrDirectory @input.current()
         
-        if current.tilde
+        if current.path
             
-            ⮐ @gotoFileOrDirectory current.tilde
+            ⮐ @gotoFileOrDirectory current.path
     
         @returnToEditor()
                      
@@ -269,7 +291,8 @@ function quicky
         @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
 
         @input.draw()
-        @choices.draw()
+        @crumbs.draw()
+        @choices.draw()        
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
@@ -283,8 +306,38 @@ function quicky
             'down'  ➜ @choices.state.selectNextLine()
             'up'    ➜ @choices.state.selectPrevLine()
 
-        @input.set @choices.state.selectedText()
+        if @choices.current().path
+            # @input.set @choices.current().path
+            @input.set ''
+            
+            if slash.ext(@choices.current().path) in walker.sourceFileExtensions
+                @preview @choices.current().path
+        else
+            @input.set @choices.state.selectedText()
         @input.selectAll()
+        @choices.grabFocus()
+        
+    # 00000000   00000000   00000000  000   000  000  00000000  000   000  
+    # 000   000  000   000  000       000   000  000  000       000 0 000  
+    # 00000000   0000000    0000000    000 000   000  0000000   000000000  
+    # 000        000   000  000          000     000  000       000   000  
+    # 000        000   000  00000000      0      000  00000000  00     00  
+    
+    preview: file ○->
+
+        lf 'preview' file
+        text =○ nfs.read file
+        lines = util.linesForText text
+        @choices.mapscr.setSyntaxLines slash.ext(file) lines 
+        # @choices.setLines lines
+        @choices.mapscr.show()
+        
+    moveFocus: ->
+        
+        if @choices.hasFocus()
+            @input.grabFocus()
+        else
+            @choices.grabFocus()
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000
@@ -297,9 +350,33 @@ function quicky
         ⮐ if @hidden()
 
         switch event.combo
+            'tab'       ➜ ⮐ @moveFocus()
             'esc'       ➜ ⮐ @hide()
             'return'    ➜ ⮐ @postResult()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.state.hasFocus
+            'up' 'down' ➜ ⮐ @moveSelection event.combo
+            
+        if @choices.hasFocus()
+            
+            current = @choices.current()
+            lf 'current' current key
+            switch event.combo
+                'right' 
+                    if current.path
+                        if current.tilde == ' ..'
+                            ⮐ @moveSelection 'down'
+                        if current.type == 'file'
+                            ⮐ post.emit 'quicky' current.path
+                        else
+                            ⮐ @gotoFileOrDirectory current.link ? current.path
+                'left'  
+                    if current.path
+                        upDir = slash.dir @currentDir
+                        ⮐ @gotoDirectory upDir @currentDir
+                'space'            
+                    if current.path and current.type == 'file'
+                        ⮐ post.emit 'quicky' current.path
+                    
+            @input.grabFocus()
 
         ⮐ true if @input.onKey key event
         ⮐ true if @choices.onKey key event

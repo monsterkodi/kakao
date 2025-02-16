@@ -1,10 +1,12 @@
 
-([^\/]+)(\.noon)    . .noon . .noon_ext
-([^\/]+)(\.kode)    . .kode . .kode_ext
-([^\/]+)(\.md)      . .md   . .md_ext
-(\/)([\w\.]+)(\/)   .  dir_punct  . dir . dir_punct  
-(\w+)(\.\w+)        .  file .  ext
-(\w+)$              .  dir_leaf
-(\w+|~)(\/)         .  dir  .  dir_punct
-\.\.                .  dir  
-\/                  .  dir_punct
+([^\/]+)(\.noon)        . .noon . .noon_ext
+([^\/]+)(\.kode)        . .kode . .kode_ext
+([^\/]+)(\.md)          . .md   . .md_ext
+(\/)([\w\.\-]+)(\/)     .  dir_punct  . dir . dir_punct  
+([\w\-]+)(\.[\w\-]+)    .  file .  ext
+([\w\s\-]+)$            .  dir_leaf
+([\w\-]+|~)(\/)         .  dir  .  dir_punct
+\.\.                    .  dir  
+\s\.                    .  dir
+\/                      .  dir_punct
+                       .  dir_punct

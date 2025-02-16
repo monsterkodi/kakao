@@ -169,7 +169,7 @@ function menu
         switch event.combo
             'esc'       ➜ ⮐ @hide()
             'return'    ➜ ⮐ @applyChoice()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.state.hasFocus
+            'up' 'down' ➜ ⮐ @moveSelection event.combo if @input.hasFocus()
 
         ⮐ true if @input.onKey key event
         ⮐ true if @choices.onKey key event

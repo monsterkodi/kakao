@@ -7,14 +7,14 @@
 ###
 
 use ../../kxk ▪ kstr slash krzl
-use .. ◆ editor theme
+use ..        ◆ editor theme
 
 function choices extends editor
 
     @: screen name ->
 
-        super screen name ['scrllr']
-
+        super screen name ['scrllr' 'mapview']
+        
     set: @items @key -> 
         
         @fuzzied = @items
@@ -26,7 +26,7 @@ function choices extends editor
     num: -> @fuzzied.length
 
     current: -> @fuzzied[@state.mainCursor()[1]]
-
+    
     extract: item => @key and item is obj ? item[@key] : item        
         
     weight: item text =>
@@ -62,10 +62,4 @@ function choices extends editor
 
         @state.loadLines lines
         
-    draw: =>
-
-        # @cells.bg_fill 0 0 -1 -1 '#f80'
-        
-        super()
-
 export choices

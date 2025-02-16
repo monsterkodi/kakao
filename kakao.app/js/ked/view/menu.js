@@ -210,7 +210,7 @@ quit`)
 
             case 'up':
             case 'down':
-                if (this.input.state.hasFocus)
+                if (this.input.hasFocus())
                 {
                     return this.moveSelection(event.combo)
                 }

@@ -1,0 +1,36 @@
+###
+     0000000  00000000   000   000  00     00  0000000     0000000  
+    000       000   000  000   000  000   000  000   000  000       
+    000       0000000    000   000  000000000  0000000    0000000   
+    000       000   000  000   000  000 0 000  000   000       000  
+     0000000  000   000   0000000   000   000  0000000    0000000   
+###
+
+use ../../kxk ▪ slash
+use .. ◆ editor theme
+
+function crumbs extends editor
+
+    @: screen name features ->
+
+        super screen name []
+        
+    current: => trim @state.s.lines[0]
+
+    init: x y w h -> @cells.init x y w h
+    set: text -> @text = trim text; @state.loadLines [@text]
+
+    show: path => @set slash.tilde(path); @cells.rows = 1
+    hide:   => @cells.rows = 0#; true
+    hidden: -> @cells.rows <= 0
+    visible: -> @cells.rows > 0
+
+    draw: ->
+        
+        ⮐ if @hidden()
+
+        @cells.fill_rect 0 0 -1 -1 ' ' null theme.selection
+        @cells.draw_path 0 0 @current() theme.selection
+        # super()
+
+export crumbs

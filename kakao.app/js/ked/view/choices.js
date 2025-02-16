@@ -16,11 +16,10 @@ choices = (function ()
     _k_.extend(choices, editor)
     function choices (screen, name)
     {
-        this["draw"] = this["draw"].bind(this)
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
-        choices.__super__.constructor.call(this,screen,name,['scrllr'])
+        choices.__super__.constructor.call(this,screen,name,['scrllr','mapview'])
     }
 
     choices.prototype["set"] = function (items, key)
@@ -93,11 +92,6 @@ choices = (function ()
             lines = ['']
         }
         return this.state.loadLines(lines)
-    }
-
-    choices.prototype["draw"] = function ()
-    {
-        return choices.__super__.draw.call(this)
     }
 
     return choices

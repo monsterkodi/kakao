@@ -1,10 +1,10 @@
 
 ###
-00     00   0000000   00000000    0000000   0000000  00000000 
-000   000  000   000  000   000  000       000       000   000
-000000000  000000000  00000000   0000000   000       0000000  
-000 0 000  000   000  000             000  000       000   000
-000   000  000   000  000        0000000    0000000  000   000
+    00     00   0000000   00000000   000   000  000  00000000  000   000  
+    000   000  000   000  000   000  000   000  000  000       000 0 000  
+    000000000  000000000  00000000    000 000   000  0000000   000000000  
+    000 0 000  000   000  000           000     000  000       000   000  
+    000   000  000   000  000            0      000  00000000  00     00  
 ###
 
 use ../../kxk ▪ kstr post
@@ -14,7 +14,7 @@ use         ◆ cells
 
 {floor, pow} = Math
 
-function mapscr
+function mapview
 
     @: screen @state ->
         
@@ -24,9 +24,6 @@ function mapscr
         @pixelsPerRow = 4
         @pixelsPerCol = 2
         
-        screen.t.on 'preResize' @onPreResize
-        post.on 'greet' @clearImages
-       
     init: x y w h -> @cells.init x y w h
     
     show:   doShow=true => if doShow == false ➜ @hide() else @cells.cols = 10
@@ -34,32 +31,26 @@ function mapscr
     hidden: -> @cells.cols <= 0
     visible: -> @cells.cols > 0
         
-    # 00000000   00000000   0000000  000  0000000  00000000  
-    # 000   000  000       000       000     000   000       
-    # 0000000    0000000   0000000   000    000    0000000   
-    # 000   000  000            000  000   000     000       
-    # 000   000  00000000  0000000   000  0000000  00000000  
-    
     clearImages: =>
         
         @cells.screen.t.write "\x1b_Gq=1,a=d,d=i,i=#{@imgId}\x1b\\" # delete all images with id        
-    
-    onPreResize: => @clearImages()
-    
+        
     reload: => @clearImages() ; @reallocBuffer()
-        
-    onResize: =>
-        
-        ⮐ if empty @cells.screen.t.pixels
-        
-        clearTimeout @reallocId
-        @reallocId = setTimeout @reallocBuffer 100
-        
+                
     # 0000000    000   000  00000000  00000000  00000000  00000000   
     # 000   000  000   000  000       000       000       000   000  
     # 0000000    000   000  000000    000000    0000000   0000000    
     # 000   000  000   000  000       000       000       000   000  
     # 0000000     0000000   000       000       00000000  000   000  
+    
+    getLines:  => @lines
+    getSyntax: => @syntax
+    setSyntaxLines: ext @lines => 
+        
+        @syntax = new syntax 
+        @syntax.setExt ext 
+        @syntax.setLines @lines
+        @reallocBuffer()
     
     reallocBuffer: =>
         
@@ -79,9 +70,12 @@ function mapscr
         data = Buffer.alloc bytes
         # prof.time 'mapscr' 'alloc'
         
-        for y in 0...min(h @state.s.lines.length*@pixelsPerRow)
+        lines = @getLines()
+        syntax = @getSyntax()
+        
+        for y in 0...min(h lines.length*@pixelsPerRow)
             li = parseInt y/@pixelsPerRow
-            line = @state.s.lines[li]
+            line = lines[li]
             for x in 0...min(w line.length*@pixelsPerCol)
                 if x == 0
                     data[(y*w+x)*3+0] = 55 
@@ -93,7 +87,7 @@ function mapscr
                 
                 if valid ch and ch != ' '
                 
-                    clss = @state.syntax.getClass xi li
+                    clss = syntax.getClass xi li
                     
                     if 'header' in clss
                         if 'triple' in clss
@@ -102,7 +96,7 @@ function mapscr
                             rgb = [9 140 0]
                     else
                         f = 0.7
-                        rgb = color.rgb @state.syntax.getColor(xi li)
+                        rgb = color.rgb syntax.getColor(xi li)
                         rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
                     
                     [r g b] = rgb
@@ -153,66 +147,5 @@ function mapscr
         t.setCursor @cells.x @cells.y
         t.write "\x1b_Gq=1,a=p,i=#{@imgId},p=#{@imgId},C=1\x1b\\"
         @
-        
-    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
-    # 000       000       000   000  000   000  000      000         000     000   000  
-    # 0000000   000       0000000    000   000  000      000         000     000   000  
-    #      000  000       000   000  000   000  000      000         000     000   000  
-    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
-    
-    scrollToPixel: pixel =>
-        
-        view = @state.s.view.asMutable()
-        
-        view[1] = parseInt (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
-        
-        view[1] -= 6 # offset so that clicking inside a header scrolls it into view
-        
-        maxY = @state.s.lines.length - @cells.rows
-        
-        view[1] = min maxY view[1] if maxY > 0
-        view[1] = max 0 view[1]
-        
-        @state.setView view
-        
-        true
-        
-    # 00     00   0000000   000   000   0000000  00000000  
-    # 000   000  000   000  000   000  000       000       
-    # 000000000  000   000  000   000  0000000   0000000   
-    # 000 0 000  000   000  000   000       000  000       
-    # 000   000   0000000    0000000   0000000   00000000  
-    
-    onMouse: event =>
-        
-        [sx  sy]  = event.cell
-        [col row] = @cells.posForEvent event
-        
-        switch event.type
-            
-            'press'
-            
-                if @cells.isInsideScreen sx sy
-                    @doDrag = true
-                    ⮐ @scrollToPixel event.pixel
-                    
-            'drag'
-            
-                if @doDrag
-                    ⮐ @scrollToPixel event.pixel
-                
-            'release'
-            
-                if @doDrag
-                    delete @doDrag 
-                    @hover = @cells.isInsideScreen sx sy
-                    ⮐ true
-            
-            'move'
-            
-                @hover = @cells.isInsideScreen sx sy
-                @cells.screen.t.setPointerStyle('hand') if @hover
-                    
-        false
-        
-export mapscr
+                        
+export mapview
