@@ -7,9 +7,9 @@
 ###
 
 use ../../kxk ▪ kstr slash post noon
-use ../util ◆ prjcts util
-use ..      ◆ editor theme
-use         ◆ cells input choices greeter inputchoice
+use ../util   ◆ util
+use ..        ◆ editor theme
+use           ◆ cells greeter inputchoice
 
 function menu extends inputchoice
 
@@ -25,12 +25,36 @@ function menu extends inputchoice
     #      000  000   000  000   000  000   000
     # 0000000   000   000   0000000   00     00
 
-    show: =>
-
+    show: @greet=false ->
+        
+        lf 'menu show' @greet
+        
         @greeter.show @greet
+        
+        items = util.linesForText
+            """
+            open ...
+            recent ...
+            session ...
+            help
+            quit
+            """
+            
+        items.splice items.length-2 0 'about' if not @greet
+            
+        ccol = int(@screen.cols/2) - 5
+
+        @input.set ''
+        @choices.set items
+        @choices.state.selectLine 0
+        @choices.frontCursor()
+        @choices.state.setView [0 0]
+        
+        post.emit 'greet' if @greet
+        
         super()
 
-    hide:    => 
+    hide: => 
     
         delete @greet
         super()
@@ -54,37 +78,6 @@ function menu extends inputchoice
         @choices.init  x+2   y+3   w-3  c
         @cells.init    x     y     w    c+4
 
-    #  0000000   00000000   00000000  000   000
-    # 000   000  000   000  000       0000  000
-    # 000   000  00000000   0000000   000 0 000
-    # 000   000  000        000       000  0000
-    #  0000000   000        00000000  000   000
-
-    open: @greet=false -> 
-        
-        items = util.linesForText
-            """
-            open ...
-            recent ...
-            session ...
-            help
-            quit
-            """
-            
-        items.splice items.length-2 0 'about' if not @greet
-            
-        ccol = int(@screen.cols/2) - 5
-
-        @input.set ''
-        @choices.set items
-        @choices.state.selectLine 0
-        @choices.frontCursor()
-        @choices.state.setView [0 0]
-        
-        post.emit 'greet' if @greet
-        
-        @show()
-
     # 000  000   000  00000000   000   000  000000000  
     # 000  0000  000  000   000  000   000     000     
     # 000  000 0 000  00000000   000   000     000     
@@ -96,7 +89,7 @@ function menu extends inputchoice
         current = @choices.current()
         
         switch current
-            'about'    ➜ ⮐ @open true
+            'about'    ➜ ⮐ @show true
             'quit'     ➜ post.emit 'quit' ; ⮐ redraw:false
             'open ...' ➜ post.emit 'quicky.dir' process.cwd()
             

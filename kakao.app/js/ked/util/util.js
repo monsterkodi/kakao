@@ -317,10 +317,10 @@ util = (function ()
 
     util["positionsOutsideRange"] = function (posl, rng)
     {
-        return posl.filter(function (p)
+        return posl.filter((function (p)
         {
             return this.isPosOutsideRange(p,rng)
-        })
+        }).bind(this))
     }
 
     util["isPosInsideRange"] = function (pos, rng)

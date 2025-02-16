@@ -72,7 +72,7 @@ function KED
             @loadFile args.options[0]
         else
             @newFile()
-            @menu.open true
+            @menu.show true
             
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -222,7 +222,7 @@ function KED
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
-            'alt+m'                      ➜ ⮐ @menu.toggle()
+            'alt+m'                      ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDirectory slash.dir(@currentFile) ? process.cwd()
             

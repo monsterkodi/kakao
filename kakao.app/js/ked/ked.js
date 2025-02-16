@@ -101,7 +101,7 @@ ked [file]
         else
         {
             this.newFile()
-            this.menu.open(true)
+            this.menu.show(true)
         }
     }
 
@@ -267,7 +267,7 @@ ked [file]
                 return this.newFile()
 
             case 'alt+m':
-                return this.menu.toggle()
+                return this.menu.show()
 
             case 'cmd+p':
             case 'ctrl+p':

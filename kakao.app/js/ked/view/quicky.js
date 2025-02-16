@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var int, quicky
 
@@ -21,12 +21,14 @@ import cells from "./cells.js"
 import input from "./input.js"
 import choices from "./choices.js"
 import crumbs from "./crumbs.js"
+import inputchoice from "./inputchoice.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 int = parseInt
 
 quicky = (function ()
 {
+    _k_.extend(quicky, inputchoice)
     function quicky (screen)
     {
         this.screen = screen
@@ -41,14 +43,9 @@ quicky = (function ()
         this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
         this["show"] = this["show"].bind(this)
-        this.name = 'quicky'
-        this.cells = new cells(this.screen)
-        this.input = new input(this.screen,'quicky_input')
+        quicky.__super__.constructor.call(this,this.screen,'quicky')
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
-        this.choices = new choices(this.screen,'quicky_choices')
-        this.choices.mapscr.hide()
         this.choices.state.syntax.setRgxs(rgxs)
-        this.input.on('changed',this.onInputChanged)
         post.on('quicky.dir',this.gotoDirectory)
     }
 
@@ -410,7 +407,7 @@ quicky = (function ()
 
     quicky.prototype["onKey"] = function (key, event)
     {
-        var current, upDir, _378_69_
+        var current, upDir, _372_69_
 
         if (this.hidden())
         {
@@ -453,7 +450,7 @@ quicky = (function ()
                         else
                         {
                             this.choices.mapscr.hide()
-                            return this.gotoFileOrDirectory(((_378_69_=current.link) != null ? _378_69_ : current.path))
+                            return this.gotoFileOrDirectory(((_372_69_=current.link) != null ? _372_69_ : current.path))
                         }
                     }
                     break

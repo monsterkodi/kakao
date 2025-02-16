@@ -8,15 +8,12 @@ let slash = kxk.slash
 let post = kxk.post
 let noon = kxk.noon
 
-import prjcts from "../util/prjcts.js"
 import util from "../util/util.js"
 
 import editor from "../editor.js"
 import theme from "../theme.js"
 
 import cells from "./cells.js"
-import input from "./input.js"
-import choices from "./choices.js"
 import greeter from "./greeter.js"
 import inputchoice from "./inputchoice.js"
 
@@ -31,14 +28,37 @@ menu = (function ()
         this["onChoiceAction"] = this["onChoiceAction"].bind(this)
         this["layout"] = this["layout"].bind(this)
         this["hide"] = this["hide"].bind(this)
-        this["show"] = this["show"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
         this.greeter = new greeter(this.screen)
     }
 
-    menu.prototype["show"] = function ()
+    menu.prototype["show"] = function (greet = false)
     {
+        var ccol, items
+
+        this.greet = greet
+    
+        lf('menu show',this.greet)
         this.greeter.show(this.greet)
+        items = util.linesForText(`open ...
+recent ...
+session ...
+help
+quit`)
+        if (!this.greet)
+        {
+            items.splice(items.length - 2,0,'about')
+        }
+        ccol = parseInt(this.screen.cols / 2) - 5
+        this.input.set('')
+        this.choices.set(items)
+        this.choices.state.selectLine(0)
+        this.choices.frontCursor()
+        this.choices.state.setView([0,0])
+        if (this.greet)
+        {
+            post.emit('greet')
+        }
         return menu.__super__.show.call(this)
     }
 
@@ -63,34 +83,6 @@ menu = (function ()
         return this.cells.init(x,y,w,c + 4)
     }
 
-    menu.prototype["open"] = function (greet = false)
-    {
-        var ccol, items
-
-        this.greet = greet
-    
-        items = util.linesForText(`open ...
-recent ...
-session ...
-help
-quit`)
-        if (!this.greet)
-        {
-            items.splice(items.length - 2,0,'about')
-        }
-        ccol = parseInt(this.screen.cols / 2) - 5
-        this.input.set('')
-        this.choices.set(items)
-        this.choices.state.selectLine(0)
-        this.choices.frontCursor()
-        this.choices.state.setView([0,0])
-        if (this.greet)
-        {
-            post.emit('greet')
-        }
-        return this.show()
-    }
-
     menu.prototype["applyChoice"] = function ()
     {
         var current
@@ -99,7 +91,7 @@ quit`)
         switch (current)
         {
             case 'about':
-                return this.open(true)
+                return this.show(true)
 
             case 'quit':
                 post.emit('quit')

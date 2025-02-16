@@ -34,12 +34,13 @@
     - global session for recent files?
     
 - config
-
     - similar to session, but loads and merges (to handle multiple instances)
+    - index & source & text files 
+    - index files per project?
 
 - quick open cmd+p
     - merge with macro?
-    - fix layout issues for larger repositories with longer file names
+    - subdirectory column
 
 - find and search
     - each multiline editor has its own knobbed finder at bottom
