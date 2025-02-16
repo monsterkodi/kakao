@@ -31,7 +31,11 @@ function state
             cursors:     [[0 0]]
             main:        0
             view:        [0 0]
-
+            
+        @clearHistory()
+        
+    clearHistory: ->
+    
         @h = [@s] # undo states (history)
         @r = []   # redo states
 

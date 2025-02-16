@@ -63,8 +63,13 @@ state = (function ()
         this.syntax = new syntax
         this.hasFocus = false
         this.s = immutable({lines:[''],selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
+        this.clearHistory()
+    }
+
+    state.prototype["clearHistory"] = function ()
+    {
         this.h = [this.s]
-        this.r = []
+        return this.r = []
     }
 
     state.prototype["set"] = function (item, arg)
@@ -130,7 +135,7 @@ state = (function ()
 
     state.prototype["setLines"] = function (lines)
     {
-        var _105_23_
+        var _109_23_
 
         if (_k_.empty(lines))
         {

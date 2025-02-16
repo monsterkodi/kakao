@@ -168,7 +168,8 @@ function KED
         
         if valid @currentFile
             ○ nfs.write @currentFile text
-            @reloadFile()
+            @editor.state.clearHistory() # lazy way to 'undirty' would be nicer to be able to undo after save!
+            @redraw()
             
     saveAs: => lfc 'saveAs'
     
@@ -224,7 +225,7 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+m'                      ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
-            'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDirectory slash.dir(@currentFile) ? process.cwd()
+            'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile) ? process.cwd()
             
         for handler in @keyHandlers
             break if result = handler.onKey key event

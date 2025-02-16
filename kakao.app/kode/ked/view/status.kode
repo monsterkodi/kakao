@@ -72,14 +72,6 @@ function status
         
         x += @cells.draw_path x y @file theme.status
 
-        # lastSlash = @file.lastIndexOf '/'
-        # lastDot = @file.lastIndexOf '.'
-        # for ci in 0...fnl
-            # fg = ci > lastSlash ? 'status_file' : 'status_dir'
-            # fg = 'status_ext' if lastSlash <= lastDot <= ci
-            # fg = color.darken(theme[fg]) if @file[ci] in './'
-            # add @file[ci] fg 'status'
-            
         # draw the redo indicator
         
         add ' ' 'status_fg' 'status'

@@ -46,14 +46,12 @@ choices = (function ()
 
     choices.prototype["selectNext"] = function ()
     {
-        lf('next')
         this.state.selectNextLine()
         return this.frontCursor()
     }
 
     choices.prototype["selectPrev"] = function ()
     {
-        lf('prev')
         this.state.selectPrevLine()
         return this.frontCursor()
     }

@@ -25,8 +25,17 @@
 ## todo
 # todo
 
+- mapscroll
+    - add scrollbar handle
+    - update on line changes
+    - fix scrolling to bottom for long files
+    - show cursors and selections
+    - split image into chunks
+    
 - greeter 
     - recent files
+    
+- set terminal title?
     
 - session
     - save main cursor positions per file and apply on load
@@ -50,13 +59,6 @@
             - if executed via shortcut: selected or cursor word
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
-                
-- mapscroll
-    - add scrollbar handle
-    - update on line changes
-    - fix scrolling to bottom for long files
-    - show cursors and selections
-    - split image into chunks
 
 - multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
 

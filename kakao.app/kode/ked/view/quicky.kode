@@ -26,18 +26,13 @@ function quicky extends inputchoice
 
         @choices.state.syntax.setRgxs rgxs
 
-        post.on 'quicky.dir' @gotoDirectory
+        post.on 'quicky.dir' @gotoDir
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
     # 0000000   000000000  000   000  000000000
     #      000  000   000  000   000  000   000
     # 0000000   000   000   0000000   00     00
-
-    show: =>
-
-        @layout()
-        @input.grabFocus()
 
     layout: =>
 
@@ -59,35 +54,23 @@ function quicky extends inputchoice
 
         # lf 'layout' c @choices.items.length
 
-    hide: => 
-        
-        @choices.mapscr.hide()
-        @cells.rows = 0 
-        post.emit 'focus' 'editor' 
-        # post.emit 'redraw'
-        redraw:true
-        
-    hidden: -> @cells.rows <= 0
-    visible: -> @cells.rows > 0
-
-    #  0000000   00000000   00000000  000   000
-    # 000   000  000   000  000       0000  000
-    # 000   000  00000000   0000000   000 0 000
-    # 000   000  000        000       000  0000
-    #  0000000   000        00000000  000   000
-
-    toggle: currentFile -> if @hidden() then @open(currentFile) else @hide()
-    open:   currentFile -> @gotoFile currentFile
-        
-    #  0000000    0000000   000000000   0000000   00000000  000  000      00000000  
-    # 000        000   000     000     000   000  000       000  000      000       
-    # 000  0000  000   000     000     000   000  000000    000  000      0000000   
-    # 000   000  000   000     000     000   000  000       000  000      000       
-    #  0000000    0000000      000      0000000   000       000  0000000  00000000  
+    # 000000000   0000000    0000000    0000000   000      00000000  
+    #    000     000   000  000        000        000      000       
+    #    000     000   000  000  0000  000  0000  000      0000000   
+    #    000     000   000  000   000  000   000  000      000       
+    #    000      0000000    0000000    0000000   0000000  00000000  
     
-    gotoFile: @currentFile ->
+    toggle: currentFile -> if @hidden() then @show(currentFile) else @hide()
 
-        # lf 'quicky.gotoFile' @currentFile
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: @currentFile ->
+
+        # lf 'quicky.show' @currentFile
 
         items = prjcts.files @currentFile
         @currentDir = slash.dir @currentFile
@@ -123,7 +106,8 @@ function quicky extends inputchoice
         @choices.state.selectLine 0
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
         @choices.state.setView [0 0]
-        @show()
+        
+        super()
         
     #  0000000    0000000   000000000   0000000   0000000    000  00000000   
     # 000        000   000     000     000   000  000   000  000  000   000  
@@ -131,12 +115,12 @@ function quicky extends inputchoice
     # 000   000  000   000     000     000   000  000   000  000  000   000  
     #  0000000    0000000      000      0000000   0000000    000  000   000  
     
-    gotoDirectory: dir select ○=>
+    gotoDir: dir select ○=>
         
         ⮐ if empty dir
 
         dir = slash.untilde dir
-        lf 'quicky.gotoDirectory' dir
+        lf 'quicky.gotoDir' dir
         
         try
             items =○ nfs.list dir recursive:false
@@ -188,7 +172,8 @@ function quicky extends inputchoice
         @choices.state.selectLine selectIndex
         @choices.state.setMainCursor @choices.state.s.lines[selectIndex].length selectIndex
         @choices.state.setView [0 0]
-        @show()
+        
+        @layout()
         @choices.grabFocus()
         
     # 00000000  000  000      00000000   0000000   00000000   0000000    000  00000000   
@@ -197,65 +182,47 @@ function quicky extends inputchoice
     # 000       000  000      000       000   000  000   000  000   000  000  000   000  
     # 000       000  0000000  00000000   0000000   000   000  0000000    000  000   000  
     
-    gotoFileOrDirectory: path ○=>
-        
-        # lf 'gotoFileOrDirectory' path
+    gotoDirOrOpenFile: path ○=>
         
         isDir =○ nfs.dirExists path
         
         if isDir
-            ○ @gotoDirectory path
+            ○ @gotoDir path
         else
             isFile =○ nfs.fileExists path
             if isFile
                 @openFileInEditor path
-            
+                            
     openFileInEditor: file =>
         
         @hide()
         post.emit 'quicky' file
         redraw:false
         
-    # 000  000   000  00000000   000   000  000000000  
-    # 000  0000  000  000   000  000   000     000     
-    # 000  000 0 000  00000000   000   000     000     
-    # 000  000  0000  000        000   000     000     
-    # 000  000   000  000         0000000      000     
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
     
-    onInputChanged: text =>
-
-        @choices.filter text
-        @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
-        @layout()
-
-    # 00000000    0000000    0000000  000000000  00000000   00000000   0000000  000   000  000      000000000  
-    # 000   000  000   000  000          000     000   000  000       000       000   000  000         000     
-    # 00000000   000   000  0000000      000     0000000    0000000   0000000   000   000  000         000     
-    # 000        000   000       000     000     000   000  000            000  000   000  000         000     
-    # 000         0000000   0000000      000     000   000  00000000  0000000    0000000   0000000     000     
-    
-    postResult: ->
-        
-        # lf ">#{@input.current()}<" 
+    applyChoice: ->
         
         switch @input.current()
             
-            '/'  ➜ ⮐ @gotoDirectory '/'
-            '~'  ➜ ⮐ @gotoDirectory '~'
-            '.'  ➜ ⮐ @gotoDirectory @currentDir
-            '..' ➜ ⮐ @gotoDirectory slash.dir(@currentDir)
+            '/'  ➜ ⮐ @gotoDir '/'
+            '~'  ➜ ⮐ @gotoDir '~'
+            '.'  ➜ ⮐ @gotoDir @currentDir
+            '..' ➜ ⮐ @gotoDir slash.dir(@currentDir)
             
         current = @choices.current()
-        lf 'current choice' current
         
         if empty current and valid @input.current()
-            
-            ⮐ @gotoFileOrDirectory @input.current()
+            @gotoDirOrOpenFile @input.current()
+            ⮐ redraw:true
         
         if current.path
-            
-            ⮐ @gotoFileOrDirectory current.path
+            @gotoDirOrOpenFile current.path
+            ⮐ redraw:true
     
         @returnToEditor()
                      
@@ -265,9 +232,8 @@ function quicky extends inputchoice
 
         if @choices.num()
             post.emit 'quicky' @currentChoice()
-            redraw:false
-        else
-            redraw:true
+
+        redraw:true
             
     currentChoice: -> trim @choices.current()
 
@@ -281,14 +247,9 @@ function quicky extends inputchoice
 
         ⮐ if @hidden()
 
-        fg = theme.quicky_frame_fg
-        bg = theme.quicky_frame_bg
-
-        @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
-
-        @input.draw()
+        @drawBackground()
         @crumbs.draw()
-        @choices.draw()        
+        super()
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
@@ -298,22 +259,16 @@ function quicky extends inputchoice
 
     moveSelection: dir ->
         
-        lf 'moveSelection' dir
-
-        switch dir
-            'down'  ➜ @choices.selectNext()
-            'up'    ➜ @choices.selectPrev()
-
         @choices.mapscr.hide()
+
+        super dir
         
         if @choices.current().path
             @input.set ''
             @preview @choices.current().path
         else
             @input.set @choices.state.selectedText()
-        @input.selectAll()
-        @choices.grabFocus()
-        
+            
     # 00000000   00000000   00000000  000   000  000  00000000  000   000  
     # 000   000  000   000  000       000   000  000  000       000 0 000  
     # 00000000   0000000    0000000    000 000   000  0000000   000000000  
@@ -333,71 +288,36 @@ function quicky extends inputchoice
         else
             @choices.mapscr.hide()
         
-    moveFocus: ->
-        
-        if @choices.hasFocus()
-            @input.grabFocus()
-        else
-            @choices.grabFocus()
-
-    # 000   000  00000000  000   000
-    # 000  000   000        000 000
-    # 0000000    0000000     00000
-    # 000  000   000          000
-    # 000   000  00000000     000
-
-    onKey: key event =>
-
-        ⮐ if @hidden()
-
-        switch event.combo
-            'tab'       ➜ ⮐ @moveFocus()
-            'esc'       ➜ ⮐ @hide()
-            'return'    ➜ ⮐ @postResult()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    onChoiceAction: choice action =>
             
-        if @choices.hasFocus()
+        # lf 'onChoiceAction' choice action
+        switch action
             
-            current = @choices.current()
-            lf 'current' current key
-            switch event.combo
-                'right' 
-                    if current.path
-                        if current.tilde == ' ..'
-                            ⮐ @moveSelection 'down'
-                        if current.type == 'file'
-                            ⮐ post.emit 'quicky' current.path
-                        else
-                            @choices.mapscr.hide()
-                            ⮐ @gotoFileOrDirectory current.link ? current.path
-                'left'  
-                    if current.path
-                        upDir = slash.dir @currentDir
+            'right' 
+                
+                if choice.path
+                    if choice.tilde == ' ..'
+                        ⮐ @moveSelection 'down'
+                    if choice.type == 'file'
+                        ⮐ post.emit 'quicky' choice.path
+                    else
                         @choices.mapscr.hide()
-                        ⮐ @gotoDirectory upDir @currentDir
-                'space'            
-                    if current.path and current.type == 'file'
-                        ⮐ post.emit 'quicky' current.path
-                    
-            @input.grabFocus()
-
-        ⮐ true if @input.onKey key event
-        ⮐ true if @choices.onKey key event
-        true
-
-    onMouse: type sx sy event =>
-
-        ⮐ if @hidden()
-        ⮐ true if @input.onMouse type sx sy event
-        ⮐ true if @choices.onMouse type sx sy event
-        true
-
-    onWheel: event =>
-
-        ⮐ if @hidden()
-
-        ⮐ true if @input.onWheel event
-        ⮐ true if @choices.onWheel event
-        true
+                        ⮐ @gotoDirOrOpenFile choice.link ? choice.path
+            'left'  
+                
+                if choice.path
+                    upDir = slash.dir @currentDir
+                    @choices.mapscr.hide()
+                    ⮐ @gotoDir upDir @currentDir
+            'space'            
+                
+                if choice.path and v.type == 'file'
+                    ⮐ post.emit 'quicky' choice.path
 
 export quicky

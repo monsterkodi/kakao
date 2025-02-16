@@ -33,26 +33,15 @@ quicky = (function ()
     {
         this.screen = screen
     
-        this["onWheel"] = this["onWheel"].bind(this)
-        this["onMouse"] = this["onMouse"].bind(this)
-        this["onKey"] = this["onKey"].bind(this)
-        this["onInputChanged"] = this["onInputChanged"].bind(this)
+        this["onChoiceAction"] = this["onChoiceAction"].bind(this)
         this["openFileInEditor"] = this["openFileInEditor"].bind(this)
-        this["gotoFileOrDirectory"] = this["gotoFileOrDirectory"].bind(this)
-        this["gotoDirectory"] = this["gotoDirectory"].bind(this)
-        this["hide"] = this["hide"].bind(this)
+        this["gotoDirOrOpenFile"] = this["gotoDirOrOpenFile"].bind(this)
+        this["gotoDir"] = this["gotoDir"].bind(this)
         this["layout"] = this["layout"].bind(this)
-        this["show"] = this["show"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,'quicky')
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.choices.state.syntax.setRgxs(rgxs)
-        post.on('quicky.dir',this.gotoDirectory)
-    }
-
-    quicky.prototype["show"] = function ()
-    {
-        this.layout()
-        return this.input.grabFocus()
+        post.on('quicky.dir',this.gotoDir)
     }
 
     quicky.prototype["layout"] = function ()
@@ -76,29 +65,11 @@ quicky = (function ()
         return this.cells.init(x,y,w,cs + 4 + cd)
     }
 
-    quicky.prototype["hide"] = function ()
-    {
-        this.choices.mapscr.hide()
-        this.cells.rows = 0
-        post.emit('focus','editor')
-        return {redraw:true}
-    }
-
-    quicky.prototype["hidden"] = function ()
-    {
-        return this.cells.rows <= 0
-    }
-
-    quicky.prototype["visible"] = function ()
-    {
-        return this.cells.rows > 0
-    }
-
     quicky.prototype["toggle"] = function (currentFile)
     {
         if (this.hidden())
         {
-            return this.open(currentFile)
+            return this.show(currentFile)
         }
         else
         {
@@ -106,12 +77,7 @@ quicky = (function ()
         }
     }
 
-    quicky.prototype["open"] = function (currentFile)
-    {
-        return this.gotoFile(currentFile)
-    }
-
-    quicky.prototype["gotoFile"] = function (currentFile)
+    quicky.prototype["show"] = function (currentFile)
     {
         var ccol, indent, indents, item, items, maxind, weight
 
@@ -162,10 +128,10 @@ quicky = (function ()
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
         this.choices.state.setView([0,0])
-        return this.show()
+        return quicky.__super__.show.call(this)
     }
 
-    quicky.prototype["gotoDirectory"] = async function (dir, select)
+    quicky.prototype["gotoDir"] = async function (dir, select)
     {
         var idx, item, items, parent, selectIndex, weight
 
@@ -174,7 +140,7 @@ quicky = (function ()
             return
         }
         dir = slash.untilde(dir)
-        lf('quicky.gotoDirectory',dir)
+        lf('quicky.gotoDir',dir)
         try
         {
             items = await nfs.list(dir,{recursive:false})
@@ -243,18 +209,18 @@ quicky = (function ()
         this.choices.state.selectLine(selectIndex)
         this.choices.state.setMainCursor(this.choices.state.s.lines[selectIndex].length,selectIndex)
         this.choices.state.setView([0,0])
-        this.show()
+        this.layout()
         return this.choices.grabFocus()
     }
 
-    quicky.prototype["gotoFileOrDirectory"] = async function (path)
+    quicky.prototype["gotoDirOrOpenFile"] = async function (path)
     {
         var isDir, isFile
 
         isDir = await nfs.dirExists(path)
         if (isDir)
         {
-            return await this.gotoDirectory(path)
+            return await this.gotoDir(path)
         }
         else
         {
@@ -273,43 +239,36 @@ quicky = (function ()
         return {redraw:false}
     }
 
-    quicky.prototype["onInputChanged"] = function (text)
-    {
-        this.choices.filter(text)
-        this.choices.state.selectLine(0)
-        this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
-        return this.layout()
-    }
-
-    quicky.prototype["postResult"] = function ()
+    quicky.prototype["applyChoice"] = function ()
     {
         var current
 
         switch (this.input.current())
         {
             case '/':
-                return this.gotoDirectory('/')
+                return this.gotoDir('/')
 
             case '~':
-                return this.gotoDirectory('~')
+                return this.gotoDir('~')
 
             case '.':
-                return this.gotoDirectory(this.currentDir)
+                return this.gotoDir(this.currentDir)
 
             case '..':
-                return this.gotoDirectory(slash.dir(this.currentDir))
+                return this.gotoDir(slash.dir(this.currentDir))
 
         }
 
         current = this.choices.current()
-        lf('current choice',current)
         if (_k_.empty(current) && !_k_.empty(this.input.current()))
         {
-            return this.gotoFileOrDirectory(this.input.current())
+            this.gotoDirOrOpenFile(this.input.current())
+            return {redraw:true}
         }
         if (current.path)
         {
-            return this.gotoFileOrDirectory(current.path)
+            this.gotoDirOrOpenFile(current.path)
+            return {redraw:true}
         }
         return this.returnToEditor()
     }
@@ -320,12 +279,8 @@ quicky = (function ()
         if (this.choices.num())
         {
             post.emit('quicky',this.currentChoice())
-            return {redraw:false}
         }
-        else
-        {
-            return {redraw:true}
-        }
+        return {redraw:true}
     }
 
     quicky.prototype["currentChoice"] = function ()
@@ -335,45 +290,28 @@ quicky = (function ()
 
     quicky.prototype["draw"] = function ()
     {
-        var bg, fg
-
         if (this.hidden())
         {
             return
         }
-        fg = theme.quicky_frame_fg
-        bg = theme.quicky_frame_bg
-        this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
-        this.input.draw()
+        this.drawBackground()
         this.crumbs.draw()
-        return this.choices.draw()
+        return quicky.__super__.draw.call(this)
     }
 
     quicky.prototype["moveSelection"] = function (dir)
     {
-        lf('moveSelection',dir)
-        switch (dir)
-        {
-            case 'down':
-                this.choices.selectNext()
-                break
-            case 'up':
-                this.choices.selectPrev()
-                break
-        }
-
         this.choices.mapscr.hide()
+        quicky.__super__.moveSelection.call(this,dir)
         if (this.choices.current().path)
         {
             this.input.set('')
-            this.preview(this.choices.current().path)
+            return this.preview(this.choices.current().path)
         }
         else
         {
-            this.input.set(this.choices.state.selectedText())
+            return this.input.set(this.choices.state.selectedText())
         }
-        this.input.selectAll()
-        return this.choices.grabFocus()
     }
 
     quicky.prototype["preview"] = async function (file)
@@ -393,128 +331,46 @@ quicky = (function ()
         }
     }
 
-    quicky.prototype["moveFocus"] = function ()
+    quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        if (this.choices.hasFocus())
+        var upDir, _311_62_
+
+        switch (action)
         {
-            return this.input.grabFocus()
-        }
-        else
-        {
-            return this.choices.grabFocus()
-        }
-    }
-
-    quicky.prototype["onKey"] = function (key, event)
-    {
-        var current, upDir, _372_69_
-
-        if (this.hidden())
-        {
-            return
-        }
-        switch (event.combo)
-        {
-            case 'tab':
-                return this.moveFocus()
-
-            case 'esc':
-                return this.hide()
-
-            case 'return':
-                return this.postResult()
-
-            case 'up':
-            case 'down':
-                return this.moveSelection(event.combo)
-
-        }
-
-        if (this.choices.hasFocus())
-        {
-            current = this.choices.current()
-            lf('current',current,key)
-            switch (event.combo)
-            {
-                case 'right':
-                    if (current.path)
+            case 'right':
+                if (choice.path)
+                {
+                    if (choice.tilde === ' ..')
                     {
-                        if (current.tilde === ' ..')
-                        {
-                            return this.moveSelection('down')
-                        }
-                        if (current.type === 'file')
-                        {
-                            return post.emit('quicky',current.path)
-                        }
-                        else
-                        {
-                            this.choices.mapscr.hide()
-                            return this.gotoFileOrDirectory(((_372_69_=current.link) != null ? _372_69_ : current.path))
-                        }
+                        return this.moveSelection('down')
                     }
-                    break
-                case 'left':
-                    if (current.path)
+                    if (choice.type === 'file')
                     {
-                        upDir = slash.dir(this.currentDir)
+                        return post.emit('quicky',choice.path)
+                    }
+                    else
+                    {
                         this.choices.mapscr.hide()
-                        return this.gotoDirectory(upDir,this.currentDir)
+                        return this.gotoDirOrOpenFile(((_311_62_=choice.link) != null ? _311_62_ : choice.path))
                     }
-                    break
-                case 'space':
-                    if (current.path && current.type === 'file')
-                    {
-                        return post.emit('quicky',current.path)
-                    }
-                    break
-            }
+                }
+                break
+            case 'left':
+                if (choice.path)
+                {
+                    upDir = slash.dir(this.currentDir)
+                    this.choices.mapscr.hide()
+                    return this.gotoDir(upDir,this.currentDir)
+                }
+                break
+            case 'space':
+                if (choice.path && v.type === 'file')
+                {
+                    return post.emit('quicky',choice.path)
+                }
+                break
+        }
 
-            this.input.grabFocus()
-        }
-        if (this.input.onKey(key,event))
-        {
-            return true
-        }
-        if (this.choices.onKey(key,event))
-        {
-            return true
-        }
-        return true
-    }
-
-    quicky.prototype["onMouse"] = function (type, sx, sy, event)
-    {
-        if (this.hidden())
-        {
-            return
-        }
-        if (this.input.onMouse(type,sx,sy,event))
-        {
-            return true
-        }
-        if (this.choices.onMouse(type,sx,sy,event))
-        {
-            return true
-        }
-        return true
-    }
-
-    quicky.prototype["onWheel"] = function (event)
-    {
-        if (this.hidden())
-        {
-            return
-        }
-        if (this.input.onWheel(event))
-        {
-            return true
-        }
-        if (this.choices.onWheel(event))
-        {
-            return true
-        }
-        return true
     }
 
     return quicky

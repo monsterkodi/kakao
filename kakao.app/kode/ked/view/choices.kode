@@ -27,8 +27,8 @@ function choices extends editor
 
     current: -> @fuzzied[@state.mainCursor()[1]]
     
-    selectNext: -> lf 'next'; @state.selectNextLine() ; @frontCursor()
-    selectPrev: -> lf 'prev'; @state.selectPrevLine() ; @frontCursor()
+    selectNext: -> @state.selectNextLine() ; @frontCursor()
+    selectPrev: -> @state.selectPrevLine() ; @frontCursor()
     
     frontCursor: -> 
         
