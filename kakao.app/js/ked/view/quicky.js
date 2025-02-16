@@ -65,8 +65,12 @@ quicky = (function ()
         x = parseInt(this.screen.cols / 4)
         y = parseInt(this.screen.rows / 4)
         w = parseInt(this.screen.cols / 2)
-        h = parseInt(this.screen.rows / 2)
+        h = parseInt(this.screen.rows / 2 - 4)
         cs = _k_.min(h,this.choices.num())
+        if (this.crumbs.visible())
+        {
+            cs = h
+        }
         ch = (this.crumbs.visible() ? 1 : 0)
         cd = (ch === 1 ? 1 : 0)
         this.input.init(x + 2,y + 1,w - 4,1)
@@ -77,10 +81,10 @@ quicky = (function ()
 
     quicky.prototype["hide"] = function ()
     {
+        this.choices.mapscr.hide()
         this.cells.rows = 0
         post.emit('focus','editor')
-        post.emit('redraw')
-        return true
+        return {redraw:true}
     }
 
     quicky.prototype["hidden"] = function ()
@@ -237,6 +241,7 @@ quicky = (function ()
                 }
             }
         }
+        this.preview(items[selectIndex].path)
         this.choices.set(items,'tilde')
         this.choices.state.selectLine(selectIndex)
         this.choices.state.setMainCursor(this.choices.state.s.lines[selectIndex].length,selectIndex)
@@ -266,8 +271,7 @@ quicky = (function ()
 
     quicky.prototype["openFileInEditor"] = function (file)
     {
-        this.cells.rows = 0
-        post.emit('focus','editor')
+        this.hide()
         post.emit('quicky',file)
         return {redraw:false}
     }
@@ -315,8 +319,7 @@ quicky = (function ()
 
     quicky.prototype["returnToEditor"] = function ()
     {
-        this.cells.rows = 0
-        post.emit('focus','editor')
+        this.hide()
         if (this.choices.num())
         {
             post.emit('quicky',this.currentChoice())
@@ -361,13 +364,11 @@ quicky = (function ()
                 break
         }
 
+        this.choices.mapscr.hide()
         if (this.choices.current().path)
         {
             this.input.set('')
-            if (_k_.in(slash.ext(this.choices.current().path),walker.sourceFileExtensions))
-            {
-                this.preview(this.choices.current().path)
-            }
+            this.preview(this.choices.current().path)
         }
         else
         {
@@ -381,11 +382,18 @@ quicky = (function ()
     {
         var lines, text
 
-        lf('preview',file)
-        text = await nfs.read(file)
-        lines = util.linesForText(text)
-        this.choices.mapscr.setSyntaxLines(slash.ext(file),lines)
-        return this.choices.mapscr.show()
+        if (_k_.in(slash.ext(file),walker.sourceFileExtensions))
+        {
+            lf('preview',file)
+            text = await nfs.read(file)
+            lines = util.linesForText(text)
+            this.choices.mapscr.show()
+            return this.choices.mapscr.setSyntaxLines(slash.ext(file),lines)
+        }
+        else
+        {
+            return this.choices.mapscr.hide()
+        }
     }
 
     quicky.prototype["moveFocus"] = function ()
@@ -402,7 +410,7 @@ quicky = (function ()
 
     quicky.prototype["onKey"] = function (key, event)
     {
-        var current, upDir, _370_69_
+        var current, upDir, _386_69_
 
         if (this.hidden())
         {
@@ -444,7 +452,8 @@ quicky = (function ()
                         }
                         else
                         {
-                            return this.gotoFileOrDirectory(((_370_69_=current.link) != null ? _370_69_ : current.path))
+                            this.choices.mapscr.hide()
+                            return this.gotoFileOrDirectory(((_386_69_=current.link) != null ? _386_69_ : current.path))
                         }
                     }
                     break
@@ -452,6 +461,7 @@ quicky = (function ()
                     if (current.path)
                     {
                         upDir = slash.dir(this.currentDir)
+                        this.choices.mapscr.hide()
                         return this.gotoDirectory(upDir,this.currentDir)
                     }
                     break

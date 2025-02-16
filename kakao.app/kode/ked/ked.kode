@@ -301,6 +301,7 @@ function KED
             @editor.draw()
             @status.draw()
             @konsole.draw()
+            
         @menu.draw()
         @quicky.draw()
         

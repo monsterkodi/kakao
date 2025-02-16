@@ -52,9 +52,11 @@ function quicky
         x = int @screen.cols/4
         y = int @screen.rows/4
         w = int @screen.cols/2
-        h = int @screen.rows/2
+        h = int @screen.rows/2-4
 
         cs = min h @choices.num()
+        cs = h if @crumbs.visible()
+        
         ch = @crumbs.visible() ? 1 : 0
         cd = ch == 1 ? 1 : 0
 
@@ -65,7 +67,14 @@ function quicky
 
         # lf 'layout' c @choices.items.length
 
-    hide:   => @cells.rows = 0; post.emit 'focus' 'editor'; post.emit 'redraw'; true
+    hide: => 
+        
+        @choices.mapscr.hide()
+        @cells.rows = 0 
+        post.emit 'focus' 'editor' 
+        # post.emit 'redraw'
+        redraw:true
+        
     hidden: -> @cells.rows <= 0
     visible: -> @cells.rows > 0
 
@@ -180,6 +189,8 @@ function quicky
                 if slash.samePath item.path select
                     selectIndex = idx
                     break
+                    
+        @preview items[selectIndex].path
         
         @choices.set items 'tilde'
         @choices.state.selectLine selectIndex
@@ -213,8 +224,9 @@ function quicky
         
         # lf 'quicky.openFileInEditor' file
        
-        @cells.rows = 0
-        post.emit 'focus' 'editor'
+        # @cells.rows = 0
+        # post.emit 'focus' 'editor'
+        @hide()
         post.emit 'quicky' file
         redraw:false
         
@@ -264,8 +276,9 @@ function quicky
     returnToEditor: ->
 
         # lf 'returnToEditor'
-        @cells.rows = 0
-        post.emit 'focus' 'editor'
+        # @cells.rows = 0
+        # post.emit 'focus' 'editor'
+        @hide()
 
         if @choices.num()
             post.emit 'quicky' @currentChoice()
@@ -306,12 +319,11 @@ function quicky
             'down'  ➜ @choices.state.selectNextLine()
             'up'    ➜ @choices.state.selectPrevLine()
 
+        @choices.mapscr.hide()
+        
         if @choices.current().path
-            # @input.set @choices.current().path
             @input.set ''
-            
-            if slash.ext(@choices.current().path) in walker.sourceFileExtensions
-                @preview @choices.current().path
+            @preview @choices.current().path
         else
             @input.set @choices.state.selectedText()
         @input.selectAll()
@@ -324,13 +336,16 @@ function quicky
     # 000        000   000  00000000      0      000  00000000  00     00  
     
     preview: file ○->
+        
+        if slash.ext(file) in walker.sourceFileExtensions
 
-        lf 'preview' file
-        text =○ nfs.read file
-        lines = util.linesForText text
-        @choices.mapscr.setSyntaxLines slash.ext(file) lines 
-        # @choices.setLines lines
-        @choices.mapscr.show()
+            lf 'preview' file
+            text =○ nfs.read file
+            lines = util.linesForText text
+            @choices.mapscr.show()
+            @choices.mapscr.setSyntaxLines slash.ext(file) lines 
+        else
+            @choices.mapscr.hide()
         
     moveFocus: ->
         
@@ -367,10 +382,12 @@ function quicky
                         if current.type == 'file'
                             ⮐ post.emit 'quicky' current.path
                         else
+                            @choices.mapscr.hide()
                             ⮐ @gotoFileOrDirectory current.link ? current.path
                 'left'  
                     if current.path
                         upDir = slash.dir @currentDir
+                        @choices.mapscr.hide()
                         ⮐ @gotoDirectory upDir @currentDir
                 'space'            
                     if current.path and current.type == 'file'

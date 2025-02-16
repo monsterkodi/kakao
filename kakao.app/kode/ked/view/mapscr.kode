@@ -29,10 +29,17 @@ function mapscr
        
     init: x y w h -> @cells.init x y w h
     
-    show:   doShow=true => if doShow == false ➜ @hide() else @cells.cols = 10
-    hide:   => @cells.cols = 0
-    hidden: -> @cells.cols <= 0
+    hidden:  -> @cells.cols <= 0
     visible: -> @cells.cols > 0
+    hide: => 
+        
+        @clearImages()
+        @cells.cols = 0
+        
+    show: doShow=true => 
+        
+        ⮐ @hide() if doShow == false
+        @cells.cols = 10
         
     # 00000000   00000000   0000000  000  0000000  00000000  
     # 000   000  000       000       000     000   000       
@@ -63,7 +70,7 @@ function mapscr
     
     reallocBuffer: =>
         
-        # prof.start 'mapscr'
+        prof.start 'mapscr'
         
         t = @cells.screen.t
         ⮐ if empty t.cellsz
@@ -134,7 +141,7 @@ function mapscr
         else            
             t.write "\x1b_Gq=1,i=#{@imgId},p=#{@imgId},f=24,s=#{w},v=#{h};#{base64}\x1b\\"
             
-        # prof.end 'mapscr' 'send'
+        prof.end 'mapscr' #'send'
         
         @draw()
                         

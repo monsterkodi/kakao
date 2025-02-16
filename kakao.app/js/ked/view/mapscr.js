@@ -32,8 +32,8 @@ mapscr = (function ()
         this["reload"] = this["reload"].bind(this)
         this["onPreResize"] = this["onPreResize"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
-        this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
+        this["hide"] = this["hide"].bind(this)
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name)
         this.pixelsPerRow = 4
@@ -47,23 +47,6 @@ mapscr = (function ()
         return this.cells.init(x,y,w,h)
     }
 
-    mapscr.prototype["show"] = function (doShow = true)
-    {
-        if (doShow === false)
-        {
-            return this.hide()
-        }
-        else
-        {
-            return this.cells.cols = 10
-        }
-    }
-
-    mapscr.prototype["hide"] = function ()
-    {
-        return this.cells.cols = 0
-    }
-
     mapscr.prototype["hidden"] = function ()
     {
         return this.cells.cols <= 0
@@ -72,6 +55,21 @@ mapscr = (function ()
     mapscr.prototype["visible"] = function ()
     {
         return this.cells.cols > 0
+    }
+
+    mapscr.prototype["hide"] = function ()
+    {
+        this.clearImages()
+        return this.cells.cols = 0
+    }
+
+    mapscr.prototype["show"] = function (doShow = true)
+    {
+        if (doShow === false)
+        {
+            return this.hide()
+        }
+        return this.cells.cols = 10
     }
 
     mapscr.prototype["clearImages"] = function ()
@@ -104,6 +102,7 @@ mapscr = (function ()
     {
         var b, base64, bytes, ch, chunk, chunks, clss, data, f, g, h, i, li, line, r, rgb, t, w, x, xi, y
 
+        prof.start('mapscr')
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
         {
@@ -179,6 +178,7 @@ mapscr = (function ()
         {
             t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h};${base64}\x1b\\`)
         }
+        prof.end('mapscr')
         return this.draw()
     }
 

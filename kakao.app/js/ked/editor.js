@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, noon: function (obj) { var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.prototype.hasOwnProperty(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = `|${k}|` } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; var toStr = function (o, ind = '', arry = false, seen = []) { var s, t, v; if (!(o != null)) { if (o === null) { return 'null' }; if (o === undefined) { return 'undefined' }; return '<?>' }; switch (t = typeof(o)) { case 'string': {return esc(o,arry)}; case 'object': { if (_k_.in(o,seen)) { return '<v>' }; seen.push(o); if ((o.constructor != null ? o.constructor.name : undefined) === 'Array') { s = ind !== '' && arry && '.' || ''; if (o.length && ind !== '') { s += '\n' }; s += (function () { var result = []; var list = _k_.list(o); for (var li = 0; li < list.length; li++)  { v = list[li];result.push(ind + toStr(v,ind + '    ',true,seen))  } return result }).bind(this)().join('\n') } else if ((o.constructor != null ? o.constructor.name : undefined) === 'RegExp') { return o.source } else { s = (arry && '.\n') || ((ind !== '') && '\n' || ''); s += pretty(o,ind,seen) }; return s } default: return String(o) }; return '<???>' }; return toStr(obj) }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
@@ -55,6 +55,7 @@ editor = (function ()
                     break
                 case 'mapscr':
                     this.mapscr = new mapscr(this.screen,this.state)
+                    this.mapscr.show()
                     break
                 case 'mapview':
                     this.mapscr = new mapview(this.screen,this.state)
@@ -89,10 +90,10 @@ editor = (function ()
             g = this.state.gutterWidth()
             this.gutter.init(x + sl,y,g,h)
         }
-        if (this.mapscr && this.mapscr.visible())
+        if (this.mapscr)
         {
-            m = 10
-            this.mapscr.init(x + w - sr - m,y,m,h)
+            m = (this.mapscr.visible() ? 10 : 0)
+            this.mapscr.init(x + w - sr - 10,y,m,h)
         }
         this.cells.init(x + sl + g,y,w - sr - g - m,h)
         return this.state.initView()
@@ -100,7 +101,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _166_41_, _167_44_, _201_15_, _202_15_, _203_15_, _79_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _162_41_, _163_44_, _197_15_, _198_15_, _199_15_, _79_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -115,28 +116,24 @@ editor = (function ()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
-            if (y >= lines.length)
+            if (y < lines.length)
             {
-                break
+                line = lines[y]
             }
-            line = lines[y]
-            if (!(line != null))
+            if (y < lines.length)
             {
-                lf('empty line?',_k_.noon((lines)),y,row,view[1])
-                lf('empty line?',lines.length,y)
-                lf('???')
-            }
-            for (var _c_ = x = 0, _d_ = this.cells.cols; (_c_ <= _d_ ? x < this.cells.cols : x > this.cells.cols); (_c_ <= _d_ ? ++x : --x))
-            {
-                if (x + view[0] < line.length)
+                for (var _c_ = x = 0, _d_ = this.cells.cols; (_c_ <= _d_ ? x < this.cells.cols : x > this.cells.cols); (_c_ <= _d_ ? ++x : --x))
                 {
-                    fg = syntax.getColor(x + view[0],y)
-                    ch = syntax.getChar(x + view[0],y,line[x + view[0]])
-                    if (ch === "#")
+                    if (x + view[0] < line.length)
                     {
+                        fg = syntax.getColor(x + view[0],y)
+                        ch = syntax.getChar(x + view[0],y,line[x + view[0]])
+                        if (ch === "#")
+                        {
+                        }
+                        checkColor = true
+                        this.cells.set(x,row,ch,fg,bg)
                     }
-                    checkColor = true
-                    this.cells.set(x,row,ch,fg,bg)
                 }
             }
             emptyColor = theme[this.name + '_empty']
@@ -189,6 +186,10 @@ editor = (function ()
                         }
                     }
                 }
+            }
+            else
+            {
+                this.cells.bg_fill(0,row,-1,row,emptyColor)
             }
         }
         bg = theme.highlight
@@ -253,8 +254,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_166_41_=theme[this.name + '_cursor_fg']) != null ? _166_41_ : theme['editor_cursor_fg'])
-        bg = ((_167_44_=theme[this.name + '_cursor_multi']) != null ? _167_44_ : theme['editor_cursor_multi'])
+        fg = ((_162_41_=theme[this.name + '_cursor_fg']) != null ? _162_41_ : theme['editor_cursor_fg'])
+        bg = ((_163_44_=theme[this.name + '_cursor_multi']) != null ? _163_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -305,9 +306,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _215_30_, _215_39_, _216_30_, _226_41_
+        var col, row, start, x, y, _211_30_, _211_39_, _212_30_, _222_41_
 
-        if (((_215_30_=this.mapscr) != null ? typeof (_215_39_=_215_30_.onMouse) === "function" ? _215_39_(event) : undefined : undefined))
+        if (((_211_30_=this.mapscr) != null ? typeof (_211_39_=_211_30_.onMouse) === "function" ? _211_39_(event) : undefined : undefined))
         {
             return true
         }

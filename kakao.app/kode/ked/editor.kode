@@ -26,9 +26,9 @@ function editor extends view
                 'scrllr'
                 'scroll'    ➜ @scroll = new scroll  @screen @state
                 'gutter'    ➜ @gutter = new gutter  @screen @state
-                'mapscr'    ➜ @mapscr = new mapscr  @screen @state
+                'mapscr'    ➜ @mapscr = new mapscr  @screen @state; @mapscr.show()
                 'mapview'   ➜ @mapscr = new mapview @screen @state
-        
+                
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
     # 000  000 0 000  000     000     
@@ -53,9 +53,9 @@ function editor extends view
             g = @state.gutterWidth()
             @gutter.init    x+sl    y   g   h
             
-        if @mapscr and @mapscr.visible()
-            m = 10
-            @mapscr.init x+w-sr-m   y   m   h
+        if @mapscr
+            m = @mapscr.visible() ? 10 : 0
+            @mapscr.init x+w-sr-10   y   m   h
             
         @cells.init x+sl+g  y   w-sr-g-m    h
         @state.initView()
@@ -82,21 +82,16 @@ function editor extends view
             
             y = row+view[1]
             
-            break if y >= lines.length
-            line = lines[y]
-            
-            if not line?
-                lf 'empty line?', noon(lines), y, row, view[1]
-                lf 'empty line?' lines.length y
-                lf '???'
-            
+            line = lines[y] if y < lines.length
+                        
             # text
-            for x in 0...@cells.cols
-                if x+view[0] < line.length
-                    fg = syntax.getColor x+view[0] y
-                    ch = syntax.getChar x+view[0] y line[x+view[0]]
-                    if ch == "#" checkColor = true
-                    @cells.set x row ch fg bg
+            if y < lines.length
+                for x in 0...@cells.cols
+                    if x+view[0] < line.length
+                        fg = syntax.getColor x+view[0] y
+                        ch = syntax.getChar x+view[0] y line[x+view[0]]
+                        if ch == "#" checkColor = true
+                        @cells.set x row ch fg bg
                     
             # empty
             emptyColor = theme[@name + '_empty']
@@ -121,7 +116,8 @@ function editor extends view
                             if idx == rngs.length-1 ➜ dta--
                             @cells.bg_rect cx row cx+dta row rng.match; cx += dta
                             if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
-
+            else
+                @cells.bg_fill 0 row -1 row emptyColor
                                 
         bg = theme.highlight
         bg = color.darken bg if not @cells.screen.t.hasFocus
