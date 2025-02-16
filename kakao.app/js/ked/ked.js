@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var KED
 
@@ -14,6 +14,7 @@ import screen from "./view/screen.js"
 import cells from "./view/cells.js"
 import status from "./view/status.js"
 import quicky from "./view/quicky.js"
+import greeter from "./view/greeter.js"
 
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
@@ -31,7 +32,7 @@ KED = (function ()
 {
     function KED ()
     {
-        var args, c, cells, dcells, ecells, h, kcells, l
+        var args
 
         this["draw"] = this["draw"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
@@ -45,83 +46,14 @@ KED = (function ()
         this["saveFile"] = this["saveFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
+        this["newFile"] = this["newFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this.version = '0.0.4'
-        h = `
-╭───╮                ╭───╮                ╭───╮
-│○○○│                │○○○│                │○○○│
-│○○○│                ╰───╯                │○○○│
-│○○○│     ╭───╮    ╭───────╮       ╭──────╯○○○│
-│○○○│   ╭─╯○○○│  ╭─╯○○○○○○○╰─╮   ╭─╯○○○○○○○○○○│
-│○○○│ ╭─╯○○╭──╯ ╭╯○○╭─────╮○○╰╮ ╭╯○○╭─────╮○○○│
-│○○○╰─╯○○╭─╯    │○○○│     │○○○│ │○○○│     │○○○│
-│○○○○○○○○│      │○○○╰─────╯○○○│ │○○○│     │○○○│
-│○○○╭─╮○○╰─╮    │○○○╭─────────╯ │○○○│     │○○○│
-│○○○│ ╰─╮○○╰─╮  │○○○│     ╭───╮ │○○○│     │○○○│
-│○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯
-│○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯ 
-╰───╯     ╰───╯    ╰───────╯       ╰───────╯   
-`
-        l = util.indentLines(util.linesForText(h))
-        cells = util.cellsForLines(l)
-        kcells = util.cellsInRect(cells,0,0,19,-1)
-        var list = _k_.list(kcells)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            c = list[_a_]
-            switch (c.cell.char)
-            {
-                case ' ':
-                case '○':
-                    c.cell.fg = [0,80,0]
-                    break
-                default:
-                    c.cell.fg = [0,255,0]
-            }
-
-        }
-        ecells = util.cellsInRect(cells,19,0,35,-1)
-        var list1 = _k_.list(ecells)
-        for (var _b_ = 0; _b_ < list1.length; _b_++)
-        {
-            c = list1[_b_]
-            switch (c.cell.char)
-            {
-                case ' ':
-                case '○':
-                    c.cell.fg = [0,0,155]
-                    break
-                default:
-                    c.cell.fg = [120,120,255]
-            }
-
-        }
-        dcells = util.cellsInRect(cells,36,0,-1,-1)
-        var list2 = _k_.list(dcells)
-        for (var _c_ = 0; _c_ < list2.length; _c_++)
-        {
-            c = list2[_c_]
-            switch (c.cell.char)
-            {
-                case ' ':
-                case '○':
-                    c.cell.fg = [105,0,0]
-                    break
-                default:
-                    c.cell.fg = [255,160,0]
-            }
-
-        }
-        color.glowEffect(cells)
-        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.6)
-        l = util.indentLines(color.linesForCells(cells),0)
-        h = l.join('\n')
-        h = '\n' + h + '\n'
         args = karg(`
 ked [file]
     options                      **
     version    log version       = false
-    `,{preHelp:h,version:this.version})
+    `,{preHelp:this.helpHeader(),version:this.version})
         process.on('uncaughtException',this.onException)
         this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
@@ -129,7 +61,7 @@ ked [file]
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _125_64_
+            var _39_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -138,6 +70,7 @@ ked [file]
             }
         }).bind(this)
         this.screen = new screen(this.t)
+        this.greeter = new greeter(this.screen)
         this.quicky = new quicky(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
@@ -149,9 +82,10 @@ ked [file]
         post.on('window.blur',this.redraw)
         post.on('view.size',this.onViewSize)
         post.on('quicky',this.onQuicky)
-        this.mouseHandlers = [this.quicky,this.konsole,this.editor]
-        this.wheelHandlers = [this.quicky,this.konsole,this.editor]
-        this.keyHandlers = [this.quicky,this.konsole,this.editor]
+        post.on('file.new',this.newFile)
+        this.mouseHandlers = [this.quicky,this.greeter,this.konsole,this.editor]
+        this.wheelHandlers = [this.quicky,this.greeter,this.konsole,this.editor]
+        this.keyHandlers = [this.quicky,this.greeter,this.konsole,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -164,6 +98,7 @@ ked [file]
         else
         {
             this.newFile()
+            this.greeter.open()
         }
     }
 
@@ -174,7 +109,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _172_10_
+        var _89_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -196,7 +131,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _194_22_
+        var _111_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -221,7 +156,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _234_22_
+        var lines, start, text, _151_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -328,6 +263,9 @@ ked [file]
             case 'ctrl+n':
                 return this.newFile()
 
+            case 'alt+m':
+                return this.greeter.toggle()
+
             case 'cmd+p':
             case 'ctrl+p':
                 return this.quicky.toggle(this.currentFile)
@@ -370,7 +308,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _341_22_, _342_23_
+        var _259_22_, _260_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -379,7 +317,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _347_22_, _348_23_
+        var _265_22_, _266_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -408,9 +346,86 @@ ked [file]
         this.editor.draw()
         this.konsole.draw()
         this.status.draw()
+        this.greeter.draw()
         this.quicky.draw()
         this.screen.render()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+    }
+
+    KED.prototype["helpHeader"] = function ()
+    {
+        var c, cells, dcells, ecells, h, kcells, l
+
+        h = `
+╭───╮                ╭───╮                ╭───╮
+│○○○│                │○○○│                │○○○│
+│○○○│                ╰───╯                │○○○│
+│○○○│     ╭───╮    ╭───────╮       ╭──────╯○○○│
+│○○○│   ╭─╯○○○│  ╭─╯○○○○○○○╰─╮   ╭─╯○○○○○○○○○○│
+│○○○│ ╭─╯○○╭──╯ ╭╯○○╭─────╮○○╰╮ ╭╯○○╭─────╮○○○│
+│○○○╰─╯○○╭─╯    │○○○│     │○○○│ │○○○│     │○○○│
+│○○○○○○○○│      │○○○╰─────╯○○○│ │○○○│     │○○○│
+│○○○╭─╮○○╰─╮    │○○○╭─────────╯ │○○○│     │○○○│
+│○○○│ ╰─╮○○╰─╮  │○○○│     ╭───╮ │○○○│     │○○○│
+│○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯
+│○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯ 
+╰───╯     ╰───╯    ╰───────╯       ╰───────╯   
+`
+        l = util.indentLines(util.linesForText(h))
+        cells = util.cellsForLines(l)
+        kcells = util.cellsInRect(cells,0,0,19,-1)
+        var list = _k_.list(kcells)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            c = list[_a_]
+            switch (c.cell.char)
+            {
+                case ' ':
+                case '○':
+                    c.cell.fg = [0,80,0]
+                    break
+                default:
+                    c.cell.fg = [0,255,0]
+            }
+
+        }
+        ecells = util.cellsInRect(cells,19,0,35,-1)
+        var list1 = _k_.list(ecells)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            c = list1[_b_]
+            switch (c.cell.char)
+            {
+                case ' ':
+                case '○':
+                    c.cell.fg = [0,0,155]
+                    break
+                default:
+                    c.cell.fg = [120,120,255]
+            }
+
+        }
+        dcells = util.cellsInRect(cells,36,0,-1,-1)
+        var list2 = _k_.list(dcells)
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            c = list2[_c_]
+            switch (c.cell.char)
+            {
+                case ' ':
+                case '○':
+                    c.cell.fg = [105,0,0]
+                    break
+                default:
+                    c.cell.fg = [255,160,0]
+            }
+
+        }
+        color.glowEffect(cells)
+        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.6)
+        l = util.indentLines(color.linesForCells(cells),0)
+        h = l.join('\n')
+        return h = '\n' + h + '\n'
     }
 
     return KED

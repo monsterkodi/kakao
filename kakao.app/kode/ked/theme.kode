@@ -23,6 +23,7 @@ class theme
     @status:                '#222'     
     @status_dark:           '#1a1a1a'  
     @scroll:                '#1a1a1a'  
+    @scroll_empty:          '#000'     
     @scroll_dot:            '#222'     
     @scroll_knob:           '#44f'     
     @scroll_doth:           '#88f'     

@@ -93,7 +93,7 @@ function scroll
         for row in 0...rows
             
             bg = if
-                lnum < rows     ➜ theme.gutter
+                lnum <= rows    ➜ theme.scroll_empty
                 row == nc       ➜ @hover ? theme.scroll_doth : theme.scroll_dot
                 ns <= row <= ne ➜ @hover ? theme.scroll_knob : theme.scroll
                 @hover          ➜ theme.gutter

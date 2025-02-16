@@ -95,7 +95,7 @@ scroll = (function ()
         ne = kp + kh
         for (var _a_ = row = 0, _b_ = rows; (_a_ <= _b_ ? row < rows : row > rows); (_a_ <= _b_ ? ++row : --row))
         {
-            bg = lnum < rows ? theme.gutter : row === nc ? (this.hover ? theme.scroll_doth : theme.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? theme.scroll_knob : theme.scroll) : this.hover ? theme.gutter : theme.gutter
+            bg = lnum <= rows ? theme.scroll_empty : row === nc ? (this.hover ? theme.scroll_doth : theme.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? theme.scroll_knob : theme.scroll) : this.hover ? theme.gutter : theme.gutter
             this.cells.set(0,row,' ',null,bg)
         }
     }
