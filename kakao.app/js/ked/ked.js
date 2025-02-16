@@ -15,6 +15,7 @@ import cells from "./view/cells.js"
 import status from "./view/status.js"
 import quicky from "./view/quicky.js"
 import menu from "./view/menu.js"
+import finder from "./view/finder.js"
 
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
@@ -74,6 +75,7 @@ ked [file]
         this.screen = new screen(this.t)
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
+        this.finder = new finder(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
         this.status = new status(this.screen,this.editor.state)
@@ -86,9 +88,9 @@ ked [file]
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
         post.on('quit',this.quit)
-        this.mouseHandlers = [this.quicky,this.menu,this.konsole,this.editor]
-        this.wheelHandlers = [this.quicky,this.menu,this.konsole,this.editor]
-        this.keyHandlers = [this.quicky,this.menu,this.konsole,this.editor]
+        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.konsole,this.editor]
+        this.wheelHandlers = [this.finder,this.quicky,this.menu,this.konsole,this.editor]
+        this.keyHandlers = [this.finder,this.quicky,this.menu,this.konsole,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -112,7 +114,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _90_10_
+        var _91_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -134,7 +136,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _112_22_
+        var _113_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -159,7 +161,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _152_22_
+        var lines, start, text, _153_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -241,7 +243,7 @@ ked [file]
 
     KED.prototype["onKey"] = function (key, event)
     {
-        var handler, result, _228_93_
+        var handler, result, _230_93_
 
         switch (key)
         {
@@ -274,9 +276,13 @@ ked [file]
             case 'ctrl+p':
                 return this.quicky.toggle(this.currentFile)
 
+            case 'cmd+f':
+            case 'ctrl+f':
+                return this.finder.show('ehllo')
+
             case 'cmd+.':
             case 'ctrl+.':
-                return this.quicky.gotoDir(((_228_93_=slash.dir(this.currentFile)) != null ? _228_93_ : process.cwd()))
+                return this.quicky.gotoDir(((_230_93_=slash.dir(this.currentFile)) != null ? _230_93_ : process.cwd()))
 
         }
 
@@ -320,7 +326,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _264_22_, _265_23_
+        var _266_22_, _267_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -329,7 +335,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _270_22_, _271_23_
+        var _272_22_, _273_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -363,6 +369,7 @@ ked [file]
         }
         this.menu.draw()
         this.quicky.draw()
+        this.finder.draw()
         this.screen.render()
         return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
     }

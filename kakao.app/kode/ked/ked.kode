@@ -10,7 +10,7 @@
 
 use ../kxk ▪ karg kstr slash post
 use ../kxk ◆ nfs
-use ./view ◆ screen cells status quicky menu
+use ./view ◆ screen cells status quicky menu finder
 use ./util ◆ logfile util prjcts session color help
 use        ◆ ttio editor state konsole
 
@@ -42,6 +42,7 @@ function KED
         
         @menu    = new menu     @screen        
         @quicky  = new quicky   @screen 
+        @finder  = new finder   @screen 
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
         @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
         @status  = new status   @screen @editor.state
@@ -58,9 +59,9 @@ function KED
         post.on 'file.new'      @newFile
         post.on 'quit'          @quit
         
-        @mouseHandlers = [@quicky @menu @konsole @editor]
-        @wheelHandlers = [@quicky @menu @konsole @editor]
-        @keyHandlers   = [@quicky @menu @konsole @editor]
+        @mouseHandlers = [@finder @quicky @menu @konsole @editor]
+        @wheelHandlers = [@finder @quicky @menu @konsole @editor]
+        @keyHandlers   = [@finder @quicky @menu @konsole @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -225,6 +226,7 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+m'                      ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
+            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show 'ehllo'
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile) ? process.cwd()
             
         for handler in @keyHandlers
@@ -305,6 +307,7 @@ function KED
             
         @menu.draw()
         @quicky.draw()
+        @finder.draw()
         
         @screen.render()
         

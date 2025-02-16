@@ -78,7 +78,6 @@ class prjcts
             prjPath = null
         }
         prjPath = (prjPath != null ? prjPath : slash.dir(file))
-        lf('prjcts.index ▸',prjPath)
         if (this.indexing)
         {
             if (this.indexing === prjPath)

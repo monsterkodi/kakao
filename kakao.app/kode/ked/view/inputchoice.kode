@@ -22,6 +22,25 @@ function inputchoice
 
         @input.on 'changed' @onInputChanged
         
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
+    layout: =>
+
+        x = int @screen.cols/4
+        y = int @screen.rows/4
+        w = int @screen.cols/2
+        h = int @screen.rows/2-4
+
+        cs = min h @choices.num()
+        
+        @input.init    x+2   y+1  w-4  1
+        @choices.init  x+2   y+3  w-3  cs
+        @cells.init    x     y    w    cs+4
+        
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
     # 0000000   000000000  000   000  000000000
@@ -43,8 +62,7 @@ function inputchoice
     hidden:  -> @cells.rows <= 0 or @cells.cols <= 0
     visible: -> @cells.rows > 0 and @cells.cols > 0
     toggle:  -> if @hidden() then @show() else @hide()
-            
-        
+                    
     # 000  000   000  00000000   000   000  000000000  
     # 000  0000  000  000   000  000   000     000     
     # 000  000 0 000  00000000   000   000     000     
@@ -58,7 +76,12 @@ function inputchoice
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
         @layout()
         
-    currentChoice: -> trim @choices.current()
+    currentChoice: ->
+    
+        choice = @choices.current() ? @input.current()
+        choice = trim choice if choice is str
+        lf 'choice' choice
+        choice
     
     onChoiceAction: choice action => lf 'onChoiceAction' choice action
 
@@ -71,11 +94,17 @@ function inputchoice
     draw: ->
 
         ⮐ if @hidden()
+        
+        @layout()
+        @drawFrame()
+        @drawChoices()
 
+    drawChoices: ->
+        
         @input.draw()
         @choices.draw()    
 
-    drawBackground: ->
+    drawFrame: ->
         
         fg = theme.quicky_frame_fg
         bg = theme.quicky_frame_bg
@@ -119,7 +148,7 @@ function inputchoice
         switch event.combo
             'tab'       ➜ ⮐ @moveFocus()
             'esc'       ➜ ⮐ @hide()
-            'return'    ➜ ⮐ @applyChoice()
+            'return'    ➜ ⮐ @applyChoice @currentChoice()
             'up' 'down' ➜ ⮐ @moveSelection event.combo
 
         if @choices.hasFocus()

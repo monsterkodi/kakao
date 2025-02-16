@@ -10,7 +10,7 @@ use ../../kxk ▪ kstr slash post noon
 use ../../kxk ◆ nfs
 use ../util ◆ prjcts walker util
 use ..      ◆ editor theme
-use         ◆ cells input choices crumbs inputchoice
+use         ◆ cells crumbs inputchoice
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -151,6 +151,7 @@ function quicky extends inputchoice
             ⮐ w if item.tilde == ' ..'
             w += 10000 if item.type == 'file'
             w += 1000  if item.tilde.startsWith ' .'
+            w += 1     if slash.ext(item.tilde) in ['js' 'json']
             w += kstr.weight(p.file)
             w
 
@@ -235,8 +236,6 @@ function quicky extends inputchoice
 
         redraw:true
             
-    currentChoice: -> trim @choices.current()
-
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
     # 000   000  0000000    000000000  000000000
@@ -247,9 +246,9 @@ function quicky extends inputchoice
 
         ⮐ if @hidden()
 
-        @drawBackground()
+        @drawFrame()
         @crumbs.draw()
-        super()
+        @drawChoices()
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
@@ -277,8 +276,6 @@ function quicky extends inputchoice
     
     preview: file ○->
         
-        # lf 'preview' walker.sourceFileExtensions
-        
         if slash.ext(file) in walker.sourceFileExtensions
 
             text =○ nfs.read file
@@ -296,7 +293,6 @@ function quicky extends inputchoice
     
     onChoiceAction: choice action =>
             
-        # lf 'onChoiceAction' choice action
         switch action
             
             'right' 

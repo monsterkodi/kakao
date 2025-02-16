@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int, quicky
 
@@ -18,8 +18,6 @@ import editor from "../editor.js"
 import theme from "../theme.js"
 
 import cells from "./cells.js"
-import input from "./input.js"
-import choices from "./choices.js"
 import crumbs from "./crumbs.js"
 import inputchoice from "./inputchoice.js"
 
@@ -182,6 +180,10 @@ quicky = (function ()
             {
                 w += 1000
             }
+            if (_k_.in(slash.ext(item.tilde),['js','json']))
+            {
+                w += 1
+            }
             w += kstr.weight(p.file)
             return w
         }
@@ -283,20 +285,15 @@ quicky = (function ()
         return {redraw:true}
     }
 
-    quicky.prototype["currentChoice"] = function ()
-    {
-        return _k_.trim(this.choices.current())
-    }
-
     quicky.prototype["draw"] = function ()
     {
         if (this.hidden())
         {
             return
         }
-        this.drawBackground()
+        this.drawFrame()
         this.crumbs.draw()
-        return quicky.__super__.draw.call(this)
+        return this.drawChoices()
     }
 
     quicky.prototype["moveSelection"] = function (dir)
@@ -333,7 +330,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _311_62_
+        var upDir, _307_62_
 
         switch (action)
         {
@@ -351,7 +348,7 @@ quicky = (function ()
                     else
                     {
                         this.choices.mapscr.hide()
-                        return this.gotoDirOrOpenFile(((_311_62_=choice.link) != null ? _311_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_307_62_=choice.link) != null ? _307_62_ : choice.path))
                     }
                 }
                 break

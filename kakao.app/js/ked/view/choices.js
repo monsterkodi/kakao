@@ -68,20 +68,25 @@ choices = (function ()
 
     choices.prototype["weight"] = function (item, text)
     {
-        var idx, p, w
+        var itemText, matchOrLevenshtein, p, w
 
-        item = this.extract(item)
-        p = slash.parse(item)
-        idx = item.indexOf(text)
-        if (idx < 0)
+        itemText = this.extract(item)
+        p = slash.parse(itemText)
+        matchOrLevenshtein = function (t)
         {
-            idx = item.length * 2
+            var idx
+
+            idx = t.indexOf(text)
+            if (idx < 0)
+            {
+                idx = t.length + kstr.levensthein(t,text)
+            }
+            return idx
         }
-        w = 0
-        w += idx
-        w += kstr.levensthein(p.name,text)
-        w += kstr.levensthein(p.dir,text)
-        w += kstr.levensthein(p.ext,text)
+        w = this.items.indexOf(item)
+        w += 10 * matchOrLevenshtein(p.name)
+        w += 5 * matchOrLevenshtein(p.dir)
+        w += (!_k_.empty(p.ext) ? (0.1 * matchOrLevenshtein(p.ext)) : 4)
         return w
     }
 

@@ -38,16 +38,20 @@ function choices extends editor
         
     weight: item text =>
 
-        item = @extract item
-        p = slash.parse item
+        itemText = @extract item
+        p = slash.parse itemText
+        
+        matchOrLevenshtein = t -> 
+            idx = t.indexOf text
+            if idx < 0
+                idx = t.length + kstr.levensthein(t text)
+            idx
 
-        idx = item.indexOf text
-        idx = item.length*2 if idx < 0
-        w  = 0
-        w += idx
-        w += kstr.levensthein p.name text
-        w += kstr.levensthein p.dir  text
-        w += kstr.levensthein p.ext  text
+        w  = @items.indexOf(item)               # try to keep order of original items
+        w += 10 * matchOrLevenshtein(p.name)    # high focus on file name
+        w += 5  * matchOrLevenshtein(p.dir)     # lesser focus on dir
+        w += valid p.ext ? (0.1 * matchOrLevenshtein(p.ext)) : 4 # low weight for extensions
+                                                                 # has the side-effect of moving directories down
         w
 
     filter: text =>

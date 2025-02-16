@@ -21,6 +21,9 @@ function editor extends view
         
         post.on 'focus' @onFocus
         
+        if @name == 'editor'
+            post.on 'finder.apply' @onFinderApply 
+        
         for feature in features
             switch feature
                 'scrllr'
@@ -382,7 +385,12 @@ function editor extends view
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
     redraw: => post.emit 'redraw'
-        
+    
+    onFinderApply: text => 
+    
+        lf 'finderApply' text
+        @state.highlightText text
+                
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

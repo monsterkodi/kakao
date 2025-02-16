@@ -1,4 +1,4 @@
-var _k_ = {trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var inputchoice
 
@@ -26,11 +26,26 @@ inputchoice = (function ()
         this["onInputChanged"] = this["onInputChanged"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
+        this["layout"] = this["layout"].bind(this)
         this.cells = new cells(this.screen)
         this.input = new input(this.screen,`${this.name}_input`)
         this.choices = new choices(this.screen,`${this.name}_choices`)
         this.choices.mapscr.hide()
         this.input.on('changed',this.onInputChanged)
+    }
+
+    inputchoice.prototype["layout"] = function ()
+    {
+        var cs, h, w, x, y
+
+        x = parseInt(this.screen.cols / 4)
+        y = parseInt(this.screen.rows / 4)
+        w = parseInt(this.screen.cols / 2)
+        h = parseInt(this.screen.rows / 2 - 4)
+        cs = _k_.min(h,this.choices.num())
+        this.input.init(x + 2,y + 1,w - 4,1)
+        this.choices.init(x + 2,y + 3,w - 3,cs)
+        return this.cells.init(x,y,w,cs + 4)
     }
 
     inputchoice.prototype["show"] = function ()
@@ -79,7 +94,15 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        return _k_.trim(this.choices.current())
+        var choice, _81_36_
+
+        choice = ((_81_36_=this.choices.current()) != null ? _81_36_ : this.input.current())
+        if (_k_.isStr(choice))
+        {
+            choice = _k_.trim(choice)
+        }
+        lf('choice',choice)
+        return choice
     }
 
     inputchoice.prototype["onChoiceAction"] = function (choice, action)
@@ -93,11 +116,18 @@ inputchoice = (function ()
         {
             return
         }
+        this.layout()
+        this.drawFrame()
+        return this.drawChoices()
+    }
+
+    inputchoice.prototype["drawChoices"] = function ()
+    {
         this.input.draw()
         return this.choices.draw()
     }
 
-    inputchoice.prototype["drawBackground"] = function ()
+    inputchoice.prototype["drawFrame"] = function ()
     {
         var bg, fg
 
@@ -151,7 +181,7 @@ inputchoice = (function ()
                 return this.hide()
 
             case 'return':
-                return this.applyChoice()
+                return this.applyChoice(this.currentChoice())
 
             case 'up':
             case 'down':

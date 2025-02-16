@@ -1,0 +1,63 @@
+###
+    00000000  000  000   000  0000000    00000000  00000000   
+    000       000  0000  000  000   000  000       000   000  
+    000000    000  000 0 000  000   000  0000000   0000000    
+    000       000  000  0000  000   000  000       000   000  
+    000       000  000   000  0000000    00000000  000   000  
+###
+
+use ../../kxk ▪ kstr slash post
+use ../util ◆ prjcts walker util
+use         ◆ cells inputchoice
+
+import rgxs from './quicky.json' with { type: "json" }
+
+int = parseInt
+
+function finder extends inputchoice
+
+    @: @screen ->
+
+        super @screen 'finder'
+
+        @choices.state.syntax.setRgxs rgxs
+
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: @searchText ->
+
+        lf 'finder.show' @searchText
+
+        @input.set ''
+        @choices.set []
+        
+        @layout()
+        @input.grabFocus()
+        
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    applyChoice: choice ->
+        
+        @hide()
+        post.emit 'finder.apply' choice
+        redraw:true
+            
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    onChoiceAction: choice action =>
+            
+        # lf 'onChoiceAction' choice action
+
+export finder

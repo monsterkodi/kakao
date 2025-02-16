@@ -28,6 +28,7 @@ editor = (function ()
         var feature
 
         this["onKey"] = this["onKey"].bind(this)
+        this["onFinderApply"] = this["onFinderApply"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["onFocus"] = this["onFocus"].bind(this)
         this["grabFocus"] = this["grabFocus"].bind(this)
@@ -40,6 +41,10 @@ editor = (function ()
         editor.__super__.constructor.call(this,screen,name,features)
         this.state = new state(this.cells,this.name)
         post.on('focus',this.onFocus)
+        if (this.name === 'editor')
+        {
+            post.on('finder.apply',this.onFinderApply)
+        }
         var list = _k_.list(features)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -101,7 +106,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _162_41_, _163_44_, _197_15_, _198_15_, _199_15_, _79_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _165_41_, _166_44_, _200_15_, _201_15_, _202_15_, _82_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -112,7 +117,7 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_79_26_=theme[this.name]) != null ? _79_26_ : theme['editor'])
+        bg = ((_82_26_=theme[this.name]) != null ? _82_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -254,8 +259,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_162_41_=theme[this.name + '_cursor_fg']) != null ? _162_41_ : theme['editor_cursor_fg'])
-        bg = ((_163_44_=theme[this.name + '_cursor_multi']) != null ? _163_44_ : theme['editor_cursor_multi'])
+        fg = ((_165_41_=theme[this.name + '_cursor_fg']) != null ? _165_41_ : theme['editor_cursor_fg'])
+        bg = ((_166_44_=theme[this.name + '_cursor_multi']) != null ? _166_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -306,9 +311,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _211_30_, _211_39_, _212_30_, _222_41_
+        var col, row, start, x, y, _214_30_, _214_39_, _215_30_, _225_41_
 
-        if (((_211_30_=this.mapscr) != null ? typeof (_211_39_=_211_30_.onMouse) === "function" ? _211_39_(event) : undefined : undefined))
+        if (((_214_30_=this.mapscr) != null ? typeof (_214_39_=_214_30_.onMouse) === "function" ? _214_39_(event) : undefined : undefined))
         {
             return true
         }
@@ -526,6 +531,12 @@ editor = (function ()
     editor.prototype["redraw"] = function ()
     {
         return post.emit('redraw')
+    }
+
+    editor.prototype["onFinderApply"] = function (text)
+    {
+        lf('finderApply',text)
+        return this.state.highlightText(text)
     }
 
     editor.prototype["onKey"] = function (key, event)

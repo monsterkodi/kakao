@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var menu
 
@@ -83,12 +83,9 @@ quit`)
         return this.cells.init(x,y,w,c + 4)
     }
 
-    menu.prototype["applyChoice"] = function ()
+    menu.prototype["applyChoice"] = function (choice)
     {
-        var current
-
-        current = this.choices.current()
-        switch (current)
+        switch (choice)
         {
             case 'about':
                 return this.show(true)
@@ -109,13 +106,8 @@ quit`)
     {
         if (_k_.in(action,['space','right']))
         {
-            return this.applyChoice()
+            return this.applyChoice(choice)
         }
-    }
-
-    menu.prototype["currentChoice"] = function ()
-    {
-        return _k_.trim(this.choices.current())
     }
 
     menu.prototype["draw"] = function ()
@@ -125,12 +117,12 @@ quit`)
             return
         }
         this.layout()
-        this.drawBackground()
+        this.drawFrame()
         if (this.greet)
         {
             this.greeter.draw()
         }
-        return menu.__super__.draw.call(this)
+        return this.drawChoices()
     }
 
     return menu

@@ -61,6 +61,8 @@
                 - original finder can be closed and thus 'moves' to the search result pane
 
 - multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
+- alt+cmd+d should work inside selection: highlight word at cursor inside
+- alt+cmd+e add word at cursor to highlights
 
 - prefs 
     - file positions
