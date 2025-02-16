@@ -309,8 +309,8 @@ function util
         rngs.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
         rngs.filter (a) -> a[1] != a[3] or a[0] != a[2] 
         
-    @startPositionsOfRanges: rngs -> rngs.map (r) -> @startOfRange r
-    @endPositionsOfRanges:   rngs -> rngs.map (r) -> @endOfRange r
+    @startPositionsOfRanges: rngs -> rngs.map (r) => @startOfRange r
+    @endPositionsOfRanges:   rngs -> rngs.map (r) => @endOfRange r
         
     @removeTrailingEmptyRange: rngs ->
         

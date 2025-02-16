@@ -202,7 +202,7 @@ quicky = (function ()
 
     quicky.prototype["gotoFileOrDirectory"] = async function (path)
     {
-        var isDir
+        var isDir, isFile
 
         isDir = await nfs.dirExists(path)
         if (isDir)
@@ -211,7 +211,11 @@ quicky = (function ()
         }
         else
         {
-            return this.openFileInEditor(path)
+            isFile = await nfs.fileExists(path)
+            if (isFile)
+            {
+                return this.openFileInEditor(path)
+            }
         }
     }
 

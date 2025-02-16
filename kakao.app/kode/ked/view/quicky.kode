@@ -181,7 +181,9 @@ function quicky
         if isDir
             ○ @gotoDirectory path
         else
-            @openFileInEditor path
+            isFile =○ nfs.fileExists path
+            if isFile
+                @openFileInEditor path
             
     openFileInEditor: file =>
         

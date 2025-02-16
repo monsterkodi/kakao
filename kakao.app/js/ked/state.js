@@ -245,7 +245,6 @@ state = (function ()
         if (_k_.empty(this.s.selections))
         {
             this.selectCursorLines()
-            lf('state.cut',this.allSelections())
         }
         return this.deleteSelection()
     }

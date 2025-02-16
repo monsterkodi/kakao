@@ -630,18 +630,18 @@ util = (function ()
 
     util["startPositionsOfRanges"] = function (rngs)
     {
-        return rngs.map(function (r)
+        return rngs.map((function (r)
         {
             return this.startOfRange(r)
-        })
+        }).bind(this))
     }
 
     util["endPositionsOfRanges"] = function (rngs)
     {
-        return rngs.map(function (r)
+        return rngs.map((function (r)
         {
             return this.endOfRange(r)
-        })
+        }).bind(this))
     }
 
     util["removeTrailingEmptyRange"] = function (rngs)

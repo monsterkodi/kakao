@@ -96,8 +96,13 @@ function edit
         lines = copy lines
         posl  = clone posl
         
+        # ⮐ [lines posl] if lines eql ['']
+        
         for ri in rngs.length-1..0
             rng = rngs[ri]
+            
+            if rng[2] == 0 and rng[3] > rng[1]
+                rng = [rng[0] rng[1] lines[rng[3]-1].length rng[3]-1]
             
             posl = @adjustPositionsForDeletedLineRange posl lines rng
             
@@ -107,6 +112,7 @@ function edit
                 else
                     lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
             else # range spans multiple lines
+                        
                 if rng[2] == lines[rng[3]].length # range ends at end of last line
                     lines.splice rng[3] 1 
                 else
@@ -169,7 +175,7 @@ function edit
         newp = []
         newr = copy rngs
     
-        addLineAtIndex = c i ->
+        addLineAtIndex = c i =>
             range = @rangeOfLine lines i
             range[1] += 1 if @isEmptyRange range
             newr.push range

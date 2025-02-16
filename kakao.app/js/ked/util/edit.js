@@ -107,6 +107,10 @@ edit = (function ()
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
             rng = rngs[ri]
+            if (rng[2] === 0 && rng[3] > rng[1])
+            {
+                rng = [rng[0],rng[1],lines[rng[3] - 1].length,rng[3] - 1]
+            }
             posl = this.adjustPositionsForDeletedLineRange(posl,lines,rng)
             if (rng[1] === rng[3])
             {
@@ -212,7 +216,7 @@ edit = (function ()
 
         newp = []
         newr = _k_.copy(rngs)
-        addLineAtIndex = function (c, i)
+        addLineAtIndex = (function (c, i)
         {
             var range
 
@@ -223,7 +227,7 @@ edit = (function ()
             }
             newr.push(range)
             return newp.push(this.endOfRange(range))
-        }
+        }).bind(this)
         var list = _k_.list(posl)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {

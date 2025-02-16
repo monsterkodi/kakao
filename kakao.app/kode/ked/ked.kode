@@ -154,10 +154,7 @@ function KED
         if valid args.options
             @loadFile args.options[0]
         else
-            @editor.state.syntax.ext = 'txt'
-            @editor.state.loadLines ['']
-            @t.setCursor 0 0
-            @redraw()
+            @newFile()
             
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -178,14 +175,38 @@ function KED
             process.exit msg? ? 1 : 0
                 
     onException: err => @quit err
-                    
+
+    # 000   000  00000000  000   000  
+    # 0000  000  000       000 0 000  
+    # 000 0 000  0000000   000000000  
+    # 000  0000  000       000   000  
+    # 000   000  00000000  00     00  
+    
+    newFile: ->
+        
+        delete @currentFile
+        @status.file = ''
+    
+        @editor.state.syntax.ext = 'txt'
+        @editor.state.loadLines ['']
+        @t.setCursor 0 0
+        
+        @editor.mapscr?.reload()
+
+        @redraw()
+            
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
     # 000      000   000  000000000  000   000  
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
         
-    reloadFile: => @loadFile @currentFile
+    reloadFile: => 
+        
+        if valid @currentFile
+            @loadFile @currentFile
+        else
+            @newFile()
         
     loadFile: p ○=>
         
@@ -282,6 +303,7 @@ function KED
             'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
+            'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             
         for handler in @keyHandlers
