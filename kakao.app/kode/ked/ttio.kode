@@ -8,6 +8,8 @@
 
 use ../kxk ◆ events post kstr
 
+int = parseInt
+
 function TTIO extends events
 
     @: ->
@@ -77,6 +79,36 @@ function TTIO extends events
     # 0000000   0000000   000 0 000  000   000        000  000000000  000000000  000  0000  0000000   
     #      000  000       000  0000  000   000        000  000 0 000  000   000  000   000  000       
     # 0000000   00000000  000   000  0000000          000  000   000  000   000   0000000   00000000  
+    
+    placeImage: id x y px py sx sy ->
+        
+        # lf '.'
+        
+        for placement in 0...sy
+            
+            pl = py + placement
+            
+            cx = x + int(px / @cellsz[0])
+            cy = y + int(pl / @cellsz[1])
+            rx = px % @cellsz[0]
+            ry = pl % @cellsz[1]
+            
+            @setCursor cx cy
+            
+            ###
+                C=1 don't move cursor policy
+            ###
+            
+            @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement},X=#{rx},Y=#{ry},C=1\x1b\\"
+
+    deleteImage: id ->
+        
+        @write "\x1b_Gq=1,a=d,d=i,i=#{id}\x1b\\"
+        
+    deleteImagesInRange: start end ->
+                
+        # @write "\x1b_Ga=d,d=r,x=#{start},y=#{end}\x1b\\" # this would be nicer, but for now ...
+        @deleteImage id for id in start...end # workaround for ghostty bug
     
     sendImageData: data id w h ->
         

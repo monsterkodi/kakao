@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var floor, mapview, pow
 
@@ -25,7 +25,7 @@ mapview = (function ()
     {
         this.state = state
     
-        this["reallocBuffer"] = this["reallocBuffer"].bind(this)
+        this["createImages"] = this["createImages"].bind(this)
         this["setSyntaxLines"] = this["setSyntaxLines"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getLines"] = this["getLines"].bind(this)
@@ -36,6 +36,7 @@ mapview = (function ()
         this.cells = new cells(screen)
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
+        this.images = []
         lf('mapview',this.state.name,this.imgId.toString(2))
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
@@ -73,13 +74,25 @@ mapview = (function ()
 
     mapview.prototype["clearImages"] = function ()
     {
-        return this.cells.screen.t.write(`\x1b_Gq=1,a=d,d=i,i=${this.imgId}\x1b\\`)
+        var id
+
+        if (!_k_.empty(this.images))
+        {
+            lf('clear',this.images.length)
+        }
+        var list = _k_.list(this.images)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            id = list[_a_]
+            this.cells.screen.t.deleteImage(id)
+        }
+        return this.images = []
     }
 
     mapview.prototype["reload"] = function ()
     {
         this.clearImages()
-        return this.reallocBuffer()
+        return this.createImages()
     }
 
     mapview.prototype["getLines"] = function ()
@@ -99,12 +112,12 @@ mapview = (function ()
         this.syntax = new syntax
         this.syntax.setExt(ext)
         this.syntax.setLines(this.lines)
-        return this.reallocBuffer()
+        return this.createImages()
     }
 
-    mapview.prototype["reallocBuffer"] = function ()
+    mapview.prototype["createImages"] = function ()
     {
-        var b, bytes, ch, clss, data, f, g, h, li, line, lines, r, rgb, syntax, t, w, x, xi, y
+        var bytes, data, dataForLine, line, lines, syntax, t, w, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
@@ -112,35 +125,31 @@ mapview = (function ()
             return
         }
         this.show()
-        prof.start(this.state.name + 'map')
-        var _a_ = [this.cells.cols * t.cellsz[0],this.cells.rows * t.cellsz[1]]; w = _a_[0]; h = _a_[1]
-
-        bytes = w * h * 3
+        this.clearImages()
+        w = this.cells.cols * t.cellsz[0]
+        bytes = w * 3
         if (bytes <= 0)
         {
-            this.clearImages()
-            return
+            return this.clearImages()
         }
-        data = Buffer.alloc(bytes)
         lines = this.getLines()
         syntax = this.getSyntax()
-        for (var _b_ = y = 0, _c_ = _k_.min(h,lines.length * this.pixelsPerRow); (_b_ <= _c_ ? y < _k_.min(h,lines.length * this.pixelsPerRow) : y > _k_.min(h,lines.length * this.pixelsPerRow)); (_b_ <= _c_ ? ++y : --y))
+        data = Buffer.alloc(bytes)
+        dataForLine = (function (line)
         {
-            li = parseInt(y / this.pixelsPerRow)
-            line = lines[li]
-            for (var _d_ = x = 0, _e_ = _k_.min(w,line.length * this.pixelsPerCol); (_d_ <= _e_ ? x < _k_.min(w,line.length * this.pixelsPerCol) : x > _k_.min(w,line.length * this.pixelsPerCol)); (_d_ <= _e_ ? ++x : --x))
+            var b, ch, clss, f, g, r, rgb, x, xr
+
+            data.fill(0)
+            for (var _a_ = x = 0, _b_ = line.length; (_a_ <= _b_ ? x < line.length : x > line.length); (_a_ <= _b_ ? ++x : --x))
             {
-                if (x === 0)
+                if (x * this.pixelsPerCol > w)
                 {
-                    data[(y * w + x) * 3 + 0] = 55
-                    data[(y * w + x) * 3 + 1] = 55
-                    data[(y * w + x) * 3 + 2] = 55
+                    break
                 }
-                xi = parseInt(x / this.pixelsPerCol)
-                ch = line[xi]
+                ch = line[x]
                 if (!_k_.empty(ch) && ch !== ' ')
                 {
-                    clss = syntax.getClass(xi,li)
+                    clss = syntax.getClass(x,y)
                     if (_k_.in('header',clss))
                     {
                         if (_k_.in('triple',clss))
@@ -155,36 +164,54 @@ mapview = (function ()
                     else
                     {
                         f = 0.7
-                        rgb = color.rgb(syntax.getColor(xi,li))
+                        rgb = color.rgb(syntax.getColor(x,y))
                         rgb = rgb.map(function (v)
                         {
                             return _k_.clamp(0,255,parseInt(f * v))
                         })
                     }
-                    var _f_ = rgb; r = _f_[0]; g = _f_[1]; b = _f_[2]
+                    var _c_ = rgb; r = _c_[0]; g = _c_[1]; b = _c_[2]
 
-                    data[(y * w + x) * 3 + 0] = r
-                    data[(y * w + x) * 3 + 1] = g
-                    data[(y * w + x) * 3 + 2] = b
+                    for (var _d_ = xr = 0, _e_ = this.pixelsPerCol; (_d_ <= _e_ ? xr <= this.pixelsPerCol : xr >= this.pixelsPerCol); (_d_ <= _e_ ? ++xr : --xr))
+                    {
+                        data[(x * this.pixelsPerCol + xr) * 3 + 0] = r
+                        data[(x * this.pixelsPerCol + xr) * 3 + 1] = g
+                        data[(x * this.pixelsPerCol + xr) * 3 + 2] = b
+                    }
                 }
             }
+        }).bind(this)
+        var list = _k_.list(lines)
+        for (y = 0; y < list.length; y++)
+        {
+            line = list[y]
+            dataForLine(line)
+            this.images.push(this.imgId + y)
+            t.sendImageData(data,this.imgId + y,w,1)
+            if (y > this.cells.rows * t.cellsz[1] / this.pixelsPerRow)
+            {
+                break
+            }
         }
-        t.sendImageData(data,this.imgId,w,h)
-        prof.end(this.state.name + 'map')
         return this.draw()
     }
 
     mapview.prototype["draw"] = function ()
     {
-        var t
+        var id, t, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.pixels) || this.cells.rows <= 0 || this.cells.cols <= 0)
         {
             return
         }
-        t.setCursor(this.cells.x,this.cells.y)
-        t.write(`\x1b_Gq=1,a=p,i=${this.imgId},p=${this.imgId},C=1\x1b\\`)
+        lf('map draw',this.images.length)
+        var list = _k_.list(this.images)
+        for (y = 0; y < list.length; y++)
+        {
+            id = list[y]
+            t.placeImage(id,this.cells.x,this.cells.y,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
+        }
         return this
     }
 

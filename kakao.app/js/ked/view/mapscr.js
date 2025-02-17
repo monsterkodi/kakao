@@ -40,8 +40,8 @@ mapscr = (function ()
         {
             return
         }
-        clearTimeout(this.reallocId)
-        return this.reallocId = setTimeout(this.reallocBuffer,100)
+        clearTimeout(this.redrawTimer)
+        return this.redrawTimer = setTimeout(this.createImages,100)
     }
 
     mapscr.prototype["scrollToPixel"] = function (pixel)
