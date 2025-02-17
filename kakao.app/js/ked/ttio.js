@@ -117,6 +117,18 @@ TTIO = (function ()
         }
     }
 
+    TTIO.prototype["placeImageStretched"] = function (id, x, y, w, h, px, py)
+    {
+        var cx, cy, rx, ry
+
+        cx = x + parseInt(px / this.cellsz[0])
+        cy = y + parseInt(py / this.cellsz[1])
+        rx = px % this.cellsz[0]
+        ry = py % this.cellsz[1]
+        this.setCursor(cx,cy)
+        return this.write(`\x1b_Gq=1,a=p,i=${id},X=${rx},Y=${ry},r=${cx + w},c=${cy + h},C=1\x1b\\`)
+    }
+
     TTIO.prototype["deleteImage"] = function (id)
     {
         return this.write(`\x1b_Gq=1,a=d,d=i,i=${id}\x1b\\`)
@@ -614,11 +626,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _418_23_
+        var diff, _433_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_418_23_=this.lastClick) != null ? _418_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_433_23_=this.lastClick) != null ? _433_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -694,7 +706,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _494_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _509_23_
 
         if ((this.pasteBuffer != null))
         {

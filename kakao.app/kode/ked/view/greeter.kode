@@ -29,11 +29,10 @@ function greeter
         
         ⮐ @hide() if doShow == false
         
+    init: x y ->
+        
         [w h] = util.cellSize @header
         
-        y = int @screen.rows/4
-        x = int @screen.cols/2-w/2
-
         @cells.init x y w h
 
     hide:    => @cells.rows = 0

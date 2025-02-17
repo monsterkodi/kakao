@@ -22,6 +22,11 @@ input = (function ()
         return _k_.trim(this.state.s.lines[0])
     }
 
+    input.prototype["hasFocus"] = function ()
+    {
+        return this.state.hasFocus
+    }
+
     input.prototype["onChange"] = function ()
     {
         var newText
@@ -52,6 +57,10 @@ input = (function ()
 
     input.prototype["draw"] = function ()
     {
+        if (this.hidden())
+        {
+            return
+        }
         this.cells.fill_rect(0,0,-1,-1,' ',null,theme.quicky_frame_bg)
         return input.__super__.draw.call(this)
     }

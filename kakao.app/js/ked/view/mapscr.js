@@ -16,6 +16,8 @@ mapscr = (function ()
     _k_.extend(mapscr, mapview)
     function mapscr (screen, state)
     {
+        this["createImages"] = this["createImages"].bind(this)
+        this["clearImages"] = this["clearImages"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
@@ -102,6 +104,51 @@ mapscr = (function ()
         }
 
         return false
+    }
+
+    mapscr.prototype["clearImages"] = function ()
+    {
+        if (this.knobId)
+        {
+            this.cells.screen.t.deleteImage(this.knobId)
+        }
+        delete this.knobId
+        return mapscr.__super__.clearImages.call(this)
+    }
+
+    mapscr.prototype["createImages"] = function ()
+    {
+        var data, i, t, w
+
+        t = this.cells.screen.t
+        if (_k_.empty(t.cellsz))
+        {
+            return
+        }
+        w = t.cellsz[0]
+        data = Buffer.alloc(w * 3)
+        for (var _a_ = i = 0, _b_ = w; (_a_ <= _b_ ? i < w : i > w); (_a_ <= _b_ ? ++i : --i))
+        {
+            data[i * 3 + 0] = 255
+            data[i * 3 + 1] = 55
+            data[i * 3 + 2] = 155
+        }
+        this.knobId = this.imgId + 0xeeee
+        t.sendImageData(data,this.knobId,w,1)
+        return mapscr.__super__.createImages.call(this)
+    }
+
+    mapscr.prototype["draw"] = function ()
+    {
+        var t
+
+        t = this.cells.screen.t
+        if (_k_.empty(t.pixels) || this.cells.rows <= 0 || this.cells.cols <= 0)
+        {
+            return
+        }
+        t.placeImageStretched(this.knobId,this.cells.x,this.cells.y,2,3,0,0)
+        return mapscr.__super__.draw.call(this)
     }
 
     return mapscr

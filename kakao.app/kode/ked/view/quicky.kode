@@ -28,19 +28,24 @@ function quicky extends inputchoice
 
         post.on 'quicky.dir' @gotoDir
 
-    #  0000000  000   000   0000000   000   000
-    # 000       000   000  000   000  000 0 000
-    # 0000000   000000000  000   000  000000000
-    #      000  000   000  000   000  000   000
-    # 0000000   000   000   0000000   00     00
-
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
     layout: =>
+        
+        scx = int @screen.cols/2
+        scy = int @screen.rows/2
 
-        x = int @screen.cols/4
-        y = int @screen.rows/4
-        w = int @screen.cols/2
+        w = min @screen.cols max(32 int(@screen.cols/2))
         h = int @screen.rows/2-4
+        x = int scx-w/2
+        y = int scy-h/2
 
+        # lf 'layout' w
+        
         cs = min h @choices.num()
         cs = h if @crumbs.visible()
         
@@ -247,7 +252,8 @@ function quicky extends inputchoice
     draw: ->
 
         ⮐ if @hidden()
-
+        
+        @layout()
         @drawFrame()
         @crumbs.draw()
         @drawChoices()

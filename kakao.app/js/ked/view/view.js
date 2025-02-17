@@ -47,16 +47,38 @@ view = (function ()
         return view.__super__.constructor.apply(this, arguments)
     }
 
+    view.prototype["hidden"] = function ()
+    {
+        return this.cells.rows <= 0 || this.cells.cols <= 0
+    }
+
+    view.prototype["visible"] = function ()
+    {
+        return this.cells.rows > 0 && this.cells.cols > 0
+    }
+
+    view.prototype["toggle"] = function ()
+    {
+        if (this.hidden())
+        {
+            return this.show()
+        }
+        else
+        {
+            return this.hide()
+        }
+    }
+
     view.prototype["onMouse"] = function (event)
     {
-        var _33_13_
+        var _37_13_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
 
     view.prototype["draw"] = function ()
     {
-        var _37_13_
+        var _41_13_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

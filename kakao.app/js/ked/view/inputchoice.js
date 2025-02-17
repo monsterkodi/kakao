@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var inputchoice
 
@@ -7,6 +7,7 @@ let post = kxk.post
 
 import theme from "../theme.js"
 
+import view from "./view.js"
 import cells from "./cells.js"
 import input from "./input.js"
 import choices from "./choices.js"
@@ -14,9 +15,10 @@ import choices from "./choices.js"
 
 inputchoice = (function ()
 {
+    _k_.extend(inputchoice, view)
     function inputchoice (screen, name, features)
     {
-        var _21_23_
+        var _22_23_
 
         this.screen = screen
         this.name = name
@@ -29,11 +31,16 @@ inputchoice = (function ()
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
         this["layout"] = this["layout"].bind(this)
-        this.cells = new cells(this.screen)
+        inputchoice.__super__.constructor.call(this,this.screen,this.name,features)
         this.input = new input(this.screen,`${this.name}_input`)
         this.choices = new choices(this.screen,`${this.name}_choices`,features)
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.input.on('changed',this.onInputChanged)
+    }
+
+    inputchoice.prototype["inputIsActive"] = function ()
+    {
+        return this.input.hasFocus() || this.input.current().length
     }
 
     inputchoice.prototype["layout"] = function ()
@@ -58,34 +65,12 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _57_23_
+        var _60_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.cells.rows = 0
         post.emit('focus','editor')
         return {redraw:true}
-    }
-
-    inputchoice.prototype["hidden"] = function ()
-    {
-        return this.cells.rows <= 0 || this.cells.cols <= 0
-    }
-
-    inputchoice.prototype["visible"] = function ()
-    {
-        return this.cells.rows > 0 && this.cells.cols > 0
-    }
-
-    inputchoice.prototype["toggle"] = function ()
-    {
-        if (this.hidden())
-        {
-            return this.show()
-        }
-        else
-        {
-            return this.hide()
-        }
     }
 
     inputchoice.prototype["onInputChanged"] = function (text)
@@ -98,9 +83,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _81_36_
+        var choice, _80_36_
 
-        choice = ((_81_36_=this.choices.current()) != null ? _81_36_ : this.input.current())
+        choice = ((_80_36_=this.choices.current()) != null ? _80_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             choice = _k_.trim(choice)
@@ -137,7 +122,14 @@ inputchoice = (function ()
 
         fg = theme.quicky_frame_fg
         bg = theme.quicky_frame_bg
-        return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
+        if (this.input.visible())
+        {
+            return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
+        }
+        else
+        {
+            return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg})
+        }
     }
 
     inputchoice.prototype["moveSelection"] = function (dir)

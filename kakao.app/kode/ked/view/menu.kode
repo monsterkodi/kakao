@@ -27,7 +27,7 @@ function menu extends inputchoice
 
     show: @greet=false ->
         
-        lf 'menu show' @greet
+        # lf 'menu show' @greet
         
         @greeter.show @greet
         
@@ -70,13 +70,25 @@ function menu extends inputchoice
         w = 16
         c = @choices.num()
         g = @greet ? @greeter.cells.rows : 0
-        h = c + 4 + g
-        x = int @screen.cols/2 - w/2
-        y = int @screen.rows/2 - h/2 + g
+        
+        [gw gh] = util.cellSize @greeter.header
+        
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
+        
+        h = c + 2 + ih
+        scx = int @screen.cols/2
+        scy = int @screen.rows/2
+        x  = int scx - w/2 - ih
+        y  = int g ? scy : scy-h/2
+        y -= iz
+        gx = int scx-gw/2
+        gy = int scy-gh
 
-        @input.init    x+2   y+1   w-4  1
-        @choices.init  x+2   y+3   w-3  c
-        @cells.init    x     y     w    c+4
+        @greeter.init  gx    gy
+        @input.init    x+2   y+1      w-4  iz
+        @choices.init  x+2   y+1+ih   w-3  c
+        @cells.init    x     y        w    c+2+ih
 
     # 000  000   000  00000000   000   000  000000000  
     # 000  0000  000  000   000  000   000     000     

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int, quicky
 
@@ -44,12 +44,14 @@ quicky = (function ()
 
     quicky.prototype["layout"] = function ()
     {
-        var cd, ch, cs, h, w, x, y
+        var cd, ch, cs, h, scx, scy, w, x, y
 
-        x = parseInt(this.screen.cols / 4)
-        y = parseInt(this.screen.rows / 4)
-        w = parseInt(this.screen.cols / 2)
+        scx = parseInt(this.screen.cols / 2)
+        scy = parseInt(this.screen.rows / 2)
+        w = _k_.min(this.screen.cols,_k_.max(32,parseInt(this.screen.cols / 2)))
         h = parseInt(this.screen.rows / 2 - 4)
+        x = parseInt(scx - w / 2)
+        y = parseInt(scy - h / 2)
         cs = _k_.min(h,this.choices.num())
         if (this.crumbs.visible())
         {
@@ -295,6 +297,7 @@ quicky = (function ()
         {
             return
         }
+        this.layout()
         this.drawFrame()
         this.crumbs.draw()
         return this.drawChoices()
@@ -334,7 +337,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _309_62_
+        var upDir, _315_62_
 
         switch (action)
         {
@@ -352,7 +355,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_309_62_=choice.link) != null ? _309_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_315_62_=choice.link) != null ? _315_62_ : choice.path))
                     }
                 }
                 break

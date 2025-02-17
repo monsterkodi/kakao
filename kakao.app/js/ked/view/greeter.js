@@ -29,16 +29,18 @@ greeter = (function ()
 
     greeter.prototype["show"] = function (doShow = true)
     {
-        var h, w, x, y
-
         if (doShow === false)
         {
             return this.hide()
         }
+    }
+
+    greeter.prototype["init"] = function (x, y)
+    {
+        var h, w
+
         var _a_ = util.cellSize(this.header); w = _a_[0]; h = _a_[1]
 
-        y = parseInt(this.screen.rows / 4)
-        x = parseInt(this.screen.cols / 2 - w / 2)
         return this.cells.init(x,y,w,h)
     }
 

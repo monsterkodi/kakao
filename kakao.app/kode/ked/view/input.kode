@@ -17,6 +17,8 @@ function input extends editor
         @state.onLinesChanged = @onChange
         
     current: => trim @state.s.lines[0]
+    
+    hasFocus: -> @state.hasFocus
 
     onChange: =>
 
@@ -32,6 +34,8 @@ function input extends editor
     selectAll: -> @state.selectLine 0
 
     draw: ->
+        
+        ⮐ if @hidden()
 
         @cells.fill_rect 0 0 -1 -1 ' ' null theme.quicky_frame_bg
         super()

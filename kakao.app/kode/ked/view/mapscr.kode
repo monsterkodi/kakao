@@ -98,4 +98,39 @@ function mapscr extends mapview
                     
         false
         
+    clearImages: =>
+        
+        @cells.screen.t.deleteImage @knobId if @knobId
+        delete @knobId
+        
+        super()
+        
+    createImages: =>
+        
+        t = @cells.screen.t
+        ⮐ if empty t.cellsz
+        
+        w = t.cellsz[0]
+        data = Buffer.alloc w*3
+        
+        for i in 0...w 
+            data[i*3+0] = 255
+            data[i*3+1] =  55
+            data[i*3+2] = 155
+        
+        @knobId = @imgId+0xeeee
+        t.sendImageData data @knobId w 1
+        
+        super()
+        
+    draw: ->
+        
+        t = @cells.screen.t
+        
+        ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
+        
+        t.placeImageStretched @knobId @cells.x @cells.y 2 3 0 0
+        
+        super()
+        
 export mapscr

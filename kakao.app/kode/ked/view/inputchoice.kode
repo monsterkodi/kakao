@@ -8,19 +8,22 @@
 
 use ../../kxk ▪ post
 use ..        ◆ theme
-use           ◆ cells input choices
+use           ◆ view cells input choices
 
-function inputchoice
+function inputchoice extends view
 
     @: @screen @name features ->
 
-        @cells   = new cells   @screen
+        super @screen @name features
+        
         @input   = new input   @screen "#{@name}_input"
         @choices = new choices @screen "#{@name}_choices" features
 
         @choices.mapscr?.hide()       
 
         @input.on 'changed' @onInputChanged
+        
+    inputIsActive: -> @input.hasFocus() or @input.current().length
         
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -58,11 +61,7 @@ function inputchoice
         @cells.rows = 0 
         post.emit 'focus' 'editor' 
         redraw:true
-        
-    hidden:  -> @cells.rows <= 0 or @cells.cols <= 0
-    visible: -> @cells.rows > 0 and @cells.cols > 0
-    toggle:  -> if @hidden() then @show() else @hide()
-                    
+                            
     # 000  000   000  00000000   000   000  000000000  
     # 000  0000  000  000   000  000   000     000     
     # 000  000 0 000  00000000   000   000     000     
@@ -108,8 +107,11 @@ function inputchoice
         
         fg = theme.quicky_frame_fg
         bg = theme.quicky_frame_bg
-
-        @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
+        
+        if @input.visible()
+            @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
+        else
+            @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg
 
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000

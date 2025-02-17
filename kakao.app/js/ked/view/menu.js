@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var menu
 
@@ -38,7 +38,6 @@ menu = (function ()
 
         this.greet = greet
     
-        lf('menu show',this.greet)
         this.greeter.show(this.greet)
         items = util.linesForText(`open ...
 recent ...
@@ -70,17 +69,27 @@ quit`)
 
     menu.prototype["layout"] = function ()
     {
-        var c, g, h, w, x, y
+        var c, g, gh, gw, gx, gy, h, ih, iz, scx, scy, w, x, y
 
         w = 16
         c = this.choices.num()
         g = (this.greet ? this.greeter.cells.rows : 0)
-        h = c + 4 + g
-        x = parseInt(this.screen.cols / 2 - w / 2)
-        y = parseInt(this.screen.rows / 2 - h / 2 + g)
-        this.input.init(x + 2,y + 1,w - 4,1)
-        this.choices.init(x + 2,y + 3,w - 3,c)
-        return this.cells.init(x,y,w,c + 4)
+        var _a_ = util.cellSize(this.greeter.header); gw = _a_[0]; gh = _a_[1]
+
+        ih = (this.inputIsActive() ? 2 : 0)
+        iz = _k_.max(0,ih - 1)
+        h = c + 2 + ih
+        scx = parseInt(this.screen.cols / 2)
+        scy = parseInt(this.screen.rows / 2)
+        x = parseInt(scx - w / 2 - ih)
+        y = parseInt((g ? scy : scy - h / 2))
+        y -= iz
+        gx = parseInt(scx - gw / 2)
+        gy = parseInt(scy - gh)
+        this.greeter.init(gx,gy)
+        this.input.init(x + 2,y + 1,w - 4,iz)
+        this.choices.init(x + 2,y + 1 + ih,w - 3,c)
+        return this.cells.init(x,y,w,c + 2 + ih)
     }
 
     menu.prototype["applyChoice"] = function (choice)
