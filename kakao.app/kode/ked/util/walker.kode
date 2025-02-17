@@ -11,9 +11,10 @@ use ../../kxk ◆ nfs
 
 class walker
     
-    @indexFileExtensions:  [ 'kode' 'mm' 'zig' 'cc' 'c' 'h' 'hpp' 'cpp' ] # move this to config!
+    # move these to config!
+    @indexFileExtensions:  [ 'kode' 'mm' 'zig' 'cc' 'c' 'h' 'hpp' 'cpp' ] 
     @dotFileExtensions:    [ 'bashrc' 'bash_history' 'gitconfig' 'gitignore_global' 'lesshst' 'npmrc' 'nvimrc' 'profile' 'zprofile' 'zsh_history' 'zshrc' ]
-    @sourceFileExtensions: walker.indexFileExtensions.concat(walker.dotFileExtensions [ 'ts' 'js' 'mjs' 'swift' 'styl' 'css' 'pug' 'html' 'md' 'noon' 'json' 'txt' 'log' 'sh' 'py' 'frag' 'vert' 'config' 'lua' 'gitignore' 'plist' ] # move this to config!)
+    @sourceFileExtensions: walker.indexFileExtensions.concat(walker.dotFileExtensions [ 'ts' 'js' 'mjs' 'swift' 'styl' 'css' 'pug' 'html' 'md' 'noon' 'json' 'txt' 'log' 'sh' 'py' 'frag' 'vert' 'config' 'lua' 'gitignore' 'plist' ]) 
 
     @: @cfg ->
 

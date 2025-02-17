@@ -524,7 +524,7 @@ Parser = (function ()
         }
         if (open && !close)
         {
-            this.error({hdr:'call',msg:'explicit call without closing )',tokens:tokens})
+            this.onError("explicit call is missing closing bracket )",{tokens:tokens})
         }
         this.pop('call')
         if (!_k_.empty(args))

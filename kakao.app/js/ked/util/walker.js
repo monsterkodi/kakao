@@ -15,18 +15,18 @@ class walker
 
     constructor (cfg)
     {
-        var _21_25_, _22_25_, _23_25_, _24_25_, _25_25_, _26_25_, _27_25_
+        var _22_25_, _23_25_, _24_25_, _25_25_, _26_25_, _27_25_, _28_25_
 
         this.cfg = cfg
     
         this.cfg.files = []
-        this.cfg.maxDepth = ((_21_25_=this.cfg.maxDepth) != null ? _21_25_ : 3)
-        this.cfg.dotFiles = ((_22_25_=this.cfg.dotFiles) != null ? _22_25_ : false)
-        this.cfg.maxFiles = ((_23_25_=this.cfg.maxFiles) != null ? _23_25_ : 15000)
-        this.cfg.ignore = ((_24_25_=this.cfg.ignore) != null ? _24_25_ : ['node_modules','build','Build','Library','Applications'])
-        this.cfg.include = ((_25_25_=this.cfg.include) != null ? _25_25_ : ['.konrad.noon','.gitignore','.npmignore'])
-        this.cfg.ignoreExt = ((_26_25_=this.cfg.ignoreExt) != null ? _26_25_ : ['asar'])
-        this.cfg.includeExt = ((_27_25_=this.cfg.includeExt) != null ? _27_25_ : walker.indexFileExtensions)
+        this.cfg.maxDepth = ((_22_25_=this.cfg.maxDepth) != null ? _22_25_ : 3)
+        this.cfg.dotFiles = ((_23_25_=this.cfg.dotFiles) != null ? _23_25_ : false)
+        this.cfg.maxFiles = ((_24_25_=this.cfg.maxFiles) != null ? _24_25_ : 15000)
+        this.cfg.ignore = ((_25_25_=this.cfg.ignore) != null ? _25_25_ : ['node_modules','build','Build','Library','Applications'])
+        this.cfg.include = ((_26_25_=this.cfg.include) != null ? _26_25_ : ['.konrad.noon','.gitignore','.npmignore'])
+        this.cfg.ignoreExt = ((_27_25_=this.cfg.ignoreExt) != null ? _27_25_ : ['asar'])
+        this.cfg.includeExt = ((_28_25_=this.cfg.includeExt) != null ? _28_25_ : walker.indexFileExtensions)
     }
 
     ignore (p)
@@ -34,7 +34,7 @@ class walker
 
     async start ()
     {
-        var dir, ext, file, item, items, listDir, p, toWalk, _65_31_, _93_17_
+        var dir, ext, file, item, items, listDir, p, toWalk, _66_31_, _94_17_
 
         dir = this.cfg.root
         this.running = true
