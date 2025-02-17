@@ -36,7 +36,7 @@ quicky = (function ()
         this["gotoDirOrOpenFile"] = this["gotoDirOrOpenFile"].bind(this)
         this["gotoDir"] = this["gotoDir"].bind(this)
         this["layout"] = this["layout"].bind(this)
-        quicky.__super__.constructor.call(this,this.screen,'quicky')
+        quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.choices.state.syntax.setRgxs(rgxs)
         post.on('quicky.dir',this.gotoDir)
@@ -73,6 +73,11 @@ quicky = (function ()
         {
             return this.hide()
         }
+    }
+
+    quicky.prototype["hideMap"] = function ()
+    {
+        return this.choices.mapscr.hide()
     }
 
     quicky.prototype["show"] = function (currentFile)
@@ -138,7 +143,6 @@ quicky = (function ()
             return
         }
         dir = slash.untilde(dir)
-        lf('quicky.gotoDir',dir)
         try
         {
             items = await nfs.list(dir,{recursive:false})
@@ -298,7 +302,7 @@ quicky = (function ()
 
     quicky.prototype["moveSelection"] = function (dir)
     {
-        this.choices.mapscr.hide()
+        this.hideMap()
         quicky.__super__.moveSelection.call(this,dir)
         if (this.choices.current().path)
         {
@@ -324,13 +328,13 @@ quicky = (function ()
         }
         else
         {
-            return this.choices.mapscr.hide()
+            return this.hideMap()
         }
     }
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _307_62_
+        var upDir, _309_62_
 
         switch (action)
         {
@@ -347,8 +351,8 @@ quicky = (function ()
                     }
                     else
                     {
-                        this.choices.mapscr.hide()
-                        return this.gotoDirOrOpenFile(((_307_62_=choice.link) != null ? _307_62_ : choice.path))
+                        this.hideMap()
+                        return this.gotoDirOrOpenFile(((_309_62_=choice.link) != null ? _309_62_ : choice.path))
                     }
                 }
                 break
@@ -356,7 +360,7 @@ quicky = (function ()
                 if (choice.path)
                 {
                     upDir = slash.dir(this.currentDir)
-                    this.choices.mapscr.hide()
+                    this.hideMap()
                     return this.gotoDir(upDir,this.currentDir)
                 }
                 break

@@ -20,7 +20,7 @@ function quicky extends inputchoice
 
     @: @screen ->
 
-        super @screen 'quicky'
+        super @screen 'quicky' ['mapview']
 
         @crumbs  = new crumbs  @screen 'quicky_crumbs'
 
@@ -61,6 +61,8 @@ function quicky extends inputchoice
     #    000      0000000    0000000    0000000   0000000  00000000  
     
     toggle: currentFile -> if @hidden() then @show(currentFile) else @hide()
+    
+    hideMap: -> @choices.mapscr.hide()
 
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -120,7 +122,7 @@ function quicky extends inputchoice
         ⮐ if empty dir
 
         dir = slash.untilde dir
-        lf 'quicky.gotoDir' dir
+        # lf 'quicky.gotoDir' dir
         
         try
             items =○ nfs.list dir recursive:false
@@ -258,7 +260,7 @@ function quicky extends inputchoice
 
     moveSelection: dir ->
         
-        @choices.mapscr.hide()
+        @hideMap()
 
         super dir
         
@@ -283,7 +285,7 @@ function quicky extends inputchoice
             @choices.mapscr.show()
             @choices.mapscr.setSyntaxLines slash.ext(file) lines 
         else
-            @choices.mapscr.hide()
+            @hideMap()
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
@@ -303,13 +305,13 @@ function quicky extends inputchoice
                     if choice.type == 'file'
                         ⮐ post.emit 'quicky' choice.path
                     else
-                        @choices.mapscr.hide()
+                        @hideMap()
                         ⮐ @gotoDirOrOpenFile choice.link ? choice.path
             'left'  
                 
                 if choice.path
                     upDir = slash.dir @currentDir
-                    @choices.mapscr.hide()
+                    @hideMap()
                     ⮐ @gotoDir upDir @currentDir
             'space'            
                 

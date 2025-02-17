@@ -14,8 +14,10 @@ import choices from "./choices.js"
 
 inputchoice = (function ()
 {
-    function inputchoice (screen, name)
+    function inputchoice (screen, name, features)
     {
+        var _21_23_
+
         this.screen = screen
         this.name = name
     
@@ -29,8 +31,8 @@ inputchoice = (function ()
         this["layout"] = this["layout"].bind(this)
         this.cells = new cells(this.screen)
         this.input = new input(this.screen,`${this.name}_input`)
-        this.choices = new choices(this.screen,`${this.name}_choices`)
-        this.choices.mapscr.hide()
+        this.choices = new choices(this.screen,`${this.name}_choices`,features)
+        ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.input.on('changed',this.onInputChanged)
     }
 
@@ -56,7 +58,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        this.choices.mapscr.hide()
+        var _57_23_
+
+        ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.cells.rows = 0
         post.emit('focus','editor')
         return {redraw:true}

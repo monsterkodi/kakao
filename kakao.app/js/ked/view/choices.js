@@ -14,12 +14,12 @@ import theme from "../theme.js"
 choices = (function ()
 {
     _k_.extend(choices, editor)
-    function choices (screen, name)
+    function choices (screen, name, features = [])
     {
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
-        choices.__super__.constructor.call(this,screen,name,['scrllr','mapview'])
+        choices.__super__.constructor.call(this,screen,name,['scrllr'].concat(features))
     }
 
     choices.prototype["set"] = function (items, key)

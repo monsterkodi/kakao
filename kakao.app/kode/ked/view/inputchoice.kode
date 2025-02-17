@@ -12,13 +12,13 @@ use           ◆ cells input choices
 
 function inputchoice
 
-    @: @screen @name ->
+    @: @screen @name features ->
 
         @cells   = new cells   @screen
         @input   = new input   @screen "#{@name}_input"
-        @choices = new choices @screen "#{@name}_choices"
+        @choices = new choices @screen "#{@name}_choices" features
 
-        @choices.mapscr.hide()        
+        @choices.mapscr?.hide()       
 
         @input.on 'changed' @onInputChanged
         
@@ -54,7 +54,7 @@ function inputchoice
 
     hide: => 
         
-        @choices.mapscr.hide()
+        @choices.mapscr?.hide()
         @cells.rows = 0 
         post.emit 'focus' 'editor' 
         redraw:true

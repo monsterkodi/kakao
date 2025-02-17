@@ -11,9 +11,9 @@ use ..        ◆ editor theme
 
 function choices extends editor
 
-    @: screen name ->
+    @: screen name features=[] ->
 
-        super screen name ['scrllr' 'mapview']
+        super screen name ['scrllr'].concat(features)
         
     set: @items @key -> 
         

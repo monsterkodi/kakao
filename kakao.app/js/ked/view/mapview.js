@@ -34,7 +34,9 @@ mapview = (function ()
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
         this.cells = new cells(screen)
-        this.imgId = kstr.hash(this.state.name)
+        this.imgId = kstr.hash(this.state.name) & ~
+        0xffff
+        lf('mapview',this.state.name,this.imgId.toString(2))
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
     }
@@ -102,7 +104,7 @@ mapview = (function ()
 
     mapview.prototype["reallocBuffer"] = function ()
     {
-        var b, base64, bytes, ch, chunk, chunks, clss, data, f, g, h, i, li, line, lines, r, rgb, syntax, t, w, x, xi, y
+        var b, bytes, ch, clss, data, f, g, h, li, line, lines, r, rgb, syntax, t, w, x, xi, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
@@ -110,6 +112,7 @@ mapview = (function ()
             return
         }
         this.show()
+        prof.start(this.state.name + 'map')
         var _a_ = [this.cells.cols * t.cellsz[0],this.cells.rows * t.cellsz[1]]; w = _a_[0]; h = _a_[1]
 
         bytes = w * h * 3
@@ -166,22 +169,8 @@ mapview = (function ()
                 }
             }
         }
-        base64 = data.toString('base64')
-        if (base64.length > 4096)
-        {
-            chunk = base64.slice(0, 4096)
-            t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h},m=1;${chunk}\x1b\\`)
-            chunks = Math.ceil(base64.length / 4096)
-            for (var _10_ = i = 1, _11_ = chunks; (_10_ <= _11_ ? i < chunks : i > chunks); (_10_ <= _11_ ? ++i : --i))
-            {
-                chunk = base64.slice(i * 4096, typeof Math.min((i + 1) * 4096,base64.length) === 'number' ? Math.min((i + 1) * 4096,base64.length) : -1)
-                t.write(`\x1b_Gq=1,m=${((i === chunks - 1) ? 0 : 1)};${chunk}\x1b\\`)
-            }
-        }
-        else
-        {
-            t.write(`\x1b_Gq=1,i=${this.imgId},p=${this.imgId},f=24,s=${w},v=${h};${base64}\x1b\\`)
-        }
+        t.sendImageData(data,this.imgId,w,h)
+        prof.end(this.state.name + 'map')
         return this.draw()
     }
 

@@ -100,6 +100,28 @@ TTIO = (function ()
         return process.stdout.rows
     }
 
+    TTIO.prototype["sendImageData"] = function (data, id, w, h)
+    {
+        var base64, chunk, chunks, i
+
+        base64 = data.toString('base64')
+        if (base64.length > 4096)
+        {
+            chunk = base64.slice(0, 4096)
+            this.write(`\x1b_Gq=1,i=${id},p=${id},f=24,s=${w},v=${h},m=1;${chunk}\x1b\\`)
+            chunks = Math.ceil(base64.length / 4096)
+            for (var _a_ = i = 1, _b_ = chunks; (_a_ <= _b_ ? i < chunks : i > chunks); (_a_ <= _b_ ? ++i : --i))
+            {
+                chunk = base64.slice(i * 4096, typeof Math.min((i + 1) * 4096,base64.length) === 'number' ? Math.min((i + 1) * 4096,base64.length) : -1)
+                this.write(`\x1b_Gq=1,m=${((i === chunks - 1) ? 0 : 1)};${chunk}\x1b\\`)
+            }
+        }
+        else
+        {
+            return this.write(`\x1b_Gq=1,i=${id},p=${id},f=24,s=${w},v=${h};${base64}\x1b\\`)
+        }
+    }
+
     TTIO.prototype["setCursor"] = function (x, y)
     {
         return this.write(`\x1b[${y + 1};${x + 1}H`)
@@ -560,11 +582,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _355_23_
+        var diff, _386_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_355_23_=this.lastClick) != null ? _355_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_386_23_=this.lastClick) != null ? _386_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -640,7 +662,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _431_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _462_23_
 
         if ((this.pasteBuffer != null))
         {
