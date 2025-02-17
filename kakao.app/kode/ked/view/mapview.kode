@@ -51,7 +51,7 @@ function mapview
     
     clearImages: =>
         
-        lf 'clear' @images.length if valid @images
+        # lf 'clear' @images.length if valid @images
         
         for id in @images
             @cells.screen.t.deleteImage id
@@ -149,7 +149,7 @@ function mapview
         
         ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
         
-        lf 'map draw' @images.length
+        # lf 'map draw' @images.length
         
         for id,y in @images
             t.placeImage id @cells.x @cells.y 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
