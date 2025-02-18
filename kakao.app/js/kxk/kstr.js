@@ -16,6 +16,25 @@ str = function (o)
     return _k_.noon(o)
 }
 
+str.graphemes = function (s)
+{
+    var segmenter
+
+    segmenter = new Intl.Segmenter("en-US",{granularity:'grapheme'})
+    return Array.from(segmenter.segment(s))
+}
+
+str.segments = function (s)
+{
+    var segmenter
+
+    segmenter = new Intl.Segmenter("en-US",{granularity:'grapheme'})
+    return Array.from(segmenter.segment(s)).map(function (s)
+    {
+        return s.segment
+    })
+}
+
 str.fillet = function (s, wordCharacterSet = '')
 {
     var ch, ci, fillet, fillets, isWord
@@ -753,7 +772,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _554_13_
+    var _564_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

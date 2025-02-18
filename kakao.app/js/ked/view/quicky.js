@@ -57,7 +57,6 @@ quicky = (function ()
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
         x = parseInt(scx - w / 2)
         h = cs + ih + cr + 2
-        lf('quicky',h,cs,ih,cr)
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
         this.choices.layout(x + 2,y + 1 + ih + cr,w - 3,cs)
@@ -331,7 +330,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _313_62_
+        var upDir, _311_62_
 
         switch (action)
         {
@@ -349,7 +348,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_313_62_=choice.link) != null ? _313_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_311_62_=choice.link) != null ? _311_62_ : choice.path))
                     }
                 }
                 break
@@ -362,7 +361,7 @@ quicky = (function ()
                 }
                 break
             case 'space':
-                if (choice.path && v.type === 'file')
+                if (choice.path && choice.type === 'file')
                 {
                     return post.emit('quicky',choice.path)
                 }

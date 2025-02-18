@@ -53,8 +53,6 @@ function quicky extends inputchoice
         
         h  = cs + ih + cr + 2
         
-        lf 'quicky' h cs ih cr
-
         @input.layout    x+2   y+1        w-4  iz
         @crumbs.layout   x+2   y+1+ih     w-4  cr
         @choices.layout  x+2   y+1+ih+cr  w-3  cs
@@ -319,7 +317,7 @@ function quicky extends inputchoice
                     ⮐ @gotoDir upDir @currentDir
             'space'            
                 
-                if choice.path and v.type == 'file'
+                if choice.path and choice.type == 'file'
                     ⮐ post.emit 'quicky' choice.path
 
 export quicky

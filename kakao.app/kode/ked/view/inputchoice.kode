@@ -78,8 +78,6 @@ function inputchoice extends view
     
         choice = @choices.current() ? @input.current()
         choice = trim choice if choice is str
-        lf 'choice' choice
-        choice
     
     onChoiceAction: choice action => lf 'onChoiceAction' choice action
 
@@ -161,7 +159,8 @@ function inputchoice extends view
                 'left'  
                 'space' ➜ @onChoiceAction current event.combo
                     
-            if key.length == 1 and kstr.isAlphaNumeric key
+            if event.char
+                lf 'focus input' event
                 @input.grabFocus()
             
         if @input.onKey key event

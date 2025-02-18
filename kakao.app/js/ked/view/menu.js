@@ -36,7 +36,7 @@ menu = (function ()
     {
         var c, gh, gw, h, ih, iz, scx, scy, w, x, y
 
-        w = 16
+        w = 15
         c = this.choices.numChoices()
         ih = (this.inputIsActive() ? 2 : 0)
         iz = _k_.max(0,ih - 1)
@@ -48,7 +48,7 @@ menu = (function ()
         y -= ih
         var _a_ = util.cellSize(this.greeter.header); gw = _a_[0]; gh = _a_[1]
 
-        this.greeter.layout(parseInt(scx - gw / 2),parseInt(y - gh - 1 + ih))
+        this.greeter.layout(parseInt(scx - gw / 2),_k_.max(0,parseInt(y - gh - 1 + ih)))
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.choices.layout(x + 2,y + 1 + ih,w - 3,c)
         return this.cells.layout(x,y,w,h)

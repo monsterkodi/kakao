@@ -27,7 +27,7 @@ function menu extends inputchoice
     
     layout: =>
 
-        w = 16
+        w = 15
         c = @choices.numChoices()
         
         ih = @inputIsActive() ? 2 : 0
@@ -41,8 +41,8 @@ function menu extends inputchoice
         y -= ih
         
         [gw gh] = util.cellSize @greeter.header
-
-        @greeter.layout  int(scx-gw/2)  int(y-gh-1+ih)
+        
+        @greeter.layout  int(scx-gw/2)  max(0 int(y-gh-1+ih))
         @input.layout    x+2   y+1      w-4  iz
         @choices.layout  x+2   y+1+ih   w-3  c
         @cells.layout    x     y        w    h

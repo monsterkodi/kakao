@@ -19,6 +19,16 @@ str = o -> # converts anything into a string in noon syntax
         
 # the function above is exported as the default
 # all the functions below are attached to it
+
+str.graphemes = s ->
+    
+    segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'
+    Array.from segmenter.segment(s)
+
+str.segments = s ->
+    
+    segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'
+    Array.from(segmenter.segment(s)).map (s) -> s.segment
     
 # 00000000  000  000      000      00000000  000000000   0000000  
 # 000       000  000      000      000          000     000       

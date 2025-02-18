@@ -89,10 +89,8 @@ inputchoice = (function ()
         choice = ((_79_36_=this.choices.current()) != null ? _79_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
-            choice = _k_.trim(choice)
+            return choice = _k_.trim(choice)
         }
-        lf('choice',choice)
-        return choice
     }
 
     inputchoice.prototype["onChoiceAction"] = function (choice, action)
@@ -198,8 +196,9 @@ inputchoice = (function ()
                     break
             }
 
-            if (key.length === 1 && kstr.isAlphaNumeric(key))
+            if (event.char)
             {
+                lf('focus input',event)
                 this.input.grabFocus()
             }
         }
