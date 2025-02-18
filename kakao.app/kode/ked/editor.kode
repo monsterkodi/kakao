@@ -36,9 +36,9 @@ function editor extends view
     # 000  000  0000  000     000     
     # 000  000   000  000     000     
     
-    layout: x y w h => 
+    layout: x y w h =>
         
-        g = m = s = 0 
+        g = m = s = 0
         sl = sr = 0
         
         if @scroll

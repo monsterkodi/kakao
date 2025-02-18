@@ -22,7 +22,7 @@ function quicky extends inputchoice
 
         super @screen 'quicky' ['mapview']
 
-        @crumbs  = new crumbs  @screen 'quicky_crumbs'
+        @crumbs = new crumbs  @screen 'quicky_crumbs'
 
         @choices.state.syntax.setRgxs rgxs
 
@@ -38,26 +38,27 @@ function quicky extends inputchoice
         
         scx = int @screen.cols/2
         scy = int @screen.rows/2
-
-        w = min @screen.cols max(32 int(@screen.cols/2))
-        h = int @screen.rows/2-4
-        x = int scx-w/2
-        y = int scy-h/2
-
-        # lf 'layout' w
         
-        cs = min h @choices.numFiltered()
-        cs = h if @crumbs.visible()
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
         
-        ch = @crumbs.visible() ? 1 : 0
-        cd = ch == 1 ? 1 : 0
+        hs = int @screen.rows/2
+        y  = int scy - hs/2 - ih
+        
+        cr = @crumbs.visible() ? 1 : 0
+        cs = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
 
-        @input.layout    x+2   y+1     w-4  1
-        @crumbs.layout   x+2   y+3     w-4  ch
-        @choices.layout  x+2   y+3+cd  w-3  cs
-        @cells.layout    x     y       w    cs+4+cd
+        w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
+        x  = int scx-w/2
+        
+        h  = cs + ih + cr + 2
+        
+        lf 'quicky' h cs ih cr
 
-        # lf 'layout' c @choices.items.length
+        @input.layout    x+2   y+1        w-4  iz
+        @crumbs.layout   x+2   y+1+ih     w-4  cr
+        @choices.layout  x+2   y+1+ih+cr  w-3  cs
+        @cells.layout    x     y          w    h
 
     # 000000000   0000000    0000000    0000000   000      00000000  
     #    000     000   000  000        000        000      000       
@@ -252,7 +253,7 @@ function quicky extends inputchoice
     draw: ->
 
         ⮐ if @hidden()
-        
+         
         @layout()
         @drawFrame()
         @crumbs.draw()
@@ -271,10 +272,7 @@ function quicky extends inputchoice
         super dir
         
         if @choices.current().path
-            @input.set ''
             @preview @choices.current().path
-        else
-            @input.set @choices.state.selectedText()
             
     # 00000000   00000000   00000000  000   000  000  00000000  000   000  
     # 000   000  000   000  000       000   000  000  000       000 0 000  

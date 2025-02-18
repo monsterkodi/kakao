@@ -43,7 +43,6 @@ editor = (function ()
         {
             post.on('finder.apply',this.onFinderApply)
         }
-        lf('editor.state.name',this.state.name)
         if (this.feats.scrllr)
         {
             this.scroll = new scroll(this.screen,this.state)
@@ -103,7 +102,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _164_41_, _165_44_, _199_15_, _200_15_, _81_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _163_41_, _164_44_, _198_15_, _199_15_, _80_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -114,7 +113,7 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_81_26_=theme[this.name]) != null ? _81_26_ : theme['editor'])
+        bg = ((_80_26_=theme[this.name]) != null ? _80_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -256,8 +255,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_164_41_=theme[this.name + '_cursor_fg']) != null ? _164_41_ : theme['editor_cursor_fg'])
-        bg = ((_165_44_=theme[this.name + '_cursor_multi']) != null ? _165_44_ : theme['editor_cursor_multi'])
+        fg = ((_163_41_=theme[this.name + '_cursor_fg']) != null ? _163_41_ : theme['editor_cursor_fg'])
+        bg = ((_164_44_=theme[this.name + '_cursor_multi']) != null ? _164_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -307,9 +306,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _213_30_, _213_39_, _214_30_, _224_41_
+        var col, row, start, x, y, _212_30_, _212_39_, _213_30_, _223_41_
 
-        if (((_213_30_=this.mapscr) != null ? typeof (_213_39_=_213_30_.onMouse) === "function" ? _213_39_(event) : undefined : undefined))
+        if (((_212_30_=this.mapscr) != null ? typeof (_212_39_=_212_30_.onMouse) === "function" ? _212_39_(event) : undefined : undefined))
         {
             return true
         }

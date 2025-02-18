@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var int, quicky
 
@@ -44,25 +44,24 @@ quicky = (function ()
 
     quicky.prototype["layout"] = function ()
     {
-        var cd, ch, cs, h, scx, scy, w, x, y
+        var cr, cs, h, hs, ih, iz, scx, scy, w, x, y
 
         scx = parseInt(this.screen.cols / 2)
         scy = parseInt(this.screen.rows / 2)
-        w = _k_.min(this.screen.cols,_k_.max(32,parseInt(this.screen.cols / 2)))
-        h = parseInt(this.screen.rows / 2 - 4)
+        ih = (this.inputIsActive() ? 2 : 0)
+        iz = _k_.max(0,ih - 1)
+        hs = parseInt(this.screen.rows / 2)
+        y = parseInt(scy - hs / 2 - ih)
+        cr = (this.crumbs.visible() ? 1 : 0)
+        cs = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
+        w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
         x = parseInt(scx - w / 2)
-        y = parseInt(scy - h / 2)
-        cs = _k_.min(h,this.choices.numFiltered())
-        if (this.crumbs.visible())
-        {
-            cs = h
-        }
-        ch = (this.crumbs.visible() ? 1 : 0)
-        cd = (ch === 1 ? 1 : 0)
-        this.input.layout(x + 2,y + 1,w - 4,1)
-        this.crumbs.layout(x + 2,y + 3,w - 4,ch)
-        this.choices.layout(x + 2,y + 3 + cd,w - 3,cs)
-        return this.cells.layout(x,y,w,cs + 4 + cd)
+        h = cs + ih + cr + 2
+        lf('quicky',h,cs,ih,cr)
+        this.input.layout(x + 2,y + 1,w - 4,iz)
+        this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
+        this.choices.layout(x + 2,y + 1 + ih + cr,w - 3,cs)
+        return this.cells.layout(x,y,w,h)
     }
 
     quicky.prototype["toggle"] = function (currentFile)
@@ -84,10 +83,10 @@ quicky = (function ()
 
     quicky.prototype["show"] = function (currentFile)
     {
-        var ccol, indent, indents, item, items, maxind, weight
-
         this.currentFile = currentFile
     
+        var ccol, indent, indents, item, items, maxind, weight
+
         items = prjcts.files(this.currentFile)
         this.currentDir = slash.dir(this.currentFile)
         items = items.map((function (i)
@@ -273,7 +272,7 @@ quicky = (function ()
             this.gotoDirOrOpenFile(this.input.current())
             return {redraw:true}
         }
-        if (current.path)
+        if ((current != null ? current.path : undefined))
         {
             this.gotoDirOrOpenFile(current.path)
             return {redraw:true}
@@ -309,12 +308,7 @@ quicky = (function ()
         quicky.__super__.moveSelection.call(this,dir)
         if (this.choices.current().path)
         {
-            this.input.set('')
             return this.preview(this.choices.current().path)
-        }
-        else
-        {
-            return this.input.set(this.choices.state.selectedText())
         }
     }
 
@@ -337,7 +331,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _315_62_
+        var upDir, _313_62_
 
         switch (action)
         {
@@ -355,7 +349,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_315_62_=choice.link) != null ? _315_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_313_62_=choice.link) != null ? _313_62_ : choice.path))
                     }
                 }
                 break

@@ -56,10 +56,10 @@ menu = (function ()
 
     menu.prototype["show"] = function (greet = false)
     {
-        var ccol, items
-
         this.greet = greet
     
+        var ccol, items
+
         this.greeter.show(this.greet)
         items = util.linesForText(`open ...
 recent ...

@@ -16,11 +16,11 @@ view = (function ()
     _k_.extend(view, events)
     function view (screen, name, features)
     {
-        var f, feature
-
         this.screen = screen
         this.name = name
     
+        var f, feature
+
         this["draw"] = this["draw"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this.cells = new cells(this.screen)
@@ -60,12 +60,12 @@ view = (function ()
 
     view.prototype["visible"] = function ()
     {
-        return this.cells.rows > 0 && this.cells.cols > 0
+        return this.cells.rows > 0
     }
 
     view.prototype["hidden"] = function ()
     {
-        return this.cells.rows <= 0 || this.cells.cols <= 0
+        return this.cells.rows <= 0
     }
 
     view.prototype["toggle"] = function ()

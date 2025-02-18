@@ -7,30 +7,26 @@
 ###
 
 use ../../kxk ▪ slash
-use .. ◆ editor theme
+use ..        ◆ theme
+use           ◆ view 
 
-function crumbs extends editor
+function crumbs extends view
 
-    @: screen name features ->
+    @: screen name ->
 
-        super screen name []
+        super screen name
         
-    current: => trim @state.s.lines[0]
-
-    # layout: x y w h -> @cells.layout x y w h
-    set: text -> @text = trim text; @state.loadLines [@text]
+    set: text -> @text = trim text
 
     show: path => @set slash.tilde(path); @cells.rows = 1
-    # hide:   => @cells.rows = 0#; true
-    # hidden: -> @cells.rows <= 0
-    # visible: -> @cells.rows > 0
 
     draw: ->
         
         ⮐ if @hidden()
 
         @cells.fill_rect 0 0 -1 -1 ' ' null theme.selection
-        @cells.draw_path 0 0 @current() theme.selection
-        # super()
+        @cells.set 0 0 '' theme.selection
+        @cells.draw_path 1 0 @text theme.selection
+        @cells.set -1 0 '' theme.selection
 
 export crumbs

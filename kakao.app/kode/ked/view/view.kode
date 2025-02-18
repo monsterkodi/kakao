@@ -30,8 +30,8 @@ function view extends events
   
     show:    -> @layout(); redraw:true
     hide:    -> @cells.rows = 0; redraw:true
-    visible: -> @cells.rows > 0 and @cells.cols > 0
-    hidden:  -> @cells.rows <= 0 or @cells.cols <= 0
+    visible: -> @cells.rows > 0 #and @cells.cols > 0
+    hidden:  -> @cells.rows <= 0 #or @cells.cols <= 0
     toggle:  -> if @hidden() then @show() else @hide()
     # toggle: => post.emit 'view.size' @name @cells.cols (@cells.rows ? 0 : 10) 
                 

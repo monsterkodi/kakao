@@ -30,7 +30,6 @@
     - update on line changes
     - fix scrolling to bottom for long files
     - show cursors and selections
-    - split image into chunks
     
 - greeter 
     - recent files

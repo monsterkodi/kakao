@@ -19,11 +19,11 @@ inputchoice = (function ()
     _k_.extend(inputchoice, view)
     function inputchoice (screen, name, features)
     {
-        var _22_23_
-
         this.screen = screen
         this.name = name
     
+        var _22_23_
+
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
@@ -209,11 +209,6 @@ inputchoice = (function ()
             {
                 this.choices.grabFocus()
             }
-            return true
-        }
-        if (this.choices.onKey(key,event))
-        {
-            return true
         }
         return true
     }

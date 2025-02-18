@@ -16,6 +16,7 @@ choices = (function ()
     _k_.extend(choices, editor)
     function choices (screen, name, features = [])
     {
+        this["onKey"] = this["onKey"].bind(this)
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
@@ -24,11 +25,11 @@ choices = (function ()
 
     choices.prototype["set"] = function (items, key)
     {
-        var lines
-
         this.items = items
         this.key = key
     
+        var lines
+
         this.fuzzied = this.items
         lines = (this.key ? this.items.map(this.extract) : this.items)
         return this.state.loadLines(lines)
@@ -119,6 +120,11 @@ choices = (function ()
             lines = ['']
         }
         return this.state.loadLines(lines)
+    }
+
+    choices.prototype["onKey"] = function (key, event)
+    {
+        return choices.__super__.onKey.call(this,key,event)
     }
 
     return choices

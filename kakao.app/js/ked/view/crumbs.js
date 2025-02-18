@@ -5,29 +5,23 @@ var crumbs
 import kxk from "../../kxk.js"
 let slash = kxk.slash
 
-import editor from "../editor.js"
 import theme from "../theme.js"
+
+import view from "./view.js"
 
 
 crumbs = (function ()
 {
-    _k_.extend(crumbs, editor)
-    function crumbs (screen, name, features)
+    _k_.extend(crumbs, view)
+    function crumbs (screen, name)
     {
         this["show"] = this["show"].bind(this)
-        this["current"] = this["current"].bind(this)
-        crumbs.__super__.constructor.call(this,screen,name,[])
-    }
-
-    crumbs.prototype["current"] = function ()
-    {
-        return _k_.trim(this.state.s.lines[0])
+        crumbs.__super__.constructor.call(this,screen,name)
     }
 
     crumbs.prototype["set"] = function (text)
     {
-        this.text = _k_.trim(text)
-        return this.state.loadLines([this.text])
+        return this.text = _k_.trim(text)
     }
 
     crumbs.prototype["show"] = function (path)
@@ -43,7 +37,9 @@ crumbs = (function ()
             return
         }
         this.cells.fill_rect(0,0,-1,-1,' ',null,theme.selection)
-        return this.cells.draw_path(0,0,this.current(),theme.selection)
+        this.cells.set(0,0,'',theme.selection)
+        this.cells.draw_path(1,0,this.text,theme.selection)
+        return this.cells.set(-1,0,'',theme.selection)
     }
 
     return crumbs
