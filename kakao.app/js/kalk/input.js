@@ -53,10 +53,10 @@ class Input
 
     setText (plain)
     {
-        var br, cw, fs
-
         this.plain = plain
     
+        var br, cw, fs
+
         if ((text.balance(this.plain) === 1) && !this.forceBracket)
         {
             this.input.innerHTML = color(text.clean(this.plain))

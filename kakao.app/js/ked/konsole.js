@@ -31,6 +31,12 @@ konsole = (function ()
         }).bind(this)
     }
 
+    konsole.prototype["show"] = function ()
+    {
+        this.cells.rows = 10
+        return konsole.__super__.show.call(this)
+    }
+
     konsole.prototype["onWheel"] = function (event)
     {
         var steps
@@ -74,8 +80,7 @@ konsole = (function ()
                 return true
 
             case 'alt+k':
-                this.toggle()
-                return true
+                return this.toggle()
 
         }
 

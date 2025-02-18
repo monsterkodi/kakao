@@ -8,11 +8,11 @@ Weed = (function ()
 {
     function Weed (scene, gyroid)
     {
-        var cylinder
-
         this.scene = scene
         this.gyroid = gyroid
     
+        var cylinder
+
         this.count = 1000
         cylinder = geom.cylinder({length:4,radius:0.5,sgmt:6,material:'white'})
         this.dummy = new three.Object3D()

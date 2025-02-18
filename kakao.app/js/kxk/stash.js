@@ -18,10 +18,10 @@ Stash = (function ()
 {
     function Stash (name, opt)
     {
-        var _22_34_, _25_32_, _29_61_
-
         this.name = name
     
+        var _22_34_, _25_32_, _29_61_
+
         this["save"] = this["save"].bind(this)
         if (!this.name)
         {

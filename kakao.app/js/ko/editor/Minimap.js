@@ -11,10 +11,10 @@ class Minimap
 {
     constructor (editor)
     {
-        var minimapWidth, _40_56_
-
         this.editor = editor
     
+        var minimapWidth, _40_56_
+
         this.clearAll = this.clearAll.bind(this)
         this.onScroll = this.onScroll.bind(this)
         this.onEditorScroll = this.onEditorScroll.bind(this)

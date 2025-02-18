@@ -16,10 +16,10 @@ CommandList = (function ()
     _k_.extend(CommandList, TextEditor)
     function CommandList (command, viewElem, opt)
     {
-        var _22_41_
-
         this.command = command
     
+        var _22_41_
+
         this["dequeueMeta"] = this["dequeueMeta"].bind(this)
         this["onMetaClick"] = this["onMetaClick"].bind(this)
         CommandList.__super__.constructor.call(this,viewElem,{features:['Scrollbar','Numbers','Meta'],lineHeight:1.4,fontSize:19,scrollOffset:0,syntaxName:((_22_41_=opt.syntaxName) != null ? _22_41_ : 'ko')})

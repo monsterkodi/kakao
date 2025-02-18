@@ -39,11 +39,6 @@ input = (function ()
         }
     }
 
-    input.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
-    }
-
     input.prototype["set"] = function (text)
     {
         this.text = _k_.trim(text)

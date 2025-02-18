@@ -617,10 +617,10 @@ world = (function ()
 
     world.prototype["tick"] = function (tickInfo)
     {
-        var c, e, g, p, t, _495_15_
-
         this.tickInfo = tickInfo
     
+        var c, e, g, p, t, _495_15_
+
         this.simulate(this.tickInfo)
         ;(this.tweaky != null ? this.tweaky.update() : undefined)
         this.roundedQuadRect(0,-0.5,this.ws - 0.5,this.ws - 1,COL_SHADOW)

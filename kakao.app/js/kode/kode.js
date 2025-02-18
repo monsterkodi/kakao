@@ -18,10 +18,10 @@ class Kode
 {
     constructor (args)
     {
-        var _16_14_, _17_21_
-
         this.args = args
     
+        var _16_14_, _17_21_
+
         this.onError = this.onError.bind(this)
         this.args = ((_16_14_=this.args) != null ? _16_14_ : {})
         this.args.header = ((_17_21_=this.args.header) != null ? _17_21_ : true)

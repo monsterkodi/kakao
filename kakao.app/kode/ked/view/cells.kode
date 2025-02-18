@@ -6,14 +6,14 @@
  0000000  00000000  0000000  0000000  0000000   
 ###
 
-use ..        ◆ theme
-use ../util   ◆ util color
+use ..      ◆ theme
+use ../util ◆ util color
 
 function cells
 
-    @: @screen -> @init 0 0 0 0
+    @: @screen -> @x = @y = @cols = @rows = 0
     
-    init: @x @y @cols @rows =>
+    layout: @x @y @cols @rows =>
         
     #  0000000  00000000  000000000  
     # 000       000          000     

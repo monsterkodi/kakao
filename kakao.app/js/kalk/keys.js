@@ -93,10 +93,10 @@ class Keys
 
     setKeys (keys1, keys)
     {
-        var i, row
-
         this.keys = keys1
     
+        var i, row
+
         this.table.innerHTML = ''
         this.table.className = `key-table ${this.keys}`
         row = elem('tr',{class:'spacing-row'})

@@ -18,12 +18,12 @@ class AutoComplete extends events
 {
     constructor (editor)
     {
+        this.editor = editor
+    
         super()
     
         var c, specials
 
-        this.editor = editor
-    
         this.onLinesSet = this.onLinesSet.bind(this)
         this.onWillDeleteLine = this.onWillDeleteLine.bind(this)
         this.onLineChanged = this.onLineChanged.bind(this)

@@ -46,16 +46,16 @@ function quicky extends inputchoice
 
         # lf 'layout' w
         
-        cs = min h @choices.num()
+        cs = min h @choices.numFiltered()
         cs = h if @crumbs.visible()
         
         ch = @crumbs.visible() ? 1 : 0
         cd = ch == 1 ? 1 : 0
 
-        @input.init    x+2   y+1     w-4  1
-        @crumbs.init   x+2   y+3     w-4  ch
-        @choices.init  x+2   y+3+cd  w-3  cs
-        @cells.init    x     y       w    cs+4+cd
+        @input.layout    x+2   y+1     w-4  1
+        @crumbs.layout   x+2   y+3     w-4  ch
+        @choices.layout  x+2   y+3+cd  w-3  cs
+        @cells.layout    x     y       w    cs+4+cd
 
         # lf 'layout' c @choices.items.length
 
@@ -228,7 +228,7 @@ function quicky extends inputchoice
             @gotoDirOrOpenFile @input.current()
             ⮐ redraw:true
         
-        if current.path
+        if current?.path
             @gotoDirOrOpenFile current.path
             ⮐ redraw:true
     
@@ -238,7 +238,7 @@ function quicky extends inputchoice
 
         @hide()
 
-        if @choices.num()
+        if @choices.numFiltered()
             post.emit 'quicky' @currentChoice()
 
         redraw:true

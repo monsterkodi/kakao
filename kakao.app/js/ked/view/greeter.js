@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var greeter
 
@@ -11,20 +11,18 @@ import help from "../util/help.js"
 import editor from "../editor.js"
 import theme from "../theme.js"
 
-import cells from "./cells.js"
+import view from "./view.js"
 
 
 greeter = (function ()
 {
+    _k_.extend(greeter, view)
     function greeter (screen)
     {
-        this.screen = screen
-    
-        this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
+        greeter.__super__.constructor.call(this,screen,'greeter')
         this.header = help.headerCells()
         this.name = 'greeter'
-        this.cells = new cells(this.screen)
     }
 
     greeter.prototype["show"] = function (doShow = true)
@@ -35,40 +33,13 @@ greeter = (function ()
         }
     }
 
-    greeter.prototype["init"] = function (x, y)
+    greeter.prototype["layout"] = function (x, y)
     {
         var h, w
 
         var _a_ = util.cellSize(this.header); w = _a_[0]; h = _a_[1]
 
-        return this.cells.init(x,y,w,h)
-    }
-
-    greeter.prototype["hide"] = function ()
-    {
-        return this.cells.rows = 0
-    }
-
-    greeter.prototype["hidden"] = function ()
-    {
-        return this.cells.rows <= 0
-    }
-
-    greeter.prototype["visible"] = function ()
-    {
-        return this.cells.rows > 0
-    }
-
-    greeter.prototype["toggle"] = function ()
-    {
-        if (this.hidden())
-        {
-            return this.open()
-        }
-        else
-        {
-            return this.hide()
-        }
+        return this.cells.layout(x,y,w,h)
     }
 
     greeter.prototype["draw"] = function ()

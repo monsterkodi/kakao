@@ -10,10 +10,10 @@ Pigments = (function ()
 {
     function Pigments (editor)
     {
-        var hexa, rgb, rgba, trio
-
         this.editor = editor
     
+        var hexa, rgb, rgba, trio
+
         this["onFile"] = this["onFile"].bind(this)
         this["onLineChanged"] = this["onLineChanged"].bind(this)
         this["onLineInserted"] = this["onLineInserted"].bind(this)

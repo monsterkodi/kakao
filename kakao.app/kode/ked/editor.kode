@@ -24,13 +24,11 @@ function editor extends view
         if @name == 'editor'
             post.on 'finder.apply' @onFinderApply 
         
-        for feature in features
-            switch feature
-                'scrllr'
-                'scroll'    ➜ @scroll = new scroll  @screen @state
-                'gutter'    ➜ @gutter = new gutter  @screen @state
-                'mapscr'    ➜ @mapscr = new mapscr  @screen @state; @mapscr.show()
-                'mapview'   ➜ @mapscr = new mapview @screen @state
+        if @feats.scrllr  ➜ @scroll = new scroll  @screen @state
+        if @feats.scroll  ➜ @scroll = new scroll  @screen @state
+        if @feats.gutter  ➜ @gutter = new gutter  @screen @state
+        if @feats.mapscr  ➜ @mapscr = new mapscr  @screen @state; @mapscr.show()
+        if @feats.mapview ➜ @mapscr = new mapview @screen @state
                 
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -38,7 +36,7 @@ function editor extends view
     # 000  000  0000  000     000     
     # 000  000   000  000     000     
     
-    init: x y w h => 
+    layout: x y w h => 
         
         g = m = s = 0 
         sl = sr = 0
@@ -47,20 +45,20 @@ function editor extends view
             s = 1
             if @feats.scrllr
                 sr = s
-                @scroll.init x+w-sr y   s   h 
+                @scroll.layout x+w-sr y   s   h 
             else
                 sl = s
-                @scroll.init x      y   s   h 
+                @scroll.layout x      y   s   h 
             
         if @gutter
             g = @state.gutterWidth()
-            @gutter.init    x+sl    y   g   h
+            @gutter.layout    x+sl    y   g   h
             
         if @mapscr
             m = @mapscr.visible() ? 10 : 0
-            @mapscr.init x+w-sr-10   y   m   h
+            @mapscr.layout x+w-sr-10   y   m   h
             
-        @cells.init x+sl+g  y   w-sr-g-m    h
+        @cells.layout x+sl+g  y   w-sr-g-m    h
         @state.initView()
         
     # 0000000    00000000    0000000   000   000  

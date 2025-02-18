@@ -72,10 +72,10 @@ class Win
 
     constructor (delegate)
     {
-        var main, menuIcon, menuNoon, _45_18_, _60_38_, _61_38_, _87_17_, _87_34_
-
         this.delegate = delegate
     
+        var main, menuIcon, menuNoon, _45_18_, _60_38_, _61_38_, _87_17_, _87_34_
+
         this.onKeyUp = this.onKeyUp.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.onMenuAction = this.onMenuAction.bind(this)

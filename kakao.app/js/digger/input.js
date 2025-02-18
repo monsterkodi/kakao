@@ -20,10 +20,10 @@ input = (function ()
 
     input.prototype["init"] = function (actionMap)
     {
-        var action, key, keys
-
         this.actionMap = actionMap
     
+        var action, key, keys
+
         for (action in this.actionMap)
         {
             keys = this.actionMap[action]

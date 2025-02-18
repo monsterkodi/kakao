@@ -10,10 +10,10 @@ class Walker
 {
     constructor (cfg)
     {
-        var _18_25_, _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_
-
         this.cfg = cfg
     
+        var _18_25_, _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_
+
         this.cfg.files = []
         this.cfg.maxDepth = ((_18_25_=this.cfg.maxDepth) != null ? _18_25_ : 3)
         this.cfg.dotFiles = ((_19_25_=this.cfg.dotFiles) != null ? _19_25_ : false)

@@ -1,9 +1,10 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var inputchoice
 
 import kxk from "../../kxk.js"
 let post = kxk.post
+let kstr = kxk.kstr
 
 import theme from "../theme.js"
 
@@ -51,15 +52,16 @@ inputchoice = (function ()
         y = parseInt(this.screen.rows / 4)
         w = parseInt(this.screen.cols / 2)
         h = parseInt(this.screen.rows / 2 - 4)
-        cs = _k_.min(h,this.choices.num())
-        this.input.init(x + 2,y + 1,w - 4,1)
-        this.choices.init(x + 2,y + 3,w - 3,cs)
-        return this.cells.init(x,y,w,cs + 4)
+        cs = _k_.min(h,this.choices.numFiltered())
+        this.input.layout(x + 2,y + 1,w - 4,1)
+        this.choices.layout(x + 2,y + 3,w - 3,cs)
+        return this.cells.layout(x,y,w,cs + 4)
     }
 
     inputchoice.prototype["show"] = function ()
     {
-        this.layout()
+        inputchoice.__super__.show.call(this)
+    
         return this.choices.grabFocus()
     }
 
@@ -68,9 +70,8 @@ inputchoice = (function ()
         var _60_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
-        this.cells.rows = 0
         post.emit('focus','editor')
-        return {redraw:true}
+        return inputchoice.__super__.hide.call(this)
     }
 
     inputchoice.prototype["onInputChanged"] = function (text)
@@ -83,9 +84,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _80_36_
+        var choice, _79_36_
 
-        choice = ((_80_36_=this.choices.current()) != null ? _80_36_ : this.input.current())
+        choice = ((_79_36_=this.choices.current()) != null ? _79_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             choice = _k_.trim(choice)
@@ -197,10 +198,17 @@ inputchoice = (function ()
                     break
             }
 
-            this.input.grabFocus()
+            if (key.length === 1 && kstr.isAlphaNumeric(key))
+            {
+                this.input.grabFocus()
+            }
         }
         if (this.input.onKey(key,event))
         {
+            if (_k_.empty(this.input.current()))
+            {
+                this.choices.grabFocus()
+            }
             return true
         }
         if (this.choices.onKey(key,event))

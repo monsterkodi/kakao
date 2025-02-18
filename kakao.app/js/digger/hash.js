@@ -11,10 +11,10 @@ Hash = (function ()
 {
     function Hash (scene)
     {
-        var ctr, eul, euler, eulers, geo, i, icosa, lines, mat, pc, points, posattr, quat, tri, u, v
-
         this.scene = scene
     
+        var ctr, eul, euler, eulers, geo, i, icosa, lines, mat, pc, points, posattr, quat, tri, u, v
+
         icosa = geom.icosa({radius:50,material:'debugblue',detail:0})
         icosa.renderOrder = 100
         posattr = icosa.geometry.getAttribute('position')

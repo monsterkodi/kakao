@@ -1,4 +1,4 @@
-var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var gutter
 
@@ -6,21 +6,17 @@ import color from "../util/color.js"
 
 import theme from "../theme.js"
 
-import cells from "./cells.js"
+import view from "./view.js"
 
 
 gutter = (function ()
 {
+    _k_.extend(gutter, view)
     function gutter (screen, state)
     {
         this.state = state
     
-        this.cells = new cells(screen)
-    }
-
-    gutter.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
+        gutter.__super__.constructor.call(this,screen,this.state.name + 'gutter')
     }
 
     gutter.prototype["draw"] = function ()

@@ -13,10 +13,10 @@ geell = (function ()
 {
     function geell (main)
     {
-        var layer
-
         this.main = main
     
+        var layer
+
         this["clearCanvas"] = this["clearCanvas"].bind(this)
         this["resize"] = this["resize"].bind(this)
         this["loaded"] = this["loaded"].bind(this)

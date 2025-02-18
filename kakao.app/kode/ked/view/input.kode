@@ -28,7 +28,6 @@ function input extends editor
             @text = newText
             @emit 'changed' @text
 
-    init: x y w h -> @cells.init x y w h
     set: text -> @text = trim text; @state.loadLines [@text]
 
     selectAll: -> @state.selectLine 0

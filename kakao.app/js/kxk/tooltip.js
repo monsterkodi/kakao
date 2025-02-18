@@ -9,10 +9,10 @@ Tooltip = (function ()
 {
     function Tooltip (opt)
     {
-        var _15_55_, _17_19_, _18_19_
-
         this.opt = opt
     
+        var _15_55_, _17_19_, _18_19_
+
         this["onLeave"] = this["onLeave"].bind(this)
         this["popup"] = this["popup"].bind(this)
         this["onHover"] = this["onHover"].bind(this)

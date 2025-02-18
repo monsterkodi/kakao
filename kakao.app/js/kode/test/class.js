@@ -191,9 +191,9 @@ toExport["class"] = function ()
 {
     constructor (e)
     {
-        super()
-    
         this.e = e
+    
+        super()
     
         this.start = this.start.bind(this)
         this.v = -1

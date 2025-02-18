@@ -1,10 +1,10 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var floor, pow, scroll
 
 import theme from "../theme.js"
 
-import cells from "./cells.js"
+import view from "./view.js"
 
 floor = Math.floor
 pow = Math.pow
@@ -12,6 +12,7 @@ pow = Math.pow
 
 scroll = (function ()
 {
+    _k_.extend(scroll, view)
     function scroll (screen, state)
     {
         this.state = state
@@ -19,12 +20,7 @@ scroll = (function ()
         this["draw"] = this["draw"].bind(this)
         this["scrollTo"] = this["scrollTo"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this.cells = new cells(screen)
-    }
-
-    scroll.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
+        scroll.__super__.constructor.call(this,screen,this.state.name + 'scroll')
     }
 
     scroll.prototype["onMouse"] = function (event)

@@ -12,12 +12,12 @@ Boids = (function ()
 {
     function Boids (scene, player, gyroid)
     {
-        var sphere
-
         this.scene = scene
         this.player = player
         this.gyroid = gyroid
     
+        var sphere
+
         sphere = geom.sphere({radius:0.2,sgmt:6,material:'flatwhite'})
         this.m4 = new three.Matrix4
         this.pos = new three.Vector3

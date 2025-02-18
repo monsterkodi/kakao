@@ -20,11 +20,11 @@ Row = (function ()
 {
     function Row (column, item)
     {
-        var html, text, _20_26_, _20_39_, _20_52_, _26_38_
-
         this.column = column
         this.item = item
     
+        var html, text, _20_26_, _20_39_, _20_52_, _26_38_
+
         this["rename"] = this["rename"].bind(this)
         this["onNameChange"] = this["onNameChange"].bind(this)
         this["onNameFocusOut"] = this["onNameFocusOut"].bind(this)

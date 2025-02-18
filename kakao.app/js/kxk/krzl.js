@@ -7,10 +7,10 @@ Krzl = (function ()
 {
     function Krzl (values, opt)
     {
-        var _24_31_, _25_41_
-
         this.values = values
     
+        var _24_31_, _25_41_
+
         if (_k_.isObj(this.values) && _k_.empty(opt))
         {
             opt = this.values

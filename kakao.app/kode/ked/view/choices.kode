@@ -23,7 +23,8 @@ function choices extends editor
         
         @state.loadLines lines
 
-    num: -> @fuzzied.length
+    numChoices:  -> @items.length
+    numFiltered: -> @fuzzied.length
 
     current: -> @fuzzied[@state.mainCursor()[1]]
     
@@ -72,5 +73,9 @@ function choices extends editor
         lines = [''] if empty lines
 
         @state.loadLines lines
+        
+    onKey: key event =>
+        
+        super key event
         
 export choices

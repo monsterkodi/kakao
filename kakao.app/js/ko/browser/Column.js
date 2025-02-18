@@ -29,10 +29,10 @@ Column = (function ()
 {
     function Column (browser)
     {
-        var _26_21_, _49_34_
-
         this.browser = browser
     
+        var _26_21_, _49_34_
+
         this["onKeyUp"] = this["onKeyUp"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["showContextMenu"] = this["showContextMenu"].bind(this)
@@ -439,10 +439,10 @@ Column = (function ()
 
     Column.prototype["setItems"] = function (items, opt)
     {
-        var item, _338_46_, _339_72_
-
         this.items = items
     
+        var item, _338_46_, _339_72_
+
         this.browser.clearColumn(this.index)
         this.parent = opt.parent
         if (!(this.parent != null))
@@ -515,10 +515,10 @@ Column = (function ()
 
     Column.prototype["setIndex"] = function (index)
     {
-        var _374_17_
-
         this.index = index
     
+        var _374_17_
+
         if ((this.crumb != null))
         {
             return this.crumb.elem.columnIndex = this.index
@@ -889,10 +889,10 @@ Column = (function ()
 
     Column.prototype["setSearch"] = function (search)
     {
-        var activeIndex, fuzzied, k, row, rows, _568_35_, _568_45_
-
         this.search = search
     
+        var activeIndex, fuzzied, k, row, rows, _568_35_, _568_45_
+
         clearTimeout(this.searchTimer)
         this.searchTimer = setTimeout(this.clearSearch,700)
         this.searchDiv.textContent = this.search

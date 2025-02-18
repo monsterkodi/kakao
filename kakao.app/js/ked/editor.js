@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
@@ -25,8 +25,6 @@ editor = (function ()
     _k_.extend(editor, view)
     function editor (screen, name, features)
     {
-        var feature
-
         this["onKey"] = this["onKey"].bind(this)
         this["onFinderApply"] = this["onFinderApply"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
@@ -37,7 +35,7 @@ editor = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["draw"] = this["draw"].bind(this)
-        this["init"] = this["init"].bind(this)
+        this["layout"] = this["layout"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
         this.state = new state(this.cells,this.name)
         post.on('focus',this.onFocus)
@@ -45,32 +43,31 @@ editor = (function ()
         {
             post.on('finder.apply',this.onFinderApply)
         }
-        var list = _k_.list(features)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
+        lf('editor.state.name',this.state.name)
+        if (this.feats.scrllr)
         {
-            feature = list[_a_]
-            switch (feature)
-            {
-                case 'scrllr':
-                case 'scroll':
-                    this.scroll = new scroll(this.screen,this.state)
-                    break
-                case 'gutter':
-                    this.gutter = new gutter(this.screen,this.state)
-                    break
-                case 'mapscr':
-                    this.mapscr = new mapscr(this.screen,this.state)
-                    this.mapscr.show()
-                    break
-                case 'mapview':
-                    this.mapscr = new mapview(this.screen,this.state)
-                    break
-            }
-
+            this.scroll = new scroll(this.screen,this.state)
+        }
+        if (this.feats.scroll)
+        {
+            this.scroll = new scroll(this.screen,this.state)
+        }
+        if (this.feats.gutter)
+        {
+            this.gutter = new gutter(this.screen,this.state)
+        }
+        if (this.feats.mapscr)
+        {
+            this.mapscr = new mapscr(this.screen,this.state)
+            this.mapscr.show()
+        }
+        if (this.feats.mapview)
+        {
+            this.mapscr = new mapview(this.screen,this.state)
         }
     }
 
-    editor.prototype["init"] = function (x, y, w, h)
+    editor.prototype["layout"] = function (x, y, w, h)
     {
         var g, m, s, sl, sr
 
@@ -82,31 +79,31 @@ editor = (function ()
             if (this.feats.scrllr)
             {
                 sr = s
-                this.scroll.init(x + w - sr,y,s,h)
+                this.scroll.layout(x + w - sr,y,s,h)
             }
             else
             {
                 sl = s
-                this.scroll.init(x,y,s,h)
+                this.scroll.layout(x,y,s,h)
             }
         }
         if (this.gutter)
         {
             g = this.state.gutterWidth()
-            this.gutter.init(x + sl,y,g,h)
+            this.gutter.layout(x + sl,y,g,h)
         }
         if (this.mapscr)
         {
             m = (this.mapscr.visible() ? 10 : 0)
-            this.mapscr.init(x + w - sr - 10,y,m,h)
+            this.mapscr.layout(x + w - sr - 10,y,m,h)
         }
-        this.cells.init(x + sl + g,y,w - sr - g - m,h)
+        this.cells.layout(x + sl + g,y,w - sr - g - m,h)
         return this.state.initView()
     }
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _165_41_, _166_44_, _200_15_, _201_15_, _82_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _164_41_, _165_44_, _199_15_, _200_15_, _81_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -117,7 +114,7 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_82_26_=theme[this.name]) != null ? _82_26_ : theme['editor'])
+        bg = ((_81_26_=theme[this.name]) != null ? _81_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -259,8 +256,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_165_41_=theme[this.name + '_cursor_fg']) != null ? _165_41_ : theme['editor_cursor_fg'])
-        bg = ((_166_44_=theme[this.name + '_cursor_multi']) != null ? _166_44_ : theme['editor_cursor_multi'])
+        fg = ((_164_41_=theme[this.name + '_cursor_fg']) != null ? _164_41_ : theme['editor_cursor_fg'])
+        bg = ((_165_44_=theme[this.name + '_cursor_multi']) != null ? _165_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -310,9 +307,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _214_30_, _214_39_, _215_30_, _225_41_
+        var col, row, start, x, y, _213_30_, _213_39_, _214_30_, _224_41_
 
-        if (((_214_30_=this.mapscr) != null ? typeof (_214_39_=_214_30_.onMouse) === "function" ? _214_39_(event) : undefined : undefined))
+        if (((_213_30_=this.mapscr) != null ? typeof (_213_39_=_213_30_.onMouse) === "function" ? _213_39_(event) : undefined : undefined))
         {
             return true
         }

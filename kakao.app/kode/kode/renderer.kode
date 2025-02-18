@@ -669,6 +669,12 @@ class Renderer
         s += gi + '{'
 
         @varstack.push n.body.vars
+        
+        if valid ths                     # moved this up from below. let's see if it breaks something. 
+            s += '\n'                    # moved this up from below. let's see if it breaks something. 
+            for t in ths                 # moved this up from below. let's see if it breaks something. 
+                s += @indent + t + '\n'  # moved this up from below. let's see if it breaks something. 
+            s += gi                      # moved this up from below. let's see if it breaks something. 
 
         if n.body.exps?[0]?.call?.callee.text == 'super'
             s += '\n'
@@ -681,11 +687,11 @@ class Renderer
             vs = @sortVars n.body.vars
             s += @indent + "var #{vs}\n"
 
-        if valid ths
-            s += '\n'
-            for t in ths
-                s += @indent + t + '\n'
-            s += gi
+        # if valid ths
+            # s += '\n'
+            # for t in ths
+                # s += @indent + t + '\n'
+            # s += gi
             
         if valid n.body.exps
 

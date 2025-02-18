@@ -32,11 +32,11 @@ Pos = (function ()
 {
     function Pos (x, y)
     {
-        var br, event, _21_13_, _21_22_, _29_18_, _33_22_
-
         this.x = x
         this.y = y
     
+        var br, event, _21_13_, _21_22_, _29_18_, _33_22_
+
         if (((this.x != null ? this.x.clientX : undefined) != null))
         {
             event = this.x

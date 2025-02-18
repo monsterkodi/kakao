@@ -18,6 +18,34 @@ function menu extends inputchoice
         super @screen 'menu'
         
         @greeter = new greeter @screen
+        
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
+    layout: =>
+
+        w = 16
+        c = @choices.numChoices()
+        
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
+        
+        h = c + 2 + ih
+        scx = int @screen.cols/2
+        scy = int @screen.rows/2
+        x  = int scx - w/2
+        y  = int scy-(c+2)/2
+        y -= ih
+        
+        [gw gh] = util.cellSize @greeter.header
+
+        @greeter.layout  int(scx-gw/2)  int(y-gh-1+ih)
+        @input.layout    x+2   y+1      w-4  iz
+        @choices.layout  x+2   y+1+ih   w-3  c
+        @cells.layout    x     y        w    h
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -59,37 +87,6 @@ function menu extends inputchoice
         delete @greet
         super()
     
-    # 000       0000000   000   000   0000000   000   000  000000000  
-    # 000      000   000   000 000   000   000  000   000     000     
-    # 000      000000000    00000    000   000  000   000     000     
-    # 000      000   000     000     000   000  000   000     000     
-    # 0000000  000   000     000      0000000    0000000      000     
-    
-    layout: =>
-
-        w = 16
-        c = @choices.num()
-        g = @greet ? @greeter.cells.rows : 0
-        
-        [gw gh] = util.cellSize @greeter.header
-        
-        ih = @inputIsActive() ? 2 : 0
-        iz = max 0 ih - 1
-        
-        h = c + 2 + ih
-        scx = int @screen.cols/2
-        scy = int @screen.rows/2
-        x  = int scx - w/2 - ih
-        y  = int g ? scy : scy-h/2
-        y -= iz
-        gx = int scx-gw/2
-        gy = int scy-gh
-
-        @greeter.init  gx    gy
-        @input.init    x+2   y+1      w-4  iz
-        @choices.init  x+2   y+1+ih   w-3  c
-        @cells.init    x     y        w    c+2+ih
-
     # 000  000   000  00000000   000   000  000000000  
     # 000  0000  000  000   000  000   000     000     
     # 000  000 0 000  00000000   000   000     000     
@@ -122,9 +119,8 @@ function menu extends inputchoice
         ⮐ if @hidden()
         
         @layout()
-
-        @drawFrame()
         @greeter.draw() if @greet
+        @drawFrame()
         @drawChoices()
 
 export menu

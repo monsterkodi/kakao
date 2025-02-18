@@ -21,7 +21,6 @@ view = (function ()
         this.screen = screen
         this.name = name
     
-        this["toggle"] = this["toggle"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this.cells = new cells(this.screen)
@@ -47,14 +46,26 @@ view = (function ()
         return view.__super__.constructor.apply(this, arguments)
     }
 
-    view.prototype["hidden"] = function ()
+    view.prototype["show"] = function ()
     {
-        return this.cells.rows <= 0 || this.cells.cols <= 0
+        this.layout()
+        return {redraw:true}
+    }
+
+    view.prototype["hide"] = function ()
+    {
+        this.cells.rows = 0
+        return {redraw:true}
     }
 
     view.prototype["visible"] = function ()
     {
         return this.cells.rows > 0 && this.cells.cols > 0
+    }
+
+    view.prototype["hidden"] = function ()
+    {
+        return this.cells.rows <= 0 || this.cells.cols <= 0
     }
 
     view.prototype["toggle"] = function ()
@@ -71,21 +82,21 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _37_13_
+        var _46_13_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
 
-    view.prototype["draw"] = function ()
+    view.prototype["layout"] = function (x, y, w, h)
     {
-        var _41_13_
-
-        return (this.knob != null ? this.knob.draw() : undefined)
+        return this.cells.layout(x,y,w,h)
     }
 
-    view.prototype["toggle"] = function ()
+    view.prototype["draw"] = function ()
     {
-        return post.emit('view.size',this.name,this.cells.cols,((this.cells.rows ? 0 : 10)))
+        var _56_18_
+
+        return (this.knob != null ? this.knob.draw() : undefined)
     }
 
     return view

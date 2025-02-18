@@ -1,10 +1,10 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}}
 
 var status
 
 import theme from "../theme.js"
 
-import cells from "./cells.js"
+import view from "./view.js"
 
 import color from "../util/color.js"
 import util from "../util/util.js"
@@ -12,20 +12,16 @@ import util from "../util/util.js"
 
 status = (function ()
 {
+    _k_.extend(status, view)
     function status (screen, state)
     {
         this.state = state
     
         this["draw"] = this["draw"].bind(this)
+        status.__super__.constructor.call(this,screen,'status')
         this.gutter = 4
-        this.cells = new cells(screen)
         this.file = ''
         this.drawTime = ''
-    }
-
-    status.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
     }
 
     status.prototype["draw"] = function ()

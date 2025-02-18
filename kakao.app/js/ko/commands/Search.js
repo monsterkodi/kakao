@@ -118,12 +118,12 @@ FileSearcher = (function ()
 {
     function FileSearcher (command, opt, file)
     {
-        var extn
-
         this.command = command
         this.opt = opt
         this.file = file
     
+        var extn
+
         this["report"] = this["report"].bind(this)
         this.line = 0
         this.flags = ''

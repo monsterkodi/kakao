@@ -7,16 +7,14 @@
 ###
 
 use ../util ◆ color
-use .. ◆ theme 
-use    ◆ cells
+use ..      ◆ theme 
+use         ◆ view
 
-function gutter
+function gutter extends view
 
     @: screen @state ->
         
-        @cells = new cells screen
-        
-    init: x y w h -> @cells.init x y w h
+        super screen @state.name + 'gutter'
         
     draw: ->
         

@@ -7,10 +7,10 @@ class walkdir
 {
     constructor (cfg)
     {
-        var _16_25_, _17_25_, _18_25_, _19_25_, _20_25_
-
         this.cfg = cfg
     
+        var _16_25_, _17_25_, _18_25_, _19_25_, _20_25_
+
         this.cfg.files = []
         this.cfg.maxDepth = ((_16_25_=this.cfg.maxDepth) != null ? _16_25_ : 3)
         this.cfg.dotFiles = ((_17_25_=this.cfg.dotFiles) != null ? _17_25_ : false)

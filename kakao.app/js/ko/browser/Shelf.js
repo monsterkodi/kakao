@@ -159,10 +159,10 @@ Shelf = (function ()
 
     Shelf.prototype["setItems"] = function (items, opt)
     {
-        var _117_15_
-
         this.items = items
     
+        var _117_15_
+
         this.clear()
         this.items = ((_117_15_=this.items) != null ? _117_15_ : [])
         this.addItems(this.items,opt)

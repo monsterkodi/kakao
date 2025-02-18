@@ -9,15 +9,16 @@
 use ../../kxk ▪ kstr
 use ../util ◆ util help
 use ..      ◆ editor theme
-use         ◆ cells 
+use         ◆ view
 
-function greeter
+function greeter extends view
 
-    @: @screen ->
+    @: screen ->
+        
+        super screen 'greeter'
         
         @header  = help.headerCells()
         @name    = 'greeter'
-        @cells   = new cells @screen
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -29,24 +30,12 @@ function greeter
         
         ⮐ @hide() if doShow == false
         
-    init: x y ->
+    layout: x y ->
         
         [w h] = util.cellSize @header
         
-        @cells.init x y w h
+        @cells.layout x y w h
 
-    hide:    => @cells.rows = 0
-    hidden:  -> @cells.rows <= 0
-    visible: -> @cells.rows > 0
-
-    #  0000000   00000000   00000000  000   000
-    # 000   000  000   000  000       0000  000
-    # 000   000  00000000   0000000   000 0 000
-    # 000   000  000        000       000  0000
-    #  0000000   000        00000000  000   000
-
-    toggle: -> if @hidden() then @open() else @hide()
-        
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
     # 000   000  0000000    000000000  000000000

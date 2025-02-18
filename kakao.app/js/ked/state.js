@@ -23,10 +23,10 @@ state = (function ()
 {
     function state (cells, name)
     {
-        var act, k, v
-
         this.cells = cells
     
+        var act, k, v
+
         this["rangeForVisibleLines"] = this["rangeForVisibleLines"].bind(this)
         this["setView"] = this["setView"].bind(this)
         this["initView"] = this["initView"].bind(this)

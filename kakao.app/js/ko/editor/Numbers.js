@@ -10,9 +10,9 @@ class Numbers extends events
 {
     constructor (editor)
     {
-        super()
-    
         this.editor = editor
+    
+        super()
     
         this.updateColor = this.updateColor.bind(this)
         this.updateColors = this.updateColors.bind(this)

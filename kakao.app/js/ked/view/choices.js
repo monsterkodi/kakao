@@ -34,7 +34,12 @@ choices = (function ()
         return this.state.loadLines(lines)
     }
 
-    choices.prototype["num"] = function ()
+    choices.prototype["numChoices"] = function ()
+    {
+        return this.items.length
+    }
+
+    choices.prototype["numFiltered"] = function ()
     {
         return this.fuzzied.length
     }

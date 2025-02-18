@@ -7,16 +7,14 @@
 ###
 
 use .. ◆ theme 
-use    ◆ cells
+use    ◆ view
 
 {floor, pow} = Math
 
-function scroll
+function scroll extends view
 
-    @: screen @state -> @cells = new cells screen  
+    @: screen @state -> super screen @state.name + 'scroll'
     
-    init: x y w h -> @cells.init x y w h 
-        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   

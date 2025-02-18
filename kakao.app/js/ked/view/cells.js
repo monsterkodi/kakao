@@ -32,11 +32,11 @@ cells = (function ()
         this["set_bg"] = this["set_bg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
         this["set"] = this["set"].bind(this)
-        this["init"] = this["init"].bind(this)
-        this.init(0,0,0,0)
+        this["layout"] = this["layout"].bind(this)
+        this.x = this.y = this.cols = this.rows = 0
     }
 
-    cells.prototype["init"] = function (x, y, cols, rows)
+    cells.prototype["layout"] = function (x, y, cols, rows)
     {
         this.x = x
         this.y = y

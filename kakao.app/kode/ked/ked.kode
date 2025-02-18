@@ -294,11 +294,11 @@ function KED
 
         @status.gutter = @editor.state.gutterWidth()
         
-        @status.init  0  h-1   w     1
-        @editor.init  0  0     w h-k-1    
-        @konsole.init 0  h-k-1 w   k
-                        
         @screen.init()
+        
+        @status.layout  0  h-1   w     1
+        @editor.layout  0  0     w h-k-1    
+        @konsole.layout 0  h-k-1 w   k
         
         if not @menu.greet
             @editor.draw()

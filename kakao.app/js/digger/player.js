@@ -19,10 +19,10 @@ Player = (function ()
 {
     function Player (scene)
     {
-        var child
-
         this.scene = scene
     
+        var child
+
         this.input = new input(this)
         this.eat = 0
         this.maxVel = 0.7

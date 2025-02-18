@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var floor, mapview, pow
 
@@ -13,7 +13,7 @@ import util from "../util/util.js"
 
 import theme from "../theme.js"
 
-import cells from "./cells.js"
+import view from "./view.js"
 
 floor = Math.floor
 pow = Math.pow
@@ -21,6 +21,7 @@ pow = Math.pow
 
 mapview = (function ()
 {
+    _k_.extend(mapview, view)
     function mapview (screen, state)
     {
         this.state = state
@@ -33,18 +34,12 @@ mapview = (function ()
         this["clearImages"] = this["clearImages"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
-        this.cells = new cells(screen)
+        mapview.__super__.constructor.call(this,screen,this.state.name + 'mapview')
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
         this.images = []
-        lf('mapview',this.state.name,this.imgId.toString(2))
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
-    }
-
-    mapview.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
     }
 
     mapview.prototype["show"] = function (doShow = true)

@@ -15,10 +15,10 @@ class Tab
 {
     constructor (tabs, koreTab)
     {
-        var k, v
-
         this.tabs = tabs
     
+        var k, v
+
         this.togglePinned = this.togglePinned.bind(this)
         this.onGitStatus = this.onGitStatus.bind(this)
         this.tooltipHtml = this.tooltipHtml.bind(this)

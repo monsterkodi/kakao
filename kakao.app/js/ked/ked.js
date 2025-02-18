@@ -357,10 +357,10 @@ ked [file]
         h = this.t.rows()
         k = this.viewSizes.konsole[1]
         this.status.gutter = this.editor.state.gutterWidth()
-        this.status.init(0,h - 1,w,1)
-        this.editor.init(0,0,w,h - k - 1)
-        this.konsole.init(0,h - k - 1,w,k)
         this.screen.init()
+        this.status.layout(0,h - 1,w,1)
+        this.editor.layout(0,0,w,h - k - 1)
+        this.konsole.layout(0,h - k - 1,w,k)
         if (!this.menu.greet)
         {
             this.editor.draw()

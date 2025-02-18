@@ -7,19 +7,18 @@
 ###
 
 use ..      ◆ theme
-use         ◆ cells 
+use         ◆ view
 use ../util ◆ color util
 
-function status
+function status extends view
 
     @: screen @state ->
+
+        super screen 'status'
         
         @gutter = 4
-        @cells = new cells screen
         @file = ''
         @drawTime = ''
-        
-    init: x y w h -> @cells.init x y w h
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -30,7 +29,7 @@ function status
     draw: =>
         
         x      = 0
-        y      = 0 #@cells.rows-1
+        y      = 0
         cursor = @state.mainCursor()
         cols   = @cells.cols
         fnl    = @file.length

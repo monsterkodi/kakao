@@ -14,10 +14,10 @@ class Lexer
 {
     constructor (kode)
     {
-        var key, pat, reg
-
         this.kode = kode
     
+        var key, pat, reg
+
         this.debug = this.kode.args.debug
         this.verbose = this.kode.args.verbose
         this.raw = this.kode.args.raw

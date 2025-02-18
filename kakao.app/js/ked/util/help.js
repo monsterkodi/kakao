@@ -21,7 +21,6 @@ help = (function ()
         var c, cells, dcells, ecells, h, kcells
 
         h = `
-
 ╭───╮                ╭───╮                ╭───╮     
 │○○○│                │○○○│                │○○○│     
 │○○○│                ╰───╯                │○○○│     
@@ -35,7 +34,6 @@ help = (function ()
 │○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯     
 │○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯      
 ╰───╯     ╰───╯    ╰───────╯       ╰───────╯        
-
 `
         cells = util.cellsForLines(util.indentLines(util.linesForText(h),5))
         kcells = util.cellsInRect(cells,0,0,20,-1)

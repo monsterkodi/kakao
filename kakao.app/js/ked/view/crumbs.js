@@ -14,7 +14,6 @@ crumbs = (function ()
     _k_.extend(crumbs, editor)
     function crumbs (screen, name, features)
     {
-        this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
         this["current"] = this["current"].bind(this)
         crumbs.__super__.constructor.call(this,screen,name,[])
@@ -23,11 +22,6 @@ crumbs = (function ()
     crumbs.prototype["current"] = function ()
     {
         return _k_.trim(this.state.s.lines[0])
-    }
-
-    crumbs.prototype["init"] = function (x, y, w, h)
-    {
-        return this.cells.init(x,y,w,h)
     }
 
     crumbs.prototype["set"] = function (text)
@@ -40,21 +34,6 @@ crumbs = (function ()
     {
         this.set(slash.tilde(path))
         return this.cells.rows = 1
-    }
-
-    crumbs.prototype["hide"] = function ()
-    {
-        return this.cells.rows = 0
-    }
-
-    crumbs.prototype["hidden"] = function ()
-    {
-        return this.cells.rows <= 0
-    }
-
-    crumbs.prototype["visible"] = function ()
-    {
-        return this.cells.rows > 0
     }
 
     crumbs.prototype["draw"] = function ()

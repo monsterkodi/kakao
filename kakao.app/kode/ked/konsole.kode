@@ -22,6 +22,11 @@ function konsole extends editor
                 @state.insert "\n"+noon(obj)
             else        
                 @state.insert "\n"+noon(args)
+                
+    show: ->
+        
+        @cells.rows = 10
+        super()
                          
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -54,7 +59,7 @@ function konsole extends editor
         switch key
             
             'cmd+k' ➜ @state.clearLines(); ⮐ true
-            'alt+k' ➜ @toggle(); ⮐ true
+            'alt+k' ➜ ⮐ @toggle()
             
         super key event
             

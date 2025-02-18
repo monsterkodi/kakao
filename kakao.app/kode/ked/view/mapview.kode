@@ -10,26 +10,25 @@
 use ../../kxk ▪ kstr post
 use ../util ◆ prof syntax color util
 use ..      ◆ theme 
-use         ◆ cells
+use         ◆ view
 
 {floor, pow} = Math
 
-function mapview
+function mapview extends view
 
     @: screen @state ->
         
-        @cells  = new cells screen
+        super screen @state.name + 'mapview'
+        
         @imgId  = kstr.hash(@state.name) & ~0xffff
         
         @images = []
         
-        lf 'mapview' @state.name @imgId.toString(2)
+        # lf 'mapview' @state.name @imgId.toString(2)
         
         @pixelsPerRow = 4
         @pixelsPerCol = 2
-        
-    init: x y w h -> @cells.init x y w h
-    
+            
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  

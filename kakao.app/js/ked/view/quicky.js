@@ -52,17 +52,17 @@ quicky = (function ()
         h = parseInt(this.screen.rows / 2 - 4)
         x = parseInt(scx - w / 2)
         y = parseInt(scy - h / 2)
-        cs = _k_.min(h,this.choices.num())
+        cs = _k_.min(h,this.choices.numFiltered())
         if (this.crumbs.visible())
         {
             cs = h
         }
         ch = (this.crumbs.visible() ? 1 : 0)
         cd = (ch === 1 ? 1 : 0)
-        this.input.init(x + 2,y + 1,w - 4,1)
-        this.crumbs.init(x + 2,y + 3,w - 4,ch)
-        this.choices.init(x + 2,y + 3 + cd,w - 3,cs)
-        return this.cells.init(x,y,w,cs + 4 + cd)
+        this.input.layout(x + 2,y + 1,w - 4,1)
+        this.crumbs.layout(x + 2,y + 3,w - 4,ch)
+        this.choices.layout(x + 2,y + 3 + cd,w - 3,cs)
+        return this.cells.layout(x,y,w,cs + 4 + cd)
     }
 
     quicky.prototype["toggle"] = function (currentFile)
@@ -284,7 +284,7 @@ quicky = (function ()
     quicky.prototype["returnToEditor"] = function ()
     {
         this.hide()
-        if (this.choices.num())
+        if (this.choices.numFiltered())
         {
             post.emit('quicky',this.currentChoice())
         }

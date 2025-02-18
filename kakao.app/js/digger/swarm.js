@@ -10,11 +10,11 @@ Swarm = (function ()
 {
     function Swarm (scene, player)
     {
-        var i, ra, sphere
-
         this.scene = scene
         this.player = player
     
+        var i, ra, sphere
+
         this.count = 500
         sphere = geom.sphere({radius:0.5,sgmt:6,material:'flatwhite'})
         this.dummy = new three.Object3D()

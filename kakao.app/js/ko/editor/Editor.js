@@ -136,10 +136,10 @@ Editor = (function ()
 
     Editor.prototype["setFileType"] = function (fileType)
     {
-        var cstr, k, key, reg, v, _135_21_
-
         this.fileType = fileType
     
+        var cstr, k, key, reg, v, _135_21_
+
         switch (this.fileType)
         {
             case 'md':

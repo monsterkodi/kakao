@@ -7,12 +7,12 @@ class EditorScroll extends events
 {
     constructor (editor)
     {
+        this.editor = editor
+    
         super()
     
         var _16_46_
 
-        this.editor = editor
-    
         this.setLineHeight = this.setLineHeight.bind(this)
         this.setNumLines = this.setNumLines.bind(this)
         this.setViewHeight = this.setViewHeight.bind(this)

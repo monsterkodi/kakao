@@ -15,10 +15,10 @@ class Meta
 {
     constructor (editor)
     {
-        var _30_26_, _34_13_
-
         this.editor = editor
     
+        var _30_26_, _34_13_
+
         this.clear = this.clear.bind(this)
         this.onClearLines = this.onClearLines.bind(this)
         this.onLineDeleted = this.onLineDeleted.bind(this)

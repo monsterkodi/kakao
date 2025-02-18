@@ -19,10 +19,10 @@ Title = (function ()
 {
     function Title (opt)
     {
-        var pkg, _21_13_, _25_27_
-
         this.opt = opt
     
+        var pkg, _21_13_, _25_27_
+
         this["openMenu"] = this["openMenu"].bind(this)
         this["toggleMenu"] = this["toggleMenu"].bind(this)
         this["hideMenu"] = this["hideMenu"].bind(this)
