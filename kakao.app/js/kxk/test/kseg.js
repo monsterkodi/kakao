@@ -15,6 +15,9 @@ world`
     section("segls", function ()
     {
         compare(kseg.segls(hello),[['h','e','l','l','o'],['w','o','r','l','d']])
+        compare(kseg.segls(`aaa
+
+bbb`),[['a','a','a'],[],['b','b','b']])
     })
     section("join", function ()
     {

@@ -5,7 +5,7 @@ var syntax
 import kstr from "../../kxk/kstr.js"
 import matchr from "../../kxk/matchr.js"
 
-import kolor from "../../kolor/kolor.js"
+import kulur from "../../kolor/kulur.js"
 
 import theme from "../theme.js"
 
@@ -50,7 +50,7 @@ syntax = (function ()
         }
         else
         {
-            return this.diss = kolor.dissect(lines,this.ext)
+            return this.diss = kulur.dissect(lines,this.ext)
         }
     }
 

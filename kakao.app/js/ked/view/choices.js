@@ -4,6 +4,7 @@ var choices
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
+let kseg = kxk.kseg
 let slash = kxk.slash
 let krzl = kxk.krzl
 
@@ -47,7 +48,7 @@ choices = (function ()
 
     choices.prototype["current"] = function ()
     {
-        return this.fuzzied[this.state.mainCursor()[1]]
+        return kseg.join(this.fuzzied[this.state.mainCursor()[1]])
     }
 
     choices.prototype["selectNext"] = function ()
@@ -69,7 +70,7 @@ choices = (function ()
 
     choices.prototype["extract"] = function (item)
     {
-        return (this.key && _k_.isObj(item) ? item[this.key] : item)
+        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.join(item))
     }
 
     choices.prototype["weight"] = function (item, text)

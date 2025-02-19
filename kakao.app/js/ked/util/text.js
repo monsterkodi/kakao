@@ -4,6 +4,7 @@ var text
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 
 text = (function ()
@@ -14,7 +15,7 @@ text = (function ()
     text["linesForText"] = function (text)
     {
         text = text.replace(/\x1b/g,'�')
-        return text.split(/\r?\n/)
+        return kseg.segls(text)
     }
 
     text["textForLineRange"] = function (lines, rng)
@@ -108,13 +109,20 @@ text = (function ()
         return /^\s+$/.test(text)
     }
 
-    text["numIndent"] = function (str)
+    text["numIndent"] = function (segs)
     {
-        var m
+        var i, s
 
-        if (m = str.match(/^\s+/))
+        i = 0
+        var list = _k_.list(segs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            return String(m).length
+            s = list[_a_]
+            if (s !== ' ')
+            {
+                return i
+            }
+            i += 1
         }
         return 0
     }
@@ -153,7 +161,7 @@ text = (function ()
     {
         return lines.map(function (l)
         {
-            return _k_.lpad(num) + l
+            return _k_.lpad(num).split('').concat(l)
         })
     }
 
@@ -239,7 +247,7 @@ text = (function ()
         {
             lns = lns.concat(lines.slice(rng[1] + 1, typeof rng[3] === 'number' ? rng[3] : -1))
         }
-        return lns = lns.concat(lines[rng[3]].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
+        return lns = lns.concat([lines[rng[3]].slice(0, typeof rng[2] === 'number' ? rng[2] : -1)])
     }
 
     text["indexOfLongestLine"] = function (lines)
@@ -267,7 +275,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/util/text.kode", 166, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/util/text.kode", 168, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

@@ -6,15 +6,15 @@
    000     00000000  000   000     000   
 ###
 
-use ../../kxk ▪ kstr
+use ../../kxk ▪ kstr kseg
 
 function text
 
     @linesForText: text -> 
         
         text = text.replace /\x1b/g '�'
-    
-        text.split /\r?\n/
+        # text.split /\r?\n/
+        kseg.segls text
     
     @textForLineRange: lines rng ->
         
@@ -68,10 +68,12 @@ function text
     # 000  000  0000  000   000  000       000  0000     000     
     # 000  000   000  0000000    00000000  000   000     000     
     
-    @numIndent: str ->
- 
-        if m = str.match /^\s+/
-            ⮐ String(m).length
+    @numIndent: segs ->
+        
+        i = 0
+        for s in segs
+            ⮐ i if s != ' '
+            i += 1
         0
         
     @splitLineIndent: str ->
@@ -92,7 +94,7 @@ function text
         
     @indentLines: lines num=4 ->
         
-        lines.map (l) -> lpad(num) + l
+        lines.map (l) -> lpad(num).split('').concat l
         
     # 000      000  000   000  00000000   0000000  
     # 000      000  0000  000  000       000       
@@ -144,7 +146,7 @@ function text
         
         lns = [lines[rng[1]][rng[0]..]]
         lns = lns.concat lines[rng[1]+1...rng[3]] if nl > 2
-        lns = lns.concat lines[rng[3]][0...rng[2]] 
+        lns = lns.concat [lines[rng[3]][0...rng[2]] ]
         
     @indexOfLongestLine: lines ->
         

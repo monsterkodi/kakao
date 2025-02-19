@@ -6,7 +6,7 @@
  0000000  000   000   0000000   000   0000000  00000000  0000000
 ###
 
-use ../../kxk ▪ kstr slash krzl
+use ../../kxk ▪ kstr kseg slash krzl
 use ..        ◆ editor theme
 
 function choices extends editor
@@ -26,7 +26,7 @@ function choices extends editor
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
-    current: -> @fuzzied[@state.mainCursor()[1]]
+    current: -> kseg.join @fuzzied[@state.mainCursor()[1]]
     
     selectNext: -> @state.selectNextLine() ; @frontCursor()
     selectPrev: -> @state.selectPrevLine() ; @frontCursor()
@@ -35,7 +35,7 @@ function choices extends editor
         
         @state.setMainCursor 0 @state.mainCursor()[1]
     
-    extract: item => @key and item is obj ? item[@key] : item        
+    extract: item => @key and item is obj ? item[@key] : kseg.join(item)        
         
     weight: item text =>
 

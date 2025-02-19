@@ -25,7 +25,7 @@ function edit
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
             
-        # lf "insert text ▸#{text}◂"
+        lf "insert text ▸#{text}◂"
             
         text = kstr.detab text
         

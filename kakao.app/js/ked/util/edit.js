@@ -22,6 +22,7 @@ edit = (function ()
             pos = posl[0]
             text = _k_.lpad(4 - pos[0] % 4,' ')
         }
+        lf(`insert text ▸${text}◂`)
         text = kstr.detab(text)
         txtls = this.linesForText(text)
         newls = []

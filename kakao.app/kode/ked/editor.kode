@@ -84,21 +84,20 @@ function editor extends view
             y = row+view[1]
             
             line = lines[y] if y < lines.length
-            segs = kstr.segments line
                         
             # text
             if y < lines.length
                 for x in 0...@cells.cols
-                    if x+view[0] < segs.length
+                    if x+view[0] < line.length
                         fg = syntax.getColor x+view[0] y
-                        ch = syntax.getChar x+view[0] y segs[x+view[0]]
+                        ch = syntax.getChar x+view[0] y line[x+view[0]]
                         if ch == "#" checkColor = true
                         @cells.set x row ch fg bg
                     
             # empty
             emptyColor = theme[@name + '_empty']
             if y < lines.length
-                linel = segs.length - view[0]
+                linel = line.length - view[0]
                 if y == mainCursor[1]
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
