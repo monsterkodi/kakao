@@ -165,8 +165,7 @@ function KED
     
     saveFile: ○=>
         
-        # text = @editor.state.s.lines.asMutable().join '\n'
-        text = kseg.join @editor.state.allLines()
+        text = kseg.str @editor.state.allLines()
         
         if valid @currentFile
             ○ nfs.write @currentFile text

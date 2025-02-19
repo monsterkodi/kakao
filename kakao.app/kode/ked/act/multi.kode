@@ -259,9 +259,9 @@ export
         @setSelections util.extendLineRangesFromPositionToPosition @allLines() @allSelections() @mainCursor() [x y]
         @setCursors [[x y]]
     
-    moveCursorsAndSelect: dir ->
+    moveCursorsAndSelect: dir opt ->
         
-        [selections cursors] = util.extendLineRangesByMovingPositionsInDirection @allLines() @allSelections() @allCursors() dir
+        [selections cursors] = util.extendLineRangesByMovingPositionsInDirection @allLines() @allSelections() @allCursors() dir opt
         
         @setSelections selections
         @setCursors cursors

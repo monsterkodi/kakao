@@ -350,16 +350,51 @@ line 2`)
         {
             lines = util.linesForText(`line 1
 line 2`)
-            compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[['a','b','line 1','line 2'],[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[kseg.segls('a\nb\nline 1\nline 2'),[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'a\nb',[[2,0]]),[kseg.segls('lia\nbne 1\nline 2'),[[1,1]]])
+            compare(util.insertTextAtPositions(lines,'a\nb',[[0,1]]),[kseg.segls('line 1\na\nb\nline 2'),[[0,3]]])
+        })
+        section("multiple lines into multi cursor", function ()
+        {
+            lines = util.linesForText(`1234
+5678`)
+            compare(util.insertTextAtPositions(lines,'X\nY',[[0,0],[0,1]]),[kseg.segls('X1234\nY5678'),[[1,0],[1,1]]])
+            compare(util.insertTextAtPositions(lines,'X\nY',[[0,0],[1,0],[2,0],[3,0]]),[kseg.segls('X1Y2X3Y4\n5678'),[[1,0],[3,0],[5,0],[7,0]]])
+            compare(util.insertTextAtPositions(lines,'@\n$\n%',[[0,0],[1,0],[2,0],[3,0]]),[kseg.segls('@1$2%3@4\n5678'),[[1,0],[3,0],[5,0],[7,0]]])
         })
         section("newlines", function ()
         {
             lines = util.linesForText(`line 1
 line 2`)
+            compare(util.insertTextAtPositions(lines,'\n',[[2,0]]),[kseg.segls('li\nne 1\nline 2'),[[0,1]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[6,0]]),[kseg.segls('line 1\n\nline 2'),[[0,1]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[0,1]]),[kseg.segls('line 1\n\nline 2'),[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[2,1]]),[kseg.segls('line 1\nli\nne 2'),[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[6,1]]),[kseg.segls('line 1\nline 2\n'),[[0,2]]])
+            compare(util.insertTextAtPositions(lines,'\n',[[0,0],[0,1]]),[kseg.segls('\nline 1\n\nline 2'),[[0,1],[0,3]]])
             lines = util.linesForText(`◆1
 ◆2
 ◆3
 ◆4`)
+            compare(util.insertTextAtPositions(lines,'\n',[[1,0],[1,1],[1,2],[1,3]]),[kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4'),[[0,1],[0,3],[0,5],[0,7]]])
+        })
+        section("util.insertTextAtPositions into indented lines", function ()
+        {
+            lines = util.linesForText(`◆1
+    ◆2
+        ◆3`)
+            section("single span", function ()
+            {
+                compare(util.insertTextAtPositions(lines,'~!',[[4,1]]),[kseg.segls('◆1\n    ~!◆2\n        ◆3'),[[6,1]]])
+                compare(util.insertTextAtPositions(lines,'#{',[[2,2]]),[kseg.segls('◆1\n    ◆2\n  #{      ◆3'),[[4,2]]])
+            })
+            section("newline into single cursor", function ()
+            {
+                compare(util.insertTextAtPositions(lines,'\n',[[4,1]]),[kseg.segls('◆1\n    \n    ◆2\n        ◆3'),[[4,2]]])
+            })
+            section("multiple lines into single cursor", function ()
+            {
+            })
         })
     })
     section("moveLineRangesAndPositionsAtIndicesInDirection", function ()

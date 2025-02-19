@@ -427,6 +427,8 @@ function editor extends view
             
             'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
             'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
+            'shift+alt+cmd+right'       ➜ ⮐ @state.moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
+            'shift+alt+cmd+left'        ➜ ⮐ @state.moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
             
             'shift+up'                  ➜ ⮐ @state.moveCursorsAndSelect 'up'
             'shift+down'                ➜ ⮐ @state.moveCursorsAndSelect 'down'
@@ -437,10 +439,10 @@ function editor extends view
             'shift+ctrl+h'              ➜ ⮐ @state.moveCursorsAndSelect 'bof'
             'shift+ctrl+j'              ➜ ⮐ @state.moveCursorsAndSelect 'eof'
             
-            'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true
-            'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true
-            'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true
-            'shift+alt+right'           ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true
+            'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true # 'paint' cursors
+            'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true # 'paint' cursors
+            'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true # 'paint' cursors
+            'shift+alt+right'           ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true # 'paint' cursors
 
             'home'                      ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
             'end'                       ➜ ⮐ @state.singleCursorAtEndOfLine()

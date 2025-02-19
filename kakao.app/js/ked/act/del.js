@@ -54,7 +54,6 @@ export default {delete:function (type, mods)
                     {
                         rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,cursor)
                         dc = rng[2] - rng[0]
-                        line = kstr.splice(line,x - dc,dc)
                     }
                     else
                     {
@@ -66,14 +65,13 @@ export default {delete:function (type, mods)
                             {
                                 dc = 4
                             }
-                            line = kstr.splice(line,x - dc,dc)
                         }
                         else
                         {
                             dc = 1
-                            line = kstr.splice(line,x - dc,dc)
                         }
                     }
+                    line = line.slice(0, x - dc).concat(line.slice(x))
                 }
                 break
             case 'next':
@@ -87,7 +85,7 @@ export default {delete:function (type, mods)
                         }
                         x = lines[y].length
                         remove = 2
-                        line = line + lines[y + 1]
+                        line = line.concat(lines[y + 1])
                         cursor[0] = x
                         cursor[1] = y
                     }
@@ -99,13 +97,13 @@ export default {delete:function (type, mods)
                         if (rng = util.rangeOfWordOrWhitespaceRightToPos(lines,cursor))
                         {
                             dc = rng[2] - rng[0]
-                            line = kstr.splice(line,x,dc)
+                            line = line.slice(0, typeof x === 'number' ? x : -1).concat(line.slice(x + dc))
                         }
                     }
                     else
                     {
                         dc = 1
-                        line = kstr.splice(line,x,dc)
+                        line = line.slice(0, typeof x === 'number' ? x : -1).concat(line.slice(x + dc))
                     }
                     cursor[0] += dc
                 }

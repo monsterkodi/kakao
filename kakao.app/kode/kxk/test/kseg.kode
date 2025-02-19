@@ -28,11 +28,15 @@ use .. ◆ kstr kseg
             bbb
             """ ▸ [['a' 'a' 'a'] [] ['b' 'b' 'b']]
             
-    ▸ join
+    ▸ str
     
-        kseg.join kseg('hello') ▸ 'hello'
-        kseg.join kseg('hello\world') ▸ 'hello\world'
-        kseg.join kseg.segls(hello) ▸ hello
+        kseg.str kseg('hello') ▸ 'hello'
+        kseg.str kseg('hello\world') ▸ 'hello\world'
+        kseg.str kseg.segls(hello) ▸ hello
+        
+    ▸ join
+        
+        kseg.join 'hello' '!'   ▸ kseg 'hello!'
     
     ▸ lines
         
@@ -49,3 +53,22 @@ use .. ◆ kstr kseg
     
         kseg.chunks 'a' ▸ [index:0 segl:['a']]
         kseg.chunks 'ab\ncd' ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        
+    ▸ startsWith
+    
+        kseg.startsWith kseg('something') 'some' ▸ true
+        kseg.startsWith kseg('something') 'Some' ▸ false
+        kseg.startsWith kseg('something') 'son'  ▸ false
+        
+    ▸ splitAtIndent
+    
+        kseg.splitAtIndent kseg('something') ▸ [kseg('') kseg('something')]
+        kseg.splitAtIndent kseg('  some')    ▸ [kseg('  ') kseg('some')]
+        kseg.splitAtIndent kseg('    more')  ▸ [kseg('    ') kseg('more')]
+        
+    ▸ repeat
+    
+        kseg.repeat 4      ▸ kseg "    "
+        kseg.repeat 4 '*'  ▸ kseg "****"
+        kseg.repeat 2 '◂▸' ▸ kseg "◂▸◂▸"
+        

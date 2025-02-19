@@ -61,7 +61,7 @@ chunked = function (segls, ext)
         {
             if (lastWord !== null)
             {
-                line.chunks.push({start:lastWordIndex,length:lastWord.length,match:kseg.join(lastWord),clss:'text'})
+                line.chunks.push({start:lastWordIndex,length:lastWord.length,match:kseg.str(lastWord),clss:'text'})
                 lastWord = null
                 return lastWordIndex = -1
             }

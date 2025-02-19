@@ -296,11 +296,11 @@ export default {allCursors:function ()
 {
     this.setSelections(util.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
     return this.setCursors([[x,y]])
-},moveCursorsAndSelect:function (dir)
+},moveCursorsAndSelect:function (dir, opt)
 {
     var cursors, selections
 
-    var _11_ = util.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir); selections = _11_[0]; cursors = _11_[1]
+    var _11_ = util.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir,opt); selections = _11_[0]; cursors = _11_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors)

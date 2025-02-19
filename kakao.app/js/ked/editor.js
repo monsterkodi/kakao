@@ -599,6 +599,12 @@ editor = (function ()
             case 'alt+right':
                 return this.state.moveCursors('right',{jump:['ws','word','empty','punct']})
 
+            case 'shift+alt+cmd+right':
+                return this.state.moveCursorsAndSelect('right',{jump:['ws','word','empty','punct']})
+
+            case 'shift+alt+cmd+left':
+                return this.state.moveCursorsAndSelect('left',{jump:['ws','word','empty','punct']})
+
             case 'shift+up':
                 return this.state.moveCursorsAndSelect('up')
 

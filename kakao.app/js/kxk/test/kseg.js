@@ -19,11 +19,15 @@ world`
 
 bbb`),[['a','a','a'],[],['b','b','b']])
     })
+    section("str", function ()
+    {
+        compare(kseg.str(kseg('hello')),'hello')
+        compare(kseg.str(kseg('hello\world')),'hello\world')
+        compare(kseg.str(kseg.segls(hello)),hello)
+    })
     section("join", function ()
     {
-        compare(kseg.join(kseg('hello')),'hello')
-        compare(kseg.join(kseg('hello\world')),'hello\world')
-        compare(kseg.join(kseg.segls(hello)),hello)
+        compare(kseg.join('hello','!'),kseg('hello!'))
     })
     section("lines", function ()
     {
@@ -40,6 +44,24 @@ bbb`),[['a','a','a'],[],['b','b','b']])
     {
         compare(kseg.chunks('a'),[{index:0,segl:['a']}])
         compare(kseg.chunks('ab\ncd'),[{index:0,segl:['a','b']},{index:3,segl:['c','d']}])
+    })
+    section("startsWith", function ()
+    {
+        compare(kseg.startsWith(kseg('something'),'some'),true)
+        compare(kseg.startsWith(kseg('something'),'Some'),false)
+        compare(kseg.startsWith(kseg('something'),'son'),false)
+    })
+    section("splitAtIndent", function ()
+    {
+        compare(kseg.splitAtIndent(kseg('something')),[kseg(''),kseg('something')])
+        compare(kseg.splitAtIndent(kseg('  some')),[kseg('  '),kseg('some')])
+        compare(kseg.splitAtIndent(kseg('    more')),[kseg('    '),kseg('more')])
+    })
+    section("repeat", function ()
+    {
+        compare(kseg.repeat(4),kseg("    "))
+        compare(kseg.repeat(4,'*'),kseg("****"))
+        compare(kseg.repeat(2,'◂▸'),kseg("◂▸◂▸"))
     })
 }
 toExport["kseg"]._section_ = true

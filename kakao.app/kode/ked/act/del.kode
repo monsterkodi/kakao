@@ -57,16 +57,14 @@ export
                         if mods == 'alt'
                             rng = util.rangeOfWordOrWhitespaceLeftToPos lines cursor
                             dc = rng[2] - rng[0]
-                            line = kstr.splice line x-dc dc
                         else
                             before = util.textFromBolToPos lines cursor
                             if util.isOnlyWhitespace before
                                 dc = x % 4
                                 dc = 4 if dc == 0
-                                line = kstr.splice line x-dc dc
                             else
                                 dc = 1
-                                line = kstr.splice line x-dc dc
+                        line = line[0...x-dc].concat line[x..]
 
                 'next' 
                     if x == lines[y].length
@@ -74,17 +72,17 @@ export
                             ⮐ if y >= lines.length-1
                             x = lines[y].length
                             remove = 2
-                            line = line + lines[y+1]
+                            line = line.concat lines[y+1]
                             cursor[0] = x
                             cursor[1] = y
                     else
                         if mods == 'alt'
                             if rng = util.rangeOfWordOrWhitespaceRightToPos lines cursor
                                 dc = rng[2] - rng[0]
-                                line = kstr.splice line x dc
+                                line = line[0...x].concat line[x+dc..]
                         else
                             dc = 1
-                            line = kstr.splice line x dc
+                            line = line[0...x].concat line[x+dc..]
                         cursor[0] += dc
                                 
             util.moveCursorsInSameLineBy cursors cursor -dc

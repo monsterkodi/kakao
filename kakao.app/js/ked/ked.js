@@ -191,7 +191,7 @@ ked [file]
     {
         var text
 
-        text = kseg.join(this.editor.state.allLines())
+        text = kseg.str(this.editor.state.allLines())
         if (!_k_.empty(this.currentFile))
         {
             await nfs.write(this.currentFile,text)
@@ -244,7 +244,7 @@ ked [file]
 
     KED.prototype["onKey"] = function (key, event)
     {
-        var handler, result, _231_93_
+        var handler, result, _230_93_
 
         switch (key)
         {
@@ -283,7 +283,7 @@ ked [file]
 
             case 'cmd+.':
             case 'ctrl+.':
-                return this.quicky.gotoDir(((_231_93_=slash.dir(this.currentFile)) != null ? _231_93_ : process.cwd()))
+                return this.quicky.gotoDir(((_230_93_=slash.dir(this.currentFile)) != null ? _230_93_ : process.cwd()))
 
         }
 
@@ -327,7 +327,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _267_22_, _268_23_
+        var _266_22_, _267_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -336,7 +336,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _273_22_, _274_23_
+        var _272_22_, _273_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

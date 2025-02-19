@@ -16,7 +16,7 @@ edit = (function ()
 
     edit["insertTextAtPositions"] = function (lines, text, posl)
     {
-        var after, before, idx, indent, insertLineIndex, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtls, x, y
+        var after, before, idx, indent, insertLineIndex, insl, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtls, x, y
 
         if (_k_.empty(text))
         {
@@ -27,7 +27,6 @@ edit = (function ()
             pos = posl[0]
             text = _k_.lpad(4 - pos[0] % 4,' ')
         }
-        lf(`insert text ▸${text}◂`)
         text = kstr.detab(text)
         txtls = this.linesForText(text)
         newls = []
@@ -71,8 +70,8 @@ edit = (function ()
                         var list1 = _k_.list(txtls.slice(1))
                         for (lidx = 0; lidx < list1.length; lidx++)
                         {
-                            line = list1[lidx]
-                            before.push(indent.concat(line))
+                            insl = list1[lidx]
+                            before.push(indent.concat(insl))
                         }
                         if (x > posLineIndent)
                         {
@@ -100,7 +99,6 @@ edit = (function ()
                     newls.push(line)
                 }
             }
-            lf('before',before)
             before = after
         }
         newls = newls.concat(before)
@@ -129,7 +127,7 @@ edit = (function ()
                 }
                 else
                 {
-                    lines.splice(rng[1],1,kstr.splice(lines[rng[1]],rng[0],rng[2] - rng[0]))
+                    lines.splice(rng[1],1,lines[rng[1]].slice(0, typeof rng[0] === 'number' ? rng[0] : -1).concat(lines[rng[1]].slice(rng[2])))
                 }
             }
             else
@@ -405,7 +403,7 @@ edit = (function ()
             index = list[_a_]
             var _b_ = this.splitLineIndent(newLines[index]); indent = _b_[0]; line = _b_[1]
 
-            if (!line.startsWith(comStart))
+            if (!kseg.startsWith(line,comStart))
             {
                 comment = comStart
                 minIndent = _k_.min(indent.length,minIndent)
@@ -413,7 +411,7 @@ edit = (function ()
         }
         if (comment)
         {
-            comIndent = _k_.lpad(minIndent)
+            comIndent = kseg.repeat(minIndent)
         }
         var list1 = _k_.list(indices)
         for (var _c_ = 0; _c_ < list1.length; _c_++)
@@ -423,13 +421,13 @@ edit = (function ()
 
             if (comment)
             {
-                indent = (indent.length > minIndent ? _k_.lpad(indent.length - minIndent) : '')
-                newLine = comIndent + comment + indent + ' ' + line
+                indent = kseg.repeat(indent.length - minIndent)
+                newLine = kseg.join(comIndent,comment,indent,' ',line)
             }
             else
             {
                 d = (line[comStart.length] === ' ' ? 1 : 0)
-                newLine = indent + line.slice(comStart.length + d)
+                newLine = kseg.join(indent,line.slice(comStart.length + d))
             }
             newLines.splice(index,1,newLine)
         }
@@ -551,9 +549,9 @@ edit = (function ()
         return newRngs
     }
 
-    edit["extendLineRangesByMovingPositionsInDirection"] = function (lines, rngs, posl, dir)
+    edit["extendLineRangesByMovingPositionsInDirection"] = function (lines, rngs, posl, dir, opt)
     {
-        var ind, line, newPosl, newRngs, pos, rng
+        var ind, line, nc, newPosl, newRngs, pos, rng
 
         newRngs = _k_.copy(rngs)
         newPosl = _k_.copy(posl)
@@ -568,7 +566,8 @@ edit = (function ()
             {
                 case 'left':
                 case 'right':
-                    pos[0] += this.numCharsFromPosToWordOrPunctInDirection(lines,pos,dir)
+                    nc = this.numCharsFromPosToWordOrPunctInDirection(lines,pos,dir,opt)
+                    pos[0] += nc
                     break
                 case 'up':
                     pos[1] -= 1
@@ -603,10 +602,10 @@ edit = (function ()
             switch (dir)
             {
                 case 'left':
-                    rng[0] = rng[0] - 1
+                    rng[0] = rng[0] + nc
                     break
                 case 'right':
-                    rng[2] = rng[2] + 1
+                    rng[2] = rng[2] + nc
                     break
                 case 'up':
                     rng[1] = _k_.max(0,rng[1] - 1)

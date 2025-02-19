@@ -85,7 +85,7 @@ chunked = segls ext ->
         pushLastWord = ->
             
             if lastWord != null
-                line.chunks.push start:lastWordIndex length:lastWord.length match:kseg.join(lastWord) clss:'text'
+                line.chunks.push start:lastWordIndex length:lastWord.length match:kseg.str(lastWord) clss:'text'
                 lastWord = null
                 lastWordIndex = -1
         
@@ -138,7 +138,7 @@ chunked = segls ext ->
                     lastWord.push s
                     
         # if valid lastWord
-            # line.chunks.push start:lastWordIndex length:lastWord.length match:kseg.join(lastWord) clss:'text'
+            # line.chunks.push start:lastWordIndex length:lastWord.length match:kseg.str(lastWord) clss:'text'
         pushLastWord()
 
         if line.chunks.length

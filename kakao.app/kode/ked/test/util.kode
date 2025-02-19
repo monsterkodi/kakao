@@ -397,21 +397,21 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 line 2
                 """
                  
-            util.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [['a' 'b' 'line 1' 'line 2'] [[0 2]]]
-            # util.insertTextAtPositions lines 'a\nb'   [[2 0]]       ▸ [['lia' 'bne 1' 'line 2'] [[1 1]]]
-            # util.insertTextAtPositions lines 'a\nb'   [[0 1]]       ▸ [['line 1' 'a' 'b' 'line 2'] [[0 3]]]
+            util.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [kseg.segls('a\nb\nline 1\nline 2') [[0 2]]]
+            util.insertTextAtPositions lines 'a\nb'   [[2 0]]       ▸ [kseg.segls('lia\nbne 1\nline 2')   [[1 1]]]
+            util.insertTextAtPositions lines 'a\nb'   [[0 1]]       ▸ [kseg.segls('line 1\na\nb\nline 2') [[0 3]]]
 
-        # ▸ multiple lines into multi cursor
-#         
-            # lines = util.linesForText 
-                # """
-                # 1234
-                # 5678
-                # """
-#                 
-            # util.insertTextAtPositions lines 'X\nY'      [[0 0] [0 1]]              ▸ [['X1234' 'Y5678'] [[1 0] [1 1]]]
-            # util.insertTextAtPositions lines 'X\nY'      [[0 0] [1 0] [2 0] [3 0]]  ▸ [['X1Y2X3Y4' '5678'] [[1 0] [3 0] [5 0] [7 0]]]
-            # util.insertTextAtPositions lines '@\n$\n%'   [[0 0] [1 0] [2 0] [3 0]]  ▸ [['@1$2%3@4' '5678'] [[1 0] [3 0] [5 0] [7 0]]]
+        ▸ multiple lines into multi cursor
+         
+            lines = util.linesForText 
+                """
+                1234
+                5678
+                """
+                 
+            util.insertTextAtPositions lines 'X\nY'      [[0 0] [0 1]]              ▸ [kseg.segls('X1234\nY5678')   [[1 0] [1 1]]]
+            util.insertTextAtPositions lines 'X\nY'      [[0 0] [1 0] [2 0] [3 0]]  ▸ [kseg.segls('X1Y2X3Y4\n5678') [[1 0] [3 0] [5 0] [7 0]]]
+            util.insertTextAtPositions lines '@\n$\n%'   [[0 0] [1 0] [2 0] [3 0]]  ▸ [kseg.segls('@1$2%3@4\n5678') [[1 0] [3 0] [5 0] [7 0]]]
             
         ▸ newlines
         
@@ -421,14 +421,14 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 line 2
                 """
                 
-            # util.insertTextAtPositions lines '\n' [[2 0]] ▸ [['li' 'ne 1' 'line 2'] [[0 1]]]
-            # util.insertTextAtPositions lines '\n' [[6 0]] ▸ [['line 1' '' 'line 2'] [[0 1]]]
+            util.insertTextAtPositions lines '\n' [[2 0]] ▸ [kseg.segls('li\nne 1\nline 2') [[0 1]]]
+            util.insertTextAtPositions lines '\n' [[6 0]] ▸ [kseg.segls('line 1\n\nline 2') [[0 1]]]
 #                                               
-            # util.insertTextAtPositions lines '\n' [[0 1]] ▸ [['line 1' '' 'line 2'] [[0 2]]]
-            # util.insertTextAtPositions lines '\n' [[2 1]] ▸ [['line 1' 'li' 'ne 2'] [[0 2]]]
-            # util.insertTextAtPositions lines '\n' [[6 1]] ▸ [['line 1' 'line 2' ''] [[0 2]]]
+            util.insertTextAtPositions lines '\n' [[0 1]] ▸ [kseg.segls('line 1\n\nline 2') [[0 2]]]
+            util.insertTextAtPositions lines '\n' [[2 1]] ▸ [kseg.segls('line 1\nli\nne 2') [[0 2]]]
+            util.insertTextAtPositions lines '\n' [[6 1]] ▸ [kseg.segls('line 1\nline 2\n') [[0 2]]]
                                                
-            # util.insertTextAtPositions lines '\n' [[0 0] [0 1]] ▸ [['' 'line 1' '' 'line 2'] [[0 1] [0 3]]]
+            util.insertTextAtPositions lines '\n' [[0 0] [0 1]] ▸ [kseg.segls('\nline 1\n\nline 2') [[0 1] [0 3]]]
             
             lines = util.linesForText 
                 """ 
@@ -438,29 +438,29 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 ◆4
                 """
             
-            # util.insertTextAtPositions lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [['◆' '1' '◆' '2' '◆' '3' '◆' '4'] [[0 1] [0 3] [0 5] [0 7]]]
+            util.insertTextAtPositions lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4') [[0 1] [0 3] [0 5] [0 7]]]
             
-        # ▸ util.insertTextAtPositions into indented lines
-#                 
-            # lines = util.linesForText
-                # """ 
-                # ◆1
-                    # ◆2
-                        # ◆3
-                # """
-#             
-            # ▸ single span 
-#         
-                # util.insertTextAtPositions lines '~!' [[4 1]] ▸ [['◆1' '    ~!◆2' '        ◆3'] [[6 1]]]
-                # util.insertTextAtPositions lines '#{' [[2 2]] ▸ [['◆1' '    ◆2' '  #{      ◆3'] [[4 2]]]
-#                 
-            # ▸ newline into single cursor
-#     
-                # util.insertTextAtPositions lines '\n' [[4 1]] ▸ [['◆1' '    ' '    ◆2' '        ◆3'] [[4 2]]]
-#             
-            # ▸ multiple lines into single cursor
-#             
-                # util.insertTextAtPositions lines 'a\nb' [[4 1]] ▸ [['◆1' '    a' '    b' '    ◆2' '        ◆3'] [[4 3]]]
+        ▸ util.insertTextAtPositions into indented lines
+                 
+            lines = util.linesForText
+                """ 
+                ◆1
+                    ◆2
+                        ◆3
+                """
+             
+            ▸ single span 
+         
+                util.insertTextAtPositions lines '~!' [[4 1]] ▸ [kseg.segls('◆1\n    ~!◆2\n        ◆3') [[6 1]]]
+                util.insertTextAtPositions lines '#{' [[2 2]] ▸ [kseg.segls('◆1\n    ◆2\n  #{      ◆3') [[4 2]]]
+                 
+            ▸ newline into single cursor
+     
+                util.insertTextAtPositions lines '\n' [[4 1]] ▸ [kseg.segls('◆1\n    \n    ◆2\n        ◆3') [[4 2]]]
+             
+            ▸ multiple lines into single cursor
+             
+                # util.insertTextAtPositions lines 'a\nb' [[4 1]] ▸ [kseg.segls('◆1\n    a\n    b\n    ◆2\n        ◆3') [[4 3]]]
         
     # 00     00   0000000   000   000  00000000  000      000  000   000  00000000   0000000  
     # 000   000  000   000  000   000  000       000      000  0000  000  000       000       

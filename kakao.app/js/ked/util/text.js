@@ -111,28 +111,12 @@ text = (function ()
 
     text["numIndent"] = function (segs)
     {
-        var i, s
-
-        i = 0
-        var list = _k_.list(segs)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            s = list[_a_]
-            if (s !== ' ')
-            {
-                return i
-            }
-            i += 1
-        }
-        return 0
+        return kseg.numIndent(segs)
     }
 
     text["splitLineIndent"] = function (str)
     {
-        var i
-
-        i = this.numIndent(str)
-        return [str.slice(0, typeof i === 'number' ? i : -1),str.slice(i)]
+        return kseg.splitAtIndent(str)
     }
 
     text["numIndentOfLines"] = function (lines)
@@ -275,7 +259,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/util/text.kode", 168, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/util/text.kode", 159, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

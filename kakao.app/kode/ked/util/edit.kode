@@ -27,7 +27,7 @@ function edit
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
             
-        lf "insert text ▸#{text}◂"
+        # lf y5("insert text ▸#{text}◂")
             
         text  = kstr.detab text
         txtls = @linesForText text  # the text to insert split into lines
@@ -39,15 +39,19 @@ function edit
             
             after = @linesForRange lines rng # all the lines in the current range (after current position)
                         
+            # lf "#{idx} after" after
+            
             if idx > 0                           # start processing ranges after the first position
                 
                 [x y] = posl[idx-1]              # coordinates of current position 
                 
                 if valid before ➜ line = before.pop() # pop the last line from before the current position
                 else              line = newls.pop()  # or the last of the already generated lines
-                    
+                
                 if x > line.length ➜ line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces if pos is in empty space
                                         
+                # lf 'line' line line.length x txtls
+                
                 if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     
                     if posl.length > 1 and text != '\n'
@@ -59,9 +63,11 @@ function edit
                         posLineIndent = @numIndent line
                         indent = kseg lpad(posLineIndent)
                         before.push line.concat(txtls[0])
-                        for line,lidx in txtls[1..]
-                            before.push indent.concat(line)
+                        for insl,lidx in txtls[1..]
+                            before.push indent.concat(insl)
                     
+                        # lf ">>>#{indent}<<<#{posLineIndent} #{x}" line
+                        
                         if x > posLineIndent
                             newpl.push [last(before).length newls.length+before.length-1]
                             before.push before.pop().concat(after.shift())
@@ -79,7 +85,7 @@ function edit
                     line  = line.concat after.shift()  #     ... first line after to current line
                     newls = newls.concat before        # add lines from before and ...
                     newls.push line                    #     ... current line to result
-            lf 'before' before    
+            # lf 'before' before    
             before = after 
             
         newls = newls.concat before
@@ -113,7 +119,7 @@ function edit
                 if rng[0] == 0 and rng[2] == lines[rng[1]].length
                     lines.splice rng[1] 1
                 else
-                    lines.splice rng[1] 1 kstr.splice(lines[rng[1]] rng[0] rng[2]-rng[0])
+                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]].concat(lines[rng[1]][rng[2]..])   
             else # range spans multiple lines
                         
                 if rng[2] == lines[rng[3]].length # range ends at end of last line
@@ -281,21 +287,22 @@ function edit
         for index in indices
             
             [indent line] = @splitLineIndent newLines[index]
-            if not line.startsWith comStart
+            if not kseg.startsWith(line comStart)
                 comment = comStart
                 minIndent = min indent.length minIndent
             
-        comIndent = lpad minIndent if comment
+        comIndent = kseg.repeat(minIndent) if comment
                 
         for index in indices
             
             [indent line] = @splitLineIndent newLines[index]
             if comment
-                indent = indent.length > minIndent ? lpad(indent.length-minIndent) : ''
-                newLine = comIndent + comment + indent + ' ' + line
+                # indent  = indent.length > minIndent ? lpad(indent.length-minIndent) : ''
+                indent  = kseg.repeat indent.length-minIndent
+                newLine = kseg.join comIndent comment indent ' ' line
             else
                 d = line[comStart.length] == ' ' ? 1 : 0
-                newLine = indent + line[comStart.length+d..]
+                newLine = kseg.join indent line[comStart.length+d..]
             newLines.splice index 1 newLine
         
         [newLines newRngs newPosl]      
@@ -389,7 +396,7 @@ function edit
 
         newRngs
     
-    @extendLineRangesByMovingPositionsInDirection: lines rngs posl dir ->
+    @extendLineRangesByMovingPositionsInDirection: lines rngs posl dir opt ->
         
         newRngs = copy rngs
         newPosl = copy posl
@@ -402,7 +409,7 @@ function edit
             
             switch dir
                 'left'  
-                'right'     ➜ pos[0] += @numCharsFromPosToWordOrPunctInDirection(lines pos dir)
+                'right'     ➜ nc = @numCharsFromPosToWordOrPunctInDirection(lines pos dir opt); pos[0] += nc
                 'up'        ➜ pos[1] -= 1
                 'down'      ➜ pos[1] += 1
                 'eol'       ➜ pos[0] = line.length
@@ -414,8 +421,8 @@ function edit
                 'ind_eol'   ➜ ind = @numIndent(line); pos[0] = pos[0] < ind ? ind : line.length
                 
             switch dir
-                'left'      ➜ rng[0] = rng[0]-1
-                'right'     ➜ rng[2] = rng[2]+1
+                'left'      ➜ rng[0] = rng[0]+nc
+                'right'     ➜ rng[2] = rng[2]+nc
                 'up'        ➜ rng[1] = max 0 rng[1]-1
                 'down'      ➜ rng[3] = min lines.length-1 rng[3]+1
                 'eol'       ➜ rng[2] = Infinity
