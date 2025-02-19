@@ -75,9 +75,11 @@ function edit
                 else                                # if text is the only line to insert
 
                     newpl.push [line.length+txtls[0].length newls.length+before.length] # move position to the end of the inserted text
-                    line  = line.concat [txtls[0] after.shift()]  # append it and first line after to current line
-                    newls = newls.concat before line              # add lines from before and current line to result
-                
+                    line  = line.concat txtls[0]       # append it and ...
+                    line  = line.concat after.shift()  #     ... first line after to current line
+                    newls = newls.concat before        # add lines from before and ...
+                    newls.push line                    #     ... current line to result
+            lf 'before' before    
             before = after 
             
         newls = newls.concat before

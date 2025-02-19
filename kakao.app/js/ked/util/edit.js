@@ -94,10 +94,13 @@ edit = (function ()
                 else
                 {
                     newpl.push([line.length + txtls[0].length,newls.length + before.length])
-                    line = line.concat([txtls[0],after.shift()])
-                    newls = newls.concat(before,line)
+                    line = line.concat(txtls[0])
+                    line = line.concat(after.shift())
+                    newls = newls.concat(before)
+                    newls.push(line)
                 }
             }
+            lf('before',before)
             before = after
         }
         newls = newls.concat(before)

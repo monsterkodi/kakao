@@ -341,6 +341,16 @@ def`)
 line 2`)
             compare(util.insertTextAtPositions(lines,'',[[0,0]]),[kseg.segls('line 1\nline 2'),[[0,0]]])
             compare(util.insertTextAtPositions(lines,'a ',[[0,0]]),[kseg.segls('a line 1\nline 2'),[[2,0]]])
+            compare(util.insertTextAtPositions(lines,'a ',[[0,0],[0,1]]),[kseg.segls('a line 1\na line 2'),[[2,0],[2,1]]])
+            compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0]]),[kseg.segls('xlixne 1\nline 2'),[[1,0],[4,0]]])
+            compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0],[6,0]]),[kseg.segls('xlixne 1x\nline 2'),[[1,0],[4,0],[9,0]]])
+            compare(util.insertTextAtPositions(lines,'z',[[0,0],[2,0],[6,0],[1,1],[2,1],[4,1]]),[kseg.segls('zlizne 1z\nlziznez 2'),[[1,0],[4,0],[9,0],[2,1],[4,1],[7,1]]])
+        })
+        section("multiple lines into single cursor", function ()
+        {
+            lines = util.linesForText(`line 1
+line 2`)
+            compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[['a','b','line 1','line 2'],[[0,2]]])
         })
         section("newlines", function ()
         {
