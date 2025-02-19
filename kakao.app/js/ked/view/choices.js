@@ -48,7 +48,7 @@ choices = (function ()
 
     choices.prototype["current"] = function ()
     {
-        return kseg.join(this.fuzzied[this.state.mainCursor()[1]])
+        return kseg.str(this.fuzzied[this.state.mainCursor()[1]])
     }
 
     choices.prototype["selectNext"] = function ()
@@ -70,7 +70,7 @@ choices = (function ()
 
     choices.prototype["extract"] = function (item)
     {
-        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.join(item))
+        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.str(item))
     }
 
     choices.prototype["weight"] = function (item, text)

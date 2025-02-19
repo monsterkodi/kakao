@@ -84,13 +84,16 @@ function editor extends view
             y = row+view[1]
             
             line = lines[y] if y < lines.length
-                        
+            
             # text
             if y < lines.length
+                # lf 'line' y line line.length
                 for x in 0...@cells.cols
                     if x+view[0] < line.length
                         fg = syntax.getColor x+view[0] y
                         ch = syntax.getChar x+view[0] y line[x+view[0]]
+                        # ch = line[x+view[0]]
+                        # lf 'ch' ch
                         if ch == "#" checkColor = true
                         @cells.set x row ch fg bg
                     
@@ -106,7 +109,7 @@ function editor extends view
                     if linel > 0
                         @cells.bg_rect 0 row linel row theme[@name]
                     @cells.bg_fill max(0 linel) row -1 row emptyColor
-                    
+                      
                 if checkColor
                     if rngs = kstr.colorRanges line
                         cx = max(0 linel)+1
@@ -165,39 +168,41 @@ function editor extends view
         bg = color.darken bg if not @cells.screen.t.hasFocus
         
         for cursor in s.cursors
+ 
+            continue if cursor eql mainCursor
             
             if @isCursorVisible cursor
-            
+             
                 x = cursor[0]-view[0]
                 y = cursor[1]-view[1]
-                
+                 
                 @cells.set_bg x y bg
                 @cells.set_fg x y fg
                             
         if @isCursorVisible()
-            
+             
             fg  = theme[@name    + '_cursor_fg']
             fg ?= theme['editor' + '_cursor_fg']
             bg  = theme[@name    + (@hasFocus() ? '_cursor_bg' : '_cursor_blur')]
             bg ?= theme['editor' + (@hasFocus() ? '_cursor_bg' : '_cursor_blur')]
-            
+             
             x = mainCursor[0]-view[0]
             y = mainCursor[1]-view[1]
-            
+             
             if s.cursors.length <= 1
                 if @isCursorInEmpty()
                     bg = color.darken bg 0.7
                 else if ' ' == @cells.get_char(x y)
                     bg = color.darken bg 0.8
-                    
+                     
             bg = color.darken bg if not @cells.screen.t.hasFocus
-                
+                 
             @cells.set_bg x y bg
             @cells.set_fg x y fg
 
         @scroll?.draw()
         @gutter?.draw()
-        # @mapscr?.draw()
+        @mapscr?.draw()
         
         super()
             
@@ -427,8 +432,8 @@ function editor extends view
             
             'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
             'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
-            'shift+alt+cmd+right'       ➜ ⮐ @state.moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
-            'shift+alt+cmd+left'        ➜ ⮐ @state.moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
+            'shift+alt+right'           ➜ ⮐ @state.moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
+            'shift+alt+left'            ➜ ⮐ @state.moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
             
             'shift+up'                  ➜ ⮐ @state.moveCursorsAndSelect 'up'
             'shift+down'                ➜ ⮐ @state.moveCursorsAndSelect 'down'
@@ -439,10 +444,10 @@ function editor extends view
             'shift+ctrl+h'              ➜ ⮐ @state.moveCursorsAndSelect 'bof'
             'shift+ctrl+j'              ➜ ⮐ @state.moveCursorsAndSelect 'eof'
             
-            'shift+alt+up'              ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true # 'paint' cursors
-            'shift+alt+down'            ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true # 'paint' cursors
-            'shift+alt+left'            ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true # 'paint' cursors
-            'shift+alt+right'           ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true # 'paint' cursors
+            'shift+alt+cmd+up'          ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true # 'paint' cursors
+            'shift+alt+cmd+down'        ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true # 'paint' cursors
+            'shift+alt+cmd+left'        ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true # 'paint' cursors
+            'shift+alt+cmd+right'       ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true # 'paint' cursors
 
             'home'                      ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
             'end'                       ➜ ⮐ @state.singleCursorAtEndOfLine()

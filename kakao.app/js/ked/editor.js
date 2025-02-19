@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
@@ -102,7 +102,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _163_41_, _164_44_, _198_15_, _199_15_, _80_26_
+        var bg, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, syntax, view, x, xe, xs, y, _166_41_, _167_44_, _203_15_, _204_15_, _205_15_, _80_26_
 
         if (this.cells.rows <= 0 || this.cells.cols <= 0)
         {
@@ -255,8 +255,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_163_41_=theme[this.name + '_cursor_fg']) != null ? _163_41_ : theme['editor_cursor_fg'])
-        bg = ((_164_44_=theme[this.name + '_cursor_multi']) != null ? _164_44_ : theme['editor_cursor_multi'])
+        fg = ((_166_41_=theme[this.name + '_cursor_fg']) != null ? _166_41_ : theme['editor_cursor_fg'])
+        bg = ((_167_44_=theme[this.name + '_cursor_multi']) != null ? _167_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -265,6 +265,10 @@ editor = (function ()
         for (var _17_ = 0; _17_ < list3.length; _17_++)
         {
             cursor = list3[_17_]
+            if (_k_.eql(cursor, mainCursor))
+            {
+                continue
+            }
             if (this.isCursorVisible(cursor))
             {
                 x = cursor[0] - view[0]
@@ -301,14 +305,15 @@ editor = (function ()
         }
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
+        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
         return editor.__super__.draw.call(this)
     }
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _212_30_, _212_39_, _213_30_, _223_41_
+        var col, row, start, x, y, _217_30_, _217_39_, _218_30_, _228_41_
 
-        if (((_212_30_=this.mapscr) != null ? typeof (_212_39_=_212_30_.onMouse) === "function" ? _212_39_(event) : undefined : undefined))
+        if (((_217_30_=this.mapscr) != null ? typeof (_217_39_=_217_30_.onMouse) === "function" ? _217_39_(event) : undefined : undefined))
         {
             return true
         }
@@ -599,10 +604,10 @@ editor = (function ()
             case 'alt+right':
                 return this.state.moveCursors('right',{jump:['ws','word','empty','punct']})
 
-            case 'shift+alt+cmd+right':
+            case 'shift+alt+right':
                 return this.state.moveCursorsAndSelect('right',{jump:['ws','word','empty','punct']})
 
-            case 'shift+alt+cmd+left':
+            case 'shift+alt+left':
                 return this.state.moveCursorsAndSelect('left',{jump:['ws','word','empty','punct']})
 
             case 'shift+up':
@@ -629,16 +634,16 @@ editor = (function ()
             case 'shift+ctrl+j':
                 return this.state.moveCursorsAndSelect('eof')
 
-            case 'shift+alt+up':
+            case 'shift+alt+cmd+up':
                 return this.state.moveMainCursorInDirection('up',{keep:true})
 
-            case 'shift+alt+down':
+            case 'shift+alt+cmd+down':
                 return this.state.moveMainCursorInDirection('down',{keep:true})
 
-            case 'shift+alt+left':
+            case 'shift+alt+cmd+left':
                 return this.state.moveMainCursorInDirection('left',{keep:true})
 
-            case 'shift+alt+right':
+            case 'shift+alt+cmd+right':
                 return this.state.moveMainCursorInDirection('right',{keep:true})
 
             case 'home':

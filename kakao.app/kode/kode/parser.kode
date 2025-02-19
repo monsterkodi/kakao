@@ -595,7 +595,8 @@ function Parser extends parse
         if tokens[0]?.type != 'nl'        
             val = @block 'return' tokens
             if val?.length > 1
-                log 'unreachable code after return statement?' tok tokens noon(val)
+                # log 'unreachable code after return statement?' tok tokens noon(val)
+                @onError 'unreachable code after return statement?' tok:tok tokens:tokens
             val = val?[0]
             
         e = return: ret: tok
@@ -650,7 +651,7 @@ function Parser extends parse
                 close = tokens.shift()
 
         if open and not close 
-            @onError "explicit call is missing closing bracket )" tokens:tokens
+            @onError "explicit call is missing closing bracket )" tok:tok tokens:tokens
             # @error hdr:'call' msg:'explicit call without closing )' tokens
 
         @pop 'call'

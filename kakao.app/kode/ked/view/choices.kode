@@ -26,7 +26,7 @@ function choices extends editor
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
-    current: -> kseg.join @fuzzied[@state.mainCursor()[1]]
+    current: -> kseg.str @fuzzied[@state.mainCursor()[1]]
     
     selectNext: -> @state.selectNextLine() ; @frontCursor()
     selectPrev: -> @state.selectPrevLine() ; @frontCursor()
@@ -35,7 +35,7 @@ function choices extends editor
         
         @state.setMainCursor 0 @state.mainCursor()[1]
     
-    extract: item => @key and item is obj ? item[@key] : kseg.join(item)        
+    extract: item => @key and item is obj ? item[@key] : kseg.str(item)        
         
     weight: item text =>
 

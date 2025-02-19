@@ -28,6 +28,7 @@ TTIO = (function ()
         this["store"] = this["store"].bind(this)
         this["showCursor"] = this["showCursor"].bind(this)
         this["hideCursor"] = this["hideCursor"].bind(this)
+        this["requestCursor"] = this["requestCursor"].bind(this)
         this["setCursor"] = this["setCursor"].bind(this)
         this["rows"] = this["rows"].bind(this)
         this["cols"] = this["cols"].bind(this)
@@ -169,6 +170,11 @@ TTIO = (function ()
     TTIO.prototype["setCursor"] = function (x, y)
     {
         return this.write(`\x1b[${y + 1};${x + 1}H`)
+    }
+
+    TTIO.prototype["requestCursor"] = function ()
+    {
+        return this.write("\x1b[6n")
     }
 
     TTIO.prototype["hideCursor"] = function ()
@@ -626,11 +632,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _433_23_
+        var diff, _434_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_433_23_=this.lastClick) != null ? _433_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_434_23_=this.lastClick) != null ? _434_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -706,7 +712,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _509_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _510_23_
 
         if ((this.pasteBuffer != null))
         {

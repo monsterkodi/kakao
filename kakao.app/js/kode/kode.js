@@ -42,10 +42,18 @@ class Kode
         var li
 
         console.error(this.file)
-        if (info.tokens)
+        if (!_k_.empty(info))
         {
-            li = info.tokens[0].line
-            console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
+            if (!_k_.empty(info.tokens) && !_k_.empty(info.tokens[0]))
+            {
+                li = info.tokens[0].line
+                console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
+            }
+            if (!_k_.empty(info.tok))
+            {
+                li = info.tok.line
+                console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
+            }
         }
         console.error(msg)
     }

@@ -36,7 +36,11 @@ use .. ◆ kstr kseg
         
     ▸ join
         
-        kseg.join 'hello' '!'   ▸ kseg 'hello!'
+        kseg.join 'hello' '!' '?'   ▸ kseg 'hello!?'
+        kseg.join kseg('hello') '!' ▸ kseg 'hello!'
+        kseg.join 'hello' kseg('!') ▸ kseg 'hello!'
+        kseg.join kseg.segls('hello') kseg.segls('world') ▸ kseg.segls("hello\nworld")
+        kseg.join kseg.segls('hello') kseg('world') ▸ kseg.segls('hello').concat kseg('world') # attention! result is mixed for mixed input!
     
     ▸ lines
         
@@ -71,4 +75,28 @@ use .. ◆ kstr kseg
         kseg.repeat 4      ▸ kseg "    "
         kseg.repeat 4 '*'  ▸ kseg "****"
         kseg.repeat 2 '◂▸' ▸ kseg "◂▸◂▸"
+        
+    ▸ width 
+    
+        kseg.width 'a'           ▸ 1
+        kseg.width '字'          ▸ 2
+        kseg.width '的'          ▸ 2
+        kseg.width '块'          ▸ 2
+        kseg.width '模'          ▸ 2
+        kseg.width '字的模块'    ▸ 8
+        kseg.width '🧑'          ▸ 2
+        kseg.width '👁'           ▸ 2
+        kseg.width '🧑‍🌾'          ▸ 4   
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         

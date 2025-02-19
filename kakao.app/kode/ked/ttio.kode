@@ -157,6 +157,7 @@ function TTIO extends events
     #  0000000   0000000   000   000  0000000    0000000   000   000  
     
     setCursor: x y => @write "\x1b[#{y+1};#{x+1}H"
+    requestCursor: => @write "\x1b[6n"
     hideCursor: => @write '\x1b[?25l'
     showCursor: show=true => 
         if show
