@@ -6,6 +6,7 @@
 #  0000000      000     000  0000000  
 
 use ../util ◆ util
+use ../../kxk ▪ kseg
 
 global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
 
@@ -380,8 +381,8 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                 line 2
                 """
              
-            util.insertTextAtPositions lines ''       [[0 0]]       ▸ [['line 1' 'line 2'] [[0 0]]]
-            # util.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [['a line 1' 'line 2'] [[2 0]]]
+            util.insertTextAtPositions lines ''       [[0 0]]       ▸ [kseg.segls('line 1\nline 2') [[0 0]]]
+            util.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [kseg.segls('a line 1\nline 2') [[2 0]]]
             # util.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [['a line 1' 'a line 2'] [[2 0] [2 1]]]
 #     
             # util.insertTextAtPositions lines 'x'      [[0 0] [2 0]] ▸ [['xlixne 1' 'line 2'] [[1 0] [4 0]]]

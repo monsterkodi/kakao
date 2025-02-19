@@ -23,6 +23,7 @@ bbb`),[['a','a','a'],[],['b','b','b']])
     {
         compare(kseg.join(kseg('hello')),'hello')
         compare(kseg.join(kseg('hello\world')),'hello\world')
+        compare(kseg.join(kseg.segls(hello)),hello)
     })
     section("lines", function ()
     {

@@ -8,7 +8,7 @@
     bun --watch js/ked/ked.js kode/ked/kde.kode
 ###
 
-use ../kxk ▪ karg kstr slash post
+use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
 use ./view ◆ screen cells status quicky menu finder
 use ./util ◆ logfile util prjcts session color help
@@ -165,7 +165,8 @@ function KED
     
     saveFile: ○=>
         
-        text = @editor.state.s.lines.asMutable().join '\n'
+        # text = @editor.state.s.lines.asMutable().join '\n'
+        text = kseg.join @editor.state.allLines()
         
         if valid @currentFile
             ○ nfs.write @currentFile text

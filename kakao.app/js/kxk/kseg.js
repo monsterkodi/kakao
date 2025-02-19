@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isArr: function (o) {return Array.isArray(o)}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var kseg, segmenter
 
@@ -33,13 +33,25 @@ kseg.segls = function (s)
 
 kseg.join = function (a)
 {
-    if (_k_.isArr(a))
+    if (_k_.empty(a))
+    {
+        return ''
+    }
+    if (_k_.isStr(a))
+    {
+        return a
+    }
+    if (!(_k_.isArr(a)))
+    {
+        return a
+    }
+    if (_k_.isStr(a[0]))
     {
         return a.join('')
     }
     else
     {
-        return a
+        return a.map(kseg.join).join('\n')
     }
 }
 

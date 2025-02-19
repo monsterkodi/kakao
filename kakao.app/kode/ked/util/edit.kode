@@ -6,7 +6,7 @@
 00000000  0000000    000     000   
 ###
 
-use ../../kxk ▪ kstr
+use ../../kxk ▪ kstr kseg
 use ◆ prof
 
 function edit
@@ -21,18 +21,19 @@ function edit
                           
         # prof.start 'insert'
         
+        ⮐ [lines posl] if empty text
+        
         if text == '\t'
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
             
         lf "insert text ▸#{text}◂"
             
-        text = kstr.detab text
-        
+        text  = kstr.detab text
         txtls = @linesForText text  # the text to insert split into lines
         newls = []                      # list of new lines 
         newpl = []                      # list of new positions
-        rngs = @rangesForLinePositions lines posl # list of ranges for lines split by positions
+        rngs  = @rangesForLinePositions lines posl # list of ranges for lines split by positions
         
         for rng,idx in rngs
             
@@ -45,37 +46,37 @@ function edit
                 if valid before ➜ line = before.pop() # pop the last line from before the current position
                 else              line = newls.pop()  # or the last of the already generated lines
                     
-                if x > line.length ➜ line += lpad x-line.length # fill line at end with spaces if pos is in empty space
+                if x > line.length ➜ line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces if pos is in empty space
                                         
                 if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     
                     if posl.length > 1 and text != '\n'
                         insertLineIndex = (idx-1) % txtls.length
-                        before.push line + txtls[insertLineIndex]
+                        before.push line.concat(txtls[insertLineIndex])
                         newpl.push [last(before).length newls.length+before.length-1]
-                        before.push before.pop()+after.shift()
+                        before.push before.pop().concat(after.shift())
                     else
                         posLineIndent = @numIndent line
-                        indentstr = lpad posLineIndent
-                        before.push line + txtls[0]
+                        indent = kseg lpad(posLineIndent)
+                        before.push line.concat(txtls[0])
                         for line,lidx in txtls[1..]
-                            before.push indentstr + line
+                            before.push indent.concat(line)
                     
                         if x > posLineIndent
                             newpl.push [last(before).length newls.length+before.length-1]
-                            before.push before.pop()+after.shift()
+                            before.push before.pop().concat(after.shift())
                         else
-                            after.unshift indentstr+after.shift()
+                            after.unshift indent.concat(after.shift())
                             before.pop() if text == '\n'
-                            newpl.push [indentstr.length newls.length+before.length]
+                            newpl.push [indent.length newls.length+before.length]
                         
                     newls = newls.concat before
                             
                 else                                # if text is the only line to insert
 
                     newpl.push [line.length+txtls[0].length newls.length+before.length] # move position to the end of the inserted text
-                    line += txtls[0] + after.shift()        # append it and first line after to current line
-                    newls = newls.concat before line        # add lines from before and current line to result
+                    line  = line.concat [txtls[0] after.shift()]  # append it and first line after to current line
+                    newls = newls.concat before line              # add lines from before and current line to result
                 
             before = after 
             

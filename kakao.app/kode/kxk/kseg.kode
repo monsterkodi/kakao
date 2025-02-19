@@ -27,10 +27,14 @@ kseg.segls = s -> kseg.lines(s).segls
     
 kseg.join = a ->
     
-    if a is arr
+    ⮐ '' if empty a
+    ⮐ a if a is str
+    ⮐ a if not a is arr
+    
+    if a[0] is str
         a.join ''
     else
-        a
+        a.map(kseg.join).join('\n')
     
 kseg.detab = a tw=4 ->
     

@@ -5,6 +5,9 @@ var c, cells, l, line, lines, rect, spans
 
 import util from "../util/util.js"
 
+import kxk from "../../kxk.js"
+let kseg = kxk.kseg
+
 
 global.lf = function (...args)
 {
@@ -336,7 +339,8 @@ def`)
         {
             lines = util.linesForText(`line 1
 line 2`)
-            compare(util.insertTextAtPositions(lines,'',[[0,0]]),[['line 1','line 2'],[[0,0]]])
+            compare(util.insertTextAtPositions(lines,'',[[0,0]]),[kseg.segls('line 1\nline 2'),[[0,0]]])
+            compare(util.insertTextAtPositions(lines,'a ',[[0,0]]),[kseg.segls('a line 1\nline 2'),[[2,0]]])
         })
         section("newlines", function ()
         {

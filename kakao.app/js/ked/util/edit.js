@@ -1,9 +1,10 @@
-var _k_ = {lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var edit
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 import prof from "./prof.js"
 
@@ -15,8 +16,12 @@ edit = (function ()
 
     edit["insertTextAtPositions"] = function (lines, text, posl)
     {
-        var after, before, idx, indentstr, insertLineIndex, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtls, x, y
+        var after, before, idx, indent, insertLineIndex, lidx, line, newls, newpl, pos, posLineIndent, rng, rngs, txtls, x, y
 
+        if (_k_.empty(text))
+        {
+            return [lines,posl]
+        }
         if (text === '\t')
         {
             pos = posl[0]
@@ -47,41 +52,41 @@ edit = (function ()
                 }
                 if (x > line.length)
                 {
-                    line += _k_.lpad(x - line.length)
+                    line = line.concat(_k_.lpad(x - line.length).split(''))
                 }
                 if (txtls.length > 1)
                 {
                     if (posl.length > 1 && text !== '\n')
                     {
                         insertLineIndex = (idx - 1) % txtls.length
-                        before.push(line + txtls[insertLineIndex])
+                        before.push(line.concat(txtls[insertLineIndex]))
                         newpl.push([_k_.last(before).length,newls.length + before.length - 1])
-                        before.push(before.pop() + after.shift())
+                        before.push(before.pop().concat(after.shift()))
                     }
                     else
                     {
                         posLineIndent = this.numIndent(line)
-                        indentstr = _k_.lpad(posLineIndent)
-                        before.push(line + txtls[0])
+                        indent = kseg(_k_.lpad(posLineIndent))
+                        before.push(line.concat(txtls[0]))
                         var list1 = _k_.list(txtls.slice(1))
                         for (lidx = 0; lidx < list1.length; lidx++)
                         {
                             line = list1[lidx]
-                            before.push(indentstr + line)
+                            before.push(indent.concat(line))
                         }
                         if (x > posLineIndent)
                         {
                             newpl.push([_k_.last(before).length,newls.length + before.length - 1])
-                            before.push(before.pop() + after.shift())
+                            before.push(before.pop().concat(after.shift()))
                         }
                         else
                         {
-                            after.unshift(indentstr + after.shift())
+                            after.unshift(indent.concat(after.shift()))
                             if (text === '\n')
                             {
                                 before.pop()
                             }
-                            newpl.push([indentstr.length,newls.length + before.length])
+                            newpl.push([indent.length,newls.length + before.length])
                         }
                     }
                     newls = newls.concat(before)
@@ -89,7 +94,7 @@ edit = (function ()
                 else
                 {
                     newpl.push([line.length + txtls[0].length,newls.length + before.length])
-                    line += txtls[0] + after.shift()
+                    line = line.concat([txtls[0],after.shift()])
                     newls = newls.concat(before,line)
                 }
             }
