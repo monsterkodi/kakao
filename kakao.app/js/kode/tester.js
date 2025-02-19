@@ -152,7 +152,7 @@ class Tester
                     catch (err)
                     {
                         console.log(err)
-                        fails.push({comps:comps,lhs:`${err}`,rhs:''})
+                        fails.push({stack:stack.concat([comps]),comps:comps,lhs:`${err}`,rhs:''})
                     }
                     return stack.pop()
                 }

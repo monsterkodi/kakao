@@ -20,6 +20,8 @@ str = o -> # converts anything into a string in noon syntax
 # the function above is exported as the default
 # all the functions below are attached to it
 
+str.lines = s -> s.split /\r?\n/
+
 str.graphemes = s ->
     
     segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'

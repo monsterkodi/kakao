@@ -1,0 +1,75 @@
+###
+000   000   0000000  00000000   0000000 
+000  000   000       000       000      
+0000000    0000000   0000000   000  0000
+000  000        000  000       000   000
+000   000  0000000   00000000   0000000 
+###
+
+use ◆ kstr
+
+segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'
+
+kseg = s ->
+    
+    Array.from(segmenter.segment(s)).map (r) -> r.segment
+    
+kseg.lines = s ->
+    
+    lines = kstr.lines s
+    
+    segls = lines.map (l) -> kseg(l)
+    
+    lines: lines
+    segls: segls
+    
+kseg.segls = s -> kseg.lines(s).segls
+    
+kseg.join = a ->
+    
+    if a is arr
+        a.join ''
+    else
+        a
+    
+kseg.detab = a tw=4 ->
+    
+    ⮐ a if not a is arr
+    
+    i = 0
+    while i < a.length
+        if a[i] == '\t'
+            n = tw-(i%tw)
+            args = [i 1].concat(rpad(n).split(''))
+            a.splice.apply a args
+            i += n
+        else
+            i += 1
+    a
+    
+kseg.chunks = a ->
+    
+    chunks = []
+    spaces = true
+    for g,i in a
+        if spaces
+            if g not in ' \t\r\n'
+                chunk = index:i segl:[g]
+                spaces = false
+        else
+            if g in ' \t\r\n'
+                spaces = true
+                chunks.push chunk
+            else
+                chunk.segl.push g
+    if not spaces
+        chunks.push chunk
+    chunks
+
+# segworder = new Intl.Segmenter "en-US" granularity:'word'
+# log Array.from(segworder.segment("""
+    # hello_world.     how's it going?
+    # dash-ed    ./slash/ed/   #hashed
+    # """))
+    
+export kseg

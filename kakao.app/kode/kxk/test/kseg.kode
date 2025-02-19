@@ -1,0 +1,44 @@
+###
+000000000  00000000   0000000  000000000          000   000   0000000  00000000   0000000   
+   000     000       000          000             000  000   000       000       000        
+   000     0000000   0000000      000             0000000    0000000   0000000   000  0000  
+   000     000            000     000             000  000        000  000       000   000  
+   000     00000000  0000000      000     000000  000   000  0000000   00000000   0000000   
+###
+
+use .. ◆ kstr kseg
+
+▸ kseg
+
+    hello = """
+        hello
+        world
+        """
+    ▸ kseg
+    
+        kseg hello ▸ ['h' 'e' 'l' 'l' 'o' '\n' 'w' 'o' 'r' 'l' 'd']
+        
+    ▸ segls
+    
+        kseg.segls hello ▸ [['h' 'e' 'l' 'l' 'o'] ['w' 'o' 'r' 'l' 'd']]
+        
+    ▸ join
+    
+        kseg.join kseg('hello') ▸ 'hello'
+        kseg.join kseg('hello\world') ▸ 'hello\world'
+    
+    ▸ lines
+        
+        kseg.lines ''    ▸ lines:['']   segls:[[]]
+        kseg.lines ' '   ▸ lines:[' ']  segls:[[' ']]
+        kseg.lines 'a'   ▸ lines:['a']  segls:[['a']]
+        kseg.lines hello ▸ lines:kstr.lines(hello) segls:[kseg('hello') kseg('world')]
+
+    ▸ detab
+    
+        kseg.detab(kseg("ta\tb\tb\ty")) ▸ kseg("ta  b   b   y")
+    
+    ▸ chunks
+    
+        kseg.chunks 'a' ▸ [index:0 segl:['a']]
+        kseg.chunks 'ab\ncd' ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]

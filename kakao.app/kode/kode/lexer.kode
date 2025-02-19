@@ -110,6 +110,8 @@ class Lexer
                     pat = pat.map (p) -> kstr.escapeRegexp "#{p}"
                     reg = '\\b(' + pat.join('|') + ')\\b'
                     @regs.push [key new RegExp(reg)]
+                    
+    onError: msg info -> @kode.onError msg info
 
     # 000000000   0000000   000   000  00000000  000   000  000  0000000  00000000
     #    000     000   000  000  000   000       0000  000  000     000   000
@@ -279,7 +281,7 @@ class Lexer
             if tok.type == 'op' and tok.text not in ['--''++''=''clone''copy''delete''new''is''instanceof''noon''last''first']
                 newTokens.push tok
                 idx += 1
-                while tokens[idx].type in ['nl' 'ws']
+                while tokens[idx]?.type in ['nl' 'ws']
                     idx += 1
             else
                 newTokens.push tok

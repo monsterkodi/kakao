@@ -41,6 +41,11 @@ class Lexer
         }
     }
 
+    onError (msg, info)
+    {
+        return this.kode.onError(msg,info)
+    }
+
     tokenize (text)
     {
         var after, before, col, end, key, line, lines, linetokens, match, ni, reg, si, token, tokens, txt, value
@@ -274,7 +279,7 @@ class Lexer
             {
                 newTokens.push(tok)
                 idx += 1
-                while (_k_.in(tokens[idx].type,['nl','ws']))
+                while (_k_.in((tokens[idx] != null ? tokens[idx].type : undefined),['nl','ws']))
                 {
                     idx += 1
                 }

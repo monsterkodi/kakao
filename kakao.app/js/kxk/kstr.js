@@ -16,6 +16,11 @@ str = function (o)
     return _k_.noon(o)
 }
 
+str.lines = function (s)
+{
+    return s.split(/\r?\n/)
+}
+
 str.graphemes = function (s)
 {
     var segmenter
@@ -772,7 +777,7 @@ STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
 
 str.stripAnsi = function (s)
 {
-    var _564_13_
+    var _566_13_
 
     return (typeof s.replace === "function" ? s.replace(STRIPANSI,'') : undefined)
 }

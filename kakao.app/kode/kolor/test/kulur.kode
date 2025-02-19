@@ -1,16 +1,66 @@
 ###
-000   000   0000000   000       0000000   00000000     
+000   000  000   000  000      000   000  00000000     
 000  000   000   000  000      000   000  000   000    
 0000000    000   000  000      000   000  0000000      
 000  000   000   000  000      000   000  000   000    
 000   000   0000000   0000000   0000000   000   000    
 ###
 
-use ./util ▪ inc ranges dissect lang
+use ../../kxk ▪ kstr kseg
+use ./util    ▪ inc 
+use ..        ◆ kulur
+
+ext     = 'kode'
+lang    = l -> ext = l
+ranges  = s -> kulur.ranges s ext
+dissect = c -> kulur.dissect kstr.lines(c) ext
+
+▸ kulur
+
+    # 000   000  000   000  000   0000000   0000000   0000000    00000000  
+    # 000   000  0000  000  000  000       000   000  000   000  000       
+    # 000   000  000 0 000  000  000       000   000  000   000  0000000   
+    # 000   000  000  0000  000  000       000   000  000   000  000       
+    #  0000000   000   000  000   0000000   0000000   0000000    00000000  
+    
+    ▸ unicode
         
-lang 'kode'
+        rgs = ranges "🌈"
+        inc rgs 0 '🌈' ▸  'text unicode'
         
-▸ kolor
+        rgs[0] ▸ start:0 length:1 match:'🌈' turd: '🌈' clss: 'text unicode'
+        
+        rgs = ranges "🌈🌱"
+
+        inc rgs 0 '🌈' ▸ 'text unicode'
+        inc rgs 1 '🌱' ▸ 'text unicode'
+          
+        rgs = ranges "🙂lol😀"
+        
+        inc rgs 0 '🙂'   ▸   'text unicode'
+        inc rgs 1 'lol'  ▸   'text'
+        inc rgs 4 '😀'    ▸  'text unicode'
+
+        rgs = ranges "a➜b"
+
+        inc rgs 1 '➜' ▸ 'punct keyword'
+
+        rgs = ranges '┌─┬─┐'
+        inc rgs 0 '┌' ▸ 'text unicode'
+        inc rgs 1 '─' ▸ 'text unicode'
+        inc rgs 2 '┬' ▸ 'text unicode'
+        inc rgs 3 '─' ▸ 'text unicode'
+        inc rgs 4 '┐' ▸ 'text unicode'
+
+        rgs = ranges "🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥"
+        inc rgs 0  '🐀' ▸ 'text unicode'
+        inc rgs 12 '🐌' ▸ 'text unicode'
+      
+        rgs = ranges "'🔧' bla:1"
+        inc rgs 4 'bla' ▸ 'dictionary key'
+          
+        rgs = ranges "icon: '🔧' bla:1"
+        inc rgs 10 'bla' ▸ 'dictionary key'
 
     # 000   000   0000000   0000000    00000000  
     # 000  000   000   000  000   000  000       
@@ -26,13 +76,19 @@ lang 'kode'
         inc dss[0] 0 "a"   ▸ 'function'
         inc dss[0] 2 "="   ▸ 'punct function'
         inc dss[0] 4 "b"   ▸ 'function argument'
-        inc dss[0] 6 "->"  ▸ 'punct function tail ligature'
+        inc dss[0] 6 "->"  ▸ 'punct function'
 
         dss = dissect "->"
-        inc dss[0] 0 "->"  ▸ 'punct function tail ligature'
+        inc dss[0] 0 "->"  ▸ 'punct function'
 
         dss = dissect "    -> true"
-        inc dss[0] 4 "->"  ▸ 'punct function tail ligature'
+        inc dss[0] 4 "->"  ▸ 'punct function'
+
+        dss = dissect "=>"
+        inc dss[0] 0 "=>"  ▸ 'punct function bound'
+
+        dss = dissect "    => true"
+        inc dss[0] 4 "=>"  ▸ 'punct function bound'
         
     # 00000000   0000000   000      000      0000000     0000000    0000000  000   000  
     # 000       000   000  000      000      000   000  000   000  000       000  000   
@@ -48,52 +104,9 @@ lang 'kode'
         rgs = ranges 'text' 'fish'
         inc rgs, 0 'text' ▸ 'text'
         
-        rgs = ranges "###" '.coffee' 
-        inc rgs, 0 "#" ▸ 'punct comment triple'
-        
-    # 000   000  000   000  000   0000000   0000000   0000000    00000000  
-    # 000   000  0000  000  000  000       000   000  000   000  000       
-    # 000   000  000 0 000  000  000       000   000  000   000  0000000   
-    # 000   000  000  0000  000  000       000   000  000   000  000       
-    #  0000000   000   000  000   0000000   0000000   0000000    00000000  
-    
-    ▸ unicode
-        
-        rgs = ranges "🌈"
-        # log rgs
-        inc rgs, 0 '🌈' ▸ 'text'
-        rgs[0] ▸ start:0 length:2 match:'🌈' turd: '🌈' clss: 'text' 
-        
-        rgs = ranges "🌈🌱"
-        inc rgs, 0 '🌈' ▸ 'text'
-        inc rgs, 2 '🌱' ▸ 'text'
-         
-        rgs = ranges "🙂lol😀"
-        inc rgs, 0 '🙂'     ▸   'text'
-        inc rgs, 2 'lol'     ▸   'text'
-        inc rgs, 5 '😀'     ▸   'text'
-         
-        rgs = ranges "a➜b"
-     
-        inc rgs, 1 '➜' ▸ 'punct keyword'
-         
-        rgs = ranges '┌─┬─┐'
-        inc rgs, 0 '┌' ▸ 'text unicode'
-        inc rgs, 1 '─' ▸ 'text unicode'
-        inc rgs, 2 '┬' ▸ 'text unicode'
-        inc rgs, 3 '─' ▸ 'text unicode'
-        inc rgs, 4 '┐' ▸ 'text unicode'
-         
-        rgs = ranges "🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥"
-        inc rgs, 0 '🐀' ▸ 'text'
-        inc rgs, 24 '🐌' ▸ 'text'
-     
-        rgs = ranges "'🔧' bla:1"
-        inc rgs, 6 'bla' ▸ 'dictionary key'
-         
-        rgs = ranges "icon: '🔧' bla:1"
-        inc rgs, 12 'bla' ▸ 'dictionary key'
-        
+        rgs = ranges ' ###' 'kode' 
+        inc rgs 1 '###' ▸ 'punct comment triple'
+                
     #  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
     # 000       000   000  000   000  000   000  000       0000  000     000     000       
     # 000       000   000  000000000  000000000  0000000   000 0 000     000     0000000   
@@ -103,38 +116,29 @@ lang 'kode'
     ▸ comments
         
         rgs = ranges "hello # world"
-        inc rgs, 6 "#"      ▸ 'punct comment'
-        inc rgs, 8 "world"  ▸ 'comment'
+        inc rgs 6 "#"      ▸ 'punct comment'
+        inc rgs 8 "world"  ▸ 'comment'
                 
     ▸ triple comment
                 
         rgs = ranges "###a###"
-        inc rgs, 0 "#"  ▸ 'punct comment triple'
-        inc rgs, 1 "#"  ▸ 'punct comment triple'
-        inc rgs, 2 "#"  ▸ 'punct comment triple'
-        inc rgs, 3 "a"  ▸ 'comment triple'
-        inc rgs, 4 "#"  ▸ 'punct comment triple'
-        inc rgs, 5 "#"  ▸ 'punct comment triple'
-        inc rgs, 6 "#"  ▸ 'punct comment triple'
+        inc rgs 0 '###'  ▸ 'punct comment triple'
+        inc rgs 3 "a"    ▸ 'comment triple'
+        inc rgs 4 '###'  ▸ 'punct comment triple'
     
         dss = dissect "###\na\n###"
-        inc dss[0], 0 "#"   ▸ 'punct comment triple'
-        inc dss[0], 1 "#"   ▸ 'punct comment triple'
-        inc dss[0], 2 "#"   ▸ 'punct comment triple'
-        inc dss[1], 0 "a"   ▸ 'comment triple'
-        inc dss[2], 0 "#"   ▸ 'punct comment triple'
-        inc dss[2], 1 "#"   ▸ 'punct comment triple'
-        inc dss[2], 2 "#"   ▸ 'punct comment triple'
+        inc dss[0] 0 '###'   ▸ 'punct comment triple'
+        inc dss[1] 0 'a'     ▸ 'comment triple'
+        inc dss[2] 0 '###'   ▸ 'punct comment triple'
     
         lang 'styl'
-        
         dss = dissect "/*\na\n*/"
-        inc dss[0], 0 "/"   ▸ 'punct comment triple'
-        inc dss[0], 1 "*"   ▸ 'punct comment triple'
-        inc dss[1], 0 "a"   ▸ 'comment triple'
+        inc dss[0] 0 "/"   ▸ 'punct comment triple'
+        inc dss[0] 1 "*"   ▸ 'punct comment triple'
+        inc dss[1] 0 "a"   ▸ 'comment triple'
         inc dss[2], 0 "*"   ▸ 'punct comment triple'
         inc dss[2], 1 "/"   ▸ 'punct comment triple'
-        
+
     ▸ comment header
     
         lang 'kode'
@@ -144,7 +148,7 @@ lang 'kode'
         inc rgs, 2  "0"     ▸ 'comment header'
         inc rgs, 4  "00"    ▸ 'comment header'
         inc rgs, 7  "0000"  ▸ 'comment header'
-    
+
         dss = dissect "###\n 0 00 0 \n###"
         inc dss[1], 1 "0"   ▸ 'comment triple header'
         
@@ -437,40 +441,40 @@ lang 'kode'
     # 0000000   000   000  
     
     ▸ sh
-    
+     
         lang 'sh'
-        
+         
         rgs = ranges "dir/path/with/dashes/file.txt"
         inc rgs, 0 'dir'        ▸ 'text dir'
         inc rgs, 4 'path'       ▸ 'text dir'
         inc rgs, 9 'with'       ▸ 'text dir'
         inc rgs, 14 'dashes'    ▸ 'text dir'
-        
+         
         rgs = ranges "prg --arg1 -arg2"
         inc rgs, 4 '-'          ▸ 'punct argument'
         inc rgs, 5 '-'          ▸ 'punct argument'
         inc rgs, 6 'arg1'       ▸ 'argument'
         inc rgs, 11 '-'         ▸ 'punct argument'
         inc rgs, 12 'arg2'      ▸ 'argument'
-        
+         
         rgs = ranges "cd ~"
         inc rgs, 3 '~'          ▸ 'text dir'
-    
+     
         rgs = ranges "~/home"
         inc rgs, 0 '~'          ▸ 'text dir'
         inc rgs, 1 '/'          ▸ 'punct dir'
         inc rgs, 2 'home'       ▸ 'text file'
-        
+         
     # 000       0000000    0000000   
     # 000      000   000  000        
     # 000      000   000  000  0000  
     # 000      000   000  000   000  
     # 0000000   0000000    0000000   
-    
+     
     ▸ log
-    
+     
         lang 'log'
-        
+         
         rgs = ranges "http://domain.com"
         inc rgs, 0 'http'           ▸ 'url protocol'
         inc rgs, 4 ':'              ▸ 'punct url'
@@ -479,16 +483,16 @@ lang 'kode'
         inc rgs, 7 'domain'         ▸ 'url domain'
         inc rgs, 13 '.'             ▸ 'punct url tld'
         inc rgs, 14 'com'           ▸ 'url tld'
-        
+         
         rgs = ranges "file.coffee"
         inc rgs, 0 'file'           ▸ 'coffee file'
         inc rgs, 4 '.'              ▸ 'punct coffee'
         inc rgs, 5 'coffee'         ▸ 'coffee ext'
-    
+     
         rgs = ranges "/some/path"
         inc rgs, 1 'some'           ▸ 'text dir'
         inc rgs, 5 '/'              ▸ 'punct dir'
-    
+     
         rgs = ranges "key: value"
         inc rgs, 0 'key'            ▸ 'dictionary key'
         inc rgs, 3 ':'              ▸ 'punct dictionary'

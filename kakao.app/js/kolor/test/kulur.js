@@ -1,49 +1,45 @@
 var toExport = {}
-var dss, rgs
+var dissect, dss, ext, lang, ranges, rgs
+
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 import util from "./util.js"
 let inc = util.inc
-let ranges = util.ranges
-let dissect = util.dissect
-let lang = util.lang
 
-lang('kode')
-toExport["kolor"] = function ()
+import kulur from "../kulur.js"
+
+ext = 'kode'
+
+lang = function (l)
 {
-    section("kode", function ()
-    {
-        lang('kode')
-        dss = dissect("a = b -> true")
-        compare(inc(dss[0],0,"a"),'function')
-        compare(inc(dss[0],2,"="),'punct function')
-        compare(inc(dss[0],4,"b"),'function argument')
-        compare(inc(dss[0],6,"->"),'punct function tail ligature')
-        dss = dissect("->")
-        compare(inc(dss[0],0,"->"),'punct function tail ligature')
-        dss = dissect("    -> true")
-        compare(inc(dss[0],4,"->"),'punct function tail ligature')
-    })
-    section("fallback", function ()
-    {
-        rgs = ranges('text','unknown')
-        compare(inc(rgs,0,'text'),'text')
-        rgs = ranges('text','fish')
-        compare(inc(rgs,0,'text'),'text')
-        rgs = ranges("###",'.coffee')
-        compare(inc(rgs,0,"#"),'punct comment triple')
-    })
+    return ext = l
+}
+
+ranges = function (s)
+{
+    return kulur.ranges(s,ext)
+}
+
+dissect = function (c)
+{
+    return kulur.dissect(kstr.lines(c),ext)
+}
+toExport["kulur"] = function ()
+{
     section("unicode", function ()
     {
         rgs = ranges("🌈")
-        compare(inc(rgs,0,'🌈'),'text')
-        compare(rgs[0],{start:0,length:2,match:'🌈',turd:'🌈',clss:'text'})
+        compare(inc(rgs,0,'🌈'),'text unicode')
+        compare(rgs[0],{start:0,length:1,match:'🌈',turd:'🌈',clss:'text unicode'})
         rgs = ranges("🌈🌱")
-        compare(inc(rgs,0,'🌈'),'text')
-        compare(inc(rgs,2,'🌱'),'text')
+        compare(inc(rgs,0,'🌈'),'text unicode')
+        compare(inc(rgs,1,'🌱'),'text unicode')
         rgs = ranges("🙂lol😀")
-        compare(inc(rgs,0,'🙂'),'text')
-        compare(inc(rgs,2,'lol'),'text')
-        compare(inc(rgs,5,'😀'),'text')
+        compare(inc(rgs,0,'🙂'),'text unicode')
+        compare(inc(rgs,1,'lol'),'text')
+        compare(inc(rgs,4,'😀'),'text unicode')
         rgs = ranges("a➜b")
         compare(inc(rgs,1,'➜'),'punct keyword')
         rgs = ranges('┌─┬─┐')
@@ -53,12 +49,38 @@ toExport["kolor"] = function ()
         compare(inc(rgs,3,'─'),'text unicode')
         compare(inc(rgs,4,'┐'),'text unicode')
         rgs = ranges("🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥")
-        compare(inc(rgs,0,'🐀'),'text')
-        compare(inc(rgs,24,'🐌'),'text')
+        compare(inc(rgs,0,'🐀'),'text unicode')
+        compare(inc(rgs,12,'🐌'),'text unicode')
         rgs = ranges("'🔧' bla:1")
-        compare(inc(rgs,6,'bla'),'dictionary key')
+        compare(inc(rgs,4,'bla'),'dictionary key')
         rgs = ranges("icon: '🔧' bla:1")
-        compare(inc(rgs,12,'bla'),'dictionary key')
+        compare(inc(rgs,10,'bla'),'dictionary key')
+    })
+    section("kode", function ()
+    {
+        lang('kode')
+        dss = dissect("a = b -> true")
+        compare(inc(dss[0],0,"a"),'function')
+        compare(inc(dss[0],2,"="),'punct function')
+        compare(inc(dss[0],4,"b"),'function argument')
+        compare(inc(dss[0],6,"->"),'punct function')
+        dss = dissect("->")
+        compare(inc(dss[0],0,"->"),'punct function')
+        dss = dissect("    -> true")
+        compare(inc(dss[0],4,"->"),'punct function')
+        dss = dissect("=>")
+        compare(inc(dss[0],0,"=>"),'punct function bound')
+        dss = dissect("    => true")
+        compare(inc(dss[0],4,"=>"),'punct function bound')
+    })
+    section("fallback", function ()
+    {
+        rgs = ranges('text','unknown')
+        compare(inc(rgs,0,'text'),'text')
+        rgs = ranges('text','fish')
+        compare(inc(rgs,0,'text'),'text')
+        rgs = ranges(' ###','kode')
+        compare(inc(rgs,1,'###'),'punct comment triple')
     })
     section("comments", function ()
     {
@@ -69,21 +91,13 @@ toExport["kolor"] = function ()
     section("triple comment", function ()
     {
         rgs = ranges("###a###")
-        compare(inc(rgs,0,"#"),'punct comment triple')
-        compare(inc(rgs,1,"#"),'punct comment triple')
-        compare(inc(rgs,2,"#"),'punct comment triple')
+        compare(inc(rgs,0,'###'),'punct comment triple')
         compare(inc(rgs,3,"a"),'comment triple')
-        compare(inc(rgs,4,"#"),'punct comment triple')
-        compare(inc(rgs,5,"#"),'punct comment triple')
-        compare(inc(rgs,6,"#"),'punct comment triple')
+        compare(inc(rgs,4,'###'),'punct comment triple')
         dss = dissect("###\na\n###")
-        compare(inc(dss[0],0,"#"),'punct comment triple')
-        compare(inc(dss[0],1,"#"),'punct comment triple')
-        compare(inc(dss[0],2,"#"),'punct comment triple')
-        compare(inc(dss[1],0,"a"),'comment triple')
-        compare(inc(dss[2],0,"#"),'punct comment triple')
-        compare(inc(dss[2],1,"#"),'punct comment triple')
-        compare(inc(dss[2],2,"#"),'punct comment triple')
+        compare(inc(dss[0],0,'###'),'punct comment triple')
+        compare(inc(dss[1],0,'a'),'comment triple')
+        compare(inc(dss[2],0,'###'),'punct comment triple')
         lang('styl')
         dss = dissect("/*\na\n*/")
         compare(inc(dss[0],0,"/"),'punct comment triple')
@@ -307,6 +321,6 @@ toExport["kolor"] = function ()
         compare(inc(rgs,3,':'),'punct dictionary')
     })
 }
-toExport["kolor"]._section_ = true
+toExport["kulur"]._section_ = true
 toExport._test_ = true
 export default toExport

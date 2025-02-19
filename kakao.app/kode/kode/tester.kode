@@ -145,7 +145,7 @@ class Tester
                 catch err
                     log err
                     fails.push
-                        # stack: stack.concat([comps])
+                        stack: stack.concat([comps])
                         comps: comps
                         lhs:   "#{err}"
                         rhs:   ''
