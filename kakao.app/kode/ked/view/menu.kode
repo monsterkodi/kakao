@@ -61,9 +61,9 @@ function menu extends inputchoice
         
         items = util.linesForText
             """
+            new
             open ...
             recent ...
-            session ...
             help
             quit
             """

@@ -25,7 +25,7 @@ function state
         @hasFocus = false
 
         @s = immutable
-            lines:       ['']
+            lines:       [[]]
             selections:  []
             highlights:  []
             cursors:     [[0 0]]
@@ -98,7 +98,7 @@ function state
 
     setLines: lines =>
 
-        if empty lines ➜ lines = ['']
+        if empty lines ➜ lines = [[]]
 
         @syntax.setLines lines
 
@@ -122,7 +122,7 @@ function state
 
     clearLines: =>
 
-        @setLines ['']
+        @setLines [[]]
         @setMainCursor 0 0
 
     isValidLineIndex:   li => 0 <= li < @s.lines.length

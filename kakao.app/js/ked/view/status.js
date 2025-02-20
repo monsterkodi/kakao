@@ -26,7 +26,7 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var add, ci, colno, cols, cur, cursor, dt, dtl, dty, fg, fnl, hil, i, rcol, rdo, sel, set, x, y
+        var add, ci, colno, cols, cur, cursor, dt, dtl, dty, fg, fnl, hil, i, mx, rcol, rdo, sel, set, x, y
 
         x = 0
         y = 0
@@ -68,7 +68,8 @@ status = (function ()
         add('','status','status_dark')
         add((dty ? '' : ''),(dty ? 'status_dirty' : 'status_dark'),'status')
         add(' ','status_fg','status')
-        x += this.cells.draw_path(x,y,this.file,theme.status)
+        mx = this.cells.cols - 3
+        x += this.cells.draw_path(x,mx,y,this.file,theme.status)
         add(' ','status_fg','status')
         rcol = (rdo ? 'status_redo' : (dty ? 'status_dirty' : 'status_dark'))
         add((rdo ? '' : ''),rcol,'status')

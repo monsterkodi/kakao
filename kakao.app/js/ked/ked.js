@@ -142,7 +142,7 @@ ked [file]
         delete this.currentFile
         this.status.file = ''
         this.editor.state.syntax.ext = 'txt'
-        this.editor.state.loadLines([''])
+        this.editor.state.loadLines([[]])
         this.t.setCursor(0,0)
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         return this.redraw()
@@ -244,7 +244,7 @@ ked [file]
 
     KED.prototype["onKey"] = function (key, event)
     {
-        var handler, result, _230_93_
+        var handler, result
 
         switch (key)
         {
@@ -279,11 +279,11 @@ ked [file]
 
             case 'cmd+f':
             case 'ctrl+f':
-                return this.finder.show('ehllo')
+                return this.finder.show(this.editor.state.textForSelectionOrWordAtCursor())
 
             case 'cmd+.':
             case 'ctrl+.':
-                return this.quicky.gotoDir(((_230_93_=slash.dir(this.currentFile)) != null ? _230_93_ : process.cwd()))
+                return this.quicky.gotoDir(slash.dir(this.currentFile))
 
         }
 

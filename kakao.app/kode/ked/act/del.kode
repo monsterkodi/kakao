@@ -6,8 +6,8 @@
 0000000    00000000  0000000
 ###
 
-use ../../kxk ◆ kstr
-use ../util ◆ util
+use ../../kxk ▪ kstr kseg
+use ../util   ◆ util
 
 export
     
@@ -19,21 +19,20 @@ export
     
     delete: type mods ->
                 
-        if type in ['back' 'next'] and valid @s.selections
-            ⮐ @deleteSelection()
+        ⮐ @deleteSelection() if type in ['back' 'next'] and valid @s.selections
         
         lines   = @allLines()
         cursors = @allCursors()
+        
+        if cursors.length == 1 and type in ['back' 'next'] and util.isLinesPosOutside lines cursors[0]
+            ⮐ @setMainCursor lines[cursors[0]].length cursors[0]
             
         for ci in cursors.length-1..0
             
             cursor = cursors[ci]
             
             [x y] = cursor
-                
-            if type in ['back' 'next'] and cursors.length == 1 and util.isLinesPosOutside @s.lines [x y] 
-                ⮐ @setMainCursor @s.lines[y].length y
-            
+                            
             line = lines[y]
             
             remove = 1
@@ -50,7 +49,7 @@ export
                             y -= 1
                             x = lines[y].length
                             remove = 2
-                            line = lines[y] + line
+                            line = kseg.join lines[y] line
                             cursor[0] = x
                             cursor[1] = y
                     else
@@ -112,9 +111,3 @@ export
         @clearHighlights()
         @setLines   lines
         @setCursors cursors
-        
-        
-        
-        
-        
-        

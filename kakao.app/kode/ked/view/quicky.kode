@@ -123,10 +123,11 @@ function quicky extends inputchoice
     
     gotoDir: dir select ○=>
         
-        ⮐ if empty dir
+        dir = process.cwd() if empty dir
 
-        dir = slash.untilde dir
         # lf 'quicky.gotoDir' dir
+        
+        dir = slash.untilde dir
         
         try
             items =○ nfs.list dir recursive:false
@@ -309,7 +310,8 @@ function quicky extends inputchoice
                     else
                         @hideMap()
                         ⮐ @gotoDirOrOpenFile choice.link ? choice.path
-            'left'  
+                        
+            'left' 'delete'
                 
                 if choice.path
                     upDir = slash.dir @currentDir

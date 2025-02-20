@@ -147,12 +147,14 @@ function cells
             @set  x2  y '┤' fg bg
             @fill_rect x1+1 y x2-1 y '─' fg bg
         
-    draw_path: x y pth bg ->
+    draw_path: x mx y pth bg ->
 
         lastSlash = pth.lastIndexOf '/'
         lastDot   = pth.lastIndexOf '.'
         
-        for ci in 0...pth.length
+        si = max 0 pth.length - mx + x
+        
+        for ci in si...pth.length
             fg = ci > lastSlash ? 'file' : 'dir'
             fg = theme[fg]
             fg = color.darken(fg) if lastSlash <= lastDot <= ci
@@ -160,6 +162,6 @@ function cells
             @set x y pth[ci] fg bg
             x += 1
             
-        pth.length
+        pth.length - si
                         
 export cells

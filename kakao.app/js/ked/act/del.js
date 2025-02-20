@@ -1,6 +1,8 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-import kstr from "../../kxk/kstr.js"
+import kxk from "../../kxk.js"
+let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 import util from "../util/util.js"
 
@@ -14,15 +16,15 @@ export default {delete:function (type, mods)
     }
     lines = this.allLines()
     cursors = this.allCursors()
+    if (cursors.length === 1 && _k_.in(type,['back','next']) && util.isLinesPosOutside(lines,cursors[0]))
+    {
+        return this.setMainCursor(lines[cursors[0]].length,cursors[0])
+    }
     for (var _a_ = ci = cursors.length - 1, _b_ = 0; (_a_ <= _b_ ? ci <= 0 : ci >= 0); (_a_ <= _b_ ? ++ci : --ci))
     {
         cursor = cursors[ci]
         var _c_ = cursor; x = _c_[0]; y = _c_[1]
 
-        if (_k_.in(type,['back','next']) && cursors.length === 1 && util.isLinesPosOutside(this.s.lines,[x,y]))
-        {
-            return this.setMainCursor(this.s.lines[y].length,y)
-        }
         line = lines[y]
         remove = 1
         dc = 0
@@ -43,7 +45,7 @@ export default {delete:function (type, mods)
                         y -= 1
                         x = lines[y].length
                         remove = 2
-                        line = lines[y] + line
+                        line = kseg.join(lines[y],line)
                         cursor[0] = x
                         cursor[1] = y
                     }

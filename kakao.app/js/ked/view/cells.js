@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var cells
 
@@ -309,13 +309,14 @@ cells = (function ()
         }
     }
 
-    cells.prototype["draw_path"] = function (x, y, pth, bg)
+    cells.prototype["draw_path"] = function (x, mx, y, pth, bg)
     {
-        var ci, fg, lastDot, lastSlash
+        var ci, fg, lastDot, lastSlash, si
 
         lastSlash = pth.lastIndexOf('/')
         lastDot = pth.lastIndexOf('.')
-        for (var _a_ = ci = 0, _b_ = pth.length; (_a_ <= _b_ ? ci < pth.length : ci > pth.length); (_a_ <= _b_ ? ++ci : --ci))
+        si = _k_.max(0,pth.length - mx + x)
+        for (var _a_ = ci = si, _b_ = pth.length; (_a_ <= _b_ ? ci < pth.length : ci > pth.length); (_a_ <= _b_ ? ++ci : --ci))
         {
             fg = (ci > lastSlash ? 'file' : 'dir')
             fg = theme[fg]
@@ -330,7 +331,7 @@ cells = (function ()
             this.set(x,y,pth[ci],fg,bg)
             x += 1
         }
-        return pth.length
+        return pth.length - si
     }
 
     return cells

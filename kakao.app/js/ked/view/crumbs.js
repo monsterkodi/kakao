@@ -36,10 +36,10 @@ crumbs = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,0,-1,-1,' ',null,theme.selection)
+        this.cells.fill_rect(1,0,-2,0,' ',null,theme.selection)
         this.cells.set(0,0,'',theme.selection)
-        this.cells.draw_path(1,0,this.text,theme.selection)
-        return this.cells.set(-1,0,'',theme.selection)
+        this.cells.draw_path(1,this.cells.cols - 2,0,this.text,theme.selection)
+        return this.cells.set(this.cells.cols - 1,0,'',theme.selection)
     }
 
     return crumbs

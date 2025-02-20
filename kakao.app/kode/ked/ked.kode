@@ -107,7 +107,7 @@ function KED
         @status.file = ''
     
         @editor.state.syntax.ext = 'txt'
-        @editor.state.loadLines ['']
+        @editor.state.loadLines [[]]
         @t.setCursor 0 0
         
         @editor.mapscr?.reload()
@@ -226,8 +226,8 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+m'                      ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
-            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show 'ehllo'
-            'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile) ? process.cwd()
+            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor.state.textForSelectionOrWordAtCursor()
+            'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers
             break if result = handler.onKey key event

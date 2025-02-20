@@ -16,17 +16,19 @@ function crumbs extends view
 
         super screen name
         
-    set: text -> @text = trim text
-
+    set: text -> 
+    
+        @text = trim text
+        
     show: path => @set slash.tilde(path); @cells.rows = 1
 
     draw: ->
         
         ⮐ if @hidden()
 
-        @cells.fill_rect 0 0 -1 -1 ' ' null theme.selection
+        @cells.fill_rect 1 0 -2 0 ' ' null theme.selection
         @cells.set 0 0 '' theme.selection
-        @cells.draw_path 1 0 @text theme.selection
-        @cells.set -1 0 '' theme.selection
+        @cells.draw_path 1 @cells.cols-2 0 @text theme.selection
+        @cells.set @cells.cols-1 0 '' theme.selection
 
 export crumbs

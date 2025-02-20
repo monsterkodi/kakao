@@ -143,3 +143,19 @@ sel = r... -> s.allSelections() ▸ r
         
         txt text
         
+    ▸ empty
+    
+        s.syntax.ext = 'kode'
+        s.loadLines util.linesForText('')
+        
+        txt ''
+        cur 0 0
+        
+        s.insert '\n'
+        
+        txt '\n'
+        cur 0 1
+        
+        s.allLines() ▸ [[][]]
+        
+        

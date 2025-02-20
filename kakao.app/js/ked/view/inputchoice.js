@@ -191,6 +191,7 @@ inputchoice = (function ()
             {
                 case 'right':
                 case 'left':
+                case 'delete':
                 case 'space':
                     this.onChoiceAction(current,event.combo)
                     break

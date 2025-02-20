@@ -140,7 +140,7 @@ quicky = (function ()
 
         if (_k_.empty(dir))
         {
-            return
+            dir = process.cwd()
         }
         dir = slash.untilde(dir)
         try
@@ -330,7 +330,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _311_62_
+        var upDir, _312_62_
 
         switch (action)
         {
@@ -348,11 +348,12 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_311_62_=choice.link) != null ? _311_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_312_62_=choice.link) != null ? _312_62_ : choice.path))
                     }
                 }
                 break
             case 'left':
+            case 'delete':
                 if (choice.path)
                 {
                     upDir = slash.dir(this.currentDir)

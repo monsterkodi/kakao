@@ -69,7 +69,6 @@ function editor extends view
     
     draw: =>
         
-        # ⮐ if @cells.rows <= 0 or @cells.cols <= 0
         ⮐ if @hidden()
                 
         syntax     = @state.syntax
@@ -87,10 +86,6 @@ function editor extends view
             
             line = lines[y]
             
-            lf 'line' y line
-            # text
-            # if y < lines.length
-                # lf 'line' y line line.length
             c = 0
             for x in 0...@cells.cols
                 
@@ -102,7 +97,6 @@ function editor extends view
                 if ch == "#" ➜ checkColor = true
                 c += @cells.add c row ch fg bg
                     
-            # empty
             emptyColor = theme[@name + '_empty']
             if y < lines.length
                 
@@ -117,16 +111,7 @@ function editor extends view
                         # @cells.bg_rect 0 row linel row theme[@name]
                     # @cells.bg_fill max(0 linel) row -1 row emptyColor
                        
-                if checkColor
-                    if rngs = kstr.colorRanges kseg.str(line)
-                        cx = max(0 linel)+1
-                        for rng,idx in rngs
-                            clr = color.rgb rng.color
-                            dta = 4
-                            if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
-                            if idx == rngs.length-1 ➜ dta--
-                            @cells.bg_rect cx row cx+dta row rng.match; cx += dta
-                            if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
+                @drawColors line row linel emptyColor if checkColor
             # else
                 # @cells.bg_fill 0 row -1 row emptyColor
                                 
@@ -139,11 +124,8 @@ function editor extends view
             
             break if y >= @cells.rows
                 
-            # if 0 <= y < @cells.rows
-                    
             for x in highlight[0]...highlight[2]
                 
-                # if 0 <= x-view[0] < @cells.cols
                 @cells.set_bg x-view[0] y bg
                 @cells.set_char x-view[0] y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x-view[0] y)+'\x1b[4:0m'
                     
@@ -155,8 +137,6 @@ function editor extends view
                 
                 break if y >= @cells.rows
                 
-                # if view[1] <= li < view[1] + @cells.rows
-                    
                 if li == selection[1]
                     xs = selection[0]
                 else
@@ -171,7 +151,6 @@ function editor extends view
                 bg = color.darken bg if not @cells.screen.t.hasFocus
                 
                 for x in xs...xe
-                    # if 0 <= x-view[0] < @cells.cols
                     @cells.set_bg x-view[0] y bg 
                             
         fg = theme[@name + '_cursor_fg'] ? theme['editor_cursor_fg']
@@ -216,7 +195,25 @@ function editor extends view
         # @mapscr?.draw()
         
         super()
-            
+
+    #  0000000   0000000   000       0000000   00000000    0000000  
+    # 000       000   000  000      000   000  000   000  000       
+    # 000       000   000  000      000   000  0000000    0000000   
+    # 000       000   000  000      000   000  000   000       000  
+    #  0000000   0000000   0000000   0000000   000   000  0000000   
+    
+    drawColors: line row linel emptyColor ->
+        
+        if rngs = kstr.colorRanges kseg.str(line)
+            cx = max(0 linel)+1
+            for rng,idx in rngs
+                clr = color.rgb rng.color
+                dta = 4
+                if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
+                if idx == rngs.length-1 ➜ dta--
+                @cells.bg_rect cx row cx+dta row rng.match; cx += dta
+                if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
+        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   

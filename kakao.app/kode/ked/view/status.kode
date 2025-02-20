@@ -69,7 +69,8 @@ function status extends view
         
         add ' ' 'status_fg' 'status'
         
-        x += @cells.draw_path x y @file theme.status
+        mx = @cells.cols-3
+        x += @cells.draw_path x mx y @file theme.status
 
         # draw the redo indicator
         

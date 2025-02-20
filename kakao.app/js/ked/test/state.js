@@ -118,6 +118,17 @@ line 3`)
         s.toggleCommentAtSelectionOrCursorLines()
         txt(text)
     })
+    section("empty", function ()
+    {
+        s.syntax.ext = 'kode'
+        s.loadLines(util.linesForText(''))
+        txt('')
+        cur(0,0)
+        s.insert('\n')
+        txt('\n')
+        cur(0,1)
+        compare(s.allLines(),[[],[]])
+    })
 }
 toExport["state"]._section_ = true
 toExport._test_ = true

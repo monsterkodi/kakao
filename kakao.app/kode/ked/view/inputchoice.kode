@@ -156,7 +156,8 @@ function inputchoice extends view
 
             switch event.combo
                 'right'  
-                'left'  
+                'left' 
+                'delete'
                 'space' ➜ @onChoiceAction current event.combo
                     
             if event.char
