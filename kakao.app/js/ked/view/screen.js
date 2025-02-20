@@ -1,5 +1,3 @@
-var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.b7=_k_.k.F256(_k_.k.b(7))
-
 var screen
 
 import kxk from "../../kxk.js"
@@ -23,6 +21,7 @@ screen = (function ()
         this["set_bg"] = this["set_bg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
         this["set"] = this["set"].bind(this)
+        this["add"] = this["add"].bind(this)
         this["init"] = this["init"].bind(this)
         this.init()
     }
@@ -32,6 +31,24 @@ screen = (function ()
         this.rows = this.t.rows()
         this.cols = this.t.cols()
         return this.c = util.cells(this.cols,this.rows)
+    }
+
+    screen.prototype["add"] = function (x, y, char, fg, bg)
+    {
+        var w
+
+        w = kseg.width(char)
+        if (w > 1)
+        {
+            this.set(x,y,char,fg,bg)
+            this.set(x + 1,y,null,fg,bg)
+            return 2
+        }
+        else
+        {
+            this.set(x,y,char,fg,bg)
+            return 1
+        }
     }
 
     screen.prototype["set"] = function (x, y, char, fg, bg)
@@ -97,7 +114,7 @@ screen = (function ()
 
     screen.prototype["render"] = function ()
     {
-        var bg, char, end, fg, pbg, pfg, s, x, y
+        var bg, char, fg, pbg, pfg, s, x, y
 
         this.t.setCursor(0,0)
         s = ''
@@ -105,20 +122,18 @@ screen = (function ()
         pfg = ''
         for (var _a_ = y = 0, _b_ = this.rows; (_a_ <= _b_ ? y < this.rows : y > this.rows); (_a_ <= _b_ ? ++y : --y))
         {
-            x = 0
-            end = this.cols
-            while (x < end - 1)
+            for (var _c_ = x = 0, _d_ = this.cols - 1; (_c_ <= _d_ ? x < this.cols - 1 : x > this.cols - 1); (_c_ <= _d_ ? ++x : --x))
             {
                 char = this.c[y][x].char
+                if (char === null)
+                {
+                    continue
+                }
                 bg = color.bg_rgb(this.c[y][x].bg)
                 if (bg !== pbg)
                 {
                     s += bg
                     pbg = bg
-                    if (char === ' ')
-                    {
-                        char = '○'
-                    }
                 }
                 fg = color.fg_rgb(this.c[y][x].fg)
                 if (fg !== pfg)
@@ -127,12 +142,6 @@ screen = (function ()
                     pfg = fg
                 }
                 s += char
-                if (kseg.width(char) > 1)
-                {
-                    lf(char + ' ' + _k_.b7(char.codePointAt(0).toString(16)) + kseg.width(char))
-                    end -= 1
-                }
-                x += 1
             }
             s += '▪'
         }

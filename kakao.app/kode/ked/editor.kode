@@ -88,40 +88,41 @@ function editor extends view
             # text
             if y < lines.length
                 # lf 'line' y line line.length
+                c = 0
                 for x in 0...@cells.cols
                     if x+view[0] < line.length
                         fg = syntax.getColor x+view[0] y
                         ch = syntax.getChar x+view[0] y line[x+view[0]]
-                        # ch = line[x+view[0]]
-                        # lf 'ch' ch
                         if ch == "#" checkColor = true
-                        @cells.set x row ch fg bg
+                        c += @cells.add c row ch fg bg
+                    else
+                        break
                     
             # empty
-            emptyColor = theme[@name + '_empty']
-            if y < lines.length
-                linel = line.length - view[0]
-                if y == mainCursor[1]
-                    if linel > 0
-                        @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
-                    @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
-                else
-                    if linel > 0
-                        @cells.bg_rect 0 row linel row theme[@name]
-                    @cells.bg_fill max(0 linel) row -1 row emptyColor
-                      
-                if checkColor
-                    if rngs = kstr.colorRanges line
-                        cx = max(0 linel)+1
-                        for rng,idx in rngs
-                            clr = color.rgb rng.color
-                            dta = 4
-                            if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
-                            if idx == rngs.length-1 ➜ dta--
-                            @cells.bg_rect cx row cx+dta row rng.match; cx += dta
-                            if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
-            else
-                @cells.bg_fill 0 row -1 row emptyColor
+            # emptyColor = theme[@name + '_empty']
+            # if y < lines.length
+                # linel = line.length - view[0]
+                # if y == mainCursor[1]
+                    # if linel > 0
+                        # @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
+                    # @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
+                # else
+                    # if linel > 0
+                        # @cells.bg_rect 0 row linel row theme[@name]
+                    # @cells.bg_fill max(0 linel) row -1 row emptyColor
+#                       
+                # if checkColor
+                    # if rngs = kstr.colorRanges line
+                        # cx = max(0 linel)+1
+                        # for rng,idx in rngs
+                            # clr = color.rgb rng.color
+                            # dta = 4
+                            # if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
+                            # if idx == rngs.length-1 ➜ dta--
+                            # @cells.bg_rect cx row cx+dta row rng.match; cx += dta
+                            # if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
+            # else
+                # @cells.bg_fill 0 row -1 row emptyColor
                                 
         bg = theme.highlight
         bg = color.darken bg if not @cells.screen.t.hasFocus

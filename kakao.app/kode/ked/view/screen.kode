@@ -25,6 +25,24 @@ function screen
     #      000  000          000     
     # 0000000   00000000     000     
     
+    add: x y char fg bg =>
+        
+        w = kseg.width char
+        if w > 1
+
+            @set x   y char fg bg
+            @set x+1 y null fg bg
+            
+            # lf @c[0][5..11] if y == 0
+            
+            ⮐ 2
+        else
+            @set x y char fg bg
+            
+            # lf @c[0][5..11] if y == 0
+            
+            ⮐ 1
+    
     set: x y char fg bg =>
         
         if 0 <= x < @cols and 0 <= y < @rows
@@ -78,30 +96,28 @@ function screen
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
     render: =>
+        
+        # lf @c[0..0].map((r) -> r[5..10])
+        # lf @c[0][5..11] 
 
         @t.setCursor 0 0
         s = ''
         pbg = ''
         pfg = ''
         for y in 0...@rows
-            x = 0
-            end = @cols
-            while x < end-1
+            for x in 0...@cols-1
                 char = @c[y][x].char
+                continue if char == null
                 bg = color.bg_rgb @c[y][x].bg
                 if bg != pbg
                     s += bg
                     pbg = bg
-                    char = '○' if char == ' '
+                    # char = '○' if char == ' '
                 fg = color.fg_rgb @c[y][x].fg
                 if fg != pfg
                     s += fg
                     pfg = fg
                 s += char
-                if kseg.width(char) > 1
-                    lf char + ' ' + b7(char.codePointAt(0).toString(16)) + kseg.width(char)
-                    end -= 1
-                x += 1
             s += '▪'
         # lf s
         @t.write s[0..-2]

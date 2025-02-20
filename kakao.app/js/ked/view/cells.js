@@ -32,6 +32,7 @@ cells = (function ()
         this["set_bg"] = this["set_bg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
         this["set"] = this["set"].bind(this)
+        this["add"] = this["add"].bind(this)
         this["layout"] = this["layout"].bind(this)
         this.x = this.y = this.cols = this.rows = 0
     }
@@ -52,6 +53,11 @@ cells = (function ()
     cells.prototype["wy"] = function (y)
     {
         return (y < 0 ? this.y + this.rows + y : this.y + y)
+    }
+
+    cells.prototype["add"] = function (x, y, char, fg, bg)
+    {
+        return this.screen.add(this.wx(x),this.wy(y),char,fg,bg)
     }
 
     cells.prototype["set"] = function (x, y, char, fg, bg)
@@ -240,7 +246,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _117_16_, _125_20_, _126_20_
+        var bg, fg, x, y, _118_16_, _126_20_, _127_20_
 
         if (x1 < 0)
         {
@@ -259,9 +265,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_117_16_=opt.pad) != null ? _117_16_ : [1,0])
-        fg = ((_125_20_=opt.fg) != null ? _125_20_ : '#888888')
-        bg = ((_126_20_=opt.bg) != null ? _126_20_ : null)
+        opt.pad = ((_118_16_=opt.pad) != null ? _118_16_ : [1,0])
+        fg = ((_126_20_=opt.fg) != null ? _126_20_ : '#888888')
+        bg = ((_127_20_=opt.bg) != null ? _127_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

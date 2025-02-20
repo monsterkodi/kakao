@@ -79,14 +79,17 @@ use .. ◆ kstr kseg
     ▸ width 
     
         kseg.width 'a'           ▸ 1
+        kseg.width '🔨'          ▸ 2
+        kseg.width '🔧'          ▸ 2
         kseg.width '字'          ▸ 2
         kseg.width '的'          ▸ 2
         kseg.width '块'          ▸ 2
         kseg.width '模'          ▸ 2
         kseg.width '字的模块'    ▸ 8
-        kseg.width '🧑'          ▸ 2
+        kseg.width '🌾'          ▸ 2
         kseg.width '👁'           ▸ 2
-        kseg.width '🧑‍🌾'          ▸ 4   
+        kseg.width '🧑‍🌾'          ▸ 4
+        kseg.width '🧑'         ▸ 2
         
         
         

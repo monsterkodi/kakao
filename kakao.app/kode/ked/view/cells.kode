@@ -24,6 +24,7 @@ function cells
     wx: x -> x < 0 ? @x+@cols+x : @x+x
     wy: y -> y < 0 ? @y+@rows+y : @y+y
     
+    add:      x y char fg bg => @screen.add      @wx(x) @wy(y) char fg bg
     set:      x y char fg bg => @screen.set      @wx(x) @wy(y) char fg bg
     set_char: x y char       => @screen.set_char @wx(x) @wy(y) char
     set_bg:   x y bg         => @screen.set_bg   @wx(x) @wy(y) bg

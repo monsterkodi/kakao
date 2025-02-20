@@ -70,14 +70,17 @@ bbb`),[['a','a','a'],[],['b','b','b']])
     section("width", function ()
     {
         compare(kseg.width('a'),1)
+        compare(kseg.width('🔨'),2)
+        compare(kseg.width('🔧'),2)
         compare(kseg.width('字'),2)
         compare(kseg.width('的'),2)
         compare(kseg.width('块'),2)
         compare(kseg.width('模'),2)
         compare(kseg.width('字的模块'),8)
-        compare(kseg.width('🧑'),2)
+        compare(kseg.width('🌾'),2)
         compare(kseg.width('👁'),2)
         compare(kseg.width('🧑‍🌾'),4)
+        compare(kseg.width('🧑'),2)
     })
 }
 toExport["kseg"]._section_ = true
