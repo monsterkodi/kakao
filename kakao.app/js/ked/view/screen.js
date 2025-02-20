@@ -122,7 +122,7 @@ screen = (function ()
         pfg = ''
         for (var _a_ = y = 0, _b_ = this.rows; (_a_ <= _b_ ? y < this.rows : y > this.rows); (_a_ <= _b_ ? ++y : --y))
         {
-            for (var _c_ = x = 0, _d_ = this.cols - 1; (_c_ <= _d_ ? x < this.cols - 1 : x > this.cols - 1); (_c_ <= _d_ ? ++x : --x))
+            for (var _c_ = x = 0, _d_ = this.cols; (_c_ <= _d_ ? x < this.cols : x > this.cols); (_c_ <= _d_ ? ++x : --x))
             {
                 char = this.c[y][x].char
                 if (char === null)
@@ -141,11 +141,14 @@ screen = (function ()
                     s += fg
                     pfg = fg
                 }
-                s += char
+                s += (char != null ? char : '?')
             }
-            s += '▪'
+            if (y !== this.rows - 1)
+            {
+                s += '\n'
+            }
         }
-        return this.t.write(s.slice(0, -1))
+        return this.t.write(s)
     }
 
     return screen

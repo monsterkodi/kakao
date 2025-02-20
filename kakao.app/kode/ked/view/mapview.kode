@@ -83,7 +83,7 @@ function mapview extends view
         @clearImages()
 
         # prof.start @state.name+'map'
-        
+        # lf  'mapview.createImages' @cells.cols
         w = @cells.cols * t.cellsz[0]
         bytes = w*3
         
@@ -96,7 +96,7 @@ function mapview extends view
         
         dataForLine = line =>
             
-            data.fill 0
+            data.fill 10
             
             for x in 0...line.length
                 

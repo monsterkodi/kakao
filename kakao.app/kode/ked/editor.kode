@@ -6,7 +6,7 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../kxk ◆ events matchr kstr post
+use ../kxk ◆ events matchr kstr kseg post
 use ./util ◆ util color
 use ./view ◆ view scroll gutter mapscr mapview
 use        ◆ state theme
@@ -58,7 +58,7 @@ function editor extends view
             m = @mapscr.visible() ? 10 : 0
             @mapscr.layout x+w-sr-10   y   m   h
             
-        @cells.layout x+sl+g  y   w-sr-g-m    h
+        @cells.layout x+sl+g  y   w-s-g-m    h
         @state.initView()
         
     # 0000000    00000000    0000000   000   000  
@@ -69,8 +69,9 @@ function editor extends view
     
     draw: =>
         
-        ⮐ if @cells.rows <= 0 or @cells.cols <= 0
-        
+        # ⮐ if @cells.rows <= 0 or @cells.cols <= 0
+        ⮐ if @hidden()
+                
         syntax     = @state.syntax
         s          = @state.s
         view       = s.view.asMutable()
@@ -82,26 +83,31 @@ function editor extends view
         for row in 0...@cells.rows
             
             y = row+view[1]
+            break if y >= lines.length
             
-            line = lines[y] if y < lines.length
+            line = lines[y]
             
+            lf 'line' y line
             # text
-            if y < lines.length
+            # if y < lines.length
                 # lf 'line' y line line.length
-                c = 0
-                for x in 0...@cells.cols
-                    if x+view[0] < line.length
-                        fg = syntax.getColor x+view[0] y
-                        ch = syntax.getChar x+view[0] y line[x+view[0]]
-                        if ch == "#" checkColor = true
-                        c += @cells.add c row ch fg bg
-                    else
-                        break
+            c = 0
+            for x in 0...@cells.cols
+                
+                si = x+view[0]
+                break if si >= line.length
+
+                fg = syntax.getColor si y
+                ch = syntax.getChar si y line[si]
+                if ch == "#" ➜ checkColor = true
+                c += @cells.add c row ch fg bg
                     
             # empty
-            # emptyColor = theme[@name + '_empty']
-            # if y < lines.length
-                # linel = line.length - view[0]
+            emptyColor = theme[@name + '_empty']
+            if y < lines.length
+                
+                linel = line.length - view[0]
+                
                 # if y == mainCursor[1]
                     # if linel > 0
                         # @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
@@ -110,17 +116,17 @@ function editor extends view
                     # if linel > 0
                         # @cells.bg_rect 0 row linel row theme[@name]
                     # @cells.bg_fill max(0 linel) row -1 row emptyColor
-#                       
-                # if checkColor
-                    # if rngs = kstr.colorRanges line
-                        # cx = max(0 linel)+1
-                        # for rng,idx in rngs
-                            # clr = color.rgb rng.color
-                            # dta = 4
-                            # if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
-                            # if idx == rngs.length-1 ➜ dta--
-                            # @cells.bg_rect cx row cx+dta row rng.match; cx += dta
-                            # if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
+                       
+                if checkColor
+                    if rngs = kstr.colorRanges kseg.str(line)
+                        cx = max(0 linel)+1
+                        for rng,idx in rngs
+                            clr = color.rgb rng.color
+                            dta = 4
+                            if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
+                            if idx == rngs.length-1 ➜ dta--
+                            @cells.bg_rect cx row cx+dta row rng.match; cx += dta
+                            if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
             # else
                 # @cells.bg_fill 0 row -1 row emptyColor
                                 
@@ -130,14 +136,16 @@ function editor extends view
         for highlight in s.highlights
             
             y = highlight[1]-view[1]
+            
+            break if y >= @cells.rows
                 
-            if 0 <= y < @cells.rows
+            # if 0 <= y < @cells.rows
                     
-                for x in highlight[0]...highlight[2]
-                    
-                    if 0 <= x-view[0] < @cells.cols
-                        @cells.set_bg x-view[0] y bg
-                        @cells.set_char x-view[0] y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x-view[0] y)+'\x1b[4:0m'
+            for x in highlight[0]...highlight[2]
+                
+                # if 0 <= x-view[0] < @cells.cols
+                @cells.set_bg x-view[0] y bg
+                @cells.set_char x-view[0] y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x-view[0] y)+'\x1b[4:0m'
                     
         for selection in s.selections
             
@@ -145,24 +153,26 @@ function editor extends view
                 
                 y = li-view[1]
                 
-                if view[1] <= li < view[1] + @cells.rows
+                break if y >= @cells.rows
+                
+                # if view[1] <= li < view[1] + @cells.rows
                     
-                    if li == selection[1]
-                        xs = selection[0]
-                    else
-                        xs = 0
-                        
-                    if li == selection[3]
-                        xe = selection[2]
-                    else
-                        xe = lines[li].length # segs
+                if li == selection[1]
+                    xs = selection[0]
+                else
+                    xs = 0
+                    
+                if li == selection[3]
+                    xe = selection[2]
+                else
+                    xe = lines[li].length # segs
 
-                    bg = util.isSpanLineRange(lines selection) ? theme.selection : theme.selection_line
-                    bg = color.darken bg if not @cells.screen.t.hasFocus
-                    
-                    for x in xs...xe
-                        if 0 <= x-view[0] < @cells.cols
-                            @cells.set_bg x-view[0] y bg 
+                bg = util.isSpanLineRange(lines selection) ? theme.selection : theme.selection_line
+                bg = color.darken bg if not @cells.screen.t.hasFocus
+                
+                for x in xs...xe
+                    # if 0 <= x-view[0] < @cells.cols
+                    @cells.set_bg x-view[0] y bg 
                             
         fg = theme[@name + '_cursor_fg'] ? theme['editor_cursor_fg']
         bg = theme[@name + '_cursor_multi'] ? theme['editor_cursor_multi']
@@ -203,7 +213,7 @@ function editor extends view
 
         @scroll?.draw()
         @gutter?.draw()
-        @mapscr?.draw()
+        # @mapscr?.draw()
         
         super()
             

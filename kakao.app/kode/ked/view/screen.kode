@@ -97,15 +97,12 @@ function screen
     
     render: =>
         
-        # lf @c[0..0].map((r) -> r[5..10])
-        # lf @c[0][5..11] 
-
         @t.setCursor 0 0
         s = ''
         pbg = ''
         pfg = ''
         for y in 0...@rows
-            for x in 0...@cols-1
+            for x in 0...@cols
                 char = @c[y][x].char
                 continue if char == null
                 bg = color.bg_rgb @c[y][x].bg
@@ -117,9 +114,8 @@ function screen
                 if fg != pfg
                     s += fg
                     pfg = fg
-                s += char
-            s += '▪'
-        # lf s
-        @t.write s[0..-2]
+                s += char ? '?'
+            s += '\n' if y != @rows-1
+        @t.write s
         
 export screen

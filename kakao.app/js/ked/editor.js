@@ -1,10 +1,11 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
 import events from "../kxk/events.js"
 import matchr from "../kxk/matchr.js"
 import kstr from "../kxk/kstr.js"
+import kseg from "../kxk/kseg.js"
 import post from "../kxk/post.js"
 
 import util from "./util/util.js"
@@ -96,15 +97,15 @@ editor = (function ()
             m = (this.mapscr.visible() ? 10 : 0)
             this.mapscr.layout(x + w - sr - 10,y,m,h)
         }
-        this.cells.layout(x + sl + g,y,w - sr - g - m,h)
+        this.cells.layout(x + sl + g,y,w - s - g - m,h)
         return this.state.initView()
     }
 
     editor.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, cursor, fg, highlight, li, line, lines, mainCursor, row, s, selection, syntax, view, x, xe, xs, y, _167_41_, _168_44_, _204_15_, _205_15_, _206_15_, _80_26_
+        var bg, c, ch, checkColor, clr, cursor, cx, dta, emptyColor, fg, highlight, idx, li, line, linel, lines, mainCursor, rng, rngs, row, s, selection, si, syntax, view, x, xe, xs, y, _177_41_, _178_44_, _214_15_, _215_15_, _81_26_
 
-        if (this.cells.rows <= 0 || this.cells.cols <= 0)
+        if (this.hidden())
         {
             return
         }
@@ -113,32 +114,64 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_80_26_=theme[this.name]) != null ? _80_26_ : theme['editor'])
+        bg = ((_81_26_=theme[this.name]) != null ? _81_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
-            if (y < lines.length)
+            if (y >= lines.length)
             {
-                line = lines[y]
+                break
             }
+            line = lines[y]
+            lf('line',y,line)
+            c = 0
+            for (var _c_ = x = 0, _d_ = this.cells.cols; (_c_ <= _d_ ? x < this.cells.cols : x > this.cells.cols); (_c_ <= _d_ ? ++x : --x))
+            {
+                si = x + view[0]
+                if (si >= line.length)
+                {
+                    break
+                }
+                fg = syntax.getColor(si,y)
+                ch = syntax.getChar(si,y,line[si])
+                if (ch === "#")
+                {
+                    checkColor = true
+                }
+                c += this.cells.add(c,row,ch,fg,bg)
+            }
+            emptyColor = theme[this.name + '_empty']
             if (y < lines.length)
             {
-                c = 0
-                for (var _c_ = x = 0, _d_ = this.cells.cols; (_c_ <= _d_ ? x < this.cells.cols : x > this.cells.cols); (_c_ <= _d_ ? ++x : --x))
+                linel = line.length - view[0]
+                if (checkColor)
                 {
-                    if (x + view[0] < line.length)
+                    if (rngs = kstr.colorRanges(kseg.str(line)))
                     {
-                        fg = syntax.getColor(x + view[0],y)
-                        ch = syntax.getChar(x + view[0],y,line[x + view[0]])
-                        if (ch === "#")
+                        cx = _k_.max(0,linel) + 1
+                        var list = _k_.list(rngs)
+                        for (idx = 0; idx < list.length; idx++)
                         {
+                            rng = list[idx]
+                            clr = color.rgb(rng.color)
+                            dta = 4
+                            if (idx === 0)
+                            {
+                                this.cells.set(cx,row,'',clr,emptyColor)
+                                cx += 1
+                                dta--
+                            }
+                            if (idx === rngs.length - 1)
+                            {
+                                dta--
+                            }
+                            this.cells.bg_rect(cx,row,cx + dta,row,rng.match)
+                            cx += dta
+                            if (idx === rngs.length - 1)
+                            {
+                                this.cells.set(cx,row,'',clr,emptyColor)
+                            }
                         }
-                        checkColor = true
-                        c += this.cells.add(c,row,ch,fg,bg)
-                    }
-                    else
-                    {
-                        break
                     }
                 }
             }
@@ -148,73 +181,69 @@ editor = (function ()
         {
             bg = color.darken(bg)
         }
-        var list = _k_.list(s.highlights)
-        for (var _e_ = 0; _e_ < list.length; _e_++)
+        var list1 = _k_.list(s.highlights)
+        for (var _f_ = 0; _f_ < list1.length; _f_++)
         {
-            highlight = list[_e_]
+            highlight = list1[_f_]
             y = highlight[1] - view[1]
-            if ((0 <= y && y < this.cells.rows))
+            if (y >= this.cells.rows)
             {
-                for (var _f_ = x = highlight[0], _10_ = highlight[2]; (_f_ <= _10_ ? x < highlight[2] : x > highlight[2]); (_f_ <= _10_ ? ++x : --x))
-                {
-                    if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
-                    {
-                        this.cells.set_bg(x - view[0],y,bg)
-                        this.cells.set_char(x - view[0],y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - view[0],y) + '\x1b[4:0m')
-                    }
-                }
+                break
+            }
+            for (var _10_ = x = highlight[0], _11_ = highlight[2]; (_10_ <= _11_ ? x < highlight[2] : x > highlight[2]); (_10_ <= _11_ ? ++x : --x))
+            {
+                this.cells.set_bg(x - view[0],y,bg)
+                this.cells.set_char(x - view[0],y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - view[0],y) + '\x1b[4:0m')
             }
         }
-        var list1 = _k_.list(s.selections)
-        for (var _11_ = 0; _11_ < list1.length; _11_++)
+        var list2 = _k_.list(s.selections)
+        for (var _12_ = 0; _12_ < list2.length; _12_++)
         {
-            selection = list1[_11_]
-            for (var _12_ = li = selection[1], _13_ = selection[3]; (_12_ <= _13_ ? li <= selection[3] : li >= selection[3]); (_12_ <= _13_ ? ++li : --li))
+            selection = list2[_12_]
+            for (var _13_ = li = selection[1], _14_ = selection[3]; (_13_ <= _14_ ? li <= selection[3] : li >= selection[3]); (_13_ <= _14_ ? ++li : --li))
             {
                 y = li - view[1]
-                if ((view[1] <= li && li < view[1] + this.cells.rows))
+                if (y >= this.cells.rows)
                 {
-                    if (li === selection[1])
-                    {
-                        xs = selection[0]
-                    }
-                    else
-                    {
-                        xs = 0
-                    }
-                    if (li === selection[3])
-                    {
-                        xe = selection[2]
-                    }
-                    else
-                    {
-                        xe = lines[li].length
-                    }
-                    bg = (util.isSpanLineRange(lines,selection) ? theme.selection : theme.selection_line)
-                    if (!this.cells.screen.t.hasFocus)
-                    {
-                        bg = color.darken(bg)
-                    }
-                    for (var _14_ = x = xs, _15_ = xe; (_14_ <= _15_ ? x < xe : x > xe); (_14_ <= _15_ ? ++x : --x))
-                    {
-                        if ((0 <= x - view[0] && x - view[0] < this.cells.cols))
-                        {
-                            this.cells.set_bg(x - view[0],y,bg)
-                        }
-                    }
+                    break
+                }
+                if (li === selection[1])
+                {
+                    xs = selection[0]
+                }
+                else
+                {
+                    xs = 0
+                }
+                if (li === selection[3])
+                {
+                    xe = selection[2]
+                }
+                else
+                {
+                    xe = lines[li].length
+                }
+                bg = (util.isSpanLineRange(lines,selection) ? theme.selection : theme.selection_line)
+                if (!this.cells.screen.t.hasFocus)
+                {
+                    bg = color.darken(bg)
+                }
+                for (var _15_ = x = xs, _16_ = xe; (_15_ <= _16_ ? x < xe : x > xe); (_15_ <= _16_ ? ++x : --x))
+                {
+                    this.cells.set_bg(x - view[0],y,bg)
                 }
             }
         }
-        fg = ((_167_41_=theme[this.name + '_cursor_fg']) != null ? _167_41_ : theme['editor_cursor_fg'])
-        bg = ((_168_44_=theme[this.name + '_cursor_multi']) != null ? _168_44_ : theme['editor_cursor_multi'])
+        fg = ((_177_41_=theme[this.name + '_cursor_fg']) != null ? _177_41_ : theme['editor_cursor_fg'])
+        bg = ((_178_44_=theme[this.name + '_cursor_multi']) != null ? _178_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
         }
-        var list2 = _k_.list(s.cursors)
-        for (var _16_ = 0; _16_ < list2.length; _16_++)
+        var list3 = _k_.list(s.cursors)
+        for (var _17_ = 0; _17_ < list3.length; _17_++)
         {
-            cursor = list2[_16_]
+            cursor = list3[_17_]
             if (_k_.eql(cursor, mainCursor))
             {
                 continue
@@ -255,15 +284,14 @@ editor = (function ()
         }
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
-        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
         return editor.__super__.draw.call(this)
     }
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _218_30_, _218_39_, _219_30_, _229_41_
+        var col, row, start, x, y, _228_30_, _228_39_, _229_30_, _239_41_
 
-        if (((_218_30_=this.mapscr) != null ? typeof (_218_39_=_218_30_.onMouse) === "function" ? _218_39_(event) : undefined : undefined))
+        if (((_228_30_=this.mapscr) != null ? typeof (_228_39_=_228_30_.onMouse) === "function" ? _228_39_(event) : undefined : undefined))
         {
             return true
         }

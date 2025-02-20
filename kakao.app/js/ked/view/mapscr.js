@@ -108,33 +108,18 @@ mapscr = (function ()
 
     mapscr.prototype["clearImages"] = function ()
     {
-        if (this.knobId)
-        {
-            this.cells.screen.t.deleteImage(this.knobId)
-        }
-        delete this.knobId
         return mapscr.__super__.clearImages.call(this)
     }
 
     mapscr.prototype["createImages"] = function ()
     {
-        var data, i, t, w
+        var t
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
         {
             return
         }
-        w = t.cellsz[0]
-        data = Buffer.alloc(w * 3)
-        for (var _a_ = i = 0, _b_ = w; (_a_ <= _b_ ? i < w : i > w); (_a_ <= _b_ ? ++i : --i))
-        {
-            data[i * 3 + 0] = 255
-            data[i * 3 + 1] = 55
-            data[i * 3 + 2] = 155
-        }
-        this.knobId = this.imgId + 0xeeee
-        t.sendImageData(data,this.knobId,w,1)
         return mapscr.__super__.createImages.call(this)
     }
 
@@ -147,7 +132,7 @@ mapscr = (function ()
         {
             return
         }
-        t.placeImageStretched(this.knobId,this.cells.x,this.cells.y,2,3,0,0)
+        this.cells.fill_rect(0,0,-1,-1,'●','#f00','#ff0')
         return mapscr.__super__.draw.call(this)
     }
 

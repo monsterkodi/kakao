@@ -24,11 +24,13 @@ function cells
     wx: x -> x < 0 ? @x+@cols+x : @x+x
     wy: y -> y < 0 ? @y+@rows+y : @y+y
     
-    add:      x y char fg bg => @screen.add      @wx(x) @wy(y) char fg bg
-    set:      x y char fg bg => @screen.set      @wx(x) @wy(y) char fg bg
-    set_char: x y char       => @screen.set_char @wx(x) @wy(y) char
-    set_bg:   x y bg         => @screen.set_bg   @wx(x) @wy(y) bg
-    set_fg:   x y fg         => @screen.set_fg   @wx(x) @wy(y) fg
+    inside: x y -> 0 <= x < @cols and 0 <= y < @rows
+    
+    add:      x y char fg bg => if @inside(x y) ➜ @screen.add      @wx(x) @wy(y) char fg bg else Infinity
+    set:      x y char fg bg => if @inside(x y) ➜ @screen.set      @wx(x) @wy(y) char fg bg
+    set_char: x y char       => if @inside(x y) ➜ @screen.set_char @wx(x) @wy(y) char
+    set_bg:   x y bg         => if @inside(x y) ➜ @screen.set_bg   @wx(x) @wy(y) bg
+    set_fg:   x y fg         => if @inside(x y) ➜ @screen.set_fg   @wx(x) @wy(y) fg
     
     #  0000000   00000000  000000000  
     # 000        000          000     
@@ -101,9 +103,9 @@ function cells
         y2 = @rows + y2 if y2 < 0
         
         for row in y1..y2
-            if row < @rows
+            # if row < @rows
                 for col in x1..x2
-                    if col < @cols
+                    # if col < @cols
                         @set col row char fg bg
     
     draw_frame: x1 y1 x2 y2 opt =>

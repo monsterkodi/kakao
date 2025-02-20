@@ -58,14 +58,19 @@ view = (function ()
         return {redraw:true}
     }
 
-    view.prototype["visible"] = function ()
-    {
-        return this.cells.rows > 0
-    }
-
     view.prototype["hidden"] = function ()
     {
         return this.cells.rows <= 0
+    }
+
+    view.prototype["invisible"] = function ()
+    {
+        return this.cells.rows <= 0
+    }
+
+    view.prototype["visible"] = function ()
+    {
+        return this.cells.rows > 0
     }
 
     view.prototype["toggle"] = function ()
@@ -82,7 +87,7 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _46_13_
+        var _47_13_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
@@ -94,7 +99,7 @@ view = (function ()
 
     view.prototype["draw"] = function ()
     {
-        var _56_18_
+        var _57_18_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

@@ -395,6 +395,11 @@ text = (function ()
         return [0,y,lines[y].length,y]
     }
 
+    text["colsOfLine"] = function (lines, y)
+    {
+        return [0,y,kseg.str(lines[y]).length,y]
+    }
+
     text["rangeOfClosestChunkToPos"] = function (lines, pos)
     {
         var r, x, y

@@ -130,7 +130,7 @@ mapview = (function ()
         {
             var b, ch, clss, f, g, r, rgb, x, xr
 
-            data.fill(0)
+            data.fill(10)
             for (var _a_ = x = 0, _b_ = line.length; (_a_ <= _b_ ? x < line.length : x > line.length); (_a_ <= _b_ ? ++x : --x))
             {
                 if (x * this.pixelsPerCol > w)
