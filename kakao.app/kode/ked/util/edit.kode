@@ -30,14 +30,14 @@ function edit
         # lf y5("insert text ▸#{text}◂")
             
         text  = kstr.detab text
-        txtls = @linesForText text  # the text to insert split into lines
+        txtls = @seglsForText text  # the text to insert split into segls
         newls = []                      # list of new lines 
         newpl = []                      # list of new positions
         rngs  = @rangesForLinePositions lines posl # list of ranges for lines split by positions
         
         for rng,idx in rngs
             
-            after = @linesForRange lines rng # all the lines in the current range (after current position)
+            after = @seglsForRange lines rng # all the lines in the current range (after current position)
                         
             # lf "#{idx} after" after
             
@@ -137,7 +137,7 @@ function edit
                     lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
                     
                     if partialLast
-                        lines.splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
+                        lines.splice rng[1] 2 lines[rng[1]].concat(lines[rng[1]+1])
                
         [lines posl]
         

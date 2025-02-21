@@ -26,7 +26,14 @@ kseg.lines = s ->
     lines: lines
     segls: segls
     
-kseg.segls = s -> kseg.lines(s).segls
+kseg.segls = s -> 
+
+    if 
+        s is str ➜ kseg.lines(s).segls
+        s is arr 
+            if 
+                s[0] is str ➜ s.map(kseg)
+                s[0] is arr ➜  s
     
 kseg.str = a ->
 
@@ -87,13 +94,19 @@ kseg.startsWith = a prefix ->
     segs = kseg prefix
     a[0...segs.length] eql segs
     
-kseg.numIndent = a ->
-        
-    i = 0
-    for s in a
-        ⮐ i if s != ' '
-        i += 1
+kseg.headCount = a c ->
+    
+    for s,i in a
+        ⮐ i if s != c
     i
+    
+kseg.tailCount = a c ->
+    
+    for i in 0...a.length
+        ⮐ i if a[a.length-1-i] != c
+    i
+    
+kseg.numIndent = a -> kseg.headCount a ' '
         
 kseg.splitAtIndent = a ->
         
@@ -110,8 +123,18 @@ kseg.repeat = n s=' ' ->
         a = a.concat s
     a
     
+kseg.trim = s ->
+    
+    ⮐ [] if empty s
+    s = kseg s
+    hc = kseg.headCount(s ' ')
+    tc = kseg.tailCount(s ' ')
+    s[hc..s.length-1-tc]
+    
 kseg.width = c ->
     
+    ⮐ 0 if empty c
+    c = kseg.str c
     cpz = c.codePointAt 0
     str = String.fromCodePoint cpz
     # log c c.length cpz.toString(16) String.fromCodePoint(cpz)

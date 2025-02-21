@@ -292,6 +292,9 @@ export default {allCursors:function ()
             return true
         }
     }
+},wordAtCursor:function ()
+{
+    return util.wordAtPos(this.allLines(),this.mainCursor())
 },setMainCursorAndSelect:function (x, y)
 {
     this.setSelections(util.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])

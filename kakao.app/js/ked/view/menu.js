@@ -66,6 +66,7 @@ open ...
 recent ...
 help
 quit`)
+        lf('menu.show',items)
         if (!this.greet)
         {
             items.splice(items.length - 2,0,'about')

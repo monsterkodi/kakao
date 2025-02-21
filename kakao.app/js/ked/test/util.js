@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var c, cells, l, line, lines, rect, spans
+var c, cells, l, line, lines, rect, segls, spans
 
 import util from "../util/util.js"
 
@@ -290,21 +290,21 @@ abc`)
         compare(util.splitLineRanges(lines,[[0,0,1,2]]),[[0,0,1,0],[0,1,0,1],[0,2,1,2]])
         compare(util.splitLineRanges(lines,[[0,2,1,2],[2,2,3,2]]),[[0,2,1,2],[2,2,3,2]])
     })
-    section("linesForText", function ()
+    section("seglsForText", function ()
     {
-        lines = util.linesForText(`123
+        segls = util.seglsForText(`123
 456
 
 abc
 def`)
-        compare(lines,[['1','2','3'],['4','5','6'],[],['a','b','c'],['d','e','f']])
-        section("linesForRange", function ()
+        compare(segls,[['1','2','3'],['4','5','6'],[],['a','b','c'],['d','e','f']])
+        section("seglsForRange", function ()
         {
-            compare(util.linesForRange(lines,[0,0,3,4]),[['1','2','3'],['4','5','6'],[],['a','b','c'],['d','e','f']])
-            compare(util.linesForRange(lines,[0,0,0,0]),[[]])
-            compare(util.linesForRange(lines,[0,0,1,0]),[['1']])
-            compare(util.linesForRange(lines,[3,0,0,1]),[[],[]])
-            compare(util.linesForRange(lines,[3,0,1,1]),[[],['4']])
+            compare(util.seglsForRange(segls,[0,0,3,4]),[['1','2','3'],['4','5','6'],[],['a','b','c'],['d','e','f']])
+            compare(util.seglsForRange(segls,[0,0,0,0]),[[]])
+            compare(util.seglsForRange(segls,[0,0,1,0]),[['1']])
+            compare(util.seglsForRange(segls,[3,0,0,1]),[[],[]])
+            compare(util.seglsForRange(segls,[3,0,1,1]),[[],['4']])
         })
     })
     section("rangesForLinePositions", function ()
@@ -323,21 +323,24 @@ def`)
     })
     section("deleteLineRangesAndAdjustPositions", function ()
     {
-        lines = ['1234567890','abcdefghij']
+        lines = util.seglsForText(`1234567890
+abcdefghij`)
         compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,0]],[[5,1]]),[lines,[[5,1]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,6,0]],[[5,1]]),[['123457890','abcdefghij'],[[5,1]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,1]],[[5,1]]),[['12345fghij'],[[5,0]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,1,1,1]],[[0,1]]),[['1234567890','bcdefghij'],[[0,1]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,3,1]],[[3,1]]),[['12345defghij'],[[5,0]]])
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[3,0,5,1]],[[3,1]]),[['123fghij'],[[3,0]]])
-        lines = ['line 1','line 2','line 3']
-        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,0,6,1]],[[6,0],[6,1]]),[['line 3'],[[0,0]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,6,0]],[[5,1]]),[[kseg('123457890'),kseg('abcdefghij')],[[5,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,5,1]],[[5,1]]),[[kseg('12345fghij')],[[5,0]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,1,1,1]],[[0,1]]),[[kseg('1234567890'),kseg('bcdefghij')],[[0,1]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[5,0,3,1]],[[3,1]]),[[kseg('12345defghij')],[[5,0]]])
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[3,0,5,1]],[[3,1]]),[[kseg('123fghij')],[[3,0]]])
+        lines = util.seglsForText(`line 1
+line 2
+line 3`)
+        compare(util.deleteLineRangesAndAdjustPositions(lines,[[0,0,6,1]],[[6,0],[6,1]]),[[kseg('line 3')],[[0,0]]])
     })
     section("insertTextAtPositions", function ()
     {
         section("single spans", function ()
         {
-            lines = util.linesForText(`line 1
+            lines = util.seglsForText(`line 1
 line 2`)
             compare(util.insertTextAtPositions(lines,'',[[0,0]]),[kseg.segls('line 1\nline 2'),[[0,0]]])
             compare(util.insertTextAtPositions(lines,'a ',[[0,0]]),[kseg.segls('a line 1\nline 2'),[[2,0]]])
@@ -348,7 +351,7 @@ line 2`)
         })
         section("multiple lines into single cursor", function ()
         {
-            lines = util.linesForText(`line 1
+            lines = util.seglsForText(`line 1
 line 2`)
             compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[kseg.segls('a\nb\nline 1\nline 2'),[[0,2]]])
             compare(util.insertTextAtPositions(lines,'a\nb',[[2,0]]),[kseg.segls('lia\nbne 1\nline 2'),[[1,1]]])
@@ -356,7 +359,7 @@ line 2`)
         })
         section("multiple lines into multi cursor", function ()
         {
-            lines = util.linesForText(`1234
+            lines = util.seglsForText(`1234
 5678`)
             compare(util.insertTextAtPositions(lines,'X\nY',[[0,0],[0,1]]),[kseg.segls('X1234\nY5678'),[[1,0],[1,1]]])
             compare(util.insertTextAtPositions(lines,'X\nY',[[0,0],[1,0],[2,0],[3,0]]),[kseg.segls('X1Y2X3Y4\n5678'),[[1,0],[3,0],[5,0],[7,0]]])
@@ -364,7 +367,7 @@ line 2`)
         })
         section("newlines", function ()
         {
-            lines = util.linesForText(`line 1
+            lines = util.seglsForText(`line 1
 line 2`)
             compare(util.insertTextAtPositions(lines,'\n',[[2,0]]),[kseg.segls('li\nne 1\nline 2'),[[0,1]]])
             compare(util.insertTextAtPositions(lines,'\n',[[6,0]]),[kseg.segls('line 1\n\nline 2'),[[0,1]]])
@@ -372,15 +375,15 @@ line 2`)
             compare(util.insertTextAtPositions(lines,'\n',[[2,1]]),[kseg.segls('line 1\nli\nne 2'),[[0,2]]])
             compare(util.insertTextAtPositions(lines,'\n',[[6,1]]),[kseg.segls('line 1\nline 2\n'),[[0,2]]])
             compare(util.insertTextAtPositions(lines,'\n',[[0,0],[0,1]]),[kseg.segls('\nline 1\n\nline 2'),[[0,1],[0,3]]])
-            lines = util.linesForText(`◆1
+            lines = util.seglsForText(`◆1
 ◆2
 ◆3
 ◆4`)
             compare(util.insertTextAtPositions(lines,'\n',[[1,0],[1,1],[1,2],[1,3]]),[kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4'),[[0,1],[0,3],[0,5],[0,7]]])
         })
-        section("util.insertTextAtPositions into indented lines", function ()
+        section("into indented lines", function ()
         {
-            lines = util.linesForText(`◆1
+            lines = util.seglsForText(`◆1
     ◆2
         ◆3`)
             section("single span", function ()

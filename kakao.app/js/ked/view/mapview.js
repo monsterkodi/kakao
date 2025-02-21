@@ -27,9 +27,9 @@ mapview = (function ()
         this.state = state
     
         this["createImages"] = this["createImages"].bind(this)
-        this["setSyntaxLines"] = this["setSyntaxLines"].bind(this)
+        this["setSyntaxSegls"] = this["setSyntaxSegls"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
-        this["getLines"] = this["getLines"].bind(this)
+        this["getSegls"] = this["getSegls"].bind(this)
         this["reload"] = this["reload"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
         this["hide"] = this["hide"].bind(this)
@@ -86,9 +86,9 @@ mapview = (function ()
         return this.createImages()
     }
 
-    mapview.prototype["getLines"] = function ()
+    mapview.prototype["getSegls"] = function ()
     {
-        return this.lines
+        return this.segls
     }
 
     mapview.prototype["getSyntax"] = function ()
@@ -96,13 +96,13 @@ mapview = (function ()
         return this.syntax
     }
 
-    mapview.prototype["setSyntaxLines"] = function (ext, lines)
+    mapview.prototype["setSyntaxSegls"] = function (ext, segls)
     {
-        this.lines = lines
+        this.segls = segls
     
         this.syntax = new syntax
         this.syntax.setExt(ext)
-        this.syntax.setLines(this.lines)
+        this.syntax.setSegls(this.segls)
         return this.createImages()
     }
 
@@ -123,7 +123,7 @@ mapview = (function ()
         {
             return this.clearImages()
         }
-        lines = this.getLines()
+        lines = this.getSegls()
         syntax = this.getSyntax()
         data = Buffer.alloc(bytes)
         dataForLine = (function (line)

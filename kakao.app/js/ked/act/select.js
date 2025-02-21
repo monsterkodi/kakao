@@ -73,6 +73,42 @@ export default {select:function (from, to)
         this.selectNextHighlight()
     }
     return this.selectWordAtCursor_highlightSelection()
+},selectWordAtCursor_highlightSelection:function ()
+{
+    if (_k_.empty(this.s.selections))
+    {
+        this.selectWord(this.mainCursor())
+    }
+    return this.highlightSelection()
+},highlightSelection:function ()
+{
+    var lines, selection, spans, text
+
+    if (_k_.empty(this.s.selections))
+    {
+        return
+    }
+    spans = []
+    lines = this.allLines()
+    var list = _k_.list(this.allSelections())
+    for (var _b_ = 0; _b_ < list.length; _b_++)
+    {
+        selection = list[_b_]
+        if (selection[1] !== selection[3])
+        {
+            continue
+        }
+        text = util.textForLineRange(lines,selection)
+        spans = spans.concat(util.lineSpansForText(lines,text))
+    }
+    return this.setHighlights(spans)
+},highlightText:function (text)
+{
+    var lines, spans
+
+    lines = this.allLines()
+    spans = util.lineSpansForText(lines,text)
+    return this.setHighlights(spans)
 },deselectCursorHighlight:function ()
 {
     var prev
@@ -100,9 +136,9 @@ export default {select:function (from, to)
     selections = []
     cursors = []
     var list = _k_.list(this.s.highlights)
-    for (var _b_ = 0; _b_ < list.length; _b_++)
+    for (var _c_ = 0; _c_ < list.length; _c_++)
     {
-        span = list[_b_]
+        span = list[_c_]
         selections.push(util.rangeForSpan(span))
         cursors.push(util.endOfSpan(span))
     }
@@ -196,42 +232,6 @@ export default {select:function (from, to)
 },addSpanToSelection:function (span)
 {
     return this.addRangeToSelection(util.rangeForSpan(span))
-},selectWordAtCursor_highlightSelection:function ()
-{
-    if (_k_.empty(this.s.selections))
-    {
-        this.selectWord(this.mainCursor())
-    }
-    return this.highlightSelection()
-},highlightSelection:function ()
-{
-    var lines, selection, spans, text
-
-    if (_k_.empty(this.s.selections))
-    {
-        return
-    }
-    spans = []
-    lines = this.allLines()
-    var list = _k_.list(this.allSelections())
-    for (var _d_ = 0; _d_ < list.length; _d_++)
-    {
-        selection = list[_d_]
-        if (selection[1] !== selection[3])
-        {
-            continue
-        }
-        text = util.textForLineRange(lines,selection)
-        spans = spans.concat(util.lineSpansForText(lines,text))
-    }
-    return this.setHighlights(spans)
-},highlightText:function (text)
-{
-    var lines, spans
-
-    lines = this.allLines()
-    spans = util.lineSpansForText(lines,text)
-    return this.setHighlights(spans)
 },selectChunk:function (x, y)
 {
     var rng
@@ -308,7 +308,7 @@ export default {select:function (from, to)
 
     this.setSelections(selections)
     return this.setCursors(cursors,-1)
-},textForSelection:function ()
+},textOfSelection:function ()
 {
     return util.textForLineRanges(this.allLines(),this.allSelections())
 },selectedText:function ()
@@ -317,7 +317,7 @@ export default {select:function (from, to)
 },selectionsOrCursorLineRanges:function ()
 {
     return (!_k_.empty(this.s.selections) ? this.allSelections() : util.lineRangesForPositions(this.allLines(),this.allCursors(),true))
-},textForSelectionOrCursorLines:function ()
+},textOfSelectionOrCursorLines:function ()
 {
     return util.textForLineRanges(this.allLines(),this.selectionsOrCursorLineRanges())
 },isSingleLineSelected:function ()

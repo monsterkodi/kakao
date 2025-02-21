@@ -14,11 +14,55 @@ text = (function ()
 
     text["linesForText"] = function (text)
     {
-        text = text.replace(/\x1b/g,'�')
-        return kseg.segls(text)
+        return kstr.lines(text.replace(/\x1b/g,'�'))
+    }
+
+    text["seglsForText"] = function (text)
+    {
+        return kseg.segls(text.replace(/\x1b/g,'�'))
     }
 
     text["textForLineRange"] = function (lines, rng)
+    {
+        var l, s, y
+
+        if (_k_.empty(lines) || _k_.empty(rng))
+        {
+            return ''
+        }
+        l = []
+        for (var _a_ = y = rng[1], _b_ = rng[3]; (_a_ <= _b_ ? y <= rng[3] : y >= rng[3]); (_a_ <= _b_ ? ++y : --y))
+        {
+            if (this.isInvalidLineIndex(lines,y))
+            {
+                continue
+            }
+            if (y === rng[1])
+            {
+                if (y === rng[3])
+                {
+                    l.push(lines[y].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1))
+                }
+                else
+                {
+                    l.push(lines[y].slice(rng[0]))
+                }
+            }
+            else if (y === rng[3])
+            {
+                l.push(lines[y].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
+            }
+            else
+            {
+                l.push(lines[y])
+            }
+        }
+        s = kseg.str(l)
+        lf('textForLineRanges',rng,l,s)
+        return s
+    }
+
+    text["seglsForLineRange"] = function (lines, rng)
     {
         var l, y
 
@@ -52,8 +96,29 @@ text = (function ()
             {
                 l.push(lines[y])
             }
+            if (y < rng[3])
+            {
+                l.push('\n')
+            }
         }
-        return l.join('\n')
+        return l
+    }
+
+    text["segsForLineSpan"] = function (lines, span)
+    {
+        var l, y
+
+        l = []
+        if (_k_.empty(lines) || _k_.empty(span))
+        {
+            return l
+        }
+        y = span[1]
+        if (this.isInvalidLineIndex(lines,y))
+        {
+            return l
+        }
+        return lines[y].slice(span[0], typeof span[2] === 'number' ? span[2] : -1)
     }
 
     text["textForLineRanges"] = function (lines, rngs)
@@ -217,7 +282,7 @@ text = (function ()
         return rngs
     }
 
-    text["linesForRange"] = function (lines, rng)
+    text["seglsForRange"] = function (lines, rng)
     {
         var lns, nl
 
@@ -259,7 +324,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/util/text.kode", 159, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/util/text.kode", 193, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length
@@ -417,6 +482,17 @@ text = (function ()
                 return [r[0],y,r[1],y]
             }
         }
+    }
+
+    text["wordAtPos"] = function (lines, pos)
+    {
+        var rng
+
+        if (rng = this.rangeOfClosestWordToPos(lines,pos))
+        {
+            return kseg.str(this.segsForLineSpan(lines,rng))
+        }
+        return ''
     }
 
     text["rangeOfClosestWordToPos"] = function (lines, pos)

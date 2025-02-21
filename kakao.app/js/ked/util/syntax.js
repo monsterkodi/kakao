@@ -2,8 +2,9 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var syntax
 
-import kstr from "../../kxk/kstr.js"
 import matchr from "../../kxk/matchr.js"
+import kstr from "../../kxk/kstr.js"
+import kseg from "../../kxk/kseg.js"
 
 import kulur from "../../kolor/kulur.js"
 
@@ -17,6 +18,7 @@ syntax = (function ()
         this["getChar"] = this["getChar"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
+        this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["setRgxs"] = this["setRgxs"].bind(this)
         this["setExt"] = this["setExt"].bind(this)
@@ -35,22 +37,27 @@ syntax = (function ()
 
     syntax.prototype["setLines"] = function (lines)
     {
-        var dss, line
+        return this.setSegls(kseg.segls(lines))
+    }
+
+    syntax.prototype["setSegls"] = function (segls)
+    {
+        var dss, segs
 
         if (!_k_.empty(this.config))
         {
             this.diss = []
-            var list = _k_.list(lines)
+            var list = _k_.list(segls)
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
-                line = list[_a_]
-                dss = matchr.ranges(this.config,line)
+                segs = list[_a_]
+                dss = matchr.ranges(this.config,kseg.str,segs)
                 this.diss.push(dss)
             }
         }
         else
         {
-            return this.diss = kulur.dissect(lines,this.ext)
+            return this.diss = kulur.dissect(segls,this.ext)
         }
     }
 
@@ -72,9 +79,9 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _41_36_
+        var _43_36_
 
-        return ((_41_36_=theme.syntax[this.getClass(x,y)]) != null ? _41_36_ : '#ff0000')
+        return ((_43_36_=theme.syntax[this.getClass(x,y)]) != null ? _43_36_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

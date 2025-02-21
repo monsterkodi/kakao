@@ -5,6 +5,7 @@ var inputchoice
 import kxk from "../../kxk.js"
 let post = kxk.post
 let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 import theme from "../theme.js"
 
@@ -33,8 +34,8 @@ inputchoice = (function ()
         this["show"] = this["show"].bind(this)
         this["layout"] = this["layout"].bind(this)
         inputchoice.__super__.constructor.call(this,this.screen,this.name,features)
-        this.input = new input(this.screen,`${this.name}_input`)
-        this.choices = new choices(this.screen,`${this.name}_choices`,features)
+        this.input = new input(this.screen,`${this.name}.input`)
+        this.choices = new choices(this.screen,`${this.name}.choices`,features)
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.input.on('changed',this.onInputChanged)
     }
@@ -76,6 +77,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["onInputChanged"] = function (text)
     {
+        lf('inputchoice.onInputChanged',text)
         this.choices.filter(text)
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
@@ -84,9 +86,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _79_36_
+        var choice, _80_36_
 
-        choice = ((_79_36_=this.choices.current()) != null ? _79_36_ : this.input.current())
+        choice = ((_80_36_=this.choices.current()) != null ? _80_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -133,6 +135,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["moveSelection"] = function (dir)
     {
+        lf('moveSelection',dir)
         switch (dir)
         {
             case 'down':

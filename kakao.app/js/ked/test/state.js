@@ -1,12 +1,12 @@
 var toExport = {}
 var cells, cur, mul, s, sel, text, txt
 
-import state from "../state.js"
+import kxk from "../../kxk.js"
+let kseg = kxk.kseg
 
 import util from "../util/util.js"
 
-import kxk from "../../kxk.js"
-let kseg = kxk.kseg
+import state from "../state.js"
 
 
 global.lf = function (...args)
@@ -111,6 +111,8 @@ line 3`)
 line 3`
         s.syntax.ext = 'kode'
         s.loadLines(util.linesForText(text))
+        console.log('----------------',s.allLines())
+        console.log('----------------',kseg.str(s.allLines()))
         txt(text)
         s.toggleCommentAtSelectionOrCursorLines()
         txt(`# s = "🧑🌾"

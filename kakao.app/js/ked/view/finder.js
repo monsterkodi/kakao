@@ -31,10 +31,8 @@ finder = (function ()
 
     finder.prototype["show"] = function (searchText)
     {
-        this.searchText = searchText
-    
-        lf('finder.show',this.searchText)
-        this.input.set('')
+        lf('finder.show',searchText)
+        this.input.set(searchText)
         this.choices.set([])
         this.layout()
         return this.input.grabFocus()

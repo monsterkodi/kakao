@@ -22,6 +22,7 @@ use .. ◆ kstr kseg
     ▸ segls
     
         kseg.segls hello ▸ [['h' 'e' 'l' 'l' 'o'] ['w' 'o' 'r' 'l' 'd']]
+        kseg.segls kseg.segls(hello) ▸ [['h' 'e' 'l' 'l' 'o'] ['w' 'o' 'r' 'l' 'd']]
         kseg.segls """
             aaa
             
@@ -78,6 +79,13 @@ use .. ◆ kstr kseg
         
     ▸ width 
     
+        kseg.width null          ▸ 0
+        kseg.width undefined     ▸ 0
+        kseg.width ''            ▸ 0
+        kseg.width []            ▸ 0
+        kseg.width {}            ▸ 0
+    
+        kseg.width ' '           ▸ 1
         kseg.width 'a'           ▸ 1
         kseg.width '💀'          ▸ 2
         kseg.width '🔥'          ▸ 2
@@ -97,4 +105,29 @@ use .. ◆ kstr kseg
         kseg.width '🛠'           ▸ 1
         kseg.width '🧑‍🌾'          ▸ 2
         kseg.width '🧑'          ▸ 2
+        
+        kseg.width kseg("hello world") ▸ 11
+        
+    ▸ headCount
+    
+        kseg.headCount '***xx***' '*' ▸ 3
+        kseg.headCount kseg('***xx***') '*' ▸ 3
+        
+    ▸ tailCount
+    
+        kseg.tailCount '***xx***' '*' ▸ 3
+        kseg.tailCount kseg('***xx***') '*' ▸ 3
+        
+    ▸ numIndent
+    
+        kseg.numIndent 'a' ▸ 0
+        kseg.numIndent kseg('a') ▸ 0
+        kseg.numIndent '   b' ▸ 3
+        kseg.numIndent kseg('   ') ▸ 3
+        
+    ▸ trim
+    
+        kseg.trim ' ' ▸ kseg ''
+    
+        
         

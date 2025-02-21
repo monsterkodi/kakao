@@ -81,6 +81,32 @@ export
             @selectNextHighlight()
             
         @selectWordAtCursor_highlightSelection()
+        
+    selectWordAtCursor_highlightSelection: ->
+        
+        @selectWord @mainCursor() if empty @s.selections
+        
+        @highlightSelection()
+    
+    highlightSelection: ->
+        
+        ⮐ if empty @s.selections
+        
+        spans = []
+        lines = @allLines()
+        for selection in @allSelections()
+            continue if selection[1] != selection[3]
+            text  = util.textForLineRange lines selection
+            spans = spans.concat util.lineSpansForText(lines text)
+        
+        @setHighlights spans
+        
+    highlightText: text ->
+        
+        lines = @allLines()
+        spans = util.lineSpansForText lines text
+
+        @setHighlights spans
     
     deselectCursorHighlight: ->
         
@@ -168,33 +194,7 @@ export
         @setSelections selections
                     
     addSpanToSelection: span -> @addRangeToSelection util.rangeForSpan(span)
-        
-    selectWordAtCursor_highlightSelection: ->
-        
-        @selectWord @mainCursor() if empty @s.selections
-        
-        @highlightSelection()
-    
-    highlightSelection: ->
-        
-        ⮐ if empty @s.selections
-        
-        spans = []
-        lines = @allLines()
-        for selection in @allSelections()
-            continue if selection[1] != selection[3]
-            text  = util.textForLineRange lines selection
-            spans = spans.concat util.lineSpansForText(lines text)
-        
-        @setHighlights spans
-        
-    highlightText: text ->
-        
-        lines = @allLines()
-        spans = util.lineSpansForText lines text
-
-        @setHighlights spans
-        
+                
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   
     # 000       000000000  000   000  000 0 000  0000000    
@@ -218,7 +218,7 @@ export
         if range = util.rangeOfClosestWordToPos @s.lines util.pos(x y)
             @addRangeToSelectionWithMainCursorAtEnd range
         @
-        
+                
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       
     # 000      000  000 0 000  0000000   
@@ -299,12 +299,12 @@ export
     #    000     000        000 000      000     
     #    000     00000000  000   000     000     
     
-    textForSelection: -> util.textForLineRanges @allLines() @allSelections()
-    selectedText:     -> util.textForLineRanges @allLines() @allSelections()
+    textOfSelection: -> util.textForLineRanges @allLines() @allSelections()
+    selectedText:    -> util.textForLineRanges @allLines() @allSelections()
     
     selectionsOrCursorLineRanges: -> valid @s.selections ? @allSelections() : util.lineRangesForPositions(@allLines() @allCursors() true)
     
-    textForSelectionOrCursorLines: -> 
+    textOfSelectionOrCursorLines: -> 
         
         util.textForLineRanges @allLines() @selectionsOrCursorLineRanges()
 

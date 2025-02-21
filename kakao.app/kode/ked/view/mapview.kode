@@ -59,13 +59,13 @@ function mapview extends view
                 
     reload: => @clearImages() ; @createImages()
                 
-    getLines:  => @lines
+    getSegls:  => @segls
     getSyntax: => @syntax
-    setSyntaxLines: ext @lines => 
+    setSyntaxSegls: ext @segls => 
         
         @syntax = new syntax 
         @syntax.setExt ext 
-        @syntax.setLines @lines
+        @syntax.setSegls @segls
         @createImages()
     
     # 000  00     00   0000000    0000000   00000000   0000000  
@@ -89,7 +89,7 @@ function mapview extends view
         
         ⮐ @clearImages() if bytes <= 0
         
-        lines  = @getLines()
+        lines  = @getSegls()
         syntax = @getSyntax()
         
         data = Buffer.alloc bytes

@@ -1532,19 +1532,17 @@ syntax = arg ->
 # 000   000  000       000       000  000       000          000     
 # 0000000    000  0000000   0000000   00000000   0000000     000     
 
-dissect = lines ext='kode' ->
+dissect = segls ext='kode' ->
     
-    ⮐ [] if empty lines
+    ⮐ [] if empty segls
+    # lf 'kulur.dissect' segls
+    segls = kseg.segls segls
     
-    if lines[0] is str
-        lines = lines.map kseg
-    
-    parse(lines ext).map (l) -> l.chunks
+    parse(segls ext).map (l) -> l.chunks
     
 ranges = line ext='kode' ->
     
-    if line is str
-        line = kseg line
+    line = kseg line
 
     parse([line] ext)[0].chunks
 

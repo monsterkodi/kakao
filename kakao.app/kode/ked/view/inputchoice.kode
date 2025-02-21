@@ -6,7 +6,7 @@
 000  000   000  000         0000000      000      0000000  000   000   0000000   000   0000000  00000000  
 ###
 
-use ../../kxk ▪ post kstr
+use ../../kxk ▪ post kstr kseg
 use ..        ◆ theme
 use           ◆ view cells input choices
 
@@ -16,8 +16,8 @@ function inputchoice extends view
 
         super @screen @name features
         
-        @input   = new input   @screen "#{@name}_input"
-        @choices = new choices @screen "#{@name}_choices" features
+        @input   = new input   @screen "#{@name}.input"
+        @choices = new choices @screen "#{@name}.choices" features
 
         @choices.mapscr?.hide()       
 
@@ -69,6 +69,7 @@ function inputchoice extends view
     
     onInputChanged: text =>
 
+        lf 'inputchoice.onInputChanged' text
         @choices.filter text
         @choices.state.selectLine 0
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
@@ -118,7 +119,7 @@ function inputchoice extends view
 
     moveSelection: dir ->
         
-        # lf 'moveSelection' dir
+        lf 'moveSelection' dir
 
         switch dir
             'down'  ➜ @choices.selectNext()

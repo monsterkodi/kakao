@@ -11,14 +11,14 @@
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
 use ./view ◆ screen cells status quicky menu finder
-use ./util ◆ logfile util prjcts session color help
+use ./util ◆ logfile util prjcts session color help julia
 use        ◆ ttio editor state konsole
 
 function KED
 
     @: ->
 
-        @version = '0.0.4'
+        @version = '0.0.5'
         args = karg """
             
             ked [file]
@@ -37,6 +37,8 @@ function KED
         @t = new ttio
         
         global.lfc = args... => lf.apply null args; if global.lc? ➜ global.lc.apply null args 
+        
+        @julia   = new julia
         
         @screen  = new screen @t
         
@@ -74,7 +76,7 @@ function KED
         else
             @newFile()
             @menu.show true
-            
+                        
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
     # 0000000    000   000  000 0 000  
@@ -143,10 +145,10 @@ function KED
 
         text =○ nfs.read @currentFile
         
-        lines = util.linesForText text
+        segls = util.seglsForText text
         
         @editor.state.syntax.ext = slash.ext @currentFile
-        @editor.state.loadLines lines
+        @editor.state.loadSegls segls
         
         @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         
@@ -226,7 +228,7 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+m'                      ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
-            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor.state.textForSelectionOrWordAtCursor()
+            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor.state.textOfSelectionOrWordAtCursor()
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers

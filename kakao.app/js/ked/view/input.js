@@ -1,6 +1,9 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
 
 var input
+
+import kxk from "../../kxk.js"
+let kseg = kxk.kseg
 
 import editor from "../editor.js"
 import theme from "../theme.js"
@@ -17,32 +20,24 @@ input = (function ()
         this.state.onLinesChanged = this.onChange
     }
 
-    input.prototype["current"] = function ()
-    {
-        return _k_.trim(this.state.s.lines[0])
-    }
-
     input.prototype["hasFocus"] = function ()
     {
         return this.state.hasFocus
     }
 
+    input.prototype["current"] = function ()
+    {
+        return kseg.str(this.state.s.lines[0])
+    }
+
     input.prototype["onChange"] = function ()
     {
-        var newText
-
-        newText = this.current()
-        if (this.text.localeCompare(newText))
-        {
-            this.text = newText
-            return this.emit('changed',this.text)
-        }
+        return this.emit('changed',this.current())
     }
 
     input.prototype["set"] = function (text)
     {
-        this.text = _k_.trim(text)
-        return this.state.loadLines([this.text])
+        return this.state.loadLines([kseg(text)])
     }
 
     input.prototype["selectAll"] = function ()

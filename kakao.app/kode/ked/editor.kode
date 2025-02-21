@@ -98,22 +98,23 @@ function editor extends view
                 c += @cells.add c row ch fg bg
                     
             emptyColor = theme[@name + '_empty']
-            if y < lines.length
                 
-                linel = line.length - view[0]
-                
-                # if y == mainCursor[1]
-                    # if linel > 0
-                        # @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
-                    # @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
-                # else
-                    # if linel > 0
-                        # @cells.bg_rect 0 row linel row theme[@name]
-                    # @cells.bg_fill max(0 linel) row -1 row emptyColor
-                       
-                @drawColors line row linel emptyColor if checkColor
+            # linel = line.length - view[0]
+            # lf 'line' line
+            linel = kseg.width(line) - view[0]
+            
+            if y == mainCursor[1]
+                if linel > 0
+                    @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
+                # @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
+            # else
+                # if linel > 0
+                    # @cells.bg_rect 0 row linel row theme[@name]
+                # @cells.bg_fill max(0 linel) row -1 row emptyColor
             # else
                 # @cells.bg_fill 0 row -1 row emptyColor
+                
+            @drawColors line row linel emptyColor if checkColor
                                 
         bg = theme.highlight
         bg = color.darken bg if not @cells.screen.t.hasFocus

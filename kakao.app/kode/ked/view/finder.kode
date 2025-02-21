@@ -28,11 +28,11 @@ function finder extends inputchoice
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    show: @searchText ->
+    show: searchText ->
 
-        lf 'finder.show' @searchText
+        lf 'finder.show' searchText
 
-        @input.set ''
+        @input.set searchText
         @choices.set []
         
         @layout()

@@ -36,7 +36,21 @@ kseg.lines = function (s)
 
 kseg.segls = function (s)
 {
-    return kseg.lines(s).segls
+    if (_k_.isStr(s))
+    {
+        return kseg.lines(s).segls
+    }
+    else if (_k_.isArr(s))
+    {
+        if (_k_.isStr(s[0]))
+        {
+            return s.map(kseg)
+        }
+        else if (_k_.isArr(s[0]))
+        {
+            return s
+        }
+    }
 }
 
 kseg.str = function (a)
@@ -157,22 +171,39 @@ kseg.startsWith = function (a, prefix)
     return _k_.eql(a.slice(0, typeof segs.length === 'number' ? segs.length : -1), segs)
 }
 
-kseg.numIndent = function (a)
+kseg.headCount = function (a, c)
 {
     var i, s
 
-    i = 0
     var list = _k_.list(a)
-    for (var _c_ = 0; _c_ < list.length; _c_++)
+    for (i = 0; i < list.length; i++)
     {
-        s = list[_c_]
-        if (s !== ' ')
+        s = list[i]
+        if (s !== c)
         {
             return i
         }
-        i += 1
     }
     return i
+}
+
+kseg.tailCount = function (a, c)
+{
+    var i
+
+    for (var _d_ = i = 0, _e_ = a.length; (_d_ <= _e_ ? i < a.length : i > a.length); (_d_ <= _e_ ? ++i : --i))
+    {
+        if (a[a.length - 1 - i] !== c)
+        {
+            return i
+        }
+    }
+    return i
+}
+
+kseg.numIndent = function (a)
+{
+    return kseg.headCount(a,' ')
 }
 
 kseg.splitAtIndent = function (a)
@@ -193,17 +224,36 @@ kseg.repeat = function (n, s = ' ')
     }
     s = kseg(s)
     a = []
-    for (var _d_ = i = 0, _e_ = n; (_d_ <= _e_ ? i < n : i > n); (_d_ <= _e_ ? ++i : --i))
+    for (var _f_ = i = 0, _10_ = n; (_f_ <= _10_ ? i < n : i > n); (_f_ <= _10_ ? ++i : --i))
     {
         a = a.concat(s)
     }
     return a
 }
 
+kseg.trim = function (s)
+{
+    var hc, tc
+
+    if (_k_.empty(s))
+    {
+        return []
+    }
+    s = kseg(s)
+    hc = kseg.headCount(s,' ')
+    tc = kseg.tailCount(s,' ')
+    return s.slice(hc, s.length - 1 - tc)
+}
+
 kseg.width = function (c)
 {
     var cpz, i, n, sgs, str, w
 
+    if (_k_.empty(c))
+    {
+        return 0
+    }
+    c = kseg.str(c)
     cpz = c.codePointAt(0)
     str = String.fromCodePoint(cpz)
     if (c === str)
@@ -212,7 +262,7 @@ kseg.width = function (c)
     }
     sgs = kseg(c)
     w = 0
-    for (var _f_ = i = 0, _10_ = sgs.length; (_f_ <= _10_ ? i < sgs.length : i > sgs.length); (_f_ <= _10_ ? ++i : --i))
+    for (var _11_ = i = 0, _12_ = sgs.length; (_11_ <= _12_ ? i < sgs.length : i > sgs.length); (_11_ <= _12_ ? ++i : --i))
     {
         n = wcwidth(sgs[i].codePointAt(0))
         if (n < 0)
@@ -301,11 +351,11 @@ dumptable = function (table)
     var c, item, s
 
     var list = _k_.list(table)
-    for (var _11_ = 0; _11_ < list.length; _11_++)
+    for (var _13_ = 0; _13_ < list.length; _13_++)
     {
-        item = list[_11_]
+        item = list[_13_]
         s = _k_.b6(item[0].toString(16)) + '-' + _k_.b6(item[1].toString(16))
-        for (var _12_ = c = item[0], _13_ = item[1]; (_12_ <= _13_ ? c <= item[1] : c >= item[1]); (_12_ <= _13_ ? ++c : --c))
+        for (var _14_ = c = item[0], _15_ = item[1]; (_14_ <= _15_ ? c <= item[1] : c >= item[1]); (_14_ <= _15_ ? ++c : --c))
         {
             s += String.fromCodePoint(c)
         }

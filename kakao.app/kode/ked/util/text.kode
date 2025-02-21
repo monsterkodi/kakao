@@ -12,11 +12,34 @@ function text
 
     @linesForText: text -> 
         
-        text = text.replace /\x1b/g '�'
-        # text.split /\r?\n/
-        kseg.segls text
-    
+        kstr.lines text.replace(/\x1b/g '�')
+        
+    @seglsForText: text ->
+
+        kseg.segls text.replace(/\x1b/g '�')
+        
     @textForLineRange: lines rng ->
+         
+        ⮐ '' if empty lines or empty rng
+         
+        l = []
+         
+        for y in rng[1]..rng[3]
+            continue if @isInvalidLineIndex lines y
+            if
+                y == rng[1]
+                    if 
+                        y == rng[3] ➜ l.push lines[y][rng[0]...rng[2]]
+                                    ➜ l.push lines[y][rng[0]..]
+                y == rng[3] ➜ l.push lines[y][0...rng[2]]
+                            ➜ l.push lines[y]
+         
+        s = kseg.str l
+        lf 'textForLineRanges' rng l s
+        s
+        # l.join '\n'
+
+    @seglsForLineRange: lines rng ->
         
         ⮐ '' if empty lines or empty rng
         
@@ -31,8 +54,19 @@ function text
                                     ➜ l.push lines[y][rng[0]..]
                 y == rng[3] ➜ l.push lines[y][0...rng[2]]
                             ➜ l.push lines[y]
+                            
+            l.push '\n' if y < rng[3]
         
-        l.join '\n'
+        # lf 'seglsForLineRange' rng l
+        l
+        
+    @segsForLineSpan: lines span ->
+        
+        l = []
+        ⮐ l if empty lines or empty span
+        y = span[1]
+        ⮐ l if @isInvalidLineIndex lines y
+        lines[y][span[0]...span[2]]
         
     @textForLineRanges: lines rngs ->
         
@@ -129,7 +163,7 @@ function text
             rngs.push @lineRangeAtPos(lines [0 rng[1]+ln])
         rngs
         
-    @linesForRange: lines rng ->
+    @seglsForRange: lines rng ->
 
         nl = @numLinesInRange rng 
         
@@ -249,6 +283,12 @@ function text
     # 000000000  000   000  0000000    000   000  
     # 000   000  000   000  000   000  000   000  
     # 00     00   0000000   000   000  0000000    
+    
+    @wordAtPos: lines pos ->
+        
+        if rng = @rangeOfClosestWordToPos lines pos
+            ⮐ kseg.str @segsForLineSpan(lines rng)
+        ''
     
     @rangeOfClosestWordToPos: lines pos ->
         

@@ -38,7 +38,9 @@ choices = (function ()
 
     choices.prototype["numChoices"] = function ()
     {
-        return this.items.length
+        var _26_26_, _26_35_
+
+        return ((_26_35_=(this.items != null ? this.items.length : undefined)) != null ? _26_35_ : 0)
     }
 
     choices.prototype["numFiltered"] = function ()
@@ -48,7 +50,7 @@ choices = (function ()
 
     choices.prototype["current"] = function ()
     {
-        return kseg.str(this.fuzzied[this.state.mainCursor()[1]])
+        return this.fuzzied[this.state.mainCursor()[1]]
     }
 
     choices.prototype["selectNext"] = function ()
@@ -101,12 +103,14 @@ choices = (function ()
     {
         var fuzz, lines
 
+        lf('choices.filter',text,this.items)
         if (_k_.empty(this.items))
         {
             return
         }
         if (_k_.empty(text))
         {
+            lf('choices.filter empty',this.items,this.key)
             return this.set(this.items,this.key)
         }
         fuzz = new krzl({values:this.items,extract:this.extract})
@@ -120,6 +124,7 @@ choices = (function ()
         {
             lines = ['']
         }
+        lf('choices.filter lines',lines)
         return this.state.loadLines(lines)
     }
 

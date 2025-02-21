@@ -4,6 +4,7 @@ var state
 
 import immutable from "../kxk/immutable.js"
 import kstr from "../kxk/kstr.js"
+import kseg from "../kxk/kseg.js"
 
 import del from "./act/del.js"
 import insert from "./act/insert.js"
@@ -45,8 +46,10 @@ state = (function ()
         this["isInvalidLineIndex"] = this["isInvalidLineIndex"].bind(this)
         this["isValidLineIndex"] = this["isValidLineIndex"].bind(this)
         this["clearLines"] = this["clearLines"].bind(this)
+        this["loadSegls"] = this["loadSegls"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
         this["allLines"] = this["allLines"].bind(this)
+        this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
         this.name = name + '.state'
@@ -133,16 +136,41 @@ state = (function ()
         return this
     }
 
+    state.prototype["textOfSelectionOrWordAtCursor"] = function ()
+    {
+        if (this.s.selections.length)
+        {
+            lf('textOfSelection',this.textOfSelection())
+            return this.textOfSelection()
+        }
+        else
+        {
+            lf('wordAtCursor',this.wordAtCursor())
+            return this.wordAtCursor()
+        }
+    }
+
     state.prototype["setLines"] = function (lines)
     {
-        var _109_23_
-
         if (_k_.empty(lines))
         {
-            lines = [[]]
+            lines = ['']
         }
-        this.syntax.setLines(lines)
-        this.s = this.s.set('lines',lines)
+        lf('state.setLines',this.name,lines)
+        return this.setSegls(kseg.segls(lines))
+    }
+
+    state.prototype["setSegls"] = function (segls)
+    {
+        var _128_23_
+
+        if (_k_.empty(segls))
+        {
+            segls = [[]]
+        }
+        lf('state.setSegls',this.name,segls)
+        this.syntax.setSegls(segls)
+        this.s = this.s.set('lines',segls)
         this.r = []
         this.pushState()
         return (typeof this.onLinesChanged === "function" ? this.onLinesChanged() : undefined)
@@ -155,18 +183,24 @@ state = (function ()
 
     state.prototype["loadLines"] = function (lines)
     {
+        lf('state.loadLines',this.name,lines)
+        return this.loadSegls(kseg.segls(lines))
+    }
+
+    state.prototype["loadSegls"] = function (segls)
+    {
         this.s = this.s.set('cursors',[[0,0]])
         this.s = this.s.set('view',[0,0])
         this.s = this.s.set('main',0)
         this.clearCursorsHighlightsAndSelections()
         this.r = []
         this.h = []
-        return this.setLines(lines)
+        return this.setSegls(segls)
     }
 
     state.prototype["clearLines"] = function ()
     {
-        this.setLines([[]])
+        this.setSegls([[]])
         return this.setMainCursor(0,0)
     }
 
@@ -188,7 +222,7 @@ state = (function ()
         }
         this.r.push(this.h.pop())
         this.s = this.h.slice(-1)[0]
-        return this.syntax.setLines(this.allLines())
+        return this.syntax.setSegls(this.allLines())
     }
 
     state.prototype["redo"] = function ()
@@ -199,7 +233,7 @@ state = (function ()
         }
         this.h.push(this.r.pop())
         this.s = this.h.slice(-1)[0]
-        return this.syntax.setLines(this.allLines())
+        return this.syntax.setSegls(this.allLines())
     }
 
     state.prototype["begin"] = function ()
@@ -262,16 +296,16 @@ state = (function ()
         {
             case 'darwin':
                 proc = child_process.spawn('pbcopy')
-                return proc.stdin.end(this.textForSelectionOrCursorLines())
+                return proc.stdin.end(this.textOfSelectionOrCursorLines())
 
             case 'linux':
                 proc = child_process.spawn('xsel',['-i','--clipboard'])
-                proc.stdin.write(this.textForSelectionOrCursorLines())
+                proc.stdin.write(this.textOfSelectionOrCursorLines())
                 return proc.stdin.end()
 
             case 'win32':
                 proc = child_process.spawn(`${_k_.dir()}/../../bin/utf8clip.exe`)
-                proc.stdin.write(this.textForSelectionOrCursorLines())
+                proc.stdin.write(this.textOfSelectionOrCursorLines())
                 return proc.stdin.end()
 
         }

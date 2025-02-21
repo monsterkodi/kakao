@@ -103,7 +103,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _156_41_, _157_44_, _193_15_, _194_15_, _80_26_
+        var bg, c, ch, checkColor, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _157_41_, _158_44_, _194_15_, _195_15_, _80_26_
 
         if (this.hidden())
         {
@@ -140,13 +140,17 @@ editor = (function ()
                 c += this.cells.add(c,row,ch,fg,bg)
             }
             emptyColor = theme[this.name + '_empty']
-            if (y < lines.length)
+            linel = kseg.width(line) - view[0]
+            if (y === mainCursor[1])
             {
-                linel = line.length - view[0]
-                if (checkColor)
+                if (linel > 0)
                 {
-                    this.drawColors(line,row,linel,emptyColor)
+                    this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
                 }
+            }
+            if (checkColor)
+            {
+                this.drawColors(line,row,linel,emptyColor)
             }
         }
         bg = theme.highlight
@@ -207,8 +211,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_156_41_=theme[this.name + '_cursor_fg']) != null ? _156_41_ : theme['editor_cursor_fg'])
-        bg = ((_157_44_=theme[this.name + '_cursor_multi']) != null ? _157_44_ : theme['editor_cursor_multi'])
+        fg = ((_157_41_=theme[this.name + '_cursor_fg']) != null ? _157_41_ : theme['editor_cursor_fg'])
+        bg = ((_158_44_=theme[this.name + '_cursor_multi']) != null ? _158_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -295,9 +299,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _225_30_, _225_39_, _226_30_, _236_41_
+        var col, row, start, x, y, _226_30_, _226_39_, _227_30_, _237_41_
 
-        if (((_225_30_=this.mapscr) != null ? typeof (_225_39_=_225_30_.onMouse) === "function" ? _225_39_(event) : undefined : undefined))
+        if (((_226_30_=this.mapscr) != null ? typeof (_226_39_=_226_30_.onMouse) === "function" ? _226_39_(event) : undefined : undefined))
         {
             return true
         }

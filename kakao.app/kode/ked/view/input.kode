@@ -6,6 +6,7 @@
 000  000   000  000         0000000      000
 ###
 
+use ../../kxk ▪ kseg
 use .. ◆ editor theme
 
 function input extends editor
@@ -15,26 +16,23 @@ function input extends editor
         super screen name []
 
         @state.onLinesChanged = @onChange
-        
-    current: => trim @state.s.lines[0]
     
     hasFocus: -> @state.hasFocus
 
-    onChange: =>
+    current:  => kseg.str @state.s.lines[0]
+    onChange: => @emit 'changed' @current()
 
-        newText = @current()
-
-        if @text.localeCompare newText
-            @text = newText
-            @emit 'changed' @text
-
-    set: text -> @text = trim text; @state.loadLines [@text]
+    set: text ->
+    
+        @state.loadLines [kseg(text)]
 
     selectAll: -> @state.selectLine 0
 
     draw: ->
         
         ⮐ if @hidden()
+        
+        # lf 'input.draw' @name @state.allLines()
 
         @cells.fill_rect 0 0 -1 -1 ' ' null theme.quicky_frame_bg
         super()

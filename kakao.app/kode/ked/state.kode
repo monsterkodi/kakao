@@ -6,7 +6,7 @@
 0000000      000     000   000     000     00000000
 ###
 
-use ../kxk  ◆ immutable kstr
+use ../kxk  ◆ immutable kstr kseg
 use  ./act  ◆ del insert select join indent multi
 use  ./util ◆ util syntax
 use child_process os
@@ -89,6 +89,15 @@ function state
         @adjustViewForMainCursor()
         @swapState()
         @
+            
+    textOfSelectionOrWordAtCursor: -> 
+        
+        if @s.selections.length
+            lf 'textOfSelection' @textOfSelection()
+            ⮐ @textOfSelection()
+        else
+            lf 'wordAtCursor' @wordAtCursor()
+            ⮐ @wordAtCursor()
 
     # 000      000  000   000  00000000   0000000
     # 000      000  0000  000  000       000
@@ -97,12 +106,22 @@ function state
     # 0000000  000  000   000  00000000  0000000
 
     setLines: lines =>
-
-        if empty lines ➜ lines = [[]]
-
-        @syntax.setLines lines
-
-        @s = @s.set 'lines' lines
+        
+        if empty lines ➜ lines = ['']
+            
+        lf 'state.setLines' @name lines
+            
+        @setSegls kseg.segls(lines)
+        
+    setSegls: segls =>
+        
+        if empty segls ➜ segls = [[]]
+        
+        lf 'state.setSegls' @name segls
+            
+        @syntax.setSegls segls
+        
+        @s = @s.set 'lines' segls
         @r = []
         @pushState()
 
@@ -110,7 +129,13 @@ function state
 
     allLines: => @s.lines.asMutable()
 
-    loadLines: lines =>
+    loadLines: lines => 
+    
+        lf 'state.loadLines' @name lines
+        
+        @loadSegls kseg.segls(lines)
+    
+    loadSegls: segls =>
 
         @s = @s.set 'cursors' [[0 0]]
         @s = @s.set 'view' [0 0]
@@ -118,11 +143,11 @@ function state
         @clearCursorsHighlightsAndSelections()
         @r = []
         @h = []
-        @setLines lines
+        @setSegls segls
 
     clearLines: =>
 
-        @setLines [[]]
+        @setSegls [[]]
         @setMainCursor 0 0
 
     isValidLineIndex:   li => 0 <= li < @s.lines.length
@@ -139,14 +164,14 @@ function state
         ⮐ if @h.length <= 1
         @r.push @h.pop()
         @s = @h[-1]
-        @syntax.setLines @allLines()
+        @syntax.setSegls @allLines()
 
     redo: =>
 
         ⮐ if empty @r
         @h.push @r.pop()
         @s = @h[-1]
-        @syntax.setLines @allLines()
+        @syntax.setSegls @allLines()
 
     begin: => @beginIndex = @h.length
 
@@ -194,18 +219,18 @@ function state
             'darwin'
 
                 proc = child_process.spawn 'pbcopy'
-                proc.stdin.end @textForSelectionOrCursorLines()
+                proc.stdin.end @textOfSelectionOrCursorLines()
 
             'linux'
 
                 proc = child_process.spawn 'xsel' ['-i' '--clipboard']
-                proc.stdin.write @textForSelectionOrCursorLines()
+                proc.stdin.write @textOfSelectionOrCursorLines()
                 proc.stdin.end()
 
             'win32'
 
                 proc = child_process.spawn "#{◆dir}/../../bin/utf8clip.exe"
-                proc.stdin.write @textForSelectionOrCursorLines()
+                proc.stdin.write @textOfSelectionOrCursorLines()
                 proc.stdin.end()
 
 

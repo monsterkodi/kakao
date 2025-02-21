@@ -35,7 +35,7 @@ help = (function ()
 │○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯      
 ╰───╯     ╰───╯    ╰───────╯       ╰───────╯        
 `
-        cells = util.cellsForLines(util.indentLines(util.linesForText(h),5))
+        cells = util.cellsForLines(util.indentLines(util.seglsForText(h),5))
         kcells = util.cellsInRect(cells,0,0,20,-1)
         var list = _k_.list(kcells)
         for (var _a_ = 0; _a_ < list.length; _a_++)

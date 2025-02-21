@@ -6,7 +6,7 @@
 0000000      000     000   000     000     000   000  000   000
 ###
 
-use ../../kxk   ◆ kstr matchr
+use ../../kxk   ◆ matchr kstr kseg
 use ../../kolor ◆ kulur
 use    ..       ◆ theme
 
@@ -17,16 +17,18 @@ function syntax
     setExt: @ext =>
     
     setRgxs: rgxs => @config = matchr.config rgxs
+    
+    setLines: lines => @setSegls kseg.segls(lines) 
         
-    setLines: lines =>
+    setSegls: segls =>
         
         if valid @config
             @diss = []
-            for line in lines
-                dss = matchr.ranges @config line
+            for segs in segls
+                dss = matchr.ranges @config kseg.str segs
                 @diss.push dss
         else
-            @diss = kulur.dissect lines @ext
+            @diss = kulur.dissect segls @ext
             # lf '●' @diss
             
     getClass: x y =>

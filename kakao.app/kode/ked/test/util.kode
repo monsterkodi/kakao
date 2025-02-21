@@ -307,9 +307,9 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
         util.splitLineRanges lines [[0 2 1 2] [2 2 3 2]] ▸ [[0 2 1 2] [2 2 3 2]]
         
-    ▸ linesForText
+    ▸ seglsForText
     
-        lines = util.linesForText """
+        segls = util.seglsForText """
             123
             456
             
@@ -317,15 +317,15 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
             def
             """
             
-        lines ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]    
+        segls ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]    
             
-        ▸ linesForRange
+        ▸ seglsForRange
             
-            util.linesForRange lines [0 0 3 4] ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]
-            util.linesForRange lines [0 0 0 0] ▸ [[]]
-            util.linesForRange lines [0 0 1 0] ▸ [['1']]
-            util.linesForRange lines [3 0 0 1] ▸ [[] []]
-            util.linesForRange lines [3 0 1 1] ▸ [[] ['4']]
+            util.seglsForRange segls [0 0 3 4] ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]
+            util.seglsForRange segls [0 0 0 0] ▸ [[]]
+            util.seglsForRange segls [0 0 1 0] ▸ [['1']]
+            util.seglsForRange segls [3 0 0 1] ▸ [[] []]
+            util.seglsForRange segls [3 0 1 1] ▸ [[] ['4']]
         
     ▸ rangesForLinePositions 
     
@@ -353,17 +353,25 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
     
     ▸ deleteLineRangesAndAdjustPositions
     
-        lines = ['1234567890' 'abcdefghij']
+        lines = util.seglsForText """
+            1234567890
+            abcdefghij
+            """
     
         util.deleteLineRangesAndAdjustPositions lines [[5 0 5 0]] [[5 1]] ▸ [lines [[5 1]]]
-        util.deleteLineRangesAndAdjustPositions lines [[5 0 6 0]] [[5 1]] ▸ [['123457890''abcdefghij'] [[5 1]]]
-        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 1]] [[5 1]] ▸ [['12345fghij'] [[5 0]]]
-        util.deleteLineRangesAndAdjustPositions lines [[0 1 1 1]] [[0 1]] ▸ [['1234567890''bcdefghij'] [[0 1]]]
-        util.deleteLineRangesAndAdjustPositions lines [[5 0 3 1]] [[3 1]] ▸ [['12345defghij'] [[5 0]]]
-        util.deleteLineRangesAndAdjustPositions lines [[3 0 5 1]] [[3 1]] ▸ [['123fghij'] [[3 0]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 6 0]] [[5 1]] ▸ [[kseg('123457890') kseg('abcdefghij')] [[5 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 5 1]] [[5 1]] ▸ [[kseg('12345fghij')] [[5 0]]]
+        util.deleteLineRangesAndAdjustPositions lines [[0 1 1 1]] [[0 1]] ▸ [[kseg('1234567890') kseg('bcdefghij')] [[0 1]]]
+        util.deleteLineRangesAndAdjustPositions lines [[5 0 3 1]] [[3 1]] ▸ [[kseg('12345defghij')] [[5 0]]]
+        util.deleteLineRangesAndAdjustPositions lines [[3 0 5 1]] [[3 1]] ▸ [[kseg('123fghij')] [[3 0]]]
         
-        lines = ['line 1' 'line 2' 'line 3']
-        util.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [['line 3'] [[0 0]]]
+        lines = util.seglsForText """
+            line 1
+            line 2
+            line 3
+            """
+            
+        util.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [[kseg('line 3')] [[0 0]]]
                 
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
@@ -375,7 +383,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
     
         ▸ single spans
      
-            lines = util.linesForText 
+            lines = util.seglsForText 
                 """
                 line 1
                 line 2
@@ -391,7 +399,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
             
         ▸ multiple lines into single cursor
          
-            lines = util.linesForText 
+            lines = util.seglsForText 
                 """
                 line 1
                 line 2
@@ -403,7 +411,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
 
         ▸ multiple lines into multi cursor
          
-            lines = util.linesForText 
+            lines = util.seglsForText 
                 """
                 1234
                 5678
@@ -415,7 +423,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
             
         ▸ newlines
         
-            lines = util.linesForText 
+            lines = util.seglsForText 
                 """
                 line 1
                 line 2
@@ -430,7 +438,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
                                                
             util.insertTextAtPositions lines '\n' [[0 0] [0 1]] ▸ [kseg.segls('\nline 1\n\nline 2') [[0 1] [0 3]]]
             
-            lines = util.linesForText 
+            lines = util.seglsForText 
                 """ 
                 ◆1
                 ◆2
@@ -440,9 +448,9 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
             
             util.insertTextAtPositions lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4') [[0 1] [0 3] [0 5] [0 7]]]
             
-        ▸ util.insertTextAtPositions into indented lines
+        ▸ into indented lines
                  
-            lines = util.linesForText
+            lines = util.seglsForText
                 """ 
                 ◆1
                     ◆2

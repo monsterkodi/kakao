@@ -24,6 +24,7 @@ import prjcts from "./util/prjcts.js"
 import session from "./util/session.js"
 import color from "./util/color.js"
 import help from "./util/help.js"
+import julia from "./util/julia.js"
 
 import ttio from "./ttio.js"
 import editor from "./editor.js"
@@ -52,7 +53,7 @@ KED = (function ()
         this["newFile"] = this["newFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
-        this.version = '0.0.4'
+        this.version = '0.0.5'
         args = karg(`
 ked [file]
     options                      **
@@ -73,6 +74,7 @@ ked [file]
                 return global.lc.apply(null,args)
             }
         }).bind(this)
+        this.julia = new julia
         this.screen = new screen(this.t)
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
@@ -115,7 +117,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _91_10_
+        var _93_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -137,7 +139,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _113_22_
+        var _115_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -162,7 +164,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var lines, start, text, _153_22_
+        var segls, start, text, _155_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -177,9 +179,9 @@ ked [file]
         }
         this.currentFile = await nfs.resolveSymlink(this.currentFile)
         text = await nfs.read(this.currentFile)
-        lines = util.linesForText(text)
+        segls = util.seglsForText(text)
         this.editor.state.syntax.ext = slash.ext(this.currentFile)
-        this.editor.state.loadLines(lines)
+        this.editor.state.loadSegls(segls)
         this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         this.redraw()
@@ -279,7 +281,7 @@ ked [file]
 
             case 'cmd+f':
             case 'ctrl+f':
-                return this.finder.show(this.editor.state.textForSelectionOrWordAtCursor())
+                return this.finder.show(this.editor.state.textOfSelectionOrWordAtCursor())
 
             case 'cmd+.':
             case 'ctrl+.':
@@ -327,7 +329,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _266_22_, _267_23_
+        var _268_22_, _269_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -336,7 +338,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _272_22_, _273_23_
+        var _274_22_, _275_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

@@ -15,6 +15,7 @@ world`
     section("segls", function ()
     {
         compare(kseg.segls(hello),[['h','e','l','l','o'],['w','o','r','l','d']])
+        compare(kseg.segls(kseg.segls(hello)),[['h','e','l','l','o'],['w','o','r','l','d']])
         compare(kseg.segls(`aaa
 
 bbb`),[['a','a','a'],[],['b','b','b']])
@@ -69,6 +70,12 @@ bbb`),[['a','a','a'],[],['b','b','b']])
     })
     section("width", function ()
     {
+        compare(kseg.width(null),0)
+        compare(kseg.width(undefined),0)
+        compare(kseg.width(''),0)
+        compare(kseg.width([]),0)
+        compare(kseg.width({}),0)
+        compare(kseg.width(' '),1)
         compare(kseg.width('a'),1)
         compare(kseg.width('💀'),2)
         compare(kseg.width('🔥'),2)
@@ -88,6 +95,28 @@ bbb`),[['a','a','a'],[],['b','b','b']])
         compare(kseg.width('🛠'),1)
         compare(kseg.width('🧑‍🌾'),2)
         compare(kseg.width('🧑'),2)
+        compare(kseg.width(kseg("hello world")),11)
+    })
+    section("headCount", function ()
+    {
+        compare(kseg.headCount('***xx***','*'),3)
+        compare(kseg.headCount(kseg('***xx***'),'*'),3)
+    })
+    section("tailCount", function ()
+    {
+        compare(kseg.tailCount('***xx***','*'),3)
+        compare(kseg.tailCount(kseg('***xx***'),'*'),3)
+    })
+    section("numIndent", function ()
+    {
+        compare(kseg.numIndent('a'),0)
+        compare(kseg.numIndent(kseg('a')),0)
+        compare(kseg.numIndent('   b'),3)
+        compare(kseg.numIndent(kseg('   ')),3)
+    })
+    section("trim", function ()
+    {
+        compare(kseg.trim(' '),kseg(''))
     })
 }
 toExport["kseg"]._section_ = true

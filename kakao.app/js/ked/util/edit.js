@@ -28,7 +28,7 @@ edit = (function ()
             text = _k_.lpad(4 - pos[0] % 4,' ')
         }
         text = kstr.detab(text)
-        txtls = this.linesForText(text)
+        txtls = this.seglsForText(text)
         newls = []
         newpl = []
         rngs = this.rangesForLinePositions(lines,posl)
@@ -36,7 +36,7 @@ edit = (function ()
         for (idx = 0; idx < list.length; idx++)
         {
             rng = list[idx]
-            after = this.linesForRange(lines,rng)
+            after = this.seglsForRange(lines,rng)
             if (idx > 0)
             {
                 var _b_ = posl[idx - 1]; x = _b_[0]; y = _b_[1]
@@ -154,7 +154,7 @@ edit = (function ()
                     lines.splice(rng[1],1,lines[rng[1]].slice(0, typeof rng[0] === 'number' ? rng[0] : -1))
                     if (partialLast)
                     {
-                        lines.splice(rng[1],2,lines[rng[1]] + lines[rng[1] + 1])
+                        lines.splice(rng[1],2,lines[rng[1]].concat(lines[rng[1] + 1]))
                     }
                 }
             }

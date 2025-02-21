@@ -313,14 +313,14 @@ quicky = (function ()
 
     quicky.prototype["preview"] = async function (file)
     {
-        var lines, text
+        var segls, text
 
         if (_k_.in(slash.ext(file),walker.sourceFileExtensions))
         {
             text = await nfs.read(file)
-            lines = util.linesForText(text)
+            segls = util.seglsForText(text)
             this.choices.mapscr.show()
-            return this.choices.mapscr.setSyntaxLines(slash.ext(file),lines)
+            return this.choices.mapscr.setSyntaxSegls(slash.ext(file),segls)
         }
         else
         {

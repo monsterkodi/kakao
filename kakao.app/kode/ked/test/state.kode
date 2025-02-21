@@ -6,9 +6,9 @@
     0000000      000     000   000     000     00000000  
 ###
 
-use .. ◆ state
-use ../util ◆ util
 use ../../kxk ▪ kseg
+use ../util   ◆ util
+use ..        ◆ state
 
 global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
 
@@ -130,6 +130,9 @@ sel = r... -> s.allSelections() ▸ r
         
         s.syntax.ext = 'kode'
         s.loadLines util.linesForText(text)
+        
+        log '----------------' s.allLines()
+        log '----------------' kseg.str(s.allLines())
         
         txt text
         

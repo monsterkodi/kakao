@@ -284,9 +284,9 @@ function quicky extends inputchoice
         if slash.ext(file) in walker.sourceFileExtensions
 
             text =○ nfs.read file
-            lines = util.linesForText text
+            segls = util.seglsForText text
             @choices.mapscr.show()
-            @choices.mapscr.setSyntaxLines slash.ext(file) lines 
+            @choices.mapscr.setSyntaxSegls slash.ext(file) segls
         else
             @hideMap()
         
