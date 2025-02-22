@@ -25,9 +25,6 @@
 ### todo
 #### todo
 
-- greeter 
-    - recent files
-    
 - unicode mode
     - ~ replacement
     - quicky
@@ -44,8 +41,8 @@
     
 - session
     - save main cursor positions per file and apply on load
-    - load last session by default?  
-    - global session for recent files?
+    - merge cursor positions from last session by default?  
+    - clean recent files (check for existance)
     
 - config
     - similar to session, but loads and merges (to handle multiple instances)

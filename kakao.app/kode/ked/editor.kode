@@ -56,7 +56,9 @@ function editor extends view
             
         if @mapscr
             m = @mapscr.visible() ? 10 : 0
-            @mapscr.layout x+w-sr-10   y   m   h
+            r = @mapscr.visible() ? h : 0
+            # lf 'editor.layout.mapscr' @name @mapscr.visible() x+w-sr-10 y m r
+            @mapscr.layout x+w-sr-10   y   m   r
             
         @cells.layout x+sl+g  y   w-s-g-m    h
         @state.initView()
@@ -318,32 +320,40 @@ function editor extends view
         
         ⮐ if event.cell[1] >= @cells.y + @cells.rows
         
-        steps  = 1 # should be 4 if not using a mouse pad -> config
-        steps *= 2 if event.shift
-        steps *= 2 if event.ctrl
-        steps *= 2 if event.alt
+        if @name == 'editor' # this sucks! consider a separate main editor class
         
-        if @dragStart
+            steps  = 1 # should be 4 if not using a mouse pad -> config
+            steps *= 2 if event.shift
+            steps *= 2 if event.ctrl
+            steps *= 2 if event.alt
             
-            [x y] = @state.mainCursor()
-            
-            switch event.dir
-                'up'    ➜ y -= steps    
-                'down'  ➜ y += steps    
-                'left'  ➜ x -= 1    
-                'right' ➜ x += 1    
+            if @dragStart
                 
-            y = clamp 0 @state.s.lines.length-1 y
-            x = clamp 0 @state.s.lines[y].length-1 x
-            
-            start = [@dragStart[0] @dragStart[1]]
-            
-            if y < @dragStart[1] 
-                start = [@dragStart[2] @dragStart[1]]
-            
-            if @state.select start [x y]
-                @redraw()
-            ⮐ 
+                [x y] = @state.mainCursor()
+                
+                switch event.dir
+                    'up'    ➜ y -= steps    
+                    'down'  ➜ y += steps    
+                    'left'  ➜ x -= 1    
+                    'right' ➜ x += 1    
+                    
+                y = clamp 0 @state.s.lines.length-1 y
+                x = clamp 0 @state.s.lines[y].length-1 x
+                
+                start = [@dragStart[0] @dragStart[1]]
+                
+                if y < @dragStart[1] 
+                    start = [@dragStart[2] @dragStart[1]]
+                
+                if @state.select start [x y]
+                    @redraw()
+                ⮐ 
+                
+        
+        [col row] = @cells.posForEvent event
+        
+                
+        ⮐ if not @cells.isInsideEvent event
                 
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
@@ -365,11 +375,7 @@ function editor extends view
     isCursorVisible: cursor =>
         
         cursor ?= @state.mainCursor()
-        
-        # visible = util.isPosInsideRange cursor @state.rangeForVisibleLines()
-        # if cursor[0] < @state.s.view[0] ➜ visible = false
-        # visible
-        
+                
         v = @state.s.view
         
         v[0] <= cursor[0] < v[0] + @cells.cols and v[1] <= cursor[1] < v[1] + @cells.rows

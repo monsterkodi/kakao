@@ -122,7 +122,7 @@ TTIO = (function ()
             rx = px % this.cellsz[0]
             ry = pl % this.cellsz[1]
             this.setCursor(cx,cy)
-            this.write(`\x1b_Gq=1,a=p,i=${id},p=${placement},X=${rx},Y=${ry},C=1\x1b\\`)
+            this.write(`\x1b_Gq=1,a=p,i=${id},p=${placement + 1},X=${rx},Y=${ry},C=1\x1b\\`)
         }
     }
 

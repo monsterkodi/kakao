@@ -87,7 +87,7 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _47_13_
+        var _48_13_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
@@ -99,7 +99,7 @@ view = (function ()
 
     view.prototype["draw"] = function ()
     {
-        var _57_18_
+        var _58_18_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

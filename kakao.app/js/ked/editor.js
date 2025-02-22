@@ -69,7 +69,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, s, sl, sr
+        var g, m, r, s, sl, sr
 
         g = m = s = 0
         sl = sr = 0
@@ -95,7 +95,8 @@ editor = (function ()
         if (this.mapscr)
         {
             m = (this.mapscr.visible() ? 10 : 0)
-            this.mapscr.layout(x + w - sr - 10,y,m,h)
+            r = (this.mapscr.visible() ? h : 0)
+            this.mapscr.layout(x + w - sr - 10,y,m,r)
         }
         this.cells.layout(x + sl + g,y,w - s - g - m,h)
         return this.state.initView()
@@ -103,7 +104,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _101_42_, _158_41_, _159_44_, _195_15_, _196_15_, _197_15_, _80_26_
+        var bg, c, ch, checkColor, ci, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _103_42_, _160_41_, _161_44_, _197_15_, _198_15_, _199_15_, _82_26_
 
         if (this.hidden())
         {
@@ -114,7 +115,7 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_80_26_=theme[this.name]) != null ? _80_26_ : theme['editor'])
+        bg = ((_82_26_=theme[this.name]) != null ? _82_26_ : theme['editor'])
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -140,7 +141,7 @@ editor = (function ()
                     checkColor = true
                 }
                 c += this.cells.add(c,row,ch,fg,bg)
-                x += ((_101_42_=kseg.width(line[si])) != null ? _101_42_ : 1)
+                x += ((_103_42_=kseg.width(line[si])) != null ? _103_42_ : 1)
             }
             emptyColor = theme[this.name + '_empty']
             if (y === mainCursor[1])
@@ -229,8 +230,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_158_41_=theme[this.name + '_cursor_fg']) != null ? _158_41_ : theme['editor_cursor_fg'])
-        bg = ((_159_44_=theme[this.name + '_cursor_multi']) != null ? _159_44_ : theme['editor_cursor_multi'])
+        fg = ((_160_41_=theme[this.name + '_cursor_fg']) != null ? _160_41_ : theme['editor_cursor_fg'])
+        bg = ((_161_44_=theme[this.name + '_cursor_multi']) != null ? _161_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -318,9 +319,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _227_30_, _227_39_, _228_30_, _238_41_, _306_31_
+        var col, row, start, x, y, _229_30_, _229_39_, _230_30_, _240_41_, _308_31_
 
-        if (((_227_30_=this.mapscr) != null ? typeof (_227_39_=_227_30_.onMouse) === "function" ? _227_39_(event) : undefined : undefined))
+        if (((_229_30_=this.mapscr) != null ? typeof (_229_39_=_229_30_.onMouse) === "function" ? _229_39_(event) : undefined : undefined))
         {
             return true
         }
@@ -443,56 +444,65 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var start, steps, x, y
+        var col, row, start, steps, x, y
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
             return
         }
-        steps = 1
-        if (event.shift)
+        if (this.name === 'editor')
         {
-            steps *= 2
-        }
-        if (event.ctrl)
-        {
-            steps *= 2
-        }
-        if (event.alt)
-        {
-            steps *= 2
-        }
-        if (this.dragStart)
-        {
-            var _a_ = this.state.mainCursor(); x = _a_[0]; y = _a_[1]
+            steps = 1
+            if (event.shift)
+            {
+                steps *= 2
+            }
+            if (event.ctrl)
+            {
+                steps *= 2
+            }
+            if (event.alt)
+            {
+                steps *= 2
+            }
+            if (this.dragStart)
+            {
+                var _a_ = this.state.mainCursor(); x = _a_[0]; y = _a_[1]
 
-            switch (event.dir)
-            {
-                case 'up':
-                    y -= steps
-                    break
-                case 'down':
-                    y += steps
-                    break
-                case 'left':
-                    x -= 1
-                    break
-                case 'right':
-                    x += 1
-                    break
-            }
+                switch (event.dir)
+                {
+                    case 'up':
+                        y -= steps
+                        break
+                    case 'down':
+                        y += steps
+                        break
+                    case 'left':
+                        x -= 1
+                        break
+                    case 'right':
+                        x += 1
+                        break
+                }
 
-            y = _k_.clamp(0,this.state.s.lines.length - 1,y)
-            x = _k_.clamp(0,this.state.s.lines[y].length - 1,x)
-            start = [this.dragStart[0],this.dragStart[1]]
-            if (y < this.dragStart[1])
-            {
-                start = [this.dragStart[2],this.dragStart[1]]
+                y = _k_.clamp(0,this.state.s.lines.length - 1,y)
+                x = _k_.clamp(0,this.state.s.lines[y].length - 1,x)
+                start = [this.dragStart[0],this.dragStart[1]]
+                if (y < this.dragStart[1])
+                {
+                    start = [this.dragStart[2],this.dragStart[1]]
+                }
+                if (this.state.select(start,[x,y]))
+                {
+                    this.redraw()
+                }
+                return
             }
-            if (this.state.select(start,[x,y]))
-            {
-                this.redraw()
-            }
+        }
+        var _b_ = this.cells.posForEvent(event); col = _b_[0]; row = _b_[1]
+
+        if (!this.cells.isInsideEvent(event))
+        {
             return
         }
         switch (event.dir)

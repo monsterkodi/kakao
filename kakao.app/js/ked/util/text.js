@@ -58,7 +58,6 @@ text = (function ()
             }
         }
         s = kseg.str(l)
-        lf('textForLineRanges',rng,l,s)
         return s
     }
 
@@ -149,6 +148,7 @@ text = (function ()
         for (y = 0; y < list.length; y++)
         {
             line = list[y]
+            line = kseg.str(line)
             x2 = 0
             while (true)
             {

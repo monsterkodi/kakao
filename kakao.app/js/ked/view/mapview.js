@@ -26,17 +26,18 @@ mapview = (function ()
     {
         this.state = state
     
+        this["drawImages"] = this["drawImages"].bind(this)
         this["createImages"] = this["createImages"].bind(this)
         this["setSyntaxSegls"] = this["setSyntaxSegls"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
-        this["reload"] = this["reload"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
-        mapview.__super__.constructor.call(this,screen,this.state.name + 'mapview')
+        mapview.__super__.constructor.call(this,screen,this.state.name + '.mapview')
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
+        this.rowOffset = 0
         this.images = []
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
@@ -67,6 +68,12 @@ mapview = (function ()
         return this.cells.cols > 0
     }
 
+    mapview.prototype["reload"] = function ()
+    {
+        this.createImages()
+        return this.drawImages()
+    }
+
     mapview.prototype["clearImages"] = function ()
     {
         var id
@@ -80,10 +87,24 @@ mapview = (function ()
         return this.images = []
     }
 
-    mapview.prototype["reload"] = function ()
+    mapview.prototype["layout"] = function (x, y, w, h)
     {
-        this.clearImages()
-        return this.createImages()
+        var resized
+
+        resized = x !== this.cells.x || y !== this.cells.y || w !== this.cells.cols || h !== this.cells.rows
+        mapview.__super__.layout.call(this,x,y,w,h)
+        if (this.hidden())
+        {
+            return
+        }
+        if (this.redraw || resized)
+        {
+            if (this.redraw)
+            {
+                this.createImages()
+            }
+            return this.drawImages()
+        }
     }
 
     mapview.prototype["getSegls"] = function ()
@@ -103,7 +124,7 @@ mapview = (function ()
         this.syntax = new syntax
         this.syntax.setExt(ext)
         this.syntax.setSegls(this.segls)
-        return this.createImages()
+        return this.redraw = true
     }
 
     mapview.prototype["createImages"] = function ()
@@ -115,13 +136,12 @@ mapview = (function ()
         {
             return
         }
-        this.show()
         this.clearImages()
         w = this.cells.cols * t.cellsz[0]
         bytes = w * 3
         if (bytes <= 0)
         {
-            return this.clearImages()
+            return
         }
         lines = this.getSegls()
         syntax = this.getSyntax()
@@ -179,12 +199,11 @@ mapview = (function ()
             dataForLine(line)
             this.images.push(this.imgId + y)
             t.sendImageData(data,this.imgId + y,w,1)
-            if (y > this.cells.rows * t.cellsz[1] / this.pixelsPerRow)
+            if (y > (this.cells.rows - this.rowOffset) * t.cellsz[1] / this.pixelsPerRow)
             {
                 break
             }
         }
-        return this.drawImages()
     }
 
     mapview.prototype["drawImages"] = function ()
@@ -192,7 +211,7 @@ mapview = (function ()
         var id, t, y
 
         t = this.cells.screen.t
-        if (_k_.empty(t.pixels) || this.cells.rows <= 0 || this.cells.cols <= 0)
+        if (_k_.empty(t.pixels) || this.hidden())
         {
             return
         }
@@ -200,7 +219,7 @@ mapview = (function ()
         for (y = 0; y < list.length; y++)
         {
             id = list[y]
-            t.placeImage(id,this.cells.x,this.cells.y,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
+            t.placeImage(id,this.cells.x,this.cells.y + this.rowOffset,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
         }
         return this
     }

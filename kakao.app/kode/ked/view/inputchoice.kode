@@ -174,11 +174,11 @@ function inputchoice extends view
         # ⮐ true if @choices.onKey key event
         true
         
-    onMouse: type sx sy event =>
+    onMouse: event =>
 
         ⮐ if @hidden()
-        ⮐ true if @input.onMouse type sx sy event
-        ⮐ true if @choices.onMouse type sx sy event
+        ⮐ true if @input.onMouse   event
+        ⮐ true if @choices.onMouse event
         true
 
     onWheel: event =>

@@ -225,17 +225,17 @@ inputchoice = (function ()
         return true
     }
 
-    inputchoice.prototype["onMouse"] = function (type, sx, sy, event)
+    inputchoice.prototype["onMouse"] = function (event)
     {
         if (this.hidden())
         {
             return
         }
-        if (this.input.onMouse(type,sx,sy,event))
+        if (this.input.onMouse(event))
         {
             return true
         }
-        if (this.choices.onMouse(type,sx,sy,event))
+        if (this.choices.onMouse(event))
         {
             return true
         }

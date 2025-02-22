@@ -84,7 +84,7 @@ export default {select:function (from, to)
     return this.highlightSelection()
 },highlightSelection:function ()
 {
-    var lines, selection, spans, text
+    var lines, rng, spans, text
 
     if (_k_.empty(this.s.selections))
     {
@@ -95,12 +95,12 @@ export default {select:function (from, to)
     var list = _k_.list(this.allSelections())
     for (var _b_ = 0; _b_ < list.length; _b_++)
     {
-        selection = list[_b_]
-        if (selection[1] !== selection[3])
+        rng = list[_b_]
+        if (rng[1] !== rng[3])
         {
             continue
         }
-        text = util.textForLineRange(lines,selection)
+        text = util.textForLineRange(lines,rng)
         spans = spans.concat(util.lineSpansForText(lines,text))
     }
     return this.setHighlights(spans)

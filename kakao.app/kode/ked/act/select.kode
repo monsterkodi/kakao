@@ -69,7 +69,7 @@ export
         @deselectCursorHighlight()
     
     selectWordAtCursor_highlightSelection_addNextHighlightToSelection: ->
-        # cmd+d ctrl+d
+        # cmd+d ctrl+d
         if valid @s.highlights ➜ ⮐ @addCurrentOrNextHighlightToSelection()
             
         @selectWordAtCursor_highlightSelection()
@@ -94,9 +94,9 @@ export
         
         spans = []
         lines = @allLines()
-        for selection in @allSelections()
-            continue if selection[1] != selection[3]
-            text  = util.textForLineRange lines selection
+        for rng in @allSelections()
+            continue if rng[1] != rng[3]
+            text  = util.textForLineRange lines rng
             spans = spans.concat util.lineSpansForText(lines text)
         
         @setHighlights spans

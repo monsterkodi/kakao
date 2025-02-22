@@ -17,9 +17,9 @@ import util from "../util/util.js"
 import editor from "../editor.js"
 import theme from "../theme.js"
 
-import cells from "./cells.js"
-import crumbs from "./crumbs.js"
 import inputchoice from "./inputchoice.js"
+import crumbs from "./crumbs.js"
+import fscol from "./fscol.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 int = parseInt
@@ -32,6 +32,8 @@ quicky = (function ()
         this.screen = screen
     
         this["onChoiceAction"] = this["onChoiceAction"].bind(this)
+        this["onWheel"] = this["onWheel"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
         this["openFileInEditor"] = this["openFileInEditor"].bind(this)
         this["gotoDirOrOpenFile"] = this["gotoDirOrOpenFile"].bind(this)
         this["showFiles"] = this["showFiles"].bind(this)
@@ -39,6 +41,7 @@ quicky = (function ()
         this["layout"] = this["layout"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
+        this.fscol = new fscol(this.screen,'quicky_fscol')
         this.choices.state.syntax.setRgxs(rgxs)
         post.on('quicky.dir',this.gotoDir)
         post.on('quicky.files',this.showFiles)
@@ -46,7 +49,7 @@ quicky = (function ()
 
     quicky.prototype["layout"] = function ()
     {
-        var cr, cs, h, hs, ih, iz, scx, scy, w, x, y
+        var ch, cr, cw, fh, fw, h, hs, ih, iz, scx, scy, w, x, y
 
         scx = parseInt(this.screen.cols / 2)
         scy = parseInt(this.screen.rows / 2)
@@ -55,14 +58,31 @@ quicky = (function ()
         hs = parseInt(this.screen.rows / 2)
         y = parseInt(scy - hs / 2 - ih)
         cr = (this.crumbs.visible() ? 1 : 0)
-        cs = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
+        ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
         x = parseInt(scx - w / 2)
-        h = cs + ih + cr + 2
+        h = ch + ih + cr + 2
+        fw = (this.fscol.visible() ? parseInt((w - 3) / 2) : 0)
+        fh = (this.fscol.visible() ? ch : 0)
+        cw = w - 3 - fw
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
-        this.choices.layout(x + 2,y + 1 + ih + cr,w - 3,cs)
+        this.choices.layout(x + 2,y + 1 + ih + cr,cw,ch)
+        this.fscol.layout(x + 2 + cw,y + 1 + ih + cr,fw,fh)
         return this.cells.layout(x,y,w,h)
+    }
+
+    quicky.prototype["draw"] = function ()
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        this.layout()
+        this.drawFrame()
+        this.crumbs.draw()
+        this.fscol.draw()
+        return this.drawChoices()
     }
 
     quicky.prototype["toggle"] = function (currentFile)
@@ -75,11 +95,6 @@ quicky = (function ()
         {
             return this.hide()
         }
-    }
-
-    quicky.prototype["hideMap"] = function ()
-    {
-        return this.choices.mapscr.hide()
     }
 
     quicky.prototype["show"] = function (currentFile)
@@ -188,16 +203,14 @@ quicky = (function ()
             item.tilde = slash.relative(item.path,this.currentDir)
             item.tilde = (((item.type === 'dir') ? ' ' : '  ')) + item.tilde
         }
-        parent = slash.dir(this.currentDir)
-        if (!_k_.empty(parent))
-        {
-            items.push({type:'dir',file:slash.name(parent),path:parent,tilde:' ..'})
-        }
         items.sort(function (a, b)
         {
             return weight(a) - weight(b)
         })
-        select = items[(parent ? 1 : 0)].path
+        parent = slash.dir(this.currentDir)
+        items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? ' ..' : '')})
+        select = items[1].path
+        this.choices.mapscr.rowOffset = 1
         return this.showPathItems(items,select)
     }
 
@@ -210,6 +223,7 @@ quicky = (function ()
             return {path:path,type:'file',tilde:slash.file(path)}
         })
         this.crumbs.hide()
+        this.choices.mapscr.rowOffset = 0
         return this.showPathItems(items)
     }
 
@@ -232,7 +246,7 @@ quicky = (function ()
                 }
             }
         }
-        this.preview(items[selectIndex].path)
+        this.preview(items[selectIndex])
         this.choices.set(items,'tilde')
         this.choices.state.selectLine(selectIndex)
         this.choices.state.setMainCursor(this.choices.state.s.lines[selectIndex].length,selectIndex)
@@ -311,18 +325,6 @@ quicky = (function ()
         return {redraw:true}
     }
 
-    quicky.prototype["draw"] = function ()
-    {
-        if (this.hidden())
-        {
-            return
-        }
-        this.layout()
-        this.drawFrame()
-        this.crumbs.draw()
-        return this.drawChoices()
-    }
-
     quicky.prototype["moveSelection"] = function (dir)
     {
         switch (dir)
@@ -345,30 +347,70 @@ quicky = (function ()
         quicky.__super__.moveSelection.call(this,dir)
         if (this.choices.current().path)
         {
-            return this.preview(this.choices.current().path)
+            return this.preview(this.choices.current())
         }
     }
 
-    quicky.prototype["preview"] = async function (file)
+    quicky.prototype["preview"] = async function (item)
     {
         var segls, text
 
-        if (_k_.in(slash.ext(file),walker.sourceFileExtensions))
+        if (item.type === 'file' && _k_.in(slash.ext(item.path),walker.sourceFileExtensions))
         {
-            text = await nfs.read(file)
+            text = await nfs.read(item.path)
             segls = util.seglsForText(text)
             this.choices.mapscr.show()
-            return this.choices.mapscr.setSyntaxSegls(slash.ext(file),segls)
+            this.choices.mapscr.setSyntaxSegls(slash.ext(item.path),segls)
         }
         else
         {
-            return this.hideMap()
+            this.hideMap()
         }
+        if (item.type === 'dir' && !item.tilde.endsWith('..'))
+        {
+            this.fscol.show(item.path)
+        }
+        else
+        {
+            this.fscol.hide()
+        }
+        return post.emit('redraw')
+    }
+
+    quicky.prototype["hideMap"] = function ()
+    {
+        return this.choices.mapscr.hide()
+    }
+
+    quicky.prototype["onMouse"] = function (event)
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        if (this.fscol.onMouse(event))
+        {
+            return true
+        }
+        return quicky.__super__.onMouse.call(this,event)
+    }
+
+    quicky.prototype["onWheel"] = function (event)
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        if (this.fscol.onWheel(event))
+        {
+            return true
+        }
+        return quicky.__super__.onWheel.call(this,event)
     }
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _335_62_
+        var upDir, _373_62_
 
         switch (action)
         {
@@ -386,7 +428,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_335_62_=choice.link) != null ? _335_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_373_62_=choice.link) != null ? _373_62_ : choice.path))
                     }
                 }
                 break

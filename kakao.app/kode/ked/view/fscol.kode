@@ -6,26 +6,59 @@
 000       0000000    0000000   0000000   0000000
 ###
 
-use ◆ editor theme
+use ../../kxk ▪ slash post kstr
+use ../../kxk ◆ nfs
+use ◆ choices
 
-function fscol extends editor
+import rgxs from './quicky.json' with { type: "json" }
 
-    @: screen ->
+function fscol extends choices
+
+    @: screen name ->
         
-        super screen
+        super screen name
         
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
-    onKey: key =>
+        @state.syntax.setRgxs rgxs
         
-        switch key
+    show: dir -> 
+
+        @cells.rows = 1 
+        @listDir dir
+        
+    isCursorVisible: -> false
+        
+    listDir: dir ○->
+        
+        try
+            items =○ nfs.list dir recursive:false
+        catch err
+            lf 'list error' dir String(err)
+            ⮐ 
+
+        for item in items
+            item.tilde = slash.file item.path
+            item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
+
+        weight = item ->
+
+            p = slash.parse item.path
+
+            w = 0
+            ⮐ w if item.tilde == ' ..'
+            w += 10000 if item.type == 'file'
+            w += 1000  if item.tilde.startsWith ' .'
+            w += 1     if slash.ext(item.tilde) in ['js' 'json']
+            w += kstr.weight(p.file)
+            w
             
-            'cmd+.' ➜ @toggle(); ⮐ true
+        items.sort (a b) -> weight(a) - weight(b)
+        
+        items.unshift(tilde:'')
             
-        false
-
+        selectIndex = 0
+        @set items 'tilde'
+        @state.setView [0 0]
+        
+        post.emit 'redraw'
+        
 export fscol

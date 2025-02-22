@@ -29,6 +29,7 @@ function view extends events
     #     0      000  0000000   000  0000000    000  0000000  000     000        000     
   
     show:      -> @layout(); redraw:true
+    # show:      -> lf 'view.show' @name; @layout(); redraw:true
     hide:      -> @cells.rows = 0; redraw:true
     hidden:    -> @cells.rows <= 0 #or @cells.cols <= 0
     invisible: -> @cells.rows <= 0 #or @cells.cols <= 0
@@ -52,7 +53,7 @@ function view extends events
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    layout:  x y w h -> @cells.layout x y w h 
+    layout: x y w h -> @cells.layout x y w h 
     
     draw: => @knob?.draw() 
         

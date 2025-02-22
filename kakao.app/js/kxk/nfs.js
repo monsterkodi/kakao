@@ -61,6 +61,10 @@ class NFS
                 await NFS.listdir(absPath,opt)
             }
         }
+        opt.found.sort(function (a, b)
+        {
+            return a.path.localeCompare(b.path)
+        })
         return opt.found
     }
 

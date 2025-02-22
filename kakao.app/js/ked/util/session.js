@@ -43,6 +43,7 @@ session = (function ()
         this.file = slash.path(this.dir,`${this.name}.noon`)
         lf('session',this.file)
         this.loadAndMergeRecentSession()
+        this.cleanSessionFiles()
         return session.__super__.constructor.apply(this, arguments)
     }
 
@@ -53,7 +54,7 @@ session = (function ()
 
     session.prototype["get"] = function (key, value)
     {
-        var _49_45_
+        var _50_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -64,7 +65,7 @@ session = (function ()
 
     session.prototype["set"] = function (key, value)
     {
-        var _67_14_
+        var _68_14_
 
         if (!(_k_.isStr(key)))
         {
@@ -82,7 +83,7 @@ session = (function ()
         {
             return this.del(key)
         }
-        this.data = ((_67_14_=this.data) != null ? _67_14_ : {})
+        this.data = ((_68_14_=this.data) != null ? _68_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         return this.delayedSave()
     }
@@ -152,6 +153,10 @@ session = (function ()
             {
                 return lf('session.save failed!',this.file,result)
             }
+            else
+            {
+                return lf('session.saved',result,this.data)
+            }
         }
         catch (err)
         {
@@ -164,11 +169,17 @@ session = (function ()
         var file, recent
 
         file = await this.newestSessionFile()
+        if (_k_.empty(file))
+        {
+            return
+        }
         recent = await noon.read(file)
+        lf(`loadAndMergeRecent ${file}`,recent)
         if (!_k_.empty(recent.files))
         {
-            return this.set('files',recent.files)
+            this.set('files',recent.files)
         }
+        return this.emit('loaded')
     }
 
     session.prototype["newestSessionFile"] = async function ()
@@ -176,18 +187,16 @@ session = (function ()
         var files
 
         files = await this.listSessionFiles()
+        lf('newestSessionFile',files)
         return files.slice(-1)[0]
     }
 
     session.prototype["listSessionFiles"] = async function ()
     {
-        var files
+        var f, files
 
         files = await nfs.list(this.dir)
-        return files.map(function (f)
-        {
-            return f.path
-        })
+        return (function () { var r_a_ = []; var list = _k_.list(files); for (var _b_ = 0; _b_ < list.length; _b_++)  { f = list[_b_];r_a_.push(f.path)  } return r_a_ }).bind(this)()
     }
 
     session.prototype["cleanSessionFiles"] = async function ()
@@ -196,11 +205,12 @@ session = (function ()
 
         maxFiles = 10
         files = await this.listSessionFiles()
-        var list = _k_.list(files.slice(0, typeof maxFiles === 'number' ? maxFiles : -1))
+        var list = _k_.list(files.slice(0, files.length - maxFiles))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             file = list[_a_]
             lf('delete old session file',file)
+            await nfs.remove(file)
         }
     }
 

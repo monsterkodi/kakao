@@ -34,6 +34,7 @@ function KED
         @logfile = new logfile
         @session = new session
         global.ked_session = @session
+        @session.on 'loaded' @onSessionLoaded
                     
         @t = new ttio
         
@@ -47,7 +48,8 @@ function KED
         @quicky  = new quicky   @screen 
         @finder  = new finder   @screen 
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
+        # @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
+        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob']
         @status  = new status   @screen @editor.state
         
         lfc "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked #{@version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
@@ -76,7 +78,11 @@ function KED
             @loadFile args.options[0]
         else
             @newFile()
-            @menu.show true
+            
+    onSessionLoaded: => 
+    
+        # lf 'ked.onSessionLoaded' @currentFile
+        @menu.show true if empty @currentFile
                         
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  

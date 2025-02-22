@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var menu
 
@@ -70,6 +70,10 @@ quit`)
         {
             items.splice(items.length - 2,0,'about')
         }
+        if (_k_.empty(global.ked_session.get('files')))
+        {
+            items.splice(2,1)
+        }
         ccol = parseInt(this.screen.cols / 2) - 5
         this.input.set('')
         this.choices.set(items)
@@ -85,14 +89,15 @@ quit`)
 
     menu.prototype["showRecent"] = function ()
     {
-        var files, loaded, maxRecent, recent, saved, _95_30_, _96_29_
+        var files, loaded, maxRecent, recent, saved, _97_30_, _98_29_
 
         maxRecent = 20
         files = ked_session.get('files',[])
-        loaded = ((_95_30_=files.loaded) != null ? _95_30_ : [])
-        saved = ((_96_29_=files.saved) != null ? _96_29_ : [])
+        loaded = ((_97_30_=files.loaded) != null ? _97_30_ : [])
+        saved = ((_98_29_=files.saved) != null ? _98_29_ : [])
         recent = loaded.concat(saved)
-        recent = recent.slice(_k_.max(0,recent.length - maxRecent))
+        recent.reverse()
+        recent = recent.slice(0, typeof _k_.min(recent.length,maxRecent) === 'number' ? _k_.min(recent.length,maxRecent) : -1)
         this.choices.set(recent)
         this.hide()
         return post.emit('quicky.files',recent)

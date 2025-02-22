@@ -63,6 +63,7 @@ class NFS
     
                 ○ NFS.listdir absPath opt
         
+        opt.found.sort (a b) -> a.path.localeCompare b.path # if not opt.recursive
         opt.found
     
     @list:    NFS.listdir

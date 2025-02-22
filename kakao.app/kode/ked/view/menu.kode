@@ -69,6 +69,8 @@ function menu extends inputchoice
             """
 
         items.splice items.length-2 0 'about' if not @greet
+        
+        items.splice 2 1 if empty global.ked_session.get 'files'
             
         ccol = int(@screen.cols/2) - 5
 
@@ -95,7 +97,9 @@ function menu extends inputchoice
         loaded = files.loaded ? []
         saved  = files.saved ? [] 
         recent = loaded.concat saved
-        recent = recent[max(0 recent.length-maxRecent)..]
+        recent.reverse()
+        # recent = recent[max(0 recent.length-maxRecent)..]
+        recent = recent[0...min(recent.length maxRecent)]
         @choices.set recent
         # lf 'showRecent' recent
         @hide()

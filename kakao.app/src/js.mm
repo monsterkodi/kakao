@@ -51,7 +51,7 @@
         
     JSValue* jsValue = [jsContext evaluateScript:scriptSrc withSourceURL:[NSURL fileURLWithPath:scriptPath]];
     
-    NSLog(@"ret %@", jsValue);
+    NSLog(@"js script returned: %@", jsValue);
         
     return 0;
 }

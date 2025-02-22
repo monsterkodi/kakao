@@ -103,7 +103,7 @@ function TTIO extends events
                 C=1 don't move cursor policy
             ###
             
-            @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement},X=#{rx},Y=#{ry},C=1\x1b\\"
+            @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement+1},X=#{rx},Y=#{ry},C=1\x1b\\"
 
     placeImageStretched: id x y w h px py ->
         

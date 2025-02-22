@@ -32,7 +32,7 @@ function choices extends editor
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
-    current: -> @fuzzied[@state.mainCursor()[1]]
+    current:    -> @fuzzied[@state.mainCursor()[1]]
     
     hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1
     hasPrev:    -> @state.mainCursor()[1] > 0

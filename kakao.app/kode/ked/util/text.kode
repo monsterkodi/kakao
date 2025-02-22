@@ -35,9 +35,8 @@ function text
                             ➜ l.push lines[y]
          
         s = kseg.str l
-        lf 'textForLineRanges' rng l s
+        # lf 'textForLineRange' rng s
         s
-        # l.join '\n'
 
     @seglsForLineRange: lines rng ->
         
@@ -83,6 +82,7 @@ function text
         spans = []
         
         for line,y in lines
+            line = kseg.str line
             x2 = 0
             while true
                 x1 = line.indexOf text x2

@@ -35,6 +35,7 @@ function session extends events
         lf 'session' @file
         
         @loadAndMergeRecentSession()
+        @cleanSessionFiles()
         
     keypath: key => key.split @sep
     
@@ -121,8 +122,8 @@ function session extends events
             result =○ nfs.write @file text
             if result.error
                 lf 'session.save failed!' @file result
-            # else
-                # lf 'session.saved' result @data
+            else
+                lf 'session.saved' result @data
 
         catch err
             lf "session -- can't save to '#{@file}':" err
@@ -136,25 +137,31 @@ function session extends events
     loadAndMergeRecentSession: ○=>
         
         file =○ @newestSessionFile()
+        ⮐ if empty file
         recent =○ noon.read(file)
-        # lf 'loadAndMergeRecent' file recent
+        lf "loadAndMergeRecent #{file}" recent  
         @set 'files' recent.files if valid recent.files # probably should actually merge here instead of overriding!
+        
+        @emit 'loaded'
     
     newestSessionFile: ○=>
         
         files =○ @listSessionFiles()
+        lf 'newestSessionFile' files
         files[-1]
             
     listSessionFiles: ○=>
         
         files =○ nfs.list @dir
-        files.map (f) -> f.path
+        [f.path for f in files]
+        # files.map (f) -> f.path
         
     cleanSessionFiles: ○=>
         
         maxFiles = 10
         files =○ @listSessionFiles()
-        for file in files[0...maxFiles]
+        for file in files[0...files.length-maxFiles]
             lf 'delete old session file' file
+            ○ nfs.remove file
         
 export session

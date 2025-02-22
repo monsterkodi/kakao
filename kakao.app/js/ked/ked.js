@@ -53,6 +53,7 @@ KED = (function ()
         this["newFile"] = this["newFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
+        this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
         this.version = '0.0.5'
         args = karg(`
 ked [file]
@@ -64,10 +65,11 @@ ked [file]
         this.logfile = new logfile
         this.session = new session
         global.ked_session = this.session
+        this.session.on('loaded',this.onSessionLoaded)
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _40_64_
+            var _41_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -81,7 +83,7 @@ ked [file]
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
-        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','mapscr','knob'])
+        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','knob'])
         this.status = new status(this.screen,this.editor.state)
         lfc(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked ${this.version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
         this.editor.state.hasFocus = true
@@ -107,7 +109,14 @@ ked [file]
         else
         {
             this.newFile()
-            this.menu.show(true)
+        }
+    }
+
+    KED.prototype["onSessionLoaded"] = function ()
+    {
+        if (_k_.empty(this.currentFile))
+        {
+            return this.menu.show(true)
         }
     }
 
@@ -139,7 +148,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _115_10_
+        var _121_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -161,7 +170,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _137_22_
+        var _143_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -186,7 +195,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _177_22_
+        var segls, start, text, _183_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -373,7 +382,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _306_22_, _307_23_
+        var _312_22_, _313_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -382,7 +391,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _312_22_, _313_23_
+        var _318_22_, _319_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

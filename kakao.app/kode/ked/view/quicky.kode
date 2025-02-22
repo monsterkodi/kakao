@@ -10,7 +10,7 @@ use ../../kxk ▪ kstr slash post noon
 use ../../kxk ◆ nfs
 use ../util ◆ prjcts walker util
 use ..      ◆ editor theme
-use         ◆ cells crumbs inputchoice
+use         ◆ inputchoice crumbs fscol 
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -23,6 +23,7 @@ function quicky extends inputchoice
         super @screen 'quicky' ['mapview']
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
+        @fscol  = new fscol   @screen 'quicky_fscol'
 
         @choices.state.syntax.setRgxs rgxs
 
@@ -47,18 +48,41 @@ function quicky extends inputchoice
         y  = int scy - hs/2 - ih
         
         cr = @crumbs.visible() ? 1 : 0
-        cs = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
+        ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
 
         w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
         x  = int scx-w/2
         
-        h  = cs + ih + cr + 2
+        h  = ch + ih + cr + 2
         
-        @input.layout    x+2   y+1        w-4  iz
-        @crumbs.layout   x+2   y+1+ih     w-4  cr
-        @choices.layout  x+2   y+1+ih+cr  w-3  cs
-        @cells.layout    x     y          w    h
+        fw = @fscol.visible() ? int((w-3)/2) : 0
+        fh = @fscol.visible() ? ch : 0
+        cw = w-3-fw
+        
+        # lf "quicky.layout #{cw} #{fw}"
+        
+        @input.layout    x+2      y+1        w-4   iz
+        @crumbs.layout   x+2      y+1+ih     w-4   cr
+        @choices.layout  x+2      y+1+ih+cr  cw    ch
+        @fscol.layout    x+2+cw   y+1+ih+cr  fw    fh
+        @cells.layout    x        y          w     h
 
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
+    draw: ->
+
+        ⮐ if @hidden()
+         
+        @layout()
+        @drawFrame()
+        @crumbs.draw()
+        @fscol.draw()
+        @drawChoices()
+        
     # 000000000   0000000    0000000    0000000   000      00000000  
     #    000     000   000  000        000        000      000       
     #    000     000   000  000  0000  000  0000  000      0000000   
@@ -67,8 +91,6 @@ function quicky extends inputchoice
     
     toggle: currentFile -> if @hidden() then @show(currentFile) else @hide()
     
-    hideMap: -> @choices.mapscr.hide()
-
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  
@@ -155,24 +177,27 @@ function quicky extends inputchoice
             item.tilde = slash.relative item.path @currentDir
             item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
 
-        parent = slash.dir @currentDir
-        if valid parent
-            items.push
-                type: 'dir'
-                file: slash.name(parent)
-                path: parent
-                tilde: ' ..'
-            
         items.sort (a b) -> weight(a) - weight(b)
         
-        select = items[parent ? 1 : 0].path
-                        
+        parent = slash.dir @currentDir
+        # if valid parent
+        items.unshift
+            type: 'dir'
+            file: slash.name(parent)
+            path: parent
+            tilde: parent ? ' ..' : ''
+            
+        # select = items[parent ? 1 : 0].path
+        select = items[1].path
+               
+        @choices.mapscr.rowOffset = 1
         @showPathItems items select
     
     showFiles: files =>
         
         items = files.map (path) -> path:path type:'file' tilde:slash.file(path)
         @crumbs.hide()
+        @choices.mapscr.rowOffset = 0
         @showPathItems items
         
     # 00000000    0000000   000000000  000   000        000  000000000  00000000  00     00   0000000  
@@ -193,7 +218,7 @@ function quicky extends inputchoice
                     selectIndex = idx
                     break
                     
-        @preview items[selectIndex].path
+        @preview items[selectIndex]
         
         @choices.set items 'tilde'
         @choices.state.selectLine selectIndex
@@ -262,21 +287,6 @@ function quicky extends inputchoice
 
         redraw:true
             
-    # 0000000    00000000    0000000   000   000
-    # 000   000  000   000  000   000  000 0 000
-    # 000   000  0000000    000000000  000000000
-    # 000   000  000   000  000   000  000   000
-    # 0000000    000   000  000   000  00     00
-
-    draw: ->
-
-        ⮐ if @hidden()
-         
-        @layout()
-        @drawFrame()
-        @crumbs.draw()
-        @drawChoices()
-
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
     # 0000000   0000000   000      0000000   000          000
@@ -294,7 +304,7 @@ function quicky extends inputchoice
         super dir
         
         if @choices.current().path
-            @preview @choices.current().path
+            @preview @choices.current()
             
     # 00000000   00000000   00000000  000   000  000  00000000  000   000  
     # 000   000  000   000  000       000   000  000  000       000 0 000  
@@ -302,17 +312,45 @@ function quicky extends inputchoice
     # 000        000   000  000          000     000  000       000   000  
     # 000        000   000  00000000      0      000  00000000  00     00  
     
-    preview: file ○->
+    preview: item ○->
         
-        if slash.ext(file) in walker.sourceFileExtensions
-
-            text =○ nfs.read file
+        # lf 'quicky.preview' item
+        
+        if item.type == 'file' and slash.ext(item.path) in walker.sourceFileExtensions
+            text =○ nfs.read item.path
             segls = util.seglsForText text
             @choices.mapscr.show()
-            @choices.mapscr.setSyntaxSegls slash.ext(file) segls
+            @choices.mapscr.setSyntaxSegls slash.ext(item.path) segls
         else
             @hideMap()
+            
+        if item.type == 'dir' and not item.tilde.endsWith '..'
+            @fscol.show item.path
+        else
+            @fscol.hide()
+            
+        post.emit 'redraw'
+            
+    hideMap: -> @choices.mapscr.hide()        
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+
+        ⮐ if @hidden()
+        ⮐ true if @fscol.onMouse event
+        super event
+
+    onWheel: event =>
         
+        ⮐ if @hidden()
+        ⮐ true if @fscol.onWheel event
+        super event
+                
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
     # 000000000  000          000     000  000   000  000 0 000  
