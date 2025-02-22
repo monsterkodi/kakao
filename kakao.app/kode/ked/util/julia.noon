@@ -1,20 +1,4 @@
 
-prefixes
-    bold              bf
-    italic            it
-    bolditalic        bi
-    blackboard        bb
-    italicblackboard  bbi
-    script            scr
-    boldscript        bscr
-    sans              sans
-    boldsans          bsans
-    italicsans        isans
-    bolditalicsans    bisans
-    frak              frak
-    boldfrak          bfrak
-    mono              tt
-
 latex_symbols
 
     sqrt           \u221A

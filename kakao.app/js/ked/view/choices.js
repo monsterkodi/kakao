@@ -22,6 +22,9 @@ choices = (function ()
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,['scrllr'].concat(features))
+        this.items = []
+        this.fuzzied = this.items
+        this.filterText = ''
     }
 
     choices.prototype["set"] = function (items, key)
@@ -29,18 +32,18 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines
+        var lines, _24_15_
 
+        this.items = ((_24_15_=this.items) != null ? _24_15_ : [])
         this.fuzzied = this.items
+        this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
         return this.state.loadLines(lines)
     }
 
     choices.prototype["numChoices"] = function ()
     {
-        var _26_26_, _26_35_
-
-        return ((_26_35_=(this.items != null ? this.items.length : undefined)) != null ? _26_35_ : 0)
+        return this.items.length
     }
 
     choices.prototype["numFiltered"] = function ()
@@ -51,6 +54,16 @@ choices = (function ()
     choices.prototype["current"] = function ()
     {
         return this.fuzzied[this.state.mainCursor()[1]]
+    }
+
+    choices.prototype["hasNext"] = function ()
+    {
+        return this.state.mainCursor()[1] < this.numFiltered() - 1
+    }
+
+    choices.prototype["hasPrev"] = function ()
+    {
+        return this.state.mainCursor()[1] > 0
     }
 
     choices.prototype["selectNext"] = function ()
@@ -103,16 +116,19 @@ choices = (function ()
     {
         var fuzz, lines
 
-        lf('choices.filter',text,this.items)
         if (_k_.empty(this.items))
+        {
+            return
+        }
+        if (text === this.filterText)
         {
             return
         }
         if (_k_.empty(text))
         {
-            lf('choices.filter empty',this.items,this.key)
             return this.set(this.items,this.key)
         }
+        this.filterText = text
         fuzz = new krzl({values:this.items,extract:this.extract})
         this.fuzzied = fuzz.filter(text)
         this.fuzzied.sort((function (a, b)
@@ -124,7 +140,6 @@ choices = (function ()
         {
             lines = ['']
         }
-        lf('choices.filter lines',lines)
         return this.state.loadLines(lines)
     }
 

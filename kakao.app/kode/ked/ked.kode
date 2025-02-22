@@ -84,6 +84,27 @@ function KED
     # 000   000   0000000   000   000  
     
     @run: -> new KED()
+
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
+    layout: ->
+        
+        w = @t.cols()
+        h = @t.rows()
+        k = @viewSizes.konsole[1]
+        
+        if true # status at top
+            @status.layout  0  0     w     1
+            @editor.layout  0  1     w h-k-1    
+            @konsole.layout 0  h-k-1 w   k
+        else # status at bottom
+            @status.layout  0  h-1   w     1
+            @editor.layout  0  0     w h-k-1    
+            @konsole.layout 0  h-k-1 w   k
     
     quit: msg ○=>
         
@@ -109,7 +130,7 @@ function KED
         @status.file = ''
     
         @editor.state.syntax.ext = 'txt'
-        @editor.state.loadLines [[]]
+        @editor.state.loadLines ['']
         @t.setCursor 0 0
         
         @editor.mapscr?.reload()
@@ -157,6 +178,7 @@ function KED
         @redraw()
         
         prjcts.index @currentFile
+        @t.setTitle slash.name(@status.file)
         @
             
     #  0000000   0000000   000   000  00000000  
@@ -289,18 +311,11 @@ function KED
               
         start = process.hrtime()
         
-        w = @t.cols()
-        h = @t.rows()
-        
-        k = @viewSizes.konsole[1]
-
         @status.gutter = @editor.state.gutterWidth()
         
         @screen.init()
-        
-        @status.layout  0  h-1   w     1
-        @editor.layout  0  0     w h-k-1    
-        @konsole.layout 0  h-k-1 w   k
+
+        @layout()
         
         if not @menu.greet
             @editor.draw()

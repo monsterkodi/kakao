@@ -84,6 +84,7 @@ use .. ◆ kstr kseg
         kseg.width ''            ▸ 0
         kseg.width []            ▸ 0
         kseg.width {}            ▸ 0
+        kseg.width '┏━'          ▸ 2
     
         kseg.width ' '           ▸ 1
         kseg.width 'a'           ▸ 1
@@ -108,15 +109,38 @@ use .. ◆ kstr kseg
         
         kseg.width kseg("hello world") ▸ 11
         
+    ▸ trim
+    
+        kseg.trim ' '            ▸ kseg ''
+        kseg.trim ' x '          ▸ kseg 'x'
+        kseg.trim '🖍'            kseg '🖍'  
+        kseg.trim '字的模块'         ▸ kseg '字的模块'
+        kseg.trim '🧑‍🌾'       ▸ kseg '🧑‍🌾'
+        kseg.trim '  🖍    '           ▸ kseg '🖍'  
+        kseg.trim '  字的模块    '          ▸ kseg '字的模块'
+        kseg.trim '  🧑‍🌾   '       ▸ kseg '🧑‍🌾'
+        
     ▸ headCount
     
+        kseg.headCount ' x ' ' ' ▸ 1
         kseg.headCount '***xx***' '*' ▸ 3
         kseg.headCount kseg('***xx***') '*' ▸ 3
+
+        kseg.headCountWord ' x ' ▸ 0
+        kseg.headCountWord 'xxx  ' ▸ 3
+        kseg.headCountWord '🧑‍🌾' ▸  0
+        kseg.headCountWord 'xx🧑‍🌾' ▸  2
         
     ▸ tailCount
-    
+
+        kseg.tailCount ' x ' ' ' ▸ 1
         kseg.tailCount '***xx***' '*' ▸ 3
         kseg.tailCount kseg('***xx***') '*' ▸ 3
+        
+        kseg.tailCountWord ' x ' ▸ 0
+        kseg.tailCountWord ' xxx' ▸ 3
+        kseg.tailCountWord '🧑‍🌾' ▸  0
+        kseg.tailCountWord '🧑‍🌾xx' ▸  2
         
     ▸ numIndent
     
@@ -124,10 +148,42 @@ use .. ◆ kstr kseg
         kseg.numIndent kseg('a') ▸ 0
         kseg.numIndent '   b' ▸ 3
         kseg.numIndent kseg('   ') ▸ 3
-        
-    ▸ trim
+                
+    ▸ indexAtWidth
     
-        kseg.trim ' ' ▸ kseg ''
-    
+        kseg.indexAtWidth kseg('')    0 ▸ 0
+        kseg.indexAtWidth kseg('')    1 ▸ 0
+        kseg.indexAtWidth kseg('a')   0 ▸ 0
+        kseg.indexAtWidth kseg('a')   1 ▸ 1
+        kseg.indexAtWidth kseg('a')   2 ▸ 1
+        kseg.indexAtWidth kseg('abc') 2 ▸ 2
+        kseg.indexAtWidth kseg('ab3') 3 ▸ 3
+        kseg.indexAtWidth kseg('ab3') 4 ▸ 3
         
+        kseg.indexAtWidth kseg('🧑🧑') 0 ▸ 0
+        kseg.indexAtWidth kseg('🧑🧑') 1 ▸ 1
+        kseg.indexAtWidth kseg('🧑🧑') 2 ▸ 1
+        kseg.indexAtWidth kseg('🧑🧑') 3 ▸ 2
+        kseg.indexAtWidth kseg('🧑🧑') 4 ▸ 2
+        kseg.indexAtWidth kseg('🧑🧑') 5 ▸ 2
+        kseg.indexAtWidth kseg('🧑🧑') 6 ▸ 2
+    
+    ▸ segiAtWidth
+    
+        kseg.segiAtWidth kseg('')    0 ▸ 0
+        kseg.segiAtWidth kseg('')    1 ▸ 0
+        kseg.segiAtWidth kseg('a')   0 ▸ 0
+        kseg.segiAtWidth kseg('a')   1 ▸ 1
+        kseg.segiAtWidth kseg('a')   2 ▸ 1
+        kseg.segiAtWidth kseg('abc') 2 ▸ 2
+        kseg.segiAtWidth kseg('ab3') 3 ▸ 3
+        kseg.segiAtWidth kseg('ab3') 4 ▸ 3
+        
+        kseg.segiAtWidth kseg('🧑🧑') 0 ▸ 0
+        kseg.segiAtWidth kseg('🧑🧑') 1 ▸ 0
+        kseg.segiAtWidth kseg('🧑🧑') 2 ▸ 1
+        kseg.segiAtWidth kseg('🧑🧑') 3 ▸ 1
+        kseg.segiAtWidth kseg('🧑🧑') 4 ▸ 2
+        kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 2
+        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2        
         

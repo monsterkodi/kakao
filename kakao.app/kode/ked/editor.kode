@@ -84,38 +84,39 @@ function editor extends view
             y = row+view[1]
             break if y >= lines.length
             
-            line = lines[y]
+            line  = lines[y]
+            linel = kseg.width(line) - view[0]
             
-            c = 0
-            for x in 0...@cells.cols
+            x = c = 0
+            while x < @cells.cols
                 
-                si = x+view[0]
+                ci = x+view[0]
+                si = kseg.segiAtWidth line ci
                 break if si >= line.length
 
-                fg = syntax.getColor si y
-                ch = syntax.getChar si y line[si]
+                fg = syntax.getColor ci y
+                ch = syntax.getChar ci y line[si]
                 if ch == "#" ➜ checkColor = true
                 c += @cells.add c row ch fg bg
+                x += kseg.width(line[si]) ? 1
                     
             emptyColor = theme[@name + '_empty']
-                
-            # linel = line.length - view[0]
-            # lf 'line' line
-            linel = kseg.width(line) - view[0]
             
             if y == mainCursor[1]
                 if linel > 0
                     @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
-                # @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
-            # else
-                # if linel > 0
-                    # @cells.bg_rect 0 row linel row theme[@name]
-                # @cells.bg_fill max(0 linel) row -1 row emptyColor
-            # else
-                # @cells.bg_fill 0 row -1 row emptyColor
+                @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
+            else
+                if linel > 0
+                    @cells.bg_rect 0 row linel row theme[@name]
+                @cells.bg_fill max(0 linel) row -1 row emptyColor
                 
             @drawColors line row linel emptyColor if checkColor
-                                
+
+        if lines.length - view[1] < @cells.rows # fill empty rows below last line
+            for row in lines.length-view[1]...@cells.rows
+                @cells.bg_fill 0 row -1 row emptyColor            
+            
         bg = theme.highlight
         bg = color.darken bg if not @cells.screen.t.hasFocus
                                 
@@ -146,7 +147,7 @@ function editor extends view
                 if li == selection[3]
                     xe = selection[2]
                 else
-                    xe = lines[li].length # segs
+                    xe = kseg.width(lines[li])
 
                 bg = util.isSpanLineRange(lines selection) ? theme.selection : theme.selection_line
                 bg = color.darken bg if not @cells.screen.t.hasFocus
@@ -193,7 +194,7 @@ function editor extends view
 
         @scroll?.draw()
         @gutter?.draw()
-        # @mapscr?.draw()
+        @mapscr?.draw()
         
         super()
 
@@ -301,7 +302,9 @@ function editor extends view
             'move'
                 
                 if @cells.isInsideEvent event
-                    @cells.screen.t.setPointerStyle 'xterm'
+                    post.emit 'pointer' 'text'
+                else if @gutter?.cells.isInsideEvent event
+                    post.emit 'pointer' 'vertical-text'
                 
         false
                 
@@ -471,8 +474,8 @@ function editor extends view
             'shift+ctrl+k' 'entf'       ➜ ⮐ @state.delete 'next'
             'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
             'delete'                    ➜ ⮐ @state.delete 'back'
-            'cmd+delete'                ➜ ⮐ @state.delete 'back' 'cmd'
-            'alt+delete'                ➜ ⮐ @state.delete 'back' 'alt'
+            'ctrl+delete'               ➜ ⮐ @state.delete 'back' true
+            'cmd+delete'                ➜ ⮐ @state.delete 'back' true
             
             'shift+tab'                 ➜ ⮐ @state.deindentSelectedOrCursorLines()
             'tab'                       ➜ ⮐ @state.insert '\t'

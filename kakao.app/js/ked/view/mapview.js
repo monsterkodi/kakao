@@ -130,7 +130,7 @@ mapview = (function ()
         {
             var b, ch, clss, f, g, r, rgb, x, xr
 
-            data.fill(10)
+            data.fill(0)
             for (var _a_ = x = 0, _b_ = line.length; (_a_ <= _b_ ? x < line.length : x > line.length); (_a_ <= _b_ ? ++x : --x))
             {
                 if (x * this.pixelsPerCol > w)
@@ -184,10 +184,10 @@ mapview = (function ()
                 break
             }
         }
-        return this.draw()
+        return this.drawImages()
     }
 
-    mapview.prototype["draw"] = function ()
+    mapview.prototype["drawImages"] = function ()
     {
         var id, t, y
 
@@ -203,6 +203,11 @@ mapview = (function ()
             t.placeImage(id,this.cells.x,this.cells.y,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
         }
         return this
+    }
+
+    mapview.prototype["draw"] = function ()
+    {
+        return this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,'#000')
     }
 
     return mapview

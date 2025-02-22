@@ -28,24 +28,29 @@ function knob
             'press'
             
                 if row == 0
+                    post.emit 'pointer' 'grabbing'
                     @doDrag = true
                     ⮐ true
                     
             'drag'
             
                 if @doDrag and row
+                    post.emit 'pointer' 'grabbing'
                     post.emit 'view.size' @name @cells.cols max(0 @cells.rows - row)
                     ⮐ true
                 
             'release'
             
                 if @doDrag
+                    @hover = row == 0
+                    post.emit 'pointer' 'ns-resize' if @hover
                     delete @doDrag
                     ⮐ true
             
             'move'
             
                 @hover = row == 0
+                post.emit 'pointer' 'ns-resize' if @hover
                 
         false
                 

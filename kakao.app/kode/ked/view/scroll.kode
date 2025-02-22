@@ -6,8 +6,9 @@
 0000000    0000000  000   000   0000000   0000000  0000000
 ###
 
-use .. ◆ theme 
-use    ◆ view
+use ../../kxk ▪ post
+use ..        ◆ theme 
+use           ◆ view
 
 {floor, pow} = Math
 
@@ -32,12 +33,14 @@ function scroll extends view
             
                 if @hover
                     @doDrag = true
+                    post.emit 'pointer''grabbing' 
                     ⮐ @scrollTo row
                     
             'drag'
             
                 if @doDrag
                     @hover = true
+                    post.emit 'pointer''grab' 
                     ⮐ @scrollTo row 
                 else
                     @hover = false
@@ -45,8 +48,13 @@ function scroll extends view
             'release'
             
                 if @doDrag
+                    post.emit 'pointer''pointer' 
                     delete @doDrag 
                     ⮐ true
+                    
+            'move'
+            
+                post.emit 'pointer''pointer' if @hover
             
         false
         

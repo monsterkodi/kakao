@@ -6,9 +6,9 @@ let kseg = kxk.kseg
 
 import util from "../util/util.js"
 
-export default {delete:function (type, mods)
+export default {delete:function (type, jump)
 {
-    var before, ci, cursor, cursors, dc, line, lines, remove, rng, x, y
+    var before, ci, cursor, cursors, dc, line, lines, remove, rng, segi, x, y
 
     if (_k_.in(type,['back','next']) && !_k_.empty(this.s.selections))
     {
@@ -18,7 +18,7 @@ export default {delete:function (type, mods)
     cursors = this.allCursors()
     if (cursors.length === 1 && _k_.in(type,['back','next']) && util.isLinesPosOutside(lines,cursors[0]))
     {
-        return this.setMainCursor(lines[cursors[0]].length,cursors[0])
+        return this.setMainCursor(kseg.width(lines[cursors[0][1]]),cursors[0][1])
     }
     for (var _a_ = ci = cursors.length - 1, _b_ = 0; (_a_ <= _b_ ? ci <= 0 : ci >= 0); (_a_ <= _b_ ? ++ci : --ci))
     {
@@ -43,7 +43,7 @@ export default {delete:function (type, mods)
                             return
                         }
                         y -= 1
-                        x = lines[y].length
+                        x = kseg.width(lines[y])
                         remove = 2
                         line = kseg.join(lines[y],line)
                         cursor[0] = x
@@ -52,10 +52,16 @@ export default {delete:function (type, mods)
                 }
                 else
                 {
-                    if (mods === 'alt')
+                    if (jump)
                     {
-                        rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,cursor)
-                        dc = rng[2] - rng[0]
+                        if (rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,cursor))
+                        {
+                            dc = rng[2] - rng[0]
+                        }
+                        else
+                        {
+                            dc = 1
+                        }
                     }
                     else
                     {
@@ -73,11 +79,12 @@ export default {delete:function (type, mods)
                             dc = 1
                         }
                     }
-                    line = line.slice(0, x - dc).concat(line.slice(x))
+                    segi = kseg.indexAtWidth(line,x)
+                    line = kseg.join(line.slice(0, segi - dc),line.slice(segi))
                 }
                 break
             case 'next':
-                if (x === lines[y].length)
+                if (x === kseg.width(lines[y]))
                 {
                     if (cursors.length === 1)
                     {
@@ -85,27 +92,27 @@ export default {delete:function (type, mods)
                         {
                             return
                         }
-                        x = lines[y].length
+                        x = kseg.width(lines[y])
                         remove = 2
-                        line = line.concat(lines[y + 1])
+                        line = kseg.join(line,lines[y + 1])
                         cursor[0] = x
                         cursor[1] = y
                     }
                 }
                 else
                 {
-                    if (mods === 'alt')
+                    if (jump)
                     {
                         if (rng = util.rangeOfWordOrWhitespaceRightToPos(lines,cursor))
                         {
                             dc = rng[2] - rng[0]
-                            line = line.slice(0, typeof x === 'number' ? x : -1).concat(line.slice(x + dc))
+                            line = kseg.join(line.slice(0, typeof x === 'number' ? x : -1),line.slice(x + dc))
                         }
                     }
                     else
                     {
                         dc = 1
-                        line = line.slice(0, typeof x === 'number' ? x : -1).concat(line.slice(x + dc))
+                        line = kseg.join(line.slice(0, typeof x === 'number' ? x : -1),line.slice(x + dc))
                     }
                     cursor[0] += dc
                 }

@@ -21,9 +21,9 @@ function mapscr extends mapview
         screen.t.on 'preResize' @clearImages
         post.on 'greet' @clearImages
         
-    getLines:  -> @state.s.lines
-    getSyntax: -> @state.syntax
-       
+    getSegls:  => @state.segls
+    getSyntax: => @state.syntax
+    
     # 00000000   00000000   0000000  000  0000000  00000000  
     # 000   000  000       000       000     000   000       
     # 0000000    0000000   0000000   000    000    0000000   
@@ -77,11 +77,13 @@ function mapscr extends mapview
             
                 if @cells.isInsideScreen sx sy
                     @doDrag = true
+                    post.emit 'pointer''grabbing'
                     ⮐ @scrollToPixel event.pixel
                     
             'drag'
             
                 if @doDrag
+                    post.emit 'pointer''grab'
                     ⮐ @scrollToPixel event.pixel
                 
             'release'
@@ -89,12 +91,13 @@ function mapscr extends mapview
                 if @doDrag
                     delete @doDrag 
                     @hover = @cells.isInsideScreen sx sy
+                    post.emit 'pointer''pointer' if @hover
                     ⮐ true
             
             'move'
             
                 @hover = @cells.isInsideScreen sx sy
-                @cells.screen.t.setPointerStyle('hand') if @hover
+                post.emit 'pointer''pointer' if @hover
                     
         false
         
@@ -123,14 +126,13 @@ function mapscr extends mapview
         
         super()
         
-    draw: ->
+    drawImages: ->
         
         t = @cells.screen.t
         
         ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
         
-        @cells.fill_rect 0 0 -1 -1 '●' '#f00' '#ff0'
-        
+        # lf 'mapscr' @cells.cols @cells.rows 
         # t.placeImageStretched @knobId @cells.x @cells.y 2 3 0 0
         
         super()

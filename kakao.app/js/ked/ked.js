@@ -115,9 +115,30 @@ ked [file]
         return new KED()
     }
 
+    KED.prototype["layout"] = function ()
+    {
+        var h, k, w
+
+        w = this.t.cols()
+        h = this.t.rows()
+        k = this.viewSizes.konsole[1]
+        if (true)
+        {
+            this.status.layout(0,0,w,1)
+            this.editor.layout(0,1,w,h - k - 1)
+            return this.konsole.layout(0,h - k - 1,w,k)
+        }
+        else
+        {
+            this.status.layout(0,h - 1,w,1)
+            this.editor.layout(0,0,w,h - k - 1)
+            return this.konsole.layout(0,h - k - 1,w,k)
+        }
+    }
+
     KED.prototype["quit"] = async function (msg)
     {
-        var _93_10_
+        var _114_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -139,12 +160,12 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _115_22_
+        var _136_22_
 
         delete this.currentFile
         this.status.file = ''
         this.editor.state.syntax.ext = 'txt'
-        this.editor.state.loadLines([[]])
+        this.editor.state.loadLines([''])
         this.t.setCursor(0,0)
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         return this.redraw()
@@ -164,7 +185,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _155_22_
+        var segls, start, text, _176_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -186,6 +207,7 @@ ked [file]
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         this.redraw()
         prjcts.index(this.currentFile)
+        this.t.setTitle(slash.name(this.status.file))
         return this
     }
 
@@ -329,7 +351,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _268_22_, _269_23_
+        var _290_22_, _291_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -338,7 +360,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _274_22_, _275_23_
+        var _296_22_, _297_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -353,17 +375,12 @@ ked [file]
 
     KED.prototype["draw"] = function ()
     {
-        var h, k, start, w
+        var start
 
         start = process.hrtime()
-        w = this.t.cols()
-        h = this.t.rows()
-        k = this.viewSizes.konsole[1]
         this.status.gutter = this.editor.state.gutterWidth()
         this.screen.init()
-        this.status.layout(0,h - 1,w,1)
-        this.editor.layout(0,0,w,h - k - 1)
-        this.konsole.layout(0,h - k - 1,w,k)
+        this.layout()
         if (!this.menu.greet)
         {
             this.editor.draw()

@@ -25,7 +25,7 @@ function syntax
         if valid @config
             @diss = []
             for segs in segls
-                dss = matchr.ranges @config kseg.str segs
+                dss = matchr.ranges @config kseg.str(segs)
                 @diss.push dss
         else
             @diss = kulur.dissect segls @ext

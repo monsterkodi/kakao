@@ -227,8 +227,7 @@ edit = (function ()
         {
             var range
 
-            lf('addLineAtIndex',c,i)
-            range = this.colsOfLine(lines,i)
+            range = this.rangeOfLine(lines,i)
             if (this.isEmptyRange(range))
             {
                 range[1] += 1

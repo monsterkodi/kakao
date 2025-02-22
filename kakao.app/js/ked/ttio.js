@@ -15,9 +15,10 @@ TTIO = (function ()
     {
         this["onData"] = this["onData"].bind(this)
         this["parseData"] = this["parseData"].bind(this)
-        this["setPointerStyle"] = this["setPointerStyle"].bind(this)
         this["emitMouseEvent"] = this["emitMouseEvent"].bind(this)
         this["parseMouse"] = this["parseMouse"].bind(this)
+        this["setPointerStyle"] = this["setPointerStyle"].bind(this)
+        this["onPointer"] = this["onPointer"].bind(this)
         this["keyEventForCombo"] = this["keyEventForCombo"].bind(this)
         this["keyEventForChar"] = this["keyEventForChar"].bind(this)
         this["parseRaw"] = this["parseRaw"].bind(this)
@@ -56,6 +57,8 @@ TTIO = (function ()
         this.write('\x1b[=31;1u')
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
+        post.on('pointer',this.onPointer)
+        this.setTitle('ked')
         setTimeout(this.onResize,10)
         return TTIO.__super__.constructor.apply(this, arguments)
     }
@@ -100,6 +103,11 @@ TTIO = (function ()
     TTIO.prototype["rows"] = function ()
     {
         return process.stdout.rows
+    }
+
+    TTIO.prototype["setTitle"] = function (t)
+    {
+        return this.write(`\x1b]2;${t}\x1b\\`)
     }
 
     TTIO.prototype["placeImage"] = function (id, x, y, px, py, sx, sy)
@@ -513,6 +521,20 @@ TTIO = (function ()
         return {key:combo.split('+').slice(-1)[0],type:'press',combo:combo,char:char}
     }
 
+    TTIO.prototype["onPointer"] = function (style)
+    {
+        if (style !== this.pointerStyle)
+        {
+            this.pointerStyle = style
+            return this.setPointerStyle(this.pointerStyle)
+        }
+    }
+
+    TTIO.prototype["setPointerStyle"] = function (pointerStyle = 'pointer')
+    {
+        return this.write(`\x1b]22;${pointerStyle}\x1b\\`)
+    }
+
     TTIO.prototype["parseMouse"] = function (csi)
     {
         var code, cx, cy, event, m, mods, px, py
@@ -632,11 +654,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _434_23_
+        var diff, _449_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_434_23_=this.lastClick) != null ? _434_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_449_23_=this.lastClick) != null ? _449_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -660,11 +682,6 @@ TTIO = (function ()
             event.count = this.lastClick.count
         }
         return this.emit('mouse',event)
-    }
-
-    TTIO.prototype["setPointerStyle"] = function (pointerStyle = 'hand')
-    {
-        return this.write(`\x1b]22;${pointerStyle}\x1b\\`)
     }
 
     TTIO.prototype["parseData"] = function (data)
@@ -712,7 +729,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _510_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _521_23_
 
         if ((this.pasteBuffer != null))
         {

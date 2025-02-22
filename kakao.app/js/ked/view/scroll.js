@@ -2,6 +2,9 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var floor, pow, scroll
 
+import kxk from "../../kxk.js"
+let post = kxk.post
+
 import theme from "../theme.js"
 
 import view from "./view.js"
@@ -36,6 +39,7 @@ scroll = (function ()
                 if (this.hover)
                 {
                     this.doDrag = true
+                    post.emit('pointer','grabbing')
                     return this.scrollTo(row)
                 }
                 break
@@ -43,6 +47,7 @@ scroll = (function ()
                 if (this.doDrag)
                 {
                     this.hover = true
+                    post.emit('pointer','grab')
                     return this.scrollTo(row)
                 }
                 else
@@ -53,8 +58,15 @@ scroll = (function ()
             case 'release':
                 if (this.doDrag)
                 {
+                    post.emit('pointer','pointer')
                     delete this.doDrag
                     return true
+                }
+                break
+            case 'move':
+                if (this.hover)
+                {
+                    post.emit('pointer','pointer')
                 }
                 break
         }

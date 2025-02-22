@@ -41,9 +41,11 @@ function TTIO extends events
         
         process.stdout.on 'resize' @onResize
         process.stdin.on  'data'   @onData
+        post.on 'pointer'          @onPointer
         
+        @setTitle 'ked'
         setTimeout @onResize 10 # delay screen size request due to ghostty bug
-                
+                            
     write: str => process.stdout.write str
     
     quit: =>
@@ -72,7 +74,9 @@ function TTIO extends events
         @write '\x1b[H'  # cursor home
 
     cols: => process.stdout.columns
-    rows: => process.stdout.rows
+    rows: => process.stdout.rows  
+    
+    setTitle: t -> @write "\x1b]2;#{t}\x1b\\"
         
     #  0000000  00000000  000   000  0000000          000  00     00   0000000    0000000   00000000  
     # 000       000       0000  000  000   000        000  000   000  000   000  000        000       
@@ -372,6 +376,17 @@ function TTIO extends events
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
+    onPointer: style =>
+        
+        if style != @pointerStyle
+            # lf 'pointerStyle' style
+            @pointerStyle = style
+            @setPointerStyle @pointerStyle
+
+    setPointerStyle: pointerStyle='pointer' =>
+    
+        @write "\x1b]22;#{pointerStyle}\x1b\\"
+    
     parseMouse: csi =>
                 
         [code px py] = csi[1..-2].split(';').map (s) -> parseInt s
@@ -455,11 +470,7 @@ function TTIO extends events
             # lfc 'mouse' event
         
         @emit 'mouse' event
-    
-    setPointerStyle: pointerStyle='hand' =>
-    
-        @write "\x1b]22;#{pointerStyle}\x1b\\"
-            
+                
     # 00000000    0000000   00000000    0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 00000000   000000000  0000000    0000000   0000000   

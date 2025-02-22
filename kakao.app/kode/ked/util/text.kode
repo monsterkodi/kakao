@@ -127,9 +127,13 @@ function text
     # 000      000  000  0000  000            000  
     # 0000000  000  000   000  00000000  0000000   
     
+    @seglRangeAtPos: segls pos ->
+
+        [0 pos[1] segls[pos[1]].length pos[1]]
+        
     @lineRangeAtPos: lines pos ->
 
-        [0 pos[1] lines[pos[1]].length pos[1]]
+        [0 pos[1] kseg.width(lines[pos[1]]) pos[1]]
 
     @lineRangesForPositions: lines posl append->
         
@@ -230,11 +234,11 @@ function text
         
         split = []
         
-        split.push [rng[0] rng[1] lines[rng[1]].length rng[1]]
+        split.push [rng[0] rng[1] kseg.width(lines[rng[1]]) rng[1]]
         
         if nl > 2
             for i in 1..nl-2
-                split.push [0 rng[1]+i lines[rng[1]+i].length rng[1]+i]
+                split.push [0 rng[1]+i kseg.width(lines[rng[1]+i]) rng[1]+i]
         
         split.push [0 rng[3] rng[2] rng[3]] if includeEmpty or rng[2] > 0
 
@@ -247,7 +251,7 @@ function text
             split = split.concat @splitLineRange(lines rng includeEmpty)
         split
         
-    @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= lines[pos[1]].length
+    @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= kseg.width(lines[pos[1]])
     @isLinesPosOutside: lines pos -> not @isLinesPosInside lines pos 
     
     @isValidLineIndex:   lines li -> 0 <= li < lines.length
@@ -259,8 +263,7 @@ function text
     
     @isSpanLineRange: lines rng -> (0 <= rng[1] == rng[3] < lines.length) and (rng[0] > 0 or rng[2] < lines[rng[1]].length)
         
-    @rangeOfLine: lines y -> [0 y lines[y].length y]
-    @colsOfLine:  lines y -> [0 y kseg.str(lines[y]).length y]
+    @rangeOfLine: lines y -> [0 y kseg.width(lines[y]) y]
     
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   
@@ -306,13 +309,18 @@ function text
         
         ⮐ if x <= 0 or @isInvalidLineIndex lines y
         
-        if r = kstr.rangeOfClosestWord lines[y][0...x] x
-            if r[1] < x
-                ⮐ [r[1] y x y]
-            if 0 <= r[0] < r[1]
-                ⮐ [r[0] y r[1] y]
+        segi = kseg.indexAtWidth lines[y] x
+        left = lines[y][0...segi]
+        
+        # log "rangeOfWordOrWhitespaceLeftToPos ▸#{kseg.str left}◂ #{x} #{segi}"
+        
+        if tc = kseg.tailCount left ' '
+            ⮐ [segi-tc y segi y]
             
-        [0 y x y]   
+        if tc = kseg.tailCountWord left
+            ⮐ [segi-tc y segi y]
+        
+        [segi-1 y segi y]
 
     @rangeOfWordOrWhitespaceRightToPos: lines pos ->
         

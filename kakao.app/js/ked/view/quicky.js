@@ -303,6 +303,22 @@ quicky = (function ()
 
     quicky.prototype["moveSelection"] = function (dir)
     {
+        switch (dir)
+        {
+            case 'down':
+                if (!this.choices.hasNext())
+                {
+                    return
+                }
+                break
+            case 'up':
+                if (!this.choices.hasPrev())
+                {
+                    return
+                }
+                break
+        }
+
         this.hideMap()
         quicky.__super__.moveSelection.call(this,dir)
         if (this.choices.current().path)
@@ -330,7 +346,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _312_62_
+        var upDir, _316_62_
 
         switch (action)
         {
@@ -348,7 +364,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_312_62_=choice.link) != null ? _312_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_316_62_=choice.link) != null ? _316_62_ : choice.path))
                     }
                 }
                 break

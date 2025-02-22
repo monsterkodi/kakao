@@ -214,9 +214,14 @@ text = (function ()
         })
     }
 
+    text["seglRangeAtPos"] = function (segls, pos)
+    {
+        return [0,pos[1],segls[pos[1]].length,pos[1]]
+    }
+
     text["lineRangeAtPos"] = function (lines, pos)
     {
-        return [0,pos[1],lines[pos[1]].length,pos[1]]
+        return [0,pos[1],kseg.width(lines[pos[1]]),pos[1]]
     }
 
     text["lineRangesForPositions"] = function (lines, posl, append)
@@ -324,7 +329,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/util/text.kode", 193, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/util/text.kode", 197, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length
@@ -391,12 +396,12 @@ text = (function ()
             return [rng]
         }
         split = []
-        split.push([rng[0],rng[1],lines[rng[1]].length,rng[1]])
+        split.push([rng[0],rng[1],kseg.width(lines[rng[1]]),rng[1]])
         if (nl > 2)
         {
             for (var _a_ = i = 1, _b_ = nl - 2; (_a_ <= _b_ ? i <= nl - 2 : i >= nl - 2); (_a_ <= _b_ ? ++i : --i))
             {
-                split.push([0,rng[1] + i,lines[rng[1] + i].length,rng[1] + i])
+                split.push([0,rng[1] + i,kseg.width(lines[rng[1] + i]),rng[1] + i])
             }
         }
         if (includeEmpty || rng[2] > 0)
@@ -422,7 +427,7 @@ text = (function ()
 
     text["isLinesPosInside"] = function (lines, pos)
     {
-        return pos[1] < lines.length && (0 <= pos[0] && pos[0] <= lines[pos[1]].length)
+        return pos[1] < lines.length && (0 <= pos[0] && pos[0] <= kseg.width(lines[pos[1]]))
     }
 
     text["isLinesPosOutside"] = function (lines, pos)
@@ -457,12 +462,7 @@ text = (function ()
 
     text["rangeOfLine"] = function (lines, y)
     {
-        return [0,y,lines[y].length,y]
-    }
-
-    text["colsOfLine"] = function (lines, y)
-    {
-        return [0,y,kseg.str(lines[y]).length,y]
+        return [0,y,kseg.width(lines[y]),y]
     }
 
     text["rangeOfClosestChunkToPos"] = function (lines, pos)
@@ -516,7 +516,7 @@ text = (function ()
 
     text["rangeOfWordOrWhitespaceLeftToPos"] = function (lines, pos)
     {
-        var r, x, y
+        var left, segi, tc, x, y
 
         var _a_ = pos; x = _a_[0]; y = _a_[1]
 
@@ -524,18 +524,17 @@ text = (function ()
         {
             return
         }
-        if (r = kstr.rangeOfClosestWord(lines[y].slice(0, typeof x === 'number' ? x : -1),x))
+        segi = kseg.indexAtWidth(lines[y],x)
+        left = lines[y].slice(0, typeof segi === 'number' ? segi : -1)
+        if (tc = kseg.tailCount(left,' '))
         {
-            if (r[1] < x)
-            {
-                return [r[1],y,x,y]
-            }
-            if ((0 <= r[0] && r[0] < r[1]))
-            {
-                return [r[0],y,r[1],y]
-            }
+            return [segi - tc,y,segi,y]
         }
-        return [0,y,x,y]
+        if (tc = kseg.tailCountWord(left))
+        {
+            return [segi - tc,y,segi,y]
+        }
+        return [segi - 1,y,segi,y]
     }
 
     text["rangeOfWordOrWhitespaceRightToPos"] = function (lines, pos)

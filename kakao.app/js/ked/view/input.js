@@ -37,7 +37,7 @@ input = (function ()
 
     input.prototype["set"] = function (text)
     {
-        return this.state.loadLines([kseg(text)])
+        return this.state.loadLines([text])
     }
 
     input.prototype["selectAll"] = function ()

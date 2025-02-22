@@ -77,7 +77,10 @@ inputchoice = (function ()
 
     inputchoice.prototype["onInputChanged"] = function (text)
     {
-        lf('inputchoice.onInputChanged',text)
+        if (text === this.choices.filterText)
+        {
+            return
+        }
         this.choices.filter(text)
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
@@ -86,9 +89,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _80_36_
+        var choice, _81_36_
 
-        choice = ((_80_36_=this.choices.current()) != null ? _80_36_ : this.input.current())
+        choice = ((_81_36_=this.choices.current()) != null ? _81_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -135,13 +138,20 @@ inputchoice = (function ()
 
     inputchoice.prototype["moveSelection"] = function (dir)
     {
-        lf('moveSelection',dir)
         switch (dir)
         {
             case 'down':
+                if (!this.choices.hasNext())
+                {
+                    return
+                }
                 this.choices.selectNext()
                 break
             case 'up':
+                if (!this.choices.hasPrev())
+                {
+                    return
+                }
                 this.choices.selectPrev()
                 break
         }
@@ -202,7 +212,6 @@ inputchoice = (function ()
 
             if (event.char)
             {
-                lf('focus input',event)
                 this.input.grabFocus()
             }
         }

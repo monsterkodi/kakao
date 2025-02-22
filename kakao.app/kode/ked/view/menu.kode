@@ -68,8 +68,6 @@ function menu extends inputchoice
             quit
             """
 
-        lf 'menu.show' items
-            
         items.splice items.length-2 0 'about' if not @greet
             
         ccol = int(@screen.cols/2) - 5

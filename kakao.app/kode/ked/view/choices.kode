@@ -15,19 +15,27 @@ function choices extends editor
 
         super screen name ['scrllr'].concat(features)
         
+        @items = []
+        @fuzzied = @items
+        @filterText = ''
+        
     set: @items @key ->
         
+        @items ?= []
         @fuzzied = @items
+        @filterText = ''
         
         lines = @key ? @items.map(@extract) : @items
         
         @state.loadLines lines
 
-    numChoices:  -> @items?.length ? 0
+    numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
     current: -> @fuzzied[@state.mainCursor()[1]]
     
+    hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1
+    hasPrev:    -> @state.mainCursor()[1] > 0
     selectNext: -> @state.selectNextLine() ; @frontCursor()
     selectPrev: -> @state.selectPrevLine() ; @frontCursor()
     
@@ -57,14 +65,16 @@ function choices extends editor
 
     filter: text =>
         
-        lf 'choices.filter' text @items
+        # lf 'choices.filter' text @items
 
         ⮐ if empty @items
 
-        if empty text
-            lf 'choices.filter empty' @items @key
-            ⮐ @set @items @key
-
+        ⮐ if text == @filterText
+        
+        ⮐ @set(@items @key) if empty text
+            
+        @filterText = text
+            
         fuzz = new krzl values:@items extract:@extract
         
         @fuzzied = fuzz.filter text
@@ -75,7 +85,7 @@ function choices extends editor
 
         lines = [''] if empty lines
         
-        lf 'choices.filter lines' lines
+        # lf 'choices.filter lines' lines
 
         @state.loadLines lines
         

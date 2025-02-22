@@ -29,6 +29,7 @@ knob = (function ()
             case 'press':
                 if (row === 0)
                 {
+                    post.emit('pointer','grabbing')
                     this.doDrag = true
                     return true
                 }
@@ -36,6 +37,7 @@ knob = (function ()
             case 'drag':
                 if (this.doDrag && row)
                 {
+                    post.emit('pointer','grabbing')
                     post.emit('view.size',this.name,this.cells.cols,_k_.max(0,this.cells.rows - row))
                     return true
                 }
@@ -43,12 +45,21 @@ knob = (function ()
             case 'release':
                 if (this.doDrag)
                 {
+                    this.hover = row === 0
+                    if (this.hover)
+                    {
+                        post.emit('pointer','ns-resize')
+                    }
                     delete this.doDrag
                     return true
                 }
                 break
             case 'move':
                 this.hover = row === 0
+                if (this.hover)
+                {
+                    post.emit('pointer','ns-resize')
+                }
                 break
         }
 

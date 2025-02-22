@@ -21,14 +21,16 @@ mapscr = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["getSyntax"] = this["getSyntax"].bind(this)
+        this["getSegls"] = this["getSegls"].bind(this)
         mapscr.__super__.constructor.call(this,screen,state)
         screen.t.on('preResize',this.clearImages)
         post.on('greet',this.clearImages)
     }
 
-    mapscr.prototype["getLines"] = function ()
+    mapscr.prototype["getSegls"] = function ()
     {
-        return this.state.s.lines
+        return this.state.segls
     }
 
     mapscr.prototype["getSyntax"] = function ()
@@ -77,12 +79,14 @@ mapscr = (function ()
                 if (this.cells.isInsideScreen(sx,sy))
                 {
                     this.doDrag = true
+                    post.emit('pointer','grabbing')
                     return this.scrollToPixel(event.pixel)
                 }
                 break
             case 'drag':
                 if (this.doDrag)
                 {
+                    post.emit('pointer','grab')
                     return this.scrollToPixel(event.pixel)
                 }
                 break
@@ -91,6 +95,10 @@ mapscr = (function ()
                 {
                     delete this.doDrag
                     this.hover = this.cells.isInsideScreen(sx,sy)
+                    if (this.hover)
+                    {
+                        post.emit('pointer','pointer')
+                    }
                     return true
                 }
                 break
@@ -98,7 +106,7 @@ mapscr = (function ()
                 this.hover = this.cells.isInsideScreen(sx,sy)
                 if (this.hover)
                 {
-                    this.cells.screen.t.setPointerStyle('hand')
+                    post.emit('pointer','pointer')
                 }
                 break
         }
@@ -123,7 +131,7 @@ mapscr = (function ()
         return mapscr.__super__.createImages.call(this)
     }
 
-    mapscr.prototype["draw"] = function ()
+    mapscr.prototype["drawImages"] = function ()
     {
         var t
 
@@ -132,8 +140,7 @@ mapscr = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,0,-1,-1,'●','#f00','#ff0')
-        return mapscr.__super__.draw.call(this)
+        return mapscr.__super__.drawImages.call(this)
     }
 
     return mapscr

@@ -19,6 +19,8 @@ function prof
             if prof.tils[key]
                 ⮐ [key prof.tils[key] args.join(' ')] 
             key += ' '
+        lf r5("prof! #{g5(key)} doesn't match #{b8(Object.keys(prof.tils).join(' '))}")
+        ['' [] '']
             
     @tstr: til idx -> lpad(6 kstr.time(BigInt(process.hrtime(til[idx < 0 ? til.length+idx : idx])[1])))
     
@@ -27,13 +29,15 @@ function prof
     @time:  args... -> 
         
         [key til rst] = prof.til args
-        til.push process.hrtime()
-        lf key lpad(5 rst) prof.tstr(til -2)
+        if valid til
+            til.push process.hrtime()
+            lf key lpad(5 rst) prof.tstr(til -2)
         
     @end:   args... -> 
         
         [key til rst] = prof.til args
-        prof.time.apply prof [key rst] if til.length > 1
-        lf key lpad(5) prof.tstr(til 0)
+        if valid til
+            prof.time.apply prof [key rst] 
+            lf key lpad(5) prof.tstr(til 0)
 
 export prof

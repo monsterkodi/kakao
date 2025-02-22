@@ -105,7 +105,19 @@ kseg.tailCount = a c ->
     for i in 0...a.length
         ⮐ i if a[a.length-1-i] != c
     i
+
+kseg.headCountWord = a ->
     
+    for s,i in a
+        ⮐ i if not /\w+/.test s
+    i
+    
+kseg.tailCountWord = a ->
+    
+    for i in 0...a.length
+        ⮐ i if not /\w+/.test a[a.length-1-i]
+    i
+        
 kseg.numIndent = a -> kseg.headCount a ' '
         
 kseg.splitAtIndent = a ->
@@ -116,7 +128,6 @@ kseg.splitAtIndent = a ->
 kseg.repeat = n s=' ' ->
     
     ⮐ [] if n <= 0
-    
     s = kseg s
     a = []
     for i in 0...n
@@ -127,24 +138,51 @@ kseg.trim = s ->
     
     ⮐ [] if empty s
     s = kseg s
-    hc = kseg.headCount(s ' ')
-    tc = kseg.tailCount(s ' ')
-    s[hc..s.length-1-tc]
+    hc = kseg.headCount s ' '
+    tc = kseg.tailCount s ' '
+    s[hc..s.length-tc]
+
+### 
+    segment index at column w 
     
-kseg.width = c ->
+    ⮐ start of next segment if column is inside
+###
+kseg.indexAtWidth = segs w ->
+
+    i = s = 0
+    while s < w and i < segs.length
+        s += kseg.width segs[i]
+        i += 1    
+    i
+
+### 
+    segment index at column w 
     
-    ⮐ 0 if empty c
-    c = kseg.str c
-    cpz = c.codePointAt 0
-    str = String.fromCodePoint cpz
-    # log c c.length cpz.toString(16) String.fromCodePoint(cpz)
-    if c == str ➜ ⮐ min 2 wcwidth(cpz)
-    sgs = kseg c
-    w = 0
-    for i in 0...sgs.length
-        n = wcwidth sgs[i].codePointAt(0)
-        ⮐ 0 if n < 0
-        w += min 2 n
+    ⮐ start of segment if column is inside
+###
+kseg.segiAtWidth = segs w ->
+
+    w = min w segs.length * 2
+    i = s = 0
+    while s < w and i < segs.length
+        s += kseg.width segs[i]
+        i += 1
+    i -= 1 if s > w
+    i
+
+###
+    number of columns occupied by string or segment list s
+###
+kseg.width = s ->
+    
+    ⮐ 0 if empty s
+    s   = kseg.str s                   
+    cpz = s.codePointAt 0            # code of first character
+    str = String.fromCodePoint cpz   # ... converted to string 
+    if s == str ➜ ⮐ wcwidth(cpz)    # ⮐ width if not a compounded glyph
+    w = 0                               
+    for seg in kseg(s)               # sum up individual width of subglyphs
+        w += wcwidth seg.codePointAt(0)                    
     w
 
 # https://github.com/joshuarubin/wcwidth9            
@@ -213,7 +251,7 @@ wcwidth_ambiguous = [
     [0x0148 0x014b] [0x014d 0x014d] [0x0152 0x0153] [0x0166 0x0167] [0x016b 0x016b] [0x01ce 0x01ce]
     [0x01d0 0x01d0] [0x01d2 0x01d2] [0x01d4 0x01d4] [0x01d6 0x01d6] [0x01d8 0x01d8] [0x01da 0x01da]
     [0x01dc 0x01dc] [0x0251 0x0251] [0x0261 0x0261] [0x02c4 0x02c4] [0x02c7 0x02c7] [0x02c9 0x02cb]
-    [0x02cd 0x02cd] [0x02d0 0x02d0] [0x02d8 0x02db] [0x02dd 0x02dd] [0x02df 0x02df] [0x0300 0x036f]
+    [0x02cd 0x02cd] [0x02d0 0x02d0] [0x02d8 0x02db] [0x02dd 0x02dd] [0x02df 0x02df] 
     [0x0391 0x03a1] [0x03a3 0x03a9] [0x03b1 0x03c1] [0x03c3 0x03c9] [0x0401 0x0401] [0x0410 0x044f]
     [0x0451 0x0451] [0x2010 0x2010] [0x2013 0x2016] [0x2018 0x2019] [0x201c 0x201d] [0x2020 0x2022]
     [0x2024 0x2027] [0x2030 0x2030] [0x2032 0x2033] [0x2035 0x2035] [0x203b 0x203b] [0x203e 0x203e]
@@ -225,7 +263,8 @@ wcwidth_ambiguous = [
     [0x221d 0x2220] [0x2223 0x2223] [0x2225 0x2225] [0x2227 0x222c] [0x222e 0x222e] [0x2234 0x2237]
     [0x223c 0x223d] [0x2248 0x2248] [0x224c 0x224c] [0x2252 0x2252] [0x2260 0x2261] [0x2264 0x2267]
     [0x226a 0x226b] [0x226e 0x226f] [0x2282 0x2283] [0x2286 0x2287] [0x2295 0x2295] [0x2299 0x2299]
-    [0x22a5 0x22a5] [0x22bf 0x22bf] [0x2312 0x2312] [0x2460 0x24e9] [0x24eb 0x254b] [0x2550 0x2573] 
+    [0x22a5 0x22a5] [0x22bf 0x22bf] [0x2312 0x2312] [0x2460 0x24e9] 
+    [0x2550 0x2573] 
     [0x2580 0x258f] [0x2592 0x2595] [0x25a0 0x25a1] [0x25a3 0x25a9] [0x25b2 0x25b3] [0x25b6 0x25b7]
     [0x25bc 0x25bd] [0x25c0 0x25c1] [0x25c6 0x25c8] [0x25cb 0x25cb] [0x25ce 0x25d1] [0x25e2 0x25e5]
     [0x25ef 0x25ef] [0x2605 0x2606] [0x2609 0x2609] [0x260e 0x260f] [0x261c 0x261c] [0x261e 0x261e]
@@ -275,7 +314,9 @@ wcwidth_emoji_width = [
     # [0x1f6e0 0x1f6e5] # tools, shield, barrel, etc
     [0x1f6e9 0x1f6e9] [0x1f6f0 0x1f6f0] [0x1f6f3 0x1f6f3]] 
     
-wcwidth_simple = [[32 0x7f] [0xa0 0x300]]
+wcwidth_singlewidth = [
+    [32 0x7f] [0xa0 0x300] [0x24eb 0x254b] 
+    ]
 
 intable = table c ->
   
@@ -297,13 +338,13 @@ intable = table c ->
 wcwidth = c ->
     
     ⮐  0 if c < 0 or c > 0x10ffff
-    ⮐  1 if intable wcwidth_simple         c
+    ⮐  1 if intable wcwidth_singlewidth    c
+    ⮐  1 if intable wcwidth_ambiguous      c
     ⮐  1 if intable wcwidth_private        c
     ⮐  2 if intable wcwidth_doublewidth    c
     ⮐  2 if intable wcwidth_emoji_width    c
     ⮐  0 if intable wcwidth_nonprint       c
     ⮐  0 if intable wcwidth_combining      c
-    ⮐  0 if intable wcwidth_ambiguous      c
     1
     
 dumptable = table ->
@@ -313,11 +354,11 @@ dumptable = table ->
             s += String.fromCodePoint(c)
         log s
     
-# log String.fromCodePoint(0x1f6e0)
-# log String.fromCodePoint(0x1f6e1)
-# log String.fromCodePoint(0x1f6e2)
-# log String.fromCodePoint(0x1f6e3)
-# log String.fromCodePoint(0x1f6e4)
-# log String.fromCodePoint(0x1f6e5)
+# dumptable wcwidth_private
+        
+# for rng in wcwidth_ambiguous
+    # log y8('---------') rng[0].toString(16) rng[1].toString(16)
+    # for cp in rng[0]..rng[1]
+        # log cp.toString(16) ">#{String.fromCodePoint(cp)}<"
         
 export kseg

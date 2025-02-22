@@ -6,8 +6,8 @@
 0000000   00000000  0000000  00000000   0000000     000       
 ###
 
-use ../../kxk ◆ kstr
-use ../util ◆ util
+use ../../kxk ▪ kstr kseg
+use ../util   ◆ util
 
 export
     
@@ -252,7 +252,8 @@ export
         
     selectAllLines: ->
         
-        allsel = [[0 0 @s.lines[@s.lines.length-1].length @s.lines.length-1]]
+        # allsel = [[0 0 @s.lines[@s.lines.length-1].length @s.lines.length-1]]
+        allsel = [[0 0 kseg.width(@s.lines[@s.lines.length-1]) @s.lines.length-1]]
         
         if allsel eql @s.selections
             @deselect()

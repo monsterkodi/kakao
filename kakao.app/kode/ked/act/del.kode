@@ -17,7 +17,7 @@ export
     # 000   000  000       000      000          000     000       
     # 0000000    00000000  0000000  00000000     000     00000000  
     
-    delete: type mods ->
+    delete: type jump ->
                 
         ⮐ @deleteSelection() if type in ['back' 'next'] and valid @s.selections
         
@@ -25,7 +25,7 @@ export
         cursors = @allCursors()
         
         if cursors.length == 1 and type in ['back' 'next'] and util.isLinesPosOutside lines cursors[0]
-            ⮐ @setMainCursor lines[cursors[0]].length cursors[0]
+            ⮐ @setMainCursor kseg.width(lines[cursors[0][1]]) cursors[0][1]
             
         for ci in cursors.length-1..0
             
@@ -47,15 +47,17 @@ export
                         if cursors.length == 1
                             ⮐ if y <= 0
                             y -= 1
-                            x = lines[y].length
+                            x = kseg.width(lines[y])
                             remove = 2
-                            line = kseg.join lines[y] line
+                            line = kseg.join(lines[y] line)
                             cursor[0] = x
                             cursor[1] = y
                     else
-                        if mods == 'alt'
-                            rng = util.rangeOfWordOrWhitespaceLeftToPos lines cursor
-                            dc = rng[2] - rng[0]
+                        if jump
+                            if rng = util.rangeOfWordOrWhitespaceLeftToPos lines cursor
+                                dc = rng[2] - rng[0]
+                            else
+                                dc = 1
                         else
                             before = util.textFromBolToPos lines cursor
                             if util.isOnlyWhitespace before
@@ -63,25 +65,27 @@ export
                                 dc = 4 if dc == 0
                             else
                                 dc = 1
-                        line = line[0...x-dc].concat line[x..]
+
+                        segi = kseg.indexAtWidth line x
+                        line = kseg.join line[0...segi-dc] line[segi..]
 
                 'next' 
-                    if x == lines[y].length
+                    if x == kseg.width(lines[y])
                         if cursors.length == 1
                             ⮐ if y >= lines.length-1
-                            x = lines[y].length
+                            x = kseg.width(lines[y])
                             remove = 2
-                            line = line.concat lines[y+1]
+                            line = kseg.join line lines[y+1]
                             cursor[0] = x
                             cursor[1] = y
                     else
-                        if mods == 'alt'
+                        if jump
                             if rng = util.rangeOfWordOrWhitespaceRightToPos lines cursor
                                 dc = rng[2] - rng[0]
-                                line = line[0...x].concat line[x+dc..]
+                                line = kseg.join line[0...x] line[x+dc..]
                         else
                             dc = 1
-                            line = line[0...x].concat line[x+dc..]
+                            line = kseg.join line[0...x] line[x+dc..]
                         cursor[0] += dc
                                 
             util.moveCursorsInSameLineBy cursors cursor -dc

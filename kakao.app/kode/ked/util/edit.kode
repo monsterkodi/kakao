@@ -185,9 +185,8 @@ function edit
         newr = copy rngs
     
         addLineAtIndex = c i =>
-            lf 'addLineAtIndex' c i
-            # range = @rangeOfLine lines i
-            range = @colsOfLine lines i
+
+            range = @rangeOfLine lines i
             range[1] += 1 if @isEmptyRange range
             newr.push range
             newp.push @endOfRange(range)

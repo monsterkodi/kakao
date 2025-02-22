@@ -110,15 +110,78 @@ line 3`)
         text = `s = "🧑🌾"
 line 3`
         s.syntax.ext = 'kode'
-        s.loadLines(util.linesForText(text))
-        console.log('----------------',s.allLines())
-        console.log('----------------',kseg.str(s.allLines()))
+        s.loadSegls(util.seglsForText(text))
         txt(text)
         s.toggleCommentAtSelectionOrCursorLines()
         txt(`# s = "🧑🌾"
 line 3`)
         s.toggleCommentAtSelectionOrCursorLines()
         txt(text)
+        section("selection", function ()
+        {
+            text = `'a'        ▸ 1
+'🔧'       ▸ 2
+'字'       ▸ 2
+'字的模块' ▸ 8
+'👁'        ▸ 1
+'🖌'        ▸ 1
+'🛠'        ▸ 1
+'🧑‍🌾'       ▸ 4
+'🔥'       ▸ 2
+'💩'       ▸ 2`
+            s.syntax.ext = 'kode'
+            s.loadSegls(util.seglsForText(text))
+            txt(text)
+            s.selectAllLines()
+            sel([0,0,14,9])
+            s.moveCursorsToEndOfSelections()
+            sel([0,0,14,9])
+            mul([14,0],[14,1],[14,2],[14,3],[14,4],[14,5],[14,6],[14,7],[14,8],[14,9])
+            s.deselect()
+            sel()
+            mul([14,0],[14,1],[14,2],[14,3],[14,4],[14,5],[14,6],[14,7],[14,8],[14,9])
+            s.moveCursors('bol')
+            mul([0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9])
+            s.selectMoreLines()
+            sel([0,0,14,9])
+            mul([14,0],[14,1],[14,2],[14,3],[14,4],[14,5],[14,6],[14,7],[14,8],[14,9])
+            s.deselect()
+            s.delete('back')
+            txt(`'a'        ▸ 
+'🔧'       ▸ 
+'字'       ▸ 
+'字的模块' ▸ 
+'👁'        ▸ 
+'🖌'        ▸ 
+'🛠'        ▸ 
+'🧑‍🌾'       ▸ 
+'🔥'       ▸ 
+'💩'       ▸ `)
+            s.delete('back')
+            s.moveCursors('left')
+            s.delete('back')
+            txt(`'a'       ▸
+'🔧'      ▸
+'字'      ▸
+'字的模块'▸
+'👁'       ▸
+'🖌'       ▸
+'🛠'       ▸
+'🧑‍🌾'      ▸
+'🔥'      ▸
+'💩'      ▸`)
+            s.delete('back',true)
+            txt(`'a'▸
+'🔧'▸
+'字'▸
+'字的模块▸
+'👁'▸
+'🖌'▸
+'🛠'▸
+'🧑‍🌾'▸
+'🔥'▸
+'💩'▸`)
+        })
     })
     section("empty", function ()
     {

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
@@ -103,7 +103,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _157_41_, _158_44_, _194_15_, _195_15_, _80_26_
+        var bg, c, ch, checkColor, ci, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _101_42_, _158_41_, _159_44_, _195_15_, _196_15_, _197_15_, _80_26_
 
         if (this.hidden())
         {
@@ -123,34 +123,52 @@ editor = (function ()
                 break
             }
             line = lines[y]
-            c = 0
-            for (var _c_ = x = 0, _d_ = this.cells.cols; (_c_ <= _d_ ? x < this.cells.cols : x > this.cells.cols); (_c_ <= _d_ ? ++x : --x))
+            linel = kseg.width(line) - view[0]
+            x = c = 0
+            while (x < this.cells.cols)
             {
-                si = x + view[0]
+                ci = x + view[0]
+                si = kseg.segiAtWidth(line,ci)
                 if (si >= line.length)
                 {
                     break
                 }
-                fg = syntax.getColor(si,y)
-                ch = syntax.getChar(si,y,line[si])
+                fg = syntax.getColor(ci,y)
+                ch = syntax.getChar(ci,y,line[si])
                 if (ch === "#")
                 {
                     checkColor = true
                 }
                 c += this.cells.add(c,row,ch,fg,bg)
+                x += ((_101_42_=kseg.width(line[si])) != null ? _101_42_ : 1)
             }
             emptyColor = theme[this.name + '_empty']
-            linel = kseg.width(line) - view[0]
             if (y === mainCursor[1])
             {
                 if (linel > 0)
                 {
                     this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
                 }
+                this.cells.bg_fill(_k_.max(0,linel),row,-1,row,theme[this.name + '_cursor_empty'])
+            }
+            else
+            {
+                if (linel > 0)
+                {
+                    this.cells.bg_rect(0,row,linel,row,theme[this.name])
+                }
+                this.cells.bg_fill(_k_.max(0,linel),row,-1,row,emptyColor)
             }
             if (checkColor)
             {
                 this.drawColors(line,row,linel,emptyColor)
+            }
+        }
+        if (lines.length - view[1] < this.cells.rows)
+        {
+            for (var _c_ = row = lines.length - view[1], _d_ = this.cells.rows; (_c_ <= _d_ ? row < this.cells.rows : row > this.cells.rows); (_c_ <= _d_ ? ++row : --row))
+            {
+                this.cells.bg_fill(0,row,-1,row,emptyColor)
             }
         }
         bg = theme.highlight
@@ -198,7 +216,7 @@ editor = (function ()
                 }
                 else
                 {
-                    xe = lines[li].length
+                    xe = kseg.width(lines[li])
                 }
                 bg = (util.isSpanLineRange(lines,selection) ? theme.selection : theme.selection_line)
                 if (!this.cells.screen.t.hasFocus)
@@ -211,8 +229,8 @@ editor = (function ()
                 }
             }
         }
-        fg = ((_157_41_=theme[this.name + '_cursor_fg']) != null ? _157_41_ : theme['editor_cursor_fg'])
-        bg = ((_158_44_=theme[this.name + '_cursor_multi']) != null ? _158_44_ : theme['editor_cursor_multi'])
+        fg = ((_158_41_=theme[this.name + '_cursor_fg']) != null ? _158_41_ : theme['editor_cursor_fg'])
+        bg = ((_159_44_=theme[this.name + '_cursor_multi']) != null ? _159_44_ : theme['editor_cursor_multi'])
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -261,6 +279,7 @@ editor = (function ()
         }
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
+        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
         return editor.__super__.draw.call(this)
     }
 
@@ -299,9 +318,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _226_30_, _226_39_, _227_30_, _237_41_
+        var col, row, start, x, y, _227_30_, _227_39_, _228_30_, _238_41_, _306_31_
 
-        if (((_226_30_=this.mapscr) != null ? typeof (_226_39_=_226_30_.onMouse) === "function" ? _226_39_(event) : undefined : undefined))
+        if (((_227_30_=this.mapscr) != null ? typeof (_227_39_=_227_30_.onMouse) === "function" ? _227_39_(event) : undefined : undefined))
         {
             return true
         }
@@ -410,7 +429,11 @@ editor = (function ()
             case 'move':
                 if (this.cells.isInsideEvent(event))
                 {
-                    this.cells.screen.t.setPointerStyle('xterm')
+                    post.emit('pointer','text')
+                }
+                else if ((this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
+                {
+                    post.emit('pointer','vertical-text')
                 }
                 break
         }
@@ -665,11 +688,11 @@ editor = (function ()
             case 'delete':
                 return this.state.delete('back')
 
-            case 'cmd+delete':
-                return this.state.delete('back','cmd')
+            case 'ctrl+delete':
+                return this.state.delete('back',true)
 
-            case 'alt+delete':
-                return this.state.delete('back','alt')
+            case 'cmd+delete':
+                return this.state.delete('back',true)
 
             case 'shift+tab':
                 return this.state.deindentSelectedOrCursorLines()

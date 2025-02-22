@@ -24,7 +24,7 @@ function input extends editor
 
     set: text ->
     
-        @state.loadLines [kseg(text)]
+        @state.loadLines [text]
 
     selectAll: -> @state.selectLine 0
 

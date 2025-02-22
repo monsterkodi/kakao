@@ -201,6 +201,24 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.rangeOfWordOrWhitespaceLeftToPos lines [1 1] ▸ [0 1 1 1]
         util.rangeOfWordOrWhitespaceLeftToPos lines [3 1] ▸ [0 1 3 1]
         
+        segls = kseg.segls lines.join('\n')
+        
+        util.rangeOfWordOrWhitespaceLeftToPos segls [0 0] ▸ undefined
+        util.rangeOfWordOrWhitespaceLeftToPos segls [1 0] ▸ [0 0 1 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [1 1] ▸ [0 1 1 1]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [0 1 3 1]
+        
+        segls = kseg.segls '  🧑🌾  ab🌾cde'
+        
+        util.rangeOfWordOrWhitespaceLeftToPos segls [1 0] ▸ [0 0 1 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [2 0] ▸ [0 0 2 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [3 0] ▸ [2 0 3 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [4 0] ▸ [2 0 3 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [5 0] ▸ [3 0 4 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [6 0] ▸ [3 0 4 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [7 0] ▸ [4 0 5 0]
+        util.rangeOfWordOrWhitespaceLeftToPos segls [8 0] ▸ [4 0 6 0]
+        
     ▸ isFullLineRange
     
         lines = ['' '124' 'abcdef']
@@ -290,9 +308,31 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.normalizePositions [[2 2] [3 3] [1 1]]     ▸ [[1 1] [2 2] [3 3]]
         util.normalizePositions [[2 2] [0 3] [11 1]]    ▸ [[11 1] [2 2] [0 3]]
 
+    ▸ lineRangeAtPos
+    
+        lines = util.seglsForText """
+            🌾🧑
+            """
+
+        util.lineRangeAtPos lines [0 0] ▸ [0 0 4 0]
+
+    ▸ seglRangeAtPos
+    
+        lines = util.seglsForText """
+            🧑🌾
+            """
+
+        util.seglRangeAtPos lines [0 0] ▸ [0 0 2 0]
+        
     ▸ lineRangesInRange
     
-        lines = ['1' '' '12' 'abc']
+        lines = util.seglsForText """
+            1
+            
+            12
+            abc
+            """
+        
         util.lineRangesInRange lines [0 0 0 2] ▸ [[0 0 1 0] [0 1 0 1] [0 2 2 2]]
         
     ▸ splitLineRanges

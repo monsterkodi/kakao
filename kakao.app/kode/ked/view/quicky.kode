@@ -266,6 +266,10 @@ function quicky extends inputchoice
 
     moveSelection: dir ->
         
+        switch dir
+            'down' ➜ ⮐ if not @choices.hasNext()
+            'up'   ➜ ⮐ if not @choices.hasPrev()
+        
         @hideMap()
 
         super dir

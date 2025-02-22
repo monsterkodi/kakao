@@ -1,5 +1,8 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
+import kxk from "../../kxk.js"
+let kseg = kxk.kseg
+
 import util from "../util/util.js"
 
 export default {allCursors:function ()
@@ -73,7 +76,7 @@ export default {allCursors:function ()
     return this.setCursors(outside,-1)
 },moveCursors:function (dir, opt)
 {
-    var c, cursors, ind, line, lines, _98_18_, _99_22_
+    var c, cursors, ind, line, lines, _100_22_, _99_18_
 
     if (_k_.isArr(dir))
     {
@@ -98,8 +101,8 @@ export default {allCursors:function ()
         dir = dir[0]
     }
     opt = (opt != null ? opt : {})
-    opt.count = ((_98_18_=opt.count) != null ? _98_18_ : 1)
-    opt.jumpWords = ((_99_22_=opt.jumpWords) != null ? _99_22_ : false)
+    opt.count = ((_99_18_=opt.count) != null ? _99_18_ : 1)
+    opt.jumpWords = ((_100_22_=opt.jumpWords) != null ? _100_22_ : false)
     if (this.s.highlights.length)
     {
         this.deselect()
@@ -124,7 +127,7 @@ export default {allCursors:function ()
                 c[1] += opt.count
                 break
             case 'eol':
-                c[0] = this.s.lines[c[1]].length
+                c[0] = kseg.width(this.s.lines[c[1]])
                 break
             case 'bol':
                 c[0] = 0
@@ -135,14 +138,14 @@ export default {allCursors:function ()
                 break
             case 'eof':
                 c[1] = this.s.lines.length - 1
-                c[0] = line.length
+                c[0] = kseg.width(line)
                 break
             case 'ind':
                 c[0] = util.numIndent(line)
                 break
             case 'ind_eol':
                 ind = util.numIndent(line)
-                c[0] = (c[0] < ind ? ind : line.length)
+                c[0] = (c[0] < ind ? ind : kseg.width(line))
                 break
             case 'ind_bol':
                 ind = util.numIndent(line)

@@ -109,19 +109,19 @@ function state
         
         if empty lines ➜ lines = ['']
             
-        lf 'state.setLines' @name lines
+        # if not lines[0] is str ➜ lf 'state.setLines' @name lines
             
         @setSegls kseg.segls(lines)
         
-    setSegls: segls =>
+    setSegls: @segls =>
         
-        if empty segls ➜ segls = [[]]
+        if empty @segls ➜ @segls = [[]]
         
-        lf 'state.setSegls' @name segls
+        # lf 'state.setSegls' @name @segls
             
-        @syntax.setSegls segls
+        @syntax.setSegls @segls
         
-        @s = @s.set 'lines' segls
+        @s = @s.set 'lines' @segls
         @r = []
         @pushState()
 
@@ -131,7 +131,7 @@ function state
 
     loadLines: lines => 
     
-        lf 'state.loadLines' @name lines
+        if not lines[0] is str ➜ lf 'state.loadLines' @name lines 
         
         @loadSegls kseg.segls(lines)
     

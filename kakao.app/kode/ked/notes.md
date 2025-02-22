@@ -25,16 +25,22 @@
 ### todo
 #### todo
 
+- greeter 
+    - recent files
+    
+- unicode mode
+    - ~ replacement
+    - quicky
+        - ~\w+ julia search
+        - ~\d+ single character
+        - ~\d+n multiple characters
+        - ~...*n n times *
+
 - mapscroll
     - add scrollbar handle
     - update on line changes
     - fix scrolling to bottom for long files
     - show cursors and selections
-    
-- greeter 
-    - recent files
-    
-- set terminal title?
     
 - session
     - save main cursor positions per file and apply on load
@@ -59,12 +65,19 @@
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
 
+- cutting multiple lines with main cursor at start of next line 
+    moves it one down too much
+
 - multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
 - alt+cmd+d should work inside selection: highlight word at cursor inside
 - alt+cmd+e add word at cursor to highlights
+- shift+ctrl+left|right|up|down rectangular selection
 
-- prefs 
-    - file positions
+- status 
+    - clamp file path to half screen width 
+
+- nvim style min-distance from top and bottom of screen when moving main cursor?
+
 
 ▸ completion
 
@@ -96,7 +109,7 @@
         - store ansi color in cells
         - color palette
         
-    - theme 
+    - theme  
         - color vibrancy?      
         
     - help 
@@ -106,6 +119,31 @@
 - todo
     - state tests
     - undo fixes
+
+
+
+## design choices
+
+- precious shortcut space
+
+    - no deselect shortcut
+        - esc does it most of the time
+        - in the rare cases i want to deselect, but keep the multi cursors:
+            - select all and select all again
+    
+    - select all
+        - deselects when all lines are selected already 
+
+    - auto-select word at cursor
+        - if an action needs a selection and nothing is selected
+          the closest word to the cursor will be selected
+    
+- precious screen space
+
+    - status at top
+        - familiarity with desktop apps
+        - potential merge with tabs
+        - potential drop down menu (drop-up menus are just as ugly as they sound :)
     
 agg ked01.cast ked01.gif --font-family "LiterationMono Nerd Font" --idle-time-limit 0.2 --speed 4 --theme 000000,ffffff,272822,f92672,a6e22e,f4bf75,66d9ef,ae81ff,a1efe4,f8f8f2 --line-height 1.3    
 gifsicle ked01.gif -o ked01o.gif -O=3 --colors 256 

@@ -51,7 +51,7 @@ syntax = (function ()
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
                 segs = list[_a_]
-                dss = matchr.ranges(this.config,kseg.str,segs)
+                dss = matchr.ranges(this.config,kseg.str(segs))
                 this.diss.push(dss)
             }
         }

@@ -69,7 +69,8 @@ function inputchoice extends view
     
     onInputChanged: text =>
 
-        lf 'inputchoice.onInputChanged' text
+        ⮐ if text == @choices.filterText
+        # lf 'inputchoice.onInputChanged' text
         @choices.filter text
         @choices.state.selectLine 0
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
@@ -119,12 +120,15 @@ function inputchoice extends view
 
     moveSelection: dir ->
         
-        lf 'moveSelection' dir
-
         switch dir
-            'down'  ➜ @choices.selectNext()
-            'up'    ➜ @choices.selectPrev()
+            'down'  
+                ⮐ if not @choices.hasNext()
+                @choices.selectNext()
+            'up'    
+                ⮐ if not @choices.hasPrev()
+                @choices.selectPrev()
 
+        # lf 'moveSelection' dir @choices.state.mainCursor()[1] @choices.numFiltered()
         @input.set ''
         @choices.grabFocus()
         
@@ -162,7 +166,7 @@ function inputchoice extends view
                 'space' ➜ @onChoiceAction current event.combo
                     
             if event.char
-                lf 'focus input' event
+                # lf 'focus input' event
                 @input.grabFocus()
             
         if @input.onKey key event
