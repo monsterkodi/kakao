@@ -208,6 +208,10 @@ util =
     sleep: ms ○-> ○ new Promise((r) => setTimeout(r ms)); true
     
     uuid: -> crypto.randomUUID()
+    
+    sessionId: -> # perplexity gave this to me :)
+        
+        (Date.now().toString(36) + Math.random().toString(36).substring(2 5)).slice(-8)
 
     # 00     00   0000000   000000000  000   000    
     # 000   000  000   000     000     000   000    

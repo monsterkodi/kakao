@@ -16,22 +16,25 @@
 ###
 
 use ../../kxk ◆ noon events slash post nfs sds
-use ../../kxk/util ▪ isEqual defaults uuid
+use ../../kxk/util ▪ isEqual defaults sessionId
 
 function session extends events
 
     @: opt ->
 
-        @name = uuid()
+        @name = sessionId()
 
         opt ?= {}        
         opt.timeout ?= 4000
         
-        @sep  = opt.separator ? '|'
+        @sep  = opt.separator ? '▸'
         
-        @file = slash.absolute "~/.config/ked/sessions/#{@name}.noon"
+        @dir  = slash.absolute "~/.config/ked/sessions/"
+        @file = slash.path @dir "#{@name}.noon"
         
         lf 'session' @file
+        
+        @loadAndMergeRecentSession()
         
     keypath: key => key.split @sep
     
@@ -54,10 +57,10 @@ function session extends events
     
     set: key value =>
         
-        lf "session[#{@name}].set" key value
+        # lf "session[#{@name}].set" key value
 
         ⮐ if not key is str
-        ⮐ if eql @get(key) value
+        ⮐ if @get(key) eql value
         ⮐ if @get(key) == value
         ⮐ @del(key) if empty value
 
@@ -113,15 +116,45 @@ function session extends events
         @timer = null
 
         try
-            text = noon.stringify(@data {indent:2 maxalign:8})+'\n'
+            text = noon.stringify(@data {indent:4 maxalign:8})+'\n'
 
             result =○ nfs.write @file text
             if result.error
-                lf 'save failed!' @file result
-            else
-                lf 'session.saved' result @data
+                lf 'session.save failed!' @file result
+            # else
+                # lf 'session.saved' result @data
 
         catch err
             lf "session -- can't save to '#{@file}':" err
+            
+    # 00000000  000  000      00000000   0000000  
+    # 000       000  000      000       000       
+    # 000000    000  000      0000000   0000000   
+    # 000       000  000      000            000  
+    # 000       000  0000000  00000000  0000000   
+    
+    loadAndMergeRecentSession: ○=>
+        
+        file =○ @newestSessionFile()
+        recent =○ noon.read(file)
+        # lf 'loadAndMergeRecent' file recent
+        @set 'files' recent.files if valid recent.files # probably should actually merge here instead of overriding!
+    
+    newestSessionFile: ○=>
+        
+        files =○ @listSessionFiles()
+        files[-1]
+            
+    listSessionFiles: ○=>
+        
+        files =○ nfs.list @dir
+        files.map (f) -> f.path
+        
+    cleanSessionFiles: ○=>
+        
+        maxFiles = 10
+        files =○ @listSessionFiles()
+        for file in files[0...maxFiles]
+            lf 'delete old session file' file
         
 export session

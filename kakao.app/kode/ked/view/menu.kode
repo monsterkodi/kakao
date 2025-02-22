@@ -81,7 +81,26 @@ function menu extends inputchoice
         post.emit 'greet' if @greet
         
         super()
-
+        
+    # 00000000   00000000   0000000  00000000  000   000  000000000  
+    # 000   000  000       000       000       0000  000     000     
+    # 0000000    0000000   000       0000000   000 0 000     000     
+    # 000   000  000       000       000       000  0000     000     
+    # 000   000  00000000   0000000  00000000  000   000     000     
+    
+    showRecent: ->
+        
+        maxRecent = 20
+        files  = ked_session.get 'files' []
+        loaded = files.loaded ? []
+        saved  = files.saved ? [] 
+        recent = loaded.concat saved
+        recent = recent[max(0 recent.length-maxRecent)..]
+        @choices.set recent
+        # lf 'showRecent' recent
+        @hide()
+        post.emit 'quicky.files' recent
+        
     hide: => 
     
         delete @greet
@@ -96,9 +115,10 @@ function menu extends inputchoice
     applyChoice: choice ->
         
         switch choice
-            'about'    ➜ ⮐ @show true
-            'quit'     ➜ post.emit 'quit' ; ⮐ redraw:false
-            'open ...' ➜ post.emit 'quicky.dir' process.cwd()
+            'about'      ➜ ⮐ @show true # reopen with greeting header
+            'quit'       ➜ post.emit 'quit' ;                    #⮐ redraw:false
+            'open ...'   ➜ post.emit 'quicky.dir' process.cwd(); #⮐ redraw:false
+            'recent ...' ➜ ⮐ @showRecent()
             
         # lf 'menu choice' current
         

@@ -84,6 +84,7 @@ function mapview extends view
 
         # prof.start @state.name+'.map'
         # lf  'mapview.createImages' @cells.cols
+        
         w = @cells.cols * t.cellsz[0]
         bytes = w*3
         

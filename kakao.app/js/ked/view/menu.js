@@ -83,6 +83,21 @@ quit`)
         return menu.__super__.show.call(this)
     }
 
+    menu.prototype["showRecent"] = function ()
+    {
+        var files, loaded, maxRecent, recent, saved, _95_30_, _96_29_
+
+        maxRecent = 20
+        files = ked_session.get('files',[])
+        loaded = ((_95_30_=files.loaded) != null ? _95_30_ : [])
+        saved = ((_96_29_=files.saved) != null ? _96_29_ : [])
+        recent = loaded.concat(saved)
+        recent = recent.slice(_k_.max(0,recent.length - maxRecent))
+        this.choices.set(recent)
+        this.hide()
+        return post.emit('quicky.files',recent)
+    }
+
     menu.prototype["hide"] = function ()
     {
         delete this.greet
@@ -98,11 +113,13 @@ quit`)
 
             case 'quit':
                 post.emit('quit')
-                return {redraw:false}
-
+                break
             case 'open ...':
                 post.emit('quicky.dir',process.cwd())
                 break
+            case 'recent ...':
+                return this.showRecent()
+
         }
 
         return this.hide()

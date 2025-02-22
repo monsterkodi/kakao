@@ -34,12 +34,14 @@ quicky = (function ()
         this["onChoiceAction"] = this["onChoiceAction"].bind(this)
         this["openFileInEditor"] = this["openFileInEditor"].bind(this)
         this["gotoDirOrOpenFile"] = this["gotoDirOrOpenFile"].bind(this)
+        this["showFiles"] = this["showFiles"].bind(this)
         this["gotoDir"] = this["gotoDir"].bind(this)
         this["layout"] = this["layout"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.choices.state.syntax.setRgxs(rgxs)
         post.on('quicky.dir',this.gotoDir)
+        post.on('quicky.files',this.showFiles)
     }
 
     quicky.prototype["layout"] = function ()
@@ -136,7 +138,7 @@ quicky = (function ()
 
     quicky.prototype["gotoDir"] = async function (dir, select)
     {
-        var idx, item, items, parent, selectIndex, weight
+        var item, items, parent, weight
 
         if (_k_.empty(dir))
         {
@@ -154,18 +156,6 @@ quicky = (function ()
         }
         this.currentDir = dir
         this.crumbs.show(this.currentDir)
-        var list = _k_.list(items)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            item = list[_a_]
-            item.tilde = slash.relative(item.path,this.currentDir)
-            item.tilde = (((item.type === 'dir') ? ' ' : '  ')) + item.tilde
-        }
-        parent = slash.dir(this.currentDir)
-        if (!_k_.empty(parent))
-        {
-            items.push({type:'dir',file:slash.name(parent),path:parent,tilde:' ..'})
-        }
         weight = function (item)
         {
             var p, w
@@ -191,18 +181,50 @@ quicky = (function ()
             w += kstr.weight(p.file)
             return w
         }
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            item.tilde = slash.relative(item.path,this.currentDir)
+            item.tilde = (((item.type === 'dir') ? ' ' : '  ')) + item.tilde
+        }
+        parent = slash.dir(this.currentDir)
+        if (!_k_.empty(parent))
+        {
+            items.push({type:'dir',file:slash.name(parent),path:parent,tilde:' ..'})
+        }
         items.sort(function (a, b)
         {
             return weight(a) - weight(b)
         })
+        select = items[(parent ? 1 : 0)].path
+        return this.showPathItems(items,select)
+    }
+
+    quicky.prototype["showFiles"] = function (files)
+    {
+        var items
+
+        items = files.map(function (path)
+        {
+            return {path:path,type:'file',tilde:slash.file(path)}
+        })
+        this.crumbs.hide()
+        return this.showPathItems(items)
+    }
+
+    quicky.prototype["showPathItems"] = function (items, select)
+    {
+        var idx, item, selectIndex
+
         this.input.set('')
-        selectIndex = (!_k_.empty(parent) && items.length > 1 ? 1 : 0)
+        selectIndex = 0
         if (select)
         {
-            var list1 = _k_.list(items)
-            for (idx = 0; idx < list1.length; idx++)
+            var list = _k_.list(items)
+            for (idx = 0; idx < list.length; idx++)
             {
-                item = list1[idx]
+                item = list[idx]
                 if (slash.samePath(item.path,select))
                 {
                     selectIndex = idx
@@ -346,7 +368,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _316_62_
+        var upDir, _335_62_
 
         switch (action)
         {
@@ -364,7 +386,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_316_62_=choice.link) != null ? _316_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_335_62_=choice.link) != null ? _335_62_ : choice.path))
                     }
                 }
                 break
@@ -373,6 +395,10 @@ quicky = (function ()
                 if (choice.path)
                 {
                     upDir = slash.dir(this.currentDir)
+                    if (_k_.empty(upDir))
+                    {
+                        return
+                    }
                     this.hideMap()
                     return this.gotoDir(upDir,this.currentDir)
                 }

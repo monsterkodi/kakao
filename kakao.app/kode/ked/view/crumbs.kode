@@ -21,7 +21,7 @@ function crumbs extends view
         @text = trim text
         
     show: path => @set slash.tilde(path); @cells.rows = 1
-
+    
     draw: ->
         
         ⮐ if @hidden()

@@ -33,6 +33,7 @@ function KED
         
         @logfile = new logfile
         @session = new session
+        global.ked_session = @session
                     
         @t = new ttio
         
@@ -179,6 +180,8 @@ function KED
         
         prjcts.index @currentFile
         @t.setTitle slash.name(@status.file)
+        
+        @saveSessionFile @currentFile 'loaded'        
         @
             
     #  0000000   0000000   000   000  00000000  
@@ -195,8 +198,20 @@ function KED
             ○ nfs.write @currentFile text
             @editor.state.clearHistory() # lazy way to 'undirty' would be nicer to be able to undo after save!
             @redraw()
+            @saveSessionFile @currentFile 'saved'
             
     saveAs: => lfc 'saveAs'
+
+    saveSessionFile: file type ->
+        
+        key = "files▸#{type}"
+        filesLoaded = @session.get key []
+        index = filesLoaded.indexOf @currentFile
+        filesLoaded.splice index 1 if index >= 0
+        filesLoaded.push @currentFile
+        maxFilesLoaded = 10
+        filesLoaded = filesLoaded[max(0 filesLoaded.length-maxFilesLoaded)..]
+        @session.set key filesLoaded
     
     # 00000000    0000000    0000000  000000000  00000000  
     # 000   000  000   000  000          000     000       
@@ -251,6 +266,7 @@ function KED
             'alt+m'                      ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor.state.textOfSelectionOrWordAtCursor()
+            'cmd+o' 'ctrl+o'
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers

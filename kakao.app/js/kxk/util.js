@@ -334,6 +334,9 @@ util = {isEqual:function (a, b)
 },uuid:function ()
 {
     return crypto.randomUUID()
+},sessionId:function ()
+{
+    return (Date.now().toString(36) + Math.random().toString(36).substring(2,5)).slice(-8)
 },rad2deg:function (r)
 {
     return 180 * r / Math.PI

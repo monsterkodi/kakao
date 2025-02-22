@@ -27,6 +27,7 @@ function quicky extends inputchoice
         @choices.state.syntax.setRgxs rgxs
 
         post.on 'quicky.dir' @gotoDir
+        post.on 'quicky.files' @showFiles
 
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -137,19 +138,7 @@ function quicky extends inputchoice
 
         @currentDir = dir
         @crumbs.show @currentDir
-        
-        for item in items
-            item.tilde = slash.relative item.path @currentDir
-            item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
             
-        parent = slash.dir @currentDir
-        if valid parent
-            items.push
-                type: 'dir'
-                file: slash.name(parent)
-                path: parent
-                tilde: ' ..'
-
         weight = item ->
 
             p = slash.parse item.path
@@ -161,12 +150,42 @@ function quicky extends inputchoice
             w += 1     if slash.ext(item.tilde) in ['js' 'json']
             w += kstr.weight(p.file)
             w
+        
+        for item in items
+            item.tilde = slash.relative item.path @currentDir
+            item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
 
+        parent = slash.dir @currentDir
+        if valid parent
+            items.push
+                type: 'dir'
+                file: slash.name(parent)
+                path: parent
+                tilde: ' ..'
+            
         items.sort (a b) -> weight(a) - weight(b)
+        
+        select = items[parent ? 1 : 0].path
+                        
+        @showPathItems items select
+    
+    showFiles: files =>
+        
+        items = files.map (path) -> path:path type:'file' tilde:slash.file(path)
+        @crumbs.hide()
+        @showPathItems items
+        
+    # 00000000    0000000   000000000  000   000        000  000000000  00000000  00     00   0000000  
+    # 000   000  000   000     000     000   000        000     000     000       000   000  000       
+    # 00000000   000000000     000     000000000        000     000     0000000   000000000  0000000   
+    # 000        000   000     000     000   000        000     000     000       000 0 000       000  
+    # 000        000   000     000     000   000        000     000     00000000  000   000  0000000   
+    
+    showPathItems: items select ->
 
         @input.set ''
-
-        selectIndex = valid parent and items.length > 1 ? 1 : 0        
+        
+        selectIndex = 0
         
         if select
             for item,idx in items
@@ -319,6 +338,7 @@ function quicky extends inputchoice
                 
                 if choice.path
                     upDir = slash.dir @currentDir
+                    ⮐ if empty upDir
                     @hideMap()
                     ⮐ @gotoDir upDir @currentDir
             'space'            

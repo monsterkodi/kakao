@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var KED
 
@@ -63,10 +63,11 @@ ked [file]
         this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
         this.session = new session
+        global.ked_session = this.session
         this.t = new ttio
         global.lfc = (function (...args)
         {
-            var _39_64_
+            var _40_64_
 
             lf.apply(null,args)
             if ((global.lc != null))
@@ -138,7 +139,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _114_10_
+        var _115_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -160,7 +161,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _136_22_
+        var _137_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -185,7 +186,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _176_22_
+        var segls, start, text, _177_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -208,6 +209,7 @@ ked [file]
         this.redraw()
         prjcts.index(this.currentFile)
         this.t.setTitle(slash.name(this.status.file))
+        this.saveSessionFile(this.currentFile,'loaded')
         return this
     }
 
@@ -220,13 +222,31 @@ ked [file]
         {
             await nfs.write(this.currentFile,text)
             this.editor.state.clearHistory()
-            return this.redraw()
+            this.redraw()
+            return this.saveSessionFile(this.currentFile,'saved')
         }
     }
 
     KED.prototype["saveAs"] = function ()
     {
         return lfc('saveAs')
+    }
+
+    KED.prototype["saveSessionFile"] = function (file, type)
+    {
+        var filesLoaded, index, key, maxFilesLoaded
+
+        key = `files▸${type}`
+        filesLoaded = this.session.get(key,[])
+        index = filesLoaded.indexOf(this.currentFile)
+        if (index >= 0)
+        {
+            filesLoaded.splice(index,1)
+        }
+        filesLoaded.push(this.currentFile)
+        maxFilesLoaded = 10
+        filesLoaded = filesLoaded.slice(_k_.max(0,filesLoaded.length - maxFilesLoaded))
+        return this.session.set(key,filesLoaded)
     }
 
     KED.prototype["onPaste"] = function (text)
@@ -305,6 +325,8 @@ ked [file]
             case 'ctrl+f':
                 return this.finder.show(this.editor.state.textOfSelectionOrWordAtCursor())
 
+            case 'cmd+o':
+            case 'ctrl+o':
             case 'cmd+.':
             case 'ctrl+.':
                 return this.quicky.gotoDir(slash.dir(this.currentFile))
@@ -351,7 +373,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _290_22_, _291_23_
+        var _306_22_, _307_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -360,7 +382,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _296_22_, _297_23_
+        var _312_22_, _313_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

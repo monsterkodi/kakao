@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var session
 
@@ -12,7 +12,7 @@ import sds from "../../kxk/sds.js"
 import util from "../../kxk/util.js"
 let isEqual = util.isEqual
 let defaults = util.defaults
-let uuid = util.uuid
+let sessionId = util.sessionId
 
 
 session = (function ()
@@ -22,6 +22,10 @@ session = (function ()
     {
         var _28_20_, _30_30_
 
+        this["cleanSessionFiles"] = this["cleanSessionFiles"].bind(this)
+        this["listSessionFiles"] = this["listSessionFiles"].bind(this)
+        this["newestSessionFile"] = this["newestSessionFile"].bind(this)
+        this["loadAndMergeRecentSession"] = this["loadAndMergeRecentSession"].bind(this)
         this["save"] = this["save"].bind(this)
         this["load"] = this["load"].bind(this)
         this["reload"] = this["reload"].bind(this)
@@ -31,12 +35,14 @@ session = (function ()
         this["set"] = this["set"].bind(this)
         this["get"] = this["get"].bind(this)
         this["keypath"] = this["keypath"].bind(this)
-        this.name = uuid()
+        this.name = sessionId()
         opt = (opt != null ? opt : {})
         opt.timeout = ((_28_20_=opt.timeout) != null ? _28_20_ : 4000)
-        this.sep = ((_30_30_=opt.separator) != null ? _30_30_ : '|')
-        this.file = slash.absolute(`~/.config/ked/sessions/${this.name}.noon`)
+        this.sep = ((_30_30_=opt.separator) != null ? _30_30_ : '▸')
+        this.dir = slash.absolute("~/.config/ked/sessions/")
+        this.file = slash.path(this.dir,`${this.name}.noon`)
         lf('session',this.file)
+        this.loadAndMergeRecentSession()
         return session.__super__.constructor.apply(this, arguments)
     }
 
@@ -47,7 +53,7 @@ session = (function ()
 
     session.prototype["get"] = function (key, value)
     {
-        var _46_45_
+        var _49_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -58,18 +64,16 @@ session = (function ()
 
     session.prototype["set"] = function (key, value)
     {
-        var _64_14_
+        var _67_14_
 
-        lf(`session[${this.name}].set`,key,value)
         if (!(_k_.isStr(key)))
         {
             return
         }
-        if (eql)
+        if (_k_.eql(this.get(key), value))
         {
             return
         }
-        this.get(key)(value)
         if (this.get(key) === value)
         {
             return
@@ -78,7 +82,7 @@ session = (function ()
         {
             return this.del(key)
         }
-        this.data = ((_64_14_=this.data) != null ? _64_14_ : {})
+        this.data = ((_67_14_=this.data) != null ? _67_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         return this.delayedSave()
     }
@@ -142,20 +146,61 @@ session = (function ()
         this.timer = null
         try
         {
-            text = noon.stringify(this.data,{indent:2,maxalign:8}) + '\n'
+            text = noon.stringify(this.data,{indent:4,maxalign:8}) + '\n'
             result = await nfs.write(this.file,text)
             if (result.error)
             {
-                return lf('save failed!',this.file,result)
-            }
-            else
-            {
-                return lf('session.saved',result,this.data)
+                return lf('session.save failed!',this.file,result)
             }
         }
         catch (err)
         {
             return lf(`session -- can't save to '${this.file}':`,err)
+        }
+    }
+
+    session.prototype["loadAndMergeRecentSession"] = async function ()
+    {
+        var file, recent
+
+        file = await this.newestSessionFile()
+        recent = await noon.read(file)
+        if (!_k_.empty(recent.files))
+        {
+            return this.set('files',recent.files)
+        }
+    }
+
+    session.prototype["newestSessionFile"] = async function ()
+    {
+        var files
+
+        files = await this.listSessionFiles()
+        return files.slice(-1)[0]
+    }
+
+    session.prototype["listSessionFiles"] = async function ()
+    {
+        var files
+
+        files = await nfs.list(this.dir)
+        return files.map(function (f)
+        {
+            return f.path
+        })
+    }
+
+    session.prototype["cleanSessionFiles"] = async function ()
+    {
+        var file, files, maxFiles
+
+        maxFiles = 10
+        files = await this.listSessionFiles()
+        var list = _k_.list(files.slice(0, typeof maxFiles === 'number' ? maxFiles : -1))
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            file = list[_a_]
+            lf('delete old session file',file)
         }
     }
 

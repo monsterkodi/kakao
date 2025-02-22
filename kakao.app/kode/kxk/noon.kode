@@ -583,10 +583,10 @@ load = p ext ○->
     if globalThis.global
         
         fs  =○ import('fs/promises')
-        str =○ fs.readFile p, 'utf8'
+        str =○ fs.readFile p 'utf8'
              
         if valid str
-            parseStr str, p, ext
+            parseStr str p ext
         else
             null
         
@@ -595,10 +595,10 @@ load = p ext ○->
         str = await globalThis.kakao.ffs.read p
              
         if valid str
-            parseStr str, p, ext
+            parseStr str p ext
         else
             null
-
+            
 ###
  0000000   0000000   000   000  00000000
 000       000   000  000   000  000
@@ -628,5 +628,7 @@ save = p data strOpt cb ->
 export
     save:       save
     load:       load
+    read:       load
+    write:      save
     parse:      parse
     stringify:  stringify
