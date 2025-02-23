@@ -145,12 +145,19 @@ class color
         
         for row,y in cells
             for cell,x in row
-                nbcs = util.cellNeighborsAtPos cells x y 4 2
+                nbcs = util.cellNeighborsAtPos cells x y 6 3
                 continue if empty nbcs
-                fgs = nbcs.map (n) -> n.cell.fg
-                sum = util.sum fgs
-                scl = strength * 0.007
-                scl = scl * randRange(0.95 1.05)
+                
+                sum = [0 0 0]
+                for nbc in nbcs
+                    dx = nbc.pos[0]-x
+                    dy = nbc.pos[1]-y
+                    df = 1 - max(0 Math.sqrt(dx*dx + dy*dy) / 6)
+                    for vi in 0..2
+                        sum[vi] += nbc.cell.fg[vi]*df
+                    
+                scl = strength * 0.014
+                scl = scl * randRange(0.96 1.04)
                 sum = sum.map (v) -> clamp 0 255 int(scl * v)
                 cell.bg = sum
         cells

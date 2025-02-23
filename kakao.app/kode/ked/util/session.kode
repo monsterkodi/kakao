@@ -139,7 +139,7 @@ function session extends events
         file =○ @newestSessionFile()
         ⮐ if empty file
         recent =○ noon.read(file)
-        lf "loadAndMergeRecent #{file}" recent  
+        # lf "loadAndMergeRecent #{file}" recent  
         @set 'files' recent.files if valid recent.files # probably should actually merge here instead of overriding!
         
         @emit 'loaded'
@@ -147,7 +147,7 @@ function session extends events
     newestSessionFile: ○=>
         
         files =○ @listSessionFiles()
-        lf 'newestSessionFile' files
+        # lf 'newestSessionFile' files
         files[-1]
             
     listSessionFiles: ○=>

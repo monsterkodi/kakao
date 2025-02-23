@@ -269,7 +269,7 @@ function KED
             'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
-            'alt+.'                      ➜ ⮐ @menu.show()
+            'alt+.' 'alt+m'              ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor.state.textOfSelectionOrWordAtCursor()
             'cmd+o' 'ctrl+o'

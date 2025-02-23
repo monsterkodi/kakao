@@ -67,6 +67,7 @@ function mapview extends view
         ⮐ if @hidden()
         if @redraw or resized
             @createImages() if @redraw
+            delete @redraw
             # lf "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{@redraw} #{resized}"
             # setImmediate @drawImages
             @drawImages()
@@ -93,7 +94,6 @@ function mapview extends view
         t = @cells.screen.t
         ⮐ if empty t.cellsz
         
-        # @show()
         @clearImages()
 
         # prof.start @state.name+'.map'
@@ -163,7 +163,7 @@ function mapview extends view
         
         ⮐ if empty t.pixels or @hidden()
         
-        # lf "mapview.drawImages #{r5 @name} #{b8 @images.length} #{@rowOffset}"  
+        # lf "mapview.drawImages #{r5 @name} #{b8 @images.length}"  
         for id,y in @images
             # t.placeImage id @cells.x @cells.y 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
             t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow

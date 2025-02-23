@@ -33,9 +33,7 @@ function mapscr extends mapview
     onResize: =>
         
         ⮐ if empty @cells.screen.t.pixels
-        
-        clearTimeout @redrawTimer
-        @redrawTimer = setTimeout @createImages 100
+        @redraw = true
         
     #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
     # 000       000       000   000  000   000  000      000         000     000   000  

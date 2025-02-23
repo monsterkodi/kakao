@@ -16,6 +16,8 @@ function help
         
         h = """
             
+        
+        
             ╭───╮                ╭───╮                ╭───╮     
             │○○○│                │○○○│                │○○○│     
             │○○○│                ╰───╯                │○○○│     
@@ -30,31 +32,33 @@ function help
             │○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯      
             ╰───╯     ╰───╯    ╰───────╯       ╰───────╯        
             
+            
+            
             """ 
             
         cells = util.cellsForLines util.indentLines(util.seglsForText(h) 5)
         
-        kcells = util.cellsInRect cells 0 0 20 -1
+        kcells = util.cellsInRect cells 0 0 20 cells.length-1
         for c in kcells
-            c.cell.fg = switch c.cell.char
-                ' ' ➜ [0 0 0]
-                    ➜ [0 255 0]
+            switch c.cell.char
+                ' ' ➜ c.cell.fg = [0 0 0]
+                    ➜ c.cell.fg = [0 255 0]
                                 
-        ecells = util.cellsInRect cells 20 0 35 -1
+        ecells = util.cellsInRect cells 20 0 35 cells.length-1
         for c in ecells
-            c.cell.fg = switch c.cell.char
-                ' ' ➜ [0 0 0]
-                    ➜ [120 120 255]
-            
-        dcells = util.cellsInRect cells 36 0 -1 -1
+            switch c.cell.char
+                ' ' ➜ c.cell.fg = [0 0 0]
+                    ➜ c.cell.fg = [120 120 255]
+             
+        dcells = util.cellsInRect cells 36 0 cells[0].length-1 cells.length-1
         for c in dcells
-            c.cell.fg = switch c.cell.char
-                ' ' ➜ [0 0 0]
-                    ➜ [255 160 0]
+            switch c.cell.char
+                ' ' ➜ c.cell.fg = [0 0 0]
+                    ➜ c.cell.fg = [255 160 0]
 
         color.glowEffect cells
-        color.dimCellsColor     util.cellsWithChar(cells '○') 'fg' 0.35
-        color.variateCellsColor util.cellsWithChar(cells '○') 'fg' 0.5
+        color.dimCellsColor     util.cellsWithChar(cells '○') 'fg' 0.26
+        color.variateCellsColor util.cellsWithChar(cells '○') 'fg' 0.3
         cells
 
 ###

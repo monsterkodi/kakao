@@ -33,6 +33,8 @@ function finder extends inputchoice
         lf 'finder.show' searchText
 
         @input.set searchText
+        @input.selectAll()
+        @input.moveCursors 'eol'
         @choices.set []
         
         @layout()

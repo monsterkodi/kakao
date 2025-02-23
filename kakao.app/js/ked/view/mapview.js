@@ -103,6 +103,7 @@ mapview = (function ()
             {
                 this.createImages()
             }
+            delete this.redraw
             return this.drawImages()
         }
     }

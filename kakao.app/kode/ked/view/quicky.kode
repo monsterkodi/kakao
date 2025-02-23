@@ -102,6 +102,9 @@ function quicky extends inputchoice
         # lf 'quicky.show' @currentFile
 
         items = prjcts.files @currentFile
+        
+        ⮐ @gotoDir process.cwd() if empty items
+        
         @currentDir = slash.dir @currentFile
         items = items.map (i) => slash.relative i @currentDir
         

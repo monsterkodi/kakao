@@ -36,7 +36,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         util.cellsInRect(cells 0 0 1 1).map((n) -> n.cell.char) ▸ ['0' '1' 'a' 'b']
         util.cellsInRect(cells 1 1 1 1).map((n) -> n.cell.char) ▸ ['b']
         util.cellsInRect(cells 0 0 2 0).map((n) -> n.cell.char) ▸ ['0' '1' '2']
-        util.cellsInRect(cells -2 -1 -1 -1).map((n) -> n.cell.char) ▸ ['Y' 'Z']
+        util.cellsInRect(cells 1 2 2 2).map((n) -> n.cell.char) ▸ ['Y' 'Z']
         
         util.cellNeighborsAtPos(cells 0 0).map((n) -> n.cell.char) ▸ ['0' '1' 'a' 'b']
 

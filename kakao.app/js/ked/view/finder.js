@@ -33,6 +33,8 @@ finder = (function ()
     {
         lf('finder.show',searchText)
         this.input.set(searchText)
+        this.input.selectAll()
+        this.input.moveCursors('eol')
         this.choices.set([])
         this.layout()
         return this.input.grabFocus()

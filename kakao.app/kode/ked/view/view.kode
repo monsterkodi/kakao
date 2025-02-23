@@ -16,7 +16,7 @@ function view extends events
 
     @: @screen @name features ->
         
-        lf "view #{c4 @name}"
+        # lf "view #{c4 @name}"
         
         @cells = new cells @screen
         @feats = {}

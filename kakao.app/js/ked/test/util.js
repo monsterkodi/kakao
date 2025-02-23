@@ -48,7 +48,7 @@ XYZ`)
         {
             return n.cell.char
         }),['0','1','2'])
-        compare(util.cellsInRect(cells,-2,-1,-1,-1).map(function (n)
+        compare(util.cellsInRect(cells,1,2,2,2).map(function (n)
         {
             return n.cell.char
         }),['Y','Z'])

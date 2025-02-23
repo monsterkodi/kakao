@@ -44,8 +44,7 @@ mapscr = (function ()
         {
             return
         }
-        clearTimeout(this.redrawTimer)
-        return this.redrawTimer = setTimeout(this.createImages,100)
+        return this.redraw = true
     }
 
     mapscr.prototype["scrollToPixel"] = function (pixel)

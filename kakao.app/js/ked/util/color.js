@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var int
 
@@ -154,7 +154,7 @@ class color
 
     static glowEffect (cells, strength = 0.5)
     {
-        var cell, fgs, nbcs, row, scl, sum, x, y
+        var cell, df, dx, dy, nbc, nbcs, row, scl, sum, vi, x, y
 
         var list = _k_.list(cells)
         for (y = 0; y < list.length; y++)
@@ -164,18 +164,26 @@ class color
             for (x = 0; x < list1.length; x++)
             {
                 cell = list1[x]
-                nbcs = util.cellNeighborsAtPos(cells,x,y,4,2)
+                nbcs = util.cellNeighborsAtPos(cells,x,y,6,3)
                 if (_k_.empty(nbcs))
                 {
                     continue
                 }
-                fgs = nbcs.map(function (n)
+                sum = [0,0,0]
+                var list2 = _k_.list(nbcs)
+                for (var _c_ = 0; _c_ < list2.length; _c_++)
                 {
-                    return n.cell.fg
-                })
-                sum = util.sum(fgs)
-                scl = strength * 0.007
-                scl = scl * randRange(0.95,1.05)
+                    nbc = list2[_c_]
+                    dx = nbc.pos[0] - x
+                    dy = nbc.pos[1] - y
+                    df = 1 - _k_.max(0,Math.sqrt(dx * dx + dy * dy) / 6)
+                    for (vi = 0; vi <= 2; vi++)
+                    {
+                        sum[vi] += nbc.cell.fg[vi] * df
+                    }
+                }
+                scl = strength * 0.014
+                scl = scl * randRange(0.96,1.04)
                 sum = sum.map(function (v)
                 {
                     return _k_.clamp(0,255,parseInt(scl * v))

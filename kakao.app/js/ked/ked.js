@@ -324,6 +324,7 @@ ked [file]
                 return this.newFile()
 
             case 'alt+.':
+            case 'alt+m':
                 return this.menu.show()
 
             case 'cmd+p':

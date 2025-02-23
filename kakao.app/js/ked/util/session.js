@@ -170,7 +170,6 @@ session = (function ()
             return
         }
         recent = await noon.read(file)
-        lf(`loadAndMergeRecent ${file}`,recent)
         if (!_k_.empty(recent.files))
         {
             this.set('files',recent.files)
@@ -183,7 +182,6 @@ session = (function ()
         var files
 
         files = await this.listSessionFiles()
-        lf('newestSessionFile',files)
         return files.slice(-1)[0]
     }
 
