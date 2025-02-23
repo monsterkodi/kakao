@@ -138,6 +138,19 @@ class theme
         # 000 0 000  000   000    
         # 000   000  0000000      
         
+        'text h1':                              '#0f0'   
+        'text h2':                              '#0a0'   
+        'text h3':                              '#080'   
+        'text h4':                              '#aaf'   
+        'text h5':                              '#88f'   
+                                                         
+        'punct h1':                             '#050'   
+        'punct h2':                             '#040'   
+        'punct h3':                             '#030'   
+        'punct h4':                             '#336'   
+        'punct h5':                             '#224'   
+                                                         
+        'text bold':                            '#ff8'   
         'text unicode li1':                     '#aaa'   
         'text unicode li2':                     '#888'   
         'text unicode li3':                     '#666'   
@@ -161,21 +174,6 @@ class theme
         'punct li3 marker':                     '#337'   
         'punct li4 marker':                     '#226'   
         'punct li5 marker':                     '#114'   
-
-        
-        'text h1':                              '#0f0'
-        'text h2':                              '#0a0'
-        'text h3':                              '#080'
-        'text h4':                              '#aaf'
-        'text h5':                              '#88f'
-
-        'punct h1':                             '#050'
-        'punct h2':                             '#040'
-        'punct h3':                             '#030'
-        'punct h4':                             '#336'
-        'punct h5':                             '#224'
-        
-        'text bold':                            '#ff8'
                 
         # 00000000  000  000      00000000   0000000    
         # 000       000  000      000       000         
@@ -183,29 +181,29 @@ class theme
         # 000       000  000      000            000    
         # 000       000  0000000  00000000  0000000     
         
-        'file':                                 '#aaa'
-        'ext':                                  '#444'
-                                                      
-        'dir_leaf':                             '#aaf'
-        'text dir':                             '#88f'
-        'dir':                                  '#66d'
-        'punct dir':                            '#55a'
-        'dir_punct':                            '#226'
-                                                      
-        '.text':                                '#aaf'
-        '.md':                                  '#f4f'
-        '.json':                                '#d0d'
-        '.cast':                                '#b0b'
-        '.js':                                  '#a0a'
-        '.kode':                                '#ff0'
-        '.noon':                                '#0a0'
-        '.png':                                 '#080'
-        '.gif':                                 '#070'
-        '.jpg':                                 '#060'
-        '.jpeg':                                '#060'
-        '.bmp':                                 '#050'
-        '.tiff':                                '#040'
-        '.image':                               '#030'
+        'file':                                 '#aaa'   
+        'ext':                                  '#444'   
+                                                         
+        'dir_leaf':                             '#aaf'   
+        'text dir':                             '#88f'   
+        'dir':                                  '#66d'   
+        'punct dir':                            '#55a'   
+        'dir_punct':                            '#226'   
+                                                         
+        '.text':                                '#aaf'   
+        '.md':                                  '#f4f'   
+        '.json':                                '#d0d'   
+        '.cast':                                '#b0b'   
+        '.js':                                  '#a0a'   
+        '.kode':                                '#ff0'   
+        '.noon':                                '#0a0'   
+        '.png':                                 '#080'   
+        '.gif':                                 '#070'   
+        '.jpg':                                 '#060'   
+        '.jpeg':                                '#060'   
+        '.bmp':                                 '#050'   
+        '.tiff':                                '#040'   
+        '.image':                               '#030'   
         
 
 for key,value of theme.syntax

@@ -32,7 +32,7 @@ function session extends events
         @dir  = slash.absolute "~/.config/ked/sessions/"
         @file = slash.path @dir "#{@name}.noon"
         
-        lf 'session' @file
+        # lf 'session' @file
         
         @loadAndMergeRecentSession()
         @cleanSessionFiles()
@@ -147,21 +147,18 @@ function session extends events
     newestSessionFile: ○=>
         
         files =○ @listSessionFiles()
-        # lf 'newestSessionFile' files
         files[-1]
             
     listSessionFiles: ○=>
         
         files =○ nfs.list @dir
         [f.path for f in files]
-        # files.map (f) -> f.path
         
     cleanSessionFiles: ○=>
         
         maxFiles = 10
         files =○ @listSessionFiles()
         for file in files[0...files.length-maxFiles]
-            lf 'delete old session file' file
             ○ nfs.remove file
         
 export session

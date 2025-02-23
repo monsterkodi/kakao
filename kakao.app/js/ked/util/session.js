@@ -41,7 +41,6 @@ session = (function ()
         this.sep = ((_30_30_=opt.separator) != null ? _30_30_ : '▸')
         this.dir = slash.absolute("~/.config/ked/sessions/")
         this.file = slash.path(this.dir,`${this.name}.noon`)
-        lf('session',this.file)
         this.loadAndMergeRecentSession()
         this.cleanSessionFiles()
         return session.__super__.constructor.apply(this, arguments)
@@ -203,7 +202,6 @@ session = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             file = list[_a_]
-            lf('delete old session file',file)
             await nfs.remove(file)
         }
     }

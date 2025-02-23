@@ -321,3 +321,65 @@ sel = r... -> s.allSelections() ▸ r
         s.delete 'back'
         mul [4 0] [4 1] [4 2]
         
+        
+    #  0000000  000       0000000   000   000  00000000         000      000  000   000  00000000   0000000  
+    # 000       000      000   000  0000  000  000              000      000  0000  000  000       000       
+    # 000       000      000   000  000 0 000  0000000          000      000  000 0 000  0000000   0000000   
+    # 000       000      000   000  000  0000  000              000      000  000  0000  000            000  
+    #  0000000  0000000   0000000   000   000  00000000         0000000  000  000   000  00000000  0000000   
+    
+    ▸ cloneSelectionAndCursorLines
+    
+        text = """
+            line 1
+            line 2
+            line 3
+            """
+        s.loadLines util.linesForText(text)
+        s.cloneSelectionAndCursorLines 'down'
+        
+        txt """
+            line 1
+            line 1
+            line 2
+            line 3
+            """
+            
+        mul [0 1]
+            
+        s.expandCursors 'down'
+        
+        mul [0 1] [0 2]
+        
+        s.cloneSelectionAndCursorLines 'down'
+         
+        txt """
+            line 1
+            line 1
+            line 2
+            line 1
+            line 2
+            line 3
+            """
+            
+        mul [0 3] [0 4] 
+        
+        s.expandCursors 'down'
+        s.moveCursors 'right'
+        
+        mul [1 3] [1 4] [1 5] 
+        
+        s.cloneSelectionAndCursorLines 'down'
+
+        # txt """
+            # line 1
+            # line 1
+            # line 2
+            # line 1
+            # line 2
+            # line 3
+            # line 1
+            # line 2
+            # line 3
+            # """
+        

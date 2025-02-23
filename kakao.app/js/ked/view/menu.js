@@ -61,10 +61,9 @@ menu = (function ()
         var ccol, items
 
         this.greeter.show(this.greet)
-        items = util.linesForText(`new
+        items = util.linesForText(`recent ...
 open ...
-recent ...
-help
+new
 quit`)
         if (!this.greet)
         {
@@ -89,12 +88,12 @@ quit`)
 
     menu.prototype["showRecent"] = function ()
     {
-        var files, loaded, maxRecent, recent, saved, _97_30_, _98_29_
+        var files, loaded, maxRecent, recent, saved, _96_30_, _97_29_
 
         maxRecent = 20
         files = ked_session.get('files',[])
-        loaded = ((_97_30_=files.loaded) != null ? _97_30_ : [])
-        saved = ((_98_29_=files.saved) != null ? _98_29_ : [])
+        loaded = ((_96_30_=files.loaded) != null ? _96_30_ : [])
+        saved = ((_97_29_=files.saved) != null ? _97_29_ : [])
         recent = loaded.concat(saved)
         recent.reverse()
         recent = recent.slice(0, typeof _k_.min(recent.length,maxRecent) === 'number' ? _k_.min(recent.length,maxRecent) : -1)

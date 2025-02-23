@@ -221,6 +221,26 @@ XYZ`)
         compare(util.isFullLineRange(lines,[0,1,2,1]),false)
         compare(util.isFullLineRange(lines,[1,1,3,1]),false)
     })
+    section("lineIndicesForRangesAndPositions", function ()
+    {
+        compare(util.lineIndicesForRangesAndPositions([],[[1,1],[1,2],[1,3]]),[1,2,3])
+        compare(util.lineIndicesForRangesAndPositions([[0,0,2,0]],[[1,1],[1,2],[1,3]]),[0,1,2,3])
+        compare(util.lineIndicesForRangesAndPositions([[0,1,2,2]],[[1,6],[1,5],[1,4]]),[1,2,4,5,6])
+    })
+    section("blockRangesForRangesAndPositions", function ()
+    {
+        lines = kseg.segls(`line 1
+line 2`)
+        compare(util.blockRangesForRangesAndPositions(lines,[],[[0,0],[0,1]]),[[0,0,6,1]])
+        compare(util.blockRangesForRangesAndPositions(lines,[[0,0,5,1]],[[0,0]]),[[0,0,6,1]])
+        compare(util.blockRangesForRangesAndPositions(lines,[[0,1,5,1]],[[0,0]]),[[0,0,6,1]])
+        lines = kseg.segls(`line 1
+line 2
+line 3
+line 4
+line 5
+line 6`)
+    })
     section("isSpanLineRange", function ()
     {
         lines = ['','124','abcdef']
@@ -383,6 +403,7 @@ line 2`)
             compare(util.insertTextAtPositions(lines,'a\nb',[[0,0]]),[kseg.segls('a\nb\nline 1\nline 2'),[[0,2]]])
             compare(util.insertTextAtPositions(lines,'a\nb',[[2,0]]),[kseg.segls('lia\nbne 1\nline 2'),[[1,1]]])
             compare(util.insertTextAtPositions(lines,'a\nb',[[0,1]]),[kseg.segls('line 1\na\nb\nline 2'),[[0,3]]])
+            compare(util.insertTextAtPositions(lines,'a\n',[[0,1]]),[kseg.segls('line 1\na\nline 2'),[[0,2]]])
         })
         section("multiple lines into multi cursor", function ()
         {
@@ -424,6 +445,7 @@ line 2`)
             })
             section("multiple lines into single cursor", function ()
             {
+                compare(util.insertTextAtPositions(lines,'a\nb',[[4,1]]),[kseg.segls('◆1\n    a\n    b\n    ◆2\n        ◆3'),[[4,3]]])
             })
         })
     })

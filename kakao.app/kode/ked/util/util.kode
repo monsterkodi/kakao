@@ -208,8 +208,9 @@ function util
         ⮐ true if pos eql @startOfRange rng
         false
 
-    @rangeContainsPos: rng pos -> @isPosInsideRange pos rng
-    @rangeTouchesPos:  rng pos -> @isPosTouchingRange pos rng
+    @rangeContainsPos:   rng pos -> @isPosInsideRange pos rng
+    @rangeContainsRange: rng ins -> @isPosInsideRange(@startOfRange(ins) rng) and @isPosInsideRange(@endOfRange(ins) rng)
+    @rangeTouchesPos:    rng pos -> @isPosTouchingRange pos rng
         
     @rangeForSpan: span -> [span[0] span[1] span[2] span[1]]
     @rangeFromStartToEnd: start end -> [start[0] start[1] end[0] end[1]]
@@ -357,6 +358,12 @@ function util
         indices = @lineIndicesForRanges rngs
         indices = @lineIndicesForPositions posl if empty indices
         indices
+
+    @lineIndicesForRangesAndPositions: rngs posl ->
+
+        indices = kxk.util.uniq @lineIndicesForRanges(rngs).concat(@lineIndicesForPositions(posl))
+        indices.sort()
+        indices
         
     @lineIndicesForRange: rng ->
         
@@ -376,6 +383,46 @@ function util
             indices = indices.concat @lineIndicesForRange(rng)
             
         indices
+        
+    # 0000000    000       0000000    0000000  000   000  
+    # 000   000  000      000   000  000       000  000   
+    # 0000000    000      000   000  000       0000000    
+    # 000   000  000      000   000  000       000  000   
+    # 0000000    0000000   0000000    0000000  000   000  
+    
+    @blockRangesForRangesAndPositions: lines rngs posl ->
+        
+        blocks = []
+        
+        indices = @lineIndicesForRangesAndPositions rngs posl
+        
+        ⮐ blocks if empty indices
+                
+        log '▸' indices
+        
+        ii = indices.length-1
+        while ii > 0
+            if indices[ii-1]+1 == indices[ii] 
+                numSplice = -1
+                while indices[ii-1]+1 == indices[ii]
+                    numSplice += 1
+                    ii -= 1
+                indices.splice ii+1 numSplice
+            ii -= 1
+            
+        log '○' indices
+                
+        ii = 0
+        while ii < indices.length
+            index = indices[ii]
+            if indices[ii+1] == index+1
+                blocks.push [0 index lines[indices[ii+1]].length indices[ii+1]]
+                ii += 1
+            else
+                blocks.push [0 index lines[index].length index]
+            ii += 1
+        
+        blocks
                 
     # 00     00  00000000  00000000    0000000   00000000  
     # 000   000  000       000   000  000        000       

@@ -32,6 +32,7 @@ edit = (function ()
         newls = []
         newpl = []
         rngs = this.rangesForLinePositions(lines,posl)
+        before = []
         var list = _k_.list(rngs)
         for (idx = 0; idx < list.length; idx++)
         {
@@ -71,7 +72,10 @@ edit = (function ()
                         for (lidx = 0; lidx < list1.length; lidx++)
                         {
                             insl = list1[lidx]
-                            before.push(indent.concat(insl))
+                            if (lidx < txtls.length - 2 || !_k_.empty(insl) || text === '\n')
+                            {
+                                before.push(indent.concat(insl))
+                            }
                         }
                         if (x > posLineIndent)
                         {
@@ -323,6 +327,19 @@ edit = (function ()
 
         }).bind(this))(); rs = _a_[0]; re = _a_[1]
 
+        d = ((function ()
+        {
+            switch (dir)
+            {
+                case 'down':
+                    return 1
+
+                case 'up':
+                    return -1
+
+            }
+
+        }).bind(this))()
         for (var _b_ = ii = rs, _c_ = re; (_b_ <= _c_ ? ii <= re : ii >= re); (_b_ <= _c_ ? ++ii : --ii))
         {
             index = indices[ii]
@@ -342,19 +359,7 @@ edit = (function ()
                 pos = list[_d_]
                 if (pos[1] === index)
                 {
-                    pos[1] += ((function ()
-                    {
-                        switch (dir)
-                        {
-                            case 'down':
-                                return 1
-
-                            case 'up':
-                                return -1
-
-                        }
-
-                    }).bind(this))()
+                    pos[1] += d
                 }
             }
             var list1 = _k_.list(newRngs)
@@ -363,19 +368,76 @@ edit = (function ()
                 rng = list1[_e_]
                 if (rng[1] === index)
                 {
-                    d = ((function ()
-                    {
-                        switch (dir)
-                        {
-                            case 'down':
-                                return 1
+                    rng[1] += d
+                    rng[3] += d
+                }
+            }
+        }
+        return [newLines,newRngs,newPosl]
+    }
 
-                            case 'up':
-                                return -1
+    edit["cloneLineBlockRangesAndMoveRangesAndPositionsInDirection"] = function (lines, blocks, rngs, posl, dir)
+    {
+        var bi, block, d, insidx, newLines, newPosl, newRngs, pos, re, rng, rs, text
 
-                        }
+        if (_k_.empty(blocks) || dir === 'down' && blocks.slice(-1)[0][3] >= lines.length - 1 || dir === 'up' && blocks[0][1] <= 0)
+        {
+            return [lines,rngs,posl]
+        }
+        newLines = _k_.copy(lines)
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        var _a_ = ((function ()
+        {
+            switch (dir)
+            {
+                case 'down':
+                    return [blocks.length - 1,0]
 
-                    }).bind(this))()
+                case 'up':
+                    return [0,blocks.length - 1]
+
+            }
+
+        }).bind(this))(); rs = _a_[0]; re = _a_[1]
+
+        d = ((function ()
+        {
+            switch (dir)
+            {
+                case 'down':
+                    return 1
+
+                case 'up':
+                    return -1
+
+            }
+
+        }).bind(this))()
+        for (var _b_ = bi = rs, _c_ = re; (_b_ <= _c_ ? bi <= re : bi >= re); (_b_ <= _c_ ? ++bi : --bi))
+        {
+            block = blocks[bi]
+            text = this.textForLineRange(newLines,block)
+            text += '\n'
+            insidx = (dir === 'up' ? block[1] : block[3] + 1)
+            var _d_ = this.insertTextAtPositions(newLines,text,[[0,insidx]]); newLines = _d_[0]; posl = _d_[1]
+
+            d = block[3] - block[1] + 1
+            var list = _k_.list(newPosl)
+            for (var _e_ = 0; _e_ < list.length; _e_++)
+            {
+                pos = list[_e_]
+                if (this.rangeContainsPos(block,pos))
+                {
+                    pos[1] += d
+                }
+            }
+            var list1 = _k_.list(newRngs)
+            for (var _f_ = 0; _f_ < list1.length; _f_++)
+            {
+                rng = list1[_f_]
+                if (this.rangeContainsRange(block,rng))
+                {
                     rng[1] += d
                     rng[3] += d
                 }

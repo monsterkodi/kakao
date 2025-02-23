@@ -27,22 +27,23 @@ function edit
             pos  = posl[0]
             text = lpad 4-pos[0]%4 ' '
             
-        # lf y5("insert text ▸#{text}◂")
+        # log y5("insert text ▸#{text}◂")
             
         text  = kstr.detab text
         txtls = @seglsForText text  # the text to insert split into segls
         newls = []                      # list of new lines 
         newpl = []                      # list of new positions
         rngs  = @rangesForLinePositions lines posl # list of ranges for lines split by positions
+        before = []
         
         for rng,idx in rngs
             
             after = @seglsForRange lines rng # all the lines in the current range (after current position)
                         
-            # lf "#{idx} after" after
+            # log "#{idx} after" after
             
             if idx > 0                           # start processing ranges after the first position
-                
+                # log "#{idx} before" before
                 [x y] = posl[idx-1]              # coordinates of current position 
                 
                 if valid before ➜ line = before.pop() # pop the last line from before the current position
@@ -54,17 +55,22 @@ function edit
                 
                 if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     
-                    if posl.length > 1 and text != '\n'
+                    if posl.length > 1 and text != '\n' # insert into multiple cursors (doesn't autoindent)
+                        # log 'insert multiple lines into multiple cursors (no autoindent)'
                         insertLineIndex = (idx-1) % txtls.length
                         before.push line.concat(txtls[insertLineIndex])
                         newpl.push [last(before).length newls.length+before.length-1]
                         before.push before.pop().concat(after.shift())
-                    else
+                    else                                 # insert into single cursor with autoindent
+                        # log 'insert multiple lines into single cursor with autoindent'
                         posLineIndent = @numIndent line
                         indent = kseg lpad(posLineIndent)
                         before.push line.concat(txtls[0])
+                        
                         for insl,lidx in txtls[1..]
-                            before.push indent.concat(insl)
+                            if lidx < txtls.length-2 or valid insl or text == '\n'
+                                # log "insl ▸#{indent}|#{insl}▪"  
+                                before.push indent.concat(insl)
                     
                         # lf ">>>#{indent}<<<#{posLineIndent} #{x}" line
                         
@@ -79,14 +85,15 @@ function edit
                     newls = newls.concat before
                             
                 else                                # if text is the only line to insert
-
+                    # log 'insert single span into split position'
                     newpl.push [line.length+txtls[0].length newls.length+before.length] # move position to the end of the inserted text
                     line  = line.concat txtls[0]       # append it and ...
                     line  = line.concat after.shift()  #     ... first line after to current line
                     newls = newls.concat before        # add lines from before and ...
                     newls.push line                    #     ... current line to result
-            # lf 'before' before    
+            
             before = after 
+            # log "#{idx} before" before    
             
         newls = newls.concat before
             
@@ -244,7 +251,11 @@ function edit
         [rs re] = switch dir
             'down' ➜ [indices.length-1 0]
             'up'   ➜ [0 indices.length-1]
-        
+
+        d = switch dir
+            'down' ➜ 1
+            'up'   ➜ -1
+            
         for ii in rs..re
             index = indices[ii]
             
@@ -254,20 +265,60 @@ function edit
                 
             for pos in newPosl
                 if pos[1] == index 
-                    pos[1] += switch dir                     
-                        'down' ➜ 1
-                        'up'   ➜ -1
+                    pos[1] += d
 
             for rng in newRngs
                 if rng[1] == index 
-                    d = switch dir                     
-                        'down' ➜ 1
-                        'up'   ➜ -1
                     rng[1] += d
                     rng[3] += d
         
         [newLines newRngs newPosl]
-                  
+
+    #  0000000  000       0000000   000   000  00000000        000      000  000   000  00000000   0000000  
+    # 000       000      000   000  0000  000  000             000      000  0000  000  000       000       
+    # 000       000      000   000  000 0 000  0000000         000      000  000 0 000  0000000   0000000   
+    # 000       000      000   000  000  0000  000             000      000  000  0000  000            000  
+    #  0000000  0000000   0000000   000   000  00000000        0000000  000  000   000  00000000  0000000   
+    
+    @cloneLineBlockRangesAndMoveRangesAndPositionsInDirection: lines blocks rngs posl dir ->
+        
+        if empty blocks or dir == 'down' and blocks[-1][3] >= lines.length-1 or dir == 'up' and blocks[0][1] <= 0
+            ⮐ [lines rngs posl]
+        
+        newLines = copy lines
+        newRngs  = copy rngs
+        newPosl  = copy posl
+        
+        [rs re] = switch dir
+            'down' ➜ [blocks.length-1 0]
+            'up'   ➜ [0 blocks.length-1]
+
+        d = switch dir
+            'down' ➜ 1
+            'up'   ➜ -1
+            
+        for bi in rs..re
+            block = blocks[bi]
+  
+            text = @textForLineRange newLines block
+            text += '\n'
+
+            insidx = dir == 'up' ? block[1] : block[3]+1
+            [newLines posl] = @insertTextAtPositions newLines text [[0 insidx]]
+            
+            d = block[3]-block[1]+1
+            
+            for pos in newPosl
+                if @rangeContainsPos block pos
+                    pos[1] += d                
+
+            for rng in newRngs
+                if @rangeContainsRange block rng
+                    rng[1] += d
+                    rng[3] += d
+        
+        [newLines newRngs newPosl]
+        
     #  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
     # 000       000   000  000   000  000   000  000       0000  000     000     000       
     # 000       000   000  000000000  000000000  0000000   000 0 000     000     0000000   

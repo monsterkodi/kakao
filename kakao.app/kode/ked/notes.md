@@ -27,6 +27,7 @@
 ##### todo
 
 - shift+alt+up|down cloneCursorLinesInDirection
+- clickable choices
 
 - unicode mode
     - ~ replacement

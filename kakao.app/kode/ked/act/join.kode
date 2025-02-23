@@ -37,6 +37,18 @@ export
         @setSelections selections
         @setCursors cursors
         
+    cloneSelectionAndCursorLines: dir ->
+        
+        selections = @allSelections()
+        cursors    = @allCursors() 
+        lines      = @allLines()
+        blocks     = util.blockRangesForRangesAndPositions lines selections cursors
+        log blocks
+        [lines selections cursors] = util.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection lines blocks selections cursors dir
+        @setLines lines
+        @setSelections selections
+        @setCursors cursors
+        
     toggleCommentAtSelectionOrCursorLines: ->
 
         selections = @allSelections()

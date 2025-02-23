@@ -668,17 +668,45 @@ editor = (function ()
             case 'shift+alt+cmd+right':
                 return this.state.moveMainCursorInDirection('right',{keep:true})
 
-            case 'home':
-                return this.state.singleCursorAtIndentOrStartOfLine()
+            case 'alt+up':
+                return this.state.moveSelectionOrCursorLines('up')
 
-            case 'end':
-                return this.state.singleCursorAtEndOfLine()
+            case 'alt+down':
+                return this.state.moveSelectionOrCursorLines('down')
+
+            case 'shift+alt+up':
+                return this.state.cloneSelectionAndCursorLines('up')
+
+            case 'shift+alt+down':
+                return this.state.cloneSelectionAndCursorLines('down')
+
+            case 'cmd+up':
+            case 'ctrl+up':
+                return this.state.expandCursors('up')
+
+            case 'cmd+down':
+            case 'ctrl+down':
+                return this.state.expandCursors('down')
+
+            case 'shift+cmd+up':
+            case 'shift+ctrl+up':
+                return this.state.contractCursors('up')
+
+            case 'shift+cmd+down':
+            case 'shift+ctrl+down':
+                return this.state.contractCursors('down')
 
             case 'pageup':
                 return this.state.singleCursorPage('up')
 
             case 'pagedown':
                 return this.state.singleCursorPage('down')
+
+            case 'home':
+                return this.state.singleCursorAtIndentOrStartOfLine()
+
+            case 'end':
+                return this.state.singleCursorAtEndOfLine()
 
             case 'ctrl+h':
                 return this.state.setMainCursor(0,0)
@@ -725,28 +753,6 @@ editor = (function ()
             case 'cmd+v':
             case 'ctrl+v':
                 return this.state.paste()
-
-            case 'alt+up':
-                return this.state.moveSelectionOrCursorLines('up')
-
-            case 'alt+down':
-                return this.state.moveSelectionOrCursorLines('down')
-
-            case 'cmd+up':
-            case 'ctrl+up':
-                return this.state.expandCursors('up')
-
-            case 'cmd+down':
-            case 'ctrl+down':
-                return this.state.expandCursors('down')
-
-            case 'shift+cmd+up':
-            case 'shift+ctrl+up':
-                return this.state.contractCursors('up')
-
-            case 'shift+cmd+down':
-            case 'shift+ctrl+down':
-                return this.state.contractCursors('down')
 
             case 'cmd+z':
             case 'ctrl+z':

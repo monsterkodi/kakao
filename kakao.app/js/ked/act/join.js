@@ -20,6 +20,20 @@ export default {joinLines:function ()
     this.setLines(lines)
     this.setSelections(selections)
     return this.setCursors(cursors)
+},cloneSelectionAndCursorLines:function (dir)
+{
+    var blocks, cursors, lines, selections
+
+    selections = this.allSelections()
+    cursors = this.allCursors()
+    lines = this.allLines()
+    blocks = util.blockRangesForRangesAndPositions(lines,selections,cursors)
+    console.log(blocks)
+    var _b_ = util.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(lines,blocks,selections,cursors,dir); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
+
+    this.setLines(lines)
+    this.setSelections(selections)
+    return this.setCursors(cursors)
 },toggleCommentAtSelectionOrCursorLines:function ()
 {
     var cursors, indices, lines, selections
@@ -27,7 +41,7 @@ export default {joinLines:function ()
     selections = this.allSelections()
     cursors = this.allCursors()
     indices = util.lineIndicesForRangesOrPositions(selections,cursors)
-    var _b_ = util.toggleCommentsInLineRangesAtIndices(this.allLines(),selections,cursors,indices); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
+    var _c_ = util.toggleCommentsInLineRangesAtIndices(this.allLines(),selections,cursors,indices); lines = _c_[0]; selections = _c_[1]; cursors = _c_[2]
 
     this.setLines(lines)
     this.setSelections(selections)

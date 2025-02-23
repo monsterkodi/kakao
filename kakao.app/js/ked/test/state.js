@@ -219,6 +219,33 @@ xxxx    .       3`
         s.delete('back')
         mul([4,0],[4,1],[4,2])
     })
+    section("cloneSelectionAndCursorLines", function ()
+    {
+        text = `line 1
+line 2
+line 3`
+        s.loadLines(util.linesForText(text))
+        s.cloneSelectionAndCursorLines('down')
+        txt(`line 1
+line 1
+line 2
+line 3`)
+        mul([0,1])
+        s.expandCursors('down')
+        mul([0,1],[0,2])
+        s.cloneSelectionAndCursorLines('down')
+        txt(`line 1
+line 1
+line 2
+line 1
+line 2
+line 3`)
+        mul([0,3],[0,4])
+        s.expandCursors('down')
+        s.moveCursors('right')
+        mul([1,3],[1,4],[1,5])
+        s.cloneSelectionAndCursorLines('down')
+    })
 }
 toExport["state"]._section_ = true
 toExport._test_ = true

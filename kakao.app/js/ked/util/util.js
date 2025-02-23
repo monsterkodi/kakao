@@ -373,6 +373,11 @@ util = (function ()
         return this.isPosInsideRange(pos,rng)
     }
 
+    util["rangeContainsRange"] = function (rng, ins)
+    {
+        return this.isPosInsideRange(this.startOfRange(ins),rng) && this.isPosInsideRange(this.endOfRange(ins),rng)
+    }
+
     util["rangeTouchesPos"] = function (rng, pos)
     {
         return this.isPosTouchingRange(pos,rng)
@@ -720,6 +725,15 @@ util = (function ()
         return indices
     }
 
+    util["lineIndicesForRangesAndPositions"] = function (rngs, posl)
+    {
+        var indices
+
+        indices = kxk.util.uniq(this.lineIndicesForRanges(rngs).concat(this.lineIndicesForPositions(posl)))
+        indices.sort()
+        return indices
+    }
+
     util["lineIndicesForRange"] = function (rng)
     {
         var indices, li
@@ -747,6 +761,51 @@ util = (function ()
             indices = indices.concat(this.lineIndicesForRange(rng))
         }
         return indices
+    }
+
+    util["blockRangesForRangesAndPositions"] = function (lines, rngs, posl)
+    {
+        var blocks, ii, index, indices, numSplice
+
+        blocks = []
+        indices = this.lineIndicesForRangesAndPositions(rngs,posl)
+        if (_k_.empty(indices))
+        {
+            return blocks
+        }
+        console.log('▸',indices)
+        ii = indices.length - 1
+        while (ii > 0)
+        {
+            if (indices[ii - 1] + 1 === indices[ii])
+            {
+                numSplice = -1
+                while (indices[ii - 1] + 1 === indices[ii])
+                {
+                    numSplice += 1
+                    ii -= 1
+                }
+                indices.splice(ii + 1,numSplice)
+            }
+            ii -= 1
+        }
+        console.log('○',indices)
+        ii = 0
+        while (ii < indices.length)
+        {
+            index = indices[ii]
+            if (indices[ii + 1] === index + 1)
+            {
+                blocks.push([0,index,lines[indices[ii + 1]].length,indices[ii + 1]])
+                ii += 1
+            }
+            else
+            {
+                blocks.push([0,index,lines[index].length,index])
+            }
+            ii += 1
+        }
+        return blocks
     }
 
     util["mergeLineRanges"] = function (lines, rngs)
