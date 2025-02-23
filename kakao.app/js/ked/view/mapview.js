@@ -34,7 +34,7 @@ mapview = (function ()
         this["clearImages"] = this["clearImages"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
-        mapview.__super__.constructor.call(this,screen,this.state.name + '.mapview')
+        mapview.__super__.constructor.call(this,screen,this.state.owner() + '.mapview')
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
         this.rowOffset = 0

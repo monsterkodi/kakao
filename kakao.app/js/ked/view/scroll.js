@@ -23,7 +23,8 @@ scroll = (function ()
         this["draw"] = this["draw"].bind(this)
         this["scrollTo"] = this["scrollTo"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        scroll.__super__.constructor.call(this,screen,this.state.name + 'scroll')
+        scroll.__super__.constructor.call(this,screen,this.state.owner() + '.scroll')
+        this.handle = (this.name === 'editor.scroll' ? '▌' : '┃')
     }
 
     scroll.prototype["onMouse"] = function (event)
@@ -92,7 +93,7 @@ scroll = (function ()
 
     scroll.prototype["draw"] = function ()
     {
-        var bg, kh, kp, lnum, nc, ne, ns, row, rows
+        var bg, ch, fg, kh, kp, lnum, nc, ne, ns, row, rows
 
         rows = this.cells.rows
         lnum = this.state.s.lines.length
@@ -103,8 +104,23 @@ scroll = (function ()
         ne = kp + kh
         for (var _a_ = row = 0, _b_ = rows; (_a_ <= _b_ ? row < rows : row > rows); (_a_ <= _b_ ? ++row : --row))
         {
-            bg = lnum <= rows ? theme.scroll_empty : row === nc ? (this.hover ? theme.scroll_doth : theme.scroll_dot) : (ns <= row && row <= ne) ? (this.hover ? theme.scroll_knob : theme.scroll) : this.hover ? theme.gutter : theme.gutter
-            this.cells.set(0,row,' ',null,bg)
+            ch = ' '
+            bg = theme.gutter
+            if (lnum <= rows)
+            {
+                bg = theme.scroll_empty
+            }
+            else if (row === nc)
+            {
+                ch = this.handle
+                fg = (this.hover ? theme.scroll_doth : theme.scroll_dot)
+            }
+            else if ((ns <= row && row <= ne))
+            {
+                ch = this.handle
+                fg = (this.hover ? theme.scroll_knob : theme.scroll)
+            }
+            this.cells.set(0,row,ch,fg,bg)
         }
     }
 

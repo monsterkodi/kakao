@@ -323,7 +323,7 @@ ked [file]
             case 'ctrl+n':
                 return this.newFile()
 
-            case 'alt+m':
+            case 'alt+.':
                 return this.menu.show()
 
             case 'cmd+p':

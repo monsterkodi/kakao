@@ -84,14 +84,18 @@ inputchoice = (function ()
         this.choices.filter(text)
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
+        this.choicesFiltered()
         return this.layout()
     }
 
+    inputchoice.prototype["choicesFiltered"] = function ()
+    {}
+
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _81_36_
+        var choice, _84_36_
 
-        choice = ((_81_36_=this.choices.current()) != null ? _81_36_ : this.input.current())
+        choice = ((_84_36_=this.choices.current()) != null ? _84_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

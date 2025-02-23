@@ -16,7 +16,7 @@ gutter = (function ()
     {
         this.state = state
     
-        gutter.__super__.constructor.call(this,screen,this.state.name + 'gutter')
+        gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
     }
 
     gutter.prototype["draw"] = function ()

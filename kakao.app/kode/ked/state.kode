@@ -34,6 +34,13 @@ function state
             
         @clearHistory()
         
+    owner: -> 
+        
+        if @name.endsWith '.state'
+            @name[0...-6]
+        else
+            @name
+        
     clearHistory: ->
     
         @h = [@s] # undo states (history)

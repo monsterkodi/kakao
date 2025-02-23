@@ -69,6 +69,18 @@ state = (function ()
         this.clearHistory()
     }
 
+    state.prototype["owner"] = function ()
+    {
+        if (this.name.endsWith('.state'))
+        {
+            return this.name.slice(0, -6)
+        }
+        else
+        {
+            return this.name
+        }
+    }
+
     state.prototype["clearHistory"] = function ()
     {
         this.h = [this.s]
@@ -163,7 +175,7 @@ state = (function ()
     {
         this.segls = segls
     
-        var _128_23_
+        var _135_23_
 
         if (_k_.empty(this.segls))
         {

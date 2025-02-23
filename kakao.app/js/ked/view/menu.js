@@ -113,6 +113,9 @@ quit`)
     {
         switch (choice)
         {
+            case 'new':
+                post.emit('file.new')
+                break
             case 'about':
                 return this.show(true)
 

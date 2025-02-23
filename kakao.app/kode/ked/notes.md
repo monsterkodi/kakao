@@ -39,6 +39,9 @@
     - fix scrolling to bottom for long files
     - show cursors and selections
     
+- scroll
+    - thin scroll handles?
+    
 - session
     - save main cursor positions per file and apply on load
     - merge cursor positions from last session by default?  
@@ -51,7 +54,6 @@
 
 - quick open cmd+p
     - merge with macro?
-    - subdirectory column
 
 - find and search
     - each multiline editor has its own knobbed finder at bottom
@@ -75,14 +77,12 @@
 
 - nvim style min-distance from top and bottom of screen when moving main cursor?
 
-
 ▸ completion
 
 ▸ macro
     - unicode palette
     
-- fscol
-    ▸ funclist
+▸ funclist
     
 - ascii header mode
     - switch automatically if cursor inside
@@ -99,7 +99,6 @@
         - insert n characters if provided 
         
     - syntax highlighting 
-        - remove ligature?
         - style for certain unicode characters?
         
     - ansi mode
@@ -116,8 +115,6 @@
 - todo
     - state tests
     - undo fixes
-
-
 
 ## design choices
 

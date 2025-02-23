@@ -10,9 +10,13 @@ use ../../kxk ◆ events kstr post
 use   ../view ◆ cells 
 use           ◆ knob
 
+popups = ['quicky' 'menu']
+
 function view extends events
 
     @: @screen @name features ->
+        
+        lf "view #{c4 @name}"
         
         @cells = new cells @screen
         @feats = {}
@@ -22,14 +26,27 @@ function view extends events
             switch feature
                 'knob' ➜ @knob = new knob @cells @name
                 
+        post.on 'view.show' @onViewShow if @name in popups
+        
+    onViewShow: viewName =>
+                
+        if viewName != @name and @visible() and viewName in popups# and @name in popups
+            # lf "hide #{c4 @name} for #{c6 viewName}"
+            @hide() 
+                
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
     # 000   000  000  000       000  000   000  000  000      000     000      000 000   
     #  000 000   000  0000000   000  0000000    000  000      000     000       00000    
     #    000     000       000  000  000   000  000  000      000     000        000     
     #     0      000  0000000   000  0000000    000  0000000  000     000        000     
   
-    show:      -> @layout(); redraw:true
-    # show:      -> lf 'view.show' @name; @layout(); redraw:true
+    show: -> 
+        
+        # lf "view.show #{c6 @name}"
+        post.emit 'view.show' @name
+        @layout()
+        redraw:true
+        
     hide:      -> @cells.rows = 0; redraw:true
     hidden:    -> @cells.rows <= 0 #or @cells.cols <= 0
     invisible: -> @cells.rows <= 0 #or @cells.cols <= 0

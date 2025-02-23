@@ -14,7 +14,7 @@ function gutter extends view
 
     @: screen @state ->
         
-        super screen @state.name + 'gutter'
+        super screen @state.owner() + '.gutter'
         
     draw: ->
         

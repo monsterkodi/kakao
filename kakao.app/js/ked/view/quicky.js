@@ -89,7 +89,7 @@ quicky = (function ()
     {
         if (this.hidden())
         {
-            return this.show(currentFile)
+            return this.showProjectFiles(currentFile)
         }
         else
         {
@@ -97,7 +97,7 @@ quicky = (function ()
         }
     }
 
-    quicky.prototype["show"] = function (currentFile)
+    quicky.prototype["showProjectFiles"] = function (currentFile)
     {
         this.currentFile = currentFile
     
@@ -148,7 +148,7 @@ quicky = (function ()
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
         this.choices.state.setView([0,0])
-        return quicky.__super__.show.call(this)
+        return this.show()
     }
 
     quicky.prototype["gotoDir"] = async function (dir, select)
@@ -251,7 +251,7 @@ quicky = (function ()
         this.choices.state.selectLine(selectIndex)
         this.choices.state.setMainCursor(this.choices.state.s.lines[selectIndex].length,selectIndex)
         this.choices.state.setView([0,0])
-        this.layout()
+        this.show()
         return this.choices.grabFocus()
     }
 
@@ -345,16 +345,22 @@ quicky = (function ()
 
         this.hideMap()
         quicky.__super__.moveSelection.call(this,dir)
-        if (this.choices.current().path)
-        {
-            return this.preview(this.choices.current())
-        }
+        return this.preview(this.choices.current())
+    }
+
+    quicky.prototype["choicesFiltered"] = function ()
+    {
+        return this.preview(this.choices.current())
     }
 
     quicky.prototype["preview"] = async function (item)
     {
         var segls, text
 
+        if (_k_.empty((item != null ? item.path : undefined)))
+        {
+            return this.hideMap()
+        }
         if (item.type === 'file' && _k_.in(slash.ext(item.path),walker.sourceFileExtensions))
         {
             text = await nfs.read(item.path)
@@ -410,7 +416,7 @@ quicky = (function ()
 
     quicky.prototype["onChoiceAction"] = function (choice, action)
     {
-        var upDir, _373_62_
+        var upDir, _379_62_
 
         switch (action)
         {
@@ -428,7 +434,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_373_62_=choice.link) != null ? _373_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_379_62_=choice.link) != null ? _379_62_ : choice.path))
                     }
                 }
                 break

@@ -119,8 +119,9 @@ function menu extends inputchoice
     applyChoice: choice ->
         
         switch choice
+            'new'        ➜ post.emit 'file.new'
             'about'      ➜ ⮐ @show true # reopen with greeting header
-            'quit'       ➜ post.emit 'quit' ;                    #⮐ redraw:false
+            'quit'       ➜ post.emit 'quit'                    ; #⮐ redraw:false
             'open ...'   ➜ post.emit 'quicky.dir' process.cwd(); #⮐ redraw:false
             'recent ...' ➜ ⮐ @showRecent()
             

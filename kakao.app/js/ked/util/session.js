@@ -153,10 +153,6 @@ session = (function ()
             {
                 return lf('session.save failed!',this.file,result)
             }
-            else
-            {
-                return lf('session.saved',result,this.data)
-            }
         }
         catch (err)
         {

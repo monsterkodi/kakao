@@ -14,7 +14,11 @@ use           ◆ view
 
 function scroll extends view
 
-    @: screen @state -> super screen @state.name + 'scroll'
+    @: screen @state -> 
+    
+        super screen @state.owner() + '.scroll'
+        
+        @handle = @name == 'editor.scroll' ? '▌' : '┃' # future me hate?
     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -97,14 +101,16 @@ function scroll extends view
         ne = kp+kh
         
         for row in 0...rows
-            
-            bg = if
-                lnum <= rows    ➜ theme.scroll_empty
-                row == nc       ➜ @hover ? theme.scroll_doth : theme.scroll_dot
-                ns <= row <= ne ➜ @hover ? theme.scroll_knob : theme.scroll
-                @hover          ➜ theme.gutter
-                                ➜ theme.gutter
+
+            ch = ' '
+            bg = theme.gutter
+
+            if
+                lnum <= rows    ➜ bg = theme.scroll_empty
+                row == nc       ➜ ch = @handle; fg = @hover ? theme.scroll_doth : theme.scroll_dot
+                ns <= row <= ne ➜ ch = @handle; fg = @hover ? theme.scroll_knob : theme.scroll
+                
                         
-            @cells.set 0 row ' ' null bg
+            @cells.set 0 row ch fg bg
 
 export scroll
