@@ -42,7 +42,8 @@ input = (function ()
 
     input.prototype["selectAll"] = function ()
     {
-        return this.state.selectLine(0)
+        this.state.selectLine(0)
+        return this.state.moveCursors('eol')
     }
 
     input.prototype["draw"] = function ()

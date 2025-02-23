@@ -1416,25 +1416,24 @@ cssWord = function ()
 
 mdPunct = function ()
 {
-    var type, _1024_65_, _1049_21_, _1074_21_
+    var type, _1024_73_, _1049_21_, _1074_21_
 
     if (chunkIndex === 0)
     {
-        if (!chunk.turd && _k_.in(chunk.match,'-*') && (getChunk(1) != null ? getChunk(1).start : undefined) > chunk.start + 1)
+        if (chunk.turd.length <= 1 && _k_.in(chunk.match,'-*') && (getChunk(1) != null ? getChunk(1).start : undefined) > chunk.start + 1)
         {
-            type = ['li1','li2','li3'][chunk.start / 4]
+            type = ['li1','li2','li3','li4','li5'][chunk.start / 4]
             pushStack({merge:true,fill:true,type:type})
             return addValue(0,type + ' marker')
         }
         if (chunk.match === '#')
         {
-            if (!chunk.turd)
-            {
-                pushStack({merge:true,fill:true,type:'h1'})
-                return addValue(0,'h1')
-            }
             switch (chunk.turd)
             {
+                case '#':
+                    pushStack({merge:true,fill:true,type:'h1'})
+                    return addValue(0,'h1')
+
                 case '##':
                     pushStack({merge:true,fill:true,type:'h2'})
                     return addValues(2,'h2')

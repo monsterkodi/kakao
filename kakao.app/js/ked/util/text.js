@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var text
 
@@ -171,7 +171,7 @@ text = (function ()
 
     text["isOnlyWhitespace"] = function (text)
     {
-        return /^\s+$/.test(text)
+        return /^\s+$/.test(kseg.str(text))
     }
 
     text["numIndent"] = function (segs)
@@ -512,6 +512,27 @@ text = (function ()
                 return [r[0],y,r[1],y]
             }
         }
+    }
+
+    text["rangeOfWhitespaceLeftToPos"] = function (lines, pos)
+    {
+        var left, segi, tc, x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        y = _k_.clamp(0,lines.length - 1,y)
+        x = _k_.clamp(0,lines[y].length,x)
+        if (x <= 0)
+        {
+            return [x,y,x,y]
+        }
+        segi = kseg.indexAtWidth(lines[y],x)
+        left = lines[y].slice(0, typeof segi === 'number' ? segi : -1)
+        if (tc = kseg.tailCount(left,' '))
+        {
+            return [segi - tc,y,segi,y]
+        }
+        return [x,y,x,y]
     }
 
     text["rangeOfWordOrWhitespaceLeftToPos"] = function (lines, pos)

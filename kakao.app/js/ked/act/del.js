@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -8,7 +8,7 @@ import util from "../util/util.js"
 
 export default {delete:function (type, jump)
 {
-    var before, ci, cursor, cursors, dc, line, lines, remove, rng, segi, x, y
+    var ci, cursor, cursors, dc, line, lines, minBeforeWs, remove, rng, segi, x, y
 
     if (_k_.in(type,['back','next']) && !_k_.empty(this.s.selections))
     {
@@ -20,10 +20,21 @@ export default {delete:function (type, jump)
     {
         return this.setMainCursor(kseg.width(lines[cursors[0][1]]),cursors[0][1])
     }
-    for (var _a_ = ci = cursors.length - 1, _b_ = 0; (_a_ <= _b_ ? ci <= 0 : ci >= 0); (_a_ <= _b_ ? ++ci : --ci))
+    if (type === 'back')
+    {
+        minBeforeWs = Infinity
+        var list = _k_.list(cursors)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            cursor = list[_a_]
+            rng = util.rangeOfWhitespaceLeftToPos(lines,cursor)
+            minBeforeWs = _k_.min(minBeforeWs,rng[2] - rng[0])
+        }
+    }
+    for (var _b_ = ci = cursors.length - 1, _c_ = 0; (_b_ <= _c_ ? ci <= 0 : ci >= 0); (_b_ <= _c_ ? ++ci : --ci))
     {
         cursor = cursors[ci]
-        var _c_ = cursor; x = _c_[0]; y = _c_[1]
+        var _d_ = cursor; x = _d_[0]; y = _d_[1]
 
         line = lines[y]
         remove = 1
@@ -65,14 +76,14 @@ export default {delete:function (type, jump)
                     }
                     else
                     {
-                        before = util.textFromBolToPos(lines,cursor)
-                        if (util.isOnlyWhitespace(before))
+                        if (minBeforeWs > 1)
                         {
                             dc = x % 4
                             if (dc === 0)
                             {
                                 dc = 4
                             }
+                            dc = _k_.min(minBeforeWs,dc)
                         }
                         else
                         {
@@ -140,7 +151,7 @@ export default {delete:function (type, jump)
     {
         this.pushState()
     }
-    var _d_ = util.deleteLineRangesAndAdjustPositions(this.allLines(),rngs,posl); lines = _d_[0]; cursors = _d_[1]
+    var _e_ = util.deleteLineRangesAndAdjustPositions(this.allLines(),rngs,posl); lines = _e_[0]; cursors = _e_[1]
 
     this.deselect()
     this.clearHighlights()

@@ -34,7 +34,6 @@ function finder extends inputchoice
 
         @input.set searchText
         @input.selectAll()
-        @input.moveCursors 'eol'
         @choices.set []
         
         @layout()

@@ -27,6 +27,12 @@ export
         if cursors.length == 1 and type in ['back' 'next'] and util.isLinesPosOutside lines cursors[0]
             ⮐ @setMainCursor kseg.width(lines[cursors[0][1]]) cursors[0][1]
             
+        if type == 'back'
+            minBeforeWs = Infinity
+            for cursor in cursors
+                rng = util.rangeOfWhitespaceLeftToPos lines cursor
+                minBeforeWs = min minBeforeWs rng[2]-rng[0]
+            
         for ci in cursors.length-1..0
             
             cursor = cursors[ci]
@@ -59,10 +65,10 @@ export
                             else
                                 dc = 1
                         else
-                            before = util.textFromBolToPos lines cursor
-                            if util.isOnlyWhitespace before
+                            if minBeforeWs > 1
                                 dc = x % 4
                                 dc = 4 if dc == 0
+                                dc = min minBeforeWs dc
                             else
                                 dc = 1
 

@@ -411,6 +411,7 @@ function editor extends view
     
         lf 'finderApply' text
         @state.highlightText text
+        @state.moveCursorToNextHighlight()
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -506,11 +507,16 @@ function editor extends view
             'cmd+j'       'ctrl+j'       ➜ ⮐ @state.joinLines()
             'cmd+l'       'ctrl+l'       ➜ ⮐ @state.selectMoreLines()
             'shift+cmd+l' 'shift+ctrl+l' ➜ ⮐ @state.selectLessLines()
+
             
-            'cmd+e' 'ctrl+e'            ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
-            'cmd+d' 'ctrl+d'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
-            'cmd+g' 'ctrl+g'            ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
+            'cmd+e' 'ctrl+e'             ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+            'cmd+d' 'ctrl+d'             ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+            'cmd+g' 'ctrl+g'             ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
             
+            'shift+cmd+e' 'shift+ctrl+e' ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
+            'shift+cmd+d' 'shift+ctrl+d' ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
+            'shift+cmd+g' 'shift+ctrl+g' ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectPrevHighlight()
+
             'alt+cmd+d' 'alt+ctrl+d'    ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectAllHighlights()
 
             'cmd+/' 'ctrl+/'            ➜ ⮐ @state.toggleCommentAtSelectionOrCursorLines()

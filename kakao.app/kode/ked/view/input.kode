@@ -26,7 +26,10 @@ function input extends editor
     
         @state.loadLines [text]
 
-    selectAll: -> @state.selectLine 0
+    selectAll: -> 
+    
+        @state.selectLine 0
+        @state.moveCursors 'eol'
 
     draw: ->
         

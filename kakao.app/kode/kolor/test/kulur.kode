@@ -36,7 +36,7 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         inc rgs 2 '🌱' ▸ 'text unicode'
           
         rgs = ranges "🙂lol😀"
-        log rgs
+
         inc rgs 0 '🙂'   ▸   'text unicode'
         inc rgs 2 'lol'  ▸   'text'
         inc rgs 5 '😀'    ▸  'text unicode'
@@ -497,6 +497,125 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         rgs = ranges "key: value"
         inc rgs 0 'key'            ▸ 'dictionary key'
         inc rgs 3 ':'              ▸ 'punct dictionary'
+        
+    # 00     00  0000000    
+    # 000   000  000   000  
+    # 000000000  000   000  
+    # 000 0 000  000   000  
+    # 000   000  0000000    
+    
+    ▸ md
+        
+        lang 'md'
+        
+        rgs = ranges "**bold**"
+        inc rgs, 0 '*'          ▸ 'punct bold'
+        inc rgs, 1 '*'          ▸ 'punct bold'
+        inc rgs, 2 'bold'       ▸ 'text bold'
+        inc rgs, 6 '*'          ▸ 'punct bold'
+        inc rgs, 7 '*'          ▸ 'punct bold'
+        
+        rgs = ranges ",**b**,"
+        inc rgs, 1 '*'          ▸ 'punct bold'
+        inc rgs, 3 'b'          ▸ 'text bold'
+        inc rgs, 4 '*'          ▸ 'punct bold'
+                
+        rgs = ranges "*it lic*"
+        inc rgs, 0 '*'          ▸ 'punct italic'
+        inc rgs, 1 'it'         ▸ 'text italic'
+        inc rgs, 4 'lic'        ▸ 'text italic'
+        inc rgs, 7 '*'          ▸ 'punct italic'
+        
+        rgs = ranges "*italic*"
+        inc rgs, 0 '*'          ▸ 'punct italic'
+        inc rgs, 1 'italic'     ▸ 'text italic'
+        inc rgs, 7 '*'          ▸ 'punct italic'
+     
+        rgs = ranges "*`italic code`*"
+        inc rgs, 0 '*'          ▸ 'punct italic'
+        inc rgs, 1 '`'          ▸ 'punct italic code'
+        inc rgs, 2 'italic'     ▸ 'text italic code'
+        inc rgs, 9 'code'       ▸ 'text italic code'
+        inc rgs, 14 '*'         ▸ 'punct italic'
+        
+        rgs = ranges "it's good"
+        inc rgs, 0 'it'         ▸ 'text'
+        inc rgs, 2 "'"          ▸ 'punct'
+        inc rgs, 3 's'          ▸ 'text'
+        
+        rgs = ranges "if is empty in then"
+        inc rgs, 0  'if'        ▸ 'text'
+        inc rgs, 3  'is'        ▸ 'text'
+        inc rgs, 6  'empty'     ▸ 'text'
+        inc rgs, 12 'in'        ▸ 'text'
+        inc rgs, 15 'then'      ▸ 'text'
+    
+        rgs = ranges 'text files. bla'
+        inc rgs, 0, 'text'  ▸ 'text'
+        inc rgs, 10, '.'    ▸ 'punct'
+        
+        rgs = ranges '..bla'
+        inc rgs, 0, '.'     ▸ 'punct'
+        inc rgs, 1, '.'     ▸ 'punct'
+        
+        rgs = ranges '```coffeescript'
+        inc rgs, 0 '`'      ▸ 'punct code triple'
+        inc rgs, 3 'coffeescript' ▸ 'comment'
+            
+    ▸ md2
+        
+        rgs = ranges "- li"
+        inc rgs, 0 '-'      ▸ 'punct li1 marker'
+        inc rgs, 2 'li'     ▸ 'text li1'
+    
+        rgs = ranges "    - **bold**"
+        inc rgs, 4 '-'      ▸ 'punct li2 marker'
+        inc rgs, 8 'bold'   ▸ 'text li2 bold'
+        
+        rgs = ranges "        - **bold**"
+        inc rgs, 8 '-'      ▸ 'punct li3 marker'
+        inc rgs, 12 'bold'  ▸ 'text li3 bold'
+    
+        rgs = ranges "        * **bold**"
+        inc rgs, 8 '*'      ▸ 'punct li3 marker'
+        inc rgs, 12 'bold'  ▸ 'text li3 bold'
+    
+        dss = dissect """
+            - li1
+            text
+        """
+        inc dss[0], 0  '-'    ▸ 'punct li1 marker'
+        inc dss[1], 0  'text' ▸ 'text'
+    
+        dss = dissect """
+            # h1
+            ## h2
+            ### h3
+            #### h4
+            ##### h5
+        """
+        inc dss[0], 0  "#"    ▸ 'punct h1'
+        inc dss[0], 2  "h1"   ▸ 'text h1'
+        inc dss[1], 0  "#"    ▸ 'punct h2'
+        inc dss[1], 3  "h2"   ▸ 'text h2'
+        inc dss[2], 0  "#"    ▸ 'punct h3'
+        inc dss[2], 4  "h3"   ▸ 'text h3'
+        inc dss[3], 0  "#"    ▸ 'punct h4'
+        inc dss[3], 5  "h4"   ▸ 'text h4'
+        inc dss[4], 0  "#"    ▸ 'punct h5'
+        inc dss[4], 6  "h5"   ▸ 'text h5'
+    
+        dss = dissect """
+            \`\`\`js
+            \`\`\`
+        """
+        inc dss[1], 0 '`' ▸ 'punct code triple'
+            dss = dissect """
+                \`\`\`js
+                \`\`\`
+            """
+            inc dss[1], 0 '`' ▸ 'punct code triple'
+        
         
             
             

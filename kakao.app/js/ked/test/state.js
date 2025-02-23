@@ -194,6 +194,31 @@ line 3`)
         cur(0,1)
         compare(s.allLines(),[[],[]])
     })
+    section("delete back", function ()
+    {
+        text = `xxxx            1
+xxxx         .  2
+xxxx    .       3`
+        s.syntax.ext = 'kode'
+        s.loadLines(util.linesForText(text))
+        s.setMainCursor(16,0)
+        s.expandCursors('down')
+        s.expandCursors('down')
+        s.expandCursors('down')
+        mul([16,0],[16,1],[16,2])
+        s.delete('back')
+        mul([14,0],[14,1],[14,2])
+        s.delete('back')
+        mul([13,0],[13,1],[13,2])
+        s.delete('back')
+        mul([12,0],[12,1],[12,2])
+        s.delete('back')
+        mul([9,0],[9,1],[9,2])
+        s.delete('back')
+        mul([8,0],[8,1],[8,2])
+        s.delete('back')
+        mul([4,0],[4,1],[4,2])
+    })
 }
 toExport["state"]._section_ = true
 toExport._test_ = true

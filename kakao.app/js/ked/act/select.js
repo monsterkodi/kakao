@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -73,6 +73,33 @@ export default {select:function (from, to)
     {
         this.clearCursors()
         this.selectNextHighlight()
+    }
+    return this.selectWordAtCursor_highlightSelection()
+},highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight:function ()
+{
+    if (!_k_.empty(this.s.highlights))
+    {
+        if (!this.deselectCursorHighlight())
+        {
+            this.moveCursorToPrevHighlight()
+        }
+        return
+    }
+    this.selectWordAtCursor_highlightSelection()
+    return this.deselectCursorHighlight()
+},selectWordAtCursor_highlightSelection_addPrevHighlightToSelection:function ()
+{
+    if (!_k_.empty(this.s.highlights))
+    {
+        return this.addCurrentOrPrevHighlightToSelection()
+    }
+    return this.selectWordAtCursor_highlightSelection()
+},selectWordAtCursor_highlightSelection_selectPrevHighlight:function ()
+{
+    if (!_k_.empty(this.s.highlights))
+    {
+        this.clearCursors()
+        this.selectPrevHighlight()
     }
     return this.selectWordAtCursor_highlightSelection()
 },selectWordAtCursor_highlightSelection:function ()
@@ -159,6 +186,27 @@ export default {select:function (from, to)
         this.selectSpan(next)
         return this.setMainCursor(util.endOfSpan(next))
     }
+},selectPrevHighlight:function ()
+{
+    var pos, prev
+
+    if (_k_.empty(this.s.highlights))
+    {
+        return
+    }
+    pos = this.mainCursor()
+    if (prev = util.prevSpanBeforePos(this.s.highlights,pos))
+    {
+        if (_k_.eql(util.endOfSpan(prev), pos))
+        {
+            prev = util.prevSpanBeforePos(this.s.highlights,util.startOfSpan(prev))
+        }
+        if (prev)
+        {
+            this.selectSpan(prev)
+            return this.setMainCursor(util.endOfSpan(prev))
+        }
+    }
 },addCurrentOrNextHighlightToSelection:function ()
 {
     var prev
@@ -173,6 +221,20 @@ export default {select:function (from, to)
         }
     }
     return this.addNextHighlightToSelection()
+},addCurrentOrPrevHighlightToSelection:function ()
+{
+    var prev
+
+    if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
+    {
+        if (!util.rangesContainSpan(this.s.selections,prev))
+        {
+            this.addSpanToSelection(prev)
+            this.addCursor(util.endOfSpan(prev))
+            return
+        }
+    }
+    return this.addPrevHighlightToSelection()
 },addNextHighlightToSelection:function ()
 {
     var next
@@ -186,6 +248,27 @@ export default {select:function (from, to)
         this.addSpanToSelection(next)
         return this.addCursor(util.endOfSpan(next))
     }
+},addPrevHighlightToSelection:function ()
+{
+    var pos, prev
+
+    if (_k_.empty(this.s.highlights))
+    {
+        return
+    }
+    pos = this.mainCursor()
+    if (prev = util.prevSpanBeforePos(this.s.highlights,pos))
+    {
+        if (_k_.eql(util.endOfSpan(prev), pos))
+        {
+            prev = util.prevSpanBeforePos(this.s.highlights,util.startOfSpan(prev))
+        }
+        if (prev)
+        {
+            this.addSpanToSelection(prev)
+            return this.addCursor(util.endOfSpan(prev))
+        }
+    }
 },moveCursorToNextHighlight:function (pos)
 {
     var next
@@ -198,6 +281,26 @@ export default {select:function (from, to)
     if (next = util.nextSpanAfterPos(this.s.highlights,pos))
     {
         return this.moveMainCursor(util.endOfSpan(next))
+    }
+},moveCursorToPrevHighlight:function (pos)
+{
+    var prev
+
+    if (_k_.empty(this.s.highlights))
+    {
+        return
+    }
+    pos = (pos != null ? pos : this.mainCursor())
+    if (prev = util.prevSpanBeforePos(this.s.highlights,pos))
+    {
+        if (_k_.eql(util.endOfSpan(prev), pos))
+        {
+            prev = util.prevSpanBeforePos(this.s.highlights,util.startOfSpan(prev))
+        }
+        if (prev)
+        {
+            return this.moveMainCursor(util.endOfSpan(prev))
+        }
     }
 },selectSpan:function (span)
 {
@@ -273,7 +376,7 @@ export default {select:function (from, to)
     var selections
 
     selections = util.lineRangesForPositions(this.allLines(),this.allCursors())
-    _k_.assert("kode/ked/act/select.kode", 249, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
+    _k_.assert("kode/ked/act/select.kode", 324, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
     return this.setSelections(selections)
 },selectAllLines:function ()
 {

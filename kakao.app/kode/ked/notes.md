@@ -24,6 +24,9 @@
 ## todo
 ### todo
 #### todo
+##### todo
+
+- shift+alt+up|down cloneCursorLinesInDirection
 
 - unicode mode
     - ~ replacement
@@ -62,9 +65,9 @@
                 - original finder can be closed and thus 'moves' to the search result pane
 
 - cutting multiple lines with main cursor at start of next line 
-    moves it one down too much
+    - moves it one down too much
 
-- multicursor delete/backspace over multiple lines? (alt+cmd+delete in ko)
+- multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
 - alt+cmd+d should work inside selection: highlight word at cursor inside
 - alt+cmd+e add word at cursor to highlights
 - shift+ctrl+left|right|up|down rectangular selection
@@ -74,12 +77,12 @@
 
 - nvim style min-distance from top and bottom of screen when moving main cursor?
 
-▸ completion
+- completion
 
-▸ macro
+- macro
     - unicode palette
     
-▸ funclist
+- funclist
     
 - ascii header mode
     - switch automatically if cursor inside
@@ -87,7 +90,7 @@
     
 - file watcher
 
-- nice to have
+### nice to have
     
     - tabs
     - git
@@ -109,7 +112,8 @@
         - interactive-keyboard-shortcuts
         - multicursor tutorial game?
     
-- todo
+### todo  
+
     - state tests
     - undo fixes
 
@@ -127,7 +131,7 @@
 
     - auto-select word at cursor
         - if an action needs a selection and nothing is selected
-          the closest word to the cursor will be selected
+            - the closest word to the cursor will be selected
     
 - precious screen space
 
@@ -135,7 +139,9 @@
         - familiarity with desktop apps
         - potential merge with tabs
         - potential drop down menu (drop-up menus are just as ugly as they sound :)
-    
-agg ked01.cast ked01.gif --font-family "LiterationMono Nerd Font" --idle-time-limit 0.2 --speed 4 --theme 000000,ffffff,272822,f92672,a6e22e,f4bf75,66d9ef,ae81ff,a1efe4,f8f8f2 --line-height 1.3    
-gifsicle ked01.gif -o ked01o.gif -O=3 --colors 256 
+  
+### asciinema  
+
+    - agg ked01.cast ked01.gif --font-family "LiterationMono Nerd Font" --idle-time-limit 0.2 --speed 4 --theme 000000,ffffff,272822,f92672,a6e22e,f4bf75,66d9ef,ae81ff,a1efe4,f8f8f2 --line-height 1.3    
+    - gifsicle ked01.gif -o ked01o.gif -O=3 --colors 256 
     

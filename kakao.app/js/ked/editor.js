@@ -557,7 +557,8 @@ editor = (function ()
     editor.prototype["onFinderApply"] = function (text)
     {
         lf('finderApply',text)
-        return this.state.highlightText(text)
+        this.state.highlightText(text)
+        return this.state.moveCursorToNextHighlight()
     }
 
     editor.prototype["onKey"] = function (key, event)
@@ -783,6 +784,18 @@ editor = (function ()
             case 'cmd+g':
             case 'ctrl+g':
                 return this.state.selectWordAtCursor_highlightSelection_selectNextHighlight()
+
+            case 'shift+cmd+e':
+            case 'shift+ctrl+e':
+                return this.state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
+
+            case 'shift+cmd+d':
+            case 'shift+ctrl+d':
+                return this.state.selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
+
+            case 'shift+cmd+g':
+            case 'shift+ctrl+g':
+                return this.state.selectWordAtCursor_highlightSelection_selectPrevHighlight()
 
             case 'alt+cmd+d':
             case 'alt+ctrl+d':

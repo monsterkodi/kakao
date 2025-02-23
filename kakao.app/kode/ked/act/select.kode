@@ -81,6 +81,31 @@ export
             @selectNextHighlight()
             
         @selectWordAtCursor_highlightSelection()
+
+        
+    highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight: ->
+        # shift+cmd+e shift+ctrl+e
+        if valid @s.highlights 
+            if not @deselectCursorHighlight()
+                @moveCursorToPrevHighlight()
+            ⮐ 
+            
+        @selectWordAtCursor_highlightSelection()
+        @deselectCursorHighlight()
+    
+    selectWordAtCursor_highlightSelection_addPrevHighlightToSelection: ->
+        # shift+cmd+d shift+ctrl+d
+        if valid @s.highlights ➜ ⮐ @addCurrentOrPrevHighlightToSelection()
+            
+        @selectWordAtCursor_highlightSelection()
+        
+    selectWordAtCursor_highlightSelection_selectPrevHighlight: ->
+        # shift+cmd+g shift+ctrl+g
+        if valid @s.highlights 
+            @clearCursors()
+            @selectPrevHighlight()
+            
+        @selectWordAtCursor_highlightSelection()
         
     selectWordAtCursor_highlightSelection: ->
         
@@ -136,7 +161,21 @@ export
         if next = util.nextSpanAfterPos @s.highlights @mainCursor()
             @selectSpan next
             @setMainCursor util.endOfSpan(next)
-                        
+
+    selectPrevHighlight: ->
+        
+        ⮐ if empty @s.highlights
+        
+        pos = @mainCursor()
+        
+        if prev = util.prevSpanBeforePos @s.highlights pos
+            
+            if util.endOfSpan(prev) eql pos
+                prev = util.prevSpanBeforePos @s.highlights util.startOfSpan(prev)
+            if prev
+                @selectSpan prev
+                @setMainCursor util.endOfSpan(prev)
+            
     addCurrentOrNextHighlightToSelection: ->            
         
         if prev = util.prevSpanBeforePos @s.highlights @mainCursor()
@@ -146,6 +185,16 @@ export
                 ⮐ 
                 
         @addNextHighlightToSelection()
+
+    addCurrentOrPrevHighlightToSelection: ->            
+        
+        if prev = util.prevSpanBeforePos @s.highlights @mainCursor()
+            if not util.rangesContainSpan @s.selections prev
+                @addSpanToSelection prev
+                @addCursor util.endOfSpan(prev)
+                ⮐ 
+                
+        @addPrevHighlightToSelection()
         
     addNextHighlightToSelection: ->
         
@@ -154,6 +203,20 @@ export
         if next = util.nextSpanAfterPos @s.highlights @mainCursor()
             @addSpanToSelection next
             @addCursor util.endOfSpan(next)
+
+    addPrevHighlightToSelection: ->
+        
+        ⮐ if empty @s.highlights
+        
+        pos = @mainCursor()
+        
+        if prev = util.prevSpanBeforePos @s.highlights pos
+            
+            if util.endOfSpan(prev) eql pos
+                prev = util.prevSpanBeforePos @s.highlights util.startOfSpan(prev)
+            if prev
+                @addSpanToSelection prev
+                @addCursor util.endOfSpan(prev)
             
     moveCursorToNextHighlight: pos ->
         
@@ -164,6 +227,18 @@ export
         if next = util.nextSpanAfterPos @s.highlights pos
             @moveMainCursor util.endOfSpan(next)
 
+    moveCursorToPrevHighlight: pos ->
+        
+        ⮐ if empty @s.highlights
+        
+        pos ?= @mainCursor()
+        
+        if prev = util.prevSpanBeforePos @s.highlights pos
+            if util.endOfSpan(prev) eql pos
+                prev = util.prevSpanBeforePos @s.highlights util.startOfSpan(prev)
+            if prev
+                @moveMainCursor util.endOfSpan(prev)
+            
     selectSpan: span ->
         
         @setSelections [util.rangeForSpan(span)]

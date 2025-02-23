@@ -94,7 +94,7 @@ function text
         
     @textFromBolToPos: lines pos -> lines[pos[1]][0...pos[0]]
     
-    @isOnlyWhitespace: text -> /^\s+$/.test text
+    @isOnlyWhitespace: text -> /^\s+$/.test kseg.str(text)
     
     # 000  000   000  0000000    00000000  000   000  000000000  
     # 000  0000  000  000   000  000       0000  000     000     
@@ -302,6 +302,23 @@ function text
         if r = kstr.rangeOfClosestWord lines[y] x
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
+                
+    @rangeOfWhitespaceLeftToPos: lines pos ->
+        
+        [x y] = pos
+        
+        y = clamp 0 lines.length-1 y
+        x = clamp 0 lines[y].length x
+        
+        ⮐ [x y x y] if x <= 0
+        
+        segi = kseg.indexAtWidth lines[y] x
+        left = lines[y][0...segi]
+        
+        if tc = kseg.tailCount left ' '
+            ⮐ [segi-tc y segi y]
+            
+        [x y x y]
 
     @rangeOfWordOrWhitespaceLeftToPos: lines pos ->
         
@@ -311,8 +328,6 @@ function text
         
         segi = kseg.indexAtWidth lines[y] x
         left = lines[y][0...segi]
-        
-        # log "rangeOfWordOrWhitespaceLeftToPos ▸#{kseg.str left}◂ #{x} #{segi}"
         
         if tc = kseg.tailCount left ' '
             ⮐ [segi-tc y segi y]
