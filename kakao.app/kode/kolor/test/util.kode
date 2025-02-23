@@ -17,4 +17,4 @@ export
     
     inc: (rgs, start, match) -> 
         for r in rgs ➜ if r.start == start and r.match == match ➜ ⮐ r.clss
-        log "#{r6 noon(rgs)}\n#{r5 'inc expected'} #{g5 match} #{r5 'at index'} #{b7 start} "
+        log "#{r6 noon(rgs)}\n#{r5 'expected'} #{g5 match} #{r5 'at index'} #{b7 start} "

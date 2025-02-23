@@ -39,9 +39,6 @@
     - fix scrolling to bottom for long files
     - show cursors and selections
     
-- scroll
-    - thin scroll handles?
-    
 - session
     - save main cursor positions per file and apply on load
     - merge cursor positions from last session by default?  

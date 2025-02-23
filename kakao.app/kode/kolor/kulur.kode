@@ -85,7 +85,8 @@ chunked = segls ext ->
         pushLastWord = ->
             
             if lastWord != null
-                line.chunks.push start:lastWordIndex length:lastWord.length match:kseg.str(lastWord) clss:'text'
+                line.chunks.push start:kseg.widthAtSegi(segs lastWordIndex) length:kseg.width(lastWord) match:kseg.str(lastWord) clss:'text'
+
                 lastWord = null
                 lastWordIndex = -1
         
@@ -129,11 +130,13 @@ chunked = segls ext ->
                         if s in [','';''{''}''('')']
                             clss += ' minor'
 
-                    line.chunks.push start:chnk.index+segIndex length:1 match:s turd:turd clss:clss
+                    line.chunks.push start:kseg.widthAtSegi(segs chnk.index+segIndex) length:kseg.width(s) match:s turd:turd clss:clss
                 else
                     if lastWord == null
                         lastWord = []
                         lastWordIndex = chnk.index+segIndex
+                        # lastWordIndex = chnk.index+kseg.width(s)
+
                     # log 'lastWord' lastWordIndex chnk.index segIndex lastWord s
                     lastWord.push s
                     

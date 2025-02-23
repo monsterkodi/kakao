@@ -61,7 +61,7 @@ chunked = function (segls, ext)
         {
             if (lastWord !== null)
             {
-                line.chunks.push({start:lastWordIndex,length:lastWord.length,match:kseg.str(lastWord),clss:'text'})
+                line.chunks.push({start:kseg.widthAtSegi(segs,lastWordIndex),length:kseg.width(lastWord),match:kseg.str(lastWord),clss:'text'})
                 lastWord = null
                 return lastWordIndex = -1
             }
@@ -119,7 +119,7 @@ chunked = function (segls, ext)
                             clss += ' minor'
                         }
                     }
-                    line.chunks.push({start:chnk.index + segIndex,length:1,match:s,turd:turd,clss:clss})
+                    line.chunks.push({start:kseg.widthAtSegi(segs,chnk.index + segIndex),length:kseg.width(s),match:s,turd:turd,clss:clss})
                 }
                 else
                 {
@@ -218,7 +218,7 @@ noonComment = function ()
 
 slashComment = function ()
 {
-    var _213_17_
+    var _216_17_
 
     if (stackTop)
     {
@@ -284,7 +284,7 @@ starComment = function ()
 
 funcArgs = function ()
 {
-    var ch, turd, _260_30_
+    var ch, turd, _263_30_
 
     if (notCode)
     {
@@ -319,7 +319,7 @@ funcArgs = function ()
 
 dashArrow = function ()
 {
-    var markFunc, _296_77_, _319_77_
+    var markFunc, _299_77_, _322_77_
 
     if (notCode)
     {
@@ -435,7 +435,7 @@ commentHeader = function ()
 
 kodePunct = function ()
 {
-    var next, prev, prevEnd, _395_21_, _407_50_
+    var next, prev, prevEnd, _398_21_, _410_50_
 
     if (notCode)
     {
@@ -524,7 +524,7 @@ kodePunct = function ()
 
 kodeWord = function ()
 {
-    var c, prev, _426_22_, _475_46_
+    var c, prev, _429_22_, _478_46_
 
     if (notCode)
     {
@@ -623,7 +623,7 @@ thisCall = function ()
 
 coffeePunct = function ()
 {
-    var next, prev, prevEnd, _505_21_
+    var next, prev, prevEnd, _508_21_
 
     if (notCode)
     {
@@ -745,7 +745,7 @@ property = function ()
 
 cppWord = function ()
 {
-    var p, prevPrev, _573_19_
+    var p, prevPrev, _576_19_
 
     if (notCode)
     {
@@ -994,7 +994,7 @@ jsWord = function ()
 
 dict = function ()
 {
-    var prev, _732_44_
+    var prev, _735_44_
 
     if (notCode)
     {
@@ -1079,7 +1079,7 @@ jsonWord = function ()
 
 escape = function ()
 {
-    var _785_46_, _786_26_, _790_61_, _793_61_
+    var _788_46_, _789_26_, _793_61_, _796_61_
 
     if (chunk.match === '\\' && ((topType != null ? topType.startsWith('regexp') : undefined) || (topType != null ? topType.startsWith('string') : undefined)))
     {
@@ -1107,7 +1107,7 @@ escape = function ()
 
 regexp = function ()
 {
-    var next, prev, _803_19_
+    var next, prev, _806_19_
 
     if ((topType != null ? topType.startsWith('string') : undefined))
     {
@@ -1184,7 +1184,7 @@ tripleRegexp = function ()
 
 simpleString = function ()
 {
-    var next, scnd, type, _851_19_
+    var next, scnd, type, _854_19_
 
     if (topType === 'regexp')
     {
@@ -1252,7 +1252,7 @@ simpleString = function ()
 
 tripleString = function ()
 {
-    var type, _891_19_
+    var type, _894_19_
 
     if (!chunk.turd || chunk.turd.length < 3)
     {
@@ -1364,7 +1364,7 @@ float = function ()
 
 cssWord = function ()
 {
-    var prev, prevPrev, _987_45_
+    var prev, prevPrev, _990_45_
 
     if (_k_.in(chunk.match.slice(-2),['px','em','ex']) && NUMBER.test(chunk.match.slice(0, -2)))
     {
@@ -1416,7 +1416,7 @@ cssWord = function ()
 
 mdPunct = function ()
 {
-    var type, _1021_65_, _1046_21_, _1071_21_
+    var type, _1024_65_, _1049_21_, _1074_21_
 
     if (chunkIndex === 0)
     {
@@ -1519,7 +1519,7 @@ mdPunct = function ()
 
 interpolation = function ()
 {
-    var _1103_21_
+    var _1106_21_
 
     if ((topType != null ? topType.startsWith('string double') : undefined))
     {
@@ -1544,7 +1544,7 @@ interpolation = function ()
 
 keyword = function ()
 {
-    var _1128_61_
+    var _1131_61_
 
     if (notCode)
     {
@@ -1611,7 +1611,7 @@ mmString = function ()
 
 shPunct = function ()
 {
-    var _1194_42_, _1194_64_, _1197_102_, _1197_41_, _1197_82_, _1203_102_, _1203_41_, _1203_82_
+    var _1197_42_, _1197_64_, _1200_102_, _1200_41_, _1200_82_, _1206_102_, _1206_41_, _1206_82_
 
     if (notCode)
     {
@@ -1717,16 +1717,16 @@ setValue = function (d, value)
 
 getValue = function (d)
 {
-    var _1265_27_, _1265_34_
+    var _1268_27_, _1268_34_
 
-    return ((_1265_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1265_34_ : '')
+    return ((_1268_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1268_34_ : '')
 }
 
 getmatch = function (d)
 {
-    var _1266_27_, _1266_35_
+    var _1269_27_, _1269_35_
 
-    return ((_1266_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1266_35_ : '')
+    return ((_1269_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1269_35_ : '')
 }
 
 addValue = function (d, value)
@@ -1781,7 +1781,7 @@ for (ext in handlers)
 
 blocked = function (lines)
 {
-    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1419_40_, _1434_61_
+    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1422_40_, _1437_61_
 
     extStack = []
     stack = []
@@ -1889,7 +1889,7 @@ blocked = function (lines)
                         if (mtch.turd)
                         {
                             turdChunk = getChunk(-mtch.turd.length)
-                            if (mtch.turd === (((_1434_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1434_61_ : (turdChunk != null ? turdChunk.match : undefined))))
+                            if (mtch.turd === (((_1437_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1437_61_ : (turdChunk != null ? turdChunk.match : undefined))))
                             {
                                 pushExt(mtch)
                             }
@@ -2000,11 +2000,11 @@ kolorizeChunks = function (chunks = [])
 
 syntax = function (arg)
 {
-    var clines, index, lines, rngs, text, _1515_19_
+    var clines, index, lines, rngs, text, _1518_19_
 
     arg = (arg != null ? arg : {})
     text = arg.text
-    ext = ((_1515_19_=arg.ext) != null ? _1515_19_ : 'coffee')
+    ext = ((_1518_19_=arg.ext) != null ? _1518_19_ : 'coffee')
     lines = text.split(NEWLINE)
     rngs = parse(lines,ext).map(function (l)
     {

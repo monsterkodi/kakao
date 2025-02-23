@@ -26,7 +26,7 @@ class walker
         this.cfg.ignore = ((_25_25_=this.cfg.ignore) != null ? _25_25_ : ['node_modules','build','Build','Library','Applications'])
         this.cfg.include = ((_26_25_=this.cfg.include) != null ? _26_25_ : ['.konrad.noon','.gitignore','.npmignore'])
         this.cfg.ignoreExt = ((_27_25_=this.cfg.ignoreExt) != null ? _27_25_ : ['asar'])
-        this.cfg.includeExt = ((_28_25_=this.cfg.includeExt) != null ? _28_25_ : walker.indexFileExtensions)
+        this.cfg.includeExt = ((_28_25_=this.cfg.includeExt) != null ? _28_25_ : walker.sourceFileExtensions)
     }
 
     ignore (p)

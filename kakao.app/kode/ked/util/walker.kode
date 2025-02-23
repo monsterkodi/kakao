@@ -25,7 +25,7 @@ class walker
         @cfg.ignore      ?= ['node_modules' 'build' 'Build' 'Library' 'Applications'] #, 'resources' 'ThirdParty' 'Binaries' 'Intermediate' 'Saved' 'Programs' 'Shaders' 'DerivedDataCache' 'Content' 'Samples']
         @cfg.include     ?= ['.konrad.noon' '.gitignore' '.npmignore']
         @cfg.ignoreExt   ?= ['asar']
-        @cfg.includeExt  ?= walker.indexFileExtensions # this should be set by prjcts instead
+        @cfg.includeExt  ?= walker.sourceFileExtensions # this should be set by prjcts instead
         
         # lf 'walker' @cfg walker.sourceFileExtensions
         

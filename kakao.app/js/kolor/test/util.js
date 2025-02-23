@@ -27,5 +27,5 @@ export default {lang:function (l)
             return r.clss
         }
     }
-    console.log(`${_k_.r6(_k_.noon((rgs)))}\n${_k_.r5('inc expected')} ${_k_.g5(match)} ${_k_.r5('at index')} ${_k_.b7(start)} `)
+    console.log(`${_k_.r6(_k_.noon((rgs)))}\n${_k_.r5('expected')} ${_k_.g5(match)} ${_k_.r5('at index')} ${_k_.b7(start)} `)
 }}

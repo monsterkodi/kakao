@@ -306,6 +306,11 @@ kseg.segiAtWidth = function (segs, w)
     return i
 }
 
+kseg.widthAtSegi = function (segs, segi)
+{
+    return kseg.width(segs.slice(0, typeof segi === 'number' ? segi : -1))
+}
+
 kseg.width = function (s)
 {
     var cpz, seg, str, w

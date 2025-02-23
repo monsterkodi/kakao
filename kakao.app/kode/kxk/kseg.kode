@@ -170,6 +170,13 @@ kseg.segiAtWidth = segs w ->
     i -= 1 if s > w
     i
 
+### 
+    number of columns occupied by segments with index smaller than segi
+###
+kseg.widthAtSegi = segs segi ->    
+    
+    kseg.width segs[0...segi]
+    
 ###
     number of columns occupied by string or segment list s
 ###
